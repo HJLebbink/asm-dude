@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="utf-8"?>
+<asmdudedata xmlns="http://www.w3schools.com/RedsDevils"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="namespace ./C#/AsmDudeData.xsd">
+  <info>
+    https://software.intel.com/sites/landingpage/IntrinsicsGuide/
+    https://archive.org/stream/bitsavers_intel80386ontothe80386Apr86_12904120/231746-001_Introduction_to_the_80386_Apr86#page/n75/mode/2up
+  </info>
+
+  <directives>
+    <directive name=".intel_syntax">
+      <description>TODO1</description>
+    </directive>
+    <directive name=".text">
+      <description>TODO2</description>
+    </directive>
+    <directive name=".global">
+      <description>TODO3</description>
+    </directive>
+    <directive name=".align">
+      <description>TODO4</description>
+    </directive>
+    <directive name=".att_syntax">
+      <description>TODO5</description>
+    </directive>
+  </directives>
+
+
+  <mnemonics>
+
+    <mnemonic name='mov'>
+      <arch>i386</arch>
+      <type>general</type>
+      <description>Move operand</description>
+    </mnemonic>
+
+    <mnemonic name='push'>
+      <arch>i386</arch>
+      <type>general</type>
+      <description>Push operand onto stack</description>
+    </mnemonic>
+
+    <mnemonic name='pop'>
+      <arch>i386</arch>
+      <type>general</type>
+      <description>Pop operand off stack</description>
+    </mnemonic>
+
+    <mnemonic name='pusha'>
+      <arch>i386</arch>
+      <type>general</type>
+      <description>Push all registers operands on stack</description>
+    </mnemonic>
+
+    <mnemonic name='add'>
+      <arch>i386</arch>
+      <type>arithmetic</type>
+      <description>Push all registers operand on stack</description>
+    </mnemonic>
+
+    <mnemonic name='jmp'>
+      <arch>i386</arch>
+      <type>transfer</type>
+      <description>Jump</description>
+    </mnemonic>
+
+  </mnemonics>
+
+
+  <registers>
+
+    <register name='rax'>
+      <arch>x64</arch>
+      <bits>64</bits>
+      <description>64bits general purpose register</description>
+    </register>
+
+    <register name='rbx'>
+      <arch>x64</arch>
+      <bits>64</bits>
+      <description>64bits general purpose register</description>
+    </register>
+
+    <register name='rcx'>
+      <arch>x64</arch>
+      <bits>64</bits>
+      <description>64bits general purpose register</description>
+    </register>
+
+    <register name='rdx'>
+      <arch>x64</arch>
+      <bits>64</bits>
+      <description>64bits general purpose register</description>
+    </register>
+
+    <register name='rsi'>
+      <arch>x64</arch>
+      <bits>64</bits>
+      <description>64bits address register</description>
+    </register>
+
+    <register name='rdi'>
+      <arch>i386</arch>
+      <bits>64</bits>
+      <description>64bits address register</description>
+    </register>
+
+    <register name='rbp'>
+      <arch>i386</arch>
+      <bits>64</bits>
+      <description>64bits address register</description>
+    </register>
+
+    <register name='rsp'>
+      <arch>i386</arch>
+      <bits>64</bits>
+      <description>64bits address register</description>
+    </register>
+
+    <register name='r8'>
+      <arch>x64</arch>
+      <bits>64</bits>
+      <description>64bits general purpose register</description>
+    </register>
+
+    <register name='r9'>
+      <arch>x64</arch>
+      <bits>64</bits>
+      <description>64bits general purpose register</description>
+    </register>
+
+    <register name='r10'>
+      <arch>x64</arch>
+      <bits>64</bits>
+      <description>64bits general purpose register</description>
+    </register>
+
+    <register name='r11'>
+      <arch>x64</arch>
+      <bits>64</bits>
+      <description>64bits general purpose register</description>
+    </register>
+
+    <register name='r12'>
+      <arch>x64</arch>
+      <bits>64</bits>
+      <description>64bits general purpose register</description>
+    </register>
+
+    <register name='r13'>
+      <arch>x64</arch>
+      <bits>64</bits>
+      <description>64bits general purpose register</description>
+    </register>
+
+    <register name='r14'>
+      <arch>x64</arch>
+      <bits>64</bits>
+      <description>64bits general purpose register</description>
+    </register>
+
+    <register name='r15'>
+      <arch>x64</arch>
+      <bits>64</bits>
+      <description>64bits general purpose register</description>
+    </register>
+
+    <register name='eax'>
+      <arch>i386</arch>
+      <bits>32</bits>
+      <description>32bits general purpose register</description>
+    </register>
+
+    <register name='ebx'>
+      <arch>i386</arch>
+      <bits>32</bits>
+      <description>32bits general purpose register</description>
+    </register>
+
+    <register name='ecx'>
+      <arch>i386</arch>
+      <bits>32</bits>
+      <description>32bits general purpose register</description>
+    </register>
+
+    <register name='edx'>
+      <arch>i386</arch>
+      <bits>32</bits>
+      <description>32bits general purpose register</description>
+    </register>
+
+    <register name='esi'>
+      <arch>i386</arch>
+      <bits>32</bits>
+      <description>32bits address register</description>
+    </register>
+
+    <register name='edi'>
+      <arch>i386</arch>
+      <bits>32</bits>
+      <description>32bits address register</description>
+    </register>
+
+    <register name='ebp'>
+      <arch>i386</arch>
+      <bits>32</bits>
+      <description>32bits address register</description>
+    </register>
+
+    <register name='esp'>
+      <arch>i386</arch>
+      <bits>32</bits>
+      <description>32bits address register</description>
+    </register>
+
+    <register name='r8d'>
+      <arch>x64</arch>
+      <bits>32</bits>
+      <description>32bits general purpose register</description>
+    </register>
+
+    <register name='r9d'>
+      <arch>x64</arch>
+      <bits>32</bits>
+      <description>32bits general purpose register</description>
+    </register>
+
+    <register name='r10d'>
+      <arch>x64</arch>
+      <bits>32</bits>
+      <description>32bits general purpose register</description>
+    </register>
+
+    <register name='r11d'>
+      <arch>x64</arch>
+      <bits>32</bits>
+      <description>32bits general purpose register</description>
+    </register>
+
+    <register name='r12d'>
+      <arch>x64</arch>
+      <bits>32</bits>
+      <description>32bits general purpose register</description>
+    </register>
+
+    <register name='r13d'>
+      <arch>x64</arch>
+      <bits>32</bits>
+      <description>32bits general purpose register</description>
+    </register>
+
+    <register name='r14d'>
+      <arch>x64</arch>
+      <bits>32</bits>
+      <description>32bits general purpose register</description>
+    </register>
+
+    <register name='r15d'>
+      <arch>x64</arch>
+      <bits>32</bits>
+      <description>32bits general purpose register</description>
+    </register>
+
+    <register name='ax'>
+      <arch>i386</arch>
+      <bits>16</bits>
+      <description>16bits general purpose register</description>
+    </register>
+
+    <register name='bx'>
+      <arch>i386</arch>
+      <bits>16</bits>
+      <description>16bits general purpose register</description>
+    </register>
+
+    <register name='cx'>
+      <arch>i386</arch>
+      <bits>16</bits>
+      <description>16bits general purpose register</description>
+    </register>
+
+    <register name='dx'>
+      <arch>i386</arch>
+      <bits>16</bits>
+      <description>16bits general purpose register</description>
+    </register>
+
+    <register name='si'>
+      <arch>i386</arch>
+      <bits>16</bits>
+      <description>16bits address register</description>
+    </register>
+
+    <register name='di'>
+      <arch>i386</arch>
+      <bits>16</bits>
+      <description>16bits address register</description>
+    </register>
+
+    <register name='bp'>
+      <arch>i386</arch>
+      <bits>16</bits>
+      <description>16bits address register</description>
+    </register>
+
+    <register name='sp'>
+      <arch>i386</arch>
+      <bits>16</bits>
+      <description>16bits address register</description>
+    </register>
+
+    <register name='r8w'>
+      <arch>x64</arch>
+      <bits>16</bits>
+      <description>16bits general purpose register</description>
+    </register>
+
+    <register name='r9w'>
+      <arch>x64</arch>
+      <bits>16</bits>
+      <description>16bits general purpose register</description>
+    </register>
+
+    <register name='r10w'>
+      <arch>x64</arch>
+      <bits>16</bits>
+      <description>16bits general purpose register</description>
+    </register>
+
+    <register name='r11w'>
+      <arch>x64</arch>
+      <bits>16</bits>
+      <description>16bits general purpose register</description>
+    </register>
+
+    <register name='r12w'>
+      <arch>x64</arch>
+      <bits>16</bits>
+      <description>16bits general purpose register</description>
+    </register>
+
+    <register name='r13w'>
+      <arch>x64</arch>
+      <bits>16</bits>
+      <description>16bits general purpose register</description>
+    </register>
+
+    <register name='r14w'>
+      <arch>x64</arch>
+      <bits>16</bits>
+      <description>16bits general purpose register</description>
+    </register>
+
+    <register name='r15w'>
+      <arch>x64</arch>
+      <bits>16</bits>
+      <description>16bits general purpose register</description>
+    </register>
+
+    <register name='ah'>
+      <arch>i386</arch>
+      <bits>8</bits>
+      <description>8bits general purpose register</description>
+    </register>
+
+    <register name='bh'>
+      <arch>i386</arch>
+      <bits>8</bits>
+      <description>8bits general purpose register</description>
+    </register>
+
+    <register name='ch'>
+      <arch>i386</arch>
+      <bits>8</bits>
+      <description>8bits general purpose register</description>
+    </register>
+
+    <register name='dh'>
+      <arch>i386</arch>
+      <bits>8</bits>
+      <description>8bits general purpose register</description>
+    </register>
+
+    <register name='al'>
+      <arch>i386</arch>
+      <bits>8</bits>
+      <description>8bits general purpose register</description>
+    </register>
+
+    <register name='bl'>
+      <arch>i386</arch>
+      <bits>8</bits>
+      <description>8bits general purpose register</description>
+    </register>
+
+    <register name='cl'>
+      <arch>i386</arch>
+      <bits>8</bits>
+      <description>8bits general purpose register</description>
+    </register>
+
+    <register name='dl'>
+      <arch>i386</arch>
+      <bits>8</bits>
+      <description>8bits general purpose register</description>
+    </register>
+
+    <register name='sil'>
+      <arch>i386</arch>
+      <bits>8</bits>
+      <description>8bits address register</description>
+    </register>
+
+    <register name='dil'>
+      <arch>i386</arch>
+      <bits>8</bits>
+      <description>8bits address register</description>
+    </register>
+
+    <register name='bpl'>
+      <arch>i386</arch>
+      <bits>8</bits>
+      <description>8bits address register</description>
+    </register>
+
+    <register name='spl'>
+      <arch>i386</arch>
+      <bits>8</bits>
+      <description>8bits address register</description>
+    </register>
+
+    <register name='r8b'>
+      <arch>x64</arch>
+      <bits>8</bits>
+      <description>8bits general purpose register</description>
+    </register>
+
+    <register name='r9b'>
+      <arch>x64</arch>
+      <bits>8</bits>
+      <description>8bits general purpose register</description>
+    </register>
+
+    <register name='r10b'>
+      <arch>x64</arch>
+      <bits>8</bits>
+      <description>8bits general purpose register</description>
+    </register>
+
+    <register name='r11b'>
+      <arch>x64</arch>
+      <bits>8</bits>
+      <description>8bits general purpose register</description>
+    </register>
+
+    <register name='r12b'>
+      <arch>x64</arch>
+      <bits>8</bits>
+      <description>8bits general purpose register</description>
+    </register>
+
+    <register name='r13b'>
+      <arch>x64</arch>
+      <bits>8</bits>
+      <description>8bits general purpose register</description>
+    </register>
+
+    <register name='r14b'>
+      <arch>x64</arch>
+      <bits>8</bits>
+      <description>8bits general purpose register</description>
+    </register>
+
+    <register name='r15b'>
+      <arch>x64</arch>
+      <bits>8</bits>
+      <description>8bits general purpose register</description>
+    </register>
+  </registers>
+</asmdudedata>
