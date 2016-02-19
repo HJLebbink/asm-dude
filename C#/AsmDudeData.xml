@@ -1,0 +1,808 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--<asmdudedata xmlns="http://www.w3schools.com/RedsDevils"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="namespace AsmDudeData.xsd">
+-->
+<asmdudedata>
+  <info>
+    http://www.mathemainzel.info/files/x86asmref.html
+    https://archive.org/stream/bitsavers_intel80386ontothe80386Apr86_12904120/231746-001_Introduction_to_the_80386_Apr86#page/n75/mode/2up
+  </info>
+
+  <directives>
+    <directive name=".intel_syntax">
+      <description>TODO1</description>
+    </directive>
+    <directive name=".text">
+      <description>TODO2</description>
+    </directive>
+    <directive name=".global">
+      <description>TODO3</description>
+    </directive>
+    <directive name=".align">
+      <description>TODO4</description>
+    </directive>
+    <directive name=".att_syntax">
+      <description>TODO5</description>
+    </directive>
+  </directives>
+
+
+  <mnemonics>
+    <mnemonic name='AAA'>
+      <description>Ascii Adjust for Addition</description>
+    </mnemonic>
+    <mnemonic name='AAD'>
+      <description>Ascii Adjust for Division</description>
+    </mnemonic>
+    <mnemonic name='AAM'>
+      <description>Ascii Adjust for Multiplication</description>
+    </mnemonic>
+    <mnemonic name='AAS'>
+      <description>Ascii Adjust for Subtraction</description>
+    </mnemonic>
+    <mnemonic name='ADC'>
+      <description>Add With Carry</description>
+    </mnemonic>
+    <mnemonic name='ADD'>
+      <description>Arithmetic Addition</description>
+    </mnemonic>
+    <mnemonic name='AND'>
+      <description>Logical And</description>
+    </mnemonic>
+    <mnemonic name='ARPL'>
+      <description>Adjusted Requested Privilege Level of Selector</description>
+    </mnemonic>
+    <mnemonic name='BOUND'>
+      <description>Array Index Bound Check</description>
+    </mnemonic>
+    <mnemonic name='BSF'>
+      <description>Bit Scan Forward</description>
+    </mnemonic>
+    <mnemonic name='BSR'>
+      <description>Bit Scan Reverse</description>
+    </mnemonic>
+    <mnemonic name='BSWAP'>
+      <description>Byte Swap</description>
+    </mnemonic>
+    <mnemonic name='BT'>
+      <description>Bit Test</description>
+    </mnemonic>
+    <mnemonic name='BTC'>
+      <description>Bit Test with Compliment</description>
+    </mnemonic>
+    <mnemonic name='BTR'>
+      <description>Bit Test with Reset</description>
+    </mnemonic>
+    <mnemonic name='BTS'>
+      <description>Bit Test and Set</description>
+    </mnemonic>
+    <mnemonic name='CALL'>
+      <description>Procedure Call</description>
+    </mnemonic>
+    <mnemonic name='CBW'>
+      <description>Convert Byte to Word</description>
+    </mnemonic>
+    <mnemonic name='CDQ'>
+      <description>Convert Double to Quad</description>
+    </mnemonic>
+    <mnemonic name='CLC'>
+      <description>Clear Carry</description>
+    </mnemonic>
+    <mnemonic name='CLD'>
+      <description>Clear Direction Flag</description>
+    </mnemonic>
+    <mnemonic name='CLI'>
+      <description>Clear Interrupt Flag</description>
+    </mnemonic>
+    <mnemonic name='CLTS'>
+      <description>Clear Task Switched Flag</description>
+    </mnemonic>
+    <mnemonic name='CMC'>
+      <description>Complement Carry Flag</description>
+    </mnemonic>
+    <mnemonic name='CMP'>
+      <description>Compare</description>
+    </mnemonic>
+    <mnemonic name='CMPS'>
+      <description>Compare String</description>
+    </mnemonic>
+    <mnemonic name='CMPXCHG'>
+      <description>Compare and Exchange</description>
+    </mnemonic>
+    <mnemonic name='CWD'>
+      <description>Convert Word to Doubleword</description>
+    </mnemonic>
+    <mnemonic name='CWDE'>
+      <description>Convert Word to Extended Doubleword</description>
+    </mnemonic>
+    <mnemonic name='DAA'>
+      <description>Decimal Adjust for Addition</description>
+    </mnemonic>
+    <mnemonic name='DAS'>
+      <description>Decimal Adjust for Subtraction</description>
+    </mnemonic>
+    <mnemonic name='DEC'>
+      <description>Decrement</description>
+    </mnemonic>
+    <mnemonic name='DIV'>
+      <description>Divide</description>
+    </mnemonic>
+    <mnemonic name='ENTER'>
+      <description>Make Stack Frame</description>
+    </mnemonic>
+    <mnemonic name='ESC'>
+      <description>Escape</description>
+    </mnemonic>
+    <mnemonic name='HLT'>
+      <description>Halt CPU</description>
+    </mnemonic>
+    <mnemonic name='IDIV'>
+      <description>Signed Integer Division</description>
+    </mnemonic>
+    <mnemonic name='IMUL'>
+      <description>Signed Multiply</description>
+    </mnemonic>
+    <mnemonic name='IN'>
+      <description>Input Byte or Word From Port</description>
+    </mnemonic>
+    <mnemonic name='INC'>
+      <description>Increment</description>
+    </mnemonic>
+    <mnemonic name='INS'>
+      <description>Input String from Port</description>
+    </mnemonic>
+    <mnemonic name='INT'>
+      <description>Interrupt</description>
+    </mnemonic>
+    <mnemonic name='INTO'>
+      <description>Interrupt on Overflow</description>
+    </mnemonic>
+    <mnemonic name='INVD'>
+      <description>Invalidate Cache</description>
+    </mnemonic>
+    <mnemonic name='INVLPG'>
+      <description>Invalidate Translation Look-Aside Buffer Entry</description>
+    </mnemonic>
+    <mnemonic name='IRET'>
+      <description>Interrupt Return</description>
+    </mnemonic>
+    <mnemonic name='IRETD'>
+      <description>Interrupt Return</description>
+    </mnemonic>
+    <mnemonic name='JA' type='jump'>
+      <description>Jump Above / Jump Not Below or Equal (JA=JNBE)</description>
+    </mnemonic>
+    <mnemonic name='JNBE' type='jump'>
+      <description>Jump Above / Jump Not Below or Equal (JA=JNBE)</description>
+    </mnemonic>
+    <mnemonic name='JAE' type='jump'>
+      <description>Jump Above or Equal / Jump on Not Below (JAE=JNB)</description>
+    </mnemonic>
+    <mnemonic name='JNB' type='jump'>
+      <description>Jump Above or Equal / Jump on Not Below (JAE=JNB)</description>
+    </mnemonic>
+    <mnemonic name='JB' type='jump'>
+      <description>Jump Below / Jump Not Above or Equal (JB=JNAE)</description>
+    </mnemonic>
+    <mnemonic name='JNAE' type='jump'>
+      <description>Jump Below / Jump Not Above or Equal (JB=JNAE)</description>
+    </mnemonic>
+    <mnemonic name='JBE' type='jump'>
+      <description>Jump Below or Equal / Jump Not Above (JBE=JNA)</description>
+    </mnemonic>
+    <mnemonic name='JNA' type='jump'>
+      <description>Jump Below or Equal / Jump Not Above (JBE=JNA)</description>
+    </mnemonic>
+    <mnemonic name='JC' type='jump'>
+      <description>Jump on Carry</description>
+    </mnemonic>
+    <mnemonic name='JCXZ' type='jump'>
+      <description>Jump if Register CX is Zero</description>
+    </mnemonic>
+    <mnemonic name='JECXZ' type='jump'>
+      <description>Jump if Register ECX is Zero</description>
+    </mnemonic>
+    <mnemonic name='JE' type='jump'>
+      <description>Jump Equal / Jump Zero (JE=JZ)</description>
+    </mnemonic>
+    <mnemonic name='JZ' type='jump'>
+      <description>Jump Equal / Jump Zero (JE=JZ)</description>
+    </mnemonic>
+    <mnemonic name='JG' type='jump'>
+      <description>Jump Greater / Jump Not Less or Equal (JG=JNLE)</description>
+    </mnemonic>
+    <mnemonic name='JNLE' type='jump'>
+      <description>Jump Greater / Jump Not Less or Equal (JG=JNLE)</description>
+    </mnemonic>
+    <mnemonic name='JGE' type='jump'>
+      <description>Jump Greater or Equal / Jump Not Less (JGE=JNL)</description>
+    </mnemonic>
+    <mnemonic name='JNL' type='jump'>
+      <description>Jump Greater or Equal / Jump Not Less (JGE=JNL)</description>
+    </mnemonic>
+    <mnemonic name='JL' type='jump'>
+      <description>Jump Less / Jump Not Greater or Equal (JL=JNGE)</description>
+    </mnemonic>
+    <mnemonic name='JNGE' type='jump'>
+      <description>Jump Less / Jump Not Greater or Equal (JL=JNGE)</description>
+    </mnemonic>
+    <mnemonic name='JLE' type='jump'>
+      <description>Jump Less or Equal / Jump Not Greater (JLE=JNG)</description>
+    </mnemonic>
+    <mnemonic name='JNG' type='jump'>
+      <description>Jump Less or Equal / Jump Not Greater (JLE=JNG)</description>
+    </mnemonic>
+    <mnemonic name='JMP' type='jump'>
+      <description>Unconditional Jump</description>
+    </mnemonic>
+    <mnemonic name='JNC' type='jump'>
+      <description>Jump Not Carry</description>
+    </mnemonic>
+    <mnemonic name='JNE' type='jump'>
+      <description>Jump Not Equal / Jump Not Zero (JNE=JNZ)</description>
+    </mnemonic>
+    <mnemonic name='JNZ' type='jump'>
+      <description>Jump Not Equal / Jump Not Zero (JNE=JNZ)</description>
+    </mnemonic>
+    <mnemonic name='JNO' type='jump'>
+      <description>Jump Not Overflow</description>
+    </mnemonic>
+    <mnemonic name='JNS' type='jump'>
+      <description>Jump Not Signed</description>
+    </mnemonic>
+    <mnemonic name='JNP' type='jump'>
+      <description>Jump Not Parity / Jump Parity Odd (JNP=JPO)</description>
+    </mnemonic>
+    <mnemonic name='JNO' type='jump'>
+      <description>Jump Not Parity / Jump Parity Odd (JNP=JPO)</description>
+    </mnemonic>
+    <mnemonic name='JO' type='jump'>
+      <description>Jump on Overflow</description>
+    </mnemonic>
+    <mnemonic name='JP' type='jump'>
+      <description>Jump on Parity / Jump on Parity Even (JP=JPE)</description>
+    </mnemonic>
+    <mnemonic name='JPE' type='jump'>
+      <description>Jump on Parity / Jump on Parity Even (JP=JPE)</description>
+    </mnemonic>
+    <mnemonic name='JS' type='jump'>
+      <description>Jump Signed</description>
+    </mnemonic>
+    <mnemonic name='LAHF'>
+      <description>Load Register AH From Flags</description>
+    </mnemonic>
+    <mnemonic name='LAR'>
+      <description>Load Access Rights</description>
+    </mnemonic>
+    <mnemonic name='LDS'>
+      <description>Load Pointer Using DS</description>
+    </mnemonic>
+    <mnemonic name='LEA'>
+      <description>Load Effective Address</description>
+    </mnemonic>
+    <mnemonic name='LEAVE'>
+      <description>Restore Stack for Procedure Exit</description>
+    </mnemonic>
+    <mnemonic name='LES'>
+      <description>Load Pointer Using ES</description>
+    </mnemonic>
+    <mnemonic name='LFS'>
+      <description>Load Pointer Using FS</description>
+    </mnemonic>
+    <mnemonic name='LGDT'>
+      <description>Load Global Descriptor Table</description>
+    </mnemonic>
+    <mnemonic name='LIDT'>
+      <description>Load Interrupt Descriptor Table</description>
+    </mnemonic>
+    <mnemonic name='LGS'>
+      <description>Load Pointer Using GS</description>
+    </mnemonic>
+    <mnemonic name='LLDT'>
+      <description>Load Local Descriptor Table</description>
+    </mnemonic>
+    <mnemonic name='LMSW'>
+      <description>Load Machine Status Word</description>
+    </mnemonic>
+    <mnemonic name='LOCK'>
+      <description>Lock Bus</description>
+    </mnemonic>
+    <mnemonic name='LODS'>
+      <description>Load String</description>
+    </mnemonic>
+    <mnemonic name='LOOP'>
+      <description>Decrement CX and Loop if CX Not Zero</description>
+    </mnemonic>
+    <mnemonic name='LOOPE'>
+      <description>Loop While Equal / Loop While Zero</description>
+    </mnemonic>
+    <mnemonic name='LOOPZ'>
+      <description>Loop While Equal / Loop While Zero</description>
+    </mnemonic>
+    <mnemonic name='LOOPNZ'>
+      <description>Loop While Not Zero / Loop While Not Equal</description>
+    </mnemonic>
+    <mnemonic name='LOOPNE'>
+      <description>Loop While Not Zero / Loop While Not Equal</description>
+    </mnemonic>
+    <mnemonic name='LSL'>
+      <description>Load Segment Limit</description>
+    </mnemonic>
+    <mnemonic name='LSS'>
+      <description>Load Pointer Using SS</description>
+    </mnemonic>
+    <mnemonic name='LTR'>
+      <description>Load Task Register</description>
+    </mnemonic>
+    <mnemonic name='MOV'>
+      <description>Move Byte or Word</description>
+    </mnemonic>
+    <mnemonic name='MOVS'>
+      <description>Move String</description>
+    </mnemonic>
+    <mnemonic name='MOVSX'>
+      <description>Move with Sign Extend</description>
+    </mnemonic>
+    <mnemonic name='MOVZX'>
+      <description>Move with Zero Extend</description>
+    </mnemonic>
+    <mnemonic name='MUL'>
+      <description>Unsigned Multiply</description>
+    </mnemonic>
+    <mnemonic name='NEG'>
+      <description>Two's Complement Negation</description>
+    </mnemonic>
+    <mnemonic name='NOP'>
+      <description>No Operation</description>
+    </mnemonic>
+    <mnemonic name='NOT'>
+      <description>One's Compliment Negation</description>
+    </mnemonic>
+    <mnemonic name='OR'>
+      <description>Inclusive Logical OR</description>
+    </mnemonic>
+    <mnemonic name='OUT'>
+      <description>Output Data to Port</description>
+    </mnemonic>
+    <mnemonic name='OUTS'>
+      <description>Output String to Port</description>
+    </mnemonic>
+    <mnemonic name='POP'>
+      <description>Pop Word off Stack</description>
+    </mnemonic>
+    <mnemonic name='POPA'>
+      <description>Pop All Registers onto Stack</description>
+    </mnemonic>
+    <mnemonic name='POPAD'>
+      <description>Pop All Registers onto Stack</description>
+    </mnemonic>
+    <mnemonic name='POPF'>
+      <description>Pop Flags off Stack</description>
+    </mnemonic>
+    <mnemonic name='POPFD'>
+      <description>Pop Flags off Stack</description>
+    </mnemonic>
+    <mnemonic name='PUSH'>
+      <description>Push Word onto Stack</description>
+    </mnemonic>
+    <mnemonic name='PUSHA'>
+      <description>Push All Registers onto Stack</description>
+    </mnemonic>
+    <mnemonic name='PUSHAD'>
+      <description>Push All Registers onto Stack</description>
+    </mnemonic>
+    <mnemonic name='PUSHF'>
+      <description>Push Flags onto Stack</description>
+    </mnemonic>
+    <mnemonic name='PUSHFD'>
+      <description>Push Flags onto Stack</description>
+    </mnemonic>
+    <mnemonic name='PUSHFD'>
+      <description>Push Flags onto Stack</description>
+    </mnemonic>
+    <mnemonic name='RCL'>
+      <description>Rotate Through Carry Left</description>
+    </mnemonic>
+    <mnemonic name='RCR'>
+      <description>Rotate Through Carry Right</description>
+    </mnemonic>
+    <mnemonic name='REP'>
+      <description>Repeat String Operation</description>
+    </mnemonic>
+    <mnemonic name='REPE'>
+      <description>Repeat Equal / Repeat Zero</description>
+    </mnemonic>
+    <mnemonic name='REPZ'>
+      <description>Repeat Equal / Repeat Zero</description>
+    </mnemonic>
+    <mnemonic name='REPNE'>
+      <description>Repeat Not Equal / Repeat Not Zero</description>
+    </mnemonic>
+    <mnemonic name='REPNZ'>
+      <description>Repeat Not Equal / Repeat Not Zero</description>
+    </mnemonic>
+    <mnemonic name='RET'>
+      <description>Return From Procedure</description>
+    </mnemonic>
+    <mnemonic name='RETF'>
+      <description>Return From Procedure</description>
+    </mnemonic>
+    <mnemonic name='ROL'>
+      <description>Rotate Left</description>
+    </mnemonic>
+    <mnemonic name='ROR'>
+      <description>Rotate Right</description>
+    </mnemonic>
+    <mnemonic name='SAHF'>
+      <description>Store AH Register into FLAGS</description>
+    </mnemonic>
+    <mnemonic name='SAL'>
+      <description>Shift Arithmetic Left / Shift Logical Left (SAL=SHL)</description>
+    </mnemonic>
+    <mnemonic name='SHL'>
+      <description>Shift Arithmetic Left / Shift Logical Left (SAL=SHL)</description>
+    </mnemonic>
+    <mnemonic name='SAR'>
+      <description>Shift Arithmetic Right</description>
+    </mnemonic>
+    <mnemonic name='SBB'>
+      <description>Subtract with Borrow</description>
+    </mnemonic>
+    <mnemonic name='SCAS'>
+      <description>Scan String</description>
+    </mnemonic>
+    <mnemonic name='SETAE'>
+      <description>Set if Above or Equal / Set if Not Below (SETAE=SETNB)</description>
+    </mnemonic>
+    <mnemonic name='SETNB'>
+      <description>Set if Above or Equal / Set if Not Below (SETAE=SETNB)</description>
+    </mnemonic>
+    <mnemonic name='SETB'>
+      <description>Set if Below / Set if Not Above or Equal (SETB=SETNAE)</description>
+    </mnemonic>
+    <mnemonic name='SETNAE'>
+      <description>Set if Below / Set if Not Above or Equal (SETB=SETNAE)</description>
+    </mnemonic>
+    <mnemonic name='SETBE'>
+      <description>Set if Below or Equal / Set if Not Above (SETBE=SETNA)</description>
+    </mnemonic>
+    <mnemonic name='SETNA'>
+      <description>Set if Below or Equal / Set if Not Above (SETBE=SETNA)</description>
+    </mnemonic>
+    <mnemonic name='SETE'>
+      <description>Set if Equal / Set if Zero (SETE=SETZ)</description>
+    </mnemonic>
+    <mnemonic name='SETZ'>
+      <description>Set if Equal / Set if Zero (SETE=SETZ)</description>
+    </mnemonic>
+    <mnemonic name='SETNE'>
+      <description>Set if Not Equal / Set if Not Zero (SETNE=SETNZ)</description>
+    </mnemonic>
+    <mnemonic name='SETNZ'>
+      <description>Set if Not Equal / Set if Not Zero (SETNE=SETNZ)</description>
+    </mnemonic>
+    <mnemonic name='SETL'>
+      <description>Set if Less / Set if Not Greater or Equal (SETL=SETNGE)</description>
+    </mnemonic>
+    <mnemonic name='SETNGE'>
+      <description>Set if Less / Set if Not Greater or Equal (SETL=SETNGE)</description>
+    </mnemonic>
+    <mnemonic name='SETGE'>
+      <description>Set if Greater or Equal / Set if Not Less (SETGE=SETNL)</description>
+    </mnemonic>
+    <mnemonic name='SETNL'>
+      <description>Set if Greater or Equal / Set if Not Less (SETGE=SETNL)</description>
+    </mnemonic>
+    <mnemonic name='SETLE'>
+      <description>Set if Less or Equal / Set if Not greater or Equal (SETLE=SETNG)</description>
+    </mnemonic>
+    <mnemonic name='SETNG'>
+      <description>Set if Less or Equal / Set if Not greater or Equal (SETLE=SETNG)</description>
+    </mnemonic>
+    <mnemonic name='SETS'>
+      <description>Set if Signed</description>
+    </mnemonic>
+    <mnemonic name='SETNS'>
+      <description>Set if Not Signed</description>
+    </mnemonic>
+    <mnemonic name='SETC'>
+      <description>Set if Carry</description>
+    </mnemonic>
+    <mnemonic name='SETNC'>
+      <description>Set if Not Carry</description>
+    </mnemonic>
+    <mnemonic name='SETO'>
+      <description>Set if Overflow</description>
+    </mnemonic>
+    <mnemonic name='SETNO'>
+      <description>Set if Not Overflow</description>
+    </mnemonic>
+    <mnemonic name='SETP'>
+      <description>Set if Parity / Set if Parity Even (SETP=SETPE)</description>
+    </mnemonic>
+    <mnemonic name='SETPE'>
+      <description>Set if Parity / Set if Parity Even (SETP=SETPE)</description>
+    </mnemonic>
+    <mnemonic name='SETNP'>
+      <description>Set if No Parity / Set if Parity Odd (SETNP=SETPO)</description>
+    </mnemonic>
+    <mnemonic name='SGDT'>
+      <description>Store Global Descriptor Table</description>
+    </mnemonic>
+    <mnemonic name='SIDT'>
+      <description>Store Interrupt Descriptor Table</description>
+    </mnemonic>
+    <mnemonic name='SHR'>
+      <description>Shift Logical Right</description>
+    </mnemonic>
+    <mnemonic name='SHLD'>
+      <description>Double Precision Shift</description>
+    </mnemonic>
+    <mnemonic name='SHRD'>
+      <description>Double Precision Shift</description>
+    </mnemonic>
+    <mnemonic name='SLDT'>
+      <description>Store Local Descriptor Table</description>
+    </mnemonic>
+    <mnemonic name='SMSW'>
+      <description>Store Machine Status Word</description>
+    </mnemonic>
+    <mnemonic name='STC'>
+      <description>Set Carry</description>
+    </mnemonic>
+    <mnemonic name='STD'>
+      <description>Set Direction Flag</description>
+    </mnemonic>
+    <mnemonic name='STI'>
+      <description>Set Interrupt Flag</description>
+    </mnemonic>
+    <mnemonic name='STOS'>
+      <description>Store String</description>
+    </mnemonic>
+    <mnemonic name='STR'>
+      <description>Store Task Register</description>
+    </mnemonic>
+    <mnemonic name='SUB'>
+      <description>Subtract</description>
+    </mnemonic>
+    <mnemonic name='SUBTEST'>
+      <description>Test For Bit Pattern</description>
+    </mnemonic>
+    <mnemonic name='VERR'>
+      <description>Verify Read</description>
+    </mnemonic>
+    <mnemonic name='VERW'>
+      <description>Verify Write</description>
+    </mnemonic>
+    <mnemonic name='WAIT'>
+      <description>Event Wait</description>
+    </mnemonic>
+    <mnemonic name='FWAIT'>
+      <description>Event Wait</description>
+    </mnemonic>
+    <mnemonic name='WBINVD'>
+      <description>Write-Back and Invalidate Cache</description>
+    </mnemonic>
+    <mnemonic name='XCHG'>
+      <description>Exchange</description>
+    </mnemonic>
+    <mnemonic name='XLAT'>
+      <description>Translate</description>
+    </mnemonic>
+    <mnemonic name='XLATB'>
+      <description>Translate</description>
+    </mnemonic>
+    <mnemonic name='XOR'>
+      <description> Exclusive OR</description>
+    </mnemonic>
+  </mnemonics>
+
+
+  <registers>
+    <register name='RAX' bits='64'>
+      <description>64bits general purpose register</description>
+    </register>
+    <register name='RBX' bits='64'>
+      <description>64bits general purpose register</description>
+    </register>
+    <register name='RCX' bits='64'>
+      <description>64bits general purpose register</description>
+    </register>
+    <register name='RDX' bits='64'>
+      <description>64bits general purpose register</description>
+    </register>
+    <register name='RSI' bits='64'>
+      <description>64bits address register</description>
+    </register>
+    <register name='RDI' bits='64'>
+      <description>64bits address register</description>
+    </register>
+    <register name='RBP' bits='64'>
+      <description>64bits address register</description>
+    </register>
+    <register name='RSP' bits='64'>
+      <description>64bits address register</description>
+    </register>
+    <register name='R8' bits='64'>
+      <description>64bits general purpose register</description>
+    </register>
+    <register name='R9' bits='64'>
+      <description>64bits general purpose register</description>
+    </register>
+    <register name='R10' bits='64'>
+      <description>64bits general purpose register</description>
+    </register>
+    <register name='R11' bits='64'>
+      <description>64bits general purpose register</description>
+    </register>
+    <register name='R12' bits='64'>
+      <description>64bits general purpose register</description>
+    </register>
+    <register name='R13' bits='64'>
+      <description>64bits general purpose register</description>
+    </register>
+    <register name='R14' bits='64'>
+      <description>64bits general purpose register</description>
+    </register>
+    <register name='R15' bits='64'>
+      <description>64bits general purpose register</description>
+    </register>
+    <register name='EAX' bits='32'>
+      <description>32bits general purpose register</description>
+    </register>
+    <register name='EBX' bits='32'>
+      <description>32bits general purpose register</description>
+    </register>
+    <register name='ECX' bits='32'>
+      <description>32bits general purpose register</description>
+    </register>
+    <register name='EDX' bits='32'>
+      <description>32bits general purpose register</description>
+    </register>
+    <register name='ESI' bits='32'>
+      <description>32bits address register</description>
+    </register>
+    <register name='EDI' bits='32'>
+      <description>32bits address register</description>
+    </register>
+    <register name='EBP' bits='32'>
+      <description>32bits address register</description>
+    </register>
+    <register name='ESP' bits='32'>
+      <description>32bits address register</description>
+    </register>
+    <register name='R8D' bits='32'>
+      <description>32bits general purpose register</description>
+    </register>
+    <register name='R9D' bits='32'>
+      <description>32bits general purpose register</description>
+    </register>
+    <register name='R10D' bits='32'>
+      <description>32bits general purpose register</description>
+    </register>
+    <register name='R11D' bits='32'>
+      <description>32bits general purpose register</description>
+    </register>
+    <register name='R12D' bits='32'>
+      <description>32bits general purpose register</description>
+    </register>
+    <register name='R13D' bits='32'>
+      <description>32bits general purpose register</description>
+    </register>
+    <register name='R14D' bits='32'>
+      <description>32bits general purpose register</description>
+    </register>
+    <register name='R15D' bits='32'>
+      <description>32bits general purpose register</description>
+    </register>
+    <register name='AX' bits='16'>
+      <description>16bits general purpose register</description>
+    </register>
+    <register name='BX' bits='16'>
+      <description>16bits general purpose register</description>
+    </register>
+    <register name='CX' bits='16'>
+      <description>16bits general purpose register</description>
+    </register>
+    <register name='DX' bits='16'>
+      <description>16bits general purpose register</description>
+    </register>
+    <register name='SI' bits='16'>
+      <description>16bits address register</description>
+    </register>
+    <register name='DI' bits='16'>
+      <description>16bits address register</description>
+    </register>
+    <register name='BP' bits='16'>
+      <description>16bits address register</description>
+    </register>
+    <register name='SP' bits='16'>
+      <description>16bits address register</description>
+    </register>
+    <register name='R8W' bits='16'>
+      <description>16bits general purpose register</description>
+    </register>
+    <register name='R9W' bits='16'>
+      <description>16bits general purpose register</description>
+    </register>
+    <register name='R10W' bits='16'>
+      <description>16bits general purpose register</description>
+    </register>
+    <register name='R11W' bits='16'>
+      <description>16bits general purpose register</description>
+    </register>
+    <register name='R12W' bits='16'>
+      <description>16bits general purpose register</description>
+    </register>
+    <register name='R13W' bits='16'>
+      <description>16bits general purpose register</description>
+    </register>
+    <register name='R14W' bits='16'>
+      <description>16bits general purpose register</description>
+    </register>
+    <register name='R15W' bits='16'>
+      <description>16bits general purpose register</description>
+    </register>
+    <register name='AH' bits='8'>
+      <description>8bits general purpose register</description>
+    </register>
+    <register name='BH' bits='8'>
+      <description>8bits general purpose register</description>
+    </register>
+    <register name='CH' bits='8'>
+      <description>8bits general purpose register</description>
+    </register>
+    <register name='DH' bits='8'>
+      <description>8bits general purpose register</description>
+    </register>
+    <register name='AL' bits='8'>
+      <description>8bits general purpose register</description>
+    </register>
+    <register name='BL' bits='8'>
+      <description>8bits general purpose register</description>
+    </register>
+    <register name='CL' bits='8'>
+      <description>8bits general purpose register</description>
+    </register>
+    <register name='DL' bits='8'>
+      <description>8bits general purpose register</description>
+    </register>
+    <register name='SIL' bits='8'>
+      <description>8bits address register</description>
+    </register>
+    <register name='DIL' bits='8'>
+      <description>8bits address register</description>
+    </register>
+    <register name='BPL' bits='8'>
+      <description>8bits address register</description>
+    </register>
+    <register name='SPL' bits='8'>
+      <description>8bits address register</description>
+    </register>
+    <register name='R8B' bits='8'>
+      <description>8bits general purpose register</description>
+    </register>
+    <register name='R9B' bits='8'>
+      <description>8bits general purpose register</description>
+    </register>
+    <register name='R10B' bits='8'>
+      <description>8bits general purpose register</description>
+    </register>
+    <register name='R11B' bits='8'>
+      <description>8bits general purpose register</description>
+    </register>
+    <register name='R12B' bits='8'>
+      <description>8bits general purpose register</description>
+    </register>
+    <register name='R13B' bits='8'>
+      <description>8bits general purpose register</description>
+    </register>
+    <register name='R14B' bits='8'>
+      <description>8bits general purpose register</description>
+    </register>
+    <register name='R15B' bits='8'>
+      <description>8bits general purpose register</description>
+    </register>
+  </registers>
+</asmdudedata>
