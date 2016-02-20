@@ -26,9 +26,11 @@
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element type="xs:string" name="description" maxOccurs="1" minOccurs="0"/>
+                    <xs:element type="xs:string" name="ref" maxOccurs="1" minOccurs="0"/>
                   </xs:sequence>
                   <xs:attribute type="xs:string" name="name" use="required"/>
                   <xs:attribute type="xs:string" name="type" use="optional"/>
+                  <xs:attribute type="xs:string" name="arch" use="optional"/>
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
@@ -45,6 +47,7 @@
                   </xs:sequence>
                   <xs:attribute type="xs:string" name="name" use="required"/>
                   <xs:attribute type="xs:string" name="bits" use="optional"/>
+                  <xs:attribute type="xs:string" name="arch" use="optional"/>
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
