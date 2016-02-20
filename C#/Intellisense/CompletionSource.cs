@@ -55,9 +55,9 @@ namespace AsmDude {
 
             List<Completion> completions = new List<Completion>()
             {
-                new Completion("Ook!"),
-                new Completion("Ook."),
-                new Completion("Ook?")
+                //new Completion("Ook!"),
+                //new Completion("Ook."),
+                //new Completion("Ook?")
             };
 
             ITextSnapshot snapshot = _buffer.CurrentSnapshot;

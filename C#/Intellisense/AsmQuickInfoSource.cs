@@ -80,7 +80,7 @@ namespace AsmDude
             } catch (FileNotFoundException ex) {
                 Debug.WriteLine("ERROR: AsmQuickInfoSource: could not find file \"" + filename + "\". " + ex);
             } catch (XmlException ex2) {
-                Debug.WriteLine("ERROR: AsmQuickInfoSource: error while reading find file \"" + filename + "\". " + ex2);
+                Debug.WriteLine("ERROR: AsmQuickInfoSource: error while reading file \"" + filename + "\". " + ex2);
             }
         }
 
@@ -170,7 +170,7 @@ namespace AsmDude
                 return "";
             }
             string description = node2.InnerText.Trim();
-            Debug.WriteLine("INFO: getDescriptionMnemonic: mnemonic \"" + mnemonic + "\" has description \"" + description + "\"");
+            //Debug.WriteLine("INFO: getDescriptionMnemonic: mnemonic \"" + mnemonic + "\" has description \"" + description + "\"");
             return description;
         }
 
@@ -189,7 +189,7 @@ namespace AsmDude
                 return "";
             }
             string description = node2.InnerText.Trim();
-            Debug.WriteLine("INFO: getDescriptionRegister: register \"" + register + "\" has description \"" + description + "\"");
+            //Debug.WriteLine("INFO: getDescriptionRegister: register \"" + register + "\" has description \"" + description + "\"");
             return description;
         }
 
@@ -208,7 +208,7 @@ namespace AsmDude
                 return "";
             }
             string description = node2.InnerText.Trim();
-            Debug.WriteLine("INFO: getDescriptionDirective: directive \"" + directive + "\" has description \"" + description + "\"");
+            //Debug.WriteLine("INFO: getDescriptionDirective: directive \"" + directive + "\" has description \"" + description + "\"");
             return description;
         }
     }

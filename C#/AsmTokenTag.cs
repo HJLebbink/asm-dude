@@ -85,7 +85,7 @@ namespace AsmDude {
                         Debug.WriteLine("WARNING: AsmTokenTagger: found directive with no name");
                     } else {
                         string name = nameAttribute.Value.ToUpper();
-                        Debug.WriteLine("INFO: AsmTokenTagger: found directive " + name);
+                        //Debug.WriteLine("INFO: AsmTokenTagger: found directive " + name);
                         _asmTypes[name] = AsmTokenTypes.Directive;
                     }
                 }
@@ -95,7 +95,7 @@ namespace AsmDude {
                         Debug.WriteLine("WARNING: AsmTokenTagger: found mnemonic with no name");
                     } else {
                         string name = nameAttribute.Value.ToUpper();
-                        Debug.WriteLine("INFO: AsmTokenTagger: found mnemonic " + name);
+                        //Debug.WriteLine("INFO: AsmTokenTagger: found mnemonic " + name);
 
                         var typeAttribute = node.Attributes["type"];
                         if (typeAttribute == null) {
@@ -115,14 +115,14 @@ namespace AsmDude {
                         Debug.WriteLine("WARNING: AsmTokenTagger: found register with no name");
                     } else {
                         string name = nameAttribute.Value.ToUpper();
-                        Debug.WriteLine("INFO: AsmTokenTagger: found register " + name);
+                        //Debug.WriteLine("INFO: AsmTokenTagger: found register " + name);
                         _asmTypes[name] = AsmTokenTypes.Register;
                     }
                 }
             } catch (FileNotFoundException ex1) {
                 Debug.WriteLine("ERROR: AsmTokenTagger: could not find file \"" + filename + "\". " + ex1);
             } catch (XmlException ex2) {
-                Debug.WriteLine("ERROR: AsmTokenTagger: error while reading find file \"" + filename + "\". " + ex2);
+                Debug.WriteLine("ERROR: AsmTokenTagger: error while reading find \"" + filename + "\". " + ex2);
             } finally {
                 xmlDoc = null; // housekeeping, xmlDoc can be garbage collected
             }
