@@ -109,6 +109,15 @@ namespace AsmDude
 
 
                 switch (curTag.Tag.type) {
+                    case AsmTokenTypes.Misc: {
+                            string description = getDescriptionDirective(tagString);
+                            if (description.Length > 0) {
+                                quickInfoContent.Add("Keyword " + tagString + ": " + description);
+                            } else {
+                                quickInfoContent.Add("Keyword " + tagString);
+                            }
+                            break;
+                        }
                     case AsmTokenTypes.Directive: {
                             string description = getDescriptionDirective(tagString);
                             if (description.Length > 0) {

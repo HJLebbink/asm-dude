@@ -65,10 +65,8 @@ namespace AsmDude {
         internal AsmTokenTagger(ITextBuffer buffer) {
             _buffer = buffer;
             _asmTypes = new Dictionary<string, AsmTokenTypes>();
-            _asmTypes["ook!"] = AsmTokenTypes.OokExclamation;
-            _asmTypes["ook."] = AsmTokenTypes.OokPeriod;
-            _asmTypes["ook?"] = AsmTokenTypes.OokQuestion;
 
+            // fill the dictionary with keywords
 
             string fullPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
             string filenameData = "AsmDudeData.xml";
@@ -78,6 +76,19 @@ namespace AsmDude {
             XmlDocument xmlDoc = new XmlDocument();
             try {
                 xmlDoc.Load(filename);
+
+                foreach (XmlNode node in xmlDoc.SelectNodes("//misc"))
+                {
+                    var nameAttribute = node.Attributes["name"];
+                    if (nameAttribute == null) {
+                        Debug.WriteLine("WARNING: AsmTokenTagger: found misc with no name");
+                    }
+                    else {
+                        string name = nameAttribute.Value.ToUpper();
+                        //Debug.WriteLine("INFO: AsmTokenTagger: found misc " + name);
+                        _asmTypes[name] = AsmTokenTypes.Misc;
+                    }
+                }
 
                 foreach (XmlNode node in xmlDoc.SelectNodes("//directive")) {
                     var nameAttribute = node.Attributes["name"];
@@ -119,7 +130,9 @@ namespace AsmDude {
                         _asmTypes[name] = AsmTokenTypes.Register;
                     }
                 }
-            } catch (FileNotFoundException ex1) {
+
+            }
+            catch (FileNotFoundException ex1) {
                 Debug.WriteLine("ERROR: AsmTokenTagger: could not find file \"" + filename + "\". " + ex1);
             } catch (XmlException ex2) {
                 Debug.WriteLine("ERROR: AsmTokenTagger: error while reading find \"" + filename + "\". " + ex2);

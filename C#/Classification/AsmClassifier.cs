@@ -72,10 +72,6 @@ namespace AsmDude {
             _buffer = buffer;
             _aggregator = asmTagAggregator;
             _asmTypes = new Dictionary<AsmTokenTypes, IClassificationType>();
-            _asmTypes[AsmTokenTypes.OokExclamation] = typeService.GetClassificationType("ook!");
-            _asmTypes[AsmTokenTypes.OokPeriod] = typeService.GetClassificationType("ook.");
-            _asmTypes[AsmTokenTypes.OokQuestion] = typeService.GetClassificationType("ook?");
-
             _asmTypes[AsmTokenTypes.Mnemonic] = typeService.GetClassificationType("mnemonic");
             _asmTypes[AsmTokenTypes.Register] = typeService.GetClassificationType("register");
             _asmTypes[AsmTokenTypes.Remark] = typeService.GetClassificationType("remark");
@@ -83,6 +79,7 @@ namespace AsmDude {
             _asmTypes[AsmTokenTypes.Constant] = typeService.GetClassificationType("constant");
             _asmTypes[AsmTokenTypes.Jump] = typeService.GetClassificationType("jump");
             _asmTypes[AsmTokenTypes.Label] = typeService.GetClassificationType("label");
+            _asmTypes[AsmTokenTypes.Misc] = typeService.GetClassificationType("misc");
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged {

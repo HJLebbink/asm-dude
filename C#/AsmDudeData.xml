@@ -5,24 +5,45 @@
 -->
 <asmdudedata>
 	<info>
+    General info here
 	</info>
 
+	<miscs>
+		<misc name="ptr"/>
+		<misc name="byte"/>
+		<misc name="word"/>
+		<misc name="dword"/>
+		<misc name="qword"/>
+		<misc name="zword"/>
+		<misc name="oword"/>
+		<misc name="equ"/>
+		<misc name="strict"/>
+      <misc name="db">
+        <description>Byte (1 byte)</description>
+      </misc>
+      <misc name="dw">
+        <description>Word, Half Precision (2 bytes)</description>
+      </misc>
+      <misc name="dd">
+        <description>Double Word, Single Precision (4 bytes)</description>
+      </misc>
+      <misc name="dq">
+        <description>quad word, Double Precision (8 bytes)</description>
+      </misc>
+      <misc name="dt">
+        <description>Extended (Double) Precision (10 bytes)</description>
+      </misc>
+      <misc name="do">
+        <description>IEEE 754-2008 Quad Precision (16 bytes)</description>
+      </misc>
+  </miscs>
+
 	<directives>
-		<directive name=".intel_syntax">
-			<description>TODO1</description>
-		</directive>
-		<directive name=".text">
-			<description>TODO2</description>
-		</directive>
-		<directive name=".global">
-			<description>TODO3</description>
-		</directive>
-		<directive name=".align">
-			<description>TODO4</description>
-		</directive>
-		<directive name=".att_syntax">
-			<description>TODO5</description>
-		</directive>
+		<directive name=".intel_syntax"/>
+		<directive name=".text"/>
+		<directive name=".global"/>
+		<directive name=".align"/>
+		<directive name=".att_syntax"/>
 	</directives>
 
 	<mnemonics>
@@ -367,7 +388,6 @@
 			<description>Move if zero (ZF=1) (CMOVE=CMOVZ)</description>
 			<ref>./html/CMOVcc.html</ref>
 		</mnemonic>
-
 
 		<mnemonic name='CMOVcc'>
 			<description>Conditional Move</description>
@@ -1029,109 +1049,140 @@
 			<description>Interrupt Return</description>
 			<ref>./html/IRET_IRETD.html</ref>
 		</mnemonic>
+
 		<mnemonic name='JA' type='jump'>
-			<description>Jump Above / Jump Not Below or Equal (JA=JNBE)</description>
-		</mnemonic>
-		<mnemonic name='JNBE' type='jump'>
-			<description>Jump Above / Jump Not Below or Equal (JA=JNBE)</description>
+			<description>Jump if above (CF=0 and ZF=0) (JA=JNBE)</description>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
 		<mnemonic name='JAE' type='jump'>
-			<description>Jump Above or Equal / Jump on Not Below (JAE=JNB)</description>
-		</mnemonic>
-		<mnemonic name='JNB' type='jump'>
-			<description>Jump Above or Equal / Jump on Not Below (JAE=JNB)</description>
+			<description>Jump if above or equal (CF=0) (JAE=JNB)</description>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
 		<mnemonic name='JB' type='jump'>
-			<description>Jump Below / Jump Not Above or Equal (JB=JNAE)</description>
-		</mnemonic>
-		<mnemonic name='JNAE' type='jump'>
-			<description>Jump Below / Jump Not Above or Equal (JB=JNAE)</description>
+			<description>Jump if below (CF=1) (JB=JNAE)</description>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
 		<mnemonic name='JBE' type='jump'>
-			<description>Jump Below or Equal / Jump Not Above (JBE=JNA)</description>
-		</mnemonic>
-		<mnemonic name='JNA' type='jump'>
-			<description>Jump Below or Equal / Jump Not Above (JBE=JNA)</description>
+			<description>Jump if below or equal (CF=1 or ZF=1) (JBE=JNA)</description>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
 		<mnemonic name='JC' type='jump'>
-			<description>Jump on Carry</description>
+			<description>Jump if carry (CF=1)</description>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
 		<mnemonic name='JCXZ' type='jump'>
-			<description>Jump if Register CX is Zero</description>
+			<description>Jump if CX register is 0</description>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
 		<mnemonic name='JECXZ' type='jump'>
-			<description>Jump if Register ECX is Zero</description>
+			<description>Jump if ECX register is 0</description>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
 		<mnemonic name='JE' type='jump'>
-			<description>Jump Equal / Jump Zero (JE=JZ)</description>
-		</mnemonic>
-		<mnemonic name='JZ' type='jump'>
-			<description>Jump Equal / Jump Zero (JE=JZ)</description>
+			<description>Jump if equal (ZF=1) (JE=JZ)</description>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
 		<mnemonic name='JG' type='jump'>
-			<description>Jump Greater / Jump Not Less or Equal (JG=JNLE)</description>
-		</mnemonic>
-		<mnemonic name='JNLE' type='jump'>
-			<description>Jump Greater / Jump Not Less or Equal (JG=JNLE)</description>
+			<description>Jump if greater (ZF=0 and SF=OF) (JG=JNLE)</description>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
 		<mnemonic name='JGE' type='jump'>
-			<description>Jump Greater or Equal / Jump Not Less (JGE=JNL)</description>
-		</mnemonic>
-		<mnemonic name='JNL' type='jump'>
-			<description>Jump Greater or Equal / Jump Not Less (JGE=JNL)</description>
+			<description>Jump if greater or equal (SF=OF) (JGE=JNL)</description>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
 		<mnemonic name='JL' type='jump'>
-			<description>Jump Less / Jump Not Greater or Equal (JL=JNGE)</description>
-		</mnemonic>
-		<mnemonic name='JNGE' type='jump'>
-			<description>Jump Less / Jump Not Greater or Equal (JL=JNGE)</description>
+			<description>Jump if less (SF!=OF) (JL=JNGE)</description>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
 		<mnemonic name='JLE' type='jump'>
-			<description>Jump Less or Equal / Jump Not Greater (JLE=JNG)</description>
+			<description>Jump if less or equal (ZF=1 or SF!=OF) (JLE=JNG)</description>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
-		<mnemonic name='JNG' type='jump'>
-			<description>Jump Less or Equal / Jump Not Greater (JLE=JNG)</description>
+		<mnemonic name='JNA' type='jump'>
+			<description>Jump if not above (CF=1 or ZF=1) (JBE=JNA)</description>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
-		<mnemonic name='JMP' type='jump'>
-			<description>Unconditional Jump</description>
+		<mnemonic name='JNAE' type='jump'>
+			<description>Jump if not above or equal (CF=1) (JB=JNAE)</description>
+			<ref>./html/Jcc.html</ref>
+		</mnemonic>
+		<mnemonic name='JNB' type='jump'>
+			<description>Jump if not below (CF=0) (JAE=JNB)</description>
+			<ref>./html/Jcc.html</ref>
+		</mnemonic>
+		<mnemonic name='JNBE' type='jump'>
+			<description>Jump if not below or equal (CF=0 and ZF=0) (JA=JNBE)</description>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
 		<mnemonic name='JNC' type='jump'>
-			<description>Jump Not Carry</description>
+			<description>Jump if not carry (CF=0)</description>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
 		<mnemonic name='JNE' type='jump'>
-			<description>Jump Not Equal / Jump Not Zero (JNE=JNZ)</description>
+			<description>Jump if not equal (ZF=0) (JNE=JNZ)</description>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
-		<mnemonic name='JNZ' type='jump'>
-			<description>Jump Not Equal / Jump Not Zero (JNE=JNZ)</description>
+		<mnemonic name='JNG' type='jump'>
+			<description>Jump if not greater (ZF=1 or SF!=OF) (JLE=JNG)</description>
+			<ref>./html/Jcc.html</ref>
+		</mnemonic>
+		<mnemonic name='JNGE' type='jump'>
+			<description>Jump if not greater or equal (SF!=OF) (JL=JNGE)</description>
+			<ref>./html/Jcc.html</ref>
+		</mnemonic>
+		<mnemonic name='JNL' type='jump'>
+			<description>Jump if not less (SF=OF) (JGE=JNL)</description>
+			<ref>./html/Jcc.html</ref>
+		</mnemonic>
+		<mnemonic name='JNLE' type='jump'>
+			<description>Jump if not less or equal (ZF=0 and SF=OF) (JG=JNLE)</description>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
 		<mnemonic name='JNO' type='jump'>
-			<description>Jump Not Overflow</description>
-		</mnemonic>
-		<mnemonic name='JNS' type='jump'>
-			<description>Jump Not Signed</description>
+			<description>Jump if not overflow (OF=0)</description>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
 		<mnemonic name='JNP' type='jump'>
-			<description>Jump Not Parity / Jump Parity Odd (JNP=JPO)</description>
+			<description>Jump if not parity (PF=0) (JNP=JPO)</description>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
-		<mnemonic name='JNO' type='jump'>
-			<description>Jump Not Parity / Jump Parity Odd (JNP=JPO)</description>
+		<mnemonic name='JNS' type='jump'>
+			<description>Jump if not sign (SF=0)</description>
+			<ref>./html/Jcc.html</ref>
+		</mnemonic>
+		<mnemonic name='JNZ' type='jump'>
+			<description>Jump if not zero (ZF=0) (JNE=JNZ)</description>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
 		<mnemonic name='JO' type='jump'>
-			<description>Jump on Overflow</description>
+			<description>Jump if overflow (OF=1)</description>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
 		<mnemonic name='JP' type='jump'>
-			<description>Jump on Parity / Jump on Parity Even (JP=JPE)</description>
+			<description>Jump if parity (PF=1) (JP=JPE)</description>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
 		<mnemonic name='JPE' type='jump'>
-			<description>Jump on Parity / Jump on Parity Even (JP=JPE)</description>
+			<description>Jump if parity even (PF=1) (JP=JPE)</description>
+			<ref>./html/Jcc.html</ref>
+		</mnemonic>
+		<mnemonic name='JPO' type='jump'>
+			<description>Jump if parity odd (PF=0) (JNP=JPO)</description>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
 		<mnemonic name='JS' type='jump'>
-			<description>Jump Signed</description>
+			<description>Jump if sign (SF=1)</description>
+			<ref>./html/Jcc.html</ref>
+		</mnemonic>
+		<mnemonic name='JZ' type='jump'>
+			<description>Jump if zero (ZF = 1) (JE=JZ)</description>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
 		<mnemonic name='JMP' type='jump'>
 			<description>Unconditional Jump</description>
-			<ref>./html/JMPcc.html</ref>
+			<ref>./html/Jcc.html</ref>
 		</mnemonic>
+
 		<mnemonic name='LAHF'>
 			<description>Load Status Flags into AH Register</description>
 			<ref>./html/LAHF.html</ref>
@@ -1729,15 +1780,15 @@
 			<ref>./html/PHSUBW_PHSUBD.html</ref>
 		</mnemonic>
 		<mnemonic name='PINSRB'>
-			<description>Insert Byte/Dword/Qword</description>
+			<description>Insert Byte</description>
 			<ref>./html/PINSRB_PINSRD_PINSRQ.html</ref>
 		</mnemonic>
 		<mnemonic name='PINSRD'>
-			<description>Insert Byte/Dword/Qword</description>
+			<description>Insert Dword</description>
 			<ref>./html/PINSRB_PINSRD_PINSRQ.html</ref>
 		</mnemonic>
 		<mnemonic name='PINSRQ'>
-			<description>Insert Byte/Dword/Qword</description>
+			<description>Insert Qword</description>
 			<ref>./html/PINSRB_PINSRD_PINSRQ.html</ref>
 		</mnemonic>
 		<mnemonic name='PINSRW'>
@@ -2169,31 +2220,31 @@
 			<ref>./html/SAHF.html</ref>
 		</mnemonic>
 		<mnemonic name='SAL'>
-			<description>Shift</description>
+			<description>Shift Arithmetic Left</description>
 			<ref>./html/SAL_SAR_SHL_SHR.html</ref>
 		</mnemonic>
 		<mnemonic name='SAR'>
-			<description>Shift</description>
+			<description>Shift Arithmetic Right</description>
 			<ref>./html/SAL_SAR_SHL_SHR.html</ref>
 		</mnemonic>
 		<mnemonic name='SHL'>
-			<description>Shift</description>
+			<description>Shift Logical Left</description>
 			<ref>./html/SAL_SAR_SHL_SHR.html</ref>
 		</mnemonic>
 		<mnemonic name='SHR'>
-			<description>Shift</description>
+			<description>Shift Logical Right</description>
 			<ref>./html/SAL_SAR_SHL_SHR.html</ref>
 		</mnemonic>
 		<mnemonic name='SARX'>
-			<description>Shift Without Affecting Flags</description>
+			<description>Shift Arithmetic Right Without Affecting Flags</description>
 			<ref>./html/SARX_SHLX_SHRX.html</ref>
 		</mnemonic>
 		<mnemonic name='SHLX'>
-			<description>Shift Without Affecting Flags</description>
+			<description>Shift Logical Left Without Affecting Flags</description>
 			<ref>./html/SARX_SHLX_SHRX.html</ref>
 		</mnemonic>
 		<mnemonic name='SHRX'>
-			<description>Shift Without Affecting Flags</description>
+			<description>Shift Logical Right Without Affecting Flags</description>
 			<ref>./html/SARX_SHLX_SHRX.html</ref>
 		</mnemonic>
 		<mnemonic name='SBB'>

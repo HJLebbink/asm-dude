@@ -77,6 +77,13 @@ namespace AsmDude {
         [Name("label")]
         internal static ClassificationTypeDefinition label = null;
 
+        /// <summary>
+        /// Defines the "misc" classification type.
+        /// </summary>
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name("misc")]
+        internal static ClassificationTypeDefinition misc = null;
+
         #endregion
     }
 }

@@ -27,7 +27,6 @@ using System.Text;
 
 namespace AsmDude {
     public enum AsmTokenTypes {
-        OokExclamation, OokQuestion, OokPeriod,
-        Mnemonic, Register, Remark, Directive, Constant, Jump, Label
+        Mnemonic, Register, Remark, Directive, Constant, Jump, Label, Misc
     }
 }

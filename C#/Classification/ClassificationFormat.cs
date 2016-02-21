@@ -52,7 +52,7 @@ namespace AsmDude {
     }
 
     /// <summary>
-    /// Defines the editor format for the operand classification type. Text is colored DarkRed
+    /// Defines the editor format for the register classification type. Text is colored DarkRed
     /// </summary>
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = "register")]
@@ -72,7 +72,7 @@ namespace AsmDude {
     }
 
     /// <summary>
-    /// Defines the editor format for the operand classification type. Text is colored Green
+    /// Defines the editor format for the remark classification type. Text is colored Green
     /// </summary>
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = "remark")]
@@ -93,7 +93,7 @@ namespace AsmDude {
     }
 
     /// <summary>
-    /// Defines the editor format for the operand classification type. Text is colored Magenta
+    /// Defines the editor format for the directive classification type. Text is colored Magenta
     /// </summary>
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = "directive")]
@@ -114,7 +114,7 @@ namespace AsmDude {
     }
 
     /// <summary>
-    /// Defines the editor format for the operand classification type. Text is colored Navy
+    /// Defines the editor format for the jump classification type. Text is colored Navy
     /// </summary>
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = "jump")]
@@ -134,7 +134,7 @@ namespace AsmDude {
     }
 
     /// <summary>
-    /// Defines the editor format for the operand classification type. Text is colored OrangeRed
+    /// Defines the editor format for the label classification type. Text is colored OrangeRed
     /// </summary>
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = "label")]
@@ -154,7 +154,7 @@ namespace AsmDude {
     }
 
     /// <summary>
-    /// Defines the editor format for the operand classification type. Text is colored OrangeRed
+    /// Defines the editor format for the constant classification type. Text is colored OrangeRed
     /// </summary>
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = "constant")]
@@ -170,6 +170,28 @@ namespace AsmDude {
         public ConstantP() {
             DisplayName = "constant"; //human readable version of the name
             ForegroundColor = Colors.Chocolate;
+        }
+    }
+
+    /// <summary>
+    /// Defines the editor format for the misc classification type. Text is colored DarkOrange
+    /// </summary>
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = "misc")]
+    [Name("misc")]
+    //this should be visible to the end user
+    [UserVisible(false)]
+    //set the priority to be after the default classifiers
+    [Order(Before = Priority.Default)]
+    internal sealed class MiscP : ClassificationFormatDefinition
+    {
+        /// <summary>
+        /// Defines the visual format for the "jump" classification type
+        /// </summary>
+        public MiscP()
+        {
+            DisplayName = "misc"; //human readable version of the name
+            ForegroundColor = Colors.DarkOrange;
         }
     }
 
