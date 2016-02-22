@@ -1,7 +1,7 @@
 # Asm-Dude
 Assembly syntax highlighting (and more) for Visual Studio 2015
 
-Download installer [AsmDude.vsix](https://github.com/HJLebbink/asm-dude/blob/master/AsmDude.vsix)
+Download installer [AsmDude.vsix (v1.0)](https://github.com/HJLebbink/asm-dude/releases/download/v1.0/AsmDude.vsix)
 
 
 To run the extension from source code the Visual Studio 2015 SDK needs to be installed. To run the extension, hit F5 or choose the Debug > Start Debugging menu command. A new instance of Visual Studio will launch under the experimental hive.
