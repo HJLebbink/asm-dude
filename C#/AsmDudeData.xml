@@ -5,7 +5,7 @@
 -->
 <asmdudedata>
 	<info>
-    General info here
+		General info here
 	</info>
 
 	<miscs>
@@ -18,25 +18,25 @@
 		<misc name="oword"/>
 		<misc name="equ"/>
 		<misc name="strict"/>
-      <misc name="db">
-        <description>Byte (1 byte)</description>
-      </misc>
-      <misc name="dw">
-        <description>Word, Half Precision (2 bytes)</description>
-      </misc>
-      <misc name="dd">
-        <description>Double Word, Single Precision (4 bytes)</description>
-      </misc>
-      <misc name="dq">
-        <description>quad word, Double Precision (8 bytes)</description>
-      </misc>
-      <misc name="dt">
-        <description>Extended (Double) Precision (10 bytes)</description>
-      </misc>
-      <misc name="do">
-        <description>IEEE 754-2008 Quad Precision (16 bytes)</description>
-      </misc>
-  </miscs>
+		<misc name="db">
+			<description>Byte (1 byte)</description>
+		</misc>
+		<misc name="dw">
+			<description>Word, Half Precision (2 bytes)</description>
+		</misc>
+		<misc name="dd">
+			<description>Double Word, Single Precision (4 bytes)</description>
+		</misc>
+		<misc name="dq">
+			<description>quad word, Double Precision (8 bytes)</description>
+		</misc>
+		<misc name="dt">
+			<description>Extended (Double) Precision (10 bytes)</description>
+		</misc>
+		<misc name="do">
+			<description>IEEE 754-2008 Quad Precision (16 bytes)</description>
+		</misc>
+	</miscs>
 
 	<directives>
 		<directive name=".intel_syntax"/>
