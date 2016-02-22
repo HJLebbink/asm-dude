@@ -110,7 +110,7 @@ namespace AsmDude
 
                 switch (curTag.Tag.type) {
                     case AsmTokenTypes.Misc: {
-                            string description = getDescriptionDirective(tagString);
+                            string description = getDescriptionKeyword(tagString);
                             if (description.Length > 0) {
                                 quickInfoContent.Add("Keyword " + tagString + ": " + description);
                             } else {
@@ -218,6 +218,22 @@ namespace AsmDude
             }
             string description = node2.InnerText.Trim();
             //Debug.WriteLine("INFO: getDescriptionDirective: directive \"" + directive + "\" has description \"" + description + "\"");
+            return description;
+        }
+
+        private string getDescriptionKeyword(string keyword) {
+            XmlNode node1 = this._xmlDoc.SelectSingleNode("//misc[@name='" + keyword + "']");
+            if (node1 == null) {
+                Debug.WriteLine("WARNING: getDescriptionKeyword: no misc element for keyword " + keyword);
+                return "";
+            }
+            XmlNode node2 = node1.SelectSingleNode("./description");
+            if (node2 == null) {
+                Debug.WriteLine("WARNING: getDescriptionKeyword: no description element for misc " + keyword);
+                return "";
+            }
+            string description = node2.InnerText.Trim();
+            //Debug.WriteLine("INFO: getDescriptionKeyword: misc \"" + keyword + "\" has description \"" + description + "\"");
             return description;
         }
     }

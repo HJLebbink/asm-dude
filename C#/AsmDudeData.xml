@@ -9,44 +9,93 @@
 	</info>
 
 	<miscs>
-		<misc name="ptr"/>
-		<misc name="byte"/>
-		<misc name="word"/>
-		<misc name="dword"/>
-		<misc name="qword"/>
-		<misc name="zword"/>
-		<misc name="oword"/>
-		<misc name="equ"/>
-		<misc name="strict"/>
-		<misc name="db">
+		<misc name="PTR"/>
+		<misc name="BYTE"/>
+		<misc name="WORD"/>
+		<misc name="DWORD"/>
+		<misc name="QWORD"/>
+		<misc name="ZWORD"/>
+		<misc name="OWORD"/>
+		<misc name="EQU"/>
+		<misc name="STRICT"/>
+		<misc name="DB">
 			<description>Byte (1 byte)</description>
 		</misc>
-		<misc name="dw">
+		<misc name="DW">
 			<description>Word, Half Precision (2 bytes)</description>
 		</misc>
-		<misc name="dd">
+		<misc name="DD">
 			<description>Double Word, Single Precision (4 bytes)</description>
 		</misc>
-		<misc name="dq">
+		<misc name="DQ">
 			<description>quad word, Double Precision (8 bytes)</description>
 		</misc>
-		<misc name="dt">
+		<misc name="DT">
 			<description>Extended (Double) Precision (10 bytes)</description>
 		</misc>
-		<misc name="do">
+		<misc name="DO">
 			<description>IEEE 754-2008 Quad Precision (16 bytes)</description>
 		</misc>
 	</miscs>
 
 	<directives>
-		<directive name=".intel_syntax"/>
-		<directive name=".text"/>
-		<directive name=".global"/>
-		<directive name=".align"/>
-		<directive name=".att_syntax"/>
+    <directive name=".186"/>
+    <directive name=".286"/>
+    <directive name=".286c"/>
+    <directive name=".286p"/>
+    <directive name=".287"/>
+    <directive name=".386"/>
+    <directive name=".386p"/>
+    <directive name=".486c"/>
+    <directive name=".486p"/>
+    <directive name=".586"/>
+    <directive name=".586p"/>
+    <directive name=".686"/>
+    <directive name=".686p"/>
+    <directive name=".8086"/>
+    <directive name=".8087"/>
+    <directive name=".ALPHA"/>
+    <directive name=".CODE"/>
+    <directive name=".CONST"/>
+    <directive name=".CREF"/>
+    <directive name=".NOCREF"/>
+    <directive name=".DATA"/>
+    <directive name=".ERR"/>
+    <directive name=".ERR1"/>
+    <directive name=".ERR2"/>
+    <directive name=".ERRB"/>
+    <directive name=".ERRDEF"/>
+    <directive name=".ERRDIF"/>
+    <directive name=".ERRE"/>
+    <directive name=".FARDATA"/>
+    <directive name=".K3D"/>
+    <directive name=".LALL"/>
+    <directive name=".LFCOND"/>
+    <directive name=".LIST"/>
+    <directive name=".MODEL"/>
+    <directive name=".MMX"/>
+    <directive name=".MSFLOAT"/>
+    <directive name=".NOLIST"/>
+    <directive name=".NOLISTMACRO"/>
+    <directive name=".RADIX"/>
+    <directive name=".SALL"/>
+    <directive name=".SEQ"/>
+    <directive name=".SFCOND"/>
+    <directive name=".STACK"/>
+    <directive name=".TYPE"/>
+    <directive name=".XALL"/>
+    <directive name=".XCREF"/>
+    <directive name=".XLIST"/>
+    <directive name=".XMM"/>
+    
+    <directive name=".INTEL_SYNTAX"/>
+		<directive name=".TEXT"/>
+		<directive name=".GLOBAL"/>
+		<directive name=".ALIGN"/>
+		<directive name=".ATT_SYNTAX"/>
 	</directives>
 
-	<mnemonics>
+<mnemonics>
 		<mnemonic name='AAA'>
 			<description>ASCII Adjust After Addition</description>
 			<ref>./html/AAA.html</ref>
@@ -3275,7 +3324,33 @@
 			<description>8-bit general purpose register</description>
 		</register>
 
-		<register name='XMM0' bits='128'>
+    <register name='MM0' bits='64'>
+      <description>64-bit mmx register</description>
+    </register>
+    <register name='MM1' bits='64'>
+      <description>64-bit mmx register</description>
+    </register>
+    <register name='MM2' bits='64'>
+      <description>64-bit mmx register</description>
+    </register>
+    <register name='MM3' bits='64'>
+      <description>64-bit mmx register</description>
+    </register>
+    <register name='MM4' bits='64'>
+      <description>64-bit mmx register</description>
+    </register>
+    <register name='MM5' bits='64'>
+      <description>64-bit mmx register</description>
+    </register>
+    <register name='MM6' bits='64'>
+      <description>64-bit mmx register</description>
+    </register>
+    <register name='MM7' bits='64'>
+      <description>64-bit mmx register</description>
+    </register>
+
+
+    <register name='XMM0' bits='128'>
 			<description>128-bit sse register</description>
 		</register>
 		<register name='XMM1' bits='128'>
