@@ -10,4 +10,6 @@ Not happy with the highlighting or the descriptions. Mnemonics and descriptions 
 Updates:
 * 19 February 2016: Initial alpha release. Basic highlighting and descriptions for i368 instructions are available.
 * 20 February 2016: Added highlighting and descriptions for SSE, AVX, AVX2 instructions.
-* 21 February 2016: Added .vsix Installer
+* 21 February 2016: Added .vsix installer
+* 22 February 2016: Added .vsix installer to the visual studio extensions gallery
+* 23 February 2016: Added code completion
