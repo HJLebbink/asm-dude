@@ -22,16 +22,21 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
+using System.ComponentModel.Composition;
+using System.Xml;
+using System.IO;
+
 using Microsoft.VisualStudio.Language.Intellisense;
-using System.Collections.ObjectModel;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
-using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
 
 namespace AsmDude {
+
     [Export(typeof(ICompletionSourceProvider))]
     [ContentType("asm!")]
     [Name("asmCompletion")]
@@ -44,26 +49,61 @@ namespace AsmDude {
     class AsmCompletionSource : ICompletionSource {
         private ITextBuffer _buffer;
         private bool _disposed = false;
+        Dictionary<String, String> _keywords;
 
         public AsmCompletionSource(ITextBuffer buffer) {
             _buffer = buffer;
+            _keywords = new Dictionary<string, String>();
+
+            //TODO: Ugly: better to have one place to read AsmDudeData.xml  
+            string fullPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            string filenameData = "AsmDudeData.xml";
+            string filenameDll = "AsmDude.dll";
+            string filename = fullPath.Substring(0, fullPath.Length - filenameDll.Length) + filenameData;
+            Debug.WriteLine("INFO: AsmCompletionSource: going to load file \"" + filename + "\"");
+            try
+            {
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.Load(filename);
+
+                XmlNodeList all = xmlDoc.SelectNodes("//*[@name]"); // select everything with a name attribute
+                for (int i = 0; i < all.Count; i++)
+                {
+                    XmlNode node = all.Item(i);
+                    if (node != null)
+                    {
+                        var nameAttribute = node.Attributes["name"];
+                        if (nameAttribute != null)
+                        {
+                            string name = nameAttribute.Value.ToUpper();
+                            var node2 = node.SelectSingleNode("./description");
+                            if (node2 == null)
+                            {
+                                this._keywords[name] = name;
+                            }
+                            else {
+                                this._keywords[name] = name + " - " + node2.InnerText.Trim();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (FileNotFoundException ex)
+            {
+                Debug.WriteLine("ERROR: AsmCompletionSource: could not find file \"" + filename + "\". " + ex);
+            }
+            catch (XmlException ex2)
+            {
+                Debug.WriteLine("ERROR: AsmCompletionSource: error while reading file \"" + filename + "\". " + ex2);
+            }
         }
 
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets) {
-            if (_disposed)
-                throw new ObjectDisposedException("AsmCompletionSource");
-
-            List<Completion> completions = new List<Completion>()
-            {
-                //new Completion("Ook!"),
-                // See the Ook! language for inspiration
-            };
+            if (_disposed) throw new ObjectDisposedException("AsmCompletionSource");
 
             ITextSnapshot snapshot = _buffer.CurrentSnapshot;
             var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(snapshot);
-
-            if (triggerPoint == null)
-                return;
+            if (triggerPoint == null) return;
 
             var line = triggerPoint.GetContainingLine();
             SnapshotPoint start = triggerPoint;
@@ -73,8 +113,21 @@ namespace AsmDude {
             }
 
             var applicableTo = snapshot.CreateTrackingSpan(new SnapshotSpan(start, triggerPoint), SpanTrackingMode.EdgeInclusive);
+            string partialKeyword = applicableTo.GetText(snapshot).ToUpper();
+            if (partialKeyword.Length == 0) return;
 
-            //completionSets.Add(new CompletionSet("All", "All", applicableTo, completions, Enumerable.Empty<Completion>()));
+            //Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: partial keyword \"" + partialKeyword + "\"");
+            List<Completion> completions = new List<Completion>();
+
+            foreach (KeyValuePair<string, string> entry in this._keywords)
+            {
+                if (entry.Key.StartsWith(partialKeyword))
+                {
+                    //Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: name keyword \"" + entry.Key + "\"");
+                    completions.Add(new Completion(entry.Value, entry.Key, null, null, null));
+                }
+            };
+            completionSets.Add(new CompletionSet("All", "All", applicableTo, completions, Enumerable.Empty<Completion>()));
         }
 
         public void Dispose() {

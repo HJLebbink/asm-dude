@@ -21,22 +21,21 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Diagnostics;
+using System.Runtime.InteropServices;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
-using Microsoft.VisualStudio;
-using System.Windows;
-using System.Runtime.InteropServices;
+using System.Diagnostics;
+
 
 namespace AsmDude {
-    #region Command Filter
 
     [Export(typeof(IVsTextViewCreationListener))]
     [ContentType("asm!")]
@@ -56,132 +55,132 @@ namespace AsmDude {
 
             IOleCommandTarget next;
             textViewAdapter.AddCommandFilter(filter, out next);
-            filter.Next = next;
+            filter.m_nextCommandHandler = next;
         }
     }
 
     internal sealed class CommandFilter : IOleCommandTarget {
-        ICompletionSession _currentSession;
+        private ICompletionSession m_session;
+
 
         public CommandFilter(IWpfTextView textView, ICompletionBroker broker) {
-            this._currentSession = null;
-            TextView = textView;
+            this.m_session = null;
+            m_textView = textView;
             Broker = broker;
         }
 
-        public IWpfTextView TextView { get; private set; }
+        public IOleCommandTarget m_nextCommandHandler { get; set; }
+        public IWpfTextView m_textView { get; private set; }
         public ICompletionBroker Broker { get; private set; }
-        public IOleCommandTarget Next { get; set; }
 
         private char GetTypeChar(IntPtr pvaIn) {
             return (char)(ushort)Marshal.GetObjectForNativeVariant(pvaIn);
         }
 
         public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
-            bool handled = false;
-            int hresult = VSConstants.S_OK;
+            /*
+            if (VsShellUtilities.IsInAutomationFunction(m_provider.ServiceProvider)) {
+                return m_nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+            }
+            */
 
-            // 1. Pre-process
-            if (pguidCmdGroup == VSConstants.VSStd2K) {
-                switch ((VSConstants.VSStd2KCmdID)nCmdID) {
-                    case VSConstants.VSStd2KCmdID.AUTOCOMPLETE:
-                    case VSConstants.VSStd2KCmdID.COMPLETEWORD:
-                        handled = StartSession();
-                        break;
-                    case VSConstants.VSStd2KCmdID.RETURN:
-                        handled = Complete(false);
-                        break;
-                    case VSConstants.VSStd2KCmdID.TAB:
-                        handled = Complete(true);
-                        break;
-                    case VSConstants.VSStd2KCmdID.CANCEL:
-                        handled = Cancel();
-                        break;
-                }
+            //make a copy of this so we can look at it after forwarding some commands
+            uint commandID = nCmdID;
+            char typedChar = char.MinValue;
+            //make sure the input is a char before getting it
+            if (pguidCmdGroup == VSConstants.VSStd2K && nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR)
+            {
+                typedChar = (char)(ushort)Marshal.GetObjectForNativeVariant(pvaIn);
             }
 
-            if (!handled)
-                hresult = Next.Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
-
-            if (ErrorHandler.Succeeded(hresult)) {
-                if (pguidCmdGroup == VSConstants.VSStd2K) {
-                    switch ((VSConstants.VSStd2KCmdID)nCmdID) {
-                        case VSConstants.VSStd2KCmdID.TYPECHAR:
-                            char ch = GetTypeChar(pvaIn);
-                            if (ch == ' ')
-                                StartSession();
-                            else if (_currentSession != null)
-                                Filter();
-                            break;
-                        case VSConstants.VSStd2KCmdID.BACKSPACE:
-                            Filter();
-                            break;
+            //check for a commit character
+            if (nCmdID == (uint)VSConstants.VSStd2KCmdID.RETURN ||
+                nCmdID == (uint)VSConstants.VSStd2KCmdID.TAB ||
+                char.IsWhiteSpace(typedChar) ||
+                char.IsPunctuation(typedChar))
+            {
+                //check for a a selection
+                if (this.m_session != null && !this.m_session.IsDismissed)
+                {
+                    //if the selection is fully selected, commit the current session
+                    if (this.m_session.SelectedCompletionSet.SelectionStatus.IsSelected)
+                    {
+                        this.m_session.Commit();
+                        //also, don't add the character to the buffer
+                        return VSConstants.S_OK;
+                    }
+                    else
+                    {
+                        //if there is no selection, dismiss the session
+                        this.m_session.Dismiss();
                     }
                 }
             }
 
-            return hresult;
+            //pass along the command so the char is added to the buffer
+            int retVal = m_nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+            bool handled = false;
+            if (!typedChar.Equals(char.MinValue) && char.IsLetterOrDigit(typedChar))
+            {
+                if (m_session == null || m_session.IsDismissed) // If there is no active session, bring up completion
+                {
+                    this.TriggerCompletion();
+                    m_session.Filter();
+                }
+                else    //the completion session is already active, so just filter
+                {
+                    m_session.Filter();
+                }
+                handled = true;
+            }
+            else if (commandID == (uint)VSConstants.VSStd2KCmdID.BACKSPACE   //redo the filter if there is a deletion
+                || commandID == (uint)VSConstants.VSStd2KCmdID.DELETE)
+            {
+                if (m_session != null && !m_session.IsDismissed)
+                    m_session.Filter();
+                handled = true;
+            }
+            if (handled) return VSConstants.S_OK;
+            return retVal;
+        }
+
+        private bool TriggerCompletion()
+        {
+            //the caret must be in a non-projection location 
+            SnapshotPoint? caretPoint = m_textView.Caret.Position.Point.GetPoint(
+            textBuffer => (!textBuffer.ContentType.IsOfType("projection")), PositionAffinity.Predecessor);
+            if (!caretPoint.HasValue)
+            {
+                return false;
+            }
+
+            m_session = Broker.CreateCompletionSession(m_textView,
+                caretPoint.Value.Snapshot.CreateTrackingPoint(caretPoint.Value.Position, PointTrackingMode.Positive),
+                true);
+
+            //subscribe to the Dismissed event on the session 
+            m_session.Dismissed += this.OnSessionDismissed;
+            m_session.Start();
+
+            return true;
+        }
+
+        private void OnSessionDismissed(object sender, EventArgs e)
+        {
+            m_session.Dismissed -= this.OnSessionDismissed;
+            m_session = null;
         }
 
         /// <summary>
         /// Narrow down the list of options as the user types input
         /// </summary>
         private void Filter() {
-            if (_currentSession == null)
+            if (m_session == null)
+            {
                 return;
-
-            _currentSession.SelectedCompletionSet.SelectBestMatch();
-            _currentSession.SelectedCompletionSet.Recalculate();
-        }
-
-        /// <summary>
-        /// Cancel the auto-complete session, and leave the text unmodified
-        /// </summary>
-        bool Cancel() {
-            if (_currentSession == null)
-                return false;
-
-            _currentSession.Dismiss();
-
-            return true;
-        }
-
-        /// <summary>
-        /// Auto-complete text using the specified token
-        /// </summary>
-        bool Complete(bool force) {
-            if (_currentSession == null)
-                return false;
-
-            if (!_currentSession.SelectedCompletionSet.SelectionStatus.IsSelected && !force) {
-                _currentSession.Dismiss();
-                return false;
-            } else {
-                _currentSession.Commit();
-                return true;
             }
-        }
-
-        /// <summary>
-        /// Display list of potential tokens
-        /// </summary>
-        bool StartSession() {
-            if (_currentSession != null)
-                return false;
-
-            SnapshotPoint caret = TextView.Caret.Position.BufferPosition;
-            ITextSnapshot snapshot = caret.Snapshot;
-
-            if (!Broker.IsCompletionActive(TextView)) {
-                _currentSession = Broker.CreateCompletionSession(TextView, snapshot.CreateTrackingPoint(caret, PointTrackingMode.Positive), true);
-            } else {
-                _currentSession = Broker.GetSessions(TextView)[0];
-            }
-            _currentSession.Dismissed += (sender, args) => _currentSession = null;
-
-            _currentSession.Start();
-
-            return true;
+            m_session.SelectedCompletionSet.SelectBestMatch();
+            m_session.SelectedCompletionSet.Recalculate();
         }
 
         public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText) {
@@ -193,9 +192,7 @@ namespace AsmDude {
                         return VSConstants.S_OK;
                 }
             }
-            return Next.QueryStatus(pguidCmdGroup, cCmds, prgCmds, pCmdText);
+            return m_nextCommandHandler.QueryStatus(pguidCmdGroup, cCmds, prgCmds, pCmdText);
         }
     }
-
-    #endregion
 }
