@@ -76,14 +76,12 @@ namespace AsmDude {
                         if (nameAttribute != null)
                         {
                             string name = nameAttribute.Value.ToUpper();
-                            var node2 = node.SelectSingleNode("./description");
-                            if (node2 == null)
-                            {
-                                this._keywords[name] = name;
-                            }
-                            else {
-                                this._keywords[name] = name + " - " + node2.InnerText.Trim();
-                            }
+                            var archAttribute = node.Attributes["arch"];
+                            var descriptionNode = node.SelectSingleNode("./description");
+                            string archStr = (archAttribute == null) ? "" : " [" + archAttribute.Value + "]";
+                            string descriptionStr = (descriptionNode == null) ? "" : " - " + descriptionNode.InnerText.Trim();
+                            this._keywords[name] = name + archStr + descriptionStr;
+                            //this._keywords[name] = name.PadRight(15) + archStr.PadLeft(8) + descriptionStr;
                         }
                     }
                 }
@@ -108,26 +106,46 @@ namespace AsmDude {
             var line = triggerPoint.GetContainingLine();
             SnapshotPoint start = triggerPoint;
 
-            while (start > line.Start && !char.IsWhiteSpace((start - 1).GetChar())) {
+            // find the start of the current keyword, a whiteSpace, ",", ";", "[" and "]" also are keyword separators
+            while ((start > line.Start) && !isSeparatorChar((start - 1).GetChar())) {
                 start -= 1;
             }
 
             var applicableTo = snapshot.CreateTrackingSpan(new SnapshotSpan(start, triggerPoint), SpanTrackingMode.EdgeInclusive);
-            string partialKeyword = applicableTo.GetText(snapshot).ToUpper();
+            string partialKeyword = applicableTo.GetText(snapshot);
             if (partialKeyword.Length == 0) return;
 
-            //Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: partial keyword \"" + partialKeyword + "\"");
-            List<Completion> completions = new List<Completion>();
+            bool useCapitals = isAllUpper(partialKeyword);
+            partialKeyword = partialKeyword.ToUpper();
 
+            //Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: partial keyword \"" + partialKeyword + "\", useCapitals="+ useCapitals);
+            List<Completion> completions = new List<Completion>();
             foreach (KeyValuePair<string, string> entry in this._keywords)
             {
                 if (entry.Key.StartsWith(partialKeyword))
                 {
                     //Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: name keyword \"" + entry.Key + "\"");
-                    completions.Add(new Completion(entry.Value, entry.Key, null, null, null));
+                    if (useCapitals) { // by default, the entry.Key is with capitals
+                        completions.Add(new Completion(entry.Value, entry.Key, null, null, null));
+                    } else {
+                        completions.Add(new Completion(entry.Value, entry.Key.ToLower(), null, null, null));
+                    }
                 }
             };
-            completionSets.Add(new CompletionSet("All", "All", applicableTo, completions, Enumerable.Empty<Completion>()));
+            completionSets.Add(new CompletionSet("Tokens", "Tokens", applicableTo, completions, Enumerable.Empty<Completion>()));
+        }
+
+        private bool isSeparatorChar(char c) {
+            return char.IsWhiteSpace(c) || c.Equals(',') || c.Equals('[') || c.Equals(']');
+        }
+
+        private bool isAllUpper(string input) {
+            for (int i = 0; i < input.Length; i++) {
+                if (Char.IsLetter(input[i]) && !Char.IsUpper(input[i])) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public void Dispose() {

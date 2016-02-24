@@ -122,22 +122,24 @@ namespace AsmDude {
             bool handled = false;
             if (!typedChar.Equals(char.MinValue) && char.IsLetterOrDigit(typedChar))
             {
-                if (m_session == null || m_session.IsDismissed) // If there is no active session, bring up completion
+                if (this.m_session == null || this.m_session.IsDismissed) // If there is no active session, bring up completion
                 {
-                    this.TriggerCompletion();
-                    m_session.Filter();
+                    if (this.TriggerCompletion()) {
+                        if (this.m_session != null)
+                            this.m_session.Filter();
+                    }
                 }
                 else    //the completion session is already active, so just filter
                 {
-                    m_session.Filter();
+                    this.m_session.Filter();
                 }
                 handled = true;
             }
             else if (commandID == (uint)VSConstants.VSStd2KCmdID.BACKSPACE   //redo the filter if there is a deletion
                 || commandID == (uint)VSConstants.VSStd2KCmdID.DELETE)
             {
-                if (m_session != null && !m_session.IsDismissed)
-                    m_session.Filter();
+                if (this.m_session != null && !this.m_session.IsDismissed)
+                    this.m_session.Filter();
                 handled = true;
             }
             if (handled) return VSConstants.S_OK;
@@ -154,13 +156,13 @@ namespace AsmDude {
                 return false;
             }
 
-            m_session = Broker.CreateCompletionSession(m_textView,
+            this.m_session = Broker.CreateCompletionSession(m_textView,
                 caretPoint.Value.Snapshot.CreateTrackingPoint(caretPoint.Value.Position, PointTrackingMode.Positive),
                 true);
 
             //subscribe to the Dismissed event on the session 
-            m_session.Dismissed += this.OnSessionDismissed;
-            m_session.Start();
+            this.m_session.Dismissed += this.OnSessionDismissed;
+            this.m_session.Start();
 
             return true;
         }
