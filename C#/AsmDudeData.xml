@@ -2984,11 +2984,11 @@
 			<description>Insert Packed Integer Values</description>
 			<ref>./html/VINSERTI128.html</ref>
 		</mnemonic>
-		<mnemonic name='VMASKMOVPS'>
+		<mnemonic name='VMASKMOVPS' arch='AVX'>
 			<description>Conditional SIMD Packed Loads and Stores</description>
 			<ref>./html/VMASKMOV.html</ref>
 		</mnemonic>
-		<mnemonic name='VMASKMOVPD'>
+		<mnemonic name='VMASKMOVPD' arch='AVX'>
 			<description>Conditional SIMD Packed Loads and Stores</description>
 			<ref>./html/VMASKMOV.html</ref>
 		</mnemonic>

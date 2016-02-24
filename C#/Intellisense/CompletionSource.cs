@@ -35,6 +35,14 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 
+
+using System.Globalization;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Input;
+using System.Windows.Media.Imaging;
+
 namespace AsmDude {
 
     [Export(typeof(ICompletionSourceProvider))]
@@ -46,25 +54,93 @@ namespace AsmDude {
         }
     }
 
+    /*
+    internal class CompletionTooltipCustomization : TextBlock {
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        #region MEF Exports
+
+        [Export(typeof(IUIElementProvider<Completion, ICompletionSession>))]
+        [Name("SampleCompletionTooltipCustomization")]
+        //Roslyn is the default Tooltip Provider. We must override it if we wish to use custom tooltips
+        [Order(Before = "RoslynToolTipProvider")]
+        [ContentType("text")]
+        internal class CompletionTooltipCustomizationProvider : IUIElementProvider<Completion, ICompletionSession> {
+            public UIElement GetUIElement(Completion itemToRender, ICompletionSession context, UIElementType elementType) {
+                if (elementType == UIElementType.Tooltip) {
+
+                    var c = new CompletionTooltipCustomization(itemToRender);
+                    //c.FontFamily = new FontFamily("Fixedsys");
+                    //c.FontSize = 20;
+                    //c.MouseEnter += new MouseEventHandler(this.handleMouseEvent);
+                    c.PreviewMouseDown += new MouseButtonEventHandler(this.handleMouseButton);
+                    c.ToolTipClosing += C_ToolTipClosing;
+                    context.Committed += Context_Committed;
+                    return c;
+                } else {
+                    return null;
+                }
+            }
+
+            private void Context_Committed(object sender, EventArgs e) {
+                Debug.WriteLine("INFO: Context_Committed:");
+            }
+
+            private void C_ToolTipClosing(object sender, ToolTipEventArgs e) {
+                Debug.WriteLine("INFO: C_ToolTipClosing:");
+            }
+
+            void handleMouseButton(object sender, MouseButtonEventArgs a) {
+                Debug.WriteLine("INFO: handleMouseButton:");
+            }
+            void handleMouseEvent(object sender, MouseEventArgs a) {
+                Debug.WriteLine("INFO: handleMouseEvent:");
+            }
+            void handleContextMenu(object sender, ContextMenuEventArgs a) {
+                Debug.WriteLine("INFO: handleContextMenu:");
+            }
+        }
+        #endregion
+
+        #region Constructors
+        /// <summary>
+        /// Custom constructor enables us to modify the text values of the tooltip. In this case, we are just modifying the font style and size
+        /// </summary>
+        /// <param name="completion">The tooltip to be modified</param>
+        internal CompletionTooltipCustomization(Completion completion) {
+            Text = string.Format(CultureInfo.CurrentCulture, "{0}: {1}", completion.DisplayText, completion.Description);
+            //FontSize = 24;
+            FontStyle = FontStyles.Italic;
+        }
+        #endregion
+    }
+    */
     class AsmCompletionSource : ICompletionSource {
         private ITextBuffer _buffer;
         private bool _disposed = false;
-        Dictionary<String, String> _keywords;
+        private SortedDictionary<string, string> _keywords;
+        private Dictionary<string, string> _types;
+        private Dictionary<string, ImageSource> _icons;
 
         public AsmCompletionSource(ITextBuffer buffer) {
-            _buffer = buffer;
-            _keywords = new Dictionary<string, String>();
+            this._buffer = buffer;
 
+            this._keywords = new SortedDictionary<string, string>();
+            this._types = new Dictionary<string, string>();
+            this._icons = new Dictionary<string, ImageSource>();
+
+            #region load xml
             //TODO: Ugly: better to have one place to read AsmDudeData.xml  
             string fullPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            string filenameData = "AsmDudeData.xml";
             string filenameDll = "AsmDude.dll";
-            string filename = fullPath.Substring(0, fullPath.Length - filenameDll.Length) + filenameData;
-            Debug.WriteLine("INFO: AsmCompletionSource: going to load file \"" + filename + "\"");
+            string installPath = fullPath.Substring(0, fullPath.Length - filenameDll.Length);
+
+            string filenameXml = "AsmDudeData.xml";
+            string filenameXmlFull = installPath + filenameXml;
+            Debug.WriteLine("INFO: AsmCompletionSource: going to load file \"" + filenameXmlFull + "\"");
             try
             {
                 XmlDocument xmlDoc = new XmlDocument();
-                xmlDoc.Load(filename);
+                xmlDoc.Load(filenameXmlFull);
 
                 XmlNodeList all = xmlDoc.SelectNodes("//*[@name]"); // select everything with a name attribute
                 for (int i = 0; i < all.Count; i++)
@@ -82,20 +158,41 @@ namespace AsmDude {
                             string descriptionStr = (descriptionNode == null) ? "" : " - " + descriptionNode.InnerText.Trim();
                             this._keywords[name] = name + archStr + descriptionStr;
                             //this._keywords[name] = name.PadRight(15) + archStr.PadLeft(8) + descriptionStr;
+
+                            this._types[name] = node.Name;
+                            //Debug.WriteLine("INFO: AsmCompletionSource: keyword \"" + name + "\" has type "+ this._types[name]);
                         }
                     }
                 }
             }
             catch (FileNotFoundException ex)
             {
-                Debug.WriteLine("ERROR: AsmCompletionSource: could not find file \"" + filename + "\". " + ex);
+                Debug.WriteLine("ERROR: AsmCompletionSource: could not find file \"" + filenameXmlFull + "\". " + ex);
             }
             catch (XmlException ex2)
             {
-                Debug.WriteLine("ERROR: AsmCompletionSource: error while reading file \"" + filename + "\". " + ex2);
+                Debug.WriteLine("ERROR: AsmCompletionSource: error while reading file \"" + filenameXmlFull + "\". " + ex2);
             }
+            #endregion
+
+            #region load icons
+
+            this._icons["register"] = bitmapFromUri(new Uri(installPath + "icon-R-blue.png"));
+            this._icons["mnemonic"] = bitmapFromUri(new Uri(installPath + "icon-M.png"));
+            this._icons["misc"] = bitmapFromUri(new Uri(installPath + "icon-question.png"));
+
+            #endregion
         }
 
+        public static ImageSource bitmapFromUri(Uri bitmapUri) {
+            var bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.UriSource = bitmapUri;
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.EndInit();
+            return bitmap;
+        }
+    
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets) {
             if (_disposed) throw new ObjectDisposedException("AsmCompletionSource");
 
@@ -125,21 +222,31 @@ namespace AsmDude {
                 if (entry.Key.StartsWith(partialKeyword))
                 {
                     //Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: name keyword \"" + entry.Key + "\"");
-                    if (useCapitals) { // by default, the entry.Key is with capitals
-                        completions.Add(new Completion(entry.Value, entry.Key, null, null, null));
-                    } else {
-                        completions.Add(new Completion(entry.Value, entry.Key.ToLower(), null, null, null));
+                    
+                    // by default, the entry.Key is with capitals
+                    string insertionText = (useCapitals) ? entry.Key : entry.Key.ToLower();
+                    String description = null; //"file:H:\\Dropbox\\sc\\GitHub\\asm-dude\\html\\AAA.html";
+                    ImageSource imageSource = null;
+                    if (this._types[entry.Key] != null) {
+                        if (this._icons.ContainsKey(this._types[entry.Key])) {
+                            imageSource = this._icons[this._types[entry.Key]];
+                        }
                     }
+
+                    var c = new Completion(entry.Value, insertionText, description, imageSource, null);
+                    completions.Add(c);
                 }
             };
-            completionSets.Add(new CompletionSet("Tokens", "Tokens", applicableTo, completions, Enumerable.Empty<Completion>()));
+
+            var cc = new CompletionSet("Tokens", "Tokens", applicableTo, completions, Enumerable.Empty<Completion>());
+            completionSets.Add(cc);
         }
 
-        private bool isSeparatorChar(char c) {
+        private static bool isSeparatorChar(char c) {
             return char.IsWhiteSpace(c) || c.Equals(',') || c.Equals('[') || c.Equals(']');
         }
 
-        private bool isAllUpper(string input) {
+        private static bool isAllUpper(string input) {
             for (int i = 0; i < input.Length; i++) {
                 if (Char.IsLetter(input[i]) && !Char.IsUpper(input[i])) {
                     return false;
