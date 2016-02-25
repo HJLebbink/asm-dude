@@ -130,13 +130,13 @@ namespace AsmDude {
             this._icons = new Dictionary<string, ImageSource>();
             this._grammar = new Dictionary<string, string>();
 
-            this._grammar["MOV"]  = "<reg>,<reg>|<reg>,<mem>|<mem>,<reg>|<reg>,<const>|<mem>,<const>".ToUpper();
-            this._grammar["LEA"]  = "<reg32>,<mem>".ToUpper();
+            this._grammar["MOV"] = "<reg>,<reg>|<reg>,<mem>|<mem>,<reg>|<reg>,<const>|<mem>,<const>".ToUpper();
+            this._grammar["LEA"] = "<reg32>,<mem>".ToUpper();
             this._grammar["PUSH"] = "<reg32>|<mem>|<const32>".ToUpper();
-            this._grammar["POP"]  = "<reg32>|<mem>".ToUpper();
+            this._grammar["POP"] = "<reg32>|<mem>".ToUpper();
 
 
-            this._grammar["MEM8"]  = "byte ptr [<reg32>]|[<reg32>+<reg32>]|<reg32>+2*<reg32>|<reg32>+4*<reg32>|<reg32>+8*<reg32>".ToUpper();
+            this._grammar["MEM8"] = "byte ptr [<reg32>]|[<reg32>+<reg32>]|<reg32>+2*<reg32>|<reg32>+4*<reg32>|<reg32>+8*<reg32>".ToUpper();
             this._grammar["MEM32"] = "dword ptr [<reg32>]|[<reg32>+<reg32>]|<reg32>+2*<reg32>|<reg32>+4*<reg32>|<reg32>+8*<reg32>".ToUpper();
 
             #region load xml
@@ -148,20 +148,16 @@ namespace AsmDude {
             string filenameXml = "AsmDudeData.xml";
             string filenameXmlFull = installPath + filenameXml;
             Debug.WriteLine("INFO: AsmCompletionSource: going to load file \"" + filenameXmlFull + "\"");
-            try
-            {
+            try {
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.Load(filenameXmlFull);
 
                 XmlNodeList all = xmlDoc.SelectNodes("//*[@name]"); // select everything with a name attribute
-                for (int i = 0; i < all.Count; i++)
-                {
+                for (int i = 0; i < all.Count; i++) {
                     XmlNode node = all.Item(i);
-                    if (node != null)
-                    {
+                    if (node != null) {
                         var nameAttribute = node.Attributes["name"];
-                        if (nameAttribute != null)
-                        {
+                        if (nameAttribute != null) {
                             string name = nameAttribute.Value.ToUpper();
                             var archAttribute = node.Attributes["arch"];
                             var descriptionNode = node.SelectSingleNode("./description");
@@ -175,13 +171,9 @@ namespace AsmDude {
                         }
                     }
                 }
-            }
-            catch (FileNotFoundException ex)
-            {
+            } catch (FileNotFoundException ex) {
                 Debug.WriteLine("ERROR: AsmCompletionSource: could not find file \"" + filenameXmlFull + "\". " + ex);
-            }
-            catch (XmlException ex2)
-            {
+            } catch (XmlException ex2) {
                 Debug.WriteLine("ERROR: AsmCompletionSource: error while reading file \"" + filenameXmlFull + "\". " + ex2);
             }
             #endregion
@@ -203,11 +195,11 @@ namespace AsmDude {
                 bitmap.CacheOption = BitmapCacheOption.OnLoad;
                 bitmap.EndInit();
             } catch (Exception e) {
-                Debug.WriteLine("WARNING: bitmapFromUri: could not read icon from uri "+bitmapUri.ToString()+"; "+e.Message);
+                Debug.WriteLine("WARNING: bitmapFromUri: could not read icon from uri " + bitmapUri.ToString() + "; " + e.Message);
             }
             return bitmap;
         }
-    
+
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets) {
             if (_disposed) throw new ObjectDisposedException("AsmCompletionSource");
 
@@ -222,10 +214,13 @@ namespace AsmDude {
             while ((start > line.Start) && !isSeparatorChar((start - 1).GetChar())) {
                 start -= 1;
             }
+            if (start.Position == triggerPoint.Position) return;
+            Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: start" + start.Position + "; triggerPoint=" + triggerPoint.Position);
+
+
 
             var applicableTo = snapshot.CreateTrackingSpan(new SnapshotSpan(start, triggerPoint), SpanTrackingMode.EdgeInclusive);
             string partialKeyword = applicableTo.GetText(snapshot);
-            if (partialKeyword.Length == 0) return;
 
             //if (true)
             //{ // find the previous keyword
@@ -239,12 +234,13 @@ namespace AsmDude {
 
             //Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: partial keyword \"" + partialKeyword + "\", useCapitals="+ useCapitals);
             List<Completion> completions = new List<Completion>();
-            foreach (KeyValuePair<string, string> entry in this._keywords)
-            {
-                if (entry.Key.StartsWith(partialKeyword))
-                {
+            foreach (KeyValuePair<string, string> entry in this._keywords) {
+
+                if (entry.Key.Contains(partialKeyword)) {
+                    //if (entry.Key.StartsWith(partialKeyword)) {
+
                     //Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: name keyword \"" + entry.Key + "\"");
-                    
+
                     // by default, the entry.Key is with capitals
                     string insertionText = (useCapitals) ? entry.Key : entry.Key.ToLower();
                     String description = null; //"file:H:\\Dropbox\\sc\\GitHub\\asm-dude\\html\\AAA.html";
@@ -277,8 +273,7 @@ namespace AsmDude {
             return true;
         }
 
-        private static string getPreviousKeyword()
-        {
+        private static string getPreviousKeyword() {
             return "TODO";
         }
 

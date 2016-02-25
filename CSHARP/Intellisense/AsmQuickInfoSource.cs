@@ -35,21 +35,18 @@ using Microsoft.VisualStudio.Text.Tagging;
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
 
-namespace AsmDude
-{
+namespace AsmDude {
     /// <summary>
     /// Factory for quick info sources
     /// </summary>
     [Export(typeof(IQuickInfoSourceProvider))]
     [ContentType("asm!")]
     [Name("asmQuickInfo")]
-    class AsmQuickInfoSourceProvider : IQuickInfoSourceProvider
-    {
+    class AsmQuickInfoSourceProvider : IQuickInfoSourceProvider {
         [Import]
         IBufferTagAggregatorFactoryService aggService = null;
 
-        public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer textBuffer)
-        {
+        public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer textBuffer) {
             return new AsmQuickInfoSource(textBuffer, aggService.CreateTagAggregator<AsmTokenTag>(textBuffer));
         }
     }
@@ -57,15 +54,13 @@ namespace AsmDude
     /// <summary>
     /// Provides QuickInfo information to be displayed in a text buffer
     /// </summary>
-    class AsmQuickInfoSource : IQuickInfoSource
-    {
+    class AsmQuickInfoSource : IQuickInfoSource {
         private ITagAggregator<AsmTokenTag> _aggregator;
         private ITextBuffer _buffer;
         private bool _disposed = false;
         private XmlDocument _xmlDoc;
 
-        public AsmQuickInfoSource(ITextBuffer buffer, ITagAggregator<AsmTokenTag> aggregator)
-        {
+        public AsmQuickInfoSource(ITextBuffer buffer, ITagAggregator<AsmTokenTag> aggregator) {
             _aggregator = aggregator;
             _buffer = buffer;
             _xmlDoc = new XmlDocument();
@@ -87,22 +82,18 @@ namespace AsmDude
         /// <summary>
         /// Determine which pieces of Quickinfo content should be displayed
         /// </summary>
-        public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan)
-        {
+        public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan) {
             applicableToSpan = null;
 
-            if (_disposed)
-            {
+            if (_disposed) {
                 throw new ObjectDisposedException("TestQuickInfoSource");
             }
             var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(_buffer.CurrentSnapshot);
 
-            if (triggerPoint == null)
-            {
+            if (triggerPoint == null) {
                 return;
             }
-            foreach (IMappingTagSpan<AsmTokenTag> curTag in _aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint)))
-            {
+            foreach (IMappingTagSpan<AsmTokenTag> curTag in _aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint))) {
                 var tagSpan = curTag.Span.GetSpans(_buffer).First();
                 var tagString = tagSpan.GetText().ToUpper();
                 applicableToSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
@@ -160,21 +151,18 @@ namespace AsmDude
             }
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             _disposed = true;
         }
 
         private string getDescriptionMnemonic(string mnemonic) {
             XmlNode node1 = this._xmlDoc.SelectSingleNode("//mnemonic[@name=\"" + mnemonic + "\"]");
-            if (node1 == null)
-            {
+            if (node1 == null) {
                 Debug.WriteLine("WARNING: getDescriptionMnemonic: no mnemonic element for mnemonic " + mnemonic);
                 return "";
             }
             XmlNode node2 = node1.SelectSingleNode("./description");
-            if (node2 == null)
-            {
+            if (node2 == null) {
                 Debug.WriteLine("WARNING: getDescriptionMnemonic: no description element for mnemonic " + mnemonic);
                 return "";
             }
@@ -183,17 +171,14 @@ namespace AsmDude
             return description;
         }
 
-        private string getDescriptionRegister(string register)
-        {
+        private string getDescriptionRegister(string register) {
             XmlNode node1 = this._xmlDoc.SelectSingleNode("//register[@name=\"" + register + "\"]");
-            if (node1 == null)
-            {
+            if (node1 == null) {
                 Debug.WriteLine("WARNING: getDescriptionRegister: no register element for register " + register);
                 return "";
             }
             XmlNode node2 = node1.SelectSingleNode("./description");
-            if (node2 == null)
-            {
+            if (node2 == null) {
                 Debug.WriteLine("WARNING: getDescriptionRegister: no description element for register " + register);
                 return "";
             }
@@ -202,17 +187,14 @@ namespace AsmDude
             return description;
         }
 
-        private string getDescriptionDirective(string directive)
-        {
+        private string getDescriptionDirective(string directive) {
             XmlNode node1 = this._xmlDoc.SelectSingleNode("//directive[@name='" + directive + "']");
-            if (node1 == null)
-            {
+            if (node1 == null) {
                 Debug.WriteLine("WARNING: getDescriptionDirective: no directive element for directive " + directive);
                 return "";
             }
             XmlNode node2 = node1.SelectSingleNode("./description");
-            if (node2 == null)
-            {
+            if (node2 == null) {
                 Debug.WriteLine("WARNING: getDescriptionDirective: no description element for directive " + directive);
                 return "";
             }

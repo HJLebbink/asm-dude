@@ -1,19 +1,10 @@
-//***************************************************************************
-// 
-//    Copyright (c) Microsoft Corporation. All rights reserved.
-//    This code is licensed under the Visual Studio SDK license terms.
-//    THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
-//    ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
-//    IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
-//    PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
-//
-//***************************************************************************
 
 namespace HighlightWordSample
 {
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.Composition;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading;
     using Microsoft.VisualStudio.Text;
@@ -28,7 +19,7 @@ namespace HighlightWordSample
     /// </summary>
     public class HighlightWordTag : TextMarkerTag 
     { 
-        public HighlightWordTag() : base("blue") { }
+        public HighlightWordTag() : base("green") { }
     }
 
     /// <summary>
@@ -215,32 +206,39 @@ namespace HighlightWordSample
             if (CurrentWord == null)
                 yield break;
 
-            // Hold on to a "snapshot" of the word spans and current word, so that we maintain the same
-            // collection throughout
-            SnapshotSpan currentWord = CurrentWord.Value;
-            NormalizedSnapshotSpanCollection wordSpans = WordSpans;
-
             if (spans.Count == 0 || WordSpans.Count == 0)
                 yield break;
 
+            
+            // Hold on to a "snapshot" of the word spans and current word, so that we maintain the same
+            // collection throughout
+            SnapshotSpan currentWordLocal = CurrentWord.Value;
+            NormalizedSnapshotSpanCollection wordSpansLocal = WordSpans;
+
             // If the requested snapshot isn't the same as the one our words are on, translate our spans
             // to the expected snapshot
-            if (spans[0].Snapshot != wordSpans[0].Snapshot)
+            if (spans[0].Snapshot != wordSpansLocal[0].Snapshot)
             {
-                wordSpans = new NormalizedSnapshotSpanCollection(
-                    wordSpans.Select(span => span.TranslateTo(spans[0].Snapshot, SpanTrackingMode.EdgeExclusive)));
+                wordSpansLocal = new NormalizedSnapshotSpanCollection(
+                    wordSpansLocal.Select(span => span.TranslateTo(spans[0].Snapshot, SpanTrackingMode.EdgeExclusive)));
 
-                currentWord = currentWord.TranslateTo(spans[0].Snapshot, SpanTrackingMode.EdgeExclusive);
+                currentWordLocal = currentWordLocal.TranslateTo(spans[0].Snapshot, SpanTrackingMode.EdgeExclusive);
             }
+
+
+            Debug.WriteLine("INFO: GetTags: currentWord=" + currentWordLocal.GetText());
+
 
             // First, yield back the word the cursor is under (if it overlaps)
             // Note that we'll yield back the same word again in the wordspans collection;
             // the duplication here is expected.
-            if (spans.OverlapsWith(new NormalizedSnapshotSpanCollection(currentWord)))
-                yield return new TagSpan<HighlightWordTag>(currentWord, new HighlightWordTag());
+            var c1 = new NormalizedSnapshotSpanCollection(currentWordLocal);
+            if (spans.OverlapsWith(c1)) {
+                yield return new TagSpan<HighlightWordTag>(currentWordLocal, new HighlightWordTag());
+            }
 
             // Second, yield all the other words in the file
-            foreach (SnapshotSpan span in NormalizedSnapshotSpanCollection.Overlap(spans, wordSpans))
+            foreach (SnapshotSpan span in NormalizedSnapshotSpanCollection.Overlap(spans, wordSpansLocal))
             {
                 yield return new TagSpan<HighlightWordTag>(span, new HighlightWordTag());
             }

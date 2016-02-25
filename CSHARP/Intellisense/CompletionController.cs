@@ -88,8 +88,7 @@ namespace AsmDude {
             uint commandID = nCmdID;
             char typedChar = char.MinValue;
             //make sure the input is a char before getting it
-            if (pguidCmdGroup == VSConstants.VSStd2K && nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR)
-            {
+            if (pguidCmdGroup == VSConstants.VSStd2K && nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR) {
                 typedChar = (char)(ushort)Marshal.GetObjectForNativeVariant(pvaIn);
             }
 
@@ -97,20 +96,18 @@ namespace AsmDude {
             if (nCmdID == (uint)VSConstants.VSStd2KCmdID.RETURN ||
                 nCmdID == (uint)VSConstants.VSStd2KCmdID.TAB ||
                 char.IsWhiteSpace(typedChar) ||
-                char.IsPunctuation(typedChar))
-            {
-                //check for a a selection
-                if (this.m_session != null && !this.m_session.IsDismissed)
-                {
+                char.IsPunctuation(typedChar)) {
+
+                //check for a selection
+                if (this.m_session != null && !this.m_session.IsDismissed) {
                     //if the selection is fully selected, commit the current session
-                    if (this.m_session.SelectedCompletionSet.SelectionStatus.IsSelected)
-                    {
+                    if (this.m_session.SelectedCompletionSet.SelectionStatus.IsSelected) {
                         this.m_session.Commit();
-                        //also, don't add the character to the buffer
+
+                        //pass along the command so the char is added to the buffer
+                        m_nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
                         return VSConstants.S_OK;
-                    }
-                    else
-                    {
+                    } else {
                         //if there is no selection, dismiss the session
                         this.m_session.Dismiss();
                     }
@@ -120,24 +117,21 @@ namespace AsmDude {
             //pass along the command so the char is added to the buffer
             int retVal = m_nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
             bool handled = false;
-            if (!typedChar.Equals(char.MinValue) && char.IsLetterOrDigit(typedChar))
-            {
+            if (!typedChar.Equals(char.MinValue) && char.IsLetterOrDigit(typedChar)) {
                 if (this.m_session == null || this.m_session.IsDismissed) // If there is no active session, bring up completion
                 {
                     if (this.TriggerCompletion()) {
-                        if (this.m_session != null)
+                        if (this.m_session != null) {
                             this.m_session.Filter();
+                        }
                     }
-                }
-                else    //the completion session is already active, so just filter
-                {
+                } else    //the completion session is already active, so just filter
+                  {
                     this.m_session.Filter();
                 }
                 handled = true;
-            }
-            else if (commandID == (uint)VSConstants.VSStd2KCmdID.BACKSPACE   //redo the filter if there is a deletion
-                || commandID == (uint)VSConstants.VSStd2KCmdID.DELETE)
-            {
+            } else if (commandID == (uint)VSConstants.VSStd2KCmdID.BACKSPACE   //redo the filter if there is a deletion
+                  || commandID == (uint)VSConstants.VSStd2KCmdID.DELETE) {
                 if (this.m_session != null && !this.m_session.IsDismissed)
                     this.m_session.Filter();
                 handled = true;
@@ -146,13 +140,11 @@ namespace AsmDude {
             return retVal;
         }
 
-        private bool TriggerCompletion()
-        {
+        private bool TriggerCompletion() {
             //the caret must be in a non-projection location 
             SnapshotPoint? caretPoint = m_textView.Caret.Position.Point.GetPoint(
             textBuffer => (!textBuffer.ContentType.IsOfType("projection")), PositionAffinity.Predecessor);
-            if (!caretPoint.HasValue)
-            {
+            if (!caretPoint.HasValue) {
                 return false;
             }
 
@@ -167,8 +159,7 @@ namespace AsmDude {
             return true;
         }
 
-        private void OnSessionDismissed(object sender, EventArgs e)
-        {
+        private void OnSessionDismissed(object sender, EventArgs e) {
             m_session.Dismissed -= this.OnSessionDismissed;
             m_session = null;
         }
@@ -177,8 +168,7 @@ namespace AsmDude {
         /// Narrow down the list of options as the user types input
         /// </summary>
         private void Filter() {
-            if (m_session == null)
-            {
+            if (m_session == null) {
                 return;
             }
             m_session.SelectedCompletionSet.SelectBestMatch();
