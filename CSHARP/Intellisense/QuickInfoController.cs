@@ -48,7 +48,6 @@ namespace VSLTK.Intellisense {
             _textView = textView;
             _subjectBuffers = subjectBuffers;
             _componentContext = componentContext;
-
             _textView.MouseHover += OnTextViewMouseHover;
         }
 
@@ -77,15 +76,14 @@ namespace VSLTK.Intellisense {
         /// Determine if the mouse is hovering over a token. If so, highlight the token and display QuickInfo
         /// </summary>
         private void OnTextViewMouseHover(object sender, MouseHoverEventArgs e) {
-            SnapshotPoint? point = GetMousePosition(new SnapshotPoint(_textView.TextSnapshot, e.Position));
-
+            SnapshotPoint? point = this.GetMousePosition(new SnapshotPoint(this._textView.TextSnapshot, e.Position));
             if (point != null) {
                 ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(point.Value.Position, PointTrackingMode.Positive);
 
                 // Find the broker for this buffer
-                if (!_componentContext.QuickInfoBroker.IsQuickInfoActive(_textView)) {
-                    _session = _componentContext.QuickInfoBroker.CreateQuickInfoSession(_textView, triggerPoint, true);
-                    _session.Start();
+                if (!this._componentContext.QuickInfoBroker.IsQuickInfoActive(_textView)) {
+                    this._session = this._componentContext.QuickInfoBroker.CreateQuickInfoSession(this._textView, triggerPoint, true);
+                    this._session.Start();
                 }
             }
         }

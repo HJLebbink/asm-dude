@@ -130,6 +130,8 @@ namespace AsmDude {
             this._icons = new Dictionary<string, ImageSource>();
             this._grammar = new Dictionary<string, string>();
 
+            #region Grammar
+
             this._grammar["MOV"] = "<reg>,<reg>|<reg>,<mem>|<mem>,<reg>|<reg>,<const>|<mem>,<const>".ToUpper();
             this._grammar["LEA"] = "<reg32>,<mem>".ToUpper();
             this._grammar["PUSH"] = "<reg32>|<mem>|<const32>".ToUpper();
@@ -138,6 +140,7 @@ namespace AsmDude {
 
             this._grammar["MEM8"] = "byte ptr [<reg32>]|[<reg32>+<reg32>]|<reg32>+2*<reg32>|<reg32>+4*<reg32>|<reg32>+8*<reg32>".ToUpper();
             this._grammar["MEM32"] = "dword ptr [<reg32>]|[<reg32>+<reg32>]|<reg32>+2*<reg32>|<reg32>+4*<reg32>|<reg32>+8*<reg32>".ToUpper();
+            #endregion
 
             #region load xml
             //TODO: Ugly: better to have one place to read AsmDudeData.xml  
@@ -227,8 +230,6 @@ namespace AsmDude {
 
             //}
 
-
-
             bool useCapitals = isAllUpper(partialKeyword);
             partialKeyword = partialKeyword.ToUpper();
 
@@ -236,9 +237,11 @@ namespace AsmDude {
             List<Completion> completions = new List<Completion>();
             foreach (KeyValuePair<string, string> entry in this._keywords) {
 
-                if (entry.Key.Contains(partialKeyword)) {
-                    //if (entry.Key.StartsWith(partialKeyword)) {
+                bool selected = true;// entry.Key.Contains(partialKeyword);
+                //bool selected = entry.Key.StartsWith(partialKeyword);
+                //Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: key=" + entry.Key + "; partialKeyword=" + partialKeyword+"; contains="+ selected);
 
+                if (selected) {
                     //Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: name keyword \"" + entry.Key + "\"");
 
                     // by default, the entry.Key is with capitals

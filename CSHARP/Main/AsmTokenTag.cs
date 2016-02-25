@@ -37,16 +37,6 @@ namespace AsmDude {
     using Microsoft.VisualStudio.Utilities;
 
 
-    [Export(typeof(ITaggerProvider))]
-    [ContentType("asm!")]
-    [TagType(typeof(AsmTokenTag))]
-    internal sealed class AsmTokenTagProvider : ITaggerProvider {
-
-        public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag {
-            return new AsmTokenTagger(buffer) as ITagger<T>;
-        }
-    }
-
     public class AsmTokenTag : ITag {
         public AsmTokenTypes type { get; private set; }
 
@@ -63,8 +53,8 @@ namespace AsmDude {
         static char[] splitChars = { ' ', ',', '\t', '+', '*', '[', ']' };
 
         internal AsmTokenTagger(ITextBuffer buffer) {
-            _buffer = buffer;
-            _asmTypes = new Dictionary<string, AsmTokenTypes>();
+            this._buffer = buffer;
+            this._asmTypes = new Dictionary<string, AsmTokenTypes>();
 
             // fill the dictionary with keywords
 

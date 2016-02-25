@@ -242,8 +242,8 @@
     <Compile Include="Intellisense\QuickInfoControllerProvider.cs" />
     <Compile Include="Main\AsmTokenTag.cs" />
     <Compile Include="Main\AsmTokenTypes.cs" />
-    <Compile Include="Main\HighlightWordTagger.cs" />
-    <Compile Include="Main\HighlightWordTaggerProvider.cs" />
+    <Compile Include="Main\OutliningTagger.cs" />
+    <Compile Include="Main\TaggerProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

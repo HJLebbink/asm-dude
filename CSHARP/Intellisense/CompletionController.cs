@@ -65,8 +65,8 @@ namespace AsmDude {
 
         public CommandFilter(IWpfTextView textView, ICompletionBroker broker) {
             this.m_session = null;
-            m_textView = textView;
-            Broker = broker;
+            this.m_textView = textView;
+            this.Broker = broker;
         }
 
         public IOleCommandTarget m_nextCommandHandler { get; set; }
@@ -104,8 +104,10 @@ namespace AsmDude {
                     if (this.m_session.SelectedCompletionSet.SelectionStatus.IsSelected) {
                         this.m_session.Commit();
 
-                        //pass along the command so the char is added to the buffer
-                        m_nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+                        //pass along the command so the char is added to the buffer, except if the command is an enter
+                        if (nCmdID != (uint)VSConstants.VSStd2KCmdID.RETURN) {
+                            m_nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+                        }
                         return VSConstants.S_OK;
                     } else {
                         //if there is no selection, dismiss the session
@@ -142,13 +144,14 @@ namespace AsmDude {
 
         private bool TriggerCompletion() {
             //the caret must be in a non-projection location 
-            SnapshotPoint? caretPoint = m_textView.Caret.Position.Point.GetPoint(
-            textBuffer => (!textBuffer.ContentType.IsOfType("projection")), PositionAffinity.Predecessor);
+            SnapshotPoint? caretPoint = this.m_textView.Caret.Position.Point.GetPoint(
+                textBuffer => (!textBuffer.ContentType.IsOfType("projection")), PositionAffinity.Predecessor);
             if (!caretPoint.HasValue) {
                 return false;
             }
 
-            this.m_session = Broker.CreateCompletionSession(m_textView,
+            this.m_session = this.Broker.CreateCompletionSession(
+                this.m_textView,
                 caretPoint.Value.Snapshot.CreateTrackingPoint(caretPoint.Value.Position, PointTrackingMode.Positive),
                 true);
 
@@ -160,19 +163,19 @@ namespace AsmDude {
         }
 
         private void OnSessionDismissed(object sender, EventArgs e) {
-            m_session.Dismissed -= this.OnSessionDismissed;
-            m_session = null;
+            this.m_session.Dismissed -= this.OnSessionDismissed;
+            this.m_session = null;
         }
 
         /// <summary>
         /// Narrow down the list of options as the user types input
         /// </summary>
         private void Filter() {
-            if (m_session == null) {
+            if (this.m_session == null) {
                 return;
             }
-            m_session.SelectedCompletionSet.SelectBestMatch();
-            m_session.SelectedCompletionSet.Recalculate();
+            this.m_session.SelectedCompletionSet.SelectBestMatch();
+            this.m_session.SelectedCompletionSet.Recalculate();
         }
 
         public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText) {

@@ -61,9 +61,9 @@ namespace AsmDude {
         private XmlDocument _xmlDoc;
 
         public AsmQuickInfoSource(ITextBuffer buffer, ITagAggregator<AsmTokenTag> aggregator) {
-            _aggregator = aggregator;
-            _buffer = buffer;
-            _xmlDoc = new XmlDocument();
+            this._aggregator = aggregator;
+            this._buffer = buffer;
+            this._xmlDoc = new XmlDocument();
 
             string fullPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
             string filenameData = "AsmDudeData.xml";
@@ -71,7 +71,7 @@ namespace AsmDude {
             string filename = fullPath.Substring(0, fullPath.Length - filenameDll.Length) + filenameData;
             Debug.WriteLine("INFO: AsmQuickInfoSource: going to load file \"" + filename + "\"");
             try {
-                _xmlDoc.Load(filename);
+                this._xmlDoc.Load(filename);
             } catch (FileNotFoundException ex) {
                 Debug.WriteLine("ERROR: AsmQuickInfoSource: could not find file \"" + filename + "\". " + ex);
             } catch (XmlException ex2) {
@@ -85,7 +85,7 @@ namespace AsmDude {
         public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan) {
             applicableToSpan = null;
 
-            if (_disposed) {
+            if (this._disposed) {
                 throw new ObjectDisposedException("TestQuickInfoSource");
             }
             var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(_buffer.CurrentSnapshot);
@@ -93,10 +93,10 @@ namespace AsmDude {
             if (triggerPoint == null) {
                 return;
             }
-            foreach (IMappingTagSpan<AsmTokenTag> curTag in _aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint))) {
+            foreach (IMappingTagSpan<AsmTokenTag> curTag in this._aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint))) {
                 var tagSpan = curTag.Span.GetSpans(_buffer).First();
-                var tagString = tagSpan.GetText().ToUpper();
-                applicableToSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
+                string tagString = tagSpan.GetText().ToUpper();
+                applicableToSpan = this._buffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
 
 
                 switch (curTag.Tag.type) {
