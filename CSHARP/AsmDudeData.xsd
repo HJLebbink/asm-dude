@@ -1,0 +1,60 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="asmdudedata">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element type="xs:string" name="info"/>
+        
+        <xs:element name="directives">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="directive" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="description" maxOccurs="1" minOccurs="0"/>
+                  </xs:sequence>
+                  <xs:attribute type="xs:string" name="name" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        
+        <xs:element name="mnemonics">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="mnemonic" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="description" maxOccurs="1" minOccurs="0"/>
+                    <xs:element type="xs:string" name="ref" maxOccurs="1" minOccurs="0"/>
+                  </xs:sequence>
+                  <xs:attribute type="xs:string" name="name" use="required"/>
+                  <xs:attribute type="xs:string" name="type" use="optional"/>
+                  <xs:attribute type="xs:string" name="arch" use="optional"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="registers">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="register" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="description" maxOccurs="1" minOccurs="0"/>
+                  </xs:sequence>
+                  <xs:attribute type="xs:string" name="name" use="required"/>
+                  <xs:attribute type="xs:string" name="bits" use="optional"/>
+                  <xs:attribute type="xs:string" name="arch" use="optional"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
