@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2016 Henk-Jan Lebbink
+// Copyright (c) 2016 H.J. Lebbink
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,20 +29,14 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
 namespace VSLTK.Intellisense {
-    #region IIntellisenseController
 
     internal class TemplateQuickInfoController : IIntellisenseController {
-        #region Private Data Members
 
         private ITextView _textView;
         private IList<ITextBuffer> _subjectBuffers;
         private TemplateQuickInfoControllerProvider _componentContext;
-
         private IQuickInfoSession _session;
 
-        #endregion
-
-        #region Constructors
 
         internal TemplateQuickInfoController(ITextView textView, IList<ITextBuffer> subjectBuffers, TemplateQuickInfoControllerProvider componentContext) {
             _textView = textView;
@@ -50,10 +44,6 @@ namespace VSLTK.Intellisense {
             _componentContext = componentContext;
             _textView.MouseHover += OnTextViewMouseHover;
         }
-
-        #endregion
-
-        #region IIntellisenseController Members
 
         public void ConnectSubjectBuffer(ITextBuffer subjectBuffer) {
         }
@@ -67,10 +57,6 @@ namespace VSLTK.Intellisense {
                 _textView = null;
             }
         }
-
-        #endregion
-
-        #region Event Handlers
 
         /// <summary>
         /// Determine if the mouse is hovering over a token. If so, highlight the token and display QuickInfo
@@ -87,9 +73,6 @@ namespace VSLTK.Intellisense {
                 }
             }
         }
-        #endregion
-
-        #region Private Implementation
 
         /// <summary>
         /// get mouse location on screen. Used to determine what word the cursor is currently hovering over
@@ -105,7 +88,5 @@ namespace VSLTK.Intellisense {
                 PositionAffinity.Predecessor
                 );
         }
-        #endregion
     }
-    #endregion
 }

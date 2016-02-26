@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2016 Henk-Jan Lebbink
+// Copyright (c) 2016 H.J. Lebbink
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,6 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace AsmDude {
     internal static class OrdinaryClassificationDefinition {
-        #region Type definition
 
         /// <summary>
         /// Defines the "mnemonic" classification type.
@@ -83,7 +82,5 @@ namespace AsmDude {
         [Export(typeof(ClassificationTypeDefinition))]
         [Name("misc")]
         internal static ClassificationTypeDefinition misc = null;
-
-        #endregion
     }
 }

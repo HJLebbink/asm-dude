@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2016 Henk-Jan Lebbink
+// Copyright (c) 2016 H.J. Lebbink
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -56,8 +56,6 @@ namespace AsmDude {
 
     /*
     internal class CompletionTooltipCustomization : TextBlock {
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        #region MEF Exports
 
         [Export(typeof(IUIElementProvider<Completion, ICompletionSession>))]
         [Name("SampleCompletionTooltipCustomization")]
@@ -99,9 +97,7 @@ namespace AsmDude {
                 Debug.WriteLine("INFO: handleContextMenu:");
             }
         }
-        #endregion
 
-        #region Constructors
         /// <summary>
         /// Custom constructor enables us to modify the text values of the tooltip. In this case, we are just modifying the font style and size
         /// </summary>
@@ -111,7 +107,6 @@ namespace AsmDude {
             //FontSize = 24;
             FontStyle = FontStyles.Italic;
         }
-        #endregion
     }
     */
     class AsmCompletionSource : ICompletionSource {
@@ -218,9 +213,7 @@ namespace AsmDude {
                 start -= 1;
             }
             if (start.Position == triggerPoint.Position) return;
-            Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: start" + start.Position + "; triggerPoint=" + triggerPoint.Position);
-
-
+            //Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: start" + start.Position + "; triggerPoint=" + triggerPoint.Position);
 
             var applicableTo = snapshot.CreateTrackingSpan(new SnapshotSpan(start, triggerPoint), SpanTrackingMode.EdgeInclusive);
             string partialKeyword = applicableTo.GetText(snapshot);

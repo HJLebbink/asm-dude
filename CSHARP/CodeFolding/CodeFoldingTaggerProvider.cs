@@ -20,26 +20,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Operations;
+using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace VSLTK.Intellisense {
+namespace AsmDude.HighlightWord
+{
 
-    [Export(typeof(IIntellisenseControllerProvider))]
-    [Name("Template QuickInfo Controller")]
+    /// <summary>
+    /// Export a <see cref="IViewTaggerProvider"/>
+    /// </summary>
+    [Export(typeof(ITaggerProvider))]
     [ContentType("text")]
-    internal class TemplateQuickInfoControllerProvider : IIntellisenseControllerProvider {
-
-        [Import]
-        internal IQuickInfoBroker QuickInfoBroker { get; set; }
-
-        public IIntellisenseController TryCreateIntellisenseController(ITextView textView,
-            IList<ITextBuffer> subjectBuffers) {
-            return new TemplateQuickInfoController(textView, subjectBuffers, this);
+    [TagType(typeof(CodeFoldingTagger))]
+    internal sealed class TaggerProvider : ITaggerProvider
+    {
+        /// <summary>
+        /// This method is called by VS to generate the tagger
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="textView"> The text view we are creating a tagger for</param>
+        /// <returns> Returns a OutliningTagger instance</returns>
+        public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
+        {
+            //Debug.WriteLine("INFO: TaggerProvider:CreateTagger: entering");
+            Func<ITagger<T>> sc = delegate () {
+                return new CodeFoldingTagger(buffer) as ITagger<T>;
+            };
+            return buffer.Properties.GetOrCreateSingletonProperty<ITagger<T>>(sc);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2016 Henk-Jan Lebbink
+// Copyright (c) 2016 H.J. Lebbink
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,13 +20,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.Text;
+using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Utilities;
+using System.Diagnostics;
 
 namespace AsmDude {
-    public enum AsmTokenTypes {
-        Mnemonic, Register, Remark, Directive, Constant, Jump, Label, Misc
+
+    [Export(typeof(ITaggerProvider))]
+    [ContentType("asm!")]
+    [TagType(typeof(AsmTokenTag))]
+    internal sealed class AsmTokenTagProvider : ITaggerProvider
+    {
+        public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
+        {
+            //Debug.WriteLine("INFO: AsmTokenTagProvider:CreateTagger: entering");
+            return new AsmTokenTagger(buffer) as ITagger<T>;
+        }
     }
+
+
+
+ 
+
 }

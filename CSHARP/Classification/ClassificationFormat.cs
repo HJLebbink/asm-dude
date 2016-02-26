@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2016 Henk-Jan Lebbink
+// Copyright (c) 2016 H.J. Lebbink
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,11 +25,8 @@ using System.Windows.Media;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
-// https://msdn.microsoft.com/en-us/library/system.windows.media.colors(v=vs.110).aspx
-
 
 namespace AsmDude {
-    #region Format definition
 
     /// <summary>
     /// Defines the editor format for the mnemonic classification type. Text is colored Blue
@@ -194,6 +191,4 @@ namespace AsmDude {
             ForegroundColor = Colors.DarkOrange;
         }
     }
-
-    #endregion //Format definition
 }
