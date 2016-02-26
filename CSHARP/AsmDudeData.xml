@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<asmdudedata xmlns="http://www.w3schools.com/RedsDevils"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="namespace AsmDudeData.xsd">
--->
+<!--<asmdudedata xmlns="http://www.w3schools.com/RedsDevils" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="namespace AsmDudeData.xsd">-->
 <asmdudedata>
-	<info>
-		General info here
-	</info>
-
+	<info>General info here</info>
 	<miscs>
 		<misc name="PTR"/>
 		<misc name="BYTE"/>
@@ -37,7 +31,6 @@
 			<description>IEEE 754-2008 Quad Precision (16 bytes)</description>
 		</misc>
 	</miscs>
-
 	<directives>
 		<directive name=".186"/>
 		<directive name=".286"/>
@@ -87,14 +80,12 @@
 		<directive name=".XCREF"/>
 		<directive name=".XLIST"/>
 		<directive name=".XMM"/>
-
 		<directive name=".INTEL_SYNTAX"/>
 		<directive name=".TEXT"/>
 		<directive name=".GLOBAL"/>
 		<directive name=".ALIGN"/>
 		<directive name=".ATT_SYNTAX"/>
 	</directives>
-
 	<mnemonics>
 		<mnemonic name='AAA'>
 			<description>ASCII Adjust After Addition</description>
@@ -316,7 +307,6 @@
 			<description>Complement Carry Flag</description>
 			<ref>./html/CMC.html</ref>
 		</mnemonic>
-
 		<mnemonic name='CMOVA' arch='i686'>
 			<description>Move if above (CF=0 and ZF=0) (CMOVA=CMOVNBE)</description>
 			<ref>./html/CMOVcc.html</ref>
@@ -437,7 +427,6 @@
 			<description>Move if zero (ZF=1) (CMOVE=CMOVZ)</description>
 			<ref>./html/CMOVcc.html</ref>
 		</mnemonic>
-
 		<mnemonic name='CMP'>
 			<description>Compare Two Operands</description>
 			<ref>./html/CMP.html</ref>
@@ -694,41 +683,39 @@
 			<description>Clear Exceptions</description>
 			<ref>./html/FCLEX_FNCLEX.html</ref>
 		</mnemonic>
-
-    <mnemonic name='FCMOVB' arch='.i686'>
-      <description>Move Floating-Point if below (CF=1)</description>
-      <ref>./html/FCMOVcc.html</ref>
-    </mnemonic>
-    <mnemonic name='FCMOVE' arch='.i686'>
-      <description>Move Floating-Point if equal (ZF=1)</description>
-      <ref>./html/FCMOVcc.html</ref>
-    </mnemonic>
-    <mnemonic name='FCMOVBE' arch='.i686'>
-      <description>Move Floating-Point if below or equal (CF=1 OR ZF=1)</description>
-      <ref>./html/FCMOVcc.html</ref>
-    </mnemonic>
-    <mnemonic name='FCMOVU' arch='.i686'>
-      <description>Move Floating-Point if unordered (PF=1)</description>
-      <ref>./html/FCMOVcc.html</ref>
-    </mnemonic>
-    <mnemonic name='FCMOVNB' arch='.i686'>
-      <description>Move Floating-Point if not below (CF=0)</description>
-      <ref>./html/FCMOVcc.html</ref>
-    </mnemonic>
-    <mnemonic name='FCMOVNE' arch='.i686'>
-      <description>Move Floating-Point if not equal (ZF=0)</description>
-      <ref>./html/FCMOVcc.html</ref>
-    </mnemonic>
-    <mnemonic name='FCMOVNBE' arch='.i686'>
-      <description>Move Floating-Point if not below or equal (CF=0 AND ZF=0)</description>
-      <ref>./html/FCMOVcc.html</ref>
-    </mnemonic>
-    <mnemonic name='FCMOVNU' arch='.i686'>
-      <description>Move Floating-Point if not unordered (PF=0)</description>
-      <ref>./html/FCMOVcc.html</ref>
-    </mnemonic>
-
-    <mnemonic name='FCOMI'>
+		<mnemonic name='FCMOVB' arch='.i686'>
+			<description>Move Floating-Point if below (CF=1)</description>
+			<ref>./html/FCMOVcc.html</ref>
+		</mnemonic>
+		<mnemonic name='FCMOVE' arch='.i686'>
+			<description>Move Floating-Point if equal (ZF=1)</description>
+			<ref>./html/FCMOVcc.html</ref>
+		</mnemonic>
+		<mnemonic name='FCMOVBE' arch='.i686'>
+			<description>Move Floating-Point if below or equal (CF=1 OR ZF=1)</description>
+			<ref>./html/FCMOVcc.html</ref>
+		</mnemonic>
+		<mnemonic name='FCMOVU' arch='.i686'>
+			<description>Move Floating-Point if unordered (PF=1)</description>
+			<ref>./html/FCMOVcc.html</ref>
+		</mnemonic>
+		<mnemonic name='FCMOVNB' arch='.i686'>
+			<description>Move Floating-Point if not below (CF=0)</description>
+			<ref>./html/FCMOVcc.html</ref>
+		</mnemonic>
+		<mnemonic name='FCMOVNE' arch='.i686'>
+			<description>Move Floating-Point if not equal (ZF=0)</description>
+			<ref>./html/FCMOVcc.html</ref>
+		</mnemonic>
+		<mnemonic name='FCMOVNBE' arch='.i686'>
+			<description>Move Floating-Point if not below or equal (CF=0 AND ZF=0)</description>
+			<ref>./html/FCMOVcc.html</ref>
+		</mnemonic>
+		<mnemonic name='FCMOVNU' arch='.i686'>
+			<description>Move Floating-Point if not unordered (PF=0)</description>
+			<ref>./html/FCMOVcc.html</ref>
+		</mnemonic>
+		<mnemonic name='FCOMI'>
 			<description>Compare Floating Point Values and Set EFLAGS</description>
 			<ref>./html/FCOMI_FCOMIP_ FUCOMI_FUCOMIP.html</ref>
 		</mnemonic>
@@ -1120,7 +1107,6 @@
 			<description>Interrupt Return</description>
 			<ref>./html/IRET_IRETD.html</ref>
 		</mnemonic>
-
 		<mnemonic name='JA' type='jump'>
 			<description>Jump if above (CF=0 and ZF=0) (JA=JNBE)</description>
 			<ref>./html/Jcc.html</ref>
@@ -1253,7 +1239,6 @@
 			<description>Unconditional Jump</description>
 			<ref>./html/Jcc.html</ref>
 		</mnemonic>
-
 		<mnemonic name='LAHF'>
 			<description>Load Status Flags into AH Register</description>
 			<ref>./html/LAHF.html</ref>
@@ -1918,7 +1903,6 @@
 			<description>Move Byte Mask</description>
 			<ref>./html/PMOVMSKB.html</ref>
 		</mnemonic>
-
 		<mnemonic name='PMOVSXBW' arch='SSE4.1'>
 			<description>PMOVSXBW xmm1, xmm2/m64: Sign extend 8 packed signed 8-bit integers in the low 8 bytes of xmm2/m64 to 8 packed signed 16-bit integers in xmm1</description>
 			<ref>./html/PMOVSX.html</ref>
@@ -1943,7 +1927,6 @@
 			<description>PMOVSXDQ xmm1, xmm2/m64: Sign extend 2 packed signed 32-bit integers in the low 8 bytes of xmm2/m64 to 2 packed signed 64-bit integers in xmm1</description>
 			<ref>./html/PMOVSX.html</ref>
 		</mnemonic>
-
 		<mnemonic name='PMOVZXBW' arch='SSE4.1'>
 			<description>PMOVZXBW xmm1, xmm2/m64: Zero extend 8 packed 8-bit integers in the low 8 bytes of xmm2/m64 to 8 packed 16-bit integers in xmm1</description>
 			<ref>./html/PMOVZX.html</ref>
@@ -1968,7 +1951,6 @@
 			<description>PMOVZXDQ xmm1, xmm2/m64: Zero extend 2 packed 32-bit integers in the low 8 bytes of xmm2/m64 to 2 packed 64-bit integers in xmm1</description>
 			<ref>./html/PMOVZX.html</ref>
 		</mnemonic>
-
 		<mnemonic name='PMULDQ' arch='SSE4.1'>
 			<description>Multiply Packed Signed Dword Integers</description>
 			<ref>./html/PMULDQ.html</ref>
@@ -2045,7 +2027,6 @@
 			<description>Move data from m8 closer to the processor using NTA hint</description>
 			<ref>./html/PREFETCHh.html</ref>
 		</mnemonic>
-
 		<mnemonic name='PREFETCHW'>
 			<description>Prefetch Data into Caches in Anticipation of a Write</description>
 			<ref>./html/PREFETCHW.html</ref>
@@ -2386,7 +2367,6 @@
 			<description>Scan String</description>
 			<ref>./html/SCAS_SCASB_SCASW_SCASD.html</ref>
 		</mnemonic>
-
 		<mnemonic name='SETA'>
 			<description>Set byte if above (CF=0 and ZF=0) (SETA=SETNBE)</description>
 			<ref>./html/SETcc.html</ref>
@@ -2507,7 +2487,6 @@
 			<description>Set byte if zero (ZF=1) (SETE=SETZ)</description>
 			<ref>./html/SETcc.html</ref>
 		</mnemonic>
-
 		<mnemonic name='SFENCE' arch='SSE'>
 			<description>Store Fence</description>
 			<ref>./html/SFENCE.html</ref>
@@ -2992,7 +2971,6 @@
 			<description>Conditional SIMD Packed Loads and Stores</description>
 			<ref>./html/VMASKMOV.html</ref>
 		</mnemonic>
-
 		<mnemonic name='VPBLENDD' arch='AVX2'>
 			<description>Blend Packed Dwords</description>
 			<ref>./html/VPBLENDD.html</ref>
@@ -3017,7 +2995,6 @@
 			<description>Copy a 128-bit memory operand to all elements of a YMM vector register</description>
 			<ref>./html/VPBROADCAST.html</ref>
 		</mnemonic>
-
 		<mnemonic name='VPERM2F128' arch='AVX'>
 			<description>Permute Floating-Point Values</description>
 			<ref>./html/VPERM2F128.html</ref>
@@ -3218,8 +3195,584 @@
 			<description>Test If In Transactional Execution</description>
 			<ref>./html/XTEST.html</ref>
 		</mnemonic>
+		<mnemonic name='JKNZD' arch='KNC'>
+			<description>Jump near if mask is not zero</description>
+		</mnemonic>
+		<mnemonic name='JKZD' arch='KNC'>
+			<description>Jump near if mask is zero</description>
+		</mnemonic>
+		<mnemonic name='KAND' arch='KNC'>
+			<description>AND Vector Mask</description>
+		</mnemonic>
+		<mnemonic name='KANDN' arch='KNC'>
+			<description>AND NOT Vector Mask</description>
+		</mnemonic>
+		<mnemonic name='KANDNR' arch='KNC'>
+			<description>Reverse AND NOT Vector Mask</description>
+		</mnemonic>
+		<mnemonic name='KCONCATH' arch='KNC'>
+			<description>Pack and Move High Vector Mask</description>
+		</mnemonic>
+		<mnemonic name='KCONCATL' arch='KNC'>
+			<description>Pack and Move Low Vector Mask</description>
+		</mnemonic>
+		<mnemonic name='KEXTRACT' arch='KNC'>
+			<description>Extract Vector Mask From Register</description>
+		</mnemonic>
+		<mnemonic name='KMERGE2L1H' arch='KNC'>
+			<description>Swap and Merge High Element Portion and Low Portion of Vector Masks</description>
+		</mnemonic>
+		<mnemonic name='KMERGE2L1L' arch='KNC'>
+			<description>Move Low Element Portion into High Portion of Vector Mask</description>
+		</mnemonic>
+		<mnemonic name='KMOV' arch='KNC'>
+			<description>Move Vector Mask</description>
+		</mnemonic>
+		<mnemonic name='KNOT' arch='KNC'>
+			<description>Not Vector Mask</description>
+		</mnemonic>
+		<mnemonic name='KOR' arch='KNC'>
+			<description>OR Vector Masks</description>
+		</mnemonic>
+		<mnemonic name='KORTEST' arch='KNC'>
+			<description>OR Vector Mask And Set EFLAGS</description>
+		</mnemonic>
+		<mnemonic name='KXNOR' arch='KNC'>
+			<description>XNOR Vector Masks</description>
+		</mnemonic>
+		<mnemonic name='KXOR' arch='KNC'>
+			<description>XOR Vector Masks</description>
+		</mnemonic>
+		<mnemonic name='VADDNPD' arch='KNC'>
+			<description>Add and Negate Float64 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VADDNPS' arch='KNC'>
+			<description>Add and Negate Float32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VADDPD' arch='KNC'>
+			<description>Add Float64 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VADDPS' arch='KNC'>
+			<description>Add Float32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VADDSETSPS' arch='KNC'>
+			<description>Add Float32 Vectors and Set Mask to Sign</description>
+		</mnemonic>
+		<mnemonic name='VALIGND' arch='KNC'>
+			<description>Align Doubleword Vectors</description>
+		</mnemonic>
+		<mnemonic name='VBLENDMPD' arch='KNC'>
+			<description>Blend Float64 Vectors using the Instruction Mask</description>
+		</mnemonic>
+		<mnemonic name='VBLENDMPS' arch='KNC'>
+			<description>Blend Float32 Vectors using the Instruction Mask</description>
+		</mnemonic>
+		<mnemonic name='VBROADCASTF32X4' arch='KNC'>
+			<description>Broadcast 4xFloat32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VBROADCASTF64X4' arch='KNC'>
+			<description>Broadcast 4xFloat64 Vector</description>
+		</mnemonic>
+		<mnemonic name='VBROADCASTI32X4' arch='KNC'>
+			<description>Broadcast 4xInt32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VBROADCASTI64X4' arch='KNC'>
+			<description>Broadcast 4xInt64 Vector</description>
+		</mnemonic>
+		<mnemonic name='VBROADCASTSD' arch='KNC'>
+			<description>Broadcast Float64 Vector</description>
+		</mnemonic>
+		<mnemonic name='VBROADCASTSS' arch='KNC'>
+			<description>Broadcast Float32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VCMPPD' arch='KNC'>
+			<description>Compare Float64 Vectors and Set Vector Mask</description>
+		</mnemonic>
+		<mnemonic name='VCMPPS' arch='KNC'>
+			<description>Compare Float32 Vectors and Set Vector Mask</description>
+		</mnemonic>
+		<mnemonic name='VCVTDQ2PD' arch='KNC'>
+			<description>Convert Int32 Vector to Float64 Vector</description>
+		</mnemonic>
+		<mnemonic name='VCVTFXPNTDQ2PS' arch='KNC'>
+			<description>Convert Fixed Point Int32 Vector to Float32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VCVTFXPNTPD2DQ' arch='KNC'>
+			<description>Convert Float64 Vector to Fixed Point Int32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VCVTFXPNTPD2UDQ' arch='KNC'>
+			<description>Convert Float64 Vector to Fixed Point Uint32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VCVTFXPNTPS2DQ' arch='KNC'>
+			<description>Convert Float32 Vector to Fixed Point Int32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VCVTFXPNTPS2UDQ' arch='KNC'>
+			<description>Convert Float32 Vector to Fixed Point Uint32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VCVTFXPNTUDQ2PS' arch='KNC'>
+			<description>Convert Fixed Point Uint32 Vector to Float32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VCVTPD2PS' arch='KNC'>
+			<description>Convert Float64 Vector to Float32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VCVTPS2PD' arch='KNC'>
+			<description>Convert Float32 Vector to Float64 Vector</description>
+		</mnemonic>
+		<mnemonic name='VCVTUDQ2PD' arch='KNC'>
+			<description>Convert Uint32 Vector to Float64 Vector</description>
+		</mnemonic>
+		<mnemonic name='VEXP223PS' arch='KNC'>
+			<description>Base-2 Exponential Calculation of Float32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VFIXUPNANPD' arch='KNC'>
+			<description>Fix Up Special Float64 Vector Numbers With NaN Passthrough</description>
+		</mnemonic>
+		<mnemonic name='VFIXUPNANPS' arch='KNC'>
+			<description>Fix Up Special Float32 Vector Numbers With NaN Passthrough</description>
+		</mnemonic>
+		<mnemonic name='VFMADD132PD' arch='KNC'>
+			<description>Multiply Destination By Second Source and Add To First Source Float64 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VFMADD132PS' arch='KNC'>
+			<description>Multiply Destination By Second Source and Add To First Source Float32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VFMADD213PD' arch='KNC'>
+			<description>Multiply First Source By Destination and Add Second Source Float64 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VFMADD213PS' arch='KNC'>
+			<description>Multiply First Source By Destination and Add Second Source Float32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VFMADD231PD' arch='KNC'>
+			<description>Multiply First Source By Second Source and Add To Destination Float64 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VFMADD231PS' arch='KNC'>
+			<description>Multiply First Source By Second Source and Add To Destination Float32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VFMADD233PS' arch='KNC'>
+			<description>Multiply First Source By Specially Swizzled Second Source and Add To Second Source Float32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VFMSUB132PD' arch='KNC'>
+			<description>Multiply Destination By Second Source and Subtract First Source Float64 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VFMSUB132PS' arch='KNC'>
+			<description>Multiply Destination By Second Source and Subtract First Source Float32 Vectors231</description>
+		</mnemonic>
+		<mnemonic name='VFMSUB213PD' arch='KNC'>
+			<description>Multiply First Source By Destination and Subtract Second Source Float64 Vectors234</description>
+		</mnemonic>
+		<mnemonic name='VFMSUB213PS' arch='KNC'>
+			<description>Multiply First Source By Destination and Subtract Second Source Float32 Vectors238</description>
+		</mnemonic>
+		<mnemonic name='VFMSUB231PD' arch='KNC'>
+			<description>Multiply First Source By Second Source and Subtract Destination Float64 Vectors241</description>
+		</mnemonic>
+		<mnemonic name='VFMSUB231PS' arch='KNC'>
+			<description>Multiply First Source By Second Source and Subtract Destination Float32 Vectors245</description>
+		</mnemonic>
+		<mnemonic name='VFNMADD132PD' arch='KNC'>
+			<description>Multiply Destination By Second Source and Subtract From First Source Float64 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VFNMADD132PS' arch='KNC'>
+			<description>Multiply Destination By Second Source and Subtract From First Source Float32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VFNMADD213PD' arch='KNC'>
+			<description>Multiply First Source By Destination and Subtract From Second Source Float64 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VFNMADD213PS' arch='KNC'>
+			<description>Multiply First Source By Destination and Subtract From Second Source Float32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VFNMADD231PD' arch='KNC'>
+			<description>Multiply First Source By Second Source and Subtract From Destination Float64 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VFNMADD231PS' arch='KNC'>
+			<description>Multiply First Source By Second Source and Subtract From Destination Float32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VFNMSUB132PD' arch='KNC'>
+			<description>Multiply Destination By Second Source, Negate, and Subtract First Source Float64 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VFNMSUB132PS' arch='KNC'>
+			<description>Multiply Destination By Second Source, Negate, and Subtract First Source Float32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VFNMSUB213PD' arch='KNC'>
+			<description>Multiply First Source By Destination, Negate, and Subtract Second Source Float64 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VFNMSUB213PS' arch='KNC'>
+			<description>Multiply First Source By Destination, Negate, and Subtract Second Source Float32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VFNMSUB231PD' arch='KNC'>
+			<description>Multiply First Source By Second Source, Negate, and Subtract Destination Float64 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VFNMSUB231PS' arch='KNC'>
+			<description>Multiply First Source By Second Source, Negate, and Subtract Destination Float32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VGATHERDPD' arch='KNC'>
+			<description>Gather Float64 Vector With Signed Dword Indices</description>
+		</mnemonic>
+		<mnemonic name='VGATHERDPS' arch='KNC'>
+			<description>Gather Float32 Vector With Signed Dword Indices</description>
+		</mnemonic>
+		<mnemonic name='VGATHERPF0DPS' arch='KNC'>
+			<description>Gather Prefetch Float32 Vector With Signed Dword Indices Into L1</description>
+		</mnemonic>
+		<mnemonic name='VGATHERPF0HINTDPD' arch='KNC'>
+			<description>Gather Prefetch Float64 Vector Hint With Signed Dword Indices</description>
+		</mnemonic>
+		<mnemonic name='VGATHERPF0HINTDPS' arch='KNC'>
+			<description>Gather Prefetch Float32 Vector Hint With Signed Dword Indices</description>
+		</mnemonic>
+		<mnemonic name='VGATHERPF1DPS' arch='KNC'>
+			<description>Gather Prefetch Float32 Vector With Signed Dword Indices Into L2</description>
+		</mnemonic>
+		<mnemonic name='VGETEXPPD' arch='KNC'>
+			<description>Extract Float64 Vector of Exponents from Float64 Vector</description>
+		</mnemonic>
+		<mnemonic name='VGETEXPPS' arch='KNC'>
+			<description>Extract Float32 Vector of Exponents from Float32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VGETMANTPD' arch='KNC'>
+			<description>Extract Float64 Vector of Normalized Mantissas from Float64 Vector</description>
+		</mnemonic>
+		<mnemonic name='VGETMANTPS' arch='KNC'>
+			<description>Extract Float32 Vector of Normalized Mantissas from Float32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VGMAXABSPS' arch='KNC'>
+			<description>Absolute Maximum of Float32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VGMAXPD' arch='KNC'>
+			<description>Maximum of Float64 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VGMAXPS' arch='KNC'>
+			<description>Maximum of Float32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VGMINPD' arch='KNC'>
+			<description>Minimum of Float64 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VGMINPS' arch='KNC'>
+			<description>Minimum of Float32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VLOADUNPACKHD' arch='KNC'>
+			<description>Load Unaligned High And Unpack To Doubleword Vector</description>
+		</mnemonic>
+		<mnemonic name='VLOADUNPACKHPD' arch='KNC'>
+			<description>Load Unaligned High And Unpack To Float64 Vector</description>
+		</mnemonic>
+		<mnemonic name='VLOADUNPACKHPS' arch='KNC'>
+			<description>Load Unaligned High And Unpack To Float32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VLOADUNPACKHQ' arch='KNC'>
+			<description>Load Unaligned High And Unpack To Int64 Vector</description>
+		</mnemonic>
+		<mnemonic name='VLOADUNPACKLD' arch='KNC'>
+			<description>Load Unaligned Low And Unpack To Doubleword Vector</description>
+		</mnemonic>
+		<mnemonic name='VLOADUNPACKLPD' arch='KNC'>
+			<description>Load Unaligned Low And Unpack To Float64 Vector</description>
+		</mnemonic>
+		<mnemonic name='VLOADUNPACKLPS' arch='KNC'>
+			<description>Load Unaligned Low And Unpack To Float32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VLOADUNPACKLQ' arch='KNC'>
+			<description>Load Unaligned Low And Unpack To Int64 Vector</description>
+		</mnemonic>
+		<mnemonic name='VLOG2PS' arch='KNC'>
+			<description>Vector Logarithm Base-2 of Float32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VMOVAPD' arch='KNC'>
+			<description>Move Aligned Float64 Vector</description>
+		</mnemonic>
+		<mnemonic name='VMOVAPS' arch='KNC'>
+			<description>Move Aligned Float32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VMOVDQA32' arch='KNC'>
+			<description>Move Aligned Int32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VMOVDQA64' arch='KNC'>
+			<description>Move Aligned Int64 Vector</description>
+		</mnemonic>
+		<mnemonic name='VMOVNRAPD' arch='KNC'>
+			<description>Store Aligned Float64 Vector With No-Read Hint</description>
+		</mnemonic>
+		<mnemonic name='VMOVNRAPS' arch='KNC'>
+			<description>Store Aligned Float32 Vector With No-Read Hint</description>
+		</mnemonic>
+		<mnemonic name='VMOVNRNGOAPD' arch='KNC'>
+			<description>Non-globally Ordered Store Aligned Float64 Vector With No-Read Hint</description>
+		</mnemonic>
+		<mnemonic name='VMOVNRNGOAPS' arch='KNC'>
+			<description>Non-globally Ordered Store Aligned Float32 Vector With No-Read Hint</description>
+		</mnemonic>
+		<mnemonic name='VMULPD' arch='KNC'>
+			<description>Multiply Float64 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VMULPS' arch='KNC'>
+			<description>Multiply Float32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VPACKSTOREHD' arch='KNC'>
+			<description>Pack And Store Unaligned High From Int32 Ve</description>
+		</mnemonic>ctor<mnemonic name='VPACKSTOREHPD' arch='KNC'>
+			<description>Pack And Store Unaligned High From Float64 Vector</description>
+		</mnemonic>
+		<mnemonic name='VPACKSTOREHPS' arch='KNC'>
+			<description>Pack And Store Unaligned High From Float32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VPACKSTOREHQ' arch='KNC'>
+			<description>Pack And Store Unaligned High From Int64 Vector</description>
+		</mnemonic>
+		<mnemonic name='VPACKSTORELD' arch='KNC'>
+			<description>Pack and Store Unaligned Low From Int32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VPACKSTORELPD' arch='KNC'>
+			<description>Pack and Store Unaligned Low From Float64 Vector</description>
+		</mnemonic>
+		<mnemonic name='VPACKSTORELPS' arch='KNC'>
+			<description>Pack and Store Unaligned Low From Float32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VPACKSTORELQ' arch='KNC'>
+			<description>Pack and Store Unaligned Low From Int64 Vector</description>
+		</mnemonic>
+		<mnemonic name='VPADCD' arch='KNC'>
+			<description>Add Int32 Vectors with Carry</description>
+		</mnemonic>
+		<mnemonic name='VPADDD' arch='KNC'>
+			<description>Add Int32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VPADDSETCD' arch='KNC'>
+			<description>Add Int32 Vectors and Set Mask to Carry</description>
+		</mnemonic>
+		<mnemonic name='VPADDSETSD' arch='KNC'>
+			<description>Add Int32 Vectors and Set Mask to Sign</description>
+		</mnemonic>
+		<mnemonic name='VPANDD' arch='KNC'>
+			<description>Bitwise AND Int32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VPANDND' arch='KNC'>
+			<description>Bitwise AND NOT Int32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VPANDNQ' arch='KNC'>
+			<description>Bitwise AND NOT Int64 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VPANDQ' arch='KNC'>
+			<description>Bitwise AND Int64 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VPBLENDMD' arch='KNC'>
+			<description>Blend Int32 Vectors using the Instruction Mask</description>
+		</mnemonic>
+		<mnemonic name='VPBLENDMQ' arch='KNC'>
+			<description>Blend Int64 Vectors using the Instruction Mask</description>
+		</mnemonic>
+		<mnemonic name='VPBROADCASTD' arch='KNC'>
+			<description>Broadcast Int32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VPBROADCASTQ' arch='KNC'>
+			<description>Broadcast Int64 Vector</description>
+		</mnemonic>
+		<mnemonic name='VPCMPD' arch='KNC'>
+			<description>Compare Int32 Vectors and Set Vector Mask</description>
+		</mnemonic>
+		<mnemonic name='VPCMPEQD' arch='KNC'>
+			<description>Compare Equal Int32 Vectors and Set Vector Mask</description>
+		</mnemonic>
+		<mnemonic name='VPCMPGTD' arch='KNC'>
+			<description>Compare Greater Than Int32 Vectors and Set Vector Mask</description>
+		</mnemonic>
+		<mnemonic name='VPCMPLTD' arch='KNC'>
+			<description>Compare Less Than Int32 Vectors and Set Vector Mask</description>
+		</mnemonic>
+		<mnemonic name='VPCMPUD' arch='KNC'>
+			<description>Compare Uint32 Vectors and Set Vector Mask</description>
+		</mnemonic>
+		<mnemonic name='VPERMD' arch='KNC'>
+			<description>Permutes Int32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VPERMF32X4' arch='KNC'>
+			<description>Shufϐle Vector Dqwords</description>
+		</mnemonic>
+		<mnemonic name='VPGATHERDD' arch='KNC'>
+			<description>Gather Int32 Vector With Signed Dword Indices</description>
+		</mnemonic>
+		<mnemonic name='VPGATHERDQ' arch='KNC'>
+			<description>Gather Int64 Vector With Signed Dword Indices</description>
+		</mnemonic>
+		<mnemonic name='VPMADD231D' arch='KNC'>
+			<description>Multiply First Source By Second Source and Add To Destination Int32 Ve</description>
+		</mnemonic>ctors<mnemonic name='VPMADD233D' arch='KNC'>
+			<description>Multiply First Source By Specially Swizzled Second Source and Add To Second Source Int32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VPMAXSD' arch='KNC'>
+			<description>Maximum of Int32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VPMAXUD' arch='KNC'>
+			<description>Maximum of Uint32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VPMINSD' arch='KNC'>
+			<description>Minimum of Int32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VPMINUD' arch='KNC'>
+			<description>Minimum of Uint32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VPMULHD' arch='KNC'>
+			<description>Multiply Int32 Vectors And Store High Result</description>
+		</mnemonic>
+		<mnemonic name='VPMULHUD' arch='KNC'>
+			<description>Multiply Uint32 Vectors And Store High Result</description>
+		</mnemonic>
+		<mnemonic name='VPMULLD' arch='KNC'>
+			<description>Multiply Int32 Vectors And Store Low Result</description>
+		</mnemonic>
+		<mnemonic name='VPORD' arch='KNC'>
+			<description>Bitwise OR Int32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VPORQ' arch='KNC'>
+			<description>Bitwise OR Int64 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VPSBBD' arch='KNC'>
+			<description>Subtract Int32 Vectors with Borrow</description>
+		</mnemonic>
+		<mnemonic name='VPSBBRD' arch='KNC'>
+			<description>Reverse Subtract Int32 Vectors with Borrow</description>
+		</mnemonic>
+		<mnemonic name='VPSCATTERDD' arch='KNC'>
+			<description>Scatter Int32 Vector With Signed Dword Indices</description>
+		</mnemonic>
+		<mnemonic name='VPSCATTERDQ' arch='KNC'>
+			<description>Scatter Int64 Vector With Signed Dword Indices</description>
+		</mnemonic>
+		<mnemonic name='VPSHUFD' arch='KNC'>
+			<description>Shufϐle Vector Doublewords</description>
+		</mnemonic>
+		<mnemonic name='VPSLLD' arch='KNC'>
+			<description>Shift Int32 Vector Immediate Left Logical</description>
+		</mnemonic>
+		<mnemonic name='VPSLLVD' arch='KNC'>
+			<description>Shift Int32 Vector Left Logical</description>
+		</mnemonic>
+		<mnemonic name='VPSRAD' arch='KNC'>
+			<description>Shift Int32 Vector Immediate Right Arithmetic</description>
+		</mnemonic>
+		<mnemonic name='VPSRAVD' arch='KNC'>
+			<description>Shift Int32 Vector Right Arithmetic</description>
+		</mnemonic>
+		<mnemonic name='VPSRLD' arch='KNC'>
+			<description>Shift Int32 Vector Immediate Right Logical</description>
+		</mnemonic>
+		<mnemonic name='VPSRLVD' arch='KNC'>
+			<description>Shift Int32 Vector Right Logical</description>
+		</mnemonic>
+		<mnemonic name='VPSUBD' arch='KNC'>
+			<description>Subtract Int32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VPSUBRD' arch='KNC'>
+			<description>Reverse Subtract Int32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VPSUBRSETBD' arch='KNC'>
+			<description>Reverse Subtract Int32 Vectors and Set Borrow</description>
+		</mnemonic>
+		<mnemonic name='VPSUBSETBD' arch='KNC'>
+			<description>Subtract Int32 Vectors and Set Borrow</description>
+		</mnemonic>
+		<mnemonic name='VPTESTMD' arch='KNC'>
+			<description>Logical AND Int32 Vectors and Set Vector Mask</description>
+		</mnemonic>
+		<mnemonic name='VPXORD' arch='KNC'>
+			<description>Bitwise XOR Int32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VPXORQ' arch='KNC'>
+			<description>Bitwise XOR Int64 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VRCP23PS' arch='KNC'>
+			<description>Reciprocal of Float32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VRNDFXPNTPD' arch='KNC'>
+			<description>Round Float64 Vector</description>
+		</mnemonic>
+		<mnemonic name='VRNDFXPNTPS' arch='KNC'>
+			<description>Round Float32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VRSQRT23PS' arch='KNC'>
+			<description>Vector Reciprocal Square Root of Float32 Vector</description>
+		</mnemonic>
+		<mnemonic name='VSCALEPS' arch='KNC'>
+			<description>Scale Float32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VSCATTERDPD' arch='KNC'>
+			<description>Scatter Float64 Vector With Signed Dword Indices</description>
+		</mnemonic>
+		<mnemonic name='VSCATTERDPS' arch='KNC'>
+			<description>Scatter Float32 Vector With Signed Dword Indices</description>
+		</mnemonic>
+		<mnemonic name='VSCATTERPF0DPS' arch='KNC'>
+			<description>Scatter Prefetch Float32 Vector With Signed Dword Indices Into L1</description>
+		</mnemonic>
+		<mnemonic name='VSCATTERPF0HINTDPD' arch='KNC'>
+			<description>Scatter Prefetch Float64 Vector Hint With Signed Dword Indices</description>
+		</mnemonic>
+		<mnemonic name='VSCATTERPF0HINTDPS' arch='KNC'>
+			<description>Scatter Prefetch Float32 Vector Hint With Signed Dword Indices</description>
+		</mnemonic>
+		<mnemonic name='VSCATTERPF1DPS' arch='KNC'>
+			<description>Scatter Prefetch Float32 Vector With Signed Dword Indices Into L2</description>
+		</mnemonic>
+		<mnemonic name='VSUBPD' arch='KNC'>
+			<description>Subtract Float64 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VSUBPS' arch='KNC'>
+			<description>Subtract Float32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VSUBRPD' arch='KNC'>
+			<description>Reverse Subtract Float64 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VSUBRPS' arch='KNC'>
+			<description>Reverse Subtract Float32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='CLEVICT0' arch='KNC'>
+			<description>Evict L1 line</description>
+		</mnemonic>
+		<mnemonic name='CLEVICT1' arch='KNC'>
+			<description>Evict L2 line</description>
+		</mnemonic>
+		<mnemonic name='DELAY' arch='KNC'>
+			<description>Stall Thread</description>
+		</mnemonic>
+		<mnemonic name='LZCNT' arch='KNC'>
+			<description>Leading Zero Count</description>
+		</mnemonic>
+		<mnemonic name='POPCNT' arch='KNC'>
+			<description>Return the Count of Number of Bits Set to 1</description>
+		</mnemonic>
+		<mnemonic name='SPFLT' arch='KNC'>
+			<description>Set performance monitor ϐiltering mask</description>
+		</mnemonic>
+		<mnemonic name='TZCNT' arch='KNC'>
+			<description>Trailing Zero Count</description>
+		</mnemonic>
+		<mnemonic name='TZCNTI' arch='KNC'>
+			<description>Initialized Trailing Zero Count</description>
+		</mnemonic>
+		<mnemonic name='VPREFETCH0' arch='KNC'>
+			<description>Prefetch memory line using T0 hint</description>
+		</mnemonic>
+		<mnemonic name='VPREFETCH1' arch='KNC'>
+			<description>Prefetch memory line using T1 hint</description>
+		</mnemonic>
+		<mnemonic name='VPREFETCH2' arch='KNC'>
+			<description>Prefetch memory line using T2 hint</description>
+		</mnemonic>
+		<mnemonic name='VPREFETCHE0' arch='KNC'>
+			<description>Prefetch memory line using T0 hint, with intent to write</description>
+		</mnemonic>
+		<mnemonic name='VPREFETCHE1' arch='KNC'>
+			<description>Prefetch memory line using T1 hint, with intent to write</description>
+		</mnemonic>
+		<mnemonic name='VPREFETCHE2' arch='KNC'>
+			<description>Prefetch memory line using T2 hint, with intent to write</description>
+		</mnemonic>
+		<mnemonic name='VPREFETCHENTA' arch='KNC'>
+			<description>Prefetch memory line using NTA hint, with intent to write</description>
+		</mnemonic>
+		<mnemonic name='VPREFETCHNTA' arch='KNC'>
+			<description>Prefetch memory line using NTA hint</description>
+		</mnemonic>
 	</mnemonics>
-
 	<registers>
 		<register name='RAX' bits='64'>
 			<description>64-bit general purpose register</description>
@@ -3425,7 +3978,6 @@
 		<register name='R15B' bits='8'>
 			<description>8-bit general purpose register</description>
 		</register>
-
 		<register name='MM0' bits='64'>
 			<description>64-bit mmx register</description>
 		</register>
@@ -3450,8 +4002,6 @@
 		<register name='MM7' bits='64'>
 			<description>64-bit mmx register</description>
 		</register>
-
-
 		<register name='XMM0' bits='128'>
 			<description>128-bit sse register</description>
 		</register>
@@ -3476,7 +4026,6 @@
 		<register name='XMM7' bits='128'>
 			<description>128-bit sse register</description>
 		</register>
-
 		<register name='XMM8' bits='128'>
 			<description>128-bit sse register</description>
 		</register>
@@ -3501,7 +4050,6 @@
 		<register name='XMM15' bits='128'>
 			<description>128-bit sse register</description>
 		</register>
-
 		<register name='YMM0' bits='256'>
 			<description>256-bit avx register</description>
 		</register>
@@ -3526,7 +4074,6 @@
 		<register name='YMM7' bits='256'>
 			<description>256-bit avx register</description>
 		</register>
-
 		<register name='YMM8' bits='256'>
 			<description>256-bit avx register</description>
 		</register>
@@ -3551,7 +4098,6 @@
 		<register name='YMM15' bits='256'>
 			<description>256-bit avx register</description>
 		</register>
-
 		<register name='ZMM0' bits='512'>
 			<description>512-bit avx-512 register</description>
 		</register>
@@ -3576,7 +4122,6 @@
 		<register name='ZMM7' bits='512'>
 			<description>512-bit avx-512 register</description>
 		</register>
-
 		<register name='ZMM8' bits='512'>
 			<description>512-bit avx-512 register</description>
 		</register>
@@ -3601,7 +4146,6 @@
 		<register name='ZMM15' bits='512'>
 			<description>512-bit avx-512 register</description>
 		</register>
-
 		<register name='ZMM16' bits='512'>
 			<description>512-bit avx-512 register</description>
 		</register>
@@ -3626,7 +4170,6 @@
 		<register name='ZMM23' bits='512'>
 			<description>512-bit avx-512 register</description>
 		</register>
-
 		<register name='ZMM24' bits='512'>
 			<description>512-bit avx-512 register</description>
 		</register>
@@ -3651,6 +4194,5 @@
 		<register name='ZMM31' bits='512'>
 			<description>512-bit avx-512 register</description>
 		</register>
-
 	</registers>
 </asmdudedata>
