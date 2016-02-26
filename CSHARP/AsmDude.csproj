@@ -232,16 +232,18 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoCompletion\AsmCompletionSourceProvider.cs" />
     <Compile Include="Classification\AsmClassifier.cs" />
     <Compile Include="Classification\ClassificationFormat.cs" />
     <Compile Include="Classification\ClassificationType.cs" />
     <Compile Include="CodeFolding\CodeFoldingTaggerProvider.cs" />
     <Compile Include="HighlightWord\HighlightWordTaggerProvider.cs" />
-    <Compile Include="Intellisense\AsmQuickInfoSource.cs" />
-    <Compile Include="Intellisense\CompletionController.cs" />
-    <Compile Include="Intellisense\CompletionSource.cs" />
-    <Compile Include="Intellisense\QuickInfoController.cs" />
-    <Compile Include="Intellisense\QuickInfoControllerProvider.cs" />
+    <Compile Include="QuickInfo\AsmQuickInfoSource.cs" />
+    <Compile Include="AutoCompletion\CompletionController.cs" />
+    <Compile Include="AutoCompletion\AsmCompletionSource.cs" />
+    <Compile Include="QuickInfo\AsmQuickInfoController.cs" />
+    <Compile Include="QuickInfo\AsmQuickInfoSourceProvider.cs" />
+    <Compile Include="QuickInfo\QuickInfoControllerProvider.cs" />
     <Compile Include="AsmSyntax\AsmTokenTag.cs" />
     <Compile Include="AsmSyntax\AsmTokenTypes.cs" />
     <Compile Include="HighlightWord\HighlightWordTagger.cs" />

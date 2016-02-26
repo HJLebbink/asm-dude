@@ -20,9 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using System;
@@ -32,27 +31,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AsmDude.HighlightWord {
+namespace AsmDude {
 
     /// <summary>
-    /// Export a <see cref="IViewTaggerProvider"/>
+    /// Factory for quick info sources
     /// </summary>
-    [Export(typeof(ITaggerProvider))]
-    [ContentType("text")]
-    [TagType(typeof(IOutliningRegionTag))]
-    internal sealed class TaggerProvider : ITaggerProvider {
-        /// <summary>
-        /// This method is called by VS to generate the tagger
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="textView"> The text view we are creating a tagger for</param>
-        /// <returns> Returns a OutliningTagger instance</returns>
-        public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag {
-            //Debug.WriteLine("INFO: TaggerProvider:CreateTagger: entering");
-            Func<ITagger<T>> sc = delegate () {
-                return new CodeFoldingTagger(buffer) as ITagger<T>;
-            };
-            return buffer.Properties.GetOrCreateSingletonProperty<ITagger<T>>(sc);
+    [Export(typeof(IQuickInfoSourceProvider))]
+    [ContentType("asm!")]
+    [Name("asmQuickInfo")]
+    class AsmQuickInfoSourceProvider : IQuickInfoSourceProvider {
+        [Import]
+        IBufferTagAggregatorFactoryService aggService = null;
+
+        public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer textBuffer) {
+            return new AsmQuickInfoSource(textBuffer, aggService.CreateTagAggregator<AsmTokenTag>(textBuffer));
         }
     }
 }

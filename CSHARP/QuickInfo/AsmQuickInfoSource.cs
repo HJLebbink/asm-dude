@@ -38,21 +38,6 @@ using Microsoft.VisualStudio.Utilities;
 namespace AsmDude {
 
     /// <summary>
-    /// Factory for quick info sources
-    /// </summary>
-    [Export(typeof(IQuickInfoSourceProvider))]
-    [ContentType("asm!")]
-    [Name("asmQuickInfo")]
-    class AsmQuickInfoSourceProvider : IQuickInfoSourceProvider {
-        [Import]
-        IBufferTagAggregatorFactoryService aggService = null;
-
-        public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer textBuffer) {
-            return new AsmQuickInfoSource(textBuffer, aggService.CreateTagAggregator<AsmTokenTag>(textBuffer));
-        }
-    }
-
-    /// <summary>
     /// Provides QuickInfo information to be displayed in a text buffer
     /// </summary>
     class AsmQuickInfoSource : IQuickInfoSource {
@@ -87,7 +72,7 @@ namespace AsmDude {
             applicableToSpan = null;
 
             if (this._disposed) {
-                throw new ObjectDisposedException("TestQuickInfoSource");
+                throw new ObjectDisposedException("AsmQuickInfoSource");
             }
             var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(_buffer.CurrentSnapshot);
 
@@ -159,12 +144,12 @@ namespace AsmDude {
         private string getDescriptionMnemonic(string mnemonic) {
             XmlNode node1 = this._xmlDoc.SelectSingleNode("//mnemonic[@name=\"" + mnemonic + "\"]");
             if (node1 == null) {
-                Debug.WriteLine("WARNING: getDescriptionMnemonic: no mnemonic element for mnemonic " + mnemonic);
+                Debug.WriteLine("WARNING: AsmQuickInfoSource:getDescriptionMnemonic: no mnemonic element for mnemonic " + mnemonic);
                 return "";
             }
             XmlNode node2 = node1.SelectSingleNode("./description");
             if (node2 == null) {
-                Debug.WriteLine("WARNING: getDescriptionMnemonic: no description element for mnemonic " + mnemonic);
+                Debug.WriteLine("WARNING: AsmQuickInfoSource:getDescriptionMnemonic: no description element for mnemonic " + mnemonic);
                 return "";
             }
             string description = node2.InnerText.Trim();
@@ -175,12 +160,12 @@ namespace AsmDude {
         private string getDescriptionRegister(string register) {
             XmlNode node1 = this._xmlDoc.SelectSingleNode("//register[@name=\"" + register + "\"]");
             if (node1 == null) {
-                Debug.WriteLine("WARNING: getDescriptionRegister: no register element for register " + register);
+                Debug.WriteLine("WARNING: AsmQuickInfoSource:getDescriptionRegister: no register element for register " + register);
                 return "";
             }
             XmlNode node2 = node1.SelectSingleNode("./description");
             if (node2 == null) {
-                Debug.WriteLine("WARNING: getDescriptionRegister: no description element for register " + register);
+                Debug.WriteLine("WARNING: AsmQuickInfoSource:getDescriptionRegister: no description element for register " + register);
                 return "";
             }
             string description = node2.InnerText.Trim();
@@ -191,12 +176,12 @@ namespace AsmDude {
         private string getDescriptionDirective(string directive) {
             XmlNode node1 = this._xmlDoc.SelectSingleNode("//directive[@name='" + directive + "']");
             if (node1 == null) {
-                Debug.WriteLine("WARNING: getDescriptionDirective: no directive element for directive " + directive);
+                Debug.WriteLine("WARNING: AsmQuickInfoSource:getDescriptionDirective: no directive element for directive " + directive);
                 return "";
             }
             XmlNode node2 = node1.SelectSingleNode("./description");
             if (node2 == null) {
-                Debug.WriteLine("WARNING: getDescriptionDirective: no description element for directive " + directive);
+                Debug.WriteLine("WARNING: AsmQuickInfoSource:getDescriptionDirective: no description element for directive " + directive);
                 return "";
             }
             string description = node2.InnerText.Trim();
@@ -207,12 +192,12 @@ namespace AsmDude {
         private string getDescriptionKeyword(string keyword) {
             XmlNode node1 = this._xmlDoc.SelectSingleNode("//misc[@name='" + keyword + "']");
             if (node1 == null) {
-                Debug.WriteLine("WARNING: getDescriptionKeyword: no misc element for keyword " + keyword);
+                Debug.WriteLine("WARNING: AsmQuickInfoSource:getDescriptionKeyword: no misc element for keyword " + keyword);
                 return "";
             }
             XmlNode node2 = node1.SelectSingleNode("./description");
             if (node2 == null) {
-                Debug.WriteLine("WARNING: getDescriptionKeyword: no description element for misc " + keyword);
+                Debug.WriteLine("WARNING: AsmQuickInfoSource:getDescriptionKeyword: no description element for misc " + keyword);
                 return "";
             }
             string description = node2.InnerText.Trim();

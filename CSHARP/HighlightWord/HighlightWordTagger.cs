@@ -227,9 +227,7 @@ namespace AsmDude {
                 currentWordLocal = currentWordLocal.TranslateTo(spans[0].Snapshot, SpanTrackingMode.EdgeExclusive);
             }
 
-
-            Debug.WriteLine("INFO: GetTags: currentWord=" + currentWordLocal.GetText());
-
+            //Debug.WriteLine("INFO: GetTags: currentWord=" + currentWordLocal.GetText());
 
             // First, yield back the word the cursor is under (if it overlaps)
             // Note that we'll yield back the same word again in the wordspans collection;

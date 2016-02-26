@@ -45,15 +45,6 @@ using System.Windows.Media.Imaging;
 
 namespace AsmDude {
 
-    [Export(typeof(ICompletionSourceProvider))]
-    [ContentType("asm!")]
-    [Name("asmCompletion")]
-    class AsmCompletionSourceProvider : ICompletionSourceProvider {
-        public ICompletionSource TryCreateCompletionSource(ITextBuffer textBuffer) {
-            return new AsmCompletionSource(textBuffer);
-        }
-    }
-
     /*
     internal class CompletionTooltipCustomization : TextBlock {
 

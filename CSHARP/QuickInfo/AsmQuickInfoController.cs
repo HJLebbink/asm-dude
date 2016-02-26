@@ -28,17 +28,17 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace VSLTK.Intellisense {
+namespace AsmDude {
 
-    internal class TemplateQuickInfoController : IIntellisenseController {
+    internal class AsmQuickInfoController : IIntellisenseController {
 
         private ITextView _textView;
         private IList<ITextBuffer> _subjectBuffers;
-        private TemplateQuickInfoControllerProvider _componentContext;
+        private AsmQuickInfoControllerProvider _componentContext;
         private IQuickInfoSession _session;
 
 
-        internal TemplateQuickInfoController(ITextView textView, IList<ITextBuffer> subjectBuffers, TemplateQuickInfoControllerProvider componentContext) {
+        internal AsmQuickInfoController(ITextView textView, IList<ITextBuffer> subjectBuffers, AsmQuickInfoControllerProvider componentContext) {
             _textView = textView;
             _subjectBuffers = subjectBuffers;
             _componentContext = componentContext;
@@ -80,13 +80,12 @@ namespace VSLTK.Intellisense {
         private SnapshotPoint? GetMousePosition(SnapshotPoint topPosition) {
             // Map this point down to the appropriate subject buffer.
 
-            return _textView.BufferGraph.MapDownToFirstMatch
-                (
+            return _textView.BufferGraph.MapDownToFirstMatch(
                 topPosition,
                 PointTrackingMode.Positive,
                 snapshot => _subjectBuffers.Contains(snapshot.TextBuffer),
                 PositionAffinity.Predecessor
-                );
+            );
         }
     }
 }

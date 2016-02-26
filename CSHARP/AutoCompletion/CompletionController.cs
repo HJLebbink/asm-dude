@@ -51,7 +51,7 @@ namespace AsmDude {
             IWpfTextView view = AdaptersFactory.GetWpfTextView(textViewAdapter);
             Debug.Assert(view != null);
 
-            CommandFilter filter = new CommandFilter(view, CompletionBroker);
+            AsmCommandFilter filter = new AsmCommandFilter(view, CompletionBroker);
 
             IOleCommandTarget next;
             textViewAdapter.AddCommandFilter(filter, out next);
@@ -59,11 +59,11 @@ namespace AsmDude {
         }
     }
 
-    internal sealed class CommandFilter : IOleCommandTarget {
+    internal sealed class AsmCommandFilter : IOleCommandTarget {
         private ICompletionSession m_session;
 
 
-        public CommandFilter(IWpfTextView textView, ICompletionBroker broker) {
+        public AsmCommandFilter(IWpfTextView textView, ICompletionBroker broker) {
             this.m_session = null;
             this.m_textView = textView;
             this.Broker = broker;

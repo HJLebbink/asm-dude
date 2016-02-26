@@ -85,7 +85,10 @@ namespace AsmDude {
         private string getRegionDescription(string line)
         {
             int startPos = line.IndexOf(startHide[0]) + startHide.Length + 1;
-            return line.Substring(startPos);
+            if (startPos < line.Length) {
+                return line.Substring(startPos);
+            }
+            return "";
         }
         private string getHoverText(int begin, int end, ITextSnapshot snapshot)
         {
@@ -113,7 +116,7 @@ namespace AsmDude {
         }
 
         void ReParse() {
-            Debug.WriteLine("INFO:OutliningTagger:ReParse: entering");
+            //Debug.WriteLine("INFO:OutliningTagger:ReParse: entering");
            
             ITextSnapshot newSnapshot = buffer.CurrentSnapshot;
             List<Region> newRegions = new List<Region>();
@@ -217,7 +220,7 @@ namespace AsmDude {
                     this.TagsChanged(this, new SnapshotSpanEventArgs(
                         new SnapshotSpan(this.snapshot, Span.FromBounds(changeStart, changeEnd))));
             }
-            Debug.WriteLine("INFO:OutliningTagger:ReParse: leaving");
+            //Debug.WriteLine("INFO:OutliningTagger:ReParse: leaving");
         }
 
         private static bool TryGetLevel(string text, int startIndex, out int level) {
