@@ -1,5 +1,5 @@
 # Asm-Dude
-Assembly syntax highlighting (and more) for Visual Studio 2015
+Assembly syntax highlighting, code completion and folding for Visual Studio 2015
 
 This extension can be found in the [visual studio extensions gallery](https://visualstudiogallery.msdn.microsoft.com/ff839577-2b68-416a-b761-72f9b1ca7c8e) or download latest installer [AsmDude.vsix (v1.2)](https://github.com/HJLebbink/asm-dude/releases/download/v1.2/AsmDude.vsix)
 
@@ -13,3 +13,4 @@ Updates:
 * 21 February 2016: Added .vsix installer
 * 22 February 2016: Added .vsix installer to the visual studio extensions gallery
 * 23 February 2016: Added code completion
+* 26 February 2016: Added code folding
