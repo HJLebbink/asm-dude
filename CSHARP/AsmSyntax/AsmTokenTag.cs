@@ -34,6 +34,7 @@ using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
+using System.Windows;
 
 namespace AsmDude {
 
@@ -120,14 +121,10 @@ namespace AsmDude {
                         _asmTypes[name] = AsmTokenTypes.Register;
                     }
                 }
-
-            }
-            catch (FileNotFoundException ex1) {
-                Debug.WriteLine("ERROR: AsmTokenTagger: could not find file \"" + filename + "\". " + ex1);
-            } catch (XmlException ex2) {
-                Debug.WriteLine("ERROR: AsmTokenTagger: error while reading find \"" + filename + "\". " + ex2);
-            } finally {
-                xmlDoc = null; // housekeeping, xmlDoc can be garbage collected
+            } catch (FileNotFoundException) {
+                MessageBox.Show("ERROR: AsmTokenTagger: could not find file \"" + filename + "\".");
+            } catch (XmlException) {
+                MessageBox.Show("ERROR: AsmTokenTagger: error while reading file \"" + filename + "\".");
             }
         }
 

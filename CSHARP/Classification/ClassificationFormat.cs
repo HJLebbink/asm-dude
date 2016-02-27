@@ -33,10 +33,8 @@ namespace AsmDude {
     /// </summary>
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = "mnemonic")]
-    [Name("mnemonic")]
-    //this should be visible to the end user
-    [UserVisible(false)]
-    //set the priority to be after the default classifiers
+    [Name("mnemonic")]  //this should be visible to the end user
+    [UserVisible(true)] //set the priority to be after the default classifiers
     [Order(Before = Priority.Default)]
     internal sealed class OperandP : ClassificationFormatDefinition {
         /// <summary>
@@ -45,6 +43,8 @@ namespace AsmDude {
         public OperandP() {
             DisplayName = "mnemonic"; //human readable version of the name
             ForegroundColor = Colors.Blue;
+            //BackgroundColor = Colors.BlueViolet;
+            //TextDecorations = System.Windows.TextDecorations.Underline;
         }
     }
 
@@ -55,7 +55,7 @@ namespace AsmDude {
     [ClassificationType(ClassificationTypeNames = "register")]
     [Name("register")]
     //this should be visible to the end user
-    [UserVisible(false)]
+    [UserVisible(true)]
     //set the priority to be after the default classifiers
     [Order(Before = Priority.Default)]
     internal sealed class RegisterP : ClassificationFormatDefinition {
@@ -75,7 +75,7 @@ namespace AsmDude {
     [ClassificationType(ClassificationTypeNames = "remark")]
     [Name("remark")]
     //this should be visible to the end user
-    [UserVisible(false)]
+    [UserVisible(true)]
     //set the priority to be after the default classifiers
     [Order(Before = Priority.Default)]
     internal sealed class RemarkP : ClassificationFormatDefinition {
@@ -96,7 +96,7 @@ namespace AsmDude {
     [ClassificationType(ClassificationTypeNames = "directive")]
     [Name("directive")]
     //this should be visible to the end user
-    [UserVisible(false)]
+    [UserVisible(true)]
     //set the priority to be after the default classifiers
     [Order(Before = Priority.Default)]
     internal sealed class DirectiveP : ClassificationFormatDefinition {
@@ -117,7 +117,7 @@ namespace AsmDude {
     [ClassificationType(ClassificationTypeNames = "jump")]
     [Name("jump")]
     //this should be visible to the end user
-    [UserVisible(false)]
+    [UserVisible(true)]
     //set the priority to be after the default classifiers
     [Order(Before = Priority.Default)]
     internal sealed class JumpP : ClassificationFormatDefinition {
@@ -147,6 +147,7 @@ namespace AsmDude {
         public LabelP() {
             DisplayName = "Display label"; //human readable version of the name
             ForegroundColor = Colors.OrangeRed;
+            TextDecorations = System.Windows.TextDecorations.Underline;
         }
     }
 

@@ -23,17 +23,14 @@
 using System;
 using System.Linq;
 using System.Xml;
-using System.Text;
 using System.Diagnostics;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.IO;
 
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
-using System.ComponentModel.Composition;
-using Microsoft.VisualStudio.Utilities;
+using System.Windows;
 
 namespace AsmDude {
 
@@ -58,10 +55,10 @@ namespace AsmDude {
             Debug.WriteLine("INFO: AsmQuickInfoSource: going to load file \"" + filename + "\"");
             try {
                 this._xmlDoc.Load(filename);
-            } catch (FileNotFoundException ex) {
-                Debug.WriteLine("ERROR: AsmQuickInfoSource: could not find file \"" + filename + "\". " + ex);
-            } catch (XmlException ex2) {
-                Debug.WriteLine("ERROR: AsmQuickInfoSource: error while reading file \"" + filename + "\". " + ex2);
+            } catch (FileNotFoundException) {
+                MessageBox.Show("ERROR: AsmQuickInfoSource: could not find file \"" + filename + "\".");
+            } catch (XmlException) {
+                MessageBox.Show("ERROR: AsmQuickInfoSource: error while reading file \"" + filename + "\".");
             }
         }
 
@@ -76,69 +73,91 @@ namespace AsmDude {
             }
             var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(_buffer.CurrentSnapshot);
 
+
             if (triggerPoint == null) {
                 return;
             }
+
+
             foreach (IMappingTagSpan<AsmTokenTag> curTag in this._aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint))) {
                 var tagSpan = curTag.Span.GetSpans(_buffer).First();
                 string tagString = tagSpan.GetText().ToUpper();
                 applicableToSpan = this._buffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
 
 
+                string description = null;
+
                 switch (curTag.Tag.type) {
                     case AsmTokenTypes.Misc: {
-                            string description = getDescriptionKeyword(tagString);
-                            if (description.Length > 0) {
-                                quickInfoContent.Add("Keyword " + tagString + ": " + description);
-                            } else {
-                                quickInfoContent.Add("Keyword " + tagString);
-                            }
+                            string descr = getDescriptionKeyword(tagString);
+                            description = (descr.Length > 0) ? ("Keyword " + tagString + ": " + descr) : "Keyword " + descr;
                             break;
                         }
                     case AsmTokenTypes.Directive: {
-                            string description = getDescriptionDirective(tagString);
-                            if (description.Length > 0) {
-                                quickInfoContent.Add("Directive " + tagString + ": " + description);
-                            } else {
-                                quickInfoContent.Add("Directive " + tagString);
-                            }
+                            string descr = getDescriptionDirective(tagString);
+                            description = (descr.Length > 0) ? ("Directive " + tagString + ": " + descr) : "Directive " + descr;
                             break;
                         }
                     case AsmTokenTypes.Register: {
-                            string description = getDescriptionRegister(tagString);
-                            if (description.Length > 0) {
-                                quickInfoContent.Add("Register " + tagString + ": " + description);
-                            } else {
-                                quickInfoContent.Add("Register " + tagString);
-                            }
+                            string descr = getDescriptionRegister(tagString);
+                            description = (descr.Length > 0) ? (tagString + ": " + descr) : "Register " + descr;
                             break;
                         }
                     case AsmTokenTypes.Mnemonic: // intentional fall through
                     case AsmTokenTypes.Jump: {
-                            string description = getDescriptionMnemonic(tagString);
-                            if (description.Length > 0) {
-                                quickInfoContent.Add("Mnemonic " + tagString + ": " + description);
-                            } else {
-                                quickInfoContent.Add("Mnemonic " + tagString);
-                            }
+                            string descr = getDescriptionMnemonic(tagString);
+                            description = (descr.Length > 0) ? ("Mnemonic " + tagString + ": " + descr) : "Mnemonic " + descr;
                             break;
                         }
                     case AsmTokenTypes.Label: {
-                            quickInfoContent.Add("Label " + tagString);
+                            description = "Label " + tagString;
                             break;
                         }
                     case AsmTokenTypes.Constant: {
-                            quickInfoContent.Add("Constant " + tagString);
+                            description = "Constant " + tagString;
                             break;
                         }
                     default:
                         break;
+                }
+                if (description != null) {
+                    const int maxLineLength = 100;
+                    quickInfoContent.Add(multiLine(description, maxLineLength));
                 }
             }
         }
 
         public void Dispose() {
             _disposed = true;
+        }
+
+        #region private stuff
+
+        private static string multiLine(string strIn, int maxLineLength) {
+            string result = strIn;
+            int startPos = 0;
+            int endPos = startPos + maxLineLength;
+
+            while (endPos < result.Length) {
+                int newLinePos = getNewLinePos(result, startPos + maxLineLength/2, endPos);
+                result = result.Insert(newLinePos, System.Environment.NewLine);
+                startPos = newLinePos + 1;
+                endPos = startPos + maxLineLength;
+            }
+            return result;
+        }
+
+        private static int getNewLinePos(string str, int startPos, int endPos) {
+            for (int pos = endPos; pos > startPos; pos--) {
+                if (isSeparatorChar(str[pos])) {
+                    return pos + 1;
+                }
+            }
+            return endPos;
+        }
+
+        private static bool isSeparatorChar(char c) {
+            return char.IsWhiteSpace(c) || c.Equals(',') || c.Equals('[') || c.Equals(']');
         }
 
         private string getDescriptionMnemonic(string mnemonic) {
@@ -204,6 +223,8 @@ namespace AsmDude {
             //Debug.WriteLine("INFO: getDescriptionKeyword: misc \"" + keyword + "\" has description \"" + description + "\"");
             return description;
         }
+
+        #endregion private stuff
     }
 }
 

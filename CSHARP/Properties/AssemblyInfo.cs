@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2016 Henk-Jan Lebbink
+// Copyright (c) 2016 H.J. Lebbink
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Lebbink")]
 [assembly: AssemblyProduct("AsmDude")]
-[assembly: AssemblyCopyright("Copyright © Henk-Jan Lebbink")]
+[assembly: AssemblyCopyright("Copyright © H.J. Lebbink")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

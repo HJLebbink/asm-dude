@@ -110,14 +110,13 @@ namespace AsmDude {
 
         public AsmCompletionSource(ITextBuffer buffer) {
             this._buffer = buffer;
-
             this._keywords = new SortedDictionary<string, string>();
             this._types = new Dictionary<string, string>();
             this._icons = new Dictionary<string, ImageSource>();
             this._grammar = new Dictionary<string, string>();
 
             #region Grammar
-
+            // experimental
             this._grammar["MOV"] = "<reg>,<reg>|<reg>,<mem>|<mem>,<reg>|<reg>,<const>|<mem>,<const>".ToUpper();
             this._grammar["LEA"] = "<reg32>,<mem>".ToUpper();
             this._grammar["PUSH"] = "<reg32>|<mem>|<const32>".ToUpper();
@@ -160,19 +159,33 @@ namespace AsmDude {
                         }
                     }
                 }
-            } catch (FileNotFoundException ex) {
-                Debug.WriteLine("ERROR: AsmCompletionSource: could not find file \"" + filenameXmlFull + "\". " + ex);
-            } catch (XmlException ex2) {
-                Debug.WriteLine("ERROR: AsmCompletionSource: error while reading file \"" + filenameXmlFull + "\". " + ex2);
+            } catch (FileNotFoundException) {
+                MessageBox.Show("ERROR: AsmCompletionSource: could not find file \"" + filenameXmlFull + "\".");
+            } catch (XmlException) {
+                MessageBox.Show("ERROR: AsmCompletionSource: error while reading file \"" + filenameXmlFull + "\".");
             }
             #endregion
 
             #region load icons
-
-            this._icons["register"] = bitmapFromUri(new Uri(installPath + "images/icon-R-blue.png"));
-            this._icons["mnemonic"] = bitmapFromUri(new Uri(installPath + "images/icon-M.png"));
-            this._icons["misc"] = bitmapFromUri(new Uri(installPath + "images/icon-question.png"));
-
+            Uri uri = null;
+            try {
+                uri = new Uri(installPath + "images/icon-R-blue.png");
+                this._icons["register"] = bitmapFromUri(uri);
+            } catch (FileNotFoundException) {
+                MessageBox.Show("ERROR: AsmCompletionSource: could not find file \"" + uri.AbsolutePath+ "\".");
+            }
+            try {
+                uri = new Uri(installPath + "images/icon-M.png");
+                this._icons["mnemonic"] = bitmapFromUri(uri);
+            } catch (FileNotFoundException) {
+                MessageBox.Show("ERROR: AsmCompletionSource: could not find file \"" + filenameXmlFull + "\".");
+            }
+            try {
+                uri = new Uri(installPath + "images/icon-question.png");
+                this._icons["misc"] = bitmapFromUri(uri);
+            } catch (FileNotFoundException) {
+                MessageBox.Show("ERROR: AsmCompletionSource: could not find file \"" + filenameXmlFull + "\".");
+            }
             #endregion
         }
 
@@ -221,7 +234,10 @@ namespace AsmDude {
             List<Completion> completions = new List<Completion>();
             foreach (KeyValuePair<string, string> entry in this._keywords) {
 
-                bool selected = true;// entry.Key.Contains(partialKeyword);
+                //TODO check the architecture of the keyword and whether this arch is selected in the options.
+                bool selected = true;
+                
+                //bool selected = entry.Key.Contains(partialKeyword);
                 //bool selected = entry.Key.StartsWith(partialKeyword);
                 //Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: key=" + entry.Key + "; partialKeyword=" + partialKeyword+"; contains="+ selected);
 

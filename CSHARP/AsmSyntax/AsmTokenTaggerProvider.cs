@@ -44,9 +44,4 @@ namespace AsmDude {
             return new AsmTokenTagger(buffer) as ITagger<T>;
         }
     }
-
-
-
- 
-
 }
