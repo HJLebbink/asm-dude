@@ -24,7 +24,9 @@ using System.ComponentModel.Composition;
 using System.Windows.Media;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
-
+using System.Diagnostics;
+using System.Globalization;
+using AsmDude.OptionsPage;
 
 namespace AsmDude {
 
@@ -37,12 +39,27 @@ namespace AsmDude {
     [UserVisible(true)] //set the priority to be after the default classifiers
     [Order(Before = Priority.Default)]
     internal sealed class OperandP : ClassificationFormatDefinition {
+
+        [Import(typeof(Microsoft.VisualStudio.Shell.DialogPage))]
+        private OptionsPageSyntaxHighlighting _x;
+       // private System.Windows.Media.Color ToMediaColor(this System.Drawing.Color color) {
+       //     return System.Windows.Media.Color.FromArgb(color.A, color.R, color.G, color.B);
+       // }
+
         /// <summary>
         /// Defines the visual format for the "opcode" classification type
         /// </summary>
         public OperandP() {
+            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: Entering constructor for: {0}", this.ToString()));
             DisplayName = "mnemonic"; //human readable version of the name
-            ForegroundColor = Colors.Blue;
+
+            if (this._x == null) {
+                Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:OperandP: x is null", this.ToString()));
+                ForegroundColor = Colors.Blue;
+            } else {
+                Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:OperandP: x not null", this.ToString()));
+                ForegroundColor = Colors.Blue;// ToMediaColor(this._x._colorMnemonic);
+            }
             //BackgroundColor = Colors.BlueViolet;
             //TextDecorations = System.Windows.TextDecorations.Underline;
         }
@@ -147,7 +164,7 @@ namespace AsmDude {
         public LabelP() {
             DisplayName = "Display label"; //human readable version of the name
             ForegroundColor = Colors.OrangeRed;
-            TextDecorations = System.Windows.TextDecorations.Underline;
+            //TextDecorations = System.Windows.TextDecorations.Underline;
         }
     }
 

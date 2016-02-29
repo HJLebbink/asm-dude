@@ -14,10 +14,10 @@ namespace AsmDude.OptionsPage
     // with support for the Visual Studio automation model, Windows Forms, and state 
     // persistence through the Visual Studio settings mechanism.
     /// </summary>
-    [Guid(GuidStrings.GuidOptionsPageCodeCompletion)]
-    public class OptionsPageCodeCompletion : DialogPage
+    [Guid(GuidStrings.GuidOptionsPageCodeFolding)]
+    public class OptionsPageCodeFolding : DialogPage
     {
-        public OptionsPageCodeCompletion()
+        public OptionsPageCodeFolding()
         {
             this._useCodeCompletion = true;
 

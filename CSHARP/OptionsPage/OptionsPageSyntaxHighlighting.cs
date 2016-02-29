@@ -1,36 +1,43 @@
-
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.ComponentModel;
+using System.Windows.Media;
 using System.Drawing;
+using System.Diagnostics;
+using System.Globalization;
 using System.Runtime.InteropServices;
+using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Text.Classification;
 
-namespace AsmDude.OptionsPage
-{
+namespace AsmDude.OptionsPage {
     /// <summary>
     // Extends the standard dialog functionality for implementing ToolsOptions pages, 
     // with support for the Visual Studio automation model, Windows Forms, and state 
     // persistence through the Visual Studio settings mechanism.
     /// </summary>
-    [Guid(GuidStrings.GuidOptionsPageCodeCompletion)]
-    public class OptionsPageCodeCompletion : DialogPage
+    [Export(typeof(DialogPage))]
+    [Guid(GuidStrings.GuidOptionsPageSyntaxHighlighting)]
+    public class OptionsPageSyntaxHighlighting : DialogPage
     {
-        public OptionsPageCodeCompletion()
-        {
-            this._useCodeCompletion = true;
+        //[Import(typeof(EditorFormatDefinition))]
+        //private OperandP _operandP;
 
-            this._x86 = true;
-            this._sse = true;
-            this._sse2 = true;
-            this._sse3 = true;
-            this._ssse3 = true;
-            this._sse41 = true;
-            this._sse42 = true;
-            this._avx = true;
-            this._avx2 = true;
-            this._knc = false;
+        //private static System.Windows.Media.Color ToMediaColor(this System.Drawing.Color color) {
+        //    return System.Windows.Media.Color.FromArgb(color.A, color.R, color.G, color.B);
+        //}
+
+        public OptionsPageSyntaxHighlighting()
+        {
+            this._useSyntaxHighlighting = true;
+
+            this._colorMnemonic = System.Drawing.Color.Blue;
+            this._colorRegister = System.Drawing.Color.DarkRed;
+            this._colorRemark = System.Drawing.Color.Green;
+            this._colorDirective = System.Drawing.Color.Magenta;
+            this._colorConstant = System.Drawing.Color.Chocolate;
+            this._colorJump = System.Drawing.Color.Navy;
+            this._colorLabel = System.Drawing.Color.OrangeRed;
+            this._colorMisc = System.Drawing.Color.DarkOrange;
         }
 
         #region Properties
@@ -38,90 +45,80 @@ namespace AsmDude.OptionsPage
         [Category("Use Code Completion")]
         [Description("Use Code Completion")]
         [DisplayName("Use Code Completion")]
-        public bool _useCodeCompletion { get; set; }
-
-
-        /// <summary>
-        /// Gets or sets the integer type custom option value.
-        /// </summary>
-        /// <remarks>This value is shown in the options page.</remarks>
-        [Category("Architectures used for Code Completion")]
-        [Description("x86")]
-        [DisplayName("x86")]
-        public bool _x86 { get; set; }
-
-        [Category("Architectures used for Code Completion")]
-        [Description("SSE")]
-        [DisplayName("SSE")]
-        public bool _sse { get; set; }
-
-        [Category("Architectures used for Code Completion")]
-        [Description("SSE2")]
-        [DisplayName("SSE2")]
-        public bool _sse2 { get; set; }
-
-        [Category("Architectures used for Code Completion")]
-        [Description("SSE3")]
-        [DisplayName("SSE3")]
-        public bool _sse3 { get; set; }
-
-        [Category("Architectures used for Code Completion")]
-        [Description("SSSE3")]
-        [DisplayName("SSSE3")]
-        public bool _ssse3 { get; set; }
-
-        [Category("Architectures used for Code Completion")]
-        [Description("SSE4.1")]
-        [DisplayName("SSE4.1")]
-        public bool _sse41 { get; set; }
-
-        [Category("Architectures used for Code Completion")]
-        [Description("SSE4.2")]
-        [DisplayName("SSE4.2")]
-        public bool _sse42 { get; set; }
-
-        [Category("Architectures used for Code Completion")]
-        [Description("AVX")]
-        [DisplayName("AVX")]
-        public bool _avx { get; set; }
-
-        [Category("Architectures used for Code Completion")]
-        [Description("AVX2")]
-        [DisplayName("AVX2")]
-        public bool _avx2 { get; set; }
-
-        [Category("Architectures used for Code Completion")]
-        [Description("Xeon Phi Knights Corner")]
-        [DisplayName("KNC")]
-        public bool _knc { get; set; }
-
-
-        /*
-
-        /// <summary>
-        /// Gets or sets the String type custom option value.
-        /// </summary>
-        /// <remarks>This value is shown in the options page.</remarks>
-        [Category("String Options")]
-        [Description("My string option")]
-        public string OptionString { get; set; }
+        public bool _useSyntaxHighlighting { get; set; }
 
         /// <summary>
         /// Gets or sets the integer type custom option value.
         /// </summary>
         /// <remarks>This value is shown in the options page.</remarks>
-        [Category("Integer Options")]
-        [Description("My integer option")]
-        public int OptionInteger { get; set; }
+        [Category("Colors used for Code Completion")]
+        [Description("Mnemonic")]
+        [DisplayName("Mnemonic")]
+        public System.Drawing.Color _colorMnemonic { get; set; }
 
         /// <summary>
-        /// Gets or sets the Size type custom option value.
+        /// Gets or sets the integer type custom option value.
         /// </summary>
         /// <remarks>This value is shown in the options page.</remarks>
-        [Category("Expandable Options")]
-        [Description("My Expandable option")]
-        public Size CustomSize { get; set; }
-        */
+        [Category("Colors used for Code Completion")]
+        [Description("Register")]
+        [DisplayName("Register")]
+
+        public System.Drawing.Color _colorRegister { get; set; }
+        /// <summary>
+        /// Gets or sets the integer type custom option value.
+        /// </summary>
+        /// <remarks>This value is shown in the options page.</remarks>
+        [Category("Colors used for Code Completion")]
+        [Description("Remark")]
+        [DisplayName("Remark")]
+
+        public System.Drawing.Color _colorRemark { get; set; }
+        /// <summary>
+        /// Gets or sets the integer type custom option value.
+        /// </summary>
+        /// <remarks>This value is shown in the options page.</remarks>
+        [Category("Colors used for Code Completion")]
+        [Description("Directive")]
+        [DisplayName("Directive")]
+        public System.Drawing.Color _colorDirective { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the integer type custom option value.
+        /// </summary>
+        /// <remarks>This value is shown in the options page.</remarks>
+        [Category("Colors used for Code Completion")]
+        [Description("Constant")]
+        [DisplayName("Constant")]
+        public System.Drawing.Color _colorConstant { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the integer type custom option value.
+        /// </summary>
+        /// <remarks>This value is shown in the options page.</remarks>
+        [Category("Colors used for Code Completion")]
+        [Description("Jump")]
+        [DisplayName("Jump")]
+        public System.Drawing.Color _colorJump { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the integer type custom option value.
+        /// </summary>
+        /// <remarks>This value is shown in the options page.</remarks>
+        [Category("Colors used for Code Completion")]
+        [Description("Label")]
+        [DisplayName("Label")]
+        public System.Drawing.Color _colorLabel { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the integer type custom option value.
+        /// </summary>
+        /// <remarks>This value is shown in the options page.</remarks>
+        [Category("Colors used for Code Completion")]
+        [Description("Misc")]
+        [DisplayName("Misc")]
+        public System.Drawing.Color _colorMisc { get; set; }
+
         #endregion Properties
 
         #region Event Handlers
@@ -155,6 +152,14 @@ namespace AsmDude.OptionsPage
         /// </devdoc>
         protected override void OnClosed(EventArgs e)
         {
+            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:Onclosed", this.ToString()));
+            /*
+            if (this._operandP == null) {
+                Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:Onclosed:operandP is null", this.ToString()));
+            } else {
+                //this._operandP.update(ToMediaColor(this._colorMnemonic));
+            }
+            */
             /*
             string title = "title here";
             VsShellUtilities.ShowMessageBox(Site, Resources.MessageOnClosed, title, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
@@ -193,6 +198,7 @@ namespace AsmDude.OptionsPage
         /// changes (for example, when the user clicks OK in the dialog).
         /// </devdoc>
         protected override void OnApply(PageApplyEventArgs e) {
+
             /*
             string title = "title here";
             int result = VsShellUtilities.ShowMessageBox(Site, Resources.MessageOnApplyEntered, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
