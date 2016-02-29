@@ -15,7 +15,7 @@ namespace AsmDude
     /// </summary>
     [PackageRegistration(UseManagedResourcesOnly = true)]
 
-    [InstalledProductRegistration("Asm-Dude", "Asm-Dude description here", "1.2.4")] // for the help about information
+    [InstalledProductRegistration("Asm-Dude", "Asm-Dude description here", "1.3.2")] // for the help about information
 
     [ProvideOptionPageAttribute(typeof(OptionsPageCodeCompletion),"AsmDude","General", 100, 101, true, new string[] { "Change sample general options (C#)" })]
     [ProvideProfileAttribute(typeof(OptionsPageCodeCompletion), "AsmDude", "General Options", 100, 101, true, DescriptionResourceID = 100)]
@@ -37,7 +37,7 @@ namespace AsmDude
             base.Initialize();
             Debug.WriteLine("=============================================\n=============================================");
             Debug.WriteLine("=============================================\n=============================================");
-            Debug.WriteLine("INFO: AsmDude: q9: Initialize");
+            Debug.WriteLine("INFO: AsmDude: q10: Initialize");
             Debug.WriteLine("=============================================\n=============================================");
             Debug.WriteLine("=============================================\n=============================================");
             System.Threading.Thread.Sleep(2000);
