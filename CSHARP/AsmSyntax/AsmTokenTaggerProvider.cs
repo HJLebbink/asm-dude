@@ -21,15 +21,10 @@
 // SOFTWARE.
 
 using Microsoft.VisualStudio.Text.Tagging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.Text;
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
-using System.Diagnostics;
+using Microsoft.VisualStudio;
 
 namespace AsmDude {
 

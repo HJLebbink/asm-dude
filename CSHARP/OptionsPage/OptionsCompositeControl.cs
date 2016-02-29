@@ -1,12 +1,3 @@
-/***************************************************************************
- 
-Copyright (c) Microsoft Corporation. All rights reserved.
-THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
-ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
-IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
-PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
-
-***************************************************************************/
 
 using System;
 using System.Drawing;
@@ -19,8 +10,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 using GelUtilities = Microsoft.Internal.VisualStudio.PlatformUI.Utilities;
 
-namespace Microsoft.Samples.VisualStudio.IDE.OptionsPage
-{
+namespace AsmDude.OptionsPage {
     /// <summary>
     /// This class implements UI for the Custom options page.
     /// An OptionsPageCustom object provides the backing data.
@@ -81,7 +71,7 @@ namespace Microsoft.Samples.VisualStudio.IDE.OptionsPage
             this.buttonChooseImage.Name = "buttonChooseImage";
             this.buttonChooseImage.Size = new System.Drawing.Size(112, 23);
             this.buttonChooseImage.TabIndex = 1;
-            this.buttonChooseImage.Text = global::Microsoft.Samples.VisualStudio.IDE.OptionsPage.Resources.ChooseImageButtonText;
+            this.buttonChooseImage.Text = global::AsmDude.Resources.ChooseImageButtonText;
             this.buttonChooseImage.Click += new System.EventHandler(this.OnChooseImage);
             // 
             // buttonClearImage
@@ -90,7 +80,7 @@ namespace Microsoft.Samples.VisualStudio.IDE.OptionsPage
             this.buttonClearImage.Name = "buttonClearImage";
             this.buttonClearImage.Size = new System.Drawing.Size(96, 23);
             this.buttonClearImage.TabIndex = 2;
-            this.buttonClearImage.Text = global::Microsoft.Samples.VisualStudio.IDE.OptionsPage.Resources.ButtonClearImageText;
+            this.buttonClearImage.Text = global::AsmDude.Resources.ButtonClearImageText;
             this.buttonClearImage.Click += new System.EventHandler(this.OnClearImage);
             // 
             // bitmapPictureBox
@@ -210,7 +200,7 @@ namespace Microsoft.Samples.VisualStudio.IDE.OptionsPage
         private void LoadMoniker(object sender, EventArgs e)
         {
             /*
-            IVsImageService2 imageService = (IVsImageService2)OptionsPagePackageCS.GetGlobalService(typeof(SVsImageService));
+            IVsImageService2 imageService = (IVsImageService2)AsmOptionsPagePackage.GetGlobalService(typeof(SVsImageService));
 
             ImageAttributes attributes = new ImageAttributes
             {

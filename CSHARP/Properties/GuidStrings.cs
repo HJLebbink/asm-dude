@@ -1,7 +1,7 @@
 
 using System;
 
-namespace Microsoft.Samples.VisualStudio.IDE.OptionsPage {
+namespace AsmDude {
     /// <summary>
     /// This class contains a list of GUIDs specific to this sample. 
     /// </summary>
@@ -10,8 +10,8 @@ namespace Microsoft.Samples.VisualStudio.IDE.OptionsPage {
         /// <summary>
         /// Guid for the OptionsPagePackage class.
         /// </summary>
-        public const string GuidPackage = "AE936DBE-338F-43CD-996A-A86E0220F340";
-
+        public const string GuidPackage = "9CD7D1D2-7075-4B2C-8DE1-8D374DEDF278";
+        
         /// <summary>
         /// Guid for the OptionsPageGeneral class.
         /// </summary>
