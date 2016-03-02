@@ -67,8 +67,8 @@ namespace AsmDude {
                 ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(point.Value.Position, PointTrackingMode.Positive);
 
                 // Find the broker for this buffer
-                if (!this._componentContext.QuickInfoBroker.IsQuickInfoActive(_textView)) {
-                    this._session = this._componentContext.QuickInfoBroker.CreateQuickInfoSession(this._textView, triggerPoint, true);
+                if (!this._componentContext._quickInfoBroker.IsQuickInfoActive(_textView)) {
+                    this._session = this._componentContext._quickInfoBroker.CreateQuickInfoSession(this._textView, triggerPoint, true);
                     this._session.Start();
                 }
             }

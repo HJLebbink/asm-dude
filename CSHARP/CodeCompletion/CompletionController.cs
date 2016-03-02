@@ -27,7 +27,6 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -41,37 +40,35 @@ namespace AsmDude {
     [ContentType("asm!")]
     [TextViewRole(PredefinedTextViewRoles.Interactive)]
     internal sealed class VsTextViewCreationListener : IVsTextViewCreationListener {
-        [Import]
-        IVsEditorAdaptersFactoryService AdaptersFactory = null;
 
         [Import]
-        ICompletionBroker CompletionBroker = null;
+        IVsEditorAdaptersFactoryService _adaptersFactory = null;
+
+        [Import]
+        ICompletionBroker _completionBroker = null;
 
         public void VsTextViewCreated(IVsTextView textViewAdapter) {
-            IWpfTextView view = AdaptersFactory.GetWpfTextView(textViewAdapter);
+            IWpfTextView view = _adaptersFactory.GetWpfTextView(textViewAdapter);
             Debug.Assert(view != null);
-
-            AsmCommandFilter filter = new AsmCommandFilter(view, CompletionBroker);
-
+            AsmCommandFilter filter = new AsmCommandFilter(view, _completionBroker);
             IOleCommandTarget next;
             textViewAdapter.AddCommandFilter(filter, out next);
-            filter.m_nextCommandHandler = next;
+            filter._m_nextCommandHandler = next;
         }
     }
 
     internal sealed class AsmCommandFilter : IOleCommandTarget {
-        private ICompletionSession m_session;
-
+        private ICompletionSession _m_session;
 
         public AsmCommandFilter(IWpfTextView textView, ICompletionBroker broker) {
-            this.m_session = null;
-            this.m_textView = textView;
-            this.Broker = broker;
+            this._m_session = null;
+            this._m_textView = textView;
+            this._broker = broker;
         }
 
-        public IOleCommandTarget m_nextCommandHandler { get; set; }
-        public IWpfTextView m_textView { get; private set; }
-        public ICompletionBroker Broker { get; private set; }
+        public IOleCommandTarget _m_nextCommandHandler { get; set; }
+        public IWpfTextView _m_textView { get; private set; }
+        public ICompletionBroker _broker { get; private set; }
 
         private char GetTypeChar(IntPtr pvaIn) {
             return (char)(ushort)Marshal.GetObjectForNativeVariant(pvaIn);
@@ -99,43 +96,43 @@ namespace AsmDude {
                 char.IsPunctuation(typedChar)) {
 
                 //check for a selection
-                if (this.m_session != null && !this.m_session.IsDismissed) {
+                if (this._m_session != null && !this._m_session.IsDismissed) {
                     //if the selection is fully selected, commit the current session
-                    if (this.m_session.SelectedCompletionSet.SelectionStatus.IsSelected) {
-                        this.m_session.Commit();
+                    if (this._m_session.SelectedCompletionSet.SelectionStatus.IsSelected) {
+                        this._m_session.Commit();
 
                         //pass along the command so the char is added to the buffer, except if the command is an enter
                         if (nCmdID != (uint)VSConstants.VSStd2KCmdID.RETURN) {
-                            m_nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+                            this._m_nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
                         }
                         return VSConstants.S_OK;
                     } else {
                         //if there is no selection, dismiss the session
-                        this.m_session.Dismiss();
+                        this._m_session.Dismiss();
                     }
                 }
             }
 
             //pass along the command so the char is added to the buffer
-            int retVal = m_nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+            int retVal = this._m_nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
             bool handled = false;
             if (!typedChar.Equals(char.MinValue) && char.IsLetterOrDigit(typedChar)) {
-                if (this.m_session == null || this.m_session.IsDismissed) // If there is no active session, bring up completion
+                if (this._m_session == null || this._m_session.IsDismissed) // If there is no active session, bring up completion
                 {
                     if (this.TriggerCompletion()) {
-                        if (this.m_session != null) {
-                            this.m_session.Filter();
+                        if (this._m_session != null) {
+                            this._m_session.Filter();
                         }
                     }
                 } else    //the completion session is already active, so just filter
                   {
-                    this.m_session.Filter();
+                    this._m_session.Filter();
                 }
                 handled = true;
             } else if (commandID == (uint)VSConstants.VSStd2KCmdID.BACKSPACE   //redo the filter if there is a deletion
                   || commandID == (uint)VSConstants.VSStd2KCmdID.DELETE) {
-                if (this.m_session != null && !this.m_session.IsDismissed)
-                    this.m_session.Filter();
+                if (this._m_session != null && !this._m_session.IsDismissed)
+                    this._m_session.Filter();
                 handled = true;
             }
             if (handled) return VSConstants.S_OK;
@@ -144,38 +141,38 @@ namespace AsmDude {
 
         private bool TriggerCompletion() {
             //the caret must be in a non-projection location 
-            SnapshotPoint? caretPoint = this.m_textView.Caret.Position.Point.GetPoint(
+            SnapshotPoint? caretPoint = this._m_textView.Caret.Position.Point.GetPoint(
                 textBuffer => (!textBuffer.ContentType.IsOfType("projection")), PositionAffinity.Predecessor);
             if (!caretPoint.HasValue) {
                 return false;
             }
 
-            this.m_session = this.Broker.CreateCompletionSession(
-                this.m_textView,
+            this._m_session = this._broker.CreateCompletionSession(
+                this._m_textView,
                 caretPoint.Value.Snapshot.CreateTrackingPoint(caretPoint.Value.Position, PointTrackingMode.Positive),
                 true);
 
             //subscribe to the Dismissed event on the session 
-            this.m_session.Dismissed += this.OnSessionDismissed;
-            this.m_session.Start();
+            this._m_session.Dismissed += this.OnSessionDismissed;
+            this._m_session.Start();
 
             return true;
         }
 
         private void OnSessionDismissed(object sender, EventArgs e) {
-            this.m_session.Dismissed -= this.OnSessionDismissed;
-            this.m_session = null;
+            this._m_session.Dismissed -= this.OnSessionDismissed;
+            this._m_session = null;
         }
 
         /// <summary>
         /// Narrow down the list of options as the user types input
         /// </summary>
         private void Filter() {
-            if (this.m_session == null) {
+            if (this._m_session == null) {
                 return;
             }
-            this.m_session.SelectedCompletionSet.SelectBestMatch();
-            this.m_session.SelectedCompletionSet.Recalculate();
+            this._m_session.SelectedCompletionSet.SelectBestMatch();
+            this._m_session.SelectedCompletionSet.Recalculate();
         }
 
         public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText) {
@@ -187,7 +184,7 @@ namespace AsmDude {
                         return VSConstants.S_OK;
                 }
             }
-            return m_nextCommandHandler.QueryStatus(pguidCmdGroup, cCmds, prgCmds, pCmdText);
+            return _m_nextCommandHandler.QueryStatus(pguidCmdGroup, cCmds, prgCmds, pCmdText);
         }
     }
 }

@@ -35,7 +35,7 @@ namespace AsmDude {
     internal class AsmQuickInfoControllerProvider : IIntellisenseControllerProvider {
 
         [Import]
-        internal IQuickInfoBroker QuickInfoBroker { get; set; }
+        internal IQuickInfoBroker _quickInfoBroker { get; set; }
 
         public IIntellisenseController TryCreateIntellisenseController(ITextView textView, IList<ITextBuffer> subjectBuffers) {
             return new AsmQuickInfoController(textView, subjectBuffers, this);

@@ -27,58 +27,34 @@ using Microsoft.VisualStudio.Utilities;
 namespace AsmDude {
     internal static class OrdinaryClassificationDefinition {
 
-        /// <summary>
-        /// Defines the "mnemonic" classification type.
-        /// </summary>
         [Export(typeof(ClassificationTypeDefinition))]
         [Name("mnemonic")]
         internal static ClassificationTypeDefinition mnemonic = null;
 
-        /// <summary>
-        /// Defines the "register" classification type.
-        /// </summary>
         [Export(typeof(ClassificationTypeDefinition))]
         [Name("register")]
         internal static ClassificationTypeDefinition register = null;
 
-        /// <summary>
-        /// Defines the "remark" classification type.
-        /// </summary>
         [Export(typeof(ClassificationTypeDefinition))]
         [Name("remark")]
         internal static ClassificationTypeDefinition remark = null;
 
-        /// <summary>
-        /// Defines the "directive" classification type.
-        /// </summary>
         [Export(typeof(ClassificationTypeDefinition))]
         [Name("directive")]
         internal static ClassificationTypeDefinition directive = null;
 
-        /// <summary>
-        /// Defines the "constant" classification type.
-        /// </summary>
         [Export(typeof(ClassificationTypeDefinition))]
         [Name("constant")]
         internal static ClassificationTypeDefinition constant = null;
 
-        /// <summary>
-        /// Defines the "jump" classification type.
-        /// </summary>
         [Export(typeof(ClassificationTypeDefinition))]
         [Name("jump")]
         internal static ClassificationTypeDefinition jump = null;
 
-        /// <summary>
-        /// Defines the "label" classification type.
-        /// </summary>
         [Export(typeof(ClassificationTypeDefinition))]
         [Name("label")]
         internal static ClassificationTypeDefinition label = null;
 
-        /// <summary>
-        /// Defines the "misc" classification type.
-        /// </summary>
         [Export(typeof(ClassificationTypeDefinition))]
         [Name("misc")]
         internal static ClassificationTypeDefinition misc = null;

@@ -1,13 +1,13 @@
 using Microsoft.VisualStudio.Shell;
 using System;
 using System.ComponentModel;
-using System.Windows.Media;
-using System.Drawing;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio;
 
 namespace AsmDude.OptionsPage {
     /// <summary>
@@ -19,101 +19,48 @@ namespace AsmDude.OptionsPage {
     [Guid(GuidStrings.GuidOptionsPageSyntaxHighlighting)]
     public class OptionsPageSyntaxHighlighting : DialogPage
     {
-        //[Import(typeof(EditorFormatDefinition))]
-        //private OperandP _operandP;
-
-        //private static System.Windows.Media.Color ToMediaColor(this System.Drawing.Color color) {
-        //    return System.Windows.Media.Color.FromArgb(color.A, color.R, color.G, color.B);
-        //}
-
-        public OptionsPageSyntaxHighlighting()
-        {
-            this._useSyntaxHighlighting = true;
-
-            this._colorMnemonic = System.Drawing.Color.Blue;
-            this._colorRegister = System.Drawing.Color.DarkRed;
-            this._colorRemark = System.Drawing.Color.Green;
-            this._colorDirective = System.Drawing.Color.Magenta;
-            this._colorConstant = System.Drawing.Color.Chocolate;
-            this._colorJump = System.Drawing.Color.Navy;
-            this._colorLabel = System.Drawing.Color.OrangeRed;
-            this._colorMisc = System.Drawing.Color.DarkOrange;
-        }
-
         #region Properties
 
-        [Category("Use Code Completion")]
-        [Description("Use Code Completion")]
-        [DisplayName("Use Code Completion")]
+        [Category("General")]
+        [Description("Use Syntax Highlighting")]
+        [DisplayName("Use Syntax Highlighting")]
         public bool _useSyntaxHighlighting { get; set; }
 
-        /// <summary>
-        /// Gets or sets the integer type custom option value.
-        /// </summary>
-        /// <remarks>This value is shown in the options page.</remarks>
         [Category("Colors used for Code Completion")]
         [Description("Mnemonic")]
         [DisplayName("Mnemonic")]
         public System.Drawing.Color _colorMnemonic { get; set; }
 
-        /// <summary>
-        /// Gets or sets the integer type custom option value.
-        /// </summary>
-        /// <remarks>This value is shown in the options page.</remarks>
         [Category("Colors used for Code Completion")]
         [Description("Register")]
         [DisplayName("Register")]
-
         public System.Drawing.Color _colorRegister { get; set; }
-        /// <summary>
-        /// Gets or sets the integer type custom option value.
-        /// </summary>
-        /// <remarks>This value is shown in the options page.</remarks>
+
         [Category("Colors used for Code Completion")]
         [Description("Remark")]
         [DisplayName("Remark")]
-
         public System.Drawing.Color _colorRemark { get; set; }
-        /// <summary>
-        /// Gets or sets the integer type custom option value.
-        /// </summary>
-        /// <remarks>This value is shown in the options page.</remarks>
+
         [Category("Colors used for Code Completion")]
         [Description("Directive")]
         [DisplayName("Directive")]
         public System.Drawing.Color _colorDirective { get; set; }
         
-        /// <summary>
-        /// Gets or sets the integer type custom option value.
-        /// </summary>
-        /// <remarks>This value is shown in the options page.</remarks>
         [Category("Colors used for Code Completion")]
         [Description("Constant")]
         [DisplayName("Constant")]
         public System.Drawing.Color _colorConstant { get; set; }
         
-        /// <summary>
-        /// Gets or sets the integer type custom option value.
-        /// </summary>
-        /// <remarks>This value is shown in the options page.</remarks>
         [Category("Colors used for Code Completion")]
         [Description("Jump")]
         [DisplayName("Jump")]
         public System.Drawing.Color _colorJump { get; set; }
         
-        /// <summary>
-        /// Gets or sets the integer type custom option value.
-        /// </summary>
-        /// <remarks>This value is shown in the options page.</remarks>
         [Category("Colors used for Code Completion")]
         [Description("Label")]
         [DisplayName("Label")]
         public System.Drawing.Color _colorLabel { get; set; }
         
-        /// <summary>
-        /// Gets or sets the integer type custom option value.
-        /// </summary>
-        /// <remarks>This value is shown in the options page.</remarks>
         [Category("Colors used for Code Completion")]
         [Description("Misc")]
         [DisplayName("Misc")]
@@ -132,16 +79,16 @@ namespace AsmDude.OptionsPage {
         /// <remarks>If this handler sets e.Cancel to true, the activation will not occur.</remarks>
         protected override void OnActivate(CancelEventArgs e)
         {
-            /*
-            string title = "title here";
-            int result = VsShellUtilities.ShowMessageBox(Site, Resources.MessageOnActivateEntered, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-
-            if (result == (int)VSConstants.MessageBoxResult.IDCANCEL)
-            {
-                e.Cancel = true;
-            }
-            */
             base.OnActivate(e);
+            this._useSyntaxHighlighting = Properties.Settings.Default.SyntaxHighlighting_On;
+            this._colorMnemonic = Properties.Settings.Default.SyntaxHighlighting_Opcode;
+            this._colorRegister = Properties.Settings.Default.SyntaxHighlighting_Register;
+            this._colorRemark = Properties.Settings.Default.SyntaxHighlighting_Remark;
+            this._colorDirective = Properties.Settings.Default.SyntaxHighlighting_Directive;
+            this._colorConstant = Properties.Settings.Default.SyntaxHighlighting_Constant;
+            this._colorJump = Properties.Settings.Default.SyntaxHighlighting_Jump;
+            this._colorLabel = Properties.Settings.Default.SyntaxHighlighting_Label;
+            this._colorMisc = Properties.Settings.Default.SyntaxHighlighting_Misc;
         }
 
         /// <summary>
@@ -153,17 +100,6 @@ namespace AsmDude.OptionsPage {
         protected override void OnClosed(EventArgs e)
         {
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:Onclosed", this.ToString()));
-            /*
-            if (this._operandP == null) {
-                Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:Onclosed:operandP is null", this.ToString()));
-            } else {
-                //this._operandP.update(ToMediaColor(this._colorMnemonic));
-            }
-            */
-            /*
-            string title = "title here";
-            VsShellUtilities.ShowMessageBox(Site, Resources.MessageOnClosed, title, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-            */
         }
 
         /// <summary>
@@ -198,22 +134,28 @@ namespace AsmDude.OptionsPage {
         /// changes (for example, when the user clicks OK in the dialog).
         /// </devdoc>
         protected override void OnApply(PageApplyEventArgs e) {
+            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:OnApply", this.ToString()));
 
-            /*
-            string title = "title here";
-            int result = VsShellUtilities.ShowMessageBox(Site, Resources.MessageOnApplyEntered, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            string title = null; //"Save Changes";
+            string message = "Press OK to save changes. You may need to restart visual studio for the changes to take effect.";
+            int result = VsShellUtilities.ShowMessageBox(Site, message, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
 
-            if (result == (int)VSConstants.MessageBoxResult.IDCANCEL)
-            {
+            if (result == (int)VSConstants.MessageBoxResult.IDCANCEL) {
                 e.ApplyBehavior = ApplyKind.Cancel;
-            }
-            else
-            {
+            } else {
+                Properties.Settings.Default.SyntaxHighlighting_On = this._useSyntaxHighlighting;
+                Properties.Settings.Default.SyntaxHighlighting_Opcode = this._colorMnemonic;
+                Properties.Settings.Default.SyntaxHighlighting_Register = this._colorRegister;
+                Properties.Settings.Default.SyntaxHighlighting_Remark = this._colorRemark;
+                Properties.Settings.Default.SyntaxHighlighting_Directive = this._colorDirective;
+                Properties.Settings.Default.SyntaxHighlighting_Constant = this._colorConstant;
+                Properties.Settings.Default.SyntaxHighlighting_Jump = this._colorJump;
+                Properties.Settings.Default.SyntaxHighlighting_Label = this._colorLabel;
+                Properties.Settings.Default.SyntaxHighlighting_Misc = this._colorMisc;
+
+                Properties.Settings.Default.Save();
                 base.OnApply(e);
             }
-            string title2 = "title here";
-            VsShellUtilities.ShowMessageBox(Site, Resources.MessageOnApply, title2, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-            */
         }
 
         #endregion Event Handlers

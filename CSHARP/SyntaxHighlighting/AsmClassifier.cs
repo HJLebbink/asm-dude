@@ -92,13 +92,15 @@ namespace AsmDude {
         /// Search the given span for any instances of classified tags
         /// </summary>
         public IEnumerable<ITagSpan<ClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
-            foreach (var tagSpan in _aggregator.GetTags(spans)) {
-                var tagSpans = tagSpan.Span.GetSpans(spans[0].Snapshot);
-                var asmType = _asmTypes[tagSpan.Tag.type];
-                if (asmType == null) {
-                    Debug.WriteLine("AsmClassifier:GetTags: asmType is null for " + tagSpan.Tag.type);
-                } else {
-                    yield return new TagSpan<ClassificationTag>(tagSpans[0], new ClassificationTag(asmType));
+            if (Properties.Settings.Default.SyntaxHighlighting_On) {
+                foreach (var tagSpan in _aggregator.GetTags(spans)) {
+                    var tagSpans = tagSpan.Span.GetSpans(spans[0].Snapshot);
+                    var asmType = _asmTypes[tagSpan.Tag.type];
+                    if (asmType == null) {
+                        Debug.WriteLine("AsmClassifier:GetTags: asmType is null for " + tagSpan.Tag.type);
+                    } else {
+                        yield return new TagSpan<ClassificationTag>(tagSpans[0], new ClassificationTag(asmType));
+                    }
                 }
             }
         }

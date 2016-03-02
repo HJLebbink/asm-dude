@@ -25,12 +25,12 @@ using System.Linq;
 using System.Xml;
 using System.Diagnostics;
 using System.Collections.Generic;
-using System.IO;
 
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using System.Windows;
+using System.ComponentModel.Composition;
 
 namespace AsmDude {
 
@@ -43,22 +43,18 @@ namespace AsmDude {
         private bool _disposed = false;
         private XmlDocument _xmlDoc;
 
+        [Import]
+        private AsmDudeTools _asmDudeTools = null;
+
         public AsmQuickInfoSource(ITextBuffer buffer, ITagAggregator<AsmTokenTag> aggregator) {
             this._aggregator = aggregator;
             this._buffer = buffer;
-            this._xmlDoc = new XmlDocument();
 
-            string fullPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            string filenameData = "AsmDudeData.xml";
-            string filenameDll = "AsmDude.dll";
-            string filename = fullPath.Substring(0, fullPath.Length - filenameDll.Length) + filenameData;
-            Debug.WriteLine("INFO: AsmQuickInfoSource: going to load file \"" + filename + "\"");
-            try {
-                this._xmlDoc.Load(filename);
-            } catch (FileNotFoundException) {
-                MessageBox.Show("ERROR: AsmQuickInfoSource: could not find file \"" + filename + "\".");
-            } catch (XmlException) {
-                MessageBox.Show("ERROR: AsmQuickInfoSource: error while reading file \"" + filename + "\".");
+            AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
+            if (this._asmDudeTools == null) {
+                MessageBox.Show("ERROR: AsmQuickInfoSource:_asmDudeTools is null.");
+            } else {
+                this._xmlDoc = this._asmDudeTools.getXmlData();
             }
         }
 

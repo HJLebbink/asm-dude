@@ -22,19 +22,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
 using System.Xml;
-using System.IO;
 using System.Globalization;
 
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
-using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
-using Microsoft.VisualStudio.Utilities;
 using System.Windows;
+using System.ComponentModel.Composition;
 
 namespace AsmDude {
 
@@ -48,8 +43,11 @@ namespace AsmDude {
 
     internal sealed class AsmTokenTagger : ITagger<AsmTokenTag> {
 
-        ITextBuffer _buffer;
-        IDictionary<string, AsmTokenTypes> _asmTypes;
+        private ITextBuffer _buffer;
+        private IDictionary<string, AsmTokenTypes> _asmTypes;
+
+        [Import]
+        private AsmDudeTools _asmDudeTools = null;
 
         static char[] splitChars = { ' ', ',', '\t', '+', '*', '[', ']' };
 
@@ -58,23 +56,16 @@ namespace AsmDude {
             this._asmTypes = new Dictionary<string, AsmTokenTypes>();
 
             // fill the dictionary with keywords
-
-            string fullPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            string filenameData = "AsmDudeData.xml";
-            string filenameDll = "AsmDude.dll";
-            string filename = fullPath.Substring(0, fullPath.Length - filenameDll.Length) + filenameData;
-            Debug.WriteLine("INFO: AsmTokenTagger: going to load file \"" + filename + "\"");
-            XmlDocument xmlDoc = new XmlDocument();
-            try {
-                xmlDoc.Load(filename);
-
-                foreach (XmlNode node in xmlDoc.SelectNodes("//misc"))
-                {
+            AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
+            if (this._asmDudeTools == null) {
+                MessageBox.Show("ERROR: AsmTokenTagger:_asmDudePackage is null.");
+            } else {
+                XmlDocument xmlDoc = this._asmDudeTools.getXmlData();
+                foreach (XmlNode node in xmlDoc.SelectNodes("//misc")) {
                     var nameAttribute = node.Attributes["name"];
                     if (nameAttribute == null) {
                         Debug.WriteLine("WARNING: AsmTokenTagger: found misc with no name");
-                    }
-                    else {
+                    } else {
                         string name = nameAttribute.Value.ToUpper();
                         //Debug.WriteLine("INFO: AsmTokenTagger: found misc " + name);
                         _asmTypes[name] = AsmTokenTypes.Misc;
@@ -121,10 +112,6 @@ namespace AsmDude {
                         _asmTypes[name] = AsmTokenTypes.Register;
                     }
                 }
-            } catch (FileNotFoundException) {
-                MessageBox.Show("ERROR: AsmTokenTagger: could not find file \"" + filename + "\".");
-            } catch (XmlException) {
-                MessageBox.Show("ERROR: AsmTokenTagger: error while reading file \"" + filename + "\".");
             }
         }
 

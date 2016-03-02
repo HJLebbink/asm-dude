@@ -17,111 +17,23 @@ namespace AsmDude.OptionsPage
     [Guid(GuidStrings.GuidOptionsPageCodeFolding)]
     public class OptionsPageCodeFolding : DialogPage
     {
-        public OptionsPageCodeFolding()
-        {
-            this._useCodeCompletion = true;
-
-            this._x86 = true;
-            this._sse = true;
-            this._sse2 = true;
-            this._sse3 = true;
-            this._ssse3 = true;
-            this._sse41 = true;
-            this._sse42 = true;
-            this._avx = true;
-            this._avx2 = true;
-            this._knc = false;
-        }
-
         #region Properties
 
-        [Category("Use Code Completion")]
-        [Description("Use Code Completion")]
-        [DisplayName("Use Code Completion")]
-        public bool _useCodeCompletion { get; set; }
+        [Category("General")]
+        [Description("Use Code Folding")]
+        [DisplayName("Use Code Folding")]
+        public bool _useCodeFolding { get; set; }
 
+        [Category("Code Folding Tags")]
+        [Description("the characters that start the outlining region")]
+        [DisplayName("Begin Tag")]
+        public string _beginTag { get; set; }
 
-        /// <summary>
-        /// Gets or sets the integer type custom option value.
-        /// </summary>
-        /// <remarks>This value is shown in the options page.</remarks>
-        [Category("Architectures used for Code Completion")]
-        [Description("x86")]
-        [DisplayName("x86")]
-        public bool _x86 { get; set; }
+        [Category("Code Folding Tags")]
+        [Description("the characters that end the outlining region")]
+        [DisplayName("End Tag")]
+        public string _endTag { get; set; }
 
-        [Category("Architectures used for Code Completion")]
-        [Description("SSE")]
-        [DisplayName("SSE")]
-        public bool _sse { get; set; }
-
-        [Category("Architectures used for Code Completion")]
-        [Description("SSE2")]
-        [DisplayName("SSE2")]
-        public bool _sse2 { get; set; }
-
-        [Category("Architectures used for Code Completion")]
-        [Description("SSE3")]
-        [DisplayName("SSE3")]
-        public bool _sse3 { get; set; }
-
-        [Category("Architectures used for Code Completion")]
-        [Description("SSSE3")]
-        [DisplayName("SSSE3")]
-        public bool _ssse3 { get; set; }
-
-        [Category("Architectures used for Code Completion")]
-        [Description("SSE4.1")]
-        [DisplayName("SSE4.1")]
-        public bool _sse41 { get; set; }
-
-        [Category("Architectures used for Code Completion")]
-        [Description("SSE4.2")]
-        [DisplayName("SSE4.2")]
-        public bool _sse42 { get; set; }
-
-        [Category("Architectures used for Code Completion")]
-        [Description("AVX")]
-        [DisplayName("AVX")]
-        public bool _avx { get; set; }
-
-        [Category("Architectures used for Code Completion")]
-        [Description("AVX2")]
-        [DisplayName("AVX2")]
-        public bool _avx2 { get; set; }
-
-        [Category("Architectures used for Code Completion")]
-        [Description("Xeon Phi Knights Corner")]
-        [DisplayName("KNC")]
-        public bool _knc { get; set; }
-
-
-        /*
-
-        /// <summary>
-        /// Gets or sets the String type custom option value.
-        /// </summary>
-        /// <remarks>This value is shown in the options page.</remarks>
-        [Category("String Options")]
-        [Description("My string option")]
-        public string OptionString { get; set; }
-
-        /// <summary>
-        /// Gets or sets the integer type custom option value.
-        /// </summary>
-        /// <remarks>This value is shown in the options page.</remarks>
-        [Category("Integer Options")]
-        [Description("My integer option")]
-        public int OptionInteger { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Size type custom option value.
-        /// </summary>
-        /// <remarks>This value is shown in the options page.</remarks>
-        [Category("Expandable Options")]
-        [Description("My Expandable option")]
-        public Size CustomSize { get; set; }
-        */
         #endregion Properties
 
         #region Event Handlers
@@ -135,16 +47,10 @@ namespace AsmDude.OptionsPage
         /// <remarks>If this handler sets e.Cancel to true, the activation will not occur.</remarks>
         protected override void OnActivate(CancelEventArgs e)
         {
-            /*
-            string title = "title here";
-            int result = VsShellUtilities.ShowMessageBox(Site, Resources.MessageOnActivateEntered, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-
-            if (result == (int)VSConstants.MessageBoxResult.IDCANCEL)
-            {
-                e.Cancel = true;
-            }
-            */
             base.OnActivate(e);
+            this._useCodeFolding = Properties.Settings.Default.CodeFolding_On;
+            this._beginTag = Properties.Settings.Default.CodeFolding_BeginTag;
+            this._endTag = Properties.Settings.Default.CodeFolding_EndTag;
         }
 
         /// <summary>
@@ -193,21 +99,21 @@ namespace AsmDude.OptionsPage
         /// changes (for example, when the user clicks OK in the dialog).
         /// </devdoc>
         protected override void OnApply(PageApplyEventArgs e) {
-            /*
-            string title = "title here";
-            int result = VsShellUtilities.ShowMessageBox(Site, Resources.MessageOnApplyEntered, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:OnApply", this.ToString()));
 
-            if (result == (int)VSConstants.MessageBoxResult.IDCANCEL)
-            {
+            string title = null;// "Save Changes";
+            string message = "Press OK to save changes. You may need to restart visual studio for the changes to take effect.";
+            int result = VsShellUtilities.ShowMessageBox(Site, message, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+
+            if (result == (int)VSConstants.MessageBoxResult.IDCANCEL) {
                 e.ApplyBehavior = ApplyKind.Cancel;
-            }
-            else
-            {
+            } else {
+                Properties.Settings.Default.CodeFolding_On = this._useCodeFolding;
+                Properties.Settings.Default.CodeFolding_BeginTag = this._beginTag;
+                Properties.Settings.Default.CodeFolding_EndTag = this._endTag;
+                Properties.Settings.Default.Save();
                 base.OnApply(e);
             }
-            string title2 = "title here";
-            VsShellUtilities.ShowMessageBox(Site, Resources.MessageOnApply, title2, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-            */
         }
 
         #endregion Event Handlers

@@ -22,15 +22,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
-using Microsoft.VisualStudio.Utilities;
 
 namespace AsmDude {
 
@@ -206,40 +203,42 @@ namespace AsmDude {
         /// </summary>
         /// <param name="spans">A read-only span of text to be searched for instances of CurrentWord</param>
         public IEnumerable<ITagSpan<HighlightWordTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
-            if (CurrentWord == null)
-                yield break;
+            if (Properties.Settings.Default.SyntaxHighlighting_On) {
+                if (CurrentWord == null)
+                    yield break;
 
-            if (spans.Count == 0 || WordSpans.Count == 0)
-                yield break;
+                if (spans.Count == 0 || WordSpans.Count == 0)
+                    yield break;
 
 
-            // Hold on to a "snapshot" of the word spans and current word, so that we maintain the same
-            // collection throughout
-            SnapshotSpan currentWordLocal = CurrentWord.Value;
-            NormalizedSnapshotSpanCollection wordSpansLocal = WordSpans;
+                // Hold on to a "snapshot" of the word spans and current word, so that we maintain the same
+                // collection throughout
+                SnapshotSpan currentWordLocal = CurrentWord.Value;
+                NormalizedSnapshotSpanCollection wordSpansLocal = WordSpans;
 
-            // If the requested snapshot isn't the same as the one our words are on, translate our spans
-            // to the expected snapshot
-            if (spans[0].Snapshot != wordSpansLocal[0].Snapshot) {
-                wordSpansLocal = new NormalizedSnapshotSpanCollection(
-                    wordSpansLocal.Select(span => span.TranslateTo(spans[0].Snapshot, SpanTrackingMode.EdgeExclusive)));
+                // If the requested snapshot isn't the same as the one our words are on, translate our spans
+                // to the expected snapshot
+                if (spans[0].Snapshot != wordSpansLocal[0].Snapshot) {
+                    wordSpansLocal = new NormalizedSnapshotSpanCollection(
+                        wordSpansLocal.Select(span => span.TranslateTo(spans[0].Snapshot, SpanTrackingMode.EdgeExclusive)));
 
-                currentWordLocal = currentWordLocal.TranslateTo(spans[0].Snapshot, SpanTrackingMode.EdgeExclusive);
-            }
+                    currentWordLocal = currentWordLocal.TranslateTo(spans[0].Snapshot, SpanTrackingMode.EdgeExclusive);
+                }
 
-            //Debug.WriteLine("INFO: GetTags: currentWord=" + currentWordLocal.GetText());
+                //Debug.WriteLine("INFO: GetTags: currentWord=" + currentWordLocal.GetText());
 
-            // First, yield back the word the cursor is under (if it overlaps)
-            // Note that we'll yield back the same word again in the wordspans collection;
-            // the duplication here is expected.
-            var c1 = new NormalizedSnapshotSpanCollection(currentWordLocal);
-            if (spans.OverlapsWith(c1)) {
-                yield return new TagSpan<HighlightWordTag>(currentWordLocal, new HighlightWordTag());
-            }
+                // First, yield back the word the cursor is under (if it overlaps)
+                // Note that we'll yield back the same word again in the wordspans collection;
+                // the duplication here is expected.
+                var c1 = new NormalizedSnapshotSpanCollection(currentWordLocal);
+                if (spans.OverlapsWith(c1)) {
+                    yield return new TagSpan<HighlightWordTag>(currentWordLocal, new HighlightWordTag());
+                }
 
-            // Second, yield all the other words in the file
-            foreach (SnapshotSpan span in NormalizedSnapshotSpanCollection.Overlap(spans, wordSpansLocal)) {
-                yield return new TagSpan<HighlightWordTag>(span, new HighlightWordTag());
+                // Second, yield all the other words in the file
+                foreach (SnapshotSpan span in NormalizedSnapshotSpanCollection.Overlap(spans, wordSpansLocal)) {
+                    yield return new TagSpan<HighlightWordTag>(span, new HighlightWordTag());
+                }
             }
         }
 

@@ -23,22 +23,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Diagnostics;
-using System.Text;
-using System.Drawing;
-using System.ComponentModel.Composition;
-using Microsoft.VisualStudio.Text.Outlining;
 using Microsoft.VisualStudio.Text.Tagging;
-using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
 
 namespace AsmDude {
 
     internal sealed class CodeFoldingTagger : ITagger<IOutliningRegionTag> {
 
-        string startHide = "#region";     //the characters that start the outlining region
-        string endHide = "#endregion";       //the characters that end the outlining region
+        string startHide = Properties.Settings.Default.CodeFolding_BeginTag;     //the characters that start the outlining region
+        string endHide = Properties.Settings.Default.CodeFolding_EndTag;       //the characters that end the outlining region
         string ellipsis = "...";    //the characters that are displayed when the region is collapsed
 
         ITextBuffer buffer;
@@ -59,25 +52,27 @@ namespace AsmDude {
             if (spans.Count == 0)
                 yield break;
 
-            //Debug.WriteLine("INFO: GetTags: entering");
+            if (Properties.Settings.Default.CodeFolding_On) {
+                //Debug.WriteLine("INFO: GetTags: entering");
 
-            List<Region> currentRegions = this.regions;
-            ITextSnapshot currentSnapshot = this.snapshot;
-            SnapshotSpan entire = new SnapshotSpan(spans[0].Start, spans[spans.Count - 1].End).TranslateTo(currentSnapshot, SpanTrackingMode.EdgeExclusive);
-            int startLineNumber = entire.Start.GetContainingLine().LineNumber;
-            int endLineNumber = entire.End.GetContainingLine().LineNumber;
-            foreach (var region in currentRegions) {
-                if (region.StartLine <= endLineNumber &&
-                    region.EndLine >= startLineNumber) {
-                    var startLine = currentSnapshot.GetLineFromLineNumber(region.StartLine);
-                    var endLine = currentSnapshot.GetLineFromLineNumber(region.EndLine);
+                List<Region> currentRegions = this.regions;
+                ITextSnapshot currentSnapshot = this.snapshot;
+                SnapshotSpan entire = new SnapshotSpan(spans[0].Start, spans[spans.Count - 1].End).TranslateTo(currentSnapshot, SpanTrackingMode.EdgeExclusive);
+                int startLineNumber = entire.Start.GetContainingLine().LineNumber;
+                int endLineNumber = entire.End.GetContainingLine().LineNumber;
+                foreach (var region in currentRegions) {
+                    if (region.StartLine <= endLineNumber &&
+                        region.EndLine >= startLineNumber) {
+                        var startLine = currentSnapshot.GetLineFromLineNumber(region.StartLine);
+                        var endLine = currentSnapshot.GetLineFromLineNumber(region.EndLine);
 
-                    //the region starts at the beginning of the "[", and goes until the *end* of the line that contains the "]".
-                    string replacementString = ellipsis + " " + getRegionDescription(startLine.GetText());
-                    string hoverText = getHoverText(region.StartLine + 1, region.EndLine - 1, currentSnapshot);
-                    yield return new TagSpan<IOutliningRegionTag>(
-                        new SnapshotSpan(startLine.Start + region.StartOffset, endLine.End),
-                        new OutliningRegionTag(false, false, replacementString, hoverText));
+                        //the region starts at the beginning of the "[", and goes until the *end* of the line that contains the "]".
+                        string replacementString = ellipsis + " " + getRegionDescription(startLine.GetText());
+                        string hoverText = getHoverText(region.StartLine + 1, region.EndLine - 1, currentSnapshot);
+                        yield return new TagSpan<IOutliningRegionTag>(
+                            new SnapshotSpan(startLine.Start + region.StartOffset, endLine.End),
+                            new OutliningRegionTag(false, false, replacementString, hoverText));
+                    }
                 }
             }
         }
