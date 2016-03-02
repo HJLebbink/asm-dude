@@ -186,7 +186,6 @@ namespace AsmDude {
             #endregion
         }
 
-
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets) {
             if (_disposed) throw new ObjectDisposedException("AsmCompletionSource");
             if (Properties.Settings.Default.CodeCompletion_On) {

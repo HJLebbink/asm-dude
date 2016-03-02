@@ -277,7 +277,7 @@ namespace AsmDude.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool CodeCompletion_avx2 {
             get {
                 return ((bool)(this["CodeCompletion_avx2"]));
