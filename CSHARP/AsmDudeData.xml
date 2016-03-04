@@ -1075,15 +1075,11 @@
 			<description>Input from Port to String</description>
 			<ref>./html/INS_INSB_INSW_INSD.html</ref>
 		</mnemonic>
-		<mnemonic name='INT n'>
+		<mnemonic name='INT'>
 			<description>Call to Interrupt Procedure</description>
 			<ref>./html/INT n_INTO_INT 3.html</ref>
 		</mnemonic>
 		<mnemonic name='INTO'>
-			<description>Call to Interrupt Procedure</description>
-			<ref>./html/INT n_INTO_INT 3.html</ref>
-		</mnemonic>
-		<mnemonic name='INT 3'>
 			<description>Call to Interrupt Procedure</description>
 			<ref>./html/INT n_INTO_INT 3.html</ref>
 		</mnemonic>
