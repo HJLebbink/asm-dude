@@ -187,7 +187,6 @@ namespace AsmDude {
                                     var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
                                     if (tokenSpan.IntersectsWith(curSpan))
                                         yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Constant));
-                                    break;
                                 }
                             }
                         }
