@@ -17,6 +17,7 @@ Not happy with the highlighting or the descriptions. Mnemonics and descriptions 
 * Code completion for labels in jumps. Provide a list if existing labels from which one can choose.
 * Colored tooltips. Syntax highlighting in quickinfo tooltips.
 * Code formatting.
+* Syntax highlighting for the Debug/Windows/Disassembly view.
 * Code completion restrictions. E.g. opcode movss can only be followed by an xmm register and not by a GPR such as rax.
 * Track flag influence. Select a opcode that uses a flag (as input), find the opcodes that produce this flag (as output). E.g.  select opcode cmovc or setc , highlight all opcodes such as btr, sal, sar, shl, shr, etc.
 * Register rename assistance. Highly desirable but very challenging. E.g. rename GPR rdx to rbx, find which rdx, edx, dx, dl and dh will need to be renamed, check if renames will clash with existing occrances of rbx, ebx, bx, bl and bh.
