@@ -6,6 +6,7 @@ using System.Diagnostics;
 using Microsoft.VisualStudio.Shell.Interop;
 
 using AsmDude.OptionsPage;
+using System.Globalization;
 
 namespace AsmDude {
     /// <summary>
@@ -31,7 +32,7 @@ namespace AsmDude {
     public class AsmDudePackage : Package {
 
         public AsmDudePackage() {
-            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "=============================================\n=============================================\nINFO: Entering constructor for: {0}", this.ToString()));
+           //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: Entering constructor for: {0}", this.ToString()));
         }
 
         /// <summary>
@@ -40,14 +41,7 @@ namespace AsmDude {
         /// </summary>
         protected override void Initialize() {
             base.Initialize();
-            
-            //Debug.WriteLine("=============================================\n=============================================");
-            //Debug.WriteLine("=============================================\n=============================================");
-            Debug.WriteLine("INFO: AsmDude: q11: Initialize");
-            //Debug.WriteLine("=============================================\n=============================================");
-            //Debug.WriteLine("=============================================\n=============================================");
-            //System.Threading.Thread.Sleep(2000);
-            // TODO: add initialization code here
+            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:Initialize", this.ToString()));
         }
     }
 }

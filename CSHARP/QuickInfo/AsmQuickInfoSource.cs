@@ -69,11 +69,9 @@ namespace AsmDude {
             }
             var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(_buffer.CurrentSnapshot);
 
-
             if (triggerPoint == null) {
                 return;
             }
-
 
             foreach (IMappingTagSpan<AsmTokenTag> curTag in this._aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint))) {
                 var tagSpan = curTag.Span.GetSpans(_buffer).First();

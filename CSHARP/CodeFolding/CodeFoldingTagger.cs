@@ -32,20 +32,20 @@ namespace AsmDude {
 
         string startHide = Properties.Settings.Default.CodeFolding_BeginTag;     //the characters that start the outlining region
         string endHide = Properties.Settings.Default.CodeFolding_EndTag;       //the characters that end the outlining region
-        string ellipsis = "...";    //the characters that are displayed when the region is collapsed
+        const string ellipsis = "...";    //the characters that are displayed when the region is collapsed
 
-        ITextBuffer buffer;
-        ITextSnapshot snapshot;
-        List<Region> regions;
+        ITextBuffer _buffer;
+        ITextSnapshot _snapshot;
+        List<Region> _regions;
 
 
         public CodeFoldingTagger(ITextBuffer buffer) {
             //Debug.WriteLine("INFO:OutliningTagger: constructor");
-            this.buffer = buffer;
-            this.snapshot = buffer.CurrentSnapshot;
-            this.regions = new List<Region>();
+            this._buffer = buffer;
+            this._snapshot = buffer.CurrentSnapshot;
+            this._regions = new List<Region>();
             this.ReParse();
-            this.buffer.Changed += BufferChanged;
+            this._buffer.Changed += BufferChanged;
         }
         
         public IEnumerable<ITagSpan<IOutliningRegionTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
@@ -55,8 +55,8 @@ namespace AsmDude {
             if (Properties.Settings.Default.CodeFolding_On) {
                 //Debug.WriteLine("INFO: GetTags: entering");
 
-                List<Region> currentRegions = this.regions;
-                ITextSnapshot currentSnapshot = this.snapshot;
+                List<Region> currentRegions = this._regions;
+                ITextSnapshot currentSnapshot = this._snapshot;
                 SnapshotSpan entire = new SnapshotSpan(spans[0].Start, spans[spans.Count - 1].End).TranslateTo(currentSnapshot, SpanTrackingMode.EdgeExclusive);
                 int startLineNumber = entire.Start.GetContainingLine().LineNumber;
                 int endLineNumber = entire.End.GetContainingLine().LineNumber;
@@ -104,7 +104,7 @@ namespace AsmDude {
 
         void BufferChanged(object sender, TextContentChangedEventArgs e) {
             // If this isn't the most up-to-date version of the buffer, then ignore it for now (we'll eventually get another change event).
-            if (e.After != buffer.CurrentSnapshot) {
+            if (e.After != _buffer.CurrentSnapshot) {
                 return;
             }
             this.ReParse();
@@ -113,7 +113,7 @@ namespace AsmDude {
         void ReParse() {
             //Debug.WriteLine("INFO:OutliningTagger:ReParse: entering");
            
-            ITextSnapshot newSnapshot = buffer.CurrentSnapshot;
+            ITextSnapshot newSnapshot = _buffer.CurrentSnapshot;
             List<Region> newRegions = new List<Region>();
 
             //keep the current (deepest) partial region, which will have
@@ -182,7 +182,7 @@ namespace AsmDude {
 
             //determine the changed span, and send a changed event with the new spans
             List<Span> oldSpans =
-                new List<Span>(this.regions.Select(r => AsSnapshotSpan(r, this.snapshot)
+                new List<Span>(this._regions.Select(r => AsSnapshotSpan(r, this._snapshot)
                     .TranslateTo(newSnapshot, SpanTrackingMode.EdgeExclusive)
                     .Span));
             List<Span> newSpans = new List<Span>(newRegions.Select(r => AsSnapshotSpan(r, newSnapshot).Span));
@@ -206,14 +206,14 @@ namespace AsmDude {
                 changeEnd = Math.Max(changeEnd, newSpans[newSpans.Count - 1].End);
             }
 
-            this.snapshot = newSnapshot;
-            this.regions = newRegions;
+            this._snapshot = newSnapshot;
+            this._regions = newRegions;
 
             if (changeStart <= changeEnd) {
-                ITextSnapshot snap = this.snapshot;
+                ITextSnapshot snap = this._snapshot;
                 if (this.TagsChanged != null)
                     this.TagsChanged(this, new SnapshotSpanEventArgs(
-                        new SnapshotSpan(this.snapshot, Span.FromBounds(changeStart, changeEnd))));
+                        new SnapshotSpan(this._snapshot, Span.FromBounds(changeStart, changeEnd))));
             }
             //Debug.WriteLine("INFO:OutliningTagger:ReParse: leaving");
         }
