@@ -76,6 +76,26 @@ namespace AsmDude {
             return this._xmlData;
         }
 
+        public string getUrl(string keyword) {
+            string keywordUpper = keyword.ToUpper();
+            XmlDocument doc = this.getXmlData();
+            XmlNodeList all = doc.SelectNodes("//*[@name=\""+ keywordUpper + "\"]");
+            if (all.Count > 1) {
+                Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "WARNING: {0}:getUrl: multiple elements for keyword {1}.", this.ToString(), keywordUpper));
+            }
+            if (all.Count == 0) {
+                Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getUrl: no elements for keyword {1}.", this.ToString(), keywordUpper));
+                return null;
+            } else {
+                XmlNode node1 = all.Item(0);
+                XmlNode node2 = node1.SelectSingleNode("./ref");
+                if (node2 == null) return null;
+                string reference = node2.InnerText.Trim();
+                Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getUrl: keyword {1} yields {2}", this.ToString(), keywordUpper, reference));
+                return reference;
+            }
+        }
+
         //public void invalidateXmlData() {
         //    this._xmlData = null;
         //}
