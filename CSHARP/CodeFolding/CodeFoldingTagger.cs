@@ -26,7 +26,7 @@ using System.Linq;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Text;
 
-namespace AsmDude {
+namespace AsmDude.CodeFolding {
 
     internal sealed class CodeFoldingTagger : ITagger<IOutliningRegionTag> {
 

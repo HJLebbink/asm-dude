@@ -29,7 +29,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
 
-namespace AsmDude {
+namespace AsmDude.HighlightWord {
 
     /// <summary>
     /// Derive from TextMarkerTag, in case anyone wants to consume

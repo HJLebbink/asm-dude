@@ -26,7 +26,7 @@ using Microsoft.VisualStudio.Utilities;
 using System;
 using System.ComponentModel.Composition;
 
-namespace AsmDude.HighlightWord {
+namespace AsmDude.CodeFolding {
 
     /// <summary>
     /// Export a <see cref="IViewTaggerProvider"/>

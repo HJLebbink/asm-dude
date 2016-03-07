@@ -27,7 +27,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace AsmDude {
+namespace AsmDude.QuickInfo {
 
     [Export(typeof(IIntellisenseControllerProvider))]
     [Name("Template QuickInfo Controller")]

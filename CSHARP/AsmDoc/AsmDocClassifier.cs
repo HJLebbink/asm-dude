@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 
-namespace AsmDude.GoToDoc {
+namespace AsmDude.AsmDoc {
 
     #region Classification type/format exports
 

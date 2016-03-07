@@ -1,10 +1,8 @@
 ﻿using System;
 using System.ComponentModel.Composition;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
@@ -15,12 +13,9 @@ using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Shell;
 using System.Diagnostics;
 using System.Globalization;
-using AsmDude;
-using System.Reflection;
 using EnvDTE80;
-using System.IO;
 
-namespace AsmDude.GoToDoc {
+namespace AsmDude.AsmDoc {
 
     [Export(typeof(IKeyProcessorProvider))]
     // [TextViewRole(PredefinedTextViewRoles.Document)]
@@ -272,12 +267,9 @@ namespace AsmDude.GoToDoc {
                 //  check for valid classification type.
                 foreach (var classification in _aggregator.GetClassificationSpans(extent.Span)) {
                     string keyword = classification.Span.GetText();
-                    string type = classification.ClassificationType.Classification.ToLower();
+                    //string type = classification.ClassificationType.Classification.ToLower();
                     string url = this.getUrl(keyword);
-                    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:TryHighlightItemUnderMouse: keyword={1}; type={2}; url={3}", this.ToString(), keyword, type, url));
-
-
-                    //if ((type.Equals("mnemonic") || type.Equals("jump")) && SetHighlightSpan(classification.Span)) {
+                    //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:TryHighlightItemUnderMouse: keyword={1}; type={2}; url={3}", this.ToString(), keyword, type, url));
                     if ((url != null) && SetHighlightSpan(classification.Span)) {
                         updated = true;
                         return true;

@@ -32,7 +32,7 @@ using Microsoft.VisualStudio.Text.Tagging;
 using System.Windows;
 using System.ComponentModel.Composition;
 
-namespace AsmDude {
+namespace AsmDude.QuickInfo {
 
     /// <summary>
     /// Provides QuickInfo information to be displayed in a text buffer

@@ -26,7 +26,7 @@ using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 
-namespace AsmDude {
+namespace AsmDude.QuickInfo {
 
     /// <summary>
     /// Factory for quick info sources

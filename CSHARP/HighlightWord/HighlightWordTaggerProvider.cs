@@ -32,16 +32,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AsmDude.HighlightWord
-{
+namespace AsmDude.HighlightWord {
     /// <summary>
     /// Export a <see cref="IViewTaggerProvider"/>
     /// </summary>
     [Export(typeof(IViewTaggerProvider))]
     [ContentType("text")]
     [TagType(typeof(HighlightWordTag))]
-    public class HighlightWordTaggerProvider : IViewTaggerProvider
-    {
+    public class HighlightWordTaggerProvider : IViewTaggerProvider {
         [Import]
         internal ITextSearchService TextSearchService { get; set; }
 
@@ -55,8 +53,7 @@ namespace AsmDude.HighlightWord
         /// <param name="textView"> The text view we are creating a tagger for</param>
         /// <param name="buffer"> The buffer that the tagger will examine for instances of the current word</param>
         /// <returns> Returns a HighlightWordTagger instance</returns>
-        public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
-        {
+        public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag {
             // Only provide highlighting on the top-level buffer
             if (textView.TextBuffer != buffer)
                 return null;
