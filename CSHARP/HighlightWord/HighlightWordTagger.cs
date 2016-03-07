@@ -28,8 +28,10 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
+using System.Globalization;
+using System.Diagnostics;
 
-namespace AsmDude.HighlightWord {
+namespace AsmDude {
 
     /// <summary>
     /// Derive from TextMarkerTag, in case anyone wants to consume
@@ -124,50 +126,56 @@ namespace AsmDude.HighlightWord {
             List<SnapshotSpan> wordSpans = new List<SnapshotSpan>();
 
             // Find all words in the buffer like the one the caret is on
-            TextExtent word = TextStructureNavigator.GetExtentOfWord(currentRequest);
+            try {
+                TextExtent word = TextStructureNavigator.GetExtentOfWord(currentRequest);
+                Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:UpdateWordAdornments. word={1}", this.ToString(), word.ToString()));
 
-            bool foundWord = true;
 
-            // If we've selected something not worth highlighting, we might have
-            // missed a "word" by a little bit
-            if (!WordExtentIsValid(currentRequest, word)) {
-                // Before we retry, make sure it is worthwhile
-                if (word.Span.Start != currentRequest ||
-                    currentRequest == currentRequest.GetContainingLine().Start ||
-                    char.IsWhiteSpace((currentRequest - 1).GetChar())) {
-                    foundWord = false;
-                } else {
-                    // Try again, one character previous.  If the caret is at the end of a word, then
-                    // this will pick up the word we are at the end of.
-                    word = TextStructureNavigator.GetExtentOfWord(currentRequest - 1);
-
-                    // If we still aren't valid the second time around, we're done
-                    if (!WordExtentIsValid(currentRequest, word))
+                bool foundWord = true;
+                // If we've selected something not worth highlighting, we might have
+                // missed a "word" by a little bit
+                if (!WordExtentIsValid(currentRequest, word)) {
+                    // Before we retry, make sure it is worthwhile
+                    if (word.Span.Start != currentRequest ||
+                        currentRequest == currentRequest.GetContainingLine().Start ||
+                        char.IsWhiteSpace((currentRequest - 1).GetChar())) {
                         foundWord = false;
+                    } else {
+                        // Try again, one character previous.  If the caret is at the end of a word, then
+                        // this will pick up the word we are at the end of.
+                        word = TextStructureNavigator.GetExtentOfWord(currentRequest - 1);
+
+                        // If we still aren't valid the second time around, we're done
+                        if (!WordExtentIsValid(currentRequest, word)) {
+                            foundWord = false;
+                        }
+                    }
                 }
+                if (!foundWord) {
+                    // If we couldn't find a word, just clear out the existing markers
+                    SynchronousUpdate(currentRequest, new NormalizedSnapshotSpanCollection(), null);
+                    return;
+                }
+
+                SnapshotSpan currentWord = word.Span;
+
+                // If this is the same word we currently have, we're done (e.g. caret moved within a word).
+                if (CurrentWord.HasValue && currentWord == CurrentWord) {
+                    return;
+                }
+                // Find the new spans
+                FindData findData = new FindData(currentWord.GetText(), currentWord.Snapshot);
+                findData.FindOptions = FindOptions.WholeWord | FindOptions.MatchCase;
+
+                wordSpans.AddRange(TextSearchService.FindAll(findData));
+
+                // If we are still up-to-date (another change hasn't happened yet), do a real update
+                if (currentRequest == RequestedPoint) {
+                    SynchronousUpdate(currentRequest, new NormalizedSnapshotSpanCollection(wordSpans), currentWord);
+                }
+            } catch (Exception e) {
+                Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "ERROR: {0}:UpdateWordAdornments. Something went wrong. e={1}", this.ToString(), e.ToString()));
             }
-
-            if (!foundWord) {
-                // If we couldn't find a word, just clear out the existing markers
-                SynchronousUpdate(currentRequest, new NormalizedSnapshotSpanCollection(), null);
-                return;
-            }
-
-            SnapshotSpan currentWord = word.Span;
-
-            // If this is the same word we currently have, we're done (e.g. caret moved within a word).
-            if (CurrentWord.HasValue && currentWord == CurrentWord)
-                return;
-
-            // Find the new spans
-            FindData findData = new FindData(currentWord.GetText(), currentWord.Snapshot);
-            findData.FindOptions = FindOptions.WholeWord | FindOptions.MatchCase;
-
-            wordSpans.AddRange(TextSearchService.FindAll(findData));
-
-            // If we are still up-to-date (another change hasn't happened yet), do a real update
-            if (currentRequest == RequestedPoint)
-                SynchronousUpdate(currentRequest, new NormalizedSnapshotSpanCollection(wordSpans), currentWord);
         }
 
         /// <summary>
