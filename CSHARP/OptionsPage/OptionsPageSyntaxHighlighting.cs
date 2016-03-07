@@ -136,26 +136,63 @@ namespace AsmDude.OptionsPage {
         protected override void OnApply(PageApplyEventArgs e) {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:OnApply", this.ToString()));
 
-            string title = null; //"Save Changes";
-            string message = "Press OK to save changes. You may need to restart visual studio for the changes to take effect.";
-            int result = VsShellUtilities.ShowMessageBox(Site, message, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            bool changed = false;
+            bool restartNeeded = false;
 
-            if (result == (int)VSConstants.MessageBoxResult.IDCANCEL) {
-                e.ApplyBehavior = ApplyKind.Cancel;
-            } else {
+            if (Properties.Settings.Default.SyntaxHighlighting_On != this._useSyntaxHighlighting) {
                 Properties.Settings.Default.SyntaxHighlighting_On = this._useSyntaxHighlighting;
-                Properties.Settings.Default.SyntaxHighlighting_Opcode = this._colorMnemonic;
-                Properties.Settings.Default.SyntaxHighlighting_Register = this._colorRegister;
-                Properties.Settings.Default.SyntaxHighlighting_Remark = this._colorRemark;
-                Properties.Settings.Default.SyntaxHighlighting_Directive = this._colorDirective;
-                Properties.Settings.Default.SyntaxHighlighting_Constant = this._colorConstant;
-                Properties.Settings.Default.SyntaxHighlighting_Jump = this._colorJump;
-                Properties.Settings.Default.SyntaxHighlighting_Label = this._colorLabel;
-                Properties.Settings.Default.SyntaxHighlighting_Misc = this._colorMisc;
-
-                Properties.Settings.Default.Save();
-                base.OnApply(e);
+                changed = true;
+                restartNeeded = true;
             }
+            if (Properties.Settings.Default.SyntaxHighlighting_Opcode != this._colorMnemonic) {
+                Properties.Settings.Default.SyntaxHighlighting_Opcode = this._colorMnemonic;
+                changed = true;
+                restartNeeded = true;
+            }
+            if (Properties.Settings.Default.SyntaxHighlighting_Register != this._colorRegister) {
+                Properties.Settings.Default.SyntaxHighlighting_Register = this._colorRegister;
+                changed = true;
+                restartNeeded = true;
+            }
+            if (Properties.Settings.Default.SyntaxHighlighting_Remark != this._colorRemark) {
+                Properties.Settings.Default.SyntaxHighlighting_Remark = this._colorRemark;
+                changed = true;
+                restartNeeded = true;
+            }
+            if (Properties.Settings.Default.SyntaxHighlighting_Directive != this._colorDirective) {
+                Properties.Settings.Default.SyntaxHighlighting_Directive = this._colorDirective;
+                changed = true;
+                restartNeeded = true;
+            }
+            if (Properties.Settings.Default.SyntaxHighlighting_Constant != this._colorConstant) {
+                Properties.Settings.Default.SyntaxHighlighting_Constant = this._colorConstant;
+                changed = true;
+                restartNeeded = true;
+            }
+            if (Properties.Settings.Default.SyntaxHighlighting_Jump != this._colorJump) {
+                Properties.Settings.Default.SyntaxHighlighting_Jump = this._colorJump;
+                changed = true;
+                restartNeeded = true;
+            }
+            if (Properties.Settings.Default.SyntaxHighlighting_Label != this._colorLabel) {
+                Properties.Settings.Default.SyntaxHighlighting_Label = this._colorLabel;
+                changed = true;
+                restartNeeded = true;
+            }
+            if (Properties.Settings.Default.SyntaxHighlighting_Misc != this._colorMisc) {
+                Properties.Settings.Default.SyntaxHighlighting_Misc = this._colorMisc;
+                changed = true;
+                restartNeeded = true;
+            }
+            if (changed) {
+                Properties.Settings.Default.Save();
+            }
+            if (restartNeeded) {
+                string title = null;
+                string message = "You may need to restart visual studio for the changes to take effect.";
+                int result = VsShellUtilities.ShowMessageBox(Site, message, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            }
+            base.OnApply(e);
         }
 
         #endregion Event Handlers

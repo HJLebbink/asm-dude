@@ -43,8 +43,8 @@ namespace AsmDude.OptionsPage
         protected override void OnActivate(CancelEventArgs e)
         {
             base.OnActivate(e);
-            this._useAsmDoc = Properties.Settings.Default.CodeFolding_On;
-            this._asmDocUrl = Properties.Settings.Default.CodeFolding_EndTag;
+            this._useAsmDoc = Properties.Settings.Default.AsmDoc_On;
+            this._asmDocUrl = Properties.Settings.Default.AsmDoc_url;
         }
 
         /// <summary>
@@ -95,18 +95,27 @@ namespace AsmDude.OptionsPage
         protected override void OnApply(PageApplyEventArgs e) {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:OnApply", this.ToString()));
 
-            string title = null;// "Save Changes";
-            string message = "Press OK to save changes. You may need to restart visual studio for the changes to take effect.";
-            int result = VsShellUtilities.ShowMessageBox(Site, message, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            bool changed = false;
+            bool restartNeeded = false;
 
-            if (result == (int)VSConstants.MessageBoxResult.IDCANCEL) {
-                e.ApplyBehavior = ApplyKind.Cancel;
-            } else {
+            if (Properties.Settings.Default.AsmDoc_On != this._useAsmDoc) {
                 Properties.Settings.Default.AsmDoc_On = this._useAsmDoc;
-                Properties.Settings.Default.AsmDoc_url = this._asmDocUrl;
-                Properties.Settings.Default.Save();
-                base.OnApply(e);
+                changed = true;
             }
+            if (Properties.Settings.Default.AsmDoc_url != this._asmDocUrl) {
+                Properties.Settings.Default.AsmDoc_url = this._asmDocUrl;
+                changed = true;
+                restartNeeded = true;
+            }
+            if (changed) {
+                Properties.Settings.Default.Save();
+            }
+            if (restartNeeded) {
+                string title = null;
+                string message = "You may need to restart visual studio for the changes to take effect.";
+                int result = VsShellUtilities.ShowMessageBox(Site, message, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            }
+            base.OnApply(e);
         }
 
         #endregion Event Handlers
