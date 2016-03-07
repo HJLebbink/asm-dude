@@ -26,6 +26,9 @@ namespace AsmDude {
     [ProvideOptionPageAttribute(typeof(OptionsPageCodeFolding), "AsmDude", "Code Folding", 100, 103, true, new string[] { "Change Code Folding Options" })]
     [ProvideProfileAttribute(   typeof(OptionsPageCodeFolding), "AsmDude", "Code Folding Options", 100, 103, true)]
 
+    [ProvideOptionPageAttribute(typeof(OptionsPageAsmDoc), "AsmDude", "Asm Documentation", 100, 104, true, new string[] { "Change Asm Documentation Options" })]
+    [ProvideProfileAttribute(typeof(OptionsPageAsmDoc), "AsmDude", "Asm Documentation Options", 100, 104, true)]
+
 
     [ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
     [Guid(GuidStrings.GuidPackage)]

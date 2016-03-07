@@ -133,6 +133,10 @@
     <value>Code Folding</value>
     <comment>Code folding page</comment>
   </data>
+  <data name="104" xml:space="preserve">
+    <value>Asm Documentation</value>
+    <comment>Asm Documentation page</comment>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="400" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\400.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

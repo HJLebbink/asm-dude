@@ -199,7 +199,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="AsmDudeData.xml">
+    <Content Include="Resources\AsmDudeData.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -238,6 +238,11 @@
   <ItemGroup>
     <Compile Include="AsmDudePackage.cs" />
     <Compile Include="AsmDudeTools.cs" />
+    <Compile Include="AsmDoc\AsmDocClassifier.cs" />
+    <Compile Include="AsmDoc\AsmDocMouseHandler.cs" />
+    <Compile Include="OptionsPage\OptionsPageAsmDoc.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -251,7 +256,6 @@
     <Compile Include="CodeCompletion\CompletionController.cs" />
     <Compile Include="SyntaxHighlighting\AsmClassifier.cs" />
     <Compile Include="SyntaxHighlighting\ClassificationFormat.cs" />
-    <Compile Include="SyntaxHighlighting\ClassificationType.cs" />
     <Compile Include="CodeFolding\CodeFoldingTagger.cs" />
     <Compile Include="CodeFolding\CodeFoldingTaggerProvider.cs" />
     <Compile Include="HighlightWord\HighlightWordTagger.cs" />
@@ -291,9 +295,7 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="html\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

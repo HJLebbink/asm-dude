@@ -322,5 +322,29 @@ namespace AsmDude.Properties {
                 this["CodeCompletion_i686"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://www.felixcloutier.com/x86/")]
+        public string AsmDoc_url {
+            get {
+                return ((string)(this["AsmDoc_url"]));
+            }
+            set {
+                this["AsmDoc_url"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AsmDoc_On {
+            get {
+                return ((bool)(this["AsmDoc_On"]));
+            }
+            set {
+                this["AsmDoc_On"] = value;
+            }
+        }
     }
 }

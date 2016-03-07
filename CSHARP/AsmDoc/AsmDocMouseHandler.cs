@@ -25,11 +25,11 @@ namespace AsmDude.GoToDoc {
     [Export(typeof(IKeyProcessorProvider))]
     // [TextViewRole(PredefinedTextViewRoles.Document)]
     [ContentType("code")]
-    [Name("GotoDef")]
+    [Name("AsmDoc")]
     [Order(Before = "VisualStudioKeyboardProcessor")]
-    internal sealed class GoToDocKeyProcessorProvider : IKeyProcessorProvider {
+    internal sealed class AsmDocKeyProcessorProvider : IKeyProcessorProvider {
         public KeyProcessor GetAssociatedProcessor(IWpfTextView view) {
-            return view.Properties.GetOrCreateSingletonProperty(typeof(GoToDocKeyProcessor), () => new GoToDocKeyProcessor(CtrlKeyState.GetStateForView(view)));
+            return view.Properties.GetOrCreateSingletonProperty(typeof(AsmDocKeyProcessor), () => new AsmDocKeyProcessor(CtrlKeyState.GetStateForView(view)));
         }
     }
 
@@ -71,10 +71,10 @@ namespace AsmDude.GoToDoc {
     /// <summary>
     /// Listen for the control key being pressed or released to update the CtrlKeyStateChanged for a view.
     /// </summary>
-    internal sealed class GoToDocKeyProcessor : KeyProcessor {
+    internal sealed class AsmDocKeyProcessor : KeyProcessor {
         CtrlKeyState _state;
 
-        public GoToDocKeyProcessor(CtrlKeyState state) {
+        public AsmDocKeyProcessor(CtrlKeyState state) {
             _state = state;
         }
 
@@ -95,9 +95,9 @@ namespace AsmDude.GoToDoc {
     [Export(typeof(IMouseProcessorProvider))]
     [TextViewRole(PredefinedTextViewRoles.Document)]
     [ContentType("code")]
-    [Name("GotoDef")]
+    [Name("AsmDoc")]
     [Order(Before = "WordSelection")]
-    internal sealed class GoToDocMouseHandlerProvider : IMouseProcessorProvider {
+    internal sealed class AsmDocMouseHandlerProvider : IMouseProcessorProvider {
         [Import]
         IClassifierAggregatorService AggregatorFactory = null;
 
@@ -115,7 +115,7 @@ namespace AsmDude.GoToDoc {
             if (shellCommandDispatcher == null) {
                 return null;
             }
-            return new GoToDocMouseHandler(view,
+            return new AsmDocMouseHandler(view,
                                            shellCommandDispatcher,
                                            AggregatorFactory.GetClassifier(buffer),
                                            NavigatorService.GetTextStructureNavigator(buffer),
@@ -138,7 +138,7 @@ namespace AsmDude.GoToDoc {
     /// Handle ctrl+click on valid elements to send GoToDefinition to the shell.  Also handle mouse moves
     /// (when control is pressed) to highlight references for which GoToDefinition will (likely) be valid.
     /// </summary>
-    internal sealed class GoToDocMouseHandler : MouseProcessorBase {
+    internal sealed class AsmDocMouseHandler : MouseProcessorBase {
         IWpfTextView _view;
         CtrlKeyState _state;
         IClassifier _aggregator;
@@ -149,7 +149,7 @@ namespace AsmDude.GoToDoc {
         private AsmDudeTools _asmDudeTools = null;
 
 
-        public GoToDocMouseHandler(IWpfTextView view, IOleCommandTarget commandTarget, IClassifier aggregator,
+        public AsmDocMouseHandler(IWpfTextView view, IOleCommandTarget commandTarget, IClassifier aggregator,
                                    ITextStructureNavigator navigator, CtrlKeyState state) {
             _view = view;
             _commandTarget = commandTarget;
@@ -165,6 +165,7 @@ namespace AsmDude.GoToDoc {
                 }
             };
 
+            // resolve _asmDudeTools
             AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
 
             // Some other points to clear the highlight span:
@@ -217,10 +218,11 @@ namespace AsmDude.GoToDoc {
                     var bufferPosition = line.GetBufferPositionFromXCoordinate(currentMousePosition.X);
                     if (bufferPosition != null) {
                         string lineText = bufferPosition.Value.GetContainingLine().GetText().Trim();
-                        string[] words = lineText.Split(' ');
-                        Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:PreprocessMouseUp; lineText={1}; word={2}", this.ToString(), lineText, words[0]));
-
-                        this.DispatchGoToDoc(words[0]);
+                        //TODO: get the right word at the buffer position instead of the first keyword on the line
+                        string[] words = lineText.Split(' ','\t',',','[',']');
+                        string keyword = words[0].Trim();
+                        //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:PreprocessMouseUp; lineText={1}; keyword={2}", this.ToString(), lineText, keyword));
+                        this.DispatchGoToDoc(keyword);
                     }
                     this.SetHighlightSpan(null);
                     _view.Selection.Clear();
@@ -240,13 +242,16 @@ namespace AsmDude.GoToDoc {
         }
 
         bool TryHighlightItemUnderMouse(Point position) {
+
+
             bool updated = false;
+            if (!Properties.Settings.Default.AsmDoc_On) return false;
 
             try {
                 var line = _view.TextViewLines.GetTextViewLineContainingYCoordinate(position.Y);
-                if (line == null)
+                if (line == null) {
                     return false;
-
+                }
                 var bufferPosition = line.GetBufferPositionFromXCoordinate(position.X);
                 if (!bufferPosition.HasValue) {
                     return false;
@@ -266,10 +271,14 @@ namespace AsmDude.GoToDoc {
 
                 //  check for valid classification type.
                 foreach (var classification in _aggregator.GetClassificationSpans(extent.Span)) {
-                    var name = classification.ClassificationType.Classification.ToLower();
-                    //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:TryHighlightItemUnderMouse: name:{1}", this.ToString(), lineText));
+                    string keyword = classification.Span.GetText();
+                    string type = classification.ClassificationType.Classification.ToLower();
+                    string url = this.getUrl(keyword);
+                    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:TryHighlightItemUnderMouse: keyword={1}; type={2}; url={3}", this.ToString(), keyword, type, url));
 
-                    if (name.Equals("mnemonic") && SetHighlightSpan(classification.Span)) {
+
+                    //if ((type.Equals("mnemonic") || type.Equals("jump")) && SetHighlightSpan(classification.Span)) {
+                    if ((url != null) && SetHighlightSpan(classification.Span)) {
                         updated = true;
                         return true;
                     }
@@ -295,7 +304,7 @@ namespace AsmDude.GoToDoc {
             }
         }
 
-        bool SetHighlightSpan(SnapshotSpan? span) {
+        private bool SetHighlightSpan(SnapshotSpan? span) {
             var classifier = UnderlineClassifierProvider.GetClassifierForView(_view);
             if (classifier != null) {
                 Mouse.OverrideCursor = (span.HasValue) ? Cursors.Hand : null;
@@ -305,7 +314,7 @@ namespace AsmDude.GoToDoc {
             return false;
         }
 
-        bool DispatchGoToDoc(string keyword) {
+        private bool DispatchGoToDoc(string keyword) {
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:DispatchGoToDoc; keyword={1}", this.ToString(), keyword));
 
             int hr = this.openFile(keyword);
@@ -320,23 +329,31 @@ namespace AsmDude.GoToDoc {
             */
         }
 
+        private string getUrl(string keyword) {
+            string reference = this._asmDudeTools.getUrl(keyword);
+            if (reference == null) return null;
+            if (reference.Length == 0) return null;
+
+            return Properties.Settings.Default.AsmDoc_url + reference;
+            //return "http://www.felixcloutier.com/x86/" + reference;
+            //return AsmDudeToolsStatic.getInstallPath() + "html" + Path.DirectorySeparatorChar + reference;
+        }
+
         private int openFile(string keyword) {
 
-            string reference = this._asmDudeTools.getUrl(keyword);
-            if (reference == null) return 1;
-            if (reference.Length == 0) return 1;
+            string url = this.getUrl(keyword);
+            if (url == null) return 1;
 
-            string filename = AsmDudeToolsStatic.getInstallPath() + "html" + Path.DirectorySeparatorChar + reference;
-            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:openFile; filename={1}", this.ToString(), filename));
+            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:openFile; url={1}", this.ToString(), url));
 
             var dte2 = Package.GetGlobalService(typeof(SDTE)) as DTE2;
             if (dte2 == null) {
-                Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:DispatchGoToDoc; dte2 is null", this.ToString()));
+                Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "WARNING: {0}:DispatchGoToDoc; dte2 is null", this.ToString()));
                 return 1;
             } else {
                 try {
-                    //dte2.ItemOperations.OpenFile(filename, EnvDTE.Constants.vsDocumentKindHTML);
-                    dte2.ItemOperations.Navigate(filename, EnvDTE.vsNavigateOptions.vsNavigateOptionsNewWindow);
+                    //dte2.ItemOperations.OpenFile(url, EnvDTE.Constants.vsDocumentKindHTML);
+                    dte2.ItemOperations.Navigate(url, EnvDTE.vsNavigateOptions.vsNavigateOptionsNewWindow);
                 } catch (Exception e) {
                     Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "ERROR: {0}:DispatchGoToDoc; exception={1}", this.ToString(), e));
                     return 2;
@@ -344,7 +361,6 @@ namespace AsmDude.GoToDoc {
                 return 0;
             }
         }
-
 
         #endregion
     }

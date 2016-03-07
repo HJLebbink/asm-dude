@@ -77,5 +77,11 @@
     <Setting Name="CodeCompletion_i686" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="AsmDoc_url" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://www.felixcloutier.com/x86/</Value>
+    </Setting>
+    <Setting Name="AsmDoc_On" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

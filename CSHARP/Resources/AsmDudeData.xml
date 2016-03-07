@@ -80,11 +80,11 @@
 		<directive name=".XCREF"/>
 		<directive name=".XLIST"/>
 		<directive name=".XMM"/>
-		<directive name=".INTEL_SYNTAX"/>
+		<directive name=".INTEL:SYNTAX"/>
 		<directive name=".TEXT"/>
 		<directive name=".GLOBAL"/>
 		<directive name=".ALIGN"/>
-		<directive name=".ATT_SYNTAX"/>
+		<directive name=".ATT:SYNTAX"/>
 	</directives>
 	<mnemonics>
 		<mnemonic name='AAA'>
@@ -269,15 +269,15 @@
 		</mnemonic>
 		<mnemonic name='CBW'>
 			<description>Convert Byte to Word/Convert Word to Doubleword/Convert Doubleword to Quadword</description>
-			<ref>CBW_CWDE_CDQE.html</ref>
+			<ref>CBW:CWDE:CDQE.html</ref>
 		</mnemonic>
 		<mnemonic name='CWDE'>
 			<description>Convert Byte to Word/Convert Word to Doubleword/Convert Doubleword to Quadword</description>
-			<ref>CBW_CWDE_CDQE.html</ref>
+			<ref>CBW:CWDE:CDQE.html</ref>
 		</mnemonic>
 		<mnemonic name='CDQE'>
 			<description>Convert Byte to Word/Convert Word to Doubleword/Convert Doubleword to Quadword</description>
-			<ref>CBW_CWDE_CDQE.html</ref>
+			<ref>CBW:CWDE:CDQE.html</ref>
 		</mnemonic>
 		<mnemonic name='CLAC'>
 			<description>Clear AC Flag in EFLAGS Register</description>
@@ -449,31 +449,31 @@
 		</mnemonic>
 		<mnemonic name='CMPS'>
 			<description>Compare String Operands</description>
-			<ref>CMPS_CMPSB_CMPSW_CMPSD_CMPSQ.html</ref>
+			<ref>CMPS:CMPSB:CMPSW:CMPSD:CMPSQ.html</ref>
 		</mnemonic>
 		<mnemonic name='CMPSB'>
 			<description>Compare String Operands</description>
-			<ref>CMPS_CMPSB_CMPSW_CMPSD_CMPSQ.html</ref>
+			<ref>CMPS:CMPSB:CMPSW:CMPSD:CMPSQ.html</ref>
 		</mnemonic>
 		<mnemonic name='CMPSW'>
 			<description>Compare String Operands</description>
-			<ref>CMPS_CMPSB_CMPSW_CMPSD_CMPSQ.html</ref>
+			<ref>CMPS:CMPSB:CMPSW:CMPSD:CMPSQ.html</ref>
 		</mnemonic>
 		<mnemonic name='CMPSD'>
 			<description>Compare String Operands</description>
-			<ref>CMPS_CMPSB_CMPSW_CMPSD_CMPSQ.html</ref>
+			<ref>CMPS:CMPSB:CMPSW:CMPSD:CMPSQ.html</ref>
 		</mnemonic>
 		<mnemonic name='CMPSQ'>
 			<description>Compare String Operands</description>
-			<ref>CMPS_CMPSB_CMPSW_CMPSD_CMPSQ.html</ref>
+			<ref>CMPS:CMPSB:CMPSW:CMPSD:CMPSQ.html</ref>
 		</mnemonic>
 		<mnemonic name='CMPXCHG8B' arch='x86'>
 			<description>Compare EDX:EAX with m64. If equal, set ZF and load ECX:EBX into m64. Else, clear ZF and load m64 into EDX:EAX</description>
-			<ref>CMPXCHG8B_CMPXCHG16B.html</ref>
+			<ref>CMPXCHG8B:CMPXCHG16B.html</ref>
 		</mnemonic>
 		<mnemonic name='CMPXCHG16B' arch='x86'>
 			<description>Compare RDX:RAX with m128. If equal, set ZF and load RCX:RBX into m128. Else, clear ZF and load m128 into RDX:RAX</description>
-			<ref>CMPXCHG8B_CMPXCHG16B.html</ref>
+			<ref>CMPXCHG8B:CMPXCHG16B.html</ref>
 		</mnemonic>
 		<mnemonic name='COMISD' arch='SSE2'>
 			<description>Compare Scalar Ordered Double-Precision Floating-Point Values and Set EFLAGS</description>
@@ -581,15 +581,15 @@
 		</mnemonic>
 		<mnemonic name='CWD'>
 			<description>Convert Word to Doubleword/Convert Doubleword to Quadword</description>
-			<ref>CWD_CDQ_CQO.html</ref>
+			<ref>CWD:CDQ:CQO.html</ref>
 		</mnemonic>
 		<mnemonic name='CDQ'>
 			<description>Convert Word to Doubleword/Convert Doubleword to Quadword</description>
-			<ref>CWD_CDQ_CQO.html</ref>
+			<ref>CWD:CDQ:CQO.html</ref>
 		</mnemonic>
 		<mnemonic name='CQO'>
 			<description>Convert Word to Doubleword/Convert Doubleword to Quadword</description>
-			<ref>CWD_CDQ_CQO.html</ref>
+			<ref>CWD:CDQ:CQO.html</ref>
 		</mnemonic>
 		<mnemonic name='DAA'>
 			<description>Decimal Adjust AL after Addition</description>
@@ -653,15 +653,15 @@
 		</mnemonic>
 		<mnemonic name='FADD'>
 			<description>Add</description>
-			<ref>FADD_FADDP_FIADD.html</ref>
+			<ref>FADD:FADDP:FIADD.html</ref>
 		</mnemonic>
 		<mnemonic name='FADDP'>
 			<description>Add</description>
-			<ref>FADD_FADDP_FIADD.html</ref>
+			<ref>FADD:FADDP:FIADD.html</ref>
 		</mnemonic>
 		<mnemonic name='FIADD'>
 			<description>Add</description>
-			<ref>FADD_FADDP_FIADD.html</ref>
+			<ref>FADD:FADDP:FIADD.html</ref>
 		</mnemonic>
 		<mnemonic name='FBLD'>
 			<description>Load Binary Coded Decimal</description>
@@ -677,11 +677,11 @@
 		</mnemonic>
 		<mnemonic name='FCLEX'>
 			<description>Clear Exceptions</description>
-			<ref>FCLEX_FNCLEX.html</ref>
+			<ref>FCLEX:FNCLEX.html</ref>
 		</mnemonic>
 		<mnemonic name='FNCLEX'>
 			<description>Clear Exceptions</description>
-			<ref>FCLEX_FNCLEX.html</ref>
+			<ref>FCLEX:FNCLEX.html</ref>
 		</mnemonic>
 		<mnemonic name='FCMOVB' arch='i686'>
 			<description>Move Floating-Point if below (CF=1)</description>
@@ -717,31 +717,31 @@
 		</mnemonic>
 		<mnemonic name='FCOMI'>
 			<description>Compare Floating Point Values and Set EFLAGS</description>
-			<ref>FCOMI_FCOMIP_ FUCOMI_FUCOMIP.html</ref>
+			<ref>FCOMI:FCOMIP: FUCOMI:FUCOMIP.html</ref>
 		</mnemonic>
 		<mnemonic name='FCOMIP'>
 			<description>Compare Floating Point Values and Set EFLAGS</description>
-			<ref>FCOMI_FCOMIP_ FUCOMI_FUCOMIP.html</ref>
+			<ref>FCOMI:FCOMIP: FUCOMI:FUCOMIP.html</ref>
 		</mnemonic>
 		<mnemonic name='FUCOMI'>
 			<description>Compare Floating Point Values and Set EFLAGS</description>
-			<ref>FCOMI_FCOMIP_ FUCOMI_FUCOMIP.html</ref>
+			<ref>FCOMI:FCOMIP: FUCOMI:FUCOMIP.html</ref>
 		</mnemonic>
 		<mnemonic name='FUCOMIP'>
 			<description>Compare Floating Point Values and Set EFLAGS</description>
-			<ref>FCOMI_FCOMIP_ FUCOMI_FUCOMIP.html</ref>
+			<ref>FCOMI:FCOMIP: FUCOMI:FUCOMIP.html</ref>
 		</mnemonic>
 		<mnemonic name='FCOM'>
 			<description>Compare Floating Point Values</description>
-			<ref>FCOM_FCOMP_FCOMPP.html</ref>
+			<ref>FCOM:FCOMP:FCOMPP.html</ref>
 		</mnemonic>
 		<mnemonic name='FCOMP'>
 			<description>Compare Floating Point Values</description>
-			<ref>FCOM_FCOMP_FCOMPP.html</ref>
+			<ref>FCOM:FCOMP:FCOMPP.html</ref>
 		</mnemonic>
 		<mnemonic name='FCOMPP'>
 			<description>Compare Floating Point Values</description>
-			<ref>FCOM_FCOMP_FCOMPP.html</ref>
+			<ref>FCOM:FCOMP:FCOMPP.html</ref>
 		</mnemonic>
 		<mnemonic name='FCOS'>
 			<description>Cosine</description>
@@ -753,27 +753,27 @@
 		</mnemonic>
 		<mnemonic name='FDIVR'>
 			<description>Reverse Divide</description>
-			<ref>FDIVR_FDIVRP_FIDIVR.html</ref>
+			<ref>FDIVR:FDIVRP:FIDIVR.html</ref>
 		</mnemonic>
 		<mnemonic name='FDIVRP'>
 			<description>Reverse Divide</description>
-			<ref>FDIVR_FDIVRP_FIDIVR.html</ref>
+			<ref>FDIVR:FDIVRP:FIDIVR.html</ref>
 		</mnemonic>
 		<mnemonic name='FIDIVR'>
 			<description>Reverse Divide</description>
-			<ref>FDIVR_FDIVRP_FIDIVR.html</ref>
+			<ref>FDIVR:FDIVRP:FIDIVR.html</ref>
 		</mnemonic>
 		<mnemonic name='FDIV'>
 			<description>Divide</description>
-			<ref>FDIV_FDIVP_FIDIV.html</ref>
+			<ref>FDIV:FDIVP:FIDIV.html</ref>
 		</mnemonic>
 		<mnemonic name='FDIVP'>
 			<description>Divide</description>
-			<ref>FDIV_FDIVP_FIDIV.html</ref>
+			<ref>FDIV:FDIVP:FIDIV.html</ref>
 		</mnemonic>
 		<mnemonic name='FIDIV'>
 			<description>Divide</description>
-			<ref>FDIV_FDIVP_FIDIV.html</ref>
+			<ref>FDIV:FDIVP:FIDIV.html</ref>
 		</mnemonic>
 		<mnemonic name='FFREE'>
 			<description>Free Floating-Point Register</description>
@@ -781,11 +781,11 @@
 		</mnemonic>
 		<mnemonic name='FICOM'>
 			<description>Compare Integer</description>
-			<ref>FICOM_FICOMP.html</ref>
+			<ref>FICOM:FICOMP.html</ref>
 		</mnemonic>
 		<mnemonic name='FICOMP'>
 			<description>Compare Integer</description>
-			<ref>FICOM_FICOMP.html</ref>
+			<ref>FICOM:FICOMP.html</ref>
 		</mnemonic>
 		<mnemonic name='FILD'>
 			<description>Load Integer</description>
@@ -797,11 +797,11 @@
 		</mnemonic>
 		<mnemonic name='FINIT'>
 			<description>Initialize Floating-Point Unit</description>
-			<ref>FINIT_FNINIT.html</ref>
+			<ref>FINIT:FNINIT.html</ref>
 		</mnemonic>
 		<mnemonic name='FNINIT'>
 			<description>Initialize Floating-Point Unit</description>
-			<ref>FINIT_FNINIT.html</ref>
+			<ref>FINIT:FNINIT.html</ref>
 		</mnemonic>
 		<mnemonic name='FISTTP' arch='SSE3'>
 			<description>Store Integer with Truncation</description>
@@ -809,11 +809,11 @@
 		</mnemonic>
 		<mnemonic name='FIST'>
 			<description>Store Integer</description>
-			<ref>FIST_FISTP.html</ref>
+			<ref>FIST:FISTP.html</ref>
 		</mnemonic>
 		<mnemonic name='FISTP'>
 			<description>Store Integer</description>
-			<ref>FIST_FISTP.html</ref>
+			<ref>FIST:FISTP.html</ref>
 		</mnemonic>
 		<mnemonic name='FLD'>
 			<description>Load Floating Point Value</description>
@@ -821,31 +821,31 @@
 		</mnemonic>
 		<mnemonic name='FLD1'>
 			<description>Load Constant</description>
-			<ref>FLD1_FLDL2T_FLDL2E_FLDPI_FLDLG2_FLDLN2_FLDZ.html</ref>
+			<ref>FLD1:FLDL2T:FLDL2E:FLDPI:FLDLG2:FLDLN2:FLDZ.html</ref>
 		</mnemonic>
 		<mnemonic name='FLDL2T'>
 			<description>Load Constant</description>
-			<ref>FLD1_FLDL2T_FLDL2E_FLDPI_FLDLG2_FLDLN2_FLDZ.html</ref>
+			<ref>FLD1:FLDL2T:FLDL2E:FLDPI:FLDLG2:FLDLN2:FLDZ.html</ref>
 		</mnemonic>
 		<mnemonic name='FLDL2E'>
 			<description>Load Constant</description>
-			<ref>FLD1_FLDL2T_FLDL2E_FLDPI_FLDLG2_FLDLN2_FLDZ.html</ref>
+			<ref>FLD1:FLDL2T:FLDL2E:FLDPI:FLDLG2:FLDLN2:FLDZ.html</ref>
 		</mnemonic>
 		<mnemonic name='FLDPI'>
 			<description>Load Constant</description>
-			<ref>FLD1_FLDL2T_FLDL2E_FLDPI_FLDLG2_FLDLN2_FLDZ.html</ref>
+			<ref>FLD1:FLDL2T:FLDL2E:FLDPI:FLDLG2:FLDLN2:FLDZ.html</ref>
 		</mnemonic>
 		<mnemonic name='FLDLG2'>
 			<description>Load Constant</description>
-			<ref>FLD1_FLDL2T_FLDL2E_FLDPI_FLDLG2_FLDLN2_FLDZ.html</ref>
+			<ref>FLD1:FLDL2T:FLDL2E:FLDPI:FLDLG2:FLDLN2:FLDZ.html</ref>
 		</mnemonic>
 		<mnemonic name='FLDLN2'>
 			<description>Load Constant</description>
-			<ref>FLD1_FLDL2T_FLDL2E_FLDPI_FLDLG2_FLDLN2_FLDZ.html</ref>
+			<ref>FLD1:FLDL2T:FLDL2E:FLDPI:FLDLG2:FLDLN2:FLDZ.html</ref>
 		</mnemonic>
 		<mnemonic name='FLDZ'>
 			<description>Load Constant</description>
-			<ref>FLD1_FLDL2T_FLDL2E_FLDPI_FLDLG2_FLDLN2_FLDZ.html</ref>
+			<ref>FLD1:FLDL2T:FLDL2E:FLDPI:FLDLG2:FLDLN2:FLDZ.html</ref>
 		</mnemonic>
 		<mnemonic name='FLDCW'>
 			<description>Load x87 FPU Control Word</description>
@@ -857,15 +857,15 @@
 		</mnemonic>
 		<mnemonic name='FMUL'>
 			<description>Multiply</description>
-			<ref>FMUL_FMULP_FIMUL.html</ref>
+			<ref>FMUL:FMULP:FIMUL.html</ref>
 		</mnemonic>
 		<mnemonic name='FMULP'>
 			<description>Multiply</description>
-			<ref>FMUL_FMULP_FIMUL.html</ref>
+			<ref>FMUL:FMULP:FIMUL.html</ref>
 		</mnemonic>
 		<mnemonic name='FIMUL'>
 			<description>Multiply</description>
-			<ref>FMUL_FMULP_FIMUL.html</ref>
+			<ref>FMUL:FMULP:FIMUL.html</ref>
 		</mnemonic>
 		<mnemonic name='FNOP'>
 			<description>No Operation</description>
@@ -897,11 +897,11 @@
 		</mnemonic>
 		<mnemonic name='FSAVE'>
 			<description>Store x87 FPU State</description>
-			<ref>FSAVE_FNSAVE.html</ref>
+			<ref>FSAVE:FNSAVE.html</ref>
 		</mnemonic>
 		<mnemonic name='FNSAVE'>
 			<description>Store x87 FPU State</description>
-			<ref>FSAVE_FNSAVE.html</ref>
+			<ref>FSAVE:FNSAVE.html</ref>
 		</mnemonic>
 		<mnemonic name='FSCALE'>
 			<description>Scale</description>
@@ -921,59 +921,59 @@
 		</mnemonic>
 		<mnemonic name='FSTCW'>
 			<description>Store x87 FPU Control Word</description>
-			<ref>FSTCW_FNSTCW.html</ref>
+			<ref>FSTCW:FNSTCW.html</ref>
 		</mnemonic>
 		<mnemonic name='FNSTCW'>
 			<description>Store x87 FPU Control Word</description>
-			<ref>FSTCW_FNSTCW.html</ref>
+			<ref>FSTCW:FNSTCW.html</ref>
 		</mnemonic>
 		<mnemonic name='FSTENV'>
 			<description>Store x87 FPU Environment</description>
-			<ref>FSTENV_FNSTENV.html</ref>
+			<ref>FSTENV:FNSTENV.html</ref>
 		</mnemonic>
 		<mnemonic name='FNSTENV'>
 			<description>Store x87 FPU Environment</description>
-			<ref>FSTENV_FNSTENV.html</ref>
+			<ref>FSTENV:FNSTENV.html</ref>
 		</mnemonic>
 		<mnemonic name='FSTSW'>
 			<description>Store x87 FPU Status Word</description>
-			<ref>FSTSW_FNSTSW.html</ref>
+			<ref>FSTSW:FNSTSW.html</ref>
 		</mnemonic>
 		<mnemonic name='FNSTSW'>
 			<description>Store x87 FPU Status Word</description>
-			<ref>FSTSW_FNSTSW.html</ref>
+			<ref>FSTSW:FNSTSW.html</ref>
 		</mnemonic>
 		<mnemonic name='FST'>
 			<description>Store Floating Point Value</description>
-			<ref>FST_FSTP.html</ref>
+			<ref>FST:FSTP.html</ref>
 		</mnemonic>
 		<mnemonic name='FSTP'>
 			<description>Store Floating Point Value</description>
-			<ref>FST_FSTP.html</ref>
+			<ref>FST:FSTP.html</ref>
 		</mnemonic>
 		<mnemonic name='FSUBR'>
 			<description>Reverse Subtract</description>
-			<ref>FSUBR_FSUBRP_FISUBR.html</ref>
+			<ref>FSUBR:FSUBRP:FISUBR.html</ref>
 		</mnemonic>
 		<mnemonic name='FSUBRP'>
 			<description>Reverse Subtract</description>
-			<ref>FSUBR_FSUBRP_FISUBR.html</ref>
+			<ref>FSUBR:FSUBRP:FISUBR.html</ref>
 		</mnemonic>
 		<mnemonic name='FISUBR'>
 			<description>Reverse Subtract</description>
-			<ref>FSUBR_FSUBRP_FISUBR.html</ref>
+			<ref>FSUBR:FSUBRP:FISUBR.html</ref>
 		</mnemonic>
 		<mnemonic name='FSUB'>
 			<description>Subtract</description>
-			<ref>FSUB_FSUBP_FISUB.html</ref>
+			<ref>FSUB:FSUBP:FISUB.html</ref>
 		</mnemonic>
 		<mnemonic name='FSUBP'>
 			<description>Subtract</description>
-			<ref>FSUB_FSUBP_FISUB.html</ref>
+			<ref>FSUB:FSUBP:FISUB.html</ref>
 		</mnemonic>
 		<mnemonic name='FISUB'>
 			<description>Subtract</description>
-			<ref>FSUB_FSUBP_FISUB.html</ref>
+			<ref>FSUB:FSUBP:FISUB.html</ref>
 		</mnemonic>
 		<mnemonic name='FTST'>
 			<description>TEST</description>
@@ -981,15 +981,15 @@
 		</mnemonic>
 		<mnemonic name='FUCOM'>
 			<description>Unordered Compare Floating Point Values</description>
-			<ref>FUCOM_FUCOMP_FUCOMPP.html</ref>
+			<ref>FUCOM:FUCOMP:FUCOMPP.html</ref>
 		</mnemonic>
 		<mnemonic name='FUCOMP'>
 			<description>Unordered Compare Floating Point Values</description>
-			<ref>FUCOM_FUCOMP_FUCOMPP.html</ref>
+			<ref>FUCOM:FUCOMP:FUCOMPP.html</ref>
 		</mnemonic>
 		<mnemonic name='FUCOMPP'>
 			<description>Unordered Compare Floating Point Values</description>
-			<ref>FUCOM_FUCOMP_FUCOMPP.html</ref>
+			<ref>FUCOM:FUCOMP:FUCOMPP.html</ref>
 		</mnemonic>
 		<mnemonic name='FXAM'>
 			<description>Examine ModR/M</description>
@@ -1061,27 +1061,27 @@
 		</mnemonic>
 		<mnemonic name='INS'>
 			<description>Input from Port to String</description>
-			<ref>INS_INSB_INSW_INSD.html</ref>
+			<ref>INS:INSB:INSW:INSD.html</ref>
 		</mnemonic>
 		<mnemonic name='INSB'>
 			<description>Input from Port to String</description>
-			<ref>INS_INSB_INSW_INSD.html</ref>
+			<ref>INS:INSB:INSW:INSD.html</ref>
 		</mnemonic>
 		<mnemonic name='INSW'>
 			<description>Input from Port to String</description>
-			<ref>INS_INSB_INSW_INSD.html</ref>
+			<ref>INS:INSB:INSW:INSD.html</ref>
 		</mnemonic>
 		<mnemonic name='INSD'>
 			<description>Input from Port to String</description>
-			<ref>INS_INSB_INSW_INSD.html</ref>
+			<ref>INS:INSB:INSW:INSD.html</ref>
 		</mnemonic>
 		<mnemonic name='INT'>
 			<description>Call to Interrupt Procedure</description>
-			<ref>INT n_INTO_INT 3.html</ref>
+			<ref>INT n:INTO:INT 3.html</ref>
 		</mnemonic>
 		<mnemonic name='INTO'>
 			<description>Call to Interrupt Procedure</description>
-			<ref>INT n_INTO_INT 3.html</ref>
+			<ref>INT n:INTO:INT 3.html</ref>
 		</mnemonic>
 		<mnemonic name='INVD'>
 			<description>Invalidate Internal Caches</description>
@@ -1097,11 +1097,11 @@
 		</mnemonic>
 		<mnemonic name='IRET'>
 			<description>Interrupt Return</description>
-			<ref>IRET_IRETD.html</ref>
+			<ref>IRET:IRETD.html</ref>
 		</mnemonic>
 		<mnemonic name='IRETD'>
 			<description>Interrupt Return</description>
-			<ref>IRET_IRETD.html</ref>
+			<ref>IRET:IRETD.html</ref>
 		</mnemonic>
 		<mnemonic name='JA' type='jump'>
 			<description>Jump if above (CF=0 and ZF=0) (JA=JNBE)</description>
@@ -1253,23 +1253,23 @@
 		</mnemonic>
 		<mnemonic name='LDS'>
 			<description>Load Far Pointer</description>
-			<ref>LDS_LES_LFS_LGS_LSS.html</ref>
+			<ref>LDS:LES:LFS:LGS:LSS.html</ref>
 		</mnemonic>
 		<mnemonic name='LES'>
 			<description>Load Far Pointer</description>
-			<ref>LDS_LES_LFS_LGS_LSS.html</ref>
+			<ref>LDS:LES:LFS:LGS:LSS.html</ref>
 		</mnemonic>
 		<mnemonic name='LFS'>
 			<description>Load Far Pointer</description>
-			<ref>LDS_LES_LFS_LGS_LSS.html</ref>
+			<ref>LDS:LES:LFS:LGS:LSS.html</ref>
 		</mnemonic>
 		<mnemonic name='LGS'>
 			<description>Load Far Pointer</description>
-			<ref>LDS_LES_LFS_LGS_LSS.html</ref>
+			<ref>LDS:LES:LFS:LGS:LSS.html</ref>
 		</mnemonic>
 		<mnemonic name='LSS'>
 			<description>Load Far Pointer</description>
-			<ref>LDS_LES_LFS_LGS_LSS.html</ref>
+			<ref>LDS:LES:LFS:LGS:LSS.html</ref>
 		</mnemonic>
 		<mnemonic name='LEA'>
 			<description>Load Effective Address</description>
@@ -1285,11 +1285,11 @@
 		</mnemonic>
 		<mnemonic name='LGDT'>
 			<description>Load Global/Interrupt Descriptor Table Register</description>
-			<ref>LGDT_LIDT.html</ref>
+			<ref>LGDT:LIDT.html</ref>
 		</mnemonic>
 		<mnemonic name='LIDT'>
 			<description>Load Global/Interrupt Descriptor Table Register</description>
-			<ref>LGDT_LIDT.html</ref>
+			<ref>LGDT:LIDT.html</ref>
 		</mnemonic>
 		<mnemonic name='LLDT'>
 			<description>Load Local Descriptor Table Register</description>
@@ -1305,31 +1305,31 @@
 		</mnemonic>
 		<mnemonic name='LODS'>
 			<description>Load String</description>
-			<ref>LODS_LODSB_LODSW_LODSD_LODSQ.html</ref>
+			<ref>LODS:LODSB:LODSW:LODSD:LODSQ.html</ref>
 		</mnemonic>
 		<mnemonic name='LODSB'>
 			<description>Load String</description>
-			<ref>LODS_LODSB_LODSW_LODSD_LODSQ.html</ref>
+			<ref>LODS:LODSB:LODSW:LODSD:LODSQ.html</ref>
 		</mnemonic>
 		<mnemonic name='LODSW'>
 			<description>Load String</description>
-			<ref>LODS_LODSB_LODSW_LODSD_LODSQ.html</ref>
+			<ref>LODS:LODSB:LODSW:LODSD:LODSQ.html</ref>
 		</mnemonic>
 		<mnemonic name='LODSD'>
 			<description>Load String</description>
-			<ref>LODS_LODSB_LODSW_LODSD_LODSQ.html</ref>
+			<ref>LODS:LODSB:LODSW:LODSD:LODSQ.html</ref>
 		</mnemonic>
 		<mnemonic name='LODSQ'>
 			<description>Load String</description>
-			<ref>LODS_LODSB_LODSW_LODSD_LODSQ.html</ref>
+			<ref>LODS:LODSB:LODSW:LODSD:LODSQ.html</ref>
 		</mnemonic>
 		<mnemonic name='LOOP'>
 			<description>Loop According to ECX Counter</description>
-			<ref>LOOP_LOOPcc.html</ref>
+			<ref>LOOP:LOOPcc.html</ref>
 		</mnemonic>
 		<mnemonic name='LOOPcc'>
 			<description>Loop According to ECX Counter</description>
-			<ref>LOOP_LOOPcc.html</ref>
+			<ref>LOOP:LOOPcc.html</ref>
 		</mnemonic>
 		<mnemonic name='LSL'>
 			<description>Load Segment Limit</description>
@@ -1425,11 +1425,11 @@
 		</mnemonic>
 		<mnemonic name='MOVD' arch='MMX'>
 			<description>Move Doubleword/Move Quadword</description>
-			<ref>MOVD_MOVQ.html</ref>
+			<ref>MOVD:MOVQ.html</ref>
 		</mnemonic>
 		<mnemonic name='MOVQ' arch='MMX'>
 			<description>Move Doubleword/Move Quadword</description>
-			<ref>MOVD_MOVQ.html</ref>
+			<ref>MOVD:MOVQ.html</ref>
 		</mnemonic>
 		<mnemonic name='MOVHLPS' arch='SSE'>
 			<description>Move Packed Single-Precision Floating-Point Values High to Low</description>
@@ -1513,31 +1513,31 @@
 		</mnemonic>
 		<mnemonic name='MOVSX'>
 			<description>Move with Sign-Extension</description>
-			<ref>MOVSX_MOVSXD.html</ref>
+			<ref>MOVSX:MOVSXD.html</ref>
 		</mnemonic>
 		<mnemonic name='MOVSXD'>
 			<description>Move with Sign-Extension</description>
-			<ref>MOVSX_MOVSXD.html</ref>
+			<ref>MOVSX:MOVSXD.html</ref>
 		</mnemonic>
 		<mnemonic name='MOVS'>
 			<description>Move Data from String to String</description>
-			<ref>MOVS_MOVSB_MOVSW_MOVSD_MOVSQ.html</ref>
+			<ref>MOVS:MOVSB:MOVSW:MOVSD:MOVSQ.html</ref>
 		</mnemonic>
 		<mnemonic name='MOVSB'>
 			<description>Move Data from String to String</description>
-			<ref>MOVS_MOVSB_MOVSW_MOVSD_MOVSQ.html</ref>
+			<ref>MOVS:MOVSB:MOVSW:MOVSD:MOVSQ.html</ref>
 		</mnemonic>
 		<mnemonic name='MOVSW'>
 			<description>Move Data from String to String</description>
-			<ref>MOVS_MOVSB_MOVSW_MOVSD_MOVSQ.html</ref>
+			<ref>MOVS:MOVSB:MOVSW:MOVSD:MOVSQ.html</ref>
 		</mnemonic>
 		<mnemonic name='MOVSD'>
 			<description>Move Data from String to String</description>
-			<ref>MOVS_MOVSB_MOVSW_MOVSD_MOVSQ.html</ref>
+			<ref>MOVS:MOVSB:MOVSW:MOVSD:MOVSQ.html</ref>
 		</mnemonic>
 		<mnemonic name='MOVSQ'>
 			<description>Move Data from String to String</description>
-			<ref>MOVS_MOVSB_MOVSW_MOVSD_MOVSQ.html</ref>
+			<ref>MOVS:MOVSB:MOVSW:MOVSD:MOVSQ.html</ref>
 		</mnemonic>
 		<mnemonic name='MOVUPD' arch='SSE2'>
 			<description>Move Unaligned Packed Double-Precision Floating-Point Values</description>
@@ -1613,39 +1613,39 @@
 		</mnemonic>
 		<mnemonic name='OUTS'>
 			<description>Output String to Port</description>
-			<ref>OUTS_OUTSB_OUTSW_OUTSD.html</ref>
+			<ref>OUTS:OUTSB:OUTSW:OUTSD.html</ref>
 		</mnemonic>
 		<mnemonic name='OUTSB'>
 			<description>Output String to Port</description>
-			<ref>OUTS_OUTSB_OUTSW_OUTSD.html</ref>
+			<ref>OUTS:OUTSB:OUTSW:OUTSD.html</ref>
 		</mnemonic>
 		<mnemonic name='OUTSW'>
 			<description>Output String to Port</description>
-			<ref>OUTS_OUTSB_OUTSW_OUTSD.html</ref>
+			<ref>OUTS:OUTSB:OUTSW:OUTSD.html</ref>
 		</mnemonic>
 		<mnemonic name='OUTSD'>
 			<description>Output String to Port</description>
-			<ref>OUTS_OUTSB_OUTSW_OUTSD.html</ref>
+			<ref>OUTS:OUTSB:OUTSW:OUTSD.html</ref>
 		</mnemonic>
 		<mnemonic name='PABSB' arch='SSSE3'>
 			<description>Packed Absolute Value</description>
-			<ref>PABSB_PABSW_PABSD.html</ref>
+			<ref>PABSB:PABSW:PABSD.html</ref>
 		</mnemonic>
 		<mnemonic name='PABSW' arch='SSSE3'>
 			<description>Packed Absolute Value</description>
-			<ref>PABSB_PABSW_PABSD.html</ref>
+			<ref>PABSB:PABSW:PABSD.html</ref>
 		</mnemonic>
 		<mnemonic name='PABSD' arch='SSSE3'>
 			<description>Packed Absolute Value</description>
-			<ref>PABSB_PABSW_PABSD.html</ref>
+			<ref>PABSB:PABSW:PABSD.html</ref>
 		</mnemonic>
 		<mnemonic name='PACKSSWB' arch='MMX'>
 			<description>Pack word to byte (signed with saturation)</description>
-			<ref>PACKSSWB_PACKSSDW.html</ref>
+			<ref>PACKSSWB:PACKSSDW.html</ref>
 		</mnemonic>
 		<mnemonic name='PACKSSDW' arch='MMX'>
 			<description>Pack Doubleword to word (signed with saturation)</description>
-			<ref>PACKSSWB_PACKSSDW.html</ref>
+			<ref>PACKSSWB:PACKSSDW.html</ref>
 		</mnemonic>
 		<mnemonic name='PACKUSDW' arch='SSE4.1'>
 			<description>Pack with Unsigned Saturation</description>
@@ -1657,15 +1657,15 @@
 		</mnemonic>
 		<mnemonic name='PADDB' arch='MMX'>
 			<description>Add Packed Integers</description>
-			<ref>PADDB_PADDW_PADDD.html</ref>
+			<ref>PADDB:PADDW:PADDD.html</ref>
 		</mnemonic>
 		<mnemonic name='PADDW' arch='MMX'>
 			<description>Add Packed Integers</description>
-			<ref>PADDB_PADDW_PADDD.html</ref>
+			<ref>PADDB:PADDW:PADDD.html</ref>
 		</mnemonic>
 		<mnemonic name='PADDD' arch='MMX'>
 			<description>Add Packed Integers</description>
-			<ref>PADDB_PADDW_PADDD.html</ref>
+			<ref>PADDB:PADDW:PADDD.html</ref>
 		</mnemonic>
 		<mnemonic name='PADDQ' arch='SSE2'>
 			<description>Add Packed Quadword Integers</description>
@@ -1673,19 +1673,19 @@
 		</mnemonic>
 		<mnemonic name='PADDSB' arch='MMX'>
 			<description>Add Packed Signed Integers with Signed Saturation</description>
-			<ref>PADDSB_PADDSW.html</ref>
+			<ref>PADDSB:PADDSW.html</ref>
 		</mnemonic>
 		<mnemonic name='PADDSW' arch='MMX'>
 			<description>Add Packed Signed Integers with Signed Saturation</description>
-			<ref>PADDSB_PADDSW.html</ref>
+			<ref>PADDSB:PADDSW.html</ref>
 		</mnemonic>
 		<mnemonic name='PADDUSB' arch='MMX'>
 			<description>Add Packed Unsigned Integers with Unsigned Saturation</description>
-			<ref>PADDUSB_PADDUSW.html</ref>
+			<ref>PADDUSB:PADDUSW.html</ref>
 		</mnemonic>
 		<mnemonic name='PADDUSW' arch='MMX'>
 			<description>Add Packed Unsigned Integers with Unsigned Saturation</description>
-			<ref>PADDUSB_PADDUSW.html</ref>
+			<ref>PADDUSB:PADDUSW.html</ref>
 		</mnemonic>
 		<mnemonic name='PALIGNR' arch='SSSE3'>
 			<description>Packed Align Right</description>
@@ -1705,11 +1705,11 @@
 		</mnemonic>
 		<mnemonic name='PAVGB' arch='SSE'>
 			<description>Average Packed Integers</description>
-			<ref>PAVGB_PAVGW.html</ref>
+			<ref>PAVGB:PAVGW.html</ref>
 		</mnemonic>
 		<mnemonic name='PAVGW' arch='SSE'>
 			<description>Average Packed Integers</description>
-			<ref>PAVGB_PAVGW.html</ref>
+			<ref>PAVGB:PAVGW.html</ref>
 		</mnemonic>
 		<mnemonic name='PBLENDVB' arch='SSE4.1'>
 			<description>Variable Blend Packed Bytes</description>
@@ -1725,15 +1725,15 @@
 		</mnemonic>
 		<mnemonic name='PCMPEQB' arch='MMX'>
 			<description>Compare Packed Data for Equal</description>
-			<ref>PCMPEQB_PCMPEQW_PCMPEQD.html</ref>
+			<ref>PCMPEQB:PCMPEQW:PCMPEQD.html</ref>
 		</mnemonic>
 		<mnemonic name='PCMPEQW' arch='MMX'>
 			<description>Compare Packed Data for Equal</description>
-			<ref>PCMPEQB_PCMPEQW_PCMPEQD.html</ref>
+			<ref>PCMPEQB:PCMPEQW:PCMPEQD.html</ref>
 		</mnemonic>
 		<mnemonic name='PCMPEQD' arch='MMX'>
 			<description>Compare Packed Data for Equal</description>
-			<ref>PCMPEQB_PCMPEQW_PCMPEQD.html</ref>
+			<ref>PCMPEQB:PCMPEQW:PCMPEQD.html</ref>
 		</mnemonic>
 		<mnemonic name='PCMPEQQ' arch='SSE4.1'>
 			<description>Compare Packed Qword Data for Equal</description>
@@ -1749,15 +1749,15 @@
 		</mnemonic>
 		<mnemonic name='PCMPGTB' arch='MMX'>
 			<description>Compare Packed Signed Integers for Greater Than</description>
-			<ref>PCMPGTB_PCMPGTW_PCMPGTD.html</ref>
+			<ref>PCMPGTB:PCMPGTW:PCMPGTD.html</ref>
 		</mnemonic>
 		<mnemonic name='PCMPGTW' arch='MMX'>
 			<description>Compare Packed Signed Integers for Greater Than</description>
-			<ref>PCMPGTB_PCMPGTW_PCMPGTD.html</ref>
+			<ref>PCMPGTB:PCMPGTW:PCMPGTD.html</ref>
 		</mnemonic>
 		<mnemonic name='PCMPGTD' arch='MMX'>
 			<description>Compare Packed Signed Integers for Greater Than</description>
-			<ref>PCMPGTB_PCMPGTW_PCMPGTD.html</ref>
+			<ref>PCMPGTB:PCMPGTW:PCMPGTD.html</ref>
 		</mnemonic>
 		<mnemonic name='PCMPGTQ' arch='SSE4.2'>
 			<description>Compare Packed Data for Greater Than</description>
@@ -1781,15 +1781,15 @@
 		</mnemonic>
 		<mnemonic name='PEXTRB' arch='SSE4.1'>
 			<description>Extract Byte/Dword/Qword</description>
-			<ref>PEXTRB_PEXTRD_PEXTRQ.html</ref>
+			<ref>PEXTRB:PEXTRD:PEXTRQ.html</ref>
 		</mnemonic>
 		<mnemonic name='PEXTRD' arch='SSE4.1'>
 			<description>Extract Byte/Dword/Qword</description>
-			<ref>PEXTRB_PEXTRD_PEXTRQ.html</ref>
+			<ref>PEXTRB:PEXTRD:PEXTRQ.html</ref>
 		</mnemonic>
 		<mnemonic name='PEXTRQ' arch='SSE4.1'>
 			<description>Extract Byte/Dword/Qword</description>
-			<ref>PEXTRB_PEXTRD_PEXTRQ.html</ref>
+			<ref>PEXTRB:PEXTRD:PEXTRQ.html</ref>
 		</mnemonic>
 		<mnemonic name='PEXTRW' arch='SSE'>
 			<description>Extract Word</description>
@@ -1801,11 +1801,11 @@
 		</mnemonic>
 		<mnemonic name='PHADDW' arch='SSSE3'>
 			<description>Packed Horizontal Add</description>
-			<ref>PHADDW_PHADDD.html</ref>
+			<ref>PHADDW:PHADDD.html</ref>
 		</mnemonic>
 		<mnemonic name='PHADDD' arch='SSSE3'>
 			<description>Packed Horizontal Add</description>
-			<ref>PHADDW_PHADDD.html</ref>
+			<ref>PHADDW:PHADDD.html</ref>
 		</mnemonic>
 		<mnemonic name='PHMINPOSUW' arch='SSE4.1'>
 			<description>Packed Horizontal Word Minimum</description>
@@ -1817,23 +1817,23 @@
 		</mnemonic>
 		<mnemonic name='PHSUBW' arch='SSSE3'>
 			<description>Packed Horizontal Subtract</description>
-			<ref>PHSUBW_PHSUBD.html</ref>
+			<ref>PHSUBW:PHSUBD.html</ref>
 		</mnemonic>
 		<mnemonic name='PHSUBD' arch='SSSE3'>
 			<description>Packed Horizontal Subtract</description>
-			<ref>PHSUBW_PHSUBD.html</ref>
+			<ref>PHSUBW:PHSUBD.html</ref>
 		</mnemonic>
 		<mnemonic name='PINSRB' arch='SSE4.1'>
 			<description>Insert Byte</description>
-			<ref>PINSRB_PINSRD_PINSRQ.html</ref>
+			<ref>PINSRB:PINSRD:PINSRQ.html</ref>
 		</mnemonic>
 		<mnemonic name='PINSRD' arch='SSE4.1'>
 			<description>Insert Dword</description>
-			<ref>PINSRB_PINSRD_PINSRQ.html</ref>
+			<ref>PINSRB:PINSRD:PINSRQ.html</ref>
 		</mnemonic>
 		<mnemonic name='PINSRQ' arch='SSE4.1'>
 			<description>Insert Qword</description>
-			<ref>PINSRB_PINSRD_PINSRQ.html</ref>
+			<ref>PINSRB:PINSRD:PINSRQ.html</ref>
 		</mnemonic>
 		<mnemonic name='PINSRW' arch='SSE'>
 			<description>Insert Word</description>
@@ -1981,11 +1981,11 @@
 		</mnemonic>
 		<mnemonic name='POPA'>
 			<description>Pop All General-Purpose Registers</description>
-			<ref>POPA_POPAD.html</ref>
+			<ref>POPA:POPAD.html</ref>
 		</mnemonic>
 		<mnemonic name='POPAD'>
 			<description>Pop All General-Purpose Registers</description>
-			<ref>POPA_POPAD.html</ref>
+			<ref>POPA:POPAD.html</ref>
 		</mnemonic>
 		<mnemonic name='POPCNT' arch='SSE4.2'>
 			<description>Return the Count of Number of Bits Set to 1</description>
@@ -1993,15 +1993,15 @@
 		</mnemonic>
 		<mnemonic name='POPF'>
 			<description>Pop Stack into EFLAGS Register</description>
-			<ref>POPF_POPFD_POPFQ.html</ref>
+			<ref>POPF:POPFD:POPFQ.html</ref>
 		</mnemonic>
 		<mnemonic name='POPFD'>
 			<description>Pop Stack into EFLAGS Register</description>
-			<ref>POPF_POPFD_POPFQ.html</ref>
+			<ref>POPF:POPFD:POPFQ.html</ref>
 		</mnemonic>
 		<mnemonic name='POPFQ'>
 			<description>Pop Stack into EFLAGS Register</description>
-			<ref>POPF_POPFD_POPFQ.html</ref>
+			<ref>POPF:POPFD:POPFQ.html</ref>
 		</mnemonic>
 		<mnemonic name='POR' arch='MMX'>
 			<description>Bitwise Logical OR</description>
@@ -2057,15 +2057,15 @@
 		</mnemonic>
 		<mnemonic name='PSIGNB' arch='SSSE3'>
 			<description>Packed SIGN</description>
-			<ref>PSIGNB_PSIGNW_PSIGND.html</ref>
+			<ref>PSIGNB:PSIGNW:PSIGND.html</ref>
 		</mnemonic>
 		<mnemonic name='PSIGNW' arch='SSSE3'>
 			<description>Packed SIGN</description>
-			<ref>PSIGNB_PSIGNW_PSIGND.html</ref>
+			<ref>PSIGNB:PSIGNW:PSIGND.html</ref>
 		</mnemonic>
 		<mnemonic name='PSIGND' arch='SSSE3'>
 			<description>Packed SIGN</description>
-			<ref>PSIGNB_PSIGNW_PSIGND.html</ref>
+			<ref>PSIGNB:PSIGNW:PSIGND.html</ref>
 		</mnemonic>
 		<mnemonic name='PSLLDQ' arch='SSE2'>
 			<description>Shift Double Quadword Left Logical</description>
@@ -2073,23 +2073,23 @@
 		</mnemonic>
 		<mnemonic name='PSLLW' arch='MMX'>
 			<description>Shift Packed Data Left Logical</description>
-			<ref>PSLLW_PSLLD_PSLLQ.html</ref>
+			<ref>PSLLW:PSLLD:PSLLQ.html</ref>
 		</mnemonic>
 		<mnemonic name='PSLLD' arch='MMX'>
 			<description>Shift Packed Word Left Logical</description>
-			<ref>PSLLW_PSLLD_PSLLQ.html</ref>
+			<ref>PSLLW:PSLLD:PSLLQ.html</ref>
 		</mnemonic>
 		<mnemonic name='PSLLQ' arch='MMX'>
 			<description>Shift Packed Doubleword Left Logical</description>
-			<ref>PSLLW_PSLLD_PSLLQ.html</ref>
+			<ref>PSLLW:PSLLD:PSLLQ.html</ref>
 		</mnemonic>
 		<mnemonic name='PSRAW' arch='MMX'>
 			<description>Shift Packed Data Right Arithmetic</description>
-			<ref>PSRAW_PSRAD.html</ref>
+			<ref>PSRAW:PSRAD.html</ref>
 		</mnemonic>
 		<mnemonic name='PSRAD' arch='MMX'>
 			<description>Shift Packed Data Right Arithmetic</description>
-			<ref>PSRAW_PSRAD.html</ref>
+			<ref>PSRAW:PSRAD.html</ref>
 		</mnemonic>
 		<mnemonic name='PSRLDQ' arch='SSE2'>
 			<description>Shift Double Quadword Right Logical</description>
@@ -2097,27 +2097,27 @@
 		</mnemonic>
 		<mnemonic name='PSRLW' arch='MMX'>
 			<description>Shift Packed Data Right Logical</description>
-			<ref>PSRLW_PSRLD_PSRLQ.html</ref>
+			<ref>PSRLW:PSRLD:PSRLQ.html</ref>
 		</mnemonic>
 		<mnemonic name='PSRLD' arch='MMX'>
 			<description>Shift Packed Data Right Logical</description>
-			<ref>PSRLW_PSRLD_PSRLQ.html</ref>
+			<ref>PSRLW:PSRLD:PSRLQ.html</ref>
 		</mnemonic>
 		<mnemonic name='PSRLQ' arch='MMX'>
 			<description>Shift Packed Data Right Logical</description>
-			<ref>PSRLW_PSRLD_PSRLQ.html</ref>
+			<ref>PSRLW:PSRLD:PSRLQ.html</ref>
 		</mnemonic>
 		<mnemonic name='PSUBB' arch='MMX'>
 			<description>Subtract Packed Integers</description>
-			<ref>PSUBB_PSUBW_PSUBD.html</ref>
+			<ref>PSUBB:PSUBW:PSUBD.html</ref>
 		</mnemonic>
 		<mnemonic name='PSUBW' arch='MMX'>
 			<description>Subtract Packed Integers</description>
-			<ref>PSUBB_PSUBW_PSUBD.html</ref>
+			<ref>PSUBB:PSUBW:PSUBD.html</ref>
 		</mnemonic>
 		<mnemonic name='PSUBD' arch='MMX'>
 			<description>Subtract Packed Integers</description>
-			<ref>PSUBB_PSUBW_PSUBD.html</ref>
+			<ref>PSUBB:PSUBW:PSUBD.html</ref>
 		</mnemonic>
 		<mnemonic name='PSUBQ' arch='SSE2'>
 			<description>Subtract Packed Quadword Integers</description>
@@ -2125,19 +2125,19 @@
 		</mnemonic>
 		<mnemonic name='PSUBSB' arch='MMX'>
 			<description>Subtract Packed Signed Integers with Signed Saturation</description>
-			<ref>PSUBSB_PSUBSW.html</ref>
+			<ref>PSUBSB:PSUBSW.html</ref>
 		</mnemonic>
 		<mnemonic name='PSUBSW' arch='MMX'>
 			<description>Subtract Packed Signed Integers with Signed Saturation</description>
-			<ref>PSUBSB_PSUBSW.html</ref>
+			<ref>PSUBSB:PSUBSW.html</ref>
 		</mnemonic>
 		<mnemonic name='PSUBUSB' arch='MMX'>
 			<description>Subtract Packed Unsigned Integers with Unsigned Saturation</description>
-			<ref>PSUBUSB_PSUBUSW.html</ref>
+			<ref>PSUBUSB:PSUBUSW.html</ref>
 		</mnemonic>
 		<mnemonic name='PSUBUSW' arch='MMX'>
 			<description>Subtract Packed Unsigned Integers with Unsigned Saturation</description>
-			<ref>PSUBUSB_PSUBUSW.html</ref>
+			<ref>PSUBUSB:PSUBUSW.html</ref>
 		</mnemonic>
 		<mnemonic name='PTEST' arch='SSE4.1'>
 			<description>Logical Compare</description>
@@ -2145,35 +2145,35 @@
 		</mnemonic>
 		<mnemonic name='PUNPCKHBW' arch='MMX'>
 			<description>Unpack High Data</description>
-			<ref>PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ.html</ref>
+			<ref>PUNPCKHBW:PUNPCKHWD:PUNPCKHDQ:PUNPCKHQDQ.html</ref>
 		</mnemonic>
 		<mnemonic name='PUNPCKHWD' arch='MMX'>
 			<description>Unpack High Data</description>
-			<ref>PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ.html</ref>
+			<ref>PUNPCKHBW:PUNPCKHWD:PUNPCKHDQ:PUNPCKHQDQ.html</ref>
 		</mnemonic>
 		<mnemonic name='PUNPCKHDQ' arch='MMX'>
 			<description>Unpack High Data</description>
-			<ref>PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ.html</ref>
+			<ref>PUNPCKHBW:PUNPCKHWD:PUNPCKHDQ:PUNPCKHQDQ.html</ref>
 		</mnemonic>
 		<mnemonic name='PUNPCKHQDQ' arch='SSE2'>
 			<description>Unpack High Data</description>
-			<ref>PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ.html</ref>
+			<ref>PUNPCKHBW:PUNPCKHWD:PUNPCKHDQ:PUNPCKHQDQ.html</ref>
 		</mnemonic>
 		<mnemonic name='PUNPCKLBW' arch='MMX'>
 			<description>Unpack Low Data</description>
-			<ref>PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ.html</ref>
+			<ref>PUNPCKLBW:PUNPCKLWD:PUNPCKLDQ:PUNPCKLQDQ.html</ref>
 		</mnemonic>
 		<mnemonic name='PUNPCKLWD' arch='MMX'>
 			<description>Unpack Low Data</description>
-			<ref>PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ.html</ref>
+			<ref>PUNPCKLBW:PUNPCKLWD:PUNPCKLDQ:PUNPCKLQDQ.html</ref>
 		</mnemonic>
 		<mnemonic name='PUNPCKLDQ' arch='MMX'>
 			<description>Unpack Low Data</description>
-			<ref>PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ.html</ref>
+			<ref>PUNPCKLBW:PUNPCKLWD:PUNPCKLDQ:PUNPCKLQDQ.html</ref>
 		</mnemonic>
 		<mnemonic name='PUNPCKLQDQ' arch='SSE2'>
 			<description>Unpack Low Data</description>
-			<ref>PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ.html</ref>
+			<ref>PUNPCKLBW:PUNPCKLWD:PUNPCKLDQ:PUNPCKLQDQ.html</ref>
 		</mnemonic>
 		<mnemonic name='PUSH'>
 			<description>Push Word, Doubleword or Quadword Onto the Stack</description>
@@ -2181,19 +2181,19 @@
 		</mnemonic>
 		<mnemonic name='PUSHA'>
 			<description>Push All General-Purpose Registers</description>
-			<ref>PUSHA_PUSHAD.html</ref>
+			<ref>PUSHA:PUSHAD.html</ref>
 		</mnemonic>
 		<mnemonic name='PUSHAD'>
 			<description>Push All General-Purpose Registers</description>
-			<ref>PUSHA_PUSHAD.html</ref>
+			<ref>PUSHA:PUSHAD.html</ref>
 		</mnemonic>
 		<mnemonic name='PUSHF'>
 			<description>Push EFLAGS Register onto the Stack</description>
-			<ref>PUSHF_PUSHFD.html</ref>
+			<ref>PUSHF:PUSHFD.html</ref>
 		</mnemonic>
 		<mnemonic name='PUSHFD'>
 			<description>Push EFLAGS Register onto the Stack</description>
-			<ref>PUSHF_PUSHFD.html</ref>
+			<ref>PUSHF:PUSHFD.html</ref>
 		</mnemonic>
 		<mnemonic name='PXOR' arch='MMX'>
 			<description>Logical Exclusive OR</description>
@@ -2201,19 +2201,19 @@
 		</mnemonic>
 		<mnemonic name='RCL'>
 			<description>Rotate</description>
-			<ref>RCL_RCR_ROL_ROR.html</ref>
+			<ref>RCL:RCR:ROL:ROR.html</ref>
 		</mnemonic>
 		<mnemonic name='RCR'>
 			<description>Rotate</description>
-			<ref>RCL_RCR_ROL_ROR.html</ref>
+			<ref>RCL:RCR:ROL:ROR.html</ref>
 		</mnemonic>
 		<mnemonic name='ROL'>
 			<description>Rotate</description>
-			<ref>RCL_RCR_ROL_ROR.html</ref>
+			<ref>RCL:RCR:ROL:ROR.html</ref>
 		</mnemonic>
 		<mnemonic name='ROR'>
 			<description>Rotate</description>
-			<ref>RCL_RCR_ROL_ROR.html</ref>
+			<ref>RCL:RCR:ROL:ROR.html</ref>
 		</mnemonic>
 		<mnemonic name='RCPPS' arch='SSE'>
 			<description>Compute Reciprocals of Packed Single-Precision Floating-Point Values</description>
@@ -2225,11 +2225,11 @@
 		</mnemonic>
 		<mnemonic name='RDFSBASE'>
 			<description>Read FS/GS Segment Base</description>
-			<ref>RDFSBASE_RDGSBASE.html</ref>
+			<ref>RDFSBASE:RDGSBASE.html</ref>
 		</mnemonic>
 		<mnemonic name='RDGSBASE'>
 			<description>Read FS/GS Segment Base</description>
-			<ref>RDFSBASE_RDGSBASE.html</ref>
+			<ref>RDFSBASE:RDGSBASE.html</ref>
 		</mnemonic>
 		<mnemonic name='RDMSR'>
 			<description>Read from Model Specific Register</description>
@@ -2257,23 +2257,23 @@
 		</mnemonic>
 		<mnemonic name='REP'>
 			<description>Repeat String Operation Prefix</description>
-			<ref>REP_REPE_REPZ_REPNE_REPNZ.html</ref>
+			<ref>REP:REPE:REPZ:REPNE:REPNZ.html</ref>
 		</mnemonic>
 		<mnemonic name='REPE'>
 			<description>Repeat String Operation Prefix</description>
-			<ref>REP_REPE_REPZ_REPNE_REPNZ.html</ref>
+			<ref>REP:REPE:REPZ:REPNE:REPNZ.html</ref>
 		</mnemonic>
 		<mnemonic name='REPZ'>
 			<description>Repeat String Operation Prefix</description>
-			<ref>REP_REPE_REPZ_REPNE_REPNZ.html</ref>
+			<ref>REP:REPE:REPZ:REPNE:REPNZ.html</ref>
 		</mnemonic>
 		<mnemonic name='REPNE'>
 			<description>Repeat String Operation Prefix</description>
-			<ref>REP_REPE_REPZ_REPNE_REPNZ.html</ref>
+			<ref>REP:REPE:REPZ:REPNE:REPNZ.html</ref>
 		</mnemonic>
 		<mnemonic name='REPNZ'>
 			<description>Repeat String Operation Prefix</description>
-			<ref>REP_REPE_REPZ_REPNE_REPNZ.html</ref>
+			<ref>REP:REPE:REPZ:REPNE:REPNZ.html</ref>
 		</mnemonic>
 		<mnemonic name='RET'>
 			<description>Return from Procedure</description>
@@ -2317,31 +2317,31 @@
 		</mnemonic>
 		<mnemonic name='SAL'>
 			<description>Shift Arithmetic Left</description>
-			<ref>SAL_SAR_SHL_SHR.html</ref>
+			<ref>SAL:SAR:SHL:SHR.html</ref>
 		</mnemonic>
 		<mnemonic name='SAR'>
 			<description>Shift Arithmetic Right</description>
-			<ref>SAL_SAR_SHL_SHR.html</ref>
+			<ref>SAL:SAR:SHL:SHR.html</ref>
 		</mnemonic>
 		<mnemonic name='SHL'>
 			<description>Shift Logical Left</description>
-			<ref>SAL_SAR_SHL_SHR.html</ref>
+			<ref>SAL:SAR:SHL:SHR.html</ref>
 		</mnemonic>
 		<mnemonic name='SHR'>
 			<description>Shift Logical Right</description>
-			<ref>SAL_SAR_SHL_SHR.html</ref>
+			<ref>SAL:SAR:SHL:SHR.html</ref>
 		</mnemonic>
 		<mnemonic name='SARX'>
 			<description>Shift Arithmetic Right Without Affecting Flags</description>
-			<ref>SARX_SHLX_SHRX.html</ref>
+			<ref>SARX:SHLX:SHRX.html</ref>
 		</mnemonic>
 		<mnemonic name='SHLX'>
 			<description>Shift Logical Left Without Affecting Flags</description>
-			<ref>SARX_SHLX_SHRX.html</ref>
+			<ref>SARX:SHLX:SHRX.html</ref>
 		</mnemonic>
 		<mnemonic name='SHRX'>
 			<description>Shift Logical Right Without Affecting Flags</description>
-			<ref>SARX_SHLX_SHRX.html</ref>
+			<ref>SARX:SHLX:SHRX.html</ref>
 		</mnemonic>
 		<mnemonic name='SBB'>
 			<description>Integer Subtraction with Borrow</description>
@@ -2349,19 +2349,19 @@
 		</mnemonic>
 		<mnemonic name='SCAS'>
 			<description>Scan String</description>
-			<ref>SCAS_SCASB_SCASW_SCASD.html</ref>
+			<ref>SCAS:SCASB:SCASW:SCASD.html</ref>
 		</mnemonic>
 		<mnemonic name='SCASB'>
 			<description>Scan String</description>
-			<ref>SCAS_SCASB_SCASW_SCASD.html</ref>
+			<ref>SCAS:SCASB:SCASW:SCASD.html</ref>
 		</mnemonic>
 		<mnemonic name='SCASW'>
 			<description>Scan String</description>
-			<ref>SCAS_SCASB_SCASW_SCASD.html</ref>
+			<ref>SCAS:SCASB:SCASW:SCASD.html</ref>
 		</mnemonic>
 		<mnemonic name='SCASD'>
 			<description>Scan String</description>
-			<ref>SCAS_SCASB_SCASW_SCASD.html</ref>
+			<ref>SCAS:SCASB:SCASW:SCASD.html</ref>
 		</mnemonic>
 		<mnemonic name='SETA'>
 			<description>Set byte if above (CF=0 and ZF=0) (SETA=SETNBE)</description>
@@ -2557,23 +2557,23 @@
 		</mnemonic>
 		<mnemonic name='STOS'>
 			<description>Store String</description>
-			<ref>STOS_STOSB_STOSW_STOSD_STOSQ.html</ref>
+			<ref>STOS:STOSB:STOSW:STOSD:STOSQ.html</ref>
 		</mnemonic>
 		<mnemonic name='STOSB'>
 			<description>Store String</description>
-			<ref>STOS_STOSB_STOSW_STOSD_STOSQ.html</ref>
+			<ref>STOS:STOSB:STOSW:STOSD:STOSQ.html</ref>
 		</mnemonic>
 		<mnemonic name='STOSW'>
 			<description>Store String</description>
-			<ref>STOS_STOSB_STOSW_STOSD_STOSQ.html</ref>
+			<ref>STOS:STOSB:STOSW:STOSD:STOSQ.html</ref>
 		</mnemonic>
 		<mnemonic name='STOSD'>
 			<description>Store String</description>
-			<ref>STOS_STOSB_STOSW_STOSD_STOSQ.html</ref>
+			<ref>STOS:STOSB:STOSW:STOSD:STOSQ.html</ref>
 		</mnemonic>
 		<mnemonic name='STOSQ'>
 			<description>Store String</description>
-			<ref>STOS_STOSB_STOSW_STOSD_STOSQ.html</ref>
+			<ref>STOS:STOSB:STOSW:STOSD:STOSQ.html</ref>
 		</mnemonic>
 		<mnemonic name='STR'>
 			<description>Store Task Register</description>
@@ -2681,11 +2681,11 @@
 		</mnemonic>
 		<mnemonic name='VERR'>
 			<description>Verify a Segment for Reading or Writing</description>
-			<ref>VERR_VERW.html</ref>
+			<ref>VERR:VERW.html</ref>
 		</mnemonic>
 		<mnemonic name='VERW'>
 			<description>Verify a Segment for Reading or Writing</description>
-			<ref>VERR_VERW.html</ref>
+			<ref>VERR:VERW.html</ref>
 		</mnemonic>
 		<mnemonic name='VEXTRACTF128' arch='AVX'>
 			<description>Extract Packed Floating-Point Values</description>
@@ -2697,259 +2697,259 @@
 		</mnemonic>
 		<mnemonic name='VFMADD132PD' arch='AVX2'>
 			<description>Fused Multiply-Add of Packed Double-Precision Floating-Point Values</description>
-			<ref>VFMADD132PD_VFMADD213PD_VFMADD231PD.html</ref>
+			<ref>VFMADD132PD:VFMADD213PD:VFMADD231PD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMADD213PD' arch='AVX2'>
 			<description>Fused Multiply-Add of Packed Double-Precision Floating-Point Values</description>
-			<ref>VFMADD132PD_VFMADD213PD_VFMADD231PD.html</ref>
+			<ref>VFMADD132PD:VFMADD213PD:VFMADD231PD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMADD231PD' arch='AVX2'>
 			<description>Fused Multiply-Add of Packed Double-Precision Floating-Point Values</description>
-			<ref>VFMADD132PD_VFMADD213PD_VFMADD231PD.html</ref>
+			<ref>VFMADD132PD:VFMADD213PD:VFMADD231PD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMADD132PS' arch='AVX2'>
 			<description>Fused Multiply-Add of Packed Single-Precision Floating-Point Values</description>
-			<ref>VFMADD132PS_VFMADD213PS_VFMADD231PS.html</ref>
+			<ref>VFMADD132PS:VFMADD213PS:VFMADD231PS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMADD213PS' arch='AVX2'>
 			<description>Fused Multiply-Add of Packed Single-Precision Floating-Point Values</description>
-			<ref>VFMADD132PS_VFMADD213PS_VFMADD231PS.html</ref>
+			<ref>VFMADD132PS:VFMADD213PS:VFMADD231PS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMADD231PS' arch='AVX2'>
 			<description>Fused Multiply-Add of Packed Single-Precision Floating-Point Values</description>
-			<ref>VFMADD132PS_VFMADD213PS_VFMADD231PS.html</ref>
+			<ref>VFMADD132PS:VFMADD213PS:VFMADD231PS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMADD132SD' arch='AVX2'>
 			<description>Fused Multiply-Add of Scalar Double-Precision Floating-Point Values</description>
-			<ref>VFMADD132SD_VFMADD213SD_VFMADD231SD.html</ref>
+			<ref>VFMADD132SD:VFMADD213SD:VFMADD231SD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMADD213SD' arch='AVX2'>
 			<description>Fused Multiply-Add of Scalar Double-Precision Floating-Point Values</description>
-			<ref>VFMADD132SD_VFMADD213SD_VFMADD231SD.html</ref>
+			<ref>VFMADD132SD:VFMADD213SD:VFMADD231SD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMADD231SD' arch='AVX2'>
 			<description>Fused Multiply-Add of Scalar Double-Precision Floating-Point Values</description>
-			<ref>VFMADD132SD_VFMADD213SD_VFMADD231SD.html</ref>
+			<ref>VFMADD132SD:VFMADD213SD:VFMADD231SD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMADD132SS' arch='AVX2'>
 			<description>Fused Multiply-Add of Scalar Single-Precision Floating-Point Values</description>
-			<ref>VFMADD132SS_VFMADD213SS_VFMADD231SS.html</ref>
+			<ref>VFMADD132SS:VFMADD213SS:VFMADD231SS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMADD213SS' arch='AVX2'>
 			<description>Fused Multiply-Add of Scalar Single-Precision Floating-Point Values</description>
-			<ref>VFMADD132SS_VFMADD213SS_VFMADD231SS.html</ref>
+			<ref>VFMADD132SS:VFMADD213SS:VFMADD231SS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMADD231SS' arch='AVX2'>
 			<description>Fused Multiply-Add of Scalar Single-Precision Floating-Point Values</description>
-			<ref>VFMADD132SS_VFMADD213SS_VFMADD231SS.html</ref>
+			<ref>VFMADD132SS:VFMADD213SS:VFMADD231SS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMADDSUB132PD' arch='AVX2'>
 			<description>Fused Multiply-Alternating Add/Subtract of Packed Double-Precision Floating-Point Values</description>
-			<ref>VFMADDSUB132PD_VFMADDSUB213PD_VFMADDSUB231PD.html</ref>
+			<ref>VFMADDSUB132PD:VFMADDSUB213PD:VFMADDSUB231PD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMADDSUB213PD' arch='AVX2'>
 			<description>Fused Multiply-Alternating Add/Subtract of Packed Double-Precision Floating-Point Values</description>
-			<ref>VFMADDSUB132PD_VFMADDSUB213PD_VFMADDSUB231PD.html</ref>
+			<ref>VFMADDSUB132PD:VFMADDSUB213PD:VFMADDSUB231PD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMADDSUB231PD' arch='AVX2'>
 			<description>Fused Multiply-Alternating Add/Subtract of Packed Double-Precision Floating-Point Values</description>
-			<ref>VFMADDSUB132PD_VFMADDSUB213PD_VFMADDSUB231PD.html</ref>
+			<ref>VFMADDSUB132PD:VFMADDSUB213PD:VFMADDSUB231PD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMADDSUB132PS' arch='AVX2'>
 			<description>Fused Multiply-Alternating Add/Subtract of Packed Single-Precision Floating-Point Values</description>
-			<ref>VFMADDSUB132PS_VFMADDSUB213PS_VFMADDSUB231PS.html</ref>
+			<ref>VFMADDSUB132PS:VFMADDSUB213PS:VFMADDSUB231PS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMADDSUB213PS' arch='AVX2'>
 			<description>Fused Multiply-Alternating Add/Subtract of Packed Single-Precision Floating-Point Values</description>
-			<ref>VFMADDSUB132PS_VFMADDSUB213PS_VFMADDSUB231PS.html</ref>
+			<ref>VFMADDSUB132PS:VFMADDSUB213PS:VFMADDSUB231PS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMADDSUB231PS' arch='AVX2'>
 			<description>Fused Multiply-Alternating Add/Subtract of Packed Single-Precision Floating-Point Values</description>
-			<ref>VFMADDSUB132PS_VFMADDSUB213PS_VFMADDSUB231PS.html</ref>
+			<ref>VFMADDSUB132PS:VFMADDSUB213PS:VFMADDSUB231PS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMSUB132PD' arch='AVX2'>
 			<description>Fused Multiply-Subtract of Packed Double-Precision Floating-Point Values</description>
-			<ref>VFMSUB132PD_VFMSUB213PD_VFMSUB231PD.html</ref>
+			<ref>VFMSUB132PD:VFMSUB213PD:VFMSUB231PD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMSUB213PD' arch='AVX2'>
 			<description>Fused Multiply-Subtract of Packed Double-Precision Floating-Point Values</description>
-			<ref>VFMSUB132PD_VFMSUB213PD_VFMSUB231PD.html</ref>
+			<ref>VFMSUB132PD:VFMSUB213PD:VFMSUB231PD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMSUB231PD' arch='AVX2'>
 			<description>Fused Multiply-Subtract of Packed Double-Precision Floating-Point Values</description>
-			<ref>VFMSUB132PD_VFMSUB213PD_VFMSUB231PD.html</ref>
+			<ref>VFMSUB132PD:VFMSUB213PD:VFMSUB231PD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMSUB132PS' arch='AVX2'>
 			<description>Fused Multiply-Subtract of Packed Single-Precision Floating-Point Values</description>
-			<ref>VFMSUB132PS_VFMSUB213PS_VFMSUB231PS.html</ref>
+			<ref>VFMSUB132PS:VFMSUB213PS:VFMSUB231PS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMSUB213PS' arch='AVX2'>
 			<description>Fused Multiply-Subtract of Packed Single-Precision Floating-Point Values</description>
-			<ref>VFMSUB132PS_VFMSUB213PS_VFMSUB231PS.html</ref>
+			<ref>VFMSUB132PS:VFMSUB213PS:VFMSUB231PS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMSUB231PS' arch='AVX2'>
 			<description>Fused Multiply-Subtract of Packed Single-Precision Floating-Point Values</description>
-			<ref>VFMSUB132PS_VFMSUB213PS_VFMSUB231PS.html</ref>
+			<ref>VFMSUB132PS:VFMSUB213PS:VFMSUB231PS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMSUB132SD' arch='AVX2'>
 			<description>Fused Multiply-Subtract of Scalar Double-Precision Floating-Point Values</description>
-			<ref>VFMSUB132SD_VFMSUB213SD_VFMSUB231SD.html</ref>
+			<ref>VFMSUB132SD:VFMSUB213SD:VFMSUB231SD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMSUB213SD' arch='AVX2'>
 			<description>Fused Multiply-Subtract of Scalar Double-Precision Floating-Point Values</description>
-			<ref>VFMSUB132SD_VFMSUB213SD_VFMSUB231SD.html</ref>
+			<ref>VFMSUB132SD:VFMSUB213SD:VFMSUB231SD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMSUB231SD' arch='AVX2'>
 			<description>Fused Multiply-Subtract of Scalar Double-Precision Floating-Point Values</description>
-			<ref>VFMSUB132SD_VFMSUB213SD_VFMSUB231SD.html</ref>
+			<ref>VFMSUB132SD:VFMSUB213SD:VFMSUB231SD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMSUB132SS' arch='AVX2'>
 			<description>Fused Multiply-Subtract of Scalar Single-Precision Floating-Point Values</description>
-			<ref>VFMSUB132SS_VFMSUB213SS_VFMSUB231SS.html</ref>
+			<ref>VFMSUB132SS:VFMSUB213SS:VFMSUB231SS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMSUB213SS' arch='AVX2'>
 			<description>Fused Multiply-Subtract of Scalar Single-Precision Floating-Point Values</description>
-			<ref>VFMSUB132SS_VFMSUB213SS_VFMSUB231SS.html</ref>
+			<ref>VFMSUB132SS:VFMSUB213SS:VFMSUB231SS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMSUB231SS' arch='AVX2'>
 			<description>Fused Multiply-Subtract of Scalar Single-Precision Floating-Point Values</description>
-			<ref>VFMSUB132SS_VFMSUB213SS_VFMSUB231SS.html</ref>
+			<ref>VFMSUB132SS:VFMSUB213SS:VFMSUB231SS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMSUBADD132PD' arch='AVX2'>
 			<description>Fused Multiply-Alternating Subtract/Add of Packed Double-Precision Floating-Point Values</description>
-			<ref>VFMSUBADD132PD_VFMSUBADD213PD_VFMSUBADD231PD.html</ref>
+			<ref>VFMSUBADD132PD:VFMSUBADD213PD:VFMSUBADD231PD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMSUBADD213PD' arch='AVX2'>
 			<description>Fused Multiply-Alternating Subtract/Add of Packed Double-Precision Floating-Point Values</description>
-			<ref>VFMSUBADD132PD_VFMSUBADD213PD_VFMSUBADD231PD.html</ref>
+			<ref>VFMSUBADD132PD:VFMSUBADD213PD:VFMSUBADD231PD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMSUBADD231PD' arch='AVX2'>
 			<description>Fused Multiply-Alternating Subtract/Add of Packed Double-Precision Floating-Point Values</description>
-			<ref>VFMSUBADD132PD_VFMSUBADD213PD_VFMSUBADD231PD.html</ref>
+			<ref>VFMSUBADD132PD:VFMSUBADD213PD:VFMSUBADD231PD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMSUBADD132PS' arch='AVX2'>
 			<description>Fused Multiply-Alternating Subtract/Add of Packed Single-Precision Floating-Point Values</description>
-			<ref>VFMSUBADD132PS_VFMSUBADD213PS_VFMSUBADD231PS.html</ref>
+			<ref>VFMSUBADD132PS:VFMSUBADD213PS:VFMSUBADD231PS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMSUBADD213PS' arch='AVX2'>
 			<description>Fused Multiply-Alternating Subtract/Add of Packed Single-Precision Floating-Point Values</description>
-			<ref>VFMSUBADD132PS_VFMSUBADD213PS_VFMSUBADD231PS.html</ref>
+			<ref>VFMSUBADD132PS:VFMSUBADD213PS:VFMSUBADD231PS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFMSUBADD231PS' arch='AVX2'>
 			<description>Fused Multiply-Alternating Subtract/Add of Packed Single-Precision Floating-Point Values</description>
-			<ref>VFMSUBADD132PS_VFMSUBADD213PS_VFMSUBADD231PS.html</ref>
+			<ref>VFMSUBADD132PS:VFMSUBADD213PS:VFMSUBADD231PS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFNMADD132PD' arch='AVX2'>
 			<description>Fused Negative Multiply-Add of Packed Double-Precision Floating-Point Values</description>
-			<ref>VFNMADD132PD_VFNMADD213PD_VFNMADD231PD.html</ref>
+			<ref>VFNMADD132PD:VFNMADD213PD:VFNMADD231PD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFNMADD213PD' arch='AVX2'>
 			<description>Fused Negative Multiply-Add of Packed Double-Precision Floating-Point Values</description>
-			<ref>VFNMADD132PD_VFNMADD213PD_VFNMADD231PD.html</ref>
+			<ref>VFNMADD132PD:VFNMADD213PD:VFNMADD231PD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFNMADD231PD' arch='AVX2'>
 			<description>Fused Negative Multiply-Add of Packed Double-Precision Floating-Point Values</description>
-			<ref>VFNMADD132PD_VFNMADD213PD_VFNMADD231PD.html</ref>
+			<ref>VFNMADD132PD:VFNMADD213PD:VFNMADD231PD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFNMADD132PS' arch='AVX2'>
 			<description>Fused Negative Multiply-Add of Packed Single-Precision Floating-Point Values</description>
-			<ref>VFNMADD132PS_VFNMADD213PS_VFNMADD231PS.html</ref>
+			<ref>VFNMADD132PS:VFNMADD213PS:VFNMADD231PS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFNMADD213PS' arch='AVX2'>
 			<description>Fused Negative Multiply-Add of Packed Single-Precision Floating-Point Values</description>
-			<ref>VFNMADD132PS_VFNMADD213PS_VFNMADD231PS.html</ref>
+			<ref>VFNMADD132PS:VFNMADD213PS:VFNMADD231PS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFNMADD231PS' arch='AVX2'>
 			<description>Fused Negative Multiply-Add of Packed Single-Precision Floating-Point Values</description>
-			<ref>VFNMADD132PS_VFNMADD213PS_VFNMADD231PS.html</ref>
+			<ref>VFNMADD132PS:VFNMADD213PS:VFNMADD231PS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFNMADD132SD' arch='AVX2'>
 			<description>Fused Negative Multiply-Add of Scalar Double-Precision Floating-Point Values</description>
-			<ref>VFNMADD132SD_VFNMADD213SD_VFNMADD231SD.html</ref>
+			<ref>VFNMADD132SD:VFNMADD213SD:VFNMADD231SD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFNMADD213SD' arch='AVX2'>
 			<description>Fused Negative Multiply-Add of Scalar Double-Precision Floating-Point Values</description>
-			<ref>VFNMADD132SD_VFNMADD213SD_VFNMADD231SD.html</ref>
+			<ref>VFNMADD132SD:VFNMADD213SD:VFNMADD231SD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFNMADD231SD' arch='AVX2'>
 			<description>Fused Negative Multiply-Add of Scalar Double-Precision Floating-Point Values</description>
-			<ref>VFNMADD132SD_VFNMADD213SD_VFNMADD231SD.html</ref>
+			<ref>VFNMADD132SD:VFNMADD213SD:VFNMADD231SD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFNMADD132SS' arch='AVX2'>
 			<description>Fused Negative Multiply-Add of Scalar Single-Precision Floating-Point Values</description>
-			<ref>VFNMADD132SS_VFNMADD213SS_VFNMADD231SS.html</ref>
+			<ref>VFNMADD132SS:VFNMADD213SS:VFNMADD231SS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFNMADD213SS' arch='AVX2'>
 			<description>Fused Negative Multiply-Add of Scalar Single-Precision Floating-Point Values</description>
-			<ref>VFNMADD132SS_VFNMADD213SS_VFNMADD231SS.html</ref>
+			<ref>VFNMADD132SS:VFNMADD213SS:VFNMADD231SS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFNMADD231SS' arch='AVX2'>
 			<description>Fused Negative Multiply-Add of Scalar Single-Precision Floating-Point Values</description>
-			<ref>VFNMADD132SS_VFNMADD213SS_VFNMADD231SS.html</ref>
+			<ref>VFNMADD132SS:VFNMADD213SS:VFNMADD231SS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFNMSUB132PD' arch='AVX2'>
 			<description>Fused Negative Multiply-Subtract of Packed Double-Precision Floating-Point Values</description>
-			<ref>VFNMSUB132PD_VFNMSUB213PD_VFNMSUB231PD.html</ref>
+			<ref>VFNMSUB132PD:VFNMSUB213PD:VFNMSUB231PD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFNMSUB213PD' arch='AVX2'>
 			<description>Fused Negative Multiply-Subtract of Packed Double-Precision Floating-Point Values</description>
-			<ref>VFNMSUB132PD_VFNMSUB213PD_VFNMSUB231PD.html</ref>
+			<ref>VFNMSUB132PD:VFNMSUB213PD:VFNMSUB231PD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFNMSUB231PD' arch='AVX2'>
 			<description>Fused Negative Multiply-Subtract of Packed Double-Precision Floating-Point Values</description>
-			<ref>VFNMSUB132PD_VFNMSUB213PD_VFNMSUB231PD.html</ref>
+			<ref>VFNMSUB132PD:VFNMSUB213PD:VFNMSUB231PD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFNMSUB132PS' arch='AVX2'>
 			<description>Fused Negative Multiply-Subtract of Packed Single-Precision Floating-Point Values</description>
-			<ref>VFNMSUB132PS_VFNMSUB213PS_VFNMSUB231PS.html</ref>
+			<ref>VFNMSUB132PS:VFNMSUB213PS:VFNMSUB231PS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFNMSUB213PS' arch='AVX2'>
 			<description>Fused Negative Multiply-Subtract of Packed Single-Precision Floating-Point Values</description>
-			<ref>VFNMSUB132PS_VFNMSUB213PS_VFNMSUB231PS.html</ref>
+			<ref>VFNMSUB132PS:VFNMSUB213PS:VFNMSUB231PS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFNMSUB231PS' arch='AVX2'>
 			<description>Fused Negative Multiply-Subtract of Packed Single-Precision Floating-Point Values</description>
-			<ref>VFNMSUB132PS_VFNMSUB213PS_VFNMSUB231PS.html</ref>
+			<ref>VFNMSUB132PS:VFNMSUB213PS:VFNMSUB231PS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFNMSUB132SD' arch='AVX2'>
 			<description>Fused Negative Multiply-Subtract of Scalar Double-Precision Floating-Point Values</description>
-			<ref>VFNMSUB132SD_VFNMSUB213SD_VFNMSUB231SD.html</ref>
+			<ref>VFNMSUB132SD:VFNMSUB213SD:VFNMSUB231SD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFNMSUB213SD' arch='AVX2'>
 			<description>Fused Negative Multiply-Subtract of Scalar Double-Precision Floating-Point Values</description>
-			<ref>VFNMSUB132SD_VFNMSUB213SD_VFNMSUB231SD.html</ref>
+			<ref>VFNMSUB132SD:VFNMSUB213SD:VFNMSUB231SD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFNMSUB231SD' arch='AVX2'>
 			<description>Fused Negative Multiply-Subtract of Scalar Double-Precision Floating-Point Values</description>
-			<ref>VFNMSUB132SD_VFNMSUB213SD_VFNMSUB231SD.html</ref>
+			<ref>VFNMSUB132SD:VFNMSUB213SD:VFNMSUB231SD.html</ref>
 		</mnemonic>
 		<mnemonic name='VFNMSUB132SS' arch='AVX2'>
 			<description>Fused Negative Multiply-Subtract of Scalar Single-Precision Floating-Point Values</description>
-			<ref>VFNMSUB132SS_VFNMSUB213SS_VFNMSUB231SS.html</ref>
+			<ref>VFNMSUB132SS:VFNMSUB213SS:VFNMSUB231SS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFNMSUB213SS' arch='AVX2'>
 			<description>Fused Negative Multiply-Subtract of Scalar Single-Precision Floating-Point Values</description>
-			<ref>VFNMSUB132SS_VFNMSUB213SS_VFNMSUB231SS.html</ref>
+			<ref>VFNMSUB132SS:VFNMSUB213SS:VFNMSUB231SS.html</ref>
 		</mnemonic>
 		<mnemonic name='VFNMSUB231SS' arch='AVX2'>
 			<description>Fused Negative Multiply-Subtract of Scalar Single-Precision Floating-Point Values</description>
-			<ref>VFNMSUB132SS_VFNMSUB213SS_VFNMSUB231SS.html</ref>
+			<ref>VFNMSUB132SS:VFNMSUB213SS:VFNMSUB231SS.html</ref>
 		</mnemonic>
 		<mnemonic name='VGATHERDPD' arch='AVX2'>
 			<description>Gather Packed DP FP Values Using Signed Dword/Qword Indices</description>
-			<ref>VGATHERDPD_VGATHERQPD.html</ref>
+			<ref>VGATHERDPD:VGATHERQPD.html</ref>
 		</mnemonic>
 		<mnemonic name='VGATHERQPD' arch='AVX2'>
 			<description>Gather Packed DP FP Values Using Signed Dword/Qword Indices</description>
-			<ref>VGATHERDPD_VGATHERQPD.html</ref>
+			<ref>VGATHERDPD:VGATHERQPD.html</ref>
 		</mnemonic>
 		<mnemonic name='VGATHERDPS' arch='AVX2'>
 			<description>Gather Packed SP FP values Using Signed Dword/Qword Indices</description>
-			<ref>VGATHERDPS_VGATHERQPS.html</ref>
+			<ref>VGATHERDPS:VGATHERQPS.html</ref>
 		</mnemonic>
 		<mnemonic name='VGATHERQPS' arch='AVX2'>
 			<description>Gather Packed SP FP values Using Signed Dword/Qword Indices</description>
-			<ref>VGATHERDPS_VGATHERQPS.html</ref>
+			<ref>VGATHERDPS:VGATHERQPS.html</ref>
 		</mnemonic>
 		<mnemonic name='VINSERTF128' arch='AVX'>
 			<description>Insert Packed Floating-Point Values</description>
@@ -3025,19 +3025,19 @@
 		</mnemonic>
 		<mnemonic name='VPGATHERDD' arch='AVX2'>
 			<description>Gather Packed Dword Values Using Signed Dword/Qword Indices</description>
-			<ref>VPGATHERDD_VPGATHERQD.html</ref>
+			<ref>VPGATHERDD:VPGATHERQD.html</ref>
 		</mnemonic>
 		<mnemonic name='VPGATHERQD' arch='AVX2'>
 			<description>Gather Packed Dword Values Using Signed Dword/Qword Indices</description>
-			<ref>VPGATHERDD_VPGATHERQD.html</ref>
+			<ref>VPGATHERDD:VPGATHERQD.html</ref>
 		</mnemonic>
 		<mnemonic name='VPGATHERDQ' arch='AVX2'>
 			<description>Gather Packed Qword Values Using Signed Dword/Qword Indices</description>
-			<ref>VPGATHERDQ_VPGATHERQQ.html</ref>
+			<ref>VPGATHERDQ:VPGATHERQQ.html</ref>
 		</mnemonic>
 		<mnemonic name='VPGATHERQQ' arch='AVX2'>
 			<description>Gather Packed Qword Values Using Signed Dword/Qword Indices</description>
-			<ref>VPGATHERDQ_VPGATHERQQ.html</ref>
+			<ref>VPGATHERDQ:VPGATHERQQ.html</ref>
 		</mnemonic>
 		<mnemonic name='VPMASKMOVD' arch='AVX2'>
 			<description>Conditional SIMD Integer Packed Loads and Stores</description>
@@ -3049,11 +3049,11 @@
 		</mnemonic>
 		<mnemonic name='VPSLLVD' arch='AVX2'>
 			<description>Variable Bit Shift Left Logical</description>
-			<ref>VPSLLVD_VPSLLVQ.html</ref>
+			<ref>VPSLLVD:VPSLLVQ.html</ref>
 		</mnemonic>
 		<mnemonic name='VPSLLVQ' arch='AVX2'>
 			<description>Variable Bit Shift Left Logical</description>
-			<ref>VPSLLVD_VPSLLVQ.html</ref>
+			<ref>VPSLLVD:VPSLLVQ.html</ref>
 		</mnemonic>
 		<mnemonic name='VPSRAVD' arch='AVX2'>
 			<description>Variable Bit Shift Right Arithmetic</description>
@@ -3061,19 +3061,19 @@
 		</mnemonic>
 		<mnemonic name='VPSRLVD' arch='AVX2'>
 			<description>Variable Bit Shift Right Logical</description>
-			<ref>VPSRLVD_VPSRLVQ.html</ref>
+			<ref>VPSRLVD:VPSRLVQ.html</ref>
 		</mnemonic>
 		<mnemonic name='VPSRLVQ' arch='AVX2'>
 			<description>Variable Bit Shift Right Logical</description>
-			<ref>VPSRLVD_VPSRLVQ.html</ref>
+			<ref>VPSRLVD:VPSRLVQ.html</ref>
 		</mnemonic>
 		<mnemonic name='VTESTPD'>
 			<description>Packed Bit Test</description>
-			<ref>VTESTPD_VTESTPS.html</ref>
+			<ref>VTESTPD:VTESTPS.html</ref>
 		</mnemonic>
 		<mnemonic name='VTESTPS'>
 			<description>Packed Bit Test</description>
-			<ref>VTESTPD_VTESTPS.html</ref>
+			<ref>VTESTPD:VTESTPS.html</ref>
 		</mnemonic>
 		<mnemonic name='VZEROALL' arch='AVX'>
 			<description>Zero All YMM Registers</description>
@@ -3085,11 +3085,11 @@
 		</mnemonic>
 		<mnemonic name='WAIT'>
 			<description>Wait</description>
-			<ref>WAIT_FWAIT.html</ref>
+			<ref>WAIT:FWAIT.html</ref>
 		</mnemonic>
 		<mnemonic name='FWAIT'>
 			<description>Wait</description>
-			<ref>WAIT_FWAIT.html</ref>
+			<ref>WAIT:FWAIT.html</ref>
 		</mnemonic>
 		<mnemonic name='WBINVD'>
 			<description>Write Back and Invalidate Cache</description>
@@ -3097,11 +3097,11 @@
 		</mnemonic>
 		<mnemonic name='WRFSBASE'>
 			<description>Write FS/GS Segment Base</description>
-			<ref>WRFSBASE_WRGSBASE.html</ref>
+			<ref>WRFSBASE:WRGSBASE.html</ref>
 		</mnemonic>
 		<mnemonic name='WRGSBASE'>
 			<description>Write FS/GS Segment Base</description>
-			<ref>WRFSBASE_WRGSBASE.html</ref>
+			<ref>WRFSBASE:WRGSBASE.html</ref>
 		</mnemonic>
 		<mnemonic name='WRMSR'>
 			<description>Write to Model Specific Register</description>
@@ -3113,11 +3113,11 @@
 		</mnemonic>
 		<mnemonic name='XACQUIRE'>
 			<description>Hardware Lock Elision Prefix Hints</description>
-			<ref>XACQUIRE_XRELEASE.html</ref>
+			<ref>XACQUIRE:XRELEASE.html</ref>
 		</mnemonic>
 		<mnemonic name='XRELEASE'>
 			<description>Hardware Lock Elision Prefix Hints</description>
-			<ref>XACQUIRE_XRELEASE.html</ref>
+			<ref>XACQUIRE:XRELEASE.html</ref>
 		</mnemonic>
 		<mnemonic name='XADD'>
 			<description>Exchange and Add</description>
@@ -3141,11 +3141,11 @@
 		</mnemonic>
 		<mnemonic name='XLAT'>
 			<description>Table Look-up Translation</description>
-			<ref>XLAT_XLATB.html</ref>
+			<ref>XLAT:XLATB.html</ref>
 		</mnemonic>
 		<mnemonic name='XLATB'>
 			<description>Table Look-up Translation</description>
-			<ref>XLAT_XLATB.html</ref>
+			<ref>XLAT:XLATB.html</ref>
 		</mnemonic>
 		<mnemonic name='XOR'>
 			<description>Logical Exclusive OR</description>
