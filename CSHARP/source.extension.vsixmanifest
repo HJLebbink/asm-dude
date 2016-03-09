@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011">
   <Metadata>
-    <Identity Id="c729d6b2-f412-49ed-893d-a8f61f25db98" Version="1.4.3" Language="en-US" Publisher="H.J. Lebbink" />
+    <Identity Id="c729d6b2-f412-49ed-893d-a8f61f25db98" Version="1.4.4" Language="en-US" Publisher="H.J. Lebbink" />
     <DisplayName>AsmDude</DisplayName>
     <Description xml:space="preserve">Syntax highlighting, code completion and folding for assembly source code</Description>
     <MoreInfo>https://github.com/HJLebbink/asm-dude</MoreInfo>

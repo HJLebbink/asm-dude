@@ -15,7 +15,7 @@ namespace AsmDude {
     /// </summary>
     [PackageRegistration(UseManagedResourcesOnly = true)]
 
-    [InstalledProductRegistration("Asm-Dude", "Asm-Dude description here", "1.4.3")] // for the help about information
+    [InstalledProductRegistration("Asm-Dude", "Asm-Dude description here", "1.4.4")] // for the help about information
 
     [ProvideOptionPageAttribute(typeof(OptionsPageCodeCompletion), "AsmDude", "Code Completion", 100, 101, true, new string[] { "Change Code Completion Options" })]
     [ProvideProfileAttribute(   typeof(OptionsPageCodeCompletion), "AsmDude", "Code Completion Options", 100, 101, true)]
