@@ -30,15 +30,33 @@ using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
 using System.Globalization;
 using System.Diagnostics;
+using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Utilities;
+using Microsoft.VisualStudio.Text.Classification;
 
-namespace AsmDude {
+namespace AsmDude.HighlightWord {
+
+
+    [Export(typeof(EditorFormatDefinition))]
+    [Name("AsmDude.HighlightWordFormatDefinition")]
+    [UserVisible(true)]
+    internal class HighlightWordFormatDefinition : MarkerFormatDefinition {
+        public HighlightWordFormatDefinition() {
+            this.BackgroundColor = AsmDudeToolsStatic.convertColor(Properties.Settings.Default.KeywordHighlightColor);
+            //this.ForegroundColor = Colors.DarkBlue;
+            this.DisplayName = "Highlight Word";
+            this.ZOrder = 5;
+        }
+    }
 
     /// <summary>
     /// Derive from TextMarkerTag, in case anyone wants to consume
     /// just the HighlightWordTags by themselves.
     /// </summary>
     public class HighlightWordTag : TextMarkerTag {
-        public HighlightWordTag() : base("green") { }
+        public HighlightWordTag() : base("AsmDude.HighlightWordFormatDefinition") {
+            // empty
+        }
     }
 
     /// <summary>
@@ -128,8 +146,6 @@ namespace AsmDude {
             // Find all words in the buffer like the one the caret is on
             try {
                 TextExtent word = TextStructureNavigator.GetExtentOfWord(currentRequest);
-                Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:UpdateWordAdornments. word={1}", this.ToString(), word.ToString()));
-
 
                 bool foundWord = true;
                 // If we've selected something not worth highlighting, we might have
@@ -164,8 +180,17 @@ namespace AsmDude {
                     return;
                 }
                 // Find the new spans
-                FindData findData = new FindData(currentWord.GetText(), currentWord.Snapshot);
-                findData.FindOptions = FindOptions.WholeWord | FindOptions.MatchCase;
+                FindData findData;
+                string currentWordStr = currentWord.GetText();
+                if (AsmDudeToolsStatic.isRegister(currentWordStr)) {
+                    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:SynchronousUpdate. Register={1}", this.ToString(), currentWordStr));
+                    findData = new FindData(AsmDudeToolsStatic.getRelatedRegister(currentWordStr), currentWord.Snapshot);
+                    findData.FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions;
+                } else {
+                    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:SynchronousUpdate. Keyword={1}", this.ToString(), currentWordStr));
+                    findData = new FindData(currentWordStr, currentWord.Snapshot);
+                    findData.FindOptions = FindOptions.WholeWord;
+                }
 
                 wordSpans.AddRange(TextSearchService.FindAll(findData));
 
@@ -190,15 +215,16 @@ namespace AsmDude {
         /// </summary>
         private void SynchronousUpdate(SnapshotPoint currentRequest, NormalizedSnapshotSpanCollection newSpans, SnapshotSpan? newCurrentWord) {
             lock (updateLock) {
-                if (currentRequest != RequestedPoint)
+                if (currentRequest != RequestedPoint) {
                     return;
-
+                }
                 WordSpans = newSpans;
                 CurrentWord = newCurrentWord;
 
                 var tempEvent = TagsChanged;
-                if (tempEvent != null)
+                if (tempEvent != null) {
                     tempEvent(this, new SnapshotSpanEventArgs(new SnapshotSpan(SourceBuffer.CurrentSnapshot, 0, SourceBuffer.CurrentSnapshot.Length)));
+                }
             }
         }
 
@@ -211,13 +237,13 @@ namespace AsmDude {
         /// </summary>
         /// <param name="spans">A read-only span of text to be searched for instances of CurrentWord</param>
         public IEnumerable<ITagSpan<HighlightWordTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
-            if (Properties.Settings.Default.SyntaxHighlighting_On) {
-                if (CurrentWord == null)
+            if (Properties.Settings.Default.KeywordHighlight_On) {
+                if (CurrentWord == null) {
                     yield break;
-
-                if (spans.Count == 0 || WordSpans.Count == 0)
+                }
+                if (spans.Count == 0 || WordSpans.Count == 0) {
                     yield break;
-
+                }
 
                 // Hold on to a "snapshot" of the word spans and current word, so that we maintain the same
                 // collection throughout

@@ -27,7 +27,7 @@ using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 
-namespace AsmDude {
+namespace AsmDude.HighlightWord {
     /// <summary>
     /// Export a <see cref="IViewTaggerProvider"/>
     /// </summary>

@@ -83,5 +83,11 @@
     <Setting Name="AsmDoc_On" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="KeywordHighlight_On" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="KeywordHighlightColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Cyan</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

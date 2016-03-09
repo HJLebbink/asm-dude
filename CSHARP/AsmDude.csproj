@@ -241,6 +241,9 @@
     <Compile Include="OptionsPage\OptionsPageAsmDoc.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="OptionsPage\OptionsPageKeywordHighlighting.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

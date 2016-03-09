@@ -29,6 +29,8 @@ namespace AsmDude {
     [ProvideOptionPageAttribute(typeof(OptionsPageAsmDoc), "AsmDude", "Asm Documentation", 100, 104, true, new string[] { "Change Asm Documentation Options" })]
     [ProvideProfileAttribute(typeof(OptionsPageAsmDoc), "AsmDude", "Asm Documentation Options", 100, 104, true)]
 
+    [ProvideOptionPageAttribute(typeof(OptionsPageKeywordHighlighting), "AsmDude", "Keyword Highlighting", 100, 105, true, new string[] { "Change Asm Documentation Options" })]
+    [ProvideProfileAttribute(typeof(OptionsPageKeywordHighlighting), "AsmDude", "Keyword Highlighting Options", 100, 105, true)]
 
     [ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
     [Guid(GuidStrings.GuidPackage)]

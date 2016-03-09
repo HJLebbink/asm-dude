@@ -346,5 +346,29 @@ namespace AsmDude.Properties {
                 this["AsmDoc_On"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool KeywordHighlight_On {
+            get {
+                return ((bool)(this["KeywordHighlight_On"]));
+            }
+            set {
+                this["KeywordHighlight_On"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Cyan")]
+        public global::System.Drawing.Color KeywordHighlightColor {
+            get {
+                return ((global::System.Drawing.Color)(this["KeywordHighlightColor"]));
+            }
+            set {
+                this["KeywordHighlightColor"] = value;
+            }
+        }
     }
 }
