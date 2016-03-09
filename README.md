@@ -1,7 +1,7 @@
 # Asm-Dude
 Assembly syntax highlighting, code completion and folding for Visual Studio 2015
 
-This extension can be found in the [visual studio extensions gallery](https://visualstudiogallery.msdn.microsoft.com/ff839577-2b68-416a-b761-72f9b1ca7c8e) or download latest installer [AsmDude.vsix (v1.4.3)](https://github.com/HJLebbink/asm-dude/releases/download/v1.4.3/AsmDude.vsix)
+This extension can be found in the [visual studio extensions gallery](https://visualstudiogallery.msdn.microsoft.com/ff839577-2b68-416a-b761-72f9b1ca7c8e) or download latest installer [AsmDude.vsix (v1.4.4)](https://github.com/HJLebbink/asm-dude/releases/download/v1.4.4/AsmDude.vsix)
 
 ###Run Source Code
 To run the extension from source code, Visual Studio 2015 SDK needs to be installed. To run the extension, hit F5 or choose the Debug > Start Debugging menu command. A new instance of Visual Studio will launch under the experimental hive.
@@ -11,6 +11,7 @@ Not happy with the highlighting or the descriptions. Mnemonics and descriptions 
 
 ###Feature Requests: (desire something - let me know)
 * ~~Documentation for opcodes. Hit F12 to get full official documentation of the selected opcode~~.
+* ~~Proper Register Highlighting. E.g. When you select GPR rax, GPR al is also highlighted.~~
 * Label analysis. When jumping to a label, check if the label exists. Check if labels are unique.
 * Code folding for documentation blocks.
 * Improved syntax highlighting.  Add label highlights.
@@ -31,5 +32,5 @@ Not happy with the highlighting or the descriptions. Mnemonics and descriptions 
 * 26 February 2016: Added code folding [v1.2]
 * 2 March 2016: Added option pages for customizations. [v1.4]
 * 7 March 2016: Added documentation for opcodes for CTRL + left mouse. [v1.4.2]
-
+* 9 March 2016: Added register highlighting. [v1.4.4]
 
