@@ -12,10 +12,11 @@ Not happy with the highlighting or the descriptions. Mnemonics and descriptions 
 ###Feature Requests: (desire something - let me know)
 * ~~Documentation for opcodes. Hit F12 to get full official documentation of the selected opcode~~.
 * ~~Proper Register Highlighting. E.g. When you select GPR rax, GPR al is also highlighted.~~
+* Create new file item with .asm extension.
 * Label analysis. When jumping to a label, check if the label exists. Check if labels are unique.
 * Code folding for documentation blocks.
 * Improved syntax highlighting.  Add label highlights.
-* Code completion for labels in jumps. Provide a list if existing labels from which one can choose.
+* Code completion for labels in jumps. Provide a list of existing labels from which one can choose.
 * Colored tooltips. Syntax highlighting in quickinfo tooltips.
 * Code formatting.
 * Syntax highlighting for the Debug/Windows/Disassembly view.
