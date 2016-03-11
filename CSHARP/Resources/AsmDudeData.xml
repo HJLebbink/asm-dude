@@ -80,11 +80,12 @@
 		<directive name=".XCREF"/>
 		<directive name=".XLIST"/>
 		<directive name=".XMM"/>
-		<directive name=".INTEL:SYNTAX"/>
+		<directive name=".INTEL_SYNTAX"/>
 		<directive name=".TEXT"/>
 		<directive name=".GLOBAL"/>
 		<directive name=".ALIGN"/>
-		<directive name=".ATT:SYNTAX"/>
+		<directive name=".ATT_SYNTAX"/>
+		<directive name=".NOPREFIX"/>
 	</directives>
 	<mnemonics>
 		<mnemonic name='AAA'>

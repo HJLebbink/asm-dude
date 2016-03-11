@@ -49,7 +49,7 @@ namespace AsmDude {
         [Import]
         private AsmDudeTools _asmDudeTools = null;
 
-        static char[] splitChars = { ' ', ',', '\t', '+', '*', '[', ']' };
+        static char[] splitChars = { ' ', ',', '\t', '+', '-', '*', '[', ']' };
 
         internal AsmTokenTagger(ITextBuffer buffer) {
             this._buffer = buffer;
