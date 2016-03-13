@@ -110,11 +110,12 @@ namespace AsmDude.AsmDoc {
             if (shellCommandDispatcher == null) {
                 return null;
             }
-            return new AsmDocMouseHandler(view,
-                                           shellCommandDispatcher,
-                                           AggregatorFactory.GetClassifier(buffer),
-                                           NavigatorService.GetTextStructureNavigator(buffer),
-                                           CtrlKeyState.GetStateForView(view));
+            return new AsmDocMouseHandler(
+                view, 
+                shellCommandDispatcher,
+                AggregatorFactory.GetClassifier(buffer),
+                NavigatorService.GetTextStructureNavigator(buffer),
+                CtrlKeyState.GetStateForView(view));
         }
 
         #region Private helpers

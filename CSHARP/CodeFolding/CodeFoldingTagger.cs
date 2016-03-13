@@ -71,6 +71,7 @@ namespace AsmDude.CodeFolding {
                         string hoverText = getHoverText(region.StartLine + 1, region.EndLine - 1, currentSnapshot);
                         yield return new TagSpan<IOutliningRegionTag>(
                             new SnapshotSpan(startLine.Start + region.StartOffset, endLine.End),
+                            // TODO make hoverText a textobject with smaller fontsize
                             new OutliningRegionTag(false, false, replacementString, hoverText));
                     }
                 }
@@ -85,17 +86,14 @@ namespace AsmDude.CodeFolding {
             }
             return "";
         }
-        private string getHoverText(int begin, int end, ITextSnapshot snapshot)
-        {
+        private string getHoverText(int begin, int end, ITextSnapshot snapshot) {
             string str = "";
 
-            if (begin < end)
-            {
+            if (begin < end) {
                 str = snapshot.GetLineFromLineNumber(begin).GetText();
             }
-            for (int i= begin+1; i< end; ++i)
-            {
-                str += "\n"+snapshot.GetLineFromLineNumber(i).GetText();
+            for (int i = begin + 1; i < end; ++i) {
+                str += "\n" + snapshot.GetLineFromLineNumber(i).GetText();
             }
             return str;
         }
