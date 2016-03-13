@@ -106,8 +106,7 @@ namespace AsmDude {
                             this._m_nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
                         }
                         return VSConstants.S_OK;
-                    } else {
-                        //if there is no selection, dismiss the session
+                    } else { //if there is no selection, dismiss the session
                         this._m_session.Dismiss();
                     }
                 }
@@ -117,22 +116,21 @@ namespace AsmDude {
             int retVal = this._m_nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
             bool handled = false;
             if (!typedChar.Equals(char.MinValue) && char.IsLetterOrDigit(typedChar)) {
-                if (this._m_session == null || this._m_session.IsDismissed) // If there is no active session, bring up completion
-                {
+                if (this._m_session == null || this._m_session.IsDismissed) { // If there is no active session, bring up completion
                     if (this.TriggerCompletion()) {
                         if (this._m_session != null) {
                             this._m_session.Filter();
                         }
                     }
-                } else    //the completion session is already active, so just filter
-                  {
+                } else {   //the completion session is already active, so just filter
                     this._m_session.Filter();
                 }
                 handled = true;
             } else if (commandID == (uint)VSConstants.VSStd2KCmdID.BACKSPACE   //redo the filter if there is a deletion
                   || commandID == (uint)VSConstants.VSStd2KCmdID.DELETE) {
-                if (this._m_session != null && !this._m_session.IsDismissed)
+                if (this._m_session != null && !this._m_session.IsDismissed) {
                     this._m_session.Filter();
+                }
                 handled = true;
             }
             if (handled) return VSConstants.S_OK;

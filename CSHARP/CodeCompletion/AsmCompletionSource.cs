@@ -127,35 +127,32 @@ namespace AsmDude {
             #region load xml
 
             AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
-            if (this._asmDudeTools == null) {
-                MessageBox.Show("ERROR: AsmCompletionSource:_asmDudePackage is null.");
-            } else {
-                XmlDocument xmlDoc = this._asmDudeTools.getXmlData();
-                XmlNodeList all = xmlDoc.SelectNodes("//*[@name]"); // select everything with a name attribute
-                for (int i = 0; i < all.Count; i++) {
-                    XmlNode node = all.Item(i);
-                    if (node != null) {
-                        var nameAttribute = node.Attributes["name"];
-                        if (nameAttribute != null) {
-                            string name = nameAttribute.Value.ToUpper();
-                            string archStr;
-                            var archAttribute = node.Attributes["arch"];
-                            if (archAttribute == null) {
-                                archStr = "";
-                                this._arch[name] = null;
-                            } else {
-                                archStr = " [" + archAttribute.Value + "]";
-                                this._arch[name] = archAttribute.Value.ToUpper();
-                            }
+            XmlDocument xmlDoc = this._asmDudeTools.getXmlData();
 
-                            var descriptionNode = node.SelectSingleNode("./description");
-                            string descriptionStr = (descriptionNode == null) ? "" : " - " + descriptionNode.InnerText.Trim();
-                            this._keywords[name] = name + archStr + descriptionStr;
-                            //this._keywords[name] = name.PadRight(15) + archStr.PadLeft(8) + descriptionStr;
-
-                            this._types[name] = node.Name;
-                            //Debug.WriteLine("INFO: AsmCompletionSource: keyword \"" + name + "\" has type "+ this._types[name]);
+            XmlNodeList all = xmlDoc.SelectNodes("//*[@name]"); // select everything with a name attribute
+            for (int i = 0; i < all.Count; i++) {
+                XmlNode node = all.Item(i);
+                if (node != null) {
+                    var nameAttribute = node.Attributes["name"];
+                    if (nameAttribute != null) {
+                        string name = nameAttribute.Value.ToUpper();
+                        string archStr;
+                        var archAttribute = node.Attributes["arch"];
+                        if (archAttribute == null) {
+                            archStr = "";
+                            this._arch[name] = null;
+                        } else {
+                            archStr = " [" + archAttribute.Value + "]";
+                            this._arch[name] = archAttribute.Value.ToUpper();
                         }
+
+                        var descriptionNode = node.SelectSingleNode("./description");
+                        string descriptionStr = (descriptionNode == null) ? "" : " - " + descriptionNode.InnerText.Trim();
+                        this._keywords[name] = name + archStr + descriptionStr;
+                        //this._keywords[name] = name.PadRight(15) + archStr.PadLeft(8) + descriptionStr;
+
+                        this._types[name] = node.Name;
+                        //Debug.WriteLine("INFO: AsmCompletionSource: keyword \"" + name + "\" has type "+ this._types[name]);
                     }
                 }
             }
@@ -194,9 +191,17 @@ namespace AsmDude {
                 if (triggerPoint == null) return;
 
                 var line = triggerPoint.GetContainingLine();
-                SnapshotPoint start = triggerPoint;
 
-                // find the start of the current keyword, a whiteSpace, ",", ";", "[" and "]" also are keyword separators
+                // check if current position is in a remark, that is check if the line contains a ";" or a "#" before the current point
+                for (SnapshotPoint pos = triggerPoint; pos >= line.Start; pos -= 1) {
+                    char c = pos.GetChar();
+                    if (c.Equals(';') || c.Equals('#')) {
+                        return;
+                    }
+                }
+
+                // find the start of the current keyword
+                SnapshotPoint start = triggerPoint;
                 while ((start > line.Start) && !isSeparatorChar((start - 1).GetChar())) {
                     start -= 1;
                 }
@@ -221,7 +226,7 @@ namespace AsmDude {
 
                         // by default, the entry.Key is with capitals
                         string insertionText = (useCapitals) ? entry.Key : entry.Key.ToLower();
-                        String description = null; //"file:H:\\Dropbox\\sc\\GitHub\\asm-dude\\html\\AAA.html";
+                        String description = null;
                         ImageSource imageSource = null;
                         if (this._types[entry.Key] != null) {
                             if (this._icons.ContainsKey(this._types[entry.Key])) {
@@ -239,9 +244,7 @@ namespace AsmDude {
             }
         }
 
-        private bool isArchSwitchedOn(string arch) {
-            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:isArchSwitchedOn; arch={1}", this.ToString(), arch));
-
+        private static bool isArchSwitchedOn(string arch) {
             switch (arch) {
                 case "X86": return Properties.Settings.Default.CodeCompletion_x86;
                 case "I686": return Properties.Settings.Default.CodeCompletion_x86;
@@ -258,11 +261,10 @@ namespace AsmDude {
                 case null:
                 case "": return true;
                 default:
-                    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:isArchSwitchedOn; unsupported arch {1}", this.ToString(), arch));
+                    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:isArchSwitchedOn; unsupported arch {0}", arch));
                     return true;
             }
         }
-
 
         private static bool isSeparatorChar(char c) {
             return char.IsWhiteSpace(c) || c.Equals(',') || c.Equals('[') || c.Equals(']');

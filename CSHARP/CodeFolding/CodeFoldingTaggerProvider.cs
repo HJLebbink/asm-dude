@@ -32,7 +32,7 @@ namespace AsmDude.CodeFolding {
     /// Export a <see cref="IViewTaggerProvider"/>
     /// </summary>
     [Export(typeof(ITaggerProvider))]
-    [ContentType("text")]
+    [ContentType("asm!")]
     [TagType(typeof(IOutliningRegionTag))]
     internal sealed class TaggerProvider : ITaggerProvider {
         /// <summary>
