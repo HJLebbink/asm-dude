@@ -32,6 +32,11 @@
 		</misc>
 	</miscs>
 	<directives>
+		<directive name="GLOBAL"/>
+		<directive name="BITS"/>
+		<directive name="ALIGN"/>
+		<directive name="%DEFINE"/>
+		
 		<directive name=".186"/>
 		<directive name=".286"/>
 		<directive name=".286c"/>

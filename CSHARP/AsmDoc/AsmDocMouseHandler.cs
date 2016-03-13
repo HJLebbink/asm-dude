@@ -19,7 +19,7 @@ namespace AsmDude.AsmDoc {
 
     [Export(typeof(IKeyProcessorProvider))]
     // [TextViewRole(PredefinedTextViewRoles.Document)]
-    [ContentType("code")]
+    [ContentType("asm!")]
     [Name("AsmDoc")]
     [Order(Before = "VisualStudioKeyboardProcessor")]
     internal sealed class AsmDocKeyProcessorProvider : IKeyProcessorProvider {
@@ -89,7 +89,7 @@ namespace AsmDude.AsmDoc {
 
     [Export(typeof(IMouseProcessorProvider))]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    [ContentType("code")]
+    [ContentType("asm!")]
     [Name("AsmDoc")]
     [Order(Before = "WordSelection")]
     internal sealed class AsmDocMouseHandlerProvider : IMouseProcessorProvider {
@@ -211,20 +211,31 @@ namespace AsmDude.AsmDoc {
 
                     var line = _view.TextViewLines.GetTextViewLineContainingYCoordinate(currentMousePosition.Y);
                     var bufferPosition = line.GetBufferPositionFromXCoordinate(currentMousePosition.X);
+
                     if (bufferPosition != null) {
-                        string lineText = bufferPosition.Value.GetContainingLine().GetText().Trim();
-                        //TODO: get the right word at the buffer position instead of the first keyword on the line
-                        string[] words = lineText.Split(' ','\t',',','[',']');
-                        string keyword = words[0].Trim();
-                        //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:PreprocessMouseUp; lineText={1}; keyword={2}", this.ToString(), lineText, keyword));
-                        this.DispatchGoToDoc(keyword);
+                        int seachSpanSize = 100;
+                        int rawPos = bufferPosition.Value.Position;
+                        int bufferLength = bufferPosition.Value.Snapshot.Length;
+
+                        int beginSubString = (rawPos > seachSpanSize) ? (rawPos - seachSpanSize) : 0;
+                        int endSubString   = (bufferLength > (seachSpanSize + rawPos)) ? (seachSpanSize + rawPos) : bufferLength;
+                        int posInSubString = (rawPos > seachSpanSize) ? seachSpanSize : rawPos;
+                        //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: PreprocessMouseUp; rawPos={0}; bufferLength={1}; beginSubString={2}; endSubString={3}; posInSubString={4}", rawPos, bufferLength, beginSubString, endSubString, posInSubString));
+                        try {
+                            char[] subString = bufferPosition.Value.Snapshot.ToCharArray(beginSubString, endSubString-beginSubString);
+                            string keyword = getKeyword(posInSubString, subString);
+                            if (keyword != null) {
+                                this.DispatchGoToDoc(keyword);
+                            }
+                        } catch (Exception ex) {
+                            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "ERROR: PreprocessMouseUp; e={0}", ex.ToString()));
+                        }
                     }
                     this.SetHighlightSpan(null);
                     _view.Selection.Clear();
                     e.Handled = true;
                 }
             }
-
             _mouseDownAnchorPoint = null;
         }
 
@@ -232,13 +243,49 @@ namespace AsmDude.AsmDoc {
 
         #region Private helpers
 
+        private static string getKeyword(int pos, char[] line) {
+            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: getKeyword; pos={0}; line=\"{1}\"", pos, new string(line)));
+            if ((pos < 0) || (pos >= line.Length)) return null;
+            // find the beginning of the keyword
+            int beginPos = 0;
+            for (int i1 = pos-1; i1 > 0; --i1) {
+                if (isSeparator(line[i1])) {
+                    beginPos = i1+1;
+                    break;
+                }
+            }
+            // find the end of the keyword
+            int endPos = line.Length;
+            for (int i2 = pos + 1; i2 < line.Length; ++i2) {
+                if (isSeparator(line[i2])) {
+                    endPos = i2;
+                    break;
+                }
+            }
+            return new string(line).Substring(beginPos, endPos - beginPos);
+        }
+
+        private static bool isSeparator(char c) {
+            if (Char.IsControl(c)) return true;
+            switch (c) {
+                case ' ':
+                case '\t':
+                case ',':
+                case '-':
+                case '+':
+                case '*':
+                case '[':
+                case ']': return true;
+                default: return false;
+            }
+        }
+
+
         Point RelativeToView(Point position) {
             return new Point(position.X + _view.ViewportLeft, position.Y + _view.ViewportTop);
         }
 
         bool TryHighlightItemUnderMouse(Point position) {
-
-
             bool updated = false;
             if (!Properties.Settings.Default.AsmDoc_On) return false;
 
@@ -308,31 +355,19 @@ namespace AsmDude.AsmDoc {
 
         private bool DispatchGoToDoc(string keyword) {
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:DispatchGoToDoc; keyword={1}", this.ToString(), keyword));
-
             int hr = this.openFile(keyword);
             return ErrorHandler.Succeeded(hr);
-            /*
-                Guid cmdGroup = VSConstants.GUID_VSStandardCommandSet97;
-                int hr = _commandTarget.Exec(ref cmdGroup,
-                            (uint)VSConstants.VSStd97CmdID.GotoDefn,
-                            (uint)OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT,
-                            System.IntPtr.Zero,
-                            System.IntPtr.Zero);
-            */
         }
 
         private string getUrl(string keyword) {
             string reference = this._asmDudeTools.getUrl(keyword);
             if (reference == null) return null;
             if (reference.Length == 0) return null;
-
             return Properties.Settings.Default.AsmDoc_url + reference;
-            //return "http://www.felixcloutier.com/x86/" + reference;
             //return AsmDudeToolsStatic.getInstallPath() + "html" + Path.DirectorySeparatorChar + reference;
         }
 
         private int openFile(string keyword) {
-
             string url = this.getUrl(keyword);
             if (url == null) return 1;
 
