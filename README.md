@@ -23,7 +23,7 @@ Not happy with the highlighting or the descriptions. Mnemonics and descriptions 
 * Code formatting.
 * Syntax highlighting for the Debug/Windows/Disassembly view.
 * Code completion restrictions. E.g. opcode movss can only be followed by an xmm register and not by a GPR such as rax.
-* Track flag influence. Select a opcode that uses a flag (as input), find the opcodes that produce this flag (as output). E.g.  select opcode cmovc or setc , highlight all opcodes such as btr, sal, sar, shl, shr, etc.
+* Track flag influence. Select an opcode that uses a flag (as input), find the opcodes that produce this flag (as output). E.g.  select opcode cmovc or setc , highlight all opcodes such as btr, sal, sar, shl, shr, etc.
 * Register rename assistance. Highly desirable but very challenging. E.g. rename GPR rdx to rbx, find which rdx, edx, dx, dl and dh will need to be renamed, check if renames will clash with existing occurances of rbx, ebx, bx, bl and bh.
  
 ###Updates:
@@ -36,4 +36,5 @@ Not happy with the highlighting or the descriptions. Mnemonics and descriptions 
 * 2 March 2016: Added option pages for customizations. [v1.4]
 * 7 March 2016: Added documentation for opcodes for CTRL + left mouse. [v1.4.2]
 * 9 March 2016: Added register highlighting. [v1.4.4]
+* 14 March 2016: bugfixes and anoyances fixes [v1.4.6]
 
