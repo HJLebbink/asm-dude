@@ -63,11 +63,11 @@ namespace AsmDude.HighlightWord {
     /// matches the word currently under the cursor.
     /// </summary>
     public class HighlightWordTagger : ITagger<HighlightWordTag> {
-        private ITextView View { get; set; }
-        private ITextBuffer SourceBuffer { get; set; }
-        private ITextSearchService TextSearchService { get; set; }
-        private ITextStructureNavigator TextStructureNavigator { get; set; }
-        private object updateLock = new object();
+        private ITextView _view { get; set; }
+        private ITextBuffer _sourceBuffer { get; set; }
+        private ITextSearchService _textSearchService { get; set; }
+        private ITextStructureNavigator _textStructureNavigator { get; set; }
+        private object _updateLock = new object();
 
         // The current set of words to highlight
         private NormalizedSnapshotSpanCollection WordSpans { get; set; }
@@ -78,18 +78,18 @@ namespace AsmDude.HighlightWord {
 
         public HighlightWordTagger(ITextView view, ITextBuffer sourceBuffer, ITextSearchService textSearchService,
                                    ITextStructureNavigator textStructureNavigator) {
-            View = view;
-            SourceBuffer = sourceBuffer;
-            TextSearchService = textSearchService;
-            TextStructureNavigator = textStructureNavigator;
+            _view = view;
+            _sourceBuffer = sourceBuffer;
+            _textSearchService = textSearchService;
+            _textStructureNavigator = textStructureNavigator;
 
             WordSpans = new NormalizedSnapshotSpanCollection();
             CurrentWord = null;
 
             // Subscribe to both change events in the view - any time the view is updated
             // or the caret is moved, we refresh our list of highlighted words.
-            View.Caret.PositionChanged += CaretPositionChanged;
-            View.LayoutChanged += ViewLayoutChanged;
+            _view.Caret.PositionChanged += CaretPositionChanged;
+            _view.LayoutChanged += ViewLayoutChanged;
         }
 
         #region Event Handlers
@@ -100,7 +100,7 @@ namespace AsmDude.HighlightWord {
         private void ViewLayoutChanged(object sender, TextViewLayoutChangedEventArgs e) {
             // If a new snapshot wasn't generated, then skip this layout
             if (e.NewViewState.EditSnapshot != e.OldViewState.EditSnapshot) {
-                UpdateAtCaretPosition(View.Caret.Position);
+                UpdateAtCaretPosition(_view.Caret.Position);
             }
         }
 
@@ -115,15 +115,15 @@ namespace AsmDude.HighlightWord {
         /// Check the caret position. If the caret is on a new word, update the CurrentWord value
         /// </summary>
         private void UpdateAtCaretPosition(CaretPosition caretPoisition) {
-            SnapshotPoint? point = caretPoisition.Point.GetPoint(SourceBuffer, caretPoisition.Affinity);
+            SnapshotPoint? point = caretPoisition.Point.GetPoint(_sourceBuffer, caretPoisition.Affinity);
 
-            if (!point.HasValue)
+            if (!point.HasValue) {
                 return;
-
+            }
             // If the new cursor position is still within the current word (and on the same snapshot),
             // we don't need to check it.
             if (CurrentWord.HasValue &&
-                CurrentWord.Value.Snapshot == View.TextSnapshot &&
+                CurrentWord.Value.Snapshot == _view.TextSnapshot &&
                 point.Value >= CurrentWord.Value.Start &&
                 point.Value <= CurrentWord.Value.End) {
                 return;
@@ -144,7 +144,7 @@ namespace AsmDude.HighlightWord {
 
             // Find all words in the buffer like the one the caret is on
             try {
-                TextExtent word = TextStructureNavigator.GetExtentOfWord(currentRequest);
+                TextExtent word = _textStructureNavigator.GetExtentOfWord(currentRequest);
 
                 bool foundWord = true;
                 // If we've selected something not worth highlighting, we might have
@@ -158,7 +158,7 @@ namespace AsmDude.HighlightWord {
                     } else {
                         // Try again, one character previous.  If the caret is at the end of a word, then
                         // this will pick up the word we are at the end of.
-                        word = TextStructureNavigator.GetExtentOfWord(currentRequest - 1);
+                        word = _textStructureNavigator.GetExtentOfWord(currentRequest - 1);
 
                         // If we still aren't valid the second time around, we're done
                         if (!WordExtentIsValid(currentRequest, word)) {
@@ -191,7 +191,7 @@ namespace AsmDude.HighlightWord {
                     findData.FindOptions = FindOptions.WholeWord;
                 }
 
-                wordSpans.AddRange(TextSearchService.FindAll(findData));
+                wordSpans.AddRange(_textSearchService.FindAll(findData));
 
                 // If we are still up-to-date (another change hasn't happened yet), do a real update
                 if (currentRequest == RequestedPoint) {
@@ -213,7 +213,7 @@ namespace AsmDude.HighlightWord {
         /// Perform a synchronous update, in case multiple background threads are running
         /// </summary>
         private void SynchronousUpdate(SnapshotPoint currentRequest, NormalizedSnapshotSpanCollection newSpans, SnapshotSpan? newCurrentWord) {
-            lock (updateLock) {
+            lock (_updateLock) {
                 if (currentRequest != RequestedPoint) {
                     return;
                 }
@@ -222,7 +222,7 @@ namespace AsmDude.HighlightWord {
 
                 var tempEvent = TagsChanged;
                 if (tempEvent != null) {
-                    tempEvent(this, new SnapshotSpanEventArgs(new SnapshotSpan(SourceBuffer.CurrentSnapshot, 0, SourceBuffer.CurrentSnapshot.Length)));
+                    tempEvent(this, new SnapshotSpanEventArgs(new SnapshotSpan(_sourceBuffer.CurrentSnapshot, 0, _sourceBuffer.CurrentSnapshot.Length)));
                 }
             }
         }
