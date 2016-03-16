@@ -43,7 +43,6 @@ namespace AsmDude.HighlightWord {
     internal class HighlightWordFormatDefinition : MarkerFormatDefinition {
         public HighlightWordFormatDefinition() {
             this.BackgroundColor = AsmDudeToolsStatic.convertColor(Properties.Settings.Default.KeywordHighlightColor);
-            //this.ForegroundColor = Colors.DarkBlue;
             this.DisplayName = "Highlight Word";
             this.ZOrder = 5;
         }
@@ -183,11 +182,11 @@ namespace AsmDude.HighlightWord {
                 FindData findData;
                 string currentWordStr = currentWord.GetText();
                 if (AsmDudeToolsStatic.isRegister(currentWordStr)) {
-                    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:SynchronousUpdate. Register={1}", this.ToString(), currentWordStr));
+                    //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:SynchronousUpdate. Register={1}", this.ToString(), currentWordStr));
                     findData = new FindData(AsmDudeToolsStatic.getRelatedRegister(currentWordStr), currentWord.Snapshot);
                     findData.FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions;
                 } else {
-                    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:SynchronousUpdate. Keyword={1}", this.ToString(), currentWordStr));
+                    //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:SynchronousUpdate. Keyword={1}", this.ToString(), currentWordStr));
                     findData = new FindData(currentWordStr, currentWord.Snapshot);
                     findData.FindOptions = FindOptions.WholeWord;
                 }
@@ -264,8 +263,7 @@ namespace AsmDude.HighlightWord {
                 // First, yield back the word the cursor is under (if it overlaps)
                 // Note that we'll yield back the same word again in the wordspans collection;
                 // the duplication here is expected.
-                var c1 = new NormalizedSnapshotSpanCollection(currentWordLocal);
-                if (spans.OverlapsWith(c1)) {
+                if (spans.OverlapsWith(new NormalizedSnapshotSpanCollection(currentWordLocal))) {
                     yield return new TagSpan<HighlightWordTag>(currentWordLocal, new HighlightWordTag());
                 }
 

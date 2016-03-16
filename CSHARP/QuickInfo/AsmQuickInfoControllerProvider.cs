@@ -31,7 +31,7 @@ namespace AsmDude.QuickInfo {
 
     [Export(typeof(IIntellisenseControllerProvider))]
     [Name("Template QuickInfo Controller")]
-    [ContentType("text")]
+    [ContentType("asm!")]
     internal class AsmQuickInfoControllerProvider : IIntellisenseControllerProvider {
 
         [Import]
