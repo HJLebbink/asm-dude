@@ -26,42 +26,42 @@ namespace AsmDude.OptionsPage {
         [DisplayName("Use Syntax Highlighting")]
         public bool _useSyntaxHighlighting { get; set; }
 
-        [Category("Colors used for Code Completion")]
+        [Category("Colors used for Syntax Highlighting")]
         [Description("Mnemonic")]
         [DisplayName("Mnemonic")]
         public System.Drawing.Color _colorMnemonic { get; set; }
 
-        [Category("Colors used for Code Completion")]
+        [Category("Colors used for Syntax Highlighting")]
         [Description("Register")]
         [DisplayName("Register")]
         public System.Drawing.Color _colorRegister { get; set; }
 
-        [Category("Colors used for Code Completion")]
+        [Category("Colors used for Syntax Highlighting")]
         [Description("Remark")]
         [DisplayName("Remark")]
         public System.Drawing.Color _colorRemark { get; set; }
 
-        [Category("Colors used for Code Completion")]
+        [Category("Colors used for Syntax Highlighting")]
         [Description("Directive")]
         [DisplayName("Directive")]
         public System.Drawing.Color _colorDirective { get; set; }
-        
-        [Category("Colors used for Code Completion")]
+
+        [Category("Colors used for Syntax Highlighting")]
         [Description("Constant")]
         [DisplayName("Constant")]
         public System.Drawing.Color _colorConstant { get; set; }
-        
-        [Category("Colors used for Code Completion")]
+
+        [Category("Colors used for Syntax Highlighting")]
         [Description("Jump")]
         [DisplayName("Jump")]
         public System.Drawing.Color _colorJump { get; set; }
-        
-        [Category("Colors used for Code Completion")]
+
+        [Category("Colors used for Syntax Highlighting")]
         [Description("Label")]
         [DisplayName("Label")]
         public System.Drawing.Color _colorLabel { get; set; }
-        
-        [Category("Colors used for Code Completion")]
+
+        [Category("Colors used for Syntax Highlighting")]
         [Description("Misc")]
         [DisplayName("Misc")]
         public System.Drawing.Color _colorMisc { get; set; }
