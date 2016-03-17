@@ -18,7 +18,7 @@ Not happy with the highlighting or the descriptions. Mnemonics and descriptions 
 * Code folding for documentation blocks.
 * Improved syntax highlighting.  Add label highlights.
 * Add syntax highlighting for AT&T syntax.
-* Code completion for labels in jumps. Provide a list of existing labels from which one can choose.
+* ~~Code completion for labels in jumps. Provide a list of existing labels from which one can choose.~~
 * Colored tooltips. Syntax highlighting in quickinfo tooltips.
 * Code formatting.
 * Syntax highlighting for the Debug/Windows/Disassembly view.
