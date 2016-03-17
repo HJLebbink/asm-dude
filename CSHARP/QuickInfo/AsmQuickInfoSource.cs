@@ -41,7 +41,6 @@ namespace AsmDude.QuickInfo {
         private ITagAggregator<AsmTokenTag> _aggregator;
         private ITextBuffer _buffer;
         private bool _disposed = false;
-        private XmlDocument _xmlDoc;
 
         [Import]
         private AsmDudeTools _asmDudeTools = null;
@@ -49,13 +48,7 @@ namespace AsmDude.QuickInfo {
         public AsmQuickInfoSource(ITextBuffer buffer, ITagAggregator<AsmTokenTag> aggregator) {
             this._aggregator = aggregator;
             this._buffer = buffer;
-
             AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
-            if (this._asmDudeTools == null) {
-                MessageBox.Show("ERROR: AsmQuickInfoSource:_asmDudeTools is null.");
-            } else {
-                this._xmlDoc = this._asmDudeTools.getXmlData();
-            }
         }
 
         /// <summary>
@@ -75,32 +68,32 @@ namespace AsmDude.QuickInfo {
 
             foreach (IMappingTagSpan<AsmTokenTag> curTag in this._aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint))) {
                 var tagSpan = curTag.Span.GetSpans(_buffer).First();
-                string tagString = tagSpan.GetText().ToUpper();
+                string tagString = tagSpan.GetText();
+                string tagStringUpper = tagString.ToUpper();
                 applicableToSpan = this._buffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
-
 
                 string description = null;
 
                 switch (curTag.Tag.type) {
                     case AsmTokenTypes.Misc: {
-                            string descr = getDescriptionKeyword(tagString);
-                            description = (descr.Length > 0) ? ("Keyword " + tagString + ": " + descr) : "Keyword " + descr;
+                            string descr = this._asmDudeTools.getDescription(tagStringUpper);
+                            description = (descr.Length > 0) ? ("Keyword " + tagStringUpper + ": " + descr) : "Keyword " + descr;
                             break;
                         }
                     case AsmTokenTypes.Directive: {
-                            string descr = getDescriptionDirective(tagString);
-                            description = (descr.Length > 0) ? ("Directive " + tagString + ": " + descr) : "Directive " + descr;
+                            string descr = this._asmDudeTools.getDescription(tagStringUpper);
+                            description = (descr.Length > 0) ? ("Directive " + tagStringUpper + ": " + descr) : "Directive " + descr;
                             break;
                         }
                     case AsmTokenTypes.Register: {
-                            string descr = getDescriptionRegister(tagString);
-                            description = (descr.Length > 0) ? (tagString + ": " + descr) : "Register " + descr;
+                            string descr = this._asmDudeTools.getDescription(tagStringUpper);
+                            description = (descr.Length > 0) ? (tagStringUpper + ": " + descr) : "Register " + descr;
                             break;
                         }
                     case AsmTokenTypes.Mnemonic: // intentional fall through
                     case AsmTokenTypes.Jump: {
-                            string descr = getDescriptionMnemonic(tagString);
-                            description = (descr.Length > 0) ? ("Mnemonic " + tagString + ": " + descr) : "Mnemonic " + descr;
+                            string descr = this._asmDudeTools.getDescription(tagStringUpper);
+                            description = (descr.Length > 0) ? ("Mnemonic " + tagStringUpper + ": " + descr) : "Mnemonic " + descr;
                             break;
                         }
                     case AsmTokenTypes.Label: {
@@ -152,70 +145,6 @@ namespace AsmDude.QuickInfo {
 
         private static bool isSeparatorChar(char c) {
             return char.IsWhiteSpace(c) || c.Equals(',') || c.Equals('[') || c.Equals(']');
-        }
-
-        private string getDescriptionMnemonic(string mnemonic) {
-            XmlNode node1 = this._xmlDoc.SelectSingleNode("//mnemonic[@name=\"" + mnemonic + "\"]");
-            if (node1 == null) {
-                Debug.WriteLine("WARNING: AsmQuickInfoSource:getDescriptionMnemonic: no mnemonic element for mnemonic " + mnemonic);
-                return "";
-            }
-            XmlNode node2 = node1.SelectSingleNode("./description");
-            if (node2 == null) {
-                Debug.WriteLine("WARNING: AsmQuickInfoSource:getDescriptionMnemonic: no description element for mnemonic " + mnemonic);
-                return "";
-            }
-            string description = node2.InnerText.Trim();
-            //Debug.WriteLine("INFO: getDescriptionMnemonic: mnemonic \"" + mnemonic + "\" has description \"" + description + "\"");
-            return description;
-        }
-
-        private string getDescriptionRegister(string register) {
-            XmlNode node1 = this._xmlDoc.SelectSingleNode("//register[@name=\"" + register + "\"]");
-            if (node1 == null) {
-                Debug.WriteLine("WARNING: AsmQuickInfoSource:getDescriptionRegister: no register element for register " + register);
-                return "";
-            }
-            XmlNode node2 = node1.SelectSingleNode("./description");
-            if (node2 == null) {
-                Debug.WriteLine("WARNING: AsmQuickInfoSource:getDescriptionRegister: no description element for register " + register);
-                return "";
-            }
-            string description = node2.InnerText.Trim();
-            //Debug.WriteLine("INFO: getDescriptionRegister: register \"" + register + "\" has description \"" + description + "\"");
-            return description;
-        }
-
-        private string getDescriptionDirective(string directive) {
-            XmlNode node1 = this._xmlDoc.SelectSingleNode("//directive[@name='" + directive + "']");
-            if (node1 == null) {
-                Debug.WriteLine("WARNING: AsmQuickInfoSource:getDescriptionDirective: no directive element for directive " + directive);
-                return "";
-            }
-            XmlNode node2 = node1.SelectSingleNode("./description");
-            if (node2 == null) {
-                Debug.WriteLine("WARNING: AsmQuickInfoSource:getDescriptionDirective: no description element for directive " + directive);
-                return "";
-            }
-            string description = node2.InnerText.Trim();
-            //Debug.WriteLine("INFO: getDescriptionDirective: directive \"" + directive + "\" has description \"" + description + "\"");
-            return description;
-        }
-
-        private string getDescriptionKeyword(string keyword) {
-            XmlNode node1 = this._xmlDoc.SelectSingleNode("//misc[@name='" + keyword + "']");
-            if (node1 == null) {
-                Debug.WriteLine("WARNING: AsmQuickInfoSource:getDescriptionKeyword: no misc element for keyword " + keyword);
-                return "";
-            }
-            XmlNode node2 = node1.SelectSingleNode("./description");
-            if (node2 == null) {
-                Debug.WriteLine("WARNING: AsmQuickInfoSource:getDescriptionKeyword: no description element for misc " + keyword);
-                return "";
-            }
-            string description = node2.InnerText.Trim();
-            //Debug.WriteLine("INFO: getDescriptionKeyword: misc \"" + keyword + "\" has description \"" + description + "\"");
-            return description;
         }
 
         #endregion private stuff

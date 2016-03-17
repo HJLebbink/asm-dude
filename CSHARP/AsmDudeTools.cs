@@ -11,6 +11,9 @@ using Microsoft.VisualStudio.Shell.Settings;
 using AsmDude.Properties;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Collections.Generic;
+using Microsoft.VisualStudio.Text;
+using System.Text.RegularExpressions;
 
 namespace AsmDude {
 
@@ -44,6 +47,10 @@ namespace AsmDude {
                 Debug.WriteLine("WARNING: bitmapFromUri: could not read icon from uri " + bitmapUri.ToString() + "; " + e.Message);
             }
             return bitmap;
+        }
+
+        public static bool isSeparatorChar(char c) {
+            return char.IsWhiteSpace(c) || c.Equals(',') || c.Equals('[') || c.Equals(']') || c.Equals('+') || c.Equals('-') || c.Equals('*');
         }
 
         public static string getRelatedRegister(string reg) {
@@ -317,12 +324,214 @@ namespace AsmDude {
     [Export]
     public class AsmDudeTools {
         private XmlDocument _xmlData;
+        private IDictionary<string, AsmTokenTypes> _asmTypes;
+        private IDictionary<string, string> _arch; // todo make an arch enumeration
 
         public AsmDudeTools() {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: Entering constructor for: {0}", this.ToString()));
         }
 
-        public XmlDocument getXmlData() {
+        public ICollection<string> getKeywords() {
+            if (this._asmTypes == null) initData();
+            return this._asmTypes.Keys;
+        }
+
+        public AsmTokenTypes getAsmTokenType(string keyword) {
+            if (this._asmTypes == null) initData();
+            string k2 = keyword.ToUpper();
+            if (this._asmTypes.ContainsKey(k2)) {
+                return this._asmTypes[k2];
+            } else {
+                return AsmTokenTypes.UNKNOWN;
+            }
+        }
+
+        /// <summary>
+        /// get url for the provided keyword. Returns empty string if the keyword does not exist or the keyword does not have an url.
+        /// </summary>
+        public string getUrl(string keyword) {
+            try {
+                string keywordUpper = keyword.ToUpper();
+                XmlDocument doc = this.getXmlData();
+                XmlNodeList all = doc.SelectNodes("//*[@name=\"" + keywordUpper + "\"]");
+                if (all.Count > 1) {
+                    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "WARNING: {0}:getUrl: multiple elements for keyword {1}.", this.ToString(), keywordUpper));
+                }
+                if (all.Count == 0) {
+                    //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getUrl: no elements for keyword {1}.", this.ToString(), keywordUpper));
+                    return "";
+                } else {
+                    XmlNode node1 = all.Item(0);
+                    XmlNode node2 = node1.SelectSingleNode("./ref");
+                    if (node2 == null) return null;
+                    string text = node2.InnerText.Trim();
+                    //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getUrl: keyword {1} yields {2}", this.ToString(), keyword, text));
+                    return text;
+                }
+            } catch (Exception) {
+                return "";
+            }
+        }
+
+        /// <summary>
+        /// get url for the provided keyword. Returns empty string if the keyword does not exist or the keyword does not have an url.
+        /// </summary>
+        public string getDescription(string keyword) {
+            string keywordUpper = keyword.ToUpper();
+            try {
+                XmlNodeList all = this._xmlData.SelectNodes("//*[@name=\"" + keywordUpper + "\"]");
+                if (all.Count > 1) {
+                    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "WARNING: {0}:getDescription: multiple elements for keyword {1}.", this.ToString(), keywordUpper));
+                }
+                if (all.Count == 0) {
+                    //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getUrl: no elements for keyword {1}.", this.ToString(), keywordUpper));
+                    return "";
+                } else {
+                    XmlNode node1 = all.Item(0);
+                    XmlNode node2 = node1.SelectSingleNode("./description");
+                    if (node2 == null) return null;
+                    string text = node2.InnerText.Trim();
+                    //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getDescription: keyword {1} yields {2}", this.ToString(), keyword, text));
+                    return text;
+                }
+            } catch (Exception) {
+                return "";
+            }
+        }
+
+        /// <summary>
+        /// Determine whether the provided keyword is a jump opcode.
+        /// </summary>
+        public bool isJumpKeyword(string keyword) {
+            if (this._asmTypes == null) initData();
+            string k2 = keyword.ToUpper();
+            return (this._asmTypes.ContainsKey(k2)) ? (this._asmTypes[k2] == AsmTokenTypes.Jump) : false;
+        }
+
+        /// <summary>
+        /// Get all labels with context info containing in the provided text
+        /// </summary>
+        public SortedDictionary<string, string> getLabelsDictionary(ITextBuffer text) {
+            var result = new SortedDictionary<string, string>();
+
+            foreach (ITextSnapshotLine line in text.CurrentSnapshot.Lines) {
+                string str = line.GetText();
+                int strLength = str.Length;
+
+                // find first occurrence of a colon
+                int posColon = -1;
+
+                for (int pos = 0; pos < strLength; ++pos) {
+                    char c = str[pos];
+                    if (c == ':') {
+                        posColon = pos;
+                        break;
+                    } else if ((c == ';') || (c == '#')) {
+                        break;
+                    }
+                }
+                if (posColon > 0) {
+                    string label = str.Substring(0, posColon).Trim();
+                    //string label = match.Groups[1].Value;
+                    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getLabelsDictionary: label=\"{1}\"", this.ToString(), label));
+                    if (result.ContainsKey(label)) {
+                        Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "WARNING: {0}:getLabelsDictionary: label=\"{1}\" already exists", this.ToString(), label));
+                    } else {
+                        result.Add(label, "line " + line.LineNumber + ": " +str.Substring(0, Math.Min(str.Length, 100)));
+                    }
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Get architecture of the provided keyword
+        /// </summary>
+        public string getArchitecture(string keyword) {
+            return this._arch[keyword.ToUpper()];
+        }
+
+        public void invalidateData() {
+            this._xmlData = null;
+            this._asmTypes = null;
+        }
+
+        #region private stuff
+
+        private void initData() {
+            this._asmTypes = new Dictionary<string, AsmTokenTypes>();
+            this._arch = new Dictionary<string, string>();
+
+            // fill the dictionary with keywords
+            AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
+            XmlDocument xmlDoc = this.getXmlData();
+            foreach (XmlNode node in xmlDoc.SelectNodes("//misc")) {
+                var nameAttribute = node.Attributes["name"];
+                if (nameAttribute == null) {
+                    Debug.WriteLine("WARNING: AsmTokenTagger: found misc with no name");
+                } else {
+                    string name = nameAttribute.Value.ToUpper();
+                    //Debug.WriteLine("INFO: AsmTokenTagger: found misc " + name);
+                    this._asmTypes[name] = AsmTokenTypes.Misc;
+                    this._arch[name] = getArchPrivate(node);
+                }
+            }
+
+            foreach (XmlNode node in xmlDoc.SelectNodes("//directive")) {
+                var nameAttribute = node.Attributes["name"];
+                if (nameAttribute == null) {
+                    Debug.WriteLine("WARNING: AsmTokenTagger: found directive with no name");
+                } else {
+                    string name = nameAttribute.Value.ToUpper();
+                    //Debug.WriteLine("INFO: AsmTokenTagger: found directive " + name);
+                    this._asmTypes[name] = AsmTokenTypes.Directive;
+                    this._arch[name] = getArchPrivate(node);
+                }
+            }
+            foreach (XmlNode node in xmlDoc.SelectNodes("//mnemonic")) {
+                var nameAttribute = node.Attributes["name"];
+                if (nameAttribute == null) {
+                    Debug.WriteLine("WARNING: AsmTokenTagger: found mnemonic with no name");
+                } else {
+                    string name = nameAttribute.Value.ToUpper();
+                    //Debug.WriteLine("INFO: AsmTokenTagger: found mnemonic " + name);
+
+                    var typeAttribute = node.Attributes["type"];
+                    if (typeAttribute == null) {
+                        this._asmTypes[name] = AsmTokenTypes.Mnemonic;
+                    } else {
+                        if (typeAttribute.Value.ToUpper().Equals("JUMP")) {
+                            this._asmTypes[name] = AsmTokenTypes.Jump;
+                        } else {
+                            this._asmTypes[name] = AsmTokenTypes.Mnemonic;
+                        }
+                    }
+                    this._arch[name] = getArchPrivate(node);
+                }
+            }
+            foreach (XmlNode node in xmlDoc.SelectNodes("//register")) {
+                var nameAttribute = node.Attributes["name"];
+                if (nameAttribute == null) {
+                    Debug.WriteLine("WARNING: AsmTokenTagger: found register with no name");
+                } else {
+                    string name = nameAttribute.Value.ToUpper();
+                    //Debug.WriteLine("INFO: AsmTokenTagger: found register " + name);
+                    this._asmTypes[name] = AsmTokenTypes.Register;
+                    this._arch[name] = getArchPrivate(node);
+                }
+            }
+        }
+
+        private string getArchPrivate(XmlNode node) {
+            var archAttribute = node.Attributes["arch"];
+            if (archAttribute == null) {
+                return null;
+            } else {
+                return archAttribute.Value.ToUpper();
+            }
+        }
+
+        private XmlDocument getXmlData() {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getXmlData", this.ToString()));
 
             if (this._xmlData == null) {
@@ -342,28 +551,8 @@ namespace AsmDude {
             return this._xmlData;
         }
 
-        public string getUrl(string keyword) {
-            string keywordUpper = keyword.ToUpper();
-            XmlDocument doc = this.getXmlData();
-            XmlNodeList all = doc.SelectNodes("//*[@name=\""+ keywordUpper + "\"]");
-            if (all.Count > 1) {
-                Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "WARNING: {0}:getUrl: multiple elements for keyword {1}.", this.ToString(), keywordUpper));
-            }
-            if (all.Count == 0) {
-                //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getUrl: no elements for keyword {1}.", this.ToString(), keywordUpper));
-                return null;
-            } else {
-                XmlNode node1 = all.Item(0);
-                XmlNode node2 = node1.SelectSingleNode("./ref");
-                if (node2 == null) return null;
-                string reference = node2.InnerText.Trim();
-                Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getUrl: keyword {1} yields {2}", this.ToString(), keywordUpper, reference));
-                return reference;
-            }
-        }
 
-        //public void invalidateXmlData() {
-        //    this._xmlData = null;
-        //}
+        #endregion
+
     }
 }

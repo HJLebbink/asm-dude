@@ -32,7 +32,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 using System.Diagnostics;
-
+using System.Globalization;
 
 namespace AsmDude {
 
@@ -64,6 +64,7 @@ namespace AsmDude {
             this._m_session = null;
             this._m_textView = textView;
             this._broker = broker;
+            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:constructor", this.ToString()));
         }
 
         public IOleCommandTarget _m_nextCommandHandler { get; set; }
@@ -75,6 +76,8 @@ namespace AsmDude {
         }
 
         public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
+            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:Exec", this.ToString()));
+
             /*
             if (VsShellUtilities.IsInAutomationFunction(m_provider.ServiceProvider)) {
                 return m_nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
@@ -85,9 +88,10 @@ namespace AsmDude {
             uint commandID = nCmdID;
             char typedChar = char.MinValue;
             //make sure the input is a char before getting it
-            if (pguidCmdGroup == VSConstants.VSStd2K && nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR) {
-                typedChar = (char)(ushort)Marshal.GetObjectForNativeVariant(pvaIn);
+            if ((pguidCmdGroup == VSConstants.VSStd2K) && (nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR)) {
+                typedChar = GetTypeChar(pvaIn);
             }
+            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:Exec: typedChar={1}", this.ToString(), typedChar));
 
             //check for a commit character
             if (nCmdID == (uint)VSConstants.VSStd2KCmdID.RETURN ||
@@ -111,7 +115,6 @@ namespace AsmDude {
                     }
                 }
             }
-
             //pass along the command so the char is added to the buffer
             int retVal = this._m_nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
             bool handled = false;
@@ -127,7 +130,7 @@ namespace AsmDude {
                 }
                 handled = true;
             } else if (commandID == (uint)VSConstants.VSStd2KCmdID.BACKSPACE   //redo the filter if there is a deletion
-                  || commandID == (uint)VSConstants.VSStd2KCmdID.DELETE) {
+                    || commandID == (uint)VSConstants.VSStd2KCmdID.DELETE) {
                 if (this._m_session != null && !this._m_session.IsDismissed) {
                     this._m_session.Filter();
                 }
@@ -138,6 +141,8 @@ namespace AsmDude {
         }
 
         private bool TriggerCompletion() {
+            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:TriggerCompletion", this.ToString()));
+
             //the caret must be in a non-projection location 
             SnapshotPoint? caretPoint = this._m_textView.Caret.Position.Point.GetPoint(
                 textBuffer => (!textBuffer.ContentType.IsOfType("projection")), PositionAffinity.Predecessor);
@@ -172,12 +177,15 @@ namespace AsmDude {
             this._m_session.SelectedCompletionSet.SelectBestMatch();
             this._m_session.SelectedCompletionSet.Recalculate();
         }
-
         public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText) {
+            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:QueryStatus", this.ToString()));
             if (pguidCmdGroup == VSConstants.VSStd2K) {
                 switch ((VSConstants.VSStd2KCmdID)prgCmds[0].cmdID) {
                     case VSConstants.VSStd2KCmdID.AUTOCOMPLETE:
                     case VSConstants.VSStd2KCmdID.COMPLETEWORD:
+
+                        Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:QueryStatus", this.ToString()));
+
                         prgCmds[0].cmdf = (uint)OLECMDF.OLECMDF_ENABLED | (uint)OLECMDF.OLECMDF_SUPPORTED;
                         return VSConstants.S_OK;
                 }

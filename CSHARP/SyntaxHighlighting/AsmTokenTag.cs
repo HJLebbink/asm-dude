@@ -38,13 +38,13 @@ namespace AsmDude {
 
         public AsmTokenTag(AsmTokenTypes type) {
             this.type = type;
+            AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
         }
     }
 
     internal sealed class AsmTokenTagger : ITagger<AsmTokenTag> {
 
         private ITextBuffer _buffer;
-        private IDictionary<string, AsmTokenTypes> _asmTypes;
 
         [Import]
         private AsmDudeTools _asmDudeTools = null;
@@ -53,66 +53,7 @@ namespace AsmDude {
 
         internal AsmTokenTagger(ITextBuffer buffer) {
             this._buffer = buffer;
-            this._asmTypes = new Dictionary<string, AsmTokenTypes>();
-
-            // fill the dictionary with keywords
             AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
-            if (this._asmDudeTools == null) {
-                MessageBox.Show("ERROR: AsmTokenTagger:_asmDudePackage is null.");
-            } else {
-                XmlDocument xmlDoc = this._asmDudeTools.getXmlData();
-                foreach (XmlNode node in xmlDoc.SelectNodes("//misc")) {
-                    var nameAttribute = node.Attributes["name"];
-                    if (nameAttribute == null) {
-                        Debug.WriteLine("WARNING: AsmTokenTagger: found misc with no name");
-                    } else {
-                        string name = nameAttribute.Value.ToUpper();
-                        //Debug.WriteLine("INFO: AsmTokenTagger: found misc " + name);
-                        _asmTypes[name] = AsmTokenTypes.Misc;
-                    }
-                }
-
-                foreach (XmlNode node in xmlDoc.SelectNodes("//directive")) {
-                    var nameAttribute = node.Attributes["name"];
-                    if (nameAttribute == null) {
-                        Debug.WriteLine("WARNING: AsmTokenTagger: found directive with no name");
-                    } else {
-                        string name = nameAttribute.Value.ToUpper();
-                        //Debug.WriteLine("INFO: AsmTokenTagger: found directive " + name);
-                        _asmTypes[name] = AsmTokenTypes.Directive;
-                    }
-                }
-                foreach (XmlNode node in xmlDoc.SelectNodes("//mnemonic")) {
-                    var nameAttribute = node.Attributes["name"];
-                    if (nameAttribute == null) {
-                        Debug.WriteLine("WARNING: AsmTokenTagger: found mnemonic with no name");
-                    } else {
-                        string name = nameAttribute.Value.ToUpper();
-                        //Debug.WriteLine("INFO: AsmTokenTagger: found mnemonic " + name);
-
-                        var typeAttribute = node.Attributes["type"];
-                        if (typeAttribute == null) {
-                            _asmTypes[name] = AsmTokenTypes.Mnemonic;
-                        } else {
-                            if (typeAttribute.Value.ToUpper().Equals("JUMP")) {
-                                _asmTypes[name] = AsmTokenTypes.Jump;
-                            } else {
-                                _asmTypes[name] = AsmTokenTypes.Mnemonic;
-                            }
-                        }
-                    }
-                }
-                foreach (XmlNode node in xmlDoc.SelectNodes("//register")) {
-                    var nameAttribute = node.Attributes["name"];
-                    if (nameAttribute == null) {
-                        Debug.WriteLine("WARNING: AsmTokenTagger: found register with no name");
-                    } else {
-                        string name = nameAttribute.Value.ToUpper();
-                        //Debug.WriteLine("INFO: AsmTokenTagger: found register " + name);
-                        _asmTypes[name] = AsmTokenTypes.Register;
-                    }
-                }
-            }
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged {
@@ -146,48 +87,48 @@ namespace AsmDude {
                         if (containsRemarkSymbol(asmToken)) {
                             foundRemark = true;
                         } else {
-                            if (this._asmTypes.ContainsKey(asmToken)) {
-                                switch (this._asmTypes[asmToken]) {
+                            switch (this._asmDudeTools.getAsmTokenType(asmToken)) {
 
-                                    case AsmTokenTypes.Jump: {
-                                            //Debug.WriteLine("current jump token \"" + asmToken + "\"");
+                                case AsmTokenTypes.Jump: {
+                                        //Debug.WriteLine("current jump token \"" + asmToken + "\"");
 
-                                            var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
-                                            if (tokenSpan.IntersectsWith(curSpan))
-                                                yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Jump));
+                                        var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
+                                        if (tokenSpan.IntersectsWith(curSpan)) {
+                                            yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Jump));
+                                        }
+                                        tup = getNextToken(tokenId, nextLoc, tokens);
+                                        tokenId = tup.Item2;
+                                        nextLoc = tup.Item3;
 
-                                            tup = getNextToken(tokenId, nextLoc, tokens);
-                                            tokenId = tup.Item2;
-                                            nextLoc = tup.Item3;
+                                        if (tup.Item1) {
+                                            asmToken = tup.Item4;
+                                            curLoc = nextLoc - (asmToken.Length + 1);
+                                            //Debug.WriteLine("label token " + tokenId + " at location " + curLoc + " = \"" + asmToken + "\"");
 
-                                            if (tup.Item1) {
-                                                asmToken = tup.Item4;
-                                                curLoc = nextLoc - (asmToken.Length + 1);
-                                                //Debug.WriteLine("label token " + tokenId + " at location " + curLoc + " = \"" + asmToken + "\"");
-
-                                                if (containsRemarkSymbol(asmToken)) {
-                                                    foundRemark = true;
-                                                } else {
-                                                    tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
-                                                    if (tokenSpan.IntersectsWith(curSpan))
-                                                        yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Label));
-                                                }
+                                            if (containsRemarkSymbol(asmToken)) {
+                                                foundRemark = true;
+                                            } else {
+                                                tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
+                                                if (tokenSpan.IntersectsWith(curSpan))
+                                                    yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Label));
                                             }
-                                            break;
                                         }
-                                    default: {
+                                        break;
+                                    }
+                                case AsmTokenTypes.UNKNOWN: {// asmToken is not a known keyword, check if it is an numerical
+                                        if (isConstant(asmToken)) {
                                             var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
                                             if (tokenSpan.IntersectsWith(curSpan))
-                                                yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(_asmTypes[asmToken]));
-                                            break;
+                                                yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Constant));
                                         }
-                                }
-                            } else { // asmToken is not a known keyword, check if it is an numerical
-                                if (isConstant(asmToken)) {
-                                    var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
-                                    if (tokenSpan.IntersectsWith(curSpan))
-                                        yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Constant));
-                                }
+                                    }
+                                    break;
+                                default: {
+                                        var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
+                                        if (tokenSpan.IntersectsWith(curSpan))
+                                            yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(this._asmDudeTools.getAsmTokenType(asmToken)));
+                                        break;
+                                    }
                             }
                         }
                     }

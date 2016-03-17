@@ -240,7 +240,7 @@ namespace AsmDude.HighlightWord {
                 if (CurrentWord == null) {
                     yield break;
                 }
-                if (spans.Count == 0 || WordSpans.Count == 0) {
+                if ((spans.Count == 0) || (WordSpans.Count == 0)) {
                     yield break;
                 }
 

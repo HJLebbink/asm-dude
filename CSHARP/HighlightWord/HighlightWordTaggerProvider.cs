@@ -28,9 +28,7 @@ using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 
 namespace AsmDude.HighlightWord {
-    /// <summary>
-    /// Export a <see cref="IViewTaggerProvider"/>
-    /// </summary>
+
     [Export(typeof(IViewTaggerProvider))]
     [ContentType("asm!")]
     [TagType(typeof(HighlightWordTag))]

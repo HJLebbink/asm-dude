@@ -27,6 +27,6 @@ using System.Text;
 
 namespace AsmDude {
     public enum AsmTokenTypes {
-        Mnemonic, Register, Remark, Directive, Constant, Jump, Label, Misc
+        Mnemonic, Register, Remark, Directive, Constant, Jump, Label, Misc, UNKNOWN
     }
 }
