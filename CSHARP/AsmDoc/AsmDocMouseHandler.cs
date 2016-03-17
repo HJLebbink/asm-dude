@@ -18,7 +18,6 @@ using EnvDTE80;
 namespace AsmDude.AsmDoc {
 
     [Export(typeof(IKeyProcessorProvider))]
-    // [TextViewRole(PredefinedTextViewRoles.Document)]
     [ContentType("asm!")]
     [Name("AsmDoc")]
     [Order(Before = "VisualStudioKeyboardProcessor")]
@@ -88,7 +87,6 @@ namespace AsmDude.AsmDoc {
     }
 
     [Export(typeof(IMouseProcessorProvider))]
-    [TextViewRole(PredefinedTextViewRoles.Document)]
     [ContentType("asm!")]
     [Name("AsmDoc")]
     [Order(Before = "WordSelection")]
@@ -250,7 +248,8 @@ namespace AsmDude.AsmDoc {
             // find the beginning of the keyword
             int beginPos = 0;
             for (int i1 = pos-1; i1 > 0; --i1) {
-                if (isSeparator(line[i1])) {
+                char c = line[i1];
+                if (AsmDudeToolsStatic.isSeparatorChar(c) || Char.IsControl(c)) {
                     beginPos = i1+1;
                     break;
                 }
@@ -258,29 +257,14 @@ namespace AsmDude.AsmDoc {
             // find the end of the keyword
             int endPos = line.Length;
             for (int i2 = pos + 1; i2 < line.Length; ++i2) {
-                if (isSeparator(line[i2])) {
+                char c = line[i2];
+                if (AsmDudeToolsStatic.isSeparatorChar(c) || Char.IsControl(c)) {
                     endPos = i2;
                     break;
                 }
             }
             return new string(line).Substring(beginPos, endPos - beginPos);
         }
-
-        private static bool isSeparator(char c) {
-            if (Char.IsControl(c)) return true;
-            switch (c) {
-                case ' ':
-                case '\t':
-                case ',':
-                case '-':
-                case '+':
-                case '*':
-                case '[':
-                case ']': return true;
-                default: return false;
-            }
-        }
-
 
         Point RelativeToView(Point position) {
             return new Point(position.X + _view.ViewportLeft, position.Y + _view.ViewportTop);
@@ -362,7 +346,6 @@ namespace AsmDude.AsmDoc {
 
         private string getUrl(string keyword) {
             string reference = this._asmDudeTools.getUrl(keyword);
-            if (reference == null) return null;
             if (reference.Length == 0) return null;
             return Properties.Settings.Default.AsmDoc_url + reference;
             //return AsmDudeToolsStatic.getInstallPath() + "html" + Path.DirectorySeparatorChar + reference;
