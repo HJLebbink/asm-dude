@@ -329,6 +329,7 @@ namespace AsmDude {
 
         public AsmDudeTools() {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: Entering constructor for: {0}", this.ToString()));
+            this.initData(); // load data for speed
         }
 
         public ICollection<string> getKeywords() {
@@ -352,8 +353,7 @@ namespace AsmDude {
         public string getUrl(string keyword) {
             try {
                 string keywordUpper = keyword.ToUpper();
-                XmlDocument doc = this.getXmlData();
-                XmlNodeList all = doc.SelectNodes("//*[@name=\"" + keywordUpper + "\"]");
+                XmlNodeList all = this.getXmlData().SelectNodes("//*[@name=\"" + keywordUpper + "\"]");
                 if (all.Count > 1) {
                     Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "WARNING: {0}:getUrl: multiple elements for keyword {1}.", this.ToString(), keywordUpper));
                 }
@@ -377,9 +377,9 @@ namespace AsmDude {
         /// get url for the provided keyword. Returns empty string if the keyword does not exist or the keyword does not have an url.
         /// </summary>
         public string getDescription(string keyword) {
-            string keywordUpper = keyword.ToUpper();
             try {
-                XmlNodeList all = this._xmlData.SelectNodes("//*[@name=\"" + keywordUpper + "\"]");
+                string keywordUpper = keyword.ToUpper();
+                XmlNodeList all = this.getXmlData().SelectNodes("//*[@name=\"" + keywordUpper + "\"]");
                 if (all.Count > 1) {
                     Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "WARNING: {0}:getDescription: multiple elements for keyword {1}.", this.ToString(), keywordUpper));
                 }
@@ -411,8 +411,8 @@ namespace AsmDude {
         /// <summary>
         /// Get all labels with context info containing in the provided text
         /// </summary>
-        public SortedDictionary<string, string> getLabelsDictionary(ITextBuffer text) {
-            var result = new SortedDictionary<string, string>();
+        public IList<Tuple<string, string>> getLabels(ITextBuffer text) {
+            var result = new List<Tuple<string, string>>();
 
             foreach (ITextSnapshotLine line in text.CurrentSnapshot.Lines) {
                 string str = line.GetText();
@@ -434,13 +434,10 @@ namespace AsmDude {
                     string label = str.Substring(0, posColon).Trim();
                     //string label = match.Groups[1].Value;
                     Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getLabelsDictionary: label=\"{1}\"", this.ToString(), label));
-                    if (result.ContainsKey(label)) {
-                        Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "WARNING: {0}:getLabelsDictionary: label=\"{1}\" already exists", this.ToString(), label));
-                    } else {
-                        result.Add(label, "line " + line.LineNumber + ": " +str.Substring(0, Math.Min(str.Length, 100)));
-                    }
+                    result.Add(new Tuple<string, string>(label, "line " + line.LineNumber + ": " +str.Substring(0, Math.Min(str.Length, 100))));
                 }
             }
+            result.Sort((x, y) => x.Item1.CompareTo(y.Item1));
             return result;
         }
 
@@ -533,7 +530,6 @@ namespace AsmDude {
 
         private XmlDocument getXmlData() {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getXmlData", this.ToString()));
-
             if (this._xmlData == null) {
                 string filename = AsmDudeToolsStatic.getInstallPath() + "Resources" + Path.DirectorySeparatorChar + "AsmDudeData.xml";
                 Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getXmlData: going to load file \"{1}\"", this.ToString(), filename));

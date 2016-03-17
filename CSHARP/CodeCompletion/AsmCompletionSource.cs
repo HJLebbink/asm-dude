@@ -184,10 +184,10 @@ namespace AsmDude {
 
                 if (isLabel(start-1, line.Start)) {
                     ImageSource imageSource = this._icons[AsmTokenTypes.Label];
-                    var labels = this._asmDudeTools.getLabelsDictionary(this._buffer);
-                    foreach (KeyValuePair<string, string> entry in labels) {
+                    var labels = this._asmDudeTools.getLabels(this._buffer);
+                    foreach (Tuple<string, string> entry in labels) {
                         //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:AugmentCompletionSession; label={1}; description={2}", this.ToString(), entry.Key, entry.Value));
-                        completions.Add(new Completion(entry.Key, entry.Key, entry.Value, imageSource, ""));
+                        completions.Add(new Completion(entry.Item1, entry.Item1, entry.Item2, imageSource, ""));
                     }
                 } else { // current keyword is not a label
                     foreach (string keyword in this._asmDudeTools.getKeywords()) {
