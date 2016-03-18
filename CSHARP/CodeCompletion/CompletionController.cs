@@ -64,7 +64,7 @@ namespace AsmDude {
             this._m_session = null;
             this._m_textView = textView;
             this._broker = broker;
-            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:constructor", this.ToString()));
+            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:constructor", this.ToString()));
         }
 
         public IOleCommandTarget _m_nextCommandHandler { get; set; }
@@ -183,9 +183,7 @@ namespace AsmDude {
                 switch ((VSConstants.VSStd2KCmdID)prgCmds[0].cmdID) {
                     case VSConstants.VSStd2KCmdID.AUTOCOMPLETE:
                     case VSConstants.VSStd2KCmdID.COMPLETEWORD:
-
-                        Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:QueryStatus", this.ToString()));
-
+                        //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:QueryStatus", this.ToString()));
                         prgCmds[0].cmdf = (uint)OLECMDF.OLECMDF_ENABLED | (uint)OLECMDF.OLECMDF_SUPPORTED;
                         return VSConstants.S_OK;
                 }

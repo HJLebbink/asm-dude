@@ -22,14 +22,11 @@
 
 using System;
 using System.Linq;
-using System.Xml;
-using System.Diagnostics;
 using System.Collections.Generic;
 
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
-using System.Windows;
 using System.ComponentModel.Composition;
 
 namespace AsmDude.QuickInfo {
@@ -77,27 +74,28 @@ namespace AsmDude.QuickInfo {
                 switch (curTag.Tag.type) {
                     case AsmTokenTypes.Misc: {
                             string descr = this._asmDudeTools.getDescription(tagStringUpper);
-                            description = (descr.Length > 0) ? ("Keyword " + tagStringUpper + ": " + descr) : "Keyword " + descr;
+                            description = (descr.Length > 0) ? ("Keyword " + tagStringUpper + ": " + descr) : "Keyword " + tagStringUpper;
                             break;
                         }
                     case AsmTokenTypes.Directive: {
                             string descr = this._asmDudeTools.getDescription(tagStringUpper);
-                            description = (descr.Length > 0) ? ("Directive " + tagStringUpper + ": " + descr) : "Directive " + descr;
+                            description = (descr.Length > 0) ? ("Directive " + tagStringUpper + ": " + descr) : "Directive " + tagStringUpper;
                             break;
                         }
                     case AsmTokenTypes.Register: {
                             string descr = this._asmDudeTools.getDescription(tagStringUpper);
-                            description = (descr.Length > 0) ? (tagStringUpper + ": " + descr) : "Register " + descr;
+                            description = (descr.Length > 0) ? (tagStringUpper + ": " + descr) : "Register " + tagStringUpper;
                             break;
                         }
                     case AsmTokenTypes.Mnemonic: // intentional fall through
                     case AsmTokenTypes.Jump: {
                             string descr = this._asmDudeTools.getDescription(tagStringUpper);
-                            description = (descr.Length > 0) ? ("Mnemonic " + tagStringUpper + ": " + descr) : "Mnemonic " + descr;
+                            description = (descr.Length > 0) ? ("Mnemonic " + tagStringUpper + ": " + descr) : "Mnemonic " + tagStringUpper;
                             break;
                         }
                     case AsmTokenTypes.Label: {
-                            description = "Label " + tagString;
+                            string descr = this._asmDudeTools.getLabelDescription(tagString, this._buffer);
+                            description = (descr.Length > 0) ? ("Label at " + descr) : "Label " + tagString;
                             break;
                         }
                     case AsmTokenTypes.Constant: {

@@ -363,7 +363,7 @@ namespace AsmDude {
                 } else {
                     XmlNode node1 = all.Item(0);
                     XmlNode node2 = node1.SelectSingleNode("./ref");
-                    if (node2 == null) return null;
+                    if (node2 == null) return "";
                     string text = node2.InnerText.Trim();
                     //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getUrl: keyword {1} yields {2}", this.ToString(), keyword, text));
                     return text;
@@ -389,7 +389,7 @@ namespace AsmDude {
                 } else {
                     XmlNode node1 = all.Item(0);
                     XmlNode node2 = node1.SelectSingleNode("./description");
-                    if (node2 == null) return null;
+                    if (node2 == null) return "";
                     string text = node2.InnerText.Trim();
                     //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getDescription: keyword {1} yields {2}", this.ToString(), keyword, text));
                     return text;
@@ -432,13 +432,40 @@ namespace AsmDude {
                 }
                 if (posColon > 0) {
                     string label = str.Substring(0, posColon).Trim();
-                    //string label = match.Groups[1].Value;
                     Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getLabelsDictionary: label=\"{1}\"", this.ToString(), label));
                     result.Add(new Tuple<string, string>(label, "line " + line.LineNumber + ": " +str.Substring(0, Math.Min(str.Length, 100))));
                 }
             }
             result.Sort((x, y) => x.Item1.CompareTo(y.Item1));
             return result;
+        }
+
+        public string getLabelDescription(string label, ITextBuffer text) {
+            foreach (ITextSnapshotLine line in text.CurrentSnapshot.Lines) {
+                string str = line.GetText();
+                int strLength = str.Length;
+
+                // find first occurrence of a colon
+                int posColon = -1;
+
+                for (int pos = 0; pos < strLength; ++pos) {
+                    char c = str[pos];
+                    if (c == ':') {
+                        posColon = pos;
+                        break;
+                    } else if ((c == ';') || (c == '#')) {
+                        break;
+                    }
+                }
+                if (posColon > 0) {
+                    string labelLocal = str.Substring(0, posColon).Trim();
+                    if (labelLocal.Equals(label)) {
+                        Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getLabelDescription: label=\"{1}\"", this.ToString(), label));
+                        return "line " + line.LineNumber + ": " + str.Substring(0, Math.Min(str.Length, 100));
+                    }
+                }
+            }
+            return "";
         }
 
         /// <summary>
