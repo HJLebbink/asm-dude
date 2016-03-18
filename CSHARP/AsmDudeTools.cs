@@ -49,9 +49,30 @@ namespace AsmDude {
             return bitmap;
         }
 
+        public static bool isRemarkChar(char c) {
+            return c.Equals('#') || c.Equals(';');
+        }
+        
         public static bool isSeparatorChar(char c) {
             return char.IsWhiteSpace(c) || c.Equals(',') || c.Equals('[') || c.Equals(']') || c.Equals('+') || c.Equals('-') || c.Equals('*');
         }
+
+        public static bool isConstant(string token) {
+            string token2;
+            if (token.StartsWith("0x", StringComparison.CurrentCultureIgnoreCase)) {
+                token2 = token.Substring(2);
+            } else {
+                token2 = token;
+            }
+            ulong dummy;
+            bool parsedSuccessfully = ulong.TryParse(token2, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out dummy);
+            return parsedSuccessfully;
+        }
+
+        public static bool isLabel(string token) {
+            return false;
+        }
+
 
         public static string getRelatedRegister(string reg) {
             switch (reg.ToUpper()) {

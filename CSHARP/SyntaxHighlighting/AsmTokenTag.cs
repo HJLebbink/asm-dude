@@ -49,7 +49,7 @@ namespace AsmDude {
         [Import]
         private AsmDudeTools _asmDudeTools = null;
 
-        static char[] splitChars = { ' ', ',', '\t', '+', '-', '*', '[', ']' };
+        static char[] splitChars = { ' ', ',', '\t', '+', '-', '*', '[', ']' }; //TODO remove this to AsmDudeTools
 
         internal AsmTokenTagger(ITextBuffer buffer) {
             this._buffer = buffer;
@@ -109,24 +109,32 @@ namespace AsmDude {
                                                 foundRemark = true;
                                             } else {
                                                 tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
-                                                if (tokenSpan.IntersectsWith(curSpan))
+                                                if (tokenSpan.IntersectsWith(curSpan)) {
                                                     yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Label));
+                                                }
                                             }
                                         }
                                         break;
                                     }
                                 case AsmTokenTypes.UNKNOWN: {// asmToken is not a known keyword, check if it is an numerical
-                                        if (isConstant(asmToken)) {
+                                        if (AsmDudeToolsStatic.isConstant(asmToken)) {
                                             var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
-                                            if (tokenSpan.IntersectsWith(curSpan))
+                                            if (tokenSpan.IntersectsWith(curSpan)) {
                                                 yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Constant));
+                                            }
+                                        } else if (AsmDudeToolsStatic.isLabel(asmToken)) {
+                                            var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
+                                            if (tokenSpan.IntersectsWith(curSpan)) {
+                                                yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Label));
+                                            }
                                         }
+                                        break;
                                     }
-                                    break;
                                 default: {
                                         var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
-                                        if (tokenSpan.IntersectsWith(curSpan))
+                                        if (tokenSpan.IntersectsWith(curSpan)) {
                                             yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(this._asmDudeTools.getAsmTokenType(asmToken)));
+                                        }
                                         break;
                                     }
                             }
@@ -146,7 +154,12 @@ namespace AsmDude {
         }
 
         private bool containsRemarkSymbol(string token) {
-            return (token.Contains("#") || token.Contains(";"));
+            foreach (char c in token) {
+                if (AsmDudeToolsStatic.isRemarkChar(c)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         // return true, nextTokenId, tokenEndPos, tokenString
@@ -166,18 +179,6 @@ namespace AsmDude {
                 }
             }
             return new Tuple<bool, int, int, string>(false, nextTokenId, nextLoc, "");
-        }
-
-        private bool isConstant(string token) {
-            string token2;
-            if (token.StartsWith("0x", StringComparison.CurrentCultureIgnoreCase)) {
-                token2 = token.Substring(2);
-            } else {
-                token2 = token;
-            }
-            ulong dummy;
-            bool parsedSuccessfully = ulong.TryParse(token2, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out dummy);
-            return parsedSuccessfully;
         }
     }
 }
