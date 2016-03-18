@@ -82,6 +82,16 @@ namespace AsmDude {
         [ContentType("asm!")]
         internal static FileExtensionToContentTypeDefinition AsmFileType = null;
 
+        [Export]
+        [FileExtension(".cod")]
+        [ContentType("asm!")]
+        internal static FileExtensionToContentTypeDefinition AsmFileType_cod = null;
+
+        [Export]
+        [FileExtension(".inc")]
+        [ContentType("asm!")]
+        internal static FileExtensionToContentTypeDefinition AsmFileType_inc = null;
+
         [Import]
         internal IClassificationTypeRegistryService ClassificationTypeRegistry = null;
 
