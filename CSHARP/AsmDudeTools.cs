@@ -70,7 +70,7 @@ namespace AsmDude {
         }
 
         public static bool isLabel(string token) {
-            return false;
+            return (token[token.Length - 1] == ':');
         }
 
 
