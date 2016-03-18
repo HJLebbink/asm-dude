@@ -16,7 +16,7 @@ Not happy with the highlighting or the descriptions. Mnemonics and descriptions 
 * ~~No code completion in remarks.~~
 * Label analysis. When jumping to a label, check if the label exists. Check if labels are unique.
 * Code folding for documentation blocks.
-* Improved syntax highlighting.  Add label highlights.
+* ~~Improved syntax highlighting.  Add label highlights.~~
 * Add syntax highlighting for AT&T syntax.
 * ~~Code completion for labels in jumps. Provide a list of existing labels from which one can choose.~~
 * Colored tooltips. Syntax highlighting in quickinfo tooltips.
