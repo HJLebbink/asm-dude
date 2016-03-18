@@ -70,9 +70,12 @@ namespace AsmDude {
         }
 
         public static bool isLabel(string token) {
-            return (token[token.Length - 1] == ':');
+            if (token.Length > 1) {
+                return (token[token.Length - 1] == ':');
+            } else {
+                return false;
+            }
         }
-
 
         public static string getRelatedRegister(string reg) {
             switch (reg.ToUpper()) {
