@@ -89,6 +89,7 @@ namespace AsmDude.AsmDoc {
     [Export(typeof(IMouseProcessorProvider))]
     [ContentType("asm!")]
     [Name("AsmDoc")]
+    [TextViewRole(PredefinedTextViewRoles.Document)]
     [Order(Before = "WordSelection")]
     internal sealed class AsmDocMouseHandlerProvider : IMouseProcessorProvider {
         [Import]
