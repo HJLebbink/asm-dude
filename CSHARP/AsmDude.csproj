@@ -234,8 +234,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Resources\300.png" />
-    <Content Include="Resources\400.ico" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsmDudePackage.cs" />
@@ -247,11 +245,6 @@
     </Compile>
     <Compile Include="OptionsPage\OptionsPageKeywordHighlighting.cs">
       <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="SyntaxHighlighting\AsmTokenTag.cs" />
     <Compile Include="SyntaxHighlighting\AsmTokenTaggerProvider.cs" />
@@ -305,10 +298,6 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <EmbeddedResource Include="Resources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
     <EmbeddedResource Include="VsPackage.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
