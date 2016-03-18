@@ -375,6 +375,7 @@ namespace AsmDude {
         /// get url for the provided keyword. Returns empty string if the keyword does not exist or the keyword does not have an url.
         /// </summary>
         public string getUrl(string keyword) {
+            // no need to pre-process this information.
             try {
                 string keywordUpper = keyword.ToUpper();
                 XmlNodeList all = this.getXmlData().SelectNodes("//*[@name=\"" + keywordUpper + "\"]");
@@ -489,6 +490,7 @@ namespace AsmDude {
         public void invalidateData() {
             this._xmlData = null;
             this._asmTypes = null;
+            this._description = null;
         }
 
         #region private stuff
