@@ -6,14 +6,10 @@ using System.IO;
 using System.Windows;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using Microsoft.VisualStudio.Settings;
-using Microsoft.VisualStudio.Shell.Settings;
-using AsmDude.Properties;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.Text;
-using System.Text.RegularExpressions;
 
 namespace AsmDude {
 
@@ -61,6 +57,8 @@ namespace AsmDude {
             string token2;
             if (token.StartsWith("0x", StringComparison.CurrentCultureIgnoreCase)) {
                 token2 = token.Substring(2);
+            } else if (token.EndsWith("h", StringComparison.CurrentCultureIgnoreCase)) {
+                token2 = token.Substring(0,token.Length-1);
             } else {
                 token2 = token;
             }
@@ -350,6 +348,8 @@ namespace AsmDude {
         private XmlDocument _xmlData;
         private IDictionary<string, AsmTokenTypes> _asmTypes;
         private IDictionary<string, string> _arch; // todo make an arch enumeration
+        private IDictionary<string, string> _description;
+
 
         public AsmDudeTools() {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: Entering constructor for: {0}", this.ToString()));
@@ -401,24 +401,9 @@ namespace AsmDude {
         /// get url for the provided keyword. Returns empty string if the keyword does not exist or the keyword does not have an url.
         /// </summary>
         public string getDescription(string keyword) {
-            try {
-                string keywordUpper = keyword.ToUpper();
-                XmlNodeList all = this.getXmlData().SelectNodes("//*[@name=\"" + keywordUpper + "\"]");
-                if (all.Count > 1) {
-                    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "WARNING: {0}:getDescription: multiple elements for keyword {1}.", this.ToString(), keywordUpper));
-                }
-                if (all.Count == 0) {
-                    //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getUrl: no elements for keyword {1}.", this.ToString(), keywordUpper));
-                    return "";
-                } else {
-                    XmlNode node1 = all.Item(0);
-                    XmlNode node2 = node1.SelectSingleNode("./description");
-                    if (node2 == null) return "";
-                    string text = node2.InnerText.Trim();
-                    //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getDescription: keyword {1} yields {2}", this.ToString(), keyword, text));
-                    return text;
-                }
-            } catch (Exception) {
+            if (this._description.ContainsKey(keyword)) {
+                return this._description[keyword];
+            } else {
                 return "";
             }
         }
@@ -465,6 +450,7 @@ namespace AsmDude {
         }
 
         public string getLabelDescription(string label, ITextBuffer text) {
+            string result = "";
             foreach (ITextSnapshotLine line in text.CurrentSnapshot.Lines) {
                 string str = line.GetText();
                 int strLength = str.Length;
@@ -477,7 +463,7 @@ namespace AsmDude {
                     if (c == ':') {
                         posColon = pos;
                         break;
-                    } else if ((c == ';') || (c == '#')) {
+                    } else if (AsmDudeToolsStatic.isRemarkChar(c)) {
                         break;
                     }
                 }
@@ -485,11 +471,12 @@ namespace AsmDude {
                     string labelLocal = str.Substring(0, posColon).Trim();
                     if (labelLocal.Equals(label)) {
                         Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getLabelDescription: label=\"{1}\"", this.ToString(), label));
-                        return "line " + line.LineNumber + ": " + str.Substring(0, Math.Min(str.Length, 100));
+                        if (result.Length > 0) result += System.Environment.NewLine;
+                        result += "line " + line.LineNumber + ": " + str.Substring(0, Math.Min(str.Length, 100));
                     }
                 }
             }
-            return "";
+            return result;
         }
 
         /// <summary>
@@ -509,7 +496,8 @@ namespace AsmDude {
         private void initData() {
             this._asmTypes = new Dictionary<string, AsmTokenTypes>();
             this._arch = new Dictionary<string, string>();
-
+            this._description = new Dictionary<string, string>();
+       
             // fill the dictionary with keywords
             AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
             XmlDocument xmlDoc = this.getXmlData();
@@ -521,7 +509,8 @@ namespace AsmDude {
                     string name = nameAttribute.Value.ToUpper();
                     //Debug.WriteLine("INFO: AsmTokenTagger: found misc " + name);
                     this._asmTypes[name] = AsmTokenTypes.Misc;
-                    this._arch[name] = getArchPrivate(node);
+                    this._arch[name] = retrieveArch(node);
+                    this._description[name] = retrieveDescription(node);
                 }
             }
 
@@ -533,7 +522,8 @@ namespace AsmDude {
                     string name = nameAttribute.Value.ToUpper();
                     //Debug.WriteLine("INFO: AsmTokenTagger: found directive " + name);
                     this._asmTypes[name] = AsmTokenTypes.Directive;
-                    this._arch[name] = getArchPrivate(node);
+                    this._arch[name] = retrieveArch(node);
+                    this._description[name] = retrieveDescription(node);
                 }
             }
             foreach (XmlNode node in xmlDoc.SelectNodes("//mnemonic")) {
@@ -554,7 +544,8 @@ namespace AsmDude {
                             this._asmTypes[name] = AsmTokenTypes.Mnemonic;
                         }
                     }
-                    this._arch[name] = getArchPrivate(node);
+                    this._arch[name] = retrieveArch(node);
+                    this._description[name] = retrieveDescription(node);
                 }
             }
             foreach (XmlNode node in xmlDoc.SelectNodes("//register")) {
@@ -565,17 +556,34 @@ namespace AsmDude {
                     string name = nameAttribute.Value.ToUpper();
                     //Debug.WriteLine("INFO: AsmTokenTagger: found register " + name);
                     this._asmTypes[name] = AsmTokenTypes.Register;
-                    this._arch[name] = getArchPrivate(node);
+                    this._arch[name] = retrieveArch(node);
+                    this._description[name] = retrieveDescription(node);
                 }
             }
         }
 
-        private string getArchPrivate(XmlNode node) {
-            var archAttribute = node.Attributes["arch"];
-            if (archAttribute == null) {
+        private string retrieveArch(XmlNode node) {
+            try {
+                var archAttribute = node.Attributes["arch"];
+                if (archAttribute == null) {
+                    return null;
+                } else {
+                    return archAttribute.Value.ToUpper();
+                }
+            } catch (Exception) {
                 return null;
-            } else {
-                return archAttribute.Value.ToUpper();
+            }
+        }
+
+        private string retrieveDescription(XmlNode node) {
+            try {
+                XmlNode node2 = node.SelectSingleNode("./description");
+                if (node2 == null) return "";
+                string text = node2.InnerText.Trim();
+                //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getDescription: keyword {1} yields {2}", this.ToString(), keyword, text));
+                return text;
+            } catch (Exception) {
+                return "";
             }
         }
 
@@ -598,8 +606,6 @@ namespace AsmDude {
             return this._xmlData;
         }
 
-
         #endregion
-
     }
 }

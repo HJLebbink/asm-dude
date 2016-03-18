@@ -148,7 +148,7 @@ namespace AsmDude {
         }
 
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets) {
-            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:AugmentCompletionSession", this.ToString()));
+            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:AugmentCompletionSession", this.ToString()));
 
             if (_disposed) throw new ObjectDisposedException("AsmCompletionSource");
             if (Properties.Settings.Default.CodeCompletion_On) {
@@ -200,7 +200,7 @@ namespace AsmDude {
                             string insertionText = (useCapitals) ? keyword : keyword.ToLower();
                             string archStr = (arch == null) ? "" : " ["+arch+"]";
                             string descriptionStr = this._asmDudeTools.getDescription(keyword);
-                            descriptionStr = (descriptionStr == null) ? "" : " - " + descriptionStr;
+                            descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
                             String description = keyword + archStr + descriptionStr;
                             //String description = keyword.PadRight(15) + archStr.PadLeft(8) + descriptionStr;
 
@@ -220,8 +220,7 @@ namespace AsmDude {
         private static bool isRemark(SnapshotPoint triggerPoint, SnapshotPoint lineStart) {
             // check if the line contains a ";" or a "#" before the current point
             for (SnapshotPoint pos = triggerPoint; pos >= lineStart; pos -= 1) {
-                char c = pos.GetChar();
-                if (c.Equals(';') || c.Equals('#')) {
+                if (AsmDudeToolsStatic.isRemarkChar(pos.GetChar())) {
                     return true;
                 }
             }
@@ -287,7 +286,10 @@ namespace AsmDude {
         }
 
         public void Dispose() {
-            _disposed = true;
+            if (!this._disposed) {
+                GC.SuppressFinalize(this);
+                _disposed = true;
+            }
         }
     }
 }

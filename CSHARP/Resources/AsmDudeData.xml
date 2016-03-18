@@ -445,11 +445,17 @@
 			<description>Compare Packed Single-Precision Floating-Point Values</description>
 			<ref>CMPPS.html</ref>
 		</mnemonic>
-		<mnemonic name='CMPSD' arch='SSE2'>
+    
+    <mnemonic name='CMPSD' arch='SSE2'>
 			<description>Compare Scalar Double-Precision Floating-Point Values</description>
 			<ref>CMPSD.html</ref>
 		</mnemonic>
-		<mnemonic name='CMPSS' arch='SSE'>
+    <mnemonic name='VCMPSD' arch='AVX'>
+      <description>Compare Scalar Double-Precision Floating-Point Values</description>
+      <ref>CMPSD.html</ref>
+    </mnemonic>
+
+    <mnemonic name='CMPSS' arch='SSE'>
 			<description>Compare Scalar Single-Precision Floating-Point Values</description>
 			<ref>CMPSS.html</ref>
 		</mnemonic>
@@ -1501,11 +1507,13 @@
 			<description>Move Quadword from MMX Technology to XMM Register</description>
 			<ref>MOVQ2DQ.html</ref>
 		</mnemonic>
+    
 		<mnemonic name='MOVSD' arch='SSE2'>
 			<description>Move Scalar Double-Precision Floating-Point Value</description>
 			<ref>MOVSD.html</ref>
 		</mnemonic>
-		<mnemonic name='MOVSHDUP' arch='SSE3'>
+
+    <mnemonic name='MOVSHDUP' arch='SSE3'>
 			<description>Move Packed Single-FP High and Duplicate</description>
 			<ref>MOVSHDUP.html</ref>
 		</mnemonic>

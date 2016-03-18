@@ -95,7 +95,7 @@ namespace AsmDude.QuickInfo {
                         }
                     case AsmTokenTypes.Label: {
                             string descr = this._asmDudeTools.getLabelDescription(tagString, this._buffer);
-                            description = (descr.Length > 0) ? ("Label at " + descr) : "Label " + tagString;
+                            description = (descr.Length > 0) ? descr : "Label " + tagString;
                             break;
                         }
                     case AsmTokenTypes.Constant: {
