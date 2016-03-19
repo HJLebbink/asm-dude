@@ -121,28 +121,28 @@ namespace AsmDude {
             Uri uri = null;
             string installPath = AsmDudeToolsStatic.getInstallPath();
             try {
-                uri = new Uri(installPath + "images/icon-R-blue.png");
+                uri = new Uri(installPath + "Resources/images/icon-R-blue.png");
                 this._icons[AsmTokenTypes.Register] = AsmDudeToolsStatic.bitmapFromUri(uri);
             } catch (FileNotFoundException) {
-                MessageBox.Show("ERROR: AsmCompletionSource: could not find file \"" + uri.AbsolutePath + "\".");
+                //MessageBox.Show("ERROR: AsmCompletionSource: could not find file \"" + uri.AbsolutePath + "\".");
             }
             try {
-                uri = new Uri(installPath + "images/icon-M.png");
+                uri = new Uri(installPath + "Resources/images/icon-M.png");
                 this._icons[AsmTokenTypes.Mnemonic] = AsmDudeToolsStatic.bitmapFromUri(uri);
             } catch (FileNotFoundException) {
-                MessageBox.Show("ERROR: AsmCompletionSource: could not find file \"" + uri.AbsolutePath + "\".");
+                //MessageBox.Show("ERROR: AsmCompletionSource: could not find file \"" + uri.AbsolutePath + "\".");
             }
             try {
-                uri = new Uri(installPath + "images/icon-question.png");
+                uri = new Uri(installPath + "Resources/images/icon-question.png");
                 this._icons[AsmTokenTypes.Misc] = AsmDudeToolsStatic.bitmapFromUri(uri);
             } catch (FileNotFoundException) {
-                MessageBox.Show("ERROR: AsmCompletionSource: could not find file \"" + uri.AbsolutePath + "\".");
+                //MessageBox.Show("ERROR: AsmCompletionSource: could not find file \"" + uri.AbsolutePath + "\".");
             }
             try {
-                uri = new Uri(installPath + "images/icon-L.png");
+                uri = new Uri(installPath + "Resources/images/icon-L.png");
                 this._icons[AsmTokenTypes.Label] = AsmDudeToolsStatic.bitmapFromUri(uri);
             } catch (FileNotFoundException) {
-                MessageBox.Show("ERROR: AsmCompletionSource: could not find file \"" + uri.AbsolutePath + "\".");
+                //MessageBox.Show("ERROR: AsmCompletionSource: could not find file \"" + uri.AbsolutePath + "\".");
             }
             #endregion
         }
