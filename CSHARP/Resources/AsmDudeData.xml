@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<asmdudedata xmlns="http://www.w3schools.com/RedsDevils" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="namespace AsmDudeData.xsd">-->
 <asmdudedata>
 	<info>General info here</info>
 	<miscs>
 		<misc name="PTR"/>
 		<misc name="BYTE"/>
-		<misc name="WORD"/>
-		<misc name="DWORD"/>
-		<misc name="QWORD"/>
+    <misc name="SBYTE"/>
+    <misc name="WORD"/>
+    <misc name="SWORD"/>
+    <misc name="DWORD"/>
+    <misc name="SDWORD"/>
+    <misc name="QWORD"/>
 		<misc name="ZWORD"/>
 		<misc name="OWORD"/>
-		<misc name="EQU"/>
+
+    <misc name="EQU"/>
 		<misc name="STRICT"/>
 		<misc name="DB">
 			<description>Byte (1 byte)</description>
@@ -30,7 +33,13 @@
 		<misc name="DO">
 			<description>IEEE 754-2008 Quad Precision (16 bytes)</description>
 		</misc>
-	</miscs>
+    <misc name="DY">
+      <description>??</description>
+    </misc>
+    <misc name="DZ">
+      <description>??</description>
+    </misc>
+  </miscs>
 	<directives>
 		<directive name="GLOBAL"/>
 		<directive name="BITS"/>
