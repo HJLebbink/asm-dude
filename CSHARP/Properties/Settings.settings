@@ -15,7 +15,7 @@
       <Value Profile="(Default)">Magenta</Value>
     </Setting>
     <Setting Name="SyntaxHighlighting_Jump" Type="System.Drawing.Color" Scope="User">
-      <Value Profile="(Default)">Navy</Value>
+      <Value Profile="(Default)">Blue</Value>
     </Setting>
     <Setting Name="SyntaxHighlighting_Label" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">OrangeRed</Value>

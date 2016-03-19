@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using AsmDude;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
@@ -29,7 +29,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 //
 [assembly: AssemblyTitle("AsmDude")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription(GuidStrings.Description)]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Lebbink")]
 [assembly: AssemblyProduct("AsmDude")]
@@ -46,14 +46,13 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("1.0.*")]
-//[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion(GuidStrings.Version)]
+[assembly: AssemblyFileVersion(GuidStrings.Version)]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(false)]
+[assembly: ComVisible(true)]
 
 // Mark the assembly as not CLSCompliant
 [assembly: System.CLSCompliant(false)]

@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 using AsmDude.OptionsPage;
 using System.Globalization;
+using System.Reflection;
 
 namespace AsmDude {
     /// <summary>
@@ -15,7 +16,7 @@ namespace AsmDude {
     /// </summary>
     [PackageRegistration(UseManagedResourcesOnly = true)]
 
-    [InstalledProductRegistration("Asm-Dude", "Asm-Dude description here", "1.4.7")] // for the help about information
+    [InstalledProductRegistration("AsmDude", GuidStrings.Description, GuidStrings.Version)] // for the help about information
 
     [ProvideOptionPageAttribute(typeof(OptionsPageCodeCompletion), "AsmDude", "Code Completion", 100, 101, true, new string[] { "Change Code Completion Options" })]
     [ProvideProfileAttribute(   typeof(OptionsPageCodeCompletion), "AsmDude", "Code Completion Options", 100, 101, true)]
@@ -46,7 +47,12 @@ namespace AsmDude {
         /// </summary>
         protected override void Initialize() {
             base.Initialize();
-            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:Initialize", this.ToString()));
+
+            Assembly thisAssem = typeof(AsmDudePackage).Assembly;
+            AssemblyName thisAssemName = thisAssem.GetName();
+            Version ver = thisAssemName.Version;
+
+            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:Initializing version {1} of {2}", this.ToString(), ver, thisAssemName.Name));
         }
     }
 }

@@ -73,7 +73,7 @@ namespace AsmDude.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Navy")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Blue")]
         public global::System.Drawing.Color SyntaxHighlighting_Jump {
             get {
                 return ((global::System.Drawing.Color)(this["SyntaxHighlighting_Jump"]));
