@@ -87,7 +87,7 @@ namespace AsmDude {
     internal sealed class JumpP : ClassificationFormatDefinition {
         public JumpP() {
             DisplayName = "jump"; //human readable version of the name
-            ForegroundColor = Colors.Navy;
+            ForegroundColor = AsmDudeToolsStatic.convertColor(Properties.Settings.Default.SyntaxHighlighting_Jump);
         }
     }
 
