@@ -30,7 +30,13 @@ using System.Runtime.InteropServices;
 //
 [assembly: AssemblyTitle("AsmDude")]
 [assembly: AssemblyDescription(GuidStrings.Description)]
-[assembly: AssemblyConfiguration("")]
+
+#if DEBUG
+[assembly: AssemblyConfiguration("Debug")]
+#else
+[assembly: AssemblyConfiguration("Release")]
+#endif
+
 [assembly: AssemblyCompany("Lebbink")]
 [assembly: AssemblyProduct("AsmDude")]
 [assembly: AssemblyCopyright("Copyright © H.J. Lebbink")]

@@ -16,6 +16,8 @@ using Microsoft.VisualStudio.OLE.Interop;
 
 namespace AsmDude.SignatureHelp {
 
+    //TODO: get the data for code help from http://www.nasm.us/doc/nasmdocb.html
+
     internal class TestParameter : IParameter {
         public TestParameter(string documentation, Span locus, string name, ISignature signature) {
             Documentation = documentation;

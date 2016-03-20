@@ -15,23 +15,22 @@ namespace AsmDude {
     /// The package class uses a number of registration attributes to specify integration parameters.
     /// </summary>
     [PackageRegistration(UseManagedResourcesOnly = true)]
-
     [InstalledProductRegistration("AsmDude", GuidStrings.Description, GuidStrings.Version)] // for the help about information
 
     [ProvideOptionPageAttribute(typeof(OptionsPageCodeCompletion), "AsmDude", "Code Completion", 100, 101, true, new string[] { "Change Code Completion Options" })]
-    [ProvideProfileAttribute(   typeof(OptionsPageCodeCompletion), "AsmDude", "Code Completion Options", 100, 101, true)]
+    [ProvideProfileAttribute(   typeof(OptionsPageCodeCompletion), "AsmDude", "Code Completion Options", 100, 101, true, DescriptionResourceID = 100)]
 
     [ProvideOptionPageAttribute(typeof(OptionsPageSyntaxHighlighting), "AsmDude", "Syntax Highlighting", 100, 102, true, new string[] { "Change Syntax Highlighting Options" })]
-    [ProvideProfileAttribute(   typeof(OptionsPageSyntaxHighlighting), "AsmDude", "Syntax Highlighting Options", 100, 102, true)]
+    [ProvideProfileAttribute(   typeof(OptionsPageSyntaxHighlighting), "AsmDude", "Syntax Highlighting Options", 100, 102, true, DescriptionResourceID = 100)]
 
     [ProvideOptionPageAttribute(typeof(OptionsPageCodeFolding), "AsmDude", "Code Folding", 100, 103, true, new string[] { "Change Code Folding Options" })]
-    [ProvideProfileAttribute(   typeof(OptionsPageCodeFolding), "AsmDude", "Code Folding Options", 100, 103, true)]
+    [ProvideProfileAttribute(   typeof(OptionsPageCodeFolding), "AsmDude", "Code Folding Options", 100, 103, true, DescriptionResourceID = 100)]
 
     [ProvideOptionPageAttribute(typeof(OptionsPageAsmDoc), "AsmDude", "Asm Documentation", 100, 104, true, new string[] { "Change Asm Documentation Options" })]
-    [ProvideProfileAttribute(typeof(OptionsPageAsmDoc), "AsmDude", "Asm Documentation Options", 100, 104, true)]
+    [ProvideProfileAttribute(   typeof(OptionsPageAsmDoc), "AsmDude", "Asm Documentation Options", 100, 104, true, DescriptionResourceID = 100)]
 
     [ProvideOptionPageAttribute(typeof(OptionsPageKeywordHighlighting), "AsmDude", "Keyword Highlighting", 100, 105, true, new string[] { "Change Asm Documentation Options" })]
-    [ProvideProfileAttribute(typeof(OptionsPageKeywordHighlighting), "AsmDude", "Keyword Highlighting Options", 100, 105, true)]
+    [ProvideProfileAttribute(   typeof(OptionsPageKeywordHighlighting), "AsmDude", "Keyword Highlighting Options", 100, 105, true, DescriptionResourceID = 100)]
 
     [ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
     [Guid(GuidStrings.GuidPackage)]
