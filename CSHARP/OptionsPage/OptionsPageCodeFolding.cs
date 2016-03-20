@@ -18,18 +18,19 @@ namespace AsmDude.OptionsPage
     public class OptionsPageCodeFolding : DialogPage
     {
         #region Properties
+        private const string cat = "Code Folding Tags";
 
         [Category("General")]
         [Description("Use Code Folding")]
         [DisplayName("Use Code Folding")]
         public bool _useCodeFolding { get; set; }
 
-        [Category("Code Folding Tags")]
+        [Category(cat)]
         [Description("the characters that start the outlining region")]
         [DisplayName("Begin Tag")]
         public string _beginTag { get; set; }
 
-        [Category("Code Folding Tags")]
+        [Category(cat)]
         [Description("the characters that end the outlining region")]
         [DisplayName("End Tag")]
         public string _endTag { get; set; }
@@ -61,10 +62,6 @@ namespace AsmDude.OptionsPage
         /// </devdoc>
         protected override void OnClosed(EventArgs e)
         {
-            /*
-            string title = "title here";
-            VsShellUtilities.ShowMessageBox(Site, Resources.MessageOnClosed, title, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-            */
         }
 
         /// <summary>
@@ -80,15 +77,26 @@ namespace AsmDude.OptionsPage
         /// </remarks>
         protected override void OnDeactivate(CancelEventArgs e)
         {
-            /*
-            string title = "title here";
-            int result = VsShellUtilities.ShowMessageBox(Site, Resources.MessageOnDeactivateEntered, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-
-            if (result == (int)VSConstants.MessageBoxResult.IDCANCEL)
-            {
-                e.Cancel = true;
+            bool changed = false;
+            if (Properties.Settings.Default.CodeFolding_On != this._useCodeFolding) {
+                changed = true;
             }
-            */
+            if (Properties.Settings.Default.CodeFolding_BeginTag != this._beginTag) {
+                changed = true;
+            }
+            if (Properties.Settings.Default.CodeFolding_EndTag != this._endTag) {
+                changed = true;
+            }
+            if (changed) {
+                string title = null;
+                string message = "Unsaved changes exist. Would you like to save.";
+                int result = VsShellUtilities.ShowMessageBox(Site, message, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                if (result == (int)VSConstants.MessageBoxResult.IDOK) {
+                    this.save();
+                } else if (result == (int)VSConstants.MessageBoxResult.IDCANCEL) {
+                    e.Cancel = true;
+                }
+            }
         }
 
         /// <summary>
@@ -99,6 +107,11 @@ namespace AsmDude.OptionsPage
         /// changes (for example, when the user clicks OK in the dialog).
         /// </devdoc>
         protected override void OnApply(PageApplyEventArgs e) {
+            this.save();
+            base.OnApply(e);
+        }
+
+        private void save() {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:OnApply", this.ToString()));
 
             bool changed = false;
@@ -127,20 +140,6 @@ namespace AsmDude.OptionsPage
                 string message = "You may need to restart visual studio for the changes to take effect.";
                 int result = VsShellUtilities.ShowMessageBox(Site, message, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
             }
-            base.OnApply(e);
-
-            /*
-            string title = null;
-            string message = "Press OK to save changes. You may need to restart visual studio for the changes to take effect.";
-            int result = VsShellUtilities.ShowMessageBox(Site, message, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-
-            if (result == (int)VSConstants.MessageBoxResult.IDCANCEL) {
-                e.ApplyBehavior = ApplyKind.Cancel;
-            } else {
-                Properties.Settings.Default.Save();
-                base.OnApply(e);
-            }
-            */
         }
 
         #endregion Event Handlers

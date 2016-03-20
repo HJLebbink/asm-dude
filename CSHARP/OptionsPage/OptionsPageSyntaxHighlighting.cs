@@ -17,51 +17,51 @@ namespace AsmDude.OptionsPage {
     /// </summary>
     [Export(typeof(DialogPage))]
     [Guid(GuidStrings.GuidOptionsPageSyntaxHighlighting)]
-    public class OptionsPageSyntaxHighlighting : DialogPage
-    {
+    public class OptionsPageSyntaxHighlighting : DialogPage {
         #region Properties
+        private const string cat = "Colors used for Syntax Highlighting";
 
         [Category("General")]
         [Description("Use Syntax Highlighting")]
         [DisplayName("Use Syntax Highlighting")]
         public bool _useSyntaxHighlighting { get; set; }
 
-        [Category("Colors used for Syntax Highlighting")]
+        [Category(cat)]
         [Description("Mnemonic")]
         [DisplayName("Mnemonic")]
         public System.Drawing.Color _colorMnemonic { get; set; }
 
-        [Category("Colors used for Syntax Highlighting")]
+        [Category(cat)]
         [Description("Register")]
         [DisplayName("Register")]
         public System.Drawing.Color _colorRegister { get; set; }
 
-        [Category("Colors used for Syntax Highlighting")]
+        [Category(cat)]
         [Description("Remark")]
         [DisplayName("Remark")]
         public System.Drawing.Color _colorRemark { get; set; }
 
-        [Category("Colors used for Syntax Highlighting")]
+        [Category(cat)]
         [Description("Directive")]
         [DisplayName("Directive")]
         public System.Drawing.Color _colorDirective { get; set; }
 
-        [Category("Colors used for Syntax Highlighting")]
+        [Category(cat)]
         [Description("Constant")]
         [DisplayName("Constant")]
         public System.Drawing.Color _colorConstant { get; set; }
 
-        [Category("Colors used for Syntax Highlighting")]
+        [Category(cat)]
         [Description("Jump")]
         [DisplayName("Jump")]
         public System.Drawing.Color _colorJump { get; set; }
 
-        [Category("Colors used for Syntax Highlighting")]
+        [Category(cat)]
         [Description("Label")]
         [DisplayName("Label")]
         public System.Drawing.Color _colorLabel { get; set; }
 
-        [Category("Colors used for Syntax Highlighting")]
+        [Category(cat)]
         [Description("Misc")]
         [DisplayName("Misc")]
         public System.Drawing.Color _colorMisc { get; set; }
@@ -77,8 +77,7 @@ namespace AsmDude.OptionsPage {
         /// This method is called when Visual Studio wants to activate this page.  
         /// </devdoc>
         /// <remarks>If this handler sets e.Cancel to true, the activation will not occur.</remarks>
-        protected override void OnActivate(CancelEventArgs e)
-        {
+        protected override void OnActivate(CancelEventArgs e) {
             base.OnActivate(e);
             this._useSyntaxHighlighting = Properties.Settings.Default.SyntaxHighlighting_On;
             this._colorMnemonic = Properties.Settings.Default.SyntaxHighlighting_Opcode;
@@ -97,8 +96,7 @@ namespace AsmDude.OptionsPage {
         /// <devdoc>
         /// This event is raised when the page is closed.
         /// </devdoc>
-        protected override void OnClosed(EventArgs e)
-        {
+        protected override void OnClosed(EventArgs e) {
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:Onclosed", this.ToString()));
         }
 
@@ -113,17 +111,45 @@ namespace AsmDude.OptionsPage {
         /// A "deactivate" message is sent when focus changes to a different page in
         /// the dialog.
         /// </remarks>
-        protected override void OnDeactivate(CancelEventArgs e)
-        {
-            /*
-            string title = "title here";
-            int result = VsShellUtilities.ShowMessageBox(Site, Resources.MessageOnDeactivateEntered, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-
-            if (result == (int)VSConstants.MessageBoxResult.IDCANCEL)
-            {
-                e.Cancel = true;
+        protected override void OnDeactivate(CancelEventArgs e) {
+            bool changed = false;
+            if (Properties.Settings.Default.SyntaxHighlighting_On != this._useSyntaxHighlighting) {
+                changed = true;
             }
-            */
+            if (Properties.Settings.Default.SyntaxHighlighting_Opcode != this._colorMnemonic) {
+                changed = true;
+            }
+            if (Properties.Settings.Default.SyntaxHighlighting_Register != this._colorRegister) {
+                changed = true;
+            }
+            if (Properties.Settings.Default.SyntaxHighlighting_Remark != this._colorRemark) {
+                changed = true;
+            }
+            if (Properties.Settings.Default.SyntaxHighlighting_Directive != this._colorDirective) {
+                changed = true;
+            }
+            if (Properties.Settings.Default.SyntaxHighlighting_Constant != this._colorConstant) {
+                changed = true;
+            }
+            if (Properties.Settings.Default.SyntaxHighlighting_Jump != this._colorJump) {
+                changed = true;
+            }
+            if (Properties.Settings.Default.SyntaxHighlighting_Label != this._colorLabel) {
+                changed = true;
+            }
+            if (Properties.Settings.Default.SyntaxHighlighting_Misc != this._colorMisc) {
+                changed = true;
+            }
+            if (changed) {
+                string title = null;
+                string message = "Unsaved changes exist. Would you like to save.";
+                int result = VsShellUtilities.ShowMessageBox(Site, message, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                if (result == (int)VSConstants.MessageBoxResult.IDOK) {
+                    this.save();
+                } else if (result == (int)VSConstants.MessageBoxResult.IDCANCEL) {
+                    e.Cancel = true;
+                }
+            }
         }
 
         /// <summary>
@@ -134,6 +160,11 @@ namespace AsmDude.OptionsPage {
         /// changes (for example, when the user clicks OK in the dialog).
         /// </devdoc>
         protected override void OnApply(PageApplyEventArgs e) {
+            this.save();
+            base.OnApply(e);
+        }
+
+        private void save() {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:OnApply", this.ToString()));
 
             bool changed = false;
@@ -192,7 +223,6 @@ namespace AsmDude.OptionsPage {
                 string message = "You may need to restart visual studio for the changes to take effect.";
                 int result = VsShellUtilities.ShowMessageBox(Site, message, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
             }
-            base.OnApply(e);
         }
 
         #endregion Event Handlers

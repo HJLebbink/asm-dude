@@ -18,68 +18,69 @@ namespace AsmDude.OptionsPage
     public class OptionsPageCodeCompletion : DialogPage
     {
         #region Properties
+        private const string cat = "Architectures used for Code Completion";
 
         [Category("General")]
         [Description("Use Code Completion")]
         [DisplayName("Use Code Completion")]
         public bool _useCodeCompletion { get; set; }
 
-        [Category("Architectures used for Code Completion")]
+        [Category(cat)]
         [Description("x86")]
         [DisplayName("x86")]
         public bool _x86 { get; set; }
 
-        [Category("Architectures used for Code Completion")]
+        [Category(cat)]
         [Description("i686 (conditional move and set)")]
         [DisplayName("i686")]
         public bool _i686 { get; set; }
 
-        [Category("Architectures used for Code Completion")]
+        [Category(cat)]
         [Description("MMX")]
         [DisplayName("MMX")]
         public bool _mmx { get; set; }
 
-        [Category("Architectures used for Code Completion")]
+        [Category(cat)]
         [Description("SSE")]
         [DisplayName("SSE")]
         public bool _sse { get; set; }
 
-        [Category("Architectures used for Code Completion")]
+        [Category(cat)]
         [Description("SSE2")]
         [DisplayName("SSE2")]
         public bool _sse2 { get; set; }
 
-        [Category("Architectures used for Code Completion")]
+        [Category(cat)]
         [Description("SSE3")]
         [DisplayName("SSE3")]
         public bool _sse3 { get; set; }
 
-        [Category("Architectures used for Code Completion")]
+        [Category(cat)]
         [Description("SSSE3")]
         [DisplayName("SSSE3")]
         public bool _ssse3 { get; set; }
 
-        [Category("Architectures used for Code Completion")]
+        [Category(cat)]
         [Description("SSE4.1")]
         [DisplayName("SSE4.1")]
         public bool _sse41 { get; set; }
 
-        [Category("Architectures used for Code Completion")]
+        [Category(cat)]
         [Description("SSE4.2")]
         [DisplayName("SSE4.2")]
         public bool _sse42 { get; set; }
 
-        [Category("Architectures used for Code Completion")]
+        [Category(cat)]
         [Description("AVX")]
         [DisplayName("AVX")]
         public bool _avx { get; set; }
 
-        [Category("Architectures used for Code Completion")]
+        [Category(cat)]
         [Description("AVX2")]
         [DisplayName("AVX2")]
         public bool _avx2 { get; set; }
 
-        [Category("Architectures used for Code Completion")]
+        [Category(cat)]
         [Description("Xeon Phi Knights Corner")]
         [DisplayName("KNC")]
         public bool _knc { get; set; }
@@ -122,10 +123,6 @@ namespace AsmDude.OptionsPage
         /// </devdoc>
         protected override void OnClosed(EventArgs e)
         {
-            /*
-            string title = "title here";
-            VsShellUtilities.ShowMessageBox(Site, Resources.MessageOnClosed, title, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-            */
         }
 
         /// <summary>
@@ -141,15 +138,57 @@ namespace AsmDude.OptionsPage
         /// </remarks>
         protected override void OnDeactivate(CancelEventArgs e)
         {
-            /*
-            string title = "title here";
-            int result = VsShellUtilities.ShowMessageBox(Site, Resources.MessageOnDeactivateEntered, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            bool changed = false;
 
-            if (result == (int)VSConstants.MessageBoxResult.IDCANCEL)
-            {
-                e.Cancel = true;
+            if (Properties.Settings.Default.CodeCompletion_On != this._useCodeCompletion) {
+                changed = true;
             }
-            */
+            if (Properties.Settings.Default.CodeCompletion_x86 != this._x86) {
+                changed = true;
+            }
+            if (Properties.Settings.Default.CodeCompletion_i686 != this._i686) {
+                changed = true;
+            }
+            if (Properties.Settings.Default.CodeCompletion_mmx != this._mmx) {
+                changed = true;
+            }
+            if (Properties.Settings.Default.CodeCompletion_sse != this._sse) {
+                changed = true;
+            }
+            if (Properties.Settings.Default.CodeCompletion_sse2 != this._sse2) {
+                changed = true;
+            }
+            if (Properties.Settings.Default.CodeCompletion_sse3 != this._sse3) {
+                changed = true;
+            }
+            if (Properties.Settings.Default.CodeCompletion_ssse3 != this._ssse3) {
+                changed = true;
+            }
+            if (Properties.Settings.Default.CodeCompletion_sse41 != this._sse41) {
+                changed = true;
+            }
+            if (Properties.Settings.Default.CodeCompletion_sse42 != this._sse42) {
+                changed = true;
+            }
+            if (Properties.Settings.Default.CodeCompletion_avx != this._avx) {
+                changed = true;
+            }
+            if (Properties.Settings.Default.CodeCompletion_avx2 != this._avx2) {
+                changed = true;
+            }
+            if (Properties.Settings.Default.CodeCompletion_knc != this._knc) {
+                changed = true;
+            }
+            if (changed) {
+                string title = null;
+                string message = "Unsaved changes exist. Would you like to save.";
+                int result = VsShellUtilities.ShowMessageBox(Site, message, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                if (result == (int)VSConstants.MessageBoxResult.IDOK) {
+                    this.save();
+                } else if (result == (int)VSConstants.MessageBoxResult.IDCANCEL) {
+                    e.Cancel = true;
+                }
+            }
         }
 
         /// <summary>
@@ -160,15 +199,19 @@ namespace AsmDude.OptionsPage
         /// changes (for example, when the user clicks OK in the dialog).
         /// </devdoc>
         protected override void OnApply(PageApplyEventArgs e) {
+            this.save();
+            base.OnApply(e);
+        }
+
+        private void save() {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:OnApply", this.ToString()));
 
             bool changed = false;
             bool restartNeeded = false;
 
-
             if (Properties.Settings.Default.CodeCompletion_On != this._useCodeCompletion) {
                 Properties.Settings.Default.CodeCompletion_On = this._useCodeCompletion;
-               changed = true;
+                changed = true;
             }
             if (Properties.Settings.Default.CodeCompletion_x86 != this._x86) {
                 Properties.Settings.Default.CodeCompletion_x86 = this._x86;
@@ -226,7 +269,6 @@ namespace AsmDude.OptionsPage
                 string message = "You may need to restart visual studio for the changes to take effect.";
                 int result = VsShellUtilities.ShowMessageBox(Site, message, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
             }
-            base.OnApply(e);
         }
 
         #endregion Event Handlers
