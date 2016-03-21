@@ -1,22 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011">
-	<Metadata>
-		<Identity Id="c729d6b2-f412-49ed-893d-a8f61f25db98" Version="1.4.7.1" Language="en-US" Publisher="H.J. Lebbink" />
-		<DisplayName>AsmDude</DisplayName>
-		<Description xml:space="preserve">Syntax highlighting, code completion and code folding for assembly source code</Description>
-		<MoreInfo>https://github.com/HJLebbink/asm-dude</MoreInfo>
-		<License>LICENSE.txt</License>
-		<Icon>Resources\images\asm.png</Icon>
-		<PreviewImage>Resources\images\AsmDude.bmp</PreviewImage>
-		<Tags>Assembly, Assembler, Syntax Highlighting, Code Completion, Folding, Visual Studio 2015</Tags>
-	</Metadata>
-	<Installation>
-		<InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="14.0" />
-	</Installation>
-	<Dependencies>
-		<Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="4.5" />
-	</Dependencies>
-	<Assets>
-		<Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
-	</Assets>
+  <Metadata>
+    <Identity Id="c729d6b2-f412-49ed-893d-a8f61f25db98" Version="1.4.8.0" Language="en-US" Publisher="H.J. Lebbink" />
+    <DisplayName>AsmDude</DisplayName>
+    <Description xml:space="preserve">Syntax highlighting, code completion and code folding for assembly (.asm, .cod, .inc) source code.</Description>
+    <MoreInfo>https://github.com/HJLebbink/asm-dude</MoreInfo>
+    <License>LICENSE.txt</License>
+    <Icon>Resources\images\asm.png</Icon>
+    <PreviewImage>Resources\images\AsmDude.bmp</PreviewImage>
+    <Tags>Assembly, Assembler, Syntax Highlighting, Code Completion, Folding, Visual Studio 2015</Tags>
+  </Metadata>
+  <Installation>
+    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="14.0" />
+  </Installation>
+  <Dependencies>
+    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="4.5" />
+  </Dependencies>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
+  </Assets>
 </PackageManifest>
