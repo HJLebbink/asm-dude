@@ -47,11 +47,11 @@ namespace AsmDude.CodeFolding {
             this.ReParse();
             this._buffer.Changed += BufferChanged;
         }
-        
-        public IEnumerable<ITagSpan<IOutliningRegionTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
-            if (spans.Count == 0)
-                yield break;
 
+        public IEnumerable<ITagSpan<IOutliningRegionTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
+            if (spans.Count == 0) {
+                yield break;
+            }
             if (Properties.Settings.Default.CodeFolding_On) {
                 //Debug.WriteLine("INFO: GetTags: entering");
 
@@ -78,8 +78,7 @@ namespace AsmDude.CodeFolding {
             }
         }
 
-        private string getRegionDescription(string line)
-        {
+        private string getRegionDescription(string line) {
             int startPos = line.IndexOf(startHide[0]) + startHide.Length + 1;
             if (startPos < line.Length) {
                 return line.Substring(startPos);
@@ -100,7 +99,7 @@ namespace AsmDude.CodeFolding {
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
-        void BufferChanged(object sender, TextContentChangedEventArgs e) {
+        private void BufferChanged(object sender, TextContentChangedEventArgs e) {
             // If this isn't the most up-to-date version of the buffer, then ignore it for now (we'll eventually get another change event).
             if (e.After != _buffer.CurrentSnapshot) {
                 return;
@@ -108,9 +107,9 @@ namespace AsmDude.CodeFolding {
             this.ReParse();
         }
 
-        void ReParse() {
+        private void ReParse() {
             //Debug.WriteLine("INFO:OutliningTagger:ReParse: entering");
-           
+
             ITextSnapshot newSnapshot = _buffer.CurrentSnapshot;
             List<Region> newRegions = new List<Region>();
 
