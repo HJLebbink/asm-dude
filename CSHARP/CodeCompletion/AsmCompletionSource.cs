@@ -149,81 +149,87 @@ namespace AsmDude {
 
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets) {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:AugmentCompletionSession", this.ToString()));
+            try {
+                if (_disposed) throw new ObjectDisposedException("AsmCompletionSource");
+                if (Properties.Settings.Default.CodeCompletion_On) {
 
-            if (_disposed) throw new ObjectDisposedException("AsmCompletionSource");
-            if (Properties.Settings.Default.CodeCompletion_On) {
+                    ITextSnapshot snapshot = this._buffer.CurrentSnapshot;
+                    SnapshotPoint triggerPoint = (SnapshotPoint)session.GetTriggerPoint(snapshot);
+                    if (triggerPoint == null) return;
 
-                ITextSnapshot snapshot = this._buffer.CurrentSnapshot;
-                SnapshotPoint triggerPoint = (SnapshotPoint)session.GetTriggerPoint(snapshot);
-                if (triggerPoint == null) return;
+                    ITextSnapshotLine line = triggerPoint.GetContainingLine();
 
-                ITextSnapshotLine line = triggerPoint.GetContainingLine();
+                    //1] check if current position is in a remark
+                    if (isRemark(triggerPoint, line.Start)) return;
 
-                //1] check if current position is in a remark
-                if (isRemark(triggerPoint, line.Start)) return;
-
-                //2] find the start of the current keyword
-                SnapshotPoint start = triggerPoint;
-                while ((start > line.Start) && !AsmDudeToolsStatic.isSeparatorChar((start - 1).GetChar())) {
-                    start -= 1;
-                }
-
-                //3] test whether the keyword has a length larger than zero.
-                if (start.Position == triggerPoint.Position) return;
-                //Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: start" + start.Position + "; triggerPoint=" + triggerPoint.Position);
-
-                //4] get the word that is currently being typed
-                var applicableTo = snapshot.CreateTrackingSpan(new SnapshotSpan(start, triggerPoint), SpanTrackingMode.EdgeInclusive);
-                string partialKeyword = applicableTo.GetText(snapshot);
-
-                bool useCapitals = isAllUpper(partialKeyword);
-                partialKeyword = partialKeyword.ToUpper();
-
-                Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:AugmentCompletionSession. partialKeyword={1}", this.ToString(), partialKeyword));
-                IList<Completion> completions = new List<Completion>();
-
-                if (isLabel(start-1, line.Start)) {
-                    ImageSource imageSource = this._icons[AsmTokenTypes.Label];
-                    var labels = this._asmDudeTools.getLabels(this._buffer);
-                    foreach (Tuple<string, string> entry in labels) {
-                        //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:AugmentCompletionSession; label={1}; description={2}", this.ToString(), entry.Key, entry.Value));
-                        completions.Add(new Completion(entry.Item1, entry.Item1, entry.Item2, imageSource, ""));
+                    //2] find the start of the current keyword
+                    SnapshotPoint start = triggerPoint;
+                    while ((start > line.Start) && !AsmDudeToolsStatic.isSeparatorChar((start - 1).GetChar())) {
+                        start -= 1;
                     }
-                } else { // current keyword is not a label
-                    foreach (string keyword in this._asmDudeTools.getKeywords()) {
-                        string arch = this._asmDudeTools.getArchitecture(keyword);
-                        bool selected = isArchSwitchedOn(arch);
-                        //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:AugmentCompletionSession; keyword={1}; arch={2}; selected={3}", this.ToString(), entry.Key, this._arch[entry.Key], selected));
-                        if (selected) {
-                            //Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: name keyword \"" + entry.Key + "\"");
-                            // by default, the entry.Key is with capitals
-                            string insertionText = (useCapitals) ? keyword : keyword.ToLower();
-                            string archStr = (arch == null) ? "" : " ["+arch+"]";
-                            string descriptionStr = this._asmDudeTools.getDescription(keyword);
-                            descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
-                            String description = keyword + archStr + descriptionStr;
-                            //String description = keyword.PadRight(15) + archStr.PadLeft(8) + descriptionStr;
 
-                            ImageSource imageSource = null;
-                            AsmTokenTypes type = this._asmDudeTools.getAsmTokenType(keyword);
-                            if (this._icons.ContainsKey(type)) {
-                                imageSource = this._icons[type];
+                    //3] test whether the keyword has a length larger than zero.
+                    if (start.Position == triggerPoint.Position) return;
+                    //Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: start" + start.Position + "; triggerPoint=" + triggerPoint.Position);
+
+                    //4] get the word that is currently being typed
+                    var applicableTo = snapshot.CreateTrackingSpan(new SnapshotSpan(start, triggerPoint), SpanTrackingMode.EdgeInclusive);
+                    string partialKeyword = applicableTo.GetText(snapshot);
+
+                    bool useCapitals = isAllUpper(partialKeyword);
+                    partialKeyword = partialKeyword.ToUpper();
+
+                    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:AugmentCompletionSession. partialKeyword={1}", this.ToString(), partialKeyword));
+                    IList<Completion> completions = new List<Completion>();
+
+
+                    if (isLabel(start - 1, line.Start)) {
+                        ImageSource imageSource = this._icons[AsmTokenTypes.Label];
+                        var labels = this._asmDudeTools.getLabels(this._buffer);
+                        foreach (Tuple<string, string> entry in labels) {
+                            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:AugmentCompletionSession; label={1}; description={2}", this.ToString(), entry.Key, entry.Value));
+                            completions.Add(new Completion(entry.Item1, entry.Item1, entry.Item2, imageSource, ""));
+                        }
+                    } else { // current keyword is not a label
+                        foreach (string keyword in this._asmDudeTools.getKeywords()) {
+                            string arch = this._asmDudeTools.getArchitecture(keyword);
+                            bool selected = isArchSwitchedOn(arch);
+                            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:AugmentCompletionSession; keyword={1}; arch={2}; selected={3}", this.ToString(), entry.Key, this._arch[entry.Key], selected));
+                            if (selected) {
+                                //Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: name keyword \"" + entry.Key + "\"");
+                                // by default, the entry.Key is with capitals
+                                string insertionText = (useCapitals) ? keyword : keyword.ToLower();
+                                string archStr = (arch == null) ? "" : " [" + arch + "]";
+                                string descriptionStr = this._asmDudeTools.getDescription(keyword);
+                                descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
+                                String description = keyword + archStr + descriptionStr;
+                                //String description = keyword.PadRight(15) + archStr.PadLeft(8) + descriptionStr;
+
+                                ImageSource imageSource = null;
+                                AsmTokenTypes type = this._asmDudeTools.getAsmTokenType(keyword);
+                                if (this._icons.ContainsKey(type)) {
+                                    imageSource = this._icons[type];
+                                }
+                                completions.Add(new Completion(description, insertionText, null, imageSource, ""));
                             }
-                            completions.Add(new Completion(description, insertionText, null, imageSource, ""));
                         }
                     }
+                    completionSets.Add(new CompletionSet("Tokens", "Tokens", applicableTo, completions, Enumerable.Empty<Completion>()));
                 }
-                completionSets.Add(new CompletionSet("Tokens", "Tokens", applicableTo, completions, Enumerable.Empty<Completion>()));
+            } catch (Exception) {
+                // do nothing
             }
         }
 
         private static bool isRemark(SnapshotPoint triggerPoint, SnapshotPoint lineStart) {
-            // check if the line contains a ";" or a "#" before the current point
-            for (SnapshotPoint pos = triggerPoint; pos >= lineStart; pos -= 1) {
-                if (AsmDudeToolsStatic.isRemarkChar(pos.GetChar())) {
-                    return true;
+            try {
+                // check if the line contains a ";" or a "#" before the current point
+                for (SnapshotPoint pos = triggerPoint; pos >= lineStart; pos -= 1) {
+                    if (AsmDudeToolsStatic.isRemarkChar(pos.GetChar())) {
+                        return true;
+                    }
                 }
-            }
+            } catch (Exception) {}
             return false;
         }
 
