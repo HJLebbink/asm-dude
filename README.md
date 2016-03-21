@@ -14,7 +14,7 @@ Not happy with the highlighting or the descriptions. Mnemonics and descriptions 
 * ~~Proper Register Highlighting. E.g. When you select GPR rax, GPR al is also highlighted.~~
 * Create new file item with .asm extension.
 * ~~No code completion in remarks.~~
-* Label analysis. When jumping to a label, check if the label exists. Check if labels are unique.
+* Label analysis. When jumping to a label, check if the label exists. Check if labels are unique. Provide error squiggles if something is wrong.
 * Code folding for documentation blocks.
 * ~~Improved syntax highlighting.  Add label highlights.~~
 * Add syntax highlighting for AT&T syntax.
