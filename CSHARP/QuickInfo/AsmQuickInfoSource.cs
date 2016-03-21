@@ -53,62 +53,66 @@ namespace AsmDude.QuickInfo {
         /// </summary>
         public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan) {
             applicableToSpan = null;
+            try {
 
-            if (this._disposed) {
-                throw new ObjectDisposedException("AsmQuickInfoSource");
-            }
-            var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(_buffer.CurrentSnapshot);
-
-            if (triggerPoint == null) {
-                return;
-            }
-
-            foreach (IMappingTagSpan<AsmTokenTag> curTag in this._aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint))) {
-                var tagSpan = curTag.Span.GetSpans(_buffer).First();
-                string tagString = tagSpan.GetText();
-                string tagStringUpper = tagString.ToUpper();
-                applicableToSpan = this._buffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
-
-                string description = null;
-
-                switch (curTag.Tag.type) {
-                    case AsmTokenTypes.Misc: {
-                            string descr = this._asmDudeTools.getDescription(tagStringUpper);
-                            description = (descr.Length > 0) ? ("Keyword " + tagStringUpper + ": " + descr) : "Keyword " + tagStringUpper;
-                            break;
-                        }
-                    case AsmTokenTypes.Directive: {
-                            string descr = this._asmDudeTools.getDescription(tagStringUpper);
-                            description = (descr.Length > 0) ? ("Directive " + tagStringUpper + ": " + descr) : "Directive " + tagStringUpper;
-                            break;
-                        }
-                    case AsmTokenTypes.Register: {
-                            string descr = this._asmDudeTools.getDescription(tagStringUpper);
-                            description = (descr.Length > 0) ? (tagStringUpper + ": " + descr) : "Register " + tagStringUpper;
-                            break;
-                        }
-                    case AsmTokenTypes.Mnemonic: // intentional fall through
-                    case AsmTokenTypes.Jump: {
-                            string descr = this._asmDudeTools.getDescription(tagStringUpper);
-                            description = (descr.Length > 0) ? ("Mnemonic " + tagStringUpper + ": " + descr) : "Mnemonic " + tagStringUpper;
-                            break;
-                        }
-                    case AsmTokenTypes.Label: {
-                            string descr = this._asmDudeTools.getLabelDescription(tagString, this._buffer);
-                            description = (descr.Length > 0) ? descr : "Label " + tagString;
-                            break;
-                        }
-                    case AsmTokenTypes.Constant: {
-                            description = "Constant " + tagString;
-                            break;
-                        }
-                    default:
-                        break;
+                if (this._disposed) {
+                    throw new ObjectDisposedException("AsmQuickInfoSource");
                 }
-                if (description != null) {
-                    const int maxLineLength = 100;
-                    quickInfoContent.Add(multiLine(description, maxLineLength));
+                var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(_buffer.CurrentSnapshot);
+
+                if (triggerPoint == null) {
+                    return;
                 }
+
+                foreach (IMappingTagSpan<AsmTokenTag> curTag in this._aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint))) {
+                    var tagSpan = curTag.Span.GetSpans(_buffer).First();
+                    string tagString = tagSpan.GetText();
+                    string tagStringUpper = tagString.ToUpper();
+                    applicableToSpan = this._buffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
+
+                    string description = null;
+
+                    switch (curTag.Tag.type) {
+                        case AsmTokenTypes.Misc: {
+                                string descr = this._asmDudeTools.getDescription(tagStringUpper);
+                                description = (descr.Length > 0) ? ("Keyword " + tagStringUpper + ": " + descr) : "Keyword " + tagStringUpper;
+                                break;
+                            }
+                        case AsmTokenTypes.Directive: {
+                                string descr = this._asmDudeTools.getDescription(tagStringUpper);
+                                description = (descr.Length > 0) ? ("Directive " + tagStringUpper + ": " + descr) : "Directive " + tagStringUpper;
+                                break;
+                            }
+                        case AsmTokenTypes.Register: {
+                                string descr = this._asmDudeTools.getDescription(tagStringUpper);
+                                description = (descr.Length > 0) ? (tagStringUpper + ": " + descr) : "Register " + tagStringUpper;
+                                break;
+                            }
+                        case AsmTokenTypes.Mnemonic: // intentional fall through
+                        case AsmTokenTypes.Jump: {
+                                string descr = this._asmDudeTools.getDescription(tagStringUpper);
+                                description = (descr.Length > 0) ? ("Mnemonic " + tagStringUpper + ": " + descr) : "Mnemonic " + tagStringUpper;
+                                break;
+                            }
+                        case AsmTokenTypes.Label: {
+                                string descr = this._asmDudeTools.getLabelDescription(tagString, this._buffer);
+                                description = (descr.Length > 0) ? descr : "Label " + tagString;
+                                break;
+                            }
+                        case AsmTokenTypes.Constant: {
+                                description = "Constant " + tagString;
+                                break;
+                            }
+                        default:
+                            break;
+                    }
+                    if (description != null) {
+                        const int maxLineLength = 100;
+                        quickInfoContent.Add(multiLine(description, maxLineLength));
+                    }
+                }
+            } catch (Exception) {
+                // do nothing
             }
         }
 
