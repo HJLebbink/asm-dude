@@ -14,6 +14,7 @@ using Microsoft.VisualStudio.Shell;
 using System.Diagnostics;
 using System.Globalization;
 using EnvDTE80;
+using Microsoft.VisualStudio.Text.Formatting;
 
 namespace AsmDude.AsmDoc {
 
@@ -202,70 +203,35 @@ namespace AsmDude.AsmDoc {
             _mouseDownAnchorPoint = null;
         }
 
+
         public override void PreprocessMouseUp(MouseButtonEventArgs e) {
-            if (_mouseDownAnchorPoint.HasValue && _state.Enabled) {
-                var currentMousePosition = RelativeToView(e.GetPosition(_view.VisualElement));
+            try {
+                if (_mouseDownAnchorPoint.HasValue && this._state.Enabled) {
+                    var currentMousePosition = RelativeToView(e.GetPosition(_view.VisualElement));
 
-                if (!InDragOperation(_mouseDownAnchorPoint.Value, currentMousePosition)) {
-                    _state.Enabled = false;
+                    if (!InDragOperation(_mouseDownAnchorPoint.Value, currentMousePosition)) {
+                        this._state.Enabled = false;
 
-                    var line = _view.TextViewLines.GetTextViewLineContainingYCoordinate(currentMousePosition.Y);
-                    var bufferPosition = line.GetBufferPositionFromXCoordinate(currentMousePosition.X);
-
-                    if (bufferPosition != null) {
-                        int seachSpanSize = 100;
-                        int rawPos = bufferPosition.Value.Position;
-                        int bufferLength = bufferPosition.Value.Snapshot.Length;
-
-                        int beginSubString = (rawPos > seachSpanSize) ? (rawPos - seachSpanSize) : 0;
-                        int endSubString   = (bufferLength > (seachSpanSize + rawPos)) ? (seachSpanSize + rawPos) : bufferLength;
-                        int posInSubString = (rawPos > seachSpanSize) ? seachSpanSize : rawPos;
-                        //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: PreprocessMouseUp; rawPos={0}; bufferLength={1}; beginSubString={2}; endSubString={3}; posInSubString={4}", rawPos, bufferLength, beginSubString, endSubString, posInSubString));
-                        try {
-                            char[] subString = bufferPosition.Value.Snapshot.ToCharArray(beginSubString, endSubString-beginSubString);
-                            string keyword = getKeyword(posInSubString, subString);
-                            if (keyword != null) {
-                                this.DispatchGoToDoc(keyword);
-                            }
-                        } catch (Exception ex) {
-                            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "ERROR: PreprocessMouseUp; e={0}", ex.ToString()));
+                        ITextViewLine line = this._view.TextViewLines.GetTextViewLineContainingYCoordinate(currentMousePosition.Y);
+                        SnapshotPoint? bufferPosition = line.GetBufferPositionFromXCoordinate(currentMousePosition.X);
+                        string keyword = AsmDudeToolsStatic.getKeywordStr(bufferPosition);
+                        if (keyword != null) {
+                            this.DispatchGoToDoc(keyword);
                         }
+                        this.SetHighlightSpan(null);
+                        this._view.Selection.Clear();
+                        e.Handled = true;
                     }
-                    this.SetHighlightSpan(null);
-                    _view.Selection.Clear();
-                    e.Handled = true;
                 }
+                _mouseDownAnchorPoint = null;
+            } catch (Exception ex) {
+                Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "ERROR: PreprocessMouseUp; e={0}", ex.ToString()));
             }
-            _mouseDownAnchorPoint = null;
         }
 
         #endregion
 
         #region Private helpers
-
-        private static string getKeyword(int pos, char[] line) {
-            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: getKeyword; pos={0}; line=\"{1}\"", pos, new string(line)));
-            if ((pos < 0) || (pos >= line.Length)) return null;
-            // find the beginning of the keyword
-            int beginPos = 0;
-            for (int i1 = pos-1; i1 > 0; --i1) {
-                char c = line[i1];
-                if (AsmDudeToolsStatic.isSeparatorChar(c) || Char.IsControl(c)) {
-                    beginPos = i1+1;
-                    break;
-                }
-            }
-            // find the end of the keyword
-            int endPos = line.Length;
-            for (int i2 = pos + 1; i2 < line.Length; ++i2) {
-                char c = line[i2];
-                if (AsmDudeToolsStatic.isSeparatorChar(c) || Char.IsControl(c)) {
-                    endPos = i2;
-                    break;
-                }
-            }
-            return new string(line).Substring(beginPos, endPos - beginPos);
-        }
 
         Point RelativeToView(Point position) {
             return new Point(position.X + _view.ViewportLeft, position.Y + _view.ViewportTop);

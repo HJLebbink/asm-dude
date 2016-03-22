@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Operations;
 
 namespace AsmDude {
 
@@ -23,9 +24,13 @@ namespace AsmDude {
         }
 
         public static string getInstallPath() {
-            string fullPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            string filenameDll = "AsmDude.dll";
-            return fullPath.Substring(0, fullPath.Length - filenameDll.Length);
+            try {
+                string fullPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                string filenameDll = "AsmDude.dll";
+                return fullPath.Substring(0, fullPath.Length - filenameDll.Length);
+            } catch (Exception) {
+                return "";
+            }
         }
 
         public static System.Windows.Media.Color convertColor(System.Drawing.Color color) {
@@ -50,7 +55,7 @@ namespace AsmDude {
         }
         
         public static bool isSeparatorChar(char c) {
-            return char.IsWhiteSpace(c) || c.Equals(',') || c.Equals('[') || c.Equals(']') || c.Equals('+') || c.Equals('-') || c.Equals('*');
+            return char.IsWhiteSpace(c) || c.Equals(',') || c.Equals('[') || c.Equals(']') || c.Equals('+') || c.Equals('-') || c.Equals('*') || c.Equals(':');
         }
 
         public static bool isConstant(string token) {
@@ -73,6 +78,74 @@ namespace AsmDude {
             } else {
                 return false;
             }
+        }
+
+        private static string getKeyword(int pos, char[] line) {
+            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: getKeyword; pos={0}; line=\"{1}\"", pos, new string(line)));
+            var t = getKeywordPos(pos, line);
+            int beginPos = t.Item1;
+            int endPos = t.Item2;
+            return new string(line).Substring(beginPos, endPos - beginPos);
+        }
+
+        private static Tuple<int, int> getKeywordPos(int pos, char[] line) {
+            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: getKeyword; pos={0}; line=\"{1}\"", pos, new string(line)));
+            if ((pos < 0) || (pos >= line.Length)) return null;
+
+            // find the beginning of the keyword
+            int beginPos = 0;
+            for (int i1 = pos - 1; i1 > 0; --i1) {
+                char c = line[i1];
+                if (AsmDudeToolsStatic.isSeparatorChar(c) || Char.IsControl(c)) {
+                    beginPos = i1 + 1;
+                    break;
+                }
+            }
+            // find the end of the keyword
+            int endPos = line.Length;
+            for (int i2 = pos; i2 < line.Length; ++i2) {
+                char c = line[i2];
+                if (AsmDudeToolsStatic.isSeparatorChar(c) || Char.IsControl(c)) {
+                    endPos = i2;
+                    break;
+                }
+            }
+            return new Tuple<int, int>(beginPos, endPos);
+        }
+
+        public static string getKeywordStr(SnapshotPoint? bufferPosition) {
+            if (bufferPosition != null) {
+                int seachSpanSize = 100;
+                int rawPos = bufferPosition.Value.Position;
+                int bufferLength = bufferPosition.Value.Snapshot.Length;
+
+                int beginSubString = (rawPos > seachSpanSize) ? (rawPos - seachSpanSize) : 0;
+                int endSubString = (bufferLength > (seachSpanSize + rawPos)) ? (seachSpanSize + rawPos) : bufferLength;
+                int posInSubString = (rawPos > seachSpanSize) ? seachSpanSize : rawPos;
+                //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: PreprocessMouseUp; rawPos={0}; bufferLength={1}; beginSubString={2}; endSubString={3}; posInSubString={4}", rawPos, bufferLength, beginSubString, endSubString, posInSubString));
+                char[] subString = bufferPosition.Value.Snapshot.ToCharArray(beginSubString, endSubString - beginSubString);
+                string keyword = AsmDudeToolsStatic.getKeyword(posInSubString, subString);
+                return keyword;
+            }
+            return null;
+        }
+
+        public static TextExtent getKeyword(SnapshotPoint bufferPosition) {
+            int seachSpanSize = 100;
+            int rawPos = bufferPosition.Position;
+            int bufferLength = bufferPosition.Snapshot.Length;
+
+            int beginSubString = (rawPos > seachSpanSize) ? (rawPos - seachSpanSize) : 0;
+            int endSubString = (bufferLength > (seachSpanSize + rawPos)) ? (seachSpanSize + rawPos) : bufferLength;
+            int posInSubString = (rawPos > seachSpanSize) ? seachSpanSize : rawPos;
+            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: PreprocessMouseUp; rawPos={0}; bufferLength={1}; beginSubString={2}; endSubString={3}; posInSubString={4}", rawPos, bufferLength, beginSubString, endSubString, posInSubString));
+            char[] subString = bufferPosition.Snapshot.ToCharArray(beginSubString, endSubString - beginSubString);
+
+            var t = getKeywordPos(posInSubString, subString);
+            int beginPos = t.Item1 + beginSubString;
+            int endPos = t.Item2 + beginSubString;
+
+            return new TextExtent(new SnapshotSpan(bufferPosition.Snapshot, beginPos, endPos - beginPos), true);
         }
 
         public static string getRelatedRegister(string reg) {
@@ -168,6 +241,11 @@ namespace AsmDude {
 
         public static bool isRegister(string keyword) {
 
+            if (keyword.Length > 5) {
+                return false;
+            }
+
+            //TODO make a fast binary tree
             //TODO  get this info from AsmDudeData.xml
             switch (keyword.ToUpper()) {
                 case "RAX":
@@ -454,12 +532,11 @@ namespace AsmDude {
             string result = "";
             foreach (ITextSnapshotLine line in text.CurrentSnapshot.Lines) {
                 string str = line.GetText();
-                int strLength = str.Length;
 
                 // find first occurrence of a colon
                 int posColon = -1;
 
-                for (int pos = 0; pos < strLength; ++pos) {
+                for (int pos = 0; pos < str.Length; ++pos) {
                     char c = str[pos];
                     if (c == ':') {
                         posColon = pos;
@@ -471,7 +548,7 @@ namespace AsmDude {
                 if (posColon > 0) {
                     string labelLocal = str.Substring(0, posColon).Trim();
                     if (labelLocal.Equals(label)) {
-                        Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getLabelDescription: label=\"{1}\"", this.ToString(), label));
+                        //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getLabelDescription: label=\"{1}\"", this.ToString(), label));
                         if (result.Length > 0) result += System.Environment.NewLine;
                         result += "line " + line.LineNumber + ": " + str.Substring(0, Math.Min(str.Length, 100));
                     }

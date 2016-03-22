@@ -12,6 +12,9 @@
     <misc name="QWORD"/>
 		<misc name="ZWORD"/>
 		<misc name="OWORD"/>
+    <misc name="XMMWORD"/>
+    <misc name="YMMWORD"/>
+    <misc name="ZMMWORD"/>
 
     <misc name="EQU"/>
 		<misc name="STRICT"/>
@@ -100,7 +103,10 @@
 		<directive name=".ALIGN"/>
 		<directive name=".ATT_SYNTAX"/>
 		<directive name=".NOPREFIX"/>
-	</directives>
+    <directive name=".NOPREFIX"/>
+    <directive name=".XDATA"/>
+    <directive name=".PDATA"/>
+  </directives>
 	<mnemonics>
 		<mnemonic name='AAA'>
 			<description>ASCII Adjust After Addition</description>
@@ -1570,7 +1576,11 @@
 			<description>Move Unaligned Packed Single-Precision Floating-Point Values</description>
 			<ref>MOVUPS.html</ref>
 		</mnemonic>
-		<mnemonic name='MOVZX'>
+    <mnemonic name='VMOVUPS' arch='AVX'>
+      <description>Move Unaligned Packed Single-Precision Floating-Point Values</description>
+      <ref>MOVUPS.html</ref>
+    </mnemonic>
+    <mnemonic name='MOVZX'>
 			<description>Move with Zero-Extend</description>
 			<ref>MOVZX.html</ref>
 		</mnemonic>
@@ -2030,15 +2040,15 @@
 			<description>Bitwise Logical OR</description>
 			<ref>POR.html</ref>
 		</mnemonic>
-		<mnemonic name='PREFETCH0' arch='SSE'>
+		<mnemonic name='PREFETCHT0' arch='SSE'>
 			<description>Move data from m8 closer to the processor using T0 hint</description>
 			<ref>PREFETCHh.html</ref>
 		</mnemonic>
-		<mnemonic name='PREFETCH1' arch='SSE'>
+		<mnemonic name='PREFETCHT1' arch='SSE'>
 			<description>Move data from m8 closer to the processor using T1 hint</description>
 			<ref>PREFETCHh.html</ref>
 		</mnemonic>
-		<mnemonic name='PREFETCH2' arch='SSE'>
+		<mnemonic name='PREFETCHT2' arch='SSE'>
 			<description>Move data from m8 closer to the processor using T2 hint</description>
 			<ref>PREFETCHh.html</ref>
 		</mnemonic>

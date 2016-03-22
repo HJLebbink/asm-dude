@@ -16,6 +16,9 @@ namespace AsmDude {
     /// This class implements a Visual Studio package that is registered for the Visual Studio IDE.
     /// The package class uses a number of registration attributes to specify integration parameters.
     /// </summary>
+    /// 
+    // TODO to troubleshoot packaging problemsn, see https://blogs.msdn.microsoft.com/visualstudio/2010/03/22/troubleshooting-pkgdef-files/#registrycollision 
+
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("AsmDude", GuidStrings.Description, GuidStrings.Version)] // for the help about information
 

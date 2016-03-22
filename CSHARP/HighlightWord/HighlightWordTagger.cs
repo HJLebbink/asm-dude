@@ -70,11 +70,11 @@ namespace AsmDude.HighlightWord {
         private object _updateLock = new object();
 
         // The current set of words to highlight
-        private NormalizedSnapshotSpanCollection WordSpans { get; set; }
-        private SnapshotSpan? CurrentWord { get; set; }
+        private NormalizedSnapshotSpanCollection _wordSpans { get; set; }
+        private SnapshotSpan? _currentWord { get; set; }
 
         // The current request, from the last cursor movement or view render
-        private SnapshotPoint RequestedPoint { get; set; }
+        private SnapshotPoint _requestedPoint { get; set; }
 
         public HighlightWordTagger(ITextView view, ITextBuffer sourceBuffer, ITextSearchService textSearchService,
                                    ITextStructureNavigator textStructureNavigator) {
@@ -83,8 +83,8 @@ namespace AsmDude.HighlightWord {
             _textSearchService = textSearchService;
             _textStructureNavigator = textStructureNavigator;
 
-            WordSpans = new NormalizedSnapshotSpanCollection();
-            CurrentWord = null;
+            _wordSpans = new NormalizedSnapshotSpanCollection();
+            _currentWord = null;
 
             // Subscribe to both change events in the view - any time the view is updated
             // or the caret is moved, we refresh our list of highlighted words.
@@ -100,7 +100,7 @@ namespace AsmDude.HighlightWord {
         private void ViewLayoutChanged(object sender, TextViewLayoutChangedEventArgs e) {
             // If a new snapshot wasn't generated, then skip this layout
             if (e.NewViewState.EditSnapshot != e.OldViewState.EditSnapshot) {
-                UpdateAtCaretPosition(_view.Caret.Position);
+                this.UpdateAtCaretPosition(_view.Caret.Position);
             }
         }
 
@@ -108,44 +108,88 @@ namespace AsmDude.HighlightWord {
         /// Force an update if the caret position changes
         /// </summary>
         private void CaretPositionChanged(object sender, CaretPositionChangedEventArgs e) {
-            UpdateAtCaretPosition(e.NewPosition);
+            this.UpdateAtCaretPosition(e.NewPosition);
         }
 
         /// <summary>
         /// Check the caret position. If the caret is on a new word, update the CurrentWord value
         /// </summary>
         private void UpdateAtCaretPosition(CaretPosition caretPoisition) {
-            SnapshotPoint? point = caretPoisition.Point.GetPoint(_sourceBuffer, caretPoisition.Affinity);
-
+            SnapshotPoint? point = caretPoisition.Point.GetPoint(this._sourceBuffer, caretPoisition.Affinity);
+            if (point == null) {
+                return;
+            }
             if (!point.HasValue) {
                 return;
             }
             // If the new cursor position is still within the current word (and on the same snapshot),
             // we don't need to check it.
-            if (CurrentWord.HasValue &&
-                CurrentWord.Value.Snapshot == _view.TextSnapshot &&
-                point.Value >= CurrentWord.Value.Start &&
-                point.Value <= CurrentWord.Value.End) {
+            if (this._currentWord.HasValue &&
+                (this._currentWord.Value.Snapshot == this._view.TextSnapshot) &&
+                (point.Value >= this._currentWord.Value.Start) &&
+                (point.Value <= this._currentWord.Value.End)) {
                 return;
             }
 
-            RequestedPoint = point.Value;
-
+            this._requestedPoint = getKeyword(point.Value, this._view);
             ThreadPool.QueueUserWorkItem(UpdateWordAdornments);
+        }
+
+        /// <summary>
+        /// return the word at the provided point
+        /// </summary>
+        private SnapshotPoint getKeyword(SnapshotPoint? point, ITextView text) {
+            return point.Value;
         }
 
         /// <summary>
         /// The currently highlighted word has changed. Update the adornments to reflect this change
         /// </summary>
         private void UpdateWordAdornments(object threadContext) {
-            SnapshotPoint currentRequest = RequestedPoint;
-
-            List<SnapshotSpan> wordSpans = new List<SnapshotSpan>();
-
-            // Find all words in the buffer like the one the caret is on
             try {
-                TextExtent word = _textStructureNavigator.GetExtentOfWord(currentRequest);
+                TextExtent keywordExtend = AsmDudeToolsStatic.getKeyword(this._requestedPoint);
+                SnapshotSpan keywordSpan = keywordExtend.Span;
+                Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:UpdateWordAdornments. current keyword = {1}", this.ToString(), keywordSpan.GetText()));
 
+                bool validKeyword = true;
+                if (keywordSpan.IsEmpty) validKeyword = false;
+
+                //here is the place to filter keywords that should not be highlighted
+
+                if (validKeyword) {
+
+                    // Find all words in the buffer like the one the caret is on
+                    // If this is the same word we currently have, we're done (e.g. caret moved within a word).
+                    if (this._currentWord.HasValue && (keywordSpan == this._currentWord)) {
+                        Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:UpdateWordAdornments. current keyword = {1} is equal to the previous keyword, no update", this.ToString(), keywordSpan.GetText()));
+                        return;
+                    }
+                    // Find the new spans
+                    FindData findData;
+                    if (AsmDudeToolsStatic.isRegister(keywordSpan.GetText())) {
+                        //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:SynchronousUpdate. Register={1}", this.ToString(), currentWordStr));
+                        findData = new FindData(AsmDudeToolsStatic.getRelatedRegister(keywordSpan.GetText()), keywordSpan.Snapshot);
+                        findData.FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions;
+                    } else {
+                        //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:SynchronousUpdate. Keyword={1}", this.ToString(), currentWordStr));
+                        // because we use a regex we have to replace all occurances of a "." with "\\.".
+                        string t = keywordSpan.GetText().Replace(".", "\\.");
+                        findData = new FindData(t, keywordSpan.Snapshot);
+                        findData.FindOptions = FindOptions.SingleLine | FindOptions.UseRegularExpressions;
+                    }
+
+                    List<SnapshotSpan> wordSpans = new List<SnapshotSpan>();
+                    wordSpans.AddRange(this._textSearchService.FindAll(findData));
+                    this.SynchronousUpdate(this._requestedPoint, new NormalizedSnapshotSpanCollection(wordSpans), keywordSpan);
+                } else {
+                    // If we couldn't find a word, just clear out the existing markers
+                    this.SynchronousUpdate(this._requestedPoint, new NormalizedSnapshotSpanCollection(), null);
+                    return;
+                }
+
+
+
+                /*
                 bool foundWord = true;
                 // If we've selected something not worth highlighting, we might have
                 // missed a "word" by a little bit
@@ -158,7 +202,7 @@ namespace AsmDude.HighlightWord {
                     } else {
                         // Try again, one character previous.  If the caret is at the end of a word, then
                         // this will pick up the word we are at the end of.
-                        word = _textStructureNavigator.GetExtentOfWord(currentRequest - 1);
+                        word = this._textStructureNavigator.GetExtentOfWord(currentRequest - 1);
 
                         // If we still aren't valid the second time around, we're done
                         if (!WordExtentIsValid(currentRequest, word)) {
@@ -168,35 +212,10 @@ namespace AsmDude.HighlightWord {
                 }
                 if (!foundWord) {
                     // If we couldn't find a word, just clear out the existing markers
-                    SynchronousUpdate(currentRequest, new NormalizedSnapshotSpanCollection(), null);
+                    this.SynchronousUpdate(currentRequest, new NormalizedSnapshotSpanCollection(), null);
                     return;
                 }
-
-                SnapshotSpan currentWord = word.Span;
-
-                // If this is the same word we currently have, we're done (e.g. caret moved within a word).
-                if (CurrentWord.HasValue && currentWord == CurrentWord) {
-                    return;
-                }
-                // Find the new spans
-                FindData findData;
-                string currentWordStr = currentWord.GetText();
-                if (AsmDudeToolsStatic.isRegister(currentWordStr)) {
-                    //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:SynchronousUpdate. Register={1}", this.ToString(), currentWordStr));
-                    findData = new FindData(AsmDudeToolsStatic.getRelatedRegister(currentWordStr), currentWord.Snapshot);
-                    findData.FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions;
-                } else {
-                    //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:SynchronousUpdate. Keyword={1}", this.ToString(), currentWordStr));
-                    findData = new FindData(currentWordStr, currentWord.Snapshot);
-                    findData.FindOptions = FindOptions.WholeWord;
-                }
-
-                wordSpans.AddRange(_textSearchService.FindAll(findData));
-
-                // If we are still up-to-date (another change hasn't happened yet), do a real update
-                if (currentRequest == RequestedPoint) {
-                    SynchronousUpdate(currentRequest, new NormalizedSnapshotSpanCollection(wordSpans), currentWord);
-                }
+                */
             } catch (Exception e) {
                 Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "ERROR: {0}:UpdateWordAdornments. Something went wrong. e={1}", this.ToString(), e.ToString()));
             }
@@ -214,11 +233,11 @@ namespace AsmDude.HighlightWord {
         /// </summary>
         private void SynchronousUpdate(SnapshotPoint currentRequest, NormalizedSnapshotSpanCollection newSpans, SnapshotSpan? newCurrentWord) {
             lock (_updateLock) {
-                if (currentRequest != RequestedPoint) {
+                if (currentRequest != _requestedPoint) {
                     return;
                 }
-                WordSpans = newSpans;
-                CurrentWord = newCurrentWord;
+                _wordSpans = newSpans;
+                _currentWord = newCurrentWord;
 
                 var tempEvent = TagsChanged;
                 if (tempEvent != null) {
@@ -237,17 +256,17 @@ namespace AsmDude.HighlightWord {
         /// <param name="spans">A read-only span of text to be searched for instances of CurrentWord</param>
         public IEnumerable<ITagSpan<HighlightWordTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
             if (Properties.Settings.Default.KeywordHighlight_On) {
-                if (CurrentWord == null) {
+                if (_currentWord == null) {
                     yield break;
                 }
-                if ((spans.Count == 0) || (WordSpans.Count == 0)) {
+                if ((spans.Count == 0) || (_wordSpans.Count == 0)) {
                     yield break;
                 }
 
                 // Hold on to a "snapshot" of the word spans and current word, so that we maintain the same
                 // collection throughout
-                SnapshotSpan currentWordLocal = CurrentWord.Value;
-                NormalizedSnapshotSpanCollection wordSpansLocal = WordSpans;
+                SnapshotSpan currentWordLocal = _currentWord.Value;
+                NormalizedSnapshotSpanCollection wordSpansLocal = _wordSpans;
 
                 // If the requested snapshot isn't the same as the one our words are on, translate our spans
                 // to the expected snapshot

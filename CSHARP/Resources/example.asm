@@ -11,6 +11,20 @@
 .global bitswap_gas
 bitswap_gas: 
 
+	#region TODO
+	call 		for_write_seq_fmt
+    mov 		rsi, QWORD PTR [network_c_mp_network_neurons]
+	prefetcht0 	BYTE PTR [122000+rsi+rdi*4]
+	jg 			.B38.34 	# make the label be selectable (dot should not be a word seperator)
+	.xdata
+	.pdata
+	_TEXT		ENDS
+	_TEXT		SEGMENT      'CODE'
+	network_c_mp_init_topology_izhikevich	PROC 
+	vmovups xmm4, XMMWORD PTR [.T1737_.0.17+64] ;H:\Dropbox\sc\ScHJ\CWS\Spike\Spike-Fortran-Main\src\network_c.f90:1037.37
+	#endregion
+	
+	
 	mov         r9,rdx
 	shr         rdx,5
 	and         r9,0x1F
