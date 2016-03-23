@@ -150,6 +150,8 @@ namespace AsmDude {
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets) {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:AugmentCompletionSession", this.ToString()));
             try {
+                DateTime time1 = DateTime.Now;
+
                 if (_disposed) throw new ObjectDisposedException("AsmCompletionSource");
                 if (Properties.Settings.Default.CodeCompletion_On) {
 
@@ -176,12 +178,11 @@ namespace AsmDude {
                     var applicableTo = snapshot.CreateTrackingSpan(new SnapshotSpan(start, triggerPoint), SpanTrackingMode.EdgeInclusive);
                     string partialKeyword = applicableTo.GetText(snapshot);
 
-                    bool useCapitals = isAllUpper(partialKeyword);
-                    partialKeyword = partialKeyword.ToUpper();
+                    bool useCapitals = false;// isAllUpper(partialKeyword);
+                    //TODO the partial keyword is not used
+                    string partialKeywordUpper = partialKeyword.ToUpper();
 
-                    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:AugmentCompletionSession. partialKeyword={1}", this.ToString(), partialKeyword));
                     IList<Completion> completions = new List<Completion>();
-
 
                     if (isLabel(start - 1, line.Start)) {
                         ImageSource imageSource = this._icons[AsmTokenTypes.Label];
@@ -215,6 +216,10 @@ namespace AsmDude {
                         }
                     }
                     completionSets.Add(new CompletionSet("Tokens", "Tokens", applicableTo, completions, Enumerable.Empty<Completion>()));
+
+                    DateTime time2 = DateTime.Now;
+                    long elapsedTicks = time2.Ticks - time1.Ticks;
+                    AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: preparing code completion for string \"{0}\" took {1} seconds.", partialKeyword, ((double)elapsedTicks) / 10000000));
                 }
             } catch (Exception) {
                 // do nothing

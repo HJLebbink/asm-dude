@@ -147,6 +147,8 @@ namespace AsmDude.HighlightWord {
         /// </summary>
         private void UpdateWordAdornments(object threadContext) {
             try {
+                DateTime time1 = DateTime.Now;
+
                 TextExtent keywordExtend = AsmDudeToolsStatic.getKeyword(this._requestedPoint);
                 SnapshotSpan keywordSpan = keywordExtend.Span;
 
@@ -158,7 +160,6 @@ namespace AsmDude.HighlightWord {
                 //here is the place to filter keywords that should not be highlighted
 
                 if (validKeyword) {
-                    DateTime time1 = DateTime.Now;
 
                     Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:UpdateWordAdornments. current keyword = {1}", this.ToString(), keywordSpan.GetText()));
 
@@ -187,7 +188,7 @@ namespace AsmDude.HighlightWord {
 
                     DateTime time2 = DateTime.Now;
                     long elapsedTicks = time2.Ticks - time1.Ticks;
-                    AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: highlighting string \"{1}\" took {2} seconds.", this.ToString(), keywordStr, ((double)elapsedTicks)/10000000));
+                    AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: highlighting string \"{0}\" took {1} seconds.", keywordStr, ((double)elapsedTicks)/10000000));
 
                     this.SynchronousUpdate(this._requestedPoint, new NormalizedSnapshotSpanCollection(wordSpans), keywordSpan);
                 } else {
