@@ -149,14 +149,18 @@ namespace AsmDude.HighlightWord {
             try {
                 TextExtent keywordExtend = AsmDudeToolsStatic.getKeyword(this._requestedPoint);
                 SnapshotSpan keywordSpan = keywordExtend.Span;
-                Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:UpdateWordAdornments. current keyword = {1}", this.ToString(), keywordSpan.GetText()));
 
                 bool validKeyword = true;
                 if (keywordSpan.IsEmpty) validKeyword = false;
 
+                string keywordStr = keywordSpan.GetText().Trim();
+                if (keywordStr.Length == 0) validKeyword = false;
                 //here is the place to filter keywords that should not be highlighted
 
                 if (validKeyword) {
+                    DateTime time1 = DateTime.Now;
+
+                    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:UpdateWordAdornments. current keyword = {1}", this.ToString(), keywordSpan.GetText()));
 
                     // Find all words in the buffer like the one the caret is on
                     // If this is the same word we currently have, we're done (e.g. caret moved within a word).
@@ -166,20 +170,25 @@ namespace AsmDude.HighlightWord {
                     }
                     // Find the new spans
                     FindData findData;
-                    if (AsmDudeToolsStatic.isRegister(keywordSpan.GetText())) {
+                    if (AsmDudeToolsStatic.isRegister(keywordStr)) {
                         //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:SynchronousUpdate. Register={1}", this.ToString(), currentWordStr));
-                        findData = new FindData(AsmDudeToolsStatic.getRelatedRegister(keywordSpan.GetText()), keywordSpan.Snapshot);
+                        findData = new FindData(AsmDudeToolsStatic.getRelatedRegister(keywordStr), keywordSpan.Snapshot);
                         findData.FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions;
                     } else {
                         //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:SynchronousUpdate. Keyword={1}", this.ToString(), currentWordStr));
                         // because we use a regex we have to replace all occurances of a "." with "\\.".
-                        string t = keywordSpan.GetText().Replace(".", "\\.");
+                        string t = keywordStr.Replace(".", "\\.").Replace("$", "\\$");
                         findData = new FindData(t, keywordSpan.Snapshot);
                         findData.FindOptions = FindOptions.SingleLine | FindOptions.UseRegularExpressions;
                     }
 
                     List<SnapshotSpan> wordSpans = new List<SnapshotSpan>();
                     wordSpans.AddRange(this._textSearchService.FindAll(findData));
+
+                    DateTime time2 = DateTime.Now;
+                    long elapsedTicks = time2.Ticks - time1.Ticks;
+                    AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: highlighting string \"{1}\" took {2} seconds.", this.ToString(), keywordStr, ((double)elapsedTicks)/10000000));
+
                     this.SynchronousUpdate(this._requestedPoint, new NormalizedSnapshotSpanCollection(wordSpans), keywordSpan);
                 } else {
                     // If we couldn't find a word, just clear out the existing markers
