@@ -106,9 +106,7 @@ namespace AsmDude {
 					case VSConstants.VSStd2KCmdID.TYPECHAR:
 						typedChar = GetTypeChar(pvaIn);
 						if (char.IsWhiteSpace(typedChar) || AsmDudeToolsStatic.isSeparatorChar(typedChar) || AsmDudeToolsStatic.isRemarkChar(typedChar)) {
-							//AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:Exec: typedChar={1}", this.ToString(), typedChar));
-							handled = this.Complete(true);
-							handled = false; // set handled to false then the typed char will be handled by the _nextCommandHandler
+							handled = this.Complete(false);
 						}
 						break;
 				}
