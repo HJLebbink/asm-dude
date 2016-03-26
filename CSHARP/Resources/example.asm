@@ -1,33 +1,32 @@
 .intel_syntax noprefix
 
-# void bitswap_gas(unsigned int * const data, const unsigned long long pos1, const unsigned long long pos2) // rcx, rdx, r8, r9
-# rcx <= data
-# rdx <= pos1
-# r8 <= pos2
-# https://msdn.microsoft.com/en-us/library/9z1stfyw.aspx
-# https://software.intel.com/sites/landingpage/IntrinsicsGuide/
-
-.text                                           # Code section
-.global bitswap_gas
-bitswap_gas: 
-
 	#region TODO
-	call 		for_write_seq_fmt
+	mov			r13, QWORD PTR lennyOptions$[rsp]
     mov 		rsi, QWORD PTR [network_c_mp_network_neurons]
-	prefetcht0 	BYTE PTR [122000+rsi+rdi*4]
-	jg 			.B38.34 	# make the label be selectable (dot should not be a word seperator)
-	.xdata
-	.pdata
+	call		for_write_seq_fmt		# call to a label
+	call		??$?6U?$char_traits@D@std@@@std@@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@0@AEAV10@PEBD@Z
+
+	lea			rcx, OFFSET FLAT:??_C@_0FE@OJFGMKFJ@ERROR?3?5dataset?3?3HexDataSet?3?3getV@
+	mov			rax, -4616189618054758400		; bff0000000000000H
 	_TEXT		ENDS
 	_TEXT		SEGMENT      'CODE'
 	network_c_mp_init_topology_izhikevich	PROC 
-	vmovups xmm4, XMMWORD PTR [.T1737_.0.17+64] ;H:\Dropbox\sc\ScHJ\CWS\Spike\Spike-Fortran-Main\src\network_c.f90:1037.37
+	vmovups		xmm4, XMMWORD PTR [.T1737_.0.17+64] ;H:\Dropbox\sc\ScHJ\CWS\Spike\Spike-Fortran-Main\src\network_c.f90:1037.37
+
+$LL9@run.cpu$om: xor rax, rax
+	jb			SHORT $LL9@run.cpu$om	# short should not be considered a label in this context
 	#endregion
 	
-	
+	jbe  lea
+
+
+maskmovdqu qword 
 
 	#region allRegisters
-	RAX 
+	rax 
+	Rax
+	RAX
+	rax1
     EAX 
     AX 
     AL 
@@ -193,6 +192,18 @@ bitswap_gas:
     ZMM31 
 	#endregion
 
+	#region real example handcoded
+
+# void bitswap_gas(unsigned int * const data, const unsigned long long pos1, const unsigned long long pos2) // rcx, rdx, r8, r9
+# rcx <= data
+# rdx <= pos1
+# r8 <= pos2
+# https://msdn.microsoft.com/en-us/library/9z1stfyw.aspx
+# https://software.intel.com/sites/landingpage/IntrinsicsGuide/
+
+.text                                           # Code section
+.global bitswap_gas
+bitswap_gas:
 
 	mov         r9,rdx
 	shr         rdx,5
@@ -213,11 +224,8 @@ label2:
 	jnc         label3
 	bts         dword [rcx+4*rdx],r9d
 label3:
-
 	ret
-
 .att_syntax
-
 
 #000000013F2CB440 4C 8B CA             mov         r9,rdx  
 #000000013F2CB443 4D 8B D0             mov         r10,r8  
@@ -233,4 +241,4 @@ label3:
 #000000013F2CB469 73 05                jae         bitswap_asm+30h (013F2CB470h)  
 #000000013F2CB46B 44 0F AB 0C 91       bts         dword ptr [rcx+rdx*4],r9d  
 #000000013F2CB470 C3                   ret  
-
+#endregion

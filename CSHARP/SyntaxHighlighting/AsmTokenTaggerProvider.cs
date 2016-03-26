@@ -28,7 +28,7 @@ using Microsoft.VisualStudio.Utilities;
 namespace AsmDude {
 
     [Export(typeof(ITaggerProvider))]
-    [ContentType("asm!")]
+    [ContentType(AsmDudePackage.AsmDudeContentType)]
     [TagType(typeof(AsmTokenTag))]
     internal sealed class AsmTokenTagProvider : ITaggerProvider
     {

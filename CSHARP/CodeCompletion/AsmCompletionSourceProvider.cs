@@ -28,7 +28,7 @@ using System.ComponentModel.Composition;
 namespace AsmDude {
 
     [Export(typeof(ICompletionSourceProvider))]
-    [ContentType("asm!")]
+    [ContentType(AsmDudePackage.AsmDudeContentType)]
     [Name("asmCompletion")]
     class AsmCompletionSourceProvider : ICompletionSourceProvider {
         public ICompletionSource TryCreateCompletionSource(ITextBuffer textBuffer) {

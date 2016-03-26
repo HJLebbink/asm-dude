@@ -32,6 +32,7 @@ using Microsoft.VisualStudio.Text;
 using System.Windows;
 using System.Windows.Media;
 using System.Globalization;
+using AsmDude.OptionsPage;
 
 namespace AsmDude {
 
@@ -97,6 +98,9 @@ namespace AsmDude {
 
         [Import]
         private AsmDudeTools _asmDudeTools = null;
+
+        [Import]
+        private AsmDudePackage _package = null;
 
         public AsmCompletionSource(ITextBuffer buffer) {
             this._buffer = buffer;
@@ -195,7 +199,7 @@ namespace AsmDude {
                         foreach (string keyword in this._asmDudeTools.getKeywords()) {
                             string arch = this._asmDudeTools.getArchitecture(keyword);
                             bool selected = isArchSwitchedOn(arch);
-                            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:AugmentCompletionSession; keyword={1}; arch={2}; selected={3}", this.ToString(), entry.Key, this._arch[entry.Key], selected));
+                            //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:AugmentCompletionSession; keyword={1}; arch={2}; selected={3}", this.ToString(), keyword, arch, selected));
                             if (selected) {
                                 //Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: name keyword \"" + entry.Key + "\"");
                                 // by default, the entry.Key is with capitals
@@ -265,25 +269,47 @@ namespace AsmDude {
             return previousKeyword;
         }
 
-        private static bool isArchSwitchedOn(string arch) {
-            switch (arch) {
-                case "X86": return Properties.Settings.Default.CodeCompletion_x86;
-                case "I686": return Properties.Settings.Default.CodeCompletion_x86;
-                case "MMX": return Properties.Settings.Default.CodeCompletion_mmx;
-                case "SSE": return Properties.Settings.Default.CodeCompletion_sse;
-                case "SSE2": return Properties.Settings.Default.CodeCompletion_sse2;
-                case "SSE3": return Properties.Settings.Default.CodeCompletion_sse3;
-                case "SSSE3": return Properties.Settings.Default.CodeCompletion_ssse3;
-                case "SSE4.1": return Properties.Settings.Default.CodeCompletion_sse41;
-                case "SSE4.2": return Properties.Settings.Default.CodeCompletion_sse42;
-                case "AVX": return Properties.Settings.Default.CodeCompletion_avx;
-                case "AVX2": return Properties.Settings.Default.CodeCompletion_avx2;
-                case "KNC": return Properties.Settings.Default.CodeCompletion_knc;
-                case null:
-                case "": return true;
-                default:
-                    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:isArchSwitchedOn; unsupported arch {0}", arch));
-                    return true;
+        private bool isArchSwitchedOn(string arch) {
+            if (false) {
+                switch (arch) {
+                    case "X86": return this._package.OptionsPageCodeCompletion.x86;
+                    case "I686": return this._package.OptionsPageCodeCompletion.i686;
+                    case "MMX": return this._package.OptionsPageCodeCompletion._mmx;
+                    case "SSE": return this._package.OptionsPageCodeCompletion._sse;
+                    case "SSE2": return this._package.OptionsPageCodeCompletion._sse2;
+                    case "SSE3": return this._package.OptionsPageCodeCompletion._sse3;
+                    case "SSSE3": return this._package.OptionsPageCodeCompletion._ssse3;
+                    case "SSE4.1": return this._package.OptionsPageCodeCompletion._sse41;
+                    case "SSE4.2": return this._package.OptionsPageCodeCompletion._sse42;
+                    case "AVX": return this._package.OptionsPageCodeCompletion._avx;
+                    case "AVX2": return this._package.OptionsPageCodeCompletion._avx2;
+                    case "KNC": return this._package.OptionsPageCodeCompletion._knc;
+                    case null:
+                    case "": return true;
+                    default:
+                        Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:isArchSwitchedOn; unsupported arch {0}", arch));
+                        return true;
+                }
+            } else {
+                switch (arch) {
+                    case "X86": return Properties.Settings.Default.CodeCompletion_x86;
+                    case "I686": return Properties.Settings.Default.CodeCompletion_x86;
+                    case "MMX": return Properties.Settings.Default.CodeCompletion_mmx;
+                    case "SSE": return Properties.Settings.Default.CodeCompletion_sse;
+                    case "SSE2": return Properties.Settings.Default.CodeCompletion_sse2;
+                    case "SSE3": return Properties.Settings.Default.CodeCompletion_sse3;
+                    case "SSSE3": return Properties.Settings.Default.CodeCompletion_ssse3;
+                    case "SSE4.1": return Properties.Settings.Default.CodeCompletion_sse41;
+                    case "SSE4.2": return Properties.Settings.Default.CodeCompletion_sse42;
+                    case "AVX": return Properties.Settings.Default.CodeCompletion_avx;
+                    case "AVX2": return Properties.Settings.Default.CodeCompletion_avx2;
+                    case "KNC": return Properties.Settings.Default.CodeCompletion_knc;
+                    case null:
+                    case "": return true;
+                    default:
+                        Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:isArchSwitchedOn; unsupported arch {0}", arch));
+                        return true;
+                }
             }
         }
 

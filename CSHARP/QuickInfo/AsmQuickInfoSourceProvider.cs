@@ -32,7 +32,7 @@ namespace AsmDude.QuickInfo {
     /// Factory for quick info sources
     /// </summary>
     [Export(typeof(IQuickInfoSourceProvider))]
-    [ContentType("asm!")]
+    [ContentType(AsmDudePackage.AsmDudeContentType)]
     [Name("asmQuickInfo")]
     class AsmQuickInfoSourceProvider : IQuickInfoSourceProvider {
         [Import]

@@ -4,85 +4,115 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.ComponentModel;
+using System.ComponentModel.Composition;
 using System.Drawing;
+using System.Globalization;
 using System.Runtime.InteropServices;
 
-namespace AsmDude.OptionsPage
-{
+namespace AsmDude.OptionsPage {
     /// <summary>
     // Extends the standard dialog functionality for implementing ToolsOptions pages, 
     // with support for the Visual Studio automation model, Windows Forms, and state 
     // persistence through the Visual Studio settings mechanism.
     /// </summary>
     [Guid(GuidStrings.GuidOptionsPageCodeCompletion)]
-    public class OptionsPageCodeCompletion : DialogPage
-    {
+    public class OptionsPageCodeCompletion : DialogPage {
+
+        public OptionsPageCodeCompletion() {
+            AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0} constructor", this.ToString()));
+        }
+
         #region Properties
         private const string cat = "Architectures used for Code Completion";
+        private bool _useCodeCompletion;
+        private bool _x86;
+        private bool _i686;
 
         [Category("General")]
         [Description("Use Code Completion")]
         [DisplayName("Use Code Completion")]
-        public bool _useCodeCompletion { get; set; }
+        [DefaultValue(true)]
+        public bool UseCodeCompletion {
+            get { return _useCodeCompletion; }
+            set { _useCodeCompletion = value; }
+        }
 
         [Category(cat)]
         [Description("x86")]
         [DisplayName("x86")]
-        public bool _x86 { get; set; }
+        [DefaultValue(true)]
+        public bool x86 {
+            get { return _x86; }
+            set { _x86 = value; }
+        }
 
         [Category(cat)]
         [Description("i686 (conditional move and set)")]
         [DisplayName("i686")]
-        public bool _i686 { get; set; }
+        [DefaultValue(true)]
+        public bool i686 {
+            get { return _i686; }
+            set { _i686 = value; }
+        }
 
         [Category(cat)]
         [Description("MMX")]
         [DisplayName("MMX")]
+        [DefaultValue(false)]
         public bool _mmx { get; set; }
 
         [Category(cat)]
         [Description("SSE")]
         [DisplayName("SSE")]
+        [DefaultValue(true)]
         public bool _sse { get; set; }
 
         [Category(cat)]
         [Description("SSE2")]
         [DisplayName("SSE2")]
+        [DefaultValue(true)]
         public bool _sse2 { get; set; }
 
         [Category(cat)]
         [Description("SSE3")]
         [DisplayName("SSE3")]
+        [DefaultValue(true)]
         public bool _sse3 { get; set; }
 
         [Category(cat)]
         [Description("SSSE3")]
         [DisplayName("SSSE3")]
+        [DefaultValue(true)]
         public bool _ssse3 { get; set; }
 
         [Category(cat)]
         [Description("SSE4.1")]
         [DisplayName("SSE4.1")]
+        [DefaultValue(true)]
         public bool _sse41 { get; set; }
 
         [Category(cat)]
         [Description("SSE4.2")]
         [DisplayName("SSE4.2")]
+        [DefaultValue(true)]
         public bool _sse42 { get; set; }
 
         [Category(cat)]
         [Description("AVX")]
         [DisplayName("AVX")]
+        [DefaultValue(true)]
         public bool _avx { get; set; }
 
         [Category(cat)]
         [Description("AVX2")]
         [DisplayName("AVX2")]
+        [DefaultValue(false)]
         public bool _avx2 { get; set; }
 
         [Category(cat)]
         [Description("Xeon Phi Knights Corner")]
         [DisplayName("KNC")]
+        [DefaultValue(false)]
         public bool _knc { get; set; }
 
         #endregion Properties
@@ -96,8 +126,7 @@ namespace AsmDude.OptionsPage
         /// This method is called when Visual Studio wants to activate this page.  
         /// </devdoc>
         /// <remarks>If this handler sets e.Cancel to true, the activation will not occur.</remarks>
-        protected override void OnActivate(CancelEventArgs e)
-        {
+        protected override void OnActivate(CancelEventArgs e) {
             base.OnActivate(e);
             this._useCodeCompletion = Properties.Settings.Default.CodeCompletion_On;
 
@@ -121,9 +150,7 @@ namespace AsmDude.OptionsPage
         /// <devdoc>
         /// This event is raised when the page is closed.
         /// </devdoc>
-        protected override void OnClosed(EventArgs e)
-        {
-        }
+        protected override void OnClosed(EventArgs e) {}
 
         /// <summary>
         /// Handles "deactivate" messages from the Visual Studio environment.
@@ -136,10 +163,8 @@ namespace AsmDude.OptionsPage
         /// A "deactivate" message is sent when focus changes to a different page in
         /// the dialog.
         /// </remarks>
-        protected override void OnDeactivate(CancelEventArgs e)
-        {
+        protected override void OnDeactivate(CancelEventArgs e) {
             bool changed = false;
-
             if (Properties.Settings.Default.CodeCompletion_On != this._useCodeCompletion) {
                 changed = true;
             }
@@ -208,7 +233,6 @@ namespace AsmDude.OptionsPage
 
             bool changed = false;
             bool restartNeeded = false;
-
             if (Properties.Settings.Default.CodeCompletion_On != this._useCodeCompletion) {
                 Properties.Settings.Default.CodeCompletion_On = this._useCodeCompletion;
                 changed = true;

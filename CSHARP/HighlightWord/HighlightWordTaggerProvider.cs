@@ -30,7 +30,7 @@ using System.ComponentModel.Composition;
 namespace AsmDude.HighlightWord {
 
     [Export(typeof(IViewTaggerProvider))]
-    [ContentType("asm!")]
+    [ContentType(AsmDudePackage.AsmDudeContentType)]
     [TagType(typeof(HighlightWordTag))]
     public class HighlightWordTaggerProvider : IViewTaggerProvider {
 

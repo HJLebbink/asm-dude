@@ -30,8 +30,8 @@ using Microsoft.VisualStudio.Utilities;
 namespace AsmDude.QuickInfo {
 
     [Export(typeof(IIntellisenseControllerProvider))]
+    [ContentType(AsmDudePackage.AsmDudeContentType)]
     [Name("Template QuickInfo Controller")]
-    [ContentType("asm!")]
     internal class AsmQuickInfoControllerProvider : IIntellisenseControllerProvider {
 
         [Import]

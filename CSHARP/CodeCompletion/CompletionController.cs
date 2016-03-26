@@ -37,8 +37,8 @@ using System.Globalization;
 namespace AsmDude {
 
 	[Export(typeof(IVsTextViewCreationListener))]
-	[ContentType("asm!")]
-	[TextViewRole(PredefinedTextViewRoles.Interactive)]
+    [ContentType(AsmDudePackage.AsmDudeContentType)]
+    [TextViewRole(PredefinedTextViewRoles.Interactive)]
 	internal sealed class VsTextViewCreationListener : IVsTextViewCreationListener {
 
 		[Import]
@@ -107,6 +107,7 @@ namespace AsmDude {
 						typedChar = GetTypeChar(pvaIn);
 						if (char.IsWhiteSpace(typedChar) || AsmDudeToolsStatic.isSeparatorChar(typedChar) || AsmDudeToolsStatic.isRemarkChar(typedChar)) {
 							handled = this.Complete(false);
+                            handled = false;
 						}
 						break;
 				}

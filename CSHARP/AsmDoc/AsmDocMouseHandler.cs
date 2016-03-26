@@ -19,7 +19,7 @@ using Microsoft.VisualStudio.Text.Formatting;
 namespace AsmDude.AsmDoc {
 
     [Export(typeof(IKeyProcessorProvider))]
-    [ContentType("asm!")]
+    [ContentType(AsmDudePackage.AsmDudeContentType)]
     [Name("AsmDoc")]
     [Order(Before = "VisualStudioKeyboardProcessor")]
     internal sealed class AsmDocKeyProcessorProvider : IKeyProcessorProvider {
@@ -88,7 +88,7 @@ namespace AsmDude.AsmDoc {
     }
 
     [Export(typeof(IMouseProcessorProvider))]
-    [ContentType("asm!")]
+    [ContentType(AsmDudePackage.AsmDudeContentType)]
     [Name("AsmDoc")]
     [TextViewRole(PredefinedTextViewRoles.Document)]
     [Order(Before = "WordSelection")]
