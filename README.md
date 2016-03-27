@@ -13,7 +13,7 @@ Not happy with the highlighting or the descriptions. Mnemonics and descriptions 
 * ~~Documentation for opcodes. Hit F12 to get full official documentation of the selected opcode~~.
 * ~~Proper Register Highlighting. E.g. When you select GPR rax, GPR al is also highlighted.~~
 * Label rename assistance.
-* Track propagation of register state-change trough time (under certain assumptions such as no "jmp <reg>" etc). 
+* Track propagation of register state-change trough time (under certain assumptions such as no "jmp GPR" etc). 
 * Create new file item with .asm extension.
 * ~~No code completion in remarks.~~
 * Label analysis. When jumping to a label, check if the label exists. Check if labels are unique. Provide error squiggles if something is wrong.
