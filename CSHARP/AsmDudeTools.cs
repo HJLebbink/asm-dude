@@ -71,6 +71,52 @@ namespace AsmDude {
             return char.IsWhiteSpace(c) || c.Equals(',') || c.Equals('[') || c.Equals(']') || c.Equals('+') || c.Equals('-') || c.Equals('*') || c.Equals(':');
         }
 
+        public static Tuple<bool, int, int> getRemarkPos(string line) {
+            int nChars = line.Length;
+            for (int i = 0; i < nChars; ++i) {
+                if (AsmDudeToolsStatic.isRemarkChar(line[i])) {
+                    return new Tuple<bool, int, int>(true, i, nChars);
+                }
+            }
+            return new Tuple<bool, int, int>(false, nChars, nChars);
+        }
+
+        public static Tuple<bool, int, int> getLabelPos(string line) {
+            int nChars = line.Length;
+            int i = 0;
+
+            // find the start of the first keyword
+            for (; i < nChars; ++i) {
+                char c = line[i];
+                if (AsmDudeToolsStatic.isRemarkChar(c)) {
+                    return new Tuple<bool, int, int>(false, 0, 0);
+                } else if (char.IsWhiteSpace(c)) {
+                    // do nothing
+                } else {
+                    break;
+                }
+            }
+            if (i >= nChars) {
+                return new Tuple<bool, int, int>(false, 0, 0);
+            }
+            int beginPos = i;
+            // position i points to the start of the current keyword
+            //AsmDudeToolsStatic.Output("getLabelEndPos: found first char of first keyword "+ line[i]+".");
+
+            for (; i < nChars; ++i) {
+                char c = line[i];
+                if (c.Equals(':')) {
+                    return new Tuple<bool, int, int>(true, beginPos, i);
+                } else if (AsmDudeToolsStatic.isRemarkChar(c)) {
+                    return new Tuple<bool, int, int>(false, 0, 0);
+                } else if (AsmDudeToolsStatic.isSeparatorChar(c)) {
+                    // found another keyword: labels can only be the first keyword on a line
+                    break;
+                }
+            }
+            return new Tuple<bool, int, int>(false, 0, 0);
+        }
+
         public static bool isConstant(string token) {
             string token2;
             if (token.StartsWith("0x", StringComparison.CurrentCultureIgnoreCase)) {
@@ -85,12 +131,28 @@ namespace AsmDude {
             return parsedSuccessfully;
         }
 
-        public static bool isLabel(string token) {
-            if (token.Length > 1) {
-                return (token[token.Length - 1] == ':');
-            } else {
-                return false;
+        /// <summary>
+        /// Get all labels with context info containing in the provided text
+        /// </summary>
+        public static IList<Tuple<string, string>> getLabels(ITextBuffer text) {
+            var result = new List<Tuple<string, string>>();
+            //TODO: this can be slow on sources with many labels, better would be to precompute the list of labels.
+
+            foreach (ITextSnapshotLine line in text.CurrentSnapshot.Lines) {
+                string str = line.GetText();
+                //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: getLabels: str=\"{0}\"", str));
+
+                Tuple<bool, int, int> labelPos = AsmDudeToolsStatic.getLabelPos(str);
+                if (labelPos.Item1) {
+                    int labelBeginPos = labelPos.Item2;
+                    int labelEndPos = labelPos.Item3;
+                    string label = str.Substring(labelBeginPos, labelEndPos-labelBeginPos);
+                    //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: getLabels: label=\"{0}\"", label));
+                    result.Add(new Tuple<string, string>(label, "line " + line.LineNumber + ": " + str.Substring(0, Math.Min(str.Length, 100))));
+                }
             }
+            result.Sort((x, y) => x.Item1.CompareTo(y.Item1));
+            return result;
         }
 
         private static string getKeyword(int pos, char[] line) {
@@ -677,39 +739,6 @@ namespace AsmDude {
             return (this._asmTypes.ContainsKey(k2)) ? (this._asmTypes[k2] == AsmTokenTypes.Jump) : false;
         }
 
-        /// <summary>
-        /// Get all labels with context info containing in the provided text
-        /// </summary>
-        public IList<Tuple<string, string>> getLabels(ITextBuffer text) {
-            var result = new List<Tuple<string, string>>();
-
-            //TODO: this can be slow on sources with many labels, better would be to precompute the list of labels.
-
-            foreach (ITextSnapshotLine line in text.CurrentSnapshot.Lines) {
-                string str = line.GetText();
-                int strLength = str.Length;
-
-                // find first occurrence of a colon
-                int posColon = -1;
-
-                for (int pos = 0; pos < strLength; ++pos) {
-                    char c = str[pos];
-                    if (c == ':') {
-                        posColon = pos;
-                        break;
-                    } else if (AsmDudeToolsStatic.isRemarkChar(c)) {
-                        break;
-                    }
-                }
-                if (posColon > 0) {
-                    string label = str.Substring(0, posColon).Trim();
-                    //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getLabelsDictionary: label=\"{1}\"", this.ToString(), label));
-                    result.Add(new Tuple<string, string>(label, "line " + line.LineNumber + ": " +str.Substring(0, Math.Min(str.Length, 100))));
-                }
-            }
-            result.Sort((x, y) => x.Item1.CompareTo(y.Item1));
-            return result;
-        }
 
         public string getLabelDescription(string label, ITextBuffer text) {
             string result = "";

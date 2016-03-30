@@ -61,18 +61,60 @@ namespace AsmDude {
             remove { }
         }
 
+
         public IEnumerable<ITagSpan<AsmTokenTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
             foreach (SnapshotSpan curSpan in spans) {
-                ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
-                string[] tokens = containingLine.GetText().ToLower().Split(splitChars);
+                // split everything before the remark char according to this template
+                // LABEL: MNEMONIC OPERATOR1, OPERATOR2, OPERATOR3 (with OPERATOR1-3 are optional)
 
-                int curLoc = containingLine.Start.Position;
+                ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
+                string line = containingLine.GetText();
+                int offset = containingLine.Start.Position;
+
+                #region handle labels
+
+                Tuple<bool, int, int> labelPos = AsmDudeToolsStatic.getLabelPos(line);
+                bool labelExists = labelPos.Item1;
+
+                if (labelExists) {
+                    int labelBeginPos = labelPos.Item2;
+                    int labelEndPos = labelPos.Item3;
+
+                    var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(labelBeginPos + offset, labelEndPos - labelBeginPos));
+                    if (tokenSpan.IntersectsWith(curSpan)) {
+                        //AsmDudeToolsStatic.Output("found label " + line.Substring(labelBeginPos, labelEndPos) + "; begin pos="+ labelBeginPos+"; end pos="+ labelEndPos);
+                        yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Label));
+                    }
+                }
+                #endregion
+
+                #region remarks
+                // 1] find the first position (if any) of the remark char
+                Tuple<bool, int, int> remarkPos = AsmDudeToolsStatic.getRemarkPos(line);
+                bool remarkExists = remarkPos.Item1;
+
+                if (remarkExists) {
+                    int remarkBeginPos = remarkPos.Item2;
+                    int remarkEndPos = remarkPos.Item3;
+
+                    var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(remarkBeginPos + offset, remarkEndPos - remarkBeginPos));
+                    if (tokenSpan.IntersectsWith(curSpan)) {
+                        yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Remark));
+                    }
+                }
+                #endregion
+
+                #region opcode
+                // we are only interested in text between labelEndPos+1 and remarkBeginPos
+                int beginPos = (labelExists) ? labelPos.Item3 - 1 : 0;
+                int endPos = (remarkExists) ? remarkPos.Item2 : line.Length;
+
+                string[] tokens = line.Substring(beginPos, endPos - beginPos).ToUpper().Split(splitChars);
+                int curLoc = containingLine.Start.Position + beginPos;
                 int nextLoc = curLoc;
 
-                bool foundRemark = false;
                 int tokenId = 0;
-
-                while ((tokenId < tokens.Length) && !foundRemark) {
+                while (tokenId < tokens.Length) {
 
                     var tup = getNextToken(tokenId, nextLoc, tokens);
                     tokenId = tup.Item2;
@@ -82,84 +124,54 @@ namespace AsmDude {
                         string asmToken = tup.Item4;
                         curLoc = nextLoc - (asmToken.Length + 1);
 
-                        //Debug.WriteLine("token "+tokenId+" at location "+curLoc+" = \"" + asmToken + "\"");
+                        //AsmDudeToolsStatic.Output("token "+tokenId+" at location "+curLoc+" = \"" + asmToken + "\"");
 
-                        if (containsRemarkSymbol(asmToken)) {
-                            foundRemark = true;
-                        } else {
-                            switch (this._asmDudeTools.getAsmTokenType(asmToken)) {
+                        switch (this._asmDudeTools.getAsmTokenType(asmToken)) {
 
-                                case AsmTokenTypes.Jump: {
-                                        //Debug.WriteLine("current jump token \"" + asmToken + "\"");
+                            case AsmTokenTypes.Jump: {
+                                    //AsmDudeToolsStatic.Output("current jump token \"" + asmToken + "\"");
 
+                                    var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
+                                    if (tokenSpan.IntersectsWith(curSpan)) {
+                                        yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Jump));
+                                    }
+                                    tup = getNextToken(tokenId, nextLoc, tokens);
+                                    tokenId = tup.Item2;
+                                    nextLoc = tup.Item3;
+
+                                    if (tup.Item1) {
+                                        asmToken = tup.Item4;
+                                        curLoc = nextLoc - (asmToken.Length + 1);
+                                        //Debug.WriteLine("label token " + tokenId + " at location " + curLoc + " = \"" + asmToken + "\"");
+
+                                        tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
+                                        if (tokenSpan.IntersectsWith(curSpan)) {
+                                            yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Label));
+                                        }
+                                    }
+                                    break;
+                                }
+                            case AsmTokenTypes.UNKNOWN: {// asmToken is not a known keyword, check if it is numerical
+                                    if (AsmDudeToolsStatic.isConstant(asmToken)) {
                                         var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
                                         if (tokenSpan.IntersectsWith(curSpan)) {
-                                            yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Jump));
+                                            yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Constant));
                                         }
-                                        tup = getNextToken(tokenId, nextLoc, tokens);
-                                        tokenId = tup.Item2;
-                                        nextLoc = tup.Item3;
-
-                                        if (tup.Item1) {
-                                            asmToken = tup.Item4;
-                                            curLoc = nextLoc - (asmToken.Length + 1);
-                                            //Debug.WriteLine("label token " + tokenId + " at location " + curLoc + " = \"" + asmToken + "\"");
-
-                                            if (containsRemarkSymbol(asmToken)) {
-                                                foundRemark = true;
-                                            } else {
-                                                tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
-                                                if (tokenSpan.IntersectsWith(curSpan)) {
-                                                    yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Label));
-                                                }
-                                            }
-                                        }
-                                        break;
                                     }
-                                case AsmTokenTypes.UNKNOWN: {// asmToken is not a known keyword, check if it is an numerical
-                                        if (AsmDudeToolsStatic.isConstant(asmToken)) {
-                                            var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
-                                            if (tokenSpan.IntersectsWith(curSpan)) {
-                                                yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Constant));
-                                            }
-                                        } else if (AsmDudeToolsStatic.isLabel(asmToken)) {
-                                            var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
-                                            if (tokenSpan.IntersectsWith(curSpan)) {
-                                                yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Label));
-                                            }
-                                        }
-                                        break;
+                                    break;
+                                }
+                            default: {
+                                    var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
+                                    if (tokenSpan.IntersectsWith(curSpan)) {
+                                        yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(this._asmDudeTools.getAsmTokenType(asmToken)));
                                     }
-                                default: {
-                                        var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
-                                        if (tokenSpan.IntersectsWith(curSpan)) {
-                                            yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(this._asmDudeTools.getAsmTokenType(asmToken)));
-                                        }
-                                        break;
-                                    }
-                            }
-                        }
-                    }
-
-                    if (foundRemark) {
-                        //Debug.WriteLine("found remark: curLoc=" + curLoc);
-
-                        var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, containingLine.End.Position - curLoc));
-                        if (tokenSpan.IntersectsWith(curSpan)) {
-                            yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Remark));
+                                    break;
+                                }
                         }
                     }
                 }
+                #endregion
             }
-        }
-
-        private bool containsRemarkSymbol(string token) {
-            foreach (char c in token) {
-                if (AsmDudeToolsStatic.isRemarkChar(c)) {
-                    return true;
-                }
-            }
-            return false;
         }
 
         // return true, nextTokenId, tokenEndPos, tokenString

@@ -152,8 +152,8 @@ namespace AsmDude {
         }
 
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets) {
-            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:AugmentCompletionSession", this.ToString()));
-            try {
+            //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:AugmentCompletionSession", this.ToString()));
+           // try {
                 DateTime time1 = DateTime.Now;
 
                 if (_disposed) throw new ObjectDisposedException("AsmCompletionSource");
@@ -188,9 +188,9 @@ namespace AsmDude {
 
                     IList<Completion> completions = new List<Completion>();
 
-                    if (isLabel(start - 1, line.Start)) {
+                    if ((start > 0) && (isLabel(start - 1, line.Start))) {
                         ImageSource imageSource = this._icons[AsmTokenTypes.Label];
-                        var labels = this._asmDudeTools.getLabels(this._buffer);
+                        var labels = AsmDudeToolsStatic.getLabels(this._buffer);
                         foreach (Tuple<string, string> entry in labels) {
                             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:AugmentCompletionSession; label={1}; description={2}", this.ToString(), entry.Key, entry.Value));
                             completions.Add(new Completion(entry.Item1, entry.Item1, entry.Item2, imageSource, ""));
@@ -223,11 +223,11 @@ namespace AsmDude {
 
                     DateTime time2 = DateTime.Now;
                     long elapsedTicks = time2.Ticks - time1.Ticks;
-                    AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: preparing code completion for string \"{0}\" took {1} seconds.", partialKeyword, ((double)elapsedTicks) / 10000000));
+                    //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: preparing code completion for string \"{0}\" took {1} seconds.", partialKeyword, ((double)elapsedTicks) / 10000000));
                 }
-            } catch (Exception) {
-                // do nothing
-            }
+            //} catch (Exception e) {
+            //    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "ERROR:{0}:AugmentCompletionSession; e={1}", this.ToString(), e.Message));
+            //}
         }
 
         private static bool isRemark(SnapshotPoint triggerPoint, SnapshotPoint lineStart) {
@@ -243,7 +243,9 @@ namespace AsmDude {
         }
 
         private bool isLabel(SnapshotPoint triggerPoint, SnapshotPoint lineStart) {
-            return this._asmDudeTools.isJumpKeyword(getPreviousKeyword(triggerPoint, lineStart));
+            string previousKeyword = getPreviousKeyword(triggerPoint, lineStart);
+            //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:isLabel: previousKeyword={1}", this.ToString(), previousKeyword));
+            return this._asmDudeTools.isJumpKeyword(previousKeyword);
         }
 
         private static string getPreviousKeyword(SnapshotPoint triggerPoint, SnapshotPoint lineStart) {
@@ -272,8 +274,8 @@ namespace AsmDude {
         private bool isArchSwitchedOn(string arch) {
             if (false) {
                 switch (arch) {
-                    case "X86": return this._package.OptionsPageCodeCompletion.x86;
-                    case "I686": return this._package.OptionsPageCodeCompletion.i686;
+                    case "X86": return this._package.OptionsPageCodeCompletion._x86;
+                    case "I686": return this._package.OptionsPageCodeCompletion._i686;
                     case "MMX": return this._package.OptionsPageCodeCompletion._mmx;
                     case "SSE": return this._package.OptionsPageCodeCompletion._sse;
                     case "SSE2": return this._package.OptionsPageCodeCompletion._sse2;
