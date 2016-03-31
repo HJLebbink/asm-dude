@@ -22,48 +22,58 @@ namespace AsmDude {
     /// 
     // TODO to troubleshoot packaging problemsn, see https://blogs.msdn.microsoft.com/visualstudio/2010/03/22/troubleshooting-pkgdef-files/#registrycollision 
     [PackageRegistration(UseManagedResourcesOnly = true)]
-	//[ProvideMenuResource("Menus.ctmenu", 1)]
-	[ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
-	[Guid(GuidStrings.GuidPackage)]
+    //[ProvideMenuResource("Menus.ctmenu", 1)]
+    [ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
+    [Guid(GuidStrings.GuidPackage)]
 
-	[InstalledProductRegistration("AsmDude", GuidStrings.Description, GuidStrings.Version)] // for the help about information
+    [InstalledProductRegistration("AsmDude", GuidStrings.Description, GuidStrings.Version)] // for the help about information
 
-	[ProvideOptionPage(typeof(OptionsPageCodeCompletion), "AsmDude", "Code Completion", 100, 101, true, new string[] { "Change Code Completion Options" })]
-	//[ProvideProfile(typeof(OptionsPageCodeCompletion), "AsmDude", "Code Completion Options", 100, 101, isToolsOptionPage: false, DescriptionResourceID = 100)]
+    [ProvideOptionPage(typeof(OptionsPageCodeCompletion), "AsmDude", "Code Completion", 100, 101, true, new string[] { "Change Code Completion Options" })]
+    //[ProvideProfile(typeof(OptionsPageCodeCompletion), "AsmDude", "Code Completion Options", 100, 101, isToolsOptionPage: false, DescriptionResourceID = 100)]
 
-	[ProvideOptionPage(typeof(OptionsPageSyntaxHighlighting), "AsmDude", "Syntax Highlighting", 100, 102, true, new string[] { "Change Syntax Highlighting Options" })]
-	//[ProvideProfile(typeof(OptionsPageSyntaxHighlighting), "AsmDude", "Syntax Highlighting Options", 100, 102, isToolsOptionPage: false, DescriptionResourceID = 100)]
+    [ProvideOptionPage(typeof(OptionsPageSyntaxHighlighting), "AsmDude", "Syntax Highlighting", 100, 102, true, new string[] { "Change Syntax Highlighting Options" })]
+    //[ProvideProfile(typeof(OptionsPageSyntaxHighlighting), "AsmDude", "Syntax Highlighting Options", 100, 102, isToolsOptionPage: false, DescriptionResourceID = 100)]
 
-	[ProvideOptionPage(typeof(OptionsPageCodeFolding), "AsmDude", "Code Folding", 100, 103, true, new string[] { "Change Code Folding Options" })]
-	//[ProvideProfile(typeof(OptionsPageCodeFolding), "AsmDude", "Code Folding Options", 100, 103, isToolsOptionPage: false, DescriptionResourceID = 100)]
+    [ProvideOptionPage(typeof(OptionsPageCodeFolding), "AsmDude", "Code Folding", 100, 103, true, new string[] { "Change Code Folding Options" })]
+    //[ProvideProfile(typeof(OptionsPageCodeFolding), "AsmDude", "Code Folding Options", 100, 103, isToolsOptionPage: false, DescriptionResourceID = 100)]
 
-	[ProvideOptionPage(typeof(OptionsPageAsmDoc), "AsmDude", "Asm Documentation", 100, 104, true, new string[] { "Change Asm Documentation Options" })]
-	//[ProvideProfile(typeof(OptionsPageAsmDoc), "AsmDude", "Asm Documentation Options", 100, 104, isToolsOptionPage: false, DescriptionResourceID = 100)]
+    [ProvideOptionPage(typeof(OptionsPageAsmDoc), "AsmDude", "Asm Documentation", 100, 104, true, new string[] { "Change Asm Documentation Options" })]
+    //[ProvideProfile(typeof(OptionsPageAsmDoc), "AsmDude", "Asm Documentation Options", 100, 104, isToolsOptionPage: false, DescriptionResourceID = 100)]
 
-	[ProvideOptionPage(typeof(OptionsPageKeywordHighlighting), "AsmDude", "Keyword Highlighting", 100, 105, true, new string[] { "Change Asm Documentation Options" })]
-	//[ProvideProfile(typeof(OptionsPageKeywordHighlighting), "AsmDude", "Keyword Highlighting Options", 100, 105, isToolsOptionPage:false, DescriptionResourceID = 100)]
+    [ProvideOptionPage(typeof(OptionsPageKeywordHighlighting), "AsmDude", "Keyword Highlighting", 100, 105, true, new string[] { "Change Asm Documentation Options" })]
+    //[ProvideProfile(typeof(OptionsPageKeywordHighlighting), "AsmDude", "Keyword Highlighting Options", 100, 105, isToolsOptionPage:false, DescriptionResourceID = 100)]
 
-	[Export]
-	public class AsmDudePackage : Package {
+    [Export]
+    public class AsmDudePackage : Package {
 
         public const string AsmDudeContentType = "asm!";
 
         public AsmDudePackage() {
-			//Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: Entering constructor for: {0}", this.ToString()));
-		}
+            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: Entering constructor for: {0}", this.ToString()));
+        }
 
-		/// <summary>
-		/// Initialization of the package.  This is where you should put all initialization
-		/// code that depends on VS services.
-		/// </summary>
-		protected override void Initialize() {
-			base.Initialize();
+        /// <summary>
+        /// Initialization of the package.  This is where you should put all initialization
+        /// code that depends on VS services.
+        /// </summary>
+        protected override void Initialize() {
+            base.Initialize();
 
-			Assembly thisAssem = typeof(AsmDudePackage).Assembly;
-			AssemblyName thisAssemName = thisAssem.GetName();
-			Version ver = thisAssemName.Version;
+            Assembly thisAssem = typeof(AsmDudePackage).Assembly;
+            AssemblyName thisAssemName = thisAssem.GetName();
+            Version ver = thisAssemName.Version;
 
-            AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "Loaded AsmDude version {0}.", ver));
+            AsmDudeToolsStatic.Output(" _____           ____        _     ");
+            AsmDudeToolsStatic.Output("|  _  |___ _____|    \\ _ _ _| |___ ");
+            AsmDudeToolsStatic.Output("|     |_ -|     |  |  | | | . | -_|");
+            AsmDudeToolsStatic.Output("|__|__|___|_|_|_|____/|___|___|___|");
+
+            AsmDudeToolsStatic.Output(string.Format("INFO: Loaded AsmDude version {0}.", ver));
+            AsmDudeToolsStatic.Output(string.Format("INFO: Open source assembly plugin. To make programming assembly bearable."));
+            AsmDudeToolsStatic.Output(string.Format("INFO: More info at https://github.com/HJLebbink/asm-dude"));
+            AsmDudeToolsStatic.Output("----------------------------------");
+
+            AsmDudeToolsStatic.Output(string.Format("INFO: Is the Tools>Options>AsmDude options pane invisible? Disable and enable this plugin to make it visible again..."));
             this.changeFontAutoComplete();
         }
 
@@ -111,7 +121,7 @@ namespace AsmDude {
 
                     EnvDTE.Properties propertiesList = vsEnvironment.get_Properties("Environment", "Fonts and Colors");
                     if (propertiesList != null) {
-                       AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString()));
+                        AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString()));
                     }
                     //EnvDTE.Property prop = propertiesList.Item("Scheme");
                     //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString(), prop.Value));
@@ -123,30 +133,30 @@ namespace AsmDude {
 
         #region OptionPage getters
         public OptionsPageCodeCompletion OptionsPageCodeCompletion {
-			get {
+            get {
                 return GetDialogPage(typeof(OptionsPageCodeCompletion)) as OptionsPageCodeCompletion;
-			}
-		}
-		public OptionsPageSyntaxHighlighting OptionsPageSyntaxHighlighting {
-			get {
-				return GetDialogPage(typeof(OptionsPageSyntaxHighlighting)) as OptionsPageSyntaxHighlighting;
-			}
-		}
-		public OptionsPageCodeFolding OptionsPageCodeFolding {
-			get {
-				return GetDialogPage(typeof(OptionsPageCodeFolding)) as OptionsPageCodeFolding;
-			}
-		}
-		public OptionsPageAsmDoc OptionsPageAsmDoc {
-			get {
-				return GetDialogPage(typeof(OptionsPageAsmDoc)) as OptionsPageAsmDoc;
-			}
-		}
-		public OptionsPageKeywordHighlighting OptionsPageKeywordHighlighting {
-			get {
-				return GetDialogPage(typeof(OptionsPageKeywordHighlighting)) as OptionsPageKeywordHighlighting;
-			}
-		}
+            }
+        }
+        public OptionsPageSyntaxHighlighting OptionsPageSyntaxHighlighting {
+            get {
+                return GetDialogPage(typeof(OptionsPageSyntaxHighlighting)) as OptionsPageSyntaxHighlighting;
+            }
+        }
+        public OptionsPageCodeFolding OptionsPageCodeFolding {
+            get {
+                return GetDialogPage(typeof(OptionsPageCodeFolding)) as OptionsPageCodeFolding;
+            }
+        }
+        public OptionsPageAsmDoc OptionsPageAsmDoc {
+            get {
+                return GetDialogPage(typeof(OptionsPageAsmDoc)) as OptionsPageAsmDoc;
+            }
+        }
+        public OptionsPageKeywordHighlighting OptionsPageKeywordHighlighting {
+            get {
+                return GetDialogPage(typeof(OptionsPageKeywordHighlighting)) as OptionsPageKeywordHighlighting;
+            }
+        }
         #endregion
     }
 }
