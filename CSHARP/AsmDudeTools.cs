@@ -58,9 +58,9 @@ namespace AsmDude {
             // Ensure that the desired pane is visible
             var paneGuid = Microsoft.VisualStudio.VSConstants.OutputWindowPaneGuid.GeneralPane_guid;
             IVsOutputWindowPane pane;
-            outputWindow.CreatePane(paneGuid, "General", 1, 0);
+            outputWindow.CreatePane(paneGuid, "AsmDude", 1, 0);
             outputWindow.GetPane(paneGuid, out pane);
-            pane.OutputString(msg + Environment.NewLine);
+            pane.OutputString(string.Format(CultureInfo.CurrentCulture, "{0}", msg + Environment.NewLine));
         }
 
         public static bool isRemarkChar(char c) {
@@ -140,14 +140,14 @@ namespace AsmDude {
 
             foreach (ITextSnapshotLine line in text.CurrentSnapshot.Lines) {
                 string str = line.GetText();
-                //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: getLabels: str=\"{0}\"", str));
+                //AsmDudeToolsStatic.Output(string.Format("INFO: getLabels: str=\"{0}\"", str));
 
                 Tuple<bool, int, int> labelPos = AsmDudeToolsStatic.getLabelPos(str);
                 if (labelPos.Item1) {
                     int labelBeginPos = labelPos.Item2;
                     int labelEndPos = labelPos.Item3;
                     string label = str.Substring(labelBeginPos, labelEndPos-labelBeginPos);
-                    //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: getLabels: label=\"{0}\"", label));
+                    //AsmDudeToolsStatic.Output(string.Format("INFO: getLabels: label=\"{0}\"", label));
                     result.Add(new Tuple<string, string>(label, "line " + line.LineNumber + ": " + str.Substring(0, Math.Min(str.Length, 100))));
                 }
             }
@@ -164,7 +164,7 @@ namespace AsmDude {
         }
 
         private static Tuple<int, int> getKeywordPos(int pos, char[] line) {
-            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: getKeyword; pos={0}; line=\"{1}\"", pos, new string(line)));
+            //Debug.WriteLine(string.Format("INFO: getKeyword; pos={0}; line=\"{1}\"", pos, new string(line)));
             if ((pos < 0) || (pos >= line.Length)) return null;
 
             // find the beginning of the keyword
@@ -180,7 +180,7 @@ namespace AsmDude {
             int endPos = line.Length;
             for (int i2 = pos; i2 < line.Length; ++i2) {
                 char c = line[i2];
-                if (AsmDudeToolsStatic.isSeparatorChar(c) || Char.IsControl(c)) {
+                if (AsmDudeToolsStatic.isSeparatorChar(c) || Char.IsControl(c) || AsmDudeToolsStatic.isRemarkChar(c)) {
                     endPos = i2;
                     break;
                 }
@@ -206,6 +206,9 @@ namespace AsmDude {
         }
 
         public static TextExtent getKeyword(SnapshotPoint bufferPosition) {
+
+            //TODO: no need to search 100 chars left to right; only the current line needs to be searched
+
             int seachSpanSize = 100;
             int rawPos = bufferPosition.Position;
             int bufferLength = bufferPosition.Snapshot.Length;
@@ -216,7 +219,7 @@ namespace AsmDude {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: PreprocessMouseUp; rawPos={0}; bufferLength={1}; beginSubString={2}; endSubString={3}; posInSubString={4}", rawPos, bufferLength, beginSubString, endSubString, posInSubString));
             char[] subString = bufferPosition.Snapshot.ToCharArray(beginSubString, endSubString - beginSubString);
 
-            var t = getKeywordPos(posInSubString, subString);
+            Tuple<int, int> t = getKeywordPos(posInSubString, subString);
             int beginPos = t.Item1 + beginSubString;
             int endPos = t.Item2 + beginSubString;
 

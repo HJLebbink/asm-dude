@@ -131,15 +131,8 @@ namespace AsmDude.HighlightWord {
                 return;
             }
 
-            this._requestedPoint = getKeyword(point.Value, this._view);
+            this._requestedPoint = point.Value;
             ThreadPool.QueueUserWorkItem(UpdateWordAdornments);
-        }
-
-        /// <summary>
-        /// return the word at the provided point
-        /// </summary>
-        private SnapshotPoint getKeyword(SnapshotPoint? point, ITextView text) {
-            return point.Value;
         }
 
         /// <summary>
@@ -160,23 +153,22 @@ namespace AsmDude.HighlightWord {
                 //here is the place to filter keywords that should not be highlighted
 
                 if (validKeyword) {
-
-                    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:UpdateWordAdornments. current keyword = {1}", this.ToString(), keywordSpan.GetText()));
+                    //Debug.WriteLine(string.Format("INFO: {0}:UpdateWordAdornments. current keyword = {1}", this.ToString(), keywordSpan.GetText()));
 
                     // Find all words in the buffer like the one the caret is on
                     // If this is the same word we currently have, we're done (e.g. caret moved within a word).
                     if (this._currentWord.HasValue && (keywordSpan == this._currentWord)) {
-                        Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:UpdateWordAdornments. current keyword = {1} is equal to the previous keyword, no update", this.ToString(), keywordSpan.GetText()));
+                        //Debug.WriteLine(string.Format("INFO: {0}:UpdateWordAdornments. current keyword = {1} is equal to the previous keyword, no update", this.ToString(), keywordSpan.GetText()));
                         return;
                     }
                     // Find the new spans
                     FindData findData;
                     if (AsmDudeToolsStatic.isRegister(keywordStr)) {
-                        //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:SynchronousUpdate. Register={1}", this.ToString(), currentWordStr));
+                        //Debug.WriteLine(string.Format("INFO: {0}:SynchronousUpdate. Register={1}", this.ToString(), currentWordStr));
                         findData = new FindData(AsmDudeToolsStatic.getRelatedRegister(keywordStr), keywordSpan.Snapshot);
                         findData.FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions;
                     } else {
-                        //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:SynchronousUpdate. Keyword={1}", this.ToString(), currentWordStr));
+                        //Debug.WriteLine(string.Format("INFO: {0}:SynchronousUpdate. Keyword={1}", this.ToString(), currentWordStr));
                         // because we use a regex we have to replace all occurances of a "." with "\\.".
                         string t = keywordStr.Replace(".", "\\.").Replace("$", "\\$");
                         findData = new FindData(t, keywordSpan.Snapshot);
@@ -188,7 +180,7 @@ namespace AsmDude.HighlightWord {
 
                     DateTime time2 = DateTime.Now;
                     long elapsedTicks = time2.Ticks - time1.Ticks;
-                    AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: highlighting string \"{0}\" took {1} seconds.", keywordStr, ((double)elapsedTicks)/10000000));
+                    AsmDudeToolsStatic.Output(string.Format("INFO: highlighting string \"{0}\" took {1} seconds.", keywordStr, ((double)elapsedTicks)/10000000));
 
                     this.SynchronousUpdate(this._requestedPoint, new NormalizedSnapshotSpanCollection(wordSpans), keywordSpan);
                 } else {
@@ -196,36 +188,6 @@ namespace AsmDude.HighlightWord {
                     this.SynchronousUpdate(this._requestedPoint, new NormalizedSnapshotSpanCollection(), null);
                     return;
                 }
-
-
-
-                /*
-                bool foundWord = true;
-                // If we've selected something not worth highlighting, we might have
-                // missed a "word" by a little bit
-                if (!WordExtentIsValid(currentRequest, word)) {
-                    // Before we retry, make sure it is worthwhile
-                    if (word.Span.Start != currentRequest ||
-                        currentRequest == currentRequest.GetContainingLine().Start ||
-                        char.IsWhiteSpace((currentRequest - 1).GetChar())) {
-                        foundWord = false;
-                    } else {
-                        // Try again, one character previous.  If the caret is at the end of a word, then
-                        // this will pick up the word we are at the end of.
-                        word = this._textStructureNavigator.GetExtentOfWord(currentRequest - 1);
-
-                        // If we still aren't valid the second time around, we're done
-                        if (!WordExtentIsValid(currentRequest, word)) {
-                            foundWord = false;
-                        }
-                    }
-                }
-                if (!foundWord) {
-                    // If we couldn't find a word, just clear out the existing markers
-                    this.SynchronousUpdate(currentRequest, new NormalizedSnapshotSpanCollection(), null);
-                    return;
-                }
-                */
             } catch (Exception e) {
                 Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "ERROR: {0}:UpdateWordAdornments. Something went wrong. e={1}", this.ToString(), e.ToString()));
             }
