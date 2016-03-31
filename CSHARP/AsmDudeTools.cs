@@ -171,7 +171,7 @@ namespace AsmDude {
             int beginPos = 0;
             for (int i1 = pos - 1; i1 > 0; --i1) {
                 char c = line[i1];
-                if (AsmDudeToolsStatic.isSeparatorChar(c) || Char.IsControl(c)) {
+                if (AsmDudeToolsStatic.isSeparatorChar(c) || Char.IsControl(c) || AsmDudeToolsStatic.isRemarkChar(c)) {
                     beginPos = i1 + 1;
                     break;
                 }
@@ -219,7 +219,7 @@ namespace AsmDude {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: PreprocessMouseUp; rawPos={0}; bufferLength={1}; beginSubString={2}; endSubString={3}; posInSubString={4}", rawPos, bufferLength, beginSubString, endSubString, posInSubString));
             char[] subString = bufferPosition.Snapshot.ToCharArray(beginSubString, endSubString - beginSubString);
 
-            Tuple<int, int> t = getKeywordPos(posInSubString, subString);
+            Tuple<int, int> t = AsmDudeToolsStatic.getKeywordPos(posInSubString, subString);
             int beginPos = t.Item1 + beginSubString;
             int endPos = t.Item2 + beginSubString;
 
@@ -785,7 +785,7 @@ namespace AsmDude {
             this._description = null;
         }
 
-#region private stuff
+        #region private stuff
 
         private void initData() {
             this._asmTypes = new Dictionary<string, AsmTokenTypes>();
