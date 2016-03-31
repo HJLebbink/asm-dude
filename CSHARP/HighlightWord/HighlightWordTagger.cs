@@ -170,7 +170,7 @@ namespace AsmDude.HighlightWord {
                     } else {
                         //Debug.WriteLine(string.Format("INFO: {0}:SynchronousUpdate. Keyword={1}", this.ToString(), currentWordStr));
                         // because we use a regex we have to replace all occurances of a "." with "\\.".
-                        string t = keywordStr.Replace(".", "\\.").Replace("$", "\\$");
+                        string t = keywordStr.Replace(".", "\\.").Replace("$", "\\$").Replace("?", "\\?"); ;
                         findData = new FindData(t, keywordSpan.Snapshot);
                         findData.FindOptions = FindOptions.SingleLine | FindOptions.UseRegularExpressions;
                     }
