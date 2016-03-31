@@ -20,11 +20,13 @@ namespace AsmDude.OptionsPage {
         [Category("General")]
         [Description("Use Keyword Highlighting")]
         [DisplayName("Use Keyword Highlighting")]
+        [DefaultValue(true)]
         public bool _useCodeKeywordHighlighting { get; set; }
 
         [Category("Keyword Highlighting options")]
         [Description("the background color for keyword highlighting")]
         [DisplayName("Background Color")]
+        [DefaultValue(System.Drawing.KnownColor.Cyan)]
         public System.Drawing.Color _backgroundColor { get; set; }
 
 
@@ -110,7 +112,6 @@ namespace AsmDude.OptionsPage {
             if (Properties.Settings.Default.KeywordHighlight_On != this._useCodeKeywordHighlighting) {
                 Properties.Settings.Default.KeywordHighlight_On = this._useCodeKeywordHighlighting;
                 changed = true;
-                restartNeeded = true;
             }
             if (Properties.Settings.Default.KeywordHighlightColor != this._backgroundColor) {
                 Properties.Settings.Default.KeywordHighlightColor = this._backgroundColor;

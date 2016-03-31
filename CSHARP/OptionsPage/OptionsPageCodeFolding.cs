@@ -23,16 +23,19 @@ namespace AsmDude.OptionsPage
         [Category("General")]
         [Description("Use Code Folding")]
         [DisplayName("Use Code Folding")]
+        [DefaultValue(true)]
         public bool _useCodeFolding { get; set; }
 
         [Category(cat)]
         [Description("the characters that start the outlining region")]
         [DisplayName("Begin Tag")]
+        [DefaultValue("#region")]
         public string _beginTag { get; set; }
 
         [Category(cat)]
         [Description("the characters that end the outlining region")]
         [DisplayName("End Tag")]
+        [DefaultValue("#endregion")]
         public string _endTag { get; set; }
 
         #endregion Properties

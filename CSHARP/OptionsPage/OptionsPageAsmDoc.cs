@@ -19,11 +19,13 @@ namespace AsmDude.OptionsPage {
         [Category("General")]
         [Description("Use Asm Documentation")]
         [DisplayName("Use Asm Documentation")]
+        [DefaultValue(true)]
         public bool _useAsmDoc { get; set; }
 
         [Category("Documentation Url")]
         [Description("url to the documentation. E.g. http://www.felixcloutier.com/x86/")]
         [DisplayName("Url")]
+        [DefaultValue("http://www.felixcloutier.com/x86/")]
         public string _asmDocUrl { get; set; }
 
         #endregion Properties

@@ -18,52 +18,62 @@ namespace AsmDude.OptionsPage {
     [Export(typeof(DialogPage))]
     [Guid(GuidStrings.GuidOptionsPageSyntaxHighlighting)]
     public class OptionsPageSyntaxHighlighting : DialogPage {
+
         #region Properties
         private const string cat = "Colors used for Syntax Highlighting";
 
         [Category("General")]
         [Description("Use Syntax Highlighting")]
         [DisplayName("Use Syntax Highlighting")]
+        [DefaultValue(true)]
         public bool _useSyntaxHighlighting { get; set; }
 
         [Category(cat)]
         [Description("Mnemonic")]
         [DisplayName("Mnemonic")]
+        [DefaultValue(System.Drawing.KnownColor.Blue)]
         public System.Drawing.Color _colorMnemonic { get; set; }
 
         [Category(cat)]
         [Description("Register")]
         [DisplayName("Register")]
+        [DefaultValue(System.Drawing.KnownColor.DarkRed)]
         public System.Drawing.Color _colorRegister { get; set; }
 
         [Category(cat)]
         [Description("Remark")]
         [DisplayName("Remark")]
+        [DefaultValue(System.Drawing.KnownColor.Green)]
         public System.Drawing.Color _colorRemark { get; set; }
 
         [Category(cat)]
         [Description("Directive")]
         [DisplayName("Directive")]
+        [DefaultValue(System.Drawing.KnownColor.Magenta)]
         public System.Drawing.Color _colorDirective { get; set; }
 
         [Category(cat)]
         [Description("Constant")]
         [DisplayName("Constant")]
+        [DefaultValue(System.Drawing.KnownColor.Chocolate)]
         public System.Drawing.Color _colorConstant { get; set; }
 
         [Category(cat)]
         [Description("Jump")]
         [DisplayName("Jump")]
+        [DefaultValue(System.Drawing.KnownColor.Blue)]
         public System.Drawing.Color _colorJump { get; set; }
 
         [Category(cat)]
         [Description("Label")]
         [DisplayName("Label")]
+        [DefaultValue(System.Drawing.KnownColor.OrangeRed)]
         public System.Drawing.Color _colorLabel { get; set; }
 
         [Category(cat)]
         [Description("Misc")]
         [DisplayName("Misc")]
+        [DefaultValue(System.Drawing.KnownColor.DarkOrange)]
         public System.Drawing.Color _colorMisc { get; set; }
 
         #endregion Properties

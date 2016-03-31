@@ -210,13 +210,6 @@ namespace AsmDude {
                 if (pguidCmdGroup == VSConstants.VSStd2K) {
                     switch ((VSConstants.VSStd2KCmdID)nCmdID) {
                         case VSConstants.VSStd2KCmdID.TYPECHAR:
-                            char ch = GetTypeChar(pvaIn);
-                            //if (ch == ' ') {
-                            //    this.StartSession();
-                            //} else {
-                                this.Filter();
-                            //}
-                            break;
                         case VSConstants.VSStd2KCmdID.BACKSPACE:
                         case VSConstants.VSStd2KCmdID.DELETE:
                             this.Filter();
