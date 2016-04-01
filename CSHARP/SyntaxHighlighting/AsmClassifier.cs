@@ -107,7 +107,7 @@ namespace AsmDude {
     internal sealed class AsmClassifier : ITagger<ClassificationTag> {
         ITextBuffer _buffer;
         ITagAggregator<AsmTokenTag> _aggregator;
-        IDictionary<AsmTokenTypes, IClassificationType> _asmTypes;
+        IDictionary<TokenType, IClassificationType> _asmTypes;
 
         /// <summary>
         /// Construct the classifier and define search tokens
@@ -117,15 +117,15 @@ namespace AsmDude {
                                IClassificationTypeRegistryService typeService) {
             _buffer = buffer;
             _aggregator = asmTagAggregator;
-            _asmTypes = new Dictionary<AsmTokenTypes, IClassificationType>();
-            _asmTypes[AsmTokenTypes.Mnemonic] = typeService.GetClassificationType("mnemonic");
-            _asmTypes[AsmTokenTypes.Register] = typeService.GetClassificationType("register");
-            _asmTypes[AsmTokenTypes.Remark] = typeService.GetClassificationType("remark");
-            _asmTypes[AsmTokenTypes.Directive] = typeService.GetClassificationType("directive");
-            _asmTypes[AsmTokenTypes.Constant] = typeService.GetClassificationType("constant");
-            _asmTypes[AsmTokenTypes.Jump] = typeService.GetClassificationType("jump");
-            _asmTypes[AsmTokenTypes.Label] = typeService.GetClassificationType("label");
-            _asmTypes[AsmTokenTypes.Misc] = typeService.GetClassificationType("misc");
+            _asmTypes = new Dictionary<TokenType, IClassificationType>();
+            _asmTypes[TokenType.Mnemonic] = typeService.GetClassificationType("mnemonic");
+            _asmTypes[TokenType.Register] = typeService.GetClassificationType("register");
+            _asmTypes[TokenType.Remark] = typeService.GetClassificationType("remark");
+            _asmTypes[TokenType.Directive] = typeService.GetClassificationType("directive");
+            _asmTypes[TokenType.Constant] = typeService.GetClassificationType("constant");
+            _asmTypes[TokenType.Jump] = typeService.GetClassificationType("jump");
+            _asmTypes[TokenType.Label] = typeService.GetClassificationType("label");
+            _asmTypes[TokenType.Misc] = typeService.GetClassificationType("misc");
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged {

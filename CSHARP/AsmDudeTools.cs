@@ -664,13 +664,22 @@ namespace AsmDude {
 #           endif
             return b2;
         }
+
+        public static bool isAllUpper(string input) {
+            for (int i = 0; i < input.Length; i++) {
+                if (Char.IsLetter(input[i]) && !Char.IsUpper(input[i])) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 
 
     [Export]
     public class AsmDudeTools {
         private XmlDocument _xmlData;
-        private IDictionary<string, AsmTokenTypes> _asmTypes;
+        private IDictionary<string, TokenType> _type;
         private IDictionary<string, string> _arch; // todo make an arch enumeration
         private IDictionary<string, string> _description;
 
@@ -681,17 +690,17 @@ namespace AsmDude {
         }
 
         public ICollection<string> getKeywords() {
-            if (this._asmTypes == null) initData();
-            return this._asmTypes.Keys;
+            if (this._type == null) initData();
+            return this._type.Keys;
         }
 
-        public AsmTokenTypes getAsmTokenType(string keyword) {
-            if (this._asmTypes == null) initData();
+        public TokenType getTokenType(string keyword) {
+            if (this._type == null) initData();
             string k2 = keyword.ToUpper();
-            if (this._asmTypes.ContainsKey(k2)) {
-                return this._asmTypes[k2];
+            if (this._type.ContainsKey(k2)) {
+                return this._type[k2];
             } else {
-                return AsmTokenTypes.UNKNOWN;
+                return TokenType.UNKNOWN;
             }
         }
 
@@ -734,14 +743,22 @@ namespace AsmDude {
         }
 
         /// <summary>
-        /// Determine whether the provided keyword is a jump opcode.
+        /// Determine whether the provided keyword is a jump mnemonic.
         /// </summary>
-        public bool isJumpKeyword(string keyword) {
-            if (this._asmTypes == null) initData();
+        public bool isJumpMnenomic(string keyword) {
+            if (this._type == null) initData();
             string k2 = keyword.ToUpper();
-            return (this._asmTypes.ContainsKey(k2)) ? (this._asmTypes[k2] == AsmTokenTypes.Jump) : false;
+            return (this._type.ContainsKey(k2)) ? (this._type[k2] == TokenType.Jump) : false;
         }
 
+        /// <summary>
+        /// Determine whether the provided keyword is a mnemonic (but not a jump)
+        /// </summary>
+        public bool isMnemonic(string keyword) {
+            if (this._type == null) initData();
+            string k2 = keyword.ToUpper();
+            return (this._type.ContainsKey(k2)) ? (this._type[k2] == TokenType.Mnemonic) : false;
+        }
 
         public string getLabelDescription(string label, ITextBuffer text) {
             string result = "";
@@ -781,14 +798,14 @@ namespace AsmDude {
 
         public void invalidateData() {
             this._xmlData = null;
-            this._asmTypes = null;
+            this._type = null;
             this._description = null;
         }
 
         #region private stuff
 
         private void initData() {
-            this._asmTypes = new Dictionary<string, AsmTokenTypes>();
+            this._type = new Dictionary<string, TokenType>();
             this._arch = new Dictionary<string, string>();
             this._description = new Dictionary<string, string>();
        
@@ -802,7 +819,7 @@ namespace AsmDude {
                 } else {
                     string name = nameAttribute.Value.ToUpper();
                     //Debug.WriteLine("INFO: AsmTokenTagger: found misc " + name);
-                    this._asmTypes[name] = AsmTokenTypes.Misc;
+                    this._type[name] = TokenType.Misc;
                     this._arch[name] = retrieveArch(node);
                     this._description[name] = retrieveDescription(node);
                 }
@@ -815,7 +832,7 @@ namespace AsmDude {
                 } else {
                     string name = nameAttribute.Value.ToUpper();
                     //Debug.WriteLine("INFO: AsmTokenTagger: found directive " + name);
-                    this._asmTypes[name] = AsmTokenTypes.Directive;
+                    this._type[name] = TokenType.Directive;
                     this._arch[name] = retrieveArch(node);
                     this._description[name] = retrieveDescription(node);
                 }
@@ -830,12 +847,12 @@ namespace AsmDude {
 
                     var typeAttribute = node.Attributes["type"];
                     if (typeAttribute == null) {
-                        this._asmTypes[name] = AsmTokenTypes.Mnemonic;
+                        this._type[name] = TokenType.Mnemonic;
                     } else {
                         if (typeAttribute.Value.ToUpper().Equals("JUMP")) {
-                            this._asmTypes[name] = AsmTokenTypes.Jump;
+                            this._type[name] = TokenType.Jump;
                         } else {
-                            this._asmTypes[name] = AsmTokenTypes.Mnemonic;
+                            this._type[name] = TokenType.Mnemonic;
                         }
                     }
                     this._arch[name] = retrieveArch(node);
@@ -849,7 +866,7 @@ namespace AsmDude {
                 } else {
                     string name = nameAttribute.Value.ToUpper();
                     //Debug.WriteLine("INFO: AsmTokenTagger: found register " + name);
-                    this._asmTypes[name] = AsmTokenTypes.Register;
+                    this._type[name] = TokenType.Register;
                     this._arch[name] = retrieveArch(node);
                     this._description[name] = retrieveDescription(node);
                 }

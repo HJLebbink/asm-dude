@@ -73,33 +73,33 @@ namespace AsmDude.QuickInfo {
                     string description = null;
 
                     switch (curTag.Tag.type) {
-                        case AsmTokenTypes.Misc: {
+                        case TokenType.Misc: {
                                 string descr = this._asmDudeTools.getDescription(tagStringUpper);
                                 description = (descr.Length > 0) ? ("Keyword " + tagStringUpper + ": " + descr) : "Keyword " + tagStringUpper;
                                 break;
                             }
-                        case AsmTokenTypes.Directive: {
+                        case TokenType.Directive: {
                                 string descr = this._asmDudeTools.getDescription(tagStringUpper);
                                 description = (descr.Length > 0) ? ("Directive " + tagStringUpper + ": " + descr) : "Directive " + tagStringUpper;
                                 break;
                             }
-                        case AsmTokenTypes.Register: {
+                        case TokenType.Register: {
                                 string descr = this._asmDudeTools.getDescription(tagStringUpper);
                                 description = (descr.Length > 0) ? (tagStringUpper + ": " + descr) : "Register " + tagStringUpper;
                                 break;
                             }
-                        case AsmTokenTypes.Mnemonic: // intentional fall through
-                        case AsmTokenTypes.Jump: {
+                        case TokenType.Mnemonic: // intentional fall through
+                        case TokenType.Jump: {
                                 string descr = this._asmDudeTools.getDescription(tagStringUpper);
                                 description = (descr.Length > 0) ? ("Mnemonic " + tagStringUpper + ": " + descr) : "Mnemonic " + tagStringUpper;
                                 break;
                             }
-                        case AsmTokenTypes.Label: {
+                        case TokenType.Label: {
                                 string descr = this._asmDudeTools.getLabelDescription(tagString, this._buffer);
                                 description = (descr.Length > 0) ? descr : "Label " + tagString;
                                 break;
                             }
-                        case AsmTokenTypes.Constant: {
+                        case TokenType.Constant: {
                                 description = "Constant " + tagString;
                                 break;
                             }

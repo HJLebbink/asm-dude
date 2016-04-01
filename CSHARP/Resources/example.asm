@@ -17,10 +17,6 @@ $LL9@run.cpu$om: xor rax, rax
 	jb			SHORT $LL9@run.cpu$om	# short should not be considered a label in this context
 	#endregion
 	
-	jbe  lea
-
-
-maskmovdqu qword 
 
 	#region allRegisters
 	rax 

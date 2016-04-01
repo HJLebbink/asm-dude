@@ -22,21 +22,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Xml;
-using System.Globalization;
 
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
-using System.Windows;
 using System.ComponentModel.Composition;
 
 namespace AsmDude {
 
     public class AsmTokenTag : ITag {
-        public AsmTokenTypes type { get; private set; }
+        public TokenType type { get; private set; }
 
-        public AsmTokenTag(AsmTokenTypes type) {
+        public AsmTokenTag(TokenType type) {
             this.type = type;
             AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
         }
@@ -83,7 +79,7 @@ namespace AsmDude {
                     var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(labelBeginPos + offset, labelEndPos - labelBeginPos));
                     if (tokenSpan.IntersectsWith(curSpan)) {
                         //AsmDudeToolsStatic.Output("found label " + line.Substring(labelBeginPos, labelEndPos) + "; begin pos="+ labelBeginPos+"; end pos="+ labelEndPos);
-                        yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Label));
+                        yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(TokenType.Label));
                     }
                 }
                 #endregion
@@ -99,7 +95,7 @@ namespace AsmDude {
 
                     var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(remarkBeginPos + offset, remarkEndPos - remarkBeginPos));
                     if (tokenSpan.IntersectsWith(curSpan)) {
-                        yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Remark));
+                        yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(TokenType.Remark));
                     }
                 }
                 #endregion
@@ -126,14 +122,14 @@ namespace AsmDude {
 
                         //AsmDudeToolsStatic.Output("token "+tokenId+" at location "+curLoc+" = \"" + asmToken + "\"");
 
-                        switch (this._asmDudeTools.getAsmTokenType(asmToken)) {
+                        switch (this._asmDudeTools.getTokenType(asmToken)) {
 
-                            case AsmTokenTypes.Jump: {
+                            case TokenType.Jump: {
                                     //AsmDudeToolsStatic.Output("current jump token \"" + asmToken + "\"");
 
                                     var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
                                     if (tokenSpan.IntersectsWith(curSpan)) {
-                                        yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Jump));
+                                        yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(TokenType.Jump));
                                     }
                                     tup = getNextToken(tokenId, nextLoc, tokens);
                                     tokenId = tup.Item2;
@@ -146,16 +142,16 @@ namespace AsmDude {
 
                                         tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
                                         if (tokenSpan.IntersectsWith(curSpan)) {
-                                            yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Label));
+                                            yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(TokenType.Label));
                                         }
                                     }
                                     break;
                                 }
-                            case AsmTokenTypes.UNKNOWN: {// asmToken is not a known keyword, check if it is numerical
+                            case TokenType.UNKNOWN: {// asmToken is not a known keyword, check if it is numerical
                                     if (AsmDudeToolsStatic.isConstant(asmToken)) {
                                         var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
                                         if (tokenSpan.IntersectsWith(curSpan)) {
-                                            yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenTypes.Constant));
+                                            yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(TokenType.Constant));
                                         }
                                     }
                                     break;
@@ -163,7 +159,7 @@ namespace AsmDude {
                             default: {
                                     var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
                                     if (tokenSpan.IntersectsWith(curSpan)) {
-                                        yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(this._asmDudeTools.getAsmTokenType(asmToken)));
+                                        yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(this._asmDudeTools.getTokenType(asmToken)));
                                     }
                                     break;
                                 }
