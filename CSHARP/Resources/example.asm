@@ -1,6 +1,7 @@
 .intel_syntax noprefix
 
 	#region TODO
+	vstmxcsr	DWORD PTR [rbp]
 	mov			r13, QWORD PTR lennyOptions$[rsp]
     mov 		rsi, QWORD PTR [network_c_mp_network_neurons]
 	call		for_write_seq_fmt		# call to a label
@@ -11,13 +12,13 @@
 	_TEXT		ENDS
 	_TEXT		SEGMENT      'CODE'
 	network_c_mp_init_topology_izhikevich	PROC 
-	vmovups		xmm4, XMMWORD PTR [.T1737_.0.17+64] ;H:\Dropbox\sc\ScHJ\CWS\Spike\Spike-Fortran-Main\src\network_c.f90:1037.37
+	vmovups		xmm4, XMMWORD PTR [.T1737_.0.17+64]
 
 $LL9@run.cpu$om: xor rax, rax
 	jb			SHORT $LL9@run.cpu$om	# short should not be considered a label in this context
 	#endregion
 	
-
+	add
 	#region allRegisters
 	rax 
 	Rax

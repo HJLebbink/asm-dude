@@ -242,6 +242,7 @@
     <Compile Include="AsmDudeTools.cs" />
     <Compile Include="AsmDoc\AsmDocClassifier.cs" />
     <Compile Include="AsmDoc\AsmDocMouseHandler.cs" />
+    <Compile Include="AsmTools.cs" />
     <Compile Include="LightBulb\AsmLightBulb.cs" />
     <Compile Include="OptionsPage\OptionsPageAsmDoc.cs">
       <SubType>Component</SubType>

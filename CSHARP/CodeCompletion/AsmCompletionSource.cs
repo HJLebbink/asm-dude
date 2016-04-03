@@ -149,7 +149,7 @@ namespace AsmDude {
                 }
                 //2] find the start of the current keyword
                 SnapshotPoint start = triggerPoint;
-                while ((start > line.Start) && !AsmDudeToolsStatic.isSeparatorChar((start - 1).GetChar())) {
+                while ((start > line.Start) && !AsmTools.isSeparatorChar((start - 1).GetChar())) {
                     start -= 1;
                 }
                 //3] get the word that is currently being typed
@@ -261,7 +261,7 @@ namespace AsmDude {
             try {
                 // check if the line contains a ";" or a "#" before the current point
                 for (SnapshotPoint pos = triggerPoint; pos >= lineStart; pos -= 1) {
-                    if (AsmDudeToolsStatic.isRemarkChar(pos.GetChar())) {
+                    if (AsmTools.isRemarkChar(pos.GetChar())) {
                         return true;
                     }
                 }
@@ -276,7 +276,7 @@ namespace AsmDude {
         }
 
         private bool isRegister(string previousKeyword) {
-            return AsmDudeToolsStatic.isRegister(previousKeyword);
+            return AsmTools.isRegister(previousKeyword);
         }
 
         private bool isMnemonic(string previousKeyword) {
@@ -306,14 +306,14 @@ namespace AsmDude {
             SnapshotPoint endPrevious = begin;
             SnapshotPoint pos = end-1;
             for (; pos >= begin; pos -= 1) {
-                if (!AsmDudeToolsStatic.isSeparatorChar(pos.GetChar())) {
+                if (!AsmTools.isSeparatorChar(pos.GetChar())) {
                     endPrevious = pos+1;
                     break;
                 }
             }
             SnapshotPoint beginPrevious = begin;
             for (; pos >= begin; pos -= 1) {
-                if (AsmDudeToolsStatic.isSeparatorChar(pos.GetChar())) {
+                if (AsmTools.isSeparatorChar(pos.GetChar())) {
                     beginPrevious = pos+1;
                     break;
                 }
