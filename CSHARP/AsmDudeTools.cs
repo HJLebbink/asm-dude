@@ -63,63 +63,34 @@ namespace AsmDude {
             pane.OutputString(string.Format(CultureInfo.CurrentCulture, "{0}", msg + Environment.NewLine));
         }
 
+        public static IList<Tuple<string, string>> getLabels(string text) {
+            List<Tuple<string, string>> result = new List<Tuple<string, string>>();
+
+            int lineNumber = 1; // start counting at one since that is what VS does
+            foreach (string line in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)) {
+                //AsmDudeToolsStatic.Output(string.Format("INFO: getLabels: str=\"{0}\"", str));
+
+                Tuple<bool, int, int> labelPos = AsmTools.getLabelPos(line);
+                if (labelPos.Item1) {
+                    int labelBeginPos = labelPos.Item2;
+                    int labelEndPos = labelPos.Item3;
+                    string label = line.Substring(labelBeginPos, labelEndPos - labelBeginPos);
+                    //AsmDudeToolsStatic.Output(string.Format("INFO: getLabels: label=\"{0}\"", label));
+                    result.Add(new Tuple<string, string>(label, "line " + lineNumber + ": " + line.Substring(0, Math.Min(line.Length, 100))));
+                }
+                lineNumber++;
+            }
+            return result;
+        }
+
 
         /// <summary>
         /// Get all labels with context info containing in the provided text
         /// </summary>
         public static IList<Tuple<string, string>> getLabels(ITextBuffer text) {
-            var result = new List<Tuple<string, string>>();
-            //TODO: this can be slow on sources with many labels, better would be to precompute the list of labels.
-
-            foreach (ITextSnapshotLine line in text.CurrentSnapshot.Lines) {
-                string str = line.GetText();
-                //AsmDudeToolsStatic.Output(string.Format("INFO: getLabels: str=\"{0}\"", str));
-
-                Tuple<bool, int, int> labelPos = AsmTools.getLabelPos(str);
-                if (labelPos.Item1) {
-                    int labelBeginPos = labelPos.Item2;
-                    int labelEndPos = labelPos.Item3;
-                    string label = str.Substring(labelBeginPos, labelEndPos-labelBeginPos);
-                    //AsmDudeToolsStatic.Output(string.Format("INFO: getLabels: label=\"{0}\"", label));
-                    result.Add(new Tuple<string, string>(label, "line " + line.LineNumber + ": " + str.Substring(0, Math.Min(str.Length, 100))));
-                }
-            }
-            result.Sort((x, y) => x.Item1.CompareTo(y.Item1));
-            return result;
+            return getLabels(text.CurrentSnapshot.GetText());
         }
 
-        private static string getKeyword(int pos, char[] line) {
-            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: getKeyword; pos={0}; line=\"{1}\"", pos, new string(line)));
-            var t = getKeywordPos(pos, line);
-            int beginPos = t.Item1;
-            int endPos = t.Item2;
-            return new string(line).Substring(beginPos, endPos - beginPos);
-        }
-
-        private static Tuple<int, int> getKeywordPos(int pos, char[] line) {
-            //Debug.WriteLine(string.Format("INFO: getKeyword; pos={0}; line=\"{1}\"", pos, new string(line)));
-            if ((pos < 0) || (pos >= line.Length)) return null;
-
-            // find the beginning of the keyword
-            int beginPos = 0;
-            for (int i1 = pos - 1; i1 > 0; --i1) {
-                char c = line[i1];
-                if (AsmTools.isSeparatorChar(c) || Char.IsControl(c) || AsmTools.isRemarkChar(c)) {
-                    beginPos = i1 + 1;
-                    break;
-                }
-            }
-            // find the end of the keyword
-            int endPos = line.Length;
-            for (int i2 = pos; i2 < line.Length; ++i2) {
-                char c = line[i2];
-                if (AsmTools.isSeparatorChar(c) || Char.IsControl(c) || AsmTools.isRemarkChar(c)) {
-                    endPos = i2;
-                    break;
-                }
-            }
-            return new Tuple<int, int>(beginPos, endPos);
-        }
 
         public static string getKeywordStr(SnapshotPoint? bufferPosition) {
             if (bufferPosition != null) {
@@ -132,7 +103,7 @@ namespace AsmDude {
                 int posInSubString = (rawPos > seachSpanSize) ? seachSpanSize : rawPos;
                 //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: PreprocessMouseUp; rawPos={0}; bufferLength={1}; beginSubString={2}; endSubString={3}; posInSubString={4}", rawPos, bufferLength, beginSubString, endSubString, posInSubString));
                 char[] subString = bufferPosition.Value.Snapshot.ToCharArray(beginSubString, endSubString - beginSubString);
-                string keyword = AsmDudeToolsStatic.getKeyword(posInSubString, subString);
+                string keyword = AsmTools.getKeyword(posInSubString, subString);
                 return keyword;
             }
             return null;
@@ -152,7 +123,7 @@ namespace AsmDude {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: PreprocessMouseUp; rawPos={0}; bufferLength={1}; beginSubString={2}; endSubString={3}; posInSubString={4}", rawPos, bufferLength, beginSubString, endSubString, posInSubString));
             char[] subString = bufferPosition.Snapshot.ToCharArray(beginSubString, endSubString - beginSubString);
 
-            Tuple<int, int> t = AsmDudeToolsStatic.getKeywordPos(posInSubString, subString);
+            Tuple<int, int> t = AsmTools.getKeywordPos(posInSubString, subString);
             int beginPos = t.Item1 + beginSubString;
             int endPos = t.Item2 + beginSubString;
 
@@ -275,7 +246,7 @@ namespace AsmDude {
                     if (labelLocal.Equals(label)) {
                         //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getLabelDescription: label=\"{1}\"", this.ToString(), label));
                         if (result.Length > 0) result += System.Environment.NewLine;
-                        result += "line " + line.LineNumber + ": " + str.Substring(0, Math.Min(str.Length, 100));
+                        result += "line " + (line.LineNumber + 1) + ": " + str.Substring(0, Math.Min(str.Length, 100));
                     }
                 }
             }

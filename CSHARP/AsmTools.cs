@@ -516,6 +516,37 @@ namespace AsmDude {
             return b2;
         }
 
+        public static string getKeyword(int pos, char[] line) {
+            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: getKeyword; pos={0}; line=\"{1}\"", pos, new string(line)));
+            var t = AsmTools.getKeywordPos(pos, line);
+            int beginPos = t.Item1;
+            int endPos = t.Item2;
+            return new string(line).Substring(beginPos, endPos - beginPos);
+        }
 
+        public static Tuple<int, int> getKeywordPos(int pos, char[] line) {
+            //Debug.WriteLine(string.Format("INFO: getKeyword; pos={0}; line=\"{1}\"", pos, new string(line)));
+            if ((pos < 0) || (pos >= line.Length)) return null;
+
+            // find the beginning of the keyword
+            int beginPos = 0;
+            for (int i1 = pos - 1; i1 > 0; --i1) {
+                char c = line[i1];
+                if (AsmTools.isSeparatorChar(c) || Char.IsControl(c) || AsmTools.isRemarkChar(c)) {
+                    beginPos = i1 + 1;
+                    break;
+                }
+            }
+            // find the end of the keyword
+            int endPos = line.Length;
+            for (int i2 = pos; i2 < line.Length; ++i2) {
+                char c = line[i2];
+                if (AsmTools.isSeparatorChar(c) || Char.IsControl(c) || AsmTools.isRemarkChar(c)) {
+                    endPos = i2;
+                    break;
+                }
+            }
+            return new Tuple<int, int>(beginPos, endPos);
+        }
     }
 }
