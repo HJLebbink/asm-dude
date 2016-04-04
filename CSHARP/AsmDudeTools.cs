@@ -66,8 +66,8 @@ namespace AsmDude {
         /// <summary>
         /// Get all labels with context info containing in the provided text
         /// </summary>
-        public static IList<Tuple<string, string>> getLabels(string text) {
-            List<Tuple<string, string>> result = new List<Tuple<string, string>>();
+        public static IDictionary<string, string> getLabels(string text) {
+            IDictionary<string, string> result = new Dictionary<string, string>();
             int nLabels = 0;
             int lineNumber = 1; // start counting at one since that is what VS does
             foreach (string line in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)) {
@@ -80,7 +80,7 @@ namespace AsmDude {
                     string label = line.Substring(labelBeginPos, labelEndPos - labelBeginPos);
                     nLabels++;
                     string description = "LINE " + lineNumber + ": " + line.Substring(0, Math.Min(line.Length, 100));
-                    result.Add(new Tuple<string, string>(label, description));
+                    result.Add(label, description);
                     //AsmDudeToolsStatic.Output(string.Format("INFO: getLabels: label=\"{0}\"; description=\"{1}\".", label, description));
                 }
                 lineNumber++;
@@ -92,7 +92,7 @@ namespace AsmDude {
         /// <summary>
         /// Get all labels with context info containing in the provided text
         /// </summary>
-        public static IList<Tuple<string, string>> getLabels(ITextBuffer text) {
+        public static IDictionary<string, string> getLabels(ITextBuffer text) {
             return AsmDudeToolsStatic.getLabels(text.CurrentSnapshot.GetText());
         }
 

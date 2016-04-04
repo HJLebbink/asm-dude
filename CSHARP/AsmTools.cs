@@ -76,6 +76,48 @@ namespace AsmDude {
             return parsedSuccessfully;
         }
 
+        /// <summary>
+        /// Check if the provided string is a constant, return (bool Exists, ulong value, int nBits)
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static Tuple<bool, ulong, int> toConstant(string token) {
+            string token2;
+            bool isHex = false;
+            if (token.StartsWith("0x", StringComparison.CurrentCultureIgnoreCase)) {
+                token2 = token.Substring(2);
+                isHex = true;
+            } else if (token.EndsWith("h", StringComparison.CurrentCultureIgnoreCase)) {
+                token2 = token.Substring(0, token.Length - 1);
+                isHex = true;
+            } else {
+                token2 = token;
+            }
+            ulong v;
+            bool parsedSuccessfully;
+            int nBits;
+            if (isHex) {
+                parsedSuccessfully = ulong.TryParse(token2.Replace(".", string.Empty), NumberStyles.HexNumber, CultureInfo.CurrentCulture, out v);
+            } else {
+                parsedSuccessfully = ulong.TryParse(token2.Replace(".", string.Empty), NumberStyles.Integer, CultureInfo.CurrentCulture, out v);
+            }
+            if (parsedSuccessfully) {
+                if ((v & 0xFFFFFF00) == 0) {
+                    nBits = 8;
+                } else if ((v & 0xFFFF0000) == 0) {
+                    nBits = 16;
+                } else if ((v & 0x00000000) == 0) {
+                    nBits = 32;
+                } else {
+                    nBits = 64;
+                }
+            } else {
+                nBits = 0;
+            }
+            return new Tuple<bool, ulong, int>(parsedSuccessfully, v, nBits);
+        }
+
+
         public static string getRelatedRegister(string reg) {
             switch (reg.ToUpper()) {
                 case "RAX":

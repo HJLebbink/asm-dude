@@ -64,10 +64,13 @@ namespace AsmDude.QuickInfo {
                 if (triggerPoint == null) {
                     return;
                 }
+                string tagString = "";
 
                 foreach (IMappingTagSpan<AsmTokenTag> curTag in this._aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint))) {
                     var tagSpan = curTag.Span.GetSpans(_buffer).First();
-                    string tagString = tagSpan.GetText();
+                    tagString = tagSpan.GetText();
+
+                    //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:AugmentQuickInfoSession. tag ", this.ToString(), tagString));
                     string tagStringUpper = tagString.ToUpper();
                     applicableToSpan = this._buffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
 
@@ -115,7 +118,7 @@ namespace AsmDude.QuickInfo {
 
                 double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
                 if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
-                    AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0} seconds to retrieve quick info.", elapsedSec));
+                    AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0} seconds to retrieve quick info for tag \"{1}\".", elapsedSec, tagString));
                 }
             } catch (Exception e) {
                 AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:AugmentQuickInfoSession; e={1}", this.ToString(), e.ToString()));
