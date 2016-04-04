@@ -192,11 +192,12 @@ namespace AsmDude {
                 }
                 completionSets.Add(new CompletionSet("Tokens", "Tokens", applicableTo, completions, Enumerable.Empty<Completion>()));
 
-                long elapsedTicks = DateTime.Now.Ticks - time1.Ticks;
-                AsmDudeToolsStatic.Output(string.Format("INFO: preparing code completion for previous keyword \"{0}\" and current keyword \"{1}\" took {2} seconds.", previousKeyword, partialKeyword, ((double)elapsedTicks) / 10000000));
-
+                double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
+                if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
+                    AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0} seconds to prepare code completion for previous keyword \"{1}\" and current keyword \"{2}\".", elapsedSec, previousKeyword, partialKeyword, elapsedSec));
+                }
             } catch (Exception e) {
-                AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:AugmentCompletionSession; e={1}", this.ToString(), e.Message));
+                AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:AugmentCompletionSession; e={1}", this.ToString(), e.ToString()));
             }
         }
 
@@ -212,7 +213,13 @@ namespace AsmDude {
         private IList<Completion> labelCompletions() {
             IList<Completion> completions = new List<Completion>();
             ImageSource imageSource = this._icons[TokenType.Label];
-            var labels = AsmDudeToolsStatic.getLabels(this._buffer);
+            List<Tuple<string, string>> labels = AsmDudeToolsStatic.getLabels(this._buffer) as List<Tuple<string, string>>;
+
+
+            // sort the list
+            labels.Sort((x, y) => x.Item1.CompareTo(y.Item1));
+
+
             foreach (Tuple<string, string> entry in labels) {
                 //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:AugmentCompletionSession; label={1}; description={2}", this.ToString(), entry.Key, entry.Value));
                 completions.Add(new Completion(entry.Item1, entry.Item1, entry.Item2, imageSource, ""));

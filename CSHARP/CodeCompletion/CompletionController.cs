@@ -87,7 +87,7 @@ namespace AsmDude {
             }
         }
 
-        public int ExecMethod1(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
+        private int ExecMethod1(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:Exec", this.ToString()));
 
             //make a copy of this so we can look at it after forwarding some commands
@@ -146,7 +146,7 @@ namespace AsmDude {
             return retVal;
         }
 
-        public int ExecMethod2(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
+        private int ExecMethod2(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
             //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:ExecMethod2", this.ToString()));
 
             bool handledChar = false;
@@ -161,7 +161,7 @@ namespace AsmDude {
                         handledChar = this.StartSession();
                         break;
                     case VSConstants.VSStd2KCmdID.RETURN:
-                        handledChar = this.Complete(false);
+                        handledChar = this.Complete(true);
                         break;
                     case VSConstants.VSStd2KCmdID.TAB:
                         this.Complete(true);
@@ -187,6 +187,7 @@ namespace AsmDude {
             }
             #endregion
 
+            #region 2. Handle the typed char
             if (!handledChar) {
                 hresult = this._nextCommandHandler.Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 
@@ -205,7 +206,9 @@ namespace AsmDude {
                     hresult = VSConstants.S_OK;
                 }
             }
+            #endregion
 
+            #region Post-process
             if (ErrorHandler.Succeeded(hresult)) {
                 if (pguidCmdGroup == VSConstants.VSStd2K) {
                     switch ((VSConstants.VSStd2KCmdID)nCmdID) {
@@ -217,6 +220,8 @@ namespace AsmDude {
                     }
                 }
             }
+            #endregion
+
             return hresult;
         }
 

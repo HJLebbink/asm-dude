@@ -47,6 +47,10 @@ namespace AsmDude {
     public class AsmDudePackage : Package {
 
         public const string AsmDudeContentType = "asm!";
+        public const double slowWarningThresholdSec = 0.0; // threshold to warn that actions are considered slow
+
+
+
 
         public AsmDudePackage() {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: Entering constructor for: {0}", this.ToString()));

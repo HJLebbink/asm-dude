@@ -63,9 +63,12 @@ namespace AsmDude {
             pane.OutputString(string.Format(CultureInfo.CurrentCulture, "{0}", msg + Environment.NewLine));
         }
 
+        /// <summary>
+        /// Get all labels with context info containing in the provided text
+        /// </summary>
         public static IList<Tuple<string, string>> getLabels(string text) {
             List<Tuple<string, string>> result = new List<Tuple<string, string>>();
-
+            int nLabels = 0;
             int lineNumber = 1; // start counting at one since that is what VS does
             foreach (string line in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)) {
                 //AsmDudeToolsStatic.Output(string.Format("INFO: getLabels: str=\"{0}\"", str));
@@ -75,8 +78,10 @@ namespace AsmDude {
                     int labelBeginPos = labelPos.Item2;
                     int labelEndPos = labelPos.Item3;
                     string label = line.Substring(labelBeginPos, labelEndPos - labelBeginPos);
-                    //AsmDudeToolsStatic.Output(string.Format("INFO: getLabels: label=\"{0}\"", label));
-                    result.Add(new Tuple<string, string>(label, "line " + lineNumber + ": " + line.Substring(0, Math.Min(line.Length, 100))));
+                    nLabels++;
+                    string description = "LINE " + lineNumber + ": " + line.Substring(0, Math.Min(line.Length, 100));
+                    result.Add(new Tuple<string, string>(label, description));
+                    //AsmDudeToolsStatic.Output(string.Format("INFO: getLabels: label=\"{0}\"; description=\"{1}\".", label, description));
                 }
                 lineNumber++;
             }
@@ -88,9 +93,8 @@ namespace AsmDude {
         /// Get all labels with context info containing in the provided text
         /// </summary>
         public static IList<Tuple<string, string>> getLabels(ITextBuffer text) {
-            return getLabels(text.CurrentSnapshot.GetText());
+            return AsmDudeToolsStatic.getLabels(text.CurrentSnapshot.GetText());
         }
-
 
         public static string getKeywordStr(SnapshotPoint? bufferPosition) {
             if (bufferPosition != null) {
@@ -128,6 +132,41 @@ namespace AsmDude {
             int endPos = t.Item2 + beginSubString;
 
             return new TextExtent(new SnapshotSpan(bufferPosition.Snapshot, beginPos, endPos - beginPos), true);
+        }
+
+        public static string getLabelDescription(string label, string text) {
+            int lineNumber = 1; // start counting at one since that is what VS does
+
+            string result = "";
+            foreach (string line in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)) {
+
+                // find first occurrence of a colon
+                int posColon = -1;
+
+                for (int pos = 0; pos < line.Length; ++pos) {
+                    char c = line[pos];
+                    if (c == ':') {
+                        posColon = pos;
+                        break;
+                    } else if (AsmTools.isRemarkChar(c)) {
+                        break;
+                    }
+                }
+                if (posColon > 0) {
+                    string labelLocal = line.Substring(0, posColon).TrimStart();
+                    if (labelLocal.Equals(label)) {
+                        //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getLabelDescription: label=\"{1}\"", this.ToString(), label));
+                        if (result.Length > 0) result += System.Environment.NewLine;
+                        result += "LINE " + lineNumber + ": " + line.Substring(0, Math.Min(line.Length, 100));
+                    }
+                }
+                lineNumber++;
+            }
+            return result;
+        }
+
+        public static string getLabelDescription(string label, ITextBuffer text) {
+            return AsmDudeToolsStatic.getLabelDescription(label, text.CurrentSnapshot.GetText());
         }
 
         public static bool isAllUpper(string input) {
@@ -224,34 +263,6 @@ namespace AsmDude {
             return (this._type.ContainsKey(k2)) ? (this._type[k2] == TokenType.Mnemonic) : false;
         }
 
-        public string getLabelDescription(string label, ITextBuffer text) {
-            string result = "";
-            foreach (ITextSnapshotLine line in text.CurrentSnapshot.Lines) {
-                string str = line.GetText();
-
-                // find first occurrence of a colon
-                int posColon = -1;
-
-                for (int pos = 0; pos < str.Length; ++pos) {
-                    char c = str[pos];
-                    if (c == ':') {
-                        posColon = pos;
-                        break;
-                    } else if (AsmTools.isRemarkChar(c)) {
-                        break;
-                    }
-                }
-                if (posColon > 0) {
-                    string labelLocal = str.Substring(0, posColon).Trim();
-                    if (labelLocal.Equals(label)) {
-                        //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getLabelDescription: label=\"{1}\"", this.ToString(), label));
-                        if (result.Length > 0) result += System.Environment.NewLine;
-                        result += "line " + (line.LineNumber + 1) + ": " + str.Substring(0, Math.Min(str.Length, 100));
-                    }
-                }
-            }
-            return result;
-        }
 
         /// <summary>
         /// Get architecture of the provided keyword

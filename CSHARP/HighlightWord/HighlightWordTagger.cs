@@ -181,18 +181,19 @@ namespace AsmDude.HighlightWord {
                     List<SnapshotSpan> wordSpans = new List<SnapshotSpan>();
                     wordSpans.AddRange(this._textSearchService.FindAll(findData));
 
-                    DateTime time2 = DateTime.Now;
-                    long elapsedTicks = time2.Ticks - time1.Ticks;
-                    AsmDudeToolsStatic.Output(string.Format("INFO: highlighting string \"{0}\" took {1} seconds.", keywordStr, ((double)elapsedTicks)/10000000));
-
                     this.SynchronousUpdate(this._requestedPoint, new NormalizedSnapshotSpanCollection(wordSpans), keywordSpan);
                 } else {
                     // If we couldn't find a word, just clear out the existing markers
                     this.SynchronousUpdate(this._requestedPoint, new NormalizedSnapshotSpanCollection(), null);
                     return;
                 }
+
+                double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
+                if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
+                    AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0} seconds to highlighting string \"{1}\".", elapsedSec, keywordStr));
+                }
             } catch (Exception e) {
-                Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "ERROR: {0}:UpdateWordAdornments. Something went wrong. e={1}", this.ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:UpdateWordAdornments; e={1}", this.ToString(), e.ToString()));
             }
         }
 

@@ -54,6 +54,7 @@ namespace AsmDude.QuickInfo {
         public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan) {
             applicableToSpan = null;
             try {
+                DateTime time1 = DateTime.Now;
 
                 if (this._disposed) {
                     throw new ObjectDisposedException("AsmQuickInfoSource");
@@ -95,7 +96,7 @@ namespace AsmDude.QuickInfo {
                                 break;
                             }
                         case TokenType.Label: {
-                                string descr = this._asmDudeTools.getLabelDescription(tagString, this._buffer);
+                                string descr = AsmDudeToolsStatic.getLabelDescription(tagString, this._buffer);
                                 description = (descr.Length > 0) ? descr : "Label " + tagString;
                                 break;
                             }
@@ -111,8 +112,13 @@ namespace AsmDude.QuickInfo {
                         quickInfoContent.Add(multiLine(description, maxLineLength));
                     }
                 }
-            } catch (Exception) {
-                // do nothing
+
+                double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
+                if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
+                    AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0} seconds to retrieve quick info.", elapsedSec));
+                }
+            } catch (Exception e) {
+                AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:AugmentQuickInfoSession; e={1}", this.ToString(), e.ToString()));
             }
         }
 
