@@ -104,11 +104,13 @@ namespace AsmTools {
 
             int nBits = -1;
             if (parsedSuccessfully) {
-                if ((v & 0xFFFFFF00) == 0) {
+
+                Console.WriteLine("v="+v.ToString("X"));
+                if ((v & 0xFFFFFFFFFFFF00ul) == 0) {
                     nBits = 8;
-                } else if ((v & 0xFFFF0000) == 0) {
+                } else if ((v & 0xFFFFFFFFFF0000ul) == 0) {
                     nBits = 16;
-                } else if ((v & 0x00000000) == 0) {
+                } else if ((v & 0xFFFFFF00000000ul) == 0) {
                     nBits = 32;
                 } else {
                     nBits = 64;

@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsmDude", "AsmDude.csproj",
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unit-tests", "..\unit-tests\unit-tests.csproj", "{F3B04FA2-B6A5-4AAA-BE28-5342B7CD3D87}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B5A25E78-81D0-454A-8C02-F8C17CB0BBF5} = {B5A25E78-81D0-454A-8C02-F8C17CB0BBF5}
+		{49505283-48A9-45C5-A12B-8DCCEE32B0DA} = {49505283-48A9-45C5-A12B-8DCCEE32B0DA}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-tools", "..\asm-tools\asm-tools.csproj", "{49505283-48A9-45C5-A12B-8DCCEE32B0DA}"
 EndProject
