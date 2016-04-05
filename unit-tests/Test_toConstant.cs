@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using AsmTools;
+
 namespace unit_tests {
 
     [TestClass]
@@ -121,5 +123,12 @@ namespace unit_tests {
                 Assert.AreEqual(64, t.Item3, s);
             }
         }
+        [TestMethod]
+        public void Test_parseMnemonic() {
+            foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic))) {
+                Assert.AreEqual(AsmTools.Tools.parseMnemonic(mnemonic.ToString()), mnemonic);
+            }
+        }
+
     }
 }
