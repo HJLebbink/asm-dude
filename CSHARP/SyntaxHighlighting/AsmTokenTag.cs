@@ -69,7 +69,7 @@ namespace AsmDude {
 
                 #region handle labels
 
-                Tuple<bool, int, int> labelPos = AsmTools.getLabelPos(line);
+                Tuple<bool, int, int> labelPos = AsmTools.Tools.getLabelPos(line);
                 bool labelExists = labelPos.Item1;
 
                 if (labelExists) {
@@ -86,7 +86,7 @@ namespace AsmDude {
 
                 #region remarks
                 // 1] find the first position (if any) of the remark char
-                Tuple<bool, int, int> remarkPos = AsmTools.getRemarkPos(line);
+                Tuple<bool, int, int> remarkPos = AsmTools.Tools.getRemarkPos(line);
                 bool remarkExists = remarkPos.Item1;
 
                 if (remarkExists) {
@@ -148,7 +148,7 @@ namespace AsmDude {
                                     break;
                                 }
                             case TokenType.UNKNOWN: {// asmToken is not a known keyword, check if it is numerical
-                                    if (AsmTools.isConstant(asmToken)) {
+                                    if (AsmTools.Tools.isConstant(asmToken)) {
                                         var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
                                         if (tokenSpan.IntersectsWith(curSpan)) {
                                             yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(TokenType.Constant));

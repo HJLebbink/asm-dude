@@ -47,9 +47,7 @@ namespace AsmDude {
     public class AsmDudePackage : Package {
 
         public const string AsmDudeContentType = "asm!";
-        public const double slowWarningThresholdSec = 0.0; // threshold to warn that actions are considered slow
-
-
+        public const double slowWarningThresholdSec = 0.2; // threshold to warn that actions are considered slow
 
 
         public AsmDudePackage() {

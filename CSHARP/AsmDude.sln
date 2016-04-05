@@ -1,9 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsmDude", "AsmDude.csproj", "{B5A25E78-81D0-454A-8C02-F8C17CB0BBF5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{49505283-48A9-45C5-A12B-8DCCEE32B0DA} = {49505283-48A9-45C5-A12B-8DCCEE32B0DA}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unit-tests", "..\unit-tests\unit-tests.csproj", "{F3B04FA2-B6A5-4AAA-BE28-5342B7CD3D87}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-tools", "..\asm-tools\asm-tools.csproj", "{49505283-48A9-45C5-A12B-8DCCEE32B0DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +22,14 @@ Global
 		{B5A25E78-81D0-454A-8C02-F8C17CB0BBF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5A25E78-81D0-454A-8C02-F8C17CB0BBF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5A25E78-81D0-454A-8C02-F8C17CB0BBF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3B04FA2-B6A5-4AAA-BE28-5342B7CD3D87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3B04FA2-B6A5-4AAA-BE28-5342B7CD3D87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3B04FA2-B6A5-4AAA-BE28-5342B7CD3D87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3B04FA2-B6A5-4AAA-BE28-5342B7CD3D87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49505283-48A9-45C5-A12B-8DCCEE32B0DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49505283-48A9-45C5-A12B-8DCCEE32B0DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49505283-48A9-45C5-A12B-8DCCEE32B0DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49505283-48A9-45C5-A12B-8DCCEE32B0DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

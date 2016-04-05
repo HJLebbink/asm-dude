@@ -5,8 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AsmDude {
-    public abstract class AsmTools {
+namespace AsmTools {
+
+    public abstract class Tools {
 
         public static bool isRemarkChar(char c) {
             return c.Equals('#') || c.Equals(';');
@@ -19,7 +20,7 @@ namespace AsmDude {
         public static Tuple<bool, int, int> getRemarkPos(string line) {
             int nChars = line.Length;
             for (int i = 0; i < nChars; ++i) {
-                if (AsmTools.isRemarkChar(line[i])) {
+                if (Tools.isRemarkChar(line[i])) {
                     return new Tuple<bool, int, int>(true, i, nChars);
                 }
             }
@@ -33,7 +34,7 @@ namespace AsmDude {
             // find the start of the first keyword
             for (; i < nChars; ++i) {
                 char c = line[i];
-                if (AsmTools.isRemarkChar(c)) {
+                if (Tools.isRemarkChar(c)) {
                     return new Tuple<bool, int, int>(false, 0, 0);
                 } else if (char.IsWhiteSpace(c)) {
                     // do nothing
@@ -52,9 +53,9 @@ namespace AsmDude {
                 char c = line[i];
                 if (c.Equals(':')) {
                     return new Tuple<bool, int, int>(true, beginPos, i);
-                } else if (AsmTools.isRemarkChar(c)) {
+                } else if (Tools.isRemarkChar(c)) {
                     return new Tuple<bool, int, int>(false, 0, 0);
-                } else if (AsmTools.isSeparatorChar(c)) {
+                } else if (Tools.isSeparatorChar(c)) {
                     // found another keyword: labels can only be the first keyword on a line
                     break;
                 }
@@ -95,12 +96,13 @@ namespace AsmDude {
             }
             ulong v;
             bool parsedSuccessfully;
-            int nBits;
             if (isHex) {
                 parsedSuccessfully = ulong.TryParse(token2.Replace(".", string.Empty), NumberStyles.HexNumber, CultureInfo.CurrentCulture, out v);
             } else {
                 parsedSuccessfully = ulong.TryParse(token2.Replace(".", string.Empty), NumberStyles.Integer, CultureInfo.CurrentCulture, out v);
             }
+
+            int nBits = -1;
             if (parsedSuccessfully) {
                 if ((v & 0xFFFFFF00) == 0) {
                     nBits = 8;
@@ -111,8 +113,6 @@ namespace AsmDude {
                 } else {
                     nBits = 64;
                 }
-            } else {
-                nBits = 0;
             }
             return new Tuple<bool, ulong, int>(parsedSuccessfully, v, nBits);
         }
@@ -560,7 +560,7 @@ namespace AsmDude {
 
         public static string getKeyword(int pos, char[] line) {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: getKeyword; pos={0}; line=\"{1}\"", pos, new string(line)));
-            var t = AsmTools.getKeywordPos(pos, line);
+            var t = Tools.getKeywordPos(pos, line);
             int beginPos = t.Item1;
             int endPos = t.Item2;
             return new string(line).Substring(beginPos, endPos - beginPos);
@@ -574,7 +574,7 @@ namespace AsmDude {
             int beginPos = 0;
             for (int i1 = pos - 1; i1 > 0; --i1) {
                 char c = line[i1];
-                if (AsmTools.isSeparatorChar(c) || Char.IsControl(c) || AsmTools.isRemarkChar(c)) {
+                if (Tools.isSeparatorChar(c) || Char.IsControl(c) || Tools.isRemarkChar(c)) {
                     beginPos = i1 + 1;
                     break;
                 }
@@ -583,7 +583,7 @@ namespace AsmDude {
             int endPos = line.Length;
             for (int i2 = pos; i2 < line.Length; ++i2) {
                 char c = line[i2];
-                if (AsmTools.isSeparatorChar(c) || Char.IsControl(c) || AsmTools.isRemarkChar(c)) {
+                if (Tools.isSeparatorChar(c) || Char.IsControl(c) || Tools.isRemarkChar(c)) {
                     endPos = i2;
                     break;
                 }

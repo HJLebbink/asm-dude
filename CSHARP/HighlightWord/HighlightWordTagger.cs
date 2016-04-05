@@ -166,9 +166,9 @@ namespace AsmDude.HighlightWord {
                     }
                     // Find the new spans
                     FindData findData;
-                    if (AsmTools.isRegister(keywordStr)) {
+                    if (AsmTools.Tools.isRegister(keywordStr)) {
                         //Debug.WriteLine(string.Format("INFO: {0}:SynchronousUpdate. Register={1}", this.ToString(), currentWordStr));
-                        findData = new FindData(AsmTools.getRelatedRegister(keywordStr), keywordSpan.Snapshot);
+                        findData = new FindData(AsmTools.Tools.getRelatedRegister(keywordStr), keywordSpan.Snapshot);
                         findData.FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions;
                     } else {
                         //Debug.WriteLine(string.Format("INFO: {0}:SynchronousUpdate. Keyword={1}", this.ToString(), currentWordStr));

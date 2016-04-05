@@ -32,7 +32,9 @@ using Microsoft.VisualStudio.Text;
 using System.Windows;
 using System.Windows.Media;
 using System.Globalization;
-using AsmDude.OptionsPage;
+
+using AsmTools;
+
 
 namespace AsmDude {
 
@@ -149,7 +151,7 @@ namespace AsmDude {
                 }
                 //2] find the start of the current keyword
                 SnapshotPoint start = triggerPoint;
-                while ((start > line.Start) && !AsmTools.isSeparatorChar((start - 1).GetChar())) {
+                while ((start > line.Start) && !AsmTools.Tools.isSeparatorChar((start - 1).GetChar())) {
                     start -= 1;
                 }
                 //3] get the word that is currently being typed
@@ -263,7 +265,7 @@ namespace AsmDude {
             try {
                 // check if the line contains a ";" or a "#" before the current point
                 for (SnapshotPoint pos = triggerPoint; pos >= lineStart; pos -= 1) {
-                    if (AsmTools.isRemarkChar(pos.GetChar())) {
+                    if (AsmTools.Tools.isRemarkChar(pos.GetChar())) {
                         return true;
                     }
                 }
@@ -278,7 +280,7 @@ namespace AsmDude {
         }
 
         private bool isRegister(string previousKeyword) {
-            return AsmTools.isRegister(previousKeyword);
+            return AsmTools.Tools.isRegister(previousKeyword);
         }
 
         private bool isMnemonic(string previousKeyword) {
@@ -308,14 +310,14 @@ namespace AsmDude {
             SnapshotPoint endPrevious = begin;
             SnapshotPoint pos = end-1;
             for (; pos >= begin; pos -= 1) {
-                if (!AsmTools.isSeparatorChar(pos.GetChar())) {
+                if (!AsmTools.Tools.isSeparatorChar(pos.GetChar())) {
                     endPrevious = pos+1;
                     break;
                 }
             }
             SnapshotPoint beginPrevious = begin;
             for (; pos >= begin; pos -= 1) {
-                if (AsmTools.isSeparatorChar(pos.GetChar())) {
+                if (AsmTools.Tools.isSeparatorChar(pos.GetChar())) {
                     beginPrevious = pos+1;
                     break;
                 }

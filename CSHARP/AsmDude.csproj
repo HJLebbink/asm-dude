@@ -242,7 +242,6 @@
     <Compile Include="AsmDudeTools.cs" />
     <Compile Include="AsmDoc\AsmDocClassifier.cs" />
     <Compile Include="AsmDoc\AsmDocMouseHandler.cs" />
-    <Compile Include="AsmTools.cs" />
     <Compile Include="LightBulb\AsmLightBulb.cs" />
     <Compile Include="OptionsPage\OptionsPageAsmDoc.cs">
       <SubType>Component</SubType>
@@ -301,7 +300,12 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\asm-tools\asm-tools.csproj">
+      <Project>{49505283-48A9-45C5-A12B-8DCCEE32B0DA}</Project>
+      <Name>asm-tools</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="VsPackage.resx">
       <SubType>Designer</SubType>

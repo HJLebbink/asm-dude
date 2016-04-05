@@ -16,7 +16,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace AsmDude {
 
-
     public static class AsmDudeToolsStatic {
 
         public static CompositionContainer getCompositionContainer() {
@@ -73,7 +72,7 @@ namespace AsmDude {
             foreach (string line in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)) {
                 //AsmDudeToolsStatic.Output(string.Format("INFO: getLabels: str=\"{0}\"", str));
 
-                Tuple<bool, int, int> labelPos = AsmTools.getLabelPos(line);
+                Tuple<bool, int, int> labelPos = AsmTools.Tools.getLabelPos(line);
                 if (labelPos.Item1) {
                     int labelBeginPos = labelPos.Item2;
                     int labelEndPos = labelPos.Item3;
@@ -107,7 +106,7 @@ namespace AsmDude {
                 int posInSubString = (rawPos > seachSpanSize) ? seachSpanSize : rawPos;
                 //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: PreprocessMouseUp; rawPos={0}; bufferLength={1}; beginSubString={2}; endSubString={3}; posInSubString={4}", rawPos, bufferLength, beginSubString, endSubString, posInSubString));
                 char[] subString = bufferPosition.Value.Snapshot.ToCharArray(beginSubString, endSubString - beginSubString);
-                string keyword = AsmTools.getKeyword(posInSubString, subString);
+                string keyword = AsmTools.Tools.getKeyword(posInSubString, subString);
                 return keyword;
             }
             return null;
@@ -127,7 +126,7 @@ namespace AsmDude {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: PreprocessMouseUp; rawPos={0}; bufferLength={1}; beginSubString={2}; endSubString={3}; posInSubString={4}", rawPos, bufferLength, beginSubString, endSubString, posInSubString));
             char[] subString = bufferPosition.Snapshot.ToCharArray(beginSubString, endSubString - beginSubString);
 
-            Tuple<int, int> t = AsmTools.getKeywordPos(posInSubString, subString);
+            Tuple<int, int> t = AsmTools.Tools.getKeywordPos(posInSubString, subString);
             int beginPos = t.Item1 + beginSubString;
             int endPos = t.Item2 + beginSubString;
 
@@ -148,7 +147,7 @@ namespace AsmDude {
                     if (c == ':') {
                         posColon = pos;
                         break;
-                    } else if (AsmTools.isRemarkChar(c)) {
+                    } else if (AsmTools.Tools.isRemarkChar(c)) {
                         break;
                     }
                 }

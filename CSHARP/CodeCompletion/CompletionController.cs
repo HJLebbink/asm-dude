@@ -175,10 +175,10 @@ namespace AsmDude {
                         if (char.IsWhiteSpace(typedChar)) {
                             this.Complete(true);
                             handledChar = false;
-                        } else if (AsmTools.isSeparatorChar(typedChar)) {
+                        } else if (AsmTools.Tools.isSeparatorChar(typedChar)) {
                             this.Complete(false);
                             handledChar = false;
-                        } else if (AsmTools.isRemarkChar(typedChar)) {
+                        } else if (AsmTools.Tools.isRemarkChar(typedChar)) {
                             this.Complete(true);
                             handledChar = false;
                         }
