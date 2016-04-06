@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsmDude", "asm-dude-vsix\AsmDude.csproj", "{B5A25E78-81D0-454A-8C02-F8C17CB0BBF5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-dude-vsix", "asm-dude-vsix\asm-dude-vsix.csproj", "{B5A25E78-81D0-454A-8C02-F8C17CB0BBF5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-tools", "asm-tools\asm-tools.csproj", "{49505283-48A9-45C5-A12B-8DCCEE32B0DA}"
 EndProject

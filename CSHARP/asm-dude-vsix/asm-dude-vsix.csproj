@@ -198,6 +198,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="PkgCmd.vsct">
+      <SubType>Designer</SubType>
+      <Generator>VsctGenerator</Generator>
+      <LastGenOutput>PkgCmd.cs</LastGenOutput>
+    </Content>
     <Content Include="Resources\AsmDudeData.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -215,6 +220,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Resource Include="source.extension.ico">
+      <DependentUpon>source.extension.vsixmanifest</DependentUpon>
+    </Resource>
     <Resource Include="Resources\images\icon-D.png" />
     <Resource Include="Resources\images\icon-I.png" />
     <Content Include="Resources\images\icon-L.png">
@@ -242,15 +250,25 @@
     <Compile Include="AsmDudeTools.cs" />
     <Compile Include="AsmDoc\AsmDocClassifier.cs" />
     <Compile Include="AsmDoc\AsmDocMouseHandler.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="LightBulb\AsmLightBulb.cs" />
+    <Compile Include="Menu\DynamicTextCommand.cs" />
+    <Compile Include="Menu\PkgCmdId.cs" />
     <Compile Include="OptionsPage\OptionsPageAsmDoc.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="OptionsPage\OptionsPageKeywordHighlighting.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Settings.cs" />
+    <Compile Include="PkgCmd.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PkgCmd.vsct</DependentUpon>
+    </Compile>
     <Compile Include="SignatureHelp\SignatureHelpSource.cs" />
+    <Compile Include="source.extension.cs">
+      <DependentUpon>source.extension.vsixmanifest</DependentUpon>
+    </Compile>
     <Compile Include="SyntaxHighlighting\AsmTokenTag.cs" />
     <Compile Include="SyntaxHighlighting\AsmTokenTaggerProvider.cs" />
     <Compile Include="SyntaxHighlighting\AsmTokenTypes.cs" />
@@ -273,8 +291,8 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\GuidStrings.cs" />
-    <Compile Include="Properties\Settings.Designer.cs">
+    <Compile Include="Properties\Guids.cs" />
+    <Compile Include="Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
@@ -283,13 +301,15 @@
     <Compile Include="QuickInfo\AsmQuickInfoControllerProvider.cs" />
     <Compile Include="QuickInfo\AsmQuickInfoSource.cs" />
     <Compile Include="QuickInfo\AsmQuickInfoSourceProvider.cs" />
+    <Compile Include="VsPackage.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VsPackage.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Properties\Settings.settings">
+    <None Include="Settings.settings">
       <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
@@ -298,17 +318,30 @@
     </None>
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
+      <Generator>VsixManifestGenerator</Generator>
+      <LastGenOutput>source.extension.resx</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\asm-tools\asm-tools.csproj">
       <Project>{49505283-48A9-45C5-A12B-8DCCEE32B0DA}</Project>
       <Name>asm-tools</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>VSIXContainerProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="source.extension.resx">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>source.extension.vsixmanifest</DependentUpon>
+      <MergeWithCTO>true</MergeWithCTO>
+      <ManifestResourceName>VSPackage</ManifestResourceName>
+    </EmbeddedResource>
     <EmbeddedResource Include="VsPackage.resx">
       <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>VsPackage.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

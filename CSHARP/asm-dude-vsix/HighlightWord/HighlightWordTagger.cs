@@ -41,7 +41,7 @@ namespace AsmDude.HighlightWord {
     [UserVisible(true)]
     internal class HighlightWordFormatDefinition : MarkerFormatDefinition {
         public HighlightWordFormatDefinition() {
-            this.BackgroundColor = AsmDudeToolsStatic.convertColor(Properties.Settings.Default.KeywordHighlightColor);
+            this.BackgroundColor = AsmDudeToolsStatic.convertColor(Settings.Default.KeywordHighlightColor);
             this.DisplayName = "Highlight Word";
             this.ZOrder = 5;
         }
@@ -115,7 +115,7 @@ namespace AsmDude.HighlightWord {
         /// </summary>
         private void UpdateAtCaretPosition(CaretPosition caretPoisition) {
 
-            if (Properties.Settings.Default.KeywordHighlight_On) {
+            if (Settings.Default.KeywordHighlight_On) {
 
                 SnapshotPoint? point = caretPoisition.Point.GetPoint(this._sourceBuffer, caretPoisition.Affinity);
                 if (point == null) {
@@ -179,18 +179,20 @@ namespace AsmDude.HighlightWord {
                     }
 
                     List<SnapshotSpan> wordSpans = new List<SnapshotSpan>();
-                    wordSpans.AddRange(this._textSearchService.FindAll(findData));
-
+                    try {
+                        wordSpans.AddRange(this._textSearchService.FindAll(findData));
+                    } catch (Exception e2) {
+                        AsmDudeToolsStatic.Output(string.Format("WARNING: could not highlight string \"{0}\"; e={1}", findData.SearchString, e2.InnerException.Message));
+                    }
                     this.SynchronousUpdate(this._requestedPoint, new NormalizedSnapshotSpanCollection(wordSpans), keywordSpan);
                 } else {
                     // If we couldn't find a word, just clear out the existing markers
                     this.SynchronousUpdate(this._requestedPoint, new NormalizedSnapshotSpanCollection(), null);
-                    return;
                 }
 
                 double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
                 if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
-                    AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0} seconds to highlighting string \"{1}\".", elapsedSec, keywordStr));
+                    AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0:F3} seconds to highlight string \"{1}\".", elapsedSec, keywordStr));
                 }
             } catch (Exception e) {
                 AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:UpdateWordAdornments; e={1}", this.ToString(), e.ToString()));
@@ -255,7 +257,7 @@ namespace AsmDude.HighlightWord {
             //Debug.WriteLine("INFO: GetTags: currentWord=" + currentWordLocal.GetText());
 
             // First, yield back the word the cursor is under (if it overlaps)
-            // Note that we'll yield back the same word again in the wordspans collection;
+            // Note that we'll yield back the same word again in the word spans collection;
             // the duplication here is expected.
             if (spans.OverlapsWith(new NormalizedSnapshotSpanCollection(currentWordLocal))) {
                 yield return new TagSpan<HighlightWordTag>(currentWordLocal, new HighlightWordTag());

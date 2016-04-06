@@ -12,6 +12,8 @@ using System.Windows;
 using System.Windows.Input;
 using System.ComponentModel.Composition;
 using EnvDTE;
+using System.Text;
+using System.ComponentModel.Design;
 
 namespace AsmDude {
 
@@ -22,11 +24,11 @@ namespace AsmDude {
     /// 
     // TODO to troubleshoot packaging problemsn, see https://blogs.msdn.microsoft.com/visualstudio/2010/03/22/troubleshooting-pkgdef-files/#registrycollision 
     [PackageRegistration(UseManagedResourcesOnly = true)]
-    //[ProvideMenuResource("Menus.ctmenu", 1)]
+    [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
-    [Guid(GuidStrings.GuidPackage)]
+    [Guid(Guids.GuidPackage_str)]
 
-    [InstalledProductRegistration("AsmDude", GuidStrings.Description, GuidStrings.Version)] // for the help about information
+    [InstalledProductRegistration("AsmDude", Vsix.Description, Vsix.Version, IconResourceID = 400)] // for the help about information
 
     [ProvideOptionPage(typeof(OptionsPageCodeCompletion), "AsmDude", "Code Completion", 100, 101, true, new string[] { "Change Code Completion Options" })]
     //[ProvideProfile(typeof(OptionsPageCodeCompletion), "AsmDude", "Code Completion Options", 100, 101, isToolsOptionPage: false, DescriptionResourceID = 100)]
@@ -44,11 +46,15 @@ namespace AsmDude {
     //[ProvideProfile(typeof(OptionsPageKeywordHighlighting), "AsmDude", "Keyword Highlighting Options", 100, 105, isToolsOptionPage:false, DescriptionResourceID = 100)]
 
     [Export]
-    public class AsmDudePackage : Package {
+    public sealed class AsmDudePackage : Package {
 
-        public const string AsmDudeContentType = "asm!";
-        public const double slowWarningThresholdSec = 0.2; // threshold to warn that actions are considered slow
+        internal const string AsmDudeContentType = "asm!";
+        internal const double slowWarningThresholdSec = 0.2; // threshold to warn that actions are considered slow
 
+        #region Member Variables
+        private OleMenuCommand dynamicVisibilityCommand1;
+        private OleMenuCommand dynamicVisibilityCommand2;
+        #endregion
 
         public AsmDudePackage() {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: Entering constructor for: {0}", this.ToString()));
@@ -60,25 +66,23 @@ namespace AsmDude {
         /// </summary>
         protected override void Initialize() {
             base.Initialize();
-
-            Assembly thisAssem = typeof(AsmDudePackage).Assembly;
-            AssemblyName thisAssemName = thisAssem.GetName();
-            Version ver = thisAssemName.Version;
-
-            AsmDudeToolsStatic.Output(" _____           ____        _     ");
-            AsmDudeToolsStatic.Output("|  _  |___ _____|    \\ _ _ _| |___ ");
-            AsmDudeToolsStatic.Output("|     |_ -|     |  |  | | | . | -_|");
-            AsmDudeToolsStatic.Output("|__|__|___|_|_|_|____/|___|___|___|");
-
-            AsmDudeToolsStatic.Output(string.Format("INFO: Loaded AsmDude version {0}.", ver));
-            AsmDudeToolsStatic.Output(string.Format("INFO: Open source assembly plugin. To make programming assembly bearable."));
-            AsmDudeToolsStatic.Output(string.Format("INFO: More info at https://github.com/HJLebbink/asm-dude"));
-            AsmDudeToolsStatic.Output("----------------------------------");
-
-            AsmDudeToolsStatic.Output(string.Format("INFO: Is the Tools>Options>AsmDude options pane invisible? Disable and enable this plugin to make it visible again..."));
+            this.initMenus();
             this.changeFontAutoComplete();
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine(@" _____           ____        _     ");
+            sb.AppendLine(@"|  _  |___ _____|    \ _ _ _| |___ ");
+            sb.AppendLine(@"|     |_ -|     |  |  | | | . | -_|");
+            sb.AppendLine(@"|__|__|___|_|_|_|____/|___|___|___|");
+            sb.AppendLine(string.Format("INFO: Loaded AsmDude version {0}.", typeof(AsmDudePackage).Assembly.GetName().Version));
+            sb.AppendLine(string.Format("INFO: Open source assembly plugin. Making programming in assembler bearable."));
+            sb.AppendLine(string.Format("INFO: More info at https://github.com/HJLebbink/asm-dude"));
+            sb.AppendLine("----------------------------------");
+            sb.AppendLine(string.Format("INFO: Is the Tools>Options>AsmDude options pane invisible? Disable and enable this plugin to make it visible again..."));
+            AsmDudeToolsStatic.Output(sb.ToString());
         }
 
+        #region Font Change Experiments
         /// <summary>
         /// Set font of code completion
         /// tools>options>Environment>Fonts and Colors>statement completion>courier new.
@@ -132,6 +136,117 @@ namespace AsmDude {
                 AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "ERROR: {0}:changeFontAutoComplete {1}", this.ToString(), e.Message));
             }
         }
+        #endregion
+
+        #region Menus and Commands Actions
+
+        private void initMenus() {
+            // Now get the OleCommandService object provided by the MPF; this object is the one
+            // responsible for handling the collection of commands implemented by the package.
+            OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+            if (null == mcs) {
+                AsmDudeToolsStatic.Output("WARNING: could not retrieve the IMenuCommandService.");
+            } else {
+                AsmDudeToolsStatic.Output("INFO: retrieved the IMenuCommandService.");
+                // Now create one object derived from MenuCommand for each command defined in
+                // the VSCT file and add it to the command service.
+
+                // For each command we have to define its id that is a unique Guid/integer pair.
+                CommandID id = new CommandID(Guids.guidMenuAndCommandsCmdSet, PkgCmdIDList.cmdidMyCommand);
+                // Now create the OleMenuCommand object for this command. The EventHandler object is the
+                // function that will be called when the user will select the command.
+                OleMenuCommand command = new OleMenuCommand(new EventHandler(MenuCommandCallback), id);
+                // Add the command to the command service.
+                mcs.AddCommand(command);
+
+                
+                // Create the MenuCommand object for the command placed in the main toolbar.
+                id = new CommandID(Guids.guidMenuAndCommandsCmdSet, PkgCmdIDList.cmdidMyGraph);
+                command = new OleMenuCommand(new EventHandler(GraphCommandCallback), id);
+                mcs.AddCommand(command);
+
+                // Create the MenuCommand object for the command placed in our toolbar.
+                id = new CommandID(Guids.guidMenuAndCommandsCmdSet, PkgCmdIDList.cmdidMyZoom);
+                command = new OleMenuCommand(new EventHandler(ZoomCommandCallback), id);
+                mcs.AddCommand(command);
+
+                // Create the DynamicMenuCommand object for the command defined with the TextChanges
+                // flag.
+                id = new CommandID(Guids.guidMenuAndCommandsCmdSet, PkgCmdIDList.cmdidDynamicTxt);
+                command = new DynamicTextCommand(id, VsPackage.ResourceManager.GetString("DynamicTextBaseText"));
+                mcs.AddCommand(command);
+
+                // Now create two OleMenuCommand objects for the two commands with dynamic visibility
+                id = new CommandID(Guids.guidMenuAndCommandsCmdSet, PkgCmdIDList.cmdidDynVisibility1);
+                dynamicVisibilityCommand1 = new OleMenuCommand(new EventHandler(DynamicVisibilityCallback), id);
+                mcs.AddCommand(dynamicVisibilityCommand1);
+
+                id = new CommandID(Guids.guidMenuAndCommandsCmdSet, PkgCmdIDList.cmdidDynVisibility2);
+                dynamicVisibilityCommand2 = new OleMenuCommand(new EventHandler(DynamicVisibilityCallback), id);
+                // This command is the one that is invisible by default, so we have to set its visible
+                // property to false because the default value of this property for every object derived
+                // from MenuCommand is true.
+                dynamicVisibilityCommand2.Visible = false;
+                mcs.AddCommand(dynamicVisibilityCommand2);
+
+            }
+        }
+
+        /// <summary>
+        /// Event handler called when the user selects the Sample command.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", MessageId = "Microsoft.Samples.VisualStudio.MenuCommands.MenuCommandsPackage.OutputCommandString(System.String)")]
+        private void MenuCommandCallback(object caller, EventArgs args) {
+            AsmDudeToolsStatic.Output("Sample Command Callback.");
+        }
+
+        /// <summary>
+        /// Event handler called when the user selects the Graph command.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", MessageId = "Microsoft.Samples.VisualStudio.MenuCommands.MenuCommandsPackage.OutputCommandString(System.String)")]
+        private void GraphCommandCallback(object caller, EventArgs args) {
+            AsmDudeToolsStatic.Output("Graph Command Callback.");
+        }
+
+        /// <summary>
+        /// Event handler called when the user selects the Zoom command.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", MessageId = "Microsoft.Samples.VisualStudio.MenuCommands.MenuCommandsPackage.OutputCommandString(System.String)")]
+        private void ZoomCommandCallback(object caller, EventArgs args) {
+            AsmDudeToolsStatic.Output("Zoom Command Callback.");
+        }
+
+        /// <summary>
+        /// Event handler called when the user selects one of the two menus with
+        /// dynamic visibility.
+        /// </summary>
+        private void DynamicVisibilityCallback(object caller, EventArgs args) {
+            // This callback is supposed to be called only from the two menus with dynamic visibility
+            // defined inside this package, so first we have to verify that the caller is correct.
+
+            // Check that the type of the caller is the expected one.
+            OleMenuCommand command = caller as OleMenuCommand;
+            if (null == command) {
+                return;
+            }
+            // Now check the command set.
+            if (command.CommandID.Guid != Guids.guidMenuAndCommandsCmdSet) {
+                return;
+            }
+            // This is one of our commands. Now what we want to do is to switch the visibility status
+            // of the two menus with dynamic visibility, so that if the user clicks on one, then this 
+            // will make it invisible and the other one visible.
+            if (command.CommandID.ID == PkgCmdIDList.cmdidDynVisibility1) {
+                // The user clicked on the first one; make it invisible and show the second one.
+                dynamicVisibilityCommand1.Visible = false;
+                dynamicVisibilityCommand2.Visible = true;
+            } else if (command.CommandID.ID == PkgCmdIDList.cmdidDynVisibility2) {
+                // The user clicked on the second one; make it invisible and show the first one.
+                dynamicVisibilityCommand2.Visible = false;
+                dynamicVisibilityCommand1.Visible = true;
+            }
+        }
+        #endregion
 
         #region OptionPage getters
         public OptionsPageCodeCompletion OptionsPageCodeCompletion {

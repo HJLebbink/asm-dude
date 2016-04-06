@@ -13,7 +13,7 @@ namespace AsmDude.OptionsPage {
     // with support for the Visual Studio automation model, Windows Forms, and state 
     // persistence through the Visual Studio settings mechanism.
     /// </summary>
-    [Guid(GuidStrings.GuidOptionsPageKeywordHighlighting)]
+    [Guid(Guids.GuidOptionsPageKeywordHighlighting)]
     public class OptionsPageKeywordHighlighting : DialogPage {
         #region Properties
 
@@ -43,8 +43,8 @@ namespace AsmDude.OptionsPage {
         /// <remarks>If this handler sets e.Cancel to true, the activation will not occur.</remarks>
         protected override void OnActivate(CancelEventArgs e) {
             base.OnActivate(e);
-            this._useCodeKeywordHighlighting = Properties.Settings.Default.KeywordHighlight_On;
-            this._backgroundColor = Properties.Settings.Default.KeywordHighlightColor;
+            this._useCodeKeywordHighlighting = Settings.Default.KeywordHighlight_On;
+            this._backgroundColor = Settings.Default.KeywordHighlightColor;
         }
 
         /// <summary>
@@ -73,10 +73,10 @@ namespace AsmDude.OptionsPage {
         /// </remarks>
         protected override void OnDeactivate(CancelEventArgs e) {
             bool changed = false;
-            if (Properties.Settings.Default.KeywordHighlight_On != this._useCodeKeywordHighlighting) {
+            if (Settings.Default.KeywordHighlight_On != this._useCodeKeywordHighlighting) {
                 changed = true;
             }
-            if (Properties.Settings.Default.KeywordHighlightColor != this._backgroundColor) {
+            if (Settings.Default.KeywordHighlightColor != this._backgroundColor) {
                 changed = true;
             }
             if (changed) {
@@ -109,17 +109,17 @@ namespace AsmDude.OptionsPage {
             bool changed = false;
             bool restartNeeded = false;
 
-            if (Properties.Settings.Default.KeywordHighlight_On != this._useCodeKeywordHighlighting) {
-                Properties.Settings.Default.KeywordHighlight_On = this._useCodeKeywordHighlighting;
+            if (Settings.Default.KeywordHighlight_On != this._useCodeKeywordHighlighting) {
+                Settings.Default.KeywordHighlight_On = this._useCodeKeywordHighlighting;
                 changed = true;
             }
-            if (Properties.Settings.Default.KeywordHighlightColor != this._backgroundColor) {
-                Properties.Settings.Default.KeywordHighlightColor = this._backgroundColor;
+            if (Settings.Default.KeywordHighlightColor != this._backgroundColor) {
+                Settings.Default.KeywordHighlightColor = this._backgroundColor;
                 changed = true;
                 restartNeeded = true;
             }
             if (changed) {
-                Properties.Settings.Default.Save();
+                Settings.Default.Save();
             }
             if (restartNeeded) {
                 string title = null;

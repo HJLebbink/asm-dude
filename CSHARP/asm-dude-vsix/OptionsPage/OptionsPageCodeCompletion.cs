@@ -15,7 +15,7 @@ namespace AsmDude.OptionsPage {
     // with support for the Visual Studio automation model, Windows Forms, and state 
     // persistence through the Visual Studio settings mechanism.
     /// </summary>
-    [Guid(GuidStrings.GuidOptionsPageCodeCompletion)]
+    [Guid(Guids.GuidOptionsPageCodeCompletion)]
     public class OptionsPageCodeCompletion : DialogPage {
 
         public OptionsPageCodeCompletion() {
@@ -116,20 +116,20 @@ namespace AsmDude.OptionsPage {
         /// <remarks>If this handler sets e.Cancel to true, the activation will not occur.</remarks>
         protected override void OnActivate(CancelEventArgs e) {
             base.OnActivate(e);
-            this._useCodeCompletion = Properties.Settings.Default.CodeCompletion_On;
+            this._useCodeCompletion = Settings.Default.CodeCompletion_On;
 
-            this._x86 = Properties.Settings.Default.CodeCompletion_x86;
-            this._i686 = Properties.Settings.Default.CodeCompletion_i686;
-            this._mmx = Properties.Settings.Default.CodeCompletion_mmx;
-            this._sse = Properties.Settings.Default.CodeCompletion_sse;
-            this._sse2 = Properties.Settings.Default.CodeCompletion_sse2;
-            this._sse3 = Properties.Settings.Default.CodeCompletion_sse3;
-            this._ssse3 = Properties.Settings.Default.CodeCompletion_ssse3;
-            this._sse41 = Properties.Settings.Default.CodeCompletion_sse41;
-            this._sse42 = Properties.Settings.Default.CodeCompletion_sse42;
-            this._avx = Properties.Settings.Default.CodeCompletion_avx;
-            this._avx2 = Properties.Settings.Default.CodeCompletion_avx2;
-            this._knc = Properties.Settings.Default.CodeCompletion_knc;
+            this._x86 = Settings.Default.CodeCompletion_x86;
+            this._i686 = Settings.Default.CodeCompletion_i686;
+            this._mmx = Settings.Default.CodeCompletion_mmx;
+            this._sse = Settings.Default.CodeCompletion_sse;
+            this._sse2 = Settings.Default.CodeCompletion_sse2;
+            this._sse3 = Settings.Default.CodeCompletion_sse3;
+            this._ssse3 = Settings.Default.CodeCompletion_ssse3;
+            this._sse41 = Settings.Default.CodeCompletion_sse41;
+            this._sse42 = Settings.Default.CodeCompletion_sse42;
+            this._avx = Settings.Default.CodeCompletion_avx;
+            this._avx2 = Settings.Default.CodeCompletion_avx2;
+            this._knc = Settings.Default.CodeCompletion_knc;
         }
 
         /// <summary>
@@ -153,43 +153,43 @@ namespace AsmDude.OptionsPage {
         /// </remarks>
         protected override void OnDeactivate(CancelEventArgs e) {
             bool changed = false;
-            if (Properties.Settings.Default.CodeCompletion_On != this._useCodeCompletion) {
+            if (Settings.Default.CodeCompletion_On != this._useCodeCompletion) {
                 changed = true;
             }
-            if (Properties.Settings.Default.CodeCompletion_x86 != this._x86) {
+            if (Settings.Default.CodeCompletion_x86 != this._x86) {
                 changed = true;
             }
-            if (Properties.Settings.Default.CodeCompletion_i686 != this._i686) {
+            if (Settings.Default.CodeCompletion_i686 != this._i686) {
                 changed = true;
             }
-            if (Properties.Settings.Default.CodeCompletion_mmx != this._mmx) {
+            if (Settings.Default.CodeCompletion_mmx != this._mmx) {
                 changed = true;
             }
-            if (Properties.Settings.Default.CodeCompletion_sse != this._sse) {
+            if (Settings.Default.CodeCompletion_sse != this._sse) {
                 changed = true;
             }
-            if (Properties.Settings.Default.CodeCompletion_sse2 != this._sse2) {
+            if (Settings.Default.CodeCompletion_sse2 != this._sse2) {
                 changed = true;
             }
-            if (Properties.Settings.Default.CodeCompletion_sse3 != this._sse3) {
+            if (Settings.Default.CodeCompletion_sse3 != this._sse3) {
                 changed = true;
             }
-            if (Properties.Settings.Default.CodeCompletion_ssse3 != this._ssse3) {
+            if (Settings.Default.CodeCompletion_ssse3 != this._ssse3) {
                 changed = true;
             }
-            if (Properties.Settings.Default.CodeCompletion_sse41 != this._sse41) {
+            if (Settings.Default.CodeCompletion_sse41 != this._sse41) {
                 changed = true;
             }
-            if (Properties.Settings.Default.CodeCompletion_sse42 != this._sse42) {
+            if (Settings.Default.CodeCompletion_sse42 != this._sse42) {
                 changed = true;
             }
-            if (Properties.Settings.Default.CodeCompletion_avx != this._avx) {
+            if (Settings.Default.CodeCompletion_avx != this._avx) {
                 changed = true;
             }
-            if (Properties.Settings.Default.CodeCompletion_avx2 != this._avx2) {
+            if (Settings.Default.CodeCompletion_avx2 != this._avx2) {
                 changed = true;
             }
-            if (Properties.Settings.Default.CodeCompletion_knc != this._knc) {
+            if (Settings.Default.CodeCompletion_knc != this._knc) {
                 changed = true;
             }
             if (changed) {
@@ -222,72 +222,72 @@ namespace AsmDude.OptionsPage {
             bool changed = false;
             bool restartNeeded = false;
 
-            if (Properties.Settings.Default.CodeCompletion_On != this._useCodeCompletion) {
-                Properties.Settings.Default.CodeCompletion_On = this._useCodeCompletion;
+            if (Settings.Default.CodeCompletion_On != this._useCodeCompletion) {
+                Settings.Default.CodeCompletion_On = this._useCodeCompletion;
                 changed = true;
             }
-            if (Properties.Settings.Default.CodeCompletion_x86 != this._x86) {
-                Properties.Settings.Default.CodeCompletion_x86 = this._x86;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Properties.Settings.Default.CodeCompletion_i686 != this._i686) {
-                Properties.Settings.Default.CodeCompletion_i686 = this._i686;
+            if (Settings.Default.CodeCompletion_x86 != this._x86) {
+                Settings.Default.CodeCompletion_x86 = this._x86;
                 changed = true;
                 restartNeeded = true;
             }
-            if (Properties.Settings.Default.CodeCompletion_mmx != this._mmx) {
-                Properties.Settings.Default.CodeCompletion_mmx = this._mmx;
+            if (Settings.Default.CodeCompletion_i686 != this._i686) {
+                Settings.Default.CodeCompletion_i686 = this._i686;
                 changed = true;
                 restartNeeded = true;
             }
-            if (Properties.Settings.Default.CodeCompletion_sse != this._sse) {
-                Properties.Settings.Default.CodeCompletion_sse = this._sse;
+            if (Settings.Default.CodeCompletion_mmx != this._mmx) {
+                Settings.Default.CodeCompletion_mmx = this._mmx;
                 changed = true;
                 restartNeeded = true;
             }
-            if (Properties.Settings.Default.CodeCompletion_sse2 != this._sse2) {
-                Properties.Settings.Default.CodeCompletion_sse2 = this._sse2;
+            if (Settings.Default.CodeCompletion_sse != this._sse) {
+                Settings.Default.CodeCompletion_sse = this._sse;
                 changed = true;
                 restartNeeded = true;
             }
-            if (Properties.Settings.Default.CodeCompletion_sse3 != this._sse3) {
-                Properties.Settings.Default.CodeCompletion_sse3 = this._sse3;
+            if (Settings.Default.CodeCompletion_sse2 != this._sse2) {
+                Settings.Default.CodeCompletion_sse2 = this._sse2;
                 changed = true;
                 restartNeeded = true;
             }
-            if (Properties.Settings.Default.CodeCompletion_ssse3 != this._ssse3) {
-                Properties.Settings.Default.CodeCompletion_ssse3 = this._ssse3;
+            if (Settings.Default.CodeCompletion_sse3 != this._sse3) {
+                Settings.Default.CodeCompletion_sse3 = this._sse3;
                 changed = true;
                 restartNeeded = true;
             }
-            if (Properties.Settings.Default.CodeCompletion_sse41 != this._sse41) {
-                Properties.Settings.Default.CodeCompletion_sse41 = this._sse41;
+            if (Settings.Default.CodeCompletion_ssse3 != this._ssse3) {
+                Settings.Default.CodeCompletion_ssse3 = this._ssse3;
                 changed = true;
                 restartNeeded = true;
             }
-            if (Properties.Settings.Default.CodeCompletion_sse42 != this._sse42) {
-                Properties.Settings.Default.CodeCompletion_sse42 = this._sse42;
+            if (Settings.Default.CodeCompletion_sse41 != this._sse41) {
+                Settings.Default.CodeCompletion_sse41 = this._sse41;
                 changed = true;
                 restartNeeded = true;
             }
-            if (Properties.Settings.Default.CodeCompletion_avx != this._avx) {
-                Properties.Settings.Default.CodeCompletion_avx = this._avx;
+            if (Settings.Default.CodeCompletion_sse42 != this._sse42) {
+                Settings.Default.CodeCompletion_sse42 = this._sse42;
                 changed = true;
                 restartNeeded = true;
             }
-            if (Properties.Settings.Default.CodeCompletion_avx2 != this._avx2) {
-                Properties.Settings.Default.CodeCompletion_avx2 = this._avx2;
+            if (Settings.Default.CodeCompletion_avx != this._avx) {
+                Settings.Default.CodeCompletion_avx = this._avx;
                 changed = true;
                 restartNeeded = true;
             }
-            if (Properties.Settings.Default.CodeCompletion_knc != this._knc) {
-                Properties.Settings.Default.CodeCompletion_knc = this._knc;
+            if (Settings.Default.CodeCompletion_avx2 != this._avx2) {
+                Settings.Default.CodeCompletion_avx2 = this._avx2;
+                changed = true;
+                restartNeeded = true;
+            }
+            if (Settings.Default.CodeCompletion_knc != this._knc) {
+                Settings.Default.CodeCompletion_knc = this._knc;
                 changed = true;
                 restartNeeded = true;
             }
             if (changed) {
-                Properties.Settings.Default.Save();
+                Settings.Default.Save();
             }
             if (restartNeeded) {
                 string title = null;

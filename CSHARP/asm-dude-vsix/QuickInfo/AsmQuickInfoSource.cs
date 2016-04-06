@@ -28,6 +28,8 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using System.ComponentModel.Composition;
+using System.Windows.Forms;
+using System.Reflection;
 
 namespace AsmDude.QuickInfo {
 
@@ -118,7 +120,7 @@ namespace AsmDude.QuickInfo {
 
                 double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
                 if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
-                    AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0} seconds to retrieve quick info for tag \"{1}\".", elapsedSec, tagString));
+                    AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0:F3} seconds to retrieve quick info for tag \"{1}\".", elapsedSec, tagString));
                 }
             } catch (Exception e) {
                 AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:AugmentQuickInfoSession; e={1}", this.ToString(), e.ToString()));
@@ -147,15 +149,15 @@ namespace AsmDude.QuickInfo {
 
         private static int getNewLinePos(string str, int startPos, int endPos) {
             for (int pos = endPos; pos > startPos; pos--) {
-                if (isSeparatorChar(str[pos])) {
+                if (isTextSeparatorChar(str[pos])) {
                     return pos + 1;
                 }
             }
             return endPos;
         }
 
-        private static bool isSeparatorChar(char c) {
-            return char.IsWhiteSpace(c) || c.Equals(',') || c.Equals('[') || c.Equals(']');
+        private static bool isTextSeparatorChar(char c) {
+            return char.IsWhiteSpace(c) || c.Equals('.') || c.Equals(',') || c.Equals(';') || c.Equals('?') || c.Equals('!') || c.Equals(')') || c.Equals(']') || c.Equals('-');
         }
 
         #endregion private stuff

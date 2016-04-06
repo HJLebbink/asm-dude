@@ -30,8 +30,8 @@ namespace AsmDude.CodeFolding {
 
     internal sealed class CodeFoldingTagger : ITagger<IOutliningRegionTag> {
 
-        string startHide = Properties.Settings.Default.CodeFolding_BeginTag;     //the characters that start the outlining region
-        string endHide = Properties.Settings.Default.CodeFolding_EndTag;       //the characters that end the outlining region
+        string startHide = Settings.Default.CodeFolding_BeginTag;     //the characters that start the outlining region
+        string endHide = Settings.Default.CodeFolding_EndTag;       //the characters that end the outlining region
         const string ellipsis = "...";    //the characters that are displayed when the region is collapsed
 
         ITextBuffer _buffer;
@@ -52,7 +52,7 @@ namespace AsmDude.CodeFolding {
             if (spans.Count == 0) {
                 yield break;
             }
-            if (Properties.Settings.Default.CodeFolding_On) {
+            if (Settings.Default.CodeFolding_On) {
                 //Debug.WriteLine("INFO: GetTags: entering");
 
                 List<Region> currentRegions = this._regions;

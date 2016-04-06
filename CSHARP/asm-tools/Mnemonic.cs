@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace AsmTools {
 
-
     public enum Mnemonic {
         UNKNOWN,
         #region Data Transfer Instructions

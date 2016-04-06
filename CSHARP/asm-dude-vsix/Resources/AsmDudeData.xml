@@ -2588,6 +2588,10 @@
 			<description>Store MXCSR Register State</description>
 			<ref>STMXCSR.html</ref>
 		</mnemonic>
+		<mnemonic name='VSTMXCSR' arch='AVX'>
+			<description>Store MXCSR Register State</description>
+			<ref>STMXCSR.html</ref>
+		</mnemonic>
 		<mnemonic name='STOS'>
 			<description>Store String</description>
 			<ref>STOS:STOSB:STOSW:STOSD:STOSQ.html</ref>

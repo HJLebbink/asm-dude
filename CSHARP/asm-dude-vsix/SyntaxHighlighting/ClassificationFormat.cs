@@ -37,7 +37,7 @@ namespace AsmDude {
         public OpcodeP() {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: Entering constructor for: {0}", this.ToString()));
             DisplayName = "mnemonic"; //human readable version of the name
-            ForegroundColor = AsmDudeToolsStatic.convertColor(Properties.Settings.Default.SyntaxHighlighting_Opcode);
+            ForegroundColor = AsmDudeToolsStatic.convertColor(Settings.Default.SyntaxHighlighting_Opcode);
         }
     }
 
@@ -49,7 +49,7 @@ namespace AsmDude {
     internal sealed class RegisterP : ClassificationFormatDefinition {
         public RegisterP() {
             DisplayName = "register"; //human readable version of the name
-            ForegroundColor = AsmDudeToolsStatic.convertColor(Properties.Settings.Default.SyntaxHighlighting_Register);
+            ForegroundColor = AsmDudeToolsStatic.convertColor(Settings.Default.SyntaxHighlighting_Register);
         }
     }
 
@@ -61,7 +61,7 @@ namespace AsmDude {
     internal sealed class RemarkP : ClassificationFormatDefinition {
         public RemarkP() {
             DisplayName = "remark"; //human readable version of the name
-            ForegroundColor = AsmDudeToolsStatic.convertColor(Properties.Settings.Default.SyntaxHighlighting_Remark);
+            ForegroundColor = AsmDudeToolsStatic.convertColor(Settings.Default.SyntaxHighlighting_Remark);
             IsItalic = true;
         }
     }
@@ -74,7 +74,7 @@ namespace AsmDude {
     internal sealed class DirectiveP : ClassificationFormatDefinition {
         public DirectiveP() {
             DisplayName = "directive"; //human readable version of the name
-            ForegroundColor = AsmDudeToolsStatic.convertColor(Properties.Settings.Default.SyntaxHighlighting_Directive);
+            ForegroundColor = AsmDudeToolsStatic.convertColor(Settings.Default.SyntaxHighlighting_Directive);
             IsItalic = true;
         }
     }
@@ -87,7 +87,7 @@ namespace AsmDude {
     internal sealed class JumpP : ClassificationFormatDefinition {
         public JumpP() {
             DisplayName = "jump"; //human readable version of the name
-            ForegroundColor = AsmDudeToolsStatic.convertColor(Properties.Settings.Default.SyntaxHighlighting_Jump);
+            ForegroundColor = AsmDudeToolsStatic.convertColor(Settings.Default.SyntaxHighlighting_Jump);
         }
     }
 
@@ -99,7 +99,7 @@ namespace AsmDude {
     internal sealed class LabelP : ClassificationFormatDefinition {
         public LabelP() {
             DisplayName = "Display label"; //human readable version of the name
-            ForegroundColor = AsmDudeToolsStatic.convertColor(Properties.Settings.Default.SyntaxHighlighting_Label);
+            ForegroundColor = AsmDudeToolsStatic.convertColor(Settings.Default.SyntaxHighlighting_Label);
             //TextDecorations = System.Windows.TextDecorations.Underline;
         }
     }
@@ -112,7 +112,7 @@ namespace AsmDude {
     internal sealed class ConstantP : ClassificationFormatDefinition {
         public ConstantP() {
             DisplayName = "constant"; //human readable version of the name
-            ForegroundColor = AsmDudeToolsStatic.convertColor(Properties.Settings.Default.SyntaxHighlighting_Constant);
+            ForegroundColor = AsmDudeToolsStatic.convertColor(Settings.Default.SyntaxHighlighting_Constant);
         }
     }
 
@@ -124,7 +124,7 @@ namespace AsmDude {
     internal sealed class MiscP : ClassificationFormatDefinition {
         public MiscP() {
             DisplayName = "misc"; //human readable version of the name
-            ForegroundColor = AsmDudeToolsStatic.convertColor(Properties.Settings.Default.SyntaxHighlighting_Misc);
+            ForegroundColor = AsmDudeToolsStatic.convertColor(Settings.Default.SyntaxHighlighting_Misc);
         }
     }
 }

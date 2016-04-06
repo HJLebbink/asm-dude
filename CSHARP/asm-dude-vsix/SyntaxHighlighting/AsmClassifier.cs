@@ -137,7 +137,7 @@ namespace AsmDude {
         /// Search the given span for any instances of classified tags
         /// </summary>
         public IEnumerable<ITagSpan<ClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
-            if (Properties.Settings.Default.SyntaxHighlighting_On) {
+            if (Settings.Default.SyntaxHighlighting_On) {
                 foreach (var tagSpan in _aggregator.GetTags(spans)) {
                     var tagSpans = tagSpan.Span.GetSpans(spans[0].Snapshot);
                     var asmType = _asmTypes[tagSpan.Tag.type];

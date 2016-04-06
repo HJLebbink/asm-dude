@@ -12,7 +12,7 @@ namespace AsmDude.OptionsPage {
     // with support for the Visual Studio automation model, Windows Forms, and state 
     // persistence through the Visual Studio settings mechanism.
     /// </summary>
-    [Guid(GuidStrings.GuidOptionsPageAsmDoc)]
+    [Guid(Guids.GuidOptionsPageAsmDoc)]
     public class OptionsPageAsmDoc : DialogPage {
         #region Properties
 
@@ -41,8 +41,8 @@ namespace AsmDude.OptionsPage {
         /// <remarks>If this handler sets e.Cancel to true, the activation will not occur.</remarks>
         protected override void OnActivate(CancelEventArgs e) {
             base.OnActivate(e);
-            this._useAsmDoc = Properties.Settings.Default.AsmDoc_On;
-            this._asmDocUrl = Properties.Settings.Default.AsmDoc_url;
+            this._useAsmDoc = Settings.Default.AsmDoc_On;
+            this._asmDocUrl = Settings.Default.AsmDoc_url;
         }
 
         /// <summary>
@@ -67,10 +67,10 @@ namespace AsmDude.OptionsPage {
         /// </remarks>
         protected override void OnDeactivate(CancelEventArgs e) {
             bool changed = false;
-            if (Properties.Settings.Default.AsmDoc_On != this._useAsmDoc) {
+            if (Settings.Default.AsmDoc_On != this._useAsmDoc) {
                 changed = true;
             }
-            if (Properties.Settings.Default.AsmDoc_url != this._asmDocUrl) {
+            if (Settings.Default.AsmDoc_url != this._asmDocUrl) {
                 changed = true;
             }
             if (changed) {
@@ -102,17 +102,17 @@ namespace AsmDude.OptionsPage {
             bool changed = false;
             bool restartNeeded = false;
 
-            if (Properties.Settings.Default.AsmDoc_On != this._useAsmDoc) {
-                Properties.Settings.Default.AsmDoc_On = this._useAsmDoc;
+            if (Settings.Default.AsmDoc_On != this._useAsmDoc) {
+                Settings.Default.AsmDoc_On = this._useAsmDoc;
                 changed = true;
             }
-            if (Properties.Settings.Default.AsmDoc_url != this._asmDocUrl) {
-                Properties.Settings.Default.AsmDoc_url = this._asmDocUrl;
+            if (Settings.Default.AsmDoc_url != this._asmDocUrl) {
+                Settings.Default.AsmDoc_url = this._asmDocUrl;
                 changed = true;
                 restartNeeded = true;
             }
             if (changed) {
-                Properties.Settings.Default.Save();
+                Settings.Default.Save();
             }
             if (restartNeeded) {
                 string title = null;

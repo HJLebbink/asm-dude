@@ -16,7 +16,7 @@ namespace AsmDude.OptionsPage {
     // persistence through the Visual Studio settings mechanism.
     /// </summary>
     [Export(typeof(DialogPage))]
-    [Guid(GuidStrings.GuidOptionsPageSyntaxHighlighting)]
+    [Guid(Guids.GuidOptionsPageSyntaxHighlighting)]
     public class OptionsPageSyntaxHighlighting : DialogPage {
 
         #region Properties
@@ -89,15 +89,15 @@ namespace AsmDude.OptionsPage {
         /// <remarks>If this handler sets e.Cancel to true, the activation will not occur.</remarks>
         protected override void OnActivate(CancelEventArgs e) {
             base.OnActivate(e);
-            this._useSyntaxHighlighting = Properties.Settings.Default.SyntaxHighlighting_On;
-            this._colorMnemonic = Properties.Settings.Default.SyntaxHighlighting_Opcode;
-            this._colorRegister = Properties.Settings.Default.SyntaxHighlighting_Register;
-            this._colorRemark = Properties.Settings.Default.SyntaxHighlighting_Remark;
-            this._colorDirective = Properties.Settings.Default.SyntaxHighlighting_Directive;
-            this._colorConstant = Properties.Settings.Default.SyntaxHighlighting_Constant;
-            this._colorJump = Properties.Settings.Default.SyntaxHighlighting_Jump;
-            this._colorLabel = Properties.Settings.Default.SyntaxHighlighting_Label;
-            this._colorMisc = Properties.Settings.Default.SyntaxHighlighting_Misc;
+            this._useSyntaxHighlighting = Settings.Default.SyntaxHighlighting_On;
+            this._colorMnemonic = Settings.Default.SyntaxHighlighting_Opcode;
+            this._colorRegister = Settings.Default.SyntaxHighlighting_Register;
+            this._colorRemark = Settings.Default.SyntaxHighlighting_Remark;
+            this._colorDirective = Settings.Default.SyntaxHighlighting_Directive;
+            this._colorConstant = Settings.Default.SyntaxHighlighting_Constant;
+            this._colorJump = Settings.Default.SyntaxHighlighting_Jump;
+            this._colorLabel = Settings.Default.SyntaxHighlighting_Label;
+            this._colorMisc = Settings.Default.SyntaxHighlighting_Misc;
         }
 
         /// <summary>
@@ -123,31 +123,31 @@ namespace AsmDude.OptionsPage {
         /// </remarks>
         protected override void OnDeactivate(CancelEventArgs e) {
             bool changed = false;
-            if (Properties.Settings.Default.SyntaxHighlighting_On != this._useSyntaxHighlighting) {
+            if (Settings.Default.SyntaxHighlighting_On != this._useSyntaxHighlighting) {
                 changed = true;
             }
-            if (Properties.Settings.Default.SyntaxHighlighting_Opcode != this._colorMnemonic) {
+            if (Settings.Default.SyntaxHighlighting_Opcode != this._colorMnemonic) {
                 changed = true;
             }
-            if (Properties.Settings.Default.SyntaxHighlighting_Register != this._colorRegister) {
+            if (Settings.Default.SyntaxHighlighting_Register != this._colorRegister) {
                 changed = true;
             }
-            if (Properties.Settings.Default.SyntaxHighlighting_Remark != this._colorRemark) {
+            if (Settings.Default.SyntaxHighlighting_Remark != this._colorRemark) {
                 changed = true;
             }
-            if (Properties.Settings.Default.SyntaxHighlighting_Directive != this._colorDirective) {
+            if (Settings.Default.SyntaxHighlighting_Directive != this._colorDirective) {
                 changed = true;
             }
-            if (Properties.Settings.Default.SyntaxHighlighting_Constant != this._colorConstant) {
+            if (Settings.Default.SyntaxHighlighting_Constant != this._colorConstant) {
                 changed = true;
             }
-            if (Properties.Settings.Default.SyntaxHighlighting_Jump != this._colorJump) {
+            if (Settings.Default.SyntaxHighlighting_Jump != this._colorJump) {
                 changed = true;
             }
-            if (Properties.Settings.Default.SyntaxHighlighting_Label != this._colorLabel) {
+            if (Settings.Default.SyntaxHighlighting_Label != this._colorLabel) {
                 changed = true;
             }
-            if (Properties.Settings.Default.SyntaxHighlighting_Misc != this._colorMisc) {
+            if (Settings.Default.SyntaxHighlighting_Misc != this._colorMisc) {
                 changed = true;
             }
             if (changed) {
@@ -180,53 +180,53 @@ namespace AsmDude.OptionsPage {
             bool changed = false;
             bool restartNeeded = false;
 
-            if (Properties.Settings.Default.SyntaxHighlighting_On != this._useSyntaxHighlighting) {
-                Properties.Settings.Default.SyntaxHighlighting_On = this._useSyntaxHighlighting;
+            if (Settings.Default.SyntaxHighlighting_On != this._useSyntaxHighlighting) {
+                Settings.Default.SyntaxHighlighting_On = this._useSyntaxHighlighting;
                 changed = true;
                 restartNeeded = true;
             }
-            if (Properties.Settings.Default.SyntaxHighlighting_Opcode != this._colorMnemonic) {
-                Properties.Settings.Default.SyntaxHighlighting_Opcode = this._colorMnemonic;
+            if (Settings.Default.SyntaxHighlighting_Opcode != this._colorMnemonic) {
+                Settings.Default.SyntaxHighlighting_Opcode = this._colorMnemonic;
                 changed = true;
                 restartNeeded = true;
             }
-            if (Properties.Settings.Default.SyntaxHighlighting_Register != this._colorRegister) {
-                Properties.Settings.Default.SyntaxHighlighting_Register = this._colorRegister;
+            if (Settings.Default.SyntaxHighlighting_Register != this._colorRegister) {
+                Settings.Default.SyntaxHighlighting_Register = this._colorRegister;
                 changed = true;
                 restartNeeded = true;
             }
-            if (Properties.Settings.Default.SyntaxHighlighting_Remark != this._colorRemark) {
-                Properties.Settings.Default.SyntaxHighlighting_Remark = this._colorRemark;
+            if (Settings.Default.SyntaxHighlighting_Remark != this._colorRemark) {
+                Settings.Default.SyntaxHighlighting_Remark = this._colorRemark;
                 changed = true;
                 restartNeeded = true;
             }
-            if (Properties.Settings.Default.SyntaxHighlighting_Directive != this._colorDirective) {
-                Properties.Settings.Default.SyntaxHighlighting_Directive = this._colorDirective;
+            if (Settings.Default.SyntaxHighlighting_Directive != this._colorDirective) {
+                Settings.Default.SyntaxHighlighting_Directive = this._colorDirective;
                 changed = true;
                 restartNeeded = true;
             }
-            if (Properties.Settings.Default.SyntaxHighlighting_Constant != this._colorConstant) {
-                Properties.Settings.Default.SyntaxHighlighting_Constant = this._colorConstant;
+            if (Settings.Default.SyntaxHighlighting_Constant != this._colorConstant) {
+                Settings.Default.SyntaxHighlighting_Constant = this._colorConstant;
                 changed = true;
                 restartNeeded = true;
             }
-            if (Properties.Settings.Default.SyntaxHighlighting_Jump != this._colorJump) {
-                Properties.Settings.Default.SyntaxHighlighting_Jump = this._colorJump;
+            if (Settings.Default.SyntaxHighlighting_Jump != this._colorJump) {
+                Settings.Default.SyntaxHighlighting_Jump = this._colorJump;
                 changed = true;
                 restartNeeded = true;
             }
-            if (Properties.Settings.Default.SyntaxHighlighting_Label != this._colorLabel) {
-                Properties.Settings.Default.SyntaxHighlighting_Label = this._colorLabel;
+            if (Settings.Default.SyntaxHighlighting_Label != this._colorLabel) {
+                Settings.Default.SyntaxHighlighting_Label = this._colorLabel;
                 changed = true;
                 restartNeeded = true;
             }
-            if (Properties.Settings.Default.SyntaxHighlighting_Misc != this._colorMisc) {
-                Properties.Settings.Default.SyntaxHighlighting_Misc = this._colorMisc;
+            if (Settings.Default.SyntaxHighlighting_Misc != this._colorMisc) {
+                Settings.Default.SyntaxHighlighting_Misc = this._colorMisc;
                 changed = true;
                 restartNeeded = true;
             }
             if (changed) {
-                Properties.Settings.Default.Save();
+                Settings.Default.Save();
             }
             if (restartNeeded) {
                 string title = null;

@@ -14,7 +14,7 @@ namespace AsmDude.OptionsPage
     // with support for the Visual Studio automation model, Windows Forms, and state 
     // persistence through the Visual Studio settings mechanism.
     /// </summary>
-    [Guid(GuidStrings.GuidOptionsPageCodeFolding)]
+    [Guid(Guids.GuidOptionsPageCodeFolding)]
     public class OptionsPageCodeFolding : DialogPage
     {
         #region Properties
@@ -52,9 +52,9 @@ namespace AsmDude.OptionsPage
         protected override void OnActivate(CancelEventArgs e)
         {
             base.OnActivate(e);
-            this._useCodeFolding = Properties.Settings.Default.CodeFolding_On;
-            this._beginTag = Properties.Settings.Default.CodeFolding_BeginTag;
-            this._endTag = Properties.Settings.Default.CodeFolding_EndTag;
+            this._useCodeFolding = Settings.Default.CodeFolding_On;
+            this._beginTag = Settings.Default.CodeFolding_BeginTag;
+            this._endTag = Settings.Default.CodeFolding_EndTag;
         }
 
         /// <summary>
@@ -81,13 +81,13 @@ namespace AsmDude.OptionsPage
         protected override void OnDeactivate(CancelEventArgs e)
         {
             bool changed = false;
-            if (Properties.Settings.Default.CodeFolding_On != this._useCodeFolding) {
+            if (Settings.Default.CodeFolding_On != this._useCodeFolding) {
                 changed = true;
             }
-            if (Properties.Settings.Default.CodeFolding_BeginTag != this._beginTag) {
+            if (Settings.Default.CodeFolding_BeginTag != this._beginTag) {
                 changed = true;
             }
-            if (Properties.Settings.Default.CodeFolding_EndTag != this._endTag) {
+            if (Settings.Default.CodeFolding_EndTag != this._endTag) {
                 changed = true;
             }
             if (changed) {
@@ -120,23 +120,23 @@ namespace AsmDude.OptionsPage
             bool changed = false;
             bool restartNeeded = false;
 
-            if (Properties.Settings.Default.CodeFolding_On != this._useCodeFolding) {
-                Properties.Settings.Default.CodeFolding_On = this._useCodeFolding;
+            if (Settings.Default.CodeFolding_On != this._useCodeFolding) {
+                Settings.Default.CodeFolding_On = this._useCodeFolding;
                 changed = true;
                 restartNeeded = true;
             }
-            if (Properties.Settings.Default.CodeFolding_BeginTag != this._beginTag) {
-                Properties.Settings.Default.CodeFolding_BeginTag = this._beginTag;
+            if (Settings.Default.CodeFolding_BeginTag != this._beginTag) {
+                Settings.Default.CodeFolding_BeginTag = this._beginTag;
                 changed = true;
                 restartNeeded = true;
             }
-            if (Properties.Settings.Default.CodeFolding_EndTag != this._endTag) {
-                Properties.Settings.Default.CodeFolding_EndTag = this._endTag;
+            if (Settings.Default.CodeFolding_EndTag != this._endTag) {
+                Settings.Default.CodeFolding_EndTag = this._endTag;
                 changed = true;
                 restartNeeded = true;
             }
             if (changed) {
-                Properties.Settings.Default.Save();
+                Settings.Default.Save();
             }
             if (restartNeeded) {
                 string title = null;

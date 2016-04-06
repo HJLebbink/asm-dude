@@ -239,7 +239,7 @@ namespace AsmDude.AsmDoc {
 
         bool TryHighlightItemUnderMouse(Point position) {
             bool updated = false;
-            if (!Properties.Settings.Default.AsmDoc_On) return false;
+            if (!Settings.Default.AsmDoc_On) return false;
 
             try {
                 var line = _view.TextViewLines.GetTextViewLineContainingYCoordinate(position.Y);
@@ -314,7 +314,7 @@ namespace AsmDude.AsmDoc {
         private string getUrl(string keyword) {
             string reference = this._asmDudeTools.getUrl(keyword);
             if (reference.Length == 0) return null;
-            return Properties.Settings.Default.AsmDoc_url + reference;
+            return Settings.Default.AsmDoc_url + reference;
             //return AsmDudeToolsStatic.getInstallPath() + "html" + Path.DirectorySeparatorChar + reference;
         }
 

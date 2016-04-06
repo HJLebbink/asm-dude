@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace AsmDude.Properties {
+namespace AsmDude {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

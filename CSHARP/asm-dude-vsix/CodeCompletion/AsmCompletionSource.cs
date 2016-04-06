@@ -29,12 +29,10 @@ using System.IO;
 
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
-using System.Windows;
 using System.Windows.Media;
 using System.Globalization;
 
 using AsmTools;
-
 
 namespace AsmDude {
 
@@ -129,7 +127,7 @@ namespace AsmDude {
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets) {
             //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:AugmentCompletionSession", this.ToString()));
 
-            if (!Properties.Settings.Default.CodeCompletion_On) {
+            if (!Settings.Default.CodeCompletion_On) {
                 return;
             }
             if (_disposed) {
@@ -196,7 +194,7 @@ namespace AsmDude {
 
                 double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
                 if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
-                    AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0} seconds to prepare code completion for previous keyword \"{1}\" and current keyword \"{2}\".", elapsedSec, previousKeyword, partialKeyword, elapsedSec));
+                    AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0:F3} seconds to prepare code completion for previous keyword \"{1}\" and current keyword \"{2}\".", elapsedSec, previousKeyword, partialKeyword, elapsedSec));
                 }
             } catch (Exception e) {
                 AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:AugmentCompletionSession; e={1}", this.ToString(), e.ToString()));
@@ -351,18 +349,18 @@ namespace AsmDude {
                 }
             } else {
                 switch (arch) {
-                    case "X86": return Properties.Settings.Default.CodeCompletion_x86;
-                    case "I686": return Properties.Settings.Default.CodeCompletion_x86;
-                    case "MMX": return Properties.Settings.Default.CodeCompletion_mmx;
-                    case "SSE": return Properties.Settings.Default.CodeCompletion_sse;
-                    case "SSE2": return Properties.Settings.Default.CodeCompletion_sse2;
-                    case "SSE3": return Properties.Settings.Default.CodeCompletion_sse3;
-                    case "SSSE3": return Properties.Settings.Default.CodeCompletion_ssse3;
-                    case "SSE4.1": return Properties.Settings.Default.CodeCompletion_sse41;
-                    case "SSE4.2": return Properties.Settings.Default.CodeCompletion_sse42;
-                    case "AVX": return Properties.Settings.Default.CodeCompletion_avx;
-                    case "AVX2": return Properties.Settings.Default.CodeCompletion_avx2;
-                    case "KNC": return Properties.Settings.Default.CodeCompletion_knc;
+                    case "X86": return Settings.Default.CodeCompletion_x86;
+                    case "I686": return Settings.Default.CodeCompletion_x86;
+                    case "MMX": return Settings.Default.CodeCompletion_mmx;
+                    case "SSE": return Settings.Default.CodeCompletion_sse;
+                    case "SSE2": return Settings.Default.CodeCompletion_sse2;
+                    case "SSE3": return Settings.Default.CodeCompletion_sse3;
+                    case "SSSE3": return Settings.Default.CodeCompletion_ssse3;
+                    case "SSE4.1": return Settings.Default.CodeCompletion_sse41;
+                    case "SSE4.2": return Settings.Default.CodeCompletion_sse42;
+                    case "AVX": return Settings.Default.CodeCompletion_avx;
+                    case "AVX2": return Settings.Default.CodeCompletion_avx2;
+                    case "KNC": return Settings.Default.CodeCompletion_knc;
                     case null:
                     case "": return true;
                     default:

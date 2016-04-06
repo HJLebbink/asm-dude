@@ -28,8 +28,8 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly: AssemblyTitle("AsmDude")]
-[assembly: AssemblyDescription(GuidStrings.Description)]
+[assembly: AssemblyTitle(Vsix.Name)]
+[assembly: AssemblyDescription(Vsix.Description)]
 
 #if DEBUG
 [assembly: AssemblyConfiguration("Debug")]
@@ -38,7 +38,7 @@ using System.Runtime.InteropServices;
 #endif
 
 [assembly: AssemblyCompany("Lebbink")]
-[assembly: AssemblyProduct("AsmDude")]
+[assembly: AssemblyProduct(Vsix.Name)]
 [assembly: AssemblyCopyright("Copyright © H.J. Lebbink")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -52,8 +52,8 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion(GuidStrings.Version)]
-[assembly: AssemblyFileVersion(GuidStrings.Version)]
+[assembly: AssemblyVersion(Vsix.Version)]
+[assembly: AssemblyFileVersion(Vsix.Version)]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 

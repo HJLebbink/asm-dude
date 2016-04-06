@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AsmTools {
 
-    public abstract class Tools {
+    public static class Tools {
 
         public static bool isRemarkChar(char c) {
             return c.Equals('#') || c.Equals(';');
