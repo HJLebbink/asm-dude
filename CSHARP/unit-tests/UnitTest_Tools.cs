@@ -126,7 +126,8 @@ namespace unit_tests {
         [TestMethod]
         public void Test_parseMnemonic() {
             foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic))) {
-                Assert.AreEqual(AsmTools.Tools.parseMnemonic(mnemonic.ToString()), mnemonic);
+                Assert.AreEqual(AsmTools.Tools.parseMnemonic(mnemonic.ToString()), mnemonic, 
+                    "Parsing string "+mnemonic.ToString() + " does not yield the same mnemonic");
             }
         }
 
