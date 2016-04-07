@@ -261,14 +261,14 @@ namespace AsmDude {
         /// <returns></returns>
         private static bool isRemark(SnapshotPoint triggerPoint, SnapshotPoint lineStart) {
             try {
-                // check if the line contains a ";" or a "#" before the current point
+                // check if the line contains a remark character before the current point
                 for (SnapshotPoint pos = triggerPoint; pos >= lineStart; pos -= 1) {
                     if (AsmTools.Tools.isRemarkChar(pos.GetChar())) {
                         return true;
                     }
                 }
             } catch (Exception e) {
-                AsmDudeToolsStatic.Output(string.Format("ERROR:AugmentCompletionSession; e={0}", e.Message));
+                AsmDudeToolsStatic.Output(string.Format("ERROR: AsmCompletionSource:isRemark; triggerPoint={0}; lineStart={1}; e={2}", triggerPoint.Position, lineStart.Position, e.Message));
             }
             return false;
         }

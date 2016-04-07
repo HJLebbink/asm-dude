@@ -99,41 +99,35 @@ namespace AsmDude {
         }
 
         public static string getKeywordStr(SnapshotPoint? bufferPosition) {
-            if (bufferPosition != null) {
-                int seachSpanSize = 100;
-                int rawPos = bufferPosition.Value.Position;
-                int bufferLength = bufferPosition.Value.Snapshot.Length;
 
-                int beginSubString = (rawPos > seachSpanSize) ? (rawPos - seachSpanSize) : 0;
-                int endSubString = (bufferLength > (seachSpanSize + rawPos)) ? (seachSpanSize + rawPos) : bufferLength;
-                int posInSubString = (rawPos > seachSpanSize) ? seachSpanSize : rawPos;
-                //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: PreprocessMouseUp; rawPos={0}; bufferLength={1}; beginSubString={2}; endSubString={3}; posInSubString={4}", rawPos, bufferLength, beginSubString, endSubString, posInSubString));
-                char[] subString = bufferPosition.Value.Snapshot.ToCharArray(beginSubString, endSubString - beginSubString);
-                string keyword = AsmTools.Tools.getKeyword(posInSubString, subString);
-                return keyword;
+            if (bufferPosition != null) {
+                string line = bufferPosition.Value.GetContainingLine().GetText();
+                int startLine = bufferPosition.Value.GetContainingLine().Start;
+                int currentPos = bufferPosition.Value.Position;
+
+                Tuple<int, int> t = AsmTools.Tools.getKeywordPos(currentPos - startLine, line);
+
+                int beginPos = t.Item1;
+                int endPos = t.Item2;
+                return line.Substring(beginPos, endPos);
             }
             return null;
         }
 
-        public static TextExtent getKeyword(SnapshotPoint bufferPosition) {
+        public static TextExtent? getKeyword(SnapshotPoint? bufferPosition) {
 
-            //TODO: no need to search 100 chars left to right; only the current line needs to be searched
+            if (bufferPosition != null) {
+                string line = bufferPosition.Value.GetContainingLine().GetText();
+                int startLine = bufferPosition.Value.GetContainingLine().Start;
+                int currentPos = bufferPosition.Value.Position;
 
-            int seachSpanSize = 100;
-            int rawPos = bufferPosition.Position;
-            int bufferLength = bufferPosition.Snapshot.Length;
+                Tuple<int, int> t = AsmTools.Tools.getKeywordPos(currentPos - startLine, line);
 
-            int beginSubString = (rawPos > seachSpanSize) ? (rawPos - seachSpanSize) : 0;
-            int endSubString = (bufferLength > (seachSpanSize + rawPos)) ? (seachSpanSize + rawPos) : bufferLength;
-            int posInSubString = (rawPos > seachSpanSize) ? seachSpanSize : rawPos;
-            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: PreprocessMouseUp; rawPos={0}; bufferLength={1}; beginSubString={2}; endSubString={3}; posInSubString={4}", rawPos, bufferLength, beginSubString, endSubString, posInSubString));
-            char[] subString = bufferPosition.Snapshot.ToCharArray(beginSubString, endSubString - beginSubString);
-
-            Tuple<int, int> t = AsmTools.Tools.getKeywordPos(posInSubString, subString);
-            int beginPos = t.Item1 + beginSubString;
-            int endPos = t.Item2 + beginSubString;
-
-            return new TextExtent(new SnapshotSpan(bufferPosition.Snapshot, beginPos, endPos - beginPos), true);
+                int beginPos = t.Item1 + startLine;
+                int endPos = t.Item2 + startLine;
+                return new TextExtent(new SnapshotSpan(bufferPosition.Value.Snapshot, beginPos, endPos - beginPos), true);
+            }
+            return null;
         }
 
         public static string getLabelDescription(string label, string text) {

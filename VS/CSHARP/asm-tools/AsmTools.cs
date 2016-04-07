@@ -558,15 +558,15 @@ namespace AsmTools {
             return b2;
         }
 
-        public static string getKeyword(int pos, char[] line) {
+        public static string getKeyword(int pos, string line) {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: getKeyword; pos={0}; line=\"{1}\"", pos, new string(line)));
             var t = Tools.getKeywordPos(pos, line);
             int beginPos = t.Item1;
             int endPos = t.Item2;
-            return new string(line).Substring(beginPos, endPos - beginPos);
+            return line.Substring(beginPos, endPos - beginPos);
         }
 
-        public static Tuple<int, int> getKeywordPos(int pos, char[] line) {
+        public static Tuple<int, int> getKeywordPos(int pos, string line) {
             //Debug.WriteLine(string.Format("INFO: getKeyword; pos={0}; line=\"{1}\"", pos, new string(line)));
             if ((pos < 0) || (pos >= line.Length)) return null;
 
