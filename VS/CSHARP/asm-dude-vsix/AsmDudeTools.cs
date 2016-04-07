@@ -14,6 +14,9 @@ using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
+using AsmTools;
+
+
 namespace AsmDude {
 
     public static class AsmDudeToolsStatic {

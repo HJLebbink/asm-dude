@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!--
+
+Copyright (c) Microsoft Corporation. All rights reserved. 
+THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
+ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
+IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
+PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
+
+-->
+
 <CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <!-- 
   This is the file that defines the actual layout and type of the commands.
@@ -27,6 +38,13 @@
   <!--This header contains the image monikers for various images-->
   <Include href="KnownImageIds.vsct"/>
 
+  <!--This header contains data for a custom image moniker-->
+  <!--
+  NOTE: The custom moniker data does not have to be defined in a separate file, it can also
+  be defined in this .vsct file.
+  -->
+  <Include href="CustomMoniker.vsct"/>
+  
   <!--
   The first section of this file is the Commands section. This is where we define
   the commands, menus and menu groups. This section uses a Guid to identify the
@@ -75,7 +93,7 @@
           specify the "language" attribute for the Strings tag. It is possible however to specify
           different String sections inside any element definition, one for each supported language.
           -->
-          <ButtonText>AsmDude Sample Toolbar</ButtonText>
+          <ButtonText>C# Sample Toolbar</ButtonText>
         </Strings>
       </Menu>
     </Menus>
@@ -130,10 +148,10 @@
       -->
       <Button guid="guidMenuAndCommandsCmdSet" id="cmdidMyCommand" priority="0x100" type="Button">
         <Parent guid="guidMenuAndCommandsCmdSet" id="MyMenuGroup"/>
-        <Icon guid="ImageCatalogGuid" id="Rename"/>
+        <Icon guid="ImageCatalogGuid" id="GoToNext"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
-          <ButtonText>Label Rename X (AsmDude)</ButtonText>
+          <ButtonText>C# Command Sample</ButtonText>
         </Strings>
       </Button>
 
@@ -146,16 +164,16 @@
         <Icon guid="ImageCatalogGuid" id="GenericChart"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
-          <ButtonText>Sample Graph Command (AsmDude)</ButtonText>
+          <ButtonText>C# Sample Graph Command</ButtonText>
         </Strings>
       </Button>
 
       <Button guid="guidMenuAndCommandsCmdSet" id="cmdidMyZoom" priority="0x100" type="Button">
         <Parent guid="guidMenuAndCommandsCmdSet" id="MyToolbarGroup"/>
-        <Icon guid="ImageCatalogGuid" id="Rename"/>
+        <Icon guid="ImageCatalogGuid" id="Search"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
-          <ButtonText>Label Rename Y (AsmDude)</ButtonText>
+          <ButtonText>C# Sample Zoom Command</ButtonText>
         </Strings>
       </Button>
 
@@ -295,10 +313,6 @@
       <IDSymbol name="cmdidDynamicTxt" value="0x2004" />
       <IDSymbol name="cmdidDynVisibility1" value="0x2005" />
       <IDSymbol name="cmdidDynVisibility2" value="0x2006" />
-    </GuidSymbol>
-
-	<GuidSymbol name="CustomMoniker" value="{d53d7256-d44d-4245-bdd2-bfd22943659c}">
-      <IDSymbol name="Application" value="1" />
     </GuidSymbol>
 
   </Symbols>

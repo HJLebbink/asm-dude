@@ -1,0 +1,19 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<!--
+ This file defines the Guid data for the custom monikers and the ID symbols for individual 
+ icons. This file is used in conjunction with the imagemanifest file to provide the necessary 
+ data to display your custom icons in menu buttons, toolbars, etc.
+ -->
+ 
+ <!--
+ NOTE: This content does not have to be in a separate .vsct file, the Symbols for the custom
+ monikers can be defined in the main .vsct file. Additional file added here for demonstrative
+ purposes.
+-->
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable">
+  <Symbols>
+    <GuidSymbol name="CustomMoniker" value="{d53d7256-d44d-4245-bdd2-bfd22943659c}">
+      <IDSymbol name="Application" value="1" />
+    </GuidSymbol>
+  </Symbols>
+</CommandTable>

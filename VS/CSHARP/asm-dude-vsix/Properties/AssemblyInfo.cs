@@ -61,5 +61,5 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(true)]
 
 // Mark the assembly as not CLSCompliant
-[assembly: System.CLSCompliant(false)]
+//[assembly: System.CLSCompliant(false)]
 

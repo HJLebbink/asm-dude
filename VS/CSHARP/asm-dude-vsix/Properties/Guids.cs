@@ -15,12 +15,12 @@ namespace AsmDude {
 
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly Guid guidMenuAndCommandsPkg = new Guid("{3C7C5ABE-82AC-4A37-B077-0FF60E8B1FD3}");
-        public const string guidMenuAndCommandsPkg_string = "3C7C5ABE-82AC-4A37-B077-0FF60E8B1FD3";
+        public const string guidMenuAndCommandsPkg_string = "777B1A99-996C-453C-A174-2E8484DCC415";
+        public static readonly Guid guidMenuAndCommandsPkg = new Guid("{"+ guidMenuAndCommandsPkg_string + "}");
 
-        public static readonly Guid guidMenuAndCommandsCmdSet = new Guid("{19492BCB-32B3-4EC3-8826-D67CD5526653}");
+        public static readonly Guid guidMenuAndCommandsCmdSet = new Guid("{2BB3E0FB-4A0E-4331-BE0C-64B6512DD4D9}");
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        public static readonly Guid guidGenericCmdBmp = new Guid("{0A4C51BD-3239-4370-8869-16E0AE8C0A46}");
+        public static readonly Guid guidGenericCmdBmp = new Guid("{2BB3E0FB-4A0E-4331-BE0C-64B6512DD4D9}");
     }
 }

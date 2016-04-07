@@ -27,6 +27,7 @@ namespace AsmDude {
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
     [Guid(Guids.GuidPackage_str)]
+    [ComVisible(true)]
 
     [InstalledProductRegistration("AsmDude", Vsix.Description, Vsix.Version, IconResourceID = 400)] // for the help about information
 
@@ -193,11 +194,33 @@ namespace AsmDude {
         }
 
         /// <summary>
+        /// This function prints text on the debug ouput and on the generic pane of the 
+        /// Output window.
+        /// </summary>
+        /// <param name="text"></param>
+        private void OutputCommandString(string text) {
+            // Build the string to write on the debugger and Output window.
+            StringBuilder outputText = new StringBuilder();
+            outputText.Append(" ================================================\n");
+            outputText.AppendFormat("  MenuAndCommands: {0}\n", text);
+            outputText.Append(" ================================================\n\n");
+
+            IVsOutputWindowPane windowPane = (IVsOutputWindowPane)GetService(typeof(SVsGeneralOutputWindowPane));
+            if (null == windowPane) {
+                Debug.WriteLine("Failed to get a reference to the Output window General pane");
+                return;
+            }
+            if (Microsoft.VisualStudio.ErrorHandler.Failed(windowPane.OutputString(outputText.ToString()))) {
+                Debug.WriteLine("Failed to write on the Output window");
+            }
+        }
+
+        /// <summary>
         /// Event handler called when the user selects the Sample command.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", MessageId = "Microsoft.Samples.VisualStudio.MenuCommands.MenuCommandsPackage.OutputCommandString(System.String)")]
         private void MenuCommandCallback(object caller, EventArgs args) {
-            AsmDudeToolsStatic.Output("Sample Command Callback.");
+            OutputCommandString("Sample Command Callback.");
         }
 
         /// <summary>
@@ -205,7 +228,7 @@ namespace AsmDude {
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", MessageId = "Microsoft.Samples.VisualStudio.MenuCommands.MenuCommandsPackage.OutputCommandString(System.String)")]
         private void GraphCommandCallback(object caller, EventArgs args) {
-            AsmDudeToolsStatic.Output("Graph Command Callback.");
+            OutputCommandString("Graph Command Callback.");
         }
 
         /// <summary>
@@ -213,7 +236,7 @@ namespace AsmDude {
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", MessageId = "Microsoft.Samples.VisualStudio.MenuCommands.MenuCommandsPackage.OutputCommandString(System.String)")]
         private void ZoomCommandCallback(object caller, EventArgs args) {
-            AsmDudeToolsStatic.Output("Zoom Command Callback.");
+            OutputCommandString("Zoom Command Callback.");
         }
 
         /// <summary>
@@ -226,13 +249,13 @@ namespace AsmDude {
 
             // Check that the type of the caller is the expected one.
             OleMenuCommand command = caller as OleMenuCommand;
-            if (null == command) {
+            if (null == command)
                 return;
-            }
+
             // Now check the command set.
-            if (command.CommandID.Guid != Guids.guidMenuAndCommandsCmdSet) {
+            if (command.CommandID.Guid != Guids.guidMenuAndCommandsCmdSet)
                 return;
-            }
+
             // This is one of our commands. Now what we want to do is to switch the visibility status
             // of the two menus with dynamic visibility, so that if the user clicks on one, then this 
             // will make it invisible and the other one visible.

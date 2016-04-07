@@ -1158,7 +1158,11 @@
 			<description>Jump if ECX register is 0</description>
 			<ref>Jcc.html</ref>
 		</mnemonic>
-		<mnemonic name='JE' type='jump'>
+    <mnemonic name='JRCXZ' type='jump'>
+      <description>Jump if RCX register is 0</description>
+      <ref>Jcc.html</ref>
+    </mnemonic>
+    <mnemonic name='JE' type='jump'>
 			<description>Jump if equal (ZF=1) (JE=JZ)</description>
 			<ref>Jcc.html</ref>
 		</mnemonic>
