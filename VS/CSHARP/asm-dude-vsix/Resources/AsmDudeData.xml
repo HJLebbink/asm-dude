@@ -220,19 +220,19 @@
 			<description>Bit Field Extract</description>
 			<ref>BEXTR.html</ref>
 		</mnemonic>
-		<mnemonic name='BLENDPD' arch='SSE4.1'>
+		<mnemonic name='BLENDPD' arch='SSE41'>
 			<description>Blend Packed Double Precision Floating-Point Values</description>
 			<ref>BLENDPD.html</ref>
 		</mnemonic>
-		<mnemonic name='BLENDPS' arch='SSE4.1'>
+		<mnemonic name='BLENDPS' arch='SSE41'>
 			<description>Blend Packed Single Precision Floating-Point Values</description>
 			<ref>BLENDPS.html</ref>
 		</mnemonic>
-		<mnemonic name='BLENDVPD' arch='SSE4.1'>
+		<mnemonic name='BLENDVPD' arch='SSE41'>
 			<description>Variable Blend Packed Double Precision Floating-Point Values</description>
 			<ref>BLENDVPD.html</ref>
 		</mnemonic>
-		<mnemonic name='BLENDVPS' arch='SSE4.1'>
+		<mnemonic name='BLENDVPS' arch='SSE41'>
 			<description>Variable Blend Packed Single Precision Floating-Point Values</description>
 			<ref>BLENDVPS.html</ref>
 		</mnemonic>
@@ -514,7 +514,7 @@
 			<description>CPU Identification</description>
 			<ref>CPUID.html</ref>
 		</mnemonic>
-		<mnemonic name='CRC32' arch='SSE4.2'>
+		<mnemonic name='CRC32' arch='SSE42'>
 			<description>Accumulate CRC32 Value</description>
 			<ref>CRC32.html</ref>
 		</mnemonic>
@@ -650,11 +650,11 @@
 			<description>Divide Scalar Single-Precision Floating-Point Values</description>
 			<ref>DIVSS.html</ref>
 		</mnemonic>
-		<mnemonic name='DPPD' arch='SSE4.1'>
+		<mnemonic name='DPPD' arch='SSE41'>
 			<description>Dot Product of Packed Double Precision Floating-Point Values</description>
 			<ref>DPPD.html</ref>
 		</mnemonic>
-		<mnemonic name='DPPS' arch='SSE4.1'>
+		<mnemonic name='DPPS' arch='SSE41'>
 			<description>Dot Product of Packed Single Precision Floating-Point Values</description>
 			<ref>DPPS.html</ref>
 		</mnemonic>
@@ -666,7 +666,7 @@
 			<description>Make Stack Frame for Procedure Parameters</description>
 			<ref>ENTER.html</ref>
 		</mnemonic>
-		<mnemonic name='EXTRACTPS' arch='SSE4.1'>
+		<mnemonic name='EXTRACTPS' arch='SSE41'>
 			<description>Extract Packed Single Precision Floating-Point Value</description>
 			<ref>EXTRACTPS.html</ref>
 		</mnemonic>
@@ -1082,7 +1082,7 @@
 			<description>Increment by 1</description>
 			<ref>INC.html</ref>
 		</mnemonic>
-		<mnemonic name='INSERTPS' arch='SSE4.1'>
+		<mnemonic name='INSERTPS' arch='SSE41'>
 			<description>Insert Packed Single Precision Floating-Point Value</description>
 			<ref>INSERTPS.html</ref>
 		</mnemonic>
@@ -1370,7 +1370,7 @@
 			<description>Load Task Register</description>
 			<ref>LTR.html</ref>
 		</mnemonic>
-		<mnemonic name='LZCNT' arch='SSE4.2'>
+		<mnemonic name='LZCNT' arch='SSE42'>
 			<description>Count the Number of Leading Zero Bits</description>
 			<ref>LZCNT.html</ref>
 		</mnemonic>
@@ -1498,7 +1498,7 @@
 			<description>Store Double Quadword Using Non-Temporal Hint</description>
 			<ref>MOVNTDQ.html</ref>
 		</mnemonic>
-		<mnemonic name='MOVNTDQA' arch='SSE4.1'>
+		<mnemonic name='MOVNTDQA' arch='SSE41'>
 			<description>Load Double Quadword Non-Temporal Aligned Hint</description>
 			<ref>MOVNTDQA.html</ref>
 		</mnemonic>
@@ -1588,7 +1588,7 @@
 			<description>Move with Zero-Extend</description>
 			<ref>MOVZX.html</ref>
 		</mnemonic>
-		<mnemonic name='MPSADBW' arch='SSE4.1'>
+		<mnemonic name='MPSADBW' arch='SSE41'>
 			<description>Compute Multiple Packed Sums of Absolute Difference</description>
 			<ref>MPSADBW.html</ref>
 		</mnemonic>
@@ -1684,7 +1684,7 @@
 			<description>Pack Doubleword to word (signed with saturation)</description>
 			<ref>PACKSSWB:PACKSSDW.html</ref>
 		</mnemonic>
-		<mnemonic name='PACKUSDW' arch='SSE4.1'>
+		<mnemonic name='PACKUSDW' arch='SSE41'>
 			<description>Pack with Unsigned Saturation</description>
 			<ref>PACKUSDW.html</ref>
 		</mnemonic>
@@ -1748,11 +1748,11 @@
 			<description>Average Packed Integers</description>
 			<ref>PAVGB:PAVGW.html</ref>
 		</mnemonic>
-		<mnemonic name='PBLENDVB' arch='SSE4.1'>
+		<mnemonic name='PBLENDVB' arch='SSE41'>
 			<description>Variable Blend Packed Bytes</description>
 			<ref>PBLENDVB.html</ref>
 		</mnemonic>
-		<mnemonic name='PBLENDW' arch='SSE4.1'>
+		<mnemonic name='PBLENDW' arch='SSE41'>
 			<description>Blend Packed Words</description>
 			<ref>PBLENDW.html</ref>
 		</mnemonic>
@@ -1772,15 +1772,15 @@
 			<description>Compare Packed Data for Equal</description>
 			<ref>PCMPEQB:PCMPEQW:PCMPEQD.html</ref>
 		</mnemonic>
-		<mnemonic name='PCMPEQQ' arch='SSE4.1'>
+		<mnemonic name='PCMPEQQ' arch='SSE41'>
 			<description>Compare Packed Qword Data for Equal</description>
 			<ref>PCMPEQQ.html</ref>
 		</mnemonic>
-		<mnemonic name='PCMPESTRI' arch='SSE4.2'>
+		<mnemonic name='PCMPESTRI' arch='SSE42'>
 			<description>Packed Compare Explicit Length Strings, Return Index</description>
 			<ref>PCMPESTRI.html</ref>
 		</mnemonic>
-		<mnemonic name='PCMPESTRM' arch='SSE4.2'>
+		<mnemonic name='PCMPESTRM' arch='SSE42'>
 			<description>Packed Compare Explicit Length Strings, Return Mask</description>
 			<ref>PCMPESTRM.html</ref>
 		</mnemonic>
@@ -1796,15 +1796,15 @@
 			<description>Compare Packed Signed Integers for Greater Than</description>
 			<ref>PCMPGTB:PCMPGTW:PCMPGTD.html</ref>
 		</mnemonic>
-		<mnemonic name='PCMPGTQ' arch='SSE4.2'>
+		<mnemonic name='PCMPGTQ' arch='SSE42'>
 			<description>Compare Packed Data for Greater Than</description>
 			<ref>PCMPGTQ.html</ref>
 		</mnemonic>
-		<mnemonic name='PCMPISTRI' arch='SSE4.2'>
+		<mnemonic name='PCMPISTRI' arch='SSE42'>
 			<description>Packed Compare Implicit Length Strings, Return Index</description>
 			<ref>PCMPISTRI.html</ref>
 		</mnemonic>
-		<mnemonic name='PCMPISTRM' arch='SSE4.2'>
+		<mnemonic name='PCMPISTRM' arch='SSE42'>
 			<description>Packed Compare Implicit Length Strings, Return Mask</description>
 			<ref>PCMPISTRM.html</ref>
 		</mnemonic>
@@ -1816,15 +1816,15 @@
 			<description>Parallel Bits Extract</description>
 			<ref>PEXT.html</ref>
 		</mnemonic>
-		<mnemonic name='PEXTRB' arch='SSE4.1'>
+		<mnemonic name='PEXTRB' arch='SSE41'>
 			<description>Extract Byte/Dword/Qword</description>
 			<ref>PEXTRB:PEXTRD:PEXTRQ.html</ref>
 		</mnemonic>
-		<mnemonic name='PEXTRD' arch='SSE4.1'>
+		<mnemonic name='PEXTRD' arch='SSE41'>
 			<description>Extract Byte/Dword/Qword</description>
 			<ref>PEXTRB:PEXTRD:PEXTRQ.html</ref>
 		</mnemonic>
-		<mnemonic name='PEXTRQ' arch='SSE4.1'>
+		<mnemonic name='PEXTRQ' arch='SSE41'>
 			<description>Extract Byte/Dword/Qword</description>
 			<ref>PEXTRB:PEXTRD:PEXTRQ.html</ref>
 		</mnemonic>
@@ -1844,7 +1844,7 @@
 			<description>Packed Horizontal Add</description>
 			<ref>PHADDW:PHADDD.html</ref>
 		</mnemonic>
-		<mnemonic name='PHMINPOSUW' arch='SSE4.1'>
+		<mnemonic name='PHMINPOSUW' arch='SSE41'>
 			<description>Packed Horizontal Word Minimum</description>
 			<ref>PHMINPOSUW.html</ref>
 		</mnemonic>
@@ -1860,15 +1860,15 @@
 			<description>Packed Horizontal Subtract</description>
 			<ref>PHSUBW:PHSUBD.html</ref>
 		</mnemonic>
-		<mnemonic name='PINSRB' arch='SSE4.1'>
+		<mnemonic name='PINSRB' arch='SSE41'>
 			<description>Insert Byte</description>
 			<ref>PINSRB:PINSRD:PINSRQ.html</ref>
 		</mnemonic>
-		<mnemonic name='PINSRD' arch='SSE4.1'>
+		<mnemonic name='PINSRD' arch='SSE41'>
 			<description>Insert Dword</description>
 			<ref>PINSRB:PINSRD:PINSRQ.html</ref>
 		</mnemonic>
-		<mnemonic name='PINSRQ' arch='SSE4.1'>
+		<mnemonic name='PINSRQ' arch='SSE41'>
 			<description>Insert Qword</description>
 			<ref>PINSRB:PINSRD:PINSRQ.html</ref>
 		</mnemonic>
@@ -1884,11 +1884,11 @@
 			<description>Multiply and Add Packed Integers</description>
 			<ref>PMADDWD.html</ref>
 		</mnemonic>
-		<mnemonic name='PMAXSB' arch='SSE4.1'>
+		<mnemonic name='PMAXSB' arch='SSE41'>
 			<description>Maximum of Packed Signed Byte Integers</description>
 			<ref>PMAXSB.html</ref>
 		</mnemonic>
-		<mnemonic name='PMAXSD' arch='SSE4.1'>
+		<mnemonic name='PMAXSD' arch='SSE41'>
 			<description>Maximum of Packed Signed Dword Integers</description>
 			<ref>PMAXSD.html</ref>
 		</mnemonic>
@@ -1900,19 +1900,19 @@
 			<description>Maximum of Packed Unsigned Byte Integers</description>
 			<ref>PMAXUB.html</ref>
 		</mnemonic>
-		<mnemonic name='PMAXUD' arch='SSE4.1'>
+		<mnemonic name='PMAXUD' arch='SSE41'>
 			<description>Maximum of Packed Unsigned Dword Integers</description>
 			<ref>PMAXUD.html</ref>
 		</mnemonic>
-		<mnemonic name='PMAXUW' arch='SSE4.1'>
+		<mnemonic name='PMAXUW' arch='SSE41'>
 			<description>Maximum of Packed Word Integers</description>
 			<ref>PMAXUW.html</ref>
 		</mnemonic>
-		<mnemonic name='PMINSB' arch='SSE4.1'>
+		<mnemonic name='PMINSB' arch='SSE41'>
 			<description>Minimum of Packed Signed Byte Integers</description>
 			<ref>PMINSB.html</ref>
 		</mnemonic>
-		<mnemonic name='PMINSD' arch='SSE4.1'>
+		<mnemonic name='PMINSD' arch='SSE41'>
 			<description>Minimum of Packed Dword Integers</description>
 			<ref>PMINSD.html</ref>
 		</mnemonic>
@@ -1924,11 +1924,11 @@
 			<description>Minimum of Packed Unsigned Byte Integers</description>
 			<ref>PMINUB.html</ref>
 		</mnemonic>
-		<mnemonic name='PMINUD' arch='SSE4.1'>
+		<mnemonic name='PMINUD' arch='SSE41'>
 			<description>Minimum of Packed Dword Integers</description>
 			<ref>PMINUD.html</ref>
 		</mnemonic>
-		<mnemonic name='PMINUW' arch='SSE4.1'>
+		<mnemonic name='PMINUW' arch='SSE41'>
 			<description>Minimum of Packed Word Integers</description>
 			<ref>PMINUW.html</ref>
 		</mnemonic>
@@ -1936,55 +1936,55 @@
 			<description>Move Byte Mask</description>
 			<ref>PMOVMSKB.html</ref>
 		</mnemonic>
-		<mnemonic name='PMOVSXBW' arch='SSE4.1'>
+		<mnemonic name='PMOVSXBW' arch='SSE41'>
 			<description>PMOVSXBW xmm1, xmm2/m64: Sign extend 8 packed signed 8-bit integers in the low 8 bytes of xmm2/m64 to 8 packed signed 16-bit integers in xmm1</description>
 			<ref>PMOVSX.html</ref>
 		</mnemonic>
-		<mnemonic name='PMOVSXBD' arch='SSE4.1'>
+		<mnemonic name='PMOVSXBD' arch='SSE41'>
 			<description>PMOVSXBD xmm1, xmm2/m32: Sign extend 4 packed signed 8-bit integers in the low 4 bytes of xmm2/m32 to 4 packed signed 32-bit integers in xmm1</description>
 			<ref>PMOVSX.html</ref>
 		</mnemonic>
-		<mnemonic name='PMOVSXBQ' arch='SSE4.1'>
+		<mnemonic name='PMOVSXBQ' arch='SSE41'>
 			<description>PMOVSXWD xmm1, xmm2/m64: Sign extend 4 packed signed 16-bit integers in the low 8 bytes of xmm2/m64 to 4 packed signed 32-bit integers in xmm1</description>
 			<ref>PMOVSX.html</ref>
 		</mnemonic>
-		<mnemonic name='PMOVSXWD' arch='SSE4.1'>
+		<mnemonic name='PMOVSXWD' arch='SSE41'>
 			<description>PMOVSXWD xmm1, xmm2/m64: Sign extend 4 packed signed 16-bit integers in the low 8 bytes of xmm2/m64 to 4 packed signed 32-bit integers in xmm1</description>
 			<ref>PMOVSX.html</ref>
 		</mnemonic>
-		<mnemonic name='PMOVSXWQ' arch='SSE4.1'>
+		<mnemonic name='PMOVSXWQ' arch='SSE41'>
 			<description>PMOVSXWQ xmm1, xmm2/m32: Sign extend 2 packed signed 16-bit integers in the low 4 bytes of xmm2/m32 to 2 packed signed 64-bit integers in xmm1</description>
 			<ref>PMOVSX.html</ref>
 		</mnemonic>
-		<mnemonic name='PMOVSXDQ' arch='SSE4.1'>
+		<mnemonic name='PMOVSXDQ' arch='SSE41'>
 			<description>PMOVSXDQ xmm1, xmm2/m64: Sign extend 2 packed signed 32-bit integers in the low 8 bytes of xmm2/m64 to 2 packed signed 64-bit integers in xmm1</description>
 			<ref>PMOVSX.html</ref>
 		</mnemonic>
-		<mnemonic name='PMOVZXBW' arch='SSE4.1'>
+		<mnemonic name='PMOVZXBW' arch='SSE41'>
 			<description>PMOVZXBW xmm1, xmm2/m64: Zero extend 8 packed 8-bit integers in the low 8 bytes of xmm2/m64 to 8 packed 16-bit integers in xmm1</description>
 			<ref>PMOVZX.html</ref>
 		</mnemonic>
-		<mnemonic name='PMOVZXBD' arch='SSE4.1'>
+		<mnemonic name='PMOVZXBD' arch='SSE41'>
 			<description>PMOVZXBD xmm1, xmm2/m32: Zero extend 4 packed 8-bit integers in the low 4 bytes of xmm2/m32 to 4 packed 32-bit integers in xmm1</description>
 			<ref>PMOVZX.html</ref>
 		</mnemonic>
-		<mnemonic name='PMOVZXBQ' arch='SSE4.1'>
+		<mnemonic name='PMOVZXBQ' arch='SSE41'>
 			<description>PMOVZXBQ xmm1, xmm2/m16: Zero extend 2 packed 8-bit integers in the low 2 bytes of xmm2/m16 to 2 packed 64-bit integers in xmm1</description>
 			<ref>PMOVZX.html</ref>
 		</mnemonic>
-		<mnemonic name='PMOVZXWD' arch='SSE4.1'>
+		<mnemonic name='PMOVZXWD' arch='SSE41'>
 			<description>PMOVZXWD xmm1, xmm2/m64: Zero extend 4 packed 16-bit integers in the low 8 bytes of xmm2/m64 to 4 packed 32-bit integers in xmm1</description>
 			<ref>PMOVZX.html</ref>
 		</mnemonic>
-		<mnemonic name='PMOVZXWQ' arch='SSE4.1'>
+		<mnemonic name='PMOVZXWQ' arch='SSE41'>
 			<description>PMOVZXWQ xmm1, xmm2/m32: Zero extend 2 packed 16-bit integers in the low 4 bytes of xmm2/m32 to 2 packed 64-bit integers in xmm1</description>
 			<ref>PMOVZX.html</ref>
 		</mnemonic>
-		<mnemonic name='PMOVZXDQ' arch='SSE4.1'>
+		<mnemonic name='PMOVZXDQ' arch='SSE41'>
 			<description>PMOVZXDQ xmm1, xmm2/m64: Zero extend 2 packed 32-bit integers in the low 8 bytes of xmm2/m64 to 2 packed 64-bit integers in xmm1</description>
 			<ref>PMOVZX.html</ref>
 		</mnemonic>
-		<mnemonic name='PMULDQ' arch='SSE4.1'>
+		<mnemonic name='PMULDQ' arch='SSE41'>
 			<description>Multiply Packed Signed Dword Integers</description>
 			<ref>PMULDQ.html</ref>
 		</mnemonic>
@@ -2000,7 +2000,7 @@
 			<description>Multiply Packed Signed Integers and Store High Result</description>
 			<ref>PMULHW.html</ref>
 		</mnemonic>
-		<mnemonic name='PMULLD' arch='SSE4.1'>
+		<mnemonic name='PMULLD' arch='SSE41'>
 			<description>Multiply Packed Signed Dword Integers and Store Low Result</description>
 			<ref>PMULLD.html</ref>
 		</mnemonic>
@@ -2024,7 +2024,7 @@
 			<description>Pop All General-Purpose Registers</description>
 			<ref>POPA:POPAD.html</ref>
 		</mnemonic>
-		<mnemonic name='POPCNT' arch='SSE4.2'>
+		<mnemonic name='POPCNT' arch='SSE42'>
 			<description>Return the Count of Number of Bits Set to 1</description>
 			<ref>POPCNT.html</ref>
 		</mnemonic>
@@ -2176,7 +2176,7 @@
 			<description>Subtract Packed Unsigned Integers with Unsigned Saturation</description>
 			<ref>PSUBUSB:PSUBUSW.html</ref>
 		</mnemonic>
-		<mnemonic name='PTEST' arch='SSE4.1'>
+		<mnemonic name='PTEST' arch='SSE41'>
 			<description>Logical Compare</description>
 			<ref>PTEST.html</ref>
 		</mnemonic>
@@ -2320,19 +2320,19 @@
 			<description>Rotate Right Logical Without Affecting Flags</description>
 			<ref>RORX.html</ref>
 		</mnemonic>
-		<mnemonic name='ROUNDPD' arch='SSE4.1'>
+		<mnemonic name='ROUNDPD' arch='SSE41'>
 			<description>Round Packed Double Precision Floating-Point Values</description>
 			<ref>ROUNDPD.html</ref>
 		</mnemonic>
-		<mnemonic name='ROUNDPS' arch='SSE4.1'>
+		<mnemonic name='ROUNDPS' arch='SSE41'>
 			<description>Round Packed Single Precision Floating-Point Values</description>
 			<ref>ROUNDPS.html</ref>
 		</mnemonic>
-		<mnemonic name='ROUNDSD' arch='SSE4.1'>
+		<mnemonic name='ROUNDSD' arch='SSE41'>
 			<description>Round Scalar Double Precision Floating-Point Values</description>
 			<ref>ROUNDSD.html</ref>
 		</mnemonic>
-		<mnemonic name='ROUNDSS' arch='SSE4.1'>
+		<mnemonic name='ROUNDSS' arch='SSE41'>
 			<description>Round Scalar Single Precision Floating-Point Values</description>
 			<ref>ROUNDSS.html</ref>
 		</mnemonic>
@@ -3772,9 +3772,6 @@
 		</mnemonic>
 		<mnemonic name='LZCNT' arch='KNC'>
 			<description>Leading Zero Count</description>
-		</mnemonic>
-		<mnemonic name='POPCNT' arch='KNC'>
-			<description>Return the Count of Number of Bits Set to 1</description>
 		</mnemonic>
 		<mnemonic name='SPFLT' arch='KNC'>
 			<description>Set performance monitor ϐiltering mask</description>

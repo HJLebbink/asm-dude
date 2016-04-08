@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Arch.cs" />
     <Compile Include="AsmTools.cs" />
     <Compile Include="Mnemonic.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -179,7 +179,7 @@ namespace AsmDude {
     public class AsmDudeTools {
         private XmlDocument _xmlData;
         private IDictionary<string, TokenType> _type;
-        private IDictionary<string, string> _arch; // todo make an arch enumeration
+        private IDictionary<string, Arch> _arch;
         private IDictionary<string, string> _description;
 
 
@@ -263,7 +263,7 @@ namespace AsmDude {
         /// <summary>
         /// Get architecture of the provided keyword
         /// </summary>
-        public string getArchitecture(string keyword) {
+        public Arch getArchitecture(string keyword) {
             return this._arch[keyword.ToUpper()];
         }
 
@@ -277,7 +277,7 @@ namespace AsmDude {
 
         private void initData() {
             this._type = new Dictionary<string, TokenType>();
-            this._arch = new Dictionary<string, string>();
+            this._arch = new Dictionary<string, Arch>();
             this._description = new Dictionary<string, string>();
        
             // fill the dictionary with keywords
@@ -291,7 +291,7 @@ namespace AsmDude {
                     string name = nameAttribute.Value.ToUpper();
                     //Debug.WriteLine("INFO: AsmTokenTagger: found misc " + name);
                     this._type[name] = TokenType.Misc;
-                    this._arch[name] = retrieveArch(node);
+                    this._arch[name] = this.retrieveArch(node);
                     this._description[name] = retrieveDescription(node);
                 }
             }
@@ -304,7 +304,7 @@ namespace AsmDude {
                     string name = nameAttribute.Value.ToUpper();
                     //Debug.WriteLine("INFO: AsmTokenTagger: found directive " + name);
                     this._type[name] = TokenType.Directive;
-                    this._arch[name] = retrieveArch(node);
+                    this._arch[name] = this.retrieveArch(node);
                     this._description[name] = retrieveDescription(node);
                 }
             }
@@ -326,7 +326,7 @@ namespace AsmDude {
                             this._type[name] = TokenType.Mnemonic;
                         }
                     }
-                    this._arch[name] = retrieveArch(node);
+                    this._arch[name] = this.retrieveArch(node);
                     this._description[name] = retrieveDescription(node);
                 }
             }
@@ -338,22 +338,22 @@ namespace AsmDude {
                     string name = nameAttribute.Value.ToUpper();
                     //Debug.WriteLine("INFO: AsmTokenTagger: found register " + name);
                     this._type[name] = TokenType.Register;
-                    this._arch[name] = retrieveArch(node);
+                    this._arch[name] = this.retrieveArch(node);
                     this._description[name] = retrieveDescription(node);
                 }
             }
         }
 
-        private string retrieveArch(XmlNode node) {
+        private Arch retrieveArch(XmlNode node) {
             try {
                 var archAttribute = node.Attributes["arch"];
                 if (archAttribute == null) {
-                    return null;
+                    return Arch.NONE;
                 } else {
-                    return archAttribute.Value.ToUpper();
+                    return AsmTools.Tools.parseArch(archAttribute.Value.ToUpper());
                 }
             } catch (Exception) {
-                return null;
+                return Arch.NONE;
             }
         }
 

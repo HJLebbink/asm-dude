@@ -227,7 +227,7 @@ namespace AsmDude {
             foreach (string keyword in this._asmDudeTools.getKeywords()) {
                 TokenType type = this._asmDudeTools.getTokenType(keyword);
                 if (selectedTypes.Contains(type)) {
-                    string arch = this._asmDudeTools.getArchitecture(keyword);
+                    Arch arch = this._asmDudeTools.getArchitecture(keyword);
                     bool selected = this.isArchSwitchedOn(arch);
                     //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:AugmentCompletionSession; keyword={1}; arch={2}; selected={3}", this.ToString(), keyword, arch, selected));
 
@@ -236,7 +236,7 @@ namespace AsmDude {
                         
                         // by default, the entry.Key is with capitals
                         string insertionText = (useCapitals) ? keyword : keyword.ToLower();
-                        string archStr = (arch == null) ? "" : " [" + arch + "]";
+                        string archStr = (arch == Arch.NONE) ? "" : " [" + arch + "]";
                         string descriptionStr = this._asmDudeTools.getDescription(keyword);
                         descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
                         //String description = keyword + archStr + descriptionStr;
@@ -260,15 +260,11 @@ namespace AsmDude {
         /// <param name="lineStart"></param>
         /// <returns></returns>
         private static bool isRemark(SnapshotPoint triggerPoint, SnapshotPoint lineStart) {
-            try {
-                // check if the line contains a remark character before the current point
-                for (SnapshotPoint pos = triggerPoint; pos >= lineStart; pos -= 1) {
-                    if (AsmTools.Tools.isRemarkChar(pos.GetChar())) {
-                        return true;
-                    }
+            // check if the line contains a remark character before the current point
+            for (SnapshotPoint pos = (triggerPoint-1); pos >= lineStart; pos -= 1) {
+                if (AsmTools.Tools.isRemarkChar(pos.GetChar())) {
+                    return true;
                 }
-            } catch (Exception e) {
-                AsmDudeToolsStatic.Output(string.Format("ERROR: AsmCompletionSource:isRemark; triggerPoint={0}; lineStart={1}; e={2}", triggerPoint.Position, lineStart.Position, e.Message));
             }
             return false;
         }
@@ -326,43 +322,41 @@ namespace AsmDude {
             return previousKeyword;
         }
 
-        private bool isArchSwitchedOn(string arch) {
+        private bool isArchSwitchedOn(Arch arch) {
             if (false) {
                 switch (arch) {
-                    case "X86": return this._package.OptionsPageCodeCompletion._x86;
-                    case "I686": return this._package.OptionsPageCodeCompletion._i686;
-                    case "MMX": return this._package.OptionsPageCodeCompletion._mmx;
-                    case "SSE": return this._package.OptionsPageCodeCompletion._sse;
-                    case "SSE2": return this._package.OptionsPageCodeCompletion._sse2;
-                    case "SSE3": return this._package.OptionsPageCodeCompletion._sse3;
-                    case "SSSE3": return this._package.OptionsPageCodeCompletion._ssse3;
-                    case "SSE4.1": return this._package.OptionsPageCodeCompletion._sse41;
-                    case "SSE4.2": return this._package.OptionsPageCodeCompletion._sse42;
-                    case "AVX": return this._package.OptionsPageCodeCompletion._avx;
-                    case "AVX2": return this._package.OptionsPageCodeCompletion._avx2;
-                    case "KNC": return this._package.OptionsPageCodeCompletion._knc;
-                    case null:
-                    case "": return true;
+                    case Arch.X86: return this._package.OptionsPageCodeCompletion._x86;
+                    case Arch.I686: return this._package.OptionsPageCodeCompletion._i686;
+                    case Arch.MMX: return this._package.OptionsPageCodeCompletion._mmx;
+                    case Arch.SSE: return this._package.OptionsPageCodeCompletion._sse;
+                    case Arch.SSE2: return this._package.OptionsPageCodeCompletion._sse2;
+                    case Arch.SSE3: return this._package.OptionsPageCodeCompletion._sse3;
+                    case Arch.SSSE3: return this._package.OptionsPageCodeCompletion._ssse3;
+                    case Arch.SSE41: return this._package.OptionsPageCodeCompletion._sse41;
+                    case Arch.SSE42: return this._package.OptionsPageCodeCompletion._sse42;
+                    case Arch.AVX: return this._package.OptionsPageCodeCompletion._avx;
+                    case Arch.AVX2: return this._package.OptionsPageCodeCompletion._avx2;
+                    case Arch.KNC: return this._package.OptionsPageCodeCompletion._knc;
+                    case Arch.NONE: return true;
                     default:
                         Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:isArchSwitchedOn; unsupported arch {0}", arch));
                         return true;
                 }
             } else {
                 switch (arch) {
-                    case "X86": return Settings.Default.CodeCompletion_x86;
-                    case "I686": return Settings.Default.CodeCompletion_x86;
-                    case "MMX": return Settings.Default.CodeCompletion_mmx;
-                    case "SSE": return Settings.Default.CodeCompletion_sse;
-                    case "SSE2": return Settings.Default.CodeCompletion_sse2;
-                    case "SSE3": return Settings.Default.CodeCompletion_sse3;
-                    case "SSSE3": return Settings.Default.CodeCompletion_ssse3;
-                    case "SSE4.1": return Settings.Default.CodeCompletion_sse41;
-                    case "SSE4.2": return Settings.Default.CodeCompletion_sse42;
-                    case "AVX": return Settings.Default.CodeCompletion_avx;
-                    case "AVX2": return Settings.Default.CodeCompletion_avx2;
-                    case "KNC": return Settings.Default.CodeCompletion_knc;
-                    case null:
-                    case "": return true;
+                    case Arch.X86: return Settings.Default.CodeCompletion_x86;
+                    case Arch.I686: return Settings.Default.CodeCompletion_x86;
+                    case Arch.MMX: return Settings.Default.CodeCompletion_mmx;
+                    case Arch.SSE: return Settings.Default.CodeCompletion_sse;
+                    case Arch.SSE2: return Settings.Default.CodeCompletion_sse2;
+                    case Arch.SSE3: return Settings.Default.CodeCompletion_sse3;
+                    case Arch.SSSE3: return Settings.Default.CodeCompletion_ssse3;
+                    case Arch.SSE41: return Settings.Default.CodeCompletion_sse41;
+                    case Arch.SSE42: return Settings.Default.CodeCompletion_sse42;
+                    case Arch.AVX: return Settings.Default.CodeCompletion_avx;
+                    case Arch.AVX2: return Settings.Default.CodeCompletion_avx2;
+                    case Arch.KNC: return Settings.Default.CodeCompletion_knc;
+                    case Arch.NONE: return true;
                     default:
                         Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:isArchSwitchedOn; unsupported arch {0}", arch));
                         return true;
