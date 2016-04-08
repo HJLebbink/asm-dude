@@ -27,11 +27,13 @@ namespace AsmTools {
                 case "SSE": return Arch.SSE;
                 case "SSE2": return Arch.SSE2;
                 case "SSE3": return Arch.SSE3;
+                case "SSSE3": return Arch.SSSE3;
                 case "SSE41": return Arch.SSE41;
                 case "SSE42": return Arch.SSE42;
                 case "AVX": return Arch.AVX;
-                case "AVX2": return Arch.AVX;
+                case "AVX2": return Arch.AVX2;
                 case "KNC": return Arch.KNC;
+                case "NONE": return Arch.NONE;
             }
             return Arch.NONE;
         }
