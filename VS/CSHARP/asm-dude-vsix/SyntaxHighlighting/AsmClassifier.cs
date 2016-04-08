@@ -29,6 +29,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
+using System.Reflection;
 
 namespace AsmDude {
 
@@ -68,7 +69,7 @@ namespace AsmDude {
     }
 
     [Export(typeof(ITaggerProvider))]
-    [ContentType("asm!")]
+    [ContentType(AsmDudePackage.AsmDudeContentType)]
     [TagType(typeof(ClassificationTag))]
     internal sealed class AsmClassifierProvider : ITaggerProvider {
 
@@ -79,17 +80,17 @@ namespace AsmDude {
 
         [Export]
         [FileExtension(".asm")]
-        [ContentType("asm!")]
+        [ContentType(AsmDudePackage.AsmDudeContentType)]
         internal static FileExtensionToContentTypeDefinition AsmFileType = null;
 
         [Export]
         [FileExtension(".cod")]
-        [ContentType("asm!")]
+        [ContentType(AsmDudePackage.AsmDudeContentType)]
         internal static FileExtensionToContentTypeDefinition AsmFileType_cod = null;
 
         [Export]
         [FileExtension(".inc")]
-        [ContentType("asm!")]
+        [ContentType(AsmDudePackage.AsmDudeContentType)]
         internal static FileExtensionToContentTypeDefinition AsmFileType_inc = null;
 
         [Import]
@@ -139,8 +140,8 @@ namespace AsmDude {
         public IEnumerable<ITagSpan<ClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
             if (Settings.Default.SyntaxHighlighting_On) {
                 foreach (var tagSpan in _aggregator.GetTags(spans)) {
-                    var tagSpans = tagSpan.Span.GetSpans(spans[0].Snapshot);
-                    var asmType = _asmTypes[tagSpan.Tag.type];
+                    NormalizedSnapshotSpanCollection tagSpans = tagSpan.Span.GetSpans(spans[0].Snapshot);
+                    IClassificationType asmType = _asmTypes[tagSpan.Tag.type];
                     if (asmType == null) {
                         Debug.WriteLine("AsmClassifier:GetTags: asmType is null for " + tagSpan.Tag.type);
                     } else {
