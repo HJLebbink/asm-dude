@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Arch.cs" />
     <Compile Include="AsmTools.cs" />
+    <Compile Include="Flags.cs" />
     <Compile Include="Mnemonic.cs" />
     <Compile Include="OperandType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

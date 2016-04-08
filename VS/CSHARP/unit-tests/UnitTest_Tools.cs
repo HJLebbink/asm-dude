@@ -137,6 +137,15 @@ namespace unit_tests {
                     "Parsing string " + x.ToString() + " does not yield the same enumeration.");
             }
         }
-
+        [TestMethod]
+        public void Test_OperandType() {
+            foreach (Ot x1 in Enum.GetValues(typeof(Ot))) {
+                foreach (Ot x2 in Enum.GetValues(typeof(Ot))) {
+                    Tuple<Ot, Ot> t = Tools.splitOt(Tools.mergeOt(x1, x2));
+                    Assert.AreEqual(t.Item1, x1, "");
+                    Assert.AreEqual(t.Item2, x2, "");
+                }
+            }
+        }
     }
 }
