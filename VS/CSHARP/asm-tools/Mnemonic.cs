@@ -67,254 +67,468 @@ namespace AsmTools {
         #region Binary Arithmetic Instructions
         // The binary arithmetic instructions perform basic binary integer computations on byte, word, and doubleword integers
         // located in memory and/or the general purpose registers.
-
-        ADCX,// Unsigned integer add with carry
-        ADOX,// Unsigned integer add with overflow
-        ADD,// Integer add
-        ADC,// Add with carry
-        SUB,// Subtract
-        SBB,// Subtract with borrow
-        IMUL,// Signed multiply
-        MUL,// Unsigned multiply
-        IDIV,// Signed divide
-        DIV,// Unsigned divide
-        INC,// Increment
-        DEC,// Decrement
-        NEG,// Negate
-        CMP,// Compare
+        /// <summary>Unsigned integer add with carry</summary>
+        ADCX,
+        /// <summary>Unsigned integer add with overflow</summary>
+        ADOX,
+        /// <summary>Integer add</summary>
+        ADD,
+        /// <summary>Add with carry</summary>
+        ADC,
+        /// <summary>Subtract</summary>
+        SUB,
+        /// <summary>Subtract with borrow</summary>
+        SBB,
+        /// <summary>Signed multiply</summary>
+        IMUL,
+        /// <summary>Unsigned multiply</summary>
+        MUL,
+        /// <summary>Signed divide</summary>
+        IDIV,
+        /// <summary>Unsigned divide</summary>
+        DIV,
+        /// <summary>Increment</summary>
+        INC,
+        /// <summary>Decrement</summary>
+        DEC,
+        /// <summary>Negate</summary>
+        NEG,
+        /// <summary>Compare</summary>
+        CMP,
         #endregion
         #region Decimal Arithmetic Instructions
         //The decimal arithmetic instructions perform decimal arithmetic on binary coded decimal (BCD) data.
+
+        /// <summary>XXX</summary>
         DAA,// Decimal adjust after addition
+        /// <summary>XXX</summary>
         DAS,// Decimal adjust after subtraction
+        /// <summary>XXX</summary>
         AAA,// ASCII adjust after addition
+        /// <summary>XXX</summary>
         AAS,// ASCII adjust after subtraction
+        /// <summary>XXX</summary>
         AAM,// ASCII adjust after multiplication
+        /// <summary>XXX</summary>
         AAD,// ASCII adjust before division
         #endregion
         #region Logical Instructions
         //The logical instructions perform basic AND, OR, XOR, and NOT logical operations on byte, word, and doubleword
         //values.
+        /// <summary>XXX</summary>
         AND,// Perform bitwise logical AND
+        /// <summary>XXX</summary>
         OR,// Perform bitwise logical OR
+        /// <summary>XXX</summary>
         XOR,// Perform bitwise logical exclusive OR
+        /// <summary>XXX</summary>
         NOT,// Perform bitwise logical NOT
         #endregion
         #region Shift and Rotate Instructions
         //The shift and rotate instructions shift and rotate the bits in word and doubleword operands.
+        /// <summary>XXX</summary>
         SAR,// Shift arithmetic right
+        /// <summary>XXX</summary>
         SHR,// Shift logical right
+        /// <summary>XXX</summary>
         SAL,
+        /// <summary>XXX</summary>
         SHL,// Shift arithmetic left/Shift logical left
+        /// <summary>XXX</summary>
         SHRD,// Shift right double
+        /// <summary>XXX</summary>
         SHLD,//Shift left double
+        /// <summary>XXX</summary>
         ROR,// Rotate right
+        /// <summary>XXX</summary>
         ROL,// Rotate left
+        /// <summary>XXX</summary>
         RCR,// Rotate through carry right
+        /// <summary>XXX</summary>
         RCL,// Rotate through carry left
         #endregion
         #region Bit and Byte Instructions
         //Bit instructions test and modify individual bits in word and doubleword operands. Byte instructions set the value of
         //a byte operand to indicate the status of flags in the EFLAGS register.
+        /// <summary>XXX</summary>
         BT,// Bit test
+        /// <summary>XXX</summary>
         BTS,// Bit test and set
+        /// <summary>XXX</summary>
         BTR,// Bit test and reset
+        /// <summary>XXX</summary>
         BTC,// Bit test and complement
+        /// <summary>XXX</summary>
         BSF,// Bit scan forward
+        /// <summary>XXX</summary>
         BSR,// Bit scan reverse
+        /// <summary>XXX</summary>
         SETE,
+        /// <summary>XXX</summary>
         SETZ,// Set byte if equal/Set byte if zero
+        /// <summary>XXX</summary>
         SETNE,
+        /// <summary>XXX</summary>
         SETNZ,// Set byte if not equal/Set byte if not zero
+        /// <summary>XXX</summary>
         SETA,
+        /// <summary>XXX</summary>
         SETNBE,// Set byte if above/Set byte if not below or equal
+        /// <summary>XXX</summary>
         SETAE,
+        /// <summary>XXX</summary>
         SETNB,
+        /// <summary>XXX</summary>
         SETNC,// Set byte if above or equal/Set byte if not below/Set byte if not carry
+        /// <summary>XXX</summary>
         SETB,
+        /// <summary>XXX</summary>
         SETNAE,
+        /// <summary>XXX</summary>
         SETC,//Set byte if below/Set byte if not above or equal/Set byte if carry
+        /// <summary>XXX</summary>
         SETBE,
+        /// <summary>XXX</summary>
         SETNA,// Set byte if below or equal/Set byte if not above
+        /// <summary>XXX</summary>
         SETG,
+        /// <summary>XXX</summary>
         SETNLE,// Set byte if greater/Set byte if not less or equal
+        /// <summary>XXX</summary>
         SETGE,
+        /// <summary>XXX</summary>
         SETNL,// Set byte if greater or equal/Set byte if not less
+        /// <summary>XXX</summary>
         SETL,
+        /// <summary>XXX</summary>
         SETNGE,// Set byte if less/Set byte if not greater or equal
+        /// <summary>XXX</summary>
         SETLE,
+        /// <summary>XXX</summary>
         SETNG,// Set byte if less or equal/Set byte if not greater
+        /// <summary>XXX</summary>
         SETS,// Set byte if sign (negative)
+        /// <summary>XXX</summary>
         SETNS,// Set byte if not sign (non-negative)
+        /// <summary>XXX</summary>
         SETO,// Set byte if overflow
+        /// <summary>XXX</summary>
         SETNO,// Set byte if not overflow
+        /// <summary>XXX</summary>
         SETPE,
+        /// <summary>XXX</summary>
         SETP,// Set byte if parity even/Set byte if parity
+        /// <summary>XXX</summary>
         SETPO,
+        /// <summary>XXX</summary>
         SETNP,// Set byte if parity odd/Set byte if not parity
+        /// <summary>XXX</summary>
         TEST,// Logical compare
+        /// <summary>XXX</summary>
         CRC32,// Provides hardware acceleration to calculate cyclic redundancy checks for fast and efficient implementation of data integrity protocols.
+        /// <summary>XXX</summary>
         POPCNT,// This instruction calculates of number of bits set to 1 in the second operand (source) and returns the count in the first operand (a destination register)
         #endregion
         #region Control Transfer Instructions
         // The control transfer instructions provide jump, conditional jump, loop, and call and return operations to control
         //program flow.
+        /// <summary>XXX</summary>
         JMP,// Jump
+        /// <summary>XXX</summary>
         JE,
+        /// <summary>XXX</summary>
         JZ,// Jump if equal/Jump if zero
+        /// <summary>XXX</summary>
         JNE,
+        /// <summary>XXX</summary>
         JNZ,// Jump if not equal/Jump if not zero
+        /// <summary>XXX</summary>
         JA,
+        /// <summary>XXX</summary>
         JNBE,// Jump if above/Jump if not below or equal
+        /// <summary>XXX</summary>
         JAE,
+        /// <summary>XXX</summary>
         JNB,// Jump if above or equal/Jump if not below
+        /// <summary>XXX</summary>
         JB,
+        /// <summary>XXX</summary>
         JNAE,// Jump if below/Jump if not above or equal
+        /// <summary>XXX</summary>
         JBE,
+        /// <summary>XXX</summary>
         JNA,// Jump if below or equal/Jump if not above
+        /// <summary>XXX</summary>
         JG,
+        /// <summary>XXX</summary>
         JNLE,// Jump if greater/Jump if not less or equal
+        /// <summary>XXX</summary>
         JGE,
+        /// <summary>XXX</summary>
         JNL,// Jump if greater or equal/Jump if not less
+        /// <summary>XXX</summary>
         JL,
+        /// <summary>XXX</summary>
         JNGE,// Jump if less/Jump if not greater or equal
+        /// <summary>XXX</summary>
         JLE,
+        /// <summary>XXX</summary>
         JNG,// Jump if less or equal/Jump if not greater
+        /// <summary>XXX</summary>
         JC,// Jump if carry
+        /// <summary>XXX</summary>
         JNC,// Jump if not carry
+        /// <summary>XXX</summary>
         JO,// Jump if overflow
+        /// <summary>XXX</summary>
         JNO,// Jump if not overflow
+        /// <summary>XXX</summary>
         JS,// Jump if sign (negative)
+        /// <summary>XXX</summary>
         JNS,// Jump if not sign (non-negative)
+        /// <summary>XXX</summary>
         JPO,
+        /// <summary>XXX</summary>
         JNP,// Jump if parity odd/Jump if not parity
+        /// <summary>XXX</summary>
         JPE,
+        /// <summary>XXX</summary>
         JP,// Jump if parity even/Jump if parity
+        /// <summary>XXX</summary>
         JCXZ,
+        /// <summary>XXX</summary>
         JECXZ,// Jump register CX zero/Jump register ECX zero
+        /// <summary>XXX</summary>
         JRCXZ,
+        /// <summary>XXX</summary>
         LOOP,// Loop with ECX counter
+        /// <summary>XXX</summary>
         LOOPZ,
+        /// <summary>XXX</summary>
         LOOPE,// Loop with ECX and zero/Loop with ECX and equal
+        /// <summary>XXX</summary>
         LOOPNZ,
+        /// <summary>XXX</summary>
         LOOPNE,// Loop with ECX and not zero/Loop with ECX and not equal
+        /// <summary>XXX</summary>
         CALL,// Call procedure
+        /// <summary>XXX</summary>
         RET,// Return
+        /// <summary>XXX</summary>
         IRET,// Return from interrupt
+        /// <summary>XXX</summary>
         INT,// Software interrupt
+        /// <summary>XXX</summary>
         INTO,// Interrupt on overflow
+        /// <summary>XXX</summary>
         BOUND,// Detect value out of range
+        /// <summary>XXX</summary>
         ENTER,// High-level procedure entry
+        /// <summary>XXX</summary>
         LEAVE,// High-level procedure exit
         #endregion
         #region String Instructions
         //The string instructions operate on strings of bytes, allowing them to be moved to and from memory.
+        /// <summary>XXX</summary>
         MOVS,
+        /// <summary>XXX</summary>
         MOVSB,// Move string/Move byte string
+        /// <summary>XXX</summary>
         MOVSW,// Move string/Move word string
+        /// <summary>XXX</summary>
         MOVSD,// Move string/Move doubleword string
+        /// <summary>XXX</summary>
         CMPS,
+        /// <summary>XXX</summary>
         CMPSB,// Compare string/Compare byte string
+        /// <summary>XXX</summary>
         CMPSW,// Compare string/Compare word string
+        /// <summary>XXX</summary>
         CMPSD,// Compare string/Compare doubleword string
+        /// <summary>XXX</summary>
         SCAS,
+        /// <summary>XXX</summary>
         SCASB,// Scan string/Scan byte string
+        /// <summary>XXX</summary>
         SCASW,// Scan string/Scan word string
+        /// <summary>XXX</summary>
         SCASD,// Scan string/Scan doubleword string
+        /// <summary>XXX</summary>
         LODS,
+        /// <summary>XXX</summary>
         LODSB,// Load string/Load byte string
+        /// <summary>XXX</summary>
         LODSW,// Load string/Load word string
+        /// <summary>XXX</summary>
         LODSD,// Load string/Load doubleword string
+        /// <summary>XXX</summary>
         STOS,
+        /// <summary>XXX</summary>
         STOSB,// Store string/Store byte string
+        /// <summary>XXX</summary>
         STOSW,// Store string/Store word string
+        /// <summary>XXX</summary>
         STOSD,// Store string/Store doubleword string
+        /// <summary>XXX</summary>
         REP,// Repeat while ECX not zero
+        /// <summary>XXX</summary>
         REPE,
+        /// <summary>XXX</summary>
         REPZ,// Repeat while equal/Repeat while zero
+        /// <summary>XXX</summary>
         REPNE,
+        /// <summary>XXX</summary>
         REPNZ,// Repeat while not equal/Repeat while not zero
         #endregion
         #region I/O Instructions
         //These instructions move data between the processor’s I/O ports and a register or memory.
         //IN Read from a port
+        /// <summary>XXX</summary>
         OUT,// Write to a port
+        /// <summary>XXX</summary>
         INS,
+        /// <summary>XXX</summary>
         INSB,// Input string from port/Input byte string from port
+        /// <summary>XXX</summary>
         INSW,// Input string from port/Input word string from port
+        /// <summary>XXX</summary>
         INSD,// Input string from port/Input doubleword string from port
+        /// <summary>XXX</summary>
         OUTS,
+        /// <summary>XXX</summary>
         OUTSB,// Output string to port/Output byte string to port
+        /// <summary>XXX</summary>
         OUTSW,// Output string to port/Output word string to port
+        /// <summary>XXX</summary>
         OUTSD,// Output string to port/Output doubleword string to port
         #endregion
         #region Flag Control (EFLAG) Instructions
         //The flag control instructions operate on the flags in the EFLAGS register.
+        /// <summary>XXX</summary>
         STC,// Set carry flag
+        /// <summary>XXX</summary>
         CLC,// Clear the carry flag
+        /// <summary>XXX</summary>
         CMC,// Complement the carry flag
+        /// <summary>XXX</summary>
         CLD,// Clear the direction flag
+        /// <summary>XXX</summary>
         STD,// Set direction flag
+        /// <summary>XXX</summary>
         LAHF,// Load flags into AH register
+        /// <summary>XXX</summary>
         SAHF,// Store AH register into flags
+        /// <summary>XXX</summary>
         PUSHF,
+        /// <summary>XXX</summary>
         PUSHFD,// Push EFLAGS onto stack
+        /// <summary>XXX</summary>
         POPF,
+        /// <summary>XXX</summary>
         POPFD,// Pop EFLAGS from stack
+        /// <summary>XXX</summary>
         STI,// Set interrupt flag
+        /// <summary>XXX</summary>
         CLI,// Clear the interrupt flag
         #endregion
         #region Segment Register Instructions
         //The segment register instructions allow far pointers (segment addresses) to be loaded into the segment registers.
+        /// <summary>XXX</summary>
         LDS,// Load far pointer using DS
+        /// <summary>XXX</summary>
         LES,// Load far pointer using ES
+        /// <summary>XXX</summary>
         LFS,// Load far pointer using FS
+        /// <summary>XXX</summary>
         LGS,// Load far pointer using GS
+        /// <summary>XXX</summary>
         LSS,// Load far pointer using SS
         #endregion
         #region Miscellaneous Instructions
         //The miscellaneous instructions provide such functions as loading an effective address, executing a “no-operation,”
         //and retrieving processor identification information.
+        /// <summary>XXX</summary>
         LEA,// Load effective address
+        /// <summary>XXX</summary>
         NOP,// No operation
+        /// <summary>XXX</summary>
         UD2,// Undefined instruction
+        /// <summary>XXX</summary>
         XLAT,
+        /// <summary>XXX</summary>
         XLATB,// Table lookup translation
+        /// <summary>XXX</summary>
         CPUID,// Processor identification
+        /// <summary>XXX</summary>
         MOVBE,// Move data after swapping data bytes
+        /// <summary>XXX</summary>
         PREFETCHW,// Prefetch data into cache in anticipation of write
+        /// <summary>XXX</summary>
         PREFETCHWT1,// Prefetch hint T1 with intent to write
+        /// <summary>XXX</summary>
         CLFLUSH,//Flushes and invalidates a memory operand and its associated cache line from all levels of the processor’s cache hierarchy
+        /// <summary>XXX</summary>
         CLFLUSHOPT,// Flushes and invalidates a memory operand and its associated cache line from all levels of the processor’s cache hierarchy with optimized memory system throughput.
         #endregion
         #region User Mode Extended Sate Save/Restore Instructions
+        /// <summary>XXX</summary>
         XSAVE,// Save processor extended states to memory
+        /// <summary>XXX</summary>
         XSAVEC,// Save processor extended states with compaction to memory
+        /// <summary>XXX</summary>
         XSAVEOPT,// Save processor extended states to memory, optimized
+        /// <summary>XXX</summary>
         XRSTOR,// Restore processor extended states from memory
+        /// <summary>XXX</summary>
         XGETBV,// Reads the state of an extended control register
         #endregion
         #region Random Number Generator Instructions
+        /// <summary>XXX</summary>
         RDRAND,// Retrieves a random number generated from hardware
+        /// <summary>XXX</summary>
         RDSEED,// Retrieves a random number generated from hardware
         #endregion
         #region BMI1, BMI2
+        /// <summary>XXX</summary>
         ANDN,// Bitwise AND of first source with inverted 2nd source operands.
+        /// <summary>XXX</summary>
         BEXTR,// Contiguous bitwise extract
+        /// <summary>XXX</summary>
         BLSI,// Extract lowest set bit
+        /// <summary>XXX</summary>
         BLSMSK,// Set all lower bits below first set bit to 1
+        /// <summary>XXX</summary>
         BLSR,// Reset lowest set bit
+        /// <summary>XXX</summary>
         BZHI,// Zero high bits starting from specified bit position
-        LZCNT,// Count the number leading zero bits
-        MULX,// Unsigned multiply without affecting arithmetic flags
-        PDEP,// Parallel deposit of bits using a mask
-        PEXT,// Parallel extraction of bits using a mask
-        RORX,// Rotate right without affecting arithmetic flags
-        SARX,// Shift arithmetic right
-        SHLX,// Shift logic left
-        SHRX,// Shift logic right
-        TZCNT,// Count the number trailing zero bits
+
+        /// <summary>Count the number leading zero bits</summary>
+        LZCNT,
+        /// <summary>Unsigned multiply without affecting arithmetic flags</summary>
+        MULX,
+        /// <summary>Parallel deposit of bits using a mask</summary>
+        PDEP,
+        /// <summary>Parallel extraction of bits using a mask</summary>
+        PEXT,
+        /// <summary>Rotate right without affecting arithmetic flags</summary>
+        RORX,
+        /// <summary>Shift arithmetic right</summary>
+        SARX,
+        /// <summary>Shift logic left</summary>
+        SHLX,
+        /// <summary>Shift logic right</summary>
+        SHRX,
+        /// <summary>Count the number trailing zero bits</summary>
+        TZCNT,
         #endregion
+
+        #region SSE
+        /// <summary>XXX</summary>
+        XORPS,
+        /// <summary>XXX</summary>
+        XORPD
+        #endregion
+
     }
 
     public static partial class Tools {
@@ -574,6 +788,9 @@ namespace AsmTools {
                 case "SHLX": return Mnemonic.SHLX;
                 case "SHRX": return Mnemonic.SHRX;
                 case "TZCNT": return Mnemonic.TZCNT;
+
+                case "XORPS": return Mnemonic.XORPS;
+                case "XORPD": return Mnemonic.XORPD;
                 default:
                     Console.WriteLine("WARNING;parseMnemonic. unknown str=\"" + str + "\".");
                     return Mnemonic.UNKNOWN;

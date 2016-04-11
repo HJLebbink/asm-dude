@@ -379,5 +379,98 @@ namespace AsmTools {
             }
             return 0;
         }
+
+        public static bool isMmx(Rn rn) {
+            switch (rn) {
+                case Rn.MM0:
+                case Rn.MM1:
+                case Rn.MM2:
+                case Rn.MM3:
+                case Rn.MM4:
+                case Rn.MM5:
+                case Rn.MM6:
+                case Rn.MM7: return true;
+                default: return false;
+            }
+        }
+        public static bool isSse(Rn rn) {
+            switch (rn) {
+                case Rn.XMM0:
+                case Rn.XMM1:
+                case Rn.XMM2:
+                case Rn.XMM3:
+                case Rn.XMM4:
+                case Rn.XMM5:
+                case Rn.XMM6:
+                case Rn.XMM7:
+                case Rn.XMM8:
+                case Rn.XMM9:
+                case Rn.XMM10:
+                case Rn.XMM11:
+                case Rn.XMM12:
+                case Rn.XMM13:
+                case Rn.XMM14:
+                case Rn.XMM15: return true;
+                default: return false;
+            }
+        }
+        public static bool isAvx(Rn rn) {
+            switch (rn) {
+                case Rn.YMM0:
+                case Rn.YMM1:
+                case Rn.YMM2:
+                case Rn.YMM3:
+                case Rn.YMM4:
+                case Rn.YMM5:
+                case Rn.YMM6:
+                case Rn.YMM7:
+                case Rn.YMM8:
+                case Rn.YMM9:
+                case Rn.YMM10:
+                case Rn.YMM11:
+                case Rn.YMM12:
+                case Rn.YMM13:
+                case Rn.YMM14:
+                case Rn.YMM15: return true;
+                default: return false;
+            }
+        }
+        public static bool isAvx512(Rn rn) { 
+            switch (rn) {
+                case Rn.ZMM0:
+                case Rn.ZMM1:
+                case Rn.ZMM2:
+                case Rn.ZMM3:
+                case Rn.ZMM4:
+                case Rn.ZMM5:
+                case Rn.ZMM6:
+                case Rn.ZMM7:
+                case Rn.ZMM8:
+                case Rn.ZMM9:
+                case Rn.ZMM10:
+                case Rn.ZMM11:
+                case Rn.ZMM12:
+                case Rn.ZMM13:
+                case Rn.ZMM14:
+                case Rn.ZMM15:
+                case Rn.ZMM16:
+                case Rn.ZMM17:
+                case Rn.ZMM18:
+                case Rn.ZMM19:
+                case Rn.ZMM20:
+                case Rn.ZMM21:
+                case Rn.ZMM22:
+                case Rn.ZMM23:
+                case Rn.ZMM24:
+                case Rn.ZMM25:
+                case Rn.ZMM26:
+                case Rn.ZMM27:
+                case Rn.ZMM28:
+                case Rn.ZMM29:
+                case Rn.ZMM30:
+                case Rn.ZMM31: return true;
+                default: return false;
+            }
+        }
     }
 }

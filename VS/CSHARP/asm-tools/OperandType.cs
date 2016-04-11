@@ -53,17 +53,17 @@ namespace AsmTools {
                 case Ot2.mem_reg: return new Tuple<Ot, Ot>(Ot.mem, Ot.reg);
                 case Ot2.mem_mem: return new Tuple<Ot, Ot>(Ot.mem, Ot.mem);
                 case Ot2.mem_imm: return new Tuple<Ot, Ot>(Ot.mem, Ot.imm);
-                case Ot2.mem_UNKNOWN: return new Tuple<Ot, Ot>(Ot.mem, Ot.reg);
+                case Ot2.mem_UNKNOWN: return new Tuple<Ot, Ot>(Ot.mem, Ot.UNKNOWN);
                 case Ot2.imm_reg: return new Tuple<Ot, Ot>(Ot.imm, Ot.reg);
                 case Ot2.imm_mem: return new Tuple<Ot, Ot>(Ot.imm, Ot.mem);
                 case Ot2.imm_imm: return new Tuple<Ot, Ot>(Ot.imm, Ot.imm);
-                case Ot2.imm_UNKNOWN: return new Tuple<Ot, Ot>(Ot.imm, Ot.reg);
+                case Ot2.imm_UNKNOWN: return new Tuple<Ot, Ot>(Ot.imm, Ot.UNKNOWN);
                 case Ot2.UNKNOWN_reg: return new Tuple<Ot, Ot>(Ot.UNKNOWN, Ot.reg);
                 case Ot2.UNKNOWN_mem: return new Tuple<Ot, Ot>(Ot.UNKNOWN, Ot.mem);
                 case Ot2.UNKNOWN_imm: return new Tuple<Ot, Ot>(Ot.UNKNOWN, Ot.imm);
                 case Ot2.UNKNOWN_UNKNOWN:
                 default:
-                    return new Tuple<Ot, Ot>(Ot.UNKNOWN, Ot.reg);
+                    return new Tuple<Ot, Ot>(Ot.UNKNOWN, Ot.UNKNOWN);
             }
         }
         public static Ot2 mergeOt(Ot ot1, Ot ot2) {

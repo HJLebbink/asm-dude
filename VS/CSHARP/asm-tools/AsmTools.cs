@@ -558,6 +558,42 @@ namespace AsmTools {
             return b2;
         }
 
+        public static bool isMem(string token) {
+            //TODO
+            // see intel manual : 3.7.5 Specifying an Offset
+
+            // 32-bit mode:
+            // possible bases: EAX, EBX, ECX, EDX, ESP, EBP, ESI, EDI
+            // possible index: EAX, EBX, ECX, EDX,      EBP, ESI, EDI
+            // scale: 1, 2, 4, 8
+            // displacement none, 8-bit, 16-bit, 32-bit
+
+            // 64-bit mode:
+            // possible bases: RAX, RBX, RCX, RDX, RSP, RBP, RSI, RDI
+            // possible index: RAX, RBX, RCX, RDX, RSP, RBP, RSI, RDI
+            // scale: 1, 2, 4, 8
+            // displacement none, 8-bit, 16-bit, 32-bit
+
+
+            string[] s = token.Split(null); // by default split uses whitespace
+            switch (s[0]) {
+                case "PTR":
+                case "BYTE":
+                case "SBYTE":
+                case "WORD":
+                case "SWORD":
+                case "DWORD":
+                case "SDWORD":
+                case "QWORD":
+                case "ZWORD":
+                case "OWORD":
+                case "XMMWORD":
+                case "YMMWORD":
+                case "ZMMWORD": return true;
+            }
+            return false;
+        }
+
         public static string getKeyword(int pos, string line) {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: getKeyword; pos={0}; line=\"{1}\"", pos, new string(line)));
             var t = Tools.getKeywordPos(pos, line);

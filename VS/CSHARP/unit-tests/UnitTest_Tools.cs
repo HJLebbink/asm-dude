@@ -147,5 +147,17 @@ namespace unit_tests {
                 }
             }
         }
+        [TestMethod]
+        public void Test_and() {
+            {
+                Bt[] a = new Bt[] { Bt.ONE, Bt.ZERO, Bt.UNDEFINED, Bt.KNOWN };
+                Bt[] b = new Bt[] { Bt.ONE, Bt.ONE, Bt.KNOWN, Bt.ONE };
+                Bt[] expected = new Bt[] { Bt.ONE, Bt.ZERO, Bt.UNDEFINED, Bt.KNOWN };
+                Bt[] actual = AsmTools.BitTools.and(a, b);
+                for (int i = 0; i<a.Length; ++i) {
+                    Assert.AreEqual(expected[i], actual[i], "i="+i);
+                }
+            }
+        }
     }
 }
