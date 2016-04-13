@@ -53,10 +53,15 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="UnitTest_Tools.cs" />
+    <Compile Include="test_AsmSourceTools.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="test_BitTools.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\asm-simulator\VS\CSHARP\AsmSim\AsmSim.csproj">
+      <Project>{9525C349-3B5D-4192-81A5-4A237011457E}</Project>
+      <Name>AsmSim</Name>
+    </ProjectReference>
     <ProjectReference Include="..\asm-tools\asm-tools.csproj">
       <Project>{49505283-48a9-45c5-a12b-8dccee32b0da}</Project>
       <Name>asm-tools</Name>

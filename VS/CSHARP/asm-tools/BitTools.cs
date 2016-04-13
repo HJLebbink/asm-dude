@@ -9,32 +9,116 @@ namespace AsmTools {
     /// </summary>
     public abstract class BitTools {
 
-
         #region Conversion
 
-        public static ulong intValue(Bt[] a) {
+        public static ulong getUlongValue(Bt[] a) {
+            Debug.Assert(isGrounded(a));
+
             ulong v = 0;
+            ulong mask = 0x1;
+
             for (int i = 0; i < a.Length; ++i) {
                 switch (a[i]) {
                     case Bt.ZERO:
                         break;
                     case Bt.ONE:
-                        v |= (1ul << i);
+                        v |= mask;
                         break;
                     default:
                         throw new Exception();
                 }
+                mask <<= 1;
             }
             return v;
+        }
+        public static long getLongValue(Bt[] a) {
+            ulong v = getUlongValue(a);
+
+            if (a.Length < 64) {
+                bool sign = (a[a.Length - 1] == Bt.ONE);
+                if (sign) {
+                    v |= ~((1UL << a.Length) - 1);
+                    //for (int i = a.Length; i < 64; ++i) {
+                    //    v |= (1UL << i);
+                    //}
+                }
+            }
+            return (long)v;
+        }
+        public static uint getUintValue(Bt[] a) {
+           return (uint) getUlongValue(a);
+        }
+        public static int getIntValue(Bt[] a) {
+            ulong v = getUlongValue(a);
+
+            if (a.Length < 32) {
+                bool sign = (a[a.Length - 1] == Bt.ONE);
+                if (sign) {
+                    v |= ~((1UL << a.Length) - 1);
+                    //for (int i = a.Length; i < 32; ++i) {
+                    //   v |= (1UL << i);
+                    //}
+                }
+            }
+            return (int)v;
+        }
+        public static ushort getUshortValue(Bt[] a) {
+            return (ushort)getUlongValue(a);
+        }
+        public static short getShortValue(Bt[] a) {
+            ulong v = getUlongValue(a);
+
+            if (a.Length < 16) {
+                bool sign = (a[a.Length - 1] == Bt.ONE);
+                if (sign) {
+                    v |= ~((1UL << a.Length) - 1);
+                    //for (int i = a.Length; i < 16; ++i) {
+                    //    v |= (1UL << i);
+                    //}
+                }
+            }
+            return (short)v;
+        }
+        public static byte getByteValue(Bt[] a) {
+            return (byte)getUlongValue(a);
+        }
+        public static sbyte getSbyteValue(Bt[] a) {
+            ulong v = getUlongValue(a);
+
+            if (a.Length < 8) {
+                bool sign = (a[a.Length - 1] == Bt.ONE);
+                if (sign) {
+                    v |= ~((1UL << a.Length) - 1);
+                    //for (int i = a.Length; i < 8; ++i) {
+                    //    v |= (1UL << i);
+                    //}
+                }
+            }
+            return (sbyte)v;
+        }
+
+        public static void setUlongValue(ref Bt[] a, ulong v) {
+            //Debug.Assert(a.Length < Tools.nBitsStorageNeeded(v));
+            ulong mask = 0x1;
+            for (int i = 0; i < a.Length; ++i) {
+                a[i] = ((v & mask) == 0) ? Bt.ZERO : Bt.ONE;
+                mask <<= 1;
+            }
+        }
+
+        public static void setLongValue(ref Bt[] a, long v) {
+            //Debug.Assert(a.Length < Tools.nBitsStorageNeeded(v));
+            ulong v2 = (ulong)v;
+            ulong mask = 0x1;
+            for (int i = 0; i < a.Length; ++i) {
+                a[i] = ((v2 & mask) == 0) ? Bt.ZERO : Bt.ONE;
+                mask <<= 1;
+            }
         }
 
         #endregion Conversion
 
-        /// <summary>
-        /// Returns true if all bits are either ONE, ZERO or KNOWN
-        /// </summary>
-        /// <param name="a"></param>
-        /// <returns></returns>
+        /// <summary>Returns true if all bits are either ONE, ZERO or KNOWN.</summary>
         public static bool isKnown(Bt[] a) {
             for (int i = 0; i < a.Length; ++i) {
                 if (a[i] == Bt.UNDEFINED) return false;
@@ -42,11 +126,7 @@ namespace AsmTools {
             return true;
         }
 
-        /// <summary>
-        /// Returns true if all bits are either one or zero
-        /// </summary>
-        /// <param name="a"></param>
-        /// <returns></returns>
+        /// <summary>Returns true if all bits are either ONE or ZERO.</summary>
         public static bool isGrounded(Bt[] a) {
             for (int i = 0; i < a.Length; ++i) {
                 if ((a[i] == Bt.ONE) || (a[i] == Bt.ZERO)) {
@@ -88,16 +168,22 @@ namespace AsmTools {
         /// </summary>
         /// <param name="a"></param>
         /// <returns></returns>
-        public static Tuple<Bt[], OverflowFlag, AuxiliaryFlag> neg(Bt[] a) {
-            OverflowFlag oFlag = Bt.UNDEFINED;
-            AuxiliaryFlag aFlag = Bt.UNDEFINED;
-            //TODO
+        public static Tuple<Bt[], CarryFlag, OverflowFlag, AuxiliaryFlag> neg(Bt[] a) {
+            Bt[] zero = new Bt[a.Length];
+            for (int i = 0; i < a.Length; ++i) {
+                zero[i] = Bt.ZERO;
+            }
+            return sub(zero, a, Bt.ZERO);
+        }
+
+        public static Bt[] not(Bt[] a) {
             Bt[] r = new Bt[a.Length];
             for (int i = 0; i < a.Length; ++i) {
                 r[i] = neg(a[i]);
             }
-            return new Tuple<Bt[], OverflowFlag, AuxiliaryFlag>(r, oFlag, aFlag);
+            return r;
         }
+
 
         public static Bt and(Bt a, Bt b) {
             switch (a) {
@@ -149,8 +235,8 @@ namespace AsmTools {
                     break;
                 case Bt.KNOWN:
                     switch (b) {
-                        case Bt.ZERO: return Bt.ZERO;
-                        case Bt.ONE: return Bt.KNOWN;
+                        case Bt.ZERO: return Bt.KNOWN;
+                        case Bt.ONE: return Bt.ONE;
                         case Bt.UNDEFINED: return Bt.UNDEFINED;
                         case Bt.KNOWN: return Bt.KNOWN;
                     }
@@ -257,143 +343,325 @@ namespace AsmTools {
             return new Tuple<Bt[], CarryFlag>(r, carry);
         }
 
-        public static Tuple<Bt[], Bt> sar1(Bt[] a) {
+        public static Tuple<Bt[], CarryFlag> sar1(Bt[] a) {
             Bt[] r = new Bt[a.Length];
-            Bt carry = a[0];
+            CarryFlag carry = a[0];
             for (int i = 1; i < a.Length; ++i) {
                 r[i - 1] = a[i];
             }
             r[a.Length - 1] = r[a.Length - 2];
-            return new Tuple<Bt[], Bt>(r, carry);
+            return new Tuple<Bt[], CarryFlag>(r, carry);
         }
 
-        public static Tuple<Bt[], Bt> shl1(Bt[] a) {
+        public static Tuple<Bt[], CarryFlag> shl1(Bt[] a) {
             Bt[] r = new Bt[a.Length];
             r[0] = Bt.ZERO;
             for (int i = 0; i < (a.Length - 1); ++i) {
                 r[i + 1] = a[i];
             }
-            Bt carry = a[a.Length - 1];
-            return new Tuple<Bt[], Bt>(r, carry);
+            CarryFlag carry = a[a.Length - 1];
+            return new Tuple<Bt[], CarryFlag>(r, carry);
         }
 
-        public static Tuple<Bt[], Bt> sal1(Bt[] a) {
+        public static Tuple<Bt[], CarryFlag> sal1(Bt[] a) {
             return shl1(a);
         }
         #endregion
 
         #region Binary Arithmetic
 
+        #region Private Binary Arithmetic
         /// <summary>
         /// Half adder
         /// </summary>
-        public static Tuple<Bt, Bt> add(Bt a, Bt b) {
+        private static Tuple<Bt, Bt> addHalf(Bt a, Bt b) {
             switch (a) {
                 case Bt.ZERO:
                     switch (b) {
                         case Bt.ZERO: return new Tuple<Bt, Bt>(Bt.ZERO, Bt.ZERO);
                         case Bt.ONE: return new Tuple<Bt, Bt>(Bt.ONE, Bt.ZERO);
+                        case Bt.KNOWN: return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.ZERO);
+                        case Bt.UNDEFINED:
                         default: return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.ZERO);
                     }
                 case Bt.ONE:
                     switch (b) {
                         case Bt.ZERO: return new Tuple<Bt, Bt>(Bt.ONE, Bt.ZERO);
                         case Bt.ONE: return new Tuple<Bt, Bt>(Bt.ZERO, Bt.ONE);
+                        case Bt.KNOWN: return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.KNOWN);
+                        case Bt.UNDEFINED:
                         default: return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
                     }
+                case Bt.KNOWN:
+                    switch (b) {
+                        case Bt.ZERO: return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.ZERO);
+                        case Bt.ONE: return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.KNOWN);
+                        case Bt.KNOWN: return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.KNOWN);
+                        case Bt.UNDEFINED:
+                        default: return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+                    }
+                case Bt.UNDEFINED:
                 default: return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
             }
         }
-        /// <summary>
-        /// Full adder
-        /// </summary>
-        public static Tuple<Bt, Bt> add(Bt a, Bt b, Bt c) {
-            if ((a == Bt.ZERO) && (b == Bt.ZERO) && (c == Bt.ZERO)) return new Tuple<Bt, Bt>(Bt.ZERO, Bt.ZERO);
-            if ((a == Bt.ZERO) && (b == Bt.ZERO) && (c == Bt.ONE)) return new Tuple<Bt, Bt>(Bt.ONE, Bt.ZERO);
-            if ((a == Bt.ZERO) && (b == Bt.ONE) && (c == Bt.ZERO)) return new Tuple<Bt, Bt>(Bt.ONE, Bt.ZERO);
-            if ((a == Bt.ZERO) && (b == Bt.ONE) && (c == Bt.ONE)) return new Tuple<Bt, Bt>(Bt.ZERO, Bt.ONE);
 
-            if ((a == Bt.ONE) && (b == Bt.ZERO) && (c == Bt.ZERO)) return new Tuple<Bt, Bt>(Bt.ONE, Bt.ZERO);
-            if ((a == Bt.ONE) && (b == Bt.ZERO) && (c == Bt.ONE)) return new Tuple<Bt, Bt>(Bt.ZERO, Bt.ONE);
-            if ((a == Bt.ONE) && (b == Bt.ONE) && (c == Bt.ZERO)) return new Tuple<Bt, Bt>(Bt.ZERO, Bt.ONE);
-            if ((a == Bt.ONE) && (b == Bt.ONE) && (c == Bt.ONE)) return new Tuple<Bt, Bt>(Bt.ONE, Bt.ONE);
+        /// <summary>Full adder</summary>
+        private static Tuple<Bt, Bt> addFull(Bt x, Bt b, Bt carry) {
+            if ((x == Bt.ZERO) && (b == Bt.ZERO) && (carry == Bt.ZERO)) return new Tuple<Bt, Bt>(Bt.ZERO, Bt.ZERO);
+            if ((x == Bt.ZERO) && (b == Bt.ZERO) && (carry == Bt.ONE)) return new Tuple<Bt, Bt>(Bt.ONE, Bt.ZERO);
+            if ((x == Bt.ZERO) && (b == Bt.ONE) && (carry == Bt.ZERO)) return new Tuple<Bt, Bt>(Bt.ONE, Bt.ZERO);
+            if ((x == Bt.ZERO) && (b == Bt.ONE) && (carry == Bt.ONE)) return new Tuple<Bt, Bt>(Bt.ZERO, Bt.ONE);
 
-            if ((a == Bt.ZERO) && (b == Bt.ZERO) && (c == Bt.UNDEFINED)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.ZERO);
-            if ((a == Bt.ZERO) && (b == Bt.UNDEFINED) && (c == Bt.ZERO)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.ZERO);
-            if ((a == Bt.ZERO) && (b == Bt.UNDEFINED) && (c == Bt.UNDEFINED)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            if ((x == Bt.ONE) && (b == Bt.ZERO) && (carry == Bt.ZERO)) return new Tuple<Bt, Bt>(Bt.ONE, Bt.ZERO);
+            if ((x == Bt.ONE) && (b == Bt.ZERO) && (carry == Bt.ONE)) return new Tuple<Bt, Bt>(Bt.ZERO, Bt.ONE);
+            if ((x == Bt.ONE) && (b == Bt.ONE) && (carry == Bt.ZERO)) return new Tuple<Bt, Bt>(Bt.ZERO, Bt.ONE);
+            if ((x == Bt.ONE) && (b == Bt.ONE) && (carry == Bt.ONE)) return new Tuple<Bt, Bt>(Bt.ONE, Bt.ONE);
 
-            if ((a == Bt.UNDEFINED) && (b == Bt.ZERO) && (c == Bt.UNDEFINED)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
-            if ((a == Bt.UNDEFINED) && (b == Bt.UNDEFINED) && (c == Bt.ZERO)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
-            if ((a == Bt.UNDEFINED) && (b == Bt.UNDEFINED) && (c == Bt.UNDEFINED)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            if ((x == Bt.ZERO) && (b == Bt.ZERO) && (carry == Bt.UNDEFINED)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.ZERO);
+            if ((x == Bt.ZERO) && (b == Bt.UNDEFINED) && (carry == Bt.ZERO)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.ZERO);
+            if ((x == Bt.ZERO) && (b == Bt.UNDEFINED) && (carry == Bt.UNDEFINED)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
 
-            if ((a == Bt.ONE) && (b == Bt.ONE) && (c == Bt.UNDEFINED)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.ONE);
-            if ((a == Bt.ONE) && (b == Bt.UNDEFINED) && (c == Bt.ONE)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.ONE);
-            if ((a == Bt.ONE) && (b == Bt.UNDEFINED) && (c == Bt.UNDEFINED)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            if ((x == Bt.UNDEFINED) && (b == Bt.ZERO) && (carry == Bt.UNDEFINED)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            if ((x == Bt.UNDEFINED) && (b == Bt.UNDEFINED) && (carry == Bt.ZERO)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            if ((x == Bt.UNDEFINED) && (b == Bt.UNDEFINED) && (carry == Bt.UNDEFINED)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
 
-            if ((a == Bt.UNDEFINED) && (b == Bt.ONE) && (c == Bt.UNDEFINED)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
-            if ((a == Bt.UNDEFINED) && (b == Bt.UNDEFINED) && (c == Bt.ONE)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            if ((x == Bt.ONE) && (b == Bt.ONE) && (carry == Bt.UNDEFINED)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.ONE);
+            if ((x == Bt.ONE) && (b == Bt.UNDEFINED) && (carry == Bt.ONE)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.ONE);
+            if ((x == Bt.ONE) && (b == Bt.UNDEFINED) && (carry == Bt.UNDEFINED)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+
+            if ((x == Bt.UNDEFINED) && (b == Bt.ONE) && (carry == Bt.UNDEFINED)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            if ((x == Bt.UNDEFINED) && (b == Bt.UNDEFINED) && (carry == Bt.ONE)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
             //if ((a == Bt.UNDEFINED) && (b == Bt.UNDEFINED) && (c == Bt.UNDEFINED)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
 
             // unreachable
             return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
         }
 
-        public static OverflowFlag calcOverflow(Bt a, Bt b, Bt c) {
-            if ((a == Bt.ONE) && (b == Bt.ONE) && (c == Bt.ZERO)) return Bt.ONE;
-            if ((a == Bt.ZERO) && (b == Bt.ZERO) && (c == Bt.ONE)) return Bt.ONE;
+        /// <summary>
+        /// returns diff, borrow_out; diff = x-y;
+        /// </summary>
+        private static Tuple<Bt, Bt> subFull(Bt borrow, Bt y, Bt x) {
+           
+            // all combinations:
+            if ((borrow == Bt.ZERO) && (y == Bt.ZERO) && (x == Bt.ZERO))        return new Tuple<Bt, Bt>(Bt.ZERO, Bt.ZERO);
+            if ((borrow == Bt.ZERO) && (y == Bt.ZERO) && (x == Bt.ONE))         return new Tuple<Bt, Bt>(Bt.ONE, Bt.ZERO);
+            if ((borrow == Bt.ZERO) && (y == Bt.ZERO) && (x == Bt.KNOWN))       return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.ZERO);
+            if ((borrow == Bt.ZERO) && (y == Bt.ZERO) && (x == Bt.UNDEFINED))   return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.ZERO);
 
-            if (a == Bt.UNDEFINED) return Bt.UNDEFINED;
-            if (b == Bt.UNDEFINED) return Bt.UNDEFINED;
+            if ((borrow == Bt.ZERO) && (y == Bt.ONE) && (x == Bt.ZERO))         return new Tuple<Bt, Bt>(Bt.ONE, Bt.ONE);
+            if ((borrow == Bt.ZERO) && (y == Bt.ONE) && (x == Bt.ONE))          return new Tuple<Bt, Bt>(Bt.ZERO, Bt.ZERO);
+            if ((borrow == Bt.ZERO) && (y == Bt.ONE) && (x == Bt.KNOWN))        return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.KNOWN);
+            if ((borrow == Bt.ZERO) && (y == Bt.ONE) && (x == Bt.UNDEFINED))    return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+
+            if ((borrow == Bt.ZERO) && (y == Bt.KNOWN) && (x == Bt.ZERO))       return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.KNOWN);
+            if ((borrow == Bt.ZERO) && (y == Bt.KNOWN) && (x == Bt.ONE))        return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.ZERO);
+            if ((borrow == Bt.ZERO) && (y == Bt.KNOWN) && (x == Bt.KNOWN))      return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.KNOWN);
+            if ((borrow == Bt.ZERO) && (y == Bt.KNOWN) && (x == Bt.UNDEFINED))  return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+
+            if ((borrow == Bt.ZERO) && (y == Bt.UNDEFINED) && (x == Bt.ZERO))   return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            if ((borrow == Bt.ZERO) && (y == Bt.UNDEFINED) && (x == Bt.ONE))    return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.ZERO);
+            if ((borrow == Bt.ZERO) && (y == Bt.UNDEFINED) && (x == Bt.KNOWN))  return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            if ((borrow == Bt.ZERO) && (y == Bt.UNDEFINED) && (x == Bt.UNDEFINED)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            ////////////
+            if ((borrow == Bt.ONE) && (y == Bt.ZERO) && (x == Bt.ZERO))         return new Tuple<Bt, Bt>(Bt.ONE, Bt.ONE);
+            if ((borrow == Bt.ONE) && (y == Bt.ZERO) && (x == Bt.ONE))          return new Tuple<Bt, Bt>(Bt.ZERO, Bt.ZERO);
+            if ((borrow == Bt.ONE) && (y == Bt.ZERO) && (x == Bt.KNOWN))        return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.KNOWN);
+            if ((borrow == Bt.ONE) && (y == Bt.ZERO) && (x == Bt.UNDEFINED))    return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+
+            if ((borrow == Bt.ONE) && (y == Bt.ONE) && (x == Bt.ZERO))          return new Tuple<Bt, Bt>(Bt.ZERO, Bt.ONE);
+            if ((borrow == Bt.ONE) && (y == Bt.ONE) && (x == Bt.ONE))           return new Tuple<Bt, Bt>(Bt.ONE, Bt.ONE);
+            if ((borrow == Bt.ONE) && (y == Bt.ONE) && (x == Bt.KNOWN))         return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.ONE);
+            if ((borrow == Bt.ONE) && (y == Bt.ONE) && (x == Bt.UNDEFINED))     return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.ONE);
+
+            if ((borrow == Bt.ONE) && (y == Bt.KNOWN) && (x == Bt.ZERO))        return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.ONE);
+            if ((borrow == Bt.ONE) && (y == Bt.KNOWN) && (x == Bt.ONE))         return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.KNOWN);
+            if ((borrow == Bt.ONE) && (y == Bt.KNOWN) && (x == Bt.KNOWN))       return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.KNOWN);
+            if ((borrow == Bt.ONE) && (y == Bt.KNOWN) && (x == Bt.UNDEFINED))   return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+
+            if ((borrow == Bt.ONE) && (y == Bt.UNDEFINED) && (x == Bt.ZERO))    return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.ONE);
+            if ((borrow == Bt.ONE) && (y == Bt.UNDEFINED) && (x == Bt.ONE))     return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            if ((borrow == Bt.ONE) && (y == Bt.UNDEFINED) && (x == Bt.KNOWN))   return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            if ((borrow == Bt.ONE) && (y == Bt.UNDEFINED) && (x == Bt.UNDEFINED)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            ////////////
+            if ((borrow == Bt.KNOWN) && (y == Bt.ZERO) && (x == Bt.ZERO))       return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.KNOWN);
+            if ((borrow == Bt.KNOWN) && (y == Bt.ZERO) && (x == Bt.ONE))        return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.ZERO);
+            if ((borrow == Bt.KNOWN) && (y == Bt.ZERO) && (x == Bt.KNOWN))      return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.KNOWN);
+            if ((borrow == Bt.KNOWN) && (y == Bt.ZERO) && (x == Bt.UNDEFINED))  return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+
+            if ((borrow == Bt.KNOWN) && (y == Bt.ONE) && (x == Bt.ZERO))        return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.ONE);
+            if ((borrow == Bt.KNOWN) && (y == Bt.ONE) && (x == Bt.ONE))         return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.KNOWN);
+            if ((borrow == Bt.KNOWN) && (y == Bt.ONE) && (x == Bt.KNOWN))       return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.KNOWN);
+            if ((borrow == Bt.KNOWN) && (y == Bt.ONE) && (x == Bt.UNDEFINED))   return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+
+            if ((borrow == Bt.KNOWN) && (y == Bt.KNOWN) && (x == Bt.ZERO))      return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.ONE);
+            if ((borrow == Bt.KNOWN) && (y == Bt.KNOWN) && (x == Bt.ONE))       return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.KNOWN);
+            if ((borrow == Bt.KNOWN) && (y == Bt.KNOWN) && (x == Bt.KNOWN))     return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.KNOWN);
+            if ((borrow == Bt.KNOWN) && (y == Bt.KNOWN) && (x == Bt.UNDEFINED)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+
+            if ((borrow == Bt.KNOWN) && (y == Bt.UNDEFINED) && (x == Bt.ZERO))  return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            if ((borrow == Bt.KNOWN) && (y == Bt.UNDEFINED) && (x == Bt.ONE))   return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            if ((borrow == Bt.KNOWN) && (y == Bt.UNDEFINED) && (x == Bt.KNOWN)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            if ((borrow == Bt.KNOWN) && (y == Bt.UNDEFINED) && (x == Bt.UNDEFINED)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            ////////////
+            if ((borrow == Bt.UNDEFINED) && (y == Bt.ZERO) && (x == Bt.ZERO))   return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            if ((borrow == Bt.UNDEFINED) && (y == Bt.ZERO) && (x == Bt.ONE))    return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.ZERO);
+            if ((borrow == Bt.UNDEFINED) && (y == Bt.ZERO) && (x == Bt.KNOWN))  return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            if ((borrow == Bt.UNDEFINED) && (y == Bt.ZERO) && (x == Bt.UNDEFINED)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+
+            if ((borrow == Bt.UNDEFINED) && (y == Bt.ONE) && (x == Bt.ZERO))    return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.ONE);
+            if ((borrow == Bt.UNDEFINED) && (y == Bt.ONE) && (x == Bt.ONE))     return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            if ((borrow == Bt.UNDEFINED) && (y == Bt.ONE) && (x == Bt.KNOWN))   return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            if ((borrow == Bt.UNDEFINED) && (y == Bt.ONE) && (x == Bt.UNDEFINED)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+
+            if ((borrow == Bt.UNDEFINED) && (y == Bt.KNOWN) && (x == Bt.ZERO))      return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            if ((borrow == Bt.UNDEFINED) && (y == Bt.KNOWN) && (x == Bt.ONE))       return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            if ((borrow == Bt.UNDEFINED) && (y == Bt.KNOWN) && (x == Bt.KNOWN))     return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            if ((borrow == Bt.UNDEFINED) && (y == Bt.KNOWN) && (x == Bt.UNDEFINED)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+
+            if ((borrow == Bt.UNDEFINED) && (y == Bt.UNDEFINED) && (x == Bt.ZERO))  return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            if ((borrow == Bt.UNDEFINED) && (y == Bt.UNDEFINED) && (x == Bt.ONE))   return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            if ((borrow == Bt.UNDEFINED) && (y == Bt.UNDEFINED) && (x == Bt.KNOWN)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+            if ((borrow == Bt.UNDEFINED) && (y == Bt.UNDEFINED) && (x == Bt.UNDEFINED)) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+
+            
+            //TODO make faster switch table
+            /*
+            switch (borrow) {
+                case Bt.ZERO:
+                case Bt.ONE:
+                case Bt.KNOWN:
+                    switch (y) {
+                        case Bt.ZERO: break;
+                        case Bt.ONE: if (x == Bt.ONE) return new Tuple<Bt, Bt>(Bt.KNOWN, Bt.ZERO); break;
+                        case Bt.KNOWN: break;
+                        case Bt.UNDEFINED: break;
+                    }
+                    break;
+                case Bt.UNDEFINED:
+                    switch (y) {
+                        case Bt.ZERO: break;
+                        case Bt.ONE: if (x == Bt.ONE) return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.ZERO); break;
+                        case Bt.KNOWN: break;
+                        case Bt.UNDEFINED: break;
+                    }
+                    break;
+            }
+            */
+            // unreachable
+            return new Tuple<Bt, Bt>(Bt.UNDEFINED, Bt.UNDEFINED);
+        }
+
+        /// <summary>Calc the value of the overflow flag in an addition operation</summary>
+        private static OverflowFlag calcOverflow(Bt sign1, Bt sign2, Bt c) {
+
+            if (sign1 == Bt.UNDEFINED) return Bt.UNDEFINED;
+            if (sign2 == Bt.UNDEFINED) return Bt.UNDEFINED;
             if (c == Bt.UNDEFINED) return Bt.UNDEFINED;
+
+            if (sign1 == Bt.KNOWN) return Bt.KNOWN;
+            if (sign2 == Bt.KNOWN) return Bt.KNOWN;
+            if (c == Bt.KNOWN) return Bt.KNOWN;
+
+            if ((sign1 == Bt.ONE) && (sign2 == Bt.ONE) && (c == Bt.ZERO)) return Bt.ONE;
+            if ((sign1 == Bt.ZERO) && (sign2 == Bt.ZERO) && (c == Bt.ONE)) return Bt.ONE;
 
             return Bt.ZERO;
         }
 
-        public static Tuple<Bt[], CarryFlag, OverflowFlag, AuxiliaryFlag> add(Bt[] a, Bt[] b) {
+        /// <summary>add the provided bit to the provided the array</summary>
+        private static Tuple<CarryFlag, OverflowFlag, AuxiliaryFlag> add_one_bit(ref Bt[] a, Bt b) {
 
+            AuxiliaryFlag af = Bt.UNDEFINED;
+            Bt signBitBefore = a[a.Length - 1];
+            Bt toAdd = b;
+
+            for (int i = 0; i < a.Length; ++i) {
+                switch (toAdd) {
+                    case Bt.ZERO: // nothing to add, do nothing
+                        break;
+                    case Bt.ONE: // adding one to position i;
+                        switch (a[i]) {
+                            case Bt.ZERO:
+                                a[i] = Bt.ONE;
+                                toAdd = Bt.ZERO;
+                                break;
+                            case Bt.ONE:
+                                a[i] = Bt.ZERO;
+                                //toAdd = Bt.ONE;
+                                break;
+                            case Bt.KNOWN:
+                                a[i] = Bt.KNOWN;
+                                toAdd = Bt.KNOWN;
+                                break;
+                            case Bt.UNDEFINED:
+                                a[i] = Bt.UNDEFINED;
+                                toAdd = Bt.UNDEFINED;
+                                break;
+                        }
+                        break;
+                    case Bt.KNOWN:
+                        if (a[i] == Bt.UNDEFINED) {
+                            a[i] = Bt.UNDEFINED;
+                            toAdd = Bt.UNDEFINED;
+                        } else {
+                            a[i] = Bt.KNOWN;
+                        }
+                        break;
+                    case Bt.UNDEFINED:
+                        a[i] = Bt.UNDEFINED;
+                        break;
+                }
+                if (i == 3) {
+                    af = toAdd;
+                } 
+            }
+
+            CarryFlag cf = toAdd;
+            OverflowFlag of = calcOverflow(signBitBefore, Bt.ZERO, a[a.Length - 1]);
+            return new Tuple<CarryFlag, OverflowFlag, AuxiliaryFlag>(cf, of, af);
+        }
+
+        #endregion Private Binary Arithmetic
+
+        public static Tuple<Bt[], CarryFlag, OverflowFlag, AuxiliaryFlag> add(Bt[] a, Bt[] b, CarryFlag cfIn) {
             Debug.Assert(a.Length == b.Length);
             int length = a.Length;
 
-            Bt[] r = new Bt[a.Length];
-            CarryFlag carry = Bt.ZERO;
-            AuxiliaryFlag auxiliary = Bt.UNDEFINED;
+            Bt[] r = new Bt[length];
+            CarryFlag cf = cfIn;
+            AuxiliaryFlag af = Bt.UNDEFINED;
+
             for (int i = 0; i < length; ++i) {
-                Tuple<Bt, Bt> t = add(a[i], b[i], carry);
+                Tuple<Bt, Bt> t = addFull(a[i], b[i], cf);
                 r[i] = t.Item1;
-                carry = t.Item2;
-                if (i == 2) {
-                    auxiliary = new AuxiliaryFlag(carry);
+                cf = t.Item2;
+                if (i == 3) {
+                    af = cf.val;
                 }
             }
-            OverflowFlag overflow = calcOverflow(a[length - 2], b[length - 2], r[length - 2]);
-            return new Tuple<Bt[], CarryFlag, OverflowFlag, AuxiliaryFlag>(r, carry, overflow, auxiliary);
+            OverflowFlag of = calcOverflow(a[length - 1], b[length - 1], r[length - 1]);
+            return new Tuple<Bt[], CarryFlag, OverflowFlag, AuxiliaryFlag>(r, cf, of, af);
         }
 
-        public static Tuple<Bt[], CarryFlag, OverflowFlag, AuxiliaryFlag> sub(Bt[] a, Bt[] b) {
-
+        public static Tuple<Bt[], CarryFlag, OverflowFlag, AuxiliaryFlag> sub(Bt[] a, Bt[] b, CarryFlag cfIn) {
             Debug.Assert(a.Length == b.Length);
             int length = a.Length;
 
-            Bt[] r = new Bt[a.Length];
-            CarryFlag carry = Bt.ZERO;
-            AuxiliaryFlag auxiliary = Bt.UNDEFINED;
-            //TODO
+            Bt[] r = new Bt[length];
+            CarryFlag cf = cfIn;
+            AuxiliaryFlag af = Bt.UNDEFINED;
 
-            /*
             for (int i = 0; i < length; ++i) {
-                Tuple<Bt, Bt> t = add(a[i], b[i], carry);
+                Tuple<Bt, Bt> t = subFull(cf, b[i], a[i]);
                 r[i] = t.Item1;
-                carry = t.Item2;
-                if (i == 2) {
-                    auxiliary = new AuxiliaryFlag(carry);
+                cf = t.Item2;
+                if (i == 3) {
+                    af = cf.val;
                 }
             }
-            */
-            OverflowFlag overflow = calcOverflow(a[length - 2], b[length - 2], r[length - 2]);
-            return new Tuple<Bt[], CarryFlag, OverflowFlag, AuxiliaryFlag>(r, carry, overflow, auxiliary);
+            OverflowFlag of = calcOverflow(a[length - 1], b[length - 1], r[length - 1]);
+            return new Tuple<Bt[], CarryFlag, OverflowFlag, AuxiliaryFlag>(r, cf, of, af);
         }
-
-
 
         #endregion
 
@@ -449,7 +717,7 @@ namespace AsmTools {
 
         public static string toStringDecimal(Bt[] a) {
             if (BitTools.isKnown(a)) {
-                return BitTools.intValue(a) + "";
+                return BitTools.getUlongValue(a) + "";
             }
             //TODO:
             throw new Exception();

@@ -18,7 +18,7 @@ namespace AsmTools {
         KNC     = 2048
     }
 
-    public static partial class Tools {
+    public static partial class AsmSourceTools {
         public static Arch parseArch(string str) {
             switch (str.ToUpper()) {
                 case "X86": return Arch.X86;

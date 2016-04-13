@@ -43,7 +43,7 @@ namespace AsmTools {
         UNKNOWN_UNKNOWN = Ot.UNKNOWN | (Ot.UNKNOWN << 4),
     }
 
-    public static partial class Tools {
+    public static partial class AsmSourceTools {
         public static Tuple<Ot, Ot> splitOt(Ot2 operandTuple) {
             switch (operandTuple) {
                 case Ot2.reg_reg: return new Tuple<Ot, Ot>(Ot.reg, Ot.reg);

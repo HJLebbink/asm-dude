@@ -44,7 +44,7 @@ namespace AsmTools {
         ZMM24, ZMM25, ZMM26, ZMM27, ZMM28, ZMM29, ZMM30, ZMM31
     };
 
-    public static partial class Tools {
+    public static partial class AsmSourceTools {
 
         public static Rn parseRn(string str) {
             switch (str.ToUpper()) {

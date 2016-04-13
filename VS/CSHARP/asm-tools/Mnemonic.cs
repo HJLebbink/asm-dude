@@ -6,6 +6,72 @@ using System.Threading.Tasks;
 
 namespace AsmTools {
 
+    public enum ConditionalElement {
+
+        UNCONDITIONAL,
+
+        /// <summary>if above (CF = 0 and ZF = 0></summary>
+        A,
+        /// <summary>if above or equal (CF = 0)</summary>
+        AE,
+        /// <summary>Set byte if below (CF = 1)</summary>
+        B,
+        /// <summary>Set byte if below or equal (CF = 1 or ZF = 1)</summary>
+        BE,
+        /// <summary>Set byte if carry (CF = 1)</summary>
+        C,
+        /// <summary>Set byte if equal (ZF = 1)</summary>
+        E,
+        /// <summary>Set byte if greater (ZF = 0 and SF = OF)</summary>
+        G,
+        /// <summary>Set byte if greater or equal (SF = OF)</summary>
+        GE,
+        /// <summary>Set byte if less (SF ≠ OF)</summary>
+        L,
+        /// <summary>Set byte if less or equal (ZF = 1 or SF≠ OF)/summary>
+        LE,
+        /// <summary>Set byte if not above (CF = 1 or ZF = 1)</summary>
+        NA,
+        /// <summary>Set byte if not above or equal (CF = 1)</summary>
+        NAE,
+        /// <summary>Set byte if not below (CF = 0)</summary>
+        NB,
+        /// <summary>Set byte if not below or equal (CF = 0 and ZF = 0)</summary>
+        NBE,
+        /// <summary>Set byte if not carry (CF = 0)</summary>
+        NC,
+        /// <summary>Set byte if not equal (ZF = 0)</summary>
+        NE,
+        /// <summary>Set byte if not greater (ZF = 1 or SF ≠ OF)</summary>
+        NG,
+        /// <summary>Set byte if not greater or equal (SF ≠ OF)</summary>
+        NGE,
+        /// <summary>Set byte if not less (SF = OF)</summary>
+        NL,
+        /// <summary>Set byte if not less or equal (ZF = 0 and SF = OF)</summary>
+        NLE,
+        /// <summary>Set byte if not overflow (OF = 0)</summary>
+        NO,
+        /// <summary>Set byte if not parity (PF = 0)</summary>
+        NP,
+        /// <summary>Set byte if not sign (SF = 0)</summary>
+        NS,
+        /// <summary>Set byte if not zero (ZF = 0)</summary>
+        NZ,
+        /// <summary>Set byte if overflow (OF = 1)</summary>
+        O,
+        /// <summary>Set byte if parity (PF = 1)</summary>
+        P,
+        /// <summary>Set byte if parity even (PF = 1)</summary>
+        PE,
+        /// <summary>Set byte if parity odd (PF = 0)</summary>
+        PO,
+        /// <summary>Set byte if sign (SF = 1)</summary>
+        S,
+        /// <summary>Set byte if zero (ZF = 1)</summary>
+        Z
+    }
+
     public enum Mnemonic {
         UNKNOWN,
         #region Data Transfer Instructions
@@ -451,8 +517,8 @@ namespace AsmTools {
         LEA,// Load effective address
         /// <summary>XXX</summary>
         NOP,// No operation
-        /// <summary>XXX</summary>
-        UD2,// Undefined instruction
+        /// <summary>Generates an invalid opcode. This instruction is provided for software testing to explicitly generate an invalid opcode. The opcode for this instruction is reserved for this purpose. Other than raising the invalid opcode exception, this instruction is the same as the NOP instruction.</summary>
+        UD2,
         /// <summary>XXX</summary>
         XLAT,
         /// <summary>XXX</summary>
@@ -531,7 +597,45 @@ namespace AsmTools {
 
     }
 
-    public static partial class Tools {
+    public static partial class AsmSourceTools {
+
+        public static Bt conditionalTaken(ConditionalElement ce, CarryFlag CF, ZeroFlag ZF, SignFlag SF, OverflowFlag OF, ParityFlag PF) {
+            switch (ce) {
+                case ConditionalElement.UNCONDITIONAL: return Bt.ONE;
+                case ConditionalElement.A: return BitTools.or(BitTools.neg(CF), BitTools.neg(ZF));
+                case ConditionalElement.AE: return BitTools.neg(CF);
+                case ConditionalElement.B: return CF;
+                case ConditionalElement.BE: return BitTools.and(BitTools.neg(CF), BitTools.neg(ZF));
+                case ConditionalElement.C: return CF;
+                case ConditionalElement.E: return ZF;
+                case ConditionalElement.G: return BitTools.and(BitTools.neg(ZF), BitTools.eq(SF, OF));
+                case ConditionalElement.GE: return BitTools.neg(BitTools.xor(SF, OF));
+                case ConditionalElement.L: return BitTools.xor(SF, OF);
+                case ConditionalElement.LE: return BitTools.or(BitTools.xor(SF, OF), ZF);
+                case ConditionalElement.NA: return BitTools.and(BitTools.neg(CF), BitTools.neg(ZF));
+                case ConditionalElement.NAE: return CF;
+                case ConditionalElement.NB: return BitTools.neg(CF);
+                case ConditionalElement.NBE: return BitTools.or(BitTools.neg(CF), BitTools.neg(ZF));
+                case ConditionalElement.NC: return BitTools.neg(CF);
+                case ConditionalElement.NE: return BitTools.neg(ZF);
+                case ConditionalElement.NG: return BitTools.or(BitTools.xor(SF, OF), ZF);
+                case ConditionalElement.NGE: return BitTools.xor(SF, OF);
+                case ConditionalElement.NL: return BitTools.neg(BitTools.xor(SF, OF));
+                case ConditionalElement.NLE: return BitTools.and(BitTools.neg(ZF), BitTools.eq(SF, OF));
+                case ConditionalElement.NO: return BitTools.neg(OF);
+                case ConditionalElement.NP: return BitTools.neg(PF);
+                case ConditionalElement.NS: return BitTools.neg(SF);
+                case ConditionalElement.NZ: return BitTools.neg(ZF);
+                case ConditionalElement.O: return OF;
+                case ConditionalElement.P: return PF;
+                case ConditionalElement.PE: return PF;
+                case ConditionalElement.PO: return BitTools.neg(PF);
+                case ConditionalElement.S: return SF;
+                case ConditionalElement.Z: return ZF;
+                default: return Bt.UNDEFINED;
+            }
+        }
+
         public static Mnemonic parseMnemonic(string str) {
             switch (str.ToUpper()) {
                 case "UNKNOWN": return Mnemonic.UNKNOWN;

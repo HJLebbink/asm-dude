@@ -75,7 +75,7 @@ namespace AsmDude {
             foreach (string line in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)) {
                 //AsmDudeToolsStatic.Output(string.Format("INFO: getLabels: str=\"{0}\"", str));
 
-                Tuple<bool, int, int> labelPos = AsmTools.Tools.getLabelPos(line);
+                Tuple<bool, int, int> labelPos = AsmTools.AsmSourceTools.getLabelPos(line);
                 if (labelPos.Item1) {
                     int labelBeginPos = labelPos.Item2;
                     int labelEndPos = labelPos.Item3;
@@ -105,7 +105,7 @@ namespace AsmDude {
                 int startLine = bufferPosition.Value.GetContainingLine().Start;
                 int currentPos = bufferPosition.Value.Position;
 
-                Tuple<int, int> t = AsmTools.Tools.getKeywordPos(currentPos - startLine, line);
+                Tuple<int, int> t = AsmTools.AsmSourceTools.getKeywordPos(currentPos - startLine, line);
 
                 int beginPos = t.Item1;
                 int endPos = t.Item2;
@@ -121,7 +121,7 @@ namespace AsmDude {
                 int startLine = bufferPosition.Value.GetContainingLine().Start;
                 int currentPos = bufferPosition.Value.Position;
 
-                Tuple<int, int> t = AsmTools.Tools.getKeywordPos(currentPos - startLine, line);
+                Tuple<int, int> t = AsmTools.AsmSourceTools.getKeywordPos(currentPos - startLine, line);
 
                 int beginPos = t.Item1 + startLine;
                 int endPos = t.Item2 + startLine;
@@ -144,7 +144,7 @@ namespace AsmDude {
                     if (c == ':') {
                         posColon = pos;
                         break;
-                    } else if (AsmTools.Tools.isRemarkChar(c)) {
+                    } else if (AsmTools.AsmSourceTools.isRemarkChar(c)) {
                         break;
                     }
                 }
@@ -350,7 +350,7 @@ namespace AsmDude {
                 if (archAttribute == null) {
                     return Arch.NONE;
                 } else {
-                    return AsmTools.Tools.parseArch(archAttribute.Value.ToUpper());
+                    return AsmTools.AsmSourceTools.parseArch(archAttribute.Value.ToUpper());
                 }
             } catch (Exception) {
                 return Arch.NONE;
@@ -388,6 +388,6 @@ namespace AsmDude {
             return this._xmlData;
         }
 
-#endregion
+        #endregion
     }
 }

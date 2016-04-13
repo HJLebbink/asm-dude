@@ -149,7 +149,7 @@ namespace AsmDude {
                 }
                 //2] find the start of the current keyword
                 SnapshotPoint start = triggerPoint;
-                while ((start > line.Start) && !AsmTools.Tools.isSeparatorChar((start - 1).GetChar())) {
+                while ((start > line.Start) && !AsmTools.AsmSourceTools.isSeparatorChar((start - 1).GetChar())) {
                     start -= 1;
                 }
                 //3] get the word that is currently being typed
@@ -262,7 +262,7 @@ namespace AsmDude {
         private static bool isRemark(SnapshotPoint triggerPoint, SnapshotPoint lineStart) {
             // check if the line contains a remark character before the current point
             for (SnapshotPoint pos = (triggerPoint-1); pos >= lineStart; pos -= 1) {
-                if (AsmTools.Tools.isRemarkChar(pos.GetChar())) {
+                if (AsmTools.AsmSourceTools.isRemarkChar(pos.GetChar())) {
                     return true;
                 }
             }
@@ -274,7 +274,7 @@ namespace AsmDude {
         }
 
         private bool isRegister(string previousKeyword) {
-            return AsmTools.Tools.isRegister(previousKeyword);
+            return AsmTools.AsmSourceTools.isRegister(previousKeyword);
         }
 
         private bool isMnemonic(string previousKeyword) {
@@ -304,14 +304,14 @@ namespace AsmDude {
             SnapshotPoint endPrevious = begin;
             SnapshotPoint pos = end-1;
             for (; pos >= begin; pos -= 1) {
-                if (!AsmTools.Tools.isSeparatorChar(pos.GetChar())) {
+                if (!AsmTools.AsmSourceTools.isSeparatorChar(pos.GetChar())) {
                     endPrevious = pos+1;
                     break;
                 }
             }
             SnapshotPoint beginPrevious = begin;
             for (; pos >= begin; pos -= 1) {
-                if (AsmTools.Tools.isSeparatorChar(pos.GetChar())) {
+                if (AsmTools.AsmSourceTools.isSeparatorChar(pos.GetChar())) {
                     beginPrevious = pos+1;
                     break;
                 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AsmTools {
 
-    public static partial class Tools {
+    public static partial class AsmSourceTools {
 
         public static bool isRemarkChar(char c) {
             return c.Equals('#') || c.Equals(';');
@@ -20,7 +20,7 @@ namespace AsmTools {
         public static Tuple<bool, int, int> getRemarkPos(string line) {
             int nChars = line.Length;
             for (int i = 0; i < nChars; ++i) {
-                if (Tools.isRemarkChar(line[i])) {
+                if (AsmSourceTools.isRemarkChar(line[i])) {
                     return new Tuple<bool, int, int>(true, i, nChars);
                 }
             }
@@ -34,7 +34,7 @@ namespace AsmTools {
             // find the start of the first keyword
             for (; i < nChars; ++i) {
                 char c = line[i];
-                if (Tools.isRemarkChar(c)) {
+                if (AsmSourceTools.isRemarkChar(c)) {
                     return new Tuple<bool, int, int>(false, 0, 0);
                 } else if (char.IsWhiteSpace(c)) {
                     // do nothing
@@ -53,9 +53,9 @@ namespace AsmTools {
                 char c = line[i];
                 if (c.Equals(':')) {
                     return new Tuple<bool, int, int>(true, beginPos, i);
-                } else if (Tools.isRemarkChar(c)) {
+                } else if (AsmSourceTools.isRemarkChar(c)) {
                     return new Tuple<bool, int, int>(false, 0, 0);
-                } else if (Tools.isSeparatorChar(c)) {
+                } else if (AsmSourceTools.isSeparatorChar(c)) {
                     // found another keyword: labels can only be the first keyword on a line
                     break;
                 }
@@ -97,28 +97,32 @@ namespace AsmTools {
             ulong v;
             bool parsedSuccessfully;
             if (isHex) {
-                parsedSuccessfully = ulong.TryParse(token2.Replace(".", string.Empty), NumberStyles.HexNumber, CultureInfo.CurrentCulture, out v);
+                parsedSuccessfully = ulong.TryParse(token2.Replace("_", string.Empty), NumberStyles.HexNumber, CultureInfo.CurrentCulture, out v);
             } else {
-                parsedSuccessfully = ulong.TryParse(token2.Replace(".", string.Empty), NumberStyles.Integer, CultureInfo.CurrentCulture, out v);
+                parsedSuccessfully = ulong.TryParse(token2.Replace("_", string.Empty), NumberStyles.Integer, CultureInfo.CurrentCulture, out v);
             }
 
-            int nBits = -1;
-            if (parsedSuccessfully) {
-                if ((v & 0xFFFFFFFFFFFFFF00ul) == 0) {
-                    nBits = 8;
-                } else if ((v & 0xFFFFFFFFFFFF0000ul) == 0) {
-                    nBits = 16;
-                } else if ((v & 0xFFFFFFFF00000000ul) == 0) {
-                    nBits = 32;
-                } else {
-                    nBits = 64;
-                }
-            }
+            int nBits = (parsedSuccessfully) ? nBitsStorageNeeded(v) : -1;
             return new Tuple<bool, ulong, int>(parsedSuccessfully, v, nBits);
         }
 
+        public static int nBitsStorageNeeded(ulong v) {
+            int nBits = -1;
+            if ((v & 0xFFFFFFFFFFFFFF00ul) == 0) {
+                nBits = 8;
+            } else if ((v & 0xFFFFFFFFFFFF0000ul) == 0) {
+                nBits = 16;
+            } else if ((v & 0xFFFFFFFF00000000ul) == 0) {
+                nBits = 32;
+            } else {
+                nBits = 64;
+            }
+            return nBits;
+        }
 
         public static string getRelatedRegister(string reg) {
+
+            //TODO use register enum
             switch (reg.ToUpper()) {
                 case "RAX":
                 case "EAX":
@@ -205,6 +209,80 @@ namespace AsmTools {
                 case "R15B":
                     return "\\b(R15|R15D|R15W|R15B)\\b";
 
+                case "MM0":
+                case "XMM0":
+                case "YMM0":
+                case "ZMM0":
+                    return "\\b(MM0|XMM0|YMM0|ZMM0)\\b";
+
+                case "MM1":
+                case "XMM1":
+                case "YMM1":
+                case "ZMM1":
+                    return "\\b(MM1|XMM1|YMM1|ZMM1)\\b";
+                case "MM2":
+                case "XMM2":
+                case "YMM2":
+                case "ZMM2":
+                    return "\\b(MM2|XMM2|YMM2|ZMM2)\\b";
+                case "MM3":
+                case "XMM3":
+                case "YMM3":
+                case "ZMM3":
+                    return "\\b(MM3|XMM3|YMM3|ZMM3)\\b";
+                case "MM4":
+                case "XMM4":
+                case "YMM4":
+                case "ZMM4":
+                    return "\\b(MM4|XMM4|YMM4|ZMM4)\\b";
+                case "MM5":
+                case "XMM5":
+                case "YMM5":
+                case "ZMM5":
+                    return "\\b(MM5|XMM5|YMM5|ZMM5)\\b";
+                case "MM6":
+                case "XMM6":
+                case "YMM6":
+                case "ZMM6":
+                    return "\\b(MM6|XMM6|YMM6|ZMM6)\\b";
+                case "MM7":
+                case "XMM7":
+                case "YMM7":
+                case "ZMM7":
+                    return "\\b(MM7|XMM7|YMM7|ZMM7)\\b";
+                case "XMM8":
+                case "YMM8":
+                case "ZMM8":
+                    return "\\b(XMM8|YMM8|ZMM8)\\b";
+                case "XMM9":
+                case "YMM9":
+                case "ZMM9":
+                    return "\\b(XMM9|YMM9|ZMM9)\\b";
+                case "XMM10":
+                case "YMM10":
+                case "ZMM10":
+                    return "\\b(XMM10|YMM10|ZMM10)\\b";
+                case "XMM11":
+                case "YMM11":
+                case "ZMM11":
+                    return "\\b(XMM11|YMM11|ZMM11)\\b";
+                case "XMM12":
+                case "YMM12":
+                case "ZMM12":
+                    return "\\b(XMM12|YMM12|ZMM12)\\b";
+                case "XMM13":
+                case "YMM13":
+                case "ZMM13":
+                    return "\\b(XMM13|YMM13|ZMM13)\\b";
+                case "XMM14":
+                case "YMM14":
+                case "ZMM14":
+                    return "\\b(XMM14|YMM14|ZMM14)\\b";
+                case "XMM15":
+                case "YMM15":
+                case "ZMM15":
+                    return "\\b(XMM15|YMM15|ZMM15)\\b";
+
                 default: return reg;
             }
         }
@@ -212,6 +290,8 @@ namespace AsmTools {
         private static bool isRegisterMethod1(string keyword) {
             //TODO  get this info from AsmDudeData.xml
             switch (keyword.ToUpper()) {
+
+                #region GPR
                 case "RAX"://
                 case "EAX"://
                 case "AX"://
@@ -255,7 +335,6 @@ namespace AsmTools {
                 case "ESP"://
                 case "SP"://
                 case "SPL"://
-                #region
 
                 case "R8"://
                 case "R8D"://
@@ -296,6 +375,10 @@ namespace AsmTools {
                 case "R15D"://
                 case "R15W"://
                 case "R15B"://
+
+                #endregion GPR
+                #region SIMD
+
                 case "MM0"://
                 case "MM1"://
                 case "MM2"://
@@ -376,7 +459,7 @@ namespace AsmTools {
                 case "ZMM29":
                 case "ZMM30":
                 case "ZMM31":
-                    #endregion
+                    #endregion SIMD
                     return true;
                 default:
                     return false;
@@ -558,7 +641,7 @@ namespace AsmTools {
             return b2;
         }
 
-        public static bool isMem(string token) {
+        public static Tuple<bool, int> isMem(string token) {
             //TODO
             // see intel manual : 3.7.5 Specifying an Offset
 
@@ -577,26 +660,28 @@ namespace AsmTools {
 
             string[] s = token.Split(null); // by default split uses whitespace
             switch (s[0]) {
-                case "PTR":
-                case "BYTE":
-                case "SBYTE":
-                case "WORD":
-                case "SWORD":
-                case "DWORD":
-                case "SDWORD":
-                case "QWORD":
-                case "ZWORD":
-                case "OWORD":
-                case "XMMWORD":
-                case "YMMWORD":
-                case "ZMMWORD": return true;
+                case "PTR": return new Tuple<bool, int>(true, 32);
+                case "BYTE": return new Tuple<bool, int>(true, 8);
+                case "SBYTE": return new Tuple<bool, int>(true, 8);
+                case "WORD": return new Tuple<bool, int>(true, 16);
+                case "SWORD": return new Tuple<bool, int>(true, 16);
+                case "DWORD": return new Tuple<bool, int>(true, 32);
+                case "SDWORD": return new Tuple<bool, int>(true, 32);
+                case "QWORD": return new Tuple<bool, int>(true, 64);
+                case "TWORD": return new Tuple<bool, int>(true, 80);
+                case "XMMWORD": return new Tuple<bool, int>(true, 128);
+                case "OWORD": return new Tuple<bool, int>(true, 128);
+                case "YMMWORD": return new Tuple<bool, int>(true, 256);
+                case "YWORD": return new Tuple<bool, int>(true, 256);
+                case "ZMMWORD": return new Tuple<bool, int>(true, 512);
+                case "ZWORD": return new Tuple<bool, int>(true, 512);
             }
-            return false;
+            return new Tuple<bool, int>(false, 0);
         }
 
         public static string getKeyword(int pos, string line) {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: getKeyword; pos={0}; line=\"{1}\"", pos, new string(line)));
-            var t = Tools.getKeywordPos(pos, line);
+            var t = AsmSourceTools.getKeywordPos(pos, line);
             int beginPos = t.Item1;
             int endPos = t.Item2;
             return line.Substring(beginPos, endPos - beginPos);
@@ -611,7 +696,7 @@ namespace AsmTools {
             int beginPos = 0;
             for (int i1 = pos - 1; i1 > 0; --i1) {
                 char c = line[i1];
-                if (Tools.isSeparatorChar(c) || Char.IsControl(c) || Tools.isRemarkChar(c)) {
+                if (AsmSourceTools.isSeparatorChar(c) || Char.IsControl(c) || AsmSourceTools.isRemarkChar(c)) {
                     beginPos = i1 + 1;
                     break;
                 }
@@ -620,7 +705,7 @@ namespace AsmTools {
             int endPos = line.Length;
             for (int i2 = pos; i2 < line.Length; ++i2) {
                 char c = line[i2];
-                if (Tools.isSeparatorChar(c) || Char.IsControl(c) || Tools.isRemarkChar(c)) {
+                if (AsmSourceTools.isSeparatorChar(c) || Char.IsControl(c) || AsmSourceTools.isRemarkChar(c)) {
                     endPos = i2;
                     break;
                 }
