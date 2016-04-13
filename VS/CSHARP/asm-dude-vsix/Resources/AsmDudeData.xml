@@ -3,44 +3,74 @@
 	<info>General info here</info>
 	<miscs>
 		<misc name="PTR"/>
-		<misc name="BYTE"/>
-    <misc name="SBYTE"/>
-    <misc name="WORD"/>
-    <misc name="SWORD"/>
-    <misc name="DWORD"/>
-    <misc name="SDWORD"/>
-    <misc name="QWORD"/>
-		<misc name="ZWORD"/>
-		<misc name="OWORD"/>
-    <misc name="XMMWORD"/>
-    <misc name="YMMWORD"/>
-    <misc name="ZMMWORD"/>
+    <misc name="BYTE">
+        <description>Byte (1 byte, 8 bit)</description>
+    </misc>
+    <misc name="SBYTE">
+        <description>Signed Byte (1 byte, 8 bit)</description>
+    </misc>
+    <misc name="WORD">
+      <description>Word, Half Precision (2 bytes, 16 bit)</description>
+    </misc>
+    <misc name="SWORD">
+      <description>Signed Word, Half Precision (2 bytes, 16 bit)</description>
+    </misc>
+    <misc name="DWORD">
+      <description>Double Word, Single Precision (4 bytes, 32 bit)</description>
+    </misc>
+    <misc name="SDWORD">
+      <description>Signed Double Word, Single Precision (4 bytes, 32 bit)</description>
+    </misc>
+    <misc name="QWORD">
+      <description>Quad word, Double Precision (8 bytes, 64 bit)</description>
+    </misc>
+    <misc name="TWORD">
+      <description>Extended (Double) Precision (10 bytes, 80 bit)</description>
+    </misc>
+    <misc name="XMMWORD">
+      <description>(16 bytes, 128 bit)</description>
+    </misc>
+    <misc name="OWORD">
+      <description>IEEE 754-2008 Quad Precision (16 bytes, 128 bit)</description>
+    </misc>
+    <misc name="YMMWORD">
+      <description>(32 bytes, 256 bit)</description>
+    </misc>
+    <misc name="YWORD">
+      <description>(32 bytes, 256 bit)</description>
+    </misc>
+    <misc name="ZMMWORD">
+      <description>(64 bytes, 512 bit)</description>
+    </misc>
+    <misc name="ZWORD">
+      <description>(64 bytes, 512 bit)</description>
+    </misc>
 
     <misc name="EQU"/>
 		<misc name="STRICT"/>
 		<misc name="DB">
-			<description>Byte (1 byte)</description>
+			<description>Byte (1 byte, 8 bit)</description>
 		</misc>
 		<misc name="DW">
-			<description>Word, Half Precision (2 bytes)</description>
+			<description>Word, Half Precision (2 bytes, 16 bit)</description>
 		</misc>
 		<misc name="DD">
-			<description>Double Word, Single Precision (4 bytes)</description>
+			<description>Double Word, Single Precision (4 bytes, 32 bit)</description>
 		</misc>
 		<misc name="DQ">
-			<description>quad word, Double Precision (8 bytes)</description>
+			<description>Quad word, Double Precision (8 bytes, 64 bit)</description>
 		</misc>
 		<misc name="DT">
-			<description>Extended (Double) Precision (10 bytes)</description>
+			<description>Extended (Double) Precision (10 bytes, 80 bit)</description>
 		</misc>
 		<misc name="DO">
-			<description>IEEE 754-2008 Quad Precision (16 bytes)</description>
+			<description>IEEE 754-2008 Quad Precision (16 bytes, 128 bit)</description>
 		</misc>
     <misc name="DY">
-      <description>??</description>
+      <description>(32 bytes, 256 bit)</description>
     </misc>
     <misc name="DZ">
-      <description>??</description>
+      <description>(64 bytes, 512 bit)</description>
     </misc>
   </miscs>
 	<directives>
@@ -2230,6 +2260,10 @@
 		</mnemonic>
 		<mnemonic name='PUSHFD'>
 			<description>Push EFLAGS Register onto the Stack</description>
+			<ref>PUSHF:PUSHFD.html</ref>
+		</mnemonic>
+		<mnemonic name='PUSHFQ'>
+			<description>Push RFLAGS Register onto the Stack</description>
 			<ref>PUSHF:PUSHFD.html</ref>
 		</mnemonic>
 		<mnemonic name='PXOR' arch='MMX'>
