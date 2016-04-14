@@ -46,6 +46,15 @@ namespace AsmTools {
 
     public static partial class AsmSourceTools {
 
+        public static Tuple<bool, Rn, int> toRn(string str) {
+            Rn rn = parseRn(str);
+            if (rn == Rn.NOREG) {
+                return new Tuple<bool, Rn, int>(false, Rn.NOREG, 0);
+            } else {
+                return new Tuple<bool, Rn, int>(true, rn, nBits(rn));
+            }
+        }
+
         public static Rn parseRn(string str) {
             switch (str.ToUpper()) {
                 case "RAX": return Rn.rax;

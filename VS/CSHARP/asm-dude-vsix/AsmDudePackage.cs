@@ -148,7 +148,7 @@ namespace AsmDude {
             if (null == mcs) {
                 AsmDudeToolsStatic.Output("WARNING: could not retrieve the IMenuCommandService.");
             } else {
-                AsmDudeToolsStatic.Output("INFO: retrieved the IMenuCommandService.");
+                //AsmDudeToolsStatic.Output("INFO: retrieved the IMenuCommandService.");
                 // Now create one object derived from MenuCommand for each command defined in
                 // the VSCT file and add it to the command service.
 

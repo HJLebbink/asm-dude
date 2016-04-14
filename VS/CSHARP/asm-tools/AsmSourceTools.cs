@@ -641,7 +641,7 @@ namespace AsmTools {
             return b2;
         }
 
-        public static Tuple<bool, int> isMem(string token) {
+        public static Tuple<bool, int> toMem(string token) {
             //TODO
             // see intel manual : 3.7.5 Specifying an Offset
 

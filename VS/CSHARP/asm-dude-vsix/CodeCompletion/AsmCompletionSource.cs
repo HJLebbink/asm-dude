@@ -108,24 +108,10 @@ namespace AsmDude {
             AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
 
             this.loadIcons();
-
-            #region Grammar experiment
-            /*
-            // experimental
-            this._grammar = new Dictionary<string, string>();
-            this._grammar["MOV"] = "<reg>,<reg>|<reg>,<mem>|<mem>,<reg>|<reg>,<const>|<mem>,<const>".ToUpper();
-            this._grammar["LEA"] = "<reg32>,<mem>".ToUpper();
-            this._grammar["PUSH"] = "<reg32>|<mem>|<const32>".ToUpper();
-            this._grammar["POP"] = "<reg32>|<mem>".ToUpper();
-
-            this._grammar["MEM8"] = "byte ptr [<reg32>]|[<reg32>+<reg32>]|<reg32>+2*<reg32>|<reg32>+4*<reg32>|<reg32>+8*<reg32>".ToUpper();
-            this._grammar["MEM32"] = "dword ptr [<reg32>]|[<reg32>+<reg32>]|<reg32>+2*<reg32>|<reg32>+4*<reg32>|<reg32>+8*<reg32>".ToUpper();
-            */
-            #endregion
         }
 
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets) {
-            //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:AugmentCompletionSession", this.ToString()));
+            //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:AugmentCompletionSession", this.ToString()));
 
             if (!Settings.Default.CodeCompletion_On) {
                 return;
@@ -144,16 +130,23 @@ namespace AsmDude {
                 ITextSnapshotLine line = triggerPoint.GetContainingLine();
 
                 //1] check if current position is in a remark; if we are in a remark, no code completion
-                if (AsmCompletionSource.isRemark(triggerPoint, line.Start)) {
-                    return;
+                if (triggerPoint.Position > 1) {
+                    char currentTypedChar = (triggerPoint - 1).GetChar();
+                    //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:AugmentCompletionSession: current char = {1}", this.ToString(), currentTypedChar));
+                    if (currentTypedChar != '#') { //TODO UGLY since the use can configure this starting character
+                        if (AsmCompletionSource.isRemark(triggerPoint, line.Start)) {
+                            return;
+                        }
+                    }
                 }
+
                 //2] find the start of the current keyword
                 SnapshotPoint start = triggerPoint;
                 while ((start > line.Start) && !AsmTools.AsmSourceTools.isSeparatorChar((start - 1).GetChar())) {
                     start -= 1;
                 }
                 //3] get the word that is currently being typed
-                var applicableTo = snapshot.CreateTrackingSpan(new SnapshotSpan(start, triggerPoint), SpanTrackingMode.EdgeInclusive);
+                ITrackingSpan applicableTo = snapshot.CreateTrackingSpan(new SnapshotSpan(start, triggerPoint), SpanTrackingMode.EdgeInclusive);
                 string partialKeyword = applicableTo.GetText(snapshot);
                 bool useCapitals = AsmDudeToolsStatic.isAllUpper(partialKeyword);
 
@@ -224,6 +217,23 @@ namespace AsmDude {
 
         private IList<Completion> selectedCompletions(bool useCapitals, HashSet<TokenType> selectedTypes) {
             IList<Completion> completions = new List<Completion>();
+
+            {   // add the completions of AsmDude directives (such as code folding directives)
+                if (Settings.Default.CodeFolding_On) {
+                    {
+                        string insertionText = Settings.Default.CodeFolding_BeginTag;     //the characters that start the outlining region
+                        string description = insertionText + " - keyword to start code folding";
+                        completions.Add(new Completion(description, insertionText, null, this._icons[TokenType.Directive], ""));
+                    }
+                    {
+                        string insertionText = Settings.Default.CodeFolding_EndTag;       //the characters that end the outlining region
+                        string description = insertionText + " - keyword to end code folding";
+                        completions.Add(new Completion(description, insertionText, null, this._icons[TokenType.Directive], ""));
+                    }
+                }
+            }
+
+            // add the completions that are defined in the xml file
             foreach (string keyword in this._asmDudeTools.getKeywords()) {
                 TokenType type = this._asmDudeTools.getTokenType(keyword);
                 if (selectedTypes.Contains(type)) {
@@ -239,8 +249,8 @@ namespace AsmDude {
                         string archStr = (arch == Arch.NONE) ? "" : " [" + arch + "]";
                         string descriptionStr = this._asmDudeTools.getDescription(keyword);
                         descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
-                        //String description = keyword + archStr + descriptionStr;
-                        String description = keyword.PadRight(15) + archStr.PadLeft(8) + descriptionStr;
+                        String description = keyword + archStr + descriptionStr;
+                        //String description = keyword.PadRight(15) + archStr.PadLeft(8) + descriptionStr;
 
                         ImageSource imageSource = null;
                         if (this._icons.ContainsKey(type)) {

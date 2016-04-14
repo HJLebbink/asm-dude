@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-dude-vsix", "CSHARP\asm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-tools", "CSHARP\asm-tools\asm-tools.csproj", "{49505283-48A9-45C5-A12B-8DCCEE32B0DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unit-tests", "CSHARP\unit-tests\unit-tests.csproj", "{F3B04FA2-B6A5-4AAA-BE28-5342B7CD3D87}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unit-tests-asm-dude", "CSHARP\unit-tests-asm-dude\unit-tests-asm-dude.csproj", "{F3B04FA2-B6A5-4AAA-BE28-5342B7CD3D87}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
