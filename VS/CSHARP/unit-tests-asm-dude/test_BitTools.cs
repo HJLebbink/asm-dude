@@ -81,7 +81,25 @@ namespace unit_tests {
             Assert.IsTrue(nPositiveNumbers > 0, "nPositiveNumbers="+ nPositiveNumbers);
             Assert.IsTrue(nNegativeNumbers > 0, "nNegativeNumbers=" + nNegativeNumbers);
         }
+        [TestMethod]
+        public void Test_BitTools_toBtArray() {
 
+            Random rnd = new Random();
+            const int nTests = 10000;
+            Bt[] a = new Bt[64];
+
+            for (int k = 0; k < nTests; ++k) {
+                long aValue = randLong(64, rnd);
+                BitTools.setLongValue(ref a, aValue);
+
+                Tuple<ulong, ulong> t1 = BitTools.toRaw(a);
+                Bt[] t2 = BitTools.toBtArray(t1.Item1, t1.Item2);
+
+                for (int i = 0; i<64; ++i) {
+                    Assert.AreEqual(a[i], t2[i], "test " + k + "/" + nTests+": i="+i);
+                }
+            }
+        }
         [TestMethod]
         public void Test_BitTools_and() {
             {
