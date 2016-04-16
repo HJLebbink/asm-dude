@@ -253,9 +253,7 @@ namespace AsmDude {
                         //String description = keyword.PadRight(15) + archStr.PadLeft(8) + descriptionStr;
 
                         ImageSource imageSource = null;
-                        if (this._icons.ContainsKey(type)) {
-                            imageSource = this._icons[type];
-                        }
+                        this._icons.TryGetValue(type, out imageSource);
                         completions.Add(new Completion(description, insertionText, null, imageSource, ""));
                     }
                 }

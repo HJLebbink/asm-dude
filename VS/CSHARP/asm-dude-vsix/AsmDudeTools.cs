@@ -195,12 +195,13 @@ namespace AsmDude {
 
         public TokenType getTokenType(string keyword) {
             if (this._type == null) initData();
+
+            TokenType tokenType;
             string k2 = keyword.ToUpper();
-            if (this._type.ContainsKey(k2)) {
-                return this._type[k2];
-            } else {
-                return TokenType.UNKNOWN;
+            if (!this._type.TryGetValue(k2, out tokenType)) {
+                tokenType = TokenType.UNKNOWN;
             }
+            return tokenType;
         }
 
         /// <summary>
@@ -234,11 +235,11 @@ namespace AsmDude {
         /// get url for the provided keyword. Returns empty string if the keyword does not exist or the keyword does not have an url.
         /// </summary>
         public string getDescription(string keyword) {
-            if (this._description.ContainsKey(keyword)) {
-                return this._description[keyword];
-            } else {
-                return "";
+            string description;
+            if (!this._description.TryGetValue(keyword, out description)) {
+                description = "";
             }
+            return description;
         }
 
         /// <summary>
@@ -246,8 +247,13 @@ namespace AsmDude {
         /// </summary>
         public bool isJumpMnenomic(string keyword) {
             if (this._type == null) initData();
+            TokenType tokenType;
             string k2 = keyword.ToUpper();
-            return (this._type.ContainsKey(k2)) ? (this._type[k2] == TokenType.Jump) : false;
+            if (this._type.TryGetValue(k2, out tokenType)) {
+                return tokenType == TokenType.Jump;
+            } else {
+                return false;
+            }
         }
 
         /// <summary>
@@ -255,8 +261,13 @@ namespace AsmDude {
         /// </summary>
         public bool isMnemonic(string keyword) {
             if (this._type == null) initData();
+            TokenType tokenType;
             string k2 = keyword.ToUpper();
-            return (this._type.ContainsKey(k2)) ? (this._type[k2] == TokenType.Mnemonic) : false;
+            if (this._type.TryGetValue(k2, out tokenType)) {
+                return tokenType == TokenType.Mnemonic;
+            } else {
+                return false;
+            }
         }
 
 
