@@ -665,6 +665,48 @@ namespace AsmTools {
 
         #endregion
 
+
+        /// <summary>
+        /// Make BT[64] array from ulong d (data) and ulong du (data UNDEFINED) If bit is 0 in du, then the truth-value is UNDEFINED.
+        /// </summary>
+        /// <param name="d">DATA</param>
+        /// <param name="du">Data UNDEFINED. if bit is 0 then the truth-value is UNDEFINED</param>
+        /// <returns></returns>
+        public static Bt[] toBtArray(ulong d, ulong du) {
+            Bt[] a = new Bt[64];
+            ulong mask = 1;
+
+            for (int i = 0; i < 64; ++i) {
+                a[i] = ((du & mask) == 0) ? Bt.UNDEFINED : (((d & mask) == 0) ? Bt.ZERO : Bt.ONE);
+                mask <<= 1;
+            }
+            return a;
+        }
+
+        public static Tuple<ulong, ulong> toRaw(Bt[] a) {
+            Debug.Assert(a.Length == 64);
+            ulong d = 0;
+            ulong du = 0; // init all 64 bits to UNDEFINED
+            ulong mask = 1;
+            for (int i = 0; i < 64; ++i) {
+                switch (a[i]) {
+                    case Bt.ONE:
+                        du |= mask;
+                        d |= mask;
+                        break;
+                    case Bt.ZERO:
+                        du |= mask;
+                        break;
+                    case Bt.KNOWN: break;
+                    case Bt.UNDEFINED: break;
+                }
+                mask <<= 1;
+            }
+            return new Tuple<ulong, ulong>(d, du);
+        }
+
+
+
         #region ToString
 
         public static char bitToChar(Bt bit) {
@@ -706,8 +748,8 @@ namespace AsmTools {
             return '?';
         }
 
-        public static string toStringBinary(Bt[] a) {
-            StringBuilder sb = new StringBuilder();
+        public static string toStringBin(Bt[] a) {
+            StringBuilder sb = new StringBuilder("0b");
             for (int i = (a.Length - 1); i >= 0; --i) {
                 sb.Append(BitTools.bitToChar(a[i]));
                 if ((i > 0) && (i != a.Length - 1) && (i % 8 == 0)) sb.Append('.');
@@ -715,7 +757,7 @@ namespace AsmTools {
             return sb.ToString();
         }
 
-        public static string toStringDecimal(Bt[] a) {
+        public static string toStringDec(Bt[] a) {
             if (BitTools.isKnown(a)) {
                 return BitTools.getUlongValue(a) + "";
             }
@@ -723,12 +765,16 @@ namespace AsmTools {
             throw new Exception();
         }
 
+        public static string toStringHex(ulong a) {
+            return string.Format("0x{0:X}", a);
+        }
+
         public static string toStringHex(Bt[] a) {
             if ((a.Length % 4) != 0) {
                 Console.WriteLine("WARNING: toStringHex: found odd number of bits:" + a.Length);
                 return "";
             }
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder("0x");
             int nChars = a.Length >> 2;
 
             for (int j = (nChars - 1); j >= 0; --j) {

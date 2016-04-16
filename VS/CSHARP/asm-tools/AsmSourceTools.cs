@@ -641,42 +641,152 @@ namespace AsmTools {
             return b2;
         }
 
-        public static Tuple<bool, int> toMem(string token) {
-            //TODO
-            // see intel manual : 3.7.5 Specifying an Offset
-
-            // 32-bit mode:
-            // possible bases: EAX, EBX, ECX, EDX, ESP, EBP, ESI, EDI
-            // possible index: EAX, EBX, ECX, EDX,      EBP, ESI, EDI
-            // scale: 1, 2, 4, 8
-            // displacement none, 8-bit, 16-bit, 32-bit
-
-            // 64-bit mode:
-            // possible bases: RAX, RBX, RCX, RDX, RSP, RBP, RSI, RDI
-            // possible index: RAX, RBX, RCX, RDX, RSP, RBP, RSI, RDI
-            // scale: 1, 2, 4, 8
-            // displacement none, 8-bit, 16-bit, 32-bit
 
 
-            string[] s = token.Split(null); // by default split uses whitespace
-            switch (s[0]) {
-                case "PTR": return new Tuple<bool, int>(true, 32);
-                case "BYTE": return new Tuple<bool, int>(true, 8);
-                case "SBYTE": return new Tuple<bool, int>(true, 8);
-                case "WORD": return new Tuple<bool, int>(true, 16);
-                case "SWORD": return new Tuple<bool, int>(true, 16);
-                case "DWORD": return new Tuple<bool, int>(true, 32);
-                case "SDWORD": return new Tuple<bool, int>(true, 32);
-                case "QWORD": return new Tuple<bool, int>(true, 64);
-                case "TWORD": return new Tuple<bool, int>(true, 80);
-                case "XMMWORD": return new Tuple<bool, int>(true, 128);
-                case "OWORD": return new Tuple<bool, int>(true, 128);
-                case "YMMWORD": return new Tuple<bool, int>(true, 256);
-                case "YWORD": return new Tuple<bool, int>(true, 256);
-                case "ZMMWORD": return new Tuple<bool, int>(true, 512);
-                case "ZWORD": return new Tuple<bool, int>(true, 512);
+        /// <summary>
+        /// Return the number of bits of the provided operand (assumes 64-bits)
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static int getNbitsMemOperand(string token) {
+
+            string s = token.TrimStart().ToUpper();
+            if (s.StartsWith("PTR")) token = token.Substring(3, token.Length - 3).TrimStart();
+
+            if (s.StartsWith("BYTE")) return 8;
+            if (s.StartsWith("SBYTE")) return 8;
+            if (s.StartsWith("WORD")) return 16;
+            if (s.StartsWith("SWORD")) return 16;
+
+            if (s.StartsWith("DWORD")) return 32;
+            if (s.StartsWith("SDWORD")) return 32;
+            if (s.StartsWith("QWORD")) return 64;
+            if (s.StartsWith("TWORD")) return 80;
+
+            if (s.StartsWith("XMMWORD")) return 128;
+            if (s.StartsWith("XWORD")) return 128;
+            if (s.StartsWith("YMMWORD")) return 256;
+            if (s.StartsWith("YWORD")) return 256;
+            if (s.StartsWith("ZMMWORD")) return 512;
+            if (s.StartsWith("ZWORD")) return 512;
+
+            return 32;
+        }
+
+        /// <summary>
+        /// return Offset = Base + (Index * Scale) + Displacement
+
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static Tuple<bool, Rn, Rn, int, long, int> parseMemOperand(string token) {
+
+
+            int length = token.Length;
+            if (length < 3) {
+                return new Tuple<bool, Rn, Rn, int, long, int>(false, Rn.NOREG, Rn.NOREG, 0, 0, 0);
             }
-            return new Tuple<bool, int>(false, 0);
+
+            // 1] select everything between []
+            int beginPos = length;
+ 
+            for (int i = 0; i< length; ++i) {
+                if (token[i] == '[') beginPos = i+1;
+            }
+
+            int nBits = getNbitsMemOperand(token);
+
+            int endPos = length;
+            for (int i = beginPos; i < length; ++i) {
+                if (token[i] == ']') endPos = i;
+            }
+
+            token = token.Substring(beginPos, endPos - beginPos).Trim();
+            length = token.Length;
+            if (length == 0) {
+                return new Tuple<bool, Rn, Rn, int, long, int>(false, Rn.NOREG, Rn.NOREG, 0, 0, 0);
+            }
+
+            // 2] remove initial +
+            if (token[0] == '+') {
+                token = token.Substring(1, length - 1).Trim();
+            }
+
+            // 3] check if the displacement is negative
+            bool negativeDisplacement = token.Contains('-');
+            if (negativeDisplacement) {
+                token = token.Replace('-', '+');
+            }
+
+            // 4] split based on +
+            string[] x = token.Split('+');
+
+            Rn baseRn = Rn.NOREG;
+            Rn indexRn = Rn.NOREG;
+            int scale = 0;
+            long displacement = 0;
+
+            for (int i = 0; i < x.Length; ++i) {
+                string y = x[i].Trim();
+
+                var t2 = AsmSourceTools.toConstant(y);
+                if (t2.Item1) {
+                    displacement = (negativeDisplacement) ? -(long)t2.Item2 : (long)t2.Item2;
+                }
+
+                Rn t1 = AsmSourceTools.parseRn(y);
+                if (t1 != Rn.NOREG) {
+                    if (baseRn == Rn.NOREG) {
+                        baseRn = t1;
+                    } else {
+                        indexRn = t1;
+                    }
+                }
+
+                if (y.Contains('*')) {
+                    string[] z = y.Split('*');
+                    string z0 = z[0].Trim();
+                    string z1 = z[1].Trim();
+                    Rn z0r = AsmSourceTools.parseRn(z0);
+                    if (z0r != Rn.NOREG) {
+                        indexRn = z0r;
+                        scale = parseScale(z1);
+                    } else {
+                        Rn z1r = AsmSourceTools.parseRn(z1);
+                        if (z1r != Rn.NOREG) {
+                            indexRn = z1r;
+                            scale = parseScale(z0);
+                        }
+                    }
+                }
+            }
+
+            if (scale == -1) {
+                return new Tuple<bool, Rn, Rn, int, long, int>(false, Rn.NOREG, Rn.NOREG, 0, 0, 0);
+            }
+            return new Tuple<bool, Rn, Rn, int, long, int>(true, baseRn, indexRn, scale, displacement, nBits);
+        }
+
+        private static int parseScale(string str) {
+            switch (str) {
+                case "0": return 0;
+                case "1": return 1;
+                case "2": return 2;
+                case "4": return 4;
+                case "8": return 8;
+                default: return -1;
+            }
+        }
+
+
+        private static int findEndNextWord(string str, int begin) {
+            for (int i = begin; i < str.Length; ++i) {
+                char c = str[i];
+                if (char.IsWhiteSpace(c) || c.Equals('+') || c.Equals('*') || c.Equals('-') || c.Equals('[') || c.Equals(']') || c.Equals('(') || c.Equals(')')) { 
+                    return i;
+                }
+            }
+            return str.Length;
         }
 
         public static string getKeyword(int pos, string line) {
