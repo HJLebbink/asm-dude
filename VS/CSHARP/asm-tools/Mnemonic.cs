@@ -128,7 +128,9 @@ namespace AsmTools {
         CBW,
         CWDE,// Convert byte to word/Convert word to doubleword in EAX register
         MOVSX,// Move and sign extend
+        MOVSXD,
         MOVZX,// Move and zero extend
+        MOVZXD,
         #endregion
         #region Binary Arithmetic Instructions
         // The binary arithmetic instructions perform basic binary integer computations on byte, word, and doubleword integers
@@ -602,34 +604,34 @@ namespace AsmTools {
         public static Bt conditionalTaken(ConditionalElement ce, CarryFlag CF, ZeroFlag ZF, SignFlag SF, OverflowFlag OF, ParityFlag PF) {
             switch (ce) {
                 case ConditionalElement.UNCONDITIONAL: return Bt.ONE;
-                case ConditionalElement.A: return BitTools.or(BitTools.neg(CF), BitTools.neg(ZF));
-                case ConditionalElement.AE: return BitTools.neg(CF);
+                case ConditionalElement.A: return BitOperations.or(BitOperations.neg(CF), BitOperations.neg(ZF));
+                case ConditionalElement.AE: return BitOperations.neg(CF);
                 case ConditionalElement.B: return CF;
-                case ConditionalElement.BE: return BitTools.and(BitTools.neg(CF), BitTools.neg(ZF));
+                case ConditionalElement.BE: return BitOperations.and(BitOperations.neg(CF), BitOperations.neg(ZF));
                 case ConditionalElement.C: return CF;
                 case ConditionalElement.E: return ZF;
-                case ConditionalElement.G: return BitTools.and(BitTools.neg(ZF), BitTools.eq(SF, OF));
-                case ConditionalElement.GE: return BitTools.neg(BitTools.xor(SF, OF));
-                case ConditionalElement.L: return BitTools.xor(SF, OF);
-                case ConditionalElement.LE: return BitTools.or(BitTools.xor(SF, OF), ZF);
-                case ConditionalElement.NA: return BitTools.and(BitTools.neg(CF), BitTools.neg(ZF));
+                case ConditionalElement.G: return BitOperations.and(BitOperations.neg(ZF), BitOperations.eq(SF, OF));
+                case ConditionalElement.GE: return BitOperations.neg(BitOperations.xor(SF, OF));
+                case ConditionalElement.L: return BitOperations.xor(SF, OF);
+                case ConditionalElement.LE: return BitOperations.or(BitOperations.xor(SF, OF), ZF);
+                case ConditionalElement.NA: return BitOperations.and(BitOperations.neg(CF), BitOperations.neg(ZF));
                 case ConditionalElement.NAE: return CF;
-                case ConditionalElement.NB: return BitTools.neg(CF);
-                case ConditionalElement.NBE: return BitTools.or(BitTools.neg(CF), BitTools.neg(ZF));
-                case ConditionalElement.NC: return BitTools.neg(CF);
-                case ConditionalElement.NE: return BitTools.neg(ZF);
-                case ConditionalElement.NG: return BitTools.or(BitTools.xor(SF, OF), ZF);
-                case ConditionalElement.NGE: return BitTools.xor(SF, OF);
-                case ConditionalElement.NL: return BitTools.neg(BitTools.xor(SF, OF));
-                case ConditionalElement.NLE: return BitTools.and(BitTools.neg(ZF), BitTools.eq(SF, OF));
-                case ConditionalElement.NO: return BitTools.neg(OF);
-                case ConditionalElement.NP: return BitTools.neg(PF);
-                case ConditionalElement.NS: return BitTools.neg(SF);
-                case ConditionalElement.NZ: return BitTools.neg(ZF);
+                case ConditionalElement.NB: return BitOperations.neg(CF);
+                case ConditionalElement.NBE: return BitOperations.or(BitOperations.neg(CF), BitOperations.neg(ZF));
+                case ConditionalElement.NC: return BitOperations.neg(CF);
+                case ConditionalElement.NE: return BitOperations.neg(ZF);
+                case ConditionalElement.NG: return BitOperations.or(BitOperations.xor(SF, OF), ZF);
+                case ConditionalElement.NGE: return BitOperations.xor(SF, OF);
+                case ConditionalElement.NL: return BitOperations.neg(BitOperations.xor(SF, OF));
+                case ConditionalElement.NLE: return BitOperations.and(BitOperations.neg(ZF), BitOperations.eq(SF, OF));
+                case ConditionalElement.NO: return BitOperations.neg(OF);
+                case ConditionalElement.NP: return BitOperations.neg(PF);
+                case ConditionalElement.NS: return BitOperations.neg(SF);
+                case ConditionalElement.NZ: return BitOperations.neg(ZF);
                 case ConditionalElement.O: return OF;
                 case ConditionalElement.P: return PF;
                 case ConditionalElement.PE: return PF;
-                case ConditionalElement.PO: return BitTools.neg(PF);
+                case ConditionalElement.PO: return BitOperations.neg(PF);
                 case ConditionalElement.S: return SF;
                 case ConditionalElement.Z: return ZF;
                 default: return Bt.UNDEFINED;
@@ -686,7 +688,9 @@ namespace AsmTools {
                 case "CBW": return Mnemonic.CBW;
                 case "CWDE": return Mnemonic.CWDE;
                 case "MOVSX": return Mnemonic.MOVSX;
+                case "MOVSXD": return Mnemonic.MOVSXD;
                 case "MOVZX": return Mnemonic.MOVZX;
+                case "MOVZXD": return Mnemonic.MOVZXD;
                 case "ADCX": return Mnemonic.ADCX;
                 case "ADOX": return Mnemonic.ADOX;
                 case "ADD": return Mnemonic.ADD;

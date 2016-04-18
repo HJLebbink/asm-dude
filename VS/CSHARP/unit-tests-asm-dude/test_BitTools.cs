@@ -106,7 +106,7 @@ namespace unit_tests {
                 Bt[] a = new Bt[] { Bt.ONE, Bt.ZERO, Bt.UNDEFINED, Bt.KNOWN };
                 Bt[] b = new Bt[] { Bt.ONE, Bt.ONE, Bt.KNOWN, Bt.ONE };
                 Bt[] expected = new Bt[] { Bt.ONE, Bt.ZERO, Bt.UNDEFINED, Bt.KNOWN };
-                Bt[] actual = AsmTools.BitTools.and(a, b);
+                Bt[] actual = BitOperations.and(a, b);
                 for (int i = 0; i < a.Length; ++i) {
                     Assert.AreEqual(expected[i], actual[i], "i=" + i);
                 }
@@ -118,7 +118,7 @@ namespace unit_tests {
                 Bt[] a = new Bt[] { Bt.ONE, Bt.ZERO, Bt.UNDEFINED, Bt.KNOWN };
                 Bt[] b = new Bt[] { Bt.ONE, Bt.ONE, Bt.KNOWN, Bt.ONE };
                 Bt[] expected = new Bt[] { Bt.ONE, Bt.ONE, Bt.UNDEFINED, Bt.ONE };
-                Bt[] actual = AsmTools.BitTools.or(a, b);
+                Bt[] actual = BitOperations.or(a, b);
                 for (int i = 0; i < a.Length; ++i) {
                     Assert.AreEqual(expected[i], actual[i], "i=" + i);
                 }
@@ -149,7 +149,7 @@ namespace unit_tests {
                 BitTools.setUlongValue(ref b, (ulong)bValue);
                 BitTools.setUlongValue(ref c, (ulong)cValue);
 
-                Tuple<Bt[], CarryFlag, OverflowFlag, AuxiliaryFlag> actual = AsmTools.BitTools.add(a, b, Bt.ZERO);
+                Tuple<Bt[], CarryFlag, OverflowFlag, AuxiliaryFlag> actual = BitOperations.add(a, b, Bt.ZERO);
 
                 ulong cValueComputed = BitTools.getUlongValue(actual.Item1);
                 Assert.AreEqual(cValue, cValueComputed, "Error in add(" + aValue + ", " + bValue + ")=" + cValue + "; test " + k + " / " + nTests);
@@ -177,7 +177,7 @@ namespace unit_tests {
                 OverflowFlag of = (calcOverflowValue(4, aValue, bValue, cValue)) ? Bt.ONE : Bt.ZERO;
                 AuxiliaryFlag af = ((aValue & 0xF) < (bValue & 0xF)) ? Bt.ONE : Bt.ZERO;
 
-                Tuple<Bt[], CarryFlag, OverflowFlag, AuxiliaryFlag> r = AsmTools.BitTools.sub(a, b, Bt.ZERO);
+                Tuple<Bt[], CarryFlag, OverflowFlag, AuxiliaryFlag> r = BitOperations.sub(a, b, Bt.ZERO);
 
                 for (int i = 0; i < a.Length; ++i) {
                     Assert.AreEqual(c[i], r.Item1[i], "i=" + i);
@@ -210,7 +210,7 @@ namespace unit_tests {
                     BitTools.setUlongValue(ref b, (ulong)bValue);
                     BitTools.setUlongValue(ref c, (ulong)cValue);
 
-                    Tuple<Bt[], CarryFlag, OverflowFlag, AuxiliaryFlag> actual = AsmTools.BitTools.sub(a, b, Bt.ZERO);
+                    Tuple<Bt[], CarryFlag, OverflowFlag, AuxiliaryFlag> actual = BitOperations.sub(a, b, Bt.ZERO);
 
                     ulong cValueComputed = BitTools.getUlongValue(actual.Item1);
                     Assert.AreEqual(cValue, cValueComputed, "Error in sub(" + aValue + ", " + bValue + ")=" + cValue + "; test " + k + " / " + nTests);

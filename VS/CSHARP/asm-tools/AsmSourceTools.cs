@@ -681,7 +681,6 @@ namespace AsmTools {
         /// <returns></returns>
         public static Tuple<bool, Rn, Rn, int, long, int> parseMemOperand(string token) {
 
-
             int length = token.Length;
             if (length < 3) {
                 return new Tuple<bool, Rn, Rn, int, long, int>(false, Rn.NOREG, Rn.NOREG, 0, 0, 0);
@@ -707,15 +706,15 @@ namespace AsmTools {
                 return new Tuple<bool, Rn, Rn, int, long, int>(false, Rn.NOREG, Rn.NOREG, 0, 0, 0);
             }
 
-            // 2] remove initial +
-            if (token[0] == '+') {
-                token = token.Substring(1, length - 1).Trim();
-            }
-
-            // 3] check if the displacement is negative
+            // 2] check if the displacement is negative
             bool negativeDisplacement = token.Contains('-');
             if (negativeDisplacement) {
                 token = token.Replace('-', '+');
+            }
+
+            // 3] remove superfluous initial +
+            if (token[0] == '+') {
+                token = token.Substring(1, length - 1).Trim();
             }
 
             // 4] split based on +
@@ -726,36 +725,46 @@ namespace AsmTools {
             int scale = 0;
             long displacement = 0;
 
+            bool foundDisplacement = false;
+            
+
             for (int i = 0; i < x.Length; ++i) {
                 string y = x[i].Trim();
 
                 var t2 = AsmSourceTools.toConstant(y);
                 if (t2.Item1) {
-                    displacement = (negativeDisplacement) ? -(long)t2.Item2 : (long)t2.Item2;
-                }
-
-                Rn t1 = AsmSourceTools.parseRn(y);
-                if (t1 != Rn.NOREG) {
-                    if (baseRn == Rn.NOREG) {
-                        baseRn = t1;
+                    if (foundDisplacement) {
+                        // found an second displacement, error
+                        return new Tuple<bool, Rn, Rn, int, long, int>(false, Rn.NOREG, Rn.NOREG, 0, 0, 0);
                     } else {
-                        indexRn = t1;
+                        foundDisplacement = true;
+                        displacement = (negativeDisplacement) ? -(long)t2.Item2 : (long)t2.Item2;
                     }
-                }
+                } else {
+                    Rn t1 = AsmSourceTools.parseRn(y);
+                    if (t1 != Rn.NOREG) {
+                        if (baseRn == Rn.NOREG) {
+                            baseRn = t1;
+                        } else {
+                            indexRn = t1;
+                            scale = 1;
+                        }
+                    }
 
-                if (y.Contains('*')) {
-                    string[] z = y.Split('*');
-                    string z0 = z[0].Trim();
-                    string z1 = z[1].Trim();
-                    Rn z0r = AsmSourceTools.parseRn(z0);
-                    if (z0r != Rn.NOREG) {
-                        indexRn = z0r;
-                        scale = parseScale(z1);
-                    } else {
-                        Rn z1r = AsmSourceTools.parseRn(z1);
-                        if (z1r != Rn.NOREG) {
-                            indexRn = z1r;
-                            scale = parseScale(z0);
+                    if (y.Contains('*')) {
+                        string[] z = y.Split('*');
+                        string z0 = z[0].Trim();
+                        string z1 = z[1].Trim();
+                        Rn z0r = AsmSourceTools.parseRn(z0);
+                        if (z0r != Rn.NOREG) {
+                            indexRn = z0r;
+                            scale = parseScale(z1);
+                        } else {
+                            Rn z1r = AsmSourceTools.parseRn(z1);
+                            if (z1r != Rn.NOREG) {
+                                indexRn = z1r;
+                                scale = parseScale(z0);
+                            }
                         }
                     }
                 }
@@ -763,6 +772,11 @@ namespace AsmTools {
 
             if (scale == -1) {
                 return new Tuple<bool, Rn, Rn, int, long, int>(false, Rn.NOREG, Rn.NOREG, 0, 0, 0);
+            }
+            if ((baseRn != Rn.NOREG) && (indexRn != Rn.NOREG)) {
+                if (AsmSourceTools.nBits(baseRn) != AsmSourceTools.nBits(indexRn)) {
+                    return new Tuple<bool, Rn, Rn, int, long, int>(false, Rn.NOREG, Rn.NOREG, 0, 0, 0);
+                }
             }
             return new Tuple<bool, Rn, Rn, int, long, int>(true, baseRn, indexRn, scale, displacement, nBits);
         }

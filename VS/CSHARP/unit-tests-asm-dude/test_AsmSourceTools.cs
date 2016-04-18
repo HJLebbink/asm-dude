@@ -229,7 +229,7 @@ namespace unit_tests {
                         Assert.AreEqual(true, t.Item1, str);
                         Assert.AreEqual(b, t.Item2, "base: " + str);
                         Assert.AreEqual(idx, t.Item3, "index: " + str);
-                        Assert.AreEqual(0, t.Item4, "scale: " + str);
+                        Assert.AreEqual(1, t.Item4, "scale: " + str);
                         Assert.AreEqual(0, t.Item5, "displacement: " + str);
                     }
                     {
@@ -239,7 +239,7 @@ namespace unit_tests {
                         //idx and base can be interchanged
                         //Assert.AreEqual(b, t.Item2, "base: " + str); 
                         //Assert.AreEqual(idx, t.Item3, "index: " + str);
-                        Assert.AreEqual(0, t.Item4, "scale: " + str);
+                        Assert.AreEqual(1, t.Item4, "scale: " + str);
                         Assert.AreEqual(0, t.Item5, "displacement: " + str);
                     }
 
