@@ -190,6 +190,16 @@ namespace AsmTools
             return r;
         }
 
+        public static Tuple<Bt[], CarryFlag> shr(Bt[] a, int nShifts) {
+            //TODO: make faster
+            Tuple<Bt[], CarryFlag> r = new Tuple<Bt[], CarryFlag>(a, Bt.UNDEFINED);
+            for (int i = 0; i < nShifts; ++i) {
+                r = BitOperations.shr1(a);
+                a = r.Item1;
+                //Console.WriteLine("Shr: shift " + (i + 1) + "carry = "+carry+"; data="+AsmSimTools.toStringHex(op1_data));
+            }
+            return r;
+        }
         public static Tuple<Bt[], CarryFlag> shr1(Bt[] a) {
             Bt[] r = new Bt[a.Length];
             CarryFlag carry = a[0];
@@ -199,7 +209,16 @@ namespace AsmTools
             r[a.Length - 1] = Bt.ZERO;
             return new Tuple<Bt[], CarryFlag>(r, carry);
         }
-
+        public static Tuple<Bt[], CarryFlag> sar(Bt[] a, int nShifts) {
+            //TODO: make faster
+            Tuple<Bt[], CarryFlag> r = new Tuple<Bt[], CarryFlag>(a, Bt.UNDEFINED);
+            for (int i = 0; i < nShifts; ++i) {
+                r = BitOperations.sar1(a);
+                a = r.Item1;
+                //Console.WriteLine("Shr: shift " + (i + 1) + "carry = "+carry+"; data="+AsmSimTools.toStringHex(op1_data));
+            }
+            return r;
+        }
         public static Tuple<Bt[], CarryFlag> sar1(Bt[] a) {
             Bt[] r = new Bt[a.Length];
             CarryFlag carry = a[0];
@@ -209,7 +228,16 @@ namespace AsmTools
             r[a.Length - 1] = r[a.Length - 2];
             return new Tuple<Bt[], CarryFlag>(r, carry);
         }
-
+        public static Tuple<Bt[], CarryFlag> shl(Bt[] a, int nShifts) {
+            //TODO: make faster
+            Tuple<Bt[], CarryFlag> r = new Tuple<Bt[], CarryFlag>(a, Bt.UNDEFINED);
+            for (int i = 0; i < nShifts; ++i) {
+                r = BitOperations.shl1(a);
+                a = r.Item1;
+                //Console.WriteLine("Shl: shift " + (i + 1) + "carry = "+carry+"; data="+AsmSimTools.toStringHex(op1_data));
+            }
+            return r;
+        }
         public static Tuple<Bt[], CarryFlag> shl1(Bt[] a) {
             Bt[] r = new Bt[a.Length];
             r[0] = Bt.ZERO;
@@ -219,7 +247,9 @@ namespace AsmTools
             CarryFlag carry = a[a.Length - 1];
             return new Tuple<Bt[], CarryFlag>(r, carry);
         }
-
+        public static Tuple<Bt[], CarryFlag> sal(Bt[] a, int nShifts) {
+            return shl(a, nShifts);
+        }
         public static Tuple<Bt[], CarryFlag> sal1(Bt[] a) {
             return shl1(a);
         }
