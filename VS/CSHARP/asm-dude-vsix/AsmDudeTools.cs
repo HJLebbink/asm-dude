@@ -49,7 +49,7 @@ namespace AsmDude {
                 bitmap.CacheOption = BitmapCacheOption.OnLoad;
                 bitmap.EndInit();
             } catch (Exception e) {
-                Debug.WriteLine("WARNING: bitmapFromUri: could not read icon from uri " + bitmapUri.ToString() + "; " + e.Message);
+                AsmDudeToolsStatic.Output("WARNING: bitmapFromUri: could not read icon from uri " + bitmapUri.ToString() + "; " + e.Message);
             }
             return bitmap;
         }
@@ -90,7 +90,6 @@ namespace AsmDude {
             return result;
         }
 
-
         /// <summary>
         /// Get all labels with context info containing in the provided text
         /// </summary>
@@ -109,7 +108,9 @@ namespace AsmDude {
 
                 int beginPos = t.Item1;
                 int endPos = t.Item2;
-                return line.Substring(beginPos, endPos);
+                string result = line.Substring(beginPos, endPos);
+                //AsmDudeToolsStatic.Output("INFO: getKeyword: \"" + result + "\".");
+                return result;
             }
             return null;
         }
@@ -122,10 +123,14 @@ namespace AsmDude {
                 int currentPos = bufferPosition.Value.Position;
 
                 Tuple<int, int> t = AsmTools.AsmSourceTools.getKeywordPos(currentPos - startLine, line);
+                //AsmDudeToolsStatic.Output(string.Format("INFO: getKeywordPos: beginPos={0}; endPos={1}.", t.Item1, t.Item2));
 
                 int beginPos = t.Item1 + startLine;
                 int endPos = t.Item2 + startLine;
-                return new TextExtent(new SnapshotSpan(bufferPosition.Value.Snapshot, beginPos, endPos - beginPos), true);
+
+                SnapshotSpan span = new SnapshotSpan(bufferPosition.Value.Snapshot, beginPos, endPos - beginPos);
+                //AsmDudeToolsStatic.Output("INFO: getKeyword: \"" + span.GetText() + "\".");
+                return new TextExtent(span, true);
             }
             return null;
         }
