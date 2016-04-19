@@ -99,8 +99,8 @@ namespace AsmDude {
         [Import]
         private AsmDudeTools _asmDudeTools = null;
 
-        [Import]
-        private AsmDudePackage _package = null;
+        //[Import]
+        //private AsmDudePackage _package = null;
 
         public AsmCompletionSource(ITextBuffer buffer) {
             this._buffer = buffer;
