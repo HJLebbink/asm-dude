@@ -22,31 +22,32 @@ namespace AsmDude {
     /// The package class uses a number of registration attributes to specify integration parameters.
     /// </summary>
     /// 
-    // TODO to troubleshoot packaging problemsn, see https://blogs.msdn.microsoft.com/visualstudio/2010/03/22/troubleshooting-pkgdef-files/#registrycollision 
+    // TODO to troubleshoot packaging problems, see https://blogs.msdn.microsoft.com/visualstudio/2010/03/22/troubleshooting-pkgdef-files/#registrycollision 
     [PackageRegistration(UseManagedResourcesOnly = true)]
-    [ProvideMenuResource("Menus.ctmenu", 1)]
+    [InstalledProductRegistration("AsmDude", Vsix.Description, Vsix.Version)] // for the help about information
+
+    //[ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
     [Guid(Guids.GuidPackage_str)]
     [ComVisible(true)]
 
-    [InstalledProductRegistration("AsmDude", Vsix.Description, Vsix.Version, IconResourceID = 400)] // for the help about information
 
-    [ProvideOptionPage(typeof(OptionsPageCodeCompletion), "AsmDude", "Code Completion", 100, 101, true, new string[] { "Change Code Completion Options" })]
-    //[ProvideProfile(typeof(OptionsPageCodeCompletion), "AsmDude", "Code Completion Options", 100, 101, isToolsOptionPage: false, DescriptionResourceID = 100)]
-
-    [ProvideOptionPage(typeof(OptionsPageSyntaxHighlighting), "AsmDude", "Syntax Highlighting", 100, 102, true, new string[] { "Change Syntax Highlighting Options" })]
+    [ProvideOptionPage(typeof(OptionsPageSyntaxHighlighting), "AsmDude", "Syntax Highlighting", 0, 0, true)]
     //[ProvideProfile(typeof(OptionsPageSyntaxHighlighting), "AsmDude", "Syntax Highlighting Options", 100, 102, isToolsOptionPage: false, DescriptionResourceID = 100)]
 
-    [ProvideOptionPage(typeof(OptionsPageCodeFolding), "AsmDude", "Code Folding", 100, 103, true, new string[] { "Change Code Folding Options" })]
+    [ProvideOptionPage(typeof(OptionsPageCodeCompletion), "AsmDude", "Code Completion", 0, 0, true)]
+    //[ProvideProfile(typeof(OptionsPageCodeCompletion), "AsmDude", "Code Completion Options", 100, 101, isToolsOptionPage: false, DescriptionResourceID = 100)]
+
+    [ProvideOptionPage(typeof(OptionsPageCodeFolding), "AsmDude", "Code Folding", 0, 0, true)]
     //[ProvideProfile(typeof(OptionsPageCodeFolding), "AsmDude", "Code Folding Options", 100, 103, isToolsOptionPage: false, DescriptionResourceID = 100)]
 
-    [ProvideOptionPage(typeof(OptionsPageAsmDoc), "AsmDude", "Asm Documentation", 100, 104, true, new string[] { "Change Asm Documentation Options" })]
+    [ProvideOptionPage(typeof(OptionsPageAsmDoc), "AsmDude", "Asm Documentation", 0, 0, true)]
     //[ProvideProfile(typeof(OptionsPageAsmDoc), "AsmDude", "Asm Documentation Options", 100, 104, isToolsOptionPage: false, DescriptionResourceID = 100)]
 
-    [ProvideOptionPage(typeof(OptionsPageKeywordHighlighting), "AsmDude", "Keyword Highlighting", 100, 105, true, new string[] { "Change Asm Documentation Options" })]
+    [ProvideOptionPage(typeof(OptionsPageKeywordHighlighting), "AsmDude", "Keyword Highlighting", 0, 0, true)]
     //[ProvideProfile(typeof(OptionsPageKeywordHighlighting), "AsmDude", "Keyword Highlighting Options", 100, 105, isToolsOptionPage:false, DescriptionResourceID = 100)]
 
-    [Export]
+    ///[Export]
     public sealed class AsmDudePackage : Package {
 
         internal const string AsmDudeContentType = "asm!";
@@ -67,8 +68,8 @@ namespace AsmDude {
         /// </summary>
         protected override void Initialize() {
             base.Initialize();
-            this.initMenus();
-            this.changeFontAutoComplete();
+            //this.initMenus();
+            //this.changeFontAutoComplete();
 
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(@" _____           ____        _     ");
@@ -89,6 +90,9 @@ namespace AsmDude {
         /// tools>options>Environment>Fonts and Colors>statement completion>courier new.
         /// https://msdn.microsoft.com/en-us/library/bb166382.aspx
         /// </summary>
+        /// 
+        /*
+
         private void changeFontAutoComplete() {
             // experiments to change the font of the autocomplate
             try {
@@ -137,10 +141,11 @@ namespace AsmDude {
                 AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "ERROR: {0}:changeFontAutoComplete {1}", this.ToString(), e.Message));
             }
         }
+        */
         #endregion
 
         #region Menus and Commands Actions
-
+        /*
         private void initMenus() {
             // Now get the OleCommandService object provided by the MPF; this object is the one
             // responsible for handling the collection of commands implemented by the package.
@@ -269,9 +274,11 @@ namespace AsmDude {
                 dynamicVisibilityCommand1.Visible = true;
             }
         }
+        */
         #endregion
 
         #region OptionPage getters
+        /*
         public OptionsPageCodeCompletion OptionsPageCodeCompletion {
             get {
                 return GetDialogPage(typeof(OptionsPageCodeCompletion)) as OptionsPageCodeCompletion;
@@ -297,6 +304,7 @@ namespace AsmDude {
                 return GetDialogPage(typeof(OptionsPageKeywordHighlighting)) as OptionsPageKeywordHighlighting;
             }
         }
+        */
         #endregion
     }
 }
