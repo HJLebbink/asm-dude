@@ -9,6 +9,9 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>source.extension.ico</ApplicationIcon>
+  </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -276,6 +279,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>PkgCmd.vsct</DependentUpon>
     </Compile>
+    <Compile Include="Settings.cs" />
     <Compile Include="SignatureHelp\SignatureHelpSource.cs" />
     <Compile Include="source.extension.cs">
       <DependentUpon>source.extension.vsixmanifest</DependentUpon>

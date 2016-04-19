@@ -117,40 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="100" xml:space="preserve">
-    <value>AsmDude</value>
-    <comment>Options category</comment>
-  </data>
-  <data name="101" xml:space="preserve">
-    <value>Code Completion</value>
-    <comment>Code completion page</comment>
-  </data>
-  <data name="102" xml:space="preserve">
-    <value>Syntax Highlighting</value>
-    <comment>Syntax highlighting page</comment>
-  </data>
-  <data name="103" xml:space="preserve">
-    <value>Code Folding</value>
-    <comment>Code folding page</comment>
-  </data>
-  <data name="104" xml:space="preserve">
-    <value>Asm Documentation</value>
-    <comment>Asm documentation page</comment>
-  </data>
-  <data name="105" xml:space="preserve">
-    <value>Keyword Hightlighting</value>
-    <comment>Keyword highlighting page</comment>
-  </data>
-  <data name="110" xml:space="preserve">
-    <value>MenuAndCommands.Sample</value>
-  </data>
-  <data name="112" xml:space="preserve">
-    <value>Menu And Commands SDK sample</value>
-  </data>
   <data name="DynamicTextBaseText" xml:space="preserve">
     <value>C# Text Changes</value>
+    <comment>Experiments</comment>
   </data>
   <data name="DynamicTextFormat" xml:space="preserve">
     <value>{0} (Clicked {1} times)</value>
+    <comment>Experiments</comment>
   </data>
 </root>
