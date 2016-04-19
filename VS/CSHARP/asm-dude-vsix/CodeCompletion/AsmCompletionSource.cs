@@ -269,7 +269,8 @@ namespace AsmDude {
         /// <returns></returns>
         private static bool isRemark(SnapshotPoint triggerPoint, SnapshotPoint lineStart) {
             // check if the line contains a remark character before the current point
-            for (SnapshotPoint pos = (triggerPoint-1); pos >= lineStart; pos -= 1) {
+            SnapshotPoint startPos = (triggerPoint.Position < 1) ? triggerPoint : (triggerPoint - 1);
+            for (SnapshotPoint pos = startPos; pos > lineStart; pos -= 1) {
                 if (AsmTools.AsmSourceTools.isRemarkChar(pos.GetChar())) {
                     return true;
                 }
@@ -318,7 +319,7 @@ namespace AsmDude {
                 }
             }
             SnapshotPoint beginPrevious = begin;
-            for (; pos >= begin; pos -= 1) {
+            for (; pos > begin; pos -= 1) {
                 if (AsmTools.AsmSourceTools.isSeparatorChar(pos.GetChar())) {
                     beginPrevious = pos+1;
                     break;
@@ -332,6 +333,7 @@ namespace AsmDude {
 
         private bool isArchSwitchedOn(Arch arch) {
             if (false) {
+                /*
                 switch (arch) {
                     case Arch.X86: return this._package.OptionsPageCodeCompletion._x86;
                     case Arch.I686: return this._package.OptionsPageCodeCompletion._i686;
@@ -350,6 +352,7 @@ namespace AsmDude {
                         Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:isArchSwitchedOn; unsupported arch {0}", arch));
                         return true;
                 }
+                */
             } else {
                 switch (arch) {
                     case Arch.X86: return Settings.Default.CodeCompletion_x86;
