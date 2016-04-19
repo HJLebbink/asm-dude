@@ -201,14 +201,50 @@ namespace AsmTools
             return r;
         }
         public static Tuple<Bt[], CarryFlag> shr1(Bt[] a) {
+            return ror1(a, Bt.ZERO);
+        }
+
+        public static Tuple<Bt[], CarryFlag> rcr(Bt[] a, int nShifts, CarryFlag cf) {
+            //TODO: make faster
+            Tuple<Bt[], CarryFlag> r = new Tuple<Bt[], CarryFlag>(a, Bt.UNDEFINED);
+            for (int i = 0; i < nShifts; ++i) {
+                r = BitOperations.rcr1(a, cf);
+                a = r.Item1;
+                cf = r.Item2;
+                //Console.WriteLine("Shr: shift " + (i + 1) + "carry = "+carry+"; data="+AsmSimTools.toStringHex(op1_data));
+            }
+            return r;
+        }
+        public static Tuple<Bt[], CarryFlag> rcr1(Bt[] a, CarryFlag cf) {
             Bt[] r = new Bt[a.Length];
             CarryFlag carry = a[0];
             for (int i = 1; i < a.Length; ++i) {
                 r[i - 1] = a[i];
             }
-            r[a.Length - 1] = Bt.ZERO;
+            r[a.Length - 1] = cf;
             return new Tuple<Bt[], CarryFlag>(r, carry);
         }
+
+        public static Tuple<Bt[], CarryFlag> ror(Bt[] a, int nShifts) {
+            //TODO: make faster
+            Tuple<Bt[], CarryFlag> r = new Tuple<Bt[], CarryFlag>(a, Bt.UNDEFINED);
+            for (int i = 0; i < nShifts; ++i) {
+                r = BitOperations.ror1(a);
+                a = r.Item1;
+                //Console.WriteLine("Shr: shift " + (i + 1) + "carry = "+carry+"; data="+AsmSimTools.toStringHex(op1_data));
+            }
+            return r;
+        }
+        public static Tuple<Bt[], CarryFlag> ror1(Bt[] a) {
+            Bt[] r = new Bt[a.Length];
+            CarryFlag carry = a[0];
+            for (int i = 1; i < a.Length; ++i) {
+                r[i - 1] = a[i];
+            }
+            r[a.Length - 1] = carry;
+            return new Tuple<Bt[], CarryFlag>(r, carry);
+        }
+
         public static Tuple<Bt[], CarryFlag> sar(Bt[] a, int nShifts) {
             //TODO: make faster
             Tuple<Bt[], CarryFlag> r = new Tuple<Bt[], CarryFlag>(a, Bt.UNDEFINED);
@@ -228,6 +264,7 @@ namespace AsmTools
             r[a.Length - 1] = r[a.Length - 2];
             return new Tuple<Bt[], CarryFlag>(r, carry);
         }
+
         public static Tuple<Bt[], CarryFlag> shl(Bt[] a, int nShifts) {
             //TODO: make faster
             Tuple<Bt[], CarryFlag> r = new Tuple<Bt[], CarryFlag>(a, Bt.UNDEFINED);
@@ -247,6 +284,7 @@ namespace AsmTools
             CarryFlag carry = a[a.Length - 1];
             return new Tuple<Bt[], CarryFlag>(r, carry);
         }
+
         public static Tuple<Bt[], CarryFlag> sal(Bt[] a, int nShifts) {
             return shl(a, nShifts);
         }
