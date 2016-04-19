@@ -14,7 +14,7 @@ namespace AsmTools {
         }
 
         public static bool isSeparatorChar(char c) {
-            return char.IsWhiteSpace(c) || c.Equals(',') || c.Equals('[') || c.Equals(']') || c.Equals('+') || c.Equals('-') || c.Equals('*') || c.Equals(':');
+            return char.IsWhiteSpace(c) || c.Equals(',') || c.Equals('[') || c.Equals(']') || c.Equals('(') || c.Equals(')') || c.Equals('+') || c.Equals('-') || c.Equals('*') || c.Equals(':');
         }
 
         public static Tuple<bool, int, int> getRemarkPos(string line) {
@@ -818,7 +818,7 @@ namespace AsmTools {
             }
             // find the beginning of the keyword
             int beginPos = 0;
-            for (int i1 = pos - 1; i1 > 0; --i1) {
+            for (int i1 = pos - 1; i1 >= 0; --i1) {
                 char c = line[i1];
                 if (AsmSourceTools.isSeparatorChar(c) || Char.IsControl(c) || AsmSourceTools.isRemarkChar(c)) {
                     beginPos = i1 + 1;
