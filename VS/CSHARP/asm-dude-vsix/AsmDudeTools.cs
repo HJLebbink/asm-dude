@@ -108,7 +108,9 @@ namespace AsmDude {
 
                 int beginPos = t.Item1;
                 int endPos = t.Item2;
-                string result = line.Substring(beginPos, endPos);
+                int length = endPos - beginPos;
+
+                string result = line.Substring(beginPos, length);
                 //AsmDudeToolsStatic.Output("INFO: getKeyword: \"" + result + "\".");
                 return result;
             }
@@ -127,8 +129,9 @@ namespace AsmDude {
 
                 int beginPos = t.Item1 + startLine;
                 int endPos = t.Item2 + startLine;
+                int length = endPos - beginPos;
 
-                SnapshotSpan span = new SnapshotSpan(bufferPosition.Value.Snapshot, beginPos, endPos - beginPos);
+                SnapshotSpan span = new SnapshotSpan(bufferPosition.Value.Snapshot, beginPos, length);
                 //AsmDudeToolsStatic.Output("INFO: getKeyword: \"" + span.GetText() + "\".");
                 return new TextExtent(span, true);
             }
@@ -218,20 +221,21 @@ namespace AsmDude {
                 string keywordUpper = keyword.ToUpper();
                 XmlNodeList all = this.getXmlData().SelectNodes("//*[@name=\"" + keywordUpper + "\"]");
                 if (all.Count > 1) {
-                    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "WARNING: {0}:getUrl: multiple elements for keyword {1}.", this.ToString(), keywordUpper));
+                    AsmDudeToolsStatic.Output(string.Format("WARNING: {0}:getUrl: multiple elements for keyword {1}.", this.ToString(), keywordUpper));
                 }
-                if (all.Count == 0) {
-                    //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getUrl: no elements for keyword {1}.", this.ToString(), keywordUpper));
+                if (all.Count == 0) { // this situation happens when a keyword gets selected that does not have an url specified (such as labels)
+                    //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:getUrl: no url for keyword \"{1}\".", this.ToString(), keywordUpper));
                     return "";
                 } else {
                     XmlNode node1 = all.Item(0);
                     XmlNode node2 = node1.SelectSingleNode("./ref");
                     if (node2 == null) return "";
                     string text = node2.InnerText.Trim();
-                    //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getUrl: keyword {1} yields {2}", this.ToString(), keyword, text));
+                    //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:getUrl: keyword {1} yields {2}", this.ToString(), keyword, text));
                     return text;
                 }
-            } catch (Exception) {
+            } catch (Exception e) {
+                AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:getUrl: exception {1}.", this.ToString(), e.ToString()));
                 return "";
             }
         }
