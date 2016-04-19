@@ -804,11 +804,11 @@ namespace AsmTools {
         }
 
         public static string getKeyword(int pos, string line) {
-            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: getKeyword; pos={0}; line=\"{1}\"", pos, new string(line)));
             var t = AsmSourceTools.getKeywordPos(pos, line);
             int beginPos = t.Item1;
             int endPos = t.Item2;
-            return line.Substring(beginPos, endPos - beginPos);
+            string result = line.Substring(beginPos, endPos - beginPos);
+            return result;
         }
 
         public static Tuple<int, int> getKeywordPos(int pos, string line) {

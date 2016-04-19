@@ -154,13 +154,10 @@ namespace AsmDude.HighlightWord {
             try {
                 DateTime time1 = DateTime.Now;
 
-
                 if (this._newWord.Length > 0) {
-
 
                     ITextSnapshot s = this._requestedPoint.Snapshot;
                     SnapshotSpan sp = this._newWordSpan.Value;
-
 
                     // Find the new spans
                     FindData findData;
@@ -192,6 +189,7 @@ namespace AsmDude.HighlightWord {
                 if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
                     AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0:F3} seconds to highlight string \"{1}\".", elapsedSec, this._newWord));
                 }
+                //AsmDudeToolsStatic.Output(string.Format("INFO: took {0:F3} seconds to highlight string \"{1}\".", elapsedSec, this._newWord));
             } catch (Exception e) {
                 AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:UpdateWordAdornments; e={1}", this.ToString(), e.ToString()));
             }

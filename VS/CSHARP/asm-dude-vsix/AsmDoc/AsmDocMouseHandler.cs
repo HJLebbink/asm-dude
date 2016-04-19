@@ -225,7 +225,7 @@ namespace AsmDude.AsmDoc {
                 }
                 _mouseDownAnchorPoint = null;
             } catch (Exception ex) {
-                Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "ERROR: PreprocessMouseUp; e={0}", ex.ToString()));
+                AsmDudeToolsStatic.Output(string.Format("ERROR:{0} PreprocessMouseUp; e={1}", this.ToString(), ex.ToString()));
             }
         }
 
@@ -306,7 +306,7 @@ namespace AsmDude.AsmDoc {
         }
 
         private bool DispatchGoToDoc(string keyword) {
-            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:DispatchGoToDoc; keyword={1}", this.ToString(), keyword));
+            //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:DispatchGoToDoc; keyword=\"{1}\".", this.ToString(), keyword));
             int hr = this.openFile(keyword);
             return ErrorHandler.Succeeded(hr);
         }
@@ -320,20 +320,22 @@ namespace AsmDude.AsmDoc {
 
         private int openFile(string keyword) {
             string url = this.getUrl(keyword);
-            if (url == null) return 1;
-
-            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:openFile; url={1}", this.ToString(), url));
+            if (url == null) { // this situation happens for all keywords (such as registers) that do not have an url specified.
+                //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:openFile; url for keyword \"{1}\" is null.", this.ToString(), keyword));
+                return 1;
+            }
+            //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:openFile; url={1}", this.ToString(), url));
 
             var dte2 = Package.GetGlobalService(typeof(SDTE)) as DTE2;
             if (dte2 == null) {
-                Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "WARNING: {0}:DispatchGoToDoc; dte2 is null", this.ToString()));
+                AsmDudeToolsStatic.Output(string.Format("WARNING: {0}:openFile; dte2 is null.", this.ToString()));
                 return 1;
             } else {
                 try {
                     //dte2.ItemOperations.OpenFile(url, EnvDTE.Constants.vsDocumentKindHTML);
                     dte2.ItemOperations.Navigate(url, EnvDTE.vsNavigateOptions.vsNavigateOptionsNewWindow);
                 } catch (Exception e) {
-                    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "ERROR: {0}:DispatchGoToDoc; exception={1}", this.ToString(), e));
+                    AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:openFile; exception={1}", this.ToString(), e));
                     return 2;
                 }
                 return 0;
