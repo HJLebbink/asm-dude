@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace AsmTools {
 
-namespace AsmTools {
-
-
-    public class FlagValue {
+    public abstract class FlagValue {
         private Bt _value;
         public FlagValue(Bt v) {
             _value = v;
@@ -15,32 +8,32 @@ namespace AsmTools {
         public Bt val { get { return _value; } set { _value = value; } }
     }
 
-    public class CarryFlag : FlagValue {
+    public sealed class CarryFlag : FlagValue {
         public CarryFlag(Bt v) : base(v) { }
         public static implicit operator Bt(CarryFlag v) { return v.val; }
         public static implicit operator CarryFlag(Bt v) { return new CarryFlag(v); }
     }
-    public class AuxiliaryFlag : FlagValue {
+    public sealed class AuxiliaryFlag : FlagValue {
         public AuxiliaryFlag(Bt v) : base(v) { }
         public static implicit operator Bt(AuxiliaryFlag v) { return v.val; }
         public static implicit operator AuxiliaryFlag(Bt v) { return new AuxiliaryFlag(v); }
     }
-    public class ZeroFlag : FlagValue {
+    public sealed class ZeroFlag : FlagValue {
         public ZeroFlag(Bt v) : base(v) { }
         public static implicit operator Bt(ZeroFlag v) { return v.val; }
         public static implicit operator ZeroFlag(Bt v) { return new ZeroFlag(v); }
     }
-    public class SignFlag : FlagValue {
+    public sealed class SignFlag : FlagValue {
         public SignFlag(Bt v) : base(v) { }
         public static implicit operator Bt(SignFlag v) { return v.val; }
         public static implicit operator SignFlag(Bt v) { return new SignFlag(v); }
     }
-    public class ParityFlag : FlagValue {
+    public sealed class ParityFlag : FlagValue {
         public ParityFlag(Bt v) : base(v) { }
         public static implicit operator Bt(ParityFlag v) { return v.val; }
         public static implicit operator ParityFlag(Bt v) { return new ParityFlag(v); }
     }
-    public class OverflowFlag : FlagValue {
+    public sealed class OverflowFlag : FlagValue {
         public OverflowFlag(Bt v) : base(v) { }
         public static implicit operator Bt(OverflowFlag v) { return v.val; }
         public static implicit operator OverflowFlag(Bt v) { return new OverflowFlag(v); }

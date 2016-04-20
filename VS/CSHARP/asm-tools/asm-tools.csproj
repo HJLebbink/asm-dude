@@ -43,7 +43,6 @@
   <ItemGroup>
     <Compile Include="Arch.cs" />
     <Compile Include="AsmSourceTools.cs" />
-    <Compile Include="BitOperations.cs" />
     <Compile Include="BitTools.cs" />
     <Compile Include="BitType.cs" />
     <Compile Include="Flags.cs" />
