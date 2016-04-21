@@ -187,7 +187,7 @@ namespace AsmDude {
 
                 double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
                 if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
-                    AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0:F3} seconds to prepare code completion for previous keyword \"{1}\" and current keyword \"{2}\".", elapsedSec, previousKeyword, partialKeyword, elapsedSec));
+                    AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0:F3} seconds to prepare code completion for previous keyword \"{1}\" and current keyword \"{2}\".", elapsedSec, previousKeyword, partialKeyword));
                 }
             } catch (Exception e) {
                 AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:AugmentCompletionSession; e={1}", this.ToString(), e.ToString()));
