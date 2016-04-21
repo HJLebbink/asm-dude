@@ -26,7 +26,7 @@ namespace AsmDude {
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("AsmDude", Vsix.Description, Vsix.Version)] // for the help about information
 
-    //[ProvideMenuResource("Menus.ctmenu", 1)] // needed when showing menus
+    [ProvideMenuResource("Menus.ctmenu", 1)] // needed when showing menus
     [ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
     [Guid(Guids.GuidPackage_str)]
     [ComVisible(true)]

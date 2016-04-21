@@ -33,6 +33,7 @@ using System.Diagnostics;
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Text.Classification;
+using System.Runtime.InteropServices;
 
 namespace AsmDude.HighlightWord {
 
@@ -51,6 +52,7 @@ namespace AsmDude.HighlightWord {
     /// Derive from TextMarkerTag, in case anyone wants to consume
     /// just the HighlightWordTags by themselves.
     /// </summary>
+    [ComVisible(true)]
     public class HighlightWordTag : TextMarkerTag {
         public HighlightWordTag() : base("AsmDude.HighlightWordFormatDefinition") {
             // empty
