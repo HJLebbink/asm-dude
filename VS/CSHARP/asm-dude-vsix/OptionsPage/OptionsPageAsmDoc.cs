@@ -7,13 +7,10 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 
 namespace AsmDude.OptionsPage {
-    /// <summary>
-    // Extends the standard dialog functionality for implementing ToolsOptions pages, 
-    // with support for the Visual Studio automation model, Windows Forms, and state 
-    // persistence through the Visual Studio settings mechanism.
-    /// </summary>
+
     [Guid(Guids.GuidOptionsPageAsmDoc)]
     public class OptionsPageAsmDoc : DialogPage {
+
         #region Properties
 
         [Category("General")]
@@ -51,8 +48,7 @@ namespace AsmDude.OptionsPage {
         /// <devdoc>
         /// This event is raised when the page is closed.
         /// </devdoc>
-        protected override void OnClosed(EventArgs e) {
-        }
+        protected override void OnClosed(EventArgs e) {}
 
         /// <summary>
         /// Handles "deactivate" messages from the Visual Studio environment.

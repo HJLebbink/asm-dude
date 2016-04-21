@@ -5,16 +5,11 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.ComponentModel.Composition;
-using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio;
 
 namespace AsmDude.OptionsPage {
-    /// <summary>
-    // Extends the standard dialog functionality for implementing ToolsOptions pages, 
-    // with support for the Visual Studio automation model, Windows Forms, and state 
-    // persistence through the Visual Studio settings mechanism.
-    /// </summary>
+
     [Export(typeof(DialogPage))]
     [Guid(Guids.GuidOptionsPageSyntaxHighlighting)]
     public class OptionsPageSyntaxHighlighting : DialogPage {
