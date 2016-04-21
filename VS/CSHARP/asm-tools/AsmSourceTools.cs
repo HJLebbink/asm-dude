@@ -120,6 +120,11 @@ namespace AsmTools {
             return nBits;
         }
 
+        /// <summary>
+        /// return regular pattern to select the provided register and aliased register names
+        /// </summary>
+        /// <param name="reg"></param>
+        /// <returns></returns>
         public static string getRelatedRegister(string reg) {
 
             //TODO use register enum
@@ -209,47 +214,39 @@ namespace AsmTools {
                 case "R15B":
                     return "\\b(R15|R15D|R15W|R15B)\\b";
 
-                case "MM0":
                 case "XMM0":
                 case "YMM0":
                 case "ZMM0":
-                    return "\\b(MM0|XMM0|YMM0|ZMM0)\\b";
-
-                case "MM1":
+                    return "\\b(XMM0|YMM0|ZMM0)\\b";
+             
                 case "XMM1":
                 case "YMM1":
                 case "ZMM1":
-                    return "\\b(MM1|XMM1|YMM1|ZMM1)\\b";
-                case "MM2":
+                    return "\\b(XMM1|YMM1|ZMM1)\\b";
                 case "XMM2":
                 case "YMM2":
                 case "ZMM2":
-                    return "\\b(MM2|XMM2|YMM2|ZMM2)\\b";
-                case "MM3":
+                    return "\\b(XMM2|YMM2|ZMM2)\\b";
                 case "XMM3":
                 case "YMM3":
                 case "ZMM3":
-                    return "\\b(MM3|XMM3|YMM3|ZMM3)\\b";
-                case "MM4":
+                    return "\\b(XMM3|YMM3|ZMM3)\\b";
                 case "XMM4":
                 case "YMM4":
                 case "ZMM4":
-                    return "\\b(MM4|XMM4|YMM4|ZMM4)\\b";
-                case "MM5":
+                    return "\\b(XMM4|YMM4|ZMM4)\\b";
                 case "XMM5":
                 case "YMM5":
                 case "ZMM5":
-                    return "\\b(MM5|XMM5|YMM5|ZMM5)\\b";
-                case "MM6":
+                    return "\\b(XMM5|YMM5|ZMM5)\\b";
                 case "XMM6":
                 case "YMM6":
                 case "ZMM6":
-                    return "\\b(MM6|XMM6|YMM6|ZMM6)\\b";
-                case "MM7":
+                    return "\\b(XMM6|YMM6|ZMM6)\\b";
                 case "XMM7":
                 case "YMM7":
                 case "ZMM7":
-                    return "\\b(MM7|XMM7|YMM7|ZMM7)\\b";
+                    return "\\b(XMM7|YMM7|ZMM7)\\b";
                 case "XMM8":
                 case "YMM8":
                 case "ZMM8":
