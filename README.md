@@ -16,7 +16,7 @@ Not happy with the highlighting or the descriptions. Mnemonics and descriptions 
 * Track propagation of register and flag state-change trough time (under certain assumptions such as no "jmp GPR" etc). Provide warning squiggles if brances are never taken etc. 
 * Create new file item with .asm extension.
 * ~~No code completion in remarks.~~
-* Label analysis. When jumping to a label, check if the label exists. Check if labels are unique. Provide error squiggles if something is wrong.
+* Label analysis. When jumping to a label, check if the label exists. Check if labels are unique. Provide error squiggles (with AuthoringSink.AddError) if something is wrong.
 * Code folding for documentation blocks.
 * ~~Improved syntax highlighting.  Add label highlights.~~
 * Add syntax highlighting for AT&T syntax.
@@ -27,6 +27,7 @@ Not happy with the highlighting or the descriptions. Mnemonics and descriptions 
 * Code completion restrictions. E.g. opcode movss can only be followed by an xmm register and not by a GPR such as rax.
 * Track flag influence. Select an opcode that uses a flag (as input), find the opcodes that produce this flag (as output). E.g.  select opcode cmovc or setc , highlight all opcodes such as btr, sal, sar, shl, shr, etc.
 * Register rename assistance. Highly desirable but very challenging. E.g. rename GPR rdx to rbx, find which rdx, edx, dx, dl and dh will need to be renamed, check if renames will clash with existing occurances of rbx, ebx, bx, bl and bh.
+* Arm support.
  
 ###Updates:
 * 19 February 2016: Initial alpha release. Basic highlighting and descriptions for i368 instructions are available.
