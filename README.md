@@ -16,7 +16,7 @@ Not happy with the highlighting or the descriptions. Mnemonics and descriptions 
 * Track propagation of register and flag state-change trough time (under certain assumptions such as no "jmp GPR" etc). Provide warning squiggles if brances are never taken etc. 
 * Create new file item with .asm extension.
 * ~~No code completion in remarks.~~
-* Label analysis. When jumping to a label, check if the label exists. Check if labels are unique. Provide error squiggles if something is wrong.
+* Label analysis. When jumping to a label, check if the label exists. Check if labels are unique. Provide error squiggles (with AuthoringSink.AddError) if something is wrong.
 * Code folding for documentation blocks.
 * ~~Improved syntax highlighting.  Add label highlights.~~
 * Add syntax highlighting for AT&T syntax.
