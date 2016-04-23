@@ -2326,27 +2326,63 @@
 			<description>Read Time-Stamp Counter and Processor ID</description>
 			<ref>RDTSCP.html</ref>
 		</mnemonic>
-		<mnemonic name='REP'>
-			<description>Repeat String Operation Prefix</description>
-			<ref>REP:REPE:REPZ:REPNE:REPNZ.html</ref>
-		</mnemonic>
-		<mnemonic name='REPE'>
-			<description>Repeat String Operation Prefix</description>
-			<ref>REP:REPE:REPZ:REPNE:REPNZ.html</ref>
-		</mnemonic>
-		<mnemonic name='REPZ'>
-			<description>Repeat String Operation Prefix</description>
-			<ref>REP:REPE:REPZ:REPNE:REPNZ.html</ref>
-		</mnemonic>
-		<mnemonic name='REPNE'>
-			<description>Repeat String Operation Prefix</description>
-			<ref>REP:REPE:REPZ:REPNE:REPNZ.html</ref>
-		</mnemonic>
-		<mnemonic name='REPNZ'>
-			<description>Repeat String Operation Prefix</description>
-			<ref>REP:REPE:REPZ:REPNE:REPNZ.html</ref>
-		</mnemonic>
-		<mnemonic name='RET'>
+    
+    <mnemonic name='REP INS'>
+      <description>Input RCX from port DX into [RDI] (Termination Condition: RCX=0)</description>
+      <ref>REP:REPE:REPZ:REPNE:REPNZ.html</ref>
+    </mnemonic>
+    <mnemonic name='REP MOVS'>
+      <description>Move RCX from [RSI] to [RDI] (Termination Condition: RCX=0)</description>
+      <ref>REP:REPE:REPZ:REPNE:REPNZ.html</ref>
+    </mnemonic>
+    <mnemonic name='REP OUTS'>
+      <description>Output RCX from [RSI] to port DX (Termination Condition: RCX=0)</description>
+      <ref>REP:REPE:REPZ:REPNE:REPNZ.html</ref>
+    </mnemonic>
+    <mnemonic name='REP LODS'>
+      <description>Load RCX from [RSI] to RAX (Termination Condition: RCX=0)</description>
+      <ref>REP:REPE:REPZ:REPNE:REPNZ.html</ref>
+    </mnemonic>
+    <mnemonic name='REP STOS'>
+      <description>Fill RCX at [RDI] with RAX (Termination Condition: RCX=0)</description>
+      <ref>REP:REPE:REPZ:REPNE:REPNZ.html</ref>
+    </mnemonic>
+
+    <mnemonic name='REPE CMPS'>
+      <description>Find non-matching in [RDI] and [RSI] (Termination Condition: (RCX=0) and (ZF=0))</description>
+      <ref>REP:REPE:REPZ:REPNE:REPNZ.html</ref>
+    </mnemonic>
+    <mnemonic name='REPE SCAS'>
+      <description>Find non-RAX starting at [RDI] (Termination Condition: (RCX=0) and (ZF=0))</description>
+      <ref>REP:REPE:REPZ:REPNE:REPNZ.html</ref>
+    </mnemonic>
+    <mnemonic name='REPNE CMPS'>
+      <description>Find matching in [RDI] and [RSI] (Termination Condition: (RCX=0) and (ZF=1))</description>
+      <ref>REP:REPE:REPZ:REPNE:REPNZ.html</ref>
+    </mnemonic>
+    <mnemonic name='REPNE SCAS'>
+      <description>Find RAX, starting at [RDI] (Termination Condition: (RCX=0) and (ZF=1))</description>
+      <ref>REP:REPE:REPZ:REPNE:REPNZ.html</ref>
+    </mnemonic>
+
+    <mnemonic name='REPZ CMPS'>
+      <description>Find non-matching in [RDI] and [RSI] (Termination Condition: (RCX=0) and (ZF=0))</description>
+      <ref>REP:REPE:REPZ:REPNE:REPNZ.html</ref>
+    </mnemonic>
+    <mnemonic name='REPZ SCAS'>
+      <description>Find non-RAX starting at [RDI] (Termination Condition: (RCX=0) and (ZF=0))</description>
+      <ref>REP:REPE:REPZ:REPNE:REPNZ.html</ref>
+    </mnemonic>
+    <mnemonic name='REPNZ CMPS'>
+      <description>Find matching in [RDI] and [RSI] (Termination Condition: (RCX=0) and (ZF=1))</description>
+      <ref>REP:REPE:REPZ:REPNE:REPNZ.html</ref>
+    </mnemonic>
+    <mnemonic name='REPNZ SCAS'>
+      <description>Find RAX, starting at [RDI] (Termination Condition: (RCX=0) and (ZF=1))</description>
+      <ref>REP:REPE:REPZ:REPNE:REPNZ.html</ref>
+    </mnemonic>
+
+    <mnemonic name='RET'>
 			<description>Return from Procedure</description>
 			<ref>RET.html</ref>
 		</mnemonic>
