@@ -9,18 +9,20 @@ To run the extension from source code, Visual Studio 2015 SDK needs to be instal
 ###Customization:
 Not happy with the highlighting or the descriptions. Mnemonics and descriptions can be added and changed by updating the AsmDudeData.xml file that will be stored next to the binaries when installing the plugin (.vsix). The directory where plugins are installed can be difficult to find, try something as C:\Users\<user>\AppData\Local\Microsoft\VisualStudio\14.0\Extensions. Please consider sharing your updates.
 
+###Currently in development:
+* Track propagation of register and flag state-change trough time (under certain assumptions such as no "jmp GPR" etc). Provide warning squiggles if brances are never taken etc. 
+
 ###Feature Requests: (desire something - let me know)
 * ~~Documentation for opcodes. Hit F12 to get full official documentation of the selected opcode~~.
 * ~~Proper Register Highlighting. E.g. When you select GPR rax, GPR al is also highlighted.~~
-* Label rename assistance.
-* Track propagation of register and flag state-change trough time (under certain assumptions such as no "jmp GPR" etc). Provide warning squiggles if brances are never taken etc. 
-* Create new file item with .asm extension.
 * ~~No code completion in remarks.~~
+* ~~Improved syntax highlighting.  Add label highlights.~~
+* ~~Code completion for labels in jumps. Provide a list of existing labels from which one can choose.~~
+* Label rename assistance.
+* Create new file item with .asm extension.
 * Label analysis. When jumping to a label, check if the label exists. Check if labels are unique. Provide error squiggles (with AuthoringSink.AddError) if something is wrong.
 * Code folding for documentation blocks.
-* ~~Improved syntax highlighting.  Add label highlights.~~
 * Add syntax highlighting for AT&T syntax.
-* ~~Code completion for labels in jumps. Provide a list of existing labels from which one can choose.~~
 * Colored tooltips. Syntax highlighting in quickinfo tooltips.
 * Code formatting.
 * Syntax highlighting for the Debug/Windows/Disassembly view.
