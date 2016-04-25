@@ -7,7 +7,10 @@ using System.Linq;
 
 namespace AsmDude.BraceMatching {
 
-    class BraceMatchingTagger : ITagger<TextMarkerTag> {
+    /// <summary>
+    /// Somewhat unnecessary brace matching functionality
+    /// </summary>
+    sealed class BraceMatchingTagger : ITagger<TextMarkerTag> {
 
         ITextView View { get; set; }
         ITextBuffer SourceBuffer { get; set; }
@@ -30,8 +33,7 @@ namespace AsmDude.BraceMatching {
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
         void ViewLayoutChanged(object sender, TextViewLayoutChangedEventArgs e) {
-            if (e.NewSnapshot != e.OldSnapshot) //make sure that there has really been a change
-            {
+            if (e.NewSnapshot != e.OldSnapshot) { //make sure that there has really been a change
                 UpdateAtCaretPosition(View.Caret.Position);
             }
         }
@@ -42,13 +44,14 @@ namespace AsmDude.BraceMatching {
         void UpdateAtCaretPosition(CaretPosition caretPosition) {
             CurrentChar = caretPosition.Point.GetPoint(SourceBuffer, caretPosition.Affinity);
 
-            if (!CurrentChar.HasValue)
+            if (!CurrentChar.HasValue) {
                 return;
-
+            }
             var tempEvent = TagsChanged;
-            if (tempEvent != null)
+            if (tempEvent != null) {
                 tempEvent(this, new SnapshotSpanEventArgs(new SnapshotSpan(SourceBuffer.CurrentSnapshot, 0,
                     SourceBuffer.CurrentSnapshot.Length)));
+            }
         }
 
         public IEnumerable<ITagSpan<TextMarkerTag>> GetTags(NormalizedSnapshotSpanCollection spans) {

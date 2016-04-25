@@ -266,6 +266,8 @@
     <Compile Include="AsmDoc\AsmDocMouseHandler.cs" />
     <Compile Include="BraceMatching\BraceMatchingTagger.cs" />
     <Compile Include="BraceMatching\BraceMatchingTaggerProvider.cs" />
+    <Compile Include="ErrorSquiggles\ErrorTagger.cs" />
+    <Compile Include="ErrorSquiggles\ErrorTaggerProvider.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="LightBulb\AsmLightBulb.cs" />
     <Compile Include="Menu\DynamicTextCommand.cs" />
@@ -364,6 +366,7 @@
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
   </PropertyGroup>
