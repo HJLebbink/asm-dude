@@ -3878,6 +3878,26 @@
 		</mnemonic>
 	</mnemonics>
 	<registers>
+
+		<register name='CS' bits='16'>
+			<description>Segment Register (Code Segment)</description>
+		</register>
+		<register name='DS' bits='16'>
+			<description>Segment Register (Data Segment)</description>
+		</register>
+		<register name='ES' bits='16'>
+			<description>Segment Register (Extra Segment)</description>
+		</register>
+		<register name='FS' bits='16'>
+			<description>Segment Register (General Purpose)</description>
+		</register>
+		<register name='GS' bits='16'>
+			<description>Segment Register (General Purpose)</description>
+		</register>
+		<register name='SS' bits='16'>
+			<description>Segment Register (Stack Segment)</description>
+		</register>
+
 		<register name='RAX' bits='64'>
 			<description>64-bit GPR (Accumulator)</description>
 		</register>
