@@ -16,11 +16,12 @@ Not happy with the highlighting or the descriptions. Mnemonics and descriptions 
 * ~~Documentation for opcodes. Hit F12 to get full official documentation of the selected opcode~~.
 * ~~Proper Register Highlighting. E.g. When you select GPR rax, GPR al is also highlighted.~~
 * ~~No code completion in remarks.~~
-* ~~Improved syntax highlighting.  Add label highlights.~~
+* ~~Improved syntax highlighting. Add label highlights.~~
 * ~~Code completion for labels in jumps. Provide a list of existing labels from which one can choose.~~
+* ~~Support for segment registers.~~
 * Label rename assistance.
 * Create new file item with .asm extension.
-* Label analysis. When jumping to a label, check if the label exists. Check if labels are unique. Provide error squiggles (with AuthoringSink.AddError) if something is wrong.
+* Label analysis. When jumping to a label, check if the label exists. Check if labels are unique. Provide error squiggles if something is wrong.
 * Code folding for documentation blocks.
 * Add syntax highlighting for AT&T syntax.
 * Colored tooltips. Syntax highlighting in quickinfo tooltips.
@@ -30,7 +31,6 @@ Not happy with the highlighting or the descriptions. Mnemonics and descriptions 
 * Track flag influence. Select an opcode that uses a flag (as input), find the opcodes that produce this flag (as output). E.g.  select opcode cmovc or setc , highlight all opcodes such as btr, sal, sar, shl, shr, etc.
 * Register rename assistance. Highly desirable but very challenging. E.g. rename GPR rdx to rbx, find which rdx, edx, dx, dl and dh will need to be renamed, check if renames will clash with existing occurances of rbx, ebx, bx, bl and bh.
 * Arm support.
-* Support for segment registers.
 * Nasm macros syntax highlighting
 
 
