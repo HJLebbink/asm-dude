@@ -52,7 +52,11 @@ namespace AsmTools {
             for (; i < nChars; ++i) {
                 char c = line[i];
                 if (c.Equals(':')) {
-                    return new Tuple<bool, int, int>(true, beginPos, i);
+                    if (i == 0) { // we found an empty label
+                        return new Tuple<bool, int, int>(false, 0, 0);
+                    } else {
+                        return new Tuple<bool, int, int>(true, beginPos, i);
+                    }
                 } else if (AsmSourceTools.isRemarkChar(c)) {
                     return new Tuple<bool, int, int>(false, 0, 0);
                 } else if (AsmSourceTools.isSeparatorChar(c)) {
@@ -793,7 +797,7 @@ namespace AsmTools {
         private static int findEndNextWord(string str, int begin) {
             for (int i = begin; i < str.Length; ++i) {
                 char c = str[i];
-                if (char.IsWhiteSpace(c) || c.Equals('+') || c.Equals('*') || c.Equals('-') || c.Equals('[') || c.Equals(']') || c.Equals('(') || c.Equals(')')) { 
+                if (char.IsWhiteSpace(c) || c.Equals('+') || c.Equals('*') || c.Equals('-') || c.Equals('[') || c.Equals(']') || c.Equals('(') || c.Equals(')') || c.Equals(':')) { 
                     return i;
                 }
             }
