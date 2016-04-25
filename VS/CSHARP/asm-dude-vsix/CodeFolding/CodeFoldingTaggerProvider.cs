@@ -34,7 +34,7 @@ namespace AsmDude.CodeFolding {
     [Export(typeof(ITaggerProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [TagType(typeof(IOutliningRegionTag))]
-    internal sealed class TaggerProvider : ITaggerProvider {
+    internal sealed class CodeFoldingTaggerProvider : ITaggerProvider {
         /// <summary>
         /// This method is called by VS to generate the tagger
         /// </summary>

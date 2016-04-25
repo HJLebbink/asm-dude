@@ -77,7 +77,11 @@ namespace AsmDude {
             sb.AppendLine(@"|     |_ -|     |  |  | | | . | -_|");
             sb.AppendLine(@"|__|__|___|_|_|_|____/|___|___|___|");
             sb.AppendLine(string.Format("INFO: Loaded AsmDude version {0}.", typeof(AsmDudePackage).Assembly.GetName().Version));
-            sb.AppendLine(string.Format("INFO: Open source assembly plugin. Making programming in assembler bearable."));
+            sb.AppendLine(string.Format("INFO: Open source assembly extension. Making programming in assembler bearable."));
+            sb.AppendLine(string.Format("INFO: Why? Because programming assembly is an art which exists outside of contemporary computer science fads and fashions."));
+
+
+
             sb.AppendLine(string.Format("INFO: More info at https://github.com/HJLebbink/asm-dude"));
             sb.AppendLine("----------------------------------");
             sb.AppendLine(string.Format("INFO: Is the Tools>Options>AsmDude options pane invisible? Disable and enable this plugin to make it visible again..."));
