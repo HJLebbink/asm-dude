@@ -52,7 +52,7 @@ namespace AsmDude.HighlightWord {
     /// Derive from TextMarkerTag, in case anyone wants to consume
     /// just the HighlightWordTags by themselves.
     /// </summary>
-    [ComVisible(true)]
+ //   [ComVisible(true)]
     public class HighlightWordTag : TextMarkerTag {
         public HighlightWordTag() : base("AsmDude.HighlightWordFormatDefinition") {
             // empty
@@ -63,11 +63,10 @@ namespace AsmDude.HighlightWord {
     /// This tagger will provide tags for every word in the buffer that
     /// matches the word currently under the cursor.
     /// </summary>
-    public class HighlightWordTagger : ITagger<HighlightWordTag> {
+    internal sealed class HighlightWordTagger : ITagger<HighlightWordTag> {
         private ITextView _view { get; set; }
         private ITextBuffer _sourceBuffer { get; set; }
         private ITextSearchService _textSearchService { get; set; }
-        private ITextStructureNavigator _textStructureNavigator { get; set; }
         private object _updateLock = new object();
 
         // The current set of words to highlight
@@ -82,12 +81,10 @@ namespace AsmDude.HighlightWord {
         // The current request, from the last cursor movement or view render
         private SnapshotPoint _requestedPoint { get; set; }
 
-        public HighlightWordTagger(ITextView view, ITextBuffer sourceBuffer, ITextSearchService textSearchService,
-                                   ITextStructureNavigator textStructureNavigator) {
+        public HighlightWordTagger(ITextView view, ITextBuffer sourceBuffer, ITextSearchService textSearchService) {
             _view = view;
             _sourceBuffer = sourceBuffer;
             _textSearchService = textSearchService;
-            _textStructureNavigator = textStructureNavigator;
 
             _wordSpans = new NormalizedSnapshotSpanCollection();
 

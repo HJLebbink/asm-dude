@@ -37,9 +37,6 @@ namespace AsmDude.HighlightWord {
         [Import]
         internal ITextSearchService _textSearchService { get; set; }
 
-        [Import]
-        internal ITextStructureNavigatorSelectorService _textStructureNavigatorSelector { get; set; }
-
         /// <summary>
         /// This method is called by VS to generate the tagger
         /// </summary>
@@ -48,12 +45,14 @@ namespace AsmDude.HighlightWord {
         /// <param name="buffer"> The buffer that the tagger will examine for instances of the current word</param>
         /// <returns> Returns a HighlightWordTagger instance</returns>
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag {
+            if (textView == null) {
+                return null;
+            }
             // Only provide highlighting on the top-level buffer
             if (textView.TextBuffer != buffer) {
                 return null;
             }
-            ITextStructureNavigator textStructureNavigator = _textStructureNavigatorSelector.GetTextStructureNavigator(buffer);
-            return new HighlightWordTagger(textView, buffer, _textSearchService, textStructureNavigator) as ITagger<T>;
+            return new HighlightWordTagger(textView, buffer, _textSearchService) as ITagger<T>;
         }
     }
 }

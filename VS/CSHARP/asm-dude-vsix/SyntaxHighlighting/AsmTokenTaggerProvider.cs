@@ -30,11 +30,8 @@ namespace AsmDude {
     [Export(typeof(ITaggerProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [TagType(typeof(AsmTokenTag))]
-    internal sealed class AsmTokenTagProvider : ITaggerProvider
-    {
-        public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
-        {
-            //Debug.WriteLine("INFO: AsmTokenTagProvider:CreateTagger: entering");
+    internal sealed class AsmTokenTagProvider : ITaggerProvider {
+        public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag {
             return new AsmTokenTagger(buffer) as ITagger<T>;
         }
     }

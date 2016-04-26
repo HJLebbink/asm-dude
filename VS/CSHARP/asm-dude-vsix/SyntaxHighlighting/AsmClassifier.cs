@@ -67,54 +67,20 @@ namespace AsmDude {
         internal static ClassificationTypeDefinition misc = null;
     }
 
-    [Export(typeof(ITaggerProvider))]
-    [ContentType(AsmDudePackage.AsmDudeContentType)]
-    [TagType(typeof(ClassificationTag))]
-    internal sealed class AsmClassifierProvider : ITaggerProvider {
-
-        [Export]
-        [Name("asm!")]
-        [BaseDefinition("code")]
-        internal static ContentTypeDefinition AsmContentType = null;
-
-        [Export]
-        [FileExtension(".asm")]
-        [ContentType(AsmDudePackage.AsmDudeContentType)]
-        internal static FileExtensionToContentTypeDefinition AsmFileType = null;
-
-        [Export]
-        [FileExtension(".cod")]
-        [ContentType(AsmDudePackage.AsmDudeContentType)]
-        internal static FileExtensionToContentTypeDefinition AsmFileType_cod = null;
-
-        [Export]
-        [FileExtension(".inc")]
-        [ContentType(AsmDudePackage.AsmDudeContentType)]
-        internal static FileExtensionToContentTypeDefinition AsmFileType_inc = null;
-
-        [Import]
-        internal IClassificationTypeRegistryService ClassificationTypeRegistry = null;
-
-        [Import]
-        internal IBufferTagAggregatorFactoryService aggregatorFactory = null;
-
-        public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag {
-            ITagAggregator<AsmTokenTag> asmTagAggregator = aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
-            return new AsmClassifier(buffer, asmTagAggregator, ClassificationTypeRegistry) as ITagger<T>;
-        }
-    }
 
     internal sealed class AsmClassifier : ITagger<ClassificationTag> {
-        ITextBuffer _buffer;
-        ITagAggregator<AsmTokenTag> _aggregator;
-        IDictionary<TokenType, IClassificationType> _asmTypes;
+
+        private ITextBuffer _buffer;
+        private ITagAggregator<AsmTokenTag> _aggregator;
+        private IDictionary<TokenType, IClassificationType> _asmTypes;
 
         /// <summary>
         /// Construct the classifier and define search tokens
         /// </summary>
-        internal AsmClassifier(ITextBuffer buffer,
-                               ITagAggregator<AsmTokenTag> asmTagAggregator,
-                               IClassificationTypeRegistryService typeService) {
+        internal AsmClassifier(
+                ITextBuffer buffer, 
+                ITagAggregator<AsmTokenTag> asmTagAggregator,
+                IClassificationTypeRegistryService typeService) {
             _buffer = buffer;
             _aggregator = asmTagAggregator;
             _asmTypes = new Dictionary<TokenType, IClassificationType>();
@@ -128,17 +94,19 @@ namespace AsmDude {
             _asmTypes[TokenType.Misc] = typeService.GetClassificationType("misc");
         }
 
-        public event EventHandler<SnapshotSpanEventArgs> TagsChanged {
-            add { }
-            remove { }
-        }
+        public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
         /// <summary>
         /// Search the given span for any instances of classified tags
         /// </summary>
         public IEnumerable<ITagSpan<ClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
             if (Settings.Default.SyntaxHighlighting_On) {
-                foreach (var tagSpan in _aggregator.GetTags(spans)) {
+                DateTime time1 = DateTime.Now;
+
+                if (spans.Count == 0) {  //there is no content in the buffer
+                    yield break;
+                }
+                foreach (IMappingTagSpan<AsmTokenTag> tagSpan in _aggregator.GetTags(spans)) {
                     NormalizedSnapshotSpanCollection tagSpans = tagSpan.Span.GetSpans(spans[0].Snapshot);
                     IClassificationType asmType = _asmTypes[tagSpan.Tag.type];
                     if (asmType == null) {
@@ -146,6 +114,10 @@ namespace AsmDude {
                     } else {
                         yield return new TagSpan<ClassificationTag>(tagSpans[0], new ClassificationTag(asmType));
                     }
+                }
+                double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
+                if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
+                    AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0:F3} seconds to assign classification tags for syntax highlighting.", elapsedSec));
                 }
             }
         }

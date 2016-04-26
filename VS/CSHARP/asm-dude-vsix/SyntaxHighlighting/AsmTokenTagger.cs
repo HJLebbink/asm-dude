@@ -52,13 +52,17 @@ namespace AsmDude {
             AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
         }
 
-        public event EventHandler<SnapshotSpanEventArgs> TagsChanged {
-            add { }
-            remove { }
-        }
+        public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
 
         public IEnumerable<ITagSpan<AsmTokenTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
+
+            DateTime time1 = DateTime.Now;
+
+            if (spans.Count == 0) {  //there is no content in the buffer
+                yield break;
+            }
+
             foreach (SnapshotSpan curSpan in spans) {
                 // split everything before the remark char according to this template
                 // LABEL: MNEMONIC OPERATOR1, OPERATOR2, OPERATOR3 (with OPERATOR1-3 are optional)
@@ -167,6 +171,11 @@ namespace AsmDude {
                     }
                 }
                 #endregion
+            }
+
+            double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
+            if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
+                AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0:F3} seconds to make ASM tags for syntax hightlighting.", elapsedSec));
             }
         }
 

@@ -288,7 +288,8 @@
     <Compile Include="source.extension.cs">
       <DependentUpon>source.extension.vsixmanifest</DependentUpon>
     </Compile>
-    <Compile Include="SyntaxHighlighting\AsmTokenTag.cs" />
+    <Compile Include="SyntaxHighlighting\AsmClassifierProvider.cs" />
+    <Compile Include="SyntaxHighlighting\AsmTokenTagger.cs" />
     <Compile Include="SyntaxHighlighting\AsmTokenTaggerProvider.cs" />
     <Compile Include="SyntaxHighlighting\AsmTokenTypes.cs" />
     <Compile Include="CodeCompletion\AsmCompletionSource.cs" />

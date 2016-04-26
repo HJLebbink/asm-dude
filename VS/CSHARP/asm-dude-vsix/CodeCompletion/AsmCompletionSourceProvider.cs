@@ -30,7 +30,7 @@ namespace AsmDude {
     [Export(typeof(ICompletionSourceProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [Name("asmCompletion")]
-    class AsmCompletionSourceProvider : ICompletionSourceProvider {
+    public sealed class AsmCompletionSourceProvider : ICompletionSourceProvider {
         public ICompletionSource TryCreateCompletionSource(ITextBuffer textBuffer) {
             return new AsmCompletionSource(textBuffer);
         }
