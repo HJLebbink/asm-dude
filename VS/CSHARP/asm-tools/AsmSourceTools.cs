@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -810,6 +811,76 @@ namespace AsmTools {
             int endPos = t.Item2;
             string result = line.Substring(beginPos, endPos - beginPos);
             return result;
+        }
+
+        /// <summary>
+        /// return the previous keyword between begin and end. 
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <param name="line"></param>
+        /// <returns></returns>
+        public static string getPreviousKeyword(int begin, int end, string line) {
+            Debug.Assert(begin >= 0);
+            Debug.Assert(begin <= line.Length);
+            Debug.Assert(end <= line.Length);
+
+            if (end <= 0) {
+                return "";
+            }
+            if (begin == end) {
+                return "";
+            }
+
+            int pos = (end >= line.Length) ? (line.Length-1) : end;
+
+            // find the end of current keyword; i.e. read until a separator
+            while (pos >= begin) {
+                if (AsmTools.AsmSourceTools.isSeparatorChar(line[pos])) {
+                    Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; pos={1} has a separator. Found end of current keyword", line, pos));
+                    pos--;
+                    break;
+                } else {
+                    Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; pos={1} has char {2} of current keyword", line, pos, line[pos]));
+                    pos--;
+                }
+            }
+
+            // find the end of previous keyword; i.e. read until a non separator
+            int endPrevious = begin;
+            while (pos >= begin) {
+                if (AsmTools.AsmSourceTools.isSeparatorChar(line[pos])) {
+                    Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; pos={1} has a separator.", line, pos));
+                    pos--;
+                } else {
+                    endPrevious = pos+1;
+                    Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; pos={1} has char {2} which is the end of previous keyword.", line, pos, line[pos]));
+                    pos--;
+                    break;
+                }
+            }
+
+            // find the begin of the previous keyword; i.e. read until a separator
+            int beginPrevious = begin; // set the begin of the previous keyword to the begin of search window, such that if no separator is found this will be the begin
+            while (pos >= begin) {
+                if (AsmTools.AsmSourceTools.isSeparatorChar(line[pos])) {
+                    beginPrevious = pos+1;
+                    Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; beginPrevious={1}; pos={2}", line, beginPrevious, pos));
+                    break;
+                } else {
+                    Debug.WriteLine(string.Format("INFO: getPreviousKeyword; find begin. line=\"{0}\"; pos={1} has char {2}", line, pos, line[pos]));
+                    pos--;
+                }
+            }
+
+            int length = endPrevious - beginPrevious;
+            if (length > 0) {
+                string previousKeyword = line.Substring(beginPrevious, length);
+                Debug.WriteLine(string.Format("INFO: getPreviousKeyword; previousKeyword={0}", previousKeyword));
+                return previousKeyword;
+            } else {
+                return "";
+            }
         }
 
         public static Tuple<int, int> getKeywordPos(int pos, string line) {

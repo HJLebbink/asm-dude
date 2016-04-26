@@ -138,6 +138,26 @@ namespace AsmDude {
             return null;
         }
 
+        /// <summary>
+        /// Find the previous keyword (if any) that exists BEFORE the provided triggerPoint, and the provided start.
+        /// Eg. qqqq xxxxxx yyyyyyy zzzzzz
+        ///     ^             ^
+        ///     |begin        |end
+        /// the previous keyword is xxxxxx
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        public static string getPreviousKeyword(SnapshotPoint begin, SnapshotPoint end) {
+            // return getPreviousKeyword(begin.GetContainingLine.)
+            if (end == 0) return "";
+
+            int beginLine = begin.GetContainingLine().Start;
+            int beginPos = begin.Position - beginLine;
+            int endPos = end.Position - beginLine;
+            return AsmSourceTools.getPreviousKeyword(beginPos, endPos, begin.GetContainingLine().GetText());
+        }
+
         public static string getLabelDescription(string label, string text) {
             int lineNumber = 1; // start counting at one since that is what VS does
 

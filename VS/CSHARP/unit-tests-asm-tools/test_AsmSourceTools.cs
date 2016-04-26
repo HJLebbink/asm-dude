@@ -38,6 +38,54 @@ namespace unit_tests {
         }
         #endregion
 
+        [TestMethod]
+        public void Test_AsmSourceTools_getPreviousKeyword() {
+
+            const string line = "    mov rax, rbx;bla";
+            {
+                int begin = 0;
+                int end = 8;
+                string result = AsmTools.AsmSourceTools.getPreviousKeyword(begin, end, line);
+                string msg = "line=\"" + line + "\"; result=\"" + result + "\"; begin=" + begin + "; end=" + end;
+                Assert.AreEqual("mov", result, msg);
+            }
+            {
+                int begin = 4;
+                int end = 8;
+                string result = AsmTools.AsmSourceTools.getPreviousKeyword(begin, end, line);
+                string msg = "line=\"" + line + "\"; result=\"" + result + "\"; begin=" + begin + "; end=" + end;
+                Assert.AreEqual("mov", result, msg);
+            }
+            {
+                int begin = 5;
+                int end = 8;
+                string result = AsmTools.AsmSourceTools.getPreviousKeyword(begin, end, line);
+                string msg = "line=\"" + line + "\"; result=\"" + result + "\"; begin=" + begin + "; end=" + end;
+                Assert.AreEqual("ov", result, msg);
+            }
+            {
+                int begin = 0;
+                int end = 7;
+                string result = AsmTools.AsmSourceTools.getPreviousKeyword(begin, end, line);
+                string msg = "line=\"" + line + "\"; result=\"" + result + "\"; begin=" + begin + "; end=" + end;
+                Assert.AreEqual("mov", result, msg);
+            }
+            {
+                int begin = 0;
+                int end = 6;
+                string result = AsmTools.AsmSourceTools.getPreviousKeyword(begin, end, line);
+                string msg = "line=\"" + line + "\"; result=\"" + result + "\"; begin=" + begin + "; end=" + end;
+                Assert.AreEqual("", result, msg);
+            }
+            {
+                int begin = 0;
+                int end = 11;
+                string result = AsmTools.AsmSourceTools.getPreviousKeyword(begin, end, line);
+                string msg = "line=\"" + line + "\"; result=\"" + result + "\"; begin=" + begin + "; end=" + end;
+                Assert.AreEqual("rax", result, msg);
+            }
+        }
+
 
         [TestMethod]
         public void Test_AsmSourceTools_toConstant() {
