@@ -91,10 +91,10 @@ namespace AsmDude {
         }
     }
     */
-    class AsmCompletionSource : ICompletionSource {
-        private ITextBuffer _buffer;
+    public sealed class AsmCompletionSource : ICompletionSource {
+        private readonly ITextBuffer _buffer;
+        private readonly IDictionary<TokenType, ImageSource> _icons;
         private bool _disposed = false;
-        private IDictionary<TokenType, ImageSource> _icons;
 
         [Import]
         private AsmDudeTools _asmDudeTools = null;
@@ -151,7 +151,8 @@ namespace AsmDude {
                 bool useCapitals = AsmDudeToolsStatic.isAllUpper(partialKeyword);
 
                 //4] get the previous keyword to narrow down the possible suggestions
-                string previousKeyword = AsmCompletionSource.getPreviousKeyword(line.Start, start);
+                string previousKeyword = AsmDudeToolsStatic.getPreviousKeyword(line.Start, start);
+                //AsmDudeToolsStatic.Output(string.Format("INFO: AugmentCompletionSession: previousKeyword=\"{0}\"; partialKeyword=\"{1}\".", previousKeyword, partialKeyword));
 
                 IList<Completion> completions = null;
 
@@ -295,41 +296,6 @@ namespace AsmDude {
             //TODO
         }
 
-        /// <summary>
-        /// Find the previous keyword (if any) that exists BEFORE the provided triggerPoint, and the provided start.
-        /// Eg. qqqq xxxxxx yyyyyyy zzzzzz
-        ///     ^             ^
-        ///     |begin        |end
-        /// the previous keyword is xxxxxx
-        /// </summary>
-        /// <param name="begin"></param>
-        /// <param name="end"></param>
-        /// <returns></returns>
-        private static string getPreviousKeyword(SnapshotPoint begin, SnapshotPoint end) {
-
-            if (end == 0) return "";
-            
-            // find the end of previous keyword
-            SnapshotPoint endPrevious = begin;
-            SnapshotPoint pos = end-1;
-            for (; pos >= begin; pos -= 1) {
-                if (!AsmTools.AsmSourceTools.isSeparatorChar(pos.GetChar())) {
-                    endPrevious = pos+1;
-                    break;
-                }
-            }
-            SnapshotPoint beginPrevious = begin;
-            for (; pos > begin; pos -= 1) {
-                if (AsmTools.AsmSourceTools.isSeparatorChar(pos.GetChar())) {
-                    beginPrevious = pos+1;
-                    break;
-                }
-            }
-            var applicableTo = end.Snapshot.CreateTrackingSpan(new SnapshotSpan(beginPrevious, endPrevious), SpanTrackingMode.EdgeInclusive);
-            string previousKeyword = applicableTo.GetText(end.Snapshot);
-            //Debug.WriteLine(string.Format("INFO: getPreviousKeyword; previousKeyword={0}", previousKeyword));
-            return previousKeyword;
-        }
 
         private bool isArchSwitchedOn(Arch arch) {
             if (false) {
