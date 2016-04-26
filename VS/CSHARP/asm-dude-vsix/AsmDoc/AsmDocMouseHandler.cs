@@ -44,9 +44,9 @@ namespace AsmDude.AsmDoc {
                 // Check and see if ctrl is down but we missed it somehow.
                 bool ctrlDown = (Keyboard.Modifiers & ModifierKeys.Control) != 0 &&
                                 (Keyboard.Modifiers & ModifierKeys.Shift) == 0;
-                if (ctrlDown != _enabled)
+                if (ctrlDown != _enabled) {
                     Enabled = ctrlDown;
-
+                }
                 return _enabled;
             }
             set {
@@ -54,8 +54,9 @@ namespace AsmDude.AsmDoc {
                 _enabled = value;
                 if (oldVal != _enabled) {
                     var temp = CtrlKeyStateChanged;
-                    if (temp != null)
+                    if (temp != null) {
                         temp(this, new EventArgs());
+                    }
                 }
             }
         }
@@ -94,13 +95,13 @@ namespace AsmDude.AsmDoc {
     [Order(Before = "WordSelection")]
     internal sealed class AsmDocMouseHandlerProvider : IMouseProcessorProvider {
         [Import]
-        IClassifierAggregatorService AggregatorFactory = null;
+        private IClassifierAggregatorService AggregatorFactory = null;
 
         [Import]
-        ITextStructureNavigatorSelectorService NavigatorService = null;
+        private ITextStructureNavigatorSelectorService NavigatorService = null;
 
         [Import]
-        SVsServiceProvider GlobalServiceProvider = null;
+        private SVsServiceProvider GlobalServiceProvider = null;
 
         public IMouseProcessor GetAssociatedProcessor(IWpfTextView view) {
             var buffer = view.TextBuffer;
@@ -135,11 +136,11 @@ namespace AsmDude.AsmDoc {
     /// (when control is pressed) to highlight references for which GoToDefinition will (likely) be valid.
     /// </summary>
     internal sealed class AsmDocMouseHandler : MouseProcessorBase {
-        IWpfTextView _view;
-        CtrlKeyState _state;
-        IClassifier _aggregator;
-        ITextStructureNavigator _navigator;
-        IOleCommandTarget _commandTarget;
+        private readonly IWpfTextView _view;
+        private readonly CtrlKeyState _state;
+        private readonly IClassifier _aggregator;
+        private readonly ITextStructureNavigator _navigator;
+        private readonly IOleCommandTarget _commandTarget;
 
         [Import]
         private AsmDudeTools _asmDudeTools = null;
@@ -174,7 +175,7 @@ namespace AsmDude.AsmDoc {
 
         // Remember the location of the mouse on left button down, so we only handle left button up
         // if the mouse has stayed in a single location.
-        Point? _mouseDownAnchorPoint;
+        private Point? _mouseDownAnchorPoint;
 
         public override void PostprocessMouseLeftButtonDown(MouseButtonEventArgs e) {
             _mouseDownAnchorPoint = RelativeToView(e.GetPosition(_view.VisualElement));
@@ -233,11 +234,11 @@ namespace AsmDude.AsmDoc {
 
         #region Private helpers
 
-        Point RelativeToView(Point position) {
+        private Point RelativeToView(Point position) {
             return new Point(position.X + _view.ViewportLeft, position.Y + _view.ViewportTop);
         }
 
-        bool TryHighlightItemUnderMouse(Point position) {
+        private bool TryHighlightItemUnderMouse(Point position) {
             bool updated = false;
             if (!Settings.Default.AsmDoc_On) return false;
 
@@ -284,7 +285,7 @@ namespace AsmDude.AsmDoc {
             }
         }
 
-        SnapshotSpan? CurrentUnderlineSpan {
+        private SnapshotSpan? CurrentUnderlineSpan {
             get {
                 var classifier = UnderlineClassifierProvider.GetClassifierForView(_view);
                 if (classifier != null && classifier.CurrentUnderlineSpan.HasValue) {

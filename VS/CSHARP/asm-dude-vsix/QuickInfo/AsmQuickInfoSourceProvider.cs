@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using AsmDude.SyntaxHighlighting;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
@@ -34,12 +35,14 @@ namespace AsmDude.QuickInfo {
     [Export(typeof(IQuickInfoSourceProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [Name("asmQuickInfo")]
-    class AsmQuickInfoSourceProvider : IQuickInfoSourceProvider {
-        [Import]
-        IBufferTagAggregatorFactoryService aggService = null;
+    internal sealed class AsmQuickInfoSourceProvider : IQuickInfoSourceProvider {
 
-        public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer textBuffer) {
-            return new AsmQuickInfoSource(textBuffer, aggService.CreateTagAggregator<AsmTokenTag>(textBuffer));
+        [Import]
+        IBufferTagAggregatorFactoryService _aggregatorFactory = null;
+
+        public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer buffer) {
+            ITagAggregator<AsmTokenTag> asmTagAggregator = _aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
+            return new AsmQuickInfoSource(buffer, asmTagAggregator);
         }
     }
 }

@@ -35,7 +35,7 @@ namespace AsmDude.HighlightWord {
     public class HighlightWordTaggerProvider : IViewTaggerProvider {
 
         [Import]
-        internal ITextSearchService _textSearchService { get; set; }
+        private ITextSearchService _textSearchService = null;
 
         /// <summary>
         /// This method is called by VS to generate the tagger

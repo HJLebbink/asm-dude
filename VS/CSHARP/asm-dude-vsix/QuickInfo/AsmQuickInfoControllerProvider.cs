@@ -32,10 +32,10 @@ namespace AsmDude.QuickInfo {
     [Export(typeof(IIntellisenseControllerProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [Name("Template QuickInfo Controller")]
-    internal class AsmQuickInfoControllerProvider : IIntellisenseControllerProvider {
+    internal sealed class AsmQuickInfoControllerProvider : IIntellisenseControllerProvider {
 
         [Import]
-        internal IQuickInfoBroker _quickInfoBroker { get; set; }
+        internal IQuickInfoBroker _quickInfoBroker = null;
 
         public IIntellisenseController TryCreateIntellisenseController(ITextView textView, IList<ITextBuffer> subjectBuffers) {
             return new AsmQuickInfoController(textView, subjectBuffers, this);

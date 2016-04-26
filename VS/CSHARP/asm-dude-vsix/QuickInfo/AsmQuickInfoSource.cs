@@ -28,24 +28,24 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using System.ComponentModel.Composition;
-using System.Windows.Forms;
-using System.Reflection;
+using AsmDude.SyntaxHighlighting;
 
 namespace AsmDude.QuickInfo {
 
     /// <summary>
     /// Provides QuickInfo information to be displayed in a text buffer
     /// </summary>
-    class AsmQuickInfoSource : IQuickInfoSource {
-        private ITagAggregator<AsmTokenTag> _aggregator;
-        private ITextBuffer _buffer;
+    internal sealed class AsmQuickInfoSource : IQuickInfoSource {
+
+        private readonly ITagAggregator<AsmTokenTag> _aggregator;
+        private readonly ITextBuffer _buffer;
         private bool _disposed = false;
 
         [Import]
         private AsmDudeTools _asmDudeTools = null;
 
-        public AsmQuickInfoSource(ITextBuffer buffer, ITagAggregator<AsmTokenTag> aggregator) {
-            this._aggregator = aggregator;
+        public AsmQuickInfoSource(ITextBuffer buffer, ITagAggregator<AsmTokenTag> asmTagAggregator) {
+            this._aggregator = asmTagAggregator;
             this._buffer = buffer;
             AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
         }
@@ -79,33 +79,33 @@ namespace AsmDude.QuickInfo {
                     string description = null;
 
                     switch (curTag.Tag.type) {
-                        case TokenType.Misc: {
+                        case AsmTokenType.Misc: {
                                 string descr = this._asmDudeTools.getDescription(tagStringUpper);
                                 description = (descr.Length > 0) ? ("Keyword " + tagStringUpper + ": " + descr) : "Keyword " + tagStringUpper;
                                 break;
                             }
-                        case TokenType.Directive: {
+                        case AsmTokenType.Directive: {
                                 string descr = this._asmDudeTools.getDescription(tagStringUpper);
                                 description = (descr.Length > 0) ? ("Directive " + tagStringUpper + ": " + descr) : "Directive " + tagStringUpper;
                                 break;
                             }
-                        case TokenType.Register: {
+                        case AsmTokenType.Register: {
                                 string descr = this._asmDudeTools.getDescription(tagStringUpper);
                                 description = (descr.Length > 0) ? (tagStringUpper + ": " + descr) : "Register " + tagStringUpper;
                                 break;
                             }
-                        case TokenType.Mnemonic: // intentional fall through
-                        case TokenType.Jump: {
+                        case AsmTokenType.Mnemonic: // intentional fall through
+                        case AsmTokenType.Jump: {
                                 string descr = this._asmDudeTools.getDescription(tagStringUpper);
                                 description = (descr.Length > 0) ? ("Mnemonic " + tagStringUpper + ": " + descr) : "Mnemonic " + tagStringUpper;
                                 break;
                             }
-                        case TokenType.Label: {
+                        case AsmTokenType.Label: {
                                 string descr = AsmDudeToolsStatic.getLabelDescription(tagString, this._buffer);
                                 description = (descr.Length > 0) ? descr : "Label " + tagString;
                                 break;
                             }
-                        case TokenType.Constant: {
+                        case AsmTokenType.Constant: {
                                 description = "Constant " + tagString;
                                 break;
                             }

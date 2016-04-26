@@ -29,10 +29,10 @@ namespace AsmDude.QuickInfo {
 
     internal class AsmQuickInfoController : IIntellisenseController {
 
-        private ITextView _textView;
-        private IList<ITextBuffer> _subjectBuffers;
-        private AsmQuickInfoControllerProvider _componentContext;
+        private readonly IList<ITextBuffer> _subjectBuffers;
+        private readonly AsmQuickInfoControllerProvider _componentContext;
         private IQuickInfoSession _session;
+        private ITextView _textView;
 
 
         internal AsmQuickInfoController(ITextView textView, IList<ITextBuffer> subjectBuffers, AsmQuickInfoControllerProvider componentContext) {

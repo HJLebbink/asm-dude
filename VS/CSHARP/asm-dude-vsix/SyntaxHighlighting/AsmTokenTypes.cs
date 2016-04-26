@@ -25,7 +25,7 @@ namespace AsmDude {
     /// <summary>
     /// Types of token used in assembly source files. Mnemonic, Register, Remark, Directive, Constant, Jump, Label, Misc, UNKNOWN
     /// </summary>
-    public enum TokenType {
+    public enum AsmTokenType {
         Mnemonic, Register, Remark, Directive, Constant, Jump, Label, Misc, UNKNOWN
     }
 }

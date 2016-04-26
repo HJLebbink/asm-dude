@@ -1,20 +1,19 @@
-﻿using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
+﻿using AsmDude.SyntaxHighlighting;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 
 namespace AsmDude.ErrorSquiggles {
 
     internal sealed class ErrorTagger : ITagger<ErrorTag> {
 
-        private ITextView _view;
-        private ITextBuffer _sourceBuffer;
-        private ITagAggregator<AsmTokenTag> _aggregator;
-        private ITextSearchService _textSearchService;
+        private readonly ITextView _view;
+        private readonly ITextBuffer _sourceBuffer;
+        private readonly ITagAggregator<AsmTokenTag> _aggregator;
+        private readonly ITextSearchService _textSearchService;
 
 
         internal ErrorTagger(
@@ -45,17 +44,23 @@ namespace AsmDude.ErrorSquiggles {
                 NormalizedSnapshotSpanCollection tagSpans = tagSpan.Span.GetSpans(spans[0].Snapshot);
 
                 switch (tagSpan.Tag.type) {
-                    case TokenType.Label:
+                    case AsmTokenType.Label:
 
                         string labelStr = tagSpans[0].GetText();
                         //AsmDudeToolsStatic.Output(string.Format("INFO: label \"{0}\".", labelStr));
                         if (!labels.ContainsKey(labelStr)) {
                             string msg = String.Format("LABEL \"{0}\" is undefined.", labelStr);
                             AsmDudeToolsStatic.Output(string.Format("INFO: {0}", msg));
-                            yield return new TagSpan<ErrorTag>(tagSpans[0], new ErrorTag("smell", msg));
+
+                            //const string errorType1 = "syntax error";
+                            //const string errorType2 = "compiler error";
+                            //const string errorType3 = "other error";
+                            const string errorType4 = "warning";
+
+                            yield return new TagSpan<ErrorTag>(tagSpans[0], new ErrorTag(errorType4, msg));
                         }
                         break;
-                    case TokenType.Mnemonic:
+                    case AsmTokenType.Mnemonic:
                         break;
                     default: break;
                 }

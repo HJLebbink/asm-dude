@@ -10,47 +10,47 @@ namespace AsmDude.BraceMatching {
     /// <summary>
     /// Somewhat unnecessary brace matching functionality
     /// </summary>
-    sealed class BraceMatchingTagger : ITagger<TextMarkerTag> {
+    internal sealed class BraceMatchingTagger : ITagger<TextMarkerTag> {
 
-        ITextView View { get; set; }
-        ITextBuffer SourceBuffer { get; set; }
-        SnapshotPoint? CurrentChar { get; set; }
-        private Dictionary<char, char> m_braceList;
+        private readonly ITextView _view;
+        private readonly ITextBuffer _sourceBuffer;
+        private readonly Dictionary<char, char> m_braceList;
+        private SnapshotPoint? _currentChar;
 
         internal BraceMatchingTagger(ITextView view, ITextBuffer sourceBuffer) {
             //here the keys are the open braces, and the values are the close braces
             m_braceList = new Dictionary<char, char>();
             m_braceList.Add('[', ']');
             m_braceList.Add('(', ')');
-            this.View = view;
-            this.SourceBuffer = sourceBuffer;
-            this.CurrentChar = null;
+            this._view = view;
+            this._sourceBuffer = sourceBuffer;
+            this._currentChar = null;
 
-            this.View.Caret.PositionChanged += CaretPositionChanged;
-            this.View.LayoutChanged += ViewLayoutChanged;
+            this._view.Caret.PositionChanged += CaretPositionChanged;
+            this._view.LayoutChanged += ViewLayoutChanged;
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
-        void ViewLayoutChanged(object sender, TextViewLayoutChangedEventArgs e) {
+        private void ViewLayoutChanged(object sender, TextViewLayoutChangedEventArgs e) {
             if (e.NewSnapshot != e.OldSnapshot) { //make sure that there has really been a change
-                UpdateAtCaretPosition(View.Caret.Position);
+                UpdateAtCaretPosition(_view.Caret.Position);
             }
         }
 
-        void CaretPositionChanged(object sender, CaretPositionChangedEventArgs e) {
+        private void CaretPositionChanged(object sender, CaretPositionChangedEventArgs e) {
             UpdateAtCaretPosition(e.NewPosition);
         }
-        void UpdateAtCaretPosition(CaretPosition caretPosition) {
-            CurrentChar = caretPosition.Point.GetPoint(SourceBuffer, caretPosition.Affinity);
+        private void UpdateAtCaretPosition(CaretPosition caretPosition) {
+            _currentChar = caretPosition.Point.GetPoint(_sourceBuffer, caretPosition.Affinity);
 
-            if (!CurrentChar.HasValue) {
+            if (!_currentChar.HasValue) {
                 return;
             }
             var tempEvent = TagsChanged;
             if (tempEvent != null) {
-                tempEvent(this, new SnapshotSpanEventArgs(new SnapshotSpan(SourceBuffer.CurrentSnapshot, 0,
-                    SourceBuffer.CurrentSnapshot.Length)));
+                tempEvent(this, new SnapshotSpanEventArgs(new SnapshotSpan(_sourceBuffer.CurrentSnapshot, 0,
+                    _sourceBuffer.CurrentSnapshot.Length)));
             }
         }
 
@@ -59,11 +59,11 @@ namespace AsmDude.BraceMatching {
                 yield break;
             }
             //don't do anything if the current SnapshotPoint is not initialized or at the end of the buffer
-            if (!CurrentChar.HasValue || CurrentChar.Value.Position >= CurrentChar.Value.Snapshot.Length) {
+            if (!_currentChar.HasValue || _currentChar.Value.Position >= _currentChar.Value.Snapshot.Length) {
                 yield break;
             }
             //hold on to a snapshot of the current character
-            SnapshotPoint currentChar = CurrentChar.Value;
+            SnapshotPoint currentChar = _currentChar.Value;
 
             //if the requested snapshot isn't the same as the one the brace is on, translate our spans to the expected snapshot
             if (spans[0].Snapshot != currentChar.Snapshot) {
@@ -79,7 +79,7 @@ namespace AsmDude.BraceMatching {
             if (m_braceList.ContainsKey(currentText)) {  //the key is the open brace
                 char closeChar;
                 m_braceList.TryGetValue(currentText, out closeChar);
-                if (BraceMatchingTagger.FindMatchingCloseChar(currentChar, currentText, closeChar, View.TextViewLines.Count, out pairSpan) == true) {
+                if (BraceMatchingTagger.FindMatchingCloseChar(currentChar, currentText, closeChar, _view.TextViewLines.Count, out pairSpan) == true) {
                     yield return new TagSpan<TextMarkerTag>(new SnapshotSpan(currentChar, 1), new TextMarkerTag("blue"));
                     yield return new TagSpan<TextMarkerTag>(pairSpan, new TextMarkerTag("blue"));
                 }
@@ -87,7 +87,7 @@ namespace AsmDude.BraceMatching {
                 var open = from n in m_braceList
                            where n.Value.Equals(lastText)
                            select n.Key;
-                if (BraceMatchingTagger.FindMatchingOpenChar(lastChar, (char)open.ElementAt<char>(0), lastText, View.TextViewLines.Count, out pairSpan) == true) {
+                if (BraceMatchingTagger.FindMatchingOpenChar(lastChar, (char)open.ElementAt<char>(0), lastText, _view.TextViewLines.Count, out pairSpan) == true) {
                     yield return new TagSpan<TextMarkerTag>(new SnapshotSpan(lastChar, 1), new TextMarkerTag("blue"));
                     yield return new TagSpan<TextMarkerTag>(pairSpan, new TextMarkerTag("blue"));
                 }

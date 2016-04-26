@@ -22,57 +22,20 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Diagnostics;
 
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
-using Microsoft.VisualStudio.Utilities;
+using AsmDude.SyntaxHighlighting;
 
 namespace AsmDude {
-
-    internal static class AsmClassificationDefinition {
-
-        [Export(typeof(ClassificationTypeDefinition))]
-        [Name("mnemonic")]
-        internal static ClassificationTypeDefinition mnemonic = null;
-
-        [Export(typeof(ClassificationTypeDefinition))]
-        [Name("register")]
-        internal static ClassificationTypeDefinition register = null;
-
-        [Export(typeof(ClassificationTypeDefinition))]
-        [Name("remark")]
-        internal static ClassificationTypeDefinition remark = null;
-
-        [Export(typeof(ClassificationTypeDefinition))]
-        [Name("directive")]
-        internal static ClassificationTypeDefinition directive = null;
-
-        [Export(typeof(ClassificationTypeDefinition))]
-        [Name("constant")]
-        internal static ClassificationTypeDefinition constant = null;
-
-        [Export(typeof(ClassificationTypeDefinition))]
-        [Name("jump")]
-        internal static ClassificationTypeDefinition jump = null;
-
-        [Export(typeof(ClassificationTypeDefinition))]
-        [Name("label")]
-        internal static ClassificationTypeDefinition label = null;
-
-        [Export(typeof(ClassificationTypeDefinition))]
-        [Name("misc")]
-        internal static ClassificationTypeDefinition misc = null;
-    }
-
 
     internal sealed class AsmClassifier : ITagger<ClassificationTag> {
 
         private ITextBuffer _buffer;
         private ITagAggregator<AsmTokenTag> _aggregator;
-        private IDictionary<TokenType, IClassificationType> _asmTypes;
+        private IDictionary<AsmTokenType, IClassificationType> _asmTypes;
 
         /// <summary>
         /// Construct the classifier and define search tokens
@@ -83,15 +46,15 @@ namespace AsmDude {
                 IClassificationTypeRegistryService typeService) {
             _buffer = buffer;
             _aggregator = asmTagAggregator;
-            _asmTypes = new Dictionary<TokenType, IClassificationType>();
-            _asmTypes[TokenType.Mnemonic] = typeService.GetClassificationType("mnemonic");
-            _asmTypes[TokenType.Register] = typeService.GetClassificationType("register");
-            _asmTypes[TokenType.Remark] = typeService.GetClassificationType("remark");
-            _asmTypes[TokenType.Directive] = typeService.GetClassificationType("directive");
-            _asmTypes[TokenType.Constant] = typeService.GetClassificationType("constant");
-            _asmTypes[TokenType.Jump] = typeService.GetClassificationType("jump");
-            _asmTypes[TokenType.Label] = typeService.GetClassificationType("label");
-            _asmTypes[TokenType.Misc] = typeService.GetClassificationType("misc");
+            _asmTypes = new Dictionary<AsmTokenType, IClassificationType>();
+            _asmTypes[AsmTokenType.Mnemonic] = typeService.GetClassificationType("mnemonic");
+            _asmTypes[AsmTokenType.Register] = typeService.GetClassificationType("register");
+            _asmTypes[AsmTokenType.Remark] = typeService.GetClassificationType("remark");
+            _asmTypes[AsmTokenType.Directive] = typeService.GetClassificationType("directive");
+            _asmTypes[AsmTokenType.Constant] = typeService.GetClassificationType("constant");
+            _asmTypes[AsmTokenType.Jump] = typeService.GetClassificationType("jump");
+            _asmTypes[AsmTokenType.Label] = typeService.GetClassificationType("label");
+            _asmTypes[AsmTokenType.Misc] = typeService.GetClassificationType("misc");
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;

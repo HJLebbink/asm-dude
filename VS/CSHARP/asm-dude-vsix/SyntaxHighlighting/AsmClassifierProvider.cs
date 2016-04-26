@@ -32,14 +32,14 @@ namespace AsmDude.SyntaxHighlighting {
         internal static FileExtensionToContentTypeDefinition AsmFileType_inc = null;
 
         [Import]
-        internal IClassificationTypeRegistryService ClassificationTypeRegistry = null;
+        private IClassificationTypeRegistryService _classificationTypeRegistry = null;
 
         [Import]
-        internal IBufferTagAggregatorFactoryService aggregatorFactory = null;
+        private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
 
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag {
-            ITagAggregator<AsmTokenTag> asmTagAggregator = aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
-            return new AsmClassifier(buffer, asmTagAggregator, ClassificationTypeRegistry) as ITagger<T>;
+            ITagAggregator<AsmTokenTag> asmTagAggregator = _aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
+            return new AsmClassifier(buffer, asmTagAggregator, _classificationTypeRegistry) as ITagger<T>;
         }
     }
 }

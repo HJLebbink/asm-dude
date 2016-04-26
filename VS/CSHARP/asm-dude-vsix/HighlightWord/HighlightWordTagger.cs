@@ -64,9 +64,9 @@ namespace AsmDude.HighlightWord {
     /// matches the word currently under the cursor.
     /// </summary>
     internal sealed class HighlightWordTagger : ITagger<HighlightWordTag> {
-        private ITextView _view { get; set; }
-        private ITextBuffer _sourceBuffer { get; set; }
-        private ITextSearchService _textSearchService { get; set; }
+        private readonly ITextView _view;
+        private readonly ITextBuffer _sourceBuffer;
+        private readonly ITextSearchService _textSearchService;
         private object _updateLock = new object();
 
         // The current set of words to highlight

@@ -206,7 +206,7 @@ namespace AsmDude {
     [Export]
     public class AsmDudeTools {
         private XmlDocument _xmlData;
-        private IDictionary<string, TokenType> _type;
+        private IDictionary<string, AsmTokenType> _type;
         private IDictionary<string, Arch> _arch;
         private IDictionary<string, string> _description;
 
@@ -221,13 +221,13 @@ namespace AsmDude {
             return this._type.Keys;
         }
 
-        public TokenType getTokenType(string keyword) {
+        public AsmTokenType getTokenType(string keyword) {
             if (this._type == null) initData();
 
-            TokenType tokenType;
+            AsmTokenType tokenType;
             string k2 = keyword.ToUpper();
             if (!this._type.TryGetValue(k2, out tokenType)) {
-                tokenType = TokenType.UNKNOWN;
+                tokenType = AsmTokenType.UNKNOWN;
             }
             return tokenType;
         }
@@ -276,10 +276,10 @@ namespace AsmDude {
         /// </summary>
         public bool isJumpMnenomic(string keyword) {
             if (this._type == null) initData();
-            TokenType tokenType;
+            AsmTokenType tokenType;
             string k2 = keyword.ToUpper();
             if (this._type.TryGetValue(k2, out tokenType)) {
-                return tokenType == TokenType.Jump;
+                return tokenType == AsmTokenType.Jump;
             } else {
                 return false;
             }
@@ -290,10 +290,10 @@ namespace AsmDude {
         /// </summary>
         public bool isMnemonic(string keyword) {
             if (this._type == null) initData();
-            TokenType tokenType;
+            AsmTokenType tokenType;
             string k2 = keyword.ToUpper();
             if (this._type.TryGetValue(k2, out tokenType)) {
-                return tokenType == TokenType.Mnemonic;
+                return tokenType == AsmTokenType.Mnemonic;
             } else {
                 return false;
             }
@@ -316,7 +316,7 @@ namespace AsmDude {
         #region private stuff
 
         private void initData() {
-            this._type = new Dictionary<string, TokenType>();
+            this._type = new Dictionary<string, AsmTokenType>();
             this._arch = new Dictionary<string, Arch>();
             this._description = new Dictionary<string, string>();
        
@@ -330,7 +330,7 @@ namespace AsmDude {
                 } else {
                     string name = nameAttribute.Value.ToUpper();
                     //Debug.WriteLine("INFO: AsmTokenTagger: found misc " + name);
-                    this._type[name] = TokenType.Misc;
+                    this._type[name] = AsmTokenType.Misc;
                     this._arch[name] = this.retrieveArch(node);
                     this._description[name] = retrieveDescription(node);
                 }
@@ -343,7 +343,7 @@ namespace AsmDude {
                 } else {
                     string name = nameAttribute.Value.ToUpper();
                     //Debug.WriteLine("INFO: AsmTokenTagger: found directive " + name);
-                    this._type[name] = TokenType.Directive;
+                    this._type[name] = AsmTokenType.Directive;
                     this._arch[name] = this.retrieveArch(node);
                     this._description[name] = retrieveDescription(node);
                 }
@@ -358,12 +358,12 @@ namespace AsmDude {
 
                     var typeAttribute = node.Attributes["type"];
                     if (typeAttribute == null) {
-                        this._type[name] = TokenType.Mnemonic;
+                        this._type[name] = AsmTokenType.Mnemonic;
                     } else {
                         if (typeAttribute.Value.ToUpper().Equals("JUMP")) {
-                            this._type[name] = TokenType.Jump;
+                            this._type[name] = AsmTokenType.Jump;
                         } else {
-                            this._type[name] = TokenType.Mnemonic;
+                            this._type[name] = AsmTokenType.Mnemonic;
                         }
                     }
                     this._arch[name] = this.retrieveArch(node);
@@ -377,7 +377,7 @@ namespace AsmDude {
                 } else {
                     string name = nameAttribute.Value.ToUpper();
                     //Debug.WriteLine("INFO: AsmTokenTagger: found register " + name);
-                    this._type[name] = TokenType.Register;
+                    this._type[name] = AsmTokenType.Register;
                     this._arch[name] = this.retrieveArch(node);
                     this._description[name] = retrieveDescription(node);
                 }

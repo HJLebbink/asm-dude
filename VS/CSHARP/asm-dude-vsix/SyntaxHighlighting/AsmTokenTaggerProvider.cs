@@ -25,6 +25,8 @@ using Microsoft.VisualStudio.Text;
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
 
+using AsmDude.SyntaxHighlighting;
+
 namespace AsmDude {
 
     [Export(typeof(ITaggerProvider))]

@@ -93,7 +93,7 @@ namespace AsmDude {
     */
     public sealed class AsmCompletionSource : ICompletionSource {
         private readonly ITextBuffer _buffer;
-        private readonly IDictionary<TokenType, ImageSource> _icons;
+        private readonly IDictionary<AsmTokenType, ImageSource> _icons;
         private bool _disposed = false;
 
         [Import]
@@ -104,7 +104,7 @@ namespace AsmDude {
 
         public AsmCompletionSource(ITextBuffer buffer) {
             this._buffer = buffer;
-            this._icons = new Dictionary<TokenType, ImageSource>();
+            this._icons = new Dictionary<AsmTokenType, ImageSource>();
             AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
 
             this.loadIcons();
@@ -158,13 +158,13 @@ namespace AsmDude {
 
                 if ((previousKeyword.Length == 0) || this.isLabel(previousKeyword)) {
                     // no previous keyword exists. Do not suggest a register
-                    HashSet<TokenType> selected = new HashSet<TokenType> { TokenType.Directive, TokenType.Jump, TokenType.Misc, TokenType.Mnemonic /*, TokenType.Register*/ };
+                    HashSet<AsmTokenType> selected = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic /*, TokenType.Register*/ };
                     completions = this.selectedCompletions(useCapitals, selected);
 
                 } else if (this.isJump(previousKeyword)) {
                     // previous keyword is jump (or call) mnemonic. Suggest "SHORT" or a label
                     completions = this.labelCompletions();
-                    completions.Add(new Completion("SHORT", (useCapitals) ? "SHORT" : "short", null, this._icons[TokenType.Misc], ""));
+                    completions.Add(new Completion("SHORT", (useCapitals) ? "SHORT" : "short", null, this._icons[AsmTokenType.Misc], ""));
 
                 } else if (previousKeyword.Equals("SHORT")) {
                     // previous keyword is SHORT. Suggest a label
@@ -172,16 +172,16 @@ namespace AsmDude {
 
                 } else if (this.isRegister(previousKeyword)) {
                     // if the previous keyword is a register, suggest registers (of equal size), no opcodes and no directives
-                    HashSet<TokenType> selected = new HashSet<TokenType> { /*TokenType.Directive, TokenType.Jump,*/ TokenType.Misc, /*TokenType.Mnemonic,*/ TokenType.Register };
+                    HashSet<AsmTokenType> selected = new HashSet<AsmTokenType> { /*TokenType.Directive, TokenType.Jump,*/ AsmTokenType.Misc, /*TokenType.Mnemonic,*/ AsmTokenType.Register };
                     completions = this.selectedCompletions(useCapitals, selected);
 
                 } else if (this.isMnemonic(previousKeyword)) {
                     // if previous keyword is a mnemonic (no jump). Do not suggest a Mnemonic or directive
-                    HashSet<TokenType> selected = new HashSet<TokenType> { /*TokenType.Directive, TokenType.Jump,*/ TokenType.Misc, /*TokenType.Mnemonic,*/ TokenType.Register };
+                    HashSet<AsmTokenType> selected = new HashSet<AsmTokenType> { /*TokenType.Directive, TokenType.Jump,*/ AsmTokenType.Misc, /*TokenType.Mnemonic,*/ AsmTokenType.Register };
                     completions = this.selectedCompletions(useCapitals, selected);
 
                 } else {
-                    HashSet<TokenType> selected = new HashSet<TokenType> { TokenType.Directive, TokenType.Jump, TokenType.Misc, TokenType.Mnemonic, TokenType.Register };
+                    HashSet<AsmTokenType> selected = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic, AsmTokenType.Register };
                     completions = this.selectedCompletions(useCapitals, selected);
                 }
                 completionSets.Add(new CompletionSet("Tokens", "Tokens", applicableTo, completions, Enumerable.Empty<Completion>()));
@@ -206,7 +206,7 @@ namespace AsmDude {
 
         private IList<Completion> labelCompletions() {
             IList<Completion> completions = new List<Completion>();
-            ImageSource imageSource = this._icons[TokenType.Label];
+            ImageSource imageSource = this._icons[AsmTokenType.Label];
             SortedDictionary<string, string> labels = new SortedDictionary<string, string>(AsmDudeToolsStatic.getLabels(this._buffer));
 
             foreach (KeyValuePair<string, string> entry in labels) { 
@@ -216,7 +216,7 @@ namespace AsmDude {
             return completions;
         }
 
-        private IList<Completion> selectedCompletions(bool useCapitals, HashSet<TokenType> selectedTypes) {
+        private IList<Completion> selectedCompletions(bool useCapitals, HashSet<AsmTokenType> selectedTypes) {
             IList<Completion> completions = new List<Completion>();
 
             {   // add the completions of AsmDude directives (such as code folding directives)
@@ -224,19 +224,19 @@ namespace AsmDude {
                     {
                         string insertionText = Settings.Default.CodeFolding_BeginTag;     //the characters that start the outlining region
                         string description = insertionText + " - keyword to start code folding";
-                        completions.Add(new Completion(description, insertionText, null, this._icons[TokenType.Directive], ""));
+                        completions.Add(new Completion(description, insertionText, null, this._icons[AsmTokenType.Directive], ""));
                     }
                     {
                         string insertionText = Settings.Default.CodeFolding_EndTag;       //the characters that end the outlining region
                         string description = insertionText + " - keyword to end code folding";
-                        completions.Add(new Completion(description, insertionText, null, this._icons[TokenType.Directive], ""));
+                        completions.Add(new Completion(description, insertionText, null, this._icons[AsmTokenType.Directive], ""));
                     }
                 }
             }
 
             // add the completions that are defined in the xml file
             foreach (string keyword in this._asmDudeTools.getKeywords()) {
-                TokenType type = this._asmDudeTools.getTokenType(keyword);
+                AsmTokenType type = this._asmDudeTools.getTokenType(keyword);
                 if (selectedTypes.Contains(type)) {
                     Arch arch = this._asmDudeTools.getArchitecture(keyword);
                     bool selected = this.isArchSwitchedOn(arch);
@@ -346,27 +346,27 @@ namespace AsmDude {
             string installPath = AsmDudeToolsStatic.getInstallPath();
             try {
                 uri = new Uri(installPath + "Resources/images/icon-R-blue.png");
-                this._icons[TokenType.Register] = AsmDudeToolsStatic.bitmapFromUri(uri);
+                this._icons[AsmTokenType.Register] = AsmDudeToolsStatic.bitmapFromUri(uri);
             } catch (FileNotFoundException) {
                 //MessageBox.Show("ERROR: AsmCompletionSource: could not find file \"" + uri.AbsolutePath + "\".");
             }
             try {
                 uri = new Uri(installPath + "Resources/images/icon-M.png");
-                this._icons[TokenType.Mnemonic] = AsmDudeToolsStatic.bitmapFromUri(uri);
-                this._icons[TokenType.Jump] = this._icons[TokenType.Mnemonic];
+                this._icons[AsmTokenType.Mnemonic] = AsmDudeToolsStatic.bitmapFromUri(uri);
+                this._icons[AsmTokenType.Jump] = this._icons[AsmTokenType.Mnemonic];
             } catch (FileNotFoundException) {
                 //MessageBox.Show("ERROR: AsmCompletionSource: could not find file \"" + uri.AbsolutePath + "\".");
             }
             try {
                 uri = new Uri(installPath + "Resources/images/icon-question.png");
-                this._icons[TokenType.Misc] = AsmDudeToolsStatic.bitmapFromUri(uri);
-                this._icons[TokenType.Directive] = this._icons[TokenType.Misc];
+                this._icons[AsmTokenType.Misc] = AsmDudeToolsStatic.bitmapFromUri(uri);
+                this._icons[AsmTokenType.Directive] = this._icons[AsmTokenType.Misc];
             } catch (FileNotFoundException) {
                 //MessageBox.Show("ERROR: AsmCompletionSource: could not find file \"" + uri.AbsolutePath + "\".");
             }
             try {
                 uri = new Uri(installPath + "Resources/images/icon-L.png");
-                this._icons[TokenType.Label] = AsmDudeToolsStatic.bitmapFromUri(uri);
+                this._icons[AsmTokenType.Label] = AsmDudeToolsStatic.bitmapFromUri(uri);
             } catch (FileNotFoundException) {
                 //MessageBox.Show("ERROR: AsmCompletionSource: could not find file \"" + uri.AbsolutePath + "\".");
             }

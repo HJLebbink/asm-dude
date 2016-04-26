@@ -41,10 +41,10 @@ namespace AsmDude {
     internal sealed class VsTextViewCreationListener : IVsTextViewCreationListener {
 
         [Import]
-        IVsEditorAdaptersFactoryService _adaptersFactory = null;
+        private IVsEditorAdaptersFactoryService _adaptersFactory = null;
 
         [Import]
-        ICompletionBroker _completionBroker = null;
+        private ICompletionBroker _completionBroker = null;
 
         public void VsTextViewCreated(IVsTextView textViewAdapter) {
             IWpfTextView view = _adaptersFactory.GetWpfTextView(textViewAdapter);
