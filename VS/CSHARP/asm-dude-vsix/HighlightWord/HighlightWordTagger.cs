@@ -52,7 +52,7 @@ namespace AsmDude.HighlightWord {
     /// Derive from TextMarkerTag, in case anyone wants to consume
     /// just the HighlightWordTags by themselves.
     /// </summary>
- //   [ComVisible(true)]
+    [ComVisible(false)]
     public class HighlightWordTag : TextMarkerTag {
         public HighlightWordTag() : base("AsmDude.HighlightWordFormatDefinition") {
             // empty

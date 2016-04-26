@@ -45,7 +45,10 @@ namespace AsmDude {
             AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
         }
 
-        public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
+        event EventHandler<SnapshotSpanEventArgs> ITagger<AsmTokenTag>.TagsChanged {
+            add { }
+            remove { }
+        }
 
 
         public IEnumerable<ITagSpan<AsmTokenTag>> GetTags(NormalizedSnapshotSpanCollection spans) {

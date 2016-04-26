@@ -29,7 +29,10 @@ namespace AsmDude.ErrorSquiggles {
             this._view.LayoutChanged += ViewLayoutChanged;
         }
 
-        public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
+        event EventHandler<SnapshotSpanEventArgs> ITagger<ErrorTag>.TagsChanged {
+            add {}
+            remove {}
+        }
 
         IEnumerable<ITagSpan<ErrorTag>> ITagger<ErrorTag>.GetTags(NormalizedSnapshotSpanCollection spans) {
 

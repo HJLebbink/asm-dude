@@ -81,7 +81,7 @@ namespace AsmDude {
             //}
 
             if (false) {
-                return ExecMethod1(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+                //return ExecMethod1(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
             } else {
                 return ExecMethod2(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
             }

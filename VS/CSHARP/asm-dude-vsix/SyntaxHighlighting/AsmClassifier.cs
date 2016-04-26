@@ -57,7 +57,10 @@ namespace AsmDude {
             _asmTypes[AsmTokenType.Misc] = typeService.GetClassificationType("misc");
         }
 
-        public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
+        event EventHandler<SnapshotSpanEventArgs> ITagger<ClassificationTag>.TagsChanged {
+            add { }
+            remove { }
+        }
 
         /// <summary>
         /// Search the given span for any instances of classified tags

@@ -54,8 +54,8 @@ namespace AsmDude {
         internal const double slowWarningThresholdSec = 0.2; // threshold to warn that actions are considered slow
 
         #region Member Variables
-        private OleMenuCommand dynamicVisibilityCommand1;
-        private OleMenuCommand dynamicVisibilityCommand2;
+        //private OleMenuCommand dynamicVisibilityCommand1;
+        //private OleMenuCommand dynamicVisibilityCommand2;
         #endregion
 
         public AsmDudePackage() {
