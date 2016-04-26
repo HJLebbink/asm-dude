@@ -1488,7 +1488,11 @@
 			<description>Move Doubleword/Move Quadword</description>
 			<ref>MOVD:MOVQ.html</ref>
 		</mnemonic>
-		<mnemonic name='MOVQ' arch='MMX'>
+    <mnemonic name='VMOVD' arch='AVX'>
+      <description>Move Doubleword/Move Quadword</description>
+      <ref>MOVD:MOVQ.html</ref>
+    </mnemonic>
+    <mnemonic name='MOVQ' arch='MMX'>
 			<description>Move Doubleword/Move Quadword</description>
 			<ref>MOVD:MOVQ.html</ref>
 		</mnemonic>
