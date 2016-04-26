@@ -314,7 +314,7 @@
 			<description>Zero High Bits Starting with Specified Bit Position</description>
 			<ref>BZHI.html</ref>
 		</mnemonic>
-		<mnemonic name='CALL'>
+		<mnemonic name='CALL' type='jump'>
 			<description>Call Procedure</description>
 			<ref>CALL.html</ref>
 		</mnemonic>
