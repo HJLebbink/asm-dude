@@ -127,6 +127,8 @@ namespace AsmDude {
                                     var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
                                     if (tokenSpan.IntersectsWith(curSpan)) {
                                         yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenType.Jump));
+                                    } else {
+                                        AsmDudeToolsStatic.Output("AsmTokenTagger:GetTags: does this even happen? A");
                                     }
                                     tup = getNextToken(tokenId, nextLoc, tokens);
                                     tokenId = tup.Item2;
@@ -139,7 +141,26 @@ namespace AsmDude {
 
                                         tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
                                         if (tokenSpan.IntersectsWith(curSpan)) {
-                                            yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenType.Label));
+                                            if (asmToken.Equals("short", StringComparison.CurrentCultureIgnoreCase)) {
+                                                yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenType.Misc));
+
+                                                tup = getNextToken(tokenId, nextLoc, tokens);
+                                                tokenId = tup.Item2;
+                                                nextLoc = tup.Item3;
+
+                                                if (tup.Item1) {
+                                                    asmToken = tup.Item4;
+                                                    curLoc = nextLoc - (asmToken.Length + 1);
+                                                    //Debug.WriteLine("label token " + tokenId + " at location " + curLoc + " = \"" + asmToken + "\"");
+
+                                                    tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
+                                                    if (tokenSpan.IntersectsWith(curSpan)) {
+                                                        yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenType.Label));
+                                                    }
+                                                }
+                                            } else {
+                                                yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenType.Label));
+                                            }
                                         }
                                     }
                                     break;
