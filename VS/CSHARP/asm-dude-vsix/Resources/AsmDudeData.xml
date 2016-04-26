@@ -1492,6 +1492,10 @@
 			<description>Move Doubleword/Move Quadword</description>
 			<ref>MOVD:MOVQ.html</ref>
 		</mnemonic>
+		<mnemonic name='VMOVQ' arch='AVX'>
+			<description>Move Doubleword/Move Quadword</description>
+			<ref>MOVD:MOVQ.html</ref>
+		</mnemonic>
 		<mnemonic name='MOVHLPS' arch='SSE'>
 			<description>Move Packed Single-Precision Floating-Point Values High to Low</description>
 			<ref>MOVHLPS.html</ref>
