@@ -10,6 +10,7 @@ To run the extension from source code, Visual Studio 2015 SDK needs to be instal
 Not happy with the highlighting or the descriptions. Mnemonics and descriptions can be added and changed by updating the AsmDudeData.xml file that will be stored next to the binaries when installing the plugin (.vsix). The directory where plugins are installed can be difficult to find, try something as C:\Users\<user>\AppData\Local\Microsoft\VisualStudio\14.0\Extensions. Please consider sharing your updates.
 
 ###Currently in development:
+* Irony Parser for proper parsing and error handling.
 * Track propagation of register and flag state-change trough time (under certain assumptions such as no "jmp GPR" etc). Provide warning squiggles if brances are never taken etc. 
 
 ###Feature Requests: (desire something - let me know)
