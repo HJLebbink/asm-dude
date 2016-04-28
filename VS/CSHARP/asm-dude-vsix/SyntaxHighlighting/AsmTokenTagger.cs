@@ -131,7 +131,7 @@ namespace AsmDude {
                                     if (tokenSpan.IntersectsWith(curSpan)) {
                                         yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenType.Jump));
                                     } else {
-                                        AsmDudeToolsStatic.Output("AsmTokenTagger:GetTags: does this even happen? A");
+                                        //AsmDudeToolsStatic.Output("AsmTokenTagger:GetTags: does this even happen? A");
                                     }
                                     tup = getNextToken(tokenId, nextLoc, tokens);
                                     tokenId = tup.Item2;
