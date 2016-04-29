@@ -27,6 +27,34 @@ namespace AsmDude {
             return container;
         }
 
+        public static ErrorListProvider GetErrorListProvider() {
+            Microsoft.VisualStudio.OLE.Interop.IServiceProvider globalService =
+                (Microsoft.VisualStudio.OLE.Interop.IServiceProvider)Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider));
+
+            System.IServiceProvider serviceProvider = new ServiceProvider(globalService);
+
+            ErrorListProvider mErrorListProvider = new ErrorListProvider(serviceProvider);
+            mErrorListProvider.ProviderName = "Asm Errors";
+            mErrorListProvider.ProviderGuid = new Guid(EnvDTE.Constants.vsViewKindCode);
+            return mErrorListProvider;
+        }
+
+        public static string GetFileName(ITextBuffer buffer) {
+            Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer bufferAdapter;
+            buffer.Properties.TryGetProperty(typeof(Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer), out bufferAdapter);
+            if (bufferAdapter != null) {
+                var persistFileFormat = bufferAdapter as IPersistFileFormat;
+                string ppzsFilename = null;
+                uint iii;
+                if (persistFileFormat != null) {
+                    persistFileFormat.GetCurFile(out ppzsFilename, out iii);
+                }
+                return ppzsFilename;
+            } else {
+                return null;
+            }
+        }
+
         public static string getInstallPath() {
             try {
                 string fullPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
@@ -55,14 +83,13 @@ namespace AsmDude {
         }
 
         public static void Output(string msg) {
-            // Get the output window
-            var outputWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
-            // Ensure that the desired pane is visible
-            var paneGuid = Microsoft.VisualStudio.VSConstants.OutputWindowPaneGuid.GeneralPane_guid;
+            IVsOutputWindow outputWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
+            Guid paneGuid = Microsoft.VisualStudio.VSConstants.OutputWindowPaneGuid.GeneralPane_guid;
             IVsOutputWindowPane pane;
             outputWindow.CreatePane(paneGuid, "AsmDude", 1, 0);
             outputWindow.GetPane(paneGuid, out pane);
-            pane.OutputString(string.Format(CultureInfo.CurrentCulture, "{0}", msg + Environment.NewLine));
+            pane.OutputString(string.Format(CultureInfo.CurrentCulture, "{0}", msg.Trim() + Environment.NewLine));
+            pane.Activate();
         }
 
         /// <summary>
@@ -181,8 +208,23 @@ namespace AsmDude {
                     if (labelLocal.Equals(label)) {
                         //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getLabelDescription: label=\"{1}\"", this.ToString(), label));
                         if (result.Length > 0) result += System.Environment.NewLine;
-                        result += "LINE " + lineNumber + ": " + line.Substring(0, Math.Min(line.Length, 100));
+                        string remarkLine = "LINE " + lineNumber + ": " + line;
+                        result += remarkLine.Substring(0, Math.Min(remarkLine.Length, AsmDudePackage.maxNumberOfCharsInToolTips));
                     }
+                }
+                lineNumber++;
+            }
+            return result;
+        }
+
+        public static string getLabelDefDescription(string label, string text) {
+            int lineNumber = 1; // start counting at one since that is what VS does
+            string result = "";
+            foreach (string line in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)) {
+                if (AsmTools.AsmSourceTools.containsKeyword(label, line)) {
+                    if (result.Length > 0) result += System.Environment.NewLine;
+                    string remarkLine = "LINE " + lineNumber + ": " + line;
+                    result += remarkLine.Substring(0, Math.Min(remarkLine.Length, AsmDudePackage.maxNumberOfCharsInToolTips));
                 }
                 lineNumber++;
             }
@@ -191,6 +233,10 @@ namespace AsmDude {
 
         public static string getLabelDescription(string label, ITextBuffer text) {
             return AsmDudeToolsStatic.getLabelDescription(label, text.CurrentSnapshot.GetText());
+        }
+
+        public static string getLabelDefDescription(string label, ITextBuffer text) {
+            return AsmDudeToolsStatic.getLabelDefDescription(label, text.CurrentSnapshot.GetText());
         }
 
         public static bool isAllUpper(string input) {

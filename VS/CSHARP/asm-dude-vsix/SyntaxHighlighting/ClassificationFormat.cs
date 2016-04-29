@@ -104,6 +104,19 @@ namespace AsmDude {
     }
 
     [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = "labelDef")]
+    [Name("labelDef")] //this should be visible to the end user
+    [UserVisible(true)] //set the priority to be after the default classifiers
+    [Order(Before = Priority.Default)]
+    internal sealed class LabelDefP : ClassificationFormatDefinition {
+        public LabelDefP() {
+            DisplayName = "Display label Def"; //human readable version of the name
+            ForegroundColor = AsmDudeToolsStatic.convertColor(Settings.Default.SyntaxHighlighting_Label);
+            //TextDecorations = System.Windows.TextDecorations.Underline;
+        }
+    }
+
+    [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = "constant")]
     [Name("constant")] //this should be visible to the end user
     [UserVisible(true)] //set the priority to be after the default classifiers

@@ -27,7 +27,7 @@ namespace AsmDude {
     [InstalledProductRegistration("AsmDude", Vsix.Description, Vsix.Version)] // for the help about information
 
     [ProvideMenuResource("Menus.ctmenu", 1)] // needed when showing menus
-    [ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
+    //[ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
     [Guid(Guids.GuidPackage_str)]
     [ComVisible(true)]
 
@@ -52,6 +52,9 @@ namespace AsmDude {
 
         internal const string AsmDudeContentType = "asm!";
         internal const double slowWarningThresholdSec = 0.2; // threshold to warn that actions are considered slow
+        internal const int maxNumberOfCharsInToolTips = 150;
+
+
 
         #region Member Variables
         //private OleMenuCommand dynamicVisibilityCommand1;

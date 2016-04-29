@@ -67,7 +67,7 @@ namespace AsmDude {
                 string line = containingLine.GetText();
                 int offset = containingLine.Start.Position;
 
-                #region handle labels
+                #region handle labels definitions
 
                 Tuple<bool, int, int> labelPos = AsmTools.AsmSourceTools.getLabelPos(line);
                 bool labelExists = labelPos.Item1;
@@ -79,7 +79,7 @@ namespace AsmDude {
                     var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(labelBeginPos + offset, labelEndPos - labelBeginPos));
                     if (tokenSpan.IntersectsWith(curSpan)) {
                         //AsmDudeToolsStatic.Output("found label " + line.Substring(labelBeginPos, labelEndPos) + "; begin pos="+ labelBeginPos+"; end pos="+ labelEndPos);
-                        yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenType.Label));
+                        yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenType.LabelDef));
                     }
                 }
                 #endregion

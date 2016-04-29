@@ -38,7 +38,7 @@ namespace AsmDude.QuickInfo {
     internal sealed class AsmQuickInfoSourceProvider : IQuickInfoSourceProvider {
 
         [Import]
-        IBufferTagAggregatorFactoryService _aggregatorFactory = null;
+        private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
 
         public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer buffer) {
             ITagAggregator<AsmTokenTag> asmTagAggregator = _aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);

@@ -54,6 +54,7 @@ namespace AsmDude {
             _asmTypes[AsmTokenType.Constant] = typeService.GetClassificationType("constant");
             _asmTypes[AsmTokenType.Jump] = typeService.GetClassificationType("jump");
             _asmTypes[AsmTokenType.Label] = typeService.GetClassificationType("label");
+            _asmTypes[AsmTokenType.LabelDef] = typeService.GetClassificationType("labelDef");
             _asmTypes[AsmTokenType.Misc] = typeService.GetClassificationType("misc");
         }
 

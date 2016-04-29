@@ -105,6 +105,11 @@ namespace AsmDude.QuickInfo {
                                 description = (descr.Length > 0) ? descr : "Label " + tagString;
                                 break;
                             }
+                        case AsmTokenType.LabelDef: {
+                                string descr = AsmDudeToolsStatic.getLabelDefDescription(tagString, this._buffer);
+                                description = (descr.Length > 0) ? descr : "Label " + tagString;
+                                break;
+                            }
                         case AsmTokenType.Constant: {
                                 description = "Constant " + tagString;
                                 break;
@@ -113,8 +118,7 @@ namespace AsmDude.QuickInfo {
                             break;
                     }
                     if (description != null) {
-                        const int maxLineLength = 100;
-                        quickInfoContent.Add(multiLine(description, maxLineLength));
+                        quickInfoContent.Add(multiLine(description, AsmDudePackage.maxNumberOfCharsInToolTips+20));
                     }
                 }
 

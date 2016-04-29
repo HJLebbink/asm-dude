@@ -837,11 +837,11 @@ namespace AsmTools {
             // find the end of current keyword; i.e. read until a separator
             while (pos >= begin) {
                 if (AsmTools.AsmSourceTools.isSeparatorChar(line[pos])) {
-                    Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; pos={1} has a separator. Found end of current keyword", line, pos));
+                    //Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; pos={1} has a separator. Found end of current keyword", line, pos));
                     pos--;
                     break;
                 } else {
-                    Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; pos={1} has char {2} of current keyword", line, pos, line[pos]));
+                    //Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; pos={1} has char {2} of current keyword", line, pos, line[pos]));
                     pos--;
                 }
             }
@@ -850,11 +850,11 @@ namespace AsmTools {
             int endPrevious = begin;
             while (pos >= begin) {
                 if (AsmTools.AsmSourceTools.isSeparatorChar(line[pos])) {
-                    Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; pos={1} has a separator.", line, pos));
+                    //Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; pos={1} has a separator.", line, pos));
                     pos--;
                 } else {
                     endPrevious = pos+1;
-                    Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; pos={1} has char {2} which is the end of previous keyword.", line, pos, line[pos]));
+                    //Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; pos={1} has char {2} which is the end of previous keyword.", line, pos, line[pos]));
                     pos--;
                     break;
                 }
@@ -865,10 +865,10 @@ namespace AsmTools {
             while (pos >= begin) {
                 if (AsmTools.AsmSourceTools.isSeparatorChar(line[pos])) {
                     beginPrevious = pos+1;
-                    Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; beginPrevious={1}; pos={2}", line, beginPrevious, pos));
+                    //Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; beginPrevious={1}; pos={2}", line, beginPrevious, pos));
                     break;
                 } else {
-                    Debug.WriteLine(string.Format("INFO: getPreviousKeyword; find begin. line=\"{0}\"; pos={1} has char {2}", line, pos, line[pos]));
+                    //Debug.WriteLine(string.Format("INFO: getPreviousKeyword; find begin. line=\"{0}\"; pos={1} has char {2}", line, pos, line[pos]));
                     pos--;
                 }
             }
@@ -876,7 +876,7 @@ namespace AsmTools {
             int length = endPrevious - beginPrevious;
             if (length > 0) {
                 string previousKeyword = line.Substring(beginPrevious, length);
-                Debug.WriteLine(string.Format("INFO: getPreviousKeyword; previousKeyword={0}", previousKeyword));
+                //Debug.WriteLine(string.Format("INFO: getPreviousKeyword; previousKeyword={0}", previousKeyword));
                 return previousKeyword;
             } else {
                 return "";
@@ -908,5 +908,35 @@ namespace AsmTools {
             }
             return new Tuple<int, int>(beginPos, endPos);
         }
+
+        public static bool containsKeyword(string keyword, string line) {
+            return line.Contains(keyword);
+
+            /* TODO make own contains implementation
+
+            int k = 0;
+            int i = 0;
+            int j = 0;
+
+            while (true) {
+                j = 0;
+                for (j = 0; j < keyword.Length; ++j) {
+                    char c1 = line[i];
+                        if (c1.Equals(keyword[j])) {
+                            j++;
+                        } else {
+                            break;
+                        }
+                    }
+                    i++;
+                }
+                if (j == keyword.Length) {
+                    return true;
+                }
+            }
+            return false
+            */
+        }
+
     }
 }

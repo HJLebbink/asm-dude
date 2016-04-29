@@ -35,6 +35,10 @@ namespace AsmDude.SyntaxHighlighting {
         internal static ClassificationTypeDefinition label = null;
 
         [Export(typeof(ClassificationTypeDefinition))]
+        [Name("labelDef")]
+        internal static ClassificationTypeDefinition labelDef = null;
+
+        [Export(typeof(ClassificationTypeDefinition))]
         [Name("misc")]
         internal static ClassificationTypeDefinition misc = null;
     }
