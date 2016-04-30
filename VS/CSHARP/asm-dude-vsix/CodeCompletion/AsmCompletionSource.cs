@@ -207,7 +207,9 @@ namespace AsmDude {
         private IList<Completion> labelCompletions() {
             IList<Completion> completions = new List<Completion>();
             ImageSource imageSource = this._icons[AsmTokenType.Label];
-            SortedDictionary<string, string> labels = new SortedDictionary<string, string>(AsmDudeToolsStatic.getLabels(this._buffer));
+
+            IDictionary<string, string> labelsUnsorted = AsmDudeToolsStatic.getLabelDescriptions(this._buffer.CurrentSnapshot.GetText());
+            SortedDictionary<string, string> labels = new SortedDictionary<string, string>(labelsUnsorted);
 
             foreach (KeyValuePair<string, string> entry in labels) { 
                 //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:AugmentCompletionSession; label={1}; description={2}", this.ToString(), entry.Key, entry.Value));

@@ -101,12 +101,12 @@ namespace AsmDude.QuickInfo {
                                 break;
                             }
                         case AsmTokenType.Label: {
-                                string descr = AsmDudeToolsStatic.getLabelDescription(tagString, this._buffer);
+                                string descr = AsmDudeToolsStatic.getLabelDescription(tagString, this._buffer.CurrentSnapshot.GetText());
                                 description = (descr.Length > 0) ? descr : "Label " + tagString;
                                 break;
                             }
                         case AsmTokenType.LabelDef: {
-                                string descr = AsmDudeToolsStatic.getLabelDefDescription(tagString, this._buffer);
+                                string descr = AsmDudeToolsStatic.getLabelDefDescription(tagString, this._buffer.CurrentSnapshot.GetText());
                                 description = (descr.Length > 0) ? descr : "Label " + tagString;
                                 break;
                             }
