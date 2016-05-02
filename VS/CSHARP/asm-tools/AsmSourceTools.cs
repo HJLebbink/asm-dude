@@ -28,7 +28,7 @@ namespace AsmTools {
             return new Tuple<bool, int, int>(false, nChars, nChars);
         }
 
-        public static Tuple<bool, int, int> getLabelPos(string line) {
+        public static Tuple<bool, int, int> getLabelDefPos(string line) {
             int nChars = line.Length;
             int i = 0;
 
@@ -909,33 +909,57 @@ namespace AsmTools {
             return new Tuple<int, int>(beginPos, endPos);
         }
 
-        public static bool containsKeyword(string keyword, string line) {
-            return line.Contains(keyword);
-
-            /* TODO make own contains implementation
-
-            int k = 0;
-            int i = 0;
-            int j = 0;
+        /// <summary>
+        /// Returns true if the provided line uses the provided label in a mnemonic
+        /// </summary>
+        /// <param name="keyword"></param>
+        /// <param name="line"></param>
+        /// <returns></returns>
+        public static bool usesLabel(string label, string line) {
+            int r = label.Length;
+            int m = line.Length;
+            int i = -1; // index line 
+            int j = 0; // index label
 
             while (true) {
-                j = 0;
-                for (j = 0; j < keyword.Length; ++j) {
-                    char c1 = line[i];
-                        if (c1.Equals(keyword[j])) {
-                            j++;
-                        } else {
-                            break;
-                        }
-                    }
+                for (j = 0; j < r; ++j) {
                     i++;
+                    if (i >= m) return false;
+                    char c = line[i];
+                    if (AsmSourceTools.isRemarkChar(c)) return false;
+                    if (!c.Equals(label[j])) break;
                 }
-                if (j == keyword.Length) {
-                    return true;
+                if (j == r) {
+                    i++;
+                    if (i == m) return true;
+                    if (i > m) return false;
+                    if (line[i].Equals(':')) return false;
+
+                    if (AsmSourceTools.isSeparatorChar(line[i])) return true;
                 }
             }
-            return false
-            */
+        }
+        /// <summary>
+        /// return dictionary with line numbers and corresponding label definitions
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static IDictionary<int, string> getLineNumberWithLabelDef(string text) {
+            IDictionary<int, string> labelDefs = new Dictionary<int, string>();
+
+            int lineNumber = 0; // start counting at one since that is what VS does
+            foreach (string line in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)) {
+                //AsmDudeToolsStatic.Output(string.Format("INFO: getLabels: str=\"{0}\"", str));
+
+                Tuple<bool, int, int> labelDefPos = AsmTools.AsmSourceTools.getLabelDefPos(line);
+                if (labelDefPos.Item1) {
+                    int labelBeginPos = labelDefPos.Item2;
+                    int labelEndPos = labelDefPos.Item3;
+                    labelDefs[lineNumber] = line.Substring(labelBeginPos, labelEndPos - labelBeginPos);
+                }
+                lineNumber++;
+            }
+            return labelDefs;
         }
 
     }

@@ -38,9 +38,14 @@
         public static implicit operator Bt(OverflowFlag v) { return v.val; }
         public static implicit operator OverflowFlag(Bt v) { return new OverflowFlag(v); }
     }
+    public sealed class DirectionFlag : FlagValue {
+        public DirectionFlag(Bt v) : base(v) { }
+        public static implicit operator Bt(DirectionFlag v) { return v.val; }
+        public static implicit operator DirectionFlag(Bt v) { return new DirectionFlag(v); }
+    }
 
     /// <summary>
-    /// Flags, CF, PF, AF, ZF, SF, OF
+    /// Flags, CF, PF, AF, ZF, SF, OF, DF
     /// </summary>
     public enum Flags : byte {
         /// <summary>
@@ -75,7 +80,12 @@
         /// flag indicates an overflow condition for signed-integer (two’s complement) arithmetic.
         /// </summary>
         OF = 1 << 5,
+        /// <summary>
+        /// DF (bit ?) Direction flag
+        /// </summary>
+        DF = 1 << 6,
 
-        ALL = CF | PF | AF | ZF | SF | OF
+
+        ALL = CF | PF | AF | ZF | SF | OF | DF
     }
 }

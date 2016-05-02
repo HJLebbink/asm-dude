@@ -5,7 +5,13 @@ using System.Diagnostics;
 
 namespace asm_irony {
 
-   // [Language("asm", "1.0", "Assembly Intel-Style Grammar")]
+    //http://www.codeproject.com/Articles/33250/Writing-Your-First-Visual-Studio-Language-Service
+
+
+
+
+
+    // [Language("asm", "1.0", "Assembly Intel-Style Grammar")]
     public class AsmGrammar : Grammar {
         TerminalSet _skipTokensInPreview = new TerminalSet(); //used in token preview for conflict resolution
         public AsmGrammar() {

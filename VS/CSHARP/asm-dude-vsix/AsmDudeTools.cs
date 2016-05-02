@@ -16,6 +16,8 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 using AsmTools;
 using System.Text.RegularExpressions;
+using Microsoft.VisualStudio.Text.Tagging;
+using AsmDude.SyntaxHighlighting;
 
 namespace AsmDude {
 
@@ -84,21 +86,30 @@ namespace AsmDude {
 
         public static string cleanup(string str) {
             string cleanedString = System.Text.RegularExpressions.Regex.Replace(str, @"\s+", " ");
-            return cleanedString.Substring(0, Math.Min(cleanedString.Length, AsmDudePackage.maxNumberOfCharsInToolTips));
+            if (cleanedString.Length > AsmDudePackage.maxNumberOfCharsInToolTips) {
+                return cleanedString.Substring(0, AsmDudePackage.maxNumberOfCharsInToolTips-3) + "...";
+            } else {
+                return cleanedString;
+            }
         }
 
         public static void Output(string msg) {
             IVsOutputWindow outputWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
-            Guid paneGuid = Microsoft.VisualStudio.VSConstants.OutputWindowPaneGuid.GeneralPane_guid;
-            IVsOutputWindowPane pane;
-            outputWindow.CreatePane(paneGuid, "AsmDude", 1, 0);
-            outputWindow.GetPane(paneGuid, out pane);
-            pane.OutputString(string.Format(CultureInfo.CurrentCulture, "{0}", msg.Trim() + Environment.NewLine));
-            pane.Activate();
+            string msg2 = string.Format(CultureInfo.CurrentCulture, "{0}", msg.Trim() + Environment.NewLine);
+            if (outputWindow == null) {
+                Debug.Write(msg2);
+            } else {
+                Guid paneGuid = Microsoft.VisualStudio.VSConstants.OutputWindowPaneGuid.GeneralPane_guid;
+                IVsOutputWindowPane pane;
+                outputWindow.CreatePane(paneGuid, "AsmDude", 1, 0);
+                outputWindow.GetPane(paneGuid, out pane);
+                pane.OutputString(msg2);
+                pane.Activate();
+            }
         }
 
         /// <summary>
-        /// Get all labels with context info containing in the provided text
+        /// Get all labels with context info contained in the provided text
         /// </summary>
         public static IDictionary<string, string> getLabelDescriptions(string text) {
             IDictionary<string, string> result = new Dictionary<string, string>();
@@ -106,7 +117,7 @@ namespace AsmDude {
             foreach (string line in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)) {
                 //AsmDudeToolsStatic.Output(string.Format("INFO: getLabels: str=\"{0}\"", str));
 
-                Tuple<bool, int, int> labelPos = AsmTools.AsmSourceTools.getLabelPos(line);
+                Tuple<bool, int, int> labelPos = AsmTools.AsmSourceTools.getLabelDefPos(line);
                 if (labelPos.Item1) {
                     int labelBeginPos = labelPos.Item2;
                     int labelEndPos = labelPos.Item3;
@@ -117,7 +128,11 @@ namespace AsmDude {
                         description += description + Environment.NewLine;
                     }
                     description += AsmDudeToolsStatic.cleanup("LINE " + lineNumber + ": " + line);
-                    result.Add(label, description);
+                    if (result.ContainsKey(label)) {
+                        AsmDudeToolsStatic.Output(string.Format("INFO: multiple label definitions for label \"{0}\".", label));
+                    } else {
+                        result.Add(label, description);
+                    }
 
                     //AsmDudeToolsStatic.Output(string.Format("INFO: getLabels: label=\"{0}\"; description=\"{1}\".", label, description));
                 }
@@ -126,42 +141,6 @@ namespace AsmDude {
             return result;
         }
 
-        public static Tuple<IDictionary<string, string>, IDictionary<string, string>> getLabelClashes(string text) {
-            IDictionary<string, string> clashes = new Dictionary<string, string>();
-            IDictionary<string, string> labels = new Dictionary<string, string>();
-
-            int lineNumber = 1; // start counting at one since that is what VS does
-            foreach (string line in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)) {
-                //AsmDudeToolsStatic.Output(string.Format("INFO: getLabels: str=\"{0}\"", str));
-
-                Tuple<bool, int, int> labelPos = AsmTools.AsmSourceTools.getLabelPos(line);
-                if (labelPos.Item1) {
-                    int labelBeginPos = labelPos.Item2;
-                    int labelEndPos = labelPos.Item3;
-                    string label = line.Substring(labelBeginPos, labelEndPos - labelBeginPos);
-                    string labelDesc = AsmDudeToolsStatic.cleanup("LINE " + lineNumber + ": " + line);
-
-                    if (labels.ContainsKey(label)) {
-                        string clashDesc = "";
-                        if (clashes.ContainsKey(label)) {
-                            clashDesc = clashes[label] + Environment.NewLine;
-                        } else {
-                            clashDesc = AsmDudeToolsStatic.cleanup("Multiple definitions for LABEL \"" + label + "\"") + Environment.NewLine;
-                            clashDesc += labels[label] + Environment.NewLine;
-                        }
-                        clashDesc += labelDesc;
-                        //AsmDudeToolsStatic.Output(string.Format("INFO: found label clash for label \"{0}\"; description={1}", label, clashDesc));
-                        clashes.Add(label, clashDesc);
-                    } else {
-                        labels.Add(label, labelDesc);
-                    }
-
-                    //AsmDudeToolsStatic.Output(string.Format("INFO: getLabels: label=\"{0}\"; description=\"{1}\".", label, description));
-                }
-                lineNumber++;
-            }
-            return new Tuple<IDictionary<string, string>, IDictionary<string, string>>(labels, clashes);
-        }
 
         public static string getKeywordStr(SnapshotPoint? bufferPosition) {
 
@@ -232,17 +211,20 @@ namespace AsmDude {
 
                 // find first occurrence of a colon
                 int posColon = -1;
+                bool isRemark = false;
 
                 for (int pos = 0; pos < line.Length; ++pos) {
                     char c = line[pos];
-                    if (c == ':') {
+                    if (c.Equals(':')) {
                         posColon = pos;
                         break;
-                    } else if (AsmTools.AsmSourceTools.isRemarkChar(c)) {
+                    }
+                    if (AsmTools.AsmSourceTools.isRemarkChar(c)) {
+                        isRemark = true;
                         break;
                     }
                 }
-                if (posColon > 0) {
+                if ((posColon > 0) && (!isRemark)) {
                     string labelLocal = line.Substring(0, posColon).TrimStart();
                     if (labelLocal.Equals(label)) {
                         //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getLabelDescription: label=\"{1}\"", this.ToString(), label));
@@ -259,13 +241,9 @@ namespace AsmDude {
             int lineNumber = 1; // start counting at one since that is what VS does
             string result = "";
             foreach (string line in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)) {
-                if (AsmTools.AsmSourceTools.containsKeyword(label, line)) {
-                    if (AsmTools.AsmSourceTools.containsKeyword(label+":", line)) {
-                        // it was a definition of a label
-                    } else {
-                        if (result.Length > 0) result += System.Environment.NewLine;
-                        result += AsmDudeToolsStatic.cleanup("Label used at LINE " + lineNumber + ": " + line);
-                    }
+                if (AsmTools.AsmSourceTools.usesLabel(label, line)) {
+                    if (result.Length > 0) result += System.Environment.NewLine;
+                    result += AsmDudeToolsStatic.cleanup("Label used at LINE " + lineNumber + ": " + line);
                 }
                 lineNumber++;
             }

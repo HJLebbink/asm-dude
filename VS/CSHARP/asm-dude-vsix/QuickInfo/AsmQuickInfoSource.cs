@@ -29,6 +29,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using System.ComponentModel.Composition;
 using AsmDude.SyntaxHighlighting;
+using System.Text;
 
 namespace AsmDude.QuickInfo {
 
@@ -58,23 +59,21 @@ namespace AsmDude.QuickInfo {
             try {
                 DateTime time1 = DateTime.Now;
 
-                if (this._disposed) {
-                    throw new ObjectDisposedException("AsmQuickInfoSource");
-                }
-                var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(_buffer.CurrentSnapshot);
-
+                ITextSnapshot snapshot = _buffer.CurrentSnapshot;
+                var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(snapshot);
                 if (triggerPoint == null) {
                     return;
                 }
                 string tagString = "";
 
                 foreach (IMappingTagSpan<AsmTokenTag> curTag in this._aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint))) {
-                    var tagSpan = curTag.Span.GetSpans(_buffer).First();
+
+                    SnapshotSpan tagSpan = curTag.Span.GetSpans(_buffer).First();
                     tagString = tagSpan.GetText();
 
                     //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:AugmentQuickInfoSession. tag ", this.ToString(), tagString));
                     string tagStringUpper = tagString.ToUpper();
-                    applicableToSpan = this._buffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
+                    applicableToSpan = snapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
 
                     string description = null;
 
@@ -101,12 +100,12 @@ namespace AsmDude.QuickInfo {
                                 break;
                             }
                         case AsmTokenType.Label: {
-                                string descr = AsmDudeToolsStatic.getLabelDescription(tagString, this._buffer.CurrentSnapshot.GetText());
+                                string descr = AsmDudeToolsStatic.getLabelDescription(tagString, snapshot.GetText());
                                 description = (descr.Length > 0) ? descr : "Label " + tagString;
                                 break;
                             }
                         case AsmTokenType.LabelDef: {
-                                string descr = AsmDudeToolsStatic.getLabelDefDescription(tagString, this._buffer.CurrentSnapshot.GetText());
+                                string descr = AsmDudeToolsStatic.getLabelDefDescription(tagString, snapshot.GetText());
                                 description = (descr.Length > 0) ? descr : "Label " + tagString;
                                 break;
                             }
@@ -118,7 +117,7 @@ namespace AsmDude.QuickInfo {
                             break;
                     }
                     if (description != null) {
-                        quickInfoContent.Add(multiLine(description, AsmDudePackage.maxNumberOfCharsInToolTips+20));
+                        quickInfoContent.Add(multiLine(description, AsmDudePackage.maxNumberOfCharsInToolTips+1));
                     }
                 }
 
@@ -137,7 +136,18 @@ namespace AsmDude.QuickInfo {
 
         #region private stuff
 
+
         private static string multiLine(string strIn, int maxLineLength) {
+            StringBuilder sb = new StringBuilder();
+            foreach (string line in strIn.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)) {
+                if (line.Length > 0) {
+                    sb.Append(multiLine2(line, maxLineLength));
+                }
+            }
+            return sb.ToString();
+
+        }
+        private static string multiLine2(string strIn, int maxLineLength) {
             string result = strIn;
             int startPos = 0;
             int endPos = startPos + maxLineLength;

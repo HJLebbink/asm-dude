@@ -69,7 +69,7 @@ namespace AsmDude {
 
                 #region handle labels definitions
 
-                Tuple<bool, int, int> labelPos = AsmTools.AsmSourceTools.getLabelPos(line);
+                Tuple<bool, int, int> labelPos = AsmTools.AsmSourceTools.getLabelDefPos(line);
                 bool labelExists = labelPos.Item1;
 
                 if (labelExists) {

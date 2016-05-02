@@ -1,34 +1,29 @@
 .intel_syntax noprefix
 
-	#region TODO
-	vstmxcsr	DWORD PTR [rbp]
+	#region Things TODO
 	mov			r13, QWORD PTR lennyOptions$[rsp]
     mov 		rsi, QWORD PTR [network_c_mp_network_neurons]
-	call		for_write_seq_fmt		# call to a label
 
-
-for_write_seq_fmt:
 	??$?6U?$char_traits@D@std@@@std@@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@0@AEAV10@PEBD@Z:
-	
 	call		??$?6U?$char_traits@D@std@@@std@@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@0@AEAV10@PEBD@Z
 
 	lea			rcx, OFFSET FLAT:??_C@_0FE@OJFGMKFJ@ERROR?3?5dataset?3?3HexDataSet?3?3getV@
-	mov			rax, -4616189618054758400		; bff0000000000000H
+	mov			rax, -4616189618054758400		; negative constants not recognized bff0000000000000H
 	_TEXT		ENDS
 	_TEXT		SEGMENT      'CODE'
 	network_c_mp_init_topology_izhikevich	PROC 
-	vmovups		xmm4, XMMWORD PTR [.T1737_.0.17+64]
+	vmovups		xmm4, XMMWORD PTR [.T1737_.0.17+64] # label not recognized
 
-
-$LL9@run.cpu$om:
-
-
+$LL9@run.cpu$om: # multiple label definitions
 $LL9@run.cpu$om: xor rax, rax
-	jb			SHORT $LL9@run.cpu$om	# short should not be considered a label in this context
-	#endregion
+	jb			SHORT $LL9@run.cpu$om	# label quickinfo does not work after SHORT keyword
+	ja			$LL9@run.cpu$om
+
+
+	#endregion Things TODO
 	
-	add
 	#region allRegisters
+
 	rax 
 	Rax
 	RAX
@@ -37,8 +32,6 @@ $LL9@run.cpu$om: xor rax, rax
     AX 
     AL 
     AH 
-
-	ja $LL9@run.cpu$om
 
     RBX 
     EBX 
