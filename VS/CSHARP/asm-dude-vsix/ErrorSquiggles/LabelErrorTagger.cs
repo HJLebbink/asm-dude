@@ -1,18 +1,14 @@
 ﻿using AsmDude.SyntaxHighlighting;
 using AsmTools;
-using Microsoft.Internal.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Operations;
-using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.TextManager.Interop;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 
 namespace AsmDude.ErrorSquiggles {
@@ -22,48 +18,85 @@ namespace AsmDude.ErrorSquiggles {
         private readonly ITextView _view;
         private readonly ITextBuffer _sourceBuffer;
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
+
         private readonly ErrorListProvider _errorListProvider;
         private readonly string _filename;
 
         private readonly IDictionary<int, UndefinedLabelErrorData> _labelUndefined;
         private readonly IDictionary<int, LabelClashErrorData> _labelClashes;
 
-        bool _dirty;
+        private readonly IDictionary<string, int> _labelDefLineNumber;
+        private readonly IDictionary<string, IList<int>> _labelDefClashLineNumber;
+
+        [Import]
+        private AsmDudeTools _asmDudeTools = null;
 
         internal LabelErrorTagger(
                 ITextView view, 
                 ITextBuffer buffer,
                 ITagAggregator<AsmTokenTag> asmTagAggregator) {
 
+            //AsmDudeToolsStatic.Output(string.Format("INFO: LabelErrorTagger: constructor"));
+            AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
+
             this._view = view;
             this._sourceBuffer = buffer;
             this._aggregator = asmTagAggregator;
-            this._errorListProvider = AsmDudeToolsStatic.GetErrorListProvider();
+            this._errorListProvider = _asmDudeTools.GetErrorListProvider();
             this._filename = AsmDudeToolsStatic.GetFileName(buffer);
 
             this._labelUndefined = new Dictionary<int, UndefinedLabelErrorData>();
             this._labelClashes = new Dictionary<int, LabelClashErrorData>();
 
-            this._dirty = true;
+            this._labelDefLineNumber = new Dictionary<string, int>();
+            this._labelDefClashLineNumber = new Dictionary<string, IList<int>>();
+
+            this.initErrorCache();
+            //this.initErrorsTasks();
 
             this._view.TextBuffer.Changed += OnTextBufferChanged;
         }
 
+        [Flags]
+        private enum ErrorCategoryEnum {
+            NONE = 0,
+            LABEL_UNDEFINED = 1<<1,
+            LABEL_CLASH = 1<<2,
+            ALL = LABEL_UNDEFINED | LABEL_CLASH
+        }
 
         private class UndefinedLabelErrorData {
             internal readonly ErrorTask _errorTask;
 
             internal UndefinedLabelErrorData(int lineNumber, string msg, ErrorListProvider provider, string filename, EventHandler navigateHandler) {
                 AsmDudeToolsStatic.Output(string.Format("INFO: UndefinedLabelErrorData: constructor. line={0}; msg={1}", lineNumber, msg));
-                ErrorTask task = new ErrorTask();
-                task.Line = lineNumber;
-                task.Column = 0;
-                task.Text = msg;
-                task.ErrorCategory = TaskErrorCategory.Warning;
-                task.Document = filename;
-                task.Navigate += navigateHandler;
-                provider.Tasks.Add(task);
-                this._errorTask = task;
+
+                bool alreadyPresent = false;
+                var e = provider.Tasks.GetEnumerator();
+                while (e.MoveNext()) {
+                    Task value = e.Current as Task;
+
+                    AsmDudeToolsStatic.Output(string.Format("INFO: UndefinedLabelErrorData: current Task: line={0}; msg={1}", value.Line, value.Text));
+
+                    if (value != null) {
+                        if ((value.Line == lineNumber) && (value.SubcategoryIndex == (int)ErrorCategoryEnum.LABEL_UNDEFINED)) {
+                            alreadyPresent = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!alreadyPresent) {
+                    this._errorTask = new ErrorTask();
+                    this._errorTask.SubcategoryIndex = (int)ErrorCategoryEnum.LABEL_UNDEFINED;
+                    this._errorTask.Line = lineNumber;
+                    this._errorTask.Column = 0;
+                    this._errorTask.Text = msg;
+                    this._errorTask.ErrorCategory = TaskErrorCategory.Warning;
+                    this._errorTask.Document = filename;
+                    this._errorTask.Navigate += navigateHandler;
+                    provider.Tasks.Add(this._errorTask);
+                }
             }
 
             public int lineNumber { get { return this._errorTask.Line; } set { this._errorTask.Line = value; } }
@@ -71,140 +104,131 @@ namespace AsmDude.ErrorSquiggles {
         }
 
         private class LabelClashErrorData {
-            private readonly ErrorListProvider _provider;
-            internal readonly IList<ErrorTask> _errorTasks;
-            internal readonly IList<int> _lineNumbers;
+            internal readonly ErrorTask _errorTask;
 
-            internal LabelClashErrorData(IList<int> lineNumbers, string msg, ErrorListProvider provider, string filename, EventHandler navigateHandler) {
-                _provider = provider;
-                _lineNumbers = lineNumbers;
-                _errorTasks = new List<ErrorTask>(lineNumbers.Count);
-               
-                for (int i = 0; i<lineNumbers.Count; ++i) {
-                    ErrorTask task = new ErrorTask();
-                    task.Line = lineNumbers[i];
-                    task.Column = 0;
-                    task.Text = msg;
-                    task.ErrorCategory = TaskErrorCategory.Warning;
-                    task.Document = filename;
-                    task.Navigate += navigateHandler;
-                    provider.Tasks.Add(task);
-                    this._errorTasks.Add(task);
-                }
-            }
-            ~LabelClashErrorData() {
-                for (int i = 0; i < lineNumbers.Count; ++i) {
-                    _provider.Tasks.Remove(this._errorTasks[i]);
-                }
-            }
+            internal LabelClashErrorData(int lineNumber, string msg, ErrorListProvider provider, string filename, EventHandler navigateHandler) {
 
-
-            public IList<int> lineNumbers {
-                get {
-                    IList<int> list = new List<int>(this._errorTasks.Count);
-                    for (int i = 0; i< this._errorTasks.Count; ++i) {
-                        list[i] = this._errorTasks[i].Line;
-                    }
-                    return list;
-                }
-                set {
-                    for (int i = 0; i < this._errorTasks.Count; ++i) {
-                        this._errorTasks[i].Line = value[i];
+                bool alreadyPresent = false;
+                var e = provider.Tasks.GetEnumerator();
+                while (e.MoveNext()) {
+                    Task value = e.Current as Task;
+                    if (value != null) {
+                        if ((value.Line == lineNumber) && (value.SubcategoryIndex == (int)ErrorCategoryEnum.LABEL_CLASH)) {
+                            alreadyPresent = true;
+                            break;
+                        }
                     }
                 }
+
+                if (!alreadyPresent) {
+                    this._errorTask = new ErrorTask();
+                    this._errorTask.SubcategoryIndex = (int)ErrorCategoryEnum.LABEL_CLASH;
+                    this._errorTask.Line = lineNumber;
+                    this._errorTask.Column = 0;
+                    this._errorTask.Text = msg;
+                    this._errorTask.ErrorCategory = TaskErrorCategory.Warning;
+                    this._errorTask.Document = filename;
+                    this._errorTask.Navigate += navigateHandler;
+                    provider.Tasks.Add(this._errorTask);
+                }
             }
+
+            public int lineNumber { get { return this._errorTask.Line; } set { this._errorTask.Line = value; } }
+            public string msg { get { return this._errorTask.Text; } set { this._errorTask.Text = value; } }
         }
 
-        public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
+        private void initErrorCache() {
+            AsmDudeToolsStatic.Output(string.Format("INFO: initErrorCache"));
+            this._labelDefLineNumber.Clear();
+            this._labelDefClashLineNumber.Clear();
 
-        private static int getLineNumber(SnapshotSpan span) {
-            int lineNumber = span.Snapshot.GetLineNumberFromPosition(span.Start);
-            int lineNumber2 = span.Snapshot.GetLineNumberFromPosition(span.End);
+            ITextSnapshot snapshot = _sourceBuffer.CurrentSnapshot;
 
-            if (lineNumber != lineNumber2) {
-                AsmDudeToolsStatic.Output(string.Format("WARNING: LabelErrorTagger:getLineNumber. line number from start {0} is not equal to line number from end {1}.", lineNumber, lineNumber2));
-            }
-            return lineNumber;
-        }
+            #region initialize label caches
+            for (int lineNumber = 0; lineNumber < snapshot.LineCount; ++lineNumber) {
+                foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in _aggregator.GetTags(snapshot.GetLineFromLineNumber(lineNumber).Extent)) {
 
-        private void printCurrentUndefinedLabels() {
-            AsmDudeToolsStatic.Output(string.Format("INFO: printCurrentUndefinedLabels begin"));
-            foreach (KeyValuePair<int, UndefinedLabelErrorData> entry in _labelUndefined) {
-                AsmDudeToolsStatic.Output(string.Format("INFO: undefined label: key={0}; line={1}; msg={2}", entry.Key, entry.Value.lineNumber, entry.Value.msg));
-            }
-            AsmDudeToolsStatic.Output(string.Format("INFO: printCurrentUndefinedLabels end"));
-        }
+                    SnapshotSpan span = asmTokenSpan.Span.GetSpans(snapshot)[0];
+                    //AsmDudeToolsStatic.Output(string.Format("INFO: initAllErrors: line={0}; keyword=\"{1}\"", lineNumber, span.GetText()));
 
-        /*
-        private void updateErrors(NormalizedSnapshotSpanCollection spans) {
-
-            IDictionary<string, string> labels = new Dictionary<string, string>();
-
-            ITextSnapshot snapshot = spans[0].Snapshot;
-
-            #region pass 1: store and analyze label definitions
-            foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in _aggregator.GetTags(spans)) {
-
-                SnapshotSpan x = asmTokenSpan.Span.GetSpans(snapshot)[0];
-                AsmDudeToolsStatic.Output(string.Format("INFO: ErrorTagger:determineLabelErrors: found keyword \"{0}\"", x.GetText()));
-
-                switch (asmTokenSpan.Tag.type) {
-                    case AsmTokenType.LabelDef: {
-                            string label = x.GetText();
-                            int lineNumber = x.Snapshot.GetLineNumberFromPosition(x.Start);
-                            string line = x.Snapshot.GetLineFromLineNumber(lineNumber).Snapshot.GetText();
-                            string labelDesc = AsmDudeToolsStatic.cleanup("LINE " + lineNumber + ": " + line);
-
-                            if (labels.ContainsKey(label)) {
-                                string clashDesc = "";
-                                IList<int> clashingLineNumbers;
-
-
-                                if (this._labelClashes.ContainsKey(label)) { // update existing data
-                                    this._labelClashes[label]
-
-                                    this._labelClashes[label].Item1.Add(lineNumber);
-                                    this._labelClashes[label].Item2 = this._labelClashes[label].Item2 + Environment.NewLine + labelDesc;
-                                    clashDesc = _labelClashes[label] + Environment.NewLine;
-                                    clashingLineNumbers = 
-                                } else { // create new label clash data
-                                    clashDesc = AsmDudeToolsStatic.cleanup("Multiple definitions for LABEL \"" + label + "\"") + Environment.NewLine;
-                                    clashDesc += labels[label] + Environment.NewLine;
+                    switch (asmTokenSpan.Tag.type) {
+                        case AsmTokenType.LabelDef:
+                            string label = span.GetText();
+                            if (this._labelDefLineNumber.ContainsKey(label)) {
+                                if (this._labelDefLineNumber[label] == lineNumber) {
+                                    AsmDudeToolsStatic.Output(string.Format("WARNING: initAllErrors: label={0}; line={1}", label, lineNumber));
+                                } else {
+                                    if (this._labelDefClashLineNumber.ContainsKey(label)) {
+                                        this._labelDefClashLineNumber[label].Add(lineNumber);
+                                    } else {
+                                        IList<int> lineNumbers = new List<int> { this._labelDefLineNumber[label], lineNumber };
+                                        this._labelDefClashLineNumber.Add(label, lineNumbers);
+                                    }
                                 }
-                                clashDesc += labelDesc;
-                                AsmDudeToolsStatic.Output(string.Format("INFO: found label clash for label \"{0}\"; description={1}", label, clashDesc));
-                                _labelClashes.Add(label, new Tuple<IList<int>, string, SnapshotSpan>(lineNumber, clashDesc, x));
                             } else {
-                                labels.Add(label, labelDesc);
+                                this._labelDefLineNumber.Add(label, lineNumber);
                             }
-                        }
-                        break;
-                    default: break;
+                            break;
+                        default: break;
+                    }
                 }
             }
-            #endregion
-            #region pass 2: store and analyze usage of labels
-            foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in _aggregator.GetTags(spans)) {
-                NormalizedSnapshotSpanCollection tagSpans = asmTokenSpan.Span.GetSpans(snapshot);
-                SnapshotSpan x = tagSpans[0];
-
-                switch (asmTokenSpan.Tag.type) {
-                    case AsmTokenType.Label: {
-                            string label = x.GetText();
-                            if (!labels.ContainsKey(label)) {
-                                int lineNumber = x.Snapshot.GetLineNumberFromPosition(x.Start);
-                                AsmDudeToolsStatic.Output(string.Format("INFO: found undefined label \"{0}\"; at line {1}", label, lineNumber));
-                                _labelUndefined.Add(label, new Tuple<int, SnapshotSpan>(lineNumber, x));
-                            }
-                        }
-                        break;
-                    default: break;
+            #endregion initialize label caches
+            if (false) {
+                foreach (KeyValuePair<string, int> entry in _labelDefLineNumber) {
+                    AsmDudeToolsStatic.Output(string.Format("INFO: initAllErrors: label Def: line={0}; label={1}", entry.Value, entry.Key));
+                }
+                foreach (KeyValuePair<string, IList<int>> entry in _labelDefClashLineNumber) {
+                    AsmDudeToolsStatic.Output(string.Format("INFO: initAllErrors: label Clash: label={0}; lines={1}", entry.Key, string.Join(",", entry.Value)));
                 }
             }
-            #endregion
         }
 
+        private void initErrorsTasks() {
+            /*
+            AsmDudeToolsStatic.Output(string.Format("INFO: initAllErrors: number of error tasks={0}", this._errorListProvider.Tasks.Count));
+
+            this._errorListProvider.Tasks.Clear();
+            this._labelUndefined.Clear();
+            this._labelClashes.Clear();
+
+            ITextSnapshot snapshot = _sourceBuffer.CurrentSnapshot;
+
+            for (int lineNumber = 0; lineNumber < snapshot.LineCount; ++lineNumber) {
+                foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in _aggregator.GetTags(snapshot.GetLineFromLineNumber(lineNumber).Extent)) {
+                    switch (asmTokenSpan.Tag.type) {
+                        case AsmTokenType.Label: {
+                                SnapshotSpan span = asmTokenSpan.Span.GetSpans(snapshot)[0];
+                                string label = span.GetText();
+                                if (!this._labelDefLineNumber.ContainsKey(label)) {
+                                    if (_labelUndefined.ContainsKey(lineNumber)) {
+                                        AsmDudeToolsStatic.Output(string.Format("WARNING: LabelErrorTagger:updateLabel: line {0} already has a undefined label error", lineNumber));
+                                    } else {
+                                        _labelUndefined.Add(lineNumber, new UndefinedLabelErrorData(lineNumber, "Undefined Label \"" + label + "\"", this._errorListProvider, this._filename, this.navigateHandler));
+                                    }
+                                }
+                                break;
+                            }
+                        case AsmTokenType.LabelDef: {
+                                SnapshotSpan span = asmTokenSpan.Span.GetSpans(snapshot)[0];
+                                string label = span.GetText();
+                                if (this._labelDefClashLineNumber.ContainsKey(label)) {
+                                    if (_labelClashes.ContainsKey(lineNumber)) {
+                                        AsmDudeToolsStatic.Output(string.Format("WARNING: LabelErrorTagger:updateLabel: line {0} already has a undefined label error", lineNumber));
+                                    } else {
+                                        _labelClashes.Add(lineNumber, new LabelClashErrorData(lineNumber, "Label Clash", this._errorListProvider, this._filename, this.navigateHandler));
+                                    }
+                                }
+
+                                break;
+                            }
+                        default: break;
+                    }
+                }
+            }
             */
+        }
+
         public IEnumerable<ITagSpan<ErrorTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
 
             if (spans.Count == 0) {  //there is no content in the buffer
@@ -213,7 +237,7 @@ namespace AsmDude.ErrorSquiggles {
 
             DateTime time1 = DateTime.Now;
             ITextSnapshot snapshot = spans[0].Snapshot;
-
+            
             foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in _aggregator.GetTags(spans)) {
 
                 SnapshotSpan span = asmTokenSpan.Span.GetSpans(snapshot)[0];
@@ -224,15 +248,12 @@ namespace AsmDude.ErrorSquiggles {
                             // an occurrence of a label is updated: 
                             //    1] check whether the label is undefined or defined
 
-                            int lineNumber = getLineNumber(span);
-                            this.removeUndefinedLabelError(lineNumber);
-                            this.printCurrentUndefinedLabels();
-
+                            //int lineNumber = getLineNumber(span);
+                            //this.removeUndefinedLabelError(lineNumber);
                             string label = span.GetText();
-                            string line = span.Snapshot.GetLineFromLineNumber(lineNumber).Snapshot.GetText();
-                            Tuple<bool, ErrorTag> errorTag = this.updateLabel(lineNumber, label, line);
-                            if (errorTag.Item1) {
-                                yield return new TagSpan<ErrorTag>(span, errorTag.Item2);
+
+                            if (!this._labelDefLineNumber.ContainsKey(label)) {
+                                yield return new TagSpan<ErrorTag>(span, new ErrorTag("warning", "Undefined Label"));
                             }
                             break;
                         }
@@ -241,28 +262,37 @@ namespace AsmDude.ErrorSquiggles {
                             //    1] check all occurrences of labels whether they become undefined or defined
                             //    2] check all definitions of labels whether they clash with the new label, or whether they do not clash anymore.
 
-                            int lineNumber = getLineNumber(span);
-                            this.removeLabelClashError(lineNumber);
-
+                            //int lineNumber = getLineNumber(span);
+                            //this.removeLabelClashError(lineNumber);
                             string label = span.GetText();
-                            string line = span.Snapshot.GetLineFromLineNumber(lineNumber).Snapshot.GetText();
-                            Tuple<bool, ErrorTag> errorTag = this.updateLabelDef(lineNumber, label, line);
-                            if (errorTag.Item1) {
-                                yield return new TagSpan<ErrorTag>(span, errorTag.Item2);
+
+                            if (this._labelDefClashLineNumber.ContainsKey(label)) {
+                                yield return new TagSpan<ErrorTag>(span, new ErrorTag("warning", "Label Clash"));
                             }
                             break;
                         }
                     default: break;
                 }
             }
-
-            this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
-            this._errorListProvider.Refresh();
+            
+            //this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
+            //this._errorListProvider.Refresh();
 
             double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
             if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
                 AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0:F3} seconds to make error tags.", elapsedSec));
             }
+        }
+
+        public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
+
+        private static int getLineNumber(SnapshotSpan span) {
+            int lineNumber = span.Snapshot.GetLineNumberFromPosition(span.Start);
+            //int lineNumber2 = span.Snapshot.GetLineNumberFromPosition(span.End);
+            //if (lineNumber != lineNumber2) {
+            //    AsmDudeToolsStatic.Output(string.Format("WARNING: LabelErrorTagger:getLineNumber. line number from start {0} is not equal to line number from end {1}.", lineNumber, lineNumber2));
+            //}
+            return lineNumber;
         }
 
         private void removeUndefinedLabelError(int lineNumber) {
@@ -276,79 +306,40 @@ namespace AsmDude.ErrorSquiggles {
         }
 
         private void removeLabelClashError(int lineNumber) {
-           LabelClashErrorData data;
-            /*
+            LabelClashErrorData data;
             if (_labelClashes.TryGetValue(lineNumber, out data)) {
                 AsmDudeToolsStatic.Output(string.Format("INFO: removeUndefinedLabelError: key={0}; line={1}; msg={2}", lineNumber, data._errorTask.Line, data._errorTask.Text));
                 AsmDudeToolsStatic.Output(string.Format("INFO: removeUndefinedLabelError. nTasks before {0}", _errorListProvider.Tasks.Count));
                 _errorListProvider.Tasks.Remove(data._errorTask);
                 AsmDudeToolsStatic.Output(string.Format("INFO: removeUndefinedLabelError. nTasks after {0}", _errorListProvider.Tasks.Count));
             }
-            */
-        }
-
-        private Tuple<bool, ErrorTag> updateLabel(int lineNumber, string label, string line) {
-            AsmDudeToolsStatic.Output(string.Format("INFO: LabelErrorTagger:updateLabel: line={0}; keyword \"{1}\" is a label", lineNumber, label));
-            IDictionary<int, string> labels = AsmSourceTools.getLineNumberWithLabelDef(this._sourceBuffer.CurrentSnapshot.GetText());
-
-            bool definedLabel = false;
-            foreach (KeyValuePair<int, string> entry in labels) {
-                if (entry.Value.Equals(label)) {
-                    definedLabel = true;
-                    break;
-                }
-            }
-            if (definedLabel) {
-                return new Tuple<bool, ErrorTag>(false, null);
-            } else {
-                if (_labelUndefined.ContainsKey(lineNumber)) {
-                    AsmDudeToolsStatic.Output(string.Format("WARNING: LabelErrorTagger:updateLabel: line {0} already has a undefined label error", lineNumber));
-                } else {
-                    _labelUndefined.Add(lineNumber, new UndefinedLabelErrorData(lineNumber, "Undefined Label \""+label+"\"", this._errorListProvider, this._filename, this.navigateHandler));
-                }
-
-                //const string errorType = "syntax error";
-                //const string errorType = "compiler error";
-                const string errorType = "other error";
-                //const string errorType = "warning";
-                return new Tuple<bool, ErrorTag>(true, new ErrorTag(errorType, "Undefined Label"));
-            }
         }
 
         private Tuple<bool, ErrorTag> updateLabelDef(int lineNumber, string label, string line) {
 
             AsmDudeToolsStatic.Output(string.Format("INFO: LabelErrorTagger:updateLabelDef: line={0}; keyword \"{1}\" is a labelDef", lineNumber, label));
-            IDictionary<int, string> labels = AsmSourceTools.getLineNumberWithLabelDef(this._sourceBuffer.CurrentSnapshot.GetText());
 
-            IList<int> lineNumbers = new List<int>(0);
             string clashDesc = "";
-            foreach (KeyValuePair<int, string> entry in labels) {
-                if (entry.Value.Equals(label) && (entry.Key != lineNumber)) {
+            foreach (KeyValuePair<string, int> entry in this._labelDefLineNumber) {
+                if (entry.Key.Equals(label) && (entry.Value != lineNumber)) {
                     if (clashDesc.Length == 0) {
-                        lineNumbers.Add(entry.Key);
                         clashDesc = AsmDudeToolsStatic.cleanup("Multiple definitions for LABEL \"" + label + "\"") + Environment.NewLine;
-                        clashDesc += "Label defined at LINE "+ lineNumber+ Environment.NewLine;
-                        clashDesc += "Label defined at LINE " + entry.Key;
+                        clashDesc += "Label defined at LINE " + (lineNumber + 1) + Environment.NewLine;
+                        clashDesc += "Label defined at LINE " + (entry.Value + 1);
                     } else {
-                        clashDesc += Environment.NewLine + "Label defined at LINE " + entry.Key;
+                        clashDesc += Environment.NewLine + "Label defined at LINE " + (entry.Value + 1);
                     }
-                    lineNumbers.Add(lineNumber);
                 }
             }
-            if (lineNumbers.Count == 0) {
+            if (clashDesc.Length == 0) {
                 return new Tuple<bool, ErrorTag>(false, null);
             } else {
                 if (_labelClashes.ContainsKey(lineNumber)) {
                     AsmDudeToolsStatic.Output(string.Format("WARNING: LabelErrorTagger:updateLabelDef: line {0} already has a label clash error", lineNumber));
                 } else {
-                    _labelClashes.Add(lineNumber, new LabelClashErrorData(lineNumbers, "Label Clash", this._errorListProvider, this._filename, this.navigateHandler));
+                    _labelClashes.Add(lineNumber, new LabelClashErrorData(lineNumber, "Label Clash", this._errorListProvider, this._filename, this.navigateHandler));
                 }
-
-                //const string errorType = "syntax error";
-                //const string errorType = "compiler error";
-                const string errorType = "other error";
-                //const string errorType = "warning";
-                return new Tuple<bool, ErrorTag>(true, new ErrorTag(errorType, clashDesc));
+                return new Tuple<bool, ErrorTag>(true, new ErrorTag("warning", clashDesc));
             }
         }
 
@@ -362,51 +353,57 @@ namespace AsmDude.ErrorSquiggles {
         #endregion
 
         private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
-            AsmDudeToolsStatic.Output("INFO: LabelErrorTagger:OnTextBufferChanged: number of changes=" + e.Changes.Count);
+            //AsmDudeToolsStatic.Output("INFO: LabelErrorTagger:OnTextBufferChanged: number of changes=" + e.Changes.Count);
 
             //TODO check if the number of lines changed, if yes than dirty=true; if a label is changed than also dirty=true;
             // act as if everything changed.
             //_dirty = true;
-            //TagsChanged(this, new SnapshotSpanEventArgs(new SnapshotSpan(_sourceBuffer.CurrentSnapshot, new Span(0, _sourceBuffer.CurrentSnapshot.Length))));
+            TagsChanged(this, new SnapshotSpanEventArgs(new SnapshotSpan(_sourceBuffer.CurrentSnapshot, new Span(0, _sourceBuffer.CurrentSnapshot.Length))));
 
-            
-            foreach (ITextChange textChange in e.Changes) {
-                int newLineNumber = e.After.GetLineNumberFromPosition(textChange.NewPosition);
-                int oldLineNumber = e.Before.GetLineNumberFromPosition(textChange.OldPosition);
-
-                //this.onTextChange(textChange, oldLineNumber, newLineNumber);
-            }
-            
-        }
-        /*
-        private void onTextChange(ITextChange textChange, int oldLineNumber, int newLineNumber) {
-
-            AsmDudeToolsStatic.Output(string.Format("INFO: onTextChange: oldLineNumber={0}; newLineNumber={1}; LineCountDelta={2}.", oldLineNumber, newLineNumber, textChange.LineCountDelta));
-
-            int indexToRemove = -1;
-
-            for (int i = 0; i < _labelUndefinedErrors.Count; ++i) {
-                LabelErrorData value = this._labelUndefinedErrors[i];
-
-                if (value._lineNumber == oldLineNumber) {
-                    indexToRemove = i;
-                }
-                if (value._lineNumber > newLineNumber) {
-                    if (textChange.LineCountDelta != 0) {
-                        value._lineNumber += textChange.LineCountDelta;
+            if (e.Changes.IncludesLineChanges) {
+                if (true) {
+                    this.initErrorCache();
+                } else {
+                    foreach (ITextChange textChange in e.Changes) {
+                        if (textChange.LineCountDelta != 0) {
+                            int newLineNumber = e.After.GetLineNumberFromPosition(textChange.NewPosition);
+                            int oldLineNumber = e.Before.GetLineNumberFromPosition(textChange.OldPosition);
+                            this.onTextChange(textChange, oldLineNumber, newLineNumber);
+                        }
                     }
                 }
             }
-
-            if (indexToRemove != -1) {
-                var value = this._labelUndefinedErrors[indexToRemove];
-                if (value._task != null) {
-                    this._errorListProvider.Tasks.Remove(value._task);
-                }
-                this._labelUndefinedErrors.RemoveAt(indexToRemove);
-            }
+            
         }
-        */
+       
+        private void onTextChange(ITextChange textChange, int oldLineNumber, int newLineNumber) {
+            /*
+           AsmDudeToolsStatic.Output(string.Format("INFO: onTextChange: oldLineNumber={0}; newLineNumber={1}; LineCountDelta={2}.", oldLineNumber, newLineNumber, textChange.LineCountDelta));
+
+           int indexToRemove = -1;
+
+           for (int i = 0; i < _labelUndefinedErrors.Count; ++i) {
+               LabelErrorData value = this._labelUndefinedErrors[i];
+
+               if (value._lineNumber == oldLineNumber) {
+                   indexToRemove = i;
+               }
+               if (value._lineNumber > newLineNumber) {
+                   if (textChange.LineCountDelta != 0) {
+                       value._lineNumber += textChange.LineCountDelta;
+                   }
+               }
+           }
+
+           if (indexToRemove != -1) {
+               var value = this._labelUndefinedErrors[indexToRemove];
+               if (value._task != null) {
+                   this._errorListProvider.Tasks.Remove(value._task);
+               }
+               this._labelUndefinedErrors.RemoveAt(indexToRemove);
+           }
+           */
+        }
 
         private void navigateHandler(object sender, EventArgs arguments) {
             Task task = sender as Task;

@@ -3,17 +3,12 @@ using Microsoft.VisualStudio.Shell;
 using System;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
-using Microsoft.VisualStudio.Shell.Interop;
 
 using AsmDude.OptionsPage;
 using System.Globalization;
-using System.Reflection;
-using System.Windows;
-using System.Windows.Input;
 using System.ComponentModel.Composition;
-using EnvDTE;
 using System.Text;
-using System.ComponentModel.Design;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace AsmDude {
 
@@ -27,7 +22,7 @@ namespace AsmDude {
     [InstalledProductRegistration("AsmDude", Vsix.Description, Vsix.Version)] // for the help about information
 
     [ProvideMenuResource("Menus.ctmenu", 1)] // needed when showing menus
-    //[ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
+    [ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
     [Guid(Guids.GuidPackage_str)]
     [ComVisible(true)]
 
@@ -47,14 +42,11 @@ namespace AsmDude {
     [ProvideOptionPage(typeof(OptionsPageKeywordHighlighting), "AsmDude", "Keyword Highlighting", 0, 0, true)]
     //[ProvideProfile(typeof(OptionsPageKeywordHighlighting), "AsmDude", "Keyword Highlighting Options", 100, 105, isToolsOptionPage:false, DescriptionResourceID = 100)]
 
-    [Export]
     public sealed class AsmDudePackage : Package {
 
         internal const string AsmDudeContentType = "asm!";
         internal const double slowWarningThresholdSec = 0.2; // threshold to warn that actions are considered slow
         internal const int maxNumberOfCharsInToolTips = 150;
-
-
 
         #region Member Variables
         //private OleMenuCommand dynamicVisibilityCommand1;
@@ -62,7 +54,8 @@ namespace AsmDude {
         #endregion
 
         public AsmDudePackage() {
-            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: Entering constructor for: {0}", this.ToString()));
+            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "=========================================\nINFO: AsmDudePackage: Entering constructor"));
+            AsmDudeToolsStatic.Output("INFO: AsmDudePackage: Entering constructor");
         }
 
         /// <summary>
@@ -82,8 +75,6 @@ namespace AsmDude {
             sb.AppendLine(string.Format("INFO: Loaded AsmDude version {0}.", typeof(AsmDudePackage).Assembly.GetName().Version));
             sb.AppendLine(string.Format("INFO: Open source assembly extension. Making programming in assembler bearable."));
             sb.AppendLine(string.Format("INFO: Why? Because programming assembly is an art which exists outside of contemporary computer science fads and fashions."));
-
-
 
             sb.AppendLine(string.Format("INFO: More info at https://github.com/HJLebbink/asm-dude"));
             sb.AppendLine("----------------------------------");

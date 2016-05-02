@@ -29,18 +29,6 @@ namespace AsmDude {
             return container;
         }
 
-        public static ErrorListProvider GetErrorListProvider() {
-            Microsoft.VisualStudio.OLE.Interop.IServiceProvider globalService =
-                (Microsoft.VisualStudio.OLE.Interop.IServiceProvider)Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider));
-
-            System.IServiceProvider serviceProvider = new ServiceProvider(globalService);
-
-            ErrorListProvider mErrorListProvider = new ErrorListProvider(serviceProvider);
-            mErrorListProvider.ProviderName = "Asm Errors";
-            mErrorListProvider.ProviderGuid = new Guid(EnvDTE.Constants.vsViewKindCode);
-            return mErrorListProvider;
-        }
-
         public static string GetFileName(ITextBuffer buffer) {
             Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer bufferAdapter;
             buffer.Properties.TryGetProperty(typeof(Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer), out bufferAdapter);
@@ -140,7 +128,6 @@ namespace AsmDude {
             }
             return result;
         }
-
 
         public static string getKeywordStr(SnapshotPoint? bufferPosition) {
 
@@ -261,12 +248,13 @@ namespace AsmDude {
     }
 
     [Export]
+    [PartCreationPolicy(CreationPolicy.Shared)]
     public class AsmDudeTools {
         private XmlDocument _xmlData;
         private IDictionary<string, AsmTokenType> _type;
         private IDictionary<string, Arch> _arch;
         private IDictionary<string, string> _description;
-
+        private ErrorListProvider _errorListProvider;
 
         public AsmDudeTools() {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: Entering constructor for: {0}", this.ToString()));
@@ -483,6 +471,22 @@ namespace AsmDude {
                 }
             }
             return this._xmlData;
+        }
+
+        public ErrorListProvider GetErrorListProvider() {
+
+            if (this._errorListProvider == null) {
+                IServiceProvider serviceProvider;
+                if (true) {
+                    serviceProvider = new ServiceProvider(Package.GetGlobalService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider)) as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
+                } else {
+                    serviceProvider = Package.GetGlobalService(typeof(IServiceProvider)) as ServiceProvider;
+                }
+                this._errorListProvider = new ErrorListProvider(serviceProvider);
+                this._errorListProvider.ProviderName = "Asm Errors";
+                this._errorListProvider.ProviderGuid = new Guid(EnvDTE.Constants.vsViewKindCode);
+            }
+            return this._errorListProvider;
         }
 
         #endregion

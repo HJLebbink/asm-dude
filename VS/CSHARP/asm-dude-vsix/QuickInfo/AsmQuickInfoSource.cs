@@ -40,7 +40,6 @@ namespace AsmDude.QuickInfo {
 
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
         private readonly ITextBuffer _buffer;
-        private bool _disposed = false;
 
         [Import]
         private AsmDudeTools _asmDudeTools = null;
@@ -131,7 +130,6 @@ namespace AsmDude.QuickInfo {
         }
 
         public void Dispose() {
-            _disposed = true;
         }
 
         #region private stuff
@@ -139,9 +137,10 @@ namespace AsmDude.QuickInfo {
 
         private static string multiLine(string strIn, int maxLineLength) {
             StringBuilder sb = new StringBuilder();
-            foreach (string line in strIn.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)) {
-                if (line.Length > 0) {
-                    sb.Append(multiLine2(line, maxLineLength));
+            foreach (string line in strIn.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)) {
+                string line2 = line.Trim();
+                if (line2.Length > 0) {
+                    sb.AppendLine(multiLine2(line2, maxLineLength));
                 }
             }
             return sb.ToString();

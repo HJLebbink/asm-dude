@@ -814,12 +814,8 @@ namespace AsmTools {
         }
 
         /// <summary>
-        /// return the previous keyword between begin and end. 
+        /// Return the previous keyword between begin and end. 
         /// </summary>
-        /// <param name="begin"></param>
-        /// <param name="end"></param>
-        /// <param name="line"></param>
-        /// <returns></returns>
         public static string getPreviousKeyword(int begin, int end, string line) {
             Debug.Assert(begin >= 0);
             Debug.Assert(begin <= line.Length);
@@ -883,6 +879,9 @@ namespace AsmTools {
             }
         }
 
+        /// <summary>
+        /// Return the begin and end of the keyword
+        /// </summary>
         public static Tuple<int, int> getKeywordPos(int pos, string line) {
             //Debug.WriteLine(string.Format("INFO: getKeyword; pos={0}; line=\"{1}\"", pos, new string(line)));
             if ((pos < 0) || (pos >= line.Length)) {
@@ -912,9 +911,6 @@ namespace AsmTools {
         /// <summary>
         /// Returns true if the provided line uses the provided label in a mnemonic
         /// </summary>
-        /// <param name="keyword"></param>
-        /// <param name="line"></param>
-        /// <returns></returns>
         public static bool usesLabel(string label, string line) {
             int r = label.Length;
             int m = line.Length;
@@ -939,11 +935,10 @@ namespace AsmTools {
                 }
             }
         }
+        
         /// <summary>
-        /// return dictionary with line numbers and corresponding label definitions
+        /// Return dictionary with line numbers and corresponding label definitions
         /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
         public static IDictionary<int, string> getLineNumberWithLabelDef(string text) {
             IDictionary<int, string> labelDefs = new Dictionary<int, string>();
 
