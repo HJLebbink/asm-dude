@@ -30,6 +30,7 @@ using Microsoft.VisualStudio.Text.Tagging;
 using System.ComponentModel.Composition;
 using AsmDude.SyntaxHighlighting;
 using System.Text;
+using AsmTools;
 
 namespace AsmDude.QuickInfo {
 
@@ -116,7 +117,7 @@ namespace AsmDude.QuickInfo {
                             break;
                     }
                     if (description != null) {
-                        quickInfoContent.Add(multiLine(description, AsmDudePackage.maxNumberOfCharsInToolTips+1));
+                        quickInfoContent.Add(AsmSourceTools.linewrap(description, AsmDudePackage.maxNumberOfCharsInToolTips+1));
                     }
                 }
 
@@ -130,50 +131,8 @@ namespace AsmDude.QuickInfo {
         }
 
         public void Dispose() {
+            //empty
         }
-
-        #region private stuff
-
-
-        private static string multiLine(string strIn, int maxLineLength) {
-            StringBuilder sb = new StringBuilder();
-            foreach (string line in strIn.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)) {
-                string line2 = line.Trim();
-                if (line2.Length > 0) {
-                    sb.AppendLine(multiLine2(line2, maxLineLength));
-                }
-            }
-            return sb.ToString();
-
-        }
-        private static string multiLine2(string strIn, int maxLineLength) {
-            string result = strIn;
-            int startPos = 0;
-            int endPos = startPos + maxLineLength;
-
-            while (endPos < result.Length) {
-                int newLinePos = getNewLinePos(result, startPos + maxLineLength/2, endPos);
-                result = result.Insert(newLinePos, System.Environment.NewLine);
-                startPos = newLinePos + 1;
-                endPos = startPos + maxLineLength;
-            }
-            return result;
-        }
-
-        private static int getNewLinePos(string str, int startPos, int endPos) {
-            for (int pos = endPos; pos > startPos; pos--) {
-                if (isTextSeparatorChar(str[pos])) {
-                    return pos + 1;
-                }
-            }
-            return endPos;
-        }
-
-        private static bool isTextSeparatorChar(char c) {
-            return char.IsWhiteSpace(c) || c.Equals('.') || c.Equals(',') || c.Equals(';') || c.Equals('?') || c.Equals('!') || c.Equals(')') || c.Equals(']') || c.Equals('-');
-        }
-
-        #endregion private stuff
     }
 }
 
