@@ -4,6 +4,8 @@
 	mov			r13, QWORD PTR lennyOptions$[rsp]
     mov 		rsi, QWORD PTR [network_c_mp_network_neurons]
 
+	vmovdqu		XMMWORD PTR [imagerel(htm_v1_constants_mp_global_cell_is_active_curr)+r13+r8], xmm15 
+
 	??$?6U?$char_traits@D@std@@@std@@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@0@AEAV10@PEBD@Z:
 	call		??$?6U?$char_traits@D@std@@@std@@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@0@AEAV10@PEBD@Z
 

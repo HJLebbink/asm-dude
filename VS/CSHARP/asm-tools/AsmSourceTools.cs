@@ -29,6 +29,14 @@ namespace AsmTools {
         }
 
         public static Tuple<bool, int, int> getLabelDefPos(string line) {
+            var tup = getLabelDefPos_Regular(line);
+            if (tup.Item1) {
+                return tup;
+            }
+            return getLabelDefPos_Masm(line);
+        }
+
+        private static Tuple<bool, int, int> getLabelDefPos_Regular(string line) {
             int nChars = line.Length;
             int i = 0;
 
@@ -67,6 +75,29 @@ namespace AsmTools {
             }
             return new Tuple<bool, int, int>(false, 0, 0);
         }
+
+        private static Tuple<bool, int, int> getLabelDefPos_Masm(string line) {
+
+            string line2 = line.TrimStart();
+            int displacement = 0;
+
+            if (line2.StartsWith("EXTRN", StringComparison.CurrentCultureIgnoreCase)) {
+                displacement = 5;
+            } else if (line2.StartsWith("EXTERN", StringComparison.CurrentCultureIgnoreCase)) {
+                displacement = 6;
+            } else {
+                return new Tuple<bool, int, int>(false, 0, 0);
+            }
+
+            string line3 = line2.Substring(displacement);
+            var tup = getLabelDefPos_Regular(line3);
+            if (tup.Item1) {
+                return new Tuple<bool, int, int>(true, tup.Item2 + displacement, tup.Item3 + displacement);
+            } else {
+                return tup;
+            }
+        }
+
 
         public static bool isConstant(string token) { // todo merge this with toConstant
             string token2;

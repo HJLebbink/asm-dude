@@ -138,7 +138,7 @@ namespace AsmDude.ErrorSquiggles {
         }
 
         private void initErrorCache() {
-            AsmDudeToolsStatic.Output(string.Format("INFO: initErrorCache"));
+            //AsmDudeToolsStatic.Output(string.Format("INFO: initErrorCache"));
             this._labelDefLineNumber.Clear();
             this._labelDefClashLineNumber.Clear();
 
@@ -353,15 +353,15 @@ namespace AsmDude.ErrorSquiggles {
         #endregion
 
         private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
+            AsmDudeToolsStatic.Output(string.Format("INFO: OnTextBufferChanged: number of changes={0}; first change: old={1}; new={2}", e.Changes.Count, e.Changes[0].OldText, e.Changes[0].NewText));
             //AsmDudeToolsStatic.Output("INFO: LabelErrorTagger:OnTextBufferChanged: number of changes=" + e.Changes.Count);
 
             //TODO check if the number of lines changed, if yes than dirty=true; if a label is changed than also dirty=true;
             // act as if everything changed.
             //_dirty = true;
-            TagsChanged(this, new SnapshotSpanEventArgs(new SnapshotSpan(_sourceBuffer.CurrentSnapshot, new Span(0, _sourceBuffer.CurrentSnapshot.Length))));
 
-            if (e.Changes.IncludesLineChanges) {
-                if (true) {
+            //            if (e.Changes.IncludesLineChanges) {
+            if (true) {
                     this.initErrorCache();
                 } else {
                     foreach (ITextChange textChange in e.Changes) {
@@ -371,11 +371,12 @@ namespace AsmDude.ErrorSquiggles {
                             this.onTextChange(textChange, oldLineNumber, newLineNumber);
                         }
                     }
-                }
+//                }
             }
-            
+
+            TagsChanged(this, new SnapshotSpanEventArgs(new SnapshotSpan(_sourceBuffer.CurrentSnapshot, new Span(0, _sourceBuffer.CurrentSnapshot.Length))));
         }
-       
+
         private void onTextChange(ITextChange textChange, int oldLineNumber, int newLineNumber) {
             /*
            AsmDudeToolsStatic.Output(string.Format("INFO: onTextChange: oldLineNumber={0}; newLineNumber={1}; LineCountDelta={2}.", oldLineNumber, newLineNumber, textChange.LineCountDelta));
@@ -415,7 +416,7 @@ namespace AsmDude.ErrorSquiggles {
                 return;
             }
 
-            IVsUIShellOpenDocument openDoc = (IVsUIShellOpenDocument)Package.GetGlobalService(typeof(IVsUIShellOpenDocument));
+            IVsUIShellOpenDocument openDoc = Package.GetGlobalService(typeof(IVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
             if (openDoc == null) {
                 return;
             }
@@ -447,7 +448,7 @@ namespace AsmDude.ErrorSquiggles {
                     }
                 }
             }
-            IVsTextManager mgr = (IVsTextManager)Package.GetGlobalService(typeof(SVsTextManager));
+            IVsTextManager mgr = Package.GetGlobalService(typeof(SVsTextManager)) as IVsTextManager;
             if (mgr == null) {
                 return;
             }
