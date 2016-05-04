@@ -40,14 +40,14 @@ namespace AsmDude.QuickInfo {
     internal sealed class AsmQuickInfoSource : IQuickInfoSource {
 
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
-        private readonly ITextBuffer _buffer;
+        private readonly ITextBuffer _sourceBuffer;
 
         [Import]
         private AsmDudeTools _asmDudeTools = null;
 
         public AsmQuickInfoSource(ITextBuffer buffer, ITagAggregator<AsmTokenTag> asmTagAggregator) {
             this._aggregator = asmTagAggregator;
-            this._buffer = buffer;
+            this._sourceBuffer = buffer;
             AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
         }
 
@@ -59,71 +59,69 @@ namespace AsmDude.QuickInfo {
             try {
                 DateTime time1 = DateTime.Now;
 
-                ITextSnapshot snapshot = _buffer.CurrentSnapshot;
+                ITextSnapshot snapshot = _sourceBuffer.CurrentSnapshot;
                 var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(snapshot);
                 if (triggerPoint == null) {
                     return;
                 }
-                string tagString = "";
+                string keyword = "";
 
-                foreach (IMappingTagSpan<AsmTokenTag> curTag in this._aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint))) {
+                foreach (IMappingTagSpan<AsmTokenTag> asmTokenTag in this._aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint))) {
 
-                    SnapshotSpan tagSpan = curTag.Span.GetSpans(_buffer).First();
-                    tagString = tagSpan.GetText();
+                    SnapshotSpan tagSpan = asmTokenTag.Span.GetSpans(_sourceBuffer).First();
+                    keyword = tagSpan.GetText();
 
-                    //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:AugmentQuickInfoSession. tag ", this.ToString(), tagString));
-                    string tagStringUpper = tagString.ToUpper();
+                    AsmDudeToolsStatic.Output(string.Format("INFO: {0}:AugmentQuickInfoSession. keyword=\"{1}\"", this.ToString(), keyword));
+                    string keywordUpper = keyword.ToUpper();
                     applicableToSpan = snapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
 
                     string description = null;
 
-                    switch (curTag.Tag.type) {
+                    switch (asmTokenTag.Tag.type) {
                         case AsmTokenType.Misc: {
-                                string descr = this._asmDudeTools.getDescription(tagStringUpper);
-                                description = (descr.Length > 0) ? ("Keyword " + tagStringUpper + ": " + descr) : "Keyword " + tagStringUpper;
+                                string descr = this._asmDudeTools.getDescription(keywordUpper);
+                                description = (descr.Length > 0) ? ("Keyword " + keywordUpper + ": " + descr) : "Keyword " + keywordUpper;
                                 break;
                             }
                         case AsmTokenType.Directive: {
-                                string descr = this._asmDudeTools.getDescription(tagStringUpper);
-                                description = (descr.Length > 0) ? ("Directive " + tagStringUpper + ": " + descr) : "Directive " + tagStringUpper;
+                                string descr = this._asmDudeTools.getDescription(keywordUpper);
+                                description = (descr.Length > 0) ? ("Directive " + keywordUpper + ": " + descr) : "Directive " + keywordUpper;
                                 break;
                             }
                         case AsmTokenType.Register: {
-                                string descr = this._asmDudeTools.getDescription(tagStringUpper);
-                                description = (descr.Length > 0) ? (tagStringUpper + ": " + descr) : "Register " + tagStringUpper;
+                                string descr = this._asmDudeTools.getDescription(keywordUpper);
+                                description = (descr.Length > 0) ? (keywordUpper + ": " + descr) : "Register " + keywordUpper;
                                 break;
                             }
                         case AsmTokenType.Mnemonic: // intentional fall through
                         case AsmTokenType.Jump: {
-                                string descr = this._asmDudeTools.getDescription(tagStringUpper);
-                                description = (descr.Length > 0) ? ("Mnemonic " + tagStringUpper + ": " + descr) : "Mnemonic " + tagStringUpper;
+                                string descr = this._asmDudeTools.getDescription(keywordUpper);
+                                description = (descr.Length > 0) ? ("Mnemonic " + keywordUpper + ": " + descr) : "Mnemonic " + keywordUpper;
                                 break;
                             }
                         case AsmTokenType.Label: {
-                                string descr = AsmDudeToolsStatic.getLabelDescription(tagString, snapshot.GetText());
-                                description = (descr.Length > 0) ? descr : "Label " + tagString;
+                                description = this.getLabelDescription(keyword);
                                 break;
                             }
                         case AsmTokenType.LabelDef: {
-                                string descr = AsmDudeToolsStatic.getLabelDefDescription(tagString, snapshot.GetText());
-                                description = (descr.Length > 0) ? descr : "Label " + tagString;
+                                description = this.getLabelDefDescription(keyword);
                                 break;
                             }
                         case AsmTokenType.Constant: {
-                                description = "Constant " + tagString;
+                                description = "Constant " + keyword;
                                 break;
                             }
                         default:
                             break;
                     }
                     if (description != null) {
-                        quickInfoContent.Add(AsmSourceTools.linewrap(description, AsmDudePackage.maxNumberOfCharsInToolTips+1));
+                        quickInfoContent.Add(AsmSourceTools.linewrap(description, AsmDudePackage.maxNumberOfCharsInToolTips + 1));
                     }
                 }
 
                 double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
                 if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
-                    AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0:F3} seconds to retrieve quick info for tag \"{1}\".", elapsedSec, tagString));
+                    AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0:F3} seconds to retrieve quick info for tag \"{1}\".", elapsedSec, keyword));
                 }
             } catch (Exception e) {
                 AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:AugmentQuickInfoSession; e={1}", this.ToString(), e.ToString()));
@@ -132,6 +130,47 @@ namespace AsmDude.QuickInfo {
 
         public void Dispose() {
             //empty
+        }
+
+        private string getLabelDescription(string label) {
+
+            var tup = AsmDudeToolsStatic.getLabelDefinitionInfo(this._sourceBuffer, this._aggregator);
+            IDictionary<string, int> labelDefLineNumber = tup.Item1;
+            IDictionary<string, IList<int>> labelDefClashLineNumber = tup.Item2;
+
+            if (labelDefClashLineNumber.ContainsKey(label)) {
+                StringBuilder sb = new StringBuilder();
+                foreach (int lineNumber in new SortedSet<int>(labelDefClashLineNumber[label])) {
+                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
+                    sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label defined at LINE {0}: {1}", lineNumber + 1, lineContent)));
+                }
+                string result = sb.ToString();
+                return result.TrimEnd(Environment.NewLine.ToCharArray());
+            } else if (labelDefLineNumber.ContainsKey(label)) {
+                int lineNumber = labelDefLineNumber[label];
+                string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
+                return AsmDudeToolsStatic.cleanup(string.Format("Label defined at LINE {0}: {1}", lineNumber + 1, lineContent));
+            }
+            return "Label is not defined";
+        }
+
+        private string getLabelDefDescription(string label) {
+
+            IDictionary<string, IList<int>> labelUsedLineNumber = AsmDudeToolsStatic.getLabelUsageInfo(this._sourceBuffer, this._aggregator);
+
+            if (labelUsedLineNumber.ContainsKey(label)) {
+                StringBuilder sb = new StringBuilder();
+                foreach (int lineNumber in new SortedSet<int>(labelUsedLineNumber[label])) {
+                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
+                    //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:getLabelDefDescription; line content=\"{1}\"", this.ToString(), lineContent));
+                    sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label used at LINE {0}: {1}", lineNumber + 1, lineContent)));
+                    AsmDudeToolsStatic.Output(string.Format("INFO: {0}:getLabelDefDescription; sb=\"{1}\"", this.ToString(), sb.ToString()));
+                }
+                string result = sb.ToString();
+                return result.TrimEnd(Environment.NewLine.ToCharArray());
+            } else {
+                return "Label is not used";
+            }
         }
     }
 }

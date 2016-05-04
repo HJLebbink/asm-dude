@@ -27,13 +27,12 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace AsmDude.QuickInfo {
 
-    internal class AsmQuickInfoController : IIntellisenseController {
+    internal sealed class AsmQuickInfoController : IIntellisenseController {
 
         private readonly IList<ITextBuffer> _subjectBuffers;
         private readonly AsmQuickInfoControllerProvider _componentContext;
         private IQuickInfoSession _session;
         private ITextView _textView;
-
 
         internal AsmQuickInfoController(ITextView textView, IList<ITextBuffer> subjectBuffers, AsmQuickInfoControllerProvider componentContext) {
             _textView = textView;
@@ -43,9 +42,11 @@ namespace AsmDude.QuickInfo {
         }
 
         public void ConnectSubjectBuffer(ITextBuffer subjectBuffer) {
+            //empty
         }
 
         public void DisconnectSubjectBuffer(ITextBuffer subjectBuffer) {
+            //empty
         }
 
         public void Detach(ITextView textView) {

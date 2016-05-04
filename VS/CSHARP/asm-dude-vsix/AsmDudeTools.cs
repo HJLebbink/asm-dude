@@ -72,8 +72,11 @@ namespace AsmDude {
             return bitmap;
         }
 
-        public static string cleanup(string str) {
-            string cleanedString = System.Text.RegularExpressions.Regex.Replace(str, @"\s+", " ");
+        /// <summary>
+        /// Cleans the provided line by removing multiple white spaces and cropping if the line is too long
+        /// </summary>
+        public static string cleanup(string line) {
+            string cleanedString = System.Text.RegularExpressions.Regex.Replace(line, @"\s+", " ");
             if (cleanedString.Length > AsmDudePackage.maxNumberOfCharsInToolTips) {
                 return cleanedString.Substring(0, AsmDudePackage.maxNumberOfCharsInToolTips-3) + "...";
             } else {
@@ -190,51 +193,79 @@ namespace AsmDude {
             return AsmSourceTools.getPreviousKeyword(beginPos, endPos, begin.GetContainingLine().GetText());
         }
 
-        public static string getLabelDescription(string label, string text) {
-            int lineNumber = 1; // start counting at one since that is what VS does
+        /// <summary>
+        /// Returns dictionary of labels with the line numbers in which they are used
+        /// </summary>
+        public static IDictionary<string, IList<int>> getLabelUsageInfo(
+                ITextBuffer buffer, ITagAggregator<AsmTokenTag> aggregator) {
 
-            string result = "";
-            foreach (string line in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)) {
+            IDictionary<string, IList<int>> labelUsedLineNumber = new Dictionary<string, IList<int>>();
 
-                // find first occurrence of a colon
-                int posColon = -1;
-                bool isRemark = false;
+            ITextSnapshot snapshot = buffer.CurrentSnapshot;
 
-                for (int pos = 0; pos < line.Length; ++pos) {
-                    char c = line[pos];
-                    if (c.Equals(':')) {
-                        posColon = pos;
-                        break;
-                    }
-                    if (AsmTools.AsmSourceTools.isRemarkChar(c)) {
-                        isRemark = true;
-                        break;
-                    }
-                }
-                if ((posColon > 0) && (!isRemark)) {
-                    string labelLocal = line.Substring(0, posColon).TrimStart();
-                    if (labelLocal.Equals(label)) {
-                        //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getLabelDescription: label=\"{1}\"", this.ToString(), label));
-                        if (result.Length > 0) result += System.Environment.NewLine;
-                        result = AsmDudeToolsStatic.cleanup("Label defined at LINE " + lineNumber + ": " + line);
+            for (int lineNumber = 0; lineNumber < snapshot.LineCount; ++lineNumber) {
+                foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in aggregator.GetTags(snapshot.GetLineFromLineNumber(lineNumber).Extent)) {
+                    switch (asmTokenSpan.Tag.type) {
+                        case AsmTokenType.Label:
+                            SnapshotSpan span = asmTokenSpan.Span.GetSpans(snapshot)[0];
+                            string label = span.GetText();
+                            if (!labelUsedLineNumber.ContainsKey(label)) {
+                                labelUsedLineNumber[label] = new List<int>(1);
+                            }
+                            labelUsedLineNumber[label].Add(lineNumber);
+                            break;
+                        default: break;
                     }
                 }
-                lineNumber++;
             }
-            return result;
+            return labelUsedLineNumber;
         }
 
-        public static string getLabelDefDescription(string label, string text) {
-            int lineNumber = 1; // start counting at one since that is what VS does
-            string result = "";
-            foreach (string line in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)) {
-                if (AsmTools.AsmSourceTools.usesLabel(label, line)) {
-                    if (result.Length > 0) result += System.Environment.NewLine;
-                    result += AsmDudeToolsStatic.cleanup("Label used at LINE " + lineNumber + ": " + line);
+        /// <summary>
+        /// Returns dictionary of labels with the line numbers in which they are defined
+        /// </summary>
+        public static Tuple<IDictionary<string, int>, IDictionary<string, IList<int>>> getLabelDefinitionInfo(
+                ITextBuffer buffer, ITagAggregator<AsmTokenTag> aggregator) {
+
+            IDictionary<string, int> labelDefLineNumber = new Dictionary<string, int>();
+            IDictionary<string, IList<int>> labelDefClashLineNumber = new Dictionary<string, IList<int>>();
+
+            ITextSnapshot snapshot = buffer.CurrentSnapshot;
+
+            for (int lineNumber = 0; lineNumber < snapshot.LineCount; ++lineNumber) {
+                foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in aggregator.GetTags(snapshot.GetLineFromLineNumber(lineNumber).Extent)) {
+                    switch (asmTokenSpan.Tag.type) {
+                        case AsmTokenType.LabelDef:
+                            SnapshotSpan span = asmTokenSpan.Span.GetSpans(snapshot)[0];
+                            string label = span.GetText();
+                            if (labelDefLineNumber.ContainsKey(label)) {
+                                if (labelDefLineNumber[label] == lineNumber) {
+                                    AsmDudeToolsStatic.Output(string.Format("WARNING: getLabelDefinitionInfo: label={0}; line={1}", label, lineNumber));
+                                } else {
+                                    if (labelDefClashLineNumber.ContainsKey(label)) {
+                                        labelDefClashLineNumber[label].Add(lineNumber);
+                                    } else {
+                                        IList<int> lineNumbers = new List<int> { labelDefLineNumber[label], lineNumber };
+                                        labelDefClashLineNumber.Add(label, lineNumbers);
+                                    }
+                                }
+                            } else {
+                                labelDefLineNumber.Add(label, lineNumber);
+                            }
+                            break;
+                        default: break;
+                    }
                 }
-                lineNumber++;
             }
-            return result;
+            if (false) {
+                foreach (KeyValuePair<string, int> entry in labelDefLineNumber) {
+                    AsmDudeToolsStatic.Output(string.Format("INFO: getLabelDefinitionInfo: label Def: line={0}; label={1}", entry.Value, entry.Key));
+                }
+                foreach (KeyValuePair<string, IList<int>> entry in labelDefClashLineNumber) {
+                    AsmDudeToolsStatic.Output(string.Format("INFO: getLabelDefinitionInfo: label Clash: label={0}; lines={1}", entry.Key, string.Join(",", entry.Value)));
+                }
+            }
+            return new Tuple<IDictionary<string, int>, IDictionary<string, IList<int>>>(labelDefLineNumber, labelDefClashLineNumber);
         }
 
         public static bool isAllUpper(string input) {
