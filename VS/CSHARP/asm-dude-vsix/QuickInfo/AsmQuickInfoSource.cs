@@ -31,6 +31,7 @@ using System.ComponentModel.Composition;
 using AsmDude.SyntaxHighlighting;
 using System.Text;
 using AsmTools;
+using AsmDude.Tools;
 
 namespace AsmDude.QuickInfo {
 
@@ -41,6 +42,7 @@ namespace AsmDude.QuickInfo {
 
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
         private readonly ITextBuffer _sourceBuffer;
+        private readonly LabelGraph _labelGraph;
 
         [Import]
         private AsmDudeTools _asmDudeTools = null;
@@ -48,7 +50,9 @@ namespace AsmDude.QuickInfo {
         public AsmQuickInfoSource(ITextBuffer buffer, ITagAggregator<AsmTokenTag> asmTagAggregator) {
             this._aggregator = asmTagAggregator;
             this._sourceBuffer = buffer;
+
             AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
+            this._labelGraph = new LabelGraph(buffer, asmTagAggregator);
         }
 
         /// <summary>
@@ -71,7 +75,7 @@ namespace AsmDude.QuickInfo {
                     SnapshotSpan tagSpan = asmTokenTag.Span.GetSpans(_sourceBuffer).First();
                     keyword = tagSpan.GetText();
 
-                    AsmDudeToolsStatic.Output(string.Format("INFO: {0}:AugmentQuickInfoSession. keyword=\"{1}\"", this.ToString(), keyword));
+                    //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:AugmentQuickInfoSession. keyword=\"{1}\"", this.ToString(), keyword));
                     string keywordUpper = keyword.ToUpper();
                     applicableToSpan = snapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
 
@@ -100,11 +104,13 @@ namespace AsmDude.QuickInfo {
                                 break;
                             }
                         case AsmTokenType.Label: {
-                                description = this.getLabelDescription(keyword);
+                                string descr = this.getLabelDescription(keyword);
+                                description = (descr.Length > 0) ? descr : "Label " + keyword;
                                 break;
                             }
                         case AsmTokenType.LabelDef: {
-                                description = this.getLabelDefDescription(keyword);
+                                string descr = this.getLabelDefDescription(keyword);
+                                description = (descr.Length > 0) ? descr : "Label " + keyword;
                                 break;
                             }
                         case AsmTokenType.Constant: {
@@ -128,49 +134,43 @@ namespace AsmDude.QuickInfo {
             }
         }
 
-        public void Dispose() {
-            //empty
-        }
-
         private string getLabelDescription(string label) {
 
-            var tup = AsmDudeToolsStatic.getLabelDefinitionInfo(this._sourceBuffer, this._aggregator);
-            IDictionary<string, int> labelDefLineNumber = tup.Item1;
-            IDictionary<string, IList<int>> labelDefClashLineNumber = tup.Item2;
-
-            if (labelDefClashLineNumber.ContainsKey(label)) {
+            if (this._labelGraph.labelDefClashInfo.ContainsKey(label)) {
                 StringBuilder sb = new StringBuilder();
-                foreach (int lineNumber in new SortedSet<int>(labelDefClashLineNumber[label])) {
+                foreach (int lineNumber in new SortedSet<int>(this._labelGraph.labelDefClashInfo[label])) {
                     string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
                     sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label defined at LINE {0}: {1}", lineNumber + 1, lineContent)));
                 }
                 string result = sb.ToString();
                 return result.TrimEnd(Environment.NewLine.ToCharArray());
-            } else if (labelDefLineNumber.ContainsKey(label)) {
-                int lineNumber = labelDefLineNumber[label];
+            } else if (this._labelGraph.labelDefInfo.ContainsKey(label)) {
+                int lineNumber = this._labelGraph.labelDefInfo[label];
                 string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
                 return AsmDudeToolsStatic.cleanup(string.Format("Label defined at LINE {0}: {1}", lineNumber + 1, lineContent));
             }
-            return "Label is not defined";
+            return ""; // do not provide warning message here; that is handled in labelErrorTagger
         }
 
         private string getLabelDefDescription(string label) {
 
-            IDictionary<string, IList<int>> labelUsedLineNumber = AsmDudeToolsStatic.getLabelUsageInfo(this._sourceBuffer, this._aggregator);
-
-            if (labelUsedLineNumber.ContainsKey(label)) {
+            if (this._labelGraph.labelUsedAtInfo.ContainsKey(label)) {
                 StringBuilder sb = new StringBuilder();
-                foreach (int lineNumber in new SortedSet<int>(labelUsedLineNumber[label])) {
+                foreach (int lineNumber in new SortedSet<int>(this._labelGraph.labelUsedAtInfo[label])) {
                     string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
                     //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:getLabelDefDescription; line content=\"{1}\"", this.ToString(), lineContent));
                     sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label used at LINE {0}: {1}", lineNumber + 1, lineContent)));
-                    AsmDudeToolsStatic.Output(string.Format("INFO: {0}:getLabelDefDescription; sb=\"{1}\"", this.ToString(), sb.ToString()));
+                    //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:getLabelDefDescription; sb=\"{1}\"", this.ToString(), sb.ToString()));
                 }
                 string result = sb.ToString();
                 return result.TrimEnd(Environment.NewLine.ToCharArray());
             } else {
-                return "Label is not used";
+                return AsmDudeToolsStatic.cleanup(string.Format("Unused Label {0}", label));
             }
+        }
+
+        public void Dispose() {
+            //empty
         }
     }
 }

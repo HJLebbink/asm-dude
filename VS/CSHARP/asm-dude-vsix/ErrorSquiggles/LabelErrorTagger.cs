@@ -1,4 +1,5 @@
 ﻿using AsmDude.SyntaxHighlighting;
+using AsmDude.Tools;
 using AsmTools;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -10,6 +11,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Text;
 
 namespace AsmDude.ErrorSquiggles {
 
@@ -24,9 +26,7 @@ namespace AsmDude.ErrorSquiggles {
 
         private readonly IDictionary<int, UndefinedLabelErrorData> _labelUndefined;
         private readonly IDictionary<int, LabelClashErrorData> _labelClashes;
-
-        private readonly IDictionary<string, int> _labelDefLineNumber;
-        private readonly IDictionary<string, IList<int>> _labelDefClashLineNumber;
+        private readonly LabelGraph _labelGraph;
 
         [Import]
         private AsmDudeTools _asmDudeTools = null;
@@ -47,12 +47,7 @@ namespace AsmDude.ErrorSquiggles {
 
             this._labelUndefined = new Dictionary<int, UndefinedLabelErrorData>();
             this._labelClashes = new Dictionary<int, LabelClashErrorData>();
-
-            this._labelDefLineNumber = new Dictionary<string, int>();
-            this._labelDefClashLineNumber = new Dictionary<string, IList<int>>();
-
-            this.initErrorCache();
-            //this.initErrorsTasks();
+            this._labelGraph = new LabelGraph(buffer, asmTagAggregator);
 
             this._view.TextBuffer.Changed += OnTextBufferChanged;
         }
@@ -137,53 +132,6 @@ namespace AsmDude.ErrorSquiggles {
             public string msg { get { return this._errorTask.Text; } set { this._errorTask.Text = value; } }
         }
 
-        private void initErrorCache() {
-            //AsmDudeToolsStatic.Output(string.Format("INFO: initErrorCache"));
-            this._labelDefLineNumber.Clear();
-            this._labelDefClashLineNumber.Clear();
-
-            ITextSnapshot snapshot = _sourceBuffer.CurrentSnapshot;
-
-            #region initialize label caches
-            for (int lineNumber = 0; lineNumber < snapshot.LineCount; ++lineNumber) {
-                foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in _aggregator.GetTags(snapshot.GetLineFromLineNumber(lineNumber).Extent)) {
-
-                    SnapshotSpan span = asmTokenSpan.Span.GetSpans(snapshot)[0];
-                    //AsmDudeToolsStatic.Output(string.Format("INFO: initAllErrors: line={0}; keyword=\"{1}\"", lineNumber, span.GetText()));
-
-                    switch (asmTokenSpan.Tag.type) {
-                        case AsmTokenType.LabelDef:
-                            string label = span.GetText();
-                            if (this._labelDefLineNumber.ContainsKey(label)) {
-                                if (this._labelDefLineNumber[label] == lineNumber) {
-                                    AsmDudeToolsStatic.Output(string.Format("WARNING: initAllErrors: label={0}; line={1}", label, lineNumber));
-                                } else {
-                                    if (this._labelDefClashLineNumber.ContainsKey(label)) {
-                                        this._labelDefClashLineNumber[label].Add(lineNumber);
-                                    } else {
-                                        IList<int> lineNumbers = new List<int> { this._labelDefLineNumber[label], lineNumber };
-                                        this._labelDefClashLineNumber.Add(label, lineNumbers);
-                                    }
-                                }
-                            } else {
-                                this._labelDefLineNumber.Add(label, lineNumber);
-                            }
-                            break;
-                        default: break;
-                    }
-                }
-            }
-            #endregion initialize label caches
-            if (false) {
-                foreach (KeyValuePair<string, int> entry in _labelDefLineNumber) {
-                    AsmDudeToolsStatic.Output(string.Format("INFO: initAllErrors: label Def: line={0}; label={1}", entry.Value, entry.Key));
-                }
-                foreach (KeyValuePair<string, IList<int>> entry in _labelDefClashLineNumber) {
-                    AsmDudeToolsStatic.Output(string.Format("INFO: initAllErrors: label Clash: label={0}; lines={1}", entry.Key, string.Join(",", entry.Value)));
-                }
-            }
-        }
-
         private void initErrorsTasks() {
             /*
             AsmDudeToolsStatic.Output(string.Format("INFO: initAllErrors: number of error tasks={0}", this._errorListProvider.Tasks.Count));
@@ -252,7 +200,7 @@ namespace AsmDude.ErrorSquiggles {
                             //this.removeUndefinedLabelError(lineNumber);
                             string label = span.GetText();
 
-                            if (!this._labelDefLineNumber.ContainsKey(label)) {
+                            if (!this._labelGraph.labelDefInfo.ContainsKey(label)) {
                                 yield return new TagSpan<ErrorTag>(span, new ErrorTag("warning", "Undefined Label"));
                             }
                             break;
@@ -266,8 +214,16 @@ namespace AsmDude.ErrorSquiggles {
                             //this.removeLabelClashError(lineNumber);
                             string label = span.GetText();
 
-                            if (this._labelDefClashLineNumber.ContainsKey(label)) {
-                                yield return new TagSpan<ErrorTag>(span, new ErrorTag("warning", "Label Clash"));
+                            if (this._labelGraph.labelDefClashInfo.ContainsKey(label)) {
+
+                                StringBuilder sb = new StringBuilder();
+                                sb.AppendLine("Label Clash");
+                                foreach (int lineNumber in new SortedSet<int>(this._labelGraph.labelDefClashInfo[label])) {
+                                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
+                                    sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label defined at LINE {0}: {1}", lineNumber + 1, lineContent)));
+                                }
+                                string msg = sb.ToString().TrimEnd(Environment.NewLine.ToCharArray());
+                                yield return new TagSpan<ErrorTag>(span, new ErrorTag("warning", msg));
                             }
                             break;
                         }
@@ -320,7 +276,7 @@ namespace AsmDude.ErrorSquiggles {
             AsmDudeToolsStatic.Output(string.Format("INFO: LabelErrorTagger:updateLabelDef: line={0}; keyword \"{1}\" is a labelDef", lineNumber, label));
 
             string clashDesc = "";
-            foreach (KeyValuePair<string, int> entry in this._labelDefLineNumber) {
+            foreach (KeyValuePair<string, int> entry in this._labelGraph.labelDefInfo) {
                 if (entry.Key.Equals(label) && (entry.Value != lineNumber)) {
                     if (clashDesc.Length == 0) {
                         clashDesc = AsmDudeToolsStatic.cleanup("Multiple definitions for LABEL \"" + label + "\"") + Environment.NewLine;
@@ -362,16 +318,15 @@ namespace AsmDude.ErrorSquiggles {
 
             //            if (e.Changes.IncludesLineChanges) {
             if (true) {
-                    this.initErrorCache();
-                } else {
-                    foreach (ITextChange textChange in e.Changes) {
-                        if (textChange.LineCountDelta != 0) {
-                            int newLineNumber = e.After.GetLineNumberFromPosition(textChange.NewPosition);
-                            int oldLineNumber = e.Before.GetLineNumberFromPosition(textChange.OldPosition);
-                            this.onTextChange(textChange, oldLineNumber, newLineNumber);
-                        }
+                this._labelGraph.reset();
+            } else {
+                foreach (ITextChange textChange in e.Changes) {
+                    if (textChange.LineCountDelta != 0) {
+                        int newLineNumber = e.After.GetLineNumberFromPosition(textChange.NewPosition);
+                        int oldLineNumber = e.Before.GetLineNumberFromPosition(textChange.OldPosition);
+                        this.onTextChange(textChange, oldLineNumber, newLineNumber);
                     }
-//                }
+                }
             }
 
             TagsChanged(this, new SnapshotSpanEventArgs(new SnapshotSpan(_sourceBuffer.CurrentSnapshot, new Span(0, _sourceBuffer.CurrentSnapshot.Length))));

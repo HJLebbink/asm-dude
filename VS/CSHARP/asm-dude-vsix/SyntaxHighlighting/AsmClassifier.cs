@@ -75,12 +75,7 @@ namespace AsmDude {
                 }
                 foreach (IMappingTagSpan<AsmTokenTag> tagSpan in _aggregator.GetTags(spans)) {
                     NormalizedSnapshotSpanCollection tagSpans = tagSpan.Span.GetSpans(spans[0].Snapshot);
-                    IClassificationType asmType = _asmTypes[tagSpan.Tag.type];
-                    if (asmType == null) {
-                        Debug.WriteLine("AsmClassifier:GetTags: asmType is null for " + tagSpan.Tag.type);
-                    } else {
-                        yield return new TagSpan<ClassificationTag>(tagSpans[0], new ClassificationTag(asmType));
-                    }
+                    yield return new TagSpan<ClassificationTag>(tagSpans[0], new ClassificationTag(_asmTypes[tagSpan.Tag.type]));
                 }
                 double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
                 if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {

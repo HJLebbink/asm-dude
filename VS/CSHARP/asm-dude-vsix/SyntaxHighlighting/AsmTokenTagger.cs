@@ -192,7 +192,7 @@ namespace AsmDude {
 
             double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
             if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
-                AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0:F3} seconds to make ASM tags.", elapsedSec));
+                AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took AsmTokenTagger {0:F3} seconds to tags {1} spans.", elapsedSec, spans.Count));
             }
         }
 

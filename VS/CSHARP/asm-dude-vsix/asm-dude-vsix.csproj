@@ -256,7 +256,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsmDudePackage.cs" />
-    <Compile Include="AsmDudeTools.cs" />
+    <Compile Include="Tools\AsmDudeTools.cs" />
     <Compile Include="AsmDoc\AsmDocClassifier.cs" />
     <Compile Include="AsmDoc\AsmDocMouseHandler.cs" />
     <Compile Include="BraceMatching\BraceMatchingTagger.cs" />
@@ -319,6 +319,7 @@
     <Compile Include="QuickInfo\AsmQuickInfoControllerProvider.cs" />
     <Compile Include="QuickInfo\AsmQuickInfoSource.cs" />
     <Compile Include="QuickInfo\AsmQuickInfoSourceProvider.cs" />
+    <Compile Include="Tools\LabelGraph.cs" />
     <Compile Include="VsPackage.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
