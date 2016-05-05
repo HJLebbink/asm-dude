@@ -113,10 +113,10 @@ namespace AsmDude.QuickInfo {
                                 description = (descr.Length > 0) ? descr : "Label " + keyword;
                                 break;
                             }
-                        case AsmTokenType.Constant: {
-                                description = "Constant " + keyword;
-                                break;
-                            }
+                        //case AsmTokenType.Constant: {
+                        //        description = "Constant " + keyword;
+                        //        break;
+                        //    }
                         default:
                             break;
                     }

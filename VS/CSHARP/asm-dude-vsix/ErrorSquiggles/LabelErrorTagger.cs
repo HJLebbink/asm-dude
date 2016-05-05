@@ -5,7 +5,6 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.TextManager.Interop;
 using System;
@@ -46,7 +45,7 @@ namespace AsmDude.ErrorSquiggles {
             this._labelClashes = new Dictionary<int, LabelClashErrorData>();
             this._labelGraph = new LabelGraph(buffer, asmTagAggregator);
 
-            this._sourceBuffer.Changed += OnTextBufferChanged;
+            this._sourceBuffer.ChangedLowPriority += OnTextBufferChanged;
         }
 
         [Flags]
@@ -232,7 +231,7 @@ namespace AsmDude.ErrorSquiggles {
 
             double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
             if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
-                AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0:F3} seconds to make error tags.", elapsedSec));
+                AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took LabelErrorTagger {0:F3} seconds to make error tags.", elapsedSec));
             }
         }
 
@@ -276,24 +275,26 @@ namespace AsmDude.ErrorSquiggles {
         }
         #endregion
 
-        private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
+        async private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
             //AsmDudeToolsStatic.Output(string.Format("INFO: LabelErrorTagger:OnTextBufferChanged: number of changes={0}; first change: old={1}; new={2}", e.Changes.Count, e.Changes[0].OldText, e.Changes[0].NewText));
 
-            HashSet <int> relatedLineNumber;
-            if (e.Changes.Count == 1) {
-                int lineNumber = e.After.GetLineNumberFromPosition(e.Changes[0].NewPosition);
-                relatedLineNumber = this._labelGraph.getRelatedLineNumber(lineNumber);
-            } else {
-                relatedLineNumber = new HashSet<int>();
-                foreach (ITextChange textChange in e.Changes) {
-                    int lineNumber = e.After.GetLineNumberFromPosition(textChange.NewPosition);
-                    relatedLineNumber.UnionWith(this._labelGraph.getRelatedLineNumber(lineNumber));
+            await System.Threading.Tasks.Task.Run(() => {
+                HashSet<int> relatedLineNumber;
+                if (e.Changes.Count == 1) {
+                    int lineNumber = e.After.GetLineNumberFromPosition(e.Changes[0].NewPosition);
+                    relatedLineNumber = this._labelGraph.getRelatedLineNumber(lineNumber);
+                } else {
+                    relatedLineNumber = new HashSet<int>();
+                    foreach (ITextChange textChange in e.Changes) {
+                        int lineNumber = e.After.GetLineNumberFromPosition(textChange.NewPosition);
+                        relatedLineNumber.UnionWith(this._labelGraph.getRelatedLineNumber(lineNumber));
+                    }
                 }
-            }
 
-            foreach (int lineNumber in relatedLineNumber) {
-                TagsChanged(this, new SnapshotSpanEventArgs(this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent));
-            }
+                foreach (int lineNumber in relatedLineNumber) {
+                    TagsChanged(this, new SnapshotSpanEventArgs(this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent));
+                }
+            });
         }
 
         private void navigateHandler(object sender, EventArgs arguments) {

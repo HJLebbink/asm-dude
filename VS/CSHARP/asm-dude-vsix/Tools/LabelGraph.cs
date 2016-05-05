@@ -5,11 +5,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AsmDude.Tools {
 
-    public class LabelGraph : IDisposable {
+    public sealed class LabelGraph : IDisposable {
         private static readonly SortedSet<int> emptySet = new SortedSet<int>();
 
         private readonly ITextBuffer _sourceBuffer;
@@ -20,8 +21,10 @@ namespace AsmDude.Tools {
         private readonly IDictionary<int, IMappingTagSpan<AsmTokenTag>> _hasLabel;
         private readonly IDictionary<int, IMappingTagSpan<AsmTokenTag>> _hasDef;
 
+        private object _updateLock = new object();
 
         public LabelGraph(ITextBuffer buffer, ITagAggregator<AsmTokenTag> aggregator) {
+            AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:constructor"));
             _sourceBuffer = buffer;
             _aggregator = aggregator;
 
@@ -30,15 +33,12 @@ namespace AsmDude.Tools {
             _hasLabel = new Dictionary<int, IMappingTagSpan<AsmTokenTag>>();
             _hasDef = new Dictionary<int, IMappingTagSpan<AsmTokenTag>>();
 
-            this.reset();
+            this.reset_Async();
             this._sourceBuffer.ChangedLowPriority += OnTextBufferChanged;
         }
 
         public bool hasLabel(string label) {
-            if (this._defAt.ContainsKey(label)) {
-                return true;
-            }
-            return false;
+            return this._defAt.ContainsKey(label);
         }
 
         public bool hasLabelClash(string label) {
@@ -52,11 +52,11 @@ namespace AsmDude.Tools {
         public SortedSet<int> getLabelDefLineNumbers(string label) {
             IList<IMappingTagSpan<AsmTokenTag>> list;
             if (this._defAt.TryGetValue(label, out list)) {
-                SortedSet<int> clashes1 = new SortedSet<int>();
+                SortedSet<int> lineNumbers = new SortedSet<int>();
                 foreach (IMappingTagSpan<AsmTokenTag> asmTag in list) {
-                    clashes1.Add(getLineNumber(asmTag));
+                    lineNumbers.Add(getLineNumber(asmTag));
                 }
-                return clashes1;
+                return lineNumbers;
             } else {
                 return emptySet;
             }
@@ -82,11 +82,11 @@ namespace AsmDude.Tools {
 
                     SnapshotSpan span = asmTokenSpan.Span.GetSpans(snapshot)[0];
                     int lineNumber = getLineNumber(span);
-                    AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:labelUsedAtInfo: label {0} has lineNumber={1}", label, lineNumber));
-                    string label2 = span.GetText();
-                    if (!label2.Equals(label)) {
-                        AsmDudeToolsStatic.Output(string.Format("ERROR: LabelGraph:labelUsedAtInfo:"));
-                    }
+                    //AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:labelUsedAtInfo: label {0} has lineNumber={1}", label, lineNumber));
+                    //string label2 = span.GetText();
+                    //if (!label2.Equals(label)) {
+                    //    AsmDudeToolsStatic.Output(string.Format("ERROR: LabelGraph:labelUsedAtInfo:"));
+                    //}
                     lines2.Add(lineNumber);
                 }
                 return lines2;
@@ -95,28 +95,25 @@ namespace AsmDude.Tools {
             }
         }
 
-        public string toString() {
-            StringBuilder sb = new StringBuilder();
-            /*
-            foreach (KeyValuePair<string, int> entry in this._definedAt) {
-                sb.AppendLine(string.Format("INFO: getLabelDefinitionInfo: label Def: line={0}; label={1}", entry.Value, entry.Key));
-            }
-            foreach (KeyValuePair<string, IList<int>> entry in this._labelDefClashLineNumber) {
-                sb.AppendLine(string.Format("INFO: getLabelDefinitionInfo: label Clash: label={0}; lines={1}", entry.Key, string.Join(",", entry.Value)));
-            }
-            */
-            return sb.ToString();
+        public void reset_Async() {
+            ThreadPool.QueueUserWorkItem(reset_private);
         }
 
-        public void reset() {
+        private void reset_private(object threadContext) {
+            reset_Sync();
+        }
+
+        public void reset_Sync() {
             DateTime time1 = DateTime.Now;
+            lock (_updateLock) {
 
-            _usedAt.Clear();
-            _defAt.Clear();
-            _hasLabel.Clear();
-            _hasDef.Clear();
+                _usedAt.Clear();
+                _defAt.Clear();
+                _hasLabel.Clear();
+                _hasDef.Clear();
 
-            this.addAll();
+                this.addAll();
+            }
 
             double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
             if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
@@ -132,10 +129,14 @@ namespace AsmDude.Tools {
             // it does not work to find all the currently related line numbers. This because, 
             // due to a change in label name any other label can have become related. What works 
             // is to return all line numbers of current labels definitions and usages.
-
-            HashSet<int> results = new HashSet<int>(this._hasDef.Keys);
-            results.UnionWith(this._hasLabel.Keys);
-            return results;
+            lock (_updateLock) {
+                HashSet<int> lineNumbers = new HashSet<int>(this._hasDef.Keys);
+                lineNumbers.UnionWith(this._hasLabel.Keys);
+                if (false) {
+                    AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:getRelatedLineNumber results {0}", string.Join(",", lineNumbers)));
+                }
+                return lineNumbers;
+            }
         }
 
 
@@ -150,60 +151,60 @@ namespace AsmDude.Tools {
             return span.Snapshot.GetLineNumberFromPosition(span.Start);
         }
 
-        async private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
+        private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
             AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:OnTextBufferChanged: number of changes={0}; first change: old={1}; new={2}", e.Changes.Count, e.Changes[0].OldText, e.Changes[0].NewText));
-            await Task.Run(() => {
-                if (true) {
-                    this.reset();
-                } else {
-                    foreach (ITextChange textChange in e.Changes) {
-                        int lineNumber = e.Before.GetLineNumberFromPosition(textChange.OldPosition);
-                        this.addLineNumber(lineNumber);
-                        this.removeDefLineNumber(lineNumber);
-                        this.removeUsageLineNumber(lineNumber);
-                        if (textChange.LineCountDelta != 0) {
-                            //this.shiftLineNumber(lineNumber, textChange.LineCountDelta);
-                        }
+            if (true) {
+                this.reset_Async();
+            } else {
+                foreach (ITextChange textChange in e.Changes) {
+                    int lineNumber = e.Before.GetLineNumberFromPosition(textChange.OldPosition);
+                    this.addLineNumber(lineNumber);
+                    this.removeDefLineNumber(lineNumber);
+                    this.removeUsageLineNumber(lineNumber);
+                    if (textChange.LineCountDelta != 0) {
+                        //this.shiftLineNumber(lineNumber, textChange.LineCountDelta);
                     }
                 }
-            });
+            }
         }
 
         private void addAsmTag(int lineNumber, IMappingTagSpan<AsmTokenTag> asmTokenSpan) {
-            switch (asmTokenSpan.Tag.type) {
-                case AsmTokenType.LabelDef: {
-                        string label = getText(asmTokenSpan);
-
-                        IList<IMappingTagSpan<AsmTokenTag>> list;
-                        if (this._defAt.TryGetValue(label, out list)) {
-                            list.Add(asmTokenSpan);
-                        } else {
-                            this._defAt.Add(label, new List<IMappingTagSpan<AsmTokenTag>> { asmTokenSpan });
+            lock (_updateLock) {
+                switch (asmTokenSpan.Tag.type) {
+                    case AsmTokenType.LabelDef: {
+                            if (this._hasDef.ContainsKey(lineNumber)) {
+                                //This happens with the an update is not finished and a second update interleaves
+                                //AsmDudeToolsStatic.Output(string.Format("WARNING: LabelGraph:addLineNumber: hasDef already has a value for lineNumber={0} with label={1}", lineNumber, getText(this._hasDef[lineNumber])));
+                            } else {
+                                string label = getText(asmTokenSpan);
+                                IList<IMappingTagSpan<AsmTokenTag>> list;
+                                if (this._defAt.TryGetValue(label, out list)) {
+                                    list.Add(asmTokenSpan);
+                                } else {
+                                    this._defAt.Add(label, new List<IMappingTagSpan<AsmTokenTag>> { asmTokenSpan });
+                                }
+                                this._hasDef.Add(lineNumber, asmTokenSpan);
+                            }
+                            break;
                         }
-                        if (this._hasDef.ContainsKey(lineNumber)) {
-                            AsmDudeToolsStatic.Output(string.Format("WARNING: LabelGraph:addLineNumber: hasDef already has a value for lineNumber {0}", lineNumber));
-                            this._hasDef.Remove(lineNumber);
+                    case AsmTokenType.Label: {
+                            if (this._hasLabel.ContainsKey(lineNumber)) {
+                                //This happens with the an update is not finished and a second update interleaves
+                                //AsmDudeToolsStatic.Output(string.Format("WARNING: LabelGraph:addLineNumber: hasLabel already has a value for lineNumber={0} with label={1}", lineNumber, getText(this._hasLabel[lineNumber])));
+                            } else {
+                                string label = getText(asmTokenSpan);
+                                IList<IMappingTagSpan<AsmTokenTag>> list;
+                                if (this._usedAt.TryGetValue(label, out list)) {
+                                    list.Add(asmTokenSpan);
+                                } else {
+                                    this._usedAt.Add(label, new List<IMappingTagSpan<AsmTokenTag>> { asmTokenSpan });
+                                }
+                                this._hasLabel.Add(lineNumber, asmTokenSpan);
+                            }
+                            break;
                         }
-                        this._hasDef.Add(lineNumber, asmTokenSpan);
-                        break;
-                    }
-                case AsmTokenType.Label: {
-                        string label = getText(asmTokenSpan);
-
-                        IList<IMappingTagSpan<AsmTokenTag>> list;
-                        if (this._usedAt.TryGetValue(label, out list)) {
-                            list.Add(asmTokenSpan);
-                        } else {
-                            this._usedAt.Add(label, new List<IMappingTagSpan<AsmTokenTag>> { asmTokenSpan });
-                        }
-                        if (this._hasLabel.ContainsKey(lineNumber)) {
-                            AsmDudeToolsStatic.Output(string.Format("WARNING: LabelGraph:addLineNumber: hasLabel already has a value for lineNumber {0}", lineNumber));
-                            this._hasLabel.Remove(lineNumber);
-                        }
-                        this._hasLabel.Add(lineNumber, asmTokenSpan);
-                        break;
-                    }
-                default: break;
+                    default: break;
+                }
             }
         }
 

@@ -70,10 +70,10 @@ namespace AsmDude.HighlightWord {
         private object _updateLock = new object();
 
         // The current set of words to highlight
-        private NormalizedSnapshotSpanCollection _wordSpans { get; set; }
+        private NormalizedSnapshotSpanCollection _wordSpans;
 
         private string _currentWord { get; set; }
-        private SnapshotSpan? _currentWordSpan { get; set; }
+        private SnapshotSpan? _currentWordSpan;
 
         private string _newWord { get; set; }
         private SnapshotSpan? _newWordSpan { get; set; }

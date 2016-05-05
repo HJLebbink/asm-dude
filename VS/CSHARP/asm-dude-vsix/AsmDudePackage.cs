@@ -45,7 +45,7 @@ namespace AsmDude {
     public sealed class AsmDudePackage : Package {
 
         internal const string AsmDudeContentType = "asm!";
-        internal const double slowWarningThresholdSec = 0.2; // threshold to warn that actions are considered slow
+        internal const double slowWarningThresholdSec = 0.05; // threshold to warn that actions are considered slow
         internal const int maxNumberOfCharsInToolTips = 150;
 
         #region Member Variables
@@ -74,7 +74,7 @@ namespace AsmDude {
             sb.AppendLine(@"|__|__|___|_|_|_|____/|___|___|___|");
             sb.AppendLine(string.Format("INFO: Loaded AsmDude version {0}.", typeof(AsmDudePackage).Assembly.GetName().Version));
             sb.AppendLine(string.Format("INFO: Open source assembly extension. Making programming in assembler bearable."));
-            sb.AppendLine(string.Format("INFO: Why? Because programming assembly is an art which exists outside of contemporary computer science fads and fashions."));
+            //sb.AppendLine(string.Format("INFO: Why? Because programming assembly is an art which exists outside of contemporary computer science fads and fashions."));
 
             sb.AppendLine(string.Format("INFO: More info at https://github.com/HJLebbink/asm-dude"));
             sb.AppendLine("----------------------------------");
