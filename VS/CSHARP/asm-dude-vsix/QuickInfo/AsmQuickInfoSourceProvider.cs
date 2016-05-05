@@ -25,6 +25,7 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
+using System;
 using System.ComponentModel.Composition;
 
 namespace AsmDude.QuickInfo {
@@ -41,8 +42,12 @@ namespace AsmDude.QuickInfo {
         private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
 
         public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer buffer) {
-            ITagAggregator<AsmTokenTag> asmTagAggregator = _aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
-            return new AsmQuickInfoSource(buffer, asmTagAggregator);
+
+            Func<AsmQuickInfoSource> sc = delegate () {
+                ITagAggregator<AsmTokenTag> asmTagAggregator = _aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
+                return new AsmQuickInfoSource(buffer, asmTagAggregator);
+            };
+            return buffer.Properties.GetOrCreateSingletonProperty<AsmQuickInfoSource>(sc);
         }
     }
 }

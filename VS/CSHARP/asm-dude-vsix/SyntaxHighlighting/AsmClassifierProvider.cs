@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
+using System;
 using System.ComponentModel.Composition;
 
 namespace AsmDude.SyntaxHighlighting {
@@ -38,8 +39,12 @@ namespace AsmDude.SyntaxHighlighting {
         private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
 
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag {
-            ITagAggregator<AsmTokenTag> asmTagAggregator = _aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
-            return new AsmClassifier(buffer, asmTagAggregator, _classificationTypeRegistry) as ITagger<T>;
+            Func<ITagger<T>> sc = delegate () {
+                ITagAggregator<AsmTokenTag> asmTagAggregator = _aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
+                return new AsmClassifier(buffer, asmTagAggregator, _classificationTypeRegistry) as ITagger<T>;
+            };
+            return buffer.Properties.GetOrCreateSingletonProperty<ITagger<T>>(sc);
+
         }
     }
 }

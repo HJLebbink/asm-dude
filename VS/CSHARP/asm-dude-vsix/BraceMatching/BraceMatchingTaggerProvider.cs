@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
+using System;
 using System.ComponentModel.Composition;
 
 namespace AsmDude.BraceMatching {
@@ -18,7 +19,10 @@ namespace AsmDude.BraceMatching {
             if (textView.TextBuffer != buffer) {
                 return null;
             }
-            return new BraceMatchingTagger(textView, buffer) as ITagger<T>;
+            Func<ITagger<T>> sc = delegate () {
+                return new BraceMatchingTagger(textView, buffer) as ITagger<T>;
+            };
+            return buffer.Properties.GetOrCreateSingletonProperty<ITagger<T>>(sc);
         }
     }
 }

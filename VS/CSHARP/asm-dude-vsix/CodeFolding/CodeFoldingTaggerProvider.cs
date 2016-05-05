@@ -29,7 +29,7 @@ using System.ComponentModel.Composition;
 namespace AsmDude.CodeFolding {
 
     /// <summary>
-    /// Export a <see cref="IViewTaggerProvider"/>
+    /// Export a <see cref="ITaggerProvider"/>
     /// </summary>
     [Export(typeof(ITaggerProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
@@ -43,7 +43,6 @@ namespace AsmDude.CodeFolding {
         /// <param name="textView"> The text view we are creating a tagger for</param>
         /// <returns> Returns a OutliningTagger instance</returns>
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag {
-
             //Debug.WriteLine("INFO: TaggerProvider:CreateTagger: entering");
             Func<ITagger<T>> sc = delegate () {
                 return new CodeFoldingTagger(buffer) as ITagger<T>;

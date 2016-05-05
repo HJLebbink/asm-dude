@@ -1,12 +1,17 @@
-﻿using AsmDude.SyntaxHighlighting;
-using Microsoft.VisualStudio.Text;
+﻿using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
+using System;
 using System.ComponentModel.Composition;
+
+using AsmDude.SyntaxHighlighting;
 
 namespace AsmDude.ErrorSquiggles {
 
+    /// <summary>
+    /// Export a <see cref="IViewTaggerProvider"/>
+    /// </summary>
     [Export(typeof(IViewTaggerProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [TagType(typeof(ErrorTag))]
@@ -16,15 +21,12 @@ namespace AsmDude.ErrorSquiggles {
         private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag {
-            if (textView == null) {
-                return null;
-            }
-            //provide Error Squiggles only on the top-level buffer
-            if (textView.TextBuffer != buffer) {
-                return null;
-            }
-            ITagAggregator<AsmTokenTag> asmTagAggregator = _aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
-            return new LabelErrorTagger(textView, buffer, asmTagAggregator) as ITagger<T>;
+
+            Func<ITagger<T>> sc = delegate () {
+                ITagAggregator<AsmTokenTag> asmTagAggregator = _aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
+                return new LabelErrorTagger(buffer, asmTagAggregator) as ITagger<T>;
+            };
+            return buffer.Properties.GetOrCreateSingletonProperty<ITagger<T>>(sc);
         }
     }
 }

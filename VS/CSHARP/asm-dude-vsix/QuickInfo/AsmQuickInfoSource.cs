@@ -47,12 +47,12 @@ namespace AsmDude.QuickInfo {
         [Import]
         private AsmDudeTools _asmDudeTools = null;
 
-        public AsmQuickInfoSource(ITextBuffer buffer, ITagAggregator<AsmTokenTag> asmTagAggregator) {
-            this._aggregator = asmTagAggregator;
+        public AsmQuickInfoSource(ITextBuffer buffer, ITagAggregator<AsmTokenTag> aggregator) {
+            this._aggregator = aggregator;
             this._sourceBuffer = buffer;
 
             AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
-            this._labelGraph = new LabelGraph(buffer, asmTagAggregator);
+            this._labelGraph = new LabelGraph(buffer, aggregator);
         }
 
         /// <summary>
@@ -135,31 +135,21 @@ namespace AsmDude.QuickInfo {
         }
 
         private string getLabelDescription(string label) {
-
-            if (this._labelGraph.labelDefClashInfo.ContainsKey(label)) {
-                StringBuilder sb = new StringBuilder();
-                foreach (int lineNumber in new SortedSet<int>(this._labelGraph.labelDefClashInfo[label])) {
-                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
-                    sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label defined at LINE {0}: {1}", lineNumber + 1, lineContent)));
-                }
-                string result = sb.ToString();
-                return result.TrimEnd(Environment.NewLine.ToCharArray());
-            } else if (this._labelGraph.labelDefInfo.ContainsKey(label)) {
-                int lineNumber = this._labelGraph.labelDefInfo[label];
-                string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
-                return AsmDudeToolsStatic.cleanup(string.Format("Label defined at LINE {0}: {1}", lineNumber + 1, lineContent));
+            StringBuilder sb = new StringBuilder();
+            foreach (int lineNumber in this._labelGraph.getLabelDefLineNumbers(label)) {
+                sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label defined at LINE {0}: {1}", lineNumber + 1, this.getLineContent(lineNumber))));
             }
-            return ""; // do not provide warning message here; that is handled in labelErrorTagger
+            string result = sb.ToString();
+            return result.TrimEnd(Environment.NewLine.ToCharArray());
         }
 
         private string getLabelDefDescription(string label) {
 
-            if (this._labelGraph.labelUsedAtInfo.ContainsKey(label)) {
+            SortedSet<int> usage = this._labelGraph.labelUsedAtInfo(label);
+            if (usage.Count > 0) {
                 StringBuilder sb = new StringBuilder();
-                foreach (int lineNumber in new SortedSet<int>(this._labelGraph.labelUsedAtInfo[label])) {
-                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
-                    //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:getLabelDefDescription; line content=\"{1}\"", this.ToString(), lineContent));
-                    sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label used at LINE {0}: {1}", lineNumber + 1, lineContent)));
+                foreach (int lineNumber in usage) {
+                    sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label used at LINE {0}: {1}", lineNumber + 1, this.getLineContent(lineNumber))));
                     //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:getLabelDefDescription; sb=\"{1}\"", this.ToString(), sb.ToString()));
                 }
                 string result = sb.ToString();
@@ -167,6 +157,10 @@ namespace AsmDude.QuickInfo {
             } else {
                 return AsmDudeToolsStatic.cleanup(string.Format("Unused Label {0}", label));
             }
+        }
+
+        private string getLineContent(int lineNumber) {
+            return this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
         }
 
         public void Dispose() {

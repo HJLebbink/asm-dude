@@ -25,6 +25,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
+using System;
 using System.ComponentModel.Composition;
 
 namespace AsmDude.HighlightWord {
@@ -52,7 +53,11 @@ namespace AsmDude.HighlightWord {
             if (textView.TextBuffer != buffer) {
                 return null;
             }
-            return new HighlightWordTagger(textView, buffer, _textSearchService) as ITagger<T>;
+
+            Func<ITagger<T>> sc = delegate () {
+                return new HighlightWordTagger(textView, buffer, _textSearchService) as ITagger<T>;
+            };
+            return buffer.Properties.GetOrCreateSingletonProperty<ITagger<T>>(sc);
         }
     }
 }
