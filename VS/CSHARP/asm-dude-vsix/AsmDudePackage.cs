@@ -45,7 +45,7 @@ namespace AsmDude {
     public sealed class AsmDudePackage : Package {
 
         internal const string AsmDudeContentType = "asm!";
-        internal const double slowWarningThresholdSec = 0.05; // threshold to warn that actions are considered slow
+        internal const double slowWarningThresholdSec = 0.2; // threshold to warn that actions are considered slow
         internal const int maxNumberOfCharsInToolTips = 150;
 
         #region Member Variables

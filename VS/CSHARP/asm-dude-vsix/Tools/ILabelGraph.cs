@@ -6,6 +6,7 @@ namespace AsmDude.Tools {
         SortedSet<int> getLabelDefLineNumbers(string label);
         HashSet<int> getRelatedLineNumber(int lineNumber);
 
+        bool isEnabled { get; }
         bool hasLabel(string label);
         bool hasLabelClash(string label);
         SortedSet<int> labelUsedAtInfo(string label);

@@ -28,8 +28,6 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
-using System.Globalization;
-using System.Diagnostics;
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Text.Classification;
@@ -186,7 +184,7 @@ namespace AsmDude.HighlightWord {
 
                 double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
                 if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
-                    AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0:F3} seconds to highlight string \"{1}\".", elapsedSec, this._newWord));
+                    AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took HighlightWordTagger {0:F3} seconds to highlight string \"{1}\".", elapsedSec, this._newWord));
                 }
                 //AsmDudeToolsStatic.Output(string.Format("INFO: took {0:F3} seconds to highlight string \"{1}\".", elapsedSec, this._newWord));
             } catch (Exception e) {

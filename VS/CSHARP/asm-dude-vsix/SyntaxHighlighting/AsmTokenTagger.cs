@@ -67,7 +67,7 @@ namespace AsmDude {
                 string line = containingLine.GetText();
                 int offset = containingLine.Start.Position;
 
-                #region handle labels definitions
+                #region Handle Labels Definitions
 
                 Tuple<bool, int, int> labelPos = AsmTools.AsmSourceTools.getLabelDefPos(line);
                 bool labelExists = labelPos.Item1;
@@ -82,9 +82,9 @@ namespace AsmDude {
                         yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenType.LabelDef));
                     }
                 }
-                #endregion
+                #endregion Handle Labels Definitions
 
-                #region remarks
+                #region Handle Remarks
                 // 1] find the first position (if any) of the remark char
                 Tuple<bool, int, int> remarkPos = AsmTools.AsmSourceTools.getRemarkPos(line);
                 bool remarkExists = remarkPos.Item1;
@@ -98,9 +98,9 @@ namespace AsmDude {
                         yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenType.Remark));
                     }
                 }
-                #endregion
+                #endregion Handle Remarks
 
-                #region opcode
+                #region Handle Opcodes
                 // we are only interested in text between labelEndPos+1 and remarkBeginPos
                 int beginPos = (labelExists) ? labelPos.Item3 - 1 : 0;
                 int endPos = (remarkExists) ? remarkPos.Item2 : line.Length;
@@ -132,6 +132,7 @@ namespace AsmDude {
                                         yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenType.Jump));
                                     } else {
                                         //AsmDudeToolsStatic.Output("AsmTokenTagger:GetTags: does this even happen? A");
+                                        // Yes this does happen, but why?
                                     }
                                     tup = getNextToken(tokenId, nextLoc, tokens);
                                     tokenId = tup.Item2;
@@ -144,7 +145,9 @@ namespace AsmDude {
 
                                         tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
                                         if (tokenSpan.IntersectsWith(curSpan)) {
-                                            if (asmToken.Equals("short", StringComparison.CurrentCultureIgnoreCase)) {
+                                            if (!asmToken.Equals("short", StringComparison.CurrentCultureIgnoreCase)) {
+                                                yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenType.Label));
+                                            } else { 
                                                 yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenType.Misc));
 
                                                 tup = getNextToken(tokenId, nextLoc, tokens);
@@ -154,15 +157,13 @@ namespace AsmDude {
                                                 if (tup.Item1) {
                                                     asmToken = tup.Item4;
                                                     curLoc = nextLoc - (asmToken.Length + 1);
-                                                    //Debug.WriteLine("label token " + tokenId + " at location " + curLoc + " = \"" + asmToken + "\"");
 
                                                     tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
                                                     if (tokenSpan.IntersectsWith(curSpan)) {
+                                                        AsmDudeToolsStatic.Output(string.Format("AsmTokenTagger:GetTags: label token {0} at location {1} = \"{2}\"", tokenId, curLoc, asmToken));
                                                         yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenType.Label));
                                                     }
                                                 }
-                                            } else {
-                                                yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenType.Label));
                                             }
                                         }
                                     }
@@ -187,12 +188,12 @@ namespace AsmDude {
                         }
                     }
                 }
-                #endregion
+                #endregion Handle Opcodes
             }
 
             double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
             if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
-                AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took AsmTokenTagger {0:F3} seconds to tags {1} spans.", elapsedSec, spans.Count));
+                AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took AsmTokenTagger {0:F3} seconds to tag", elapsedSec));
             }
         }
 

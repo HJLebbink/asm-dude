@@ -69,9 +69,16 @@ namespace AsmDude.QuickInfo {
                     return;
                 }
                 string keyword = "";
+                IEnumerable<IMappingTagSpan<AsmTokenTag>> enumerator = this._aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint));
 
-                foreach (IMappingTagSpan<AsmTokenTag> asmTokenTag in this._aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint))) {
+                if (enumerator.Count() > 0) {
 
+                    if (enumerator.Count() > 1) {
+                        AsmDudeToolsStatic.Output(string.Format("WARNING: {0}:AugmentQuickInfoSession. more than one tag! \"{1}\"", this.ToString(), enumerator.ElementAt(1).ToString()));
+                    }
+
+
+                    IMappingTagSpan<AsmTokenTag> asmTokenTag = enumerator.First();
                     SnapshotSpan tagSpan = asmTokenTag.Span.GetSpans(_sourceBuffer).First();
                     keyword = tagSpan.GetText();
 
@@ -118,6 +125,7 @@ namespace AsmDude.QuickInfo {
                         //        break;
                         //    }
                         default:
+                            //description = "Unused tagType " + asmTokenTag.Tag.type;
                             break;
                     }
                     if (description != null) {
@@ -127,7 +135,7 @@ namespace AsmDude.QuickInfo {
 
                 double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
                 if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
-                    AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0:F3} seconds to retrieve quick info for tag \"{1}\".", elapsedSec, keyword));
+                    AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took QuickInfo {0:F3} seconds to retrieve info for keyword \"{1}\".", elapsedSec, keyword));
                 }
             } catch (Exception e) {
                 AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:AugmentQuickInfoSession; e={1}", this.ToString(), e.ToString()));
@@ -135,27 +143,34 @@ namespace AsmDude.QuickInfo {
         }
 
         private string getLabelDescription(string label) {
-            StringBuilder sb = new StringBuilder();
-            foreach (int lineNumber in this._labelGraph.getLabelDefLineNumbers(label)) {
-                sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label defined at LINE {0}: {1}", lineNumber + 1, this.getLineContent(lineNumber))));
-            }
-            string result = sb.ToString();
-            return result.TrimEnd(Environment.NewLine.ToCharArray());
-        }
-
-        private string getLabelDefDescription(string label) {
-
-            SortedSet<int> usage = this._labelGraph.labelUsedAtInfo(label);
-            if (usage.Count > 0) {
+            if (this._labelGraph.isEnabled) {
                 StringBuilder sb = new StringBuilder();
-                foreach (int lineNumber in usage) {
-                    sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label used at LINE {0}: {1}", lineNumber + 1, this.getLineContent(lineNumber))));
-                    //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:getLabelDefDescription; sb=\"{1}\"", this.ToString(), sb.ToString()));
+                foreach (int lineNumber in this._labelGraph.getLabelDefLineNumbers(label)) {
+                    sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label defined at LINE {0}: {1}", lineNumber + 1, this.getLineContent(lineNumber))));
                 }
                 string result = sb.ToString();
                 return result.TrimEnd(Environment.NewLine.ToCharArray());
             } else {
-                return AsmDudeToolsStatic.cleanup(string.Format("Unused Label {0}", label));
+                return "Label analysis is disabled";
+            }
+        }
+
+        private string getLabelDefDescription(string label) {
+            if (this._labelGraph.isEnabled) {
+                SortedSet<int> usage = this._labelGraph.labelUsedAtInfo(label);
+                if (usage.Count > 0) {
+                    StringBuilder sb = new StringBuilder();
+                    foreach (int lineNumber in usage) {
+                        sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label used at LINE {0}: {1}", lineNumber + 1, this.getLineContent(lineNumber))));
+                        //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:getLabelDefDescription; sb=\"{1}\"", this.ToString(), sb.ToString()));
+                    }
+                    string result = sb.ToString();
+                    return result.TrimEnd(Environment.NewLine.ToCharArray());
+                } else {
+                    return AsmDudeToolsStatic.cleanup(string.Format("Unused Label {0}", label));
+                }
+            } else {
+                return "Label analysis is disabled";
             }
         }
 

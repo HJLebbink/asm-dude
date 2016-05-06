@@ -15,11 +15,11 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 using AsmTools;
-using System.Text.RegularExpressions;
-using Microsoft.VisualStudio.Text.Tagging;
-using AsmDude.SyntaxHighlighting;
+using System.Text;
 
 namespace AsmDude {
+
+#pragma warning disable CS0162
 
     public static class AsmDudeToolsStatic {
 
@@ -102,6 +102,7 @@ namespace AsmDude {
         /// <summary>
         /// Get all labels with context info contained in the provided text
         /// </summary>
+        [Obsolete("Use LabelGraph", false)]
         public static IDictionary<string, string> getLabelDescriptions(string text) {
             IDictionary<string, string> result = new Dictionary<string, string>();
             int lineNumber = 1; // start counting at one since that is what VS does
@@ -113,16 +114,17 @@ namespace AsmDude {
                     int labelBeginPos = labelPos.Item2;
                     int labelEndPos = labelPos.Item3;
                     string label = line.Substring(labelBeginPos, labelEndPos - labelBeginPos);
-                    string description = "";
+
+                    StringBuilder sb = new StringBuilder();
 
                     if (result.ContainsKey(label)) {
-                        description += description + Environment.NewLine;
+                        sb.AppendLine("");
                     }
-                    description += AsmDudeToolsStatic.cleanup("LINE " + lineNumber + ": " + line);
+                    sb.Append(AsmDudeToolsStatic.cleanup("LINE " + lineNumber + ": " + line));
                     if (result.ContainsKey(label)) {
-                        AsmDudeToolsStatic.Output(string.Format("INFO: multiple label definitions for label \"{0}\".", label));
+                        //AsmDudeToolsStatic.Output(string.Format("INFO: multiple label definitions for label \"{0}\".", label));
                     } else {
-                        result.Add(label, description);
+                        result.Add(label, sb.ToString());
                     }
 
                     //AsmDudeToolsStatic.Output(string.Format("INFO: getLabels: label=\"{0}\"; description=\"{1}\".", label, description));
@@ -218,6 +220,8 @@ namespace AsmDude {
             this.initData(); // load data for speed
         }
 
+        #region Public Methods
+
         public ICollection<string> getKeywords() {
             if (this._type == null) initData();
             return this._type.Keys;
@@ -227,11 +231,10 @@ namespace AsmDude {
             if (this._type == null) initData();
 
             AsmTokenType tokenType;
-            string k2 = keyword.ToUpper();
-            if (!this._type.TryGetValue(k2, out tokenType)) {
-                tokenType = AsmTokenType.UNKNOWN;
+            if (this._type.TryGetValue(keyword.ToUpper(), out tokenType)) {
+                return tokenType;
             }
-            return tokenType;
+            return AsmTokenType.UNKNOWN;
         }
 
         /// <summary>
@@ -279,8 +282,7 @@ namespace AsmDude {
         public bool isJumpMnenomic(string keyword) {
             if (this._type == null) initData();
             AsmTokenType tokenType;
-            string k2 = keyword.ToUpper();
-            if (this._type.TryGetValue(k2, out tokenType)) {
+            if (this._type.TryGetValue(keyword.ToUpper(), out tokenType)) {
                 return tokenType == AsmTokenType.Jump;
             } else {
                 return false;
@@ -293,8 +295,7 @@ namespace AsmDude {
         public bool isMnemonic(string keyword) {
             if (this._type == null) initData();
             AsmTokenType tokenType;
-            string k2 = keyword.ToUpper();
-            if (this._type.TryGetValue(k2, out tokenType)) {
+            if (this._type.TryGetValue(keyword.ToUpper(), out tokenType)) {
                 return tokenType == AsmTokenType.Mnemonic;
             } else {
                 return false;
@@ -315,7 +316,24 @@ namespace AsmDude {
             this._description = null;
         }
 
-        #region private stuff
+        public ErrorListProvider GetErrorListProvider() {
+
+            if (this._errorListProvider == null) {
+                IServiceProvider serviceProvider;
+                if (true) {
+                    serviceProvider = new ServiceProvider(Package.GetGlobalService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider)) as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
+                } else {
+                    serviceProvider = Package.GetGlobalService(typeof(IServiceProvider)) as ServiceProvider;
+                }
+                this._errorListProvider = new ErrorListProvider(serviceProvider);
+                this._errorListProvider.ProviderName = "Asm Errors";
+                this._errorListProvider.ProviderGuid = new Guid(EnvDTE.Constants.vsViewKindCode);
+            }
+            return this._errorListProvider;
+        }
+
+        #endregion Public Methods
+        #region Private Methods
 
         private void initData() {
             this._type = new Dictionary<string, AsmTokenType>();
@@ -430,26 +448,38 @@ namespace AsmDude {
             return this._xmlData;
         }
 
-        public ErrorListProvider GetErrorListProvider() {
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
 
-            if (this._errorListProvider == null) {
-                IServiceProvider serviceProvider;
-                if (true) {
-                    serviceProvider = new ServiceProvider(Package.GetGlobalService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider)) as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
-                } else {
-                    serviceProvider = Package.GetGlobalService(typeof(IServiceProvider)) as ServiceProvider;
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    this._errorListProvider.Dispose();
                 }
-                this._errorListProvider = new ErrorListProvider(serviceProvider);
-                this._errorListProvider.ProviderName = "Asm Errors";
-                this._errorListProvider.ProviderGuid = new Guid(EnvDTE.Constants.vsViewKindCode);
+
+                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+                // TODO: set large fields to null.
+
+                disposedValue = true;
             }
-            return this._errorListProvider;
         }
 
+        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+        // ~AsmDudeTools() {
+        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+        //   Dispose(false);
+        // }
+
+        // This code added to correctly implement the disposable pattern.
         public void Dispose() {
-            this._errorListProvider.Dispose();
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+            // TODO: uncomment the following line if the finalizer is overridden above.
+            // GC.SuppressFinalize(this);
         }
-
         #endregion
+
     }
+    #endregion Private Methods
+    #pragma warning restore CS0162
 }

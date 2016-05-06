@@ -178,6 +178,9 @@ namespace AsmDude.ErrorSquiggles {
             if (spans.Count == 0) {  //there is no content in the buffer
                 yield break;
             }
+            if (!this._labelGraph.isEnabled) {
+                yield break;
+            }
 
             DateTime time1 = DateTime.Now;
             
@@ -277,21 +280,22 @@ namespace AsmDude.ErrorSquiggles {
 
         async private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
             //AsmDudeToolsStatic.Output(string.Format("INFO: LabelErrorTagger:OnTextBufferChanged: number of changes={0}; first change: old={1}; new={2}", e.Changes.Count, e.Changes[0].OldText, e.Changes[0].NewText));
+            if (!this._labelGraph.isEnabled) return;
 
             await System.Threading.Tasks.Task.Run(() => {
-                HashSet<int> relatedLineNumber;
+                HashSet<int> relatedLineNumbers;
                 if (e.Changes.Count == 1) {
                     int lineNumber = e.After.GetLineNumberFromPosition(e.Changes[0].NewPosition);
-                    relatedLineNumber = this._labelGraph.getRelatedLineNumber(lineNumber);
+                    relatedLineNumbers = this._labelGraph.getRelatedLineNumber(lineNumber);
                 } else {
-                    relatedLineNumber = new HashSet<int>();
+                    relatedLineNumbers = new HashSet<int>();
                     foreach (ITextChange textChange in e.Changes) {
                         int lineNumber = e.After.GetLineNumberFromPosition(textChange.NewPosition);
-                        relatedLineNumber.UnionWith(this._labelGraph.getRelatedLineNumber(lineNumber));
+                        relatedLineNumbers.UnionWith(this._labelGraph.getRelatedLineNumber(lineNumber));
                     }
                 }
 
-                foreach (int lineNumber in relatedLineNumber) {
+                foreach (int lineNumber in relatedLineNumbers) {
                     TagsChanged(this, new SnapshotSpanEventArgs(this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent));
                 }
             });
