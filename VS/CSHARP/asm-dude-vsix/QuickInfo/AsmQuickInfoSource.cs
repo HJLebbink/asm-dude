@@ -32,6 +32,11 @@ using AsmDude.SyntaxHighlighting;
 using System.Text;
 using AsmTools;
 using AsmDude.Tools;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Drawing;
+using System.Windows.Media;
 
 namespace AsmDude.QuickInfo {
 
@@ -47,6 +52,8 @@ namespace AsmDude.QuickInfo {
         [Import]
         private AsmDudeTools _asmDudeTools = null;
 
+        public object CSharpEditorResources { get; private set; }
+
         public AsmQuickInfoSource(ITextBuffer buffer, ITagAggregator<AsmTokenTag> aggregator) {
             this._aggregator = aggregator;
             this._sourceBuffer = buffer;
@@ -54,6 +61,20 @@ namespace AsmDude.QuickInfo {
             AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
             this._labelGraph = new LabelGraph(buffer, aggregator);
         }
+
+        private static Run makeRun1(string str) {
+            Run r1 = new Run(str);
+            r1.FontWeight = FontWeights.Bold;
+            return r1;
+        }
+
+        private static Run makeRun2(string str, System.Drawing.Color color) {
+            Run r1 = new Run(str);
+            r1.FontWeight = FontWeights.Bold;
+            r1.Foreground = new SolidColorBrush(AsmDudeToolsStatic.convertColor(color));
+            return r1;
+        }
+
 
         /// <summary>
         /// Determine which pieces of Quickinfo content should be displayed
@@ -86,38 +107,84 @@ namespace AsmDude.QuickInfo {
                     string keywordUpper = keyword.ToUpper();
                     applicableToSpan = snapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
 
-                    string description = null;
+                    TextBlock description = null;
 
                     switch (asmTokenTag.Tag.type) {
                         case AsmTokenType.Misc: {
+                                description = new TextBlock();
+                                description.Inlines.Add(makeRun1("Keyword "));
+                                description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Misc));
+
                                 string descr = this._asmDudeTools.getDescription(keywordUpper);
-                                description = (descr.Length > 0) ? ("Keyword " + keywordUpper + ": " + descr) : "Keyword " + keywordUpper;
+                                if (descr.Length > 0) {
+                                    description.Inlines.Add(new Run(": " + descr));
+                                }
                                 break;
                             }
                         case AsmTokenType.Directive: {
+                                description = new TextBlock();
+                                description.Inlines.Add(makeRun1("Directive "));
+                                description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Directive));
+
                                 string descr = this._asmDudeTools.getDescription(keywordUpper);
-                                description = (descr.Length > 0) ? ("Directive " + keywordUpper + ": " + descr) : "Directive " + keywordUpper;
+                                if (descr.Length > 0) {
+                                    description.Inlines.Add(new Run(": " + descr));
+                                }
                                 break;
                             }
                         case AsmTokenType.Register: {
+                                description = new TextBlock();
+                                description.Inlines.Add(makeRun1("Register "));
+                                description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Register));
+
                                 string descr = this._asmDudeTools.getDescription(keywordUpper);
-                                description = (descr.Length > 0) ? (keywordUpper + ": " + descr) : "Register " + keywordUpper;
+                                if (descr.Length > 0) {
+                                    description.Inlines.Add(new Run(": " + descr));
+                                }
                                 break;
                             }
-                        case AsmTokenType.Mnemonic: // intentional fall through
-                        case AsmTokenType.Jump: {
+                        case AsmTokenType.Mnemonic: {
+                                description = new TextBlock();
+                                description.Inlines.Add(makeRun1("Mnemonic "));
+                                description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Opcode));
+
                                 string descr = this._asmDudeTools.getDescription(keywordUpper);
-                                description = (descr.Length > 0) ? ("Mnemonic " + keywordUpper + ": " + descr) : "Mnemonic " + keywordUpper;
+                                if (descr.Length > 0) {
+                                    description.Inlines.Add(new Run(": " + descr));
+                                }
+                                break;
+                            }
+                        case AsmTokenType.Jump: {
+                                description = new TextBlock();
+                                description.Inlines.Add(makeRun1("Mnemonic "));
+                                description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Jump));
+
+                                string descr = this._asmDudeTools.getDescription(keywordUpper);
+                                if (descr.Length > 0) {
+                                    description.Inlines.Add(new Run(": " + descr));
+                                }
                                 break;
                             }
                         case AsmTokenType.Label: {
+                                description = new TextBlock();
+                                description.Inlines.Add(makeRun1("Label "));
+                                description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Label));
+
                                 string descr = this.getLabelDescription(keyword);
-                                description = (descr.Length > 0) ? descr : "Label " + keyword;
+                                if (descr.Length > 0) {
+                                    description.Inlines.Add(new Run(": " + descr));
+                                }
                                 break;
                             }
                         case AsmTokenType.LabelDef: {
+                                description = new TextBlock();
+                                description.Inlines.Add(makeRun1("Label "));
+                                description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Label));
+
                                 string descr = this.getLabelDefDescription(keyword);
-                                description = (descr.Length > 0) ? descr : "Label " + keyword;
+                                if (descr.Length > 0) {
+                                    description.Inlines.Add(new Run(": " + descr));
+                                }
                                 break;
                             }
                         //case AsmTokenType.Constant: {
@@ -129,7 +196,7 @@ namespace AsmDude.QuickInfo {
                             break;
                     }
                     if (description != null) {
-                        quickInfoContent.Add(AsmSourceTools.linewrap(description, AsmDudePackage.maxNumberOfCharsInToolTips + 1));
+                        quickInfoContent.Add(description);
                     }
                 }
 
@@ -141,6 +208,21 @@ namespace AsmDude.QuickInfo {
                 AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:AugmentQuickInfoSession; e={1}", this.ToString(), e.ToString()));
             }
         }
+
+        private FrameworkElement CreateContent(string content) {
+            var textBlock = new TextBlock();
+
+            var aRun = new Run(content);
+            aRun.FontWeight = FontWeights.Normal;
+
+
+            //aRun.Foreground = new SolidColorBrush(Colors.Blue);
+            aRun.Foreground = new SolidColorBrush(AsmDudeToolsStatic.convertColor(Settings.Default.SyntaxHighlighting_Jump));
+            textBlock.Inlines.Add(aRun);
+
+            return textBlock;
+        }
+
 
         private string getLabelDescription(string label) {
             if (this._labelGraph.isEnabled) {

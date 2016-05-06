@@ -160,7 +160,7 @@ namespace AsmDude {
 
                                                     tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
                                                     if (tokenSpan.IntersectsWith(curSpan)) {
-                                                        AsmDudeToolsStatic.Output(string.Format("AsmTokenTagger:GetTags: label token {0} at location {1} = \"{2}\"", tokenId, curLoc, asmToken));
+                                                        //AsmDudeToolsStatic.Output(string.Format("AsmTokenTagger:GetTags: label token {0} at location {1} = \"{2}\"", tokenId, curLoc, asmToken));
                                                         yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenType.Label));
                                                     }
                                                 }
