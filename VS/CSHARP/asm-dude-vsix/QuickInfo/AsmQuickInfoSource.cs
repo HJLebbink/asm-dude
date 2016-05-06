@@ -42,7 +42,7 @@ namespace AsmDude.QuickInfo {
 
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
         private readonly ITextBuffer _sourceBuffer;
-        private readonly LabelGraph _labelGraph;
+        private readonly ILabelGraph _labelGraph;
 
         [Import]
         private AsmDudeTools _asmDudeTools = null;

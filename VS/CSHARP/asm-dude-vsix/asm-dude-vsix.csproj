@@ -319,6 +319,7 @@
     <Compile Include="QuickInfo\AsmQuickInfoControllerProvider.cs" />
     <Compile Include="QuickInfo\AsmQuickInfoSource.cs" />
     <Compile Include="QuickInfo\AsmQuickInfoSourceProvider.cs" />
+    <Compile Include="Tools\ILabelGraph.cs" />
     <Compile Include="Tools\LabelGraph.cs" />
     <Compile Include="VsPackage.Designer.cs">
       <AutoGen>True</AutoGen>

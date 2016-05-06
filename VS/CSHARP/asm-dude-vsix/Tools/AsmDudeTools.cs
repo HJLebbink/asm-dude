@@ -206,7 +206,7 @@ namespace AsmDude {
 
     [Export]
     [PartCreationPolicy(CreationPolicy.Shared)]
-    public class AsmDudeTools {
+    public class AsmDudeTools : IDisposable {
         private XmlDocument _xmlData;
         private IDictionary<string, AsmTokenType> _type;
         private IDictionary<string, Arch> _arch;
@@ -444,6 +444,10 @@ namespace AsmDude {
                 this._errorListProvider.ProviderGuid = new Guid(EnvDTE.Constants.vsViewKindCode);
             }
             return this._errorListProvider;
+        }
+
+        public void Dispose() {
+            this._errorListProvider.Dispose();
         }
 
         #endregion

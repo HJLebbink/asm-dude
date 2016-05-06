@@ -44,7 +44,6 @@ namespace AsmDude.SyntaxHighlighting {
                 return new AsmClassifier(buffer, asmTagAggregator, _classificationTypeRegistry) as ITagger<T>;
             };
             return buffer.Properties.GetOrCreateSingletonProperty<ITagger<T>>(sc);
-
         }
     }
 }

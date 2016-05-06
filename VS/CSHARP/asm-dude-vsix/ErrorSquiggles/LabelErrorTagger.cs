@@ -24,7 +24,7 @@ namespace AsmDude.ErrorSquiggles {
 
         private readonly IDictionary<int, UndefinedLabelErrorData> _labelUndefined;
         private readonly IDictionary<int, LabelClashErrorData> _labelClashes;
-        private readonly LabelGraph _labelGraph;
+        private readonly ILabelGraph _labelGraph;
 
         [Import]
         private AsmDudeTools _asmDudeTools = null;

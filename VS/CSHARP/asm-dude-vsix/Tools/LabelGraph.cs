@@ -2,15 +2,217 @@
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace AsmDude.Tools {
 
-    public sealed class LabelGraph : IDisposable {
+    public sealed class LabelGraph : IDisposable, ILabelGraph {
+        private static readonly SortedSet<int> emptySet = new SortedSet<int>();
+
+        private readonly ITextBuffer _sourceBuffer;
+        private readonly ITagAggregator<AsmTokenTag> _aggregator;
+
+        private readonly IDictionary<string, IList<int>> _usedAt;
+        private readonly IDictionary<string, IList<int>> _defAt;
+        private readonly HashSet<int> _hasLabel;
+        private readonly HashSet<int> _hasDef;
+
+        private object _updateLock = new object();
+
+        public LabelGraph(ITextBuffer buffer, ITagAggregator<AsmTokenTag> aggregator) {
+            AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:constructor"));
+            _sourceBuffer = buffer;
+            _aggregator = aggregator;
+
+            _usedAt = new Dictionary<string, IList<int>>();
+            _defAt = new Dictionary<string, IList<int>>();
+            _hasLabel = new HashSet<int>();
+            _hasDef = new HashSet<int>();
+
+            this.reset_Async();
+            this._sourceBuffer.ChangedLowPriority += OnTextBufferChanged;
+        }
+
+        public bool hasLabel(string label) {
+            return this._defAt.ContainsKey(label);
+        }
+
+        public bool hasLabelClash(string label) {
+            IList<int> list;
+            if (this._defAt.TryGetValue(label, out list)) {
+                return (list.Count > 1);
+            }
+            return false;
+        }
+
+        public SortedSet<int> getLabelDefLineNumbers(string label) {
+            IList<int> list;
+            if (this._defAt.TryGetValue(label, out list)) {
+                return new SortedSet<int>(list);
+            } else {
+                return emptySet;
+            }
+        }
+
+        public bool tryGetLineNumber(string label, out int lineNumber) {
+            IList<int> list;
+            if (this._defAt.TryGetValue(label, out list)) {
+                lineNumber = list[0];
+                return true;
+            } else {
+                lineNumber = -1;
+                return false;
+            }
+        }
+
+        public SortedSet<int> labelUsedAtInfo(string label) {
+            IList<int> lines;
+            if (this._usedAt.TryGetValue(label, out lines)) {
+                return = new SortedSet<int>(lines);
+            } else {
+                return emptySet;
+            }
+        }
+
+        public void reset_Async() {
+            ThreadPool.QueueUserWorkItem(reset_private);
+        }
+
+        private void reset_private(object threadContext) {
+            reset_Sync();
+        }
+
+        public void reset_Sync() {
+            DateTime time1 = DateTime.Now;
+            lock (_updateLock) {
+
+                _usedAt.Clear();
+                _defAt.Clear();
+                _hasLabel.Clear();
+                _hasDef.Clear();
+
+                this.addAll();
+            }
+
+            double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
+            if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
+                AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took LabelGraph {0:F3} seconds to reset.", elapsedSec));
+            }
+        }
+
+        public void Dispose() {
+            this._sourceBuffer.Changed -= OnTextBufferChanged;
+        }
+
+        public HashSet<int> getRelatedLineNumber(int lineNumber) {
+            // it does not work to find all the currently related line numbers. This because, 
+            // due to a change in label name any other label can have become related. What works 
+            // is to return all line numbers of current labels definitions and usages.
+            lock (_updateLock) {
+                HashSet<int> lineNumbers = new HashSet<int>(this._hasDef);
+                lineNumbers.UnionWith(this._hasLabel);
+                if (false) {
+                    AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:getRelatedLineNumber results {0}", string.Join(",", lineNumbers)));
+                }
+                return lineNumbers;
+            }
+        }
+
+
+        #region Private Stuff
+
+
+        private static int getLineNumber(IMappingTagSpan<AsmTokenTag> tag) {
+            return getLineNumber(tag.Span.GetSpans(tag.Span.AnchorBuffer)[0]);
+        }
+
+        private static int getLineNumber(SnapshotSpan span) {
+            return span.Snapshot.GetLineNumberFromPosition(span.Start);
+        }
+
+        private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
+            AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:OnTextBufferChanged: number of changes={0}; first change: old={1}; new={2}", e.Changes.Count, e.Changes[0].OldText, e.Changes[0].NewText));
+            if (true) {
+                this.reset_Async();
+            } else {
+                foreach (ITextChange textChange in e.Changes) {
+                    int lineNumber = e.Before.GetLineNumberFromPosition(textChange.OldPosition);
+                    this.addLineNumber(lineNumber);
+                    //this.removeDefLineNumber(lineNumber);
+                    //this.removeUsageLineNumber(lineNumber);
+                    if (textChange.LineCountDelta != 0) {
+                        //this.shiftLineNumber(lineNumber, textChange.LineCountDelta);
+                    }
+                }
+            }
+        }
+
+        private void addAsmTag(int lineNumber, IMappingTagSpan<AsmTokenTag> asmTokenSpan) {
+            lock (_updateLock) {
+                switch (asmTokenSpan.Tag.type) {
+                    case AsmTokenType.LabelDef: {
+                            string label = getText(asmTokenSpan);
+                            IList<int> list;
+                            if (this._defAt.TryGetValue(label, out list)) {
+                                list.Add(lineNumber);
+                            } else {
+                                this._defAt.Add(label, new List<int> { lineNumber });
+                            }
+                            this._hasDef.Add(lineNumber);
+                        }
+                        break;
+                    case AsmTokenType.Label: {
+                            string label = getText(asmTokenSpan);
+                            IList<int> list;
+                            if (this._usedAt.TryGetValue(label, out list)) {
+                                list.Add(lineNumber);
+                            } else {
+                                this._usedAt.Add(label, new List<int> { lineNumber });
+                            }
+                            this._hasLabel.Add(lineNumber);
+                        }
+                        break;
+                    default: break;
+                }
+            }
+        }
+
+        private void addAll() {
+            if (true) {
+                for (int lineNumber = 0; lineNumber < this._sourceBuffer.CurrentSnapshot.LineCount; ++lineNumber) {
+                    addLineNumber(lineNumber);
+                }
+            } else {
+                SnapshotSpan span = new SnapshotSpan(this._sourceBuffer.CurrentSnapshot, new Span(0, this._sourceBuffer.CurrentSnapshot.Length));
+                foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in _aggregator.GetTags(span)) {
+                    addAsmTag(getLineNumber(asmTokenSpan), asmTokenSpan);
+                }
+            }
+        }
+
+        private void addLineNumber(int lineNumber) {
+            foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in _aggregator.GetTags(this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent)) {
+                addAsmTag(lineNumber, asmTokenSpan);
+            }
+        }
+
+        private string getText(IMappingTagSpan<AsmTokenTag> asmTokenSpan) {
+            return asmTokenSpan.Span.GetSpans(_sourceBuffer)[0].GetText();
+        }
+
+        private void shiftLineNumber(int lineNumber, int lineCountDelta) {
+            if (lineCountDelta > 0) {
+                AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:shiftLineNumber: starting from line {0} everything is shifted +{1}", lineNumber, lineCountDelta));
+            } else {
+                AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:shiftLineNumber: starting from line {0} everything is shifted {1}", lineNumber, lineCountDelta));
+            }
+        }
+
+        #endregion Private Stuff
+    }
+
+    public sealed class LabelGraph_OLD : IDisposable, ILabelGraph {
         private static readonly SortedSet<int> emptySet = new SortedSet<int>();
 
         private readonly ITextBuffer _sourceBuffer;
@@ -23,7 +225,7 @@ namespace AsmDude.Tools {
 
         private object _updateLock = new object();
 
-        public LabelGraph(ITextBuffer buffer, ITagAggregator<AsmTokenTag> aggregator) {
+        public LabelGraph_OLD(ITextBuffer buffer, ITagAggregator<AsmTokenTag> aggregator) {
             AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:constructor"));
             _sourceBuffer = buffer;
             _aggregator = aggregator;
