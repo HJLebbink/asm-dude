@@ -14,17 +14,18 @@ namespace AsmDude.BraceMatching {
 
         private readonly ITextView _view;
         private readonly ITextBuffer _sourceBuffer;
-        private readonly Dictionary<char, char> m_braceList;
+        private readonly Dictionary<char, char> _braceList;
         private SnapshotPoint? _currentChar;
 
         internal BraceMatchingTagger(ITextView view, ITextBuffer sourceBuffer) {
-            //here the keys are the open braces, and the values are the close braces
-            m_braceList = new Dictionary<char, char>();
-            m_braceList.Add('[', ']');
-            m_braceList.Add('(', ')');
             this._view = view;
             this._sourceBuffer = sourceBuffer;
             this._currentChar = null;
+
+            //here the keys are the open braces, and the values are the close braces
+            this._braceList = new Dictionary<char, char>();
+            this._braceList.Add('[', ']');
+            this._braceList.Add('(', ')');
 
             this._view.Caret.PositionChanged += CaretPositionChanged;
             this._view.LayoutChanged += ViewLayoutChanged;
@@ -76,15 +77,15 @@ namespace AsmDude.BraceMatching {
             char lastText = lastChar.GetChar();
             SnapshotSpan pairSpan = new SnapshotSpan();
 
-            if (m_braceList.ContainsKey(currentText)) {  //the key is the open brace
+            if (_braceList.ContainsKey(currentText)) {  //the key is the open brace
                 char closeChar;
-                m_braceList.TryGetValue(currentText, out closeChar);
+                _braceList.TryGetValue(currentText, out closeChar);
                 if (BraceMatchingTagger.FindMatchingCloseChar(currentChar, currentText, closeChar, _view.TextViewLines.Count, out pairSpan) == true) {
                     yield return new TagSpan<TextMarkerTag>(new SnapshotSpan(currentChar, 1), new TextMarkerTag("blue"));
                     yield return new TagSpan<TextMarkerTag>(pairSpan, new TextMarkerTag("blue"));
                 }
-            } else if (m_braceList.ContainsValue(lastText)) {   //the value is the close brace, which is the *previous* character 
-                var open = from n in m_braceList
+            } else if (_braceList.ContainsValue(lastText)) {   //the value is the close brace, which is the *previous* character 
+                var open = from n in _braceList
                            where n.Value.Equals(lastText)
                            select n.Key;
                 if (BraceMatchingTagger.FindMatchingOpenChar(lastChar, (char)open.ElementAt<char>(0), lastText, _view.TextViewLines.Count, out pairSpan) == true) {
