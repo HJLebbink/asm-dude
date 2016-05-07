@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Text;
+using System.Windows.Controls;
 
 namespace AsmDude.CodeFolding {
 
@@ -89,19 +90,19 @@ namespace AsmDude.CodeFolding {
             }
             return line.Trim();
         }
-        private string getHoverText(int begin, int end, ITextSnapshot snapshot) {
-
-            // TODO make hoverText a textobject with smaller fontsize
-
+        private TextBlock getHoverText(int begin, int end, ITextSnapshot snapshot) {
+            TextBlock description = new TextBlock();
             string str = "";
-
             if (begin < end) {
                 str = snapshot.GetLineFromLineNumber(begin).GetText();
             }
             for (int i = begin + 1; i < end; ++i) {
-                str += "\n" + snapshot.GetLineFromLineNumber(i).GetText();
+                str += Environment.NewLine + snapshot.GetLineFromLineNumber(i).GetText();
             }
-            return str;
+            System.Windows.Documents.Run r = new System.Windows.Documents.Run(str);
+            r.FontSize -= 1;
+            description.Inlines.Add(r);
+            return description;
         }
 
         private void BufferChanged(object sender, TextContentChangedEventArgs e) {
