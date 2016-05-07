@@ -51,10 +51,12 @@ namespace AsmDude.Tools {
             get {
                 SortedDictionary<int, string> result = new SortedDictionary<int, string>();
                 string description = "Label Clash";
-                foreach (KeyValuePair<string, IList<int>> entry in _defAt) {
-                    if (entry.Value.Count > 1) {
-                        foreach (int lineNumber in entry.Value) {
-                            result.Add(lineNumber, description);
+                lock (_updateLock) {
+                    foreach (KeyValuePair<string, IList<int>> entry in _defAt) {
+                        if (entry.Value.Count > 1) {
+                            foreach (int lineNumber in entry.Value) {
+                                result.Add(lineNumber, description);
+                            }
                         }
                     }
                 }
@@ -66,11 +68,13 @@ namespace AsmDude.Tools {
             get {
                 SortedDictionary<int, string> result = new SortedDictionary<int, string>();
                 string description = "Undefined Label";
-                foreach (KeyValuePair<string, IList<int>> entry in _usedAt) {
-                    string label = entry.Key;
-                    if (!this._defAt.ContainsKey(label)) {
-                        foreach (int lineNumber in entry.Value) {
-                            result.Add(lineNumber, description);
+                lock (_updateLock) {
+                    foreach (KeyValuePair<string, IList<int>> entry in _usedAt) {
+                        string label = entry.Key;
+                        if (!this._defAt.ContainsKey(label)) {
+                            foreach (int lineNumber in entry.Value) {
+                                result.Add(lineNumber, description);
+                            }
                         }
                     }
                 }

@@ -30,14 +30,14 @@ namespace AsmDude.CodeFolding {
 
     internal sealed class CodeFoldingTagger : ITagger<IOutliningRegionTag> {
 
+        #region Private Fields
         private string startHide = Settings.Default.CodeFolding_BeginTag;     //the characters that start the outlining region
         private string endHide = Settings.Default.CodeFolding_EndTag;       //the characters that end the outlining region
-        private const string ellipsis = "...";    //the characters that are displayed when the region is collapsed
 
         private readonly ITextBuffer _buffer;
         private ITextSnapshot _snapshot;
         private List<Region> _regions;
-
+        #endregion Private Fields
 
         public CodeFoldingTagger(ITextBuffer buffer) {
             //Debug.WriteLine("INFO:OutliningTagger: constructor");
@@ -55,37 +55,44 @@ namespace AsmDude.CodeFolding {
             if (Settings.Default.CodeFolding_On) {
                 //Debug.WriteLine("INFO: GetTags: entering");
 
-                List<Region> currentRegions = this._regions;
-                ITextSnapshot currentSnapshot = this._snapshot;
-                SnapshotSpan entire = new SnapshotSpan(spans[0].Start, spans[spans.Count - 1].End).TranslateTo(currentSnapshot, SpanTrackingMode.EdgeExclusive);
+                SnapshotSpan entire = new SnapshotSpan(spans[0].Start, spans[spans.Count - 1].End).TranslateTo(this._snapshot, SpanTrackingMode.EdgeExclusive);
                 int startLineNumber = entire.Start.GetContainingLine().LineNumber;
                 int endLineNumber = entire.End.GetContainingLine().LineNumber;
-                foreach (var region in currentRegions) {
-                    if (region.StartLine <= endLineNumber &&
-                        region.EndLine >= startLineNumber) {
-                        var startLine = currentSnapshot.GetLineFromLineNumber(region.StartLine);
-                        var endLine = currentSnapshot.GetLineFromLineNumber(region.EndLine);
 
-                        //the region starts at the beginning of the "[", and goes until the *end* of the line that contains the "]".
-                        string replacementString = ellipsis + " " + getRegionDescription(startLine.GetText());
-                        string hoverText = getHoverText(region.StartLine + 1, region.EndLine - 1, currentSnapshot);
+                foreach (Region region in this._regions) {
+                    if ((region.StartLine <= endLineNumber) && (region.EndLine >= startLineNumber)) {
+
+                        ITextSnapshotLine startLine = this._snapshot.GetLineFromLineNumber(region.StartLine);
+                        ITextSnapshotLine endLine = this._snapshot.GetLineFromLineNumber(region.EndLine);
+
+                        var replacement = getRegionDescription(startLine.GetText());
+                        var hover = getHoverText(region.StartLine + 1, region.EndLine - 1, this._snapshot);
+
                         yield return new TagSpan<IOutliningRegionTag>(
                             new SnapshotSpan(startLine.Start + region.StartOffset, endLine.End),
-                            // TODO make hoverText a textobject with smaller fontsize
-                            new OutliningRegionTag(false, false, replacementString, hoverText));
+                            new OutliningRegionTag(false, false, replacement, hover));
                     }
                 }
             }
         }
+        public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
+
+        #region Private Methods
 
         private string getRegionDescription(string line) {
             int startPos = line.IndexOf(startHide[0]) + startHide.Length + 1;
             if (startPos < line.Length) {
-                return line.Substring(startPos);
+                string description = line.Substring(startPos).Trim();
+                if (description.Length > 0) {
+                    return description;
+                }
             }
-            return "";
+            return line.Trim();
         }
         private string getHoverText(int begin, int end, ITextSnapshot snapshot) {
+
+            // TODO make hoverText a textobject with smaller fontsize
+
             string str = "";
 
             if (begin < end) {
@@ -96,8 +103,6 @@ namespace AsmDude.CodeFolding {
             }
             return str;
         }
-
-        public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
         private void BufferChanged(object sender, TextContentChangedEventArgs e) {
             // If this isn't the most up-to-date version of the buffer, then ignore it for now (we'll eventually get another change event).
@@ -241,5 +246,7 @@ namespace AsmDude.CodeFolding {
         class Region : PartialRegion {
             public int EndLine { get; set; }
         }
+
+        #endregion Private Methods
     }
 }
