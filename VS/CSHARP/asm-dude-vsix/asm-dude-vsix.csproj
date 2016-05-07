@@ -256,6 +256,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsmDudePackage.cs" />
+    <Compile Include="ErrorSquiggles\AsmErrorEnum.cs" />
     <Compile Include="Tools\AsmDudeTools.cs" />
     <Compile Include="AsmDoc\AsmDocClassifier.cs" />
     <Compile Include="AsmDoc\AsmDocMouseHandler.cs" />
