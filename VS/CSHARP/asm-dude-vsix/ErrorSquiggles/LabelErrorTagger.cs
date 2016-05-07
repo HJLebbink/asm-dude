@@ -24,24 +24,20 @@ namespace AsmDude.ErrorSquiggles {
         private readonly string _filename;
         private readonly ILabelGraph _labelGraph;
 
-        [Import]
-        private AsmDudeTools _asmDudeTools = null;
-
         #endregion Private Fields
 
         internal LabelErrorTagger(
                 ITextBuffer buffer,
-                ITagAggregator<AsmTokenTag> asmTagAggregator) {
+                ITagAggregator<AsmTokenTag> asmTagAggregator,
+                ErrorListProvider errorListProvider) {
 
             //AsmDudeToolsStatic.Output(string.Format("INFO: LabelErrorTagger: constructor"));
-            AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
 
             this._sourceBuffer = buffer;
             this._aggregator = asmTagAggregator;
-            this._errorListProvider = _asmDudeTools.GetErrorListProvider();
+            this._errorListProvider = errorListProvider;
             this._filename = AsmDudeToolsStatic.GetFileName(buffer);
-
-            this._labelGraph = new LabelGraph(buffer, asmTagAggregator);
+            this._labelGraph = new LabelGraph(buffer, asmTagAggregator, errorListProvider);
 
             this._sourceBuffer.ChangedLowPriority += OnTextBufferChanged;
         }
@@ -102,9 +98,6 @@ namespace AsmDude.ErrorSquiggles {
                 }
             }
             
-            //this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
-            //this._errorListProvider.Refresh();
-
             double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
             if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
                 AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took LabelErrorTagger {0:F3} seconds to make error tags.", elapsedSec));
@@ -112,6 +105,8 @@ namespace AsmDude.ErrorSquiggles {
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
+
+        #region Private Methods
 
         private static int getLineNumber(SnapshotSpan span) {
             int lineNumber = span.Snapshot.GetLineNumberFromPosition(span.Start);
@@ -151,6 +146,8 @@ namespace AsmDude.ErrorSquiggles {
                     }
                 }
 
+                bool errorExists = false;
+
                 foreach (KeyValuePair<int, string> entry in this._labelGraph.labelClashes) {
                     ErrorTask errorTask = new ErrorTask();
                     errorTask.SubcategoryIndex = (int)AsmErrorEnum.LABEL_CLASH;
@@ -161,8 +158,8 @@ namespace AsmDude.ErrorSquiggles {
                     errorTask.Document = this._filename;
                     errorTask.Navigate += navigateHandler;
                     errorTasks.Add(errorTask);
+                    errorExists = true;
                 }
-
                 foreach (KeyValuePair<int, string> entry in this._labelGraph.undefinedLabels) {
                     ErrorTask errorTask = new ErrorTask();
                     errorTask.SubcategoryIndex = (int)AsmErrorEnum.LABEL_UNDEFINED;
@@ -173,6 +170,11 @@ namespace AsmDude.ErrorSquiggles {
                     errorTask.Document = this._filename;
                     errorTask.Navigate += navigateHandler;
                     errorTasks.Add(errorTask);
+                    errorExists = true;
+                }
+                if (errorExists) {
+                    this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
+                    this._errorListProvider.Refresh();
                 }
 
                 #endregion Update Error Tasks
@@ -227,5 +229,6 @@ namespace AsmDude.ErrorSquiggles {
             }
             mgr.NavigateToLineAndColumn(buffer, ref logicalView, task.Line, task.Column, task.Line, task.Column);
         }
+        #endregion Private Methods
     }
 }

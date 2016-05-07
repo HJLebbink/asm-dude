@@ -37,6 +37,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Drawing;
 using System.Windows.Media;
+using Microsoft.VisualStudio.Shell;
 
 namespace AsmDude.QuickInfo {
 
@@ -54,12 +55,16 @@ namespace AsmDude.QuickInfo {
 
         public object CSharpEditorResources { get; private set; }
 
-        public AsmQuickInfoSource(ITextBuffer buffer, ITagAggregator<AsmTokenTag> aggregator) {
+        public AsmQuickInfoSource(
+                ITextBuffer buffer, 
+                ITagAggregator<AsmTokenTag> aggregator,
+                ErrorListProvider errorListProvider) {
+
             this._aggregator = aggregator;
             this._sourceBuffer = buffer;
 
             AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
-            this._labelGraph = new LabelGraph(buffer, aggregator);
+            this._labelGraph = new LabelGraph(buffer, aggregator, errorListProvider);
         }
 
         private static Run makeRun1(string str) {

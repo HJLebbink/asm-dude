@@ -16,6 +16,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 using AsmTools;
 using System.Text;
+using AsmDude.ErrorSquiggles;
 
 namespace AsmDude {
 
@@ -102,7 +103,7 @@ namespace AsmDude {
         /// <summary>
         /// Get all labels with context info contained in the provided text
         /// </summary>
-        [Obsolete("Use LabelGraph", false)]
+        [Obsolete("Use LabelGraph, but this method is much faster...", false)]
         public static IDictionary<string, string> getLabelDescriptions(string text) {
             IDictionary<string, string> result = new Dictionary<string, string>();
             int lineNumber = 1; // start counting at one since that is what VS does
@@ -316,24 +317,25 @@ namespace AsmDude {
             this._description = null;
         }
 
-        public ErrorListProvider GetErrorListProvider() {
-
-            if (this._errorListProvider == null) {
-                IServiceProvider serviceProvider;
-                if (true) {
-                    serviceProvider = new ServiceProvider(Package.GetGlobalService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider)) as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
-                } else {
-                    serviceProvider = Package.GetGlobalService(typeof(IServiceProvider)) as ServiceProvider;
+        public ErrorListProvider errorListProvider {
+            get {
+                if (this._errorListProvider == null) {
+                    IServiceProvider serviceProvider;
+                    if (true) {
+                        serviceProvider = new ServiceProvider(Package.GetGlobalService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider)) as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
+                    } else {
+                        serviceProvider = Package.GetGlobalService(typeof(IServiceProvider)) as ServiceProvider;
+                    }
+                    this._errorListProvider = new ErrorListProvider(serviceProvider);
+                    this._errorListProvider.ProviderName = "Asm Errors";
+                    this._errorListProvider.ProviderGuid = new Guid(EnvDTE.Constants.vsViewKindCode);
                 }
-                this._errorListProvider = new ErrorListProvider(serviceProvider);
-                this._errorListProvider.ProviderName = "Asm Errors";
-                this._errorListProvider.ProviderGuid = new Guid(EnvDTE.Constants.vsViewKindCode);
+                return this._errorListProvider;
             }
-            return this._errorListProvider;
         }
-
         #endregion Public Methods
         #region Private Methods
+
 
         private void initData() {
             this._type = new Dictionary<string, AsmTokenType>();

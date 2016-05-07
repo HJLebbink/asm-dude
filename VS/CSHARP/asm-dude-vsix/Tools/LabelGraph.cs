@@ -1,4 +1,6 @@
-﻿using AsmDude.SyntaxHighlighting;
+﻿using AsmDude.ErrorSquiggles;
+using AsmDude.SyntaxHighlighting;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
@@ -17,6 +19,7 @@ namespace AsmDude.Tools {
 
         private readonly ITextBuffer _sourceBuffer;
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
+        private readonly ErrorListProvider _errorListProvider;
 
         private readonly IDictionary<string, IList<int>> _usedAt;
         private readonly IDictionary<string, IList<int>> _defAt;
@@ -30,19 +33,27 @@ namespace AsmDude.Tools {
 
         #region Public Methods
 
-        public LabelGraph(ITextBuffer buffer, ITagAggregator<AsmTokenTag> aggregator) {
+        public LabelGraph(
+                ITextBuffer buffer, 
+                ITagAggregator<AsmTokenTag> aggregator,
+                ErrorListProvider errorListProvider) {
+
             AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:constructor"));
-            _sourceBuffer = buffer;
-            _aggregator = aggregator;
+            this._sourceBuffer = buffer;
+            this._aggregator = aggregator;
+            this._errorListProvider = errorListProvider;
 
-            _usedAt = new Dictionary<string, IList<int>>();
-            _defAt = new Dictionary<string, IList<int>>();
-            _hasLabel = new HashSet<int>();
-            _hasDef = new HashSet<int>();
+            this._usedAt = new Dictionary<string, IList<int>>();
+            this._defAt = new Dictionary<string, IList<int>>();
+            this._hasLabel = new HashSet<int>();
+            this._hasDef = new HashSet<int>();
 
-            _enabled = true;
+            this._enabled = true;
             this.reset_Sync();
             this._sourceBuffer.ChangedLowPriority += OnTextBufferChanged;
+
+            addInfoToErrorTask();
+
         }
 
         public bool isEnabled { get { return this._enabled; } }
@@ -172,8 +183,31 @@ namespace AsmDude.Tools {
 
         #region Private Methods
 
+        private void addInfoToErrorTask() {
+            string msg = "Is the Tools>Options>AsmDude options pane not visible? Disable and enable this plugin to make it visible again...";
+
+            bool alreadyPresent = false;
+            foreach (ErrorTask task in this._errorListProvider.Tasks) {
+                if (task.Text.Equals(msg)) {
+                    alreadyPresent = true;
+                    break;
+                }
+            }
+            if (!alreadyPresent) {
+                ErrorTask errorTask = new ErrorTask();
+                errorTask.SubcategoryIndex = (int)AsmErrorEnum.OTHER;
+                errorTask.Text = msg;
+                errorTask.ErrorCategory = TaskErrorCategory.Message;
+                this._errorListProvider.Tasks.Add(errorTask);
+
+                this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
+                this._errorListProvider.Refresh();
+            }
+        }
+
         private void disable() {
-            AsmDudeToolsStatic.Output(string.Format("WARNING: performance of LabelGraph is horrible, disabling label analysis"));
+            string msg = "Performance of LabelGraph is horrible: disabling label analysis.";
+            AsmDudeToolsStatic.Output(string.Format("WARNING: "+msg));
 
             this._enabled = false;
             lock (this._updateLock) {
@@ -182,6 +216,17 @@ namespace AsmDude.Tools {
                 this._usedAt.Clear();
                 this._hasLabel.Clear();
             }
+
+            #region Add Error Task
+            ErrorTask errorTask = new ErrorTask();
+            errorTask.SubcategoryIndex = (int)AsmErrorEnum.OTHER;
+            errorTask.Text = msg;
+            errorTask.ErrorCategory = TaskErrorCategory.Message;
+            this._errorListProvider.Tasks.Add(errorTask);
+            this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
+            this._errorListProvider.Refresh();
+
+            #endregion
         }
 
         private void reset_private(object threadContext) {

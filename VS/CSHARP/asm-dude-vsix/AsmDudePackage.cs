@@ -9,6 +9,7 @@ using System.Globalization;
 using System.ComponentModel.Composition;
 using System.Text;
 using Microsoft.VisualStudio.Shell.Interop;
+using AsmDude.ErrorSquiggles;
 
 namespace AsmDude {
 
@@ -55,7 +56,7 @@ namespace AsmDude {
 
         public AsmDudePackage() {
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "=========================================\nINFO: AsmDudePackage: Entering constructor"));
-            AsmDudeToolsStatic.Output("INFO: AsmDudePackage: Entering constructor");
+            //AsmDudeToolsStatic.Output("INFO: AsmDudePackage: Entering constructor");
         }
 
         /// <summary>
@@ -78,7 +79,6 @@ namespace AsmDude {
 
             sb.AppendLine(string.Format("INFO: More info at https://github.com/HJLebbink/asm-dude"));
             sb.AppendLine("----------------------------------");
-            sb.AppendLine(string.Format("INFO: Is the Tools>Options>AsmDude options pane invisible? Disable and enable this plugin to make it visible again..."));
             AsmDudeToolsStatic.Output(sb.ToString());
         }
 

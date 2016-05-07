@@ -264,11 +264,10 @@
     <Compile Include="BraceMatching\BraceMatchingTaggerProvider.cs" />
     <Compile Include="ErrorSquiggles\LabelErrorTagger.cs" />
     <Compile Include="ErrorSquiggles\LabelErrorTaggerProvider.cs" />
-    <Compile Include="ErrorSquiggles\Test.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="LightBulb\AsmLightBulb.cs" />
-    <Compile Include="Menu\DynamicTextCommand.cs" />
-    <Compile Include="Menu\PkgCmdId.cs" />
+    <Compile Include="Experimental\LightBulb\AsmLightBulb.cs" />
+    <Compile Include="Experimental\Menu\DynamicTextCommand.cs" />
+    <Compile Include="Experimental\Menu\PkgCmdId.cs" />
     <Compile Include="OptionsPage\OptionsPageAsmDoc.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -281,7 +280,7 @@
       <DependentUpon>PkgCmd.vsct</DependentUpon>
     </Compile>
     <Compile Include="Settings.cs" />
-    <Compile Include="SignatureHelp\SignatureHelpSource.cs" />
+    <Compile Include="Experimental\SignatureHelp\SignatureHelpSource.cs" />
     <Compile Include="source.extension.cs">
       <DependentUpon>source.extension.vsixmanifest</DependentUpon>
     </Compile>
@@ -376,7 +375,7 @@
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="..\..\packages\Microsoft.VisualStudio.SDK.VsixSuppression.14.0.50420-pre\build\Microsoft.VisualStudio.SDK.VsixSuppression.targets" Condition="Exists('..\..\packages\Microsoft.VisualStudio.SDK.VsixSuppression.14.0.50420-pre\build\Microsoft.VisualStudio.SDK.VsixSuppression.targets')" />
   <Import Project="..\..\packages\Microsoft.VSSDK.BuildTools.14.0.22823-RC-Updated\build\Microsoft.VSSDK.BuildTools.targets" Condition="Exists('..\..\packages\Microsoft.VSSDK.BuildTools.14.0.22823-RC-Updated\build\Microsoft.VSSDK.BuildTools.targets')" />
-<!--
+  <!--
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>

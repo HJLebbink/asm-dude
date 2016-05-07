@@ -36,71 +36,14 @@ using AsmTools;
 
 namespace AsmDude {
 
-    /*
-    internal class CompletionTooltipCustomization : TextBlock {
-
-        [Export(typeof(IUIElementProvider<Completion, ICompletionSession>))]
-        [Name("SampleCompletionTooltipCustomization")]
-        //Roslyn is the default Tooltip Provider. We must override it if we wish to use custom tooltips
-        [Order(Before = "RoslynToolTipProvider")]
-        [ContentType("text")]
-        internal class CompletionTooltipCustomizationProvider : IUIElementProvider<Completion, ICompletionSession> {
-            public UIElement GetUIElement(Completion itemToRender, ICompletionSession context, UIElementType elementType) {
-                if (elementType == UIElementType.Tooltip) {
-
-                    var c = new CompletionTooltipCustomization(itemToRender);
-                    //c.FontFamily = new FontFamily("Fixedsys");
-                    //c.FontSize = 20;
-                    //c.MouseEnter += new MouseEventHandler(this.handleMouseEvent);
-                    c.PreviewMouseDown += new MouseButtonEventHandler(this.handleMouseButton);
-                    c.ToolTipClosing += C_ToolTipClosing;
-                    context.Committed += Context_Committed;
-                    return c;
-                } else {
-                    return null;
-                }
-            }
-
-            private void Context_Committed(object sender, EventArgs e) {
-                Debug.WriteLine("INFO: Context_Committed:");
-            }
-
-            private void C_ToolTipClosing(object sender, ToolTipEventArgs e) {
-                Debug.WriteLine("INFO: C_ToolTipClosing:");
-            }
-
-            void handleMouseButton(object sender, MouseButtonEventArgs a) {
-                Debug.WriteLine("INFO: handleMouseButton:");
-            }
-            void handleMouseEvent(object sender, MouseEventArgs a) {
-                Debug.WriteLine("INFO: handleMouseEvent:");
-            }
-            void handleContextMenu(object sender, ContextMenuEventArgs a) {
-                Debug.WriteLine("INFO: handleContextMenu:");
-            }
-        }
-
-        /// <summary>
-        /// Custom constructor enables us to modify the text values of the tooltip. In this case, we are just modifying the font style and size
-        /// </summary>
-        /// <param name="completion">The tooltip to be modified</param>
-        internal CompletionTooltipCustomization(Completion completion) {
-            Text = string.Format(CultureInfo.CurrentCulture, "{0}: {1}", completion.DisplayText, completion.Description);
-            //FontSize = 24;
-            FontStyle = FontStyles.Italic;
-        }
-    }
-    */
     public sealed class AsmCompletionSource : ICompletionSource {
+
         private readonly ITextBuffer _buffer;
         private readonly IDictionary<AsmTokenType, ImageSource> _icons;
         private bool _disposed = false;
 
         [Import]
         private AsmDudeTools _asmDudeTools = null;
-
-        //[Import]
-        //private AsmDudePackage _package = null;
 
         public AsmCompletionSource(ITextBuffer buffer) {
             this._buffer = buffer;
@@ -202,7 +145,7 @@ namespace AsmDude {
             }
         }
 
-        #region private stuff
+        #region Private Methods
 
         private IList<Completion> labelCompletions() {
             IList<Completion> completions = new List<Completion>();
