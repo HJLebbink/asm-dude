@@ -90,14 +90,21 @@ namespace AsmDude.QuickInfo {
                     return;
                 }
                 string keyword = "";
+
                 IEnumerable<IMappingTagSpan<AsmTokenTag>> enumerator = this._aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint));
 
                 if (enumerator.Count() > 0) {
-
-                    if (enumerator.Count() > 1) {
-                        AsmDudeToolsStatic.Output(string.Format("WARNING: {0}:AugmentQuickInfoSession. more than one tag! \"{1}\"", this.ToString(), enumerator.ElementAt(1).ToString()));
+                    
+                    if (false) {
+#                       pragma warning disable CS0162
+                        // TODO: multiple tags at the provided triggerPoint is most likely the result of a bug in AsmTokenTagger, but it seems harmless...
+                        if (enumerator.Count() > 1) {
+                            foreach (IMappingTagSpan<AsmTokenTag> v in enumerator) {
+                                AsmDudeToolsStatic.Output(string.Format("WARNING: {0}:AugmentQuickInfoSession. more than one tag! \"{1}\"", this.ToString(), v.Span.GetSpans(_sourceBuffer).First().GetText()));
+                            }
+                        }
+#                       pragma warning restore CS0162
                     }
-
 
                     IMappingTagSpan<AsmTokenTag> asmTokenTag = enumerator.First();
                     SnapshotSpan tagSpan = asmTokenTag.Span.GetSpans(_sourceBuffer).First();
@@ -187,10 +194,12 @@ namespace AsmDude.QuickInfo {
                                 }
                                 break;
                             }
-                        //case AsmTokenType.Constant: {
-                        //        description = "Constant " + keyword;
-                        //        break;
-                        //    }
+                        case AsmTokenType.Constant: {
+                                description = new TextBlock();
+                                description.Inlines.Add(makeRun1("Constant "));
+                                description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Constant));
+                                break;
+                            }
                         default:
                             //description = "Unused tagType " + asmTokenTag.Tag.type;
                             break;
