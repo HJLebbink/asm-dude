@@ -3,6 +3,8 @@
 	#region Things TODO
 	mov			r13, QWORD PTR lennyOptions$[rsp]
     mov 		rsi, QWORD PTR [network_c_mp_network_neurons]
+	vpextrb		BYTE PTR [r13+r9*2], xmm0, 10  
+
 
 	vmovdqu		XMMWORD PTR [imagerel(htm_v1_constants_mp_global_cell_is_active_curr)+r13+r8], xmm15 
 

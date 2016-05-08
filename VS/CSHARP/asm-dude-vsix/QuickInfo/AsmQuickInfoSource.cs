@@ -46,8 +46,8 @@ namespace AsmDude.QuickInfo {
     /// </summary>
     internal sealed class AsmQuickInfoSource : IQuickInfoSource {
 
-        private readonly ITagAggregator<AsmTokenTag> _aggregator;
         private readonly ITextBuffer _sourceBuffer;
+        private readonly ITagAggregator<AsmTokenTag> _aggregator;
         private readonly ILabelGraph _labelGraph;
 
         [Import]
@@ -58,13 +58,12 @@ namespace AsmDude.QuickInfo {
         public AsmQuickInfoSource(
                 ITextBuffer buffer, 
                 ITagAggregator<AsmTokenTag> aggregator,
-                ErrorListProvider errorListProvider) {
+                ILabelGraph labelGraph) {
 
-            this._aggregator = aggregator;
             this._sourceBuffer = buffer;
-
+            this._aggregator = aggregator;
+            this._labelGraph = labelGraph;
             AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
-            this._labelGraph = new LabelGraph(buffer, aggregator, errorListProvider);
         }
 
         private static Run makeRun1(string str) {
@@ -223,25 +222,14 @@ namespace AsmDude.QuickInfo {
             }
         }
 
-        private FrameworkElement CreateContent(string content) {
-            var textBlock = new TextBlock();
-
-            var aRun = new Run(content);
-            aRun.FontWeight = FontWeights.Normal;
-
-
-            //aRun.Foreground = new SolidColorBrush(Colors.Blue);
-            aRun.Foreground = new SolidColorBrush(AsmDudeToolsStatic.convertColor(Settings.Default.SyntaxHighlighting_Jump));
-            textBlock.Inlines.Add(aRun);
-
-            return textBlock;
-        }
-
-
         private string getLabelDescription(string label) {
             if (this._labelGraph.isEnabled) {
                 StringBuilder sb = new StringBuilder();
-                foreach (int lineNumber in this._labelGraph.getLabelDefLineNumbers(label)) {
+                SortedSet<int> labelDefs = this._labelGraph.getLabelDefLineNumbers(label);
+                if (labelDefs.Count > 1) {
+                    sb.AppendLine("");
+                }
+                foreach (int lineNumber in labelDefs) {
                     sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label defined at LINE {0}: {1}", lineNumber + 1, this.getLineContent(lineNumber))));
                 }
                 string result = sb.ToString();
@@ -256,6 +244,9 @@ namespace AsmDude.QuickInfo {
                 SortedSet<int> usage = this._labelGraph.labelUsedAtInfo(label);
                 if (usage.Count > 0) {
                     StringBuilder sb = new StringBuilder();
+                    if (usage.Count > 1) {
+                        sb.AppendLine("");
+                    }
                     foreach (int lineNumber in usage) {
                         sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label used at LINE {0}: {1}", lineNumber + 1, this.getLineContent(lineNumber))));
                         //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:getLabelDefDescription; sb=\"{1}\"", this.ToString(), sb.ToString()));
@@ -263,7 +254,7 @@ namespace AsmDude.QuickInfo {
                     string result = sb.ToString();
                     return result.TrimEnd(Environment.NewLine.ToCharArray());
                 } else {
-                    return AsmDudeToolsStatic.cleanup(string.Format("Unused Label {0}", label));
+                    return "Not used";
                 }
             } else {
                 return "Label analysis is disabled";

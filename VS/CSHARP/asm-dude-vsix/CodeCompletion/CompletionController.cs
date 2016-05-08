@@ -81,7 +81,9 @@ namespace AsmDude {
             //}
 
             if (false) {
-                //return ExecMethod1(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+#               pragma warning disable CS0162
+                return ExecMethod1(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+#               pragma warning restore CS0162
             } else {
                 return ExecMethod2(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
             }
@@ -153,7 +155,7 @@ namespace AsmDude {
             int hresult = VSConstants.S_OK;
             char typedChar = char.MinValue;
 
-            #region 1. Pre-process
+            #region 1. Preprocess
             if (pguidCmdGroup == VSConstants.VSStd2K) {
                 switch ((VSConstants.VSStd2KCmdID)nCmdID) {
                     case VSConstants.VSStd2KCmdID.AUTOCOMPLETE:

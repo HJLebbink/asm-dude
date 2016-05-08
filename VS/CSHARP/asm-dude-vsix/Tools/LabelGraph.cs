@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace AsmDude.Tools {
 
-#pragma warning disable CS0162
+#   pragma warning disable CS0162
 
     public sealed class LabelGraph : IDisposable, ILabelGraph {
 
@@ -38,7 +38,7 @@ namespace AsmDude.Tools {
                 ITagAggregator<AsmTokenTag> aggregator,
                 ErrorListProvider errorListProvider) {
 
-            AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:constructor"));
+            AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph: constructor: creating a label graph for {0}", AsmDudeToolsStatic.GetFileName(buffer)));
             this._sourceBuffer = buffer;
             this._aggregator = aggregator;
             this._errorListProvider = errorListProvider;
@@ -155,9 +155,9 @@ namespace AsmDude.Tools {
 
             double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
             if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
-                AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took LabelGraph {0:F3} seconds to reset.", elapsedSec));
+                AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took LabelGraph {0:F3} seconds to reset file {1}.", elapsedSec, AsmDudeToolsStatic.GetFileName(this._sourceBuffer)));
             }
-            if (elapsedSec > 2.0) {
+            if (elapsedSec > AsmDudePackage.slowShutdownThresholdSec) {
                 this.disable();
             }
         }
@@ -165,6 +165,9 @@ namespace AsmDude.Tools {
         public void Dispose() {
             this._sourceBuffer.Changed -= OnTextBufferChanged;
         }
+
+        public ErrorListProvider errorListProvider { get { return this._errorListProvider; } }
+
 
         public HashSet<int> getAllRelatedLineNumber() {
             // it does not work to find all the currently related line numbers. This because, 
@@ -184,6 +187,7 @@ namespace AsmDude.Tools {
         #region Private Methods
 
         private void addInfoToErrorTask() {
+            //TODO this method should not be here
             string msg = "Is the Tools>Options>AsmDude options pane not visible? Disable and enable this plugin to make it visible again...";
 
             bool alreadyPresent = false;
@@ -206,7 +210,7 @@ namespace AsmDude.Tools {
         }
 
         private void disable() {
-            string msg = "Performance of LabelGraph is horrible: disabling label analysis.";
+            string msg = string.Format("Performance of LabelGraph is horrible: disabling label analysis for {0}.", AsmDudeToolsStatic.GetFileName(this._sourceBuffer));
             AsmDudeToolsStatic.Output(string.Format("WARNING: "+msg));
 
             this._enabled = false;
@@ -218,6 +222,7 @@ namespace AsmDude.Tools {
             }
 
             #region Add Error Task
+
             ErrorTask errorTask = new ErrorTask();
             errorTask.SubcategoryIndex = (int)AsmErrorEnum.OTHER;
             errorTask.Text = msg;
@@ -422,7 +427,7 @@ namespace AsmDude.Tools {
             }
         }
 
-        #endregion Private Methods
+#       endregion Private Methods
     }
-#pragma warning restore CS0162
+#   pragma warning restore CS0162
 }

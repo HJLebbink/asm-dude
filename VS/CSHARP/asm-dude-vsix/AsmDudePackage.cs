@@ -47,6 +47,7 @@ namespace AsmDude {
 
         internal const string AsmDudeContentType = "asm!";
         internal const double slowWarningThresholdSec = 0.2; // threshold to warn that actions are considered slow
+        internal const double slowShutdownThresholdSec = 2.0; // threshold to switch of components
         internal const int maxNumberOfCharsInToolTips = 150;
 
         #region Member Variables

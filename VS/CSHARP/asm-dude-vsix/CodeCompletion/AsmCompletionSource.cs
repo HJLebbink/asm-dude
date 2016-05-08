@@ -154,9 +154,11 @@ namespace AsmDude {
             IDictionary<string, string> labelsUnsorted = AsmDudeToolsStatic.getLabelDescriptions(this._buffer.CurrentSnapshot.GetText());
             SortedDictionary<string, string> labels = new SortedDictionary<string, string>(labelsUnsorted);
 
-            foreach (KeyValuePair<string, string> entry in labels) { 
+            foreach (KeyValuePair<string, string> entry in labels) {
                 //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:AugmentCompletionSession; label={1}; description={2}", this.ToString(), entry.Key, entry.Value));
-                completions.Add(new Completion(entry.Key, entry.Key, entry.Value, imageSource, ""));
+                string displayText = entry.Key + " - " + entry.Value;
+                string insertionText = entry.Key;
+                completions.Add(new Completion(displayText, insertionText, null, imageSource, ""));
             }
             return completions;
         }
@@ -164,22 +166,22 @@ namespace AsmDude {
         private IList<Completion> selectedCompletions(bool useCapitals, HashSet<AsmTokenType> selectedTypes) {
             IList<Completion> completions = new List<Completion>();
 
-            {   // add the completions of AsmDude directives (such as code folding directives)
-                if (Settings.Default.CodeFolding_On) {
-                    {
-                        string insertionText = Settings.Default.CodeFolding_BeginTag;     //the characters that start the outlining region
-                        string description = insertionText + " - keyword to start code folding";
-                        completions.Add(new Completion(description, insertionText, null, this._icons[AsmTokenType.Directive], ""));
-                    }
-                    {
-                        string insertionText = Settings.Default.CodeFolding_EndTag;       //the characters that end the outlining region
-                        string description = insertionText + " - keyword to end code folding";
-                        completions.Add(new Completion(description, insertionText, null, this._icons[AsmTokenType.Directive], ""));
-                    }
+            #region add the completions of AsmDude directives (such as code folding directives)
+            if (Settings.Default.CodeFolding_On) {
+                {
+                    string insertionText = Settings.Default.CodeFolding_BeginTag;     //the characters that start the outlining region
+                    string description = insertionText + " - keyword to start code folding";
+                    completions.Add(new Completion(description, insertionText, null, this._icons[AsmTokenType.Directive], ""));
+                }
+                {
+                    string insertionText = Settings.Default.CodeFolding_EndTag;       //the characters that end the outlining region
+                    string description = insertionText + " - keyword to end code folding";
+                    completions.Add(new Completion(description, insertionText, null, this._icons[AsmTokenType.Directive], ""));
                 }
             }
+            #endregion
 
-            // add the completions that are defined in the xml file
+            #region add the completions that are defined in the xml file
             foreach (string keyword in this._asmDudeTools.getKeywords()) {
                 AsmTokenType type = this._asmDudeTools.getTokenType(keyword);
                 if (selectedTypes.Contains(type)) {
@@ -195,15 +197,16 @@ namespace AsmDude {
                         string archStr = (arch == Arch.NONE) ? "" : " [" + arch + "]";
                         string descriptionStr = this._asmDudeTools.getDescription(keyword);
                         descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
-                        String description = keyword + archStr + descriptionStr;
+                        String displayText = keyword + archStr + descriptionStr;
                         //String description = keyword.PadRight(15) + archStr.PadLeft(8) + descriptionStr;
 
                         ImageSource imageSource = null;
                         this._icons.TryGetValue(type, out imageSource);
-                        completions.Add(new Completion(description, insertionText, null, imageSource, ""));
+                        completions.Add(new Completion(displayText, insertionText, null, imageSource, ""));
                     }
                 }
             }
+            #endregion
             return completions;
         }
 

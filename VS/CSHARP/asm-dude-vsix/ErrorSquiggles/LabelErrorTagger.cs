@@ -24,21 +24,23 @@ namespace AsmDude.ErrorSquiggles {
         private readonly string _filename;
         private readonly ILabelGraph _labelGraph;
 
+        private object _updateLock = new object();
+
         #endregion Private Fields
 
         internal LabelErrorTagger(
                 ITextBuffer buffer,
-                ITagAggregator<AsmTokenTag> asmTagAggregator,
+                ITagAggregator<AsmTokenTag> aggregator,
+                ILabelGraph labelGraph,
                 ErrorListProvider errorListProvider) {
 
             //AsmDudeToolsStatic.Output(string.Format("INFO: LabelErrorTagger: constructor"));
-
             this._sourceBuffer = buffer;
-            this._aggregator = asmTagAggregator;
+            this._aggregator = aggregator;
+            this._labelGraph = labelGraph;
             this._errorListProvider = errorListProvider;
-            this._filename = AsmDudeToolsStatic.GetFileName(buffer);
-            this._labelGraph = new LabelGraph(buffer, asmTagAggregator, errorListProvider);
 
+            this._filename = AsmDudeToolsStatic.GetFileName(buffer);
             this._sourceBuffer.ChangedLowPriority += OnTextBufferChanged;
         }
 
@@ -132,52 +134,56 @@ namespace AsmDude.ErrorSquiggles {
 
             await System.Threading.Tasks.Task.Run(() => {
 
-                #region Update Tags
-                foreach (int lineNumber in this._labelGraph.getAllRelatedLineNumber()) {
-                    TagsChanged(this, new SnapshotSpanEventArgs(this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent));
-                }
-                #endregion Update Tags
+                lock (this._updateLock) {
 
-                #region Update Error Tasks
-                var errorTasks = this._errorListProvider.Tasks;
-                for (int i = errorTasks.Count -1 ; i >= 0 ; --i) {
-                    if (AsmErrorEnum.LABEL.HasFlag((AsmErrorEnum)errorTasks[i].SubcategoryIndex)) {
-                        errorTasks.RemoveAt(i);
+                    #region Update Tags
+                    foreach (int lineNumber in this._labelGraph.getAllRelatedLineNumber()) {
+                        TagsChanged(this, new SnapshotSpanEventArgs(this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent));
                     }
-                }
+                    #endregion Update Tags
 
-                bool errorExists = false;
+                    #region Update Error Tasks
+                    var errorTasks = this._errorListProvider.Tasks;
 
-                foreach (KeyValuePair<int, string> entry in this._labelGraph.labelClashes) {
-                    ErrorTask errorTask = new ErrorTask();
-                    errorTask.SubcategoryIndex = (int)AsmErrorEnum.LABEL_CLASH;
-                    errorTask.Line = entry.Key;
-                    errorTask.Column = 0;
-                    errorTask.Text = entry.Value;
-                    errorTask.ErrorCategory = TaskErrorCategory.Warning;
-                    errorTask.Document = this._filename;
-                    errorTask.Navigate += navigateHandler;
-                    errorTasks.Add(errorTask);
-                    errorExists = true;
-                }
-                foreach (KeyValuePair<int, string> entry in this._labelGraph.undefinedLabels) {
-                    ErrorTask errorTask = new ErrorTask();
-                    errorTask.SubcategoryIndex = (int)AsmErrorEnum.LABEL_UNDEFINED;
-                    errorTask.Line = entry.Key;
-                    errorTask.Column = 0;
-                    errorTask.Text = entry.Value;
-                    errorTask.ErrorCategory = TaskErrorCategory.Warning;
-                    errorTask.Document = this._filename;
-                    errorTask.Navigate += navigateHandler;
-                    errorTasks.Add(errorTask);
-                    errorExists = true;
-                }
-                if (errorExists) {
-                    this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
-                    this._errorListProvider.Refresh();
-                }
+                    for (int i = errorTasks.Count - 1; i >= 0; --i) {
+                        if (AsmErrorEnum.LABEL.HasFlag((AsmErrorEnum)errorTasks[i].SubcategoryIndex)) {
+                            errorTasks.RemoveAt(i);
+                        }
+                    }
 
-                #endregion Update Error Tasks
+                    bool errorExists = false;
+
+                    foreach (KeyValuePair<int, string> entry in this._labelGraph.labelClashes) {
+                        ErrorTask errorTask = new ErrorTask();
+                        errorTask.SubcategoryIndex = (int)AsmErrorEnum.LABEL_CLASH;
+                        errorTask.Line = entry.Key;
+                        errorTask.Column = 0;
+                        errorTask.Text = entry.Value;
+                        errorTask.ErrorCategory = TaskErrorCategory.Warning;
+                        errorTask.Document = this._filename;
+                        errorTask.Navigate += navigateHandler;
+                        errorTasks.Add(errorTask);
+                        errorExists = true;
+                    }
+                    foreach (KeyValuePair<int, string> entry in this._labelGraph.undefinedLabels) {
+                        ErrorTask errorTask = new ErrorTask();
+                        errorTask.SubcategoryIndex = (int)AsmErrorEnum.LABEL_UNDEFINED;
+                        errorTask.Line = entry.Key;
+                        errorTask.Column = 0;
+                        errorTask.Text = entry.Value;
+                        errorTask.ErrorCategory = TaskErrorCategory.Warning;
+                        errorTask.Document = this._filename;
+                        errorTask.Navigate += navigateHandler;
+                        errorTasks.Add(errorTask);
+                        errorExists = true;
+                    }
+                    if (errorExists) {
+                        this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
+                        this._errorListProvider.Refresh();
+                    }
+
+                    #endregion Update Error Tasks
+                }
             });
         }
 

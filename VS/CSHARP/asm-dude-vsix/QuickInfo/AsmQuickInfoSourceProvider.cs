@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using AsmDude.SyntaxHighlighting;
+using AsmDude.Tools;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
@@ -47,9 +48,15 @@ namespace AsmDude.QuickInfo {
 
         public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer buffer) {
 
+            Func<LabelGraph> sc1 = delegate () {
+                ITagAggregator<AsmTokenTag> aggregator = _aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
+                return new LabelGraph(buffer, aggregator, _asmDudeTools.errorListProvider);
+            };
+            ILabelGraph labelGraph = buffer.Properties.GetOrCreateSingletonProperty<LabelGraph>(sc1);
+
             Func<AsmQuickInfoSource> sc = delegate () {
                 ITagAggregator<AsmTokenTag> asmTagAggregator = _aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
-                return new AsmQuickInfoSource(buffer, asmTagAggregator, _asmDudeTools.errorListProvider);
+                return new AsmQuickInfoSource(buffer, asmTagAggregator, labelGraph);
             };
             return buffer.Properties.GetOrCreateSingletonProperty<AsmQuickInfoSource>(sc);
         }

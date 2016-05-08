@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.VisualStudio.Shell;
+using System.Collections.Generic;
 
 namespace AsmDude.Tools {
 
@@ -27,6 +28,12 @@ namespace AsmDude.Tools {
 
         void reset_Async();
         void reset_Sync();
+
+        /// <summary>
+        /// Get the error list provider that is used by this LabelGraph
+        /// </summary>
+        ErrorListProvider errorListProvider { get; }
+
         bool tryGetLineNumber(string label, out int lineNumber);
     }
 }
