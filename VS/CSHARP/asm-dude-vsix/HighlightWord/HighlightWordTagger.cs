@@ -32,6 +32,7 @@ using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Text.Classification;
 using System.Runtime.InteropServices;
+using AsmDude.Tools;
 
 namespace AsmDude.HighlightWord {
 

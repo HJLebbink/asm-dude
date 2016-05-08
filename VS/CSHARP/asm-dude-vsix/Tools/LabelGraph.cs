@@ -210,7 +210,8 @@ namespace AsmDude.Tools {
         }
 
         private void disable() {
-            string msg = string.Format("Performance of LabelGraph is horrible: disabling label analysis for {0}.", AsmDudeToolsStatic.GetFileName(this._sourceBuffer));
+            string filename = AsmDudeToolsStatic.GetFileName(this._sourceBuffer);
+            string msg = string.Format("Performance of LabelGraph is horrible: disabling label analysis for {0}.", filename);
             AsmDudeToolsStatic.Output(string.Format("WARNING: "+msg));
 
             this._enabled = false;
@@ -227,6 +228,8 @@ namespace AsmDude.Tools {
             errorTask.SubcategoryIndex = (int)AsmErrorEnum.OTHER;
             errorTask.Text = msg;
             errorTask.ErrorCategory = TaskErrorCategory.Message;
+            errorTask.Document = filename;
+            errorTask.Navigate += AsmDudeToolsStatic.errorTaskNavigateHandler;
             this._errorListProvider.Tasks.Add(errorTask);
             this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
             this._errorListProvider.Refresh();

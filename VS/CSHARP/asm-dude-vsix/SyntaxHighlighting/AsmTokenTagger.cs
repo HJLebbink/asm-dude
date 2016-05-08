@@ -28,6 +28,7 @@ using Microsoft.VisualStudio.Text.Tagging;
 using System.ComponentModel.Composition;
 
 using AsmDude.SyntaxHighlighting;
+using AsmDude.Tools;
 
 namespace AsmDude {
 

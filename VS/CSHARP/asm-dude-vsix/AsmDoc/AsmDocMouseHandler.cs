@@ -11,10 +11,9 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Shell;
-using System.Diagnostics;
-using System.Globalization;
 using EnvDTE80;
 using Microsoft.VisualStudio.Text.Formatting;
+using AsmDude.Tools;
 
 namespace AsmDude.AsmDoc {
 

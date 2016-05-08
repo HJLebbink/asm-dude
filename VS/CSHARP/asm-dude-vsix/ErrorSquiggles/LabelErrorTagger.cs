@@ -157,11 +157,11 @@ namespace AsmDude.ErrorSquiggles {
                         ErrorTask errorTask = new ErrorTask();
                         errorTask.SubcategoryIndex = (int)AsmErrorEnum.LABEL_CLASH;
                         errorTask.Line = entry.Key;
-                        errorTask.Column = 0;
+                        //errorTask.Column = 0;
                         errorTask.Text = entry.Value;
                         errorTask.ErrorCategory = TaskErrorCategory.Warning;
                         errorTask.Document = this._filename;
-                        errorTask.Navigate += navigateHandler;
+                        errorTask.Navigate += AsmDudeToolsStatic.errorTaskNavigateHandler;
                         errorTasks.Add(errorTask);
                         errorExists = true;
                     }
@@ -169,11 +169,11 @@ namespace AsmDude.ErrorSquiggles {
                         ErrorTask errorTask = new ErrorTask();
                         errorTask.SubcategoryIndex = (int)AsmErrorEnum.LABEL_UNDEFINED;
                         errorTask.Line = entry.Key;
-                        errorTask.Column = 0;
+                        //errorTask.Column = 0;
                         errorTask.Text = entry.Value;
                         errorTask.ErrorCategory = TaskErrorCategory.Warning;
                         errorTask.Document = this._filename;
-                        errorTask.Navigate += navigateHandler;
+                        errorTask.Navigate += AsmDudeToolsStatic.errorTaskNavigateHandler;
                         errorTasks.Add(errorTask);
                         errorExists = true;
                     }
@@ -185,55 +185,6 @@ namespace AsmDude.ErrorSquiggles {
                     #endregion Update Error Tasks
                 }
             });
-        }
-
-        private void navigateHandler(object sender, EventArgs arguments) {
-            Task task = sender as Task;
-
-            if (task == null) {
-                throw new ArgumentException("sender parm cannot be null");
-            }
-            if (String.IsNullOrEmpty(task.Document)) {
-                return;
-            }
-
-            IVsUIShellOpenDocument openDoc = Package.GetGlobalService(typeof(IVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
-            if (openDoc == null) {
-                return;
-            }
-
-            IVsWindowFrame frame;
-            Microsoft.VisualStudio.OLE.Interop.IServiceProvider serviceProvider;
-            IVsUIHierarchy hierarchy;
-            uint itemId;
-            Guid logicalView = VSConstants.LOGVIEWID_Code;
-
-            int hr = openDoc.OpenDocumentViaProject(task.Document, ref logicalView, out serviceProvider, out hierarchy, out itemId, out frame);
-            if (ErrorHandler.Failed(hr) || (frame == null)) {
-                return;
-            }
-
-            object docData;
-            frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out docData);
-
-            VsTextBuffer buffer = docData as VsTextBuffer;
-            if (buffer == null) {
-                IVsTextBufferProvider bufferProvider = docData as IVsTextBufferProvider;
-                if (bufferProvider != null) {
-                    IVsTextLines lines;
-                    ErrorHandler.ThrowOnFailure(bufferProvider.GetTextBuffer(out lines));
-                    buffer = lines as VsTextBuffer;
-
-                    if (buffer == null) {
-                        return;
-                    }
-                }
-            }
-            IVsTextManager mgr = Package.GetGlobalService(typeof(SVsTextManager)) as IVsTextManager;
-            if (mgr == null) {
-                return;
-            }
-            mgr.NavigateToLineAndColumn(buffer, ref logicalView, task.Line, task.Column, task.Line, task.Column);
         }
         #endregion Private Methods
     }

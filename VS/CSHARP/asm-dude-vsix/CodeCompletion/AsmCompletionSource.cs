@@ -33,6 +33,7 @@ using System.Windows.Media;
 using System.Globalization;
 
 using AsmTools;
+using AsmDude.Tools;
 
 namespace AsmDude {
 

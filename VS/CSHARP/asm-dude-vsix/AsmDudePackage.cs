@@ -10,6 +10,7 @@ using System.ComponentModel.Composition;
 using System.Text;
 using Microsoft.VisualStudio.Shell.Interop;
 using AsmDude.ErrorSquiggles;
+using AsmDude.Tools;
 
 namespace AsmDude {
 

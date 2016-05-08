@@ -27,15 +27,9 @@ namespace AsmDude.ErrorSquiggles {
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag {
 
-            Func<LabelGraph> sc1 = delegate () {
-                ErrorListProvider errorListProvider = _asmDudeTools.errorListProvider;
-                ITagAggregator<AsmTokenTag> aggregator = _aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
-                return new LabelGraph(buffer, aggregator, errorListProvider);
-            };
-            ILabelGraph labelGraph = buffer.Properties.GetOrCreateSingletonProperty<LabelGraph>(sc1);
-
             Func<ITagger<T>> sc2 = delegate () {
                 ITagAggregator<AsmTokenTag> aggregator = _aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
+                ILabelGraph labelGraph = _asmDudeTools.createLabelGraph(buffer, _aggregatorFactory);
                 return new LabelErrorTagger(buffer, aggregator, labelGraph, labelGraph.errorListProvider) as ITagger<T>;
             };
             return buffer.Properties.GetOrCreateSingletonProperty<ITagger<T>>(sc2);
