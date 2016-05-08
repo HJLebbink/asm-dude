@@ -2253,11 +2253,27 @@
 			<description>Extract Byte/Dword/Qword</description>
 			<ref>PEXTRB:PEXTRD:PEXTRQ.html</ref>
 		</mnemonic>
-		<mnemonic name='PEXTRW' arch='SSE'>
+    <mnemonic name='VPEXTRB' arch='AVX'>
+      <description>Extract Byte/Dword/Qword</description>
+      <ref>PEXTRB:PEXTRD:PEXTRQ.html</ref>
+    </mnemonic>
+    <mnemonic name='VPEXTRD' arch='AVX'>
+      <description>Extract Byte/Dword/Qword</description>
+      <ref>PEXTRB:PEXTRD:PEXTRQ.html</ref>
+    </mnemonic>
+    <mnemonic name='VPEXTRQ' arch='AVX'>
+      <description>Extract Byte/Dword/Qword</description>
+      <ref>PEXTRB:PEXTRD:PEXTRQ.html</ref>
+    </mnemonic>
+    <mnemonic name='PEXTRW' arch='SSE'>
 			<description>Extract Word</description>
 			<ref>PEXTRW.html</ref>
 		</mnemonic>
-		<mnemonic name='PHADDSW' arch='SSSE3'>
+    <mnemonic name='VPEXTRW' arch='AVX'>
+      <description>Extract Word</description>
+      <ref>PEXTRW.html</ref>
+    </mnemonic>
+    <mnemonic name='PHADDSW' arch='SSSE3'>
 			<description>Packed Horizontal Add and Saturate</description>
 			<ref>PHADDSW.html</ref>
 		</mnemonic>
