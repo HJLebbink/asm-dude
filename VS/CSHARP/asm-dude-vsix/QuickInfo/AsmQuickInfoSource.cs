@@ -30,14 +30,12 @@ using Microsoft.VisualStudio.Text.Tagging;
 using System.ComponentModel.Composition;
 using AsmDude.SyntaxHighlighting;
 using System.Text;
-using AsmTools;
 using AsmDude.Tools;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Drawing;
 using System.Windows.Media;
-using Microsoft.VisualStudio.Shell;
+using AsmTools;
 
 namespace AsmDude.QuickInfo {
 
@@ -128,7 +126,7 @@ namespace AsmDude.QuickInfo {
 
                                 string descr = this._asmDudeTools.getDescription(keywordUpper);
                                 if (descr.Length > 0) {
-                                    description.Inlines.Add(new Run(": " + descr));
+                                    description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                                 }
                                 break;
                             }
@@ -139,7 +137,7 @@ namespace AsmDude.QuickInfo {
 
                                 string descr = this._asmDudeTools.getDescription(keywordUpper);
                                 if (descr.Length > 0) {
-                                    description.Inlines.Add(new Run(": " + descr));
+                                    description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                                 }
                                 break;
                             }
@@ -150,7 +148,7 @@ namespace AsmDude.QuickInfo {
 
                                 string descr = this._asmDudeTools.getDescription(keywordUpper);
                                 if (descr.Length > 0) {
-                                    description.Inlines.Add(new Run(": " + descr));
+                                    description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                                 }
                                 break;
                             }
@@ -161,7 +159,7 @@ namespace AsmDude.QuickInfo {
 
                                 string descr = this._asmDudeTools.getDescription(keywordUpper);
                                 if (descr.Length > 0) {
-                                    description.Inlines.Add(new Run(": " + descr));
+                                    description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                                 }
                                 break;
                             }
@@ -172,7 +170,7 @@ namespace AsmDude.QuickInfo {
 
                                 string descr = this._asmDudeTools.getDescription(keywordUpper);
                                 if (descr.Length > 0) {
-                                    description.Inlines.Add(new Run(": " + descr));
+                                    description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                                 }
                                 break;
                             }
@@ -183,7 +181,7 @@ namespace AsmDude.QuickInfo {
 
                                 string descr = this.getLabelDescription(keyword);
                                 if (descr.Length > 0) {
-                                    description.Inlines.Add(new Run(": " + descr));
+                                    description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                                 }
                                 break;
                             }
@@ -194,7 +192,7 @@ namespace AsmDude.QuickInfo {
 
                                 string descr = this.getLabelDefDescription(keyword);
                                 if (descr.Length > 0) {
-                                    description.Inlines.Add(new Run(": " + descr));
+                                    description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                                 }
                                 break;
                             }
