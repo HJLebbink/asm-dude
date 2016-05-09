@@ -163,7 +163,8 @@ namespace AsmDude {
             this._description = new Dictionary<string, string>();
        
             // fill the dictionary with keywords
-            AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
+            //AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
+
             XmlDocument xmlDoc = this.getXmlData();
             foreach (XmlNode node in xmlDoc.SelectNodes("//misc")) {
                 var nameAttribute = node.Attributes["name"];

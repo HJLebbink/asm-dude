@@ -93,6 +93,7 @@ namespace AsmDude.AsmDoc {
     [TextViewRole(PredefinedTextViewRoles.Document)]
     [Order(Before = "WordSelection")]
     internal sealed class AsmDocMouseHandlerProvider : IMouseProcessorProvider {
+
         [Import]
         private IClassifierAggregatorService AggregatorFactory = null;
 
@@ -110,12 +111,16 @@ namespace AsmDude.AsmDoc {
             if (shellCommandDispatcher == null) {
                 return null;
             }
+
+            AsmDudeTools asmDudeTools = AsmDudeToolsStatic.getAsmDudeTools(buffer);
+
             return new AsmDocMouseHandler(
                 view, 
                 shellCommandDispatcher,
                 AggregatorFactory.GetClassifier(buffer),
                 NavigatorService.GetTextStructureNavigator(buffer),
-                CtrlKeyState.GetStateForView(view));
+                CtrlKeyState.GetStateForView(view),
+                asmDudeTools);
         }
 
         #region Private helpers
@@ -143,23 +148,21 @@ namespace AsmDude.AsmDoc {
         private readonly AsmDudeTools _asmDudeTools;
 
         public AsmDocMouseHandler(IWpfTextView view, IOleCommandTarget commandTarget, IClassifier aggregator,
-                                   ITextStructureNavigator navigator, CtrlKeyState state) {
-            _view = view;
-            _commandTarget = commandTarget;
-            _state = state;
-            _aggregator = aggregator;
-            _navigator = navigator;
+                                   ITextStructureNavigator navigator, CtrlKeyState state, AsmDudeTools asmDudeTools) {
+            this._view = view;
+            this._commandTarget = commandTarget;
+            this._state = state;
+            this._aggregator = aggregator;
+            this._navigator = navigator;
+            this._asmDudeTools = asmDudeTools;
 
-            _state.CtrlKeyStateChanged += (sender, args) => {
+            this._state.CtrlKeyStateChanged += (sender, args) => {
                 if (_state.Enabled) {
                     this.TryHighlightItemUnderMouse(RelativeToView(Mouse.PrimaryDevice.GetPosition(_view.VisualElement)));
                 } else {
                     this.SetHighlightSpan(null);
                 }
             };
-
-            // resolve _asmDudeTools
-            AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
 
             // Some other points to clear the highlight span:
             _view.LostAggregateFocus += (sender, args) => this.SetHighlightSpan(null);
