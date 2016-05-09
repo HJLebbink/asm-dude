@@ -1,7 +1,7 @@
 # Asm-Dude
 Assembly syntax highlighting, code completion and folding for Visual Studio 2015
 
-This extension can be found in the [visual studio extensions gallery](https://visualstudiogallery.msdn.microsoft.com/ff839577-2b68-416a-b761-72f9b1ca7c8e) or download latest installer [AsmDude.vsix (v1.4.8)](https://github.com/HJLebbink/asm-dude/releases/download/v1.4.8/AsmDude.vsix)
+This extension can be found in the [visual studio extensions gallery](https://visualstudiogallery.msdn.microsoft.com/ff839577-2b68-416a-b761-72f9b1ca7c8e) or download latest installer [AsmDude.vsix (v1.5.0.0)](https://github.com/HJLebbink/asm-dude/releases/download/v1.5.0.0/AsmDude.vsix)
 
 ###Features
 
@@ -93,5 +93,5 @@ Studio will launch under the experimental hive.
 * 9 March 2016: Added register highlighting. [v1.4.4]
 * 14 March 2016: bugfixes and anoyances fixes [v1.4.6]
 * 21 March 2016: Added code completion for labels in jumps [v1.4.8]
-* 8 May 2016: Added Label analysis [v1.5.0]
+* 8 May 2016: Added Label analysis [v1.5.0.0]
 
