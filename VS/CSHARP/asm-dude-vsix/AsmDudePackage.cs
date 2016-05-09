@@ -1,16 +1,13 @@
-
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
-
-using AsmDude.OptionsPage;
 using System.Globalization;
-using System.ComponentModel.Composition;
 using System.Text;
-using Microsoft.VisualStudio.Shell.Interop;
-using AsmDude.ErrorSquiggles;
+
 using AsmDude.Tools;
+using AsmDude.OptionsPage;
 
 namespace AsmDude {
 
@@ -71,15 +68,13 @@ namespace AsmDude {
             //this.changeFontAutoComplete();
 
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine(@" _____           ____        _     ");
+            sb.AppendLine(@"  _____           ____        _     ");
             sb.AppendLine(@"|  _  |___ _____|    \ _ _ _| |___ ");
             sb.AppendLine(@"|     |_ -|     |  |  | | | . | -_|");
             sb.AppendLine(@"|__|__|___|_|_|_|____/|___|___|___|");
-            sb.AppendLine(string.Format("INFO: Loaded AsmDude version {0}.", typeof(AsmDudePackage).Assembly.GetName().Version));
-            sb.AppendLine(string.Format("INFO: Open source assembly extension. Making programming in assembler bearable."));
-            //sb.AppendLine(string.Format("INFO: Why? Because programming assembly is an art which exists outside of contemporary computer science fads and fashions."));
-
-            sb.AppendLine(string.Format("INFO: More info at https://github.com/HJLebbink/asm-dude"));
+            sb.AppendFormat("INFO: Loaded AsmDude version {0}.\n", typeof(AsmDudePackage).Assembly.GetName().Version);
+            sb.AppendFormat("INFO: Open source assembly extension. Making programming in assembler bearable.\n");
+            sb.AppendLine("INFO: More info at https://github.com/HJLebbink/asm-dude");
             sb.AppendLine("----------------------------------");
             AsmDudeToolsStatic.Output(sb.ToString());
         }

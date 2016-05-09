@@ -38,7 +38,7 @@ namespace AsmDude.Tools {
                 ITagAggregator<AsmTokenTag> aggregator,
                 ErrorListProvider errorListProvider) {
 
-            AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph: constructor: creating a label graph for {0}", AsmDudeToolsStatic.GetFileName(buffer)));
+            //AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph: constructor: creating a label graph for {0}", AsmDudeToolsStatic.GetFileName(buffer)));
             this._sourceBuffer = buffer;
             this._aggregator = aggregator;
             this._errorListProvider = errorListProvider;
@@ -53,7 +53,6 @@ namespace AsmDude.Tools {
             this._sourceBuffer.ChangedLowPriority += OnTextBufferChanged;
 
             addInfoToErrorTask();
-
         }
 
         public bool isEnabled { get { return this._enabled; } }

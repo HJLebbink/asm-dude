@@ -47,9 +47,7 @@ namespace AsmDude.QuickInfo {
         private readonly ITextBuffer _sourceBuffer;
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
         private readonly ILabelGraph _labelGraph;
-
-        [Import]
-        private AsmDudeTools _asmDudeTools = null;
+        private readonly AsmDudeTools _asmDudeTools;
 
         public object CSharpEditorResources { get; private set; }
 
@@ -61,22 +59,8 @@ namespace AsmDude.QuickInfo {
             this._sourceBuffer = buffer;
             this._aggregator = aggregator;
             this._labelGraph = labelGraph;
-            AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
+            this._asmDudeTools = AsmDudeToolsStatic.getAsmDudeTools(buffer);
         }
-
-        private static Run makeRun1(string str) {
-            Run r1 = new Run(str);
-            r1.FontWeight = FontWeights.Bold;
-            return r1;
-        }
-
-        private static Run makeRun2(string str, System.Drawing.Color color) {
-            Run r1 = new Run(str);
-            r1.FontWeight = FontWeights.Bold;
-            r1.Foreground = new SolidColorBrush(AsmDudeToolsStatic.convertColor(color));
-            return r1;
-        }
-
 
         /// <summary>
         /// Determine which pieces of Quickinfo content should be displayed
@@ -220,6 +204,25 @@ namespace AsmDude.QuickInfo {
             }
         }
 
+        public void Dispose() {
+            //empty
+        }
+
+        #region Private Methods
+
+        private static Run makeRun1(string str) {
+            Run r1 = new Run(str);
+            r1.FontWeight = FontWeights.Bold;
+            return r1;
+        }
+
+        private static Run makeRun2(string str, System.Drawing.Color color) {
+            Run r1 = new Run(str);
+            r1.FontWeight = FontWeights.Bold;
+            r1.Foreground = new SolidColorBrush(AsmDudeToolsStatic.convertColor(color));
+            return r1;
+        }
+
         private string getLabelDescription(string label) {
             if (this._labelGraph.isEnabled) {
                 StringBuilder sb = new StringBuilder();
@@ -263,9 +266,7 @@ namespace AsmDude.QuickInfo {
             return this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
         }
 
-        public void Dispose() {
-            //empty
-        }
+        #endregion Private Methods
     }
 }
 

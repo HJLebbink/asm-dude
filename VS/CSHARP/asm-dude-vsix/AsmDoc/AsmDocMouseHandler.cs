@@ -140,10 +140,7 @@ namespace AsmDude.AsmDoc {
         private readonly IClassifier _aggregator;
         private readonly ITextStructureNavigator _navigator;
         private readonly IOleCommandTarget _commandTarget;
-
-        [Import]
-        private AsmDudeTools _asmDudeTools = null;
-
+        private readonly AsmDudeTools _asmDudeTools;
 
         public AsmDocMouseHandler(IWpfTextView view, IOleCommandTarget commandTarget, IClassifier aggregator,
                                    ITextStructureNavigator navigator, CtrlKeyState state) {

@@ -1,16 +1,14 @@
 ﻿using AsmDude.SyntaxHighlighting;
 using AsmDude.Tools;
-using AsmTools;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
-using Microsoft.VisualStudio.TextManager.Interop;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
 
 namespace AsmDude.ErrorSquiggles {
 
@@ -42,6 +40,7 @@ namespace AsmDude.ErrorSquiggles {
 
             this._filename = AsmDudeToolsStatic.GetFileName(buffer);
             this._sourceBuffer.ChangedLowPriority += OnTextBufferChanged;
+            this.updateErrorTasks();
         }
 
         public IEnumerable<ITagSpan<ErrorTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
@@ -57,42 +56,22 @@ namespace AsmDude.ErrorSquiggles {
             
             foreach (IMappingTagSpan<AsmTokenTag> asmTokenTag in _aggregator.GetTags(spans)) {
                 SnapshotSpan tagSpan = asmTokenTag.Span.GetSpans(_sourceBuffer)[0];
-
-                //AsmDudeToolsStatic.Output(string.Format("INFO: ErrorTagger:GetTags: found keyword \"{0}\"", span.GetText()));
+                //AsmDudeToolsStatic.Output(string.Format("INFO: ErrorTagger:GetTags: found keyword \"{0}\"", tagSpan.GetText()));
 
                 switch (asmTokenTag.Tag.type) {
                     case AsmTokenType.Label: {
-                            // an occurrence of a label is updated: 
-                            //    1] check whether the label is undefined or defined
-
-                            //int lineNumber = getLineNumber(span);
-                            //this.removeUndefinedLabelError(lineNumber);
                             string label = tagSpan.GetText();
-
                             if (!this._labelGraph.hasLabel(label)) {
-                                yield return new TagSpan<ErrorTag>(tagSpan, new ErrorTag("warning", "Undefined Label"));
+                                var toolTipContent = undefinedlabelToolTipContent();
+                                yield return new TagSpan<ErrorTag>(tagSpan, new ErrorTag("warning", toolTipContent));
                             }
                             break;
                         }
                     case AsmTokenType.LabelDef: {
-                            // a label definition is updated: 
-                            //    1] check all occurrences of labels whether they become undefined or defined
-                            //    2] check all definitions of labels whether they clash with the new label, or whether they do not clash anymore.
-
-                            //int lineNumber = getLineNumber(span);
-                            //this.removeLabelClashError(lineNumber);
                             string label = tagSpan.GetText();
-
                             if (this._labelGraph.hasLabelClash(label)) {
-
-                                StringBuilder sb = new StringBuilder();
-                                sb.AppendLine("Label Clash");
-                                foreach (int lineNumber in this._labelGraph.getLabelDefLineNumbers(label)) {
-                                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
-                                    sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label defined at LINE {0}: {1}", lineNumber + 1, lineContent)));
-                                }
-                                string msg = sb.ToString().TrimEnd(Environment.NewLine.ToCharArray());
-                                yield return new TagSpan<ErrorTag>(tagSpan, new ErrorTag("warning", msg));
+                                var toolTipContent = labelClashToolTipContent(label);
+                                yield return new TagSpan<ErrorTag>(tagSpan, new ErrorTag("warning", toolTipContent));
                             }
                             break;
                         }
@@ -109,6 +88,32 @@ namespace AsmDude.ErrorSquiggles {
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
         #region Private Methods
+
+        private TextBlock undefinedlabelToolTipContent() {
+            TextBlock textBlock = new TextBlock();
+            Run r1 = new Run("Undefined Label");
+            r1.FontWeight = FontWeights.Bold;
+            textBlock.Inlines.Add(r1);
+            return textBlock;
+        }
+
+        private TextBlock labelClashToolTipContent(string label) {
+            TextBlock textBlock = new TextBlock();
+            Run r1 = new Run("Label Clash:"+Environment.NewLine);
+            r1.FontWeight = FontWeights.Bold;
+            textBlock.Inlines.Add(r1);
+
+            StringBuilder sb = new StringBuilder();
+            foreach (int lineNumber in this._labelGraph.getLabelDefLineNumbers(label)) {
+                string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
+                sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label defined at LINE {0}: {1}", lineNumber + 1, lineContent)));
+            }
+            string msg = sb.ToString().TrimEnd(Environment.NewLine.ToCharArray());
+
+            Run r2 = new Run(msg);
+            textBlock.Inlines.Add(r2);
+            return textBlock;
+        }
 
         private static int getLineNumber(SnapshotSpan span) {
             int lineNumber = span.Snapshot.GetLineNumberFromPosition(span.Start);
@@ -128,8 +133,7 @@ namespace AsmDude.ErrorSquiggles {
         }
         #endregion
 
-        async private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
-            //AsmDudeToolsStatic.Output(string.Format("INFO: LabelErrorTagger:OnTextBufferChanged: number of changes={0}; first change: old={1}; new={2}", e.Changes.Count, e.Changes[0].OldText, e.Changes[0].NewText));
+        async private void updateErrorTasks() {
             if (!this._labelGraph.isEnabled) return;
 
             await System.Threading.Tasks.Task.Run(() => {
@@ -185,6 +189,11 @@ namespace AsmDude.ErrorSquiggles {
                     #endregion Update Error Tasks
                 }
             });
+        }
+
+        private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
+            //AsmDudeToolsStatic.Output(string.Format("INFO: LabelErrorTagger:OnTextBufferChanged: number of changes={0}; first change: old={1}; new={2}", e.Changes.Count, e.Changes[0].OldText, e.Changes[0].NewText));
+            this.updateErrorTasks();
         }
         #endregion Private Methods
     }

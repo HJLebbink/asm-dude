@@ -21,6 +21,14 @@ using System.Windows.Media.Imaging;
 namespace AsmDude.Tools {
     public static class AsmDudeToolsStatic {
 
+        public static AsmDudeTools getAsmDudeTools(ITextBuffer buffer) {
+            Func<AsmDudeTools> sc1 = delegate () {
+                return new AsmDudeTools();
+            };
+            AsmDudeTools asmDudeTools = buffer.Properties.GetOrCreateSingletonProperty<AsmDudeTools>(sc1);
+            return asmDudeTools;
+        }
+
         public static CompositionContainer getCompositionContainer() {
             AssemblyCatalog catalog = new AssemblyCatalog(System.Reflection.Assembly.GetExecutingAssembly());
             CompositionContainer container = new CompositionContainer(catalog);
@@ -31,13 +39,13 @@ namespace AsmDude.Tools {
             Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer bufferAdapter;
             buffer.Properties.TryGetProperty(typeof(Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer), out bufferAdapter);
             if (bufferAdapter != null) {
-                var persistFileFormat = bufferAdapter as IPersistFileFormat;
-                string ppzsFilename = null;
-                uint iii;
+                IPersistFileFormat persistFileFormat = bufferAdapter as IPersistFileFormat;
+                string filename = null;
+                uint dummyInteger;
                 if (persistFileFormat != null) {
-                    persistFileFormat.GetCurFile(out ppzsFilename, out iii);
+                    persistFileFormat.GetCurFile(out filename, out dummyInteger);
                 }
-                return ppzsFilename;
+                return filename;
             } else {
                 return null;
             }

@@ -41,16 +41,13 @@ namespace AsmDude {
 
         private readonly ITextBuffer _buffer;
         private readonly IDictionary<AsmTokenType, ImageSource> _icons;
+        private readonly AsmDudeTools _asmDudeTools;
         private bool _disposed = false;
-
-        [Import]
-        private AsmDudeTools _asmDudeTools = null;
 
         public AsmCompletionSource(ITextBuffer buffer) {
             this._buffer = buffer;
             this._icons = new Dictionary<AsmTokenType, ImageSource>();
-            AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
-
+            this._asmDudeTools = AsmDudeToolsStatic.getAsmDudeTools(buffer);
             this.loadIcons();
         }
 

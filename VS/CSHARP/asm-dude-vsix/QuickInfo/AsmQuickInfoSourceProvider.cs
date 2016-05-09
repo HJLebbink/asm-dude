@@ -43,14 +43,12 @@ namespace AsmDude.QuickInfo {
         [Import]
         private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
 
-        [Import]
-        private AsmDudeTools _asmDudeTools = null;
-
         public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer buffer) {
 
             Func<AsmQuickInfoSource> sc = delegate () {
                 ITagAggregator<AsmTokenTag> asmTagAggregator = _aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
-                ILabelGraph labelGraph = _asmDudeTools.createLabelGraph(buffer, _aggregatorFactory);
+                AsmDudeTools asmDudeTools = AsmDudeToolsStatic.getAsmDudeTools(buffer);
+                ILabelGraph labelGraph = asmDudeTools.createLabelGraph(buffer, _aggregatorFactory);
                 return new AsmQuickInfoSource(buffer, asmTagAggregator, labelGraph);
             };
             return buffer.Properties.GetOrCreateSingletonProperty<AsmQuickInfoSource>(sc);

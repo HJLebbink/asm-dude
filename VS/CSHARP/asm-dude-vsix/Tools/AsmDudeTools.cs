@@ -28,7 +28,7 @@ namespace AsmDude {
         private ErrorListProvider _errorListProvider;
 
         public AsmDudeTools() {
-            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: Entering constructor for: {0}", this.ToString()));
+            //AsmDudeToolsStatic.Output(string.Format("INFO: AsmDudeTools constructor"));
             this.initData(); // load data for speed
         }
 

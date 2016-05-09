@@ -35,22 +35,19 @@ namespace AsmDude {
     internal sealed class AsmTokenTagger : ITagger<AsmTokenTag> {
 
         private readonly ITextBuffer _buffer;
-
-        [Import]
-        private AsmDudeTools _asmDudeTools = null;
+        private readonly AsmDudeTools _asmDudeTools = null;
 
         static char[] splitChars = { ' ', ',', '\t', '+', '-', '*', '[', ']', '(', ')', ':' }; //TODO remove this to AsmDudeTools
 
         internal AsmTokenTagger(ITextBuffer buffer) {
             this._buffer = buffer;
-            AsmDudeToolsStatic.getCompositionContainer().SatisfyImportsOnce(this);
+            this._asmDudeTools = AsmDudeToolsStatic.getAsmDudeTools(buffer);
         }
 
         event EventHandler<SnapshotSpanEventArgs> ITagger<AsmTokenTag>.TagsChanged {
             add { }
             remove { }
         }
-
 
         public IEnumerable<ITagSpan<AsmTokenTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
 

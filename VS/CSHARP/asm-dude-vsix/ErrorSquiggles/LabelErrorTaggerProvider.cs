@@ -22,14 +22,12 @@ namespace AsmDude.ErrorSquiggles {
         [Import]
         private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
 
-        [Import]
-        private AsmDudeTools _asmDudeTools = null;
-
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag {
 
             Func<ITagger<T>> sc2 = delegate () {
                 ITagAggregator<AsmTokenTag> aggregator = _aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
-                ILabelGraph labelGraph = _asmDudeTools.createLabelGraph(buffer, _aggregatorFactory);
+                AsmDudeTools asmDudeTools = AsmDudeToolsStatic.getAsmDudeTools(buffer);
+                ILabelGraph labelGraph = asmDudeTools.createLabelGraph(buffer, _aggregatorFactory);
                 return new LabelErrorTagger(buffer, aggregator, labelGraph, labelGraph.errorListProvider) as ITagger<T>;
             };
             return buffer.Properties.GetOrCreateSingletonProperty<ITagger<T>>(sc2);
