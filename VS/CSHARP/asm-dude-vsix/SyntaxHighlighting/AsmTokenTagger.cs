@@ -29,6 +29,7 @@ using System.ComponentModel.Composition;
 
 using AsmDude.SyntaxHighlighting;
 using AsmDude.Tools;
+using AsmTools;
 
 namespace AsmDude {
 
@@ -144,8 +145,12 @@ namespace AsmDude {
                                         tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
                                         if (tokenSpan.IntersectsWith(curSpan)) {
                                             if (!asmToken.Equals("short", StringComparison.CurrentCultureIgnoreCase)) {
-                                                yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenType.Label));
-                                            } else { 
+                                                if (AsmSourceTools.isRegister(asmToken)) {
+                                                    yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenType.Register));
+                                                } else {
+                                                    yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenType.Label));
+                                                }
+                                           } else { 
                                                 yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenType.Misc));
 
                                                 tup = getNextToken(tokenId, nextLoc, tokens);
