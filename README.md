@@ -11,6 +11,7 @@ SSE, AVX, AVX2, Xeon-Phi (Knights Corner) instructions with their descriptions a
 Most of the regularly used Masm directives are supported and some Nasm directives. 
 
 Highlighting and descriptions are also provided for labels.
+
 ![label-analysis](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude-label-usage.png?raw=true "Label Usage")
 
 If you are not happy with highlighting or the descriptions. Mnemonics and descriptions can be added and changed by updating 
