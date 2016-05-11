@@ -29,12 +29,6 @@ namespace AsmDude.Tools {
             return asmDudeTools;
         }
 
-        public static CompositionContainer getCompositionContainer() {
-            AssemblyCatalog catalog = new AssemblyCatalog(System.Reflection.Assembly.GetExecutingAssembly());
-            CompositionContainer container = new CompositionContainer(catalog);
-            return container;
-        }
-
         public static string GetFileName(ITextBuffer buffer) {
             Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer bufferAdapter;
             buffer.Properties.TryGetProperty(typeof(Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer), out bufferAdapter);
@@ -109,8 +103,8 @@ namespace AsmDude.Tools {
         /// Get all labels with context info contained in the provided text
         /// </summary>
         [Obsolete("Use LabelGraph, but this method is much faster...", false)]
-        public static IDictionary<string, string> getLabelDescriptions(string text) {
-            IDictionary<string, string> result = new Dictionary<string, string>();
+        public static IReadOnlyDictionary<string, string> getLabelDescriptions(string text) {
+            Dictionary<string, string> result = new Dictionary<string, string>();
             int lineNumber = 1; // start counting at one since that is what VS does
             foreach (string line in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)) {
                 //AsmDudeToolsStatic.Output(string.Format("INFO: getLabels: str=\"{0}\"", str));

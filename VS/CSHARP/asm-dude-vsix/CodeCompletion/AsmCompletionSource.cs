@@ -230,7 +230,7 @@ namespace AsmDude {
         }
 
         private bool isRegister(string previousKeyword) {
-            return AsmTools.AsmSourceTools.isRegister(previousKeyword);
+            return AsmTools.RegisterTools.isRegister(previousKeyword);
         }
 
         private bool isMnemonic(string previousKeyword) {

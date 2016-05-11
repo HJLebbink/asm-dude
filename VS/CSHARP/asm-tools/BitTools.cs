@@ -172,6 +172,13 @@ namespace AsmTools {
             return 64;
         }
 
+        public static bool getBit(ulong[] data, int bitPos) {
+            return (((data[bitPos >> 6] >> (bitPos & 0x3F)) & 0x1) == 1);
+        }
+
+
+
+
         public static Tuple<ulong, ulong> toRaw(Bt[] a) {
             Debug.Assert(a.Length == 64);
             ulong d = 0;
