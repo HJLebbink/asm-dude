@@ -57,8 +57,8 @@ To run the extension, hit F5 or choose the Debug > Start Debugging menu command.
 Studio will launch under the experimental hive.
 
 ###Currently in development:
-* Irony Parser for proper parsing and error handling.
-* Track propagation of register and flag state-change trough time (under certain assumptions such as no "jmp GPR" etc). Provide warning squiggles if branches are never taken etc. 
+* Considering [Irony](https://irony.codeplex.com/) for proper parsing and error handling.
+* Considering [Z3](https://github.com/Z3Prover/z3) for proof tree induction to track propagation of register and flag state-change trough time.
 
 ###Feature Requests: (desire something - let me know)
 * ~~Documentation for opcodes. Hit F12 to get full official documentation of the selected opcode~~.
