@@ -325,15 +325,8 @@ namespace AsmDude.Tools {
         }
 
         private void addAll() {
-            if (true) {
-                for (int lineNumber = 0; lineNumber < this._sourceBuffer.CurrentSnapshot.LineCount; ++lineNumber) {
-                    addLineNumber(lineNumber);
-                }
-            } else {
-                SnapshotSpan span = new SnapshotSpan(this._sourceBuffer.CurrentSnapshot, new Span(0, this._sourceBuffer.CurrentSnapshot.Length));
-                foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in _aggregator.GetTags(span)) {
-                    addAsmTag(getLineNumber(asmTokenSpan), asmTokenSpan);
-                }
+            for (int lineNumber = 0; lineNumber < this._sourceBuffer.CurrentSnapshot.LineCount; ++lineNumber) {
+                this.addLineNumber(lineNumber);
             }
         }
 
@@ -344,8 +337,8 @@ namespace AsmDude.Tools {
         }
 
         private void addLineNumber(int lineNumber) {
-            foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in _aggregator.GetTags(this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent)) {
-                addAsmTag(lineNumber, asmTokenSpan);
+            foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in this._aggregator.GetTags(this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent)) {
+                this.addAsmTag(lineNumber, asmTokenSpan);
             }
         }
 
@@ -353,7 +346,7 @@ namespace AsmDude.Tools {
             lock (_updateLock) {
                 IList<string> toDelete = new List<string>();
                 if (this._hasLabel.Remove(lineNumber)) {
-                    foreach (KeyValuePair<string, IList<int>> entry in _usedAt) {
+                    foreach (KeyValuePair<string, IList<int>> entry in this._usedAt) {
                         if (entry.Value.Remove(lineNumber)) {
                             if (entry.Value.Count == 0) {
                                 toDelete.Add(entry.Key);
@@ -363,12 +356,12 @@ namespace AsmDude.Tools {
                 }
                 if (toDelete.Count > 0) {
                     foreach (string label in toDelete) {
-                        _usedAt.Remove(label);
+                        this._usedAt.Remove(label);
                     }
                 }
                 toDelete.Clear();
                 if (this._hasDef.Remove(lineNumber)) {
-                    foreach (KeyValuePair<string, IList<int>> entry in _defAt) {
+                    foreach (KeyValuePair<string, IList<int>> entry in this._defAt) {
                         if (entry.Value.Remove(lineNumber)) {
                             if (entry.Value.Count == 0) {
                                 toDelete.Add(entry.Key);
@@ -378,14 +371,14 @@ namespace AsmDude.Tools {
                 }
                 if (toDelete.Count > 0) {
                     foreach (string label in toDelete) {
-                        _defAt.Remove(label);
+                        this._defAt.Remove(label);
                     }
                 }
             }
         }
 
         private string getText(IMappingTagSpan<AsmTokenTag> asmTokenSpan) {
-            return asmTokenSpan.Span.GetSpans(_sourceBuffer)[0].GetText();
+            return asmTokenSpan.Span.GetSpans(this._sourceBuffer)[0].GetText();
         }
 
         private void shiftLineNumber(int lineNumber, int lineCountDelta) {
