@@ -164,7 +164,7 @@ namespace AsmDude {
         private IList<Completion> selectedCompletions(bool useCapitals, HashSet<AsmTokenType> selectedTypes) {
             IList<Completion> completions = new List<Completion>();
 
-            #region add the completions of AsmDude directives (such as code folding directives)
+            #region Add the completions of AsmDude directives (such as code folding directives)
             if (Settings.Default.CodeFolding_On) {
                 {
                     string insertionText = Settings.Default.CodeFolding_BeginTag;     //the characters that start the outlining region
@@ -179,7 +179,7 @@ namespace AsmDude {
             }
             #endregion
 
-            #region add the completions that are defined in the xml file
+            #region Add the completions that are defined in the xml file
             foreach (string keyword in this._asmDudeTools.getKeywords()) {
                 AsmTokenType type = this._asmDudeTools.getTokenType(keyword);
                 if (selectedTypes.Contains(type)) {
@@ -205,6 +205,7 @@ namespace AsmDude {
                 }
             }
             #endregion
+
             return completions;
         }
 

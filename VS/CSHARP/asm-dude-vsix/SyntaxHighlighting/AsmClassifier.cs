@@ -69,11 +69,10 @@ namespace AsmDude {
         /// </summary>
         public IEnumerable<ITagSpan<ClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
             if (Settings.Default.SyntaxHighlighting_On) {
-                DateTime time1 = DateTime.Now;
-
                 if (spans.Count == 0) {  //there is no content in the buffer
                     yield break;
                 }
+                DateTime time1 = DateTime.Now;
                 foreach (IMappingTagSpan<AsmTokenTag> tagSpan in _aggregator.GetTags(spans)) {
                     NormalizedSnapshotSpanCollection tagSpans = tagSpan.Span.GetSpans(spans[0].Snapshot);
                     yield return new TagSpan<ClassificationTag>(tagSpans[0], new ClassificationTag(_asmTypes[tagSpan.Tag.type]));
