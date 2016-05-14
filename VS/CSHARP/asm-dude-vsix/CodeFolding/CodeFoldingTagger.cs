@@ -123,7 +123,7 @@ namespace AsmDude.CodeFolding {
             // references to any parent partial regions.
             PartialRegion currentRegion = null;
 
-            foreach (var line in newSnapshot.Lines) {
+            foreach (ITextSnapshotLine line in newSnapshot.Lines) {
                 int regionStart = -1;
                 string text = line.GetText();
 

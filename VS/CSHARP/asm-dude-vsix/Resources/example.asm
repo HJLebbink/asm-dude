@@ -1,6 +1,17 @@
 .intel_syntax noprefix
 
 	#region Things TODO
+
+segment_name SEGMENT USE64 # make code folding
+    call proc_name
+    hlt
+
+proc_name PROC # add id to label graph and make code folding
+    xor rax, rax
+    ret
+proc_name ENDP
+segment_name ENDS
+
 	mov			r13, QWORD PTR lennyOptions$[rsp]
     mov 		rsi, QWORD PTR [network_c_mp_network_neurons]
 	vpextrb		BYTE PTR [r13+r9*2], xmm0, 10  

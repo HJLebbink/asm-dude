@@ -192,8 +192,9 @@ namespace AsmDude.ErrorSquiggles {
 
                         #endregion Update Error Tasks
 
-                    } catch (Exception e) {
-                        AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:updateErrorTasks; e={1}", this.ToString(), e.ToString()));
+                    } catch (Exception) {
+                        //TODO find why exception is raised.
+//                        AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:updateErrorTasks; e={1}", this.ToString(), e.ToString()));
                     }
                 }
             });

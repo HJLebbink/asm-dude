@@ -181,7 +181,7 @@ namespace AsmDude {
                                     var tup2 = getNextToken(tokenId, nextLoc, tokens);
                                     string nextToken = tup2.Item4;
                                     if (nextToken.Equals("proc", StringComparison.CurrentCultureIgnoreCase)) {
-                                        AsmDudeToolsStatic.Output(string.Format("INFO: found Masm directive " + asmToken));
+                                        //AsmDudeToolsStatic.Output(string.Format("INFO: found Masm directive " + asmToken));
                                         var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
                                         yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenType.LabelDef));
 
