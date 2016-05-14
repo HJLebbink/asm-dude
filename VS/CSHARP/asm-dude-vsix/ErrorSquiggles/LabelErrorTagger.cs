@@ -99,19 +99,23 @@ namespace AsmDude.ErrorSquiggles {
 
         private TextBlock labelClashToolTipContent(string label) {
             TextBlock textBlock = new TextBlock();
-            Run r1 = new Run("Label Clash:"+Environment.NewLine);
-            r1.FontWeight = FontWeights.Bold;
-            textBlock.Inlines.Add(r1);
+            try {
+                Run r1 = new Run("Label Clash:" + Environment.NewLine);
+                r1.FontWeight = FontWeights.Bold;
+                textBlock.Inlines.Add(r1);
 
-            StringBuilder sb = new StringBuilder();
-            foreach (int lineNumber in this._labelGraph.getLabelDefLineNumbers(label)) {
-                string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
-                sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label defined at LINE {0}: {1}", lineNumber + 1, lineContent)));
+                StringBuilder sb = new StringBuilder();
+                foreach (int lineNumber in this._labelGraph.getLabelDefLineNumbers(label)) {
+                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
+                    sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label defined at LINE {0}: {1}", lineNumber + 1, lineContent)));
+                }
+                string msg = sb.ToString().TrimEnd(Environment.NewLine.ToCharArray());
+
+                Run r2 = new Run(msg);
+                textBlock.Inlines.Add(r2);
+            } catch (Exception e) {
+                AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:labelClashToolTipContent; e={1}", this.ToString(), e.ToString()));
             }
-            string msg = sb.ToString().TrimEnd(Environment.NewLine.ToCharArray());
-
-            Run r2 = new Run(msg);
-            textBlock.Inlines.Add(r2);
             return textBlock;
         }
 
