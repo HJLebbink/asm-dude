@@ -139,54 +139,58 @@ namespace AsmDude.ErrorSquiggles {
             await System.Threading.Tasks.Task.Run(() => {
 
                 lock (this._updateLock) {
-
-                    #region Update Tags
-                    foreach (int lineNumber in this._labelGraph.getAllRelatedLineNumber()) {
-                        TagsChanged(this, new SnapshotSpanEventArgs(this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent));
-                    }
-                    #endregion Update Tags
-
-                    #region Update Error Tasks
-                    var errorTasks = this._errorListProvider.Tasks;
-
-                    for (int i = errorTasks.Count - 1; i >= 0; --i) {
-                        if (AsmErrorEnum.LABEL.HasFlag((AsmErrorEnum)errorTasks[i].SubcategoryIndex)) {
-                            errorTasks.RemoveAt(i);
+                    try {
+                        #region Update Tags
+                        foreach (int lineNumber in this._labelGraph.getAllRelatedLineNumber()) {
+                            TagsChanged(this, new SnapshotSpanEventArgs(this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent));
                         }
-                    }
+                        #endregion Update Tags
 
-                    bool errorExists = false;
+                        #region Update Error Tasks
+                        var errorTasks = this._errorListProvider.Tasks;
 
-                    foreach (KeyValuePair<int, string> entry in this._labelGraph.labelClashes) {
-                        ErrorTask errorTask = new ErrorTask();
-                        errorTask.SubcategoryIndex = (int)AsmErrorEnum.LABEL_CLASH;
-                        errorTask.Line = entry.Key;
-                        //errorTask.Column = 0;
-                        errorTask.Text = entry.Value;
-                        errorTask.ErrorCategory = TaskErrorCategory.Warning;
-                        errorTask.Document = this._filename;
-                        errorTask.Navigate += AsmDudeToolsStatic.errorTaskNavigateHandler;
-                        errorTasks.Add(errorTask);
-                        errorExists = true;
-                    }
-                    foreach (KeyValuePair<int, string> entry in this._labelGraph.undefinedLabels) {
-                        ErrorTask errorTask = new ErrorTask();
-                        errorTask.SubcategoryIndex = (int)AsmErrorEnum.LABEL_UNDEFINED;
-                        errorTask.Line = entry.Key;
-                        //errorTask.Column = 0;
-                        errorTask.Text = entry.Value;
-                        errorTask.ErrorCategory = TaskErrorCategory.Warning;
-                        errorTask.Document = this._filename;
-                        errorTask.Navigate += AsmDudeToolsStatic.errorTaskNavigateHandler;
-                        errorTasks.Add(errorTask);
-                        errorExists = true;
-                    }
-                    if (errorExists) {
-                        this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
-                        this._errorListProvider.Refresh();
-                    }
+                        for (int i = errorTasks.Count - 1; i >= 0; --i) {
+                            if (AsmErrorEnum.LABEL.HasFlag((AsmErrorEnum)errorTasks[i].SubcategoryIndex)) {
+                                errorTasks.RemoveAt(i);
+                            }
+                        }
 
-                    #endregion Update Error Tasks
+                        bool errorExists = false;
+
+                        foreach (KeyValuePair<int, string> entry in this._labelGraph.labelClashes) {
+                            ErrorTask errorTask = new ErrorTask();
+                            errorTask.SubcategoryIndex = (int)AsmErrorEnum.LABEL_CLASH;
+                            errorTask.Line = entry.Key;
+                            //errorTask.Column = 0;
+                            errorTask.Text = entry.Value;
+                            errorTask.ErrorCategory = TaskErrorCategory.Warning;
+                            errorTask.Document = this._filename;
+                            errorTask.Navigate += AsmDudeToolsStatic.errorTaskNavigateHandler;
+                            errorTasks.Add(errorTask);
+                            errorExists = true;
+                        }
+                        foreach (KeyValuePair<int, string> entry in this._labelGraph.undefinedLabels) {
+                            ErrorTask errorTask = new ErrorTask();
+                            errorTask.SubcategoryIndex = (int)AsmErrorEnum.LABEL_UNDEFINED;
+                            errorTask.Line = entry.Key;
+                            //errorTask.Column = 0;
+                            errorTask.Text = entry.Value;
+                            errorTask.ErrorCategory = TaskErrorCategory.Warning;
+                            errorTask.Document = this._filename;
+                            errorTask.Navigate += AsmDudeToolsStatic.errorTaskNavigateHandler;
+                            errorTasks.Add(errorTask);
+                            errorExists = true;
+                        }
+                        if (errorExists) {
+                            this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
+                            this._errorListProvider.Refresh();
+                        }
+
+                        #endregion Update Error Tasks
+
+                    } catch (Exception e) {
+                        AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:updateErrorTasks; e={1}", this.ToString(), e.ToString()));
+                    }
                 }
             });
         }
