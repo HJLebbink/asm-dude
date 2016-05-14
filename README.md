@@ -70,7 +70,7 @@ Studio will launch under the experimental hive.
 * ~~Label analysis. When jumping to a label, check if the label exists. Check if labels are unique. Provide error squiggles if something is wrong.~~
 * Label rename assistance.
 * Create new file item with .asm extension.
-* Code folding for documentation blocks.
+* Code folding for documentation blocks, folding for Masm procedure blocks and and Masm segments definitions.  
 * Add syntax highlighting for AT&T syntax.
 * Syntax highlighting in quickinfo tooltips.
 * Code formatting.
