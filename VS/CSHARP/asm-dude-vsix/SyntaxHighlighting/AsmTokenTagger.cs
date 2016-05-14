@@ -124,6 +124,7 @@ namespace AsmDude {
                         switch (this._asmDudeTools.getTokenType(asmToken)) {
 
                             case AsmTokenType.Jump: {
+                                    #region Jump
                                     //AsmDudeToolsStatic.Output("current jump token \"" + asmToken + "\"");
 
                                     var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
@@ -171,15 +172,29 @@ namespace AsmDude {
                                         }
                                     }
                                     break;
+                                    #endregion
                                 }
                             case AsmTokenType.UNKNOWN: {// asmToken is not a known keyword, check if it is numerical
-                                    if (AsmTools.AsmSourceTools.isConstant(asmToken)) {
+                                    #region UNKNOWN
+
+                                    // just peek the next token to check whether this unknown word is a part of a Mask directive
+                                    var tup2 = getNextToken(tokenId, nextLoc, tokens);
+                                    string nextToken = tup2.Item4;
+                                    if (nextToken.Equals("proc", StringComparison.CurrentCultureIgnoreCase)) {
+                                        AsmDudeToolsStatic.Output(string.Format("INFO: found Masm directive " + asmToken));
                                         var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
-                                        if (tokenSpan.IntersectsWith(curSpan)) {
-                                            yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenType.Constant));
+                                        yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenType.LabelDef));
+
+                                    } else {
+                                        if (AsmTools.AsmSourceTools.isConstant(asmToken)) {
+                                            var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
+                                            if (tokenSpan.IntersectsWith(curSpan)) {
+                                                yield return new TagSpan<AsmTokenTag>(tokenSpan, new AsmTokenTag(AsmTokenType.Constant));
+                                            }
                                         }
                                     }
                                     break;
+                                    #endregion
                                 }
                             default: {
                                     var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
