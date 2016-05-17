@@ -187,7 +187,8 @@ namespace AsmDude.QuickInfo {
                                 break;
                             }
                         default:
-                            //description = "Unused tagType " + asmTokenTag.Tag.type;
+                            //description = new TextBlock();
+                            //description.Inlines.Add(makeRun1("Unused tagType " + asmTokenTag.Tag.type));
                             break;
                     }
                     if (description != null) {

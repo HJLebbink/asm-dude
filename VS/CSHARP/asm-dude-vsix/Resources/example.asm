@@ -2,6 +2,18 @@
 
 	#region Things TODO
 
+	jmp			$LL9@run.cpu$om
+	jmp			SHORT $LL9@run.cpu$om
+	jmp			$
+	jmp			NEAR ptr $
+	jmp			SHORT $+2
+	jmp			rax
+
+
+segment_name SEGMENT USE64
+    db "This string contains the word jmp inside of it",0
+segment_name ENDS
+
 segment_name SEGMENT USE64 # make code folding
     call proc_name
     hlt
@@ -14,7 +26,7 @@ segment_name ENDS
 
 	mov			r13, QWORD PTR lennyOptions$[rsp]
     mov 		rsi, QWORD PTR [network_c_mp_network_neurons]
-	vpextrb		BYTE PTR [r13+r9*2], xmm0, 10  
+	vpextrb		BYTE PTR [r13+r9*2], xmm0, 10
 
 
 	vmovdqu		XMMWORD PTR [imagerel(htm_v1_constants_mp_global_cell_is_active_curr)+r13+r8], xmm15 
@@ -31,8 +43,6 @@ segment_name ENDS
 
 $LL9@run.cpu$om: # multiple label definitions
 $LL9@run.cpu$om: xor rax, rax
-	jb			SHORT $LL9@run.cpu$om	# label quickinfo does not work after SHORT keyword
-	ja			$LL9@run.cpu$om
 
 
 	#endregion Things TODO

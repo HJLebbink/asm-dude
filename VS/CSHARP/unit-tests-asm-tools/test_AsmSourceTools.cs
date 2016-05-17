@@ -2,6 +2,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using AsmTools;
+using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace unit_tests {
 
@@ -38,6 +40,62 @@ namespace unit_tests {
         }
         #endregion
 
+
+        [TestMethod]
+        public void test_AsmSourceTools_splitIntoKeywordsPos() {
+            {
+                const string line = "    db \"This string contains the word jmp inside of it\",0";
+
+                IList<Tuple<int, int>> result = AsmSourceTools.splitIntoKeywordPos(line);
+                for (int i = 0; i < result.Count; ++i) {
+                    Console.WriteLine(line.Substring(result[i].Item1, result[i].Item2 - result[i].Item1));
+                }
+                Assert.AreEqual(3, result.Count);
+                Assert.AreEqual("db", line.Substring(result[0].Item1, result[0].Item2 - result[0].Item1));
+                Assert.AreEqual("\"This string contains the word jmp inside of it\"", line.Substring(result[1].Item1, result[1].Item2 - result[1].Item1));
+                Assert.AreEqual("0", line.Substring(result[2].Item1, result[2].Item2 - result[2].Item1));
+            }
+            {
+                const string line = "	call		??$?6U?$char_traits@D@std@@@std@@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@0@AEAV10@PEBD@Z";
+
+                IList<Tuple<int, int>> result = AsmSourceTools.splitIntoKeywordPos(line);
+                for (int i = 0; i < result.Count; ++i) {
+                    Console.WriteLine(line.Substring(result[i].Item1, result[i].Item2 - result[i].Item1));
+                }
+                Assert.AreEqual(2, result.Count);
+                Assert.AreEqual("call", line.Substring(result[0].Item1, result[0].Item2 - result[0].Item1));
+                Assert.AreEqual("??$?6U?$char_traits@D@std@@@std@@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@0@AEAV10@PEBD@Z", line.Substring(result[1].Item1, result[1].Item2 - result[1].Item1));
+            }
+        }
+
+        /*
+        [TestMethod]
+        public void test_AsmSourceTools_splitIntoKeywords() {
+            {
+                const string line = "    db \"This string contains the word jmp inside of it\",0";
+
+                string[] result = AsmSourceTools.splitIntoKeywords(line);
+                for (int i = 0; i < result.Length; ++i) {
+                    Console.WriteLine(result[i]);
+                }
+                Assert.AreEqual(3, result.Length);
+                Assert.AreEqual("db", result[0]);
+                Assert.AreEqual("\"This string contains the word jmp inside of it\"", result[1]);
+                Assert.AreEqual("0", result[2]);
+            }
+            {
+                const string line = "	call		??$?6U?$char_traits@D@std@@@std@@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@0@AEAV10@PEBD@Z";
+
+                string[] result = AsmSourceTools.splitIntoKeywords(line);
+                for (int i = 0; i < result.Length; ++i) {
+                    Console.WriteLine(result[i]);
+                }
+                Assert.AreEqual(2, result.Length);
+                Assert.AreEqual("call", result[0]);
+                Assert.AreEqual("??$?6U?$char_traits@D@std@@@std@@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@0@AEAV10@PEBD@Z", result[1]);
+            }
+        }
+        */
         [TestMethod]
         public void Test_AsmSourceTools_getPreviousKeyword() {
 

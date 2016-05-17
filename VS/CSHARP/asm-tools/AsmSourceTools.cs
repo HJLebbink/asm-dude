@@ -8,6 +8,55 @@ namespace AsmTools {
 
     public static partial class AsmSourceTools {
 
+        public static IList<Tuple<int, int, bool>> splitIntoKeywordPos(string line) {
+            IList<Tuple<int, int, bool>> list = new List<Tuple<int, int, bool>>();
+
+            int keywordBegin = 0;
+            bool inStringDef = false;
+
+            for (int i = 0; i < line.Length; ++i) {
+                char c = line[i];
+
+                if (inStringDef) {
+                    if (c.Equals('"')) {
+                        inStringDef = false;
+                        if (keywordBegin < i) {
+                            list.Add(new Tuple<int, int, bool>(keywordBegin, i + 1, false));
+                        }
+                        keywordBegin = i + 1; // next keyword starts at the next char
+                    }
+                } else {
+                    if (isRemarkChar(c)) {
+                        if (keywordBegin < i) {
+                            list.Add(new Tuple<int, int, bool>(keywordBegin, i, false));
+                        }
+                        list.Add(new Tuple<int, int, bool>(i, line.Length, false));
+                        i = line.Length;
+                    } else if (c.Equals('"')) { // start string definition
+                        if (keywordBegin < i) {
+                            list.Add(new Tuple<int, int, bool>(keywordBegin, i, false));
+                        }
+                        inStringDef = true;
+                        keywordBegin = i; // '"' is part of the keyword
+                    } else if (isSeparatorChar(c)) {
+                        if (keywordBegin < i) {
+                            if (c.Equals(':')) {
+                                list.Add(new Tuple<int, int, bool>(keywordBegin, i, true));
+                            } else {
+                                list.Add(new Tuple<int, int, bool>(keywordBegin, i, false));
+                            }
+                        }
+                        keywordBegin = i + 1; // separator is not part of the keyword
+                    }
+                }
+            }
+
+            if (keywordBegin < line.Length) {
+                list.Add(new Tuple<int, int, bool>(keywordBegin, line.Length, false));
+            }
+            return list;
+        }
+
         public static bool isRemarkChar(char c) {
             return c.Equals('#') || c.Equals(';');
         }

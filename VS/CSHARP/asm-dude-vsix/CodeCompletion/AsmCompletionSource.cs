@@ -106,8 +106,9 @@ namespace AsmDude {
                     // previous keyword is jump (or call) mnemonic. Suggest "SHORT" or a label
                     completions = this.labelCompletions();
                     completions.Add(new Completion("SHORT", (useCapitals) ? "SHORT" : "short", null, this._icons[AsmTokenType.Misc], ""));
+                    completions.Add(new Completion("NEAR", (useCapitals) ? "NEAR" : "near", null, this._icons[AsmTokenType.Misc], ""));
 
-                } else if (previousKeyword.Equals("SHORT")) {
+                } else if (previousKeyword.Equals("SHORT") || previousKeyword.Equals("NEAR")) {
                     // previous keyword is SHORT. Suggest a label
                     completions = this.labelCompletions();
 
