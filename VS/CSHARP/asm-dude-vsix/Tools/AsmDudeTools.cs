@@ -25,7 +25,6 @@ namespace AsmDude {
         private IDictionary<string, AsmTokenType> _type;
         private IDictionary<string, Arch> _arch;
         private IDictionary<string, string> _description;
-        private ErrorListProvider _errorListProvider;
 
         public AsmDudeTools() {
             //AsmDudeToolsStatic.Output(string.Format("INFO: AsmDudeTools constructor"));
@@ -128,27 +127,25 @@ namespace AsmDude {
             this._description = null;
         }
 
-        public ErrorListProvider errorListProvider {
-            get {
-                if (this._errorListProvider == null) {
-                    IServiceProvider serviceProvider;
-                    if (true) {
-                        serviceProvider = new ServiceProvider(Package.GetGlobalService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider)) as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
-                    } else {
-                        serviceProvider = Package.GetGlobalService(typeof(IServiceProvider)) as ServiceProvider;
-                    }
-                    this._errorListProvider = new ErrorListProvider(serviceProvider);
-                    this._errorListProvider.ProviderName = "Asm Errors";
-                    this._errorListProvider.ProviderGuid = new Guid(EnvDTE.Constants.vsViewKindCode);
-                }
-                return this._errorListProvider;
-            }
-        }
-
         public ILabelGraph createLabelGraph(ITextBuffer buffer, IBufferTagAggregatorFactoryService service) {
+
+            Func<ErrorListProvider> sc0 = delegate () {
+                IServiceProvider serviceProvider;
+                if (true) {
+                    serviceProvider = new ServiceProvider(Package.GetGlobalService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider)) as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
+                } else {
+                    serviceProvider = Package.GetGlobalService(typeof(IServiceProvider)) as ServiceProvider;
+                }
+                ErrorListProvider errorListProvider = new ErrorListProvider(serviceProvider);
+                errorListProvider.ProviderName = "Asm Errors";
+                errorListProvider.ProviderGuid = new Guid(EnvDTE.Constants.vsViewKindCode);
+                return errorListProvider;
+            };
+
             Func<LabelGraph> sc1 = delegate () {
                 ITagAggregator<AsmTokenTag> aggregator = service.CreateTagAggregator<AsmTokenTag>(buffer);
-                return new LabelGraph(buffer, aggregator, this.errorListProvider);
+                ErrorListProvider errorListProvider = buffer.Properties.GetOrCreateSingletonProperty<ErrorListProvider>(sc0);
+                return new LabelGraph(buffer, aggregator, errorListProvider);
             };
             return buffer.Properties.GetOrCreateSingletonProperty<LabelGraph>(sc1);
         }
@@ -277,7 +274,7 @@ namespace AsmDude {
         protected virtual void Dispose(bool disposing) {
             if (!disposedValue) {
                 if (disposing) {
-                    this._errorListProvider.Dispose();
+                    //
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.

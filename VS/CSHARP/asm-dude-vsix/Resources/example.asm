@@ -11,6 +11,15 @@
 
 
 segment_name SEGMENT USE64
+    FOO EQU 0x00
+    jmp FOO
+segment_name ENDS
+
+segment_name SEGMENT USE64
+    jmp dword ptr [eax]
+segment_name ENDS
+
+segment_name SEGMENT USE64
     db "This string contains the word jmp inside of it",0
 segment_name ENDS
 

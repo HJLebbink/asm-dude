@@ -129,7 +129,11 @@ namespace AsmDude {
                             string asmToken2 = keyword(pos[k], lineOpcodes);
                             switch (asmToken2) {
                                 case "$":
-                                    //AsmDudeToolsStatic.Output(string.Format("AsmTokenTagger:GetTags: label token {0} at location {1} = \"{2}\"", tokenId, curLoc, asmToken));
+                                    break;
+                                case "WORD":
+                                case "DWORD":
+                                case "QWORD":
+                                    yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.Misc));
                                     break;
                                 case "SHORT":
                                 case "NEAR":
@@ -179,8 +183,13 @@ namespace AsmDude {
                                 k++;
                                 if (k == nKeywords) break;
 
-                                if (keyword(pos[k], lineOpcodes).Equals("PROC")) {
-                                    yield return new TagSpan<AsmTokenTag>(newSpan(pos[k-1], offset, curSpan), new AsmTokenTag(AsmTokenType.LabelDef));
+                                string nextKeyword = keyword(pos[k], lineOpcodes);
+
+                                if (nextKeyword.Equals("PROC")) {
+                                    yield return new TagSpan<AsmTokenTag>(newSpan(pos[k - 1], offset, curSpan), new AsmTokenTag(AsmTokenType.LabelDef));
+                                    yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.Directive));
+                                } else if (nextKeyword.Equals("EQU")) {
+                                    yield return new TagSpan<AsmTokenTag>(newSpan(pos[k - 1], offset, curSpan), new AsmTokenTag(AsmTokenType.LabelDef));
                                     yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.Directive));
                                 } else {
                                     k--;
