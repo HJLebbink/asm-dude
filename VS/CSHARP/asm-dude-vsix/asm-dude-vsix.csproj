@@ -372,6 +372,7 @@
     <None Include="app.config" />
     <None Include="CustomMoniker.imagemanifest" />
     <None Include="packages.config" />
+    <None Include="Resources\example.inc" />
     <None Include="Settings.settings">
       <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

@@ -3,6 +3,7 @@ using AsmDude.SyntaxHighlighting;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
+using Microsoft.VisualStudio.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -20,6 +21,8 @@ namespace AsmDude.Tools {
         private readonly ITextBuffer _sourceBuffer;
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
         private readonly ErrorListProvider _errorListProvider;
+        private readonly ITextDocumentFactoryService _docFactory;
+        private readonly IContentType _contentType;
 
         private readonly IDictionary<string, IList<int>> _usedAt;
         private readonly IDictionary<string, IList<int>> _defAt;
@@ -35,13 +38,17 @@ namespace AsmDude.Tools {
 
         public LabelGraph(
                 ITextBuffer buffer, 
-                ITagAggregator<AsmTokenTag> aggregator,
-                ErrorListProvider errorListProvider) {
+                ITagAggregator<AsmTokenTag> aggregator, 
+                ErrorListProvider errorListProvider,
+                ITextDocumentFactoryService docFactory,
+                IContentType contentType) {
 
             //AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph: constructor: creating a label graph for {0}", AsmDudeToolsStatic.GetFileName(buffer)));
             this._sourceBuffer = buffer;
             this._aggregator = aggregator;
             this._errorListProvider = errorListProvider;
+            this._docFactory = docFactory;
+            this._contentType = contentType;
 
             this._usedAt = new Dictionary<string, IList<int>>();
             this._defAt = new Dictionary<string, IList<int>>();
@@ -52,7 +59,7 @@ namespace AsmDude.Tools {
             this.reset_Sync();
             this._sourceBuffer.ChangedLowPriority += OnTextBufferChanged;
 
-            addInfoToErrorTask();
+            this.addInfoToErrorTask();
         }
 
         public bool isEnabled { get { return this._enabled; } }
@@ -180,6 +187,11 @@ namespace AsmDude.Tools {
 
         #region Private Methods
 
+        private void addIncludeFile() {
+
+        }
+
+
         private void addInfoToErrorTask() {
             //TODO this method should not be here
             string msg = "Is the Tools>Options>AsmDude options pane not visible? Disable and enable this plugin to make it visible again...";
@@ -250,47 +262,68 @@ namespace AsmDude.Tools {
             if (true) {
                 this.reset_Async();
             } else {
-                // experimental faster method, but it still has subtle bugs
-                switch (e.Changes.Count) {
-                    case 0: return;
-                    case 1:
-                        ITextChange textChange = e.Changes[0];
-                        switch (textChange.LineCountDelta) {
-                            case 0: {
-                                    int lineNumber = e.Before.GetLineNumberFromPosition(textChange.OldPosition);
-                                    this.updateLineNumber(lineNumber);
-                                }
-                                break;
-                            case 1: {
-                                    int lineNumber = e.Before.GetLineNumberFromPosition(textChange.OldPosition);
-                                    //AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:OnTextBufferChanged: old={0}; new={1}; LineNumber={2}", textChange.OldText, textChange.NewText, lineNumber));
-                                    this.shiftLineNumber(lineNumber + 1, 1);
-                                    this.updateLineNumber(lineNumber);
-                                }
-                                break;
-                            case -1: {
-                                    int lineNumber = e.Before.GetLineNumberFromPosition(textChange.OldPosition);
-                                    AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:OnTextBufferChanged: old={0}; new={1}; LineNumber={2}", textChange.OldText, textChange.NewText, lineNumber));
-                                    this.shiftLineNumber(lineNumber + 1, -1);
-                                    this.updateLineNumber(lineNumber);
-                                    this.updateLineNumber(lineNumber - 1);
-                                }
-                                break;
-                            default:
-                                AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:OnTextBufferChanged: lineDelta={0}", textChange.LineCountDelta));
-                                this.reset_Async();
-                                break;
-                        }
-                        break;
-                    default:
-                        this.reset_Async();
-                        break;
+                lock (_updateLock) {
+                    // experimental faster method, but it still has subtle bugs
+                    switch (e.Changes.Count) {
+                        case 0: return;
+                        case 1:
+                            ITextChange textChange = e.Changes[0];
+                            switch (textChange.LineCountDelta) {
+                                case 0: {
+                                        int lineNumber = e.Before.GetLineNumberFromPosition(textChange.OldPosition);
+                                        this.updateLineNumber(lineNumber);
+                                    }
+                                    break;
+                                case 1: {
+                                        int lineNumber = e.Before.GetLineNumberFromPosition(textChange.OldPosition);
+                                        //AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:OnTextBufferChanged: old={0}; new={1}; LineNumber={2}", textChange.OldText, textChange.NewText, lineNumber));
+                                        this.shiftLineNumber(lineNumber + 1, 1);
+                                        this.updateLineNumber(lineNumber);
+                                    }
+                                    break;
+                                case -1: {
+                                        int lineNumber = e.Before.GetLineNumberFromPosition(textChange.OldPosition);
+                                        AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:OnTextBufferChanged: old={0}; new={1}; LineNumber={2}", textChange.OldText, textChange.NewText, lineNumber));
+                                        this.shiftLineNumber(lineNumber + 1, -1);
+                                        this.updateLineNumber(lineNumber);
+                                        this.updateLineNumber(lineNumber - 1);
+                                    }
+                                    break;
+                                default:
+                                    AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:OnTextBufferChanged: lineDelta={0}", textChange.LineCountDelta));
+                                    this.reset_Async();
+                                    break;
+                            }
+                            break;
+                        default:
+                            this.reset_Async();
+                            break;
+                    }
                 }
             }
         }
 
-        private void addAsmTag(int lineNumber, IMappingTagSpan<AsmTokenTag> asmTokenSpan) {
+        private void addAll() {
             lock (_updateLock) {
+                for (int lineNumber = 0; lineNumber < this._sourceBuffer.CurrentSnapshot.LineCount; ++lineNumber) {
+                    this.addLineNumber(lineNumber);
+                }
+            }
+        }
+
+        private void updateLineNumber(int lineNumber) {
+            AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:updateLineNumber: line {0}", lineNumber));
+            this.addLineNumber(lineNumber);
+            this.removeLineNumber(lineNumber);
+        }
+
+        private void addLineNumber(int lineNumber) {
+
+            IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent);
+            var enumerator = tags.GetEnumerator();
+
+            while (enumerator.MoveNext()) {
+                var asmTokenSpan = enumerator.Current;
                 switch (asmTokenSpan.Tag.type) {
                     case AsmTokenType.LabelDef: {
                             string label = getText(asmTokenSpan);
@@ -314,26 +347,29 @@ namespace AsmDude.Tools {
                             this._hasLabel.Add(lineNumber);
                         }
                         break;
+                    case AsmTokenType.Directive: {
+                            string keyword = getText(asmTokenSpan);
+                            if (keyword.Equals("INCLUDE", StringComparison.OrdinalIgnoreCase)) {
+                                AsmDudeToolsStatic.Output("INFO: LabelGraph:addLineNumber keyword=\"" + keyword + "\".");
+
+                                if (enumerator.MoveNext()) {
+                                    string filename = getText(enumerator.Current);
+                                    bool characterSubstitutionsOccurred;
+                                    AsmDudeToolsStatic.Output("INFO: LabelGraph:addLineNumber found include filename \"" + filename+"\".");
+                                    string filePath = filename;
+
+                                    try {
+
+                                        ITextDocument doc = this._docFactory.CreateAndLoadTextDocument(filePath, this._contentType, true, out characterSubstitutionsOccurred);
+                                    } catch (Exception e) {
+                                        AsmDudeToolsStatic.Output("WARNING: LabelGraph:addLineNumber." + e.Message);
+                                    }
+                                }
+                            }
+                        }
+                        break;
                     default: break;
                 }
-            }
-        }
-
-        private void addAll() {
-            for (int lineNumber = 0; lineNumber < this._sourceBuffer.CurrentSnapshot.LineCount; ++lineNumber) {
-                this.addLineNumber(lineNumber);
-            }
-        }
-
-        private void updateLineNumber(int lineNumber) {
-            AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:updateLineNumber: line {0}", lineNumber));
-            this.addLineNumber(lineNumber);
-            this.removeLineNumber(lineNumber);
-        }
-
-        private void addLineNumber(int lineNumber) {
-            foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in this._aggregator.GetTags(this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent)) {
-                this.addAsmTag(lineNumber, asmTokenSpan);
             }
         }
 

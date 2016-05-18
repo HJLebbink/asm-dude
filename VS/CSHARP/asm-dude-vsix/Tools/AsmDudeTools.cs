@@ -13,6 +13,7 @@ using AsmDude.Tools;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using AsmDude.SyntaxHighlighting;
+using Microsoft.VisualStudio.Utilities;
 
 namespace AsmDude {
 
@@ -127,7 +128,11 @@ namespace AsmDude {
             this._description = null;
         }
 
-        public ILabelGraph createLabelGraph(ITextBuffer buffer, IBufferTagAggregatorFactoryService service) {
+        public ILabelGraph createLabelGraph(
+            ITextBuffer buffer, 
+            ITagAggregator<AsmTokenTag> aggregator, 
+            ITextDocumentFactoryService docFactory,
+            IContentType contentType) {
 
             Func<ErrorListProvider> sc0 = delegate () {
                 IServiceProvider serviceProvider;
@@ -143,9 +148,8 @@ namespace AsmDude {
             };
 
             Func<LabelGraph> sc1 = delegate () {
-                ITagAggregator<AsmTokenTag> aggregator = service.CreateTagAggregator<AsmTokenTag>(buffer);
-                ErrorListProvider errorListProvider = buffer.Properties.GetOrCreateSingletonProperty<ErrorListProvider>(sc0);
-                return new LabelGraph(buffer, aggregator, errorListProvider);
+                ErrorListProvider errorListProvider = buffer.Properties.GetOrCreateSingletonProperty(sc0);
+                return new LabelGraph(buffer, aggregator, errorListProvider, docFactory, contentType);
             };
             return buffer.Properties.GetOrCreateSingletonProperty<LabelGraph>(sc1);
         }

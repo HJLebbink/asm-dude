@@ -1,7 +1,20 @@
 .intel_syntax noprefix
 
+include example.inc
+
 	#region Things TODO
 
+	mov			r13, QWORD PTR lennyOptions$[rsp]
+	mov 		rsi, QWORD PTR [network_c_mp_network_neurons]
+	vmovups		xmm4, XMMWORD PTR [.T1737_.0.17+64] # label not recognized
+	vmovdqu		XMMWORD PTR [imagerel(htm_v1_constants_mp_global_cell_is_active_curr)+r13+r8], xmm15 
+
+	lea			rcx, OFFSET FLAT:??_C@_0FE@OJFGMKFJ@ERROR?3?5dataset?3?3HexDataSet?3?3getV@
+	mov			rax, -4616189618054758400		; negative constants not recognized bff0000000000000H
+
+	#endregion Things TODO
+
+	#region Jump Examples
 	jmp			$LL9@run.cpu$om
 	jmp			SHORT $LL9@run.cpu$om
 	jmp			$
@@ -9,10 +22,16 @@
 	jmp			SHORT $+2
 	jmp			rax
 
+	??$?6U?$char_traits@D@std@@@std@@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@0@AEAV10@PEBD@Z:
+	call		??$?6U?$char_traits@D@std@@@std@@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@0@AEAV10@PEBD@Z
+
+	#endregion
+
+	#region Masm Examples
 
 segment_name SEGMENT USE64
-    FOO EQU 0x00
-    jmp FOO
+    FOO2 EQU 0x00
+    jmp FOO2
 segment_name ENDS
 
 segment_name SEGMENT USE64
@@ -33,30 +52,14 @@ proc_name PROC # add id to label graph and make code folding
 proc_name ENDP
 segment_name ENDS
 
-	mov			r13, QWORD PTR lennyOptions$[rsp]
-    mov 		rsi, QWORD PTR [network_c_mp_network_neurons]
-	vpextrb		BYTE PTR [r13+r9*2], xmm0, 10
+	#endregion
 
-
-	vmovdqu		XMMWORD PTR [imagerel(htm_v1_constants_mp_global_cell_is_active_curr)+r13+r8], xmm15 
-
-	??$?6U?$char_traits@D@std@@@std@@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@0@AEAV10@PEBD@Z:
-	call		??$?6U?$char_traits@D@std@@@std@@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@0@AEAV10@PEBD@Z
-
-	lea			rcx, OFFSET FLAT:??_C@_0FE@OJFGMKFJ@ERROR?3?5dataset?3?3HexDataSet?3?3getV@
-	mov			rax, -4616189618054758400		; negative constants not recognized bff0000000000000H
-	_TEXT		ENDS
-	_TEXT		SEGMENT      'CODE'
-	network_c_mp_init_topology_izhikevich	PROC 
-	vmovups		xmm4, XMMWORD PTR [.T1737_.0.17+64] # label not recognized
-
+	#region Label Clash Example
 $LL9@run.cpu$om: # multiple label definitions
 $LL9@run.cpu$om: xor rax, rax
+	#endregion
 
-
-	#endregion Things TODO
-	
-	#region allRegisters
+	#region All Registers
 
 	rax 
 	Rax
@@ -227,7 +230,7 @@ $LL9@run.cpu$om: xor rax, rax
     ZMM31 
 	#endregion
 
-	#region real example handcoded
+	#region Real Example Handcoded
 
 # void bitswap_gas(unsigned int * const data, const unsigned long long pos1, const unsigned long long pos2) // rcx, rdx, r8, r9
 # rcx <= data

@@ -112,7 +112,7 @@ namespace AsmDude {
                         yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.LabelDef));
                         continue;
                     }
-                     
+
                     string asmToken = keyword(pos[k], lineOpcodes);
                     if (AsmSourceTools.isRemarkChar(asmToken[0])) {
                         yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.Remark));
@@ -180,20 +180,29 @@ namespace AsmDude {
                                 yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.Constant));
 
                             } else {
-                                k++;
-                                if (k == nKeywords) break;
+                                bool isUnknown = true;
 
-                                string nextKeyword = keyword(pos[k], lineOpcodes);
+                                if ((k + 1) < nKeywords) {
+                                    k++;
+                                    string nextKeyword = keyword(pos[k], lineOpcodes);
 
-                                if (nextKeyword.Equals("PROC")) {
-                                    yield return new TagSpan<AsmTokenTag>(newSpan(pos[k - 1], offset, curSpan), new AsmTokenTag(AsmTokenType.LabelDef));
-                                    yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.Directive));
-                                } else if (nextKeyword.Equals("EQU")) {
-                                    yield return new TagSpan<AsmTokenTag>(newSpan(pos[k - 1], offset, curSpan), new AsmTokenTag(AsmTokenType.LabelDef));
-                                    yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.Directive));
-                                } else {
-                                    k--;
+                                    if (nextKeyword.Equals("PROC")) {
+                                        yield return new TagSpan<AsmTokenTag>(newSpan(pos[k - 1], offset, curSpan), new AsmTokenTag(AsmTokenType.LabelDef));
+                                        yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.Directive));
+                                        isUnknown = false;
+                                    } else if (nextKeyword.Equals("EQU")) {
+                                        yield return new TagSpan<AsmTokenTag>(newSpan(pos[k - 1], offset, curSpan), new AsmTokenTag(AsmTokenType.LabelDef));
+                                        yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.Directive));
+                                        isUnknown = false;
+                                    } else {
+                                        k--;
+                                    }
                                 }
+
+                                if (isUnknown) {
+                                    yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.UNKNOWN));
+                                }
+
                             }
                             break;
 

@@ -34,6 +34,7 @@ namespace AsmDude.Tools {
             buffer.Properties.TryGetProperty(typeof(Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer), out bufferAdapter);
             if (bufferAdapter != null) {
                 IPersistFileFormat persistFileFormat = bufferAdapter as IPersistFileFormat;
+
                 string filename = null;
                 uint dummyInteger;
                 if (persistFileFormat != null) {
@@ -43,6 +44,59 @@ namespace AsmDude.Tools {
             } else {
                 return null;
             }
+        }
+
+        public static string getFileContent(string filename) {
+            return "";
+            //TODO
+        }
+
+        public static void errorTaskNavigateHandler(object sender, EventArgs arguments) {
+            Microsoft.VisualStudio.Shell.Task task = sender as Microsoft.VisualStudio.Shell.Task;
+
+            if (task == null) {
+                throw new ArgumentException("sender parm cannot be null");
+            }
+            if (String.IsNullOrEmpty(task.Document)) {
+                return;
+            }
+
+            IVsUIShellOpenDocument openDoc = Package.GetGlobalService(typeof(IVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
+            if (openDoc == null) {
+                return;
+            }
+            IVsWindowFrame frame;
+            Microsoft.VisualStudio.OLE.Interop.IServiceProvider serviceProvider;
+            IVsUIHierarchy hierarchy;
+            uint itemId;
+            Guid logicalView = VSConstants.LOGVIEWID_Code;
+
+            int hr = openDoc.OpenDocumentViaProject(task.Document, ref logicalView, out serviceProvider, out hierarchy, out itemId, out frame);
+            if (ErrorHandler.Failed(hr) || (frame == null)) {
+                return;
+            }
+
+            object docData;
+            frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out docData);
+
+            VsTextBuffer buffer = docData as VsTextBuffer;
+            if (buffer == null) {
+                IVsTextBufferProvider bufferProvider = docData as IVsTextBufferProvider;
+                if (bufferProvider != null) {
+                    IVsTextLines lines;
+                    ErrorHandler.ThrowOnFailure(bufferProvider.GetTextBuffer(out lines));
+                    buffer = lines as VsTextBuffer;
+
+                    if (buffer == null) {
+                        return;
+                    }
+                }
+            }
+            IVsTextManager mgr = Package.GetGlobalService(typeof(SVsTextManager)) as IVsTextManager;
+            if (mgr == null) {
+                return;
+            }
+            mgr.NavigateToLineAndColumn(buffer, ref logicalView, task.Line, task.Column, task.Line, task.Column);
         }
 
         public static string getInstallPath() {
@@ -83,7 +137,9 @@ namespace AsmDude.Tools {
                 return cleanedString;
             }
         }
-
+        /// <summary>
+        /// Output message to the AsmDude window
+        /// </summary>
         public static void Output(string msg) {
             IVsOutputWindow outputWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
             string msg2 = string.Format(CultureInfo.CurrentCulture, "{0}", msg.Trim() + Environment.NewLine);
@@ -205,53 +261,5 @@ namespace AsmDude.Tools {
             return true;
         }
 
-        public static void errorTaskNavigateHandler(object sender, EventArgs arguments) {
-            Microsoft.VisualStudio.Shell.Task task = sender as Microsoft.VisualStudio.Shell.Task;
-
-            if (task == null) {
-                throw new ArgumentException("sender parm cannot be null");
-            }
-            if (String.IsNullOrEmpty(task.Document)) {
-                return;
-            }
-
-            IVsUIShellOpenDocument openDoc = Package.GetGlobalService(typeof(IVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
-            if (openDoc == null) {
-                return;
-            }
-
-            IVsWindowFrame frame;
-            Microsoft.VisualStudio.OLE.Interop.IServiceProvider serviceProvider;
-            IVsUIHierarchy hierarchy;
-            uint itemId;
-            Guid logicalView = VSConstants.LOGVIEWID_Code;
-
-            int hr = openDoc.OpenDocumentViaProject(task.Document, ref logicalView, out serviceProvider, out hierarchy, out itemId, out frame);
-            if (ErrorHandler.Failed(hr) || (frame == null)) {
-                return;
-            }
-
-            object docData;
-            frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out docData);
-
-            VsTextBuffer buffer = docData as VsTextBuffer;
-            if (buffer == null) {
-                IVsTextBufferProvider bufferProvider = docData as IVsTextBufferProvider;
-                if (bufferProvider != null) {
-                    IVsTextLines lines;
-                    ErrorHandler.ThrowOnFailure(bufferProvider.GetTextBuffer(out lines));
-                    buffer = lines as VsTextBuffer;
-
-                    if (buffer == null) {
-                        return;
-                    }
-                }
-            }
-            IVsTextManager mgr = Package.GetGlobalService(typeof(SVsTextManager)) as IVsTextManager;
-            if (mgr == null) {
-                return;
-            }
-            mgr.NavigateToLineAndColumn(buffer, ref logicalView, task.Line, task.Column, task.Line, task.Column);
-        }
     }
 }
