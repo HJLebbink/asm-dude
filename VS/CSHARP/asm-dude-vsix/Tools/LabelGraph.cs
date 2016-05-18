@@ -447,7 +447,7 @@ namespace AsmDude.Tools {
 
         private void handleInclude(string includeFilename) {
             string parentFilename = AsmDudeToolsStatic.GetFileName(this._sourceBuffer);
-            string filePath = Path.GetDirectoryName(parentFilename) + Path.DirectorySeparatorChar + includeFilename;
+            string filePath = Path.GetDirectoryName(parentFilename) + Path.DirectorySeparatorChar + includeFilename.Substring(1, includeFilename.Length-2);
 
             if (File.Exists(filePath)) {
                 AsmDudeToolsStatic.Output("INFO: LabelGraph:handleInclude: including file " + filePath);

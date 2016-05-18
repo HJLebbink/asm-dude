@@ -1,6 +1,6 @@
 .intel_syntax noprefix
 
-include inc\example.inc
+include "inc\example.inc"
 	jmp			FOO		# FOO is defined in an included file
 
 	#region Things TODO
