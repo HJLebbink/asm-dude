@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.TextManager.Interop;
+using Microsoft.VisualStudio.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
@@ -21,6 +22,35 @@ using System.Windows.Media.Imaging;
 namespace AsmDude.Tools {
     public static class AsmDudeToolsStatic {
 
+
+        public static ILabelGraph createLabelGraph(
+            ITextBuffer buffer,
+            IBufferTagAggregatorFactoryService aggregatorFactory,
+            ITextDocumentFactoryService docFactory,
+            IContentType contentType) {
+
+            Func<ErrorListProvider> sc0 = delegate () {
+                IServiceProvider serviceProvider;
+                if (true) {
+                    serviceProvider = new ServiceProvider(Package.GetGlobalService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider)) as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
+                } else {
+                    serviceProvider = Package.GetGlobalService(typeof(IServiceProvider)) as ServiceProvider;
+                }
+                ErrorListProvider errorListProvider = new ErrorListProvider(serviceProvider);
+                errorListProvider.ProviderName = "Asm Errors";
+                errorListProvider.ProviderGuid = new Guid(EnvDTE.Constants.vsViewKindCode);
+                return errorListProvider;
+            };
+
+            Func<LabelGraph> sc1 = delegate () {
+                ErrorListProvider errorListProvider = buffer.Properties.GetOrCreateSingletonProperty(sc0);
+                return new LabelGraph(buffer, aggregatorFactory, errorListProvider, docFactory, contentType);
+            };
+            return buffer.Properties.GetOrCreateSingletonProperty(sc1);
+        }
+
+
+
         public static AsmDudeTools getAsmDudeTools(ITextBuffer buffer) {
             Func<AsmDudeTools> sc1 = delegate () {
                 return new AsmDudeTools();
@@ -29,6 +59,9 @@ namespace AsmDude.Tools {
             return asmDudeTools;
         }
 
+        /// <summary>
+        /// get the full filename (with path) for the provided buffer
+        /// </summary>
         public static string GetFileName(ITextBuffer buffer) {
             Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer bufferAdapter;
             buffer.Properties.TryGetProperty(typeof(Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer), out bufferAdapter);
@@ -44,11 +77,6 @@ namespace AsmDude.Tools {
             } else {
                 return null;
             }
-        }
-
-        public static string getFileContent(string filename) {
-            return "";
-            //TODO
         }
 
         public static void errorTaskNavigateHandler(object sender, EventArgs arguments) {
@@ -99,6 +127,9 @@ namespace AsmDude.Tools {
             mgr.NavigateToLineAndColumn(buffer, ref logicalView, task.Line, task.Column, task.Line, task.Column);
         }
 
+        /// <summary>
+        /// Get the path where this visual studio extension is installed.
+        /// </summary>
         public static string getInstallPath() {
             try {
                 string fullPath = System.Reflection.Assembly.GetExecutingAssembly().Location;

@@ -38,7 +38,6 @@ namespace AsmDude.ErrorSquiggles {
             this._labelGraph = labelGraph;
             this._errorListProvider = errorListProvider;
 
-            this._filename = AsmDudeToolsStatic.GetFileName(buffer);
             this._sourceBuffer.ChangedLowPriority += OnTextBufferChanged;
             this.updateErrorTasks();
         }
@@ -145,8 +144,11 @@ namespace AsmDude.ErrorSquiggles {
                 lock (this._updateLock) {
                     try {
                         #region Update Tags
-                        foreach (int lineNumber in this._labelGraph.getAllRelatedLineNumber()) {
-                            TagsChanged(this, new SnapshotSpanEventArgs(this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent));
+                        foreach (uint id in this._labelGraph.getAllRelatedLineNumber()) {
+                            if (this._labelGraph.isFromMainFile(id)) {
+                                int lineNumber = (int)id;
+                                TagsChanged(this, new SnapshotSpanEventArgs(this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent));
+                            }
                         }
                         #endregion Update Tags
 
@@ -161,26 +163,26 @@ namespace AsmDude.ErrorSquiggles {
 
                         bool errorExists = false;
 
-                        foreach (KeyValuePair<int, string> entry in this._labelGraph.labelClashes) {
+                        foreach (KeyValuePair<uint, string> entry in this._labelGraph.labelClashes) {
                             ErrorTask errorTask = new ErrorTask();
                             errorTask.SubcategoryIndex = (int)AsmErrorEnum.LABEL_CLASH;
-                            errorTask.Line = entry.Key;
+                            errorTask.Line = this._labelGraph.getLinenumber(entry.Key);
                             //errorTask.Column = 0;
                             errorTask.Text = entry.Value;
                             errorTask.ErrorCategory = TaskErrorCategory.Warning;
-                            errorTask.Document = this._filename;
+                            errorTask.Document = this._labelGraph.getFilename(entry.Key);
                             errorTask.Navigate += AsmDudeToolsStatic.errorTaskNavigateHandler;
                             errorTasks.Add(errorTask);
                             errorExists = true;
                         }
-                        foreach (KeyValuePair<int, string> entry in this._labelGraph.undefinedLabels) {
+                        foreach (KeyValuePair<uint, string> entry in this._labelGraph.undefinedLabels) {
                             ErrorTask errorTask = new ErrorTask();
                             errorTask.SubcategoryIndex = (int)AsmErrorEnum.LABEL_UNDEFINED;
-                            errorTask.Line = entry.Key;
+                            errorTask.Line = this._labelGraph.getLinenumber(entry.Key);
                             //errorTask.Column = 0;
                             errorTask.Text = entry.Value;
                             errorTask.ErrorCategory = TaskErrorCategory.Warning;
-                            errorTask.Document = this._filename;
+                            errorTask.Document = this._labelGraph.getFilename(entry.Key);
                             errorTask.Navigate += AsmDudeToolsStatic.errorTaskNavigateHandler;
                             errorTasks.Add(errorTask);
                             errorExists = true;
@@ -192,9 +194,9 @@ namespace AsmDude.ErrorSquiggles {
 
                         #endregion Update Error Tasks
 
-                    } catch (Exception) {
+                    } catch (Exception e) {
                         //TODO find why exception is raised.
-//                        AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:updateErrorTasks; e={1}", this.ToString(), e.ToString()));
+                        AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:updateErrorTasks; e={1}", this.ToString(), e.ToString()));
                     }
                 }
             });

@@ -48,7 +48,7 @@ namespace AsmDude.CodeFolding {
             Func<ITagger<T>> sc = delegate () {
                 return new CodeFoldingTagger(buffer) as ITagger<T>;
             };
-            return buffer.Properties.GetOrCreateSingletonProperty<ITagger<T>>(sc);
+            return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
     }
 }

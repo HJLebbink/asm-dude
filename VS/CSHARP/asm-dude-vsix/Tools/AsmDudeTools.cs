@@ -128,31 +128,6 @@ namespace AsmDude {
             this._description = null;
         }
 
-        public ILabelGraph createLabelGraph(
-            ITextBuffer buffer, 
-            ITagAggregator<AsmTokenTag> aggregator, 
-            ITextDocumentFactoryService docFactory,
-            IContentType contentType) {
-
-            Func<ErrorListProvider> sc0 = delegate () {
-                IServiceProvider serviceProvider;
-                if (true) {
-                    serviceProvider = new ServiceProvider(Package.GetGlobalService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider)) as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
-                } else {
-                    serviceProvider = Package.GetGlobalService(typeof(IServiceProvider)) as ServiceProvider;
-                }
-                ErrorListProvider errorListProvider = new ErrorListProvider(serviceProvider);
-                errorListProvider.ProviderName = "Asm Errors";
-                errorListProvider.ProviderGuid = new Guid(EnvDTE.Constants.vsViewKindCode);
-                return errorListProvider;
-            };
-
-            Func<LabelGraph> sc1 = delegate () {
-                ErrorListProvider errorListProvider = buffer.Properties.GetOrCreateSingletonProperty(sc0);
-                return new LabelGraph(buffer, aggregator, errorListProvider, docFactory, contentType);
-            };
-            return buffer.Properties.GetOrCreateSingletonProperty<LabelGraph>(sc1);
-        }
 
         #endregion Public Methods
         #region Private Methods

@@ -22,7 +22,7 @@ namespace AsmDude.BraceMatching {
             Func<ITagger<T>> sc = delegate () {
                 return new BraceMatchingTagger(textView, buffer) as ITagger<T>;
             };
-            return buffer.Properties.GetOrCreateSingletonProperty<ITagger<T>>(sc);
+            return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
     }
 }

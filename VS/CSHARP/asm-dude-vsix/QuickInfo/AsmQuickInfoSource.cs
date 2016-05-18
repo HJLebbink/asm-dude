@@ -36,6 +36,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using AsmTools;
+using System.IO;
 
 namespace AsmDude.QuickInfo {
 
@@ -227,12 +228,14 @@ namespace AsmDude.QuickInfo {
         private string getLabelDescription(string label) {
             if (this._labelGraph.isEnabled) {
                 StringBuilder sb = new StringBuilder();
-                SortedSet<int> labelDefs = this._labelGraph.getLabelDefLineNumbers(label);
+                SortedSet<uint> labelDefs = this._labelGraph.getLabelDefLineNumbers(label);
                 if (labelDefs.Count > 1) {
                     sb.AppendLine("");
                 }
-                foreach (int lineNumber in labelDefs) {
-                    sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label defined at LINE {0}: {1}", lineNumber + 1, this.getLineContent(lineNumber))));
+                foreach (uint id in labelDefs) {
+                    int lineNumber = this._labelGraph.getLinenumber(id);
+                    string filename = Path.GetFileName(this._labelGraph.getFilename(id));
+                    sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label defined at LINE {0} in {1}", lineNumber + 1, filename)));
                 }
                 string result = sb.ToString();
                 return result.TrimEnd(Environment.NewLine.ToCharArray());
@@ -243,14 +246,16 @@ namespace AsmDude.QuickInfo {
 
         private string getLabelDefDescription(string label) {
             if (this._labelGraph.isEnabled) {
-                SortedSet<int> usage = this._labelGraph.labelUsedAtInfo(label);
+                SortedSet<uint> usage = this._labelGraph.labelUsedAtInfo(label);
                 if (usage.Count > 0) {
                     StringBuilder sb = new StringBuilder();
                     if (usage.Count > 1) {
                         sb.AppendLine("");
                     }
-                    foreach (int lineNumber in usage) {
-                        sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label used at LINE {0}: {1}", lineNumber + 1, this.getLineContent(lineNumber))));
+                    foreach (uint id in usage) {
+                        int lineNumber = this._labelGraph.getLinenumber(id);
+                        string filename = Path.GetFileName(this._labelGraph.getFilename(id));
+                        sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label used at LINE {0} in {1}", lineNumber + 1, filename)));
                         //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:getLabelDefDescription; sb=\"{1}\"", this.ToString(), sb.ToString()));
                     }
                     string result = sb.ToString();
@@ -261,10 +266,6 @@ namespace AsmDude.QuickInfo {
             } else {
                 return "Label analysis is disabled";
             }
-        }
-
-        private string getLineContent(int lineNumber) {
-            return this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
         }
 
         #endregion Private Methods

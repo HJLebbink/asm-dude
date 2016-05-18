@@ -39,11 +39,16 @@ namespace AsmDude.SyntaxHighlighting {
         private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
 
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag {
+
             Func<ITagger<T>> sc = delegate () {
-                ITagAggregator<AsmTokenTag> asmTagAggregator = _aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
-                return new AsmClassifier(buffer, asmTagAggregator, _classificationTypeRegistry) as ITagger<T>;
+                Func<ITagAggregator<AsmTokenTag>> sc2 = delegate () {
+                    return _aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
+                };
+                ITagAggregator<AsmTokenTag> aggregator = buffer.Properties.GetOrCreateSingletonProperty(sc2);
+
+                return new AsmClassifier(buffer, aggregator, _classificationTypeRegistry) as ITagger<T>;
             };
-            return buffer.Properties.GetOrCreateSingletonProperty<ITagger<T>>(sc);
+            return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
     }
 }

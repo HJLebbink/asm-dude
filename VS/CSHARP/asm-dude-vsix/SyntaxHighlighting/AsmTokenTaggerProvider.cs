@@ -26,6 +26,7 @@ using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
 
 using AsmDude.SyntaxHighlighting;
+using System;
 
 namespace AsmDude {
 
@@ -33,8 +34,12 @@ namespace AsmDude {
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [TagType(typeof(AsmTokenTag))]
     internal sealed class AsmTokenTagProvider : ITaggerProvider {
+
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag {
-            return new AsmTokenTagger(buffer) as ITagger<T>;
+            Func<ITagger<T>> sc = delegate () {
+                return new AsmTokenTagger(buffer) as ITagger<T>;
+            };
+            return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
     }
 }
