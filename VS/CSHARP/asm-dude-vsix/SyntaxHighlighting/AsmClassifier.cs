@@ -34,9 +34,18 @@ namespace AsmDude {
 
     internal sealed class AsmClassifier : ITagger<ClassificationTag> {
 
-        private ITextBuffer _buffer;
-        private ITagAggregator<AsmTokenTag> _aggregator;
-        private IDictionary<AsmTokenType, IClassificationType> _asmTypes;
+        private readonly ITextBuffer _buffer;
+        private readonly ITagAggregator<AsmTokenTag> _aggregator;
+
+        private readonly ClassificationTag _mnemonic;
+        private readonly ClassificationTag _register;
+        private readonly ClassificationTag _remark;
+        private readonly ClassificationTag _directive;
+        private readonly ClassificationTag _constant;
+        private readonly ClassificationTag _jump;
+        private readonly ClassificationTag _label;
+        private readonly ClassificationTag _labelDef;
+        private readonly ClassificationTag _misc;
 
         /// <summary>
         /// Construct the classifier and define search tokens
@@ -45,18 +54,18 @@ namespace AsmDude {
                 ITextBuffer buffer, 
                 ITagAggregator<AsmTokenTag> asmTagAggregator,
                 IClassificationTypeRegistryService typeService) {
-            _buffer = buffer;
-            _aggregator = asmTagAggregator;
-            _asmTypes = new Dictionary<AsmTokenType, IClassificationType>();
-            _asmTypes[AsmTokenType.Mnemonic] = typeService.GetClassificationType("mnemonic");
-            _asmTypes[AsmTokenType.Register] = typeService.GetClassificationType("register");
-            _asmTypes[AsmTokenType.Remark] = typeService.GetClassificationType("remark");
-            _asmTypes[AsmTokenType.Directive] = typeService.GetClassificationType("directive");
-            _asmTypes[AsmTokenType.Constant] = typeService.GetClassificationType("constant");
-            _asmTypes[AsmTokenType.Jump] = typeService.GetClassificationType("jump");
-            _asmTypes[AsmTokenType.Label] = typeService.GetClassificationType("label");
-            _asmTypes[AsmTokenType.LabelDef] = typeService.GetClassificationType("labelDef");
-            _asmTypes[AsmTokenType.Misc] = typeService.GetClassificationType("misc");
+            this._buffer = buffer;
+            this._aggregator = asmTagAggregator;
+
+            this._mnemonic = new ClassificationTag(typeService.GetClassificationType("mnemonic"));
+            this._register = new ClassificationTag(typeService.GetClassificationType("register"));
+            this._remark = new ClassificationTag(typeService.GetClassificationType("remark"));
+            this._directive = new ClassificationTag(typeService.GetClassificationType("directive"));
+            this._constant = new ClassificationTag(typeService.GetClassificationType("constant"));
+            this._jump = new ClassificationTag(typeService.GetClassificationType("jump"));
+            this._label = new ClassificationTag(typeService.GetClassificationType("label"));
+            this._labelDef = new ClassificationTag(typeService.GetClassificationType("labelDef"));
+            this._misc = new ClassificationTag(typeService.GetClassificationType("misc"));
         }
 
         event EventHandler<SnapshotSpanEventArgs> ITagger<ClassificationTag>.TagsChanged {
@@ -75,8 +84,21 @@ namespace AsmDude {
                 DateTime time1 = DateTime.Now;
                 foreach (IMappingTagSpan<AsmTokenTag> tagSpan in _aggregator.GetTags(spans)) {
                     NormalizedSnapshotSpanCollection tagSpans = tagSpan.Span.GetSpans(spans[0].Snapshot);
-                    yield return new TagSpan<ClassificationTag>(tagSpans[0], new ClassificationTag(_asmTypes[tagSpan.Tag.type]));
+                    switch (tagSpan.Tag.type) {
+                        case AsmTokenType.Mnemonic: yield return new TagSpan<ClassificationTag>(tagSpans[0], _mnemonic); break;
+                        case AsmTokenType.Register: yield return new TagSpan<ClassificationTag>(tagSpans[0], _register); break;
+                        case AsmTokenType.Remark: yield return new TagSpan<ClassificationTag>(tagSpans[0], _remark); break;
+                        case AsmTokenType.Directive: yield return new TagSpan<ClassificationTag>(tagSpans[0], _directive); break;
+                        case AsmTokenType.Constant: yield return new TagSpan<ClassificationTag>(tagSpans[0], _constant); break;
+                        case AsmTokenType.Jump: yield return new TagSpan<ClassificationTag>(tagSpans[0], _jump); break;
+                        case AsmTokenType.Label : yield return new TagSpan<ClassificationTag>(tagSpans[0], _label); break;
+                        case AsmTokenType.LabelDef : yield return new TagSpan<ClassificationTag>(tagSpans[0], _labelDef); break;
+                        case AsmTokenType.Misc : yield return new TagSpan<ClassificationTag>(tagSpans[0], _misc); break;
+                        default:
+                            break;
+                    }
                 }
+
                 double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
                 if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
                     AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0:F3} seconds to assign classification tags for syntax highlighting.", elapsedSec));
