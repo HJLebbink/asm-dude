@@ -75,6 +75,23 @@ namespace AsmTools {
             return new Tuple<bool, int, int>(false, nChars, nChars);
         }
 
+        /// <summary>
+        /// Determine whether the provided pos is in a remark in the provided line.
+        /// </summary>
+        /// <param name="triggerPoint"></param>
+        /// <param name="lineStart"></param>
+        /// <returns></returns>
+        public static bool isInRemark(int pos, string line) {
+            // check if the line contains a remark character before the current point
+            int startPos = (pos >= line.Length) ? line.Length - 1 : pos;
+            for (int p = startPos; p > 0; --p) {
+                if (AsmTools.AsmSourceTools.isRemarkChar(line[p])) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public static Tuple<bool, int, int> getLabelDefPos(string line) {
             var tup = getLabelDefPos_Regular(line);
             if (tup.Item1) {

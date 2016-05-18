@@ -24,7 +24,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
-using System.ComponentModel.Composition;
 using System.IO;
 
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -74,8 +73,9 @@ namespace AsmDude {
                 if (triggerPoint.Position > 1) {
                     char currentTypedChar = (triggerPoint - 1).GetChar();
                     //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:AugmentCompletionSession: current char = {1}", this.ToString(), currentTypedChar));
-                    if (currentTypedChar != '#') { //TODO UGLY since the use can configure this starting character
-                        if (AsmCompletionSource.isRemark(triggerPoint, line.Start)) {
+                    if (!currentTypedChar.Equals('#')) { //TODO UGLY since the use can configure this starting character
+                        int pos = triggerPoint.Position - line.Start;
+                        if (AsmSourceTools.isInRemark(pos, line.GetText())) {
                             return;
                         }
                     }
@@ -208,23 +208,6 @@ namespace AsmDude {
             #endregion
 
             return completions;
-        }
-
-        /// <summary>
-        /// Determine whether the provided triggerPoint is in a remark.
-        /// </summary>
-        /// <param name="triggerPoint"></param>
-        /// <param name="lineStart"></param>
-        /// <returns></returns>
-        private static bool isRemark(SnapshotPoint triggerPoint, SnapshotPoint lineStart) {
-            // check if the line contains a remark character before the current point
-            SnapshotPoint startPos = (triggerPoint.Position < 1) ? triggerPoint : (triggerPoint - 1);
-            for (SnapshotPoint pos = startPos; pos > lineStart; pos -= 1) {
-                if (AsmTools.AsmSourceTools.isRemarkChar(pos.GetChar())) {
-                    return true;
-                }
-            }
-            return false;
         }
 
         private bool isJump(string previousKeyword) {
