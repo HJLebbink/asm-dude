@@ -19,8 +19,7 @@ namespace AsmDude.Tools {
 
         private static readonly SortedSet<uint> emptySet = new SortedSet<uint>();
 
-        private readonly ITextBuffer _sourceBuffer2;
-        //private readonly ITagAggregator<AsmTokenTag> _aggregator2;
+        private readonly ITextBuffer _sourceBuffer;
         private readonly IBufferTagAggregatorFactoryService _aggregatorFactory;
         private readonly ErrorListProvider _errorListProvider;
         private readonly ITextDocumentFactoryService _docFactory;
@@ -48,15 +47,13 @@ namespace AsmDude.Tools {
                 IContentType contentType) {
 
             //AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph: constructor: creating a label graph for {0}", AsmDudeToolsStatic.GetFileName(buffer)));
-            this._sourceBuffer2 = buffer;
+            this._sourceBuffer = buffer;
             this._aggregatorFactory = aggregatorFactory;
             this._errorListProvider = errorListProvider;
             this._docFactory = docFactory;
             this._contentType = contentType;
 
             this._filenames = new Dictionary<uint, string>();
-            this._filenames.Add(0, AsmDudeToolsStatic.GetFileName(buffer));
-
             this._usedAt = new Dictionary<string, IList<uint>>();
             this._defAt = new Dictionary<string, IList<uint>>();
             this._hasLabel = new HashSet<uint>();
@@ -64,7 +61,7 @@ namespace AsmDude.Tools {
 
             this._enabled = true;
             this.reset_Sync();
-            this._sourceBuffer2.ChangedLowPriority += OnTextBufferChanged;
+            this._sourceBuffer.ChangedLowPriority += OnTextBufferChanged;
 
             this.addInfoToErrorTask();
         }
@@ -143,17 +140,6 @@ namespace AsmDude.Tools {
             }
         }
 
-        public bool tryGetLineNumber(string label, out uint lineNumber) {
-            IList<uint> list;
-            if (this._defAt.TryGetValue(label, out list)) {
-                lineNumber = list[0];
-                return true;
-            } else {
-                lineNumber = 0;
-                return false;
-            }
-        }
-
         public SortedSet<uint> labelUsedAtInfo(string label) {
             IList<uint> lines;
             if (this._usedAt.TryGetValue(label, out lines)) {
@@ -178,12 +164,15 @@ namespace AsmDude.Tools {
                 _defAt.Clear();
                 _hasLabel.Clear();
                 _hasDef.Clear();
-                this.addAll(this._sourceBuffer2, 0);
+                _filenames.Clear();
+                _filenames.Add(0, AsmDudeToolsStatic.GetFileName(this._sourceBuffer));
+
+                this.addAll(this._sourceBuffer, 0);
             }
 
             double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
             if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
-                AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took LabelGraph {0:F3} seconds to reset file {1}.", elapsedSec, AsmDudeToolsStatic.GetFileName(this._sourceBuffer2)));
+                AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took LabelGraph {0:F3} seconds to reset file {1}.", elapsedSec, AsmDudeToolsStatic.GetFileName(this._sourceBuffer)));
             }
             if (elapsedSec > AsmDudePackage.slowShutdownThresholdSec) {
                 this.disable();
@@ -219,12 +208,6 @@ namespace AsmDude.Tools {
 
         #region Private Methods
 
-        private ITagAggregator<AsmTokenTag> getAggregator(ITextBuffer buffer) {
-            Func<ITagAggregator<AsmTokenTag>> sc = delegate () {
-                return this._aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
-            };
-            return buffer.Properties.GetOrCreateSingletonProperty(sc);
-        }
 
         private void addInfoToErrorTask() {
             //TODO this method should not be here
@@ -250,7 +233,7 @@ namespace AsmDude.Tools {
         }
 
         private void disable() {
-            string filename = AsmDudeToolsStatic.GetFileName(this._sourceBuffer2);
+            string filename = AsmDudeToolsStatic.GetFileName(this._sourceBuffer);
             string msg = string.Format("Performance of LabelGraph is horrible: disabling label analysis for {0}.", filename);
             AsmDudeToolsStatic.Output(string.Format("WARNING: " + msg));
 
@@ -302,7 +285,7 @@ namespace AsmDude.Tools {
                         case 0: return;
                         case 1:
                             ITextChange textChange = e.Changes[0];
-                            ITextBuffer buffer = this._sourceBuffer2;
+                            ITextBuffer buffer = this._sourceBuffer;
                             ITagAggregator<AsmTokenTag> aggregator = null;
 
 
@@ -341,8 +324,8 @@ namespace AsmDude.Tools {
             }
         }
 
-        private void addAll(ITextBuffer buffer,  uint fileId) {
-            ITagAggregator<AsmTokenTag> aggregator = this.getAggregator(buffer);
+        private void addAll(ITextBuffer buffer, uint fileId) {
+            ITagAggregator<AsmTokenTag> aggregator = AsmDudeToolsStatic.getAggregator(buffer, this._aggregatorFactory);
             lock (_updateLock) {
                 if (fileId == 0) {
                     for (int lineNumber = 0; lineNumber < buffer.CurrentSnapshot.LineCount; ++lineNumber) {
@@ -406,11 +389,11 @@ namespace AsmDude.Tools {
         }
 
         private void handleInclude(string includeFilename) {
-            string parentFilename = AsmDudeToolsStatic.GetFileName(this._sourceBuffer2);
+            string parentFilename = AsmDudeToolsStatic.GetFileName(this._sourceBuffer);
             string filePath = Path.GetDirectoryName(parentFilename) + Path.DirectorySeparatorChar + includeFilename;
 
             if (File.Exists(filePath)) {
-                AsmDudeToolsStatic.Output("INFO: LabelGraph:handleInclude: found include " + includeFilename + "; filePath=" + filePath);
+                AsmDudeToolsStatic.Output("INFO: LabelGraph:handleInclude: including file " + filePath);
             } else {
                 AsmDudeToolsStatic.Output("WARNING: LabelGraph:handleInclude: file " + filePath + " does not exist");
                 return;
@@ -421,6 +404,8 @@ namespace AsmDude.Tools {
                     bool characterSubstitutionsOccurred;
                     ITextDocument doc = this._docFactory.CreateAndLoadTextDocument(filePath, this._contentType, true, out characterSubstitutionsOccurred);
                     //AsmDudeToolsStatic.Output(doc.TextBuffer.CurrentSnapshot.GetText());
+
+                    doc.FileActionOccurred += Doc_FileActionOccurred;
                     uint fileId = (uint)this._filenames.Count;
                     this._filenames.Add(fileId, filePath);
                     this.addAll(doc.TextBuffer, fileId);
@@ -428,6 +413,12 @@ namespace AsmDude.Tools {
                     AsmDudeToolsStatic.Output("WARNING: LabelGraph:handleInclude. Exception:" + e.Message);
                 }
             }
+        }
+
+        private void Doc_FileActionOccurred(Object sender, TextDocumentFileActionEventArgs e) {
+
+            ITextDocument doc = sender as ITextDocument;
+            AsmDudeToolsStatic.Output("INFO: LabelGraph:Doc_FileActionOccurred: "+doc.FilePath +":" + e.FileActionType);
         }
 
         private void removeLineNumber(int lineNumber, uint id) {
@@ -521,7 +512,7 @@ namespace AsmDude.Tools {
             if (!disposedValue) {
                 if (disposing) {
                     // dispose managed state (managed objects).
-                    this._sourceBuffer2.Changed -= OnTextBufferChanged;
+                    this._sourceBuffer.Changed -= OnTextBufferChanged;
                     AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:Dispose."));
                     //this._errorListProvider.Tasks.Clear();
                 }

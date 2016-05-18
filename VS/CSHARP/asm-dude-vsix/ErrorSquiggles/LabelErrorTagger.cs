@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -104,9 +105,16 @@ namespace AsmDude.ErrorSquiggles {
                 textBlock.Inlines.Add(r1);
 
                 StringBuilder sb = new StringBuilder();
-                foreach (int lineNumber in this._labelGraph.getLabelDefLineNumbers(label)) {
-                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
-                    sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label defined at LINE {0}: {1}", lineNumber + 1, lineContent)));
+                foreach (uint id in this._labelGraph.getLabelDefLineNumbers(label)) {
+                    int lineNumber = this._labelGraph.getLinenumber(id);
+                    string filename = Path.GetFileName(this._labelGraph.getFilename(id));
+                    string lineContent;
+                    if (this._labelGraph.isFromMainFile(id)) {
+                        lineContent = " :" + this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
+                    } else {
+                        lineContent = "";
+                    }
+                    sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Defined at LINE {0} ({1}){2}", lineNumber + 1, filename, lineContent)));
                 }
                 string msg = sb.ToString().TrimEnd(Environment.NewLine.ToCharArray());
 

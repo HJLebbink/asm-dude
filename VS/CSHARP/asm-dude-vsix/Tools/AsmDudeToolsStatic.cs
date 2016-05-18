@@ -23,11 +23,21 @@ namespace AsmDude.Tools {
     public static class AsmDudeToolsStatic {
 
 
-        public static ILabelGraph createLabelGraph(
+        public static ITagAggregator<AsmTokenTag> getAggregator(
+            ITextBuffer buffer, 
+            IBufferTagAggregatorFactoryService aggregatorFactory) {
+
+            Func<ITagAggregator<AsmTokenTag>> sc = delegate () {
+                return aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
+            };
+            return buffer.Properties.GetOrCreateSingletonProperty(sc);
+        }
+
+        public static ILabelGraph getLabelGraph(
             ITextBuffer buffer,
             IBufferTagAggregatorFactoryService aggregatorFactory,
             ITextDocumentFactoryService docFactory,
-            IContentType contentType) {
+            IContentTypeRegistryService contentService) {
 
             Func<ErrorListProvider> sc0 = delegate () {
                 IServiceProvider serviceProvider;
@@ -43,13 +53,12 @@ namespace AsmDude.Tools {
             };
 
             Func<LabelGraph> sc1 = delegate () {
+                IContentType contentType = contentService.GetContentType(AsmDudePackage.AsmDudeContentType);
                 ErrorListProvider errorListProvider = buffer.Properties.GetOrCreateSingletonProperty(sc0);
                 return new LabelGraph(buffer, aggregatorFactory, errorListProvider, docFactory, contentType);
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc1);
         }
-
-
 
         public static AsmDudeTools getAsmDudeTools(ITextBuffer buffer) {
             Func<AsmDudeTools> sc1 = delegate () {

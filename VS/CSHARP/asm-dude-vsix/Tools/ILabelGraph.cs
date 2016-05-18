@@ -38,7 +38,5 @@ namespace AsmDude.Tools {
         /// Get the error list provider that is used by this LabelGraph
         /// </summary>
         ErrorListProvider errorListProvider { get; }
-
-        bool tryGetLineNumber(string label, out uint lineNumber);
     }
 }

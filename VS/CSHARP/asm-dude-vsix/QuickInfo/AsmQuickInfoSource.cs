@@ -235,7 +235,13 @@ namespace AsmDude.QuickInfo {
                 foreach (uint id in labelDefs) {
                     int lineNumber = this._labelGraph.getLinenumber(id);
                     string filename = Path.GetFileName(this._labelGraph.getFilename(id));
-                    sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label defined at LINE {0} in {1}", lineNumber + 1, filename)));
+                    string lineContent;
+                    if (this._labelGraph.isFromMainFile(id)) {
+                        lineContent = " :" + this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
+                    } else {
+                        lineContent = "";
+                    }
+                    sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Defined at LINE {0} ({1}){2}", lineNumber + 1, filename, lineContent)));
                 }
                 string result = sb.ToString();
                 return result.TrimEnd(Environment.NewLine.ToCharArray());
@@ -255,7 +261,13 @@ namespace AsmDude.QuickInfo {
                     foreach (uint id in usage) {
                         int lineNumber = this._labelGraph.getLinenumber(id);
                         string filename = Path.GetFileName(this._labelGraph.getFilename(id));
-                        sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Label used at LINE {0} in {1}", lineNumber + 1, filename)));
+                        string lineContent;
+                        if (this._labelGraph.isFromMainFile(id)) {
+                            lineContent = " :" + this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
+                        } else {
+                            lineContent = "";
+                        }
+                        sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Used at LINE {0} ({1}){2}", lineNumber + 1, filename, lineContent)));
                         //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:getLabelDefDescription; sb=\"{1}\"", this.ToString(), sb.ToString()));
                     }
                     string result = sb.ToString();
