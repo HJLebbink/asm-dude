@@ -20,7 +20,6 @@ namespace AsmDude.ErrorSquiggles {
         private readonly ITextBuffer _sourceBuffer;
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
         private readonly ErrorListProvider _errorListProvider;
-        private readonly string _filename;
         private readonly ILabelGraph _labelGraph;
 
         private object _updateLock = new object();

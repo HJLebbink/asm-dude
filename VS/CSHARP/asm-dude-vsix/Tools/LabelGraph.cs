@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading;
 
 namespace AsmDude.Tools {
@@ -119,6 +120,61 @@ namespace AsmDude.Tools {
             }
         }
 
+        public SortedDictionary<string, string> getLabelDescriptions {
+            get {
+                SortedDictionary<string, string> result = new SortedDictionary<string, string>();
+                lock (_updateLock) {
+                    foreach (KeyValuePair<string, IList<uint>> entry in _defAt) {
+                        uint id = entry.Value[0];
+                        int lineNumber = getLinenumber(id);
+                        string filename = Path.GetFileName(getFilename(id));
+                        string lineContent;
+                        if (this.isFromMainFile(id)) {
+                            lineContent = " :" + this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
+                        } else {
+                            lineContent = "";
+                        }
+                        result.Add(entry.Key, AsmDudeToolsStatic.cleanup(string.Format("LINE {0} ({1}) {2}", lineNumber, filename, lineContent)));
+                    }
+                }
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Get all labels with context info contained in the provided text
+        /// </summary>
+        private static IDictionary<string, string> getLabelDescriptions_old(string text) {
+            Dictionary<string, string> result = new Dictionary<string, string>();
+            int lineNumber = 1; // start counting at one since that is what VS does
+            foreach (string line in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)) {
+                //AsmDudeToolsStatic.Output(string.Format("INFO: getLabels: str=\"{0}\"", str));
+
+                Tuple<bool, int, int> labelPos = AsmTools.AsmSourceTools.getLabelDefPos(line);
+                if (labelPos.Item1) {
+                    int labelBeginPos = labelPos.Item2;
+                    int labelEndPos = labelPos.Item3;
+                    string label = line.Substring(labelBeginPos, labelEndPos - labelBeginPos);
+
+                    StringBuilder sb = new StringBuilder();
+
+                    if (result.ContainsKey(label)) {
+                        sb.AppendLine("");
+                    }
+                    sb.Append(AsmDudeToolsStatic.cleanup("LINE " + lineNumber + ": " + line));
+                    if (result.ContainsKey(label)) {
+                        //AsmDudeToolsStatic.Output(string.Format("INFO: multiple label definitions for label \"{0}\".", label));
+                    } else {
+                        result.Add(label, sb.ToString());
+                    }
+
+                    //AsmDudeToolsStatic.Output(string.Format("INFO: getLabels: label=\"{0}\"; description=\"{1}\".", label, description));
+                }
+                lineNumber++;
+            }
+            return result;
+        }
+
         public bool hasLabel(string label) {
             return this._defAt.ContainsKey(label);
         }
@@ -204,6 +260,7 @@ namespace AsmDude.Tools {
                 return lineNumbers;
             }
         }
+
         #endregion Public Methods
 
         #region Private Methods
@@ -537,6 +594,7 @@ namespace AsmDude.Tools {
             // TODO: uncomment the following line if the finalizer is overridden above.
             // GC.SuppressFinalize(this);
         }
+
         #endregion
 
         #endregion Private Methods

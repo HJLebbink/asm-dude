@@ -38,5 +38,7 @@ namespace AsmDude.Tools {
         /// Get the error list provider that is used by this LabelGraph
         /// </summary>
         ErrorListProvider errorListProvider { get; }
+
+        SortedDictionary<string, string> getLabelDescriptions { get; }
     }
 }

@@ -23,7 +23,9 @@
 using AsmDude.Tools;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
+using System;
 using System.ComponentModel.Composition;
 
 namespace AsmDude {
@@ -32,8 +34,22 @@ namespace AsmDude {
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [Name("asmCompletion")]
     public sealed class AsmCompletionSourceProvider : ICompletionSourceProvider {
-        public ICompletionSource TryCreateCompletionSource(ITextBuffer textBuffer) {
-            return new AsmCompletionSource(textBuffer);
+
+        [Import]
+        private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
+
+        [Import]
+        private ITextDocumentFactoryService _docFactory = null;
+
+        [Import]
+        private IContentTypeRegistryService _contentService = null;
+
+        public ICompletionSource TryCreateCompletionSource(ITextBuffer buffer) {
+            Func<AsmCompletionSource> sc = delegate () {
+                ILabelGraph labelGraph = AsmDudeToolsStatic.getLabelGraph(buffer, _aggregatorFactory, _docFactory, _contentService);
+                return new AsmCompletionSource(buffer, labelGraph);
+            };
+            return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
     }
 }

@@ -39,12 +39,14 @@ namespace AsmDude {
     public sealed class AsmCompletionSource : ICompletionSource {
 
         private readonly ITextBuffer _buffer;
+        private readonly ILabelGraph _labelGraph;
         private readonly IDictionary<AsmTokenType, ImageSource> _icons;
         private readonly AsmDudeTools _asmDudeTools;
         private bool _disposed = false;
 
-        public AsmCompletionSource(ITextBuffer buffer) {
+        public AsmCompletionSource(ITextBuffer buffer, ILabelGraph labelGraph) {
             this._buffer = buffer;
+            this._labelGraph = labelGraph;
             this._icons = new Dictionary<AsmTokenType, ImageSource>();
             this._asmDudeTools = AsmDudeToolsStatic.getAsmDudeTools(buffer);
             this.loadIcons();
@@ -150,9 +152,7 @@ namespace AsmDude {
             IList<Completion> completions = new List<Completion>();
             ImageSource imageSource = this._icons[AsmTokenType.Label];
 
-            IDictionary<string, string> labelsUnsorted = AsmDudeToolsStatic.getLabelDescriptions(this._buffer.CurrentSnapshot.GetText());
-            SortedDictionary<string, string> labels = new SortedDictionary<string, string>(labelsUnsorted);
-
+            SortedDictionary<string, string> labels = this._labelGraph.getLabelDescriptions;
             foreach (KeyValuePair<string, string> entry in labels) {
                 //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:AugmentCompletionSession; label={1}; description={2}", this.ToString(), entry.Key, entry.Value));
                 string displayText = entry.Key + " - " + entry.Value;
