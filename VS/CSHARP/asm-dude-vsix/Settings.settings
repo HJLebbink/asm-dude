@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="AsmDude.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="AsmDude" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
     <Setting Name="SyntaxHighlighting_Opcode" Type="System.Drawing.Color" Scope="User">
@@ -88,6 +88,9 @@
     </Setting>
     <Setting Name="KeywordHighlightColor" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">Cyan</Value>
+    </Setting>
+    <Setting Name="CodeFolding_IsDefaultCollapsed" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -20,17 +20,26 @@ namespace AsmDude.OptionsPage {
         [DefaultValue(true)]
         public bool _useCodeFolding { get; set; }
 
+        [Category("General")]
+        [Description("Whether regions are collapsed by default")]
+        [DisplayName("Default Collapsed")]
+        [DefaultValue(true)]
+        public bool _isDefaultCollaped { get; set; }
+
         [Category(cat)]
-        [Description("the characters that start the outlining region")]
+        [Description("The characters that start the outlining region")]
         [DisplayName("Begin Tag")]
         [DefaultValue("#region")]
         public string _beginTag { get; set; }
 
         [Category(cat)]
-        [Description("the characters that end the outlining region")]
+        [Description("The characters that end the outlining region")]
         [DisplayName("End Tag")]
         [DefaultValue("#endregion")]
         public string _endTag { get; set; }
+
+
+
 
         #endregion Properties
 
@@ -47,6 +56,7 @@ namespace AsmDude.OptionsPage {
         {
             base.OnActivate(e);
             this._useCodeFolding = Settings.Default.CodeFolding_On;
+            this._isDefaultCollaped = Settings.Default.CodeFolding_IsDefaultCollapsed;
             this._beginTag = Settings.Default.CodeFolding_BeginTag;
             this._endTag = Settings.Default.CodeFolding_EndTag;
         }
@@ -76,6 +86,9 @@ namespace AsmDude.OptionsPage {
         {
             bool changed = false;
             if (Settings.Default.CodeFolding_On != this._useCodeFolding) {
+                changed = true;
+            }
+            if (Settings.Default.CodeFolding_IsDefaultCollapsed != this._isDefaultCollaped) {
                 changed = true;
             }
             if (Settings.Default.CodeFolding_BeginTag != this._beginTag) {
@@ -118,6 +131,11 @@ namespace AsmDude.OptionsPage {
                 Settings.Default.CodeFolding_On = this._useCodeFolding;
                 changed = true;
                 restartNeeded = true;
+            }
+            if (Settings.Default.CodeFolding_IsDefaultCollapsed != this._isDefaultCollaped) {
+                Settings.Default.CodeFolding_IsDefaultCollapsed = this._isDefaultCollaped;
+                changed = true;
+                restartNeeded = false;
             }
             if (Settings.Default.CodeFolding_BeginTag != this._beginTag) {
                 Settings.Default.CodeFolding_BeginTag = this._beginTag;

@@ -370,5 +370,17 @@ namespace AsmDude {
                 this["KeywordHighlightColor"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool CodeFolding_IsDefaultCollapsed {
+            get {
+                return ((bool)(this["CodeFolding_IsDefaultCollapsed"]));
+            }
+            set {
+                this["CodeFolding_IsDefaultCollapsed"] = value;
+            }
+        }
     }
 }

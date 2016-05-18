@@ -26,6 +26,7 @@ using System.Linq;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Text;
 using System.Windows.Controls;
+using AsmDude.Tools;
 
 namespace AsmDude.CodeFolding {
 
@@ -54,7 +55,7 @@ namespace AsmDude.CodeFolding {
                 yield break;
             }
             if (Settings.Default.CodeFolding_On) {
-                //Debug.WriteLine("INFO: GetTags: entering");
+                //AsmDudeToolsStatic.Output(string.Format("INFO: GetTags:entering: IsDefaultCollapsed={0}", Settings.Default.CodeFolding_IsDefaultCollapsed));
 
                 SnapshotSpan entire = new SnapshotSpan(spans[0].Start, spans[spans.Count - 1].End).TranslateTo(this._snapshot, SpanTrackingMode.EdgeExclusive);
                 int startLineNumber = entire.Start.GetContainingLine().LineNumber;
@@ -71,7 +72,7 @@ namespace AsmDude.CodeFolding {
 
                         yield return new TagSpan<IOutliningRegionTag>(
                             new SnapshotSpan(startLine.Start + region.StartOffset, endLine.End),
-                            new OutliningRegionTag(false, false, replacement, hover));
+                            new OutliningRegionTag(Settings.Default.CodeFolding_IsDefaultCollapsed, true, replacement, hover));
                     }
                 }
             }
