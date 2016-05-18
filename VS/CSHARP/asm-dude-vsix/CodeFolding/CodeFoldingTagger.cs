@@ -68,7 +68,7 @@ namespace AsmDude.CodeFolding {
                         ITextSnapshotLine endLine = this._snapshot.GetLineFromLineNumber(region.EndLine);
 
                         var replacement = getRegionDescription(startLine.GetText());
-                        var hover = getHoverText(region.StartLine + 1, region.EndLine - 1, this._snapshot);
+                        var hover = getHoverText(region.StartLine + 1, region.EndLine, this._snapshot);
 
                         yield return new TagSpan<IOutliningRegionTag>(
                             new SnapshotSpan(startLine.Start + region.StartOffset, endLine.End),
