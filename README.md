@@ -81,7 +81,8 @@ Studio will launch under the experimental hive.
 * Arm support.
 * Nasm macros syntax highlighting.
 * Provide one (large) label graph for the complete solution such that label usage can be tracked throughout the solution.
-* Add pragmas to disable warnings such as "#pragma AsmDude warning disable/restore"
+* Add pragmas to disable warnings such as "#pragma AsmDude warning disable/restore".
+* Add support for MASM keyword "comment".
 
 ###Updates:
 * 19 February 2016: Initial alpha release. Basic highlighting and descriptions for i368 instructions are available.
