@@ -79,7 +79,9 @@ Studio will launch under the experimental hive.
 * Track flag influence. Select an opcode that uses a flag (as input), find the opcodes that produce this flag (as output). E.g.  select opcode cmovc or setc , highlight all opcodes such as btr, sal, sar, shl, shr, etc.
 * Register rename assistance. Highly desirable but very challenging. E.g. rename GPR rdx to rbx, find which rdx, edx, dx, dl and dh will need to be renamed, check if renames will clash with existing occurances of rbx, ebx, bx, bl and bh.
 * Arm support.
-* Nasm macros syntax highlighting
+* Nasm macros syntax highlighting.
+* Provide one (large) label graph for the complete solution such that label usage can be tracked throughout the solution.
+* Add pragmas to disable warnings such as "#pragma AsmDude warning disable/restore"
 
 ###Updates:
 * 19 February 2016: Initial alpha release. Basic highlighting and descriptions for i368 instructions are available.
