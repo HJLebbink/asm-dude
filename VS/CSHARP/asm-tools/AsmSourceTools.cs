@@ -411,7 +411,86 @@ namespace AsmTools {
             return new Tuple<int, int>(beginPos, endPos);
         }
 
-        
+        public static Tuple<bool, int, int> getLabelDefPos(string line) {
+            var tup = getLabelDefPos_Regular(line);
+            if (tup.Item1) {
+                return tup;
+            }
+            return getLabelDefPos_Masm(line);
+        }
+
+        private static Tuple<bool, int, int> getLabelDefPos_Regular(string line) {
+            int nChars = line.Length;
+            int i = 0;
+
+            // find the start of the first keyword
+            for (; i < nChars; ++i) {
+                char c = line[i];
+                if (AsmSourceTools.isRemarkChar(c)) {
+                    return new Tuple<bool, int, int>(false, 0, 0);
+                } else if (char.IsWhiteSpace(c)) {
+                    // do nothing
+                } else {
+                    break;
+                }
+            }
+            if (i >= nChars) {
+                return new Tuple<bool, int, int>(false, 0, 0);
+            }
+            int beginPos = i;
+            // position i points to the start of the current keyword
+            //AsmDudeToolsStatic.Output("getLabelEndPos: found first char of first keyword "+ line[i]+".");
+
+            for (; i < nChars; ++i) {
+                char c = line[i];
+                if (c.Equals(':')) {
+                    if (i == 0) { // we found an empty label
+                        return new Tuple<bool, int, int>(false, 0, 0);
+                    } else {
+                        return new Tuple<bool, int, int>(true, beginPos, i);
+                    }
+                } else if (AsmSourceTools.isRemarkChar(c)) {
+                    return new Tuple<bool, int, int>(false, 0, 0);
+                } else if (AsmSourceTools.isSeparatorChar(c)) {
+                    // found another keyword: labels can only be the first keyword on a line
+                    break;
+                }
+            }
+            return new Tuple<bool, int, int>(false, 0, 0);
+        }
+
+        private static Tuple<bool, int, int> getLabelDefPos_Masm(string line) {
+
+            string line2 = line.TrimStart();
+            int displacement = 0;
+
+            if (line2.StartsWith("EXTRN", StringComparison.CurrentCultureIgnoreCase)) {
+                displacement = 5;
+            } else if (line2.StartsWith("EXTERN", StringComparison.CurrentCultureIgnoreCase)) {
+                displacement = 6;
+            } else {
+                return new Tuple<bool, int, int>(false, 0, 0);
+            }
+
+            string line3 = line2.Substring(displacement);
+            var tup = getLabelDefPos_Regular(line3);
+            if (tup.Item1) {
+                return new Tuple<bool, int, int>(true, tup.Item2 + displacement, tup.Item3 + displacement);
+            } else {
+                return tup;
+            }
+        }
+
+        public static Tuple<bool, int, int> getRemarkPos(string line) {
+            int nChars = line.Length;
+            for (int i = 0; i < nChars; ++i) {
+                if (AsmSourceTools.isRemarkChar(line[i])) {
+                    return new Tuple<bool, int, int>(true, i, nChars);
+                }
+            }
+            return new Tuple<bool, int, int>(false, nChars, nChars);
+        }
+
         #region Text Wrap
         /// <summary>
         /// Forces the string to word wrap so that each line doesn't exceed the maxLineLength.
