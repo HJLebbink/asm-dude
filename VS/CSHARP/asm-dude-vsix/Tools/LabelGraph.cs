@@ -134,45 +134,11 @@ namespace AsmDude.Tools {
                         } else {
                             lineContent = "";
                         }
-                        result.Add(entry.Key, AsmDudeToolsStatic.cleanup(string.Format("LINE {0} ({1}) {2}", lineNumber, filename, lineContent)));
+                        result.Add(entry.Key, AsmDudeToolsStatic.cleanup(string.Format("LINE {0} ({1}){2}", lineNumber, filename, lineContent)));
                     }
                 }
                 return result;
             }
-        }
-
-        /// <summary>
-        /// Get all labels with context info contained in the provided text
-        /// </summary>
-        private static IDictionary<string, string> getLabelDescriptions_old(string text) {
-            Dictionary<string, string> result = new Dictionary<string, string>();
-            int lineNumber = 1; // start counting at one since that is what VS does
-            foreach (string line in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)) {
-                //AsmDudeToolsStatic.Output(string.Format("INFO: getLabels: str=\"{0}\"", str));
-
-                Tuple<bool, int, int> labelPos = AsmTools.AsmSourceTools.getLabelDefPos(line);
-                if (labelPos.Item1) {
-                    int labelBeginPos = labelPos.Item2;
-                    int labelEndPos = labelPos.Item3;
-                    string label = line.Substring(labelBeginPos, labelEndPos - labelBeginPos);
-
-                    StringBuilder sb = new StringBuilder();
-
-                    if (result.ContainsKey(label)) {
-                        sb.AppendLine("");
-                    }
-                    sb.Append(AsmDudeToolsStatic.cleanup("LINE " + lineNumber + ": " + line));
-                    if (result.ContainsKey(label)) {
-                        //AsmDudeToolsStatic.Output(string.Format("INFO: multiple label definitions for label \"{0}\".", label));
-                    } else {
-                        result.Add(label, sb.ToString());
-                    }
-
-                    //AsmDudeToolsStatic.Output(string.Format("INFO: getLabels: label=\"{0}\"; description=\"{1}\".", label, description));
-                }
-                lineNumber++;
-            }
-            return result;
         }
 
         public bool hasLabel(string label) {

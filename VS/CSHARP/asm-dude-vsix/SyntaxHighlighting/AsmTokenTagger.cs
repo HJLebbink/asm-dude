@@ -38,9 +38,32 @@ namespace AsmDude {
         private readonly ITextBuffer _buffer;
         private readonly AsmDudeTools _asmDudeTools = null;
 
+        private readonly AsmTokenTag _mnemonic;
+        private readonly AsmTokenTag _register;
+        private readonly AsmTokenTag _remark;
+        private readonly AsmTokenTag _directive;
+        private readonly AsmTokenTag _constant;
+        private readonly AsmTokenTag _jump;
+        private readonly AsmTokenTag _label;
+        private readonly AsmTokenTag _labelDef;
+        private readonly AsmTokenTag _misc;
+        private readonly AsmTokenTag _UNKNOWN;
+
+
         internal AsmTokenTagger(ITextBuffer buffer) {
             this._buffer = buffer;
             this._asmDudeTools = AsmDudeToolsStatic.getAsmDudeTools(buffer);
+
+            this._mnemonic = new AsmTokenTag(AsmTokenType.Mnemonic);
+            this._register = new AsmTokenTag(AsmTokenType.Register);
+            this._remark = new AsmTokenTag(AsmTokenType.Remark);
+            this._directive = new AsmTokenTag(AsmTokenType.Directive);
+            this._constant = new AsmTokenTag(AsmTokenType.Constant);
+            this._jump = new AsmTokenTag(AsmTokenType.Jump);
+            this._label = new AsmTokenTag(AsmTokenType.Label);
+            this._labelDef = new AsmTokenTag(AsmTokenType.LabelDef);
+            this._misc = new AsmTokenTag(AsmTokenType.Misc);
+            this._UNKNOWN = new AsmTokenTag(AsmTokenType.UNKNOWN);
         }
 
         event EventHandler<SnapshotSpanEventArgs> ITagger<AsmTokenTag>.TagsChanged {
@@ -96,77 +119,65 @@ namespace AsmDude {
             }
 
             foreach (SnapshotSpan curSpan in spans) {
-                // split everything before the remark char according to this template
-                // LABEL: MNEMONIC OPERATOR1, OPERATOR2, OPERATOR3 (with OPERATOR1-3 are optional)
-
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
-                string lineOpcodes = containingLine.GetText().ToUpper();
-                int offset = containingLine.Start.Position;
 
-                IList<Tuple<int, int, bool>> pos = AsmSourceTools.splitIntoKeywordPos(lineOpcodes);
+                string line = containingLine.GetText().ToUpper();
+                IList<Tuple<int, int, bool>> pos = AsmSourceTools.splitIntoKeywordPos(line);
+
+                int offset = containingLine.Start.Position;
                 int nKeywords = pos.Count;
 
                 for (int k = 0; k < nKeywords; k++) {
 
                     if (pos[k].Item3) {
-                        yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.LabelDef));
+                        yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), this._labelDef); 
                         continue;
                     }
 
-                    string asmToken = keyword(pos[k], lineOpcodes);
+                    string asmToken = keyword(pos[k], line);
                     if (AsmSourceTools.isRemarkChar(asmToken[0])) {
-                        yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.Remark));
+                        yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), this._remark);
                         continue;
                     }
 
-                    switch (this._asmDudeTools.getTokenType(asmToken)) {
+                    AsmTokenType keywordType = this._asmDudeTools.getTokenType(asmToken);
+                    switch (keywordType) {
                         case AsmTokenType.Jump:
-                            yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.Jump));
+                            yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), this._jump);
 
                             k++;
                             if (k == nKeywords) break;
 
-                            string asmToken2 = keyword(pos[k], lineOpcodes);
+                            string asmToken2 = keyword(pos[k], line);
                             switch (asmToken2) {
                                 case "$":
                                     break;
                                 case "WORD":
                                 case "DWORD":
                                 case "QWORD":
-                                    yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.Misc));
-                                    break;
                                 case "SHORT":
                                 case "NEAR":
-                                    yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.Misc));
+                                    yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), this._misc);
 
                                     k++;
                                     if (k == nKeywords) break;
 
-                                    switch (keyword(pos[k], lineOpcodes)) {
+                                    switch (keyword(pos[k], line)) {
                                         case "$": break;
                                         case "PTR":
-                                            yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.Misc));
-
-                                            k++;
-                                            if (k == nKeywords) break;
-
-                                            if (!keyword(pos[k], lineOpcodes).Equals("$")) {
-                                                k++;
-                                                if (k == nKeywords) break;
-                                                yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.Label));
-                                            }
+                                            yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), this._misc);
                                             break;
                                         default:
-                                            yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.Label));
+                                            yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), this._label);
                                             break;
                                     }
                                     break;
 
                                 default:
                                     if (RegisterTools.isRegister(asmToken2)) {
-                                        yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.Register));
+                                        yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), this._register);
                                     } else {
-                                        yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.Label));
+                                        yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), this._label);
                                     }
                                     break;
                             }
@@ -174,40 +185,42 @@ namespace AsmDude {
 
                         case AsmTokenType.UNKNOWN: // asmToken is not a known keyword, check if it is numerical
                             if (AsmTools.AsmSourceTools.isConstant(asmToken)) {
-                                yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.Constant));
+                                yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), this._constant);
 
                             } else if (asmToken.StartsWith("\"") && asmToken.EndsWith("\"")) {
-                                yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.Constant));
+                                yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), this._constant);
 
                             } else {
                                 bool isUnknown = true;
 
                                 if ((k + 1) < nKeywords) {
                                     k++;
-                                    string nextKeyword = keyword(pos[k], lineOpcodes);
+                                    string nextKeyword = keyword(pos[k], line);
 
-                                    if (nextKeyword.Equals("PROC")) {
-                                        yield return new TagSpan<AsmTokenTag>(newSpan(pos[k - 1], offset, curSpan), new AsmTokenTag(AsmTokenType.LabelDef));
-                                        yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.Directive));
-                                        isUnknown = false;
-                                    } else if (nextKeyword.Equals("EQU")) {
-                                        yield return new TagSpan<AsmTokenTag>(newSpan(pos[k - 1], offset, curSpan), new AsmTokenTag(AsmTokenType.LabelDef));
-                                        yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.Directive));
-                                        isUnknown = false;
-                                    } else {
-                                        k--;
+                                    switch (nextKeyword) {
+                                        case "PROC":
+                                        case "EQU":
+                                        case "LABEL":
+                                            yield return new TagSpan<AsmTokenTag>(newSpan(pos[k - 1], offset, curSpan), this._labelDef);
+                                            yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), this._directive);
+                                            isUnknown = false;
+                                            break;
+
+                                        default:
+                                            k--;
+                                            break;
                                     }
                                 }
 
                                 if (isUnknown) {
-                                    yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(AsmTokenType.UNKNOWN));
+                                    yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), this._UNKNOWN);
                                 }
 
                             }
                             break;
 
                         default:
-                            yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(this._asmDudeTools.getTokenType(asmToken)));
+                            yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(keywordType));
                             break;
                     }
                 }

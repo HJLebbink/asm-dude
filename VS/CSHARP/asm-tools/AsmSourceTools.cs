@@ -13,6 +13,7 @@ namespace AsmTools {
 
             int keywordBegin = 0;
             bool inStringDef = false;
+            bool isFirstKeyword = true;
 
             for (int i = 0; i < line.Length; ++i) {
                 char c = line[i];
@@ -22,6 +23,7 @@ namespace AsmTools {
                         inStringDef = false;
                         if (keywordBegin < i) {
                             list.Add(new Tuple<int, int, bool>(keywordBegin, i + 1, false));
+                            isFirstKeyword = false;
                         }
                         keywordBegin = i + 1; // next keyword starts at the next char
                     }
@@ -29,22 +31,29 @@ namespace AsmTools {
                     if (isRemarkChar(c)) {
                         if (keywordBegin < i) {
                             list.Add(new Tuple<int, int, bool>(keywordBegin, i, false));
+                            isFirstKeyword = false;
                         }
                         list.Add(new Tuple<int, int, bool>(i, line.Length, false));
                         i = line.Length;
                     } else if (c.Equals('"')) { // start string definition
                         if (keywordBegin < i) {
                             list.Add(new Tuple<int, int, bool>(keywordBegin, i, false));
+                            isFirstKeyword = false;
                         }
                         inStringDef = true;
                         keywordBegin = i; // '"' is part of the keyword
                     } else if (isSeparatorChar(c)) {
                         if (keywordBegin < i) {
                             if (c.Equals(':')) {
-                                list.Add(new Tuple<int, int, bool>(keywordBegin, i, true));
+                                if (isFirstKeyword) {
+                                    list.Add(new Tuple<int, int, bool>(keywordBegin, i, true));
+                                } else {
+                                    list.Add(new Tuple<int, int, bool>(keywordBegin, i, false));
+                                }
                             } else {
                                 list.Add(new Tuple<int, int, bool>(keywordBegin, i, false));
                             }
+                            isFirstKeyword = false;
                         }
                         keywordBegin = i + 1; // separator is not part of the keyword
                     }
@@ -65,16 +74,6 @@ namespace AsmTools {
             return char.IsWhiteSpace(c) || c.Equals(',') || c.Equals('[') || c.Equals(']') || c.Equals('(') || c.Equals(')') || c.Equals('+') || c.Equals('-') || c.Equals('*') || c.Equals(':');
         }
 
-        public static Tuple<bool, int, int> getRemarkPos(string line) {
-            int nChars = line.Length;
-            for (int i = 0; i < nChars; ++i) {
-                if (AsmSourceTools.isRemarkChar(line[i])) {
-                    return new Tuple<bool, int, int>(true, i, nChars);
-                }
-            }
-            return new Tuple<bool, int, int>(false, nChars, nChars);
-        }
-
         /// <summary>
         /// Determine whether the provided pos is in a remark in the provided line.
         /// </summary>
@@ -83,85 +82,15 @@ namespace AsmTools {
         /// <returns></returns>
         public static bool isInRemark(int pos, string line) {
             // check if the line contains a remark character before the current point
-            int startPos = (pos >= line.Length) ? line.Length - 1 : pos;
-            for (int p = startPos; p > 0; --p) {
-                if (AsmTools.AsmSourceTools.isRemarkChar(line[p])) {
+            int nChars = line.Length;
+            int startPos = (pos >= nChars) ? nChars - 1 : pos;
+            for (int i = startPos; i > 0; --i) {
+                if (AsmSourceTools.isRemarkChar(line[i])) {
                     return true;
                 }
             }
             return false;
         }
-
-        public static Tuple<bool, int, int> getLabelDefPos(string line) {
-            var tup = getLabelDefPos_Regular(line);
-            if (tup.Item1) {
-                return tup;
-            }
-            return getLabelDefPos_Masm(line);
-        }
-
-        private static Tuple<bool, int, int> getLabelDefPos_Regular(string line) {
-            int nChars = line.Length;
-            int i = 0;
-
-            // find the start of the first keyword
-            for (; i < nChars; ++i) {
-                char c = line[i];
-                if (AsmSourceTools.isRemarkChar(c)) {
-                    return new Tuple<bool, int, int>(false, 0, 0);
-                } else if (char.IsWhiteSpace(c)) {
-                    // do nothing
-                } else {
-                    break;
-                }
-            }
-            if (i >= nChars) {
-                return new Tuple<bool, int, int>(false, 0, 0);
-            }
-            int beginPos = i;
-            // position i points to the start of the current keyword
-            //AsmDudeToolsStatic.Output("getLabelEndPos: found first char of first keyword "+ line[i]+".");
-
-            for (; i < nChars; ++i) {
-                char c = line[i];
-                if (c.Equals(':')) {
-                    if (i == 0) { // we found an empty label
-                        return new Tuple<bool, int, int>(false, 0, 0);
-                    } else {
-                        return new Tuple<bool, int, int>(true, beginPos, i);
-                    }
-                } else if (AsmSourceTools.isRemarkChar(c)) {
-                    return new Tuple<bool, int, int>(false, 0, 0);
-                } else if (AsmSourceTools.isSeparatorChar(c)) {
-                    // found another keyword: labels can only be the first keyword on a line
-                    break;
-                }
-            }
-            return new Tuple<bool, int, int>(false, 0, 0);
-        }
-
-        private static Tuple<bool, int, int> getLabelDefPos_Masm(string line) {
-
-            string line2 = line.TrimStart();
-            int displacement = 0;
-
-            if (line2.StartsWith("EXTRN", StringComparison.CurrentCultureIgnoreCase)) {
-                displacement = 5;
-            } else if (line2.StartsWith("EXTERN", StringComparison.CurrentCultureIgnoreCase)) {
-                displacement = 6;
-            } else {
-                return new Tuple<bool, int, int>(false, 0, 0);
-            }
-
-            string line3 = line2.Substring(displacement);
-            var tup = getLabelDefPos_Regular(line3);
-            if (tup.Item1) {
-                return new Tuple<bool, int, int>(true, tup.Item2 + displacement, tup.Item3 + displacement);
-            } else {
-                return tup;
-            }
-        }
-
 
         public static bool isConstant(string token) { // todo merge this with toConstant
             string token2;
@@ -369,7 +298,6 @@ namespace AsmTools {
             }
         }
 
-
         private static int findEndNextWord(string str, int begin) {
             for (int i = begin; i < str.Length; ++i) {
                 char c = str[i];
@@ -483,56 +411,7 @@ namespace AsmTools {
             return new Tuple<int, int>(beginPos, endPos);
         }
 
-        /// <summary>
-        /// Returns true if the provided line uses the provided label in a mnemonic
-        /// </summary>
-        public static bool usesLabel(string label, string line) {
-            int r = label.Length;
-            int m = line.Length;
-            int i = -1; // index line 
-            int j = 0; // index label
-
-            while (true) {
-                for (j = 0; j < r; ++j) {
-                    i++;
-                    if (i >= m) return false;
-                    char c = line[i];
-                    if (AsmSourceTools.isRemarkChar(c)) return false;
-                    if (!c.Equals(label[j])) break;
-                }
-                if (j == r) {
-                    i++;
-                    if (i == m) return true;
-                    if (i > m) return false;
-                    if (line[i].Equals(':')) return false;
-
-                    if (AsmSourceTools.isSeparatorChar(line[i])) return true;
-                }
-            }
-        }
         
-        /// <summary>
-        /// Return dictionary with line numbers and corresponding label definitions
-        /// </summary>
-        public static IDictionary<int, string> getLineNumberWithLabelDef(string text) {
-            IDictionary<int, string> labelDefs = new Dictionary<int, string>();
-
-            int lineNumber = 0; // start counting at one since that is what VS does
-            foreach (string line in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None)) {
-                //AsmDudeToolsStatic.Output(string.Format("INFO: getLabels: str=\"{0}\"", str));
-
-                Tuple<bool, int, int> labelDefPos = AsmTools.AsmSourceTools.getLabelDefPos(line);
-                if (labelDefPos.Item1) {
-                    int labelBeginPos = labelDefPos.Item2;
-                    int labelEndPos = labelDefPos.Item3;
-                    labelDefs[lineNumber] = line.Substring(labelBeginPos, labelEndPos - labelBeginPos);
-                }
-                lineNumber++;
-            }
-            return labelDefs;
-        }
-
-
         #region Text Wrap
         /// <summary>
         /// Forces the string to word wrap so that each line doesn't exceed the maxLineLength.

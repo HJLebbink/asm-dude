@@ -31,22 +31,19 @@ include "inc\example.inc"
 	#region Masm Examples
 
 segment_name SEGMENT USE64
-    FOO2 EQU 0x00
-    jmp FOO2
-segment_name ENDS
-
-segment_name SEGMENT USE64
-    jmp dword ptr [eax]
-segment_name ENDS
-
-segment_name SEGMENT USE64
-    db "This string contains the word jmp inside of it",0
+    ASSUME gs:NOTHING
+    mov eax, dword ptr gs:[0]
 segment_name ENDS
 
 segment_name SEGMENT USE64 # make code folding
-    call proc_name
-    hlt
+    db "This string contains the word jmp inside of it",0
+    FOO2 EQU 0x00
+    mylabel LABEL near
 
+    call proc_name
+    jmp dword ptr [eax]
+    jmp FOO2
+    jmp mylabel
 proc_name PROC # add id to label graph and make code folding
     xor rax, rax
     ret

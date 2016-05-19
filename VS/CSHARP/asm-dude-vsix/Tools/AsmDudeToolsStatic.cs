@@ -9,19 +9,16 @@ using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace AsmDude.Tools {
+
     public static class AsmDudeToolsStatic {
 
+        #region Singleton Factories
 
         public static ITagAggregator<AsmTokenTag> getAggregator(
             ITextBuffer buffer, 
@@ -69,6 +66,9 @@ namespace AsmDude.Tools {
             AsmDudeTools asmDudeTools = buffer.Properties.GetOrCreateSingletonProperty<AsmDudeTools>(sc1);
             return asmDudeTools;
         }
+
+        #endregion Singleton Factories
+
 
         /// <summary>
         /// get the full filename (with path) for the provided buffer
