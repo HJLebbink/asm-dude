@@ -13,6 +13,16 @@ include "inc\example.inc"
 	lea			rcx, OFFSET FLAT:??_C@_0FE@OJFGMKFJ@ERROR?3?5dataset?3?3HexDataSet?3?3getV@
 	mov			rax, -4616189618054758400		; negative constants not recognized bff0000000000000H
 
+
+	@@:
+
+	jmp $F
+	jmp $B
+
+	alias labelx = FOO
+	jmp labelx
+	@@:
+
 	#endregion Things TODO
 
 	#region Jump Examples
