@@ -130,7 +130,14 @@ namespace AsmDude {
                 for (int k = 0; k < nKeywords; k++) {
 
                     if (pos[k].Item3) {
-                        yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), this._labelDef); 
+                        SnapshotSpan label = newSpan(pos[k], offset, curSpan);
+                        string labelString = label.GetText();
+                        //AsmDudeToolsStatic.Output(string.Format("INFO: found label {0}", labelString));
+                        if (labelString.Equals("@@")) {
+                            // TODO: special MASM label, for the moment, ignore it, later: check whether it is used etc.
+                        } else {
+                            yield return new TagSpan<AsmTokenTag>(label, this._labelDef);
+                        }
                         continue;
                     }
 
@@ -151,6 +158,9 @@ namespace AsmDude {
                             string asmToken2 = keyword(pos[k], line);
                             switch (asmToken2) {
                                 case "$":
+                                case "$B":
+                                case "$F":
+                                    // TODO: special MASM label, for the moment, ignore it, later: check whether it is used etc.
                                     break;
                                 case "WORD":
                                 case "DWORD":
@@ -163,7 +173,11 @@ namespace AsmDude {
                                     if (k == nKeywords) break;
 
                                     switch (keyword(pos[k], line)) {
-                                        case "$": break;
+                                        case "$": 
+                                        case "$B":
+                                        case "$F":
+                                            // TODO: special MASM label, for the moment, ignore it, later: check whether it is used etc.
+                                            break;
                                         case "PTR":
                                             yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), this._misc);
                                             break;
@@ -193,6 +207,7 @@ namespace AsmDude {
                             } else {
                                 bool isUnknown = true;
 
+                                // do one word lookahead; see whether we can understand the current unknown word
                                 if ((k + 1) < nKeywords) {
                                     k++;
                                     string nextKeyword = keyword(pos[k], line);
@@ -210,6 +225,20 @@ namespace AsmDude {
                                             k--;
                                             break;
                                     }
+                                }
+
+                                // do one word look back; see whether we can understand the current unknown word
+                                if (k > 0) {
+                                    string previousKeyword = keyword(pos[k-1], line);
+                                    switch (previousKeyword) {
+                                        case "ALIAS":
+                                            yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), this._labelDef);
+                                            isUnknown = false;
+                                            break;
+                                        default:
+                                            break;
+                                    }
+
                                 }
 
                                 if (isUnknown) {
