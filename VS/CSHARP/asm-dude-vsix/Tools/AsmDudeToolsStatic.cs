@@ -36,25 +36,9 @@ namespace AsmDude.Tools {
             ITextDocumentFactoryService docFactory,
             IContentTypeRegistryService contentService) {
 
-            Func<ErrorListProvider> sc0 = delegate () {
-                IServiceProvider serviceProvider;
-                if (true) {
-                    serviceProvider = new ServiceProvider(Package.GetGlobalService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider)) as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
-                } else {
-#pragma warning disable CS0162 // Unreachable code detected
-                    serviceProvider = Package.GetGlobalService(typeof(IServiceProvider)) as ServiceProvider;
-#pragma warning restore CS0162 // Unreachable code detected
-                }
-                ErrorListProvider errorListProvider = new ErrorListProvider(serviceProvider);
-                errorListProvider.ProviderName = "Asm Errors";
-                errorListProvider.ProviderGuid = new Guid(EnvDTE.Constants.vsViewKindCode);
-                return errorListProvider;
-            };
-
             Func<LabelGraph> sc1 = delegate () {
                 IContentType contentType = contentService.GetContentType(AsmDudePackage.AsmDudeContentType);
-                ErrorListProvider errorListProvider = buffer.Properties.GetOrCreateSingletonProperty(sc0);
-                return new LabelGraph(buffer, aggregatorFactory, errorListProvider, docFactory, contentType);
+                return new LabelGraph(buffer, aggregatorFactory, AsmDudeTools.Instance.errorListProvider, docFactory, contentType);
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc1);
         }

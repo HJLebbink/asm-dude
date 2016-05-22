@@ -7,6 +7,7 @@ using System.ComponentModel.Composition;
 
 using AsmDude.SyntaxHighlighting;
 using AsmDude.Tools;
+using Microsoft.VisualStudio.Shell;
 
 namespace AsmDude.ErrorSquiggles {
 
@@ -32,7 +33,7 @@ namespace AsmDude.ErrorSquiggles {
             Func<ITagger<T>> sc = delegate () {
                 ITagAggregator<AsmTokenTag> aggregator = AsmDudeToolsStatic.getAggregator(buffer, _aggregatorFactory);
                 ILabelGraph labelGraph = AsmDudeToolsStatic.getLabelGraph(buffer, _aggregatorFactory, _docFactory, _contentService);
-                return new LabelErrorTagger(buffer, aggregator, labelGraph, labelGraph.errorListProvider) as ITagger<T>;
+                return new LabelErrorTagger(buffer, aggregator, labelGraph) as ITagger<T>;
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }

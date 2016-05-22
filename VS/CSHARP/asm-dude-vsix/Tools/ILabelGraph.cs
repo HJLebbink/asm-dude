@@ -34,11 +34,6 @@ namespace AsmDude.Tools {
         void reset_Async();
         void reset_Sync();
 
-        /// <summary>
-        /// Get the error list provider that is used by this LabelGraph
-        /// </summary>
-        ErrorListProvider errorListProvider { get; }
-
         SortedDictionary<string, string> getLabelDescriptions { get; }
     }
 }

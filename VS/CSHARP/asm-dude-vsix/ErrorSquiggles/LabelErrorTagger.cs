@@ -29,14 +29,13 @@ namespace AsmDude.ErrorSquiggles {
         internal LabelErrorTagger(
                 ITextBuffer buffer,
                 ITagAggregator<AsmTokenTag> aggregator,
-                ILabelGraph labelGraph,
-                ErrorListProvider errorListProvider) {
+                ILabelGraph labelGraph) {
 
             //AsmDudeToolsStatic.Output(string.Format("INFO: LabelErrorTagger: constructor"));
             this._sourceBuffer = buffer;
             this._aggregator = aggregator;
             this._labelGraph = labelGraph;
-            this._errorListProvider = errorListProvider;
+            this._errorListProvider = AsmDudeTools.Instance.errorListProvider;
 
             this._sourceBuffer.ChangedLowPriority += OnTextBufferChanged;
             this.updateErrorTasks();
