@@ -401,9 +401,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\asm-tools\asm-tools.csproj">
+    <ProjectReference Include="..\asm-tools\asm-tools-lib.csproj">
       <Project>{49505283-48a9-45c5-a12b-8dccee32b0da}</Project>
-      <Name>asm-tools</Name>
+      <Name>asm-tools-lib</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

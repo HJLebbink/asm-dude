@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{49505283-48A9-45C5-A12B-8DCCEE32B0DA}</ProjectGuid>
+    <ProjectGuid>{9F5C800F-83F8-4866-AE3C-97602B39C536}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AsmTools</RootNamespace>
