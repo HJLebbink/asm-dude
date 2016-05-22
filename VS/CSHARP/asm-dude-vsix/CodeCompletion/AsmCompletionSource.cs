@@ -48,7 +48,7 @@ namespace AsmDude {
             this._buffer = buffer;
             this._labelGraph = labelGraph;
             this._icons = new Dictionary<AsmTokenType, ImageSource>();
-            this._asmDudeTools = AsmDudeToolsStatic.getAsmDudeTools(buffer);
+            this._asmDudeTools = AsmDudeTools.Instance;
             this.loadIcons();
         }
 

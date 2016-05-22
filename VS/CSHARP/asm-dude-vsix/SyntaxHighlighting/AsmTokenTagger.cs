@@ -52,7 +52,7 @@ namespace AsmDude {
 
         internal AsmTokenTagger(ITextBuffer buffer) {
             this._buffer = buffer;
-            this._asmDudeTools = AsmDudeToolsStatic.getAsmDudeTools(buffer);
+            this._asmDudeTools = AsmDudeTools.Instance;
 
             this._mnemonic = new AsmTokenTag(AsmTokenType.Mnemonic);
             this._register = new AsmTokenTag(AsmTokenType.Register);

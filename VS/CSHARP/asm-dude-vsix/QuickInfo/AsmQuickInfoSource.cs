@@ -60,7 +60,7 @@ namespace AsmDude.QuickInfo {
             this._sourceBuffer = buffer;
             this._aggregator = aggregator;
             this._labelGraph = labelGraph;
-            this._asmDudeTools = AsmDudeToolsStatic.getAsmDudeTools(buffer);
+            this._asmDudeTools = AsmDudeTools.Instance;
         }
 
         /// <summary>

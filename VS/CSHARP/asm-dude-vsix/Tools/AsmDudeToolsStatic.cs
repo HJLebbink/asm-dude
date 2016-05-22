@@ -59,14 +59,6 @@ namespace AsmDude.Tools {
             return buffer.Properties.GetOrCreateSingletonProperty(sc1);
         }
 
-        public static AsmDudeTools getAsmDudeTools(ITextBuffer buffer) {
-            Func<AsmDudeTools> sc1 = delegate () {
-                return new AsmDudeTools();
-            };
-            AsmDudeTools asmDudeTools = buffer.Properties.GetOrCreateSingletonProperty<AsmDudeTools>(sc1);
-            return asmDudeTools;
-        }
-
         #endregion Singleton Factories
 
 
@@ -104,6 +96,7 @@ namespace AsmDude.Tools {
             if (openDoc == null) {
                 return;
             }
+
             IVsWindowFrame frame;
             Microsoft.VisualStudio.OLE.Interop.IServiceProvider serviceProvider;
             IVsUIHierarchy hierarchy;
@@ -197,7 +190,6 @@ namespace AsmDude.Tools {
             }
         }
 
-
         public static string getKeywordStr(SnapshotPoint? bufferPosition) {
 
             if (bufferPosition != null) {
@@ -259,7 +251,6 @@ namespace AsmDude.Tools {
             return AsmSourceTools.getPreviousKeyword(beginPos, endPos, begin.GetContainingLine().GetText());
         }
 
-
         public static bool isAllUpper(string input) {
             for (int i = 0; i < input.Length; i++) {
                 if (Char.IsLetter(input[i]) && !Char.IsUpper(input[i])) {
@@ -268,6 +259,5 @@ namespace AsmDude.Tools {
             }
             return true;
         }
-
     }
 }

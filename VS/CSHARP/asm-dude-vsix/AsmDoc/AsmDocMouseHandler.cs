@@ -112,15 +112,13 @@ namespace AsmDude.AsmDoc {
                 return null;
             }
 
-            AsmDudeTools asmDudeTools = AsmDudeToolsStatic.getAsmDudeTools(buffer);
-
             return new AsmDocMouseHandler(
                 view, 
                 shellCommandDispatcher,
                 AggregatorFactory.GetClassifier(buffer),
                 NavigatorService.GetTextStructureNavigator(buffer),
                 CtrlKeyState.GetStateForView(view),
-                asmDudeTools);
+                AsmDudeTools.Instance);
         }
 
         #region Private helpers
