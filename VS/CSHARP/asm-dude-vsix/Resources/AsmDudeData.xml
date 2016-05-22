@@ -169,7 +169,13 @@
     <directive name="IFIDN" tool="MASM">
       <description>MASM: Grants assembly if the text items are identical.</description>
     </directive>
-
+    <directive name="ENDIF" tool="MASM">
+      <description>MASM:</description>
+    </directive>
+    <directive name="ALIAS" tool="MASM">
+      <description>MASM: The ALIAS directive creates an alternate name for a function.</description>
+    </directive>
+      
     <directive name=".BREAK" tool="MASM">
       <description>MASM: Generates code to terminate a .WHILE or .REPEAT block if condition is true.</description>
     </directive>
