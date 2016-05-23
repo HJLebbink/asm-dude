@@ -135,6 +135,8 @@ namespace AsmDude {
                         //AsmDudeToolsStatic.Output(string.Format("INFO: found label {0}", labelString));
                         if (labelString.Equals("@@")) {
                             // TODO: special MASM label, for the moment, ignore it, later: check whether it is used etc.
+                        } else if (labelString.StartsWith(".")) {
+                            // TODO: special NASM local labels, for the moment, ignore them.
                         } else {
                             yield return new TagSpan<AsmTokenTag>(label, this._labelDef);
                         }
@@ -156,44 +158,48 @@ namespace AsmDude {
                             if (k == nKeywords) break;
 
                             string asmToken2 = keyword(pos[k], line);
-                            switch (asmToken2) {
-                                case "$":
-                                case "$B":
-                                case "$F":
-                                    // TODO: special MASM label, for the moment, ignore it, later: check whether it is used etc.
-                                    break;
-                                case "WORD":
-                                case "DWORD":
-                                case "QWORD":
-                                case "SHORT":
-                                case "NEAR":
-                                    yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), this._misc);
+                            if (!asmToken2[0].Equals('.')) {
+                                switch (asmToken2) {
+                                    case "$":
+                                    case "$B":
+                                    case "$F":
+                                        // TODO: special MASM label, for the moment, ignore it, later: check whether it is used etc.
+                                        break;
+                                    case "WORD":
+                                    case "DWORD":
+                                    case "QWORD":
+                                    case "SHORT":
+                                    case "NEAR":
+                                        yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), this._misc);
 
-                                    k++;
-                                    if (k == nKeywords) break;
+                                        k++;
+                                        if (k == nKeywords) break;
+                                        string asmToken3 = keyword(pos[k], line);
+                                        if (!asmToken3[0].Equals('.')) {
+                                            switch (asmToken3) {
+                                                case "$":
+                                                case "$B":
+                                                case "$F":
+                                                    // TODO: special MASM label, for the moment, ignore it, later: check whether it is used etc.
+                                                    break;
+                                                case "PTR":
+                                                    yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), this._misc);
+                                                    break;
+                                                default:
+                                                    yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), this._label);
+                                                    break;
+                                            }
+                                        }
+                                        break;
 
-                                    switch (keyword(pos[k], line)) {
-                                        case "$": 
-                                        case "$B":
-                                        case "$F":
-                                            // TODO: special MASM label, for the moment, ignore it, later: check whether it is used etc.
-                                            break;
-                                        case "PTR":
-                                            yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), this._misc);
-                                            break;
-                                        default:
+                                    default:
+                                        if (RegisterTools.isRegister(asmToken2)) {
+                                            yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), this._register);
+                                        } else {
                                             yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), this._label);
-                                            break;
-                                    }
-                                    break;
-
-                                default:
-                                    if (RegisterTools.isRegister(asmToken2)) {
-                                        yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), this._register);
-                                    } else {
-                                        yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), this._label);
-                                    }
-                                    break;
+                                        }
+                                        break;
+                                }
                             }
                             break;
 
