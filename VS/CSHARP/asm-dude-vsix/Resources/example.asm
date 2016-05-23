@@ -14,14 +14,6 @@ include "inc\example.inc"
 	mov			rax, -4616189618054758400		; negative constants not recognized bff0000000000000H
 
 
-	@@:
-
-	jmp $F
-	jmp $B
-
-	alias labelx = FOO
-	jmp labelx
-	@@:
 
 	#endregion Things TODO
 
@@ -37,6 +29,35 @@ include "inc\example.inc"
 	call		??$?6U?$char_traits@D@std@@@std@@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@0@AEAV10@PEBD@Z
 
 	#endregion
+
+	#region Nasm Examples
+
+_str_wi:
+    enter 16,0
+    mov ebx,[ebp + 8]
+    mov ecx,[ebp + 12]
+    mov dl,[ebp + 16]
+    cmp ecx,0
+    je .end
+
+loop:
+    inc ebx
+    loop loop
+.end:
+    mov [ebx],dl
+    leave
+    ret
+
+_str_ri:
+    enter 12,0
+    mov si,[ebp + 8]
+    mov ecx,[ebp + 12]
+    loop .loop
+.loop:
+    lodsb
+
+	#endregion 
+
 
 	#region Masm Examples
 
@@ -59,6 +80,15 @@ proc_name PROC # add id to label graph and make code folding
     ret
 proc_name ENDP
 segment_name ENDS
+
+	@@:
+	jmp $F
+	jmp $B
+	alias label_alias = FOO
+	jmp label_alias
+	@@:
+
+	ja 
 
 	#endregion
 
