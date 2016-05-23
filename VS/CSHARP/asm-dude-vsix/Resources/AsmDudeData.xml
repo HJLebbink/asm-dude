@@ -1674,7 +1674,7 @@
 			<ref>Jcc.html</ref>
 		</mnemonic>
 		<mnemonic name='JZ' type='jump'>
-			<description>Jump if zero (ZF = 1) (JE=JZ)</description>
+			<description>Jump if zero (ZF=1) (JE=JZ)</description>
 			<ref>Jcc.html</ref>
 		</mnemonic>
 		<mnemonic name='JMP' type='jump'>
@@ -1769,12 +1769,16 @@
 			<description>Load String</description>
 			<ref>LODS:LODSB:LODSW:LODSD:LODSQ.html</ref>
 		</mnemonic>
-		<mnemonic name='LOOP'>
-			<description>Loop According to ECX Counter</description>
+		<mnemonic name='LOOP' type='jump'>
+			<description>Loop According to ECX Counter. Jump short if RCX!=0</description>
 			<ref>LOOP:LOOPcc.html</ref>
 		</mnemonic>
-		<mnemonic name='LOOPcc'>
-			<description>Loop According to ECX Counter</description>
+		<mnemonic name='LOOPE' type='jump'>
+			<description>Loop According to ECX Counter. Jump short if RCX!=0 and ZF=1</description>
+			<ref>LOOP:LOOPcc.html</ref>
+		</mnemonic>
+		<mnemonic name='LOOPNE' type='jump'>
+			<description>Loop According to ECX Counter. Jump short if RCX!=0 and ZF=0</description>
 			<ref>LOOP:LOOPcc.html</ref>
 		</mnemonic>
 		<mnemonic name='LSL'>
