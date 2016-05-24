@@ -13,7 +13,7 @@ using System.Windows.Documents;
 
 namespace AsmDude.ErrorSquiggles {
 
-    internal sealed class LabelErrorTagger : ITagger<ErrorTag>, IDisposable {
+    internal sealed class LabelErrorTagger : ITagger<ErrorTag> {
 
         #region Private Fields
 
@@ -76,11 +76,7 @@ namespace AsmDude.ErrorSquiggles {
                     default: break;
                 }
             }
-            
-            double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
-            if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
-                AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took LabelErrorTagger {0:F3} seconds to make error tags.", elapsedSec));
-            }
+            AsmDudeToolsStatic.printSpeedWarning(time1, "LabelErrorTagger");
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
@@ -132,15 +128,6 @@ namespace AsmDude.ErrorSquiggles {
             //}
             return lineNumber;
         }
-
-        private void Dispose() {
-            this._sourceBuffer.Changed -= OnTextBufferChanged;
-        }
-        #region IDisposable
-        void IDisposable.Dispose() {
-            Dispose();
-        }
-        #endregion
 
         async private void updateErrorTasks() {
             if (!this._labelGraph.isEnabled) return;

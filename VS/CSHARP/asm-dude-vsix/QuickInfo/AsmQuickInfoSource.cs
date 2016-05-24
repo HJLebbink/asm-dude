@@ -196,11 +196,7 @@ namespace AsmDude.QuickInfo {
                         quickInfoContent.Add(description);
                     }
                 }
-
-                double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
-                if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
-                    AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took QuickInfo {0:F3} seconds to retrieve info for keyword \"{1}\".", elapsedSec, keyword));
-                }
+                AsmDudeToolsStatic.printSpeedWarning(time1, "QuickInfo");
             } catch (Exception e) {
                 AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:AugmentQuickInfoSession; e={1}", this.ToString(), e.ToString()));
             }

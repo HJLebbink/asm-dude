@@ -382,5 +382,29 @@ namespace AsmDude {
                 this["CodeFolding_IsDefaultCollapsed"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool useAssemblerMasm {
+            get {
+                return ((bool)(this["useAssemblerMasm"]));
+            }
+            set {
+                this["useAssemblerMasm"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool useAssemblerNasm {
+            get {
+                return ((bool)(this["useAssemblerNasm"]));
+            }
+            set {
+                this["useAssemblerNasm"] = value;
+            }
+        }
     }
 }

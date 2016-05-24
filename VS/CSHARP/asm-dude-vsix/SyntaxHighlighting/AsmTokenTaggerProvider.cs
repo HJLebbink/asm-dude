@@ -27,6 +27,8 @@ using Microsoft.VisualStudio.Utilities;
 
 using AsmDude.SyntaxHighlighting;
 using System;
+using AsmDude.Tools;
+using AsmTools;
 
 namespace AsmDude {
 
@@ -37,7 +39,12 @@ namespace AsmDude {
 
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag {
             Func<ITagger<T>> sc = delegate () {
-                return new AsmTokenTagger(buffer) as ITagger<T>;
+                switch (AsmDudeToolsStatic.usedAssembler) {
+                    case AssemblerEnum.MASM: return new MasmTokenTagger(buffer) as ITagger<T>;
+                    case AssemblerEnum.NASM: return new NasmTokenTagger(buffer) as ITagger<T>;
+                    case AssemblerEnum.UNKNOWN:
+                    default: return new MasmTokenTagger(buffer) as ITagger<T>;
+                }
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }

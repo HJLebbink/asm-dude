@@ -255,6 +255,7 @@
     <Content Include="Resources\AsmDudeData.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="LICENSE.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -297,6 +298,7 @@
   <ItemGroup>
     <Compile Include="AsmDudePackage.cs" />
     <Compile Include="ErrorSquiggles\AsmErrorEnum.cs" />
+    <Compile Include="SyntaxHighlighting\NasmTokenTagger.cs" />
     <Compile Include="Tools\AsmDudeTools.cs" />
     <Compile Include="AsmDoc\AsmDocClassifier.cs" />
     <Compile Include="AsmDoc\AsmDocMouseHandler.cs" />
@@ -327,7 +329,7 @@
     <Compile Include="SyntaxHighlighting\AsmClassificationDefinition.cs" />
     <Compile Include="SyntaxHighlighting\AsmClassifierProvider.cs" />
     <Compile Include="SyntaxHighlighting\AsmTokenTag.cs" />
-    <Compile Include="SyntaxHighlighting\AsmTokenTagger.cs" />
+    <Compile Include="SyntaxHighlighting\MasmTokenTagger.cs" />
     <Compile Include="SyntaxHighlighting\AsmTokenTaggerProvider.cs" />
     <Compile Include="SyntaxHighlighting\AsmTokenTypes.cs" />
     <Compile Include="CodeCompletion\AsmCompletionSource.cs" />

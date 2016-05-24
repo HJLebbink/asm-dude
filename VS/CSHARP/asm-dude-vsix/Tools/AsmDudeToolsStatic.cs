@@ -42,9 +42,41 @@ namespace AsmDude.Tools {
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc1);
         }
+        
+        public static void printSpeedWarning(DateTime startTime, string component) {
+            double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
+            if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
+                AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0} {0:F3} seconds to finish", component, elapsedSec));
+            }
+        }
 
         #endregion Singleton Factories
 
+        public static AssemblerEnum usedAssembler {
+            get {
+                if (Settings.Default.useAssemblerMasm) {
+                    return AssemblerEnum.MASM;
+                }
+                if (Settings.Default.useAssemblerNasm) {
+                    return AssemblerEnum.NASM;
+                }
+                Output("WARNING: AsmDudeToolsStatic.usedAssebler: no assembler specified, assuming MASM");
+
+                return AssemblerEnum.MASM;
+            }
+            set {
+                Settings.Default.useAssemblerMasm = false;
+                Settings.Default.useAssemblerNasm = false;
+
+                switch (value) {
+                    case AssemblerEnum.MASM: Settings.Default.useAssemblerMasm = true; break;
+                    case AssemblerEnum.NASM: Settings.Default.useAssemblerNasm = true; break;
+                    case AssemblerEnum.UNKNOWN:
+                    default:
+                        Settings.Default.useAssemblerMasm = true; break;
+                }
+            }
+        }
 
         /// <summary>
         /// get the full filename (with path) for the provided buffer

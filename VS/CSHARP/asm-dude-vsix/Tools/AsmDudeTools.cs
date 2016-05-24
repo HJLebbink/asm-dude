@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using AsmTools;
 using AsmDude.Tools;
 using Microsoft.VisualStudio.Shell;
+using AsmDude.SyntaxHighlighting;
 
 namespace AsmDude {
 
@@ -16,6 +17,7 @@ namespace AsmDude {
 
         private XmlDocument _xmlData;
         private IDictionary<string, AsmTokenType> _type;
+        private IDictionary<string, AssemblerEnum> _assembler;
         private IDictionary<string, Arch> _arch;
         private IDictionary<string, string> _description;
         private readonly ErrorListProvider _errorListProvider;
@@ -40,7 +42,7 @@ namespace AsmDude {
             this._errorListProvider.ProviderGuid = new Guid(EnvDTE.Constants.vsViewKindCode);
             #endregion
 
-            this.initData(); // load data for speed
+            this.initData();
         }
 
         #region Public Methods
@@ -53,13 +55,19 @@ namespace AsmDude {
         }
 
         public AsmTokenType getTokenType(string keyword) {
-            if (this._type == null) initData();
-
             AsmTokenType tokenType;
             if (this._type.TryGetValue(keyword.ToUpper(), out tokenType)) {
                 return tokenType;
             }
             return AsmTokenType.UNKNOWN;
+        }
+
+        public AssemblerEnum getAssembler(string keyword) {
+            AssemblerEnum value;
+            if (this._assembler.TryGetValue(keyword, out value)) {
+                return value;
+            }
+            return AssemblerEnum.UNKNOWN;
         }
 
         /// <summary>
@@ -105,7 +113,6 @@ namespace AsmDude {
         /// Determine whether the provided keyword is a jump mnemonic.
         /// </summary>
         public bool isJumpMnenomic(string keyword) {
-            if (this._type == null) initData();
             AsmTokenType tokenType;
             if (this._type.TryGetValue(keyword.ToUpper(), out tokenType)) {
                 return tokenType == AsmTokenType.Jump;
@@ -118,7 +125,6 @@ namespace AsmDude {
         /// Determine whether the provided keyword is a mnemonic (but not a jump)
         /// </summary>
         public bool isMnemonic(string keyword) {
-            if (this._type == null) initData();
             AsmTokenType tokenType;
             if (this._type.TryGetValue(keyword.ToUpper(), out tokenType)) {
                 return tokenType == AsmTokenType.Mnemonic;
@@ -148,9 +154,8 @@ namespace AsmDude {
         private void initData() {
             this._type = new Dictionary<string, AsmTokenType>();
             this._arch = new Dictionary<string, Arch>();
+            this._assembler = new Dictionary<string, AssemblerEnum>();
             this._description = new Dictionary<string, string>();
-
-
 
             // fill the dictionary with keywords
             XmlDocument xmlDoc = this.getXmlData();
@@ -163,7 +168,7 @@ namespace AsmDude {
                     //Debug.WriteLine("INFO: AsmTokenTagger: found misc " + name);
                     this._type[name] = AsmTokenType.Misc;
                     this._arch[name] = this.retrieveArch(node);
-                    this._description[name] = retrieveDescription(node);
+                    this._description[name] = this.retrieveDescription(node);
                 }
             }
 
@@ -176,7 +181,8 @@ namespace AsmDude {
                     //Debug.WriteLine("INFO: AsmTokenTagger: found directive " + name);
                     this._type[name] = AsmTokenType.Directive;
                     this._arch[name] = this.retrieveArch(node);
-                    this._description[name] = retrieveDescription(node);
+                    this._assembler[name] = this.retrieveAssembler(node);
+                    this._description[name] = this.retrieveDescription(node);
                 }
             }
             foreach (XmlNode node in xmlDoc.SelectNodes("//mnemonic")) {
@@ -198,7 +204,7 @@ namespace AsmDude {
                         }
                     }
                     this._arch[name] = this.retrieveArch(node);
-                    this._description[name] = retrieveDescription(node);
+                    this._description[name] = this.retrieveDescription(node);
                 }
             }
             foreach (XmlNode node in xmlDoc.SelectNodes("//register")) {
@@ -225,6 +231,19 @@ namespace AsmDude {
                 }
             } catch (Exception) {
                 return Arch.NONE;
+            }
+        }
+
+        private AssemblerEnum retrieveAssembler(XmlNode node) {
+            try {
+                var archAttribute = node.Attributes["tool"];
+                if (archAttribute == null) {
+                    return AssemblerEnum.UNKNOWN;
+                } else {
+                    return AsmTools.AsmSourceTools.parseAssembler(archAttribute.Value.ToUpper());
+                }
+            } catch (Exception) {
+                return AssemblerEnum.UNKNOWN;
             }
         }
 

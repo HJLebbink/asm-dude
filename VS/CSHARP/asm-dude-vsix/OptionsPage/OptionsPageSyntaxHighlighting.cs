@@ -7,6 +7,8 @@ using System.Runtime.InteropServices;
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio;
+using AsmTools;
+using AsmDude.Tools;
 
 namespace AsmDude.OptionsPage {
 
@@ -22,6 +24,12 @@ namespace AsmDude.OptionsPage {
         [DisplayName("Use Syntax Highlighting")]
         [DefaultValue(true)]
         public bool _useSyntaxHighlighting { get; set; }
+
+        [Category("General")]
+        [Description("Which Assembler are you using?")]
+        [DisplayName("Masm/Nasm")]
+        [DefaultValue(AssemblerEnum.MASM)]
+        public AssemblerEnum _usedAssembler { get; set; }
 
         [Category(cat)]
         [Description("Mnemonic")]
@@ -85,6 +93,7 @@ namespace AsmDude.OptionsPage {
         protected override void OnActivate(CancelEventArgs e) {
             base.OnActivate(e);
             this._useSyntaxHighlighting = Settings.Default.SyntaxHighlighting_On;
+            this._usedAssembler = AsmDudeToolsStatic.usedAssembler;
             this._colorMnemonic = Settings.Default.SyntaxHighlighting_Opcode;
             this._colorRegister = Settings.Default.SyntaxHighlighting_Register;
             this._colorRemark = Settings.Default.SyntaxHighlighting_Remark;
@@ -119,6 +128,9 @@ namespace AsmDude.OptionsPage {
         protected override void OnDeactivate(CancelEventArgs e) {
             bool changed = false;
             if (Settings.Default.SyntaxHighlighting_On != this._useSyntaxHighlighting) {
+                changed = true;
+            }
+            if (AsmDudeToolsStatic.usedAssembler != this._usedAssembler) {
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Opcode != this._colorMnemonic) {
@@ -180,6 +192,11 @@ namespace AsmDude.OptionsPage {
                 changed = true;
                 restartNeeded = true;
             }
+            if (AsmDudeToolsStatic.usedAssembler != this._usedAssembler) {
+                AsmDudeToolsStatic.usedAssembler = this._usedAssembler;
+                changed = true;
+                restartNeeded = true;
+            }
             if (Settings.Default.SyntaxHighlighting_Opcode != this._colorMnemonic) {
                 Settings.Default.SyntaxHighlighting_Opcode = this._colorMnemonic;
                 changed = true;
@@ -231,5 +248,6 @@ namespace AsmDude.OptionsPage {
         }
 
         #endregion Event Handlers
+
     }
 }

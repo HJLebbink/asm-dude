@@ -98,11 +98,7 @@ namespace AsmDude {
                             break;
                     }
                 }
-
-                double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
-                if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
-                    AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0:F3} seconds to assign classification tags for syntax highlighting.", elapsedSec));
-                }
+                AsmDudeToolsStatic.printSpeedWarning(time1, "Asm Classifier");
             }
         }
     }

@@ -182,12 +182,7 @@ namespace AsmDude.HighlightWord {
                     // If we couldn't find a word, just clear out the existing markers
                     this.SynchronousUpdate(this._requestedPoint, new NormalizedSnapshotSpanCollection(), null, null);
                 }
-
-                double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
-                if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
-                    AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took HighlightWordTagger {0:F3} seconds to highlight string \"{1}\".", elapsedSec, this._newWord));
-                }
-                //AsmDudeToolsStatic.Output(string.Format("INFO: took {0:F3} seconds to highlight string \"{1}\".", elapsedSec, this._newWord));
+                AsmDudeToolsStatic.printSpeedWarning(time1, "HighlightWordTagger");
             } catch (Exception e) {
                 AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:UpdateWordAdornments; e={1}", this.ToString(), e.ToString()));
             }

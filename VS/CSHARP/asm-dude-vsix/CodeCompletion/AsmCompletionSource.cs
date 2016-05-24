@@ -130,10 +130,7 @@ namespace AsmDude {
                 }
                 completionSets.Add(new CompletionSet("Tokens", "Tokens", applicableTo, completions, Enumerable.Empty<Completion>()));
 
-                double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
-                if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
-                    AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0:F3} seconds to prepare code completion for previous keyword \"{1}\" and current keyword \"{2}\".", elapsedSec, previousKeyword, partialKeyword));
-                }
+                AsmDudeToolsStatic.printSpeedWarning(time1, "Code Completion");
             } catch (Exception e) {
                 AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:AugmentCompletionSession; e={1}", this.ToString(), e.ToString()));
             }
@@ -179,6 +176,8 @@ namespace AsmDude {
                 }
             }
             #endregion
+            AssemblerEnum usedAssember = AsmDudeToolsStatic.usedAssembler;
+
 
             #region Add the completions that are defined in the xml file
             foreach (string keyword in this._asmDudeTools.getKeywords()) {
@@ -186,11 +185,22 @@ namespace AsmDude {
                 if (selectedTypes.Contains(type)) {
                     Arch arch = this._asmDudeTools.getArchitecture(keyword);
                     bool selected = this.isArchSwitchedOn(arch);
+
+                    if (selected && (type == AsmTokenType.Directive)) {
+                        AssemblerEnum assembler = this._asmDudeTools.getAssembler(keyword);
+                        switch (assembler) {
+                            case AssemblerEnum.MASM: if (usedAssember != AssemblerEnum.MASM) selected = false; break;
+                            case AssemblerEnum.NASM: if (usedAssember != AssemblerEnum.NASM) selected = false; break;
+                            case AssemblerEnum.UNKNOWN:
+                            default:
+                                break;
+                        }
+                    }
                     //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:AugmentCompletionSession; keyword={1}; arch={2}; selected={3}", this.ToString(), keyword, arch, selected));
 
                     if (selected) {
                         //Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: name keyword \"" + entry.Key + "\"");
-                        
+
                         // by default, the entry.Key is with capitals
                         string insertionText = (useCapitals) ? keyword : keyword.ToLower();
                         string archStr = (arch == Arch.NONE) ? "" : " [" + arch + "]";

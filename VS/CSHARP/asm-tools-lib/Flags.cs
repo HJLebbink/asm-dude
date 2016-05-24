@@ -1,5 +1,12 @@
 ﻿namespace AsmTools {
 
+    public static class FlagTools {
+        public static bool SingleFlag(Flags flags) {
+            int intVal = ((int)flags);
+            return (intVal != 0) && ((intVal & (intVal - 1)) == 0);
+        }
+    }
+
     public abstract class FlagValue {
         private Bt _value;
         public FlagValue(Bt v) {
