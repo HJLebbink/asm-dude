@@ -60,18 +60,22 @@ namespace AsmDude.ErrorSquiggles {
 
                 switch (asmTokenTag.Tag.type) {
                     case AsmTokenType.Label: {
-                            string label = tagSpan.GetText();
-                            if (!this._labelGraph.hasLabel(label)) {
-                                var toolTipContent = undefinedlabelToolTipContent();
-                                yield return new TagSpan<ErrorTag>(tagSpan, new ErrorTag("warning", toolTipContent));
+                            if (Settings.Default.IntelliSenseDecorateUndefinedLabels) {
+                                string label = tagSpan.GetText();
+                                if (!this._labelGraph.hasLabel(label)) {
+                                    var toolTipContent = undefinedlabelToolTipContent();
+                                    yield return new TagSpan<ErrorTag>(tagSpan, new ErrorTag("warning", toolTipContent));
+                                }
                             }
                             break;
                         }
                     case AsmTokenType.LabelDef: {
-                            string label = tagSpan.GetText();
-                            if (this._labelGraph.hasLabelClash(label)) {
-                                var toolTipContent = labelClashToolTipContent(label);
-                                yield return new TagSpan<ErrorTag>(tagSpan, new ErrorTag("warning", toolTipContent));
+                            if (Settings.Default.IntelliSenseDecorateClashingLabels) {
+                                string label = tagSpan.GetText();
+                                if (this._labelGraph.hasLabelClash(label)) {
+                                    var toolTipContent = labelClashToolTipContent(label);
+                                    yield return new TagSpan<ErrorTag>(tagSpan, new ErrorTag("warning", toolTipContent));
+                                }
                             }
                             break;
                         }
@@ -138,6 +142,7 @@ namespace AsmDude.ErrorSquiggles {
                         #region Update Tags
                         var temp = this.TagsChanged;
                         if (temp != null) {
+                            // is this code even reached?
                             foreach (uint id in this._labelGraph.getAllRelatedLineNumber()) {
                                 if (this._labelGraph.isFromMainFile(id)) {
                                     int lineNumber = (int)id;
@@ -148,45 +153,51 @@ namespace AsmDude.ErrorSquiggles {
                         #endregion Update Tags
 
                         #region Update Error Tasks
-                        var errorTasks = this._errorListProvider.Tasks;
+                        if (Settings.Default.IntelliSenseShowClashingLabels || Settings.Default.IntelliSenseShowUndefinedLabels) {
 
-                        for (int i = errorTasks.Count - 1; i >= 0; --i) {
-                            if (AsmErrorEnum.LABEL.HasFlag((AsmErrorEnum)errorTasks[i].SubcategoryIndex)) {
-                                errorTasks.RemoveAt(i);
+                            var errorTasks = this._errorListProvider.Tasks;
+
+                            for (int i = errorTasks.Count - 1; i >= 0; --i) {
+                                if (AsmErrorEnum.LABEL.HasFlag((AsmErrorEnum)errorTasks[i].SubcategoryIndex)) {
+                                    errorTasks.RemoveAt(i);
+                                }
+                            }
+
+                            bool errorExists = false;
+
+                            if (Settings.Default.IntelliSenseShowClashingLabels) {
+                                foreach (KeyValuePair<uint, string> entry in this._labelGraph.labelClashes) {
+                                    ErrorTask errorTask = new ErrorTask();
+                                    errorTask.SubcategoryIndex = (int)AsmErrorEnum.LABEL_CLASH;
+                                    errorTask.Line = this._labelGraph.getLinenumber(entry.Key);
+                                    //errorTask.Column = 0;
+                                    errorTask.Text = entry.Value;
+                                    errorTask.ErrorCategory = TaskErrorCategory.Warning;
+                                    errorTask.Document = this._labelGraph.getFilename(entry.Key);
+                                    errorTask.Navigate += AsmDudeToolsStatic.errorTaskNavigateHandler;
+                                    errorTasks.Add(errorTask);
+                                    errorExists = true;
+                                }
+                            }
+                            if (Settings.Default.IntelliSenseShowUndefinedLabels) {
+                                foreach (KeyValuePair<uint, string> entry in this._labelGraph.undefinedLabels) {
+                                    ErrorTask errorTask = new ErrorTask();
+                                    errorTask.SubcategoryIndex = (int)AsmErrorEnum.LABEL_UNDEFINED;
+                                    errorTask.Line = this._labelGraph.getLinenumber(entry.Key);
+                                    //errorTask.Column = 0;
+                                    errorTask.Text = entry.Value;
+                                    errorTask.ErrorCategory = TaskErrorCategory.Warning;
+                                    errorTask.Document = this._labelGraph.getFilename(entry.Key);
+                                    errorTask.Navigate += AsmDudeToolsStatic.errorTaskNavigateHandler;
+                                    errorTasks.Add(errorTask);
+                                    errorExists = true;
+                                }
+                            }
+                            if (errorExists) {
+                                this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
+                                this._errorListProvider.Refresh();
                             }
                         }
-
-                        bool errorExists = false;
-
-                        foreach (KeyValuePair<uint, string> entry in this._labelGraph.labelClashes) {
-                            ErrorTask errorTask = new ErrorTask();
-                            errorTask.SubcategoryIndex = (int)AsmErrorEnum.LABEL_CLASH;
-                            errorTask.Line = this._labelGraph.getLinenumber(entry.Key);
-                            //errorTask.Column = 0;
-                            errorTask.Text = entry.Value;
-                            errorTask.ErrorCategory = TaskErrorCategory.Warning;
-                            errorTask.Document = this._labelGraph.getFilename(entry.Key);
-                            errorTask.Navigate += AsmDudeToolsStatic.errorTaskNavigateHandler;
-                            errorTasks.Add(errorTask);
-                            errorExists = true;
-                        }
-                        foreach (KeyValuePair<uint, string> entry in this._labelGraph.undefinedLabels) {
-                            ErrorTask errorTask = new ErrorTask();
-                            errorTask.SubcategoryIndex = (int)AsmErrorEnum.LABEL_UNDEFINED;
-                            errorTask.Line = this._labelGraph.getLinenumber(entry.Key);
-                            //errorTask.Column = 0;
-                            errorTask.Text = entry.Value;
-                            errorTask.ErrorCategory = TaskErrorCategory.Warning;
-                            errorTask.Document = this._labelGraph.getFilename(entry.Key);
-                            errorTask.Navigate += AsmDudeToolsStatic.errorTaskNavigateHandler;
-                            errorTasks.Add(errorTask);
-                            errorExists = true;
-                        }
-                        if (errorExists) {
-                            this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
-                            this._errorListProvider.Refresh();
-                        }
-
                         #endregion Update Error Tasks
 
                     } catch (Exception e) {

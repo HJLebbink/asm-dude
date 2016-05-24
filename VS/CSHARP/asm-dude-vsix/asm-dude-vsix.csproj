@@ -298,6 +298,9 @@
   <ItemGroup>
     <Compile Include="AsmDudePackage.cs" />
     <Compile Include="ErrorSquiggles\AsmErrorEnum.cs" />
+    <Compile Include="OptionsPage\OptionsPageIntelliSense.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="SyntaxHighlighting\NasmTokenTagger.cs" />
     <Compile Include="Tools\AsmDudeTools.cs" />
     <Compile Include="AsmDoc\AsmDocClassifier.cs" />

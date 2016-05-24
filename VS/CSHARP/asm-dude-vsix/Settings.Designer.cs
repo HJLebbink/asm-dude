@@ -406,5 +406,53 @@ namespace AsmDude {
                 this["useAssemblerNasm"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IntelliSenseShowUndefinedLabels {
+            get {
+                return ((bool)(this["IntelliSenseShowUndefinedLabels"]));
+            }
+            set {
+                this["IntelliSenseShowUndefinedLabels"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IntelliSenseShowClashingLabels {
+            get {
+                return ((bool)(this["IntelliSenseShowClashingLabels"]));
+            }
+            set {
+                this["IntelliSenseShowClashingLabels"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IntelliSenseDecorateUndefinedLabels {
+            get {
+                return ((bool)(this["IntelliSenseDecorateUndefinedLabels"]));
+            }
+            set {
+                this["IntelliSenseDecorateUndefinedLabels"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IntelliSenseDecorateClashingLabels {
+            get {
+                return ((bool)(this["IntelliSenseDecorateClashingLabels"]));
+            }
+            set {
+                this["IntelliSenseDecorateClashingLabels"] = value;
+            }
+        }
     }
 }

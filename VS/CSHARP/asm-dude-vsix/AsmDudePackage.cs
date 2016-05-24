@@ -41,6 +41,9 @@ namespace AsmDude {
     [ProvideOptionPage(typeof(OptionsPageKeywordHighlighting), "AsmDude", "Keyword Highlighting", 0, 0, true)]
     //[ProvideProfile(typeof(OptionsPageKeywordHighlighting), "AsmDude", "Keyword Highlighting Options", 100, 105, isToolsOptionPage:false, DescriptionResourceID = 100)]
 
+    [ProvideOptionPage(typeof(OptionsPageIntelliSense), "AsmDude", "IntelliSense", 0, 0, true)]
+    //[ProvideProfile(typeof(OptionsPageKeywordHighlighting), "AsmDude", "Keyword Highlighting Options", 100, 105, isToolsOptionPage:false, DescriptionResourceID = 100)]
+
     public sealed class AsmDudePackage : Package {
 
         internal const string AsmDudeContentType = "asm!";
