@@ -229,7 +229,6 @@ namespace AsmDude.Tools {
 
         #region Private Methods
 
-
         private void addInfoToErrorTask() {
             //TODO this method should not be here
             string msg = "Is the Tools>Options>AsmDude options pane not visible? Disable and enable this plugin to make it visible again...";
@@ -414,7 +413,7 @@ namespace AsmDude.Tools {
             string filePath = Path.GetDirectoryName(parentFilename) + Path.DirectorySeparatorChar + includeFilename.Substring(1, includeFilename.Length-2);
 
             if (File.Exists(filePath)) {
-                AsmDudeToolsStatic.Output("INFO: LabelGraph:handleInclude: including file " + filePath);
+                //AsmDudeToolsStatic.Output("INFO: LabelGraph:handleInclude: including file " + filePath);
             } else {
                 AsmDudeToolsStatic.Output("WARNING: LabelGraph:handleInclude: file " + filePath + " does not exist");
                 return;

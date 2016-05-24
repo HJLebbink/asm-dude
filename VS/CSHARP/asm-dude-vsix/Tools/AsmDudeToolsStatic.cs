@@ -46,7 +46,7 @@ namespace AsmDude.Tools {
         public static void printSpeedWarning(DateTime startTime, string component) {
             double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
             if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
-                AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0} {0:F3} seconds to finish", component, elapsedSec));
+                AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0} {1:F3} seconds to finish", component, elapsedSec));
             }
         }
 

@@ -24,6 +24,8 @@ namespace AsmDude.ErrorSquiggles {
 
         private object _updateLock = new object();
 
+        public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
+
         #endregion Private Fields
 
         internal LabelErrorTagger(
@@ -79,8 +81,6 @@ namespace AsmDude.ErrorSquiggles {
             AsmDudeToolsStatic.printSpeedWarning(time1, "LabelErrorTagger");
         }
 
-        public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
-
         #region Private Methods
 
         private TextBlock undefinedlabelToolTipContent() {
@@ -133,14 +133,16 @@ namespace AsmDude.ErrorSquiggles {
             if (!this._labelGraph.isEnabled) return;
 
             await System.Threading.Tasks.Task.Run(() => {
-
                 lock (this._updateLock) {
                     try {
                         #region Update Tags
-                        foreach (uint id in this._labelGraph.getAllRelatedLineNumber()) {
-                            if (this._labelGraph.isFromMainFile(id)) {
-                                int lineNumber = (int)id;
-                                TagsChanged(this, new SnapshotSpanEventArgs(this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent));
+                        var temp = this.TagsChanged;
+                        if (temp != null) {
+                            foreach (uint id in this._labelGraph.getAllRelatedLineNumber()) {
+                                if (this._labelGraph.isFromMainFile(id)) {
+                                    int lineNumber = (int)id;
+                                    temp(this, new SnapshotSpanEventArgs(this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent));
+                                }
                             }
                         }
                         #endregion Update Tags
@@ -188,7 +190,6 @@ namespace AsmDude.ErrorSquiggles {
                         #endregion Update Error Tasks
 
                     } catch (Exception e) {
-                        //TODO find why exception is raised.
                         AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:updateErrorTasks; e={1}", this.ToString(), e.ToString()));
                     }
                 }
