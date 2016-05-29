@@ -33,8 +33,16 @@ using System.Globalization;
 
 using AsmTools;
 using AsmDude.Tools;
+using System.Collections;
 
 namespace AsmDude {
+
+    public sealed class CompletionComparer : IComparer<Completion> {
+        public int Compare(Completion x, Completion y) {
+            return x.InsertionText.CompareTo(y.InsertionText);
+        }
+    }
+
 
     public sealed class AsmCompletionSource : ICompletionSource {
 
@@ -97,7 +105,7 @@ namespace AsmDude {
                 string previousKeyword = AsmDudeToolsStatic.getPreviousKeyword(line.Start, start);
                 //AsmDudeToolsStatic.Output(string.Format("INFO: AugmentCompletionSession: previousKeyword=\"{0}\"; partialKeyword=\"{1}\".", previousKeyword, partialKeyword));
 
-                IList<Completion> completions = null;
+                SortedSet<Completion> completions = null;
 
                 if ((previousKeyword.Length == 0) || this.isLabel(previousKeyword)) {
                     // no previous keyword exists. Do not suggest a register
@@ -128,6 +136,7 @@ namespace AsmDude {
                     HashSet<AsmTokenType> selected = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic, AsmTokenType.Register };
                     completions = this.selectedCompletions(useCapitals, selected);
                 }
+
                 completionSets.Add(new CompletionSet("Tokens", "Tokens", applicableTo, completions, Enumerable.Empty<Completion>()));
 
                 AsmDudeToolsStatic.printSpeedWarning(time1, "Code Completion");
@@ -145,8 +154,8 @@ namespace AsmDude {
 
         #region Private Methods
 
-        private IList<Completion> labelCompletions() {
-            IList<Completion> completions = new List<Completion>();
+        private SortedSet<Completion> labelCompletions() {
+            SortedSet<Completion> completions = new SortedSet<Completion>();
             ImageSource imageSource = this._icons[AsmTokenType.Label];
 
             SortedDictionary<string, string> labels = this._labelGraph.getLabelDescriptions;
@@ -159,8 +168,8 @@ namespace AsmDude {
             return completions;
         }
 
-        private IList<Completion> selectedCompletions(bool useCapitals, HashSet<AsmTokenType> selectedTypes) {
-            IList<Completion> completions = new List<Completion>();
+        private SortedSet<Completion> selectedCompletions(bool useCapitals, HashSet<AsmTokenType> selectedTypes) {
+            SortedSet<Completion> completions = new SortedSet<Completion>(new CompletionComparer());
 
             #region Add the completions of AsmDude directives (such as code folding directives)
             if (Settings.Default.CodeFolding_On) {

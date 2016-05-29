@@ -155,7 +155,7 @@ namespace AsmDude {
             int hresult = VSConstants.S_OK;
             char typedChar = char.MinValue;
 
-            #region 1. Preprocess
+            #region 1. Pre-process
             if (pguidCmdGroup == VSConstants.VSStd2K) {
                 switch ((VSConstants.VSStd2KCmdID)nCmdID) {
                     case VSConstants.VSStd2KCmdID.AUTOCOMPLETE:
@@ -280,8 +280,8 @@ namespace AsmDude {
             if (this._currentSession == null) {
                 return;
             }
-            this._currentSession.SelectedCompletionSet.SelectBestMatch();
-            this._currentSession.SelectedCompletionSet.Recalculate();
+           // this._currentSession.SelectedCompletionSet.SelectBestMatch();
+            //this._currentSession.SelectedCompletionSet.Recalculate();
             this._currentSession.Filter();
         }
 
