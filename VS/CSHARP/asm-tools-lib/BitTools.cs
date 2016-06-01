@@ -251,6 +251,15 @@ namespace AsmTools {
             return sb.ToString();
         }
 
+        public static string toStringBin(ulong a) {
+            StringBuilder sb = new StringBuilder("0b");
+            for (int i = (64 - 1); i >= 0; --i) {
+                sb.Append((((a >> i) & 1) == 1) ? "1" : "0");
+                if ((i > 0) && (i != 64 - 1) && (i % 8 == 0)) sb.Append('.');
+            }
+            return sb.ToString();
+        }
+
         public static string toStringDec(Bt[] a) {
             if (BitTools.isKnown(a)) {
                 return BitTools.getUlongValue(a) + "";
