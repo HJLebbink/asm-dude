@@ -167,11 +167,14 @@ namespace AsmDude.ErrorSquiggles {
 
                             if (Settings.Default.IntelliSenseShowClashingLabels) {
                                 foreach (KeyValuePair<uint, string> entry in this._labelGraph.labelClashes) {
+                                    string label = entry.Value;
+                                    int lineNumber = this._labelGraph.getLinenumber(entry.Key);
+
                                     ErrorTask errorTask = new ErrorTask();
                                     errorTask.SubcategoryIndex = (int)AsmErrorEnum.LABEL_CLASH;
                                     errorTask.Line = this._labelGraph.getLinenumber(entry.Key);
-                                    //errorTask.Column = 0;
-                                    errorTask.Text = entry.Value;
+                                    errorTask.Column = getKeywordBeginEnd(lineNumber, label);
+                                    errorTask.Text = "Label Clash: "+label;
                                     errorTask.ErrorCategory = TaskErrorCategory.Warning;
                                     errorTask.Document = this._labelGraph.getFilename(entry.Key);
                                     errorTask.Navigate += AsmDudeToolsStatic.errorTaskNavigateHandler;
@@ -181,11 +184,14 @@ namespace AsmDude.ErrorSquiggles {
                             }
                             if (Settings.Default.IntelliSenseShowUndefinedLabels) {
                                 foreach (KeyValuePair<uint, string> entry in this._labelGraph.undefinedLabels) {
+                                    string label = entry.Value;
+                                    int lineNumber = this._labelGraph.getLinenumber(entry.Key);
+
                                     ErrorTask errorTask = new ErrorTask();
                                     errorTask.SubcategoryIndex = (int)AsmErrorEnum.LABEL_UNDEFINED;
-                                    errorTask.Line = this._labelGraph.getLinenumber(entry.Key);
-                                    //errorTask.Column = 0;
-                                    errorTask.Text = entry.Value;
+                                    errorTask.Line = lineNumber;
+                                    errorTask.Column = getKeywordBeginEnd(lineNumber, label);
+                                    errorTask.Text = "Undefined Label: "+label;
                                     errorTask.ErrorCategory = TaskErrorCategory.Warning;
                                     errorTask.Document = this._labelGraph.getFilename(entry.Key);
                                     errorTask.Navigate += AsmDudeToolsStatic.errorTaskNavigateHandler;
@@ -206,6 +212,24 @@ namespace AsmDude.ErrorSquiggles {
                 }
             });
         }
+
+        private int getKeywordBeginEnd(int lineNumber, string keyword) {
+            int lengthKeyword = keyword.Length;
+            string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
+            int startPos = -1;
+            for (int i = 0; i<lineContent.Length - lengthKeyword; ++i) {
+                if (lineContent.Substring(i, lengthKeyword).Equals(keyword)) {
+                    startPos = i;
+                    break;
+                }
+            }
+
+            if (startPos == -1) {
+                return 0;
+            }
+            return (startPos | ((startPos + lengthKeyword) << 16));
+        }
+
 
         private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
             //AsmDudeToolsStatic.Output(string.Format("INFO: LabelErrorTagger:OnTextBufferChanged: number of changes={0}; first change: old={1}; new={2}", e.Changes.Count, e.Changes[0].OldText, e.Changes[0].NewText));

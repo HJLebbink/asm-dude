@@ -105,11 +105,13 @@ namespace AsmDude.Tools {
                 throw new ArgumentException("sender parm cannot be null");
             }
             if (String.IsNullOrEmpty(task.Document)) {
+                Output("INFO: AsmDudeToolsStatic:errorTaskNavigateHandler: task.Document is empty");
                 return;
             }
 
             IVsUIShellOpenDocument openDoc = Package.GetGlobalService(typeof(IVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
             if (openDoc == null) {
+                Output("INFO: AsmDudeToolsStatic:errorTaskNavigateHandler: openDoc is null");
                 return;
             }
 
@@ -121,6 +123,7 @@ namespace AsmDude.Tools {
 
             int hr = openDoc.OpenDocumentViaProject(task.Document, ref logicalView, out serviceProvider, out hierarchy, out itemId, out frame);
             if (ErrorHandler.Failed(hr) || (frame == null)) {
+                Output("INFO: AsmDudeToolsStatic:errorTaskNavigateHandler: OpenDocumentViaProject failed");
                 return;
             }
 
@@ -136,15 +139,21 @@ namespace AsmDude.Tools {
                     buffer = lines as VsTextBuffer;
 
                     if (buffer == null) {
+                        Output("INFO: AsmDudeToolsStatic:errorTaskNavigateHandler: buffer is null");
                         return;
                     }
                 }
             }
             IVsTextManager mgr = Package.GetGlobalService(typeof(SVsTextManager)) as IVsTextManager;
             if (mgr == null) {
+                Output("INFO: AsmDudeToolsStatic:errorTaskNavigateHandler: IVsTextManager is null");
                 return;
             }
-            mgr.NavigateToLineAndColumn(buffer, ref logicalView, task.Line, task.Column, task.Line, task.Column);
+
+            //Output("INFO: AsmDudeToolsStatic:errorTaskNavigateHandler: navigating to row="+task.Line);
+            int iStartIndex = task.Column & 0xFFFF;
+            int iEndIndex = (task.Column >> 16) & 0xFFFF;
+            mgr.NavigateToLineAndColumn(buffer, ref logicalView, task.Line, iStartIndex, task.Line, iEndIndex);
         }
 
         /// <summary>

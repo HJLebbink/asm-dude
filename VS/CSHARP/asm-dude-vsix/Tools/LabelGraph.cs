@@ -70,6 +70,7 @@ namespace AsmDude.Tools {
         public int getLinenumber(uint id) {
             return (int)(id & 0x00FFFFFF);
         }
+
         public uint getFileId(uint id) {
             return (id >> 24);
         }
@@ -88,12 +89,12 @@ namespace AsmDude.Tools {
         public SortedDictionary<uint, string> labelClashes {
             get {
                 SortedDictionary<uint, string> result = new SortedDictionary<uint, string>();
-                string description = "Label Clash";
                 lock (_updateLock) {
                     foreach (KeyValuePair<string, IList<uint>> entry in _defAt) {
                         if (entry.Value.Count > 1) {
+                            string label = entry.Key;
                             foreach (uint id in entry.Value) {
-                                result.Add(id, description);
+                                result.Add(id, label);
                             }
                         }
                     }
@@ -105,13 +106,12 @@ namespace AsmDude.Tools {
         public SortedDictionary<uint, string> undefinedLabels {
             get {
                 SortedDictionary<uint, string> result = new SortedDictionary<uint, string>();
-                string description = "Undefined Label";
-                lock (_updateLock) {
+                 lock (_updateLock) {
                     foreach (KeyValuePair<string, IList<uint>> entry in _usedAt) {
                         string label = entry.Key;
                         if (!this._defAt.ContainsKey(label)) {
                             foreach (uint id in entry.Value) {
-                                result.Add(id, description);
+                                result.Add(id, label);
                             }
                         }
                     }
