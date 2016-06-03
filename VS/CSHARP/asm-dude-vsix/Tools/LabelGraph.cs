@@ -26,6 +26,7 @@ namespace AsmDude.Tools {
         private readonly ITextDocumentFactoryService _docFactory;
         private readonly IContentType _contentType;
 
+        private readonly string _thisFilename;
         private readonly IDictionary<uint, string> _filenames;
 
         private readonly IDictionary<string, IList<uint>> _usedAt;
@@ -60,6 +61,7 @@ namespace AsmDude.Tools {
             this._hasLabel = new HashSet<uint>();
             this._hasDef = new HashSet<uint>();
 
+            this._thisFilename = AsmDudeToolsStatic.GetFileName(this._sourceBuffer);
             this._enabled = true;
             this.reset_Sync();
             this._sourceBuffer.ChangedLowPriority += OnTextBufferChanged;
@@ -253,8 +255,7 @@ namespace AsmDude.Tools {
         }
 
         private void disable() {
-            string filename = AsmDudeToolsStatic.GetFileName(this._sourceBuffer);
-            string msg = string.Format("Performance of LabelGraph is horrible: disabling label analysis for {0}.", filename);
+            string msg = string.Format("Performance of LabelGraph is horrible: disabling label analysis for {0}.", this._thisFilename);
             AsmDudeToolsStatic.Output(string.Format("WARNING: " + msg));
 
             this._enabled = false;
@@ -271,7 +272,7 @@ namespace AsmDude.Tools {
             errorTask.SubcategoryIndex = (int)AsmErrorEnum.OTHER;
             errorTask.Text = msg;
             errorTask.ErrorCategory = TaskErrorCategory.Message;
-            errorTask.Document = filename;
+            errorTask.Document = this._thisFilename;
             errorTask.Navigate += AsmDudeToolsStatic.errorTaskNavigateHandler;
             this._errorListProvider.Tasks.Add(errorTask);
             this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
@@ -409,18 +410,27 @@ namespace AsmDude.Tools {
         }
 
         private void handleInclude(string includeFilename) {
-            string parentFilename = AsmDudeToolsStatic.GetFileName(this._sourceBuffer);
-            string filePath = Path.GetDirectoryName(parentFilename) + Path.DirectorySeparatorChar + includeFilename.Substring(1, includeFilename.Length-2);
+            try {
+                if (includeFilename.Length < 1) {
+                    return;
+                }
+                if (includeFilename.Length > 2) {
+                    if (includeFilename.StartsWith("[") && includeFilename.EndsWith("]")) {
+                        includeFilename = includeFilename.Substring(1, includeFilename.Length - 2);
+                    } else if (includeFilename.StartsWith("\"") && includeFilename.EndsWith("\"")) {
+                        includeFilename = includeFilename.Substring(1, includeFilename.Length - 2);
+                    }
+                }
+                string filePath = Path.GetDirectoryName(_thisFilename) + Path.DirectorySeparatorChar + includeFilename;
 
-            if (File.Exists(filePath)) {
-                //AsmDudeToolsStatic.Output("INFO: LabelGraph:handleInclude: including file " + filePath);
-            } else {
-                AsmDudeToolsStatic.Output("WARNING: LabelGraph:handleInclude: file " + filePath + " does not exist");
-                return;
-            }
+                if (File.Exists(filePath)) {
+                    //AsmDudeToolsStatic.Output("INFO: LabelGraph:handleInclude: including file " + filePath);
+                } else {
+                    AsmDudeToolsStatic.Output("WARNING: LabelGraph:handleInclude: file " + filePath + " does not exist");
+                    return;
+                }
 
-            if (!this._filenames.Values.Contains(filePath)) {
-                try {
+                if (!this._filenames.Values.Contains(filePath)) {
                     bool characterSubstitutionsOccurred;
                     ITextDocument doc = this._docFactory.CreateAndLoadTextDocument(filePath, this._contentType, true, out characterSubstitutionsOccurred);
                     //AsmDudeToolsStatic.Output(doc.TextBuffer.CurrentSnapshot.GetText());
@@ -429,9 +439,9 @@ namespace AsmDude.Tools {
                     uint fileId = (uint)this._filenames.Count;
                     this._filenames.Add(fileId, filePath);
                     this.addAll(doc.TextBuffer, fileId);
-                } catch (Exception e) {
-                    AsmDudeToolsStatic.Output("WARNING: LabelGraph:handleInclude. Exception:" + e.Message);
                 }
+            } catch (Exception e) {
+                AsmDudeToolsStatic.Output("WARNING: LabelGraph:handleInclude. Exception:" + e.Message);
             }
         }
 
