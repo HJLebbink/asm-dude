@@ -155,7 +155,7 @@ namespace AsmDude {
         #region Private Methods
 
         private SortedSet<Completion> labelCompletions() {
-            SortedSet<Completion> completions = new SortedSet<Completion>();
+            SortedSet<Completion> completions = new SortedSet<Completion>(new CompletionComparer());
             ImageSource imageSource = this._icons[AsmTokenType.Label];
 
             SortedDictionary<string, string> labels = this._labelGraph.getLabelDescriptions;
