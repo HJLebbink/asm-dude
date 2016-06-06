@@ -9,15 +9,15 @@ namespace AsmTools {
     /// <summary>Register Name Enumeration</summary>
     public enum Rn {
         NOREG,
-        rax, eax, ax, al, ah,
-        rbx, ebx, bx, bl, bh,
-        rcx, ecx, cx, cl, ch,
-        rdx, edx, dx, dl, dh,
+        RAX, EAX, AX, AL, AH,
+        RBX, EBX, BX, BL, BH,
+        RCX, ECX, CX, CL, CH,
+        RDX, EDX, DX, DL, DH,
 
-        rsi, esi, si, sil,
-        rdi, edi, di, dil,
-        rbp, ebp, bp, bpl,
-        rsp, esp, sp, spl,
+        RSI, ESI, SI, SIL,
+        RDI, EDI, DI, DIL,
+        RBP, EBP, BP, BPL,
+        RSP, ESP, SP, SPL,
 
         R8, R8D, R8W, R8B,
         R9, R9D, R9W, R9B,

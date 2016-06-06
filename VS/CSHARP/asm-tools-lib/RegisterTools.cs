@@ -15,49 +15,49 @@ namespace AsmTools {
 
         public static Rn parseRn(string str) {
             switch (str.ToUpper()) {
-                case "RAX": return Rn.rax;
-                case "EAX": return Rn.eax;
-                case "AX": return Rn.ax;
-                case "AL": return Rn.al;
-                case "AH": return Rn.ah;
+                case "RAX": return Rn.RAX;
+                case "EAX": return Rn.EAX;
+                case "AX": return Rn.AX;
+                case "AL": return Rn.AL;
+                case "AH": return Rn.AH;
 
-                case "RBX": return Rn.rbx;
-                case "EBX": return Rn.ebx;
-                case "BX": return Rn.bx;
-                case "BL": return Rn.bl;
-                case "BH": return Rn.bh;
+                case "RBX": return Rn.RBX;
+                case "EBX": return Rn.EBX;
+                case "BX": return Rn.BX;
+                case "BL": return Rn.BL;
+                case "BH": return Rn.BH;
 
-                case "RCX": return Rn.rcx;
-                case "ECX": return Rn.ecx;
-                case "CX": return Rn.cx;
-                case "CL": return Rn.cl;
-                case "CH": return Rn.ch;
+                case "RCX": return Rn.RCX;
+                case "ECX": return Rn.ECX;
+                case "CX": return Rn.CX;
+                case "CL": return Rn.CL;
+                case "CH": return Rn.CH;
 
-                case "RDX": return Rn.rdx;
-                case "EDX": return Rn.edx;
-                case "DX": return Rn.dx;
-                case "DL": return Rn.dl;
-                case "DH": return Rn.dh;
+                case "RDX": return Rn.RDX;
+                case "EDX": return Rn.EDX;
+                case "DX": return Rn.DX;
+                case "DL": return Rn.DL;
+                case "DH": return Rn.DH;
 
-                case "RSI": return Rn.rsi;
-                case "ESI": return Rn.esi;
-                case "SI": return Rn.si;
-                case "SIL": return Rn.sil;
+                case "RSI": return Rn.RSI;
+                case "ESI": return Rn.ESI;
+                case "SI": return Rn.SI;
+                case "SIL": return Rn.SIL;
 
-                case "RDI": return Rn.rdi;
-                case "EDI": return Rn.edi;
-                case "DI": return Rn.di;
-                case "DIL": return Rn.dil;
+                case "RDI": return Rn.RDI;
+                case "EDI": return Rn.EDI;
+                case "DI": return Rn.DI;
+                case "DIL": return Rn.DIL;
 
-                case "RBP": return Rn.rbp;
-                case "EBP": return Rn.ebp;
-                case "BP": return Rn.bp;
-                case "BPL": return Rn.bpl;
+                case "RBP": return Rn.RBP;
+                case "EBP": return Rn.EBP;
+                case "BP": return Rn.BP;
+                case "BPL": return Rn.BPL;
 
-                case "RSP": return Rn.rsp;
-                case "ESP": return Rn.esp;
-                case "SP": return Rn.sp;
-                case "SPL": return Rn.spl;
+                case "RSP": return Rn.RSP;
+                case "ESP": return Rn.ESP;
+                case "SP": return Rn.SP;
+                case "SPL": return Rn.SPL;
 
                 case "R8": return Rn.R8;
                 case "R8D": return Rn.R8D;
@@ -187,14 +187,14 @@ namespace AsmTools {
 
         public static int nBits(Rn rn) {
             switch (rn) {
-                case Rn.rax:
-                case Rn.rbx:
-                case Rn.rcx:
-                case Rn.rdx:
-                case Rn.rsi:
-                case Rn.rdi:
-                case Rn.rbp:
-                case Rn.rsp:
+                case Rn.RAX:
+                case Rn.RBX:
+                case Rn.RCX:
+                case Rn.RDX:
+                case Rn.RSI:
+                case Rn.RDI:
+                case Rn.RBP:
+                case Rn.RSP:
                 case Rn.R8:
                 case Rn.R9:
                 case Rn.R10:
@@ -205,14 +205,14 @@ namespace AsmTools {
                 case Rn.R15:
                     return 64;
 
-                case Rn.eax:
-                case Rn.ebx:
-                case Rn.ecx:
-                case Rn.edx:
-                case Rn.esi:
-                case Rn.edi:
-                case Rn.ebp:
-                case Rn.esp:
+                case Rn.EAX:
+                case Rn.EBX:
+                case Rn.ECX:
+                case Rn.EDX:
+                case Rn.ESI:
+                case Rn.EDI:
+                case Rn.EBP:
+                case Rn.ESP:
                 case Rn.R8D:
                 case Rn.R9D:
                 case Rn.R10D:
@@ -223,14 +223,14 @@ namespace AsmTools {
                 case Rn.R15D:
                     return 32;
 
-                case Rn.ax:
-                case Rn.bx:
-                case Rn.cx:
-                case Rn.dx:
-                case Rn.si:
-                case Rn.di:
-                case Rn.bp:
-                case Rn.sp:
+                case Rn.AX:
+                case Rn.BX:
+                case Rn.CX:
+                case Rn.DX:
+                case Rn.SI:
+                case Rn.DI:
+                case Rn.BP:
+                case Rn.SP:
                 case Rn.R8W:
                 case Rn.R9W:
                 case Rn.R10W:
@@ -241,18 +241,18 @@ namespace AsmTools {
                 case Rn.R15W:
                     return 16;
 
-                case Rn.al:
-                case Rn.bl:
-                case Rn.cl:
-                case Rn.dl:
-                case Rn.ah:
-                case Rn.bh:
-                case Rn.ch:
-                case Rn.dh:
-                case Rn.sil:
-                case Rn.dil:
-                case Rn.bpl:
-                case Rn.spl:
+                case Rn.AL:
+                case Rn.BL:
+                case Rn.CL:
+                case Rn.DL:
+                case Rn.AH:
+                case Rn.BH:
+                case Rn.CH:
+                case Rn.DH:
+                case Rn.SIL:
+                case Rn.DIL:
+                case Rn.BPL:
+                case Rn.SPL:
                 case Rn.R8B:
                 case Rn.R9B:
                 case Rn.R10B:

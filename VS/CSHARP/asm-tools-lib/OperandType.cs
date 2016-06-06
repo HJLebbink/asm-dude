@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,24 +23,40 @@ namespace AsmTools {
     /// </summary>
     [Flags]
     public enum Ot2 : byte {
+        [Description("Reg-Reg")]
         reg_reg = Ot.reg | (Ot.reg << 4),
+        [Description("Reg-Mem")]
         reg_mem = Ot.reg | (Ot.mem << 4),
+        [Description("Reg-Imm")]
         reg_imm = Ot.reg | (Ot.imm << 4),
+        [Description("Reg-Unknown")]
         reg_UNKNOWN = Ot.reg | (Ot.UNKNOWN << 4),
 
+        [Description("Mem-Reg")]
         mem_reg = Ot.mem | (Ot.reg << 4),
+        [Description("Mem-Mem")]
         mem_mem = Ot.mem | (Ot.mem << 4),
+        [Description("Mem-Imm")]
         mem_imm = Ot.mem | (Ot.imm << 4),
+        [Description("Mem-Unknown")]
         mem_UNKNOWN = Ot.mem | (Ot.UNKNOWN << 4),
 
+        [Description("Imm-Reg")]
         imm_reg = Ot.imm | (Ot.reg << 4),
+        [Description("Imm-Mem")]
         imm_mem = Ot.imm | (Ot.mem << 4),
+        [Description("Imm-Imm")]
         imm_imm = Ot.imm | (Ot.imm << 4),
+        [Description("Imm-Unknown")]
         imm_UNKNOWN = Ot.imm | (Ot.UNKNOWN << 4),
 
+        [Description("Unknown-Reg")]
         UNKNOWN_reg = Ot.UNKNOWN | (Ot.reg << 4),
+        [Description("Unknown-Unknown")]
         UNKNOWN_mem = Ot.UNKNOWN | (Ot.mem << 4),
+        [Description("Unknown-Unknown")]
         UNKNOWN_imm = Ot.UNKNOWN | (Ot.imm << 4),
+        [Description("Unknown-Unknown")]
         UNKNOWN_UNKNOWN = Ot.UNKNOWN | (Ot.UNKNOWN << 4),
     }
     /// <summary>
@@ -131,6 +148,38 @@ namespace AsmTools {
 
 
     public static partial class AsmSourceTools {
+
+        public static string ToString(Ot ot) {
+            StringBuilder sb = new StringBuilder();
+            foreach (Ot value in Enum.GetValues(ot.GetType())) {
+                if (ot.HasFlag(value)) {
+                    sb.Append(value.ToString() + ", ");
+                }
+            }
+            if (sb.Length > 2) sb.Length -= 2;
+            return sb.ToString();
+        }
+        public static string ToString(Ot2 ot2) {
+            StringBuilder sb = new StringBuilder();
+            foreach (Ot2 value in Enum.GetValues(ot2.GetType())) {
+                if (ot2.HasFlag(value)) {
+                    sb.Append(value.ToString() + ", ");
+                }
+            }
+            if (sb.Length > 2) sb.Length -= 2;
+            return sb.ToString();
+        }
+        public static string ToString(Ot3 ot) {
+            StringBuilder sb = new StringBuilder();
+            foreach (Ot3 value in Enum.GetValues(ot.GetType())) {
+                if (ot.HasFlag(value)) {
+                    sb.Append(value.ToString() + ", ");
+                }
+            }
+            if (sb.Length > 2) sb.Length -= 2;
+            return sb.ToString();
+        }
+
         public static Tuple<Ot, Ot> splitOt(Ot2 operandTuple) {
             switch (operandTuple) {
                 case Ot2.reg_reg: return new Tuple<Ot, Ot>(Ot.reg, Ot.reg);

@@ -8,6 +8,7 @@ using System.Text;
 
 using AsmDude.Tools;
 using AsmDude.OptionsPage;
+using EnvDTE;
 
 namespace AsmDude {
 

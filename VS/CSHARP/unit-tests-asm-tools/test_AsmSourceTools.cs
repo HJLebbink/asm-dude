@@ -276,11 +276,11 @@ namespace unit_tests {
 
             Random rnd = new Random();
 
-            Rn[] bases32 = new Rn[] { Rn.eax, Rn.ebx, Rn.ecx, Rn.edx, Rn.esp, Rn.ebp, Rn.esi, Rn.edi };
-            Rn[] index32 = new Rn[] { Rn.eax, Rn.ebx, Rn.ecx, Rn.edx,         Rn.ebp, Rn.esi, Rn.edi };
+            Rn[] bases32 = new Rn[] { Rn.EAX, Rn.EBX, Rn.ECX, Rn.EDX, Rn.ESP, Rn.EBP, Rn.ESI, Rn.EDI };
+            Rn[] index32 = new Rn[] { Rn.EAX, Rn.EBX, Rn.ECX, Rn.EDX,         Rn.EBP, Rn.ESI, Rn.EDI };
 
-            Rn[] bases64 = new Rn[] { Rn.rax, Rn.rbx, Rn.rcx, Rn.rdx, Rn.rsp, Rn.rbp, Rn.rsi, Rn.rdi };
-            Rn[] index74 = new Rn[] { Rn.rax, Rn.rbx, Rn.rcx, Rn.rdx, Rn.rsp, Rn.rbp, Rn.rsi, Rn.rdi };
+            Rn[] bases64 = new Rn[] { Rn.RAX, Rn.RBX, Rn.RCX, Rn.RDX, Rn.RSP, Rn.RBP, Rn.RSI, Rn.RDI };
+            Rn[] index74 = new Rn[] { Rn.RAX, Rn.RBX, Rn.RCX, Rn.RDX, Rn.RSP, Rn.RBP, Rn.RSI, Rn.RDI };
 
             int[] scales = new int[] { 0, 1, 2, 4, 8 };
 

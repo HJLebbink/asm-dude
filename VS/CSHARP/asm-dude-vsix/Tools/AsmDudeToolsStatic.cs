@@ -1,5 +1,6 @@
 ﻿using AsmDude.SyntaxHighlighting;
 using AsmTools;
+using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -95,6 +96,15 @@ namespace AsmDude.Tools {
                 return filename;
             } else {
                 return null;
+            }
+        }
+
+        public static void openDisassembler() {
+            try {
+                DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
+                dte.ExecuteCommand("Debug.Disassembly");
+            } catch (Exception e) {
+                AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "ERROR: AsmDudeToolsStatic:openDisassembler {0}", e.Message));
             }
         }
 
