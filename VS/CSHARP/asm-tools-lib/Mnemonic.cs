@@ -402,32 +402,32 @@ namespace AsmTools {
         #endregion
         #region Flag Control (EFLAG) Instructions
         //The flag control instructions operate on the flags in the EFLAGS register.
-        /// <summary>XXX</summary>
-        STC,// Set carry flag
-        /// <summary>XXX</summary>
-        CLC,// Clear the carry flag
-        /// <summary>XXX</summary>
-        CMC,// Complement the carry flag
-        /// <summary>XXX</summary>
-        CLD,// Clear the direction flag
-        /// <summary>XXX</summary>
-        STD,// Set direction flag
-        /// <summary>XXX</summary>
-        LAHF,// Load flags into AH register
-        /// <summary>XXX</summary>
-        SAHF,// Store AH register into flags
-        /// <summary>XXX</summary>
+        /// <summary>Set carry flag</summary>
+        STC,
+        /// <summary>Clear the carry flag</summary>
+        CLC,
+        /// <summary>Complement the carry flag</summary>
+        CMC,
+        /// <summary>Clear the direction flag</summary>
+        CLD,
+        /// <summary>Set direction flag</summary>
+        STD,
+        /// <summary>Load flags into AH register</summary>
+        LAHF,
+        /// <summary>Store AH register into flags</summary>
+        SAHF,
+        /// <summary>Push EFLAGS onto stack</summary>
         PUSHF,
-        /// <summary>XXX</summary>
-        PUSHFD,// Push EFLAGS onto stack
-        /// <summary>XXX</summary>
+        /// <summary></summary>
+        PUSHFD,
+        /// <summary>Pop EFLAGS from stack</summary>
         POPF,
-        /// <summary>XXX</summary>
-        POPFD,// Pop EFLAGS from stack
-        /// <summary>XXX</summary>
-        STI,// Set interrupt flag
-        /// <summary>XXX</summary>
-        CLI,// Clear the interrupt flag
+        /// <summary>Pop EFLAGS from stack</summary>
+        POPFD,
+        /// <summary>Set interrupt flag</summary>
+        STI,
+        /// <summary>Clear the interrupt flag</summary>
+        CLI,
         #endregion
         #region Segment Register Instructions
         //The segment register instructions allow far pointers (segment addresses) to be loaded into the segment registers.

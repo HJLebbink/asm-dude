@@ -5,6 +5,18 @@
             int intVal = ((int)flags);
             return (intVal != 0) && ((intVal & (intVal - 1)) == 0);
         }
+
+        public static Flags parse(string str) {
+            switch (str.ToUpper()) {
+                case "CF": return Flags.CF;
+                case "PF": return Flags.PF;
+                case "AF": return Flags.AF;
+                case "ZF": return Flags.ZF;
+                case "SF": return Flags.SF;
+                case "OF": return Flags.OF;
+                default: return Flags.NONE;
+            }
+        }
     }
 
     public abstract class FlagValue {
@@ -55,6 +67,7 @@
     /// Flags, CF, PF, AF, ZF, SF, OF, DF
     /// </summary>
     public enum Flags : byte {
+        NONE = 0,
         /// <summary>
         /// CF (bit 0) Carry flag — Set if an arithmetic operation generates a carry
         /// or a borrow out of the most significant bit of the result; cleared otherwise.
