@@ -274,7 +274,7 @@ namespace unit_tests {
             // scale: 1, 2, 4, 8
             // displacement none, 8-bit, 16-bit, 32-bit
 
-            Random rnd = new Random();
+            Random rnd = new Random((int)DateTime.Now.Ticks);
 
             Rn[] bases32 = new Rn[] { Rn.EAX, Rn.EBX, Rn.ECX, Rn.EDX, Rn.ESP, Rn.EBP, Rn.ESI, Rn.EDI };
             Rn[] index32 = new Rn[] { Rn.EAX, Rn.EBX, Rn.ECX, Rn.EDX,         Rn.EBP, Rn.ESI, Rn.EDI };

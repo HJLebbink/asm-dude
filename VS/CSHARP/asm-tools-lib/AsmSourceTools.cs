@@ -181,10 +181,7 @@ namespace AsmTools {
 
         /// <summary>
         /// return Offset = Base + (Index * Scale) + Displacement
-
         /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
         public static Tuple<bool, Rn, Rn, int, long, int> parseMemOperand(string token) {
 
             int length = token.Length;

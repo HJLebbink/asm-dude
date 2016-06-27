@@ -230,20 +230,20 @@ namespace AsmTools {
         #region Control Transfer Instructions
         // The control transfer instructions provide jump, conditional jump, loop, and call and return operations to control
         //program flow.
-        /// <summary>XXX</summary>
-        JMP,// Jump
-        /// <summary>XXX</summary>
+        /// <summary>Jump</summary>
+        JMP,
+        /// <summary>Jump if equal</summary>
         JE,
-        /// <summary>XXX</summary>
-        JZ,// Jump if equal/Jump if zero
-        /// <summary>XXX</summary>
+        /// <summary>Jump if zero</summary>
+        JZ,
+        /// <summary>Jump if not equal</summary>
         JNE,
-        /// <summary>XXX</summary>
-        JNZ,// Jump if not equal/Jump if not zero
-        /// <summary>XXX</summary>
+        /// <summary>Jump if not zero</summary>
+        JNZ,
+        /// <summary>Jump if above</summary>
         JA,
-        /// <summary>XXX</summary>
-        JNBE,// Jump if above/Jump if not below or equal
+        /// <summary>Jump if not below or equal</summary>
+        JNBE,
         /// <summary>XXX</summary>
         JAE,
         /// <summary>XXX</summary>
@@ -288,42 +288,42 @@ namespace AsmTools {
         JPO,
         /// <summary>XXX</summary>
         JNP,// Jump if parity odd/Jump if not parity
-        /// <summary>XXX</summary>
+        /// <summary>Jump if parity eve</summary>
         JPE,
-        /// <summary>XXX</summary>
-        JP,// Jump if parity even/Jump if parity
-        /// <summary>XXX</summary>
+        /// <summary>Jump if parity</summary>
+        JP,
+        /// <summary> Jump register CX zero</summary>
         JCXZ,
-        /// <summary>XXX</summary>
-        JECXZ,// Jump register CX zero/Jump register ECX zero
-        /// <summary>XXX</summary>
+        /// <summary>Jump register ECX zero</summary>
+        JECXZ,
+        /// <summary>Jump register RCX zero</summary>
         JRCXZ,
-        /// <summary>XXX</summary>
-        LOOP,// Loop with ECX counter
-        /// <summary>XXX</summary>
+        /// <summary>Loop with ECX counter</summary>
+        LOOP,// 
+        /// <summary>Loop with ECX and zero</summary>
         LOOPZ,
-        /// <summary>XXX</summary>
-        LOOPE,// Loop with ECX and zero/Loop with ECX and equal
-        /// <summary>XXX</summary>
+        /// <summary>Loop with ECX and equal</summary>
+        LOOPE,
+        /// <summary>Loop with ECX and not zero</summary>
         LOOPNZ,
-        /// <summary>XXX</summary>
-        LOOPNE,// Loop with ECX and not zero/Loop with ECX and not equal
-        /// <summary>XXX</summary>
-        CALL,// Call procedure
-        /// <summary>XXX</summary>
-        RET,// Return
-        /// <summary>XXX</summary>
-        IRET,// Return from interrupt
-        /// <summary>XXX</summary>
-        INT,// Software interrupt
-        /// <summary>XXX</summary>
-        INTO,// Interrupt on overflow
-        /// <summary>XXX</summary>
-        BOUND,// Detect value out of range
-        /// <summary>XXX</summary>
-        ENTER,// High-level procedure entry
-        /// <summary>XXX</summary>
-        LEAVE,// High-level procedure exit
+        /// <summary>Loop with ECX and not equal</summary>
+        LOOPNE,
+        /// <summary>Call procedure</summary>
+        CALL,
+        /// <summary>Return</summary>
+        RET,
+        /// <summary>Return from interrupt</summary>
+        IRET,
+        /// <summary>Software interrupt</summary>
+        INT,
+        /// <summary>Interrupt on overflow</summary>
+        INTO,
+        /// <summary> Detect value out of range</summary>
+        BOUND,
+        /// <summary>High-level procedure entry</summary>
+        ENTER,
+        /// <summary> High-level procedure exit</summary>
+        LEAVE,
         #endregion
         #region String Instructions
         //The string instructions operate on strings of bytes, allowing them to be moved to and from memory.

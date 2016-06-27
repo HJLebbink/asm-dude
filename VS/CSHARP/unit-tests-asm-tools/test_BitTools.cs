@@ -49,7 +49,7 @@ namespace unit_tests {
         public void Test_BitTools_get_setUlongValue() {
             const int nBits = 16;
             const int nTests = 10000;
-            Random rnd = new Random();
+            Random rnd = new Random((int)DateTime.Now.Ticks);
             Bt[] a = new Bt[nBits];
 
             for (int k = 0; k < nTests; ++k) {
@@ -62,7 +62,7 @@ namespace unit_tests {
         public void Test_BitTools_get_setLongValue() {
             const int nBits = 32;
             const int nTests = 10000;
-            Random rnd = new Random();
+            Random rnd = new Random((int)DateTime.Now.Ticks);
             Bt[] a = new Bt[nBits];
 
             int nNegativeNumbers = 0;
@@ -84,7 +84,7 @@ namespace unit_tests {
         [TestMethod]
         public void Test_BitTools_toBtArray() {
 
-            Random rnd = new Random();
+            Random rnd = new Random((int)DateTime.Now.Ticks);
             const int nTests = 10000;
             Bt[] a = new Bt[64];
 
