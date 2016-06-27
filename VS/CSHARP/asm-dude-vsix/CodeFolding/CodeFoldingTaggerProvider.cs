@@ -36,6 +36,9 @@ namespace AsmDude.CodeFolding {
     [TagType(typeof(IOutliningRegionTag))]
     internal sealed class CodeFoldingTaggerProvider : ITaggerProvider {
 
+        [Import]
+        private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
+
         /// <summary>
         /// This method is called by VS to generate the tagger
         /// </summary>
@@ -46,7 +49,7 @@ namespace AsmDude.CodeFolding {
 
             //Debug.WriteLine("INFO: TaggerProvider:CreateTagger: entering");
             Func<ITagger<T>> sc = delegate () {
-                return new CodeFoldingTagger(buffer) as ITagger<T>;
+                return new CodeFoldingTagger(buffer, _aggregatorFactory) as ITagger<T>;
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
