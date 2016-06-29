@@ -49,7 +49,7 @@ namespace AsmDude.CodeFolding {
 
             //Debug.WriteLine("INFO: TaggerProvider:CreateTagger: entering");
             Func<ITagger<T>> sc = delegate () {
-                return new CodeFoldingTagger(buffer, _aggregatorFactory) as ITagger<T>;
+                return new CodeFoldingTagger(buffer, _aggregatorFactory, AsmDudeTools.Instance.errorListProvider) as ITagger<T>;
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }

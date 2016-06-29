@@ -48,9 +48,10 @@ namespace AsmDude {
     public sealed class AsmDudePackage : Package {
 
         internal const string AsmDudeContentType = "asm!";
-        internal const double slowWarningThresholdSec = 0.2; // threshold to warn that actions are considered slow
+        internal const double slowWarningThresholdSec = 0.1; // threshold to warn that actions are considered slow
         internal const double slowShutdownThresholdSec = 4.0; // threshold to switch of components
         internal const int maxNumberOfCharsInToolTips = 150;
+        internal const int msSleepBeforeAsyncExecution = 100;
 
         #region Member Variables
         //private OleMenuCommand dynamicVisibilityCommand1;

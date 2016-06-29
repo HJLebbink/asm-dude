@@ -203,8 +203,9 @@ namespace AsmDude.Tools {
         public void reset_Sync() {
             if (!_enabled) return;
 
-            DateTime time1 = DateTime.Now;
             lock (_updateLock) {
+                Thread.Sleep(AsmDudePackage.msSleepBeforeAsyncExecution);
+                DateTime time1 = DateTime.Now;
 
                 _usedAt.Clear();
                 _defAt.Clear();
@@ -214,12 +215,13 @@ namespace AsmDude.Tools {
                 _filenames.Add(0, AsmDudeToolsStatic.GetFileName(this._buffer));
 
                 this.addAll(this._buffer, 0);
-            }
-            AsmDudeToolsStatic.printSpeedWarning(time1, "LabelGraph");
 
-            double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
-            if (elapsedSec > AsmDudePackage.slowShutdownThresholdSec) {
-                this.disable();
+                AsmDudeToolsStatic.printSpeedWarning(time1, "LabelGraph");
+
+                double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
+                if (elapsedSec > AsmDudePackage.slowShutdownThresholdSec) {
+                    this.disable();
+                }
             }
         }
 
@@ -287,20 +289,7 @@ namespace AsmDude.Tools {
                 this._usedAt.Clear();
                 this._hasLabel.Clear();
             }
-
-            #region Add Error Task
-
-            ErrorTask errorTask = new ErrorTask();
-            errorTask.SubcategoryIndex = (int)AsmErrorEnum.OTHER;
-            errorTask.Text = msg;
-            errorTask.ErrorCategory = TaskErrorCategory.Message;
-            errorTask.Document = this._thisFilename;
-            errorTask.Navigate += AsmDudeToolsStatic.errorTaskNavigateHandler;
-            this._errorListProvider.Tasks.Add(errorTask);
-            this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
-            this._errorListProvider.Refresh();
-
-            #endregion
+            AsmDudeToolsStatic.disableMessage(msg, this._thisFilename, this._errorListProvider);
         }
 
         private void reset_private(object threadContext) {

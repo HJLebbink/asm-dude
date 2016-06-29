@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using AsmDude.ErrorSquiggles;
 using AsmDude.SyntaxHighlighting;
 using AsmTools;
 using EnvDTE;
@@ -315,6 +316,28 @@ namespace AsmDude.Tools {
                 }
             }
             return true;
+        }
+
+        public static void disableMessage(string msg, string filename, ErrorListProvider errorListProvider) {
+            AsmDudeToolsStatic.Output(string.Format("WARNING: " + msg));
+
+            for (int i = 0; i < errorListProvider.Tasks.Count; ++i) {
+                Task t = errorListProvider.Tasks[i];
+                if (t.Text.Equals(msg)) {
+                    return;
+                }
+            }
+
+            ErrorTask errorTask = new ErrorTask();
+            errorTask.SubcategoryIndex = (int)AsmErrorEnum.OTHER;
+            errorTask.Text = msg;
+            errorTask.ErrorCategory = TaskErrorCategory.Message;
+            errorTask.Document = filename;
+            errorTask.Navigate += AsmDudeToolsStatic.errorTaskNavigateHandler;
+
+            errorListProvider.Tasks.Add(errorTask);
+            errorListProvider.Show(); // do not use BringToFront since that will select the error window.
+            errorListProvider.Refresh();
         }
     }
 }

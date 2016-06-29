@@ -28,12 +28,16 @@ using Microsoft.VisualStudio.Text;
 using System.Windows.Controls;
 using AsmDude.Tools;
 using AsmDude.SyntaxHighlighting;
+using System.Threading;
+using System.Text;
+using Microsoft.VisualStudio.Shell;
 
 namespace AsmDude.CodeFolding {
 
     class PartialRegion {
         public int StartLine { get; set; }
         public int StartOffset { get; set; }
+        public int StartOffsetHoverText { get; set; }
         public int Level { get; set; }
         public PartialRegion PartialParent { get; set; }
     }
@@ -51,85 +55,98 @@ namespace AsmDude.CodeFolding {
         private readonly ITextBuffer _buffer;
         private readonly IBufferTagAggregatorFactoryService _aggregatorFactory;
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
+        private readonly ErrorListProvider _errorListProvider;
         private ITextSnapshot _snapshot;
         private IList<Region> _regions;
+        private object _updateLock = new object();
+        private bool _enabled;
+
+
         #endregion Private Fields
 
         /// <summary>Constructor</summary>
-        public CodeFoldingTagger(ITextBuffer buffer, IBufferTagAggregatorFactoryService aggregatorFactory) {
+        public CodeFoldingTagger(
+            ITextBuffer buffer, 
+            IBufferTagAggregatorFactoryService aggregatorFactory,
+            ErrorListProvider errorListProvider) {
+
             //Debug.WriteLine("INFO:OutliningTagger: constructor");
             this._buffer = buffer;
             this._aggregatorFactory = aggregatorFactory;
             this._aggregator = AsmDudeToolsStatic.getAggregator(buffer, this._aggregatorFactory);
+            this._errorListProvider = errorListProvider;
 
             this._snapshot = buffer.CurrentSnapshot;
             this._regions = new List<Region>();
-            this.ReParse();
-            this._buffer.Changed += this.BufferChanged;
+            this._enabled = true;
+            this.reparse_Async();
+            this._buffer.ChangedLowPriority += this.BufferChanged;
         }
 
         public IEnumerable<ITagSpan<IOutliningRegionTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
             if (spans.Count == 0) {
                 yield break;
             }
-            if (Settings.Default.CodeFolding_On) {
+            if (Settings.Default.CodeFolding_On && this._enabled) {
                 //AsmDudeToolsStatic.Output(string.Format("INFO: GetTags:entering: IsDefaultCollapsed={0}", Settings.Default.CodeFolding_IsDefaultCollapsed));
 
-                SnapshotSpan entire = new SnapshotSpan(spans[0].Start, spans[spans.Count - 1].End).TranslateTo(this._snapshot, SpanTrackingMode.EdgeExclusive);
-                int startLineNumber = entire.Start.GetContainingLine().LineNumber;
-                int endLineNumber = entire.End.GetContainingLine().LineNumber;
+                lock (_updateLock) {
+                    SnapshotSpan entire = new SnapshotSpan(spans[0].Start, spans[spans.Count - 1].End).TranslateTo(this._snapshot, SpanTrackingMode.EdgeExclusive);
+                    int startLineNumber = entire.Start.GetContainingLine().LineNumber;
+                    int endLineNumber = entire.End.GetContainingLine().LineNumber;
 
-                foreach (Region region in this._regions) {
-                    if ((region.StartLine <= endLineNumber) && (region.EndLine >= startLineNumber)) {
+                    //Region[] regionArray = this._regions.ToArray();//TODO expensive and ugly ToList here to prevent a modification exception
+                    foreach (Region region in this._regions) {
+                        if ((region.StartLine <= endLineNumber) && (region.EndLine >= startLineNumber)) {
 
-                        ITextSnapshotLine startLine = this._snapshot.GetLineFromLineNumber(region.StartLine);
-                        ITextSnapshotLine endLine = this._snapshot.GetLineFromLineNumber(region.EndLine);
+                            ITextSnapshotLine startLine = this._snapshot.GetLineFromLineNumber(region.StartLine);
+                            ITextSnapshotLine endLine = this._snapshot.GetLineFromLineNumber(region.EndLine);
 
-                        var replacement = this.getRegionDescription(startLine.GetText());
-                        var hover = this.getHoverText(region.StartLine + 1, region.EndLine, this._snapshot);
+                            var replacement = this.getRegionDescription(startLine.GetText(), region.StartOffsetHoverText);
+                            var hover = this.getHoverText(region.StartLine, region.EndLine, this._snapshot);
 
-                        yield return new TagSpan<IOutliningRegionTag>(
-                            new SnapshotSpan(startLine.Start + region.StartOffset, endLine.End),
-                            new OutliningRegionTag(Settings.Default.CodeFolding_IsDefaultCollapsed, true, replacement, hover));
+                            yield return new TagSpan<IOutliningRegionTag>(
+                                new SnapshotSpan(startLine.Start + region.StartOffset, endLine.End),
+                                new OutliningRegionTag(Settings.Default.CodeFolding_IsDefaultCollapsed, true, replacement, hover));
+                        }
                     }
                 }
             }
         }
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
+        public bool isEnabled { get { return this._enabled; } }
+
         #region Private Methods
 
         /// <summary>
         /// Get the description of the region that starts at the provided line content
         /// </summary>
-        private string getRegionDescription(string line) {
-            int startPos = 0;// line.IndexOf(startRegionTag[0]) + startRegionTag.Length + 1;
+        private string getRegionDescription(string line, int startPos) {
+            string description = "";
+            //AsmDudeToolsStatic.Output("getRegionDescription: startPos=" + startPos + "; line=" + line);
             if (startPos < line.Length) {
-                string description = line.Substring(startPos).Trim();
-                if (description.Length > 0) {
-                    return description;
-                }
+                description = line.Substring(startPos).Trim();
             }
-            return line.Trim();
+            return (description.Length > 0) ? description : "...";
         }
 
         /// <summary>
         /// Get the text to be displayed when hovering over a closed region
         /// </summary>
-        private TextBlock getHoverText(int begin, int end, ITextSnapshot snapshot) {
+        private TextBlock getHoverText(int beginLineNumber, int endLineNumber, ITextSnapshot snapshot) {
             TextBlock description = new TextBlock();
-            string str = "";
-            if (begin < end) {
-                str = snapshot.GetLineFromLineNumber(begin).GetText();
-            }
-            for (int i = begin + 1; i < end; ++i) {
-                str += Environment.NewLine + snapshot.GetLineFromLineNumber(i).GetText();
+            StringBuilder str = new StringBuilder();
+
+            int numberOfLines = Math.Min(endLineNumber - beginLineNumber, 40); // do not show more than 40 lines 
+            for (int i = 0; i < numberOfLines; ++i) {
+                str.AppendLine(snapshot.GetLineFromLineNumber(beginLineNumber + i).GetText());
             }
 
             //TODO provide syntax highlighting for the next run
-            System.Windows.Documents.Run r = new System.Windows.Documents.Run(str);
-            r.FontSize -= 1;
-            description.Inlines.Add(r);
+            System.Windows.Documents.Run run = new System.Windows.Documents.Run(str.ToString().TrimEnd()); // TrimEnd to get rid of the last new line
+            run.FontSize -= 1;
+            description.Inlines.Add(run);
             return description;
         }
 
@@ -138,160 +155,193 @@ namespace AsmDude.CodeFolding {
             if (e.After != _buffer.CurrentSnapshot) {
                 return;
             }
-            this.ReParse();
+            this.reparse_Async();
         }
 
-        private int isStartRegion(string lineContent, int lineNumber) {
+        /// <summary>
+        /// Return start positions of the provided line content, tuple has start folding position and start of description position
+        /// </summary>
+        private Tuple<int, int> isStartRegion(string lineContent, int lineNumber) {
             int i1 = lineContent.IndexOf(startRegionTag, StringComparison.OrdinalIgnoreCase);
-            if (i1 != -1) return i1;
+            if (i1 != -1) return new Tuple<int, int>(i1, i1 + startRegionTag.Length);
 
-            int i2 = lineContent.IndexOf("SEGMENT", StringComparison.OrdinalIgnoreCase);
-            if (i2 != -1) {
-                IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent);
-                foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in tags) {
-                    if (asmTokenSpan.Tag.type == AsmTokenType.Directive) {
-                        if (asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText().Equals("SEGMENT", StringComparison.OrdinalIgnoreCase)) {
-                            return i2;
-                        }
+            IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent);
+            foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in tags) {
+                if (asmTokenSpan.Tag.type == AsmTokenType.Directive) {
+                    string tokenStr = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText();
+                    if (tokenStr.Equals("SEGMENT", StringComparison.OrdinalIgnoreCase)) {
+                        //return lineContent.IndexOf("SEGMENT", StringComparison.OrdinalIgnoreCase);
+                        return new Tuple<int, int>(lineContent.Length, lineContent.Length);
+                    }
+                    if (tokenStr.Equals("PROC", StringComparison.OrdinalIgnoreCase)) {
+                        //return lineContent.IndexOf("PROC", StringComparison.OrdinalIgnoreCase);
+                        return new Tuple<int, int>(lineContent.Length, lineContent.Length);
+                    }
+                    if (tokenStr.Equals("MACRO", StringComparison.OrdinalIgnoreCase)) {
+                        //return lineContent.IndexOf("MACRO", StringComparison.OrdinalIgnoreCase);
+                        return new Tuple<int, int>(lineContent.Length, lineContent.Length);
                     }
                 }
             }
-
-            int i3 = lineContent.IndexOf("PROC", StringComparison.OrdinalIgnoreCase);
-            if (i3 != -1) {
-                IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent);
-                foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in tags) {
-                    if (asmTokenSpan.Tag.type == AsmTokenType.Directive) {
-                        if (asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText().Equals("PROC", StringComparison.OrdinalIgnoreCase)) {
-                            return i3;
-                        }
-                    }
-                }
-            }
-
-            return -1;
+            return new Tuple<int, int>(-1, -1);
         }
 
-        private int isEndRegion(string lineContent) {
+        private int isEndRegion(string lineContent, int lineNumber) {
             int i1 = lineContent.IndexOf(endRegionTag, StringComparison.OrdinalIgnoreCase);
             if (i1 != -1) return i1;
-            int i2 = lineContent.IndexOf("ENDS", StringComparison.OrdinalIgnoreCase);
-            if (i2 != -1) return i2;
-            int i3 = lineContent.IndexOf("ENDP", StringComparison.OrdinalIgnoreCase);
-            if (i3 != -1) return i3;
 
+            IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent);
+            foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in tags) {
+                if (asmTokenSpan.Tag.type == AsmTokenType.Directive) {
+                    string tokenStr = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText();
+                    if (tokenStr.Equals("ENDS", StringComparison.OrdinalIgnoreCase)) {
+                        return lineContent.IndexOf("ENDS", StringComparison.OrdinalIgnoreCase);
+                    }
+                    if (tokenStr.Equals("ENDP", StringComparison.OrdinalIgnoreCase)) {
+                        return lineContent.IndexOf("ENDP", StringComparison.OrdinalIgnoreCase);
+                    }
+                    if (tokenStr.Equals("ENDM", StringComparison.OrdinalIgnoreCase)) {
+                        return lineContent.IndexOf("ENDM", StringComparison.OrdinalIgnoreCase);
+                    }
+                }
+            }
             return -1;
         }
 
-        private void ReParse() {
-            //Debug.WriteLine("INFO:OutliningTagger:ReParse: entering");
+        private void reparse_Async() {
+            ThreadPool.QueueUserWorkItem(this.reparse_private);
+            //this.reparse_Sync();
+        }
 
-            ITextSnapshot newSnapshot = _buffer.CurrentSnapshot;
-            IList<Region> newRegions = new List<Region>();
+        private void reparse_private(object threadContext) {
+            this.reparse_Sync();
+        }
 
-            //keep the current (deepest) partial region, which will have
-            // references to any parent partial regions.
-            PartialRegion currentRegion = null;
+        private void reparse_Sync() {
+            if (!this._enabled) return;
+            lock (_updateLock) {
 
-            foreach (ITextSnapshotLine line in newSnapshot.Lines) {
-                string text = line.GetText();
+                //Thread.Sleep(AsmDudePackage.msSleepBeforeAsyncExecution);
+                DateTime time1 = DateTime.Now;
 
-                //lines that contain a "[" denote the start of a new region.
-                int regionStart = this.isStartRegion(text, line.LineNumber);
-                if (regionStart != -1) {
-                    int currentLevel = (currentRegion != null) ? currentRegion.Level : 1;
-                    int newLevel;
-                    if (!CodeFoldingTagger.TryGetLevel(text, regionStart, out newLevel)) {
-                        newLevel = currentLevel + 1;
-                    }
+                ITextSnapshot newSnapshot = _buffer.CurrentSnapshot;
+                IList<Region> newRegions = new List<Region>();
 
-                    //levels are the same and we have an existing region;
-                    //end the current region and start the next
-                    if ((currentLevel == newLevel) && (currentRegion != null)) {
-                        newRegions.Add(new Region() {
-                            Level = currentRegion.Level,
-                            StartLine = currentRegion.StartLine,
-                            StartOffset = currentRegion.StartOffset,
-                            EndLine = line.LineNumber
-                        });
+                // keep the current (deepest) partial region, which will have
+                // references to any parent partial regions.
+                PartialRegion currentRegion = null;
 
-                        currentRegion = new PartialRegion() {
-                            Level = newLevel,
-                            StartLine = line.LineNumber,
-                            StartOffset = regionStart,
-                            PartialParent = currentRegion.PartialParent
-                        };
-                    }
-                    //this is a new (sub)region
-                    else {
-                        currentRegion = new PartialRegion() {
-                            Level = newLevel,
-                            StartLine = line.LineNumber,
-                            StartOffset = regionStart,
-                            PartialParent = currentRegion
-                        };
-                    }
-                } else {
-                    int regionEnd = this.isEndRegion(text);
-                    //lines that contain "]" denote the end of a region
-                    if (regionEnd != -1) {
+                foreach (ITextSnapshotLine line in newSnapshot.Lines) {
+                    #region Parse Line
+                    string text = line.GetText();
+
+                    Tuple<int, int> tup = this.isStartRegion(text, line.LineNumber);
+                    int regionStart = tup.Item1;
+                    int regionStartHoverText = tup.Item2;
+                    if (regionStart != -1) {
                         int currentLevel = (currentRegion != null) ? currentRegion.Level : 1;
-                        int closingLevel;
-                        if (!CodeFoldingTagger.TryGetLevel(text, regionEnd, out closingLevel)) {
-                            closingLevel = currentLevel;
+                        int newLevel;
+                        if (!CodeFoldingTagger.TryGetLevel(text, regionStart, out newLevel)) {
+                            newLevel = currentLevel + 1;
                         }
-                        //the regions match
-                        if ((currentRegion != null) && (currentLevel == closingLevel)) {
+
+                        //levels are the same and we have an existing region;
+                        //end the current region and start the next
+                        if ((currentLevel == newLevel) && (currentRegion != null)) {
                             newRegions.Add(new Region() {
-                                Level = currentLevel,
+                                Level = currentRegion.Level,
                                 StartLine = currentRegion.StartLine,
                                 StartOffset = currentRegion.StartOffset,
+                                StartOffsetHoverText = regionStartHoverText,
                                 EndLine = line.LineNumber
                             });
 
-                            currentRegion = currentRegion.PartialParent;
+                            currentRegion = new PartialRegion() {
+                                Level = newLevel,
+                                StartLine = line.LineNumber,
+                                StartOffset = regionStart,
+                                StartOffsetHoverText = regionStartHoverText,
+                                PartialParent = currentRegion.PartialParent
+                            };
+                        }
+                        //this is a new (sub)region
+                        else {
+                            currentRegion = new PartialRegion() {
+                                Level = newLevel,
+                                StartLine = line.LineNumber,
+                                StartOffset = regionStart,
+                                StartOffsetHoverText = regionStartHoverText,
+                                PartialParent = currentRegion
+                            };
+                        }
+                    } else {
+                        int regionEnd = this.isEndRegion(text, line.LineNumber);
+                        if (regionEnd != -1) {
+                            int currentLevel = (currentRegion != null) ? currentRegion.Level : 1;
+                            int closingLevel;
+                            if (!CodeFoldingTagger.TryGetLevel(text, regionEnd, out closingLevel)) {
+                                closingLevel = currentLevel;
+                            }
+                            //the regions match
+                            if ((currentRegion != null) && (currentLevel == closingLevel)) {
+                                newRegions.Add(new Region() {
+                                    Level = currentLevel,
+                                    StartLine = currentRegion.StartLine,
+                                    StartOffset = currentRegion.StartOffset,
+                                    StartOffsetHoverText = currentRegion.StartOffsetHoverText,
+                                    EndLine = line.LineNumber
+                                });
+
+                                currentRegion = currentRegion.PartialParent;
+                            }
                         }
                     }
+                    #endregion Parse Line
+
+                    #region Update Changed Spans
+                    //determine the changed span, and send a changed event with the new spans
+                    IList<Span> oldSpans =
+                            new List<Span>(this._regions.Select(r => CodeFoldingTagger.AsSnapshotSpan(r, this._snapshot)
+                                .TranslateTo(newSnapshot, SpanTrackingMode.EdgeExclusive)
+                                .Span));
+                    IList<Span> newSpans = new List<Span>(newRegions.Select(r => CodeFoldingTagger.AsSnapshotSpan(r, newSnapshot).Span));
+
+                    NormalizedSpanCollection oldSpanCollection = new NormalizedSpanCollection(oldSpans);
+                    NormalizedSpanCollection newSpanCollection = new NormalizedSpanCollection(newSpans);
+
+                    //the changed regions are regions that appear in one set or the other, but not both.
+                    NormalizedSpanCollection removed = NormalizedSpanCollection.Difference(oldSpanCollection, newSpanCollection);
+
+                    int changeStart = int.MaxValue;
+                    int changeEnd = -1;
+
+                    if (removed.Count > 0) {
+                        changeStart = removed[0].Start;
+                        changeEnd = removed[removed.Count - 1].End;
+                    }
+                    if (newSpans.Count > 0) {
+                        changeStart = Math.Min(changeStart, newSpans[0].Start);
+                        changeEnd = Math.Max(changeEnd, newSpans[newSpans.Count - 1].End);
+                    }
+
+                    this._snapshot = newSnapshot;
+                    this._regions = newRegions;
+                    if (changeStart <= changeEnd) {
+                        if (this.TagsChanged != null) {
+                            this.TagsChanged(this, new SnapshotSpanEventArgs(new SnapshotSpan(this._snapshot, Span.FromBounds(changeStart, changeEnd))));
+                        } else {
+                            AsmDudeToolsStatic.Output("reparse_Sync: TagsChanged is null");
+                        }
+                    }
+                    #endregion
+                }
+                AsmDudeToolsStatic.printSpeedWarning(time1, "CodeFoldingTagger");
+
+                double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
+                if (elapsedSec > AsmDudePackage.slowShutdownThresholdSec) {
+                    this.disable();
                 }
             }
-
-            //determine the changed span, and send a changed event with the new spans
-            IList<Span> oldSpans =
-                new List<Span>(this._regions.Select(r => CodeFoldingTagger.AsSnapshotSpan(r, this._snapshot)
-                    .TranslateTo(newSnapshot, SpanTrackingMode.EdgeExclusive)
-                    .Span));
-            IList<Span> newSpans = new List<Span>(newRegions.Select(r => CodeFoldingTagger.AsSnapshotSpan(r, newSnapshot).Span));
-
-            NormalizedSpanCollection oldSpanCollection = new NormalizedSpanCollection(oldSpans);
-            NormalizedSpanCollection newSpanCollection = new NormalizedSpanCollection(newSpans);
-
-            //the changed regions are regions that appear in one set or the other, but not both.
-            NormalizedSpanCollection removed = NormalizedSpanCollection.Difference(oldSpanCollection, newSpanCollection);
-
-            int changeStart = int.MaxValue;
-            int changeEnd = -1;
-
-            if (removed.Count > 0) {
-                changeStart = removed[0].Start;
-                changeEnd = removed[removed.Count - 1].End;
-            }
-
-            if (newSpans.Count > 0) {
-                changeStart = Math.Min(changeStart, newSpans[0].Start);
-                changeEnd = Math.Max(changeEnd, newSpans[newSpans.Count - 1].End);
-            }
-
-            this._snapshot = newSnapshot;
-            this._regions = newRegions;
-
-            if (changeStart <= changeEnd) {
-                ITextSnapshot snap = this._snapshot;
-                if (this.TagsChanged != null) {
-                    this.TagsChanged(this, new SnapshotSpanEventArgs(
-                        new SnapshotSpan(this._snapshot, Span.FromBounds(changeStart, changeEnd))));
-                }
-            }
-            //Debug.WriteLine("INFO:OutliningTagger:ReParse: leaving");
         }
 
         private static bool TryGetLevel(string text, int startIndex, out int level) {
@@ -308,6 +358,19 @@ namespace AsmDude.CodeFolding {
             var startLine = snapshot.GetLineFromLineNumber(region.StartLine);
             var endLine = (region.StartLine == region.EndLine) ? startLine : snapshot.GetLineFromLineNumber(region.EndLine);
             return new SnapshotSpan(startLine.Start + region.StartOffset, endLine.End);
+        }
+
+        private void disable() {
+
+            string filename = AsmDudeToolsStatic.GetFileName(this._buffer);
+            string msg = string.Format("Performance of CodeFoldingTagger is horrible: disabling folding for {0}.", filename);
+            AsmDudeToolsStatic.Output(string.Format("WARNING: " + msg));
+
+            this._enabled = false;
+            lock (this._updateLock) {
+                this._regions.Clear();
+            }
+            AsmDudeToolsStatic.disableMessage(msg, filename, this._errorListProvider);
         }
 
         #endregion Private Methods
