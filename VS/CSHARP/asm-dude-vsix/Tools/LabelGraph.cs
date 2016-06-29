@@ -42,7 +42,7 @@ namespace AsmDude.Tools {
 
         private static readonly SortedSet<uint> emptySet = new SortedSet<uint>();
 
-        private readonly ITextBuffer _sourceBuffer;
+        private readonly ITextBuffer _buffer;
         private readonly IBufferTagAggregatorFactoryService _aggregatorFactory;
         private readonly ErrorListProvider _errorListProvider;
         private readonly ITextDocumentFactoryService _docFactory;
@@ -71,7 +71,7 @@ namespace AsmDude.Tools {
                 IContentType contentType) {
 
             //AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph: constructor: creating a label graph for {0}", AsmDudeToolsStatic.GetFileName(buffer)));
-            this._sourceBuffer = buffer;
+            this._buffer = buffer;
             this._aggregatorFactory = aggregatorFactory;
             this._errorListProvider = errorListProvider;
             this._docFactory = docFactory;
@@ -83,10 +83,10 @@ namespace AsmDude.Tools {
             this._hasLabel = new HashSet<uint>();
             this._hasDef = new HashSet<uint>();
 
-            this._thisFilename = AsmDudeToolsStatic.GetFileName(this._sourceBuffer);
+            this._thisFilename = AsmDudeToolsStatic.GetFileName(this._buffer);
             this._enabled = true;
             this.reset_Sync();
-            this._sourceBuffer.ChangedLowPriority += OnTextBufferChanged;
+            this._buffer.ChangedLowPriority += this.BufferChanged;
 
             this.addInfoToErrorTask();
         }
@@ -154,7 +154,7 @@ namespace AsmDude.Tools {
                         string filename = Path.GetFileName(getFilename(id));
                         string lineContent;
                         if (this.isFromMainFile(id)) {
-                            lineContent = " :" + this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
+                            lineContent = " :" + this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
                         } else {
                             lineContent = "";
                         }
@@ -197,7 +197,7 @@ namespace AsmDude.Tools {
 
         public void reset_Async() {
             if (!_enabled) return;
-            ThreadPool.QueueUserWorkItem(reset_private);
+            ThreadPool.QueueUserWorkItem(this.reset_private);
         }
 
         public void reset_Sync() {
@@ -211,9 +211,9 @@ namespace AsmDude.Tools {
                 _hasLabel.Clear();
                 _hasDef.Clear();
                 _filenames.Clear();
-                _filenames.Add(0, AsmDudeToolsStatic.GetFileName(this._sourceBuffer));
+                _filenames.Add(0, AsmDudeToolsStatic.GetFileName(this._buffer));
 
-                this.addAll(this._sourceBuffer, 0);
+                this.addAll(this._buffer, 0);
             }
             AsmDudeToolsStatic.printSpeedWarning(time1, "LabelGraph");
 
@@ -304,7 +304,7 @@ namespace AsmDude.Tools {
         }
 
         private void reset_private(object threadContext) {
-            reset_Sync();
+            this.reset_Sync();
         }
 
         private static int getLineNumber(IMappingTagSpan<AsmTokenTag> tag) {
@@ -315,7 +315,7 @@ namespace AsmDude.Tools {
             return span.Snapshot.GetLineNumberFromPosition(span.Start);
         }
 
-        private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
+        private void BufferChanged(object sender, TextContentChangedEventArgs e) {
             //AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:OnTextBufferChanged: number of changes={0}; first change: old={1}; new={2}", e.Changes.Count, e.Changes[0].OldText, e.Changes[0].NewText));
             if (!_enabled) return;
 
@@ -328,7 +328,7 @@ namespace AsmDude.Tools {
                         case 0: return;
                         case 1:
                             ITextChange textChange = e.Changes[0];
-                            ITextBuffer buffer = this._sourceBuffer;
+                            ITextBuffer buffer = this._buffer;
                             ITagAggregator<AsmTokenTag> aggregator = null;
 
 
