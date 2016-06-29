@@ -61,6 +61,10 @@ namespace AsmDude.CodeFolding {
         private object _updateLock = new object();
         private bool _enabled;
 
+        private bool _bussy;
+        private bool _waiting;
+        private bool _scheduled;
+
 
         #endregion Private Fields
 
@@ -79,7 +83,11 @@ namespace AsmDude.CodeFolding {
             this._snapshot = buffer.CurrentSnapshot;
             this._regions = new List<Region>();
             this._enabled = true;
-            this.reparse_Async();
+            this._bussy = false;
+            this._waiting = false;
+            this._scheduled = false;
+
+            this.reparse_delayed();
             this._buffer.ChangedLowPriority += this.BufferChanged;
         }
 
@@ -95,8 +103,8 @@ namespace AsmDude.CodeFolding {
                     int startLineNumber = entire.Start.GetContainingLine().LineNumber;
                     int endLineNumber = entire.End.GetContainingLine().LineNumber;
 
-                    //Region[] regionArray = this._regions.ToArray();//TODO expensive and ugly ToList here to prevent a modification exception
-                    foreach (Region region in this._regions) {
+                    Region[] regionArray = this._regions.ToArray();//TODO expensive and ugly ToList here to prevent a modification exception
+                    foreach (Region region in regionArray) {
                         if ((region.StartLine <= endLineNumber) && (region.EndLine >= startLineNumber)) {
 
                             ITextSnapshotLine startLine = this._snapshot.GetLineFromLineNumber(region.StartLine);
@@ -155,7 +163,7 @@ namespace AsmDude.CodeFolding {
             if (e.After != _buffer.CurrentSnapshot) {
                 return;
             }
-            this.reparse_Async();
+            this.reparse_delayed();
         }
 
         /// <summary>
@@ -208,21 +216,32 @@ namespace AsmDude.CodeFolding {
             return -1;
         }
 
+        private void reparse_delayed() {
+            if (this._waiting) return;
+            if (this._bussy) {
+                this._scheduled = true;
+            } else {
+                this._waiting = true;
+                this.reparse_Async();
+            }
+        }
+
         private void reparse_Async() {
-            ThreadPool.QueueUserWorkItem(this.reparse_private);
-            //this.reparse_Sync();
+            ThreadPool.QueueUserWorkItem(this.reparse_Sync);
         }
 
-        private void reparse_private(object threadContext) {
-            this.reparse_Sync();
-        }
-
-        private void reparse_Sync() {
+        private void reparse_Sync(object threadContext) {
             if (!this._enabled) return;
+
+            Thread.Sleep(AsmDudePackage.msSleepBeforeAsyncExecution);
+            this._bussy = true;
+            this._waiting = false;
+
+            #region Payload
             lock (_updateLock) {
 
-                //Thread.Sleep(AsmDudePackage.msSleepBeforeAsyncExecution);
-                DateTime time1 = DateTime.Now;
+            //Thread.Sleep(AsmDudePackage.msSleepBeforeAsyncExecution);
+            DateTime time1 = DateTime.Now;
 
                 ITextSnapshot newSnapshot = _buffer.CurrentSnapshot;
                 IList<Region> newRegions = new List<Region>();
@@ -333,14 +352,21 @@ namespace AsmDude.CodeFolding {
                             AsmDudeToolsStatic.Output("reparse_Sync: TagsChanged is null");
                         }
                     }
-                    #endregion
                 }
+                #endregion
                 AsmDudeToolsStatic.printSpeedWarning(time1, "CodeFoldingTagger");
 
                 double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
                 if (elapsedSec > AsmDudePackage.slowShutdownThresholdSec) {
                     this.disable();
                 }
+            }
+            #endregion
+
+            this._bussy = false;
+            if (this._scheduled) {
+                this._scheduled = false;
+                this.reparse_delayed();
             }
         }
 
