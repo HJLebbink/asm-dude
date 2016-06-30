@@ -81,9 +81,7 @@ namespace AsmDude {
             //}
 
             if (false) {
-#               pragma warning disable CS0162
                 return ExecMethod1(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
-#               pragma warning restore CS0162
             } else {
                 return ExecMethod2(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
             }

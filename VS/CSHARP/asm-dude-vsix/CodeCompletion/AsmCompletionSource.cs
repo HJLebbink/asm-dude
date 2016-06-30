@@ -83,7 +83,7 @@ namespace AsmDude {
                 if (triggerPoint.Position > 1) {
                     char currentTypedChar = (triggerPoint - 1).GetChar();
                     //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:AugmentCompletionSession: current char = {1}", this.ToString(), currentTypedChar));
-                    if (!currentTypedChar.Equals('#')) { //TODO UGLY since the use can configure this starting character
+                    if (!currentTypedChar.Equals('#')) { //TODO UGLY since the user can configure this starting character
                         int pos = triggerPoint.Position - line.Start;
                         if (AsmSourceTools.isInRemark(pos, line.GetText())) {
                             return;

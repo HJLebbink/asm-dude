@@ -85,6 +85,7 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <RegisterForComInterop>false</RegisterForComInterop>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <NoWarn>CS0162</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <StartAction>Program</StartAction>
@@ -100,6 +101,7 @@
     <CopyVsixExtensionFiles>False</CopyVsixExtensionFiles>
     <CopyVsixExtensionLocation>
     </CopyVsixExtensionLocation>
+    <NoWarn>CS0162</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
@@ -365,6 +367,7 @@
     <Compile Include="QuickInfo\AsmQuickInfoSource.cs" />
     <Compile Include="QuickInfo\AsmQuickInfoSourceProvider.cs" />
     <Compile Include="Tools\AsmDudeToolsStatic.cs" />
+    <Compile Include="Tools\CustomEventArgs.cs" />
     <Compile Include="Tools\ILabelGraph.cs" />
     <Compile Include="Tools\LabelGraph.cs" />
     <Compile Include="VsPackage.Designer.cs">

@@ -83,14 +83,12 @@ namespace AsmDude.QuickInfo {
                 if (enumerator.Count() > 0) {
                     
                     if (false) {
-#                       pragma warning disable CS0162
                         // TODO: multiple tags at the provided triggerPoint is most likely the result of a bug in AsmTokenTagger, but it seems harmless...
                         if (enumerator.Count() > 1) {
                             foreach (IMappingTagSpan<AsmTokenTag> v in enumerator) {
                                 AsmDudeToolsStatic.Output(string.Format("WARNING: {0}:AugmentQuickInfoSession. more than one tag! \"{1}\"", this.ToString(), v.Span.GetSpans(_sourceBuffer).First().GetText()));
                             }
                         }
-#                       pragma warning restore CS0162
                     }
 
                     IMappingTagSpan<AsmTokenTag> asmTokenTag = enumerator.First();
