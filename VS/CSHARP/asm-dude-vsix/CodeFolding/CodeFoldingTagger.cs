@@ -53,7 +53,6 @@ namespace AsmDude.CodeFolding {
         private string endRegionTag = Settings.Default.CodeFolding_EndTag;      //the characters that end the outlining region
 
         private readonly ITextBuffer _buffer;
-        private readonly IBufferTagAggregatorFactoryService _aggregatorFactory;
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
         private readonly ErrorListProvider _errorListProvider;
         private ITextSnapshot _snapshot;

@@ -48,7 +48,7 @@ namespace AsmDude {
     public sealed class AsmDudePackage : Package {
 
         internal const string AsmDudeContentType = "asm!";
-        internal const double slowWarningThresholdSec = 0.1; // threshold to warn that actions are considered slow
+        internal const double slowWarningThresholdSec = 0.3; // threshold to warn that actions are considered slow
         internal const double slowShutdownThresholdSec = 4.0; // threshold to switch of components
         internal const int maxNumberOfCharsInToolTips = 150;
         internal const int msSleepBeforeAsyncExecution = 1000;
@@ -73,7 +73,7 @@ namespace AsmDude {
             //this.changeFontAutoComplete();
 
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine(@"  _____           ____        _     ");
+            sb.AppendLine(" _____           ____        _     ");
             sb.AppendLine(@"|  _  |___ _____|    \ _ _ _| |___ ");
             sb.AppendLine(@"|     |_ -|     |  |  | | | . | -_|");
             sb.AppendLine(@"|__|__|___|_|_|_|____/|___|___|___|");

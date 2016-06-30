@@ -234,7 +234,6 @@ namespace AsmDude.Tools {
                 _filenames.Add(0, AsmDudeToolsStatic.GetFileName(this._buffer));
 
                 this.addAll(this._buffer, 0);
-                this.OnResetDoneEvent(new CustomEventArgs("Resetting LabelGraph is finished"));
 
                 AsmDudeToolsStatic.printSpeedWarning(time1, "LabelGraph");
                 double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
@@ -243,6 +242,8 @@ namespace AsmDude.Tools {
                 }
             }
             #endregion Payload
+
+            this.OnResetDoneEvent(new CustomEventArgs("Resetting LabelGraph is finished"));
 
             this._busy = false;
             if (this._scheduled) {
@@ -253,7 +254,6 @@ namespace AsmDude.Tools {
 
         // Declare the event using EventHandler<T>
         public event EventHandler<CustomEventArgs> ResetDoneEvent;
-
 
         public ErrorListProvider errorListProvider { get { return this._errorListProvider; } }
 
