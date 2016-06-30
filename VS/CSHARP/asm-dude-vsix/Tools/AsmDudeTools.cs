@@ -35,7 +35,7 @@ using AsmDude.SyntaxHighlighting;
 
 namespace AsmDude {
 
-    public sealed class AsmDudeTools {
+    public sealed class AsmDudeTools : IDisposable {
 
         private XmlDocument _xmlData;
         private IDictionary<string, AsmTokenType> _type;
@@ -298,6 +298,10 @@ namespace AsmDude {
                 }
             }
             return this._xmlData;
+        }
+
+        public void Dispose() {
+            this._errorListProvider.Dispose();
         }
 
         #endregion

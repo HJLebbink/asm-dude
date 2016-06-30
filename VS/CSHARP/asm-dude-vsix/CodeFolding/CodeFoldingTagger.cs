@@ -61,7 +61,7 @@ namespace AsmDude.CodeFolding {
         private object _updateLock = new object();
         private bool _enabled;
 
-        private bool _bussy;
+        private bool _busy;
         private bool _waiting;
         private bool _scheduled;
 
@@ -70,24 +70,23 @@ namespace AsmDude.CodeFolding {
 
         /// <summary>Constructor</summary>
         public CodeFoldingTagger(
-            ITextBuffer buffer, 
-            IBufferTagAggregatorFactoryService aggregatorFactory,
+            ITextBuffer buffer,
+            ITagAggregator<AsmTokenTag> aggregator,
             ErrorListProvider errorListProvider) {
 
             //Debug.WriteLine("INFO:OutliningTagger: constructor");
             this._buffer = buffer;
-            this._aggregatorFactory = aggregatorFactory;
-            this._aggregator = AsmDudeToolsStatic.getAggregator(buffer, this._aggregatorFactory);
+            this._aggregator = aggregator;
             this._errorListProvider = errorListProvider;
 
             this._snapshot = buffer.CurrentSnapshot;
             this._regions = new List<Region>();
             this._enabled = true;
-            this._bussy = false;
+            this._busy = false;
             this._waiting = false;
             this._scheduled = false;
 
-            this.reparse_delayed();
+            this.parse_Delayed();
             this._buffer.ChangedLowPriority += this.BufferChanged;
         }
 
@@ -163,7 +162,7 @@ namespace AsmDude.CodeFolding {
             if (e.After != _buffer.CurrentSnapshot) {
                 return;
             }
-            this.reparse_delayed();
+            this.parse_Delayed();
         }
 
         /// <summary>
@@ -216,32 +215,31 @@ namespace AsmDude.CodeFolding {
             return -1;
         }
 
-        private void reparse_delayed() {
-            if (this._waiting) return;
-            if (this._bussy) {
+        private void parse_Delayed() {
+            if (this._waiting) {
+                //AsmDudeToolsStatic.Output(string.Format("INFO: CodeFoldingTagger:reparse_delayed: already waiting for execution. Skipping this call."));
+                return;
+            }
+            if (this._busy) {
+                //AsmDudeToolsStatic.Output(string.Format("INFO: CodeFoldingTagger:reparse_delayed: busy; scheduling this call."));
                 this._scheduled = true;
             } else {
-                this._waiting = true;
-                this.reparse_Async();
+                //AsmDudeToolsStatic.Output(string.Format("INFO: CodeFoldingTagger:reparse_delayed: going to execute this call."));
+                ThreadPool.QueueUserWorkItem(this.parse);
             }
         }
 
-        private void reparse_Async() {
-            ThreadPool.QueueUserWorkItem(this.reparse_Sync);
-        }
-
-        private void reparse_Sync(object threadContext) {
+        private void parse(object threadContext) {
             if (!this._enabled) return;
 
+            this._waiting = true;
             Thread.Sleep(AsmDudePackage.msSleepBeforeAsyncExecution);
-            this._bussy = true;
+            this._busy = true;
             this._waiting = false;
 
             #region Payload
             lock (_updateLock) {
-
-            //Thread.Sleep(AsmDudePackage.msSleepBeforeAsyncExecution);
-            DateTime time1 = DateTime.Now;
+                DateTime time1 = DateTime.Now;
 
                 ITextSnapshot newSnapshot = _buffer.CurrentSnapshot;
                 IList<Region> newRegions = new List<Region>();
@@ -361,12 +359,12 @@ namespace AsmDude.CodeFolding {
                     this.disable();
                 }
             }
-            #endregion
+            #endregion Payload
 
-            this._bussy = false;
+            this._busy = false;
             if (this._scheduled) {
                 this._scheduled = false;
-                this.reparse_delayed();
+                this.parse_Delayed();
             }
         }
 
@@ -394,6 +392,7 @@ namespace AsmDude.CodeFolding {
 
             this._enabled = false;
             lock (this._updateLock) {
+                this._buffer.ChangedLowPriority -= this.BufferChanged;
                 this._regions.Clear();
             }
             AsmDudeToolsStatic.disableMessage(msg, filename, this._errorListProvider);

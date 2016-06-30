@@ -58,11 +58,10 @@ namespace AsmDude.ErrorSquiggles {
             //AsmDudeToolsStatic.Output(string.Format("INFO: LabelErrorTagger: constructor"));
             this._sourceBuffer = buffer;
             this._aggregator = aggregator;
-            this._labelGraph = labelGraph;
             this._errorListProvider = AsmDudeTools.Instance.errorListProvider;
-
-            this._sourceBuffer.ChangedLowPriority += OnTextBufferChanged;
-            this.updateErrorTasks();
+            this._labelGraph = labelGraph;
+            this._labelGraph.ResetDoneEvent += this.HandleLabelGraphResetDoneEvent;
+            this._labelGraph.reset_Delayed();
         }
 
         public IEnumerable<ITagSpan<ErrorTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
@@ -155,6 +154,28 @@ namespace AsmDude.ErrorSquiggles {
             return lineNumber;
         }
 
+        private int getKeywordBeginEnd(int lineNumber, string keyword) {
+            int lengthKeyword = keyword.Length;
+            string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
+            int startPos = -1;
+            for (int i = 0; i<lineContent.Length - lengthKeyword; ++i) {
+                if (lineContent.Substring(i, lengthKeyword).Equals(keyword)) {
+                    startPos = i;
+                    break;
+                }
+            }
+
+            if (startPos == -1) {
+                return 0;
+            }
+            return (startPos | ((startPos + lengthKeyword) << 16));
+        }
+
+        private void HandleLabelGraphResetDoneEvent(object sender, CustomEventArgs e) {
+            //AsmDudeToolsStatic.Output(string.Format("INFO: LabelErrorTagger: received an event from labelGraph {0}", e.Message));
+            this.updateErrorTasks();
+        }
+
         async private void updateErrorTasks() {
             if (!this._labelGraph.isEnabled) return;
 
@@ -196,7 +217,7 @@ namespace AsmDude.ErrorSquiggles {
                                     errorTask.SubcategoryIndex = (int)AsmErrorEnum.LABEL_CLASH;
                                     errorTask.Line = this._labelGraph.getLinenumber(entry.Key);
                                     errorTask.Column = getKeywordBeginEnd(lineNumber, label);
-                                    errorTask.Text = "Label Clash: "+label;
+                                    errorTask.Text = "Label Clash: " + label;
                                     errorTask.ErrorCategory = TaskErrorCategory.Warning;
                                     errorTask.Document = this._labelGraph.getFilename(entry.Key);
                                     errorTask.Navigate += AsmDudeToolsStatic.errorTaskNavigateHandler;
@@ -213,7 +234,7 @@ namespace AsmDude.ErrorSquiggles {
                                     errorTask.SubcategoryIndex = (int)AsmErrorEnum.LABEL_UNDEFINED;
                                     errorTask.Line = lineNumber;
                                     errorTask.Column = getKeywordBeginEnd(lineNumber, label);
-                                    errorTask.Text = "Undefined Label: "+label;
+                                    errorTask.Text = "Undefined Label: " + label;
                                     errorTask.ErrorCategory = TaskErrorCategory.Warning;
                                     errorTask.Document = this._labelGraph.getFilename(entry.Key);
                                     errorTask.Navigate += AsmDudeToolsStatic.errorTaskNavigateHandler;
@@ -235,28 +256,6 @@ namespace AsmDude.ErrorSquiggles {
             });
         }
 
-        private int getKeywordBeginEnd(int lineNumber, string keyword) {
-            int lengthKeyword = keyword.Length;
-            string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
-            int startPos = -1;
-            for (int i = 0; i<lineContent.Length - lengthKeyword; ++i) {
-                if (lineContent.Substring(i, lengthKeyword).Equals(keyword)) {
-                    startPos = i;
-                    break;
-                }
-            }
-
-            if (startPos == -1) {
-                return 0;
-            }
-            return (startPos | ((startPos + lengthKeyword) << 16));
-        }
-
-
-        private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
-            //AsmDudeToolsStatic.Output(string.Format("INFO: LabelErrorTagger:OnTextBufferChanged: number of changes={0}; first change: old={1}; new={2}", e.Changes.Count, e.Changes[0].OldText, e.Changes[0].NewText));
-            this.updateErrorTasks();
-        }
         #endregion Private Methods
     }
 }

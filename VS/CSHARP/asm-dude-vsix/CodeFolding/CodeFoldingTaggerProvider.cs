@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using AsmDude.SyntaxHighlighting;
+using AsmDude.Tools;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
@@ -49,7 +51,8 @@ namespace AsmDude.CodeFolding {
 
             //Debug.WriteLine("INFO: TaggerProvider:CreateTagger: entering");
             Func<ITagger<T>> sc = delegate () {
-                return new CodeFoldingTagger(buffer, _aggregatorFactory, AsmDudeTools.Instance.errorListProvider) as ITagger<T>;
+                ITagAggregator<AsmTokenTag> aggregator = AsmDudeToolsStatic.getAggregator(buffer, this._aggregatorFactory);
+                return new CodeFoldingTagger(buffer, aggregator, AsmDudeTools.Instance.errorListProvider) as ITagger<T>;
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }

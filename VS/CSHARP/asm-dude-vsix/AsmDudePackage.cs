@@ -51,7 +51,7 @@ namespace AsmDude {
         internal const double slowWarningThresholdSec = 0.1; // threshold to warn that actions are considered slow
         internal const double slowShutdownThresholdSec = 4.0; // threshold to switch of components
         internal const int maxNumberOfCharsInToolTips = 150;
-        internal const int msSleepBeforeAsyncExecution = 100;
+        internal const int msSleepBeforeAsyncExecution = 1000;
 
         #region Member Variables
         //private OleMenuCommand dynamicVisibilityCommand1;
