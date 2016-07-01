@@ -32,6 +32,7 @@ using Microsoft.VisualStudio;
 using AsmTools;
 using AsmDude.Tools;
 
+/*
 namespace AsmDude.OptionsPage {
 
     [Export(typeof(DialogPage))]
@@ -273,3 +274,4 @@ namespace AsmDude.OptionsPage {
 
     }
 }
+*/

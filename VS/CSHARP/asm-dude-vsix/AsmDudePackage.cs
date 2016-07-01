@@ -25,24 +25,9 @@ namespace AsmDude {
     [Guid(Guids.GuidPackage_str)]
     [ComVisible(true)]
     
-    [ProvideOptionPage(typeof(OptionsPageSyntaxHighlighting), "AsmDude", "Syntax Highlighting", 0, 0, true)]
-    //[ProvideProfile(typeof(OptionsPageSyntaxHighlighting), "AsmDude", "Syntax Highlighting Options", 100, 102, isToolsOptionPage: false, DescriptionResourceID = 100)]
-
-    [ProvideOptionPage(typeof(OptionsPageCodeCompletion), "AsmDude", "Code Completion", 0, 0, true)]
-    //[ProvideProfile(typeof(OptionsPageCodeCompletion), "AsmDude", "Code Completion Options", 100, 101, isToolsOptionPage: false, DescriptionResourceID = 100)]
-
-    [ProvideOptionPage(typeof(OptionsPageCodeFolding), "AsmDude", "Code Folding", 0, 0, true)]
-    //[ProvideProfile(typeof(OptionsPageCodeFolding), "AsmDude", "Code Folding Options", 100, 103, isToolsOptionPage: false, DescriptionResourceID = 100)]
-
-    [ProvideOptionPage(typeof(OptionsPageAsmDoc), "AsmDude", "Asm Documentation", 0, 0, true)]
+    [ProvideOptionPage(typeof(AsmDudeOptionsPage), "AsmDude", "General", 0, 0, true)]
     //[ProvideProfile(typeof(OptionsPageAsmDoc), "AsmDude", "Asm Documentation Options", 100, 104, isToolsOptionPage: false, DescriptionResourceID = 100)]
 
-    [ProvideOptionPage(typeof(OptionsPageKeywordHighlighting), "AsmDude", "Keyword Highlighting", 0, 0, true)]
-    //[ProvideProfile(typeof(OptionsPageKeywordHighlighting), "AsmDude", "Keyword Highlighting Options", 100, 105, isToolsOptionPage:false, DescriptionResourceID = 100)]
-
-    [ProvideOptionPage(typeof(OptionsPageIntelliSense), "AsmDude", "IntelliSense", 0, 0, true)]
-    //[ProvideProfile(typeof(OptionsPageKeywordHighlighting), "AsmDude", "Keyword Highlighting Options", 100, 105, isToolsOptionPage:false, DescriptionResourceID = 100)]
-    
     public sealed class AsmDudePackage : Package {
 
         #region Global Constants
@@ -71,9 +56,9 @@ namespace AsmDude {
 
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat(" _____           ____        _     \n");
-            sb.AppendFormat(@"|  _  |___ _____|    \ _ _ _| |___ \n");
-            sb.AppendFormat(@"|     |_ -|     |  |  | | | . | -_|\n");
-            sb.AppendFormat(@"|__|__|___|_|_|_|____/|___|___|___|\n");
+            sb.AppendFormat("|  _  |___ _____|    \\ _ _ _| |___ \n");
+            sb.AppendFormat("|     |_ -|     |  |  | | | . | -_|\n");
+            sb.AppendFormat("|__|__|___|_|_|_|____/|___|___|___|\n");
             sb.AppendFormat("INFO: Loaded AsmDude version {0}.\n", typeof(AsmDudePackage).Assembly.GetName().Version);
             sb.AppendFormat("INFO: Open source assembly extension. Making programming in assembler bearable.\n");
             sb.AppendFormat("INFO: More info at https://github.com/HJLebbink/asm-dude \n");

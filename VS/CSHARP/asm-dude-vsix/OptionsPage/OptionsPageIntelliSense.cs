@@ -26,7 +26,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
-
+/*
 namespace AsmDude.OptionsPage {
 
     [Guid(Guids.GuidOptionsPageIntelliSense)]
@@ -169,3 +169,4 @@ namespace AsmDude.OptionsPage {
         #endregion Event Handlers
     }
 }
+*/

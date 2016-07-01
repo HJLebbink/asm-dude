@@ -27,8 +27,8 @@ using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 
+/*
 namespace AsmDude.OptionsPage {
-
     [Guid(Guids.GuidOptionsPageCodeCompletion)]
     public class OptionsPageCodeCompletion : DialogPage {
 
@@ -309,3 +309,4 @@ namespace AsmDude.OptionsPage {
         #endregion Event Handlers
     }
 }
+*/

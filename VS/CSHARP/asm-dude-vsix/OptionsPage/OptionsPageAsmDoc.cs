@@ -26,27 +26,25 @@ using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace AsmDude.OptionsPage {
 
-    [Guid(Guids.GuidOptionsPageAsmDoc)]
-    public class OptionsPageAsmDoc : DialogPage {
+    [Guid(Guids.GuidOptionsPageAsmDude)]
+    public class AsmDudeOptionsPage : UIElementDialogPage {
 
-        #region Properties
+        private AsmDudeOptionsPageUI _asmDudeOptionsPageUI;
 
-        [Category("General")]
-        [Description("Use Asm Documentation")]
-        [DisplayName("Use Asm Documentation")]
-        [DefaultValue(true)]
-        public bool _useAsmDoc { get; set; }
+        public AsmDudeOptionsPage() {
+            this._asmDudeOptionsPageUI = new AsmDudeOptionsPageUI();
+        }
 
-        [Category("Documentation Url")]
-        [Description("url to the documentation. E.g. http://www.felixcloutier.com/x86/")]
-        [DisplayName("Url")]
-        [DefaultValue("http://www.felixcloutier.com/x86/")]
-        public string _asmDocUrl { get; set; }
-
-        #endregion Properties
+        protected override System.Windows.UIElement Child {
+            get {
+                return this._asmDudeOptionsPageUI;
+            }
+        }
 
         #region Event Handlers
 
@@ -59,8 +57,14 @@ namespace AsmDude.OptionsPage {
         /// <remarks>If this handler sets e.Cancel to true, the activation will not occur.</remarks>
         protected override void OnActivate(CancelEventArgs e) {
             base.OnActivate(e);
-            this._useAsmDoc = Settings.Default.AsmDoc_On;
-            this._asmDocUrl = Settings.Default.AsmDoc_url;
+            this._asmDudeOptionsPageUI.useAsmDoc = Settings.Default.AsmDoc_On;
+            this._asmDudeOptionsPageUI.asmDocUrl = Settings.Default.AsmDoc_url;
+
+            this._asmDudeOptionsPageUI.useCodeFolding = Settings.Default.CodeFolding_On;
+            this._asmDudeOptionsPageUI.isDefaultCollaped = Settings.Default.CodeFolding_IsDefaultCollapsed;
+            this._asmDudeOptionsPageUI.beginTag = Settings.Default.CodeFolding_BeginTag;
+            this._asmDudeOptionsPageUI.endTag = Settings.Default.CodeFolding_EndTag;
+
         }
 
         /// <summary>
@@ -84,12 +88,27 @@ namespace AsmDude.OptionsPage {
         /// </remarks>
         protected override void OnDeactivate(CancelEventArgs e) {
             bool changed = false;
-            if (Settings.Default.AsmDoc_On != this._useAsmDoc) {
+
+            if (Settings.Default.AsmDoc_On != this._asmDudeOptionsPageUI.useAsmDoc) {
                 changed = true;
             }
-            if (Settings.Default.AsmDoc_url != this._asmDocUrl) {
+            if (Settings.Default.AsmDoc_url != this._asmDudeOptionsPageUI.asmDocUrl) {
                 changed = true;
             }
+
+            if (Settings.Default.CodeFolding_On != this._asmDudeOptionsPageUI.useCodeFolding) {
+                changed = true;
+            }
+            if (Settings.Default.CodeFolding_IsDefaultCollapsed != this._asmDudeOptionsPageUI.isDefaultCollaped) {
+                changed = true;
+            }
+            if (Settings.Default.CodeFolding_BeginTag != this._asmDudeOptionsPageUI.beginTag) {
+                changed = true;
+            }
+            if (Settings.Default.CodeFolding_EndTag != this._asmDudeOptionsPageUI.endTag) {
+                changed = true;
+            }
+
             if (changed) {
                 string title = null;
                 string message = "Unsaved changes exist. Would you like to save.";
@@ -119,15 +138,41 @@ namespace AsmDude.OptionsPage {
             bool changed = false;
             bool restartNeeded = false;
 
-            if (Settings.Default.AsmDoc_On != this._useAsmDoc) {
-                Settings.Default.AsmDoc_On = this._useAsmDoc;
+            if (Settings.Default.AsmDoc_On != this._asmDudeOptionsPageUI.useAsmDoc) {
+                Settings.Default.AsmDoc_On = this._asmDudeOptionsPageUI.useAsmDoc;
                 changed = true;
             }
-            if (Settings.Default.AsmDoc_url != this._asmDocUrl) {
-                Settings.Default.AsmDoc_url = this._asmDocUrl;
+            if (Settings.Default.AsmDoc_url != this._asmDudeOptionsPageUI.asmDocUrl) {
+                Settings.Default.AsmDoc_url = this._asmDudeOptionsPageUI.asmDocUrl;
                 changed = true;
                 restartNeeded = true;
             }
+
+
+            if (Settings.Default.CodeFolding_On != this._asmDudeOptionsPageUI.useCodeFolding) {
+                Settings.Default.CodeFolding_On = this._asmDudeOptionsPageUI.useCodeFolding;
+                changed = true;
+                restartNeeded = true;
+            }
+            if (Settings.Default.CodeFolding_IsDefaultCollapsed != this._asmDudeOptionsPageUI.isDefaultCollaped) {
+                Settings.Default.CodeFolding_IsDefaultCollapsed = this._asmDudeOptionsPageUI.isDefaultCollaped;
+                changed = true;
+                restartNeeded = false;
+            }
+            if (Settings.Default.CodeFolding_BeginTag != this._asmDudeOptionsPageUI.beginTag) {
+                Settings.Default.CodeFolding_BeginTag = this._asmDudeOptionsPageUI.beginTag;
+                changed = true;
+                restartNeeded = true;
+            }
+            if (Settings.Default.CodeFolding_EndTag != this._asmDudeOptionsPageUI.endTag) {
+                Settings.Default.CodeFolding_EndTag = this._asmDudeOptionsPageUI.endTag;
+                changed = true;
+                restartNeeded = true;
+            }
+
+
+
+
             if (changed) {
                 Settings.Default.Save();
             }

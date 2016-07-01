@@ -27,6 +27,7 @@ using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 
+/*
 namespace AsmDude.OptionsPage {
 
     [Guid(Guids.GuidOptionsPageKeywordHighlighting)]
@@ -71,10 +72,9 @@ namespace AsmDude.OptionsPage {
         /// This event is raised when the page is closed.
         /// </devdoc>
         protected override void OnClosed(EventArgs e) {
-            /*
-            string title = "title here";
-            VsShellUtilities.ShowMessageBox(Site, Resources.MessageOnClosed, title, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-            */
+            
+            //string title = "title here";
+            //VsShellUtilities.ShowMessageBox(Site, Resources.MessageOnClosed, title, OLEMSGICON.OLEMSGICON_INFO, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
         }
 
         /// <summary>
@@ -148,3 +148,4 @@ namespace AsmDude.OptionsPage {
         #endregion Event Handlers
     }
 }
+*/
