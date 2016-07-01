@@ -16,8 +16,7 @@ namespace AsmDude {
     /// This class implements a Visual Studio package that is registered for the Visual Studio IDE.
     /// The package class uses a number of registration attributes to specify integration parameters.
     /// </summary>
-    /// 
-    // TODO to troubleshoot packaging problems, see https://blogs.msdn.microsoft.com/visualstudio/2010/03/22/troubleshooting-pkgdef-files/#registrycollision 
+
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("AsmDude", Vsix.Description, Vsix.Version)] // for the help about information
 
@@ -25,8 +24,7 @@ namespace AsmDude {
     [ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
     [Guid(Guids.GuidPackage_str)]
     [ComVisible(true)]
-
-
+    
     [ProvideOptionPage(typeof(OptionsPageSyntaxHighlighting), "AsmDude", "Syntax Highlighting", 0, 0, true)]
     //[ProvideProfile(typeof(OptionsPageSyntaxHighlighting), "AsmDude", "Syntax Highlighting Options", 100, 102, isToolsOptionPage: false, DescriptionResourceID = 100)]
 
@@ -44,8 +42,10 @@ namespace AsmDude {
 
     [ProvideOptionPage(typeof(OptionsPageIntelliSense), "AsmDude", "IntelliSense", 0, 0, true)]
     //[ProvideProfile(typeof(OptionsPageKeywordHighlighting), "AsmDude", "Keyword Highlighting Options", 100, 105, isToolsOptionPage:false, DescriptionResourceID = 100)]
-
+    
     public sealed class AsmDudePackage : Package {
+
+        #region Global Constants
 
         internal const string AsmDudeContentType = "asm!";
         internal const double slowWarningThresholdSec = 0.3; // threshold to warn that actions are considered slow
@@ -53,10 +53,7 @@ namespace AsmDude {
         internal const int maxNumberOfCharsInToolTips = 150;
         internal const int msSleepBeforeAsyncExecution = 1000;
 
-        #region Member Variables
-        //private OleMenuCommand dynamicVisibilityCommand1;
-        //private OleMenuCommand dynamicVisibilityCommand2;
-        #endregion
+        #endregion Global Constants
 
         public AsmDudePackage() {
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "=========================================\nINFO: AsmDudePackage: Entering constructor"));
@@ -64,7 +61,7 @@ namespace AsmDude {
         }
 
         /// <summary>
-        /// Initialization of the package.  This is where you should put all initialization
+        /// Initialization of the package. This is where you should put all initialization
         /// code that depends on VS services.
         /// </summary>
         protected override void Initialize() {
@@ -73,14 +70,14 @@ namespace AsmDude {
             //this.changeFontAutoComplete();
 
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine(" _____           ____        _     ");
-            sb.AppendLine(@"|  _  |___ _____|    \ _ _ _| |___ ");
-            sb.AppendLine(@"|     |_ -|     |  |  | | | . | -_|");
-            sb.AppendLine(@"|__|__|___|_|_|_|____/|___|___|___|");
+            sb.AppendFormat(" _____           ____        _     \n");
+            sb.AppendFormat(@"|  _  |___ _____|    \ _ _ _| |___ \n");
+            sb.AppendFormat(@"|     |_ -|     |  |  | | | . | -_|\n");
+            sb.AppendFormat(@"|__|__|___|_|_|_|____/|___|___|___|\n");
             sb.AppendFormat("INFO: Loaded AsmDude version {0}.\n", typeof(AsmDudePackage).Assembly.GetName().Version);
             sb.AppendFormat("INFO: Open source assembly extension. Making programming in assembler bearable.\n");
-            sb.AppendLine("INFO: More info at https://github.com/HJLebbink/asm-dude");
-            sb.AppendLine("----------------------------------");
+            sb.AppendFormat("INFO: More info at https://github.com/HJLebbink/asm-dude \n");
+            sb.AppendFormat("----------------------------------");
             AsmDudeToolsStatic.Output(sb.ToString());
         }
 
