@@ -5,29 +5,52 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			 xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
              xmlns:local="clr-namespace:AsmDude.OptionsPage"
-             mc:Ignorable="d" d:DesignWidth="300" Height="535">
+             mc:Ignorable="d" d:DesignWidth="300" Height="565">
 	<Grid RenderTransformOrigin="0.5,0.818" Height="525" VerticalAlignment="Top">
-		<GroupBox x:Name="Documentation" Header="Documentation" Margin="10,10,10,0" Height="70" VerticalAlignment="Top">
-			<Grid Margin="0,0,3,0" Height="50" VerticalAlignment="Top">
-				<CheckBox x:Name="useAsmDoc_UI" ToolTip="Use Asm Documentation" Content="Use Documentation" Height="20" Margin="0,9,0,21" Grid.ColumnSpan="2" />
-				<TextBox x:Name="asmDocUrl_UI" ToolTip="url to the documentation. E.g. http://www.felixcloutier.com/x86/" TextWrapping="Wrap" Text="http://www.felixcloutier.com/x86/" Height="20" Margin="94,29,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" />
-			</Grid>
-		</GroupBox>
-		<GroupBox x:Name="Folding" Header="Folding" Height="120" VerticalAlignment="Top" Margin="10,85,10,0">
-			<Grid Margin="0,0,3,-2">
-				<CheckBox x:Name="useCodeFolding_UI" ToolTip="Use Code Folding" Content="Use Code Folding" Margin="0,4,0,0" Height="20" VerticalAlignment="Top" />
-				<CheckBox x:Name="isDefaultCollaped_UI" ToolTip="Default Collapsed" Content="Default Collapsed" Margin="0,24,0,0" Height="20" VerticalAlignment="Top" />
-				<TextBox x:Name="beginTag_UI" ToolTip="The characters that start the outlining region. E.g. #region" Margin="0,44,0,0" Height="20" VerticalAlignment="Top" Grid.RowSpan="2" HorizontalAlignment="Right" Width="265" />
-				<TextBox x:Name="endTag_UI" ToolTip="The characters that start the outlining region. E.g. #endregion" Margin="0,70,0,0" Height="20" VerticalAlignment="Top" />
-			</Grid>
-		</GroupBox>
-		<GroupBox x:Name="Syntax" Header="Syntax Highlighting" Height="120" VerticalAlignment="Top" Margin="10,210,10,0">
-			<Grid Margin="0,0,-7,-2">
-				<CheckBox x:Name="useSyntaxHighlighting_UI" ToolTip="Use Syntax Highlighting" Content="Use Syntax Highlighting" Margin="0,10,0,0" Height="20" VerticalAlignment="Top" />
-				<RadioButton x:Name="usedAssemblerMasm_UI" GroupName="usedAssembler_UI" ToolTip="Which Assembler are you using?" Content="Masm" Margin="0,30,0,0" Height="20" VerticalAlignment="Top" />
-				<RadioButton x:Name="usedAssemblerNasm_UI" GroupName="usedAssembler_UI" ToolTip="Which Assembler are you using?" Content="Nasm" Margin="79,30,-79,0" Height="20" VerticalAlignment="Top" />
-				<xctk:ColorPicker x:Name="colorMnemonic_UI" DisplayColorAndName="True" ToolTip="The characters that start the outlining region. E.g. #region" Margin="0,50,10,0" Height="20" VerticalAlignment="Top" HorizontalAlignment="Right" Width="265" />
-			</Grid>
-		</GroupBox>
+		<ScrollViewer Height="565" VerticalAlignment="Top">
+
+			<StackPanel Margin="10">
+				<Expander Header="Syntax Highlighting" BorderBrush="DarkGray" Margin="5" >
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="109*"/>
+							<ColumnDefinition Width="169*"/>
+						</Grid.ColumnDefinitions>
+						<CheckBox x:Name="useSyntaxHighlighting_UI" ToolTip="Use Syntax Highlighting" Content="Use Syntax Highlighting" Margin="0,5,10,0" Height="20" VerticalAlignment="Top" Grid.ColumnSpan="2" />
+						<RadioButton x:Name="usedAssemblerMasm_UI" GroupName="usedAssembler_UI" ToolTip="Which Assembler are you using?" Content="Masm" Margin="0,25,0,0" Height="22" VerticalAlignment="Top" />
+						<RadioButton x:Name="usedAssemblerNasm_UI" GroupName="usedAssembler_UI" ToolTip="Which Assembler are you using?" Content="Nasm" Margin="0,25,10,0" Height="20" VerticalAlignment="Top" Grid.Column="1" />
+						<xctk:ColorPicker x:Name="colorMnemonic_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for mnemonics" Margin="0,45,10,0" Height="20" VerticalAlignment="Top" Grid.Column="1" />
+						<Label Content="Mnemonic" VerticalAlignment="Top" Margin="0,41,0,0" Height="26" />
+						<xctk:ColorPicker x:Name="colorRegister_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for registers" Margin="0,65,10,0" Height="20" VerticalAlignment="Top" Grid.Column="1" />
+						<Label Content="Register" VerticalAlignment="Top" Margin="0,61,0,0" Height="26" />
+					</Grid>
+				</Expander>
+				<Expander Header="Documentation" BorderBrush="DarkGray" Margin="5" >
+					<Grid Height="60">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="57*"/>
+							<ColumnDefinition Width="77*"/>
+						</Grid.ColumnDefinitions>
+						<CheckBox x:Name="useAsmDoc_UI" ToolTip="Use Asm Documentation" Content="Use Documentation" Margin="0,9,0,0" Grid.ColumnSpan="2" Height="20" VerticalAlignment="Top" />
+						<Label Content="Documentation URL" Margin="0,30,0,0" Height="28" VerticalAlignment="Top"/>
+						<TextBox x:Name="asmDocUrl_UI" ToolTip="url to the documentation. E.g. http://www.felixcloutier.com/x86/" TextWrapping="Wrap" Text="http://www.felixcloutier.com/x86/" Height="20" Margin="0,34,10,0" VerticalAlignment="Top" Grid.Column="1" />
+					</Grid>
+				</Expander>
+				<Expander Header="Folding" BorderBrush="DarkGray" Margin="5" >
+					<Grid Height="79">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="99*"/>
+							<ColumnDefinition Width="169*"/>
+						</Grid.ColumnDefinitions>
+						<CheckBox x:Name="useCodeFolding_UI" ToolTip="Use Code Folding" Content="Use Code Folding" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+						<CheckBox x:Name="isDefaultCollaped_UI" ToolTip="Default Collapsed" Content="Default Collapsed" Margin="0,5,10,0" Grid.Column="1"  />
+						<Label Content="Start Tag" VerticalAlignment="Top" Margin="0,53,0,0" Height="26" />
+						<TextBox x:Name="beginTag_UI" ToolTip="The characters that start the outlining region. E.g. #region" Margin="0,33,10,0" Height="20" VerticalAlignment="Top" Grid.Column="1" />
+						<Label Content="End Tag" VerticalAlignment="Top" Margin="0,29,0,0" Height="26" />
+						<TextBox x:Name="endTag_UI" ToolTip="The characters that start the outlining region. E.g. #endregion" Margin="0,53,10,0" Height="20" VerticalAlignment="Top" Grid.Column="1" />
+					</Grid>
+				</Expander>
+			</StackPanel>
+		</ScrollViewer>
 	</Grid>
 </UserControl>

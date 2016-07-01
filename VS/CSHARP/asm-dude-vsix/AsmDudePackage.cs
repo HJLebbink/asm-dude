@@ -23,10 +23,10 @@ namespace AsmDude {
     [ProvideMenuResource("Menus.ctmenu", 1)] // needed when showing menus
     [ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
     [Guid(Guids.GuidPackage_str)]
-    [ComVisible(true)]
+    [ComVisible(false)]
     
     [ProvideOptionPage(typeof(AsmDudeOptionsPage), "AsmDude", "General", 0, 0, true)]
-    //[ProvideProfile(typeof(OptionsPageAsmDoc), "AsmDude", "Asm Documentation Options", 100, 104, isToolsOptionPage: false, DescriptionResourceID = 100)]
+    //[ProvideProfile(typeof(AsmDudeOptionsPage), "AsmDude", "General", 100, 104, isToolsOptionPage: false, DescriptionResourceID = 100)]
 
     public sealed class AsmDudePackage : Package {
 
