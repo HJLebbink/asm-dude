@@ -339,7 +339,7 @@
     <Compile Include="Experimental\LightBulb\AsmLightBulb.cs" />
     <Compile Include="Experimental\Menu\DynamicTextCommand.cs" />
     <Compile Include="Experimental\Menu\PkgCmdId.cs" />
-    <Compile Include="OptionsPage\OptionsPageAsmDoc.cs">
+    <Compile Include="OptionsPage\AsmDudeOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="PkgCmd.cs">
