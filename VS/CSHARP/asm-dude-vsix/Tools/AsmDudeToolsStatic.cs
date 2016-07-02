@@ -202,8 +202,12 @@ namespace AsmDude.Tools {
             }
         }
 
-        public static System.Windows.Media.Color convertColor(System.Drawing.Color color) {
-            return System.Windows.Media.Color.FromArgb(color.A, color.R, color.G, color.B);
+        public static System.Windows.Media.Color convertColor(System.Drawing.Color drawingColor) {
+            return System.Windows.Media.Color.FromArgb(drawingColor.A, drawingColor.R, drawingColor.G, drawingColor.B);
+        }
+
+        public static System.Drawing.Color convertColor(System.Windows.Media.Color mediaColor) {
+            return System.Drawing.Color.FromArgb(mediaColor.A, mediaColor.R, mediaColor.G, mediaColor.B);
         }
 
         public static ImageSource bitmapFromUri(Uri bitmapUri) {

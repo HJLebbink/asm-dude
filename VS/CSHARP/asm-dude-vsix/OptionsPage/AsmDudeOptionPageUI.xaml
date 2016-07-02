@@ -4,52 +4,125 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			 xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
-             xmlns:local="clr-namespace:AsmDude.OptionsPage"
-             mc:Ignorable="d" d:DesignWidth="300" Height="565">
-	<Grid RenderTransformOrigin="0.5,0.818" Height="525" VerticalAlignment="Top">
-		<ScrollViewer Height="565" VerticalAlignment="Top">
-
-			<StackPanel Margin="10">
-				<Expander Header="Syntax Highlighting" BorderBrush="DarkGray" Margin="5" >
+             xmlns:local="clr-namespace:AsmDude.OptionsPage">
+	<Grid RenderTransformOrigin="0.5,0.818" VerticalAlignment="Top" Margin="0">
+		<ScrollViewer>
+		<StackPanel Margin="10">
+				<Label x:Name="version_UI" Content="AsmDude" />
+				<GroupBox Header="Syntax Highlighting" BorderBrush="DarkGray" Margin="5" >
 					<Grid>
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="109*"/>
-							<ColumnDefinition Width="169*"/>
-						</Grid.ColumnDefinitions>
-						<CheckBox x:Name="useSyntaxHighlighting_UI" ToolTip="Use Syntax Highlighting" Content="Use Syntax Highlighting" Margin="0,5,10,0" Height="20" VerticalAlignment="Top" Grid.ColumnSpan="2" />
-						<RadioButton x:Name="usedAssemblerMasm_UI" GroupName="usedAssembler_UI" ToolTip="Which Assembler are you using?" Content="Masm" Margin="0,25,0,0" Height="22" VerticalAlignment="Top" />
-						<RadioButton x:Name="usedAssemblerNasm_UI" GroupName="usedAssembler_UI" ToolTip="Which Assembler are you using?" Content="Nasm" Margin="0,25,10,0" Height="20" VerticalAlignment="Top" Grid.Column="1" />
-						<xctk:ColorPicker x:Name="colorMnemonic_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for mnemonics" Margin="0,45,10,0" Height="20" VerticalAlignment="Top" Grid.Column="1" />
-						<Label Content="Mnemonic" VerticalAlignment="Top" Margin="0,41,0,0" Height="26" />
-						<xctk:ColorPicker x:Name="colorRegister_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for registers" Margin="0,65,10,0" Height="20" VerticalAlignment="Top" Grid.Column="1" />
-						<Label Content="Register" VerticalAlignment="Top" Margin="0,61,0,0" Height="26" />
+						<StackPanel Margin="0">
+							<Grid Height="22">
+								<CheckBox x:Name="useSyntaxHighlighting_UI" ToolTip="Syntax Highlighting Enabled" Content="Enable Syntax Highlighting" Margin="4,3,6,-3" />
+							</Grid>
+							<Grid Height="22">
+								<Label Content="Compiler:" Margin="0,-4,0,0" HorizontalAlignment="Left" Width="84" Height="26" VerticalAlignment="Top" />
+								<RadioButton x:Name="usedAssemblerMasm_UI" GroupName="usedAssembler_UI" ToolTip="Which Assembler are you using?" Content="Masm" Height="22" VerticalAlignment="Top" Margin="69,2,0,-2"/>
+								<RadioButton x:Name="usedAssemblerNasm_UI" GroupName="usedAssembler_UI" ToolTip="Which Assembler are you using?" Content="Nasm" Height="22" VerticalAlignment="Top" Margin="129,2,0,-2"/>
+							</Grid>
+							<Grid Grid.ColumnSpan="2" Height="26">
+								<Label Content="Mnemonic:" Margin="0,-2,0,2" HorizontalAlignment="Left" Width="69" />
+								<xctk:ColorPicker x:Name="colorMnemonic_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for mnemonics" Margin="69,0,10,2" Height="24"/>
+							</Grid>
+							<Grid Grid.ColumnSpan="2" Height="26">
+								<xctk:ColorPicker x:Name="colorRegister_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for registers" Margin="69,0,10,2" Height="24"/>
+								<Label Content="Register:" HorizontalAlignment="Left" Width="69" />
+							</Grid>
+							<Grid Grid.ColumnSpan="2" Height="26">
+								<xctk:ColorPicker x:Name="colorRemark_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for registers" Margin="69,0,10,2" Height="24"/>
+								<Label Content="Remark:" HorizontalAlignment="Left" Width="69" />
+							</Grid>
+							<Grid Grid.ColumnSpan="2" Height="26">
+								<xctk:ColorPicker x:Name="colorDirective_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for registers" Margin="69,0,10,2" Height="24"/>
+								<Label Content="Directive:" HorizontalAlignment="Left" Width="69" />
+							</Grid>
+							<Grid Grid.ColumnSpan="2" Height="26">
+								<xctk:ColorPicker x:Name="colorConstant_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for registers" Margin="69,0,10,2" Height="24"/>
+								<Label Content="Constant:" HorizontalAlignment="Left" Width="69" />
+							</Grid>
+							<Grid Grid.ColumnSpan="2" Height="26">
+								<xctk:ColorPicker x:Name="colorJump_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for registers" Margin="69,0,10,2" Height="24"/>
+								<Label Content="Jump:" HorizontalAlignment="Left" Width="69" />
+							</Grid>
+							<Grid Grid.ColumnSpan="2" Height="26">
+								<xctk:ColorPicker x:Name="colorLabel_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for registers" Margin="69,0,10,2" Height="24" />
+								<Label Content="Label:" HorizontalAlignment="Left" Width="69" />
+							</Grid>
+							<Grid Grid.ColumnSpan="2" Height="26">
+								<xctk:ColorPicker x:Name="colorMisc_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for registers" Margin="69,0,10,2" Height="24"/>
+								<Label Content="Misc:" HorizontalAlignment="Left" Width="69" />
+							</Grid>
+
+						</StackPanel>
+
 					</Grid>
-				</Expander>
-				<Expander Header="Documentation" BorderBrush="DarkGray" Margin="5" >
+				</GroupBox>
+				<GroupBox Header="Documentation" BorderBrush="DarkGray" Margin="5" >
 					<Grid Height="60">
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="57*"/>
 							<ColumnDefinition Width="77*"/>
 						</Grid.ColumnDefinitions>
-						<CheckBox x:Name="useAsmDoc_UI" ToolTip="Use Asm Documentation" Content="Use Documentation" Margin="0,9,0,0" Grid.ColumnSpan="2" Height="20" VerticalAlignment="Top" />
-						<Label Content="Documentation URL" Margin="0,30,0,0" Height="28" VerticalAlignment="Top"/>
-						<TextBox x:Name="asmDocUrl_UI" ToolTip="url to the documentation. E.g. http://www.felixcloutier.com/x86/" TextWrapping="Wrap" Text="http://www.felixcloutier.com/x86/" Height="20" Margin="0,34,10,0" VerticalAlignment="Top" Grid.Column="1" />
+						<CheckBox x:Name="useAsmDoc_UI" ToolTip="Assembly Documentation Enabled" Content="Enable Documentation" Margin="0,9,0,0" Grid.ColumnSpan="2" Height="20" VerticalAlignment="Top" />
+						<Label Content="Documentation URL" Margin="0,30,0,0" Height="26" VerticalAlignment="Top"/>
+						<TextBox x:Name="asmDocUrl_UI" ToolTip="URL to the documentation. E.g. http://www.felixcloutier.com/x86/" TextWrapping="Wrap" Text="http://www.felixcloutier.com/x86/" Height="20" Margin="0,34,10,0" VerticalAlignment="Top" Grid.Column="1" />
 					</Grid>
-				</Expander>
-				<Expander Header="Folding" BorderBrush="DarkGray" Margin="5" >
+				</GroupBox>
+				<GroupBox Header="Folding" BorderBrush="DarkGray" Margin="5" >
 					<Grid Height="79">
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="99*"/>
 							<ColumnDefinition Width="169*"/>
 						</Grid.ColumnDefinitions>
-						<CheckBox x:Name="useCodeFolding_UI" ToolTip="Use Code Folding" Content="Use Code Folding" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-						<CheckBox x:Name="isDefaultCollaped_UI" ToolTip="Default Collapsed" Content="Default Collapsed" Margin="0,5,10,0" Grid.Column="1"  />
-						<Label Content="Start Tag" VerticalAlignment="Top" Margin="0,53,0,0" Height="26" />
+						<CheckBox x:Name="useCodeFolding_UI" ToolTip="Code Folding Enabled" Content="Enable Code Folding" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+						<CheckBox x:Name="isDefaultCollaped_UI" ToolTip="Whether folding regions are collapsed by default" Content="Default Collapsed" Margin="0,5,10,0" Grid.Column="1"  />
+						<Label Content="Start Tag" VerticalAlignment="Top" Margin="0,51,0,0" Height="26" />
 						<TextBox x:Name="beginTag_UI" ToolTip="The characters that start the outlining region. E.g. #region" Margin="0,33,10,0" Height="20" VerticalAlignment="Top" Grid.Column="1" />
 						<Label Content="End Tag" VerticalAlignment="Top" Margin="0,29,0,0" Height="26" />
-						<TextBox x:Name="endTag_UI" ToolTip="The characters that start the outlining region. E.g. #endregion" Margin="0,53,10,0" Height="20" VerticalAlignment="Top" Grid.Column="1" />
+						<TextBox x:Name="endTag_UI" ToolTip="The characters that start the outlining region. E.g. #endregion" Margin="0,55,10,0" Height="20" VerticalAlignment="Top" Grid.Column="1" />
 					</Grid>
-				</Expander>
+				</GroupBox>
+				<GroupBox Header="Keyword Highlighting" BorderBrush="DarkGray" Margin="5" Height="74" >
+					<Grid Height="80">
+						<CheckBox x:Name="useKeywordHighlighting_UI" ToolTip="Code Folding Enabled" Content="Enable Code Folding" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+						<Grid Grid.ColumnSpan="2" Height="26">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition/>
+							</Grid.ColumnDefinitions>
+							<Label Content="Background Color:" Margin="0,-2,0,2" HorizontalAlignment="Left" Width="89" />
+							<xctk:ColorPicker x:Name="backgroundColor_UI" DisplayColorAndName="True" ToolTip="The background color for keyword highlighting" Margin="89,0,10,2" Height="24"/>
+						</Grid>
+					</Grid>
+				</GroupBox>
+				<GroupBox Header="Intellisense" BorderBrush="DarkGray" Margin="5" Height="120" >
+					<Grid Margin="0,0,0,-12">
+						<StackPanel Margin="0">
+							<CheckBox x:Name="showUndefinedLabels_UI" Content="Show undefined labels in error task" ToolTip="Show undefined labels in error task" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+							<CheckBox x:Name="decorateUndefinedLabels_UI" Content="Decorate undefined labels" ToolTip="Decorate undefined labels with error squiggles"  Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+							<CheckBox x:Name="showClashingLabels_UI" Content="Show clashing labels in error task" ToolTip="Show clashing labels in error task"  Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+							<CheckBox x:Name="decorateClashingLabels_UI" Content="Decorate clashing labels" ToolTip="Decorate clashing labels with error squiggle"  Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+						</StackPanel>
+					</Grid>
+				</GroupBox>
+				<GroupBox Header="Code Completion" BorderBrush="DarkGray" Margin="5" >
+					<Grid Height="302">
+						<StackPanel Margin="0">
+							<CheckBox x:Name="useCodeCompletion_UI" Content="Enable Code Completion" ToolTip="Code Completion Enabled" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+							<CheckBox x:Name="useCodeCompletion_x86_UI" Content="x86" ToolTip="Use Code Completion for X86"  Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+							<CheckBox x:Name="useCodeCompletion_i686_UI" Content="i686" ToolTip="Use Code Completion for I686 (conditional move and set)"  Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+							<CheckBox x:Name="useCodeCompletion_mmx_UI" Content="MMX" ToolTip="Use Code Completion for MMX"  Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+							<CheckBox x:Name="useCodeCompletion_sse_UI" Content="SSE" ToolTip="Use Code Completion for SSE"  Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+							<CheckBox x:Name="useCodeCompletion_sse2_UI" Content="SSE2" ToolTip="Use Code Completion for SSE2"  Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+							<CheckBox x:Name="useCodeCompletion_sse3_UI" Content="SSE3" ToolTip="Use Code Completion for SSE3"  Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+							<CheckBox x:Name="useCodeCompletion_ssse3_UI" Content="SSSE3" ToolTip="Use Code Completion for SSSE3"  Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+							<CheckBox x:Name="useCodeCompletion_sse41_UI" Content="SSE4.1" ToolTip="Use Code Completion for SSE4.1"  Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+							<CheckBox x:Name="useCodeCompletion_sse42_UI" Content="SSE4.2" ToolTip="Use Code Completion for SSE4.2"  Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+							<CheckBox x:Name="useCodeCompletion_avx_UI" Content="AVX" ToolTip="Use Code Completion for AVX"  Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+							<CheckBox x:Name="useCodeCompletion_avx2_UI" Content="AVX2" ToolTip="Use Code Completion for AVX2"  Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+							<CheckBox x:Name="useCodeCompletion_knc_UI" Content="KNC" ToolTip="Use Code Completion for Xeon Phi Knights Corner"  Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+						</StackPanel>
+					</Grid>
+				</GroupBox>
 			</StackPanel>
 		</ScrollViewer>
 	</Grid>

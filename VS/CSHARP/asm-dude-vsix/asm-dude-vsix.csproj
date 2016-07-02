@@ -324,7 +324,6 @@
   <ItemGroup>
     <Compile Include="AsmDudePackage.cs" />
     <Compile Include="ErrorSquiggles\AsmErrorEnum.cs" />
-    <Compile Include="OptionsPage\OptionsPageIntelliSense.cs" />
     <Compile Include="OptionsPage\AsmDudeOptionPageUI.xaml.cs">
       <DependentUpon>AsmDudeOptionPageUI.xaml</DependentUpon>
     </Compile>
@@ -343,7 +342,6 @@
     <Compile Include="OptionsPage\OptionsPageAsmDoc.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="OptionsPage\OptionsPageKeywordHighlighting.cs" />
     <Compile Include="PkgCmd.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -369,8 +367,6 @@
     <Compile Include="CodeFolding\CodeFoldingTaggerProvider.cs" />
     <Compile Include="HighlightWord\HighlightWordTagger.cs" />
     <Compile Include="HighlightWord\HighlightWordTaggerProvider.cs" />
-    <Compile Include="OptionsPage\OptionsPageSyntaxHighlighting.cs" />
-    <Compile Include="OptionsPage\OptionsPageCodeCompletion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Guids.cs" />
     <Compile Include="Settings.Designer.cs">

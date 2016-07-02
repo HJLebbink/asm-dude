@@ -26,6 +26,7 @@ namespace AsmDude.OptionsPage {
 
         public AsmDudeOptionsPageUI() {
             InitializeComponent();
+            version_UI.Content = "AsmDude v" + typeof(AsmDudePackage).Assembly.GetName().Version.ToString();
         }
 
         #region Asm Documentation
@@ -64,8 +65,6 @@ namespace AsmDude.OptionsPage {
 
         #region Syntax Highlighting
 
-        private const string cat = "Colors used for Syntax Highlighting";
-
         public bool useSyntaxHighlighting {
             get { return (useSyntaxHighlighting_UI.IsChecked.HasValue) ? useSyntaxHighlighting_UI.IsChecked.Value : false; }
             set { useSyntaxHighlighting_UI.IsChecked = value; }
@@ -91,56 +90,186 @@ namespace AsmDude.OptionsPage {
             }
         }
 
-        /// [DefaultValue(System.Drawing.KnownColor.Blue)]
-       // public System.Drawing.Color colorMnemonic {
-       //     get { return colorMnemonic_UI.; }
-       //     set { useSyntaxHighlighting_UI.colorMnemonic_UI = value; }
-       // }
+        public System.Drawing.Color colorMnemonic {
+            get {
+                if (colorMnemonic_UI.SelectedColor.HasValue) {
+                    return AsmDudeToolsStatic.convertColor(colorMnemonic_UI.SelectedColor.Value);
+                } else {
+                    return System.Drawing.Color.Blue;
+                }
+            }
+            set { colorMnemonic_UI.SelectedColor = AsmDudeToolsStatic.convertColor(value); }
+        }
 
-        /*
-        [Category(cat)]
-        [Description("Register")]
-        [DisplayName("Register")]
-        [DefaultValue(System.Drawing.KnownColor.DarkRed)]
-        public System.Drawing.Color _colorRegister { get; set; }
+        public System.Drawing.Color colorRegister {
+            get {
+                if (colorRegister_UI.SelectedColor.HasValue) {
+                    return AsmDudeToolsStatic.convertColor(colorRegister_UI.SelectedColor.Value);
+                } else {
+                    return System.Drawing.Color.DarkRed;
+                }
+            }
+            set { colorRegister_UI.SelectedColor = AsmDudeToolsStatic.convertColor(value); }
+        }
 
-        [Category(cat)]
-        [Description("Remark")]
-        [DisplayName("Remark")]
-        [DefaultValue(System.Drawing.KnownColor.Green)]
-        public System.Drawing.Color _colorRemark { get; set; }
+        public System.Drawing.Color colorRemark {
+            get {
+                if (colorRemark_UI.SelectedColor.HasValue) {
+                    return AsmDudeToolsStatic.convertColor(colorRemark_UI.SelectedColor.Value);
+                } else {
+                    return System.Drawing.Color.Green;
+                }
+            }
+            set { colorRemark_UI.SelectedColor = AsmDudeToolsStatic.convertColor(value); }
+        }
 
-        [Category(cat)]
-        [Description("Directive")]
-        [DisplayName("Directive")]
-        [DefaultValue(System.Drawing.KnownColor.Magenta)]
-        public System.Drawing.Color _colorDirective { get; set; }
+        public System.Drawing.Color colorDirective {
+            get {
+                if (colorDirective_UI.SelectedColor.HasValue) {
+                    return AsmDudeToolsStatic.convertColor(colorDirective_UI.SelectedColor.Value);
+                } else {
+                    return System.Drawing.Color.Magenta;
+                }
+            }
+            set { colorDirective_UI.SelectedColor = AsmDudeToolsStatic.convertColor(value); }
+        }
 
-        [Category(cat)]
-        [Description("Constant")]
-        [DisplayName("Constant")]
-        [DefaultValue(System.Drawing.KnownColor.Chocolate)]
-        public System.Drawing.Color _colorConstant { get; set; }
+        public System.Drawing.Color colorConstant {
+            get {
+                if (colorConstant_UI.SelectedColor.HasValue) {
+                    return AsmDudeToolsStatic.convertColor(colorConstant_UI.SelectedColor.Value);
+                } else {
+                    return System.Drawing.Color.Chocolate;
+                }
+            }
+            set { colorConstant_UI.SelectedColor = AsmDudeToolsStatic.convertColor(value); }
+        }
 
-        [Category(cat)]
-        [Description("Jump")]
-        [DisplayName("Jump")]
-        [DefaultValue(System.Drawing.KnownColor.Blue)]
-        public System.Drawing.Color _colorJump { get; set; }
+        public System.Drawing.Color colorJump {
+            get {
+                if (colorJump_UI.SelectedColor.HasValue) {
+                    return AsmDudeToolsStatic.convertColor(colorJump_UI.SelectedColor.Value);
+                } else {
+                    return System.Drawing.Color.Blue;
+                }
+            }
+            set { colorJump_UI.SelectedColor = AsmDudeToolsStatic.convertColor(value); }
+        }
 
-        [Category(cat)]
-        [Description("Label")]
-        [DisplayName("Label")]
-        [DefaultValue(System.Drawing.KnownColor.OrangeRed)]
-        public System.Drawing.Color _colorLabel { get; set; }
+        public System.Drawing.Color colorLabel {
+            get {
+                if (colorLabel_UI.SelectedColor.HasValue) {
+                    return AsmDudeToolsStatic.convertColor(colorLabel_UI.SelectedColor.Value);
+                } else {
+                    return System.Drawing.Color.OrangeRed;
+                }
+            }
+            set { colorLabel_UI.SelectedColor = AsmDudeToolsStatic.convertColor(value); }
+        }
 
-        [Category(cat)]
-        [Description("Misc")]
-        [DisplayName("Misc")]
-        [DefaultValue(System.Drawing.KnownColor.DarkOrange)]
-        public System.Drawing.Color _colorMisc { get; set; }
-        */
+        public System.Drawing.Color colorMisc {
+            get {
+                if (colorMisc_UI.SelectedColor.HasValue) {
+                    return AsmDudeToolsStatic.convertColor(colorMisc_UI.SelectedColor.Value);
+                } else {
+                    return System.Drawing.Color.DarkOrange;
+                }
+            }
+            set { colorMisc_UI.SelectedColor = AsmDudeToolsStatic.convertColor(value); }
+        }
         #endregion Syntax Highlighting
 
+        #region Keyword Highlighting
+        public bool useCodeKeywordHighlighting {
+            get { return (useKeywordHighlighting_UI.IsChecked.HasValue) ? useKeywordHighlighting_UI.IsChecked.Value : false; }
+            set { useKeywordHighlighting_UI.IsChecked = value; }
+        }
+        public System.Drawing.Color _backgroundColor { get; set; }
+
+        public System.Drawing.Color backgroundColor {
+            get {
+                if (backgroundColor_UI.SelectedColor.HasValue) {
+                    return AsmDudeToolsStatic.convertColor(backgroundColor_UI.SelectedColor.Value);
+                } else {
+                    return System.Drawing.Color.Cyan;
+                }
+            }
+            set { backgroundColor_UI.SelectedColor = AsmDudeToolsStatic.convertColor(value); }
+        }
+        #endregion
+
+        #region Code Completion
+        public bool useCodeCompletion {
+            get { return (useCodeCompletion_UI.IsChecked.HasValue) ? useCodeCompletion_UI.IsChecked.Value : false; }
+            set { useCodeCompletion_UI.IsChecked = value; }
+        }
+        public bool useCodeCompletion_x86 {
+            get { return (useCodeCompletion_x86_UI.IsChecked.HasValue) ? useCodeCompletion_x86_UI.IsChecked.Value : false; }
+            set { useCodeCompletion_x86_UI.IsChecked = value; }
+        }
+        public bool useCodeCompletion_i686 {
+            get { return (useCodeCompletion_i686_UI.IsChecked.HasValue) ? useCodeCompletion_i686_UI.IsChecked.Value : false; }
+            set { useCodeCompletion_i686_UI.IsChecked = value; }
+        }
+        public bool useCodeCompletion_MMX {
+            get { return (useCodeCompletion_mmx_UI.IsChecked.HasValue) ? useCodeCompletion_mmx_UI.IsChecked.Value : false; }
+            set { useCodeCompletion_mmx_UI.IsChecked = value; }
+        }
+        public bool useCodeCompletion_SSE {
+            get { return (useCodeCompletion_sse_UI.IsChecked.HasValue) ? useCodeCompletion_sse_UI.IsChecked.Value : false; }
+            set { useCodeCompletion_sse_UI.IsChecked = value; }
+        }
+        public bool useCodeCompletion_SSE2 {
+            get { return (useCodeCompletion_sse2_UI.IsChecked.HasValue) ? useCodeCompletion_sse2_UI.IsChecked.Value : false; }
+            set { useCodeCompletion_sse2_UI.IsChecked = value; }
+        }
+        public bool useCodeCompletion_SSE3 {
+            get { return (useCodeCompletion_sse3_UI.IsChecked.HasValue) ? useCodeCompletion_sse3_UI.IsChecked.Value : false; }
+            set { useCodeCompletion_sse3_UI.IsChecked = value; }
+        }
+        public bool useCodeCompletion_SSSE3 {
+            get { return (useCodeCompletion_sse3_UI.IsChecked.HasValue) ? useCodeCompletion_ssse3_UI.IsChecked.Value : false; }
+            set { useCodeCompletion_ssse3_UI.IsChecked = value; }
+        }
+        public bool useCodeCompletion_SSE41 {
+            get { return (useCodeCompletion_sse41_UI.IsChecked.HasValue) ? useCodeCompletion_sse41_UI.IsChecked.Value : false; }
+            set { useCodeCompletion_sse41_UI.IsChecked = value; }
+        }
+        public bool useCodeCompletion_SSE42 {
+            get { return (useCodeCompletion_sse42_UI.IsChecked.HasValue) ? useCodeCompletion_sse42_UI.IsChecked.Value : false; }
+            set { useCodeCompletion_sse42_UI.IsChecked = value; }
+        }
+        public bool useCodeCompletion_AVX {
+            get { return (useCodeCompletion_avx_UI.IsChecked.HasValue) ? useCodeCompletion_avx_UI.IsChecked.Value : false; }
+            set { useCodeCompletion_avx_UI.IsChecked = value; }
+        }
+        public bool useCodeCompletion_AVX2 {
+            get { return (useCodeCompletion_avx2_UI.IsChecked.HasValue) ? useCodeCompletion_avx2_UI.IsChecked.Value : false; }
+            set { useCodeCompletion_avx_UI.IsChecked = value; }
+        }
+        public bool useCodeCompletion_KNC {
+            get { return (useCodeCompletion_knc_UI.IsChecked.HasValue) ? useCodeCompletion_knc_UI.IsChecked.Value : false; }
+            set { useCodeCompletion_knc_UI.IsChecked = value; }
+        }
+        #endregion
+
+        #region Intellisense
+        public bool showUndefinedLabels {
+            get { return (showUndefinedLabels_UI.IsChecked.HasValue) ? showUndefinedLabels_UI.IsChecked.Value : false; }
+            set { showUndefinedLabels_UI.IsChecked = value; }
+        }
+        public bool showClashingLabels {
+            get { return (showClashingLabels_UI.IsChecked.HasValue) ? showClashingLabels_UI.IsChecked.Value : false; }
+            set { showClashingLabels_UI.IsChecked = value; }
+        }
+        public bool decorateUndefinedLabels {
+            get { return (decorateUndefinedLabels_UI.IsChecked.HasValue) ? decorateUndefinedLabels_UI.IsChecked.Value : false; }
+            set { decorateUndefinedLabels_UI.IsChecked = value; }
+        }
+        public bool decorateClashingLabels {
+            get { return (decorateClashingLabels_UI.IsChecked.HasValue) ? decorateClashingLabels_UI.IsChecked.Value : false; }
+            set { decorateClashingLabels_UI.IsChecked = value; }
+        }
+        #endregion
     }
 }
