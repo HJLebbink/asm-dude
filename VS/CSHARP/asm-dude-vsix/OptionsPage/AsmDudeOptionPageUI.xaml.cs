@@ -32,7 +32,7 @@ namespace AsmDude.OptionsPage {
 
         public AsmDudeOptionsPageUI() {
             InitializeComponent();
-            version_UI.Content = "AsmDude v" + typeof(AsmDudePackage).Assembly.GetName().Version.ToString();
+            version_UI.Content = "AsmDude v" + typeof(AsmDudePackage).Assembly.GetName().Version.ToString() + "; compile date: " + ApplicationInformation.CompileDate.ToString();
         }
 
         #region Asm Documentation
@@ -101,8 +101,7 @@ namespace AsmDude.OptionsPage {
                 if (colorMnemonic_UI.SelectedColor.HasValue) {
                     return AsmDudeToolsStatic.convertColor(colorMnemonic_UI.SelectedColor.Value);
                 } else {
-                    AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPageUI.xaml: colorMnemonic_UI has no value, assuming BLUE");
-
+                    //AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPageUI.xaml: colorMnemonic_UI has no value, assuming BLUE");
                     return System.Drawing.Color.Blue;
                 }
             }

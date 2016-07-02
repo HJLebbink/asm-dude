@@ -328,6 +328,7 @@
       <DependentUpon>AsmDudeOptionPageUI.xaml</DependentUpon>
     </Compile>
     <Compile Include="SyntaxHighlighting\NasmTokenTagger.cs" />
+    <Compile Include="Tools\ApplicationInformation.cs" />
     <Compile Include="Tools\AsmDudeTools.cs" />
     <Compile Include="AsmDoc\AsmDocClassifier.cs" />
     <Compile Include="AsmDoc\AsmDocMouseHandler.cs" />
