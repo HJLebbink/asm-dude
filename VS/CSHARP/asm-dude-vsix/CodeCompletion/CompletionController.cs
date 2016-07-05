@@ -89,13 +89,11 @@ namespace AsmDude {
 
         private int ExecMethod1(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:Exec", this.ToString()));
-
-            //make a copy of this so we can look at it after forwarding some commands
-            uint commandID = nCmdID;
             char typedChar = char.MinValue;
+
             //make sure the input is a char before getting it
             if ((pguidCmdGroup == VSConstants.VSStd2K) && (nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR)) {
-                typedChar = GetTypeChar(pvaIn);
+                typedChar = this.GetTypeChar(pvaIn);
             }
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:Exec: typedChar={1}", this.ToString(), typedChar));
 
@@ -106,7 +104,7 @@ namespace AsmDude {
                 char.IsPunctuation(typedChar)) {
 
                 //check for a selection
-                if (this._currentSession != null && !this._currentSession.IsDismissed) {
+                if ((this._currentSession != null) && !this._currentSession.IsDismissed) {
                     //if the selection is fully selected, commit the current session
                     if (this._currentSession.SelectedCompletionSet.SelectionStatus.IsSelected) {
                         this._currentSession.Commit();
@@ -135,8 +133,8 @@ namespace AsmDude {
                     this._currentSession.Filter();
                 }
                 handled = true;
-            } else if (commandID == (uint)VSConstants.VSStd2KCmdID.BACKSPACE   //redo the filter if there is a deletion
-                    || commandID == (uint)VSConstants.VSStd2KCmdID.DELETE) {
+            } else if (nCmdID == (uint)VSConstants.VSStd2KCmdID.BACKSPACE   //redo the filter if there is a deletion
+                    || nCmdID == (uint)VSConstants.VSStd2KCmdID.DELETE) {
                 if (this._currentSession != null && !this._currentSession.IsDismissed) {
                     this._currentSession.Filter();
                 }

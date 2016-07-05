@@ -8,6 +8,67 @@ namespace AsmTools {
 
     public static partial class AsmSourceTools {
 
+
+
+        /// <summary>
+        /// Parse the provided line. Returns label, mnemonic, args, remarks
+        /// </summary>
+        public static Tuple<string, Mnemonic, string[], string> parseLine(string line) {
+            string label = "";
+            Mnemonic mnemonic = Mnemonic.UNKNOWN;
+            string[] args = new string[0] { };
+            string remark = "";
+
+            if (line.Length > 0) {
+                Tuple<bool, int, int> labelPos = AsmTools.AsmSourceTools.getLabelDefPos(line);
+                int codeBeginPos = 0;
+                if (labelPos.Item1) {
+                    label = line.Substring(labelPos.Item2, labelPos.Item3 - labelPos.Item2);
+                    codeBeginPos = labelPos.Item3 + 1; // plus one to get rid of the colon 
+                    if (line.Length > codeBeginPos) {
+                        if (line[codeBeginPos] == ':') codeBeginPos++; // remove a second colon
+                    }
+                    //Console.WriteLine("found label " + label);
+                }
+
+                Tuple<bool, int, int> remarkPos = AsmTools.AsmSourceTools.getRemarkPos(line);
+                int codeEndPos = line.Length;
+                if (remarkPos.Item1) {
+                    remark = line.Substring(remarkPos.Item2, remarkPos.Item3 - remarkPos.Item2);
+                    codeEndPos = remarkPos.Item2;
+                    //Console.WriteLine("found remark " + remark);
+                }
+
+                string codeStr = line.Substring(codeBeginPos, codeEndPos - codeBeginPos).Trim().ToUpper();
+                //Console.WriteLine("code string \"" + codeStr + "\".");
+
+                // get the first keyword, check if it is a mnemonic
+                Tuple<int, int> t = AsmTools.AsmSourceTools.getKeywordPos(0, codeStr);
+                string firstKeyword = codeStr.Substring(t.Item1, t.Item2 - t.Item1);
+                if (firstKeyword.Length > 0) {
+                    mnemonic = AsmTools.AsmSourceTools.parseMnemonic(firstKeyword);
+                    if (mnemonic == Mnemonic.UNKNOWN) {
+                        Console.WriteLine("INFO: ToolsZ3:parseLine: found unknown first Keyword \"" + firstKeyword + "\". Ignoring this line.");
+                    } else {
+                        //Console.WriteLine("INFO: ToolsZ3:parseLine: found codeStr " + codeStr);
+                        if (codeStr.Length > 0) {
+                            string argsStr = codeStr.Substring(t.Item2, codeStr.Length - t.Item2);
+                            if (argsStr.Length > 0) {
+                                args = argsStr.Split(',');
+                                for (int i = 0; i < args.Length; ++i) {
+                                    args[i] = args[i].Trim();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return new Tuple<string, Mnemonic, string[], string>(label, mnemonic, args, remark);
+        }
+
+
+
+
         public static IList<Tuple<int, int, bool>> splitIntoKeywordPos(string line) {
             IList<Tuple<int, int, bool>> list = new List<Tuple<int, int, bool>>();
 

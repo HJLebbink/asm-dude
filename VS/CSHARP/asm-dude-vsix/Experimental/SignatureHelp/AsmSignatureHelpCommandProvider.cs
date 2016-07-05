@@ -20,43 +20,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Editor;
+using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Tagging;
+using Microsoft.VisualStudio.Text.Operations;
+using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
-using System;
 using System.ComponentModel.Composition;
 
-using AsmDude.SyntaxHighlighting;
-using AsmDude.Tools;
+namespace AsmDude.SignatureHelp {
 
-namespace AsmDude.ErrorSquiggles {
-
-    /// <summary>
-    /// Export a <see cref="IViewTaggerProvider"/>
-    /// </summary>
-    [Export(typeof(IViewTaggerProvider))]
+    [Export(typeof(IVsTextViewCreationListener))]
+    [Name("Signature Help controller")]
+    [TextViewRole(PredefinedTextViewRoles.Editable)]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
-    [TagType(typeof(ErrorTag))]
-    internal sealed class LabelErrorTaggerProvider : IViewTaggerProvider {
+    internal sealed class AsmSignatureHelpCommandProvider : IVsTextViewCreationListener {
 
         [Import]
-        private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
+        private IVsEditorAdaptersFactoryService _adapterService = null;
 
         [Import]
-        private ITextDocumentFactoryService _docFactory = null;
+        private ITextStructureNavigatorSelectorService _navigatorService = null;
 
         [Import]
-        private IContentTypeRegistryService _contentService = null;
+        private ISignatureHelpBroker _signatureHelpBroker = null;
 
-        public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag {
-
-            Func<ITagger<T>> sc = delegate () {
-                ITagAggregator<AsmTokenTag> aggregator = AsmDudeToolsStatic.getAggregator(buffer, _aggregatorFactory);
-                ILabelGraph labelGraph = AsmDudeToolsStatic.getLabelGraph(buffer, _aggregatorFactory, _docFactory, _contentService);
-                return new LabelErrorTagger(buffer, aggregator, labelGraph) as ITagger<T>;
-            };
-            return buffer.Properties.GetOrCreateSingletonProperty(sc);
+        public void VsTextViewCreated(IVsTextView textViewAdapter) {
+            ITextView textView = _adapterService.GetWpfTextView(textViewAdapter);
+            if (textView == null) {
+                return;
+            }
+            textView.Properties.GetOrCreateSingletonProperty(
+                 () => new AsmSignatureHelpCommandHandler(textViewAdapter, textView, _navigatorService.GetTextStructureNavigator(textView.TextBuffer), _signatureHelpBroker)
+            );
         }
     }
 }
