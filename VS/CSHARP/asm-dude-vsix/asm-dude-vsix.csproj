@@ -296,6 +296,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Resources\mnemonics.txt">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Resource Include="source.extension.ico">
       <DependentUpon>source.extension.vsixmanifest</DependentUpon>
     </Resource>
@@ -324,8 +330,12 @@
   <ItemGroup>
     <Compile Include="AsmDudePackage.cs" />
     <Compile Include="ErrorSquiggles\AsmErrorEnum.cs" />
+    <Compile Include="Experimental\SignatureHelp\AsmParameter.cs" />
+    <Compile Include="Experimental\SignatureHelp\AsmSignature.cs" />
     <Compile Include="Experimental\SignatureHelp\AsmSignatureHelpCommandHandler.cs" />
     <Compile Include="Experimental\SignatureHelp\AsmSignatureHelpCommandProvider.cs" />
+    <Compile Include="Experimental\SignatureHelp\AsmSignatureHelpSourceProvider.cs" />
+    <Compile Include="Experimental\SignatureHelp\SignatureStore.cs" />
     <Compile Include="OptionsPage\AsmDudeOptionPageUI.xaml.cs">
       <DependentUpon>AsmDudeOptionPageUI.xaml</DependentUpon>
     </Compile>

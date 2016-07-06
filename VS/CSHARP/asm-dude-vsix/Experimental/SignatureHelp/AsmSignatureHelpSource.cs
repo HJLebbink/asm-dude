@@ -23,163 +23,35 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Utilities;
 using AsmDude.Tools;
 using Microsoft.VisualStudio.Text.Operations;
 using AsmTools;
 
 namespace AsmDude.SignatureHelp {
 
-    //TODO: get the data for code help from http://www.nasm.us/doc/nasmdocb.html
-
-    [Export(typeof(ISignatureHelpSourceProvider))]
-    [Name("Signature Help source")]
-    [Order(Before = "default")]
-    [ContentType(AsmDudePackage.AsmDudeContentType)]
-    internal class AsmSignatureHelpSourceProvider : ISignatureHelpSourceProvider {
-
-        [Import]
-        private ITextStructureNavigatorSelectorService _navigatorService = null;
-
-        public ISignatureHelpSource TryCreateSignatureHelpSource(ITextBuffer textBuffer) {
-            return new AsmSignatureHelpSource(textBuffer, _navigatorService.GetTextStructureNavigator(textBuffer));
-        }
-    }
-
-    internal class AsmParameter : IParameter {
-        public AsmParameter(string documentation, Span locus, string name, ISignature signature) {
-            Documentation = documentation;
-            Locus = locus;
-            Name = name;
-            Signature = signature;
-        }
-        public string Documentation { get; private set; }
-        public Span Locus { get; private set; }
-        public string Name { get; private set; }
-        public ISignature Signature { get; private set; }
-        public Span PrettyPrintedLocus { get; private set; }
-    }
-
-    internal class AsmSignature : ISignature {
-        private readonly ITextBuffer _subjectBuffer;
-
-        private IParameter _currentParameter;
-        private string _content;
-        private string _documentation;
-        private ITrackingSpan _applicableToSpan;
-        private ReadOnlyCollection<IParameter> _parameters;
-        private string _printContent;
-
-        internal AsmSignature(ITextBuffer subjectBuffer, string content, string doc, ReadOnlyCollection<IParameter> parameters) {
-            _subjectBuffer = subjectBuffer;
-            _content = content;
-            _documentation = doc;
-            _parameters = parameters;
-            _subjectBuffer.Changed += new EventHandler<TextContentChangedEventArgs>(OnSubjectBufferChanged);
-        }
-        public event EventHandler<CurrentParameterChangedEventArgs> CurrentParameterChanged;
-
-        public IParameter CurrentParameter {
-            get { return _currentParameter; }
-            internal set {
-                if (_currentParameter != value) {
-                    IParameter prevCurrentParameter = _currentParameter;
-                    _currentParameter = value;
-                    this.RaiseCurrentParameterChanged(prevCurrentParameter, _currentParameter);
-                }
-            }
-        }
-
-        private void RaiseCurrentParameterChanged(IParameter prevCurrentParameter, IParameter newCurrentParameter) {
-            EventHandler<CurrentParameterChangedEventArgs> tempHandler = this.CurrentParameterChanged;
-            if (tempHandler != null) {
-                tempHandler(this, new CurrentParameterChangedEventArgs(prevCurrentParameter, newCurrentParameter));
-            }
-        }
-
-        internal void ComputeCurrentParameter() {
-            if (Parameters.Count == 0) {
-                this.CurrentParameter = null;
-                return;
-            }
-
-            //the number of commas in the string is the index of the current parameter
-            string sigText = ApplicableToSpan.GetText(_subjectBuffer.CurrentSnapshot);
-
-            int currentIndex = 0;
-            int commaCount = 0;
-            while (currentIndex < sigText.Length) {
-                int commaIndex = sigText.IndexOf(',', currentIndex);
-                if (commaIndex == -1) {
-                    break;
-                }
-                commaCount++;
-                currentIndex = commaIndex + 1;
-            }
-
-            if (commaCount < Parameters.Count) {
-                this.CurrentParameter = Parameters[commaCount];
-            } else {
-                //too many commas, so use the last parameter as the current one.
-                this.CurrentParameter = Parameters[Parameters.Count - 1];
-            }
-        }
-
-        internal void OnSubjectBufferChanged(object sender, TextContentChangedEventArgs e) {
-            this.ComputeCurrentParameter();
-        }
-
-        public ITrackingSpan ApplicableToSpan {
-            get { return (_applicableToSpan); }
-            internal set { _applicableToSpan = value; }
-        }
-
-        public string Content {
-            get { return (_content); }
-            internal set { _content = value; }
-        }
-
-        public string Documentation {
-            get { return (_documentation); }
-            internal set { _documentation = value; }
-        }
-
-        public ReadOnlyCollection<IParameter> Parameters {
-            get { return (_parameters); }
-            internal set { _parameters = value; }
-        }
-
-        public string PrettyPrintedContent {
-            get { return (_printContent); }
-            internal set { _printContent = value; }
-        }
-    }
 
     internal class AsmSignatureHelpSource : ISignatureHelpSource {
         private readonly ITextBuffer _textBuffer;
-        private readonly ITextStructureNavigator _navigator;
+        private readonly SignatureStore _store;
 
-        public AsmSignatureHelpSource(ITextBuffer textBuffer, ITextStructureNavigator nav) {
-            _textBuffer = textBuffer;
-            _navigator = nav;
+        public AsmSignatureHelpSource(ITextBuffer textBuffer) {
+            AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource:constructor");
+
+            this._textBuffer = textBuffer;
+            this._store = AsmDudeTools.Instance.signatureStore;
+            //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource:constructor: "+this._store.ToString());
         }
 
         public void AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures) {
-            AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: AugmentSignatureHelpSession");
+            //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: AugmentSignatureHelpSession");
 
             ITextSnapshot snapshot = _textBuffer.CurrentSnapshot;
             int position = session.GetTriggerPoint(_textBuffer).GetPosition(snapshot);
             ITrackingSpan applicableToSpan = _textBuffer.CurrentSnapshot.CreateTrackingSpan(new Span(position, 0), SpanTrackingMode.EdgeInclusive, 0);
 
-            if (false) { //move the point back so it's in the preceding word
-                string previousWord = _navigator.GetExtentOfWord(new SnapshotPoint(snapshot, position - 1)).Span.GetText().ToUpper();
-                this.fill_OLD(previousWord, signatures, applicableToSpan);
-            } else {
-                this.fill(snapshot.GetLineFromPosition(position), position, signatures, applicableToSpan);
-            }
+            this.fill(snapshot.GetLineFromPosition(position), position, signatures, applicableToSpan);
         }
 
         public ISignature GetBestMatch(ISignatureHelpSession session) {
@@ -200,12 +72,49 @@ namespace AsmDude.SignatureHelp {
             return null;
         }
 
-        private AsmSignature CreateSignature(ITextBuffer textBuffer, string methodSig, string methodDoc, ITrackingSpan span) {
+        private void fill(ITextSnapshotLine line, int position, IList<ISignature> signatures, ITrackingSpan applicableToSpan) {
+
+            string lineStr = line.GetText();
+            int positionInLine = position - line.Start;
+            //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: fill: lineStr=" + lineStr+ "; positionInLine=" + positionInLine);
+
+            var t = AsmSourceTools.parseLine(lineStr);
+            //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: fill: Mnemonic=" + t.Item2 + "; args=" + string.Join(",", t.Item3));
+
+
+            Operand[] operands = new Operand[t.Item3.Length];
+            for (int i = 0; i < t.Item3.Length; ++i) {
+                string opStr = t.Item3[i];
+                if (opStr.Length > 0) {
+                    operands[i] = new Operand(opStr);
+                }
+                //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: fill: args["+i+"]=" + operands[i]);
+            }
+
+            foreach (SignatureElement se in this._store.get(t.Item2)) {
+                bool allowed = true;
+                for (int i = 0; i < operands.Length; ++i) {
+                    if (!se.isAllowed(operands[i], i)) {
+                        //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: fill: i="+i+"; Operand=" + operands[i] + " is not allowed. se="+se);
+                        allowed = false;
+                        break;
+                    }
+                }
+                if (allowed) {
+                    string description = AsmDudeTools.Instance.getDescription(se.mnemonic.ToString());
+                    signatures.Add(this.createSignature(_textBuffer, se, description, applicableToSpan));
+                }
+            }
+        }
+
+        private AsmSignature createSignature(ITextBuffer textBuffer, SignatureElement signatureElement, string methodDoc, ITrackingSpan span) {
+            string methodSig = signatureElement.ToString();
+
             AsmSignature sig = new AsmSignature(textBuffer, methodSig, methodDoc, null);
             textBuffer.Changed += new EventHandler<TextContentChangedEventArgs>(sig.OnSubjectBufferChanged);
 
             //find the parameters in the method signature (expect OPCODE one, two, three)
-            string[] pars = methodSig.Split(new char[] { ',', ' '});
+            string[] pars = methodSig.Split(new char[] { ',', ' ' });
             List<IParameter> paramList = new List<IParameter>();
 
             int locusSearchStart = 0;
@@ -220,112 +129,14 @@ namespace AsmDude.SignatureHelp {
                 if (locusStart >= 0) {
                     Span locus = new Span(locusStart, param.Length);
                     locusSearchStart = locusStart + param.Length;
-                    paramList.Add(new AsmParameter("Documentation for the parameter.", locus, param, sig));
+                    paramList.Add(new AsmParameter(SignatureElement.getDoc(signatureElement.operands[i-1]), locus, param, sig));
                 }
             }
 
             sig.Parameters = new ReadOnlyCollection<IParameter>(paramList);
             sig.ApplicableToSpan = span;
-            sig.ComputeCurrentParameter();
+            sig.computeCurrentParameter();
             return sig;
-        }
-
-        private void fill(ITextSnapshotLine line, int position, IList<ISignature> signatures, ITrackingSpan applicableToSpan) {
-
-            string lineStr = line.GetText();
-            int positionInLine = position - line.Start;
-            AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: fill: lineStr=" + lineStr+ "; positionInLine=" + positionInLine);
-
-            var t = AsmSourceTools.parseLine(lineStr);
-            AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: fill: Mnemonic=" + t.Item2 + "; args=" + string.Join(",", t.Item3));
-
-            switch (t.Item2) {
-                case Mnemonic.ADD:
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r/m8, imm8", "Add imm8 to r/m8.", applicableToSpan));
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r/m16, imm16", "Add imm16 to r/m16.", applicableToSpan));
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r/m32, imm32", "Add imm32 to r/m32.", applicableToSpan));
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r/m64, imm32", "Add imm32 sign-extended to 64-bits to r/m64.", applicableToSpan));
-
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r/m16, imm8", "Add sign-extended imm8 to r/m16.", applicableToSpan));
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r/m32, imm8", "Add sign-extended imm8 to r/m32.", applicableToSpan));
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r/m64, imm8", "Add sign-extended imm8 to r/m64.", applicableToSpan));
-
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r/m8, r8", "Add r8 to r/m8.", applicableToSpan));
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r/m16, r16", "Add r16 to r/m16.", applicableToSpan));
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r/m32, r32", "Add r32 to r/m32.", applicableToSpan));
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r/m64, r64", "Add r64 to r/m64.", applicableToSpan));
-
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r8, r/m8", "Add r/m8 to r8.", applicableToSpan));
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r16, r/m16", "Add r/m16 to r16.", applicableToSpan));
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r32, r/m32", "Add r/m32 to r32.", applicableToSpan));
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r64, r/m64", "Add r/m64 to r64.", applicableToSpan));
-                    break;
-                case Mnemonic.AND:
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r/m8, imm8", "Add imm8 to r/m8.", applicableToSpan));
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r/m16, imm16", "Add imm16 to r/m16.", applicableToSpan));
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r/m32, imm32", "Add imm32 to r/m32.", applicableToSpan));
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r/m64, imm32", "Add imm32 sign-extended to 64-bits to r/m64.", applicableToSpan));
-
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r/m16, imm8", "Add sign-extended imm8 to r/m16.", applicableToSpan));
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r/m32, imm8", "Add sign-extended imm8 to r/m32.", applicableToSpan));
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r/m64, imm8", "Add sign-extended imm8 to r/m64.", applicableToSpan));
-
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r/m8, r8", "Add r8 to r/m8.", applicableToSpan));
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r/m16, r16", "Add r16 to r/m16.", applicableToSpan));
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r/m32, r32", "Add r32 to r/m32.", applicableToSpan));
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r/m64, r64", "Add r64 to r/m64.", applicableToSpan));
-
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r8, r/m8", "Add r/m8 to r8.", applicableToSpan));
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r16, r/m16", "Add r/m16 to r16.", applicableToSpan));
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r32, r/m32", "Add r/m32 to r32.", applicableToSpan));
-                    signatures.Add(CreateSignature(_textBuffer, "ADD r64, r/m64", "Add r/m64 to r64.", applicableToSpan));
-                    break;
-            }
-        }
-
-        private void fill_OLD(string previousWord, IList<ISignature> signatures, ITrackingSpan applicableToSpan) {
-            AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: fill_OLD: previousWord=" + previousWord);
-
-            if (previousWord.Equals("ADD")) {
-                signatures.Add(CreateSignature(_textBuffer, "ADD r/m8, imm8", "Add imm8 to r/m8.", applicableToSpan));
-                signatures.Add(CreateSignature(_textBuffer, "ADD r/m16, imm16", "Add imm16 to r/m16.", applicableToSpan));
-                signatures.Add(CreateSignature(_textBuffer, "ADD r/m32, imm32", "Add imm32 to r/m32.", applicableToSpan));
-                signatures.Add(CreateSignature(_textBuffer, "ADD r/m64, imm32", "Add imm32 sign-extended to 64-bits to r/m64.", applicableToSpan));
-
-                signatures.Add(CreateSignature(_textBuffer, "ADD r/m16, imm8", "Add sign-extended imm8 to r/m16.", applicableToSpan));
-                signatures.Add(CreateSignature(_textBuffer, "ADD r/m32, imm8", "Add sign-extended imm8 to r/m32.", applicableToSpan));
-                signatures.Add(CreateSignature(_textBuffer, "ADD r/m64, imm8", "Add sign-extended imm8 to r/m64.", applicableToSpan));
-
-                signatures.Add(CreateSignature(_textBuffer, "ADD r/m8, r8", "Add r8 to r/m8.", applicableToSpan));
-                signatures.Add(CreateSignature(_textBuffer, "ADD r/m16, r16", "Add r16 to r/m16.", applicableToSpan));
-                signatures.Add(CreateSignature(_textBuffer, "ADD r/m32, r32", "Add r32 to r/m32.", applicableToSpan));
-                signatures.Add(CreateSignature(_textBuffer, "ADD r/m64, r64", "Add r64 to r/m64.", applicableToSpan));
-
-                signatures.Add(CreateSignature(_textBuffer, "ADD r8, r/m8", "Add r/m8 to r8.", applicableToSpan));
-                signatures.Add(CreateSignature(_textBuffer, "ADD r16, r/m16", "Add r/m16 to r16.", applicableToSpan));
-                signatures.Add(CreateSignature(_textBuffer, "ADD r32, r/m32", "Add r/m32 to r32.", applicableToSpan));
-                signatures.Add(CreateSignature(_textBuffer, "ADD r64, r/m64", "Add r/m64 to r64.", applicableToSpan));
-
-            } else if (previousWord.Equals("AND")) {
-                signatures.Add(CreateSignature(_textBuffer, "AND r/m8, imm8", "Add imm8 to r/m8.", applicableToSpan));
-                signatures.Add(CreateSignature(_textBuffer, "AND r/m16, imm16", "Add imm16 to r/m16.", applicableToSpan));
-                signatures.Add(CreateSignature(_textBuffer, "AND r/m32, imm32", "Add imm32 to r/m32.", applicableToSpan));
-                signatures.Add(CreateSignature(_textBuffer, "AND r/m64, imm32", "Add imm32 sign-extended to 64-bits to r/m64.", applicableToSpan));
-
-                signatures.Add(CreateSignature(_textBuffer, "AND r/m16, imm8", "Add sign-extended imm8 to r/m16.", applicableToSpan));
-                signatures.Add(CreateSignature(_textBuffer, "AND r/m32, imm8", "Add sign-extended imm8 to r/m32.", applicableToSpan));
-                signatures.Add(CreateSignature(_textBuffer, "AND r/m64, imm8", "Add sign-extended imm8 to r/m64.", applicableToSpan));
-
-                signatures.Add(CreateSignature(_textBuffer, "AND r/m8, r8", "Add r8 to r/m8.", applicableToSpan));
-                signatures.Add(CreateSignature(_textBuffer, "AND r/m16, r16", "Add r16 to r/m16.", applicableToSpan));
-                signatures.Add(CreateSignature(_textBuffer, "AND r/m32, r32", "Add r32 to r/m32.", applicableToSpan));
-                signatures.Add(CreateSignature(_textBuffer, "AND r/m64, r64", "Add r64 to r/m64.", applicableToSpan));
-
-                signatures.Add(CreateSignature(_textBuffer, "AND r8, r/m8", "Add r/m8 to r8.", applicableToSpan));
-                signatures.Add(CreateSignature(_textBuffer, "AND r16, r/m16", "Add r/m16 to r16.", applicableToSpan));
-                signatures.Add(CreateSignature(_textBuffer, "AND r32, r/m32", "Add r/m32 to r32.", applicableToSpan));
-                signatures.Add(CreateSignature(_textBuffer, "AND r64, r/m64", "Add r/m64 to r64.", applicableToSpan));
-            }
         }
 
         private bool _isDisposed;

@@ -32,6 +32,7 @@ using AsmTools;
 using AsmDude.Tools;
 using Microsoft.VisualStudio.Shell;
 using AsmDude.SyntaxHighlighting;
+using AsmDude.SignatureHelp;
 
 namespace AsmDude {
 
@@ -43,6 +44,8 @@ namespace AsmDude {
         private IDictionary<string, Arch> _arch;
         private IDictionary<string, string> _description;
         private readonly ErrorListProvider _errorListProvider;
+
+        private readonly SignatureStore _signatureStore;
 
 
         #region Singleton Stuff
@@ -64,12 +67,19 @@ namespace AsmDude {
             this._errorListProvider.ProviderGuid = new Guid(EnvDTE.Constants.vsViewKindCode);
             #endregion
 
+            #region load signature store
+            string filename = AsmDudeToolsStatic.getInstallPath() + "Resources" + Path.DirectorySeparatorChar + "mnemonics.txt";
+            this._signatureStore = new SignatureStore(filename);
+            #endregion
+
             this.initData();
         }
 
         #region Public Methods
 
         public ErrorListProvider errorListProvider { get { return this._errorListProvider; } }
+
+        public SignatureStore signatureStore {  get { return this._signatureStore; } }
 
         public ICollection<string> getKeywords() {
             if (this._type == null) initData();

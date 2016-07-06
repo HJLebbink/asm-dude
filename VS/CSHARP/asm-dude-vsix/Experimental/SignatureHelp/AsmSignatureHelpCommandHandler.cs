@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude.Tools;
 using AsmTools;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -30,8 +29,6 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.TextManager.Interop;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace AsmDude.SignatureHelp {
@@ -39,15 +36,13 @@ namespace AsmDude.SignatureHelp {
     internal sealed class AsmSignatureHelpCommandHandler : IOleCommandTarget {
         private readonly ITextView _textView;
         private readonly ISignatureHelpBroker _broker;
-        private readonly ITextStructureNavigator _navigator;
 
         private ISignatureHelpSession _session;
         private IOleCommandTarget _nextCommandHandler;
 
-        internal AsmSignatureHelpCommandHandler(IVsTextView textViewAdapter, ITextView textView, ITextStructureNavigator nav, ISignatureHelpBroker broker) {
+        internal AsmSignatureHelpCommandHandler(IVsTextView textViewAdapter, ITextView textView, ISignatureHelpBroker broker) {
             this._textView = textView;
             this._broker = broker;
-            this._navigator = nav;
 
             //add this to the filter chain
             textViewAdapter.AddCommandFilter(this, out _nextCommandHandler);
@@ -65,32 +60,15 @@ namespace AsmDude.SignatureHelp {
             if ((pguidCmdGroup == VSConstants.VSStd2K) && (nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR)) {
                 typedChar = this.GetTypeChar(pvaIn);
 
-                if (char.IsWhiteSpace(typedChar)) {
+                if (char.IsWhiteSpace(typedChar) || typedChar.Equals(',')) {
 
-                    if (true) {
-                        SnapshotPoint point = _textView.Caret.Position.BufferPosition - 1;
-                        string lineStr = point.Snapshot.GetLineFromPosition(point.Position).GetText();
-                        var t = AsmSourceTools.parseLine(lineStr);
-                        switch (t.Item2) {
-                            case Mnemonic.ADD:
-                            case Mnemonic.AND:
-                                if (this._session != null) this._session.Dismiss(); // cleanup previous session
-                                this._session = _broker.TriggerSignatureHelp(_textView);
-                                break;
-                        }
-                    } else {
-                        //move the point back so it's in the preceding word
-                        SnapshotPoint point = _textView.Caret.Position.BufferPosition - 1;
-                        TextExtent extent = _navigator.GetExtentOfWord(point);
-                        string previousWord = extent.Span.GetText().ToUpper();
+                    SnapshotPoint point = _textView.Caret.Position.BufferPosition - 1;
+                    string lineStr = point.Snapshot.GetLineFromPosition(point.Position).GetText();
+                    var t = AsmSourceTools.parseLine(lineStr);
 
-                        if (previousWord.Equals("ADD")) {
-                            //if (this._session != null) this._session.Dismiss(); // cleanup previous session
-                            this._session = _broker.TriggerSignatureHelp(_textView);
-                        } else if (previousWord.Equals("AND")) {
-                            if (this._session != null) this._session.Dismiss(); // cleanup previous session
-                            this._session = _broker.TriggerSignatureHelp(_textView);
-                        }
+                    if (this._session != null) this._session.Dismiss(); // cleanup previous session
+                    if (t.Item2 != Mnemonic.UNKNOWN) {
+                        this._session = _broker.TriggerSignatureHelp(_textView);
                     }
                 } else if (AsmSourceTools.isRemarkChar(typedChar) && (this._session != null)) {
                     this._session.Dismiss();

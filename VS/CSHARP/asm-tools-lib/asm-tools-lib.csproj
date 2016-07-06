@@ -84,6 +84,7 @@
     <Compile Include="BitType.cs" />
     <Compile Include="Flags.cs" />
     <Compile Include="Mnemonic.cs" />
+    <Compile Include="Operand.cs" />
     <Compile Include="OperandType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegisterName.cs" />

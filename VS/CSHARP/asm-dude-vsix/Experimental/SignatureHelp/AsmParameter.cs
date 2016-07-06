@@ -20,35 +20,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.TextManager.Interop;
-using Microsoft.VisualStudio.Utilities;
-using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Text;
 
 namespace AsmDude.SignatureHelp {
 
-    [Export(typeof(IVsTextViewCreationListener))]
-    [Name("Signature Help controller")]
-    [TextViewRole(PredefinedTextViewRoles.Editable)]
-    [ContentType(AsmDudePackage.AsmDudeContentType)]
-    internal sealed class AsmSignatureHelpCommandProvider : IVsTextViewCreationListener {
-
-        [Import]
-        private IVsEditorAdaptersFactoryService _adapterService = null;
-
-        [Import]
-        private ISignatureHelpBroker _signatureHelpBroker = null;
-
-        public void VsTextViewCreated(IVsTextView textViewAdapter) {
-            ITextView textView = _adapterService.GetWpfTextView(textViewAdapter);
-            if (textView == null) {
-                return;
-            }
-            textView.Properties.GetOrCreateSingletonProperty(
-                 () => new AsmSignatureHelpCommandHandler(textViewAdapter, textView, _signatureHelpBroker)
-            );
+    internal class AsmParameter : IParameter {
+        public AsmParameter(string documentation, Span locus, string name, ISignature signature) {
+            Documentation = documentation;
+            Locus = locus;
+            Name = name;
+            Signature = signature;
+            PrettyPrintedLocus = locus;
         }
+        public string Documentation { get; private set; }
+        public Span Locus { get; private set; }
+        public string Name { get; private set; }
+        public ISignature Signature { get; private set; }
+        public Span PrettyPrintedLocus { get; private set; }
     }
 }

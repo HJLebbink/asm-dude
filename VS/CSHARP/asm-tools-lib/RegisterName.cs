@@ -14,6 +14,8 @@ namespace AsmTools {
         RCX, ECX, CX, CL, CH,
         RDX, EDX, DX, DL, DH,
 
+        CS, DS, ES, SS, FS, GS,
+
         RSI, ESI, SI, SIL,
         RDI, EDI, DI, DIL,
         RBP, EBP, BP, BPL,

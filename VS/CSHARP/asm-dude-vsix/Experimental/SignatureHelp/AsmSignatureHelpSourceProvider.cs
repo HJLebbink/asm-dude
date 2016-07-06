@@ -20,35 +20,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.TextManager.Interop;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 
 namespace AsmDude.SignatureHelp {
 
-    [Export(typeof(IVsTextViewCreationListener))]
-    [Name("Signature Help controller")]
-    [TextViewRole(PredefinedTextViewRoles.Editable)]
+    [Export(typeof(ISignatureHelpSourceProvider))]
+    [Name("Signature Help source")]
+    [Order(Before = "default")]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
-    internal sealed class AsmSignatureHelpCommandProvider : IVsTextViewCreationListener {
+    internal class AsmSignatureHelpSourceProvider : ISignatureHelpSourceProvider {
 
-        [Import]
-        private IVsEditorAdaptersFactoryService _adapterService = null;
-
-        [Import]
-        private ISignatureHelpBroker _signatureHelpBroker = null;
-
-        public void VsTextViewCreated(IVsTextView textViewAdapter) {
-            ITextView textView = _adapterService.GetWpfTextView(textViewAdapter);
-            if (textView == null) {
-                return;
-            }
-            textView.Properties.GetOrCreateSingletonProperty(
-                 () => new AsmSignatureHelpCommandHandler(textViewAdapter, textView, _signatureHelpBroker)
-            );
+        public ISignatureHelpSource TryCreateSignatureHelpSource(ITextBuffer textBuffer) {
+            return new AsmSignatureHelpSource(textBuffer);
         }
     }
 }
