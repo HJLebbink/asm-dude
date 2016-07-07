@@ -54,9 +54,23 @@ namespace AsmTools {
                         if (codeStr.Length > 0) {
                             string argsStr = codeStr.Substring(t.Item2, codeStr.Length - t.Item2);
                             if (argsStr.Length > 0) {
-                                args = argsStr.Split(',');
-                                for (int i = 0; i < args.Length; ++i) {
-                                    args[i] = args[i].Trim();
+
+                                string[] argsTmp = argsStr.Split(',');
+                                int j = 0;
+                                for (int i = 0; i < argsTmp.Length; ++i) {
+                                    string arg = argsTmp[i].Trim();
+                                    argsTmp[i] = arg;
+                                    if (arg.Length > 0) ++j;
+                                }
+                                if (j >= argsTmp.Length) {
+                                    for (int i = 0; i < argsTmp.Length; ++i) {
+                                        args = argsTmp;
+                                    }
+                                } else {
+                                    args = new string[j];
+                                    for (int i = 0; i < j; ++i) {
+                                        args[i] = argsTmp[i];
+                                    }
                                 }
                             }
                         }
@@ -65,9 +79,6 @@ namespace AsmTools {
             }
             return new Tuple<string, Mnemonic, string[], string>(label, mnemonic, args, remark);
         }
-
-
-
 
         public static IList<Tuple<int, int, bool>> splitIntoKeywordPos(string line) {
             IList<Tuple<int, int, bool>> list = new List<Tuple<int, int, bool>>();

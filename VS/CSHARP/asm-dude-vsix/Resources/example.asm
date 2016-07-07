@@ -15,6 +15,9 @@ include "inc\example.inc"
 
 	#endregion Things TODO
 
+	vfnmadd213sd 
+	;vfnmadd213sd xmmreg|mask|z,xmmreg,xmmrm64|er
+
 	#region Jump Examples
 	jmp			$LL9@run.cpu$om
 	jmp			SHORT $LL9@run.cpu$om

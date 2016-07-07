@@ -1,9 +1,9 @@
-﻿AAA                                       8086,NOLONG 
-AAD                                       8086,NOLONG 
+﻿AAA              none                     8086,NOLONG 
+AAD              none                     8086,NOLONG 
 AAD              imm                      8086,NOLONG 
-AAM                                       8086,NOLONG 
+AAM              none                     8086,NOLONG 
 AAM              imm                      8086,NOLONG 
-AAS                                       8086,NOLONG 
+AAS              none                     8086,NOLONG 
 ADC              mem,reg8                 8086,LOCK 
 ADC              reg8,reg8                8086 
 ADC              mem,reg16                8086,LOCK 
@@ -123,8 +123,8 @@ AND              mem,imm32                386,LOCK
 AND              rm8,imm                  8086,LOCK,ND,NOLONG 
 ARPL             mem,reg16                286,PROT,NOLONG 
 ARPL             reg16,reg16              286,PROT,NOLONG 
-BB0_RESET                                 PENT,CYRIX,ND 
-BB1_RESET                                 PENT,CYRIX,ND 
+BB0_RESET        none                     PENT,CYRIX,ND 
+BB1_RESET        none                     PENT,CYRIX,ND 
 BOUND            reg16,mem                186,NOLONG 
 BOUND            reg32,mem                386,NOLONG 
 BSF              reg16,mem                386 
@@ -206,14 +206,14 @@ CALL             mem                      8086,BND
 CALL             rm16                     8086,NOLONG,BND 
 CALL             rm32                     386,NOLONG,BND 
 CALL             rm64                     X64,BND 
-CBW                                       8086 
-CDQ                                       386 
-CDQE                                      X64 
-CLC                                       8086 
-CLD                                       8086 
-CLI                                       8086 
-CLTS                                      286,PRIV 
-CMC                                       8086 
+CBW              none                     8086 
+CDQ              none                     386 
+CDQE             none                     X64 
+CLC              none                     8086 
+CLD              none                     8086 
+CLI              none                     8086 
+CLTS             none                     286,PRIV 
+CMC              none                     8086 
 CMP              mem,reg8                 8086 
 CMP              reg8,reg8                8086 
 CMP              mem,reg16                8086 
@@ -253,10 +253,10 @@ CMP              mem,imm16                8086
 CMP              mem,sbytedword32         386,ND 
 CMP              mem,imm32                386 
 CMP              rm8,imm                  8086,ND,NOLONG 
-CMPSB                                     8086 
-CMPSD                                     386 
-CMPSQ                                     X64 
-CMPSW                                     8086 
+CMPSB            none                     8086 
+CMPSD            none                     386 
+CMPSQ            none                     X64 
+CMPSW            none                     8086 
 CMPXCHG          mem,reg8                 PENT,LOCK 
 CMPXCHG          reg8,reg8                PENT 
 CMPXCHG          mem,reg16                PENT,LOCK 
@@ -273,14 +273,14 @@ CMPXCHG486       mem,reg32                486,UNDOC,ND,LOCK
 CMPXCHG486       reg32,reg32              486,UNDOC,ND 
 CMPXCHG8B        mem                      PENT,LOCK 
 CMPXCHG16B       mem                      X64,LOCK 
-CPUID                                     PENT 
-CPU_READ                                  PENT,CYRIX 
-CPU_WRITE                                 PENT,CYRIX 
-CQO                                       X64 
-CWD                                       8086 
-CWDE                                      386 
-DAA                                       8086,NOLONG 
-DAS                                       8086,NOLONG 
+CPUID            none                     PENT 
+CPU_READ         none                     PENT,CYRIX 
+CPU_WRITE        none                     PENT,CYRIX 
+CQO              none                     X64 
+CWD              none                     8086 
+CWDE             none                     386 
+DAA              none                     8086,NOLONG 
+DAS              none                     8086,NOLONG 
 DEC              reg16                    8086,NOLONG 
 DEC              reg32                    386,NOLONG 
 DEC              rm8                      8086,LOCK 
@@ -291,99 +291,99 @@ DIV              rm8                      8086
 DIV              rm16                     8086 
 DIV              rm32                     386 
 DIV              rm64                     X64 
-DMINT                                     P6,CYRIX 
-EMMS                                      PENT,MMX 
+DMINT            none                     P6,CYRIX 
+EMMS             none                     PENT,MMX 
 ENTER            imm,imm                  186 
 EQU              imm                      8086 
 EQU              imm:imm                  8086 
-F2XM1                                     8086,FPU 
-FABS                                      8086,FPU 
+F2XM1            none                     8086,FPU 
+FABS             none                     8086,FPU 
 FADD             mem32                    8086,FPU 
 FADD             mem64                    8086,FPU 
 FADD             fpureg|to                8086,FPU 
 FADD             fpureg                   8086,FPU 
 FADD             fpureg,fpu0              8086,FPU 
 FADD             fpu0,fpureg              8086,FPU 
-FADD                                      8086,FPU,ND 
+FADD             none                     8086,FPU,ND 
 FADDP            fpureg                   8086,FPU 
 FADDP            fpureg,fpu0              8086,FPU 
-FADDP                                     8086,FPU,ND 
+FADDP            none                     8086,FPU,ND 
 FBLD             mem80                    8086,FPU 
 FBLD             mem                      8086,FPU 
 FBSTP            mem80                    8086,FPU 
 FBSTP            mem                      8086,FPU 
-FCHS                                      8086,FPU 
-FCLEX                                     8086,FPU 
+FCHS             none                     8086,FPU 
+FCLEX            none                     8086,FPU 
 FCMOVB           fpureg                   P6,FPU 
 FCMOVB           fpu0,fpureg              P6,FPU 
-FCMOVB                                    P6,FPU,ND 
+FCMOVB           none                     P6,FPU,ND 
 FCMOVBE          fpureg                   P6,FPU 
 FCMOVBE          fpu0,fpureg              P6,FPU 
-FCMOVBE                                   P6,FPU,ND 
+FCMOVBE          none                     P6,FPU,ND 
 FCMOVE           fpureg                   P6,FPU 
 FCMOVE           fpu0,fpureg              P6,FPU 
-FCMOVE                                    P6,FPU,ND 
+FCMOVE           none                     P6,FPU,ND 
 FCMOVNB          fpureg                   P6,FPU 
 FCMOVNB          fpu0,fpureg              P6,FPU 
-FCMOVNB                                   P6,FPU,ND 
+FCMOVNB          none                     P6,FPU,ND 
 FCMOVNBE         fpureg                   P6,FPU 
 FCMOVNBE         fpu0,fpureg              P6,FPU 
-FCMOVNBE                                  P6,FPU,ND 
+FCMOVNBE         none                     P6,FPU,ND 
 FCMOVNE          fpureg                   P6,FPU 
 FCMOVNE          fpu0,fpureg              P6,FPU 
-FCMOVNE                                   P6,FPU,ND 
+FCMOVNE          none                     P6,FPU,ND 
 FCMOVNU          fpureg                   P6,FPU 
 FCMOVNU          fpu0,fpureg              P6,FPU 
-FCMOVNU                                   P6,FPU,ND 
+FCMOVNU          none                     P6,FPU,ND 
 FCMOVU           fpureg                   P6,FPU 
 FCMOVU           fpu0,fpureg              P6,FPU 
-FCMOVU                                    P6,FPU,ND 
+FCMOVU           none                     P6,FPU,ND 
 FCOM             mem32                    8086,FPU 
 FCOM             mem64                    8086,FPU 
 FCOM             fpureg                   8086,FPU 
 FCOM             fpu0,fpureg              8086,FPU 
-FCOM                                      8086,FPU,ND 
+FCOM             none                     8086,FPU,ND 
 FCOMI            fpureg                   P6,FPU 
 FCOMI            fpu0,fpureg              P6,FPU 
-FCOMI                                     P6,FPU,ND 
+FCOMI            none                     P6,FPU,ND 
 FCOMIP           fpureg                   P6,FPU 
 FCOMIP           fpu0,fpureg              P6,FPU 
-FCOMIP                                    P6,FPU,ND 
+FCOMIP           none                     P6,FPU,ND 
 FCOMP            mem32                    8086,FPU 
 FCOMP            mem64                    8086,FPU 
 FCOMP            fpureg                   8086,FPU 
 FCOMP            fpu0,fpureg              8086,FPU 
-FCOMP                                     8086,FPU,ND 
-FCOMPP                                    8086,FPU 
-FCOS                                      386,FPU 
-FDECSTP                                   8086,FPU 
-FDISI                                     8086,FPU 
+FCOMP            none                     8086,FPU,ND 
+FCOMPP           none                     8086,FPU 
+FCOS             none                     386,FPU 
+FDECSTP          none                     8086,FPU 
+FDISI            none                     8086,FPU 
 FDIV             mem32                    8086,FPU 
 FDIV             mem64                    8086,FPU 
 FDIV             fpureg|to                8086,FPU 
 FDIV             fpureg                   8086,FPU 
 FDIV             fpureg,fpu0              8086,FPU 
 FDIV             fpu0,fpureg              8086,FPU 
-FDIV                                      8086,FPU,ND 
+FDIV             none                     8086,FPU,ND 
 FDIVP            fpureg                   8086,FPU 
 FDIVP            fpureg,fpu0              8086,FPU 
-FDIVP                                     8086,FPU,ND 
+FDIVP            none                     8086,FPU,ND 
 FDIVR            mem32                    8086,FPU 
 FDIVR            mem64                    8086,FPU 
 FDIVR            fpureg|to                8086,FPU 
 FDIVR            fpureg,fpu0              8086,FPU 
 FDIVR            fpureg                   8086,FPU 
 FDIVR            fpu0,fpureg              8086,FPU 
-FDIVR                                     8086,FPU,ND 
+FDIVR            none                     8086,FPU,ND 
 FDIVRP           fpureg                   8086,FPU 
 FDIVRP           fpureg,fpu0              8086,FPU 
-FDIVRP                                    8086,FPU,ND 
-FEMMS                                     PENT,3DNOW 
-FENI                                      8086,FPU 
+FDIVRP           none                     8086,FPU,ND 
+FEMMS            none                     PENT,3DNOW 
+FENI             none                     8086,FPU 
 FFREE            fpureg                   8086,FPU 
-FFREE                                     8086,FPU 
+FFREE            none                     8086,FPU 
 FFREEP           fpureg                   286,FPU,UNDOC 
-FFREEP                                    286,FPU,UNDOC 
+FFREEP           none                     286,FPU,UNDOC 
 FIADD            mem32                    8086,FPU 
 FIADD            mem16                    8086,FPU 
 FICOM            mem32                    8086,FPU 
@@ -399,8 +399,8 @@ FILD             mem16                    8086,FPU
 FILD             mem64                    8086,FPU 
 FIMUL            mem32                    8086,FPU 
 FIMUL            mem16                    8086,FPU 
-FINCSTP                                   8086,FPU 
-FINIT                                     8086,FPU 
+FINCSTP          none                     8086,FPU 
+FINIT            none                     8086,FPU 
 FIST             mem32                    8086,FPU 
 FIST             mem16                    8086,FPU 
 FISTP            mem32                    8086,FPU 
@@ -417,59 +417,59 @@ FLD              mem32                    8086,FPU
 FLD              mem64                    8086,FPU 
 FLD              mem80                    8086,FPU 
 FLD              fpureg                   8086,FPU 
-FLD                                       8086,FPU,ND 
-FLD1                                      8086,FPU 
+FLD              none                     8086,FPU,ND 
+FLD1             none                     8086,FPU 
 FLDCW            mem                      8086,FPU,SW 
 FLDENV           mem                      8086,FPU 
-FLDL2E                                    8086,FPU 
-FLDL2T                                    8086,FPU 
-FLDLG2                                    8086,FPU 
-FLDLN2                                    8086,FPU 
-FLDPI                                     8086,FPU 
-FLDZ                                      8086,FPU 
+FLDL2E           none                     8086,FPU 
+FLDL2T           none                     8086,FPU 
+FLDLG2           none                     8086,FPU 
+FLDLN2           none                     8086,FPU 
+FLDPI            none                     8086,FPU 
+FLDZ             none                     8086,FPU 
 FMUL             mem32                    8086,FPU 
 FMUL             mem64                    8086,FPU 
 FMUL             fpureg|to                8086,FPU 
 FMUL             fpureg,fpu0              8086,FPU 
 FMUL             fpureg                   8086,FPU 
 FMUL             fpu0,fpureg              8086,FPU 
-FMUL                                      8086,FPU,ND 
+FMUL             none                     8086,FPU,ND 
 FMULP            fpureg                   8086,FPU 
 FMULP            fpureg,fpu0              8086,FPU 
-FMULP                                     8086,FPU,ND 
-FNCLEX                                    8086,FPU 
-FNDISI                                    8086,FPU 
-FNENI                                     8086,FPU 
-FNINIT                                    8086,FPU 
-FNOP                                      8086,FPU 
+FMULP            none                     8086,FPU,ND 
+FNCLEX           none                     8086,FPU 
+FNDISI           none                     8086,FPU 
+FNENI            none                     8086,FPU 
+FNINIT           none                     8086,FPU 
+FNOP             none                     8086,FPU 
 FNSAVE           mem                      8086,FPU 
 FNSTCW           mem                      8086,FPU,SW 
 FNSTENV          mem                      8086,FPU 
 FNSTSW           mem                      8086,FPU,SW 
 FNSTSW           reg_ax                   286,FPU 
-FPATAN                                    8086,FPU 
-FPREM                                     8086,FPU 
-FPREM1                                    386,FPU 
-FPTAN                                     8086,FPU 
-FRNDINT                                   8086,FPU 
+FPATAN           none                     8086,FPU 
+FPREM            none                     8086,FPU 
+FPREM1           none                     386,FPU 
+FPTAN            none                     8086,FPU 
+FRNDINT          none                     8086,FPU 
 FRSTOR           mem                      8086,FPU 
 FSAVE            mem                      8086,FPU 
-FSCALE                                    8086,FPU 
-FSETPM                                    286,FPU 
-FSIN                                      386,FPU 
-FSINCOS                                   386,FPU 
-FSQRT                                     8086,FPU 
+FSCALE           none                     8086,FPU 
+FSETPM           none                     286,FPU 
+FSIN             none                     386,FPU 
+FSINCOS          none                     386,FPU 
+FSQRT            none                     8086,FPU 
 FST              mem32                    8086,FPU 
 FST              mem64                    8086,FPU 
 FST              fpureg                   8086,FPU 
-FST                                       8086,FPU,ND 
+FST              none                     8086,FPU,ND 
 FSTCW            mem                      8086,FPU,SW 
 FSTENV           mem                      8086,FPU 
 FSTP             mem32                    8086,FPU 
 FSTP             mem64                    8086,FPU 
 FSTP             mem80                    8086,FPU 
 FSTP             fpureg                   8086,FPU 
-FSTP                                      8086,FPU,ND 
+FSTP             none                     8086,FPU,ND 
 FSTSW            mem                      8086,FPU,SW 
 FSTSW            reg_ax                   286,FPU 
 FSUB             mem32                    8086,FPU 
@@ -478,48 +478,48 @@ FSUB             fpureg|to                8086,FPU
 FSUB             fpureg,fpu0              8086,FPU 
 FSUB             fpureg                   8086,FPU 
 FSUB             fpu0,fpureg              8086,FPU 
-FSUB                                      8086,FPU,ND 
+FSUB             none                     8086,FPU,ND 
 FSUBP            fpureg                   8086,FPU 
 FSUBP            fpureg,fpu0              8086,FPU 
-FSUBP                                     8086,FPU,ND 
+FSUBP            none                     8086,FPU,ND 
 FSUBR            mem32                    8086,FPU 
 FSUBR            mem64                    8086,FPU 
 FSUBR            fpureg|to                8086,FPU 
 FSUBR            fpureg,fpu0              8086,FPU 
 FSUBR            fpureg                   8086,FPU 
 FSUBR            fpu0,fpureg              8086,FPU 
-FSUBR                                     8086,FPU,ND 
+FSUBR            none                     8086,FPU,ND 
 FSUBRP           fpureg                   8086,FPU 
 FSUBRP           fpureg,fpu0              8086,FPU 
-FSUBRP                                    8086,FPU,ND 
-FTST                                      8086,FPU 
+FSUBRP           none                     8086,FPU,ND 
+FTST             none                     8086,FPU 
 FUCOM            fpureg                   386,FPU 
 FUCOM            fpu0,fpureg              386,FPU 
-FUCOM                                     386,FPU,ND 
+FUCOM            none                     386,FPU,ND 
 FUCOMI           fpureg                   P6,FPU 
 FUCOMI           fpu0,fpureg              P6,FPU 
-FUCOMI                                    P6,FPU,ND 
+FUCOMI           none                     P6,FPU,ND 
 FUCOMIP          fpureg                   P6,FPU 
 FUCOMIP          fpu0,fpureg              P6,FPU 
-FUCOMIP                                   P6,FPU,ND 
+FUCOMIP          none                     P6,FPU,ND 
 FUCOMP           fpureg                   386,FPU 
 FUCOMP           fpu0,fpureg              386,FPU 
-FUCOMP                                    386,FPU,ND 
-FUCOMPP                                   386,FPU 
-FXAM                                      8086,FPU 
+FUCOMP           none                     386,FPU,ND 
+FUCOMPP          none                     386,FPU 
+FXAM             none                     8086,FPU 
 FXCH             fpureg                   8086,FPU 
 FXCH             fpureg,fpu0              8086,FPU 
 FXCH             fpu0,fpureg              8086,FPU 
-FXCH                                      8086,FPU,ND 
-FXTRACT                                   8086,FPU 
-FYL2X                                     8086,FPU 
-FYL2XP1                                   8086,FPU 
-HLT                                       8086,PRIV 
+FXCH             none                     8086,FPU,ND 
+FXTRACT          none                     8086,FPU 
+FYL2X            none                     8086,FPU 
+FYL2XP1          none                     8086,FPU 
+HLT              none                     8086,PRIV 
 IBTS             mem,reg16                386,SW,UNDOC,ND 
 IBTS             reg16,reg16              386,UNDOC,ND 
 IBTS             mem,reg32                386,SD,UNDOC,ND 
 IBTS             reg32,reg32              386,UNDOC,ND 
-ICEBP                                     386,ND 
+ICEBP            none                     386,ND 
 IDIV             rm8                      8086 
 IDIV             rm16                     8086 
 IDIV             rm32                     386 
@@ -582,28 +582,28 @@ INC              rm8                      8086,LOCK
 INC              rm16                     8086,LOCK 
 INC              rm32                     386,LOCK 
 INC              rm64                     X64,LOCK 
-INCBIN                                     
-INSB                                      186 
-INSD                                      386 
-INSW                                      186 
+INCBIN           none                     none 
+INSB             none                     186 
+INSD             none                     386 
+INSW             none                     186 
 INT              imm                      8086 
-INT01                                     386,ND 
-INT1                                      386 
-INT03                                     8086,ND 
-INT3                                      8086 
-INTO                                      8086,NOLONG 
-INVD                                      486,PRIV 
+INT01            none                     386,ND 
+INT1             none                     386 
+INT03            none                     8086,ND 
+INT3             none                     8086 
+INTO             none                     8086,NOLONG 
+INVD             none                     486,PRIV 
 INVPCID          reg32,mem128             FUTURE,INVPCID,PRIV,NOLONG 
 INVPCID          reg64,mem128             FUTURE,INVPCID,PRIV,LONG 
 INVLPG           mem                      486,PRIV 
 INVLPGA          reg_ax,reg_ecx           X86_64,AMD,NOLONG 
 INVLPGA          reg_eax,reg_ecx          X86_64,AMD 
 INVLPGA          reg_rax,reg_ecx          X64,AMD 
-INVLPGA                                   X86_64,AMD 
-IRET                                      8086 
-IRETD                                     386 
-IRETQ                                     X64 
-IRETW                                     8086 
+INVLPGA          none                     X86_64,AMD 
+IRET             none                     8086 
+IRETD            none                     386 
+IRETQ            none                     X64 
+IRETW            none                     8086 
 JCXZ             imm                      8086,NOLONG 
 JECXZ            imm                      386 
 JRCXZ            imm                      X64 
@@ -643,7 +643,7 @@ JMPE             imm16                    IA64
 JMPE             imm32                    IA64 
 JMPE             rm16                     IA64 
 JMPE             rm32                     IA64 
-LAHF                                      8086 
+LAHF             none                     8086 
 LAR              reg16,mem                286,PROT,SW 
 LAR              reg16,reg16              286,PROT 
 LAR              reg16,reg32              386,PROT 
@@ -661,10 +661,10 @@ LDS              reg32,mem                386,NOLONG
 LEA              reg16,mem                8086 
 LEA              reg32,mem                386 
 LEA              reg64,mem                X64 
-LEAVE                                     186 
+LEAVE            none                     186 
 LES              reg16,mem                8086,NOLONG 
 LES              reg32,mem                386,NOLONG 
-LFENCE                                    X64,AMD 
+LFENCE           none                     X64,AMD 
 LFS              reg16,mem                386 
 LFS              reg32,mem                386 
 LFS              reg64,mem                X64 
@@ -679,12 +679,12 @@ LLDT             reg16                    286,PROT,PRIV
 LMSW             mem                      286,PRIV 
 LMSW             mem16                    286,PRIV 
 LMSW             reg16                    286,PRIV 
-LOADALL                                   386,UNDOC,ND 
-LOADALL286                                286,UNDOC,ND 
-LODSB                                     8086 
-LODSD                                     386 
-LODSQ                                     X64 
-LODSW                                     8086 
+LOADALL          none                     386,UNDOC,ND 
+LOADALL286       none                     286,UNDOC,ND 
+LODSB            none                     8086 
+LODSD            none                     386 
+LODSQ            none                     X64 
+LODSW            none                     8086 
 LOOP             imm                      8086 
 LOOP             imm,reg_cx               8086,NOLONG 
 LOOP             imm,reg_ecx              386 
@@ -723,11 +723,11 @@ LSS              reg64,mem                X64
 LTR              mem                      286,PROT,PRIV 
 LTR              mem16                    286,PROT,PRIV 
 LTR              reg16                    286,PROT,PRIV 
-MFENCE                                    X64,AMD 
-MONITOR                                   PRESCOTT 
+MFENCE           none                     X64,AMD 
+MONITOR          none                     PRESCOTT 
 MONITOR          reg_eax,reg_ecx,reg_edx  PRESCOTT,NOLONG,ND 
 MONITOR          reg_rax,reg_ecx,reg_edx  X64,ND 
-MONITORX                                  X64,AMD 
+MONITORX         none                     X64,AMD 
 MONITORX         reg_rax,reg_ecx,reg_edx  X64,AMD,ND 
 MOV              mem,reg_sreg             8086,SW 
 MOV              reg16,reg_sreg           8086 
@@ -797,10 +797,10 @@ MOVQ             mmxreg,mmxrm             PENT,MMX
 MOVQ             mmxrm,mmxreg             PENT,MMX 
 MOVQ             mmxreg,rm64              X64,MMX 
 MOVQ             rm64,mmxreg              X64,MMX 
-MOVSB                                     8086 
-MOVSD                                     386 
-MOVSQ                                     X64 
-MOVSW                                     8086 
+MOVSB            none                     8086 
+MOVSD            none                     386 
+MOVSQ            none                     X64 
+MOVSW            none                     8086 
 MOVSX            reg16,mem                386 
 MOVSX            reg16,reg8               386 
 MOVSX            reg32,rm8                386 
@@ -819,15 +819,15 @@ MUL              rm8                      8086
 MUL              rm16                     8086 
 MUL              rm32                     386 
 MUL              rm64                     X64 
-MWAIT                                     PRESCOTT 
+MWAIT            none                     PRESCOTT 
 MWAIT            reg_eax,reg_ecx          PRESCOTT,ND 
-MWAITX                                    X64,AMD 
+MWAITX           none                     X64,AMD 
 MWAITX           reg_eax,reg_ecx          X64,AMD,ND 
 NEG              rm8                      8086,LOCK 
 NEG              rm16                     8086,LOCK 
 NEG              rm32                     386,LOCK 
 NEG              rm64                     X64,LOCK 
-NOP                                       8086 
+NOP              none                     8086 
 NOP              rm16                     P6 
 NOP              rm32                     P6 
 NOP              rm64                     X64 
@@ -880,9 +880,9 @@ OUT              imm,reg_eax              386
 OUT              reg_dx,reg_al            8086 
 OUT              reg_dx,reg_ax            8086 
 OUT              reg_dx,reg_eax           386 
-OUTSB                                     186 
-OUTSD                                     386 
-OUTSW                                     186 
+OUTSB            none                     186 
+OUTSD            none                     386 
+OUTSW            none                     186 
 PACKSSDW         mmxreg,mmxrm             PENT,MMX 
 PACKSSWB         mmxreg,mmxrm             PENT,MMX 
 PACKUSWB         mmxreg,mmxrm             PENT,MMX 
@@ -896,7 +896,7 @@ PADDUSW          mmxreg,mmxrm             PENT,MMX
 PADDW            mmxreg,mmxrm             PENT,MMX 
 PAND             mmxreg,mmxrm             PENT,MMX 
 PANDN            mmxreg,mmxrm             PENT,MMX 
-PAUSE                                     8086 
+PAUSE            none                     8086 
 PAVEB            mmxreg,mmxrm             PENT,MMX,CYRIX 
 PAVGUSB          mmxreg,mmxrm             PENT,3DNOW 
 PCMPEQB          mmxreg,mmxrm             PENT,MMX 
@@ -947,13 +947,13 @@ POP              reg_ss                   8086,NOLONG
 POP              reg_ds                   8086,NOLONG 
 POP              reg_fs                   386 
 POP              reg_gs                   386 
-POPA                                      186,NOLONG 
-POPAD                                     386,NOLONG 
-POPAW                                     186,NOLONG 
-POPF                                      8086 
-POPFD                                     386,NOLONG 
-POPFQ                                     X64 
-POPFW                                     8086 
+POPA             none                     186,NOLONG 
+POPAD            none                     386,NOLONG 
+POPAW            none                     186,NOLONG 
+POPF             none                     8086 
+POPFD            none                     386,NOLONG 
+POPFQ            none                     X64 
+POPFW            none                     8086 
 POR              mmxreg,mmxrm             PENT,MMX 
 PREFETCH         mem                      PENT,3DNOW 
 PREFETCHW        mem                      PENT,3DNOW 
@@ -1010,13 +1010,13 @@ PUSH             sbytedword64             X64,AR0,SIZE,ND
 PUSH             imm64                    X64,AR0,SIZE 
 PUSH             sbytedword32             X64,AR0,SIZE,ND 
 PUSH             imm32                    X64,AR0,SIZE 
-PUSHA                                     186,NOLONG 
-PUSHAD                                    386,NOLONG 
-PUSHAW                                    186,NOLONG 
-PUSHF                                     8086 
-PUSHFD                                    386,NOLONG 
-PUSHFQ                                    X64 
-PUSHFW                                    8086 
+PUSHA            none                     186,NOLONG 
+PUSHAD           none                     386,NOLONG 
+PUSHAW           none                     186,NOLONG 
+PUSHF            none                     8086 
+PUSHFD           none                     386,NOLONG 
+PUSHFQ           none                     X64 
+PUSHFW           none                     8086 
 PXOR             mmxreg,mmxrm             PENT,MMX 
 RCL              rm8,unity                8086 
 RCL              rm8,reg_cl               8086 
@@ -1043,15 +1043,15 @@ RCR              rm64,unity               X64
 RCR              rm64,reg_cl              X64 
 RCR              rm64,imm8                X64 
 RDSHR            rm32                     P6,CYRIXM 
-RDMSR                                     PENT,PRIV 
-RDPMC                                     P6 
-RDTSC                                     PENT 
-RDTSCP                                    X86_64 
-RET                                       8086,BND 
+RDMSR            none                     PENT,PRIV 
+RDPMC            none                     P6 
+RDTSC            none                     PENT 
+RDTSCP           none                     X86_64 
+RET              none                     8086,BND 
 RET              imm                      8086,SW,BND 
-RETF                                      8086 
+RETF             none                     8086 
 RETF             imm                      8086,SW 
-RETN                                      8086,BND 
+RETN             none                     8086,BND 
 RETN             imm                      8086,SW,BND 
 ROL              rm8,unity                8086 
 ROL              rm8,reg_cl               8086 
@@ -1077,12 +1077,12 @@ ROR              rm32,imm8                386
 ROR              rm64,unity               X64 
 ROR              rm64,reg_cl              X64 
 ROR              rm64,imm8                X64 
-RDM                                       P6,CYRIX,ND 
+RDM              none                     P6,CYRIX,ND 
 RSDC             reg_sreg,mem80           486,CYRIXM 
 RSLDT            mem80                    486,CYRIXM 
-RSM                                       PENTM 
+RSM              none                     PENTM 
 RSTS             mem80                    486,CYRIXM 
-SAHF                                      8086 
+SAHF             none                     8086 
 SAL              rm8,unity                8086,ND 
 SAL              rm8,reg_cl               8086,ND 
 SAL              rm8,imm8                 186,ND 
@@ -1095,7 +1095,7 @@ SAL              rm32,imm8                386,ND
 SAL              rm64,unity               X64,ND 
 SAL              rm64,reg_cl              X64,ND 
 SAL              rm64,imm8                X64,ND 
-SALC                                      8086,UNDOC 
+SALC             none                     8086,UNDOC 
 SAR              rm8,unity                8086 
 SAR              rm8,reg_cl               8086 
 SAR              rm8,imm8                 186 
@@ -1147,11 +1147,11 @@ SBB              mem,imm16                8086,LOCK
 SBB              mem,sbytedword32         386,LOCK,ND 
 SBB              mem,imm32                386,LOCK 
 SBB              rm8,imm                  8086,LOCK,ND,NOLONG 
-SCASB                                     8086 
-SCASD                                     386 
-SCASQ                                     X64 
-SCASW                                     8086 
-SFENCE                                    X64,AMD 
+SCASB            none                     8086 
+SCASD            none                     386 
+SCASQ            none                     X64 
+SCASW            none                     8086 
+SFENCE           none                     X64,AMD 
 SGDT             mem                      286 
 SHL              rm8,unity                8086 
 SHL              rm8,reg_cl               8086 
@@ -1208,22 +1208,22 @@ SLDT             reg16                    286
 SLDT             reg32                    386 
 SLDT             reg64                    X64,ND 
 SLDT             reg64                    X64 
-SKINIT                                    X64 
-SMI                                       386,UNDOC 
-SMINT                                     P6,CYRIX,ND 
-SMINTOLD                                  486,CYRIX,ND 
+SKINIT           none                     X64 
+SMI              none                     386,UNDOC 
+SMINT            none                     P6,CYRIX,ND 
+SMINTOLD         none                     486,CYRIX,ND 
 SMSW             mem                      286 
 SMSW             mem16                    286 
 SMSW             reg16                    286 
 SMSW             reg32                    386 
 SMSW             reg64                    X64 
-STC                                       8086 
-STD                                       8086 
-STI                                       8086 
-STOSB                                     8086 
-STOSD                                     386 
-STOSQ                                     X64 
-STOSW                                     8086 
+STC              none                     8086 
+STD              none                     8086 
+STI              none                     8086 
+STOSB            none                     8086 
+STOSD            none                     386 
+STOSQ            none                     X64 
+STOSW            none                     8086 
 STR              mem                      286,PROT 
 STR              mem16                    286,PROT 
 STR              reg16                    286,PROT 
@@ -1271,11 +1271,11 @@ SUB              rm8,imm                  8086,LOCK,ND,NOLONG
 SVDC             mem80,reg_sreg           486,CYRIXM 
 SVLDT            mem80                    486,CYRIXM,ND 
 SVTS             mem80                    486,CYRIXM 
-SWAPGS                                    X64 
-SYSCALL                                   P6,AMD 
-SYSENTER                                  P6 
-SYSEXIT                                   P6,PRIV 
-SYSRET                                    P6,PRIV,AMD 
+SWAPGS           none                     X64 
+SYSCALL          none                     P6,AMD 
+SYSENTER         none                     P6 
+SYSEXIT          none                     P6,PRIV 
+SYSRET           none                     P6,PRIV,AMD 
 TEST             mem,reg8                 8086 
 TEST             reg8,reg8                8086 
 TEST             mem,reg16                8086 
@@ -1299,11 +1299,11 @@ TEST             rm64,imm                 X64
 TEST             mem,imm8                 8086 
 TEST             mem,imm16                8086 
 TEST             mem,imm32                386 
-UD0                                       186,UNDOC 
-UD1                                       186,UNDOC 
-UD2B                                      186,UNDOC,ND 
-UD2                                       186 
-UD2A                                      186,ND 
+UD0              none                     186,UNDOC 
+UD1              none                     186,UNDOC 
+UD2B             none                     186,UNDOC,ND 
+UD2              none                     186 
+UD2A             none                     186,ND 
 UMOV             mem,reg8                 386,UNDOC,ND 
 UMOV             reg8,reg8                386,UNDOC,ND 
 UMOV             mem,reg16                386,UNDOC,ND 
@@ -1322,10 +1322,10 @@ VERR             reg16                    286,PROT
 VERW             mem                      286,PROT 
 VERW             mem16                    286,PROT 
 VERW             reg16                    286,PROT 
-FWAIT                                     8086 
-WBINVD                                    486,PRIV 
+FWAIT            none                     8086 
+WBINVD           none                     486,PRIV 
 WRSHR            rm32                     P6,CYRIXM 
-WRMSR                                     PENT,PRIV 
+WRMSR            none                     PENT,PRIV 
 XADD             mem,reg8                 486,LOCK 
 XADD             reg8,reg8                486 
 XADD             mem,reg16                486,LOCK 
@@ -1361,8 +1361,8 @@ XCHG             mem,reg32                386,LOCK
 XCHG             reg32,reg32              386 
 XCHG             mem,reg64                X64,LOCK 
 XCHG             reg64,reg64              X64 
-XLATB                                     8086 
-XLAT                                      8086 
+XLATB            none                     8086 
+XLAT             none                     8086 
 XOR              mem,reg8                 8086,LOCK 
 XOR              reg8,reg8                8086 
 XOR              mem,reg16                8086,LOCK 
@@ -1509,8 +1509,8 @@ FXSAVE64         mem                      X64,SSE,FPU
 
 ;B.1.5 XSAVE group (AVX and extended state)
 
-XGETBV                                    NEHALEM 
-XSETBV                                    NEHALEM,PRIV 
+XGETBV           none                     NEHALEM 
+XSETBV           none                     NEHALEM,PRIV 
 XSAVE            mem                      NEHALEM 
 XSAVE64          mem                      LONG,NEHALEM 
 XSAVEC           mem                      FUTURE 
@@ -1530,7 +1530,7 @@ PREFETCHNTA      mem8                     KATMAI
 PREFETCHT0       mem8                     KATMAI 
 PREFETCHT1       mem8                     KATMAI 
 PREFETCHT2       mem8                     KATMAI 
-SFENCE                                    KATMAI
+SFENCE           none                     KATMAI
 
 ;B.1.7 New MMX instructions introduced in Katmai
 
@@ -1567,8 +1567,8 @@ MOVNTDQ          mem,xmmreg               WILLAMETTE,SSE2,SO
 MOVNTI           mem,reg32                WILLAMETTE,SD 
 MOVNTI           mem,reg64                X64 
 MOVNTPD          mem,xmmreg               WILLAMETTE,SSE2,SO 
-LFENCE                                    WILLAMETTE,SSE2 
-MFENCE                                    WILLAMETTE,SSE2
+LFENCE           none                     WILLAMETTE,SSE2 
+MFENCE           none                     WILLAMETTE,SSE2
 
 ;B.1.10 Willamette MMX instructions (SSE2 SIMD Integer Instructions)
 
@@ -1777,24 +1777,24 @@ MOVSLDUP         xmmreg,xmmrm             PRESCOTT,SSE3
 
 ;B.1.13 VMX/SVM Instructions
 
-CLGI                                      VMX,AMD 
-STGI                                      VMX,AMD 
-VMCALL                                    VMX 
+CLGI             none                     VMX,AMD 
+STGI             none                     VMX,AMD 
+VMCALL           none                     VMX 
 VMCLEAR          mem                      VMX 
-VMFUNC                                    VMX 
-VMLAUNCH                                  VMX 
-VMLOAD                                    VMX,AMD 
-VMMCALL                                   VMX,AMD 
+VMFUNC           none                     VMX 
+VMLAUNCH         none                     VMX 
+VMLOAD           none                     VMX,AMD 
+VMMCALL          none                     VMX,AMD 
 VMPTRLD          mem                      VMX 
 VMPTRST          mem                      VMX 
 VMREAD           rm32,reg32               VMX,NOLONG,SD 
 VMREAD           rm64,reg64               X64,VMX 
-VMRESUME                                  VMX 
-VMRUN                                     VMX,AMD 
-VMSAVE                                    VMX,AMD 
+VMRESUME         none                     VMX 
+VMRUN            none                     VMX,AMD 
+VMSAVE           none                     VMX,AMD 
 VMWRITE          reg32,rm32               VMX,NOLONG,SD 
 VMWRITE          reg64,rm64               X64,VMX 
-VMXOFF                                    VMX 
+VMXOFF           none                     VMX 
 VMXON            mem                      VMX
 
 ;B.1.14 Extended Page Tables VMX instructions
@@ -1936,7 +1936,7 @@ POPCNT           reg64,rm64               NEHALEM,X64
 
 ;B.1.20 Intel SMX
 
-GETSEC                                    KATMAI
+GETSEC           none                     KATMAI
 
 ;B.1.21 Geode (Cyrix) 3DNow! additions
 
@@ -2654,8 +2654,8 @@ VXORPD           xmmreg,xmmreg*,xmmrm128  AVX,SANDYBRIDGE
 VXORPD           ymmreg,ymmreg*,ymmrm256  AVX,SANDYBRIDGE 
 VXORPS           xmmreg,xmmreg*,xmmrm128  AVX,SANDYBRIDGE 
 VXORPS           ymmreg,ymmreg*,ymmrm256  AVX,SANDYBRIDGE 
-VZEROALL                                  AVX,SANDYBRIDGE 
-VZEROUPPER                                AVX,SANDYBRIDGE
+VZEROALL         none                     AVX,SANDYBRIDGE 
+VZEROUPPER       none                     AVX,SANDYBRIDGE
 
 ;B.1.26 Intel Carry-Less Multiplication instructions (CLMUL)
 
@@ -2892,20 +2892,20 @@ ADOX             reg64,rm64               LONG,FUTURE
 RDSEED           reg16                    FUTURE 
 RDSEED           reg32                    FUTURE 
 RDSEED           reg64                    LONG,FUTURE 
-CLAC                                      PRIV,FUTURE 
-STAC                                      PRIV,FUTURE
+CLAC             none                     PRIV,FUTURE 
+STAC             none                     PRIV,FUTURE
 
 ;B.1.30 VIA (Centaur) security instructions
 
-XSTORE                                    PENT,CYRIX 
-XCRYPTECB                                 PENT,CYRIX 
-XCRYPTCBC                                 PENT,CYRIX 
-XCRYPTCTR                                 PENT,CYRIX 
-XCRYPTCFB                                 PENT,CYRIX 
-XCRYPTOFB                                 PENT,CYRIX 
-MONTMUL                                   PENT,CYRIX 
-XSHA1                                     PENT,CYRIX 
-XSHA256                                   PENT,CYRIX
+XSTORE           none                     PENT,CYRIX 
+XCRYPTECB        none                     PENT,CYRIX 
+XCRYPTCBC        none                     PENT,CYRIX 
+XCRYPTCTR        none                     PENT,CYRIX 
+XCRYPTCFB        none                     PENT,CYRIX 
+XCRYPTOFB        none                     PENT,CYRIX 
+MONTMUL          none                     PENT,CYRIX 
+XSHA1            none                     PENT,CYRIX 
+XSHA256          none                     PENT,CYRIX
 
 ;B.1.31 AMD Lightweight Profiling (LWP) instructions
 
@@ -3261,8 +3261,8 @@ XBEGIN           imm32                    FUTURE,RTM,NOLONG
 XBEGIN           imm32|near               FUTURE,RTM,NOLONG,ND 
 XBEGIN           imm64                    FUTURE,RTM,LONG 
 XBEGIN           imm64|near               FUTURE,RTM,LONG,ND 
-XEND                                      FUTURE,RTM 
-XTEST                                     FUTURE,HLE,RTM
+XEND             none                     FUTURE,RTM 
+XTEST            none                     FUTURE,HLE,RTM
 
 ;B.1.35 Intel BMI1 and BMI2 instructions, AMD TBM instructions
 
@@ -4945,8 +4945,8 @@ VXORPS           zmmreg|mask|z,zmmreg,zmmrm512|b32 AVX512DQ,FUTURE
 
 ;B.1.37 MJC PUBLIC END
 
-RDPKRU                                    X64,FUTURE 
-WRPKRU                                    X64,FUTURE 
+RDPKRU           none                     X64,FUTURE 
+WRPKRU           none                     X64,FUTURE 
 CLFLUSHOPT       mem                      FUTURE 
-CLZERO                                    X64,FUTURE,AMD
+CLZERO           none                     X64,FUTURE,AMD
 

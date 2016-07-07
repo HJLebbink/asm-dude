@@ -26,8 +26,8 @@ using System.Collections.ObjectModel;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using AsmDude.Tools;
-using Microsoft.VisualStudio.Text.Operations;
 using AsmTools;
+using System.Text;
 
 namespace AsmDude.SignatureHelp {
 
@@ -37,11 +37,9 @@ namespace AsmDude.SignatureHelp {
         private readonly SignatureStore _store;
 
         public AsmSignatureHelpSource(ITextBuffer textBuffer) {
-            AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource:constructor");
-
+            //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource:constructor");
             this._textBuffer = textBuffer;
             this._store = AsmDudeTools.Instance.signatureStore;
-            //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource:constructor: "+this._store.ToString());
         }
 
         public void AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures) {
@@ -51,7 +49,42 @@ namespace AsmDude.SignatureHelp {
             int position = session.GetTriggerPoint(_textBuffer).GetPosition(snapshot);
             ITrackingSpan applicableToSpan = _textBuffer.CurrentSnapshot.CreateTrackingSpan(new Span(position, 0), SpanTrackingMode.EdgeInclusive, 0);
 
-            this.fill(snapshot.GetLineFromPosition(position), position, signatures, applicableToSpan);
+            ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
+            string lineStr = line.GetText();
+            int positionInLine = position - line.Start;
+            //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: fill: lineStr=" + lineStr+ "; positionInLine=" + positionInLine);
+
+            var t = AsmSourceTools.parseLine(lineStr);
+            //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: fill: Mnemonic=" + t.Item2 + "; args=" + string.Join(",", t.Item3));
+
+            Operand[] operands = new Operand[t.Item3.Length];
+            for (int i = 0; i < t.Item3.Length; ++i) {
+                string opStr = t.Item3[i];
+                if (opStr.Length > 0) {
+                    operands[i] = new Operand(opStr);
+                }
+                //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: fill: args["+i+"]=" + operands[i]);
+            }
+
+            foreach (SignatureElement se in this._store.get(t.Item2)) {
+                bool allowed = false;
+                if (operands.Length == 0) {
+                    allowed = true;
+                } else {
+                    for (int i = 0; i < operands.Length; ++i) {
+                        if (se.isAllowed(operands[i], i)) {
+                            allowed = true;
+                            break;
+                        }
+                    }
+                }
+                if (allowed) {
+                    string description = AsmDudeTools.Instance.getDescription(se.mnemonic.ToString());
+                    signatures.Add(this.createSignature(_textBuffer, se, description, applicableToSpan));
+                } else {
+                    //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: fill: line=" + lineStr + " is not allowed. se=" + se);
+                }
+            }
         }
 
         public ISignature GetBestMatch(ISignatureHelpSession session) {
@@ -72,65 +105,32 @@ namespace AsmDude.SignatureHelp {
             return null;
         }
 
-        private void fill(ITextSnapshotLine line, int position, IList<ISignature> signatures, ITrackingSpan applicableToSpan) {
-
-            string lineStr = line.GetText();
-            int positionInLine = position - line.Start;
-            //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: fill: lineStr=" + lineStr+ "; positionInLine=" + positionInLine);
-
-            var t = AsmSourceTools.parseLine(lineStr);
-            //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: fill: Mnemonic=" + t.Item2 + "; args=" + string.Join(",", t.Item3));
-
-
-            Operand[] operands = new Operand[t.Item3.Length];
-            for (int i = 0; i < t.Item3.Length; ++i) {
-                string opStr = t.Item3[i];
-                if (opStr.Length > 0) {
-                    operands[i] = new Operand(opStr);
-                }
-                //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: fill: args["+i+"]=" + operands[i]);
-            }
-
-            foreach (SignatureElement se in this._store.get(t.Item2)) {
-                bool allowed = true;
-                for (int i = 0; i < operands.Length; ++i) {
-                    if (!se.isAllowed(operands[i], i)) {
-                        //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: fill: i="+i+"; Operand=" + operands[i] + " is not allowed. se="+se);
-                        allowed = false;
-                        break;
-                    }
-                }
-                if (allowed) {
-                    string description = AsmDudeTools.Instance.getDescription(se.mnemonic.ToString());
-                    signatures.Add(this.createSignature(_textBuffer, se, description, applicableToSpan));
-                }
-            }
-        }
-
         private AsmSignature createSignature(ITextBuffer textBuffer, SignatureElement signatureElement, string methodDoc, ITrackingSpan span) {
-            string methodSig = signatureElement.ToString();
+            int nOperands = signatureElement.operands.Count;
+            Span[] locus = new Span[nOperands];
+            string[] operandStr = new string[nOperands];
 
-            AsmSignature sig = new AsmSignature(textBuffer, methodSig, methodDoc, null);
+            StringBuilder sb = new StringBuilder();
+            sb.Append(signatureElement.mnemonic.ToString());
+            sb.Append(" ");
+            //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: createSignature: sb=" + sb.ToString());
+
+            for (int i = 0; i < nOperands; ++i) {
+                IList<OperandTypeEnum> operand = signatureElement.operands[i];
+                operandStr[i] = SignatureElement.ToString(operand, "|");
+                int locusStart = sb.Length;
+                sb.Append(operandStr[i]);
+                //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: createSignature: i="+i+"; sb=" + sb.ToString());
+                locus[i] = new Span(locusStart, sb.Length - locusStart);
+                if (i < nOperands - 1) sb.Append(", ");
+            }
+
+            AsmSignature sig = new AsmSignature(textBuffer, sb.ToString() + " ("+signatureElement.remark+")", methodDoc, null);
             textBuffer.Changed += new EventHandler<TextContentChangedEventArgs>(sig.OnSubjectBufferChanged);
 
-            //find the parameters in the method signature (expect OPCODE one, two, three)
-            string[] pars = methodSig.Split(new char[] { ',', ' ' });
             List<IParameter> paramList = new List<IParameter>();
-
-            int locusSearchStart = 0;
-            for (int i = 1; i < pars.Length; i++) {
-                string param = pars[i].Trim();
-
-                if (string.IsNullOrEmpty(param)) {
-                    continue;
-                }
-                //find where this parameter is located in the method signature
-                int locusStart = methodSig.IndexOf(param, locusSearchStart);
-                if (locusStart >= 0) {
-                    Span locus = new Span(locusStart, param.Length);
-                    locusSearchStart = locusStart + param.Length;
-                    paramList.Add(new AsmParameter(SignatureElement.getDoc(signatureElement.operands[i-1]), locus, param, sig));
-                }
+            for (int i = 0; i < nOperands; ++i) {
+                paramList.Add(new AsmParameter(SignatureElement.getDoc(signatureElement.operands[i]), locus[i], operandStr[i], sig));
             }
 
             sig.Parameters = new ReadOnlyCollection<IParameter>(paramList);

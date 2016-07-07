@@ -32,13 +32,14 @@ namespace AsmDude.SignatureHelp {
     //the data is retrieved from http://www.nasm.us/doc/nasmdocb.html
 
     public enum OperandTypeEnum : byte {
+        none,
         UNKNOWN,
 
-        MEM, MEM8, MEM16, MEM32, MEM64,
+        MEM, MEM8, MEM16, MEM32, MEM64, MEM80, MEM128, MEM256, MEM512,
         REG8, REG16, REG32, REG64,
         REG_AL, REG_AX, REG_EAX, REG_RAX,
         REG_CL, REG_CX, REG_ECX, REG_RCX,
-        REG_DX,
+        REG_DX, REG_EDX,
         REG_CS, REG_DS, REG_ES, REG_SS, REG_FS, REG_GS,
 
         IMM, IMM8, IMM16, IMM32, IMM64,
@@ -55,11 +56,26 @@ namespace AsmDude.SignatureHelp {
         near, far, short_ENUM,
         unity,
 
-        mask, z,
-        xmmreg, ymmreg, zmmreg,
-        xmmreg_star, ymmreg_star, zmmreg_star,
-        xmmrm128, ymmrm256, zmmrm512,
+        #region FPU
+        fpureg, to, fpu0, 
+        #endregion
+
+        #region SIMD
+        mask, z, kreg, sae, er,
+        krm8, krm16, krm32, krm64,
+        xmem32, xmem64, ymem32, ymem64, zmem32, zmem64,
+
+        REG_XMM0, MMXREG, xmmreg, ymmreg, zmmreg,
+
+        bndreg,
+
+        MMXRM, mmxrm64,
+
+        xmmrm, xmmrm8, xmmrm16, xmmrm32, xmmrm64, xmmrm128,
+        ymmrm, ymmrm256,
+        zmmrm512,
         b32, b64,
+        #endregion
 
         reg_sreg, mem_offs, reg_creg, reg_dreg, reg_treg,
         reg32na
@@ -68,6 +84,7 @@ namespace AsmDude.SignatureHelp {
     public class SignatureElement {
         public readonly Mnemonic mnemonic;
         public readonly IList<IList<OperandTypeEnum>> operands;
+        public string remark;
 
         public SignatureElement(Mnemonic mnem) {
             this.mnemonic = mnem;
@@ -88,7 +105,6 @@ namespace AsmDude.SignatureHelp {
         }
 
         private bool isAllowed_private(Operand op, OperandTypeEnum operandType) {
-
             switch (operandType) {
                 case OperandTypeEnum.UNKNOWN: return true;
                 case OperandTypeEnum.MEM: return op.isMem;
@@ -96,6 +112,11 @@ namespace AsmDude.SignatureHelp {
                 case OperandTypeEnum.MEM16: return (op.isMem && op.nBits == 16);
                 case OperandTypeEnum.MEM32: return (op.isMem && op.nBits == 32);
                 case OperandTypeEnum.MEM64: return (op.isMem && op.nBits == 64);
+                case OperandTypeEnum.MEM80: return (op.isMem && op.nBits == 80);
+                case OperandTypeEnum.MEM128: return (op.isMem && op.nBits == 128);
+                case OperandTypeEnum.MEM256: return (op.isMem && op.nBits == 256);
+                case OperandTypeEnum.MEM512: return (op.isMem && op.nBits == 512);
+
                 case OperandTypeEnum.REG8: return (op.isReg && op.nBits == 8);
                 case OperandTypeEnum.REG16: return (op.isReg && op.nBits == 16);
                 case OperandTypeEnum.REG32: return (op.isReg && op.nBits == 32);
@@ -109,6 +130,8 @@ namespace AsmDude.SignatureHelp {
                 case OperandTypeEnum.REG_ECX: return (op.isReg && op.rn == Rn.ECX);
                 case OperandTypeEnum.REG_RCX: return (op.isReg && op.rn == Rn.RCX);
                 case OperandTypeEnum.REG_DX:return (op.isReg && op.rn == Rn.DX);
+                case OperandTypeEnum.REG_EDX: return (op.isReg && op.rn == Rn.EDX);
+                case OperandTypeEnum.REG_XMM0: return (op.isReg && op.rn == Rn.XMM0);
 
                 case OperandTypeEnum.REG_CS: return (op.isReg && op.rn == Rn.CS);
                 case OperandTypeEnum.REG_DS: return (op.isReg && op.rn == Rn.DS);
@@ -155,10 +178,7 @@ namespace AsmDude.SignatureHelp {
                 case OperandTypeEnum.ymmreg: return (op.isReg && op.nBits == 256);
                 case OperandTypeEnum.zmmreg: return (op.isReg && op.nBits == 512);
 
-                case OperandTypeEnum.xmmreg_star: return (op.isReg && op.nBits == 128);
-                case OperandTypeEnum.ymmreg_star: return (op.isReg && op.nBits == 256);
-                case OperandTypeEnum.zmmreg_star: return (op.isReg && op.nBits == 512);
-
+                case OperandTypeEnum.xmmrm: return ((op.isReg || op.isMem) && op.nBits == 128);
                 case OperandTypeEnum.xmmrm128: return ((op.isReg || op.isMem) && op.nBits == 128);
                 case OperandTypeEnum.ymmrm256: return ((op.isReg || op.isMem) && op.nBits == 256);
                 case OperandTypeEnum.zmmrm512: return ((op.isReg || op.isMem) && op.nBits == 512);
@@ -172,9 +192,10 @@ namespace AsmDude.SignatureHelp {
                 case OperandTypeEnum.reg_treg: return true;
                 case OperandTypeEnum.reg32na: return true;
                 default:
+                    AsmDudeToolsStatic.Output("WARNING: SignatureStore:isAllowed_private: add " + operandType);
                     break;
             }
-            return false;
+            return true;
         }
 
         public static String ToString(OperandTypeEnum operandType) {
@@ -185,6 +206,11 @@ namespace AsmDude.SignatureHelp {
                 case OperandTypeEnum.MEM16: return "mem16";
                 case OperandTypeEnum.MEM32: return "mem32";
                 case OperandTypeEnum.MEM64: return "mem64";
+                case OperandTypeEnum.MEM80: return "mem80";
+                case OperandTypeEnum.MEM128: return "mem128";
+                case OperandTypeEnum.MEM256: return "mem256";
+                case OperandTypeEnum.MEM512: return "mem512";
+
                 case OperandTypeEnum.REG8: return "r8";
                 case OperandTypeEnum.REG16: return "r16";
                 case OperandTypeEnum.REG32: return "r32";
@@ -198,6 +224,7 @@ namespace AsmDude.SignatureHelp {
                 case OperandTypeEnum.REG_ECX: return "ECX";
                 case OperandTypeEnum.REG_RCX: return "RCX";
                 case OperandTypeEnum.REG_DX: return "DX";
+                case OperandTypeEnum.REG_EDX: return "EDX";
                 case OperandTypeEnum.REG_CS: return "CS";
                 case OperandTypeEnum.REG_DS: return "DS";
                 case OperandTypeEnum.REG_ES: return "ES";
@@ -232,12 +259,15 @@ namespace AsmDude.SignatureHelp {
                 case OperandTypeEnum.unity: return "unity";
                 case OperandTypeEnum.mask: return "mask";
                 case OperandTypeEnum.z: return "z";
+                case OperandTypeEnum.er: return "er";
+                case OperandTypeEnum.REG_XMM0: return "XMM0";
                 case OperandTypeEnum.xmmreg: return "xmm";
                 case OperandTypeEnum.ymmreg: return "ymm";
                 case OperandTypeEnum.zmmreg: return "zmm";
-                case OperandTypeEnum.xmmreg_star: return "xmm*";
-                case OperandTypeEnum.ymmreg_star: return "ymm*";
-                case OperandTypeEnum.zmmreg_star: return "zmm*";
+                case OperandTypeEnum.xmmrm: return "xmm/m128";
+                case OperandTypeEnum.xmmrm16: return "xmm/m16";
+                case OperandTypeEnum.xmmrm32: return "xmm/m32";
+                case OperandTypeEnum.xmmrm64: return "xmm/m64";
                 case OperandTypeEnum.xmmrm128: return "xmm/m128";
                 case OperandTypeEnum.ymmrm256: return "ymm/m256";
                 case OperandTypeEnum.zmmrm512: return "zmm/m512";
@@ -251,7 +281,8 @@ namespace AsmDude.SignatureHelp {
                 case OperandTypeEnum.reg32na: return "reg32na";
 
                 default:
-                    return "unknown";
+                    AsmDudeToolsStatic.Output("WARNING: SignatureStore:ToString: " + operandType);
+                    return operandType.ToString();
             }
         }
 
@@ -265,13 +296,16 @@ namespace AsmDude.SignatureHelp {
         }
 
         public static String getDoc(OperandTypeEnum operandType) {
-
             switch (operandType) {
                 case OperandTypeEnum.MEM: return "memory operand";
                 case OperandTypeEnum.MEM8: return "8-bits memory operand";
                 case OperandTypeEnum.MEM16: return "16-bits memory operand";
                 case OperandTypeEnum.MEM32: return "32-bits memory operand";
                 case OperandTypeEnum.MEM64: return "64-bits memory operand";
+                case OperandTypeEnum.MEM80: return "80-bits memory operand";
+                case OperandTypeEnum.MEM128: return "128-bits memory operand";
+                case OperandTypeEnum.MEM256: return "256-bits memory operand";
+                case OperandTypeEnum.MEM512: return "512-bits memory operand";
                 case OperandTypeEnum.REG8: return "8-bits register";
                 case OperandTypeEnum.REG16: return "16-bits register";
                 case OperandTypeEnum.REG32: return "32-bits register";
@@ -285,6 +319,7 @@ namespace AsmDude.SignatureHelp {
                 case OperandTypeEnum.REG_ECX: return "ECX register";
                 case OperandTypeEnum.REG_RCX: return "RCX register";
                 case OperandTypeEnum.REG_DX: return "DX register";
+                case OperandTypeEnum.REG_EDX: return "EDX register";
                 case OperandTypeEnum.REG_CS: return "CS register";
                 case OperandTypeEnum.REG_DS: return "DS register";
                 case OperandTypeEnum.REG_ES: return "ES register";
@@ -313,64 +348,79 @@ namespace AsmDude.SignatureHelp {
                 case OperandTypeEnum.sbytedword64: return "sbytedword64 constant";
                 case OperandTypeEnum.udword: return "udword constant";
                 case OperandTypeEnum.sdword: return "sdword constant";
-                case OperandTypeEnum.near: return "";
-                case OperandTypeEnum.far: return "";
-                case OperandTypeEnum.short_ENUM: return "";
-                case OperandTypeEnum.unity: return "";
-                case OperandTypeEnum.mask: return "";
-                case OperandTypeEnum.z: return "";
+                case OperandTypeEnum.near: return "near ptr";
+                case OperandTypeEnum.far: return "far ptr";
+                case OperandTypeEnum.short_ENUM: return "short";
+                case OperandTypeEnum.unity: return "unity";
+                case OperandTypeEnum.mask: return "mask register";
+                case OperandTypeEnum.z: return "z";
+                case OperandTypeEnum.er: return "er";
+                case OperandTypeEnum.REG_XMM0: return "XMM0 register";
                 case OperandTypeEnum.xmmreg: return "xmm register";
                 case OperandTypeEnum.ymmreg: return "ymm register";
                 case OperandTypeEnum.zmmreg: return "zmm register";
-                case OperandTypeEnum.xmmreg_star: return "xmm register";
-                case OperandTypeEnum.ymmreg_star: return "ymm register";
-                case OperandTypeEnum.zmmreg_star: return "zmm register";
-                case OperandTypeEnum.xmmrm128: return "xmm register or memory operand";
-                case OperandTypeEnum.ymmrm256: return "xmm register or memory operand";
-                case OperandTypeEnum.zmmrm512: return "xmm register or memory operand";
-                case OperandTypeEnum.b32: return "";
-                case OperandTypeEnum.b64: return "";
-                case OperandTypeEnum.reg_sreg: return "";
-                case OperandTypeEnum.mem_offs: return "";
-                case OperandTypeEnum.reg_creg: return "";
-                case OperandTypeEnum.reg_dreg: return "";
-                case OperandTypeEnum.reg_treg: return "";
-                case OperandTypeEnum.reg32na: return "";
+
+                case OperandTypeEnum.xmmrm: return "xmm register or memory operand";
+                case OperandTypeEnum.xmmrm16: return "xmm register or 16-bits memory operand";
+                case OperandTypeEnum.xmmrm32: return "xmm register or 32-bits memory operand";
+                case OperandTypeEnum.xmmrm64: return "xmm register or 64-bits memory operand";
+                case OperandTypeEnum.xmmrm128: return "xmm register or 128-bits memory operand";
+                case OperandTypeEnum.ymmrm256: return "ymm register or 256-bits memory operand";
+                case OperandTypeEnum.zmmrm512: return "zmm register or 512-bits memory operand";
+                case OperandTypeEnum.b32: return "b32";
+                case OperandTypeEnum.b64: return "b64";
+                case OperandTypeEnum.reg_sreg: return "reg_sreg";
+                case OperandTypeEnum.mem_offs: return "mem_offs";
+                case OperandTypeEnum.reg_creg: return "reg_creg";
+                case OperandTypeEnum.reg_dreg: return "reg_dreg";
+                case OperandTypeEnum.reg_treg: return "reg_treg";
+                case OperandTypeEnum.reg32na: return "reg32na";
                 default:
-                    return "";
+                    AsmDudeToolsStatic.Output("WARNING: SignatureStore:getDoc: add " + operandType);
+                    return operandType.ToString();
                     break;
             }
+        }
 
+        public static String ToString(IList<OperandTypeEnum> list, string concat) {
+            int nOperands = list.Count;
+            if (nOperands == 0) {
+                return "";
+            } else if (nOperands == 1) {
+                return ToString(list[0]);
+            } else {
+                StringBuilder sb = new StringBuilder();
+                for (int i=0; i<nOperands; ++i) {
+                    sb.Append(ToString(list[i]));
+                    if (i < nOperands - 1) sb.Append(concat);
+                }
+                return sb.ToString();
+            }
         }
 
         public override String ToString() {
-            string[] str = new string[this.operands.Count];
-            int counter1 = 0;
-            foreach (IList<OperandTypeEnum> op1 in this.operands) {
-                int counter2 = 0;
-                string[] str2 = new string[op1.Count];
-                foreach (OperandTypeEnum op2 in op1) {
-                    str2[counter2] = SignatureElement.ToString(op2);
-                }
-                str[counter1] = string.Join("|", str2);
-                counter1++;
+            StringBuilder sb = new StringBuilder(this.mnemonic.ToString() + " ");
+            int nOperands = this.operands.Count;
+            for (int i = 0; i < nOperands; ++i) {
+                sb.Append(ToString(this.operands[i], "|"));
+                if (i < nOperands - 1) sb.Append(", ");
             }
-            return this.mnemonic + " " + string.Join(",", str);
+            return sb.ToString();
         }
     }
 
     public class SignatureStore {
         private readonly IDictionary<Mnemonic, IList<SignatureElement>> _data;
 
-        public SignatureStore(string fileName) {
+        public SignatureStore(string filename) {
             this._data = new Dictionary<Mnemonic, IList<SignatureElement>>();
-            this.load(fileName);
+            this.load(filename);
         }
 
         private void load(string filename) {
+            AsmDudeToolsStatic.Output("INFO: SignatureStore:load: filename=" + filename);
             try {
                 System.IO.StreamReader file = new System.IO.StreamReader(filename);
-
                 string line;
                 while ((line = file.ReadLine()) != null) {
                     if ((line.Length > 0) && (!line.StartsWith(";"))) {
@@ -379,23 +429,32 @@ namespace AsmDude.SignatureHelp {
 
                         Mnemonic mnemonic = AsmSourceTools.parseMnemonic(s[0]);
                         if (mnemonic == Mnemonic.UNKNOWN) {
-                            //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource:load: unknown mnemonic in line" + line);
+                            AsmDudeToolsStatic.Output("WARNING: SignatureStore:load: unknown mnemonic in line" + line);
                         } else {
-                            //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource:load: mnemonic " + mnemonic +"; s.Length="+s.Length);
                             SignatureElement se = new SignatureElement(mnemonic);
 
                             if (s.Length == 3) {
                                 foreach (string operandStr in s[1].Split(',')) {
                                     if (operandStr.Length > 0) {
-                                        //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource:load: operandStr " + operandStr);
+                                        //AsmDudeToolsStatic.Output("INFO: SignatureStore:load: operandStr " + operandStr);
 
                                         IList<OperandTypeEnum> operandList = new List<OperandTypeEnum>();
                                         foreach (string operand2Str in operandStr.Split('|')) {
-                                            operandList.Add(parseOperandTypeEnum(operand2Str));
+                                            OperandTypeEnum operandType = parseOperandTypeEnum(operand2Str);
+                                            if ((operandType == OperandTypeEnum.none) || (operandType == OperandTypeEnum.UNKNOWN)) {
+                                                // do nothing
+                                            } else {
+                                                operandList.Add(operandType);
+                                            }
                                         }
-                                        se.operands.Add(operandList);
+                                        if (operandList.Count > 0) {
+                                            se.operands.Add(operandList);
+                                        }
                                     }
                                 }
+                                se.remark = s[2];
+                            } else {
+                                AsmDudeToolsStatic.Output("INFO: SignatureStore:load: mnemonic " + mnemonic +"; s.Length="+s.Length);
                             }
 
                             IList<SignatureElement> signatureElementList = null;
@@ -436,11 +495,17 @@ namespace AsmDude.SignatureHelp {
 
         private OperandTypeEnum parseOperandTypeEnum(string str) {
             switch (str.ToUpper()) {
+                case "NONE": return OperandTypeEnum.none;
+
                 case "MEM": return OperandTypeEnum.MEM;
                 case "MEM8": return OperandTypeEnum.MEM8;
                 case "MEM16": return OperandTypeEnum.MEM16;
                 case "MEM32": return OperandTypeEnum.MEM32;
                 case "MEM64": return OperandTypeEnum.MEM64;
+                case "MEM80": return OperandTypeEnum.MEM80;
+                case "MEM128": return OperandTypeEnum.MEM128;
+                case "MEM256": return OperandTypeEnum.MEM256;
+                case "MEM512": return OperandTypeEnum.MEM512;
 
                 case "REG8": return OperandTypeEnum.REG8;
                 case "REG16": return OperandTypeEnum.REG16;
@@ -458,6 +523,7 @@ namespace AsmDude.SignatureHelp {
                 case "REG_RCX": return OperandTypeEnum.REG_RCX;
 
                 case "REG_DX": return OperandTypeEnum.REG_DX;
+                case "REG_EDX": return OperandTypeEnum.REG_EDX;
 
                 case "REG_CS": return OperandTypeEnum.REG_CS;
                 case "REG_DS": return OperandTypeEnum.REG_DS;
@@ -498,18 +564,58 @@ namespace AsmDude.SignatureHelp {
                 case "SHORT": return OperandTypeEnum.short_ENUM;
                 case "UNITY": return OperandTypeEnum.unity;
 
+                case "FPU0": return OperandTypeEnum.fpu0;
+                case "FPUREG": return OperandTypeEnum.fpureg;
+                case "TO": return OperandTypeEnum.to;
+
                 case "MASK": return OperandTypeEnum.mask;
                 case "Z": return OperandTypeEnum.z;
+                case "KREG": return OperandTypeEnum.kreg;
+                case "SAE": return OperandTypeEnum.sae;
+                case "ER": return OperandTypeEnum.er;
+                    
+                case "KRM8": return OperandTypeEnum.krm8;
+                case "KRM16": return OperandTypeEnum.krm16;
+                case "KRM32": return OperandTypeEnum.krm32;
+                case "KRM64": return OperandTypeEnum.krm64;
 
-                case "XMMREG": return OperandTypeEnum.xmmreg;
-                case "YMMREG": return OperandTypeEnum.ymmreg;
-                case "ZMMREG": return OperandTypeEnum.zmmreg;
-                case "XMMREG*": return OperandTypeEnum.xmmreg_star;
-                case "YMMREG*": return OperandTypeEnum.ymmreg_star;
-                case "ZMMREG*": return OperandTypeEnum.zmmreg_star;
-                case "XMMRM128": return OperandTypeEnum.xmmrm128;
-                case "YMMRM256": return OperandTypeEnum.ymmrm256;
+                case "XMEM32": return OperandTypeEnum.xmem32;
+                case "XMEM64": return OperandTypeEnum.xmem64;
+                case "YMEM32": return OperandTypeEnum.ymem32;
+                case "YMEM64": return OperandTypeEnum.ymem64;
+                case "ZMEM32": return OperandTypeEnum.zmem32;
+                case "ZMEM64": return OperandTypeEnum.zmem64;
+
+                case "XMM0": return OperandTypeEnum.REG_XMM0;
+                case "MMXREG": return OperandTypeEnum.MMXREG;
+                case "XMMREG":
+                case "XMMREG*": return OperandTypeEnum.xmmreg;
+                case "YMMREG":
+                case "YMMREG*": return OperandTypeEnum.ymmreg;
+                case "ZMMREG":
+                case "ZMMREG*": return OperandTypeEnum.zmmreg;
+
+                case "BNDREG": return OperandTypeEnum.bndreg;
+
+                case "MMXRM": return OperandTypeEnum.MMXRM;
+                case "MMXRM64": return OperandTypeEnum.mmxrm64;
+
+                case "XMMRM": return OperandTypeEnum.xmmrm;
+                case "XMMRM8": return OperandTypeEnum.xmmrm8;
+                case "XMMRM16": return OperandTypeEnum.xmmrm16;
+                case "XMMRM32":
+                case "XMMRM32*": return OperandTypeEnum.xmmrm32;
+                case "XMMRM64*":
+                case "XMMRM64": return OperandTypeEnum.xmmrm64;
+                case "XMMRM128":
+                case "XMMRM128*": return OperandTypeEnum.xmmrm128;
+
+                case "YMMRM": return OperandTypeEnum.ymmrm;
+                case "YMMRM256": 
+                case "YMMRM256*": return OperandTypeEnum.ymmrm256;
+
                 case "ZMMRM512": return OperandTypeEnum.zmmrm512;
+
                 case "B32": return OperandTypeEnum.b32;
                 case "B64": return OperandTypeEnum.b64;
 

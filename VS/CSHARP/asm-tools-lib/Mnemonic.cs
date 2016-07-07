@@ -520,11 +520,1598 @@ namespace AsmTools {
         TZCNT,
         #endregion
 
+        #region other
+        ARPL,
+        BB0_RESET,
+        BB1_RESET,
+        CDQE,
+        CLTS,
+        CMPSQ,
+        CMPXCHG486,
+        CMPXCHG16B,
+        CPU_READ,
+        CPU_WRITE,
+        CQO,
+        DMINT,
+        EMMS,
+        EQU,
+        F2XM1,
+        FABS,
+        FADD,
+        FADDP,
+        FBLD,
+        FBSTP,
+        FCHS,
+        FCLEX,
+        FCMOVB,
+        FCMOVBE,
+        FCMOVE,
+        FCMOVNB,
+        FCMOVNBE,
+        FCMOVNE,
+        FCMOVNU,
+        FCMOVU,
+        FCOM,
+        FCOMI,
+        FCOMIP,
+        FCOMP,
+        FCOMPP,
+        FCOS,
+        FDECSTP,
+        FDISI,
+        FDIV,
+        FDIVP,
+        FDIVR,
+        FDIVRP,
+        FEMMS,
+        FENI,
+        FFREE,
+        FFREEP,
+        FIADD,
+        FICOM,
+        FICOMP,
+        FIDIV,
+        FIDIVR,
+        FILD,
+        FIMUL,
+        FINCSTP,
+        FINIT,
+        FIST,
+        FISTP,
+        FISTTP,
+        FISUB,
+        FISUBR,
+        FLD,
+        FLD1,
+        FLDCW,
+        FLDENV,
+        FLDL2E,
+        FLDL2T,
+        FLDLG2,
+        FLDLN2,
+        FLDPI,
+        FLDZ,
+        FMUL,
+        FMULP,
+        FNCLEX,
+        FNDISI,
+        FNENI,
+        FNINIT,
+        FNOP,
+        FNSAVE,
+        FNSTCW,
+        FNSTENV,
+        FNSTSW,
+        FPATAN,
+        FPREM,
+        FPREM1,
+        FPTAN,
+        FRNDINT,
+        FRSTOR,
+        FSAVE,
+        FSCALE,
+        FSETPM,
+        FSIN,
+        FSINCOS,
+        FSQRT,
+        FST,
+        FSTCW,
+        FSTENV,
+        FSTP,
+        FSTSW,
+        FSUB,
+        FSUBP,
+        FSUBR,
+        FSUBRP,
+        FTST,
+        FUCOM,
+        FUCOMI,
+        FUCOMIP,
+        FUCOMP,
+        FUCOMPP,
+        FXAM,
+        FXCH,
+        FXTRACT,
+        FYL2X,
+        FYL2XP1,
+        HLT,
+        IBTS,
+        ICEBP,
+        IN,
+        INCBIN,
+        INT01,
+        INT1,
+        INT03,
+        INT3,
+        INVD,
+        INVPCID,
+        INVLPG,
+        INVLPGA,
+        IRETD,
+        IRETQ,
+        IRETW,
+        JMPE,
+        LAR,
+        LFENCE,
+        LGDT,
+        LIDT,
+        LLDT,
+        LMSW,
+        LOADALL,
+        LOADALL286,
+        LODSQ,
+        LSL,
+        LTR,
+        #endregion
+
         #region SSE
-        /// <summary>XXX</summary>
+        MFENCE,
+        MONITOR,
+        MONITORX,
+        MOVD,
+        MOVQ,
+        MOVSQ,
+        MWAIT,
+        MWAITX,
+        PACKSSDW,
+        PACKSSWB,
+        PACKUSWB,
+        PADDB,
+        PADDD,
+        PADDSB,
+        PADDSIW,
+        PADDSW,
+        PADDUSB,
+        PADDUSW,
+        PADDW,
+        PAND,
+        PANDN,
+        PAUSE,
+        PAVEB,
+        PAVGUSB,
+        PCMPEQB,
+        PCMPEQD,
+        PCMPEQW,
+        PCMPGTB,
+        PCMPGTD,
+        PCMPGTW,
+        PDISTIB,
+        PF2ID,
+        PFACC,
+        PFADD,
+        PFCMPEQ,
+        PFCMPGE,
+        PFCMPGT,
+        PFMAX,
+        PFMIN,
+        PFMUL,
+        PFRCP,
+        PFRCPIT1,
+        PFRCPIT2,
+        PFRSQIT1,
+        PFRSQRT,
+        PFSUB,
+        PFSUBR,
+        PI2FD,
+        PMACHRIW,
+        PMADDWD,
+        PMAGW,
+        PMULHRIW,
+        PMULHRWA,
+        PMULHRWC,
+        PMULHW,
+        PMULLW,
+        PMVGEZB,
+        PMVLZB,
+        PMVNZB,
+        PMVZB,
+        POPAW,
+        POPFQ,
+        POPFW,
+        POR,
+        PREFETCH,
+        PSLLD,
+        PSLLQ,
+        PSLLW,
+        PSRAD,
+        PSRAW,
+        PSRLD,
+        PSRLQ,
+        PSRLW,
+        PSUBB,
+        PSUBD,
+        PSUBSB,
+        PSUBSIW,
+        PSUBSW,
+        PSUBUSB,
+        PSUBUSW,
+        PSUBW,
+        PUNPCKHBW,
+        PUNPCKHDQ,
+        PUNPCKHWD,
+        PUNPCKLBW,
+        PUNPCKLDQ,
+        PUNPCKLWD,
+        PUSHAW,
+        PUSHFQ,
+        PUSHFW,
+        PXOR,
+        RDSHR,
+        RDMSR,
+        RDPMC,
+        RDTSC,
+        RDTSCP,
+        RETF,
+        RETN,
+        RDM,
+        RSDC,
+        RSLDT,
+        RSM,
+        RSTS,
+        SALC,
+        SCASQ,
+        SFENCE,
+        SGDT,
+        SIDT,
+        SLDT,
+        SKINIT,
+        SMI,
+        SMINT,
+        SMINTOLD,
+        SMSW,
+        STOSQ,
+        STR,
+        SVDC,
+        SVLDT,
+        SVTS,
+        SWAPGS,
+        SYSCALL,
+        SYSENTER,
+        SYSEXIT,
+        SYSRET,
+        UD0,
+        UD1,
+        UD2B,
+        UD2A,
+        UMOV,
+        VERR,
+        VERW,
+        FWAIT,
+        WBINVD,
+        WRSHR,
+        WRMSR,
+        XBTS,
+        CMOVCC,
+        JCC,
+        SETCC,
+        ADDPS,
+        ADDSS,
+        ANDNPS,
+        ANDPS,
+        CMPEQPS,
+        CMPEQSS,
+        CMPLEPS,
+        CMPLESS,
+        CMPLTPS,
+        CMPLTSS,
+        CMPNEQPS,
+        CMPNEQSS,
+        CMPNLEPS,
+        CMPNLESS,
+        CMPNLTPS,
+        CMPNLTSS,
+        CMPORDPS,
+        CMPORDSS,
+        CMPUNORDPS,
+        CMPUNORDSS,
+        CMPPS,
+        CMPSS,
+        COMISS,
+        CVTPI2PS,
+        CVTPS2PI,
+        CVTSI2SS,
+        CVTSS2SI,
+        CVTTPS2PI,
+        CVTTSS2SI,
+        DIVPS,
+        DIVSS,
+        LDMXCSR,
+        MAXPS,
+        MAXSS,
+        MINPS,
+        MINSS,
+        MOVAPS,
+        MOVHPS,
+        MOVLHPS,
+        MOVLPS,
+        MOVHLPS,
+        MOVMSKPS,
+        MOVNTPS,
+        MOVSS,
+        MOVUPS,
+        MULPS,
+        MULSS,
+        ORPS,
+        RCPPS,
+        RCPSS,
+        RSQRTPS,
+        RSQRTSS,
+        SHUFPS,
+        SQRTPS,
+        SQRTSS,
+        STMXCSR,
+        SUBPS,
+        SUBSS,
+        UCOMISS,
+        UNPCKHPS,
+        UNPCKLPS,
+        FXRSTOR,
+        FXRSTOR64,
+        FXSAVE,
+        FXSAVE64,
         XORPS,
-        /// <summary>XXX</summary>
-        XORPD
+        XORPD,
+        XSETBV,
+        XSAVE64,
+        XSAVEC64,
+        XSAVEOPT64,
+        XSAVES,
+        XSAVES64,
+        XRSTOR64,
+        XRSTORS,
+        XRSTORS64,
+        PREFETCHNTA,
+        PREFETCHT0,
+        PREFETCHT1,
+        PREFETCHT2,
+        MASKMOVQ,
+        MOVNTQ,
+        PAVGB,
+        PAVGW,
+        PEXTRW,
+        PINSRW,
+        PMAXSW,
+        PMAXUB,
+        PMINSW,
+        PMINUB,
+        PMOVMSKB,
+        PMULHUW,
+        PSADBW,
+        PSHUFW,
+        PF2IW,
+        PFNACC,
+        PFPNACC,
+        PI2FW,
+        PSWAPD,
+        MASKMOVDQU,
+        MOVNTDQ,
+        MOVNTI,
+        MOVNTPD,
+        MOVDQA,
+        MOVDQU,
+        MOVDQ2Q,
+        MOVQ2DQ,
+        PADDQ,
+        PMULUDQ,
+        PSHUFD,
+        PSHUFHW,
+        PSHUFLW,
+        PSLLDQ,
+        PSRLDQ,
+        PSUBQ,
+        PUNPCKHQDQ,
+        PUNPCKLQDQ,
+        ADDPD,
+        ADDSD,
+        ANDNPD,
+        ANDPD,
+        CMPEQPD,
+        CMPEQSD,
+        CMPLEPD,
+        CMPLESD,
+        CMPLTPD,
+        CMPLTSD,
+        CMPNEQPD,
+        CMPNEQSD,
+        CMPNLEPD,
+        CMPNLESD,
+        CMPNLTPD,
+        CMPNLTSD,
+        CMPORDPD,
+        CMPORDSD,
+        CMPUNORDPD,
+        CMPUNORDSD,
+        CMPPD,
+        COMISD,
+        CVTDQ2PD,
+        CVTDQ2PS,
+        CVTPD2DQ,
+        CVTPD2PI,
+        CVTPD2PS,
+        CVTPI2PD,
+        CVTPS2DQ,
+        CVTPS2PD,
+        CVTSD2SI,
+        CVTSD2SS,
+        CVTSI2SD,
+        CVTSS2SD,
+        CVTTPD2PI,
+        CVTTPD2DQ,
+        CVTTPS2DQ,
+        CVTTSD2SI,
+        DIVPD,
+        DIVSD,
+        MAXPD,
+        MAXSD,
+        MINPD,
+        MINSD,
+        MOVAPD,
+        MOVHPD,
+        MOVLPD,
+        MOVMSKPD,
+        MOVUPD,
+        MULPD,
+        MULSD,
+        ORPD,
+        SHUFPD,
+        SQRTPD,
+        SQRTSD,
+        SUBPD,
+        SUBSD,
+        UCOMISD,
+        UNPCKHPD,
+        UNPCKLPD,
+        ADDSUBPD,
+        ADDSUBPS,
+        HADDPD,
+        HADDPS,
+        HSUBPD,
+        HSUBPS,
+        LDDQU,
+        MOVDDUP,
+        MOVSHDUP,
+        MOVSLDUP,
+        CLGI,
+        STGI,
+        VMCALL,
+        VMCLEAR,
+        VMFUNC,
+        VMLAUNCH,
+        VMLOAD,
+        VMMCALL,
+        VMPTRLD,
+        VMPTRST,
+        VMREAD,
+        VMRESUME,
+        VMRUN,
+        VMSAVE,
+        VMWRITE,
+        VMXOFF,
+        VMXON,
+        INVEPT,
+        INVVPID,
+        PABSB,
+        PABSW,
+        PABSD,
+        PALIGNR,
+        PHADDW,
+        PHADDD,
+        PHADDSW,
+        PHSUBW,
+        PHSUBD,
+        PHSUBSW,
+        PMADDUBSW,
+        PMULHRSW,
+        PSHUFB,
+        PSIGNB,
+        PSIGNW,
+        PSIGND,
+        EXTRQ,
+        INSERTQ,
+        MOVNTSD,
+        MOVNTSS,
+        BLENDPD,
+        BLENDPS,
+        BLENDVPD,
+        BLENDVPS,
+        DPPD,
+        DPPS,
+        EXTRACTPS,
+        INSERTPS,
+        MOVNTDQA,
+        MPSADBW,
+        PACKUSDW,
+        PBLENDVB,
+        PBLENDW,
+        PCMPEQQ,
+        PEXTRB,
+        PEXTRD,
+        PEXTRQ,
+        PHMINPOSUW,
+        PINSRB,
+        PINSRD,
+        PINSRQ,
+        PMAXSB,
+        PMAXSD,
+        PMAXUD,
+        PMAXUW,
+        PMINSB,
+        PMINSD,
+        PMINUD,
+        PMINUW,
+        PMOVSXBW,
+        PMOVSXBD,
+        PMOVSXBQ,
+        PMOVSXWD,
+        PMOVSXWQ,
+        PMOVSXDQ,
+        PMOVZXBW,
+        PMOVZXBD,
+        PMOVZXBQ,
+        PMOVZXWD,
+        PMOVZXWQ,
+        PMOVZXDQ,
+        PMULDQ,
+        PMULLD,
+        PTEST,
+        ROUNDPD,
+        ROUNDPS,
+        ROUNDSD,
+        ROUNDSS,
+        PCMPESTRI,
+        PCMPESTRM,
+        PCMPISTRI,
+        PCMPISTRM,
+        PCMPGTQ,
+        GETSEC,
+        PFRCPV,
+        PFRSQRTV,
+        AESENC,
+        AESENCLAST,
+        AESDEC,
+        AESDECLAST,
+        AESIMC,
+        AESKEYGENASSIST,
+        VAESENC,
+        VAESENCLAST,
+        VAESDEC,
+        VAESDECLAST,
+        VAESIMC,
+        VAESKEYGENASSIST,
+        VADDPD,
+        VADDPS,
+        VADDSD,
+        VADDSS,
+        VADDSUBPD,
+        VADDSUBPS,
+        VANDPD,
+        VANDPS,
+        VANDNPD,
+        VANDNPS,
+        VBLENDPD,
+        VBLENDPS,
+        VBLENDVPD,
+        VBLENDVPS,
+        VBROADCASTSS,
+        VBROADCASTSD,
+        VBROADCASTF128,
+        VCMPEQ_OSPD,
+        VCMPEQPD,
+        VCMPLT_OSPD,
+        VCMPLTPD,
+        VCMPLE_OSPD,
+        VCMPLEPD,
+        VCMPUNORD_QPD,
+        VCMPUNORDPD,
+        VCMPNEQ_UQPD,
+        VCMPNEQPD,
+        VCMPNLT_USPD,
+        VCMPNLTPD,
+        VCMPNLE_USPD,
+        VCMPNLEPD,
+        VCMPORD_QPD,
+        VCMPORDPD,
+        VCMPEQ_UQPD,
+        VCMPNGE_USPD,
+        VCMPNGEPD,
+        VCMPNGT_USPD,
+        VCMPNGTPD,
+        VCMPFALSE_OQPD,
+        VCMPFALSEPD,
+        VCMPNEQ_OQPD,
+        VCMPGE_OSPD,
+        VCMPGEPD,
+        VCMPGT_OSPD,
+        VCMPGTPD,
+        VCMPTRUE_UQPD,
+        VCMPTRUEPD,
+        VCMPLT_OQPD,
+        VCMPLE_OQPD,
+        VCMPUNORD_SPD,
+        VCMPNEQ_USPD,
+        VCMPNLT_UQPD,
+        VCMPNLE_UQPD,
+        VCMPORD_SPD,
+        VCMPEQ_USPD,
+        VCMPNGE_UQPD,
+        VCMPNGT_UQPD,
+        VCMPFALSE_OSPD,
+        VCMPNEQ_OSPD,
+        VCMPGE_OQPD,
+        VCMPGT_OQPD,
+        VCMPTRUE_USPD,
+        VCMPPD,
+        VCMPEQ_OSPS,
+        VCMPEQPS,
+        VCMPLT_OSPS,
+        VCMPLTPS,
+        VCMPLE_OSPS,
+        VCMPLEPS,
+        VCMPUNORD_QPS,
+        VCMPUNORDPS,
+        VCMPNEQ_UQPS,
+        VCMPNEQPS,
+        VCMPNLT_USPS,
+        VCMPNLTPS,
+        VCMPNLE_USPS,
+        VCMPNLEPS,
+        VCMPORD_QPS,
+        VCMPORDPS,
+        VCMPEQ_UQPS,
+        VCMPNGE_USPS,
+        VCMPNGEPS,
+        VCMPNGT_USPS,
+        VCMPNGTPS,
+        VCMPFALSE_OQPS,
+        VCMPFALSEPS,
+        VCMPNEQ_OQPS,
+        VCMPGE_OSPS,
+        VCMPGEPS,
+        VCMPGT_OSPS,
+        VCMPGTPS,
+        VCMPTRUE_UQPS,
+        VCMPTRUEPS,
+        VCMPLT_OQPS,
+        VCMPLE_OQPS,
+        VCMPUNORD_SPS,
+        VCMPNEQ_USPS,
+        VCMPNLT_UQPS,
+        VCMPNLE_UQPS,
+        VCMPORD_SPS,
+        VCMPEQ_USPS,
+        VCMPNGE_UQPS,
+        VCMPNGT_UQPS,
+        VCMPFALSE_OSPS,
+        VCMPNEQ_OSPS,
+        VCMPGE_OQPS,
+        VCMPGT_OQPS,
+        VCMPTRUE_USPS,
+        VCMPPS,
+        VCMPEQ_OSSD,
+        VCMPEQSD,
+        VCMPLT_OSSD,
+        VCMPLTSD,
+        VCMPLE_OSSD,
+        VCMPLESD,
+        VCMPUNORD_QSD,
+        VCMPUNORDSD,
+        VCMPNEQ_UQSD,
+        VCMPNEQSD,
+        VCMPNLT_USSD,
+        VCMPNLTSD,
+        VCMPNLE_USSD,
+        VCMPNLESD,
+        VCMPORD_QSD,
+        VCMPORDSD,
+        VCMPEQ_UQSD,
+        VCMPNGE_USSD,
+        VCMPNGESD,
+        VCMPNGT_USSD,
+        VCMPNGTSD,
+        VCMPFALSE_OQSD,
+        VCMPFALSESD,
+        VCMPNEQ_OQSD,
+        VCMPGE_OSSD,
+        VCMPGESD,
+        VCMPGT_OSSD,
+        VCMPGTSD,
+        VCMPTRUE_UQSD,
+        VCMPTRUESD,
+        VCMPLT_OQSD,
+        VCMPLE_OQSD,
+        VCMPUNORD_SSD,
+        VCMPNEQ_USSD,
+        VCMPNLT_UQSD,
+        VCMPNLE_UQSD,
+        VCMPORD_SSD,
+        VCMPEQ_USSD,
+        VCMPNGE_UQSD,
+        VCMPNGT_UQSD,
+        VCMPFALSE_OSSD,
+        VCMPNEQ_OSSD,
+        VCMPGE_OQSD,
+        VCMPGT_OQSD,
+        VCMPTRUE_USSD,
+        VCMPSD,
+        VCMPEQ_OSSS,
+        VCMPEQSS,
+        VCMPLT_OSSS,
+        VCMPLTSS,
+        VCMPLE_OSSS,
+        VCMPLESS,
+        VCMPUNORD_QSS,
+        VCMPUNORDSS,
+        VCMPNEQ_UQSS,
+        VCMPNEQSS,
+        VCMPNLT_USSS,
+        VCMPNLTSS,
+        VCMPNLE_USSS,
+        VCMPNLESS,
+        VCMPORD_QSS,
+        VCMPORDSS,
+        VCMPEQ_UQSS,
+        VCMPNGE_USSS,
+        VCMPNGESS,
+        VCMPNGT_USSS,
+        VCMPNGTSS,
+        VCMPFALSE_OQSS,
+        VCMPFALSESS,
+        VCMPNEQ_OQSS,
+        VCMPGE_OSSS,
+        VCMPGESS,
+        VCMPGT_OSSS,
+        VCMPGTSS,
+        VCMPTRUE_UQSS,
+        VCMPTRUESS,
+        VCMPLT_OQSS,
+        VCMPLE_OQSS,
+        VCMPUNORD_SSS,
+        VCMPNEQ_USSS,
+        VCMPNLT_UQSS,
+        VCMPNLE_UQSS,
+        VCMPORD_SSS,
+        VCMPEQ_USSS,
+        VCMPNGE_UQSS,
+        VCMPNGT_UQSS,
+        VCMPFALSE_OSSS,
+        VCMPNEQ_OSSS,
+        VCMPGE_OQSS,
+        VCMPGT_OQSS,
+        VCMPTRUE_USSS,
+        VCMPSS,
+        VCOMISD,
+        VCOMISS,
+        VCVTDQ2PD,
+        VCVTDQ2PS,
+        VCVTPD2DQ,
+        VCVTPD2PS,
+        VCVTPS2DQ,
+        VCVTPS2PD,
+        VCVTSD2SI,
+        VCVTSD2SS,
+        VCVTSI2SD,
+        VCVTSI2SS,
+        VCVTSS2SD,
+        VCVTSS2SI,
+        VCVTTPD2DQ,
+        VCVTTPS2DQ,
+        VCVTTSD2SI,
+        VCVTTSS2SI,
+        VDIVPD,
+        VDIVPS,
+        VDIVSD,
+        VDIVSS,
+        VDPPD,
+        VDPPS,
+        VEXTRACTF128,
+        VEXTRACTPS,
+        VHADDPD,
+        VHADDPS,
+        VHSUBPD,
+        VHSUBPS,
+        VINSERTF128,
+        VINSERTPS,
+        VLDDQU,
+        VLDQQU,
+        VLDMXCSR,
+        VMASKMOVDQU,
+        VMASKMOVPS,
+        VMASKMOVPD,
+        VMAXPD,
+        VMAXPS,
+        VMAXSD,
+        VMAXSS,
+        VMINPD,
+        VMINPS,
+        VMINSD,
+        VMINSS,
+        VMOVAPD,
+        VMOVAPS,
+        VMOVD,
+        VMOVQ,
+        VMOVDDUP,
+        VMOVDQA,
+        VMOVQQA,
+        VMOVDQU,
+        VMOVQQU,
+        VMOVHLPS,
+        VMOVHPD,
+        VMOVHPS,
+        VMOVLHPS,
+        VMOVLPD,
+        VMOVLPS,
+        VMOVMSKPD,
+        VMOVMSKPS,
+        VMOVNTDQ,
+        VMOVNTQQ,
+        VMOVNTDQA,
+        VMOVNTPD,
+        VMOVNTPS,
+        VMOVSD,
+        VMOVSHDUP,
+        VMOVSLDUP,
+        VMOVSS,
+        VMOVUPD,
+        VMOVUPS,
+        VMPSADBW,
+        VMULPD,
+        VMULPS,
+        VMULSD,
+        VMULSS,
+        VORPD,
+        VORPS,
+        VPABSB,
+        VPABSW,
+        VPABSD,
+        VPACKSSWB,
+        VPACKSSDW,
+        VPACKUSWB,
+        VPACKUSDW,
+        VPADDB,
+        VPADDW,
+        VPADDD,
+        VPADDQ,
+        VPADDSB,
+        VPADDSW,
+        VPADDUSB,
+        VPADDUSW,
+        VPALIGNR,
+        VPAND,
+        VPANDN,
+        VPAVGB,
+        VPAVGW,
+        VPBLENDVB,
+        VPBLENDW,
+        VPCMPESTRI,
+        VPCMPESTRM,
+        VPCMPISTRI,
+        VPCMPISTRM,
+        VPCMPEQB,
+        VPCMPEQW,
+        VPCMPEQD,
+        VPCMPEQQ,
+        VPCMPGTB,
+        VPCMPGTW,
+        VPCMPGTD,
+        VPCMPGTQ,
+        VPERMILPD,
+        VPERMILPS,
+        VPERM2F128,
+        VPEXTRB,
+        VPEXTRW,
+        VPEXTRD,
+        VPEXTRQ,
+        VPHADDW,
+        VPHADDD,
+        VPHADDSW,
+        VPHMINPOSUW,
+        VPHSUBW,
+        VPHSUBD,
+        VPHSUBSW,
+        VPINSRB,
+        VPINSRW,
+        VPINSRD,
+        VPINSRQ,
+        VPMADDWD,
+        VPMADDUBSW,
+        VPMAXSB,
+        VPMAXSW,
+        VPMAXSD,
+        VPMAXUB,
+        VPMAXUW,
+        VPMAXUD,
+        VPMINSB,
+        VPMINSW,
+        VPMINSD,
+        VPMINUB,
+        VPMINUW,
+        VPMINUD,
+        VPMOVMSKB,
+        VPMOVSXBW,
+        VPMOVSXBD,
+        VPMOVSXBQ,
+        VPMOVSXWD,
+        VPMOVSXWQ,
+        VPMOVSXDQ,
+        VPMOVZXBW,
+        VPMOVZXBD,
+        VPMOVZXBQ,
+        VPMOVZXWD,
+        VPMOVZXWQ,
+        VPMOVZXDQ,
+        VPMULHUW,
+        VPMULHRSW,
+        VPMULHW,
+        VPMULLW,
+        VPMULLD,
+        VPMULUDQ,
+        VPMULDQ,
+        VPOR,
+        VPSADBW,
+        VPSHUFB,
+        VPSHUFD,
+        VPSHUFHW,
+        VPSHUFLW,
+        VPSIGNB,
+        VPSIGNW,
+        VPSIGND,
+        VPSLLDQ,
+        VPSRLDQ,
+        VPSLLW,
+        VPSLLD,
+        VPSLLQ,
+        VPSRAW,
+        VPSRAD,
+        VPSRLW,
+        VPSRLD,
+        VPSRLQ,
+        VPTEST,
+        VPSUBB,
+        VPSUBW,
+        VPSUBD,
+        VPSUBQ,
+        VPSUBSB,
+        VPSUBSW,
+        VPSUBUSB,
+        VPSUBUSW,
+        VPUNPCKHBW,
+        VPUNPCKHWD,
+        VPUNPCKHDQ,
+        VPUNPCKHQDQ,
+        VPUNPCKLBW,
+        VPUNPCKLWD,
+        VPUNPCKLDQ,
+        VPUNPCKLQDQ,
+        VPXOR,
+        VRCPPS,
+        VRCPSS,
+        VRSQRTPS,
+        VRSQRTSS,
+        VROUNDPD,
+        VROUNDPS,
+        VROUNDSD,
+        VROUNDSS,
+        VSHUFPD,
+        VSHUFPS,
+        VSQRTPD,
+        VSQRTPS,
+        VSQRTSD,
+        VSQRTSS,
+        VSTMXCSR,
+        VSUBPD,
+        VSUBPS,
+        VSUBSD,
+        VSUBSS,
+        VTESTPS,
+        VTESTPD,
+        VUCOMISD,
+        VUCOMISS,
+        VUNPCKHPD,
+        VUNPCKHPS,
+        VUNPCKLPD,
+        VUNPCKLPS,
+        VXORPD,
+        VXORPS,
+        VZEROALL,
+        VZEROUPPER,
+        PCLMULLQLQDQ,
+        PCLMULHQLQDQ,
+        PCLMULLQHQDQ,
+        PCLMULHQHQDQ,
+        PCLMULQDQ,
+        VPCLMULLQLQDQ,
+        VPCLMULHQLQDQ,
+        VPCLMULLQHQDQ,
+        VPCLMULHQHQDQ,
+        VPCLMULQDQ,
+        VFMADD132PS,
+        VFMADD132PD,
+        VFMADD312PS,
+        VFMADD312PD,
+        VFMADD213PS,
+        VFMADD213PD,
+        VFMADD123PS,
+        VFMADD123PD,
+        VFMADD231PS,
+        VFMADD231PD,
+        VFMADD321PS,
+        VFMADD321PD,
+        VFMADDSUB132PS,
+        VFMADDSUB132PD,
+        VFMADDSUB312PS,
+        VFMADDSUB312PD,
+        VFMADDSUB213PS,
+        VFMADDSUB213PD,
+        VFMADDSUB123PS,
+        VFMADDSUB123PD,
+        VFMADDSUB231PS,
+        VFMADDSUB231PD,
+        VFMADDSUB321PS,
+        VFMADDSUB321PD,
+        VFMSUB132PS,
+        VFMSUB132PD,
+        VFMSUB312PS,
+        VFMSUB312PD,
+        VFMSUB213PS,
+        VFMSUB213PD,
+        VFMSUB123PS,
+        VFMSUB123PD,
+        VFMSUB231PS,
+        VFMSUB231PD,
+        VFMSUB321PS,
+        VFMSUB321PD,
+        VFMSUBADD132PS,
+        VFMSUBADD132PD,
+        VFMSUBADD312PS,
+        VFMSUBADD312PD,
+        VFMSUBADD213PS,
+        VFMSUBADD213PD,
+        VFMSUBADD123PS,
+        VFMSUBADD123PD,
+        VFMSUBADD231PS,
+        VFMSUBADD231PD,
+        VFMSUBADD321PS,
+        VFMSUBADD321PD,
+        VFNMADD132PS,
+        VFNMADD132PD,
+        VFNMADD312PS,
+        VFNMADD312PD,
+        VFNMADD213PS,
+        VFNMADD213PD,
+        VFNMADD123PS,
+        VFNMADD123PD,
+        VFNMADD231PS,
+        VFNMADD231PD,
+        VFNMADD321PS,
+        VFNMADD321PD,
+        VFNMSUB132PS,
+        VFNMSUB132PD,
+        VFNMSUB312PS,
+        VFNMSUB312PD,
+        VFNMSUB213PS,
+        VFNMSUB213PD,
+        VFNMSUB123PS,
+        VFNMSUB123PD,
+        VFNMSUB231PS,
+        VFNMSUB231PD,
+        VFNMSUB321PS,
+        VFNMSUB321PD,
+        VFMADD132SS,
+        VFMADD132SD,
+        VFMADD312SS,
+        VFMADD312SD,
+        VFMADD213SS,
+        VFMADD213SD,
+        VFMADD123SS,
+        VFMADD123SD,
+        VFMADD231SS,
+        VFMADD231SD,
+        VFMADD321SS,
+        VFMADD321SD,
+        VFMSUB132SS,
+        VFMSUB132SD,
+        VFMSUB312SS,
+        VFMSUB312SD,
+        VFMSUB213SS,
+        VFMSUB213SD,
+        VFMSUB123SS,
+        VFMSUB123SD,
+        VFMSUB231SS,
+        VFMSUB231SD,
+        VFMSUB321SS,
+        VFMSUB321SD,
+        VFNMADD132SS,
+        VFNMADD132SD,
+        VFNMADD312SS,
+        VFNMADD312SD,
+        VFNMADD213SS,
+        VFNMADD213SD,
+        VFNMADD123SS,
+        VFNMADD123SD,
+        VFNMADD231SS,
+        VFNMADD231SD,
+        VFNMADD321SS,
+        VFNMADD321SD,
+        VFNMSUB132SS,
+        VFNMSUB132SD,
+        VFNMSUB312SS,
+        VFNMSUB312SD,
+        VFNMSUB213SS,
+        VFNMSUB213SD,
+        VFNMSUB123SS,
+        VFNMSUB123SD,
+        VFNMSUB231SS,
+        VFNMSUB231SD,
+        VFNMSUB321SS,
+        VFNMSUB321SD,
+        RDFSBASE,
+        RDGSBASE,
+        WRFSBASE,
+        WRGSBASE,
+        VCVTPH2PS,
+        VCVTPS2PH,
+        CLAC,
+        STAC,
+        XSTORE,
+        XCRYPTECB,
+        XCRYPTCBC,
+        XCRYPTCTR,
+        XCRYPTCFB,
+        XCRYPTOFB,
+        MONTMUL,
+        XSHA1,
+        XSHA256,
+        LLWPCB,
+        SLWPCB,
+        LWPVAL,
+        LWPINS,
+        VFMADDPD,
+        VFMADDPS,
+        VFMADDSD,
+        VFMADDSS,
+        VFMADDSUBPD,
+        VFMADDSUBPS,
+        VFMSUBADDPD,
+        VFMSUBADDPS,
+        VFMSUBPD,
+        VFMSUBPS,
+        VFMSUBSD,
+        VFMSUBSS,
+        VFNMADDPD,
+        VFNMADDPS,
+        VFNMADDSD,
+        VFNMADDSS,
+        VFNMSUBPD,
+        VFNMSUBPS,
+        VFNMSUBSD,
+        VFNMSUBSS,
+        VFRCZPD,
+        VFRCZPS,
+        VFRCZSD,
+        VFRCZSS,
+        VPCMOV,
+        VPCOMB,
+        VPCOMD,
+        VPCOMQ,
+        VPCOMUB,
+        VPCOMUD,
+        VPCOMUQ,
+        VPCOMUW,
+        VPCOMW,
+        VPHADDBD,
+        VPHADDBQ,
+        VPHADDBW,
+        VPHADDDQ,
+        VPHADDUBD,
+        VPHADDUBQ,
+        VPHADDUBW,
+        VPHADDUDQ,
+        VPHADDUWD,
+        VPHADDUWQ,
+        VPHADDWD,
+        VPHADDWQ,
+        VPHSUBBW,
+        VPHSUBDQ,
+        VPHSUBWD,
+        VPMACSDD,
+        VPMACSDQH,
+        VPMACSDQL,
+        VPMACSSDD,
+        VPMACSSDQH,
+        VPMACSSDQL,
+        VPMACSSWD,
+        VPMACSSWW,
+        VPMACSWD,
+        VPMACSWW,
+        VPMADCSSWD,
+        VPMADCSWD,
+        VPPERM,
+        VPROTB,
+        VPROTD,
+        VPROTQ,
+        VPROTW,
+        VPSHAB,
+        VPSHAD,
+        VPSHAQ,
+        VPSHAW,
+        VPSHLB,
+        VPSHLD,
+        VPSHLQ,
+        VPSHLW,
+        VBROADCASTI128,
+        VPBLENDD,
+        VPBROADCASTB,
+        VPBROADCASTW,
+        VPBROADCASTD,
+        VPBROADCASTQ,
+        VPERMD,
+        VPERMPD,
+        VPERMPS,
+        VPERMQ,
+        VPERM2I128,
+        VEXTRACTI128,
+        VINSERTI128,
+        VPMASKMOVD,
+        VPMASKMOVQ,
+        VPSLLVD,
+        VPSLLVQ,
+        VPSRAVD,
+        VPSRLVD,
+        VPSRLVQ,
+        VGATHERDPD,
+        VGATHERQPD,
+        VGATHERDPS,
+        VGATHERQPS,
+        VPGATHERDD,
+        VPGATHERQD,
+        VPGATHERDQ,
+        VPGATHERQQ,
+        XABORT,
+        XBEGIN,
+        XEND,
+        XTEST,
+        BLCI,
+        BLCIC,
+        BLSIC,
+        BLCFILL,
+        BLSFILL,
+        BLCMSK,
+        BLCS,
+        TZMSK,
+        T1MSKC,
+        BNDMK,
+        BNDCL,
+        BNDCU,
+        BNDCN,
+        BNDMOV,
+        BNDLDX,
+        BNDSTX,
+        KADDB,
+        KADDD,
+        KADDQ,
+        KADDW,
+        KANDB,
+        KANDD,
+        KANDNB,
+        KANDND,
+        KANDNQ,
+        KANDNW,
+        KANDQ,
+        KANDW,
+        KMOVB,
+        KMOVD,
+        KMOVQ,
+        KMOVW,
+        KNOTB,
+        KNOTD,
+        KNOTQ,
+        KNOTW,
+        KORB,
+        KORD,
+        KORQ,
+        KORTESTB,
+        KORTESTD,
+        KORTESTQ,
+        KORTESTW,
+        KORW,
+        KSHIFTLB,
+        KSHIFTLD,
+        KSHIFTLQ,
+        KSHIFTLW,
+        KSHIFTRB,
+        KSHIFTRD,
+        KSHIFTRQ,
+        KSHIFTRW,
+        KTESTB,
+        KTESTD,
+        KTESTQ,
+        KTESTW,
+        KUNPCKBW,
+        KUNPCKDQ,
+        KUNPCKWD,
+        KXNORB,
+        KXNORD,
+        KXNORQ,
+        KXNORW,
+        KXORB,
+        KXORD,
+        KXORQ,
+        KXORW,
+        SHA1MSG1,
+        SHA1MSG2,
+        SHA1NEXTE,
+        SHA1RNDS4,
+        SHA256MSG1,
+        SHA256MSG2,
+        SHA256RNDS2,
+        VALIGND,
+        VALIGNQ,
+        VBLENDMPD,
+        VBLENDMPS,
+        VBROADCASTF32X2,
+        VBROADCASTF32X4,
+        VBROADCASTF32X8,
+        VBROADCASTF64X2,
+        VBROADCASTF64X4,
+        VBROADCASTI32X2,
+        VBROADCASTI32X4,
+        VBROADCASTI32X8,
+        VBROADCASTI64X2,
+        VBROADCASTI64X4,
+        VCOMPRESSPD,
+        VCOMPRESSPS,
+        VCVTPD2QQ,
+        VCVTPD2UDQ,
+        VCVTPD2UQQ,
+        VCVTPS2QQ,
+        VCVTPS2UDQ,
+        VCVTPS2UQQ,
+        VCVTQQ2PD,
+        VCVTQQ2PS,
+        VCVTSD2USI,
+        VCVTSS2USI,
+        VCVTTPD2QQ,
+        VCVTTPD2UDQ,
+        VCVTTPD2UQQ,
+        VCVTTPS2QQ,
+        VCVTTPS2UDQ,
+        VCVTTPS2UQQ,
+        VCVTTSD2USI,
+        VCVTTSS2USI,
+        VCVTUDQ2PD,
+        VCVTUDQ2PS,
+        VCVTUQQ2PD,
+        VCVTUQQ2PS,
+        VCVTUSI2SD,
+        VCVTUSI2SS,
+        VDBPSADBW,
+        VEXP2PD,
+        VEXP2PS,
+        VEXPANDPD,
+        VEXPANDPS,
+        VEXTRACTF32X4,
+        VEXTRACTF32X8,
+        VEXTRACTF64X2,
+        VEXTRACTF64X4,
+        VEXTRACTI32X4,
+        VEXTRACTI32X8,
+        VEXTRACTI64X2,
+        VEXTRACTI64X4,
+        VFIXUPIMMPD,
+        VFIXUPIMMPS,
+        VFIXUPIMMSD,
+        VFIXUPIMMSS,
+        VFPCLASSPD,
+        VFPCLASSPS,
+        VFPCLASSSD,
+        VFPCLASSSS,
+        VGATHERPF0DPD,
+        VGATHERPF0DPS,
+        VGATHERPF0QPD,
+        VGATHERPF0QPS,
+        VGATHERPF1DPD,
+        VGATHERPF1DPS,
+        VGATHERPF1QPD,
+        VGATHERPF1QPS,
+        VGETEXPPD,
+        VGETEXPPS,
+        VGETEXPSD,
+        VGETEXPSS,
+        VGETMANTPD,
+        VGETMANTPS,
+        VGETMANTSD,
+        VGETMANTSS,
+        VINSERTF32X4,
+        VINSERTF32X8,
+        VINSERTF64X2,
+        VINSERTF64X4,
+        VINSERTI32X4,
+        VINSERTI32X8,
+        VINSERTI64X2,
+        VINSERTI64X4,
+        VMOVDQA32,
+        VMOVDQA64,
+        VMOVDQU16,
+        VMOVDQU32,
+        VMOVDQU64,
+        VMOVDQU8,
+        VPABSQ,
+        VPANDD,
+        VPANDND,
+        VPANDNQ,
+        VPANDQ,
+        VPBLENDMB,
+        VPBLENDMD,
+        VPBLENDMQ,
+        VPBLENDMW,
+        VPBROADCASTMB2Q,
+        VPBROADCASTMW2D,
+        VPCMPB,
+        VPCMPD,
+        VPCMPQ,
+        VPCMPUB,
+        VPCMPUD,
+        VPCMPUQ,
+        VPCMPUW,
+        VPCMPW,
+        VPCOMPRESSD,
+        VPCOMPRESSQ,
+        VPCONFLICTD,
+        VPCONFLICTQ,
+        VPERMB,
+        VPERMI2B,
+        VPERMI2D,
+        VPERMI2PD,
+        VPERMI2PS,
+        VPERMI2Q,
+        VPERMI2W,
+        VPERMT2B,
+        VPERMT2D,
+        VPERMT2PD,
+        VPERMT2PS,
+        VPERMT2Q,
+        VPERMT2W,
+        VPERMW,
+        VPEXPANDD,
+        VPEXPANDQ,
+        VPLZCNTD,
+        VPLZCNTQ,
+        VPMADD52HUQ,
+        VPMADD52LUQ,
+        VPMAXSQ,
+        VPMAXUQ,
+        VPMINSQ,
+        VPMINUQ,
+        VPMOVB2M,
+        VPMOVD2M,
+        VPMOVDB,
+        VPMOVDW,
+        VPMOVM2B,
+        VPMOVM2D,
+        VPMOVM2Q,
+        VPMOVM2W,
+        VPMOVQ2M,
+        VPMOVQB,
+        VPMOVQD,
+        VPMOVQW,
+        VPMOVSDB,
+        VPMOVSDW,
+        VPMOVSQB,
+        VPMOVSQD,
+        VPMOVSQW,
+        VPMOVSWB,
+        VPMOVUSDB,
+        VPMOVUSDW,
+        VPMOVUSQB,
+        VPMOVUSQD,
+        VPMOVUSQW,
+        VPMOVUSWB,
+        VPMOVW2M,
+        VPMOVWB,
+        VPMULLQ,
+        VPMULTISHIFTQB,
+        VPORD,
+        VPORQ,
+        VPROLD,
+        VPROLQ,
+        VPROLVD,
+        VPROLVQ,
+        VPRORD,
+        VPRORQ,
+        VPRORVD,
+        VPRORVQ,
+        VPSCATTERDD,
+        VPSCATTERDQ,
+        VPSCATTERQD,
+        VPSCATTERQQ,
+        VPSLLVW,
+        VPSRAQ,
+        VPSRAVQ,
+        VPSRAVW,
+        VPSRLVW,
+        VPTERNLOGD,
+        VPTERNLOGQ,
+        VPTESTMB,
+        VPTESTMD,
+        VPTESTMQ,
+        VPTESTMW,
+        VPTESTNMB,
+        VPTESTNMD,
+        VPTESTNMQ,
+        VPTESTNMW,
+        VPXORD,
+        VPXORQ,
+        VRANGEPD,
+        VRANGEPS,
+        VRANGESD,
+        VRANGESS,
+        VRCP14PD,
+        VRCP14PS,
+        VRCP14SD,
+        VRCP14SS,
+        VRCP28PD,
+        VRCP28PS,
+        VRCP28SD,
+        VRCP28SS,
+        VREDUCEPD,
+        VREDUCEPS,
+        VREDUCESD,
+        VREDUCESS,
+        VRNDSCALEPD,
+        VRNDSCALEPS,
+        VRNDSCALESD,
+        VRNDSCALESS,
+        VRSQRT14PD,
+        VRSQRT14PS,
+        VRSQRT14SD,
+        VRSQRT14SS,
+        VRSQRT28PD,
+        VRSQRT28PS,
+        VRSQRT28SD,
+        VRSQRT28SS,
+        VSCALEFPD,
+        VSCALEFPS,
+        VSCALEFSD,
+        VSCALEFSS,
+        VSCATTERDPD,
+        VSCATTERDPS,
+        VSCATTERPF0DPD,
+        VSCATTERPF0DPS,
+        VSCATTERPF0QPD,
+        VSCATTERPF0QPS,
+        VSCATTERPF1DPD,
+        VSCATTERPF1DPS,
+        VSCATTERPF1QPD,
+        VSCATTERPF1QPS,
+        VSCATTERQPD,
+        VSCATTERQPS,
+        VSHUFF32X4,
+        VSHUFF64X2,
+        VSHUFI32X4,
+        VSHUFI64X2,
+        RDPKRU,
+        WRPKRU,
+        CLZERO
         #endregion
 
     }
@@ -790,8 +2377,1596 @@ namespace AsmTools {
                 case "SHRX": return Mnemonic.SHRX;
                 case "TZCNT": return Mnemonic.TZCNT;
 
+
+                case "ARPL": return Mnemonic.ARPL;
+                case "BB0_RESET": return Mnemonic.BB0_RESET;
+                case "BB1_RESET": return Mnemonic.BB1_RESET;
+                case "CDQE": return Mnemonic.CDQE;
+                case "CLTS": return Mnemonic.CLTS;
+                case "CMPSQ": return Mnemonic.CMPSQ;
+                case "CMPXCHG486": return Mnemonic.CMPXCHG486;
+                case "CMPXCHG16B": return Mnemonic.CMPXCHG16B;
+                case "CPU_READ": return Mnemonic.CPU_READ;
+                case "CPU_WRITE": return Mnemonic.CPU_WRITE;
+                case "CQO": return Mnemonic.CQO;
+                case "DMINT": return Mnemonic.DMINT;
+                case "EMMS": return Mnemonic.EMMS;
+                case "EQU": return Mnemonic.EQU;
+                case "F2XM1": return Mnemonic.F2XM1;
+                case "FABS": return Mnemonic.FABS;
+                case "FADD": return Mnemonic.FADD;
+                case "FADDP": return Mnemonic.FADDP;
+                case "FBLD": return Mnemonic.FBLD;
+                case "FBSTP": return Mnemonic.FBSTP;
+                case "FCHS": return Mnemonic.FCHS;
+                case "FCLEX": return Mnemonic.FCLEX;
+                case "FCMOVB": return Mnemonic.FCMOVB;
+                case "FCMOVBE": return Mnemonic.FCMOVBE;
+                case "FCMOVE": return Mnemonic.FCMOVE;
+                case "FCMOVNB": return Mnemonic.FCMOVNB;
+                case "FCMOVNBE": return Mnemonic.FCMOVNBE;
+                case "FCMOVNE": return Mnemonic.FCMOVNE;
+                case "FCMOVNU": return Mnemonic.FCMOVNU;
+                case "FCMOVU": return Mnemonic.FCMOVU;
+                case "FCOM": return Mnemonic.FCOM;
+                case "FCOMI": return Mnemonic.FCOMI;
+                case "FCOMIP": return Mnemonic.FCOMIP;
+                case "FCOMP": return Mnemonic.FCOMP;
+                case "FCOMPP": return Mnemonic.FCOMPP;
+                case "FCOS": return Mnemonic.FCOS;
+                case "FDECSTP": return Mnemonic.FDECSTP;
+                case "FDISI": return Mnemonic.FDISI;
+                case "FDIV": return Mnemonic.FDIV;
+                case "FDIVP": return Mnemonic.FDIVP;
+                case "FDIVR": return Mnemonic.FDIVR;
+                case "FDIVRP": return Mnemonic.FDIVRP;
+                case "FEMMS": return Mnemonic.FEMMS;
+                case "FENI": return Mnemonic.FENI;
+                case "FFREE": return Mnemonic.FFREE;
+                case "FFREEP": return Mnemonic.FFREEP;
+                case "FIADD": return Mnemonic.FIADD;
+                case "FICOM": return Mnemonic.FICOM;
+                case "FICOMP": return Mnemonic.FICOMP;
+                case "FIDIV": return Mnemonic.FIDIV;
+                case "FIDIVR": return Mnemonic.FIDIVR;
+                case "FILD": return Mnemonic.FILD;
+                case "FIMUL": return Mnemonic.FIMUL;
+                case "FINCSTP": return Mnemonic.FINCSTP;
+                case "FINIT": return Mnemonic.FINIT;
+                case "FIST": return Mnemonic.FIST;
+                case "FISTP": return Mnemonic.FISTP;
+                case "FISTTP": return Mnemonic.FISTTP;
+                case "FISUB": return Mnemonic.FISUB;
+                case "FISUBR": return Mnemonic.FISUBR;
+                case "FLD": return Mnemonic.FLD;
+                case "FLD1": return Mnemonic.FLD1;
+                case "FLDCW": return Mnemonic.FLDCW;
+                case "FLDENV": return Mnemonic.FLDENV;
+                case "FLDL2E": return Mnemonic.FLDL2E;
+                case "FLDL2T": return Mnemonic.FLDL2T;
+                case "FLDLG2": return Mnemonic.FLDLG2;
+                case "FLDLN2": return Mnemonic.FLDLN2;
+                case "FLDPI": return Mnemonic.FLDPI;
+                case "FLDZ": return Mnemonic.FLDZ;
+                case "FMUL": return Mnemonic.FMUL;
+                case "FMULP": return Mnemonic.FMULP;
+                case "FNCLEX": return Mnemonic.FNCLEX;
+                case "FNDISI": return Mnemonic.FNDISI;
+                case "FNENI": return Mnemonic.FNENI;
+                case "FNINIT": return Mnemonic.FNINIT;
+                case "FNOP": return Mnemonic.FNOP;
+                case "FNSAVE": return Mnemonic.FNSAVE;
+                case "FNSTCW": return Mnemonic.FNSTCW;
+                case "FNSTENV": return Mnemonic.FNSTENV;
+                case "FNSTSW": return Mnemonic.FNSTSW;
+                case "FPATAN": return Mnemonic.FPATAN;
+                case "FPREM": return Mnemonic.FPREM;
+                case "FPREM1": return Mnemonic.FPREM1;
+                case "FPTAN": return Mnemonic.FPTAN;
+                case "FRNDINT": return Mnemonic.FRNDINT;
+                case "FRSTOR": return Mnemonic.FRSTOR;
+                case "FSAVE": return Mnemonic.FSAVE;
+                case "FSCALE": return Mnemonic.FSCALE;
+                case "FSETPM": return Mnemonic.FSETPM;
+                case "FSIN": return Mnemonic.FSIN;
+                case "FSINCOS": return Mnemonic.FSINCOS;
+                case "FSQRT": return Mnemonic.FSQRT;
+                case "FST": return Mnemonic.FST;
+                case "FSTCW": return Mnemonic.FSTCW;
+                case "FSTENV": return Mnemonic.FSTENV;
+                case "FSTP": return Mnemonic.FSTP;
+                case "FSTSW": return Mnemonic.FSTSW;
+                case "FSUB": return Mnemonic.FSUB;
+                case "FSUBP": return Mnemonic.FSUBP;
+                case "FSUBR": return Mnemonic.FSUBR;
+                case "FSUBRP": return Mnemonic.FSUBRP;
+                case "FTST": return Mnemonic.FTST;
+                case "FUCOM": return Mnemonic.FUCOM;
+                case "FUCOMI": return Mnemonic.FUCOMI;
+                case "FUCOMIP": return Mnemonic.FUCOMIP;
+                case "FUCOMP": return Mnemonic.FUCOMP;
+                case "FUCOMPP": return Mnemonic.FUCOMPP;
+                case "FXAM": return Mnemonic.FXAM;
+                case "FXCH": return Mnemonic.FXCH;
+                case "FXTRACT": return Mnemonic.FXTRACT;
+                case "FYL2X": return Mnemonic.FYL2X;
+                case "FYL2XP1": return Mnemonic.FYL2XP1;
+                case "HLT": return Mnemonic.HLT;
+                case "IBTS": return Mnemonic.IBTS;
+                case "ICEBP": return Mnemonic.ICEBP;
+                case "IN": return Mnemonic.IN;
+                case "INCBIN": return Mnemonic.INCBIN;
+                case "INT01": return Mnemonic.INT01;
+                case "INT1": return Mnemonic.INT1;
+                case "INT03": return Mnemonic.INT03;
+                case "INT3": return Mnemonic.INT3;
+                case "INVD": return Mnemonic.INVD;
+                case "INVPCID": return Mnemonic.INVPCID;
+                case "INVLPG": return Mnemonic.INVLPG;
+                case "INVLPGA": return Mnemonic.INVLPGA;
+                case "IRETD": return Mnemonic.IRETD;
+                case "IRETQ": return Mnemonic.IRETQ;
+                case "IRETW": return Mnemonic.IRETW;
+                case "JMPE": return Mnemonic.JMPE;
+                case "LAR": return Mnemonic.LAR;
+                case "LFENCE": return Mnemonic.LFENCE;
+                case "LGDT": return Mnemonic.LGDT;
+                case "LIDT": return Mnemonic.LIDT;
+                case "LLDT": return Mnemonic.LLDT;
+                case "LMSW": return Mnemonic.LMSW;
+                case "LOADALL": return Mnemonic.LOADALL;
+                case "LOADALL286": return Mnemonic.LOADALL286;
+                case "LODSQ": return Mnemonic.LODSQ;
+                case "LSL": return Mnemonic.LSL;
+                case "LTR": return Mnemonic.LTR;
+                case "MFENCE": return Mnemonic.MFENCE;
+                case "MONITOR": return Mnemonic.MONITOR;
+                case "MONITORX": return Mnemonic.MONITORX;
+                case "MOVD": return Mnemonic.MOVD;
+                case "MOVQ": return Mnemonic.MOVQ;
+                case "MOVSQ": return Mnemonic.MOVSQ;
+                case "MWAIT": return Mnemonic.MWAIT;
+                case "MWAITX": return Mnemonic.MWAITX;
+                case "PACKSSDW": return Mnemonic.PACKSSDW;
+                case "PACKSSWB": return Mnemonic.PACKSSWB;
+                case "PACKUSWB": return Mnemonic.PACKUSWB;
+                case "PADDB": return Mnemonic.PADDB;
+                case "PADDD": return Mnemonic.PADDD;
+                case "PADDSB": return Mnemonic.PADDSB;
+                case "PADDSIW": return Mnemonic.PADDSIW;
+                case "PADDSW": return Mnemonic.PADDSW;
+                case "PADDUSB": return Mnemonic.PADDUSB;
+                case "PADDUSW": return Mnemonic.PADDUSW;
+                case "PADDW": return Mnemonic.PADDW;
+                case "PAND": return Mnemonic.PAND;
+                case "PANDN": return Mnemonic.PANDN;
+                case "PAUSE": return Mnemonic.PAUSE;
+                case "PAVEB": return Mnemonic.PAVEB;
+                case "PAVGUSB": return Mnemonic.PAVGUSB;
+                case "PCMPEQB": return Mnemonic.PCMPEQB;
+                case "PCMPEQD": return Mnemonic.PCMPEQD;
+                case "PCMPEQW": return Mnemonic.PCMPEQW;
+                case "PCMPGTB": return Mnemonic.PCMPGTB;
+                case "PCMPGTD": return Mnemonic.PCMPGTD;
+                case "PCMPGTW": return Mnemonic.PCMPGTW;
+                case "PDISTIB": return Mnemonic.PDISTIB;
+                case "PF2ID": return Mnemonic.PF2ID;
+                case "PFACC": return Mnemonic.PFACC;
+                case "PFADD": return Mnemonic.PFADD;
+                case "PFCMPEQ": return Mnemonic.PFCMPEQ;
+                case "PFCMPGE": return Mnemonic.PFCMPGE;
+                case "PFCMPGT": return Mnemonic.PFCMPGT;
+                case "PFMAX": return Mnemonic.PFMAX;
+                case "PFMIN": return Mnemonic.PFMIN;
+                case "PFMUL": return Mnemonic.PFMUL;
+                case "PFRCP": return Mnemonic.PFRCP;
+                case "PFRCPIT1": return Mnemonic.PFRCPIT1;
+                case "PFRCPIT2": return Mnemonic.PFRCPIT2;
+                case "PFRSQIT1": return Mnemonic.PFRSQIT1;
+                case "PFRSQRT": return Mnemonic.PFRSQRT;
+                case "PFSUB": return Mnemonic.PFSUB;
+                case "PFSUBR": return Mnemonic.PFSUBR;
+                case "PI2FD": return Mnemonic.PI2FD;
+                case "PMACHRIW": return Mnemonic.PMACHRIW;
+                case "PMADDWD": return Mnemonic.PMADDWD;
+                case "PMAGW": return Mnemonic.PMAGW;
+                case "PMULHRIW": return Mnemonic.PMULHRIW;
+                case "PMULHRWA": return Mnemonic.PMULHRWA;
+                case "PMULHRWC": return Mnemonic.PMULHRWC;
+                case "PMULHW": return Mnemonic.PMULHW;
+                case "PMULLW": return Mnemonic.PMULLW;
+                case "PMVGEZB": return Mnemonic.PMVGEZB;
+                case "PMVLZB": return Mnemonic.PMVLZB;
+                case "PMVNZB": return Mnemonic.PMVNZB;
+                case "PMVZB": return Mnemonic.PMVZB;
+                case "POPAW": return Mnemonic.POPAW;
+                case "POPFQ": return Mnemonic.POPFQ;
+                case "POPFW": return Mnemonic.POPFW;
+                case "POR": return Mnemonic.POR;
+                case "PREFETCH": return Mnemonic.PREFETCH;
+                case "PSLLD": return Mnemonic.PSLLD;
+                case "PSLLQ": return Mnemonic.PSLLQ;
+                case "PSLLW": return Mnemonic.PSLLW;
+                case "PSRAD": return Mnemonic.PSRAD;
+                case "PSRAW": return Mnemonic.PSRAW;
+                case "PSRLD": return Mnemonic.PSRLD;
+                case "PSRLQ": return Mnemonic.PSRLQ;
+                case "PSRLW": return Mnemonic.PSRLW;
+                case "PSUBB": return Mnemonic.PSUBB;
+                case "PSUBD": return Mnemonic.PSUBD;
+                case "PSUBSB": return Mnemonic.PSUBSB;
+                case "PSUBSIW": return Mnemonic.PSUBSIW;
+                case "PSUBSW": return Mnemonic.PSUBSW;
+                case "PSUBUSB": return Mnemonic.PSUBUSB;
+                case "PSUBUSW": return Mnemonic.PSUBUSW;
+                case "PSUBW": return Mnemonic.PSUBW;
+                case "PUNPCKHBW": return Mnemonic.PUNPCKHBW;
+                case "PUNPCKHDQ": return Mnemonic.PUNPCKHDQ;
+                case "PUNPCKHWD": return Mnemonic.PUNPCKHWD;
+                case "PUNPCKLBW": return Mnemonic.PUNPCKLBW;
+                case "PUNPCKLDQ": return Mnemonic.PUNPCKLDQ;
+                case "PUNPCKLWD": return Mnemonic.PUNPCKLWD;
+                case "PUSHAW": return Mnemonic.PUSHAW;
+                case "PUSHFQ": return Mnemonic.PUSHFQ;
+                case "PUSHFW": return Mnemonic.PUSHFW;
+                case "PXOR": return Mnemonic.PXOR;
+                case "RDSHR": return Mnemonic.RDSHR;
+                case "RDMSR": return Mnemonic.RDMSR;
+                case "RDPMC": return Mnemonic.RDPMC;
+                case "RDTSC": return Mnemonic.RDTSC;
+                case "RDTSCP": return Mnemonic.RDTSCP;
+                case "RETF": return Mnemonic.RETF;
+                case "RETN": return Mnemonic.RETN;
+                case "RDM": return Mnemonic.RDM;
+                case "RSDC": return Mnemonic.RSDC;
+                case "RSLDT": return Mnemonic.RSLDT;
+                case "RSM": return Mnemonic.RSM;
+                case "RSTS": return Mnemonic.RSTS;
+                case "SALC": return Mnemonic.SALC;
+                case "SCASQ": return Mnemonic.SCASQ;
+                case "SFENCE": return Mnemonic.SFENCE;
+                case "SGDT": return Mnemonic.SGDT;
+                case "SIDT": return Mnemonic.SIDT;
+                case "SLDT": return Mnemonic.SLDT;
+                case "SKINIT": return Mnemonic.SKINIT;
+                case "SMI": return Mnemonic.SMI;
+                case "SMINT": return Mnemonic.SMINT;
+                case "SMINTOLD": return Mnemonic.SMINTOLD;
+                case "SMSW": return Mnemonic.SMSW;
+                case "STOSQ": return Mnemonic.STOSQ;
+                case "STR": return Mnemonic.STR;
+                case "SVDC": return Mnemonic.SVDC;
+                case "SVLDT": return Mnemonic.SVLDT;
+                case "SVTS": return Mnemonic.SVTS;
+                case "SWAPGS": return Mnemonic.SWAPGS;
+                case "SYSCALL": return Mnemonic.SYSCALL;
+                case "SYSENTER": return Mnemonic.SYSENTER;
+                case "SYSEXIT": return Mnemonic.SYSEXIT;
+                case "SYSRET": return Mnemonic.SYSRET;
+                case "UD0": return Mnemonic.UD0;
+                case "UD1": return Mnemonic.UD1;
+                case "UD2B": return Mnemonic.UD2B;
+                case "UD2A": return Mnemonic.UD2A;
+                case "UMOV": return Mnemonic.UMOV;
+                case "VERR": return Mnemonic.VERR;
+                case "VERW": return Mnemonic.VERW;
+                case "FWAIT": return Mnemonic.FWAIT;
+                case "WBINVD": return Mnemonic.WBINVD;
+                case "WRSHR": return Mnemonic.WRSHR;
+                case "WRMSR": return Mnemonic.WRMSR;
+                case "XBTS": return Mnemonic.XBTS;
+                case "CMOVCC": return Mnemonic.CMOVCC;
+                case "JCC": return Mnemonic.JCC;
+                case "SETCC": return Mnemonic.SETCC;
+                case "ADDPS": return Mnemonic.ADDPS;
+                case "ADDSS": return Mnemonic.ADDSS;
+                case "ANDNPS": return Mnemonic.ANDNPS;
                 case "XORPS": return Mnemonic.XORPS;
                 case "XORPD": return Mnemonic.XORPD;
+                case "ANDPS": return Mnemonic.ANDPS;
+                case "CMPEQPS": return Mnemonic.CMPEQPS;
+                case "CMPEQSS": return Mnemonic.CMPEQSS;
+                case "CMPLEPS": return Mnemonic.CMPLEPS;
+                case "CMPLESS": return Mnemonic.CMPLESS;
+                case "CMPLTPS": return Mnemonic.CMPLTPS;
+                case "CMPLTSS": return Mnemonic.CMPLTSS;
+                case "CMPNEQPS": return Mnemonic.CMPNEQPS;
+                case "CMPNEQSS": return Mnemonic.CMPNEQSS;
+                case "CMPNLEPS": return Mnemonic.CMPNLEPS;
+                case "CMPNLESS": return Mnemonic.CMPNLESS;
+                case "CMPNLTPS": return Mnemonic.CMPNLTPS;
+                case "CMPNLTSS": return Mnemonic.CMPNLTSS;
+                case "CMPORDPS": return Mnemonic.CMPORDPS;
+                case "CMPORDSS": return Mnemonic.CMPORDSS;
+                case "CMPUNORDPS": return Mnemonic.CMPUNORDPS;
+                case "CMPUNORDSS": return Mnemonic.CMPUNORDSS;
+                case "CMPPS": return Mnemonic.CMPPS;
+                case "CMPSS": return Mnemonic.CMPSS;
+                case "COMISS": return Mnemonic.COMISS;
+                case "CVTPI2PS": return Mnemonic.CVTPI2PS;
+                case "CVTPS2PI": return Mnemonic.CVTPS2PI;
+                case "CVTSI2SS": return Mnemonic.CVTSI2SS;
+                case "CVTSS2SI": return Mnemonic.CVTSS2SI;
+                case "CVTTPS2PI": return Mnemonic.CVTTPS2PI;
+                case "CVTTSS2SI": return Mnemonic.CVTTSS2SI;
+                case "DIVPS": return Mnemonic.DIVPS;
+                case "DIVSS": return Mnemonic.DIVSS;
+                case "LDMXCSR": return Mnemonic.LDMXCSR;
+                case "MAXPS": return Mnemonic.MAXPS;
+                case "MAXSS": return Mnemonic.MAXSS;
+                case "MINPS": return Mnemonic.MINPS;
+                case "MINSS": return Mnemonic.MINSS;
+                case "MOVAPS": return Mnemonic.MOVAPS;
+                case "MOVHPS": return Mnemonic.MOVHPS;
+                case "MOVLHPS": return Mnemonic.MOVLHPS;
+                case "MOVLPS": return Mnemonic.MOVLPS;
+                case "MOVHLPS": return Mnemonic.MOVHLPS;
+                case "MOVMSKPS": return Mnemonic.MOVMSKPS;
+                case "MOVNTPS": return Mnemonic.MOVNTPS;
+                case "MOVSS": return Mnemonic.MOVSS;
+                case "MOVUPS": return Mnemonic.MOVUPS;
+                case "MULPS": return Mnemonic.MULPS;
+                case "MULSS": return Mnemonic.MULSS;
+                case "ORPS": return Mnemonic.ORPS;
+                case "RCPPS": return Mnemonic.RCPPS;
+                case "RCPSS": return Mnemonic.RCPSS;
+                case "RSQRTPS": return Mnemonic.RSQRTPS;
+                case "RSQRTSS": return Mnemonic.RSQRTSS;
+                case "SHUFPS": return Mnemonic.SHUFPS;
+                case "SQRTPS": return Mnemonic.SQRTPS;
+                case "SQRTSS": return Mnemonic.SQRTSS;
+                case "STMXCSR": return Mnemonic.STMXCSR;
+                case "SUBPS": return Mnemonic.SUBPS;
+                case "SUBSS": return Mnemonic.SUBSS;
+                case "UCOMISS": return Mnemonic.UCOMISS;
+                case "UNPCKHPS": return Mnemonic.UNPCKHPS;
+                case "UNPCKLPS": return Mnemonic.UNPCKLPS;
+                case "FXRSTOR": return Mnemonic.FXRSTOR;
+                case "FXRSTOR64": return Mnemonic.FXRSTOR64;
+                case "FXSAVE": return Mnemonic.FXSAVE;
+                case "FXSAVE64": return Mnemonic.FXSAVE64;
+                case "XSETBV": return Mnemonic.XSETBV;
+                case "XSAVE64": return Mnemonic.XSAVE64;
+                case "XSAVEC64": return Mnemonic.XSAVEC64;
+                case "XSAVEOPT64": return Mnemonic.XSAVEOPT64;
+                case "XSAVES": return Mnemonic.XSAVES;
+                case "XSAVES64": return Mnemonic.XSAVES64;
+                case "XRSTOR64": return Mnemonic.XRSTOR64;
+                case "XRSTORS": return Mnemonic.XRSTORS;
+                case "XRSTORS64": return Mnemonic.XRSTORS64;
+                case "PREFETCHNTA": return Mnemonic.PREFETCHNTA;
+                case "PREFETCHT0": return Mnemonic.PREFETCHT0;
+                case "PREFETCHT1": return Mnemonic.PREFETCHT1;
+                case "PREFETCHT2": return Mnemonic.PREFETCHT2;
+                case "MASKMOVQ": return Mnemonic.MASKMOVQ;
+                case "MOVNTQ": return Mnemonic.MOVNTQ;
+                case "PAVGB": return Mnemonic.PAVGB;
+                case "PAVGW": return Mnemonic.PAVGW;
+                case "PEXTRW": return Mnemonic.PEXTRW;
+                case "PINSRW": return Mnemonic.PINSRW;
+                case "PMAXSW": return Mnemonic.PMAXSW;
+                case "PMAXUB": return Mnemonic.PMAXUB;
+                case "PMINSW": return Mnemonic.PMINSW;
+                case "PMINUB": return Mnemonic.PMINUB;
+                case "PMOVMSKB": return Mnemonic.PMOVMSKB;
+                case "PMULHUW": return Mnemonic.PMULHUW;
+                case "PSADBW": return Mnemonic.PSADBW;
+                case "PSHUFW": return Mnemonic.PSHUFW;
+                case "PF2IW": return Mnemonic.PF2IW;
+                case "PFNACC": return Mnemonic.PFNACC;
+                case "PFPNACC": return Mnemonic.PFPNACC;
+                case "PI2FW": return Mnemonic.PI2FW;
+                case "PSWAPD": return Mnemonic.PSWAPD;
+                case "MASKMOVDQU": return Mnemonic.MASKMOVDQU;
+                case "MOVNTDQ": return Mnemonic.MOVNTDQ;
+                case "MOVNTI": return Mnemonic.MOVNTI;
+                case "MOVNTPD": return Mnemonic.MOVNTPD;
+                case "MOVDQA": return Mnemonic.MOVDQA;
+                case "MOVDQU": return Mnemonic.MOVDQU;
+                case "MOVDQ2Q": return Mnemonic.MOVDQ2Q;
+                case "MOVQ2DQ": return Mnemonic.MOVQ2DQ;
+                case "PADDQ": return Mnemonic.PADDQ;
+                case "PMULUDQ": return Mnemonic.PMULUDQ;
+                case "PSHUFD": return Mnemonic.PSHUFD;
+                case "PSHUFHW": return Mnemonic.PSHUFHW;
+                case "PSHUFLW": return Mnemonic.PSHUFLW;
+                case "PSLLDQ": return Mnemonic.PSLLDQ;
+                case "PSRLDQ": return Mnemonic.PSRLDQ;
+                case "PSUBQ": return Mnemonic.PSUBQ;
+                case "PUNPCKHQDQ": return Mnemonic.PUNPCKHQDQ;
+                case "PUNPCKLQDQ": return Mnemonic.PUNPCKLQDQ;
+                case "ADDPD": return Mnemonic.ADDPD;
+                case "ADDSD": return Mnemonic.ADDSD;
+                case "ANDNPD": return Mnemonic.ANDNPD;
+                case "ANDPD": return Mnemonic.ANDPD;
+                case "CMPEQPD": return Mnemonic.CMPEQPD;
+                case "CMPEQSD": return Mnemonic.CMPEQSD;
+                case "CMPLEPD": return Mnemonic.CMPLEPD;
+                case "CMPLESD": return Mnemonic.CMPLESD;
+                case "CMPLTPD": return Mnemonic.CMPLTPD;
+                case "CMPLTSD": return Mnemonic.CMPLTSD;
+                case "CMPNEQPD": return Mnemonic.CMPNEQPD;
+                case "CMPNEQSD": return Mnemonic.CMPNEQSD;
+                case "CMPNLEPD": return Mnemonic.CMPNLEPD;
+                case "CMPNLESD": return Mnemonic.CMPNLESD;
+                case "CMPNLTPD": return Mnemonic.CMPNLTPD;
+                case "CMPNLTSD": return Mnemonic.CMPNLTSD;
+                case "CMPORDPD": return Mnemonic.CMPORDPD;
+                case "CMPORDSD": return Mnemonic.CMPORDSD;
+                case "CMPUNORDPD": return Mnemonic.CMPUNORDPD;
+                case "CMPUNORDSD": return Mnemonic.CMPUNORDSD;
+                case "CMPPD": return Mnemonic.CMPPD;
+                case "COMISD": return Mnemonic.COMISD;
+                case "CVTDQ2PD": return Mnemonic.CVTDQ2PD;
+                case "CVTDQ2PS": return Mnemonic.CVTDQ2PS;
+                case "CVTPD2DQ": return Mnemonic.CVTPD2DQ;
+                case "CVTPD2PI": return Mnemonic.CVTPD2PI;
+                case "CVTPD2PS": return Mnemonic.CVTPD2PS;
+                case "CVTPI2PD": return Mnemonic.CVTPI2PD;
+                case "CVTPS2DQ": return Mnemonic.CVTPS2DQ;
+                case "CVTPS2PD": return Mnemonic.CVTPS2PD;
+                case "CVTSD2SI": return Mnemonic.CVTSD2SI;
+                case "CVTSD2SS": return Mnemonic.CVTSD2SS;
+                case "CVTSI2SD": return Mnemonic.CVTSI2SD;
+                case "CVTSS2SD": return Mnemonic.CVTSS2SD;
+                case "CVTTPD2PI": return Mnemonic.CVTTPD2PI;
+                case "CVTTPD2DQ": return Mnemonic.CVTTPD2DQ;
+                case "CVTTPS2DQ": return Mnemonic.CVTTPS2DQ;
+                case "CVTTSD2SI": return Mnemonic.CVTTSD2SI;
+                case "DIVPD": return Mnemonic.DIVPD;
+                case "DIVSD": return Mnemonic.DIVSD;
+                case "MAXPD": return Mnemonic.MAXPD;
+                case "MAXSD": return Mnemonic.MAXSD;
+                case "MINPD": return Mnemonic.MINPD;
+                case "MINSD": return Mnemonic.MINSD;
+                case "MOVAPD": return Mnemonic.MOVAPD;
+                case "MOVHPD": return Mnemonic.MOVHPD;
+                case "MOVLPD": return Mnemonic.MOVLPD;
+                case "MOVMSKPD": return Mnemonic.MOVMSKPD;
+                case "MOVUPD": return Mnemonic.MOVUPD;
+                case "MULPD": return Mnemonic.MULPD;
+                case "MULSD": return Mnemonic.MULSD;
+                case "ORPD": return Mnemonic.ORPD;
+                case "SHUFPD": return Mnemonic.SHUFPD;
+                case "SQRTPD": return Mnemonic.SQRTPD;
+                case "SQRTSD": return Mnemonic.SQRTSD;
+                case "SUBPD": return Mnemonic.SUBPD;
+                case "SUBSD": return Mnemonic.SUBSD;
+                case "UCOMISD": return Mnemonic.UCOMISD;
+                case "UNPCKHPD": return Mnemonic.UNPCKHPD;
+                case "UNPCKLPD": return Mnemonic.UNPCKLPD;
+                case "ADDSUBPD": return Mnemonic.ADDSUBPD;
+                case "ADDSUBPS": return Mnemonic.ADDSUBPS;
+                case "HADDPD": return Mnemonic.HADDPD;
+                case "HADDPS": return Mnemonic.HADDPS;
+                case "HSUBPD": return Mnemonic.HSUBPD;
+                case "HSUBPS": return Mnemonic.HSUBPS;
+                case "LDDQU": return Mnemonic.LDDQU;
+                case "MOVDDUP": return Mnemonic.MOVDDUP;
+                case "MOVSHDUP": return Mnemonic.MOVSHDUP;
+                case "MOVSLDUP": return Mnemonic.MOVSLDUP;
+                case "CLGI": return Mnemonic.CLGI;
+                case "STGI": return Mnemonic.STGI;
+                case "VMCALL": return Mnemonic.VMCALL;
+                case "VMCLEAR": return Mnemonic.VMCLEAR;
+                case "VMFUNC": return Mnemonic.VMFUNC;
+                case "VMLAUNCH": return Mnemonic.VMLAUNCH;
+                case "VMLOAD": return Mnemonic.VMLOAD;
+                case "VMMCALL": return Mnemonic.VMMCALL;
+                case "VMPTRLD": return Mnemonic.VMPTRLD;
+                case "VMPTRST": return Mnemonic.VMPTRST;
+                case "VMREAD": return Mnemonic.VMREAD;
+                case "VMRESUME": return Mnemonic.VMRESUME;
+                case "VMRUN": return Mnemonic.VMRUN;
+                case "VMSAVE": return Mnemonic.VMSAVE;
+                case "VMWRITE": return Mnemonic.VMWRITE;
+                case "VMXOFF": return Mnemonic.VMXOFF;
+                case "VMXON": return Mnemonic.VMXON;
+                case "INVEPT": return Mnemonic.INVEPT;
+                case "INVVPID": return Mnemonic.INVVPID;
+                case "PABSB": return Mnemonic.PABSB;
+                case "PABSW": return Mnemonic.PABSW;
+                case "PABSD": return Mnemonic.PABSD;
+                case "PALIGNR": return Mnemonic.PALIGNR;
+                case "PHADDW": return Mnemonic.PHADDW;
+                case "PHADDD": return Mnemonic.PHADDD;
+                case "PHADDSW": return Mnemonic.PHADDSW;
+                case "PHSUBW": return Mnemonic.PHSUBW;
+                case "PHSUBD": return Mnemonic.PHSUBD;
+                case "PHSUBSW": return Mnemonic.PHSUBSW;
+                case "PMADDUBSW": return Mnemonic.PMADDUBSW;
+                case "PMULHRSW": return Mnemonic.PMULHRSW;
+                case "PSHUFB": return Mnemonic.PSHUFB;
+                case "PSIGNB": return Mnemonic.PSIGNB;
+                case "PSIGNW": return Mnemonic.PSIGNW;
+                case "PSIGND": return Mnemonic.PSIGND;
+                case "EXTRQ": return Mnemonic.EXTRQ;
+                case "INSERTQ": return Mnemonic.INSERTQ;
+                case "MOVNTSD": return Mnemonic.MOVNTSD;
+                case "MOVNTSS": return Mnemonic.MOVNTSS;
+                case "BLENDPD": return Mnemonic.BLENDPD;
+                case "BLENDPS": return Mnemonic.BLENDPS;
+                case "BLENDVPD": return Mnemonic.BLENDVPD;
+                case "BLENDVPS": return Mnemonic.BLENDVPS;
+                case "DPPD": return Mnemonic.DPPD;
+                case "DPPS": return Mnemonic.DPPS;
+                case "EXTRACTPS": return Mnemonic.EXTRACTPS;
+                case "INSERTPS": return Mnemonic.INSERTPS;
+                case "MOVNTDQA": return Mnemonic.MOVNTDQA;
+                case "MPSADBW": return Mnemonic.MPSADBW;
+                case "PACKUSDW": return Mnemonic.PACKUSDW;
+                case "PBLENDVB": return Mnemonic.PBLENDVB;
+                case "PBLENDW": return Mnemonic.PBLENDW;
+                case "PCMPEQQ": return Mnemonic.PCMPEQQ;
+                case "PEXTRB": return Mnemonic.PEXTRB;
+                case "PEXTRD": return Mnemonic.PEXTRD;
+                case "PEXTRQ": return Mnemonic.PEXTRQ;
+                case "PHMINPOSUW": return Mnemonic.PHMINPOSUW;
+                case "PINSRB": return Mnemonic.PINSRB;
+                case "PINSRD": return Mnemonic.PINSRD;
+                case "PINSRQ": return Mnemonic.PINSRQ;
+                case "PMAXSB": return Mnemonic.PMAXSB;
+                case "PMAXSD": return Mnemonic.PMAXSD;
+                case "PMAXUD": return Mnemonic.PMAXUD;
+                case "PMAXUW": return Mnemonic.PMAXUW;
+                case "PMINSB": return Mnemonic.PMINSB;
+                case "PMINSD": return Mnemonic.PMINSD;
+                case "PMINUD": return Mnemonic.PMINUD;
+                case "PMINUW": return Mnemonic.PMINUW;
+                case "PMOVSXBW": return Mnemonic.PMOVSXBW;
+                case "PMOVSXBD": return Mnemonic.PMOVSXBD;
+                case "PMOVSXBQ": return Mnemonic.PMOVSXBQ;
+                case "PMOVSXWD": return Mnemonic.PMOVSXWD;
+                case "PMOVSXWQ": return Mnemonic.PMOVSXWQ;
+                case "PMOVSXDQ": return Mnemonic.PMOVSXDQ;
+                case "PMOVZXBW": return Mnemonic.PMOVZXBW;
+                case "PMOVZXBD": return Mnemonic.PMOVZXBD;
+                case "PMOVZXBQ": return Mnemonic.PMOVZXBQ;
+                case "PMOVZXWD": return Mnemonic.PMOVZXWD;
+                case "PMOVZXWQ": return Mnemonic.PMOVZXWQ;
+                case "PMOVZXDQ": return Mnemonic.PMOVZXDQ;
+                case "PMULDQ": return Mnemonic.PMULDQ;
+                case "PMULLD": return Mnemonic.PMULLD;
+                case "PTEST": return Mnemonic.PTEST;
+                case "ROUNDPD": return Mnemonic.ROUNDPD;
+                case "ROUNDPS": return Mnemonic.ROUNDPS;
+                case "ROUNDSD": return Mnemonic.ROUNDSD;
+                case "ROUNDSS": return Mnemonic.ROUNDSS;
+                case "PCMPESTRI": return Mnemonic.PCMPESTRI;
+                case "PCMPESTRM": return Mnemonic.PCMPESTRM;
+                case "PCMPISTRI": return Mnemonic.PCMPISTRI;
+                case "PCMPISTRM": return Mnemonic.PCMPISTRM;
+                case "PCMPGTQ": return Mnemonic.PCMPGTQ;
+                case "GETSEC": return Mnemonic.GETSEC;
+                case "PFRCPV": return Mnemonic.PFRCPV;
+                case "PFRSQRTV": return Mnemonic.PFRSQRTV;
+                case "AESENC": return Mnemonic.AESENC;
+                case "AESENCLAST": return Mnemonic.AESENCLAST;
+                case "AESDEC": return Mnemonic.AESDEC;
+                case "AESDECLAST": return Mnemonic.AESDECLAST;
+                case "AESIMC": return Mnemonic.AESIMC;
+                case "AESKEYGENASSIST": return Mnemonic.AESKEYGENASSIST;
+                case "VAESENC": return Mnemonic.VAESENC;
+                case "VAESENCLAST": return Mnemonic.VAESENCLAST;
+                case "VAESDEC": return Mnemonic.VAESDEC;
+                case "VAESDECLAST": return Mnemonic.VAESDECLAST;
+                case "VAESIMC": return Mnemonic.VAESIMC;
+                case "VAESKEYGENASSIST": return Mnemonic.VAESKEYGENASSIST;
+                case "VADDPD": return Mnemonic.VADDPD;
+                case "VADDPS": return Mnemonic.VADDPS;
+                case "VADDSD": return Mnemonic.VADDSD;
+                case "VADDSS": return Mnemonic.VADDSS;
+                case "VADDSUBPD": return Mnemonic.VADDSUBPD;
+                case "VADDSUBPS": return Mnemonic.VADDSUBPS;
+                case "VANDPD": return Mnemonic.VANDPD;
+                case "VANDPS": return Mnemonic.VANDPS;
+                case "VANDNPD": return Mnemonic.VANDNPD;
+                case "VANDNPS": return Mnemonic.VANDNPS;
+                case "VBLENDPD": return Mnemonic.VBLENDPD;
+                case "VBLENDPS": return Mnemonic.VBLENDPS;
+                case "VBLENDVPD": return Mnemonic.VBLENDVPD;
+                case "VBLENDVPS": return Mnemonic.VBLENDVPS;
+                case "VBROADCASTSS": return Mnemonic.VBROADCASTSS;
+                case "VBROADCASTSD": return Mnemonic.VBROADCASTSD;
+                case "VBROADCASTF128": return Mnemonic.VBROADCASTF128;
+                case "VCMPEQ_OSPD": return Mnemonic.VCMPEQ_OSPD;
+                case "VCMPEQPD": return Mnemonic.VCMPEQPD;
+                case "VCMPLT_OSPD": return Mnemonic.VCMPLT_OSPD;
+                case "VCMPLTPD": return Mnemonic.VCMPLTPD;
+                case "VCMPLE_OSPD": return Mnemonic.VCMPLE_OSPD;
+                case "VCMPLEPD": return Mnemonic.VCMPLEPD;
+                case "VCMPUNORD_QPD": return Mnemonic.VCMPUNORD_QPD;
+                case "VCMPUNORDPD": return Mnemonic.VCMPUNORDPD;
+                case "VCMPNEQ_UQPD": return Mnemonic.VCMPNEQ_UQPD;
+                case "VCMPNEQPD": return Mnemonic.VCMPNEQPD;
+                case "VCMPNLT_USPD": return Mnemonic.VCMPNLT_USPD;
+                case "VCMPNLTPD": return Mnemonic.VCMPNLTPD;
+                case "VCMPNLE_USPD": return Mnemonic.VCMPNLE_USPD;
+                case "VCMPNLEPD": return Mnemonic.VCMPNLEPD;
+                case "VCMPORD_QPD": return Mnemonic.VCMPORD_QPD;
+                case "VCMPORDPD": return Mnemonic.VCMPORDPD;
+                case "VCMPEQ_UQPD": return Mnemonic.VCMPEQ_UQPD;
+                case "VCMPNGE_USPD": return Mnemonic.VCMPNGE_USPD;
+                case "VCMPNGEPD": return Mnemonic.VCMPNGEPD;
+                case "VCMPNGT_USPD": return Mnemonic.VCMPNGT_USPD;
+                case "VCMPNGTPD": return Mnemonic.VCMPNGTPD;
+                case "VCMPFALSE_OQPD": return Mnemonic.VCMPFALSE_OQPD;
+                case "VCMPFALSEPD": return Mnemonic.VCMPFALSEPD;
+                case "VCMPNEQ_OQPD": return Mnemonic.VCMPNEQ_OQPD;
+                case "VCMPGE_OSPD": return Mnemonic.VCMPGE_OSPD;
+                case "VCMPGEPD": return Mnemonic.VCMPGEPD;
+                case "VCMPGT_OSPD": return Mnemonic.VCMPGT_OSPD;
+                case "VCMPGTPD": return Mnemonic.VCMPGTPD;
+                case "VCMPTRUE_UQPD": return Mnemonic.VCMPTRUE_UQPD;
+                case "VCMPTRUEPD": return Mnemonic.VCMPTRUEPD;
+                case "VCMPLT_OQPD": return Mnemonic.VCMPLT_OQPD;
+                case "VCMPLE_OQPD": return Mnemonic.VCMPLE_OQPD;
+                case "VCMPUNORD_SPD": return Mnemonic.VCMPUNORD_SPD;
+                case "VCMPNEQ_USPD": return Mnemonic.VCMPNEQ_USPD;
+                case "VCMPNLT_UQPD": return Mnemonic.VCMPNLT_UQPD;
+                case "VCMPNLE_UQPD": return Mnemonic.VCMPNLE_UQPD;
+                case "VCMPORD_SPD": return Mnemonic.VCMPORD_SPD;
+                case "VCMPEQ_USPD": return Mnemonic.VCMPEQ_USPD;
+                case "VCMPNGE_UQPD": return Mnemonic.VCMPNGE_UQPD;
+                case "VCMPNGT_UQPD": return Mnemonic.VCMPNGT_UQPD;
+                case "VCMPFALSE_OSPD": return Mnemonic.VCMPFALSE_OSPD;
+                case "VCMPNEQ_OSPD": return Mnemonic.VCMPNEQ_OSPD;
+                case "VCMPGE_OQPD": return Mnemonic.VCMPGE_OQPD;
+                case "VCMPGT_OQPD": return Mnemonic.VCMPGT_OQPD;
+                case "VCMPTRUE_USPD": return Mnemonic.VCMPTRUE_USPD;
+                case "VCMPPD": return Mnemonic.VCMPPD;
+                case "VCMPEQ_OSPS": return Mnemonic.VCMPEQ_OSPS;
+                case "VCMPEQPS": return Mnemonic.VCMPEQPS;
+                case "VCMPLT_OSPS": return Mnemonic.VCMPLT_OSPS;
+                case "VCMPLTPS": return Mnemonic.VCMPLTPS;
+                case "VCMPLE_OSPS": return Mnemonic.VCMPLE_OSPS;
+                case "VCMPLEPS": return Mnemonic.VCMPLEPS;
+                case "VCMPUNORD_QPS": return Mnemonic.VCMPUNORD_QPS;
+                case "VCMPUNORDPS": return Mnemonic.VCMPUNORDPS;
+                case "VCMPNEQ_UQPS": return Mnemonic.VCMPNEQ_UQPS;
+                case "VCMPNEQPS": return Mnemonic.VCMPNEQPS;
+                case "VCMPNLT_USPS": return Mnemonic.VCMPNLT_USPS;
+                case "VCMPNLTPS": return Mnemonic.VCMPNLTPS;
+                case "VCMPNLE_USPS": return Mnemonic.VCMPNLE_USPS;
+                case "VCMPNLEPS": return Mnemonic.VCMPNLEPS;
+                case "VCMPORD_QPS": return Mnemonic.VCMPORD_QPS;
+                case "VCMPORDPS": return Mnemonic.VCMPORDPS;
+                case "VCMPEQ_UQPS": return Mnemonic.VCMPEQ_UQPS;
+                case "VCMPNGE_USPS": return Mnemonic.VCMPNGE_USPS;
+                case "VCMPNGEPS": return Mnemonic.VCMPNGEPS;
+                case "VCMPNGT_USPS": return Mnemonic.VCMPNGT_USPS;
+                case "VCMPNGTPS": return Mnemonic.VCMPNGTPS;
+                case "VCMPFALSE_OQPS": return Mnemonic.VCMPFALSE_OQPS;
+                case "VCMPFALSEPS": return Mnemonic.VCMPFALSEPS;
+                case "VCMPNEQ_OQPS": return Mnemonic.VCMPNEQ_OQPS;
+                case "VCMPGE_OSPS": return Mnemonic.VCMPGE_OSPS;
+                case "VCMPGEPS": return Mnemonic.VCMPGEPS;
+                case "VCMPGT_OSPS": return Mnemonic.VCMPGT_OSPS;
+                case "VCMPGTPS": return Mnemonic.VCMPGTPS;
+                case "VCMPTRUE_UQPS": return Mnemonic.VCMPTRUE_UQPS;
+                case "VCMPTRUEPS": return Mnemonic.VCMPTRUEPS;
+                case "VCMPLT_OQPS": return Mnemonic.VCMPLT_OQPS;
+                case "VCMPLE_OQPS": return Mnemonic.VCMPLE_OQPS;
+                case "VCMPUNORD_SPS": return Mnemonic.VCMPUNORD_SPS;
+                case "VCMPNEQ_USPS": return Mnemonic.VCMPNEQ_USPS;
+                case "VCMPNLT_UQPS": return Mnemonic.VCMPNLT_UQPS;
+                case "VCMPNLE_UQPS": return Mnemonic.VCMPNLE_UQPS;
+                case "VCMPORD_SPS": return Mnemonic.VCMPORD_SPS;
+                case "VCMPEQ_USPS": return Mnemonic.VCMPEQ_USPS;
+                case "VCMPNGE_UQPS": return Mnemonic.VCMPNGE_UQPS;
+                case "VCMPNGT_UQPS": return Mnemonic.VCMPNGT_UQPS;
+                case "VCMPFALSE_OSPS": return Mnemonic.VCMPFALSE_OSPS;
+                case "VCMPNEQ_OSPS": return Mnemonic.VCMPNEQ_OSPS;
+                case "VCMPGE_OQPS": return Mnemonic.VCMPGE_OQPS;
+                case "VCMPGT_OQPS": return Mnemonic.VCMPGT_OQPS;
+                case "VCMPTRUE_USPS": return Mnemonic.VCMPTRUE_USPS;
+                case "VCMPPS": return Mnemonic.VCMPPS;
+                case "VCMPEQ_OSSD": return Mnemonic.VCMPEQ_OSSD;
+                case "VCMPEQSD": return Mnemonic.VCMPEQSD;
+                case "VCMPLT_OSSD": return Mnemonic.VCMPLT_OSSD;
+                case "VCMPLTSD": return Mnemonic.VCMPLTSD;
+                case "VCMPLE_OSSD": return Mnemonic.VCMPLE_OSSD;
+                case "VCMPLESD": return Mnemonic.VCMPLESD;
+                case "VCMPUNORD_QSD": return Mnemonic.VCMPUNORD_QSD;
+                case "VCMPUNORDSD": return Mnemonic.VCMPUNORDSD;
+                case "VCMPNEQ_UQSD": return Mnemonic.VCMPNEQ_UQSD;
+                case "VCMPNEQSD": return Mnemonic.VCMPNEQSD;
+                case "VCMPNLT_USSD": return Mnemonic.VCMPNLT_USSD;
+                case "VCMPNLTSD": return Mnemonic.VCMPNLTSD;
+                case "VCMPNLE_USSD": return Mnemonic.VCMPNLE_USSD;
+                case "VCMPNLESD": return Mnemonic.VCMPNLESD;
+                case "VCMPORD_QSD": return Mnemonic.VCMPORD_QSD;
+                case "VCMPORDSD": return Mnemonic.VCMPORDSD;
+                case "VCMPEQ_UQSD": return Mnemonic.VCMPEQ_UQSD;
+                case "VCMPNGE_USSD": return Mnemonic.VCMPNGE_USSD;
+                case "VCMPNGESD": return Mnemonic.VCMPNGESD;
+                case "VCMPNGT_USSD": return Mnemonic.VCMPNGT_USSD;
+                case "VCMPNGTSD": return Mnemonic.VCMPNGTSD;
+                case "VCMPFALSE_OQSD": return Mnemonic.VCMPFALSE_OQSD;
+                case "VCMPFALSESD": return Mnemonic.VCMPFALSESD;
+                case "VCMPNEQ_OQSD": return Mnemonic.VCMPNEQ_OQSD;
+                case "VCMPGE_OSSD": return Mnemonic.VCMPGE_OSSD;
+                case "VCMPGESD": return Mnemonic.VCMPGESD;
+                case "VCMPGT_OSSD": return Mnemonic.VCMPGT_OSSD;
+                case "VCMPGTSD": return Mnemonic.VCMPGTSD;
+                case "VCMPTRUE_UQSD": return Mnemonic.VCMPTRUE_UQSD;
+                case "VCMPTRUESD": return Mnemonic.VCMPTRUESD;
+                case "VCMPLT_OQSD": return Mnemonic.VCMPLT_OQSD;
+                case "VCMPLE_OQSD": return Mnemonic.VCMPLE_OQSD;
+                case "VCMPUNORD_SSD": return Mnemonic.VCMPUNORD_SSD;
+                case "VCMPNEQ_USSD": return Mnemonic.VCMPNEQ_USSD;
+                case "VCMPNLT_UQSD": return Mnemonic.VCMPNLT_UQSD;
+                case "VCMPNLE_UQSD": return Mnemonic.VCMPNLE_UQSD;
+                case "VCMPORD_SSD": return Mnemonic.VCMPORD_SSD;
+                case "VCMPEQ_USSD": return Mnemonic.VCMPEQ_USSD;
+                case "VCMPNGE_UQSD": return Mnemonic.VCMPNGE_UQSD;
+                case "VCMPNGT_UQSD": return Mnemonic.VCMPNGT_UQSD;
+                case "VCMPFALSE_OSSD": return Mnemonic.VCMPFALSE_OSSD;
+                case "VCMPNEQ_OSSD": return Mnemonic.VCMPNEQ_OSSD;
+                case "VCMPGE_OQSD": return Mnemonic.VCMPGE_OQSD;
+                case "VCMPGT_OQSD": return Mnemonic.VCMPGT_OQSD;
+                case "VCMPTRUE_USSD": return Mnemonic.VCMPTRUE_USSD;
+                case "VCMPSD": return Mnemonic.VCMPSD;
+                case "VCMPEQ_OSSS": return Mnemonic.VCMPEQ_OSSS;
+                case "VCMPEQSS": return Mnemonic.VCMPEQSS;
+                case "VCMPLT_OSSS": return Mnemonic.VCMPLT_OSSS;
+                case "VCMPLTSS": return Mnemonic.VCMPLTSS;
+                case "VCMPLE_OSSS": return Mnemonic.VCMPLE_OSSS;
+                case "VCMPLESS": return Mnemonic.VCMPLESS;
+                case "VCMPUNORD_QSS": return Mnemonic.VCMPUNORD_QSS;
+                case "VCMPUNORDSS": return Mnemonic.VCMPUNORDSS;
+                case "VCMPNEQ_UQSS": return Mnemonic.VCMPNEQ_UQSS;
+                case "VCMPNEQSS": return Mnemonic.VCMPNEQSS;
+                case "VCMPNLT_USSS": return Mnemonic.VCMPNLT_USSS;
+                case "VCMPNLTSS": return Mnemonic.VCMPNLTSS;
+                case "VCMPNLE_USSS": return Mnemonic.VCMPNLE_USSS;
+                case "VCMPNLESS": return Mnemonic.VCMPNLESS;
+                case "VCMPORD_QSS": return Mnemonic.VCMPORD_QSS;
+                case "VCMPORDSS": return Mnemonic.VCMPORDSS;
+                case "VCMPEQ_UQSS": return Mnemonic.VCMPEQ_UQSS;
+                case "VCMPNGE_USSS": return Mnemonic.VCMPNGE_USSS;
+                case "VCMPNGESS": return Mnemonic.VCMPNGESS;
+                case "VCMPNGT_USSS": return Mnemonic.VCMPNGT_USSS;
+                case "VCMPNGTSS": return Mnemonic.VCMPNGTSS;
+                case "VCMPFALSE_OQSS": return Mnemonic.VCMPFALSE_OQSS;
+                case "VCMPFALSESS": return Mnemonic.VCMPFALSESS;
+                case "VCMPNEQ_OQSS": return Mnemonic.VCMPNEQ_OQSS;
+                case "VCMPGE_OSSS": return Mnemonic.VCMPGE_OSSS;
+                case "VCMPGESS": return Mnemonic.VCMPGESS;
+                case "VCMPGT_OSSS": return Mnemonic.VCMPGT_OSSS;
+                case "VCMPGTSS": return Mnemonic.VCMPGTSS;
+                case "VCMPTRUE_UQSS": return Mnemonic.VCMPTRUE_UQSS;
+                case "VCMPTRUESS": return Mnemonic.VCMPTRUESS;
+                case "VCMPLT_OQSS": return Mnemonic.VCMPLT_OQSS;
+                case "VCMPLE_OQSS": return Mnemonic.VCMPLE_OQSS;
+                case "VCMPUNORD_SSS": return Mnemonic.VCMPUNORD_SSS;
+                case "VCMPNEQ_USSS": return Mnemonic.VCMPNEQ_USSS;
+                case "VCMPNLT_UQSS": return Mnemonic.VCMPNLT_UQSS;
+                case "VCMPNLE_UQSS": return Mnemonic.VCMPNLE_UQSS;
+                case "VCMPORD_SSS": return Mnemonic.VCMPORD_SSS;
+                case "VCMPEQ_USSS": return Mnemonic.VCMPEQ_USSS;
+                case "VCMPNGE_UQSS": return Mnemonic.VCMPNGE_UQSS;
+                case "VCMPNGT_UQSS": return Mnemonic.VCMPNGT_UQSS;
+                case "VCMPFALSE_OSSS": return Mnemonic.VCMPFALSE_OSSS;
+                case "VCMPNEQ_OSSS": return Mnemonic.VCMPNEQ_OSSS;
+                case "VCMPGE_OQSS": return Mnemonic.VCMPGE_OQSS;
+                case "VCMPGT_OQSS": return Mnemonic.VCMPGT_OQSS;
+                case "VCMPTRUE_USSS": return Mnemonic.VCMPTRUE_USSS;
+                case "VCMPSS": return Mnemonic.VCMPSS;
+                case "VCOMISD": return Mnemonic.VCOMISD;
+                case "VCOMISS": return Mnemonic.VCOMISS;
+                case "VCVTDQ2PD": return Mnemonic.VCVTDQ2PD;
+                case "VCVTDQ2PS": return Mnemonic.VCVTDQ2PS;
+                case "VCVTPD2DQ": return Mnemonic.VCVTPD2DQ;
+                case "VCVTPD2PS": return Mnemonic.VCVTPD2PS;
+                case "VCVTPS2DQ": return Mnemonic.VCVTPS2DQ;
+                case "VCVTPS2PD": return Mnemonic.VCVTPS2PD;
+                case "VCVTSD2SI": return Mnemonic.VCVTSD2SI;
+                case "VCVTSD2SS": return Mnemonic.VCVTSD2SS;
+                case "VCVTSI2SD": return Mnemonic.VCVTSI2SD;
+                case "VCVTSI2SS": return Mnemonic.VCVTSI2SS;
+                case "VCVTSS2SD": return Mnemonic.VCVTSS2SD;
+                case "VCVTSS2SI": return Mnemonic.VCVTSS2SI;
+                case "VCVTTPD2DQ": return Mnemonic.VCVTTPD2DQ;
+                case "VCVTTPS2DQ": return Mnemonic.VCVTTPS2DQ;
+                case "VCVTTSD2SI": return Mnemonic.VCVTTSD2SI;
+                case "VCVTTSS2SI": return Mnemonic.VCVTTSS2SI;
+                case "VDIVPD": return Mnemonic.VDIVPD;
+                case "VDIVPS": return Mnemonic.VDIVPS;
+                case "VDIVSD": return Mnemonic.VDIVSD;
+                case "VDIVSS": return Mnemonic.VDIVSS;
+                case "VDPPD": return Mnemonic.VDPPD;
+                case "VDPPS": return Mnemonic.VDPPS;
+                case "VEXTRACTF128": return Mnemonic.VEXTRACTF128;
+                case "VEXTRACTPS": return Mnemonic.VEXTRACTPS;
+                case "VHADDPD": return Mnemonic.VHADDPD;
+                case "VHADDPS": return Mnemonic.VHADDPS;
+                case "VHSUBPD": return Mnemonic.VHSUBPD;
+                case "VHSUBPS": return Mnemonic.VHSUBPS;
+                case "VINSERTF128": return Mnemonic.VINSERTF128;
+                case "VINSERTPS": return Mnemonic.VINSERTPS;
+                case "VLDDQU": return Mnemonic.VLDDQU;
+                case "VLDQQU": return Mnemonic.VLDQQU;
+                case "VLDMXCSR": return Mnemonic.VLDMXCSR;
+                case "VMASKMOVDQU": return Mnemonic.VMASKMOVDQU;
+                case "VMASKMOVPS": return Mnemonic.VMASKMOVPS;
+                case "VMASKMOVPD": return Mnemonic.VMASKMOVPD;
+                case "VMAXPD": return Mnemonic.VMAXPD;
+                case "VMAXPS": return Mnemonic.VMAXPS;
+                case "VMAXSD": return Mnemonic.VMAXSD;
+                case "VMAXSS": return Mnemonic.VMAXSS;
+                case "VMINPD": return Mnemonic.VMINPD;
+                case "VMINPS": return Mnemonic.VMINPS;
+                case "VMINSD": return Mnemonic.VMINSD;
+                case "VMINSS": return Mnemonic.VMINSS;
+                case "VMOVAPD": return Mnemonic.VMOVAPD;
+                case "VMOVAPS": return Mnemonic.VMOVAPS;
+                case "VMOVD": return Mnemonic.VMOVD;
+                case "VMOVQ": return Mnemonic.VMOVQ;
+                case "VMOVDDUP": return Mnemonic.VMOVDDUP;
+                case "VMOVDQA": return Mnemonic.VMOVDQA;
+                case "VMOVQQA": return Mnemonic.VMOVQQA;
+                case "VMOVDQU": return Mnemonic.VMOVDQU;
+                case "VMOVQQU": return Mnemonic.VMOVQQU;
+                case "VMOVHLPS": return Mnemonic.VMOVHLPS;
+                case "VMOVHPD": return Mnemonic.VMOVHPD;
+                case "VMOVHPS": return Mnemonic.VMOVHPS;
+                case "VMOVLHPS": return Mnemonic.VMOVLHPS;
+                case "VMOVLPD": return Mnemonic.VMOVLPD;
+                case "VMOVLPS": return Mnemonic.VMOVLPS;
+                case "VMOVMSKPD": return Mnemonic.VMOVMSKPD;
+                case "VMOVMSKPS": return Mnemonic.VMOVMSKPS;
+                case "VMOVNTDQ": return Mnemonic.VMOVNTDQ;
+                case "VMOVNTQQ": return Mnemonic.VMOVNTQQ;
+                case "VMOVNTDQA": return Mnemonic.VMOVNTDQA;
+                case "VMOVNTPD": return Mnemonic.VMOVNTPD;
+                case "VMOVNTPS": return Mnemonic.VMOVNTPS;
+                case "VMOVSD": return Mnemonic.VMOVSD;
+                case "VMOVSHDUP": return Mnemonic.VMOVSHDUP;
+                case "VMOVSLDUP": return Mnemonic.VMOVSLDUP;
+                case "VMOVSS": return Mnemonic.VMOVSS;
+                case "VMOVUPD": return Mnemonic.VMOVUPD;
+                case "VMOVUPS": return Mnemonic.VMOVUPS;
+                case "VMPSADBW": return Mnemonic.VMPSADBW;
+                case "VMULPD": return Mnemonic.VMULPD;
+                case "VMULPS": return Mnemonic.VMULPS;
+                case "VMULSD": return Mnemonic.VMULSD;
+                case "VMULSS": return Mnemonic.VMULSS;
+                case "VORPD": return Mnemonic.VORPD;
+                case "VORPS": return Mnemonic.VORPS;
+                case "VPABSB": return Mnemonic.VPABSB;
+                case "VPABSW": return Mnemonic.VPABSW;
+                case "VPABSD": return Mnemonic.VPABSD;
+                case "VPACKSSWB": return Mnemonic.VPACKSSWB;
+                case "VPACKSSDW": return Mnemonic.VPACKSSDW;
+                case "VPACKUSWB": return Mnemonic.VPACKUSWB;
+                case "VPACKUSDW": return Mnemonic.VPACKUSDW;
+                case "VPADDB": return Mnemonic.VPADDB;
+                case "VPADDW": return Mnemonic.VPADDW;
+                case "VPADDD": return Mnemonic.VPADDD;
+                case "VPADDQ": return Mnemonic.VPADDQ;
+                case "VPADDSB": return Mnemonic.VPADDSB;
+                case "VPADDSW": return Mnemonic.VPADDSW;
+                case "VPADDUSB": return Mnemonic.VPADDUSB;
+                case "VPADDUSW": return Mnemonic.VPADDUSW;
+                case "VPALIGNR": return Mnemonic.VPALIGNR;
+                case "VPAND": return Mnemonic.VPAND;
+                case "VPANDN": return Mnemonic.VPANDN;
+                case "VPAVGB": return Mnemonic.VPAVGB;
+                case "VPAVGW": return Mnemonic.VPAVGW;
+                case "VPBLENDVB": return Mnemonic.VPBLENDVB;
+                case "VPBLENDW": return Mnemonic.VPBLENDW;
+                case "VPCMPESTRI": return Mnemonic.VPCMPESTRI;
+                case "VPCMPESTRM": return Mnemonic.VPCMPESTRM;
+                case "VPCMPISTRI": return Mnemonic.VPCMPISTRI;
+                case "VPCMPISTRM": return Mnemonic.VPCMPISTRM;
+                case "VPCMPEQB": return Mnemonic.VPCMPEQB;
+                case "VPCMPEQW": return Mnemonic.VPCMPEQW;
+                case "VPCMPEQD": return Mnemonic.VPCMPEQD;
+                case "VPCMPEQQ": return Mnemonic.VPCMPEQQ;
+                case "VPCMPGTB": return Mnemonic.VPCMPGTB;
+                case "VPCMPGTW": return Mnemonic.VPCMPGTW;
+                case "VPCMPGTD": return Mnemonic.VPCMPGTD;
+                case "VPCMPGTQ": return Mnemonic.VPCMPGTQ;
+                case "VPERMILPD": return Mnemonic.VPERMILPD;
+                case "VPERMILPS": return Mnemonic.VPERMILPS;
+                case "VPERM2F128": return Mnemonic.VPERM2F128;
+                case "VPEXTRB": return Mnemonic.VPEXTRB;
+                case "VPEXTRW": return Mnemonic.VPEXTRW;
+                case "VPEXTRD": return Mnemonic.VPEXTRD;
+                case "VPEXTRQ": return Mnemonic.VPEXTRQ;
+                case "VPHADDW": return Mnemonic.VPHADDW;
+                case "VPHADDD": return Mnemonic.VPHADDD;
+                case "VPHADDSW": return Mnemonic.VPHADDSW;
+                case "VPHMINPOSUW": return Mnemonic.VPHMINPOSUW;
+                case "VPHSUBW": return Mnemonic.VPHSUBW;
+                case "VPHSUBD": return Mnemonic.VPHSUBD;
+                case "VPHSUBSW": return Mnemonic.VPHSUBSW;
+                case "VPINSRB": return Mnemonic.VPINSRB;
+                case "VPINSRW": return Mnemonic.VPINSRW;
+                case "VPINSRD": return Mnemonic.VPINSRD;
+                case "VPINSRQ": return Mnemonic.VPINSRQ;
+                case "VPMADDWD": return Mnemonic.VPMADDWD;
+                case "VPMADDUBSW": return Mnemonic.VPMADDUBSW;
+                case "VPMAXSB": return Mnemonic.VPMAXSB;
+                case "VPMAXSW": return Mnemonic.VPMAXSW;
+                case "VPMAXSD": return Mnemonic.VPMAXSD;
+                case "VPMAXUB": return Mnemonic.VPMAXUB;
+                case "VPMAXUW": return Mnemonic.VPMAXUW;
+                case "VPMAXUD": return Mnemonic.VPMAXUD;
+                case "VPMINSB": return Mnemonic.VPMINSB;
+                case "VPMINSW": return Mnemonic.VPMINSW;
+                case "VPMINSD": return Mnemonic.VPMINSD;
+                case "VPMINUB": return Mnemonic.VPMINUB;
+                case "VPMINUW": return Mnemonic.VPMINUW;
+                case "VPMINUD": return Mnemonic.VPMINUD;
+                case "VPMOVMSKB": return Mnemonic.VPMOVMSKB;
+                case "VPMOVSXBW": return Mnemonic.VPMOVSXBW;
+                case "VPMOVSXBD": return Mnemonic.VPMOVSXBD;
+                case "VPMOVSXBQ": return Mnemonic.VPMOVSXBQ;
+                case "VPMOVSXWD": return Mnemonic.VPMOVSXWD;
+                case "VPMOVSXWQ": return Mnemonic.VPMOVSXWQ;
+                case "VPMOVSXDQ": return Mnemonic.VPMOVSXDQ;
+                case "VPMOVZXBW": return Mnemonic.VPMOVZXBW;
+                case "VPMOVZXBD": return Mnemonic.VPMOVZXBD;
+                case "VPMOVZXBQ": return Mnemonic.VPMOVZXBQ;
+                case "VPMOVZXWD": return Mnemonic.VPMOVZXWD;
+                case "VPMOVZXWQ": return Mnemonic.VPMOVZXWQ;
+                case "VPMOVZXDQ": return Mnemonic.VPMOVZXDQ;
+                case "VPMULHUW": return Mnemonic.VPMULHUW;
+                case "VPMULHRSW": return Mnemonic.VPMULHRSW;
+                case "VPMULHW": return Mnemonic.VPMULHW;
+                case "VPMULLW": return Mnemonic.VPMULLW;
+                case "VPMULLD": return Mnemonic.VPMULLD;
+                case "VPMULUDQ": return Mnemonic.VPMULUDQ;
+                case "VPMULDQ": return Mnemonic.VPMULDQ;
+                case "VPOR": return Mnemonic.VPOR;
+                case "VPSADBW": return Mnemonic.VPSADBW;
+                case "VPSHUFB": return Mnemonic.VPSHUFB;
+                case "VPSHUFD": return Mnemonic.VPSHUFD;
+                case "VPSHUFHW": return Mnemonic.VPSHUFHW;
+                case "VPSHUFLW": return Mnemonic.VPSHUFLW;
+                case "VPSIGNB": return Mnemonic.VPSIGNB;
+                case "VPSIGNW": return Mnemonic.VPSIGNW;
+                case "VPSIGND": return Mnemonic.VPSIGND;
+                case "VPSLLDQ": return Mnemonic.VPSLLDQ;
+                case "VPSRLDQ": return Mnemonic.VPSRLDQ;
+                case "VPSLLW": return Mnemonic.VPSLLW;
+                case "VPSLLD": return Mnemonic.VPSLLD;
+                case "VPSLLQ": return Mnemonic.VPSLLQ;
+                case "VPSRAW": return Mnemonic.VPSRAW;
+                case "VPSRAD": return Mnemonic.VPSRAD;
+                case "VPSRLW": return Mnemonic.VPSRLW;
+                case "VPSRLD": return Mnemonic.VPSRLD;
+                case "VPSRLQ": return Mnemonic.VPSRLQ;
+                case "VPTEST": return Mnemonic.VPTEST;
+                case "VPSUBB": return Mnemonic.VPSUBB;
+                case "VPSUBW": return Mnemonic.VPSUBW;
+                case "VPSUBD": return Mnemonic.VPSUBD;
+                case "VPSUBQ": return Mnemonic.VPSUBQ;
+                case "VPSUBSB": return Mnemonic.VPSUBSB;
+                case "VPSUBSW": return Mnemonic.VPSUBSW;
+                case "VPSUBUSB": return Mnemonic.VPSUBUSB;
+                case "VPSUBUSW": return Mnemonic.VPSUBUSW;
+                case "VPUNPCKHBW": return Mnemonic.VPUNPCKHBW;
+                case "VPUNPCKHWD": return Mnemonic.VPUNPCKHWD;
+                case "VPUNPCKHDQ": return Mnemonic.VPUNPCKHDQ;
+                case "VPUNPCKHQDQ": return Mnemonic.VPUNPCKHQDQ;
+                case "VPUNPCKLBW": return Mnemonic.VPUNPCKLBW;
+                case "VPUNPCKLWD": return Mnemonic.VPUNPCKLWD;
+                case "VPUNPCKLDQ": return Mnemonic.VPUNPCKLDQ;
+                case "VPUNPCKLQDQ": return Mnemonic.VPUNPCKLQDQ;
+                case "VPXOR": return Mnemonic.VPXOR;
+                case "VRCPPS": return Mnemonic.VRCPPS;
+                case "VRCPSS": return Mnemonic.VRCPSS;
+                case "VRSQRTPS": return Mnemonic.VRSQRTPS;
+                case "VRSQRTSS": return Mnemonic.VRSQRTSS;
+                case "VROUNDPD": return Mnemonic.VROUNDPD;
+                case "VROUNDPS": return Mnemonic.VROUNDPS;
+                case "VROUNDSD": return Mnemonic.VROUNDSD;
+                case "VROUNDSS": return Mnemonic.VROUNDSS;
+                case "VSHUFPD": return Mnemonic.VSHUFPD;
+                case "VSHUFPS": return Mnemonic.VSHUFPS;
+                case "VSQRTPD": return Mnemonic.VSQRTPD;
+                case "VSQRTPS": return Mnemonic.VSQRTPS;
+                case "VSQRTSD": return Mnemonic.VSQRTSD;
+                case "VSQRTSS": return Mnemonic.VSQRTSS;
+                case "VSTMXCSR": return Mnemonic.VSTMXCSR;
+                case "VSUBPD": return Mnemonic.VSUBPD;
+                case "VSUBPS": return Mnemonic.VSUBPS;
+                case "VSUBSD": return Mnemonic.VSUBSD;
+                case "VSUBSS": return Mnemonic.VSUBSS;
+                case "VTESTPS": return Mnemonic.VTESTPS;
+                case "VTESTPD": return Mnemonic.VTESTPD;
+                case "VUCOMISD": return Mnemonic.VUCOMISD;
+                case "VUCOMISS": return Mnemonic.VUCOMISS;
+                case "VUNPCKHPD": return Mnemonic.VUNPCKHPD;
+                case "VUNPCKHPS": return Mnemonic.VUNPCKHPS;
+                case "VUNPCKLPD": return Mnemonic.VUNPCKLPD;
+                case "VUNPCKLPS": return Mnemonic.VUNPCKLPS;
+                case "VXORPD": return Mnemonic.VXORPD;
+                case "VXORPS": return Mnemonic.VXORPS;
+                case "VZEROALL": return Mnemonic.VZEROALL;
+                case "VZEROUPPER": return Mnemonic.VZEROUPPER;
+                case "PCLMULLQLQDQ": return Mnemonic.PCLMULLQLQDQ;
+                case "PCLMULHQLQDQ": return Mnemonic.PCLMULHQLQDQ;
+                case "PCLMULLQHQDQ": return Mnemonic.PCLMULLQHQDQ;
+                case "PCLMULHQHQDQ": return Mnemonic.PCLMULHQHQDQ;
+                case "PCLMULQDQ": return Mnemonic.PCLMULQDQ;
+                case "VPCLMULLQLQDQ": return Mnemonic.VPCLMULLQLQDQ;
+                case "VPCLMULHQLQDQ": return Mnemonic.VPCLMULHQLQDQ;
+                case "VPCLMULLQHQDQ": return Mnemonic.VPCLMULLQHQDQ;
+                case "VPCLMULHQHQDQ": return Mnemonic.VPCLMULHQHQDQ;
+                case "VPCLMULQDQ": return Mnemonic.VPCLMULQDQ;
+                case "VFMADD132PS": return Mnemonic.VFMADD132PS;
+                case "VFMADD132PD": return Mnemonic.VFMADD132PD;
+                case "VFMADD312PS": return Mnemonic.VFMADD312PS;
+                case "VFMADD312PD": return Mnemonic.VFMADD312PD;
+                case "VFMADD213PS": return Mnemonic.VFMADD213PS;
+                case "VFMADD213PD": return Mnemonic.VFMADD213PD;
+                case "VFMADD123PS": return Mnemonic.VFMADD123PS;
+                case "VFMADD123PD": return Mnemonic.VFMADD123PD;
+                case "VFMADD231PS": return Mnemonic.VFMADD231PS;
+                case "VFMADD231PD": return Mnemonic.VFMADD231PD;
+                case "VFMADD321PS": return Mnemonic.VFMADD321PS;
+                case "VFMADD321PD": return Mnemonic.VFMADD321PD;
+                case "VFMADDSUB132PS": return Mnemonic.VFMADDSUB132PS;
+                case "VFMADDSUB132PD": return Mnemonic.VFMADDSUB132PD;
+                case "VFMADDSUB312PS": return Mnemonic.VFMADDSUB312PS;
+                case "VFMADDSUB312PD": return Mnemonic.VFMADDSUB312PD;
+                case "VFMADDSUB213PS": return Mnemonic.VFMADDSUB213PS;
+                case "VFMADDSUB213PD": return Mnemonic.VFMADDSUB213PD;
+                case "VFMADDSUB123PS": return Mnemonic.VFMADDSUB123PS;
+                case "VFMADDSUB123PD": return Mnemonic.VFMADDSUB123PD;
+                case "VFMADDSUB231PS": return Mnemonic.VFMADDSUB231PS;
+                case "VFMADDSUB231PD": return Mnemonic.VFMADDSUB231PD;
+                case "VFMADDSUB321PS": return Mnemonic.VFMADDSUB321PS;
+                case "VFMADDSUB321PD": return Mnemonic.VFMADDSUB321PD;
+                case "VFMSUB132PS": return Mnemonic.VFMSUB132PS;
+                case "VFMSUB132PD": return Mnemonic.VFMSUB132PD;
+                case "VFMSUB312PS": return Mnemonic.VFMSUB312PS;
+                case "VFMSUB312PD": return Mnemonic.VFMSUB312PD;
+                case "VFMSUB213PS": return Mnemonic.VFMSUB213PS;
+                case "VFMSUB213PD": return Mnemonic.VFMSUB213PD;
+                case "VFMSUB123PS": return Mnemonic.VFMSUB123PS;
+                case "VFMSUB123PD": return Mnemonic.VFMSUB123PD;
+                case "VFMSUB231PS": return Mnemonic.VFMSUB231PS;
+                case "VFMSUB231PD": return Mnemonic.VFMSUB231PD;
+                case "VFMSUB321PS": return Mnemonic.VFMSUB321PS;
+                case "VFMSUB321PD": return Mnemonic.VFMSUB321PD;
+                case "VFMSUBADD132PS": return Mnemonic.VFMSUBADD132PS;
+                case "VFMSUBADD132PD": return Mnemonic.VFMSUBADD132PD;
+                case "VFMSUBADD312PS": return Mnemonic.VFMSUBADD312PS;
+                case "VFMSUBADD312PD": return Mnemonic.VFMSUBADD312PD;
+                case "VFMSUBADD213PS": return Mnemonic.VFMSUBADD213PS;
+                case "VFMSUBADD213PD": return Mnemonic.VFMSUBADD213PD;
+                case "VFMSUBADD123PS": return Mnemonic.VFMSUBADD123PS;
+                case "VFMSUBADD123PD": return Mnemonic.VFMSUBADD123PD;
+                case "VFMSUBADD231PS": return Mnemonic.VFMSUBADD231PS;
+                case "VFMSUBADD231PD": return Mnemonic.VFMSUBADD231PD;
+                case "VFMSUBADD321PS": return Mnemonic.VFMSUBADD321PS;
+                case "VFMSUBADD321PD": return Mnemonic.VFMSUBADD321PD;
+                case "VFNMADD132PS": return Mnemonic.VFNMADD132PS;
+                case "VFNMADD132PD": return Mnemonic.VFNMADD132PD;
+                case "VFNMADD312PS": return Mnemonic.VFNMADD312PS;
+                case "VFNMADD312PD": return Mnemonic.VFNMADD312PD;
+                case "VFNMADD213PS": return Mnemonic.VFNMADD213PS;
+                case "VFNMADD213PD": return Mnemonic.VFNMADD213PD;
+                case "VFNMADD123PS": return Mnemonic.VFNMADD123PS;
+                case "VFNMADD123PD": return Mnemonic.VFNMADD123PD;
+                case "VFNMADD231PS": return Mnemonic.VFNMADD231PS;
+                case "VFNMADD231PD": return Mnemonic.VFNMADD231PD;
+                case "VFNMADD321PS": return Mnemonic.VFNMADD321PS;
+                case "VFNMADD321PD": return Mnemonic.VFNMADD321PD;
+                case "VFNMSUB132PS": return Mnemonic.VFNMSUB132PS;
+                case "VFNMSUB132PD": return Mnemonic.VFNMSUB132PD;
+                case "VFNMSUB312PS": return Mnemonic.VFNMSUB312PS;
+                case "VFNMSUB312PD": return Mnemonic.VFNMSUB312PD;
+                case "VFNMSUB213PS": return Mnemonic.VFNMSUB213PS;
+                case "VFNMSUB213PD": return Mnemonic.VFNMSUB213PD;
+                case "VFNMSUB123PS": return Mnemonic.VFNMSUB123PS;
+                case "VFNMSUB123PD": return Mnemonic.VFNMSUB123PD;
+                case "VFNMSUB231PS": return Mnemonic.VFNMSUB231PS;
+                case "VFNMSUB231PD": return Mnemonic.VFNMSUB231PD;
+                case "VFNMSUB321PS": return Mnemonic.VFNMSUB321PS;
+                case "VFNMSUB321PD": return Mnemonic.VFNMSUB321PD;
+                case "VFMADD132SS": return Mnemonic.VFMADD132SS;
+                case "VFMADD132SD": return Mnemonic.VFMADD132SD;
+                case "VFMADD312SS": return Mnemonic.VFMADD312SS;
+                case "VFMADD312SD": return Mnemonic.VFMADD312SD;
+                case "VFMADD213SS": return Mnemonic.VFMADD213SS;
+                case "VFMADD213SD": return Mnemonic.VFMADD213SD;
+                case "VFMADD123SS": return Mnemonic.VFMADD123SS;
+                case "VFMADD123SD": return Mnemonic.VFMADD123SD;
+                case "VFMADD231SS": return Mnemonic.VFMADD231SS;
+                case "VFMADD231SD": return Mnemonic.VFMADD231SD;
+                case "VFMADD321SS": return Mnemonic.VFMADD321SS;
+                case "VFMADD321SD": return Mnemonic.VFMADD321SD;
+                case "VFMSUB132SS": return Mnemonic.VFMSUB132SS;
+                case "VFMSUB132SD": return Mnemonic.VFMSUB132SD;
+                case "VFMSUB312SS": return Mnemonic.VFMSUB312SS;
+                case "VFMSUB312SD": return Mnemonic.VFMSUB312SD;
+                case "VFMSUB213SS": return Mnemonic.VFMSUB213SS;
+                case "VFMSUB213SD": return Mnemonic.VFMSUB213SD;
+                case "VFMSUB123SS": return Mnemonic.VFMSUB123SS;
+                case "VFMSUB123SD": return Mnemonic.VFMSUB123SD;
+                case "VFMSUB231SS": return Mnemonic.VFMSUB231SS;
+                case "VFMSUB231SD": return Mnemonic.VFMSUB231SD;
+                case "VFMSUB321SS": return Mnemonic.VFMSUB321SS;
+                case "VFMSUB321SD": return Mnemonic.VFMSUB321SD;
+                case "VFNMADD132SS": return Mnemonic.VFNMADD132SS;
+                case "VFNMADD132SD": return Mnemonic.VFNMADD132SD;
+                case "VFNMADD312SS": return Mnemonic.VFNMADD312SS;
+                case "VFNMADD312SD": return Mnemonic.VFNMADD312SD;
+                case "VFNMADD213SS": return Mnemonic.VFNMADD213SS;
+                case "VFNMADD213SD": return Mnemonic.VFNMADD213SD;
+                case "VFNMADD123SS": return Mnemonic.VFNMADD123SS;
+                case "VFNMADD123SD": return Mnemonic.VFNMADD123SD;
+                case "VFNMADD231SS": return Mnemonic.VFNMADD231SS;
+                case "VFNMADD231SD": return Mnemonic.VFNMADD231SD;
+                case "VFNMADD321SS": return Mnemonic.VFNMADD321SS;
+                case "VFNMADD321SD": return Mnemonic.VFNMADD321SD;
+                case "VFNMSUB132SS": return Mnemonic.VFNMSUB132SS;
+                case "VFNMSUB132SD": return Mnemonic.VFNMSUB132SD;
+                case "VFNMSUB312SS": return Mnemonic.VFNMSUB312SS;
+                case "VFNMSUB312SD": return Mnemonic.VFNMSUB312SD;
+                case "VFNMSUB213SS": return Mnemonic.VFNMSUB213SS;
+                case "VFNMSUB213SD": return Mnemonic.VFNMSUB213SD;
+                case "VFNMSUB123SS": return Mnemonic.VFNMSUB123SS;
+                case "VFNMSUB123SD": return Mnemonic.VFNMSUB123SD;
+                case "VFNMSUB231SS": return Mnemonic.VFNMSUB231SS;
+                case "VFNMSUB231SD": return Mnemonic.VFNMSUB231SD;
+                case "VFNMSUB321SS": return Mnemonic.VFNMSUB321SS;
+                case "VFNMSUB321SD": return Mnemonic.VFNMSUB321SD;
+                case "RDFSBASE": return Mnemonic.RDFSBASE;
+                case "RDGSBASE": return Mnemonic.RDGSBASE;
+                case "WRFSBASE": return Mnemonic.WRFSBASE;
+                case "WRGSBASE": return Mnemonic.WRGSBASE;
+                case "VCVTPH2PS": return Mnemonic.VCVTPH2PS;
+                case "VCVTPS2PH": return Mnemonic.VCVTPS2PH;
+                case "CLAC": return Mnemonic.CLAC;
+                case "STAC": return Mnemonic.STAC;
+                case "XSTORE": return Mnemonic.XSTORE;
+                case "XCRYPTECB": return Mnemonic.XCRYPTECB;
+                case "XCRYPTCBC": return Mnemonic.XCRYPTCBC;
+                case "XCRYPTCTR": return Mnemonic.XCRYPTCTR;
+                case "XCRYPTCFB": return Mnemonic.XCRYPTCFB;
+                case "XCRYPTOFB": return Mnemonic.XCRYPTOFB;
+                case "MONTMUL": return Mnemonic.MONTMUL;
+                case "XSHA1": return Mnemonic.XSHA1;
+                case "XSHA256": return Mnemonic.XSHA256;
+                case "LLWPCB": return Mnemonic.LLWPCB;
+                case "SLWPCB": return Mnemonic.SLWPCB;
+                case "LWPVAL": return Mnemonic.LWPVAL;
+                case "LWPINS": return Mnemonic.LWPINS;
+                case "VFMADDPD": return Mnemonic.VFMADDPD;
+                case "VFMADDPS": return Mnemonic.VFMADDPS;
+                case "VFMADDSD": return Mnemonic.VFMADDSD;
+                case "VFMADDSS": return Mnemonic.VFMADDSS;
+                case "VFMADDSUBPD": return Mnemonic.VFMADDSUBPD;
+                case "VFMADDSUBPS": return Mnemonic.VFMADDSUBPS;
+                case "VFMSUBADDPD": return Mnemonic.VFMSUBADDPD;
+                case "VFMSUBADDPS": return Mnemonic.VFMSUBADDPS;
+                case "VFMSUBPD": return Mnemonic.VFMSUBPD;
+                case "VFMSUBPS": return Mnemonic.VFMSUBPS;
+                case "VFMSUBSD": return Mnemonic.VFMSUBSD;
+                case "VFMSUBSS": return Mnemonic.VFMSUBSS;
+                case "VFNMADDPD": return Mnemonic.VFNMADDPD;
+                case "VFNMADDPS": return Mnemonic.VFNMADDPS;
+                case "VFNMADDSD": return Mnemonic.VFNMADDSD;
+                case "VFNMADDSS": return Mnemonic.VFNMADDSS;
+                case "VFNMSUBPD": return Mnemonic.VFNMSUBPD;
+                case "VFNMSUBPS": return Mnemonic.VFNMSUBPS;
+                case "VFNMSUBSD": return Mnemonic.VFNMSUBSD;
+                case "VFNMSUBSS": return Mnemonic.VFNMSUBSS;
+                case "VFRCZPD": return Mnemonic.VFRCZPD;
+                case "VFRCZPS": return Mnemonic.VFRCZPS;
+                case "VFRCZSD": return Mnemonic.VFRCZSD;
+                case "VFRCZSS": return Mnemonic.VFRCZSS;
+                case "VPCMOV": return Mnemonic.VPCMOV;
+                case "VPCOMB": return Mnemonic.VPCOMB;
+                case "VPCOMD": return Mnemonic.VPCOMD;
+                case "VPCOMQ": return Mnemonic.VPCOMQ;
+                case "VPCOMUB": return Mnemonic.VPCOMUB;
+                case "VPCOMUD": return Mnemonic.VPCOMUD;
+                case "VPCOMUQ": return Mnemonic.VPCOMUQ;
+                case "VPCOMUW": return Mnemonic.VPCOMUW;
+                case "VPCOMW": return Mnemonic.VPCOMW;
+                case "VPHADDBD": return Mnemonic.VPHADDBD;
+                case "VPHADDBQ": return Mnemonic.VPHADDBQ;
+                case "VPHADDBW": return Mnemonic.VPHADDBW;
+                case "VPHADDDQ": return Mnemonic.VPHADDDQ;
+                case "VPHADDUBD": return Mnemonic.VPHADDUBD;
+                case "VPHADDUBQ": return Mnemonic.VPHADDUBQ;
+                case "VPHADDUBW": return Mnemonic.VPHADDUBW;
+                case "VPHADDUDQ": return Mnemonic.VPHADDUDQ;
+                case "VPHADDUWD": return Mnemonic.VPHADDUWD;
+                case "VPHADDUWQ": return Mnemonic.VPHADDUWQ;
+                case "VPHADDWD": return Mnemonic.VPHADDWD;
+                case "VPHADDWQ": return Mnemonic.VPHADDWQ;
+                case "VPHSUBBW": return Mnemonic.VPHSUBBW;
+                case "VPHSUBDQ": return Mnemonic.VPHSUBDQ;
+                case "VPHSUBWD": return Mnemonic.VPHSUBWD;
+                case "VPMACSDD": return Mnemonic.VPMACSDD;
+                case "VPMACSDQH": return Mnemonic.VPMACSDQH;
+                case "VPMACSDQL": return Mnemonic.VPMACSDQL;
+                case "VPMACSSDD": return Mnemonic.VPMACSSDD;
+                case "VPMACSSDQH": return Mnemonic.VPMACSSDQH;
+                case "VPMACSSDQL": return Mnemonic.VPMACSSDQL;
+                case "VPMACSSWD": return Mnemonic.VPMACSSWD;
+                case "VPMACSSWW": return Mnemonic.VPMACSSWW;
+                case "VPMACSWD": return Mnemonic.VPMACSWD;
+                case "VPMACSWW": return Mnemonic.VPMACSWW;
+                case "VPMADCSSWD": return Mnemonic.VPMADCSSWD;
+                case "VPMADCSWD": return Mnemonic.VPMADCSWD;
+                case "VPPERM": return Mnemonic.VPPERM;
+                case "VPROTB": return Mnemonic.VPROTB;
+                case "VPROTD": return Mnemonic.VPROTD;
+                case "VPROTQ": return Mnemonic.VPROTQ;
+                case "VPROTW": return Mnemonic.VPROTW;
+                case "VPSHAB": return Mnemonic.VPSHAB;
+                case "VPSHAD": return Mnemonic.VPSHAD;
+                case "VPSHAQ": return Mnemonic.VPSHAQ;
+                case "VPSHAW": return Mnemonic.VPSHAW;
+                case "VPSHLB": return Mnemonic.VPSHLB;
+                case "VPSHLD": return Mnemonic.VPSHLD;
+                case "VPSHLQ": return Mnemonic.VPSHLQ;
+                case "VPSHLW": return Mnemonic.VPSHLW;
+                case "VBROADCASTI128": return Mnemonic.VBROADCASTI128;
+                case "VPBLENDD": return Mnemonic.VPBLENDD;
+                case "VPBROADCASTB": return Mnemonic.VPBROADCASTB;
+                case "VPBROADCASTW": return Mnemonic.VPBROADCASTW;
+                case "VPBROADCASTD": return Mnemonic.VPBROADCASTD;
+                case "VPBROADCASTQ": return Mnemonic.VPBROADCASTQ;
+                case "VPERMD": return Mnemonic.VPERMD;
+                case "VPERMPD": return Mnemonic.VPERMPD;
+                case "VPERMPS": return Mnemonic.VPERMPS;
+                case "VPERMQ": return Mnemonic.VPERMQ;
+                case "VPERM2I128": return Mnemonic.VPERM2I128;
+                case "VEXTRACTI128": return Mnemonic.VEXTRACTI128;
+                case "VINSERTI128": return Mnemonic.VINSERTI128;
+                case "VPMASKMOVD": return Mnemonic.VPMASKMOVD;
+                case "VPMASKMOVQ": return Mnemonic.VPMASKMOVQ;
+                case "VPSLLVD": return Mnemonic.VPSLLVD;
+                case "VPSLLVQ": return Mnemonic.VPSLLVQ;
+                case "VPSRAVD": return Mnemonic.VPSRAVD;
+                case "VPSRLVD": return Mnemonic.VPSRLVD;
+                case "VPSRLVQ": return Mnemonic.VPSRLVQ;
+                case "VGATHERDPD": return Mnemonic.VGATHERDPD;
+                case "VGATHERQPD": return Mnemonic.VGATHERQPD;
+                case "VGATHERDPS": return Mnemonic.VGATHERDPS;
+                case "VGATHERQPS": return Mnemonic.VGATHERQPS;
+                case "VPGATHERDD": return Mnemonic.VPGATHERDD;
+                case "VPGATHERQD": return Mnemonic.VPGATHERQD;
+                case "VPGATHERDQ": return Mnemonic.VPGATHERDQ;
+                case "VPGATHERQQ": return Mnemonic.VPGATHERQQ;
+                case "XABORT": return Mnemonic.XABORT;
+                case "XBEGIN": return Mnemonic.XBEGIN;
+                case "XEND": return Mnemonic.XEND;
+                case "XTEST": return Mnemonic.XTEST;
+                case "BLCI": return Mnemonic.BLCI;
+                case "BLCIC": return Mnemonic.BLCIC;
+                case "BLSIC": return Mnemonic.BLSIC;
+                case "BLCFILL": return Mnemonic.BLCFILL;
+                case "BLSFILL": return Mnemonic.BLSFILL;
+                case "BLCMSK": return Mnemonic.BLCMSK;
+                case "BLCS": return Mnemonic.BLCS;
+                case "TZMSK": return Mnemonic.TZMSK;
+                case "T1MSKC": return Mnemonic.T1MSKC;
+                case "BNDMK": return Mnemonic.BNDMK;
+                case "BNDCL": return Mnemonic.BNDCL;
+                case "BNDCU": return Mnemonic.BNDCU;
+                case "BNDCN": return Mnemonic.BNDCN;
+                case "BNDMOV": return Mnemonic.BNDMOV;
+                case "BNDLDX": return Mnemonic.BNDLDX;
+                case "BNDSTX": return Mnemonic.BNDSTX;
+                case "KADDB": return Mnemonic.KADDB;
+                case "KADDD": return Mnemonic.KADDD;
+                case "KADDQ": return Mnemonic.KADDQ;
+                case "KADDW": return Mnemonic.KADDW;
+                case "KANDB": return Mnemonic.KANDB;
+                case "KANDD": return Mnemonic.KANDD;
+                case "KANDNB": return Mnemonic.KANDNB;
+                case "KANDND": return Mnemonic.KANDND;
+                case "KANDNQ": return Mnemonic.KANDNQ;
+                case "KANDNW": return Mnemonic.KANDNW;
+                case "KANDQ": return Mnemonic.KANDQ;
+                case "KANDW": return Mnemonic.KANDW;
+                case "KMOVB": return Mnemonic.KMOVB;
+                case "KMOVD": return Mnemonic.KMOVD;
+                case "KMOVQ": return Mnemonic.KMOVQ;
+                case "KMOVW": return Mnemonic.KMOVW;
+                case "KNOTB": return Mnemonic.KNOTB;
+                case "KNOTD": return Mnemonic.KNOTD;
+                case "KNOTQ": return Mnemonic.KNOTQ;
+                case "KNOTW": return Mnemonic.KNOTW;
+                case "KORB": return Mnemonic.KORB;
+                case "KORD": return Mnemonic.KORD;
+                case "KORQ": return Mnemonic.KORQ;
+                case "KORTESTB": return Mnemonic.KORTESTB;
+                case "KORTESTD": return Mnemonic.KORTESTD;
+                case "KORTESTQ": return Mnemonic.KORTESTQ;
+                case "KORTESTW": return Mnemonic.KORTESTW;
+                case "KORW": return Mnemonic.KORW;
+                case "KSHIFTLB": return Mnemonic.KSHIFTLB;
+                case "KSHIFTLD": return Mnemonic.KSHIFTLD;
+                case "KSHIFTLQ": return Mnemonic.KSHIFTLQ;
+                case "KSHIFTLW": return Mnemonic.KSHIFTLW;
+                case "KSHIFTRB": return Mnemonic.KSHIFTRB;
+                case "KSHIFTRD": return Mnemonic.KSHIFTRD;
+                case "KSHIFTRQ": return Mnemonic.KSHIFTRQ;
+                case "KSHIFTRW": return Mnemonic.KSHIFTRW;
+                case "KTESTB": return Mnemonic.KTESTB;
+                case "KTESTD": return Mnemonic.KTESTD;
+                case "KTESTQ": return Mnemonic.KTESTQ;
+                case "KTESTW": return Mnemonic.KTESTW;
+                case "KUNPCKBW": return Mnemonic.KUNPCKBW;
+                case "KUNPCKDQ": return Mnemonic.KUNPCKDQ;
+                case "KUNPCKWD": return Mnemonic.KUNPCKWD;
+                case "KXNORB": return Mnemonic.KXNORB;
+                case "KXNORD": return Mnemonic.KXNORD;
+                case "KXNORQ": return Mnemonic.KXNORQ;
+                case "KXNORW": return Mnemonic.KXNORW;
+                case "KXORB": return Mnemonic.KXORB;
+                case "KXORD": return Mnemonic.KXORD;
+                case "KXORQ": return Mnemonic.KXORQ;
+                case "KXORW": return Mnemonic.KXORW;
+                case "SHA1MSG1": return Mnemonic.SHA1MSG1;
+                case "SHA1MSG2": return Mnemonic.SHA1MSG2;
+                case "SHA1NEXTE": return Mnemonic.SHA1NEXTE;
+                case "SHA1RNDS4": return Mnemonic.SHA1RNDS4;
+                case "SHA256MSG1": return Mnemonic.SHA256MSG1;
+                case "SHA256MSG2": return Mnemonic.SHA256MSG2;
+                case "SHA256RNDS2": return Mnemonic.SHA256RNDS2;
+                case "VALIGND": return Mnemonic.VALIGND;
+                case "VALIGNQ": return Mnemonic.VALIGNQ;
+                case "VBLENDMPD": return Mnemonic.VBLENDMPD;
+                case "VBLENDMPS": return Mnemonic.VBLENDMPS;
+                case "VBROADCASTF32X2": return Mnemonic.VBROADCASTF32X2;
+                case "VBROADCASTF32X4": return Mnemonic.VBROADCASTF32X4;
+                case "VBROADCASTF32X8": return Mnemonic.VBROADCASTF32X8;
+                case "VBROADCASTF64X2": return Mnemonic.VBROADCASTF64X2;
+                case "VBROADCASTF64X4": return Mnemonic.VBROADCASTF64X4;
+                case "VBROADCASTI32X2": return Mnemonic.VBROADCASTI32X2;
+                case "VBROADCASTI32X4": return Mnemonic.VBROADCASTI32X4;
+                case "VBROADCASTI32X8": return Mnemonic.VBROADCASTI32X8;
+                case "VBROADCASTI64X2": return Mnemonic.VBROADCASTI64X2;
+                case "VBROADCASTI64X4": return Mnemonic.VBROADCASTI64X4;
+                case "VCOMPRESSPD": return Mnemonic.VCOMPRESSPD;
+                case "VCOMPRESSPS": return Mnemonic.VCOMPRESSPS;
+                case "VCVTPD2QQ": return Mnemonic.VCVTPD2QQ;
+                case "VCVTPD2UDQ": return Mnemonic.VCVTPD2UDQ;
+                case "VCVTPD2UQQ": return Mnemonic.VCVTPD2UQQ;
+                case "VCVTPS2QQ": return Mnemonic.VCVTPS2QQ;
+                case "VCVTPS2UDQ": return Mnemonic.VCVTPS2UDQ;
+                case "VCVTPS2UQQ": return Mnemonic.VCVTPS2UQQ;
+                case "VCVTQQ2PD": return Mnemonic.VCVTQQ2PD;
+                case "VCVTQQ2PS": return Mnemonic.VCVTQQ2PS;
+                case "VCVTSD2USI": return Mnemonic.VCVTSD2USI;
+                case "VCVTSS2USI": return Mnemonic.VCVTSS2USI;
+                case "VCVTTPD2QQ": return Mnemonic.VCVTTPD2QQ;
+                case "VCVTTPD2UDQ": return Mnemonic.VCVTTPD2UDQ;
+                case "VCVTTPD2UQQ": return Mnemonic.VCVTTPD2UQQ;
+                case "VCVTTPS2QQ": return Mnemonic.VCVTTPS2QQ;
+                case "VCVTTPS2UDQ": return Mnemonic.VCVTTPS2UDQ;
+                case "VCVTTPS2UQQ": return Mnemonic.VCVTTPS2UQQ;
+                case "VCVTTSD2USI": return Mnemonic.VCVTTSD2USI;
+                case "VCVTTSS2USI": return Mnemonic.VCVTTSS2USI;
+                case "VCVTUDQ2PD": return Mnemonic.VCVTUDQ2PD;
+                case "VCVTUDQ2PS": return Mnemonic.VCVTUDQ2PS;
+                case "VCVTUQQ2PD": return Mnemonic.VCVTUQQ2PD;
+                case "VCVTUQQ2PS": return Mnemonic.VCVTUQQ2PS;
+                case "VCVTUSI2SD": return Mnemonic.VCVTUSI2SD;
+                case "VCVTUSI2SS": return Mnemonic.VCVTUSI2SS;
+                case "VDBPSADBW": return Mnemonic.VDBPSADBW;
+                case "VEXP2PD": return Mnemonic.VEXP2PD;
+                case "VEXP2PS": return Mnemonic.VEXP2PS;
+                case "VEXPANDPD": return Mnemonic.VEXPANDPD;
+                case "VEXPANDPS": return Mnemonic.VEXPANDPS;
+                case "VEXTRACTF32X4": return Mnemonic.VEXTRACTF32X4;
+                case "VEXTRACTF32X8": return Mnemonic.VEXTRACTF32X8;
+                case "VEXTRACTF64X2": return Mnemonic.VEXTRACTF64X2;
+                case "VEXTRACTF64X4": return Mnemonic.VEXTRACTF64X4;
+                case "VEXTRACTI32X4": return Mnemonic.VEXTRACTI32X4;
+                case "VEXTRACTI32X8": return Mnemonic.VEXTRACTI32X8;
+                case "VEXTRACTI64X2": return Mnemonic.VEXTRACTI64X2;
+                case "VEXTRACTI64X4": return Mnemonic.VEXTRACTI64X4;
+                case "VFIXUPIMMPD": return Mnemonic.VFIXUPIMMPD;
+                case "VFIXUPIMMPS": return Mnemonic.VFIXUPIMMPS;
+                case "VFIXUPIMMSD": return Mnemonic.VFIXUPIMMSD;
+                case "VFIXUPIMMSS": return Mnemonic.VFIXUPIMMSS;
+                case "VFPCLASSPD": return Mnemonic.VFPCLASSPD;
+                case "VFPCLASSPS": return Mnemonic.VFPCLASSPS;
+                case "VFPCLASSSD": return Mnemonic.VFPCLASSSD;
+                case "VFPCLASSSS": return Mnemonic.VFPCLASSSS;
+                case "VGATHERPF0DPD": return Mnemonic.VGATHERPF0DPD;
+                case "VGATHERPF0DPS": return Mnemonic.VGATHERPF0DPS;
+                case "VGATHERPF0QPD": return Mnemonic.VGATHERPF0QPD;
+                case "VGATHERPF0QPS": return Mnemonic.VGATHERPF0QPS;
+                case "VGATHERPF1DPD": return Mnemonic.VGATHERPF1DPD;
+                case "VGATHERPF1DPS": return Mnemonic.VGATHERPF1DPS;
+                case "VGATHERPF1QPD": return Mnemonic.VGATHERPF1QPD;
+                case "VGATHERPF1QPS": return Mnemonic.VGATHERPF1QPS;
+                case "VGETEXPPD": return Mnemonic.VGETEXPPD;
+                case "VGETEXPPS": return Mnemonic.VGETEXPPS;
+                case "VGETEXPSD": return Mnemonic.VGETEXPSD;
+                case "VGETEXPSS": return Mnemonic.VGETEXPSS;
+                case "VGETMANTPD": return Mnemonic.VGETMANTPD;
+                case "VGETMANTPS": return Mnemonic.VGETMANTPS;
+                case "VGETMANTSD": return Mnemonic.VGETMANTSD;
+                case "VGETMANTSS": return Mnemonic.VGETMANTSS;
+                case "VINSERTF32X4": return Mnemonic.VINSERTF32X4;
+                case "VINSERTF32X8": return Mnemonic.VINSERTF32X8;
+                case "VINSERTF64X2": return Mnemonic.VINSERTF64X2;
+                case "VINSERTF64X4": return Mnemonic.VINSERTF64X4;
+                case "VINSERTI32X4": return Mnemonic.VINSERTI32X4;
+                case "VINSERTI32X8": return Mnemonic.VINSERTI32X8;
+                case "VINSERTI64X2": return Mnemonic.VINSERTI64X2;
+                case "VINSERTI64X4": return Mnemonic.VINSERTI64X4;
+                case "VMOVDQA32": return Mnemonic.VMOVDQA32;
+                case "VMOVDQA64": return Mnemonic.VMOVDQA64;
+                case "VMOVDQU16": return Mnemonic.VMOVDQU16;
+                case "VMOVDQU32": return Mnemonic.VMOVDQU32;
+                case "VMOVDQU64": return Mnemonic.VMOVDQU64;
+                case "VMOVDQU8": return Mnemonic.VMOVDQU8;
+                case "VPABSQ": return Mnemonic.VPABSQ;
+                case "VPANDD": return Mnemonic.VPANDD;
+                case "VPANDND": return Mnemonic.VPANDND;
+                case "VPANDNQ": return Mnemonic.VPANDNQ;
+                case "VPANDQ": return Mnemonic.VPANDQ;
+                case "VPBLENDMB": return Mnemonic.VPBLENDMB;
+                case "VPBLENDMD": return Mnemonic.VPBLENDMD;
+                case "VPBLENDMQ": return Mnemonic.VPBLENDMQ;
+                case "VPBLENDMW": return Mnemonic.VPBLENDMW;
+                case "VPBROADCASTMB2Q": return Mnemonic.VPBROADCASTMB2Q;
+                case "VPBROADCASTMW2D": return Mnemonic.VPBROADCASTMW2D;
+                case "VPCMPB": return Mnemonic.VPCMPB;
+                case "VPCMPD": return Mnemonic.VPCMPD;
+                case "VPCMPQ": return Mnemonic.VPCMPQ;
+                case "VPCMPUB": return Mnemonic.VPCMPUB;
+                case "VPCMPUD": return Mnemonic.VPCMPUD;
+                case "VPCMPUQ": return Mnemonic.VPCMPUQ;
+                case "VPCMPUW": return Mnemonic.VPCMPUW;
+                case "VPCMPW": return Mnemonic.VPCMPW;
+                case "VPCOMPRESSD": return Mnemonic.VPCOMPRESSD;
+                case "VPCOMPRESSQ": return Mnemonic.VPCOMPRESSQ;
+                case "VPCONFLICTD": return Mnemonic.VPCONFLICTD;
+                case "VPCONFLICTQ": return Mnemonic.VPCONFLICTQ;
+                case "VPERMB": return Mnemonic.VPERMB;
+                case "VPERMI2B": return Mnemonic.VPERMI2B;
+                case "VPERMI2D": return Mnemonic.VPERMI2D;
+                case "VPERMI2PD": return Mnemonic.VPERMI2PD;
+                case "VPERMI2PS": return Mnemonic.VPERMI2PS;
+                case "VPERMI2Q": return Mnemonic.VPERMI2Q;
+                case "VPERMI2W": return Mnemonic.VPERMI2W;
+                case "VPERMT2B": return Mnemonic.VPERMT2B;
+                case "VPERMT2D": return Mnemonic.VPERMT2D;
+                case "VPERMT2PD": return Mnemonic.VPERMT2PD;
+                case "VPERMT2PS": return Mnemonic.VPERMT2PS;
+                case "VPERMT2Q": return Mnemonic.VPERMT2Q;
+                case "VPERMT2W": return Mnemonic.VPERMT2W;
+                case "VPERMW": return Mnemonic.VPERMW;
+                case "VPEXPANDD": return Mnemonic.VPEXPANDD;
+                case "VPEXPANDQ": return Mnemonic.VPEXPANDQ;
+                case "VPLZCNTD": return Mnemonic.VPLZCNTD;
+                case "VPLZCNTQ": return Mnemonic.VPLZCNTQ;
+                case "VPMADD52HUQ": return Mnemonic.VPMADD52HUQ;
+                case "VPMADD52LUQ": return Mnemonic.VPMADD52LUQ;
+                case "VPMAXSQ": return Mnemonic.VPMAXSQ;
+                case "VPMAXUQ": return Mnemonic.VPMAXUQ;
+                case "VPMINSQ": return Mnemonic.VPMINSQ;
+                case "VPMINUQ": return Mnemonic.VPMINUQ;
+                case "VPMOVB2M": return Mnemonic.VPMOVB2M;
+                case "VPMOVD2M": return Mnemonic.VPMOVD2M;
+                case "VPMOVDB": return Mnemonic.VPMOVDB;
+                case "VPMOVDW": return Mnemonic.VPMOVDW;
+                case "VPMOVM2B": return Mnemonic.VPMOVM2B;
+                case "VPMOVM2D": return Mnemonic.VPMOVM2D;
+                case "VPMOVM2Q": return Mnemonic.VPMOVM2Q;
+                case "VPMOVM2W": return Mnemonic.VPMOVM2W;
+                case "VPMOVQ2M": return Mnemonic.VPMOVQ2M;
+                case "VPMOVQB": return Mnemonic.VPMOVQB;
+                case "VPMOVQD": return Mnemonic.VPMOVQD;
+                case "VPMOVQW": return Mnemonic.VPMOVQW;
+                case "VPMOVSDB": return Mnemonic.VPMOVSDB;
+                case "VPMOVSDW": return Mnemonic.VPMOVSDW;
+                case "VPMOVSQB": return Mnemonic.VPMOVSQB;
+                case "VPMOVSQD": return Mnemonic.VPMOVSQD;
+                case "VPMOVSQW": return Mnemonic.VPMOVSQW;
+                case "VPMOVSWB": return Mnemonic.VPMOVSWB;
+                case "VPMOVUSDB": return Mnemonic.VPMOVUSDB;
+                case "VPMOVUSDW": return Mnemonic.VPMOVUSDW;
+                case "VPMOVUSQB": return Mnemonic.VPMOVUSQB;
+                case "VPMOVUSQD": return Mnemonic.VPMOVUSQD;
+                case "VPMOVUSQW": return Mnemonic.VPMOVUSQW;
+                case "VPMOVUSWB": return Mnemonic.VPMOVUSWB;
+                case "VPMOVW2M": return Mnemonic.VPMOVW2M;
+                case "VPMOVWB": return Mnemonic.VPMOVWB;
+                case "VPMULLQ": return Mnemonic.VPMULLQ;
+                case "VPMULTISHIFTQB": return Mnemonic.VPMULTISHIFTQB;
+                case "VPORD": return Mnemonic.VPORD;
+                case "VPORQ": return Mnemonic.VPORQ;
+                case "VPROLD": return Mnemonic.VPROLD;
+                case "VPROLQ": return Mnemonic.VPROLQ;
+                case "VPROLVD": return Mnemonic.VPROLVD;
+                case "VPROLVQ": return Mnemonic.VPROLVQ;
+                case "VPRORD": return Mnemonic.VPRORD;
+                case "VPRORQ": return Mnemonic.VPRORQ;
+                case "VPRORVD": return Mnemonic.VPRORVD;
+                case "VPRORVQ": return Mnemonic.VPRORVQ;
+                case "VPSCATTERDD": return Mnemonic.VPSCATTERDD;
+                case "VPSCATTERDQ": return Mnemonic.VPSCATTERDQ;
+                case "VPSCATTERQD": return Mnemonic.VPSCATTERQD;
+                case "VPSCATTERQQ": return Mnemonic.VPSCATTERQQ;
+                case "VPSLLVW": return Mnemonic.VPSLLVW;
+                case "VPSRAQ": return Mnemonic.VPSRAQ;
+                case "VPSRAVQ": return Mnemonic.VPSRAVQ;
+                case "VPSRAVW": return Mnemonic.VPSRAVW;
+                case "VPSRLVW": return Mnemonic.VPSRLVW;
+                case "VPTERNLOGD": return Mnemonic.VPTERNLOGD;
+                case "VPTERNLOGQ": return Mnemonic.VPTERNLOGQ;
+                case "VPTESTMB": return Mnemonic.VPTESTMB;
+                case "VPTESTMD": return Mnemonic.VPTESTMD;
+                case "VPTESTMQ": return Mnemonic.VPTESTMQ;
+                case "VPTESTMW": return Mnemonic.VPTESTMW;
+                case "VPTESTNMB": return Mnemonic.VPTESTNMB;
+                case "VPTESTNMD": return Mnemonic.VPTESTNMD;
+                case "VPTESTNMQ": return Mnemonic.VPTESTNMQ;
+                case "VPTESTNMW": return Mnemonic.VPTESTNMW;
+                case "VPXORD": return Mnemonic.VPXORD;
+                case "VPXORQ": return Mnemonic.VPXORQ;
+                case "VRANGEPD": return Mnemonic.VRANGEPD;
+                case "VRANGEPS": return Mnemonic.VRANGEPS;
+                case "VRANGESD": return Mnemonic.VRANGESD;
+                case "VRANGESS": return Mnemonic.VRANGESS;
+                case "VRCP14PD": return Mnemonic.VRCP14PD;
+                case "VRCP14PS": return Mnemonic.VRCP14PS;
+                case "VRCP14SD": return Mnemonic.VRCP14SD;
+                case "VRCP14SS": return Mnemonic.VRCP14SS;
+                case "VRCP28PD": return Mnemonic.VRCP28PD;
+                case "VRCP28PS": return Mnemonic.VRCP28PS;
+                case "VRCP28SD": return Mnemonic.VRCP28SD;
+                case "VRCP28SS": return Mnemonic.VRCP28SS;
+                case "VREDUCEPD": return Mnemonic.VREDUCEPD;
+                case "VREDUCEPS": return Mnemonic.VREDUCEPS;
+                case "VREDUCESD": return Mnemonic.VREDUCESD;
+                case "VREDUCESS": return Mnemonic.VREDUCESS;
+                case "VRNDSCALEPD": return Mnemonic.VRNDSCALEPD;
+                case "VRNDSCALEPS": return Mnemonic.VRNDSCALEPS;
+                case "VRNDSCALESD": return Mnemonic.VRNDSCALESD;
+                case "VRNDSCALESS": return Mnemonic.VRNDSCALESS;
+                case "VRSQRT14PD": return Mnemonic.VRSQRT14PD;
+                case "VRSQRT14PS": return Mnemonic.VRSQRT14PS;
+                case "VRSQRT14SD": return Mnemonic.VRSQRT14SD;
+                case "VRSQRT14SS": return Mnemonic.VRSQRT14SS;
+                case "VRSQRT28PD": return Mnemonic.VRSQRT28PD;
+                case "VRSQRT28PS": return Mnemonic.VRSQRT28PS;
+                case "VRSQRT28SD": return Mnemonic.VRSQRT28SD;
+                case "VRSQRT28SS": return Mnemonic.VRSQRT28SS;
+                case "VSCALEFPD": return Mnemonic.VSCALEFPD;
+                case "VSCALEFPS": return Mnemonic.VSCALEFPS;
+                case "VSCALEFSD": return Mnemonic.VSCALEFSD;
+                case "VSCALEFSS": return Mnemonic.VSCALEFSS;
+                case "VSCATTERDPD": return Mnemonic.VSCATTERDPD;
+                case "VSCATTERDPS": return Mnemonic.VSCATTERDPS;
+                case "VSCATTERPF0DPD": return Mnemonic.VSCATTERPF0DPD;
+                case "VSCATTERPF0DPS": return Mnemonic.VSCATTERPF0DPS;
+                case "VSCATTERPF0QPD": return Mnemonic.VSCATTERPF0QPD;
+                case "VSCATTERPF0QPS": return Mnemonic.VSCATTERPF0QPS;
+                case "VSCATTERPF1DPD": return Mnemonic.VSCATTERPF1DPD;
+                case "VSCATTERPF1DPS": return Mnemonic.VSCATTERPF1DPS;
+                case "VSCATTERPF1QPD": return Mnemonic.VSCATTERPF1QPD;
+                case "VSCATTERPF1QPS": return Mnemonic.VSCATTERPF1QPS;
+                case "VSCATTERQPD": return Mnemonic.VSCATTERQPD;
+                case "VSCATTERQPS": return Mnemonic.VSCATTERQPS;
+                case "VSHUFF32X4": return Mnemonic.VSHUFF32X4;
+                case "VSHUFF64X2": return Mnemonic.VSHUFF64X2;
+                case "VSHUFI32X4": return Mnemonic.VSHUFI32X4;
+                case "VSHUFI64X2": return Mnemonic.VSHUFI64X2;
+                case "RDPKRU": return Mnemonic.RDPKRU;
+                case "WRPKRU": return Mnemonic.WRPKRU;
+                case "CLZERO": return Mnemonic.CLZERO;
+
                 default:
                     Console.WriteLine("WARNING;parseMnemonic. unknown str=\"" + str + "\".");
                     return Mnemonic.UNKNOWN;
