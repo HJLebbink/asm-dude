@@ -45,7 +45,7 @@ namespace AsmDude {
         private IDictionary<string, string> _description;
         private readonly ErrorListProvider _errorListProvider;
 
-        private readonly SignatureStore _signatureStore;
+        private readonly AsmSignatureStore _signatureStore;
 
 
         #region Singleton Stuff
@@ -69,7 +69,7 @@ namespace AsmDude {
 
             #region load signature store
             string filename = AsmDudeToolsStatic.getInstallPath() + "Resources" + Path.DirectorySeparatorChar + "mnemonics.txt";
-            this._signatureStore = new SignatureStore(filename);
+            this._signatureStore = new AsmSignatureStore(filename);
             #endregion
 
             this.initData();
@@ -79,7 +79,7 @@ namespace AsmDude {
 
         public ErrorListProvider errorListProvider { get { return this._errorListProvider; } }
 
-        public SignatureStore signatureStore {  get { return this._signatureStore; } }
+        public AsmSignatureStore signatureStore {  get { return this._signatureStore; } }
 
         public ICollection<string> getKeywords() {
             if (this._type == null) initData();

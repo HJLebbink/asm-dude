@@ -2,6 +2,10 @@
 
 namespace AsmTools {
 
+    public enum RegisterType {
+        UNKNOWN, BIT8, BIT16, BIT32, BIT64, MMX, XMM, YMM, ZMM, MASK, SEGMENT
+    }
+
     public static class RegisterTools {
 
         public static Tuple<bool, Rn, int> toRn(string str) {
@@ -38,6 +42,13 @@ namespace AsmTools {
                 case "DX": return Rn.DX;
                 case "DL": return Rn.DL;
                 case "DH": return Rn.DH;
+
+                case "CS": return Rn.CS;
+                case "DS": return Rn.DS;
+                case "ES": return Rn.ES;
+                case "SS": return Rn.SS;
+                case "FS": return Rn.FS;
+                case "GS": return Rn.GS;
 
                 case "RSI": return Rn.RSI;
                 case "ESI": return Rn.ESI;
@@ -511,7 +522,6 @@ namespace AsmTools {
             }
         }
 
-
         private static bool isRegisterMethod1(string keyword) {
             //TODO  get this info from AsmDudeData.xml
             switch (keyword.ToUpper()) {
@@ -866,9 +876,181 @@ namespace AsmTools {
             return b2;
         }
 
+        public static RegisterType getRegisterType(Rn rn) {
+            switch (rn) {
+                case Rn.NOREG:
+                    return RegisterType.UNKNOWN;
 
+                case Rn.AL:
+                case Rn.AH:
+                case Rn.BL:
+                case Rn.BH:
+                case Rn.CL:
+                case Rn.CH:
+                case Rn.DL:
+                case Rn.DH:
+                case Rn.SIL:
+                case Rn.DIL:
+                case Rn.BPL:
+                case Rn.SPL:
+                case Rn.R8B:
+                case Rn.R9B:
+                case Rn.R10B:
+                case Rn.R11B:
+                case Rn.R12B:
+                case Rn.R13B:
+                case Rn.R14B:
+                case Rn.R15B:
+                    return RegisterType.BIT8;
 
+                case Rn.AX:
+                case Rn.BX:
+                case Rn.CX:
+                case Rn.DX:
+                case Rn.SI:
+                case Rn.DI:
+                case Rn.BP:
+                case Rn.SP:
+                case Rn.R8W:
+                case Rn.R9W:
+                case Rn.R10W:
+                case Rn.R11W:
+                case Rn.R12W:
+                case Rn.R13W:
+                case Rn.R14W:
+                case Rn.R15W:
+                    return RegisterType.BIT16;
 
+                case Rn.EAX:
+                case Rn.EBX:
+                case Rn.ECX:
+                case Rn.EDX:
+                case Rn.ESI:
+                case Rn.EDI:
+                case Rn.EBP:
+                case Rn.ESP:
+                case Rn.R8D:
+                case Rn.R9D:
+                case Rn.R10D:
+                case Rn.R11D:
+                case Rn.R12D:
+                case Rn.R13D:
+                case Rn.R14D:
+                case Rn.R15D:
+                    return RegisterType.BIT32;
+
+                case Rn.RAX:
+                case Rn.RBX:
+                case Rn.RCX:
+                case Rn.RDX:
+                case Rn.RSI:
+                case Rn.RDI:
+                case Rn.RBP:
+                case Rn.RSP:
+                case Rn.R8:
+                case Rn.R9:
+                case Rn.R10:
+                case Rn.R11:
+                case Rn.R12:
+                case Rn.R13:
+                case Rn.R14:
+                case Rn.R15:
+                    return RegisterType.BIT64;
+
+                case Rn.CS:
+                case Rn.DS:
+                case Rn.ES:
+                case Rn.SS:
+                case Rn.FS:
+                case Rn.GS:
+                    return RegisterType.SEGMENT;
+
+                case Rn.MM0:
+                case Rn.MM1:
+                case Rn.MM2:
+                case Rn.MM3:
+                case Rn.MM4:
+                case Rn.MM5:
+                case Rn.MM6:
+                case Rn.MM7:
+                    return RegisterType.MMX;
+
+                case Rn.XMM0:
+                case Rn.XMM1:
+                case Rn.XMM2:
+                case Rn.XMM3:
+                case Rn.XMM4:
+                case Rn.XMM5:
+                case Rn.XMM6:
+                case Rn.XMM7:
+                case Rn.XMM8:
+                case Rn.XMM9:
+                case Rn.XMM10:
+                case Rn.XMM11:
+                case Rn.XMM12:
+                case Rn.XMM13:
+                case Rn.XMM14:
+                case Rn.XMM15:
+                    return RegisterType.XMM;
+
+                case Rn.YMM0:
+                case Rn.YMM1:
+                case Rn.YMM2:
+                case Rn.YMM3:
+                case Rn.YMM4:
+                case Rn.YMM5:
+                case Rn.YMM6:
+                case Rn.YMM7:
+                case Rn.YMM8:
+                case Rn.YMM9:
+                case Rn.YMM10:
+                case Rn.YMM11:
+                case Rn.YMM12:
+                case Rn.YMM13:
+                case Rn.YMM14:
+                case Rn.YMM15:
+                    return RegisterType.YMM;
+
+                case Rn.ZMM0:
+                case Rn.ZMM1:
+                case Rn.ZMM2:
+                case Rn.ZMM3:
+                case Rn.ZMM4:
+                case Rn.ZMM5:
+                case Rn.ZMM6:
+                case Rn.ZMM7:
+                case Rn.ZMM8:
+                case Rn.ZMM9:
+                case Rn.ZMM10:
+                case Rn.ZMM11:
+                case Rn.ZMM12:
+                case Rn.ZMM13:
+                case Rn.ZMM14:
+                case Rn.ZMM15:
+                case Rn.ZMM16:
+                case Rn.ZMM17:
+                case Rn.ZMM18:
+                case Rn.ZMM19:
+                case Rn.ZMM20:
+                case Rn.ZMM21:
+                case Rn.ZMM22:
+                case Rn.ZMM23:
+                case Rn.ZMM24:
+                case Rn.ZMM25:
+                case Rn.ZMM26:
+                case Rn.ZMM27:
+                case Rn.ZMM28:
+                case Rn.ZMM29:
+                case Rn.ZMM30:
+                case Rn.ZMM31:
+                    return RegisterType.ZMM;
+
+                default:
+                    break;
+
+            }
+            return RegisterType.UNKNOWN;
+        }
 
         public static bool isMmx(Rn rn) {
             switch (rn) {

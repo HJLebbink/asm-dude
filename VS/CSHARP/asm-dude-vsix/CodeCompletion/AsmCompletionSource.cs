@@ -34,6 +34,7 @@ using System.Globalization;
 using AsmTools;
 using AsmDude.Tools;
 using System.Collections;
+using AsmDude.SignatureHelp;
 
 namespace AsmDude {
 
@@ -42,7 +43,6 @@ namespace AsmDude {
             return x.InsertionText.CompareTo(y.InsertionText);
         }
     }
-
 
     public sealed class AsmCompletionSource : ICompletionSource {
 
@@ -63,12 +63,8 @@ namespace AsmDude {
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets) {
             //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:AugmentCompletionSession", this.ToString()));
 
-            if (!Settings.Default.CodeCompletion_On) {
-                return;
-            }
-            if (_disposed) {
-                throw new ObjectDisposedException("AsmCompletionSource");
-            }
+            if (_disposed) return;
+            if (!Settings.Default.CodeCompletion_On) return;
 
             try {
                 DateTime time1 = DateTime.Now;
@@ -101,42 +97,79 @@ namespace AsmDude {
                 string partialKeyword = applicableTo.GetText(snapshot);
                 bool useCapitals = AsmDudeToolsStatic.isAllUpper(partialKeyword);
 
-                //4] get the previous keyword to narrow down the possible suggestions
-                string previousKeyword = AsmDudeToolsStatic.getPreviousKeyword(line.Start, start);
-                //AsmDudeToolsStatic.Output(string.Format("INFO: AugmentCompletionSession: previousKeyword=\"{0}\"; partialKeyword=\"{1}\".", previousKeyword, partialKeyword));
-
                 SortedSet<Completion> completions = null;
+                if (false) {
+                    #region 
+                    //4] get the previous keyword to narrow down the possible suggestions
+                    string previousKeyword = AsmDudeToolsStatic.getPreviousKeyword(line.Start, start);
+                    //AsmDudeToolsStatic.Output(string.Format("INFO: AugmentCompletionSession: previousKeyword=\"{0}\"; partialKeyword=\"{1}\".", previousKeyword, partialKeyword));
 
-                if ((previousKeyword.Length == 0) || this.isLabel(previousKeyword)) {
-                    // no previous keyword exists. Do not suggest a register
-                    HashSet<AsmTokenType> selected = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic /*, TokenType.Register*/ };
-                    completions = this.selectedCompletions(useCapitals, selected);
+                    if ((previousKeyword.Length == 0) || this.isLabel(previousKeyword)) {
+                        // no previous keyword exists. Do not suggest a register
+                        HashSet<AsmTokenType> selected = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic /*, TokenType.Register*/ };
+                        completions = this.selectedCompletions(useCapitals, selected);
 
-                } else if (this.isJump(previousKeyword)) {
-                    // previous keyword is jump (or call) mnemonic. Suggest "SHORT" or a label
-                    completions = this.labelCompletions();
-                    completions.Add(new Completion("SHORT", (useCapitals) ? "SHORT" : "short", null, this._icons[AsmTokenType.Misc], ""));
-                    completions.Add(new Completion("NEAR", (useCapitals) ? "NEAR" : "near", null, this._icons[AsmTokenType.Misc], ""));
+                    } else if (this.isJump(previousKeyword)) {
+                        // previous keyword is jump (or call) mnemonic. Suggest "SHORT" or a label
+                        completions = this.labelCompletions();
+                        completions.Add(new Completion("SHORT", (useCapitals) ? "SHORT" : "short", null, this._icons[AsmTokenType.Misc], ""));
+                        completions.Add(new Completion("NEAR", (useCapitals) ? "NEAR" : "near", null, this._icons[AsmTokenType.Misc], ""));
 
-                } else if (previousKeyword.Equals("SHORT") || previousKeyword.Equals("NEAR")) {
-                    // previous keyword is SHORT. Suggest a label
-                    completions = this.labelCompletions();
+                    } else if (previousKeyword.Equals("SHORT") || previousKeyword.Equals("NEAR")) {
+                        // previous keyword is SHORT. Suggest a label
+                        completions = this.labelCompletions();
 
-                } else if (this.isRegister(previousKeyword)) {
-                    // if the previous keyword is a register, suggest registers (of equal size), no opcodes and no directives
-                    HashSet<AsmTokenType> selected = new HashSet<AsmTokenType> { /*TokenType.Directive, TokenType.Jump,*/ AsmTokenType.Misc, /*TokenType.Mnemonic,*/ AsmTokenType.Register };
-                    completions = this.selectedCompletions(useCapitals, selected);
+                    } else if (this.isRegister(previousKeyword)) {
+                        // if the previous keyword is a register, suggest registers (of equal size), no opcodes and no directives
+                        HashSet<AsmTokenType> selected = new HashSet<AsmTokenType> { /*TokenType.Directive, TokenType.Jump,*/ AsmTokenType.Misc, /*TokenType.Mnemonic,*/ AsmTokenType.Register };
+                        completions = this.selectedCompletions(useCapitals, selected);
 
-                } else if (this.isMnemonic(previousKeyword)) {
-                    // if previous keyword is a mnemonic (no jump). Do not suggest a Mnemonic or directive
-                    HashSet<AsmTokenType> selected = new HashSet<AsmTokenType> { /*TokenType.Directive, TokenType.Jump,*/ AsmTokenType.Misc, /*TokenType.Mnemonic,*/ AsmTokenType.Register };
-                    completions = this.selectedCompletions(useCapitals, selected);
-
+                    } else if (this.isMnemonic(previousKeyword)) {
+                        // previous keyword is a mnemonic (no jump).
+                        HashSet<AsmTokenType> selected = new HashSet<AsmTokenType> { /*TokenType.Directive, TokenType.Jump,*/ AsmTokenType.Misc, /*TokenType.Mnemonic,*/ AsmTokenType.Register };
+                        completions = this.selectedCompletions(useCapitals, selected);
+                    } else {
+                        HashSet<AsmTokenType> selected = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic, AsmTokenType.Register };
+                        completions = this.selectedCompletions(useCapitals, selected);
+                    }
+                    #endregion
                 } else {
-                    HashSet<AsmTokenType> selected = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic, AsmTokenType.Register };
-                    completions = this.selectedCompletions(useCapitals, selected);
-                }
+                    #region
+                    string lineStr = line.GetText();
+                    var t = AsmSourceTools.parseLine(lineStr);
+                    Mnemonic mnemonic = t.Item2;
 
+                    AsmDudeToolsStatic.Output("INFO: AsmCompletionSource:AugmentCompletionSession; mnemonic="+ mnemonic);
+
+                    if (mnemonic == Mnemonic.UNKNOWN) {
+                        HashSet<AsmTokenType> selected = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic, AsmTokenType.Register };
+                        completions = this.selectedCompletions(useCapitals, selected);
+                    } else {
+                        string previousKeyword = AsmDudeToolsStatic.getPreviousKeyword(line.Start, start);
+                        if (this.isJump(previousKeyword)) {
+                            // previous keyword is jump (or call) mnemonic. Suggest "SHORT" or a label
+                            completions = this.labelCompletions();
+                            completions.Add(new Completion("SHORT", (useCapitals) ? "SHORT" : "short", null, this._icons[AsmTokenType.Misc], ""));
+                            completions.Add(new Completion("NEAR", (useCapitals) ? "NEAR" : "near", null, this._icons[AsmTokenType.Misc], ""));
+                        } else if (previousKeyword.Equals("SHORT") || previousKeyword.Equals("NEAR")) {
+                            // previous keyword is SHORT. Suggest a label
+                            completions = this.labelCompletions();
+                        } else {
+                            IList<Operand> operands = AsmSourceTools.makeOperands(t.Item3);
+                            ISet<AsmSignatureEnum> allowed = new HashSet<AsmSignatureEnum>();
+                            int commaCount = AsmSignature.countCommas(lineStr);
+                            foreach (AsmSignatureElement se in AsmSignatureHelpSource.constrainSignatures(this._asmDudeTools.signatureStore.get(mnemonic), operands)) {
+                                if (commaCount < se.operands.Count) {
+                                    foreach (AsmSignatureEnum s in se.operands[commaCount]) {
+                                        allowed.Add(s);
+                                    }
+                                }
+                            }
+                            completions = this.mnemonicOperandCompletions(useCapitals, allowed);
+                        }
+                    }
+                    #endregion
+                }
                 completionSets.Add(new CompletionSet("Tokens", "Tokens", applicableTo, completions, Enumerable.Empty<Completion>()));
 
                 AsmDudeToolsStatic.printSpeedWarning(time1, "Code Completion");
@@ -153,6 +186,61 @@ namespace AsmDude {
         }
 
         #region Private Methods
+
+        private SortedSet<Completion> mnemonicOperandCompletions(bool useCapitals, ISet<AsmSignatureEnum> allowedOperands) {
+
+            foreach (AsmSignatureEnum s in allowedOperands) {
+                AsmDudeToolsStatic.Output(string.Format("INFO: AsmCompletionSource:AugmentCompletionSession; allowedOperands:" + s));
+            }
+
+            SortedSet<Completion> completions = new SortedSet<Completion>(new CompletionComparer());
+            foreach (string keyword in this._asmDudeTools.getKeywords()) {
+
+                Arch arch = this._asmDudeTools.getArchitecture(keyword);
+                AsmTokenType type = this._asmDudeTools.getTokenType(keyword);
+
+                bool selected = this.isArchSwitchedOn(arch);
+
+                if (selected) {
+                    switch (type) {
+                        case AsmTokenType.Register:
+                            Rn regName = RegisterTools.parseRn(keyword);
+                            if (AsmSignatureTools.isAllowedReg(regName, allowedOperands)) {
+                                //AsmDudeToolsStatic.Output(string.Format("INFO: AsmCompletionSource:mnemonicOperandCompletions; rn="+ keyword + " is selected"));
+                            } else {
+                                selected = false;
+                            }
+                            break;
+                        case AsmTokenType.Misc:
+                            if (AsmSignatureTools.isAllowedMisc(keyword, allowedOperands)) {
+                                //AsmDudeToolsStatic.Output(string.Format("INFO: AsmCompletionSource:mnemonicOperandCompletions; rn="+ keyword + " is selected"));
+                            } else {
+                                selected = false;
+                            }
+                            break;
+                        default:
+                            selected = false;
+                            break;
+                    }
+                }
+                if (selected) {
+                    //AsmDudeToolsStatic.Output("INFO: AsmCompletionSource:AugmentCompletionSession: keyword \"" + keyword + "\" is added to the completions list");
+
+                    // by default, the entry.Key is with capitals
+                    string insertionText = (useCapitals) ? keyword : keyword.ToLower();
+                    string archStr = (arch == Arch.NONE) ? "" : " [" + arch + "]";
+                    string descriptionStr = this._asmDudeTools.getDescription(keyword);
+                    descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
+                    String displayText = keyword + archStr + descriptionStr;
+                    //String description = keyword.PadRight(15) + archStr.PadLeft(8) + descriptionStr;
+
+                    ImageSource imageSource = null;
+                    this._icons.TryGetValue(type, out imageSource);
+                    completions.Add(new Completion(displayText, insertionText, null, imageSource, ""));
+                }
+            }
+            return completions;
+        }
 
         private SortedSet<Completion> labelCompletions() {
             SortedSet<Completion> completions = new SortedSet<Completion>(new CompletionComparer());

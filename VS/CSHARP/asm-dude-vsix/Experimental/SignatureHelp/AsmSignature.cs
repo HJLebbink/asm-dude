@@ -65,6 +65,20 @@ namespace AsmDude.SignatureHelp {
             }
         }
 
+        public static int countCommas(string str) {
+            int currentIndex = 0;
+            int commaCount = 0;
+            while (currentIndex < str.Length) {
+                int commaIndex = str.IndexOf(',', currentIndex);
+                if (commaIndex == -1) {
+                    break;
+                }
+                commaCount++;
+                currentIndex = commaIndex + 1;
+            }
+            return commaCount;
+        }
+
         internal void computeCurrentParameter() {
             //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: computeCurrentParameter");
 
@@ -77,26 +91,15 @@ namespace AsmDude.SignatureHelp {
             //the number of commas in the current line is the index of the current parameter
             SnapshotPoint position = _applicableToSpan.GetStartPoint(_subjectBuffer.CurrentSnapshot);
             string lineStr = _subjectBuffer.CurrentSnapshot.GetLineFromPosition(position).GetText();
-
             //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: computeCurrentParameter. lineStr=" + lineStr);
 
-            int currentIndex = 0;
-            int commaCount = 0;
-            while (currentIndex < lineStr.Length) {
-                int commaIndex = lineStr.IndexOf(',', currentIndex);
-                if (commaIndex == -1) {
-                    break;
-                }
-                commaCount++;
-                currentIndex = commaIndex + 1;
-            }
+            int commaCount = AsmSignature.countCommas(lineStr);
             //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: computeCurrentParameter. commaCount="+ commaCount);
 
             if (commaCount < nParameters) {
                 this.CurrentParameter = this.Parameters[commaCount];
             } else {
-                //too many commas, so use the last parameter as the current one.
-                this.CurrentParameter = this.Parameters[nParameters - 1];
+                this.CurrentParameter = null;
             }
         }
 

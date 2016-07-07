@@ -26,21 +26,20 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.TextManager.Interop;
 using System;
 using System.Runtime.InteropServices;
 
 namespace AsmDude.SignatureHelp {
 
-    internal sealed class AsmSignatureHelpCommandHandler : IOleCommandTarget {
+    internal sealed class AsmSignatureHelpCommand : IOleCommandTarget {
         private readonly ITextView _textView;
         private readonly ISignatureHelpBroker _broker;
 
         private ISignatureHelpSession _session;
         private IOleCommandTarget _nextCommandHandler;
 
-        internal AsmSignatureHelpCommandHandler(IVsTextView textViewAdapter, ITextView textView, ISignatureHelpBroker broker) {
+        internal AsmSignatureHelpCommand(IVsTextView textViewAdapter, ITextView textView, ISignatureHelpBroker broker) {
             this._textView = textView;
             this._broker = broker;
 
@@ -53,30 +52,35 @@ namespace AsmDude.SignatureHelp {
         }
 
         public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
-            char typedChar = char.MinValue;
 
-            bool enterPressed = (nCmdID == (uint)VSConstants.VSStd2KCmdID.RETURN);
+            SnapshotPoint point = _textView.Caret.Position.BufferPosition - 1;
+            if (point.Position > 1) {
+                ITextSnapshotLine line = point.Snapshot.GetLineFromPosition(point.Position);
+                string lineStr = line.GetText();
 
-            if ((pguidCmdGroup == VSConstants.VSStd2K) && (nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR)) {
-                typedChar = this.GetTypeChar(pvaIn);
+                int pos = point.Position - line.Start;
+                if (!AsmSourceTools.isInRemark(pos, lineStr)) { //check if current position is in a remark; if we are in a remark, no signature help
 
-                if (char.IsWhiteSpace(typedChar) || typedChar.Equals(',')) {
-
-                    SnapshotPoint point = _textView.Caret.Position.BufferPosition - 1;
-                    string lineStr = point.Snapshot.GetLineFromPosition(point.Position).GetText();
-                    var t = AsmSourceTools.parseLine(lineStr);
-
-                    if (this._session != null) this._session.Dismiss(); // cleanup previous session
-                    if (t.Item2 != Mnemonic.UNKNOWN) {
-                        this._session = _broker.TriggerSignatureHelp(_textView);
+                    if ((pguidCmdGroup == VSConstants.VSStd2K) && (nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR)) {
+                        char typedChar = this.GetTypeChar(pvaIn);
+                        if (char.IsWhiteSpace(typedChar) || typedChar.Equals(',')) {
+                            var t = AsmSourceTools.parseLine(lineStr);
+                            if (this._session != null) this._session.Dismiss(); // cleanup previous session
+                            if (t.Item2 != Mnemonic.UNKNOWN) {
+                                this._session = _broker.TriggerSignatureHelp(_textView);
+                            }
+                        } else if (AsmSourceTools.isRemarkChar(typedChar) && (this._session != null)) {
+                            this._session.Dismiss();
+                            this._session = null;
+                        }
+                    } else {
+                        bool enterPressed = (nCmdID == (uint)VSConstants.VSStd2KCmdID.RETURN);
+                        if (enterPressed && (this._session != null)) {
+                            this._session.Dismiss();
+                            this._session = null;
+                        }
                     }
-                } else if (AsmSourceTools.isRemarkChar(typedChar) && (this._session != null)) {
-                    this._session.Dismiss();
-                    this._session = null;
                 }
-            } else if (enterPressed && (this._session != null))  {
-                this._session.Dismiss();
-                this._session = null;
             }
             return _nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
         }

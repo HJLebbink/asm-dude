@@ -332,10 +332,12 @@
     <Compile Include="ErrorSquiggles\AsmErrorEnum.cs" />
     <Compile Include="Experimental\SignatureHelp\AsmParameter.cs" />
     <Compile Include="Experimental\SignatureHelp\AsmSignature.cs" />
-    <Compile Include="Experimental\SignatureHelp\AsmSignatureHelpCommandHandler.cs" />
+    <Compile Include="Experimental\SignatureHelp\AsmSignatureElement.cs" />
+    <Compile Include="Experimental\SignatureHelp\AsmSignatureEnum.cs" />
+    <Compile Include="Experimental\SignatureHelp\AsmSignatureHelpCommand.cs" />
     <Compile Include="Experimental\SignatureHelp\AsmSignatureHelpCommandProvider.cs" />
     <Compile Include="Experimental\SignatureHelp\AsmSignatureHelpSourceProvider.cs" />
-    <Compile Include="Experimental\SignatureHelp\SignatureStore.cs" />
+    <Compile Include="Experimental\SignatureHelp\AsmSignatureStore.cs" />
     <Compile Include="OptionsPage\AsmDudeOptionPageUI.xaml.cs">
       <DependentUpon>AsmDudeOptionPageUI.xaml</DependentUpon>
     </Compile>

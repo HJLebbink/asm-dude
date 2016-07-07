@@ -80,6 +80,16 @@ namespace AsmTools {
             return new Tuple<string, Mnemonic, string[], string>(label, mnemonic, args, remark);
         }
 
+        public static IList<Operand> makeOperands(string[] operandStrArray) {
+            IList<Operand> operands = new List<Operand>(operandStrArray.Length);
+            foreach (string opStr in operandStrArray) {
+                if (opStr.Length > 0) {
+                    operands.Add(new Operand(opStr));
+                }
+            }
+            return operands;
+        }
+
         public static IList<Tuple<int, int, bool>> splitIntoKeywordPos(string line) {
             IList<Tuple<int, int, bool>> list = new List<Tuple<int, int, bool>>();
 

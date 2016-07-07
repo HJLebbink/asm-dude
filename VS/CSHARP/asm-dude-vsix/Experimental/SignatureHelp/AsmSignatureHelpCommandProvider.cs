@@ -47,7 +47,7 @@ namespace AsmDude.SignatureHelp {
                 return;
             }
             textView.Properties.GetOrCreateSingletonProperty(
-                 () => new AsmSignatureHelpCommandHandler(textViewAdapter, textView, _signatureHelpBroker)
+                 () => new AsmSignatureHelpCommand(textViewAdapter, textView, _signatureHelpBroker)
             );
         }
     }
