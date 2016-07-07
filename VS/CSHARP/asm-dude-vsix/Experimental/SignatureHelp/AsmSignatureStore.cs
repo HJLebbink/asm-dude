@@ -96,6 +96,20 @@ namespace AsmDude.SignatureHelp {
             }
         }
 
+        public bool hasElement(Mnemonic mnemonic) {
+            return this._data.ContainsKey(mnemonic);
+        }
+
+        public ISet<string> getDescriptions(Mnemonic mnemonic) {
+            ISet<string> set = new HashSet<string>();
+            foreach (AsmSignatureElement e in this.get(mnemonic)) {
+                foreach (string str in e.remark.Split(',')) {
+                    set.Add(str);
+                }
+            }
+            return set;
+        }
+
         public IList<AsmSignatureElement> get(Mnemonic mnemonic) {
             IList<AsmSignatureElement> list;
             if (this._data.TryGetValue(mnemonic, out list)) {

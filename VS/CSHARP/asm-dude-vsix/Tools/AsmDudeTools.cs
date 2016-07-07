@@ -31,7 +31,6 @@ using System.Collections.Generic;
 using AsmTools;
 using AsmDude.Tools;
 using Microsoft.VisualStudio.Shell;
-using AsmDude.SyntaxHighlighting;
 using AsmDude.SignatureHelp;
 
 namespace AsmDude {
@@ -73,6 +72,26 @@ namespace AsmDude {
             #endregion
 
             this.initData();
+
+
+            if (false) {
+                foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic))) {
+                    if (!this._signatureStore.hasElement(mnemonic)) {
+                        AsmDudeToolsStatic.Output("INFO: AsmDudeTools constructor: mnemonic " + mnemonic + " is not present");
+                    }
+                }
+            }
+            if (true) {
+                // do some tests
+
+                foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic))) {
+                    if (!this._description.ContainsKey(mnemonic.ToString())) {
+                        AsmDudeToolsStatic.Output("		<mnemonic name='" + mnemonic + "'>");
+                        AsmDudeToolsStatic.Output("			<description>TODO: "+ string.Join(",", this._signatureStore.getDescriptions(mnemonic))+"</description>");
+                        AsmDudeToolsStatic.Output("		</mnemonic>");
+                    }
+                }
+            }
         }
 
         #region Public Methods

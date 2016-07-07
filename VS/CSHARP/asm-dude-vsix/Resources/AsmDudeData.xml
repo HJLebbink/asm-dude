@@ -4126,8 +4126,9 @@
 			<description>Gather Int64 Vector With Signed Dword Indices</description>
 		</mnemonic>
 		<mnemonic name='VPMADD231D' arch='KNC'>
-			<description>Multiply First Source By Second Source and Add To Destination Int32 Ve</description>
-		</mnemonic>ctors<mnemonic name='VPMADD233D' arch='KNC'>
+			<description>Multiply First Source By Second Source and Add To Destination Int32 Vectors</description>
+		</mnemonic>
+		<mnemonic name='VPMADD233D' arch='KNC'>
 			<description>Multiply First Source By Specially Swizzled Second Source and Add To Second Source Int32 Vectors</description>
 		</mnemonic>
 		<mnemonic name='VPMAXSD' arch='KNC'>
@@ -4301,9 +4302,3023 @@
 		<mnemonic name='VPREFETCHNTA' arch='KNC'>
 			<description>Prefetch memory line using NTA hint</description>
 		</mnemonic>
-	</mnemonics>
-	<registers>
 
+		<mnemonic name='CMPXCHG'>
+			<description>TODO: PENT,LOCK,X64</description>
+		</mnemonic>
+		<mnemonic name='MOVZXD'>
+			<description>TODO: </description>
+		</mnemonic>
+		<mnemonic name='LOOPZ'>
+			<description>TODO: 8086,NOLONG,386,X64</description>
+		</mnemonic>
+		<mnemonic name='LOOPNZ'>
+			<description>TODO: 8086,NOLONG,386,X64</description>
+		</mnemonic>
+		<mnemonic name='REP'>
+			<description>TODO: </description>
+		</mnemonic>
+		<mnemonic name='REPE'>
+			<description>TODO: </description>
+		</mnemonic>
+		<mnemonic name='REPZ'>
+			<description>TODO: </description>
+		</mnemonic>
+		<mnemonic name='REPNE'>
+			<description>TODO: </description>
+		</mnemonic>
+		<mnemonic name='REPNZ'>
+			<description>TODO: </description>
+		</mnemonic>
+		<mnemonic name='CLFLUSHOPT'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='BB0_RESET'>
+			<description>TODO: PENT,CYRIX,ND</description>
+		</mnemonic>
+		<mnemonic name='BB1_RESET'>
+			<description>TODO: PENT,CYRIX,ND</description>
+		</mnemonic>
+		<mnemonic name='CMPXCHG486'>
+			<description>TODO: 486,UNDOC,ND,LOCK</description>
+		</mnemonic>
+		<mnemonic name='CPU_READ'>
+			<description>TODO: PENT,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='CPU_WRITE'>
+			<description>TODO: PENT,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='DMINT'>
+			<description>TODO: P6,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='FDISI'>
+			<description>TODO: 8086,FPU</description>
+		</mnemonic>
+		<mnemonic name='FEMMS'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='FENI'>
+			<description>TODO: 8086,FPU</description>
+		</mnemonic>
+		<mnemonic name='FFREEP'>
+			<description>TODO: 286,FPU,UNDOC</description>
+		</mnemonic>
+		<mnemonic name='FNDISI'>
+			<description>TODO: 8086,FPU</description>
+		</mnemonic>
+		<mnemonic name='FNENI'>
+			<description>TODO: 8086,FPU</description>
+		</mnemonic>
+		<mnemonic name='FSETPM'>
+			<description>TODO: 286,FPU</description>
+		</mnemonic>
+		<mnemonic name='IBTS'>
+			<description>TODO: 386,SW,UNDOC,ND,SD</description>
+		</mnemonic>
+		<mnemonic name='ICEBP'>
+			<description>TODO: 386,ND</description>
+		</mnemonic>
+		<mnemonic name='INCBIN'>
+			<description>TODO: none</description>
+		</mnemonic>
+		<mnemonic name='INT01'>
+			<description>TODO: 386,ND</description>
+		</mnemonic>
+		<mnemonic name='INT1'>
+			<description>TODO: 386</description>
+		</mnemonic>
+		<mnemonic name='INT03'>
+			<description>TODO: 8086,ND</description>
+		</mnemonic>
+		<mnemonic name='INT3'>
+			<description>TODO: 8086</description>
+		</mnemonic>
+		<mnemonic name='INVLPGA'>
+			<description>TODO: X86_64,AMD,NOLONG,X64</description>
+		</mnemonic>
+		<mnemonic name='IRETQ'>
+			<description>TODO: X64</description>
+		</mnemonic>
+		<mnemonic name='IRETW'>
+			<description>TODO: 8086</description>
+		</mnemonic>
+		<mnemonic name='JMPE'>
+			<description>TODO: IA64</description>
+		</mnemonic>
+		<mnemonic name='LOADALL'>
+			<description>TODO: 386,UNDOC,ND</description>
+		</mnemonic>
+		<mnemonic name='LOADALL286'>
+			<description>TODO: 286,UNDOC,ND</description>
+		</mnemonic>
+		<mnemonic name='MONITORX'>
+			<description>TODO: X64,AMD,ND</description>
+		</mnemonic>
+		<mnemonic name='MWAITX'>
+			<description>TODO: X64,AMD,ND</description>
+		</mnemonic>
+		<mnemonic name='PADDSIW'>
+			<description>TODO: PENT,MMX,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='PAVEB'>
+			<description>TODO: PENT,MMX,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='PAVGUSB'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='PDISTIB'>
+			<description>TODO: PENT,MMX,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='PF2ID'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='PFACC'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='PFADD'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='PFCMPEQ'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='PFCMPGE'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='PFCMPGT'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='PFMAX'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='PFMIN'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='PFMUL'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='PFRCP'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='PFRCPIT1'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='PFRCPIT2'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='PFRSQIT1'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='PFRSQRT'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='PFSUB'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='PFSUBR'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='PI2FD'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='PMACHRIW'>
+			<description>TODO: PENT,MMX,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='PMAGW'>
+			<description>TODO: PENT,MMX,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='PMULHRIW'>
+			<description>TODO: PENT,MMX,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='PMULHRWA'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='PMULHRWC'>
+			<description>TODO: PENT,MMX,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='PMVGEZB'>
+			<description>TODO: PENT,MMX,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='PMVLZB'>
+			<description>TODO: PENT,MMX,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='PMVNZB'>
+			<description>TODO: PENT,MMX,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='PMVZB'>
+			<description>TODO: PENT,MMX,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='POPAW'>
+			<description>TODO: 186,NOLONG</description>
+		</mnemonic>
+		<mnemonic name='POPFW'>
+			<description>TODO: 8086</description>
+		</mnemonic>
+		<mnemonic name='PREFETCH'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='PSUBSIW'>
+			<description>TODO: PENT,MMX,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='PUSHAW'>
+			<description>TODO: 186,NOLONG</description>
+		</mnemonic>
+		<mnemonic name='PUSHFW'>
+			<description>TODO: 8086</description>
+		</mnemonic>
+		<mnemonic name='RDSHR'>
+			<description>TODO: P6,CYRIXM</description>
+		</mnemonic>
+		<mnemonic name='RETF'>
+			<description>TODO: 8086,SW</description>
+		</mnemonic>
+		<mnemonic name='RETN'>
+			<description>TODO: 8086,BND,SW</description>
+		</mnemonic>
+		<mnemonic name='RDM'>
+			<description>TODO: P6,CYRIX,ND</description>
+		</mnemonic>
+		<mnemonic name='RSDC'>
+			<description>TODO: 486,CYRIXM</description>
+		</mnemonic>
+		<mnemonic name='RSLDT'>
+			<description>TODO: 486,CYRIXM</description>
+		</mnemonic>
+		<mnemonic name='RSTS'>
+			<description>TODO: 486,CYRIXM</description>
+		</mnemonic>
+		<mnemonic name='SALC'>
+			<description>TODO: 8086,UNDOC</description>
+		</mnemonic>
+		<mnemonic name='SCASQ'>
+			<description>TODO: X64</description>
+		</mnemonic>
+		<mnemonic name='SKINIT'>
+			<description>TODO: X64</description>
+		</mnemonic>
+		<mnemonic name='SMI'>
+			<description>TODO: 386,UNDOC</description>
+		</mnemonic>
+		<mnemonic name='SMINT'>
+			<description>TODO: P6,CYRIX,ND</description>
+		</mnemonic>
+		<mnemonic name='SMINTOLD'>
+			<description>TODO: 486,CYRIX,ND</description>
+		</mnemonic>
+		<mnemonic name='SVDC'>
+			<description>TODO: 486,CYRIXM</description>
+		</mnemonic>
+		<mnemonic name='SVLDT'>
+			<description>TODO: 486,CYRIXM,ND</description>
+		</mnemonic>
+		<mnemonic name='SVTS'>
+			<description>TODO: 486,CYRIXM</description>
+		</mnemonic>
+		<mnemonic name='UD0'>
+			<description>TODO: 186,UNDOC</description>
+		</mnemonic>
+		<mnemonic name='UD1'>
+			<description>TODO: 186,UNDOC</description>
+		</mnemonic>
+		<mnemonic name='UD2B'>
+			<description>TODO: 186,UNDOC,ND</description>
+		</mnemonic>
+		<mnemonic name='UD2A'>
+			<description>TODO: 186,ND</description>
+		</mnemonic>
+		<mnemonic name='UMOV'>
+			<description>TODO: 386,UNDOC,ND</description>
+		</mnemonic>
+		<mnemonic name='WRSHR'>
+			<description>TODO: P6,CYRIXM</description>
+		</mnemonic>
+		<mnemonic name='XBTS'>
+			<description>TODO: 386,SW,UNDOC,ND,SD</description>
+		</mnemonic>
+		<mnemonic name='CMOVCC'>
+			<description>TODO: P6,X64</description>
+		</mnemonic>
+		<mnemonic name='JCC'>
+			<description>TODO: 386,BND,NOLONG,X64,8086,ND</description>
+		</mnemonic>
+		<mnemonic name='SETCC'>
+			<description>TODO: 386</description>
+		</mnemonic>
+		<mnemonic name='CMPEQPS'>
+			<description>TODO: KATMAI,SSE</description>
+		</mnemonic>
+		<mnemonic name='CMPEQSS'>
+			<description>TODO: KATMAI,SSE</description>
+		</mnemonic>
+		<mnemonic name='CMPLEPS'>
+			<description>TODO: KATMAI,SSE</description>
+		</mnemonic>
+		<mnemonic name='CMPLESS'>
+			<description>TODO: KATMAI,SSE</description>
+		</mnemonic>
+		<mnemonic name='CMPLTPS'>
+			<description>TODO: KATMAI,SSE</description>
+		</mnemonic>
+		<mnemonic name='CMPLTSS'>
+			<description>TODO: KATMAI,SSE</description>
+		</mnemonic>
+		<mnemonic name='CMPNEQPS'>
+			<description>TODO: KATMAI,SSE</description>
+		</mnemonic>
+		<mnemonic name='CMPNEQSS'>
+			<description>TODO: KATMAI,SSE</description>
+		</mnemonic>
+		<mnemonic name='CMPNLEPS'>
+			<description>TODO: KATMAI,SSE</description>
+		</mnemonic>
+		<mnemonic name='CMPNLESS'>
+			<description>TODO: KATMAI,SSE</description>
+		</mnemonic>
+		<mnemonic name='CMPNLTPS'>
+			<description>TODO: KATMAI,SSE</description>
+		</mnemonic>
+		<mnemonic name='CMPNLTSS'>
+			<description>TODO: KATMAI,SSE</description>
+		</mnemonic>
+		<mnemonic name='CMPORDPS'>
+			<description>TODO: KATMAI,SSE</description>
+		</mnemonic>
+		<mnemonic name='CMPORDSS'>
+			<description>TODO: KATMAI,SSE</description>
+		</mnemonic>
+		<mnemonic name='CMPUNORDPS'>
+			<description>TODO: KATMAI,SSE</description>
+		</mnemonic>
+		<mnemonic name='CMPUNORDSS'>
+			<description>TODO: KATMAI,SSE</description>
+		</mnemonic>
+		<mnemonic name='FXRSTOR64'>
+			<description>TODO: X64,SSE,FPU</description>
+		</mnemonic>
+		<mnemonic name='FXSAVE64'>
+			<description>TODO: X64,SSE,FPU</description>
+		</mnemonic>
+		<mnemonic name='XSAVE64'>
+			<description>TODO: LONG,NEHALEM</description>
+		</mnemonic>
+		<mnemonic name='XSAVEC64'>
+			<description>TODO: LONG,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='XSAVEOPT64'>
+			<description>TODO: LONG,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='XSAVES64'>
+			<description>TODO: LONG,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='XRSTOR64'>
+			<description>TODO: LONG,NEHALEM</description>
+		</mnemonic>
+		<mnemonic name='XRSTORS64'>
+			<description>TODO: LONG,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='PF2IW'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='PFNACC'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='PFPNACC'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='PI2FW'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='PSWAPD'>
+			<description>TODO: PENT,3DNOW</description>
+		</mnemonic>
+		<mnemonic name='CMPEQPD'>
+			<description>TODO: WILLAMETTE,SSE2,SO</description>
+		</mnemonic>
+		<mnemonic name='CMPEQSD'>
+			<description>TODO: WILLAMETTE,SSE2</description>
+		</mnemonic>
+		<mnemonic name='CMPLEPD'>
+			<description>TODO: WILLAMETTE,SSE2,SO</description>
+		</mnemonic>
+		<mnemonic name='CMPLESD'>
+			<description>TODO: WILLAMETTE,SSE2</description>
+		</mnemonic>
+		<mnemonic name='CMPLTPD'>
+			<description>TODO: WILLAMETTE,SSE2,SO</description>
+		</mnemonic>
+		<mnemonic name='CMPLTSD'>
+			<description>TODO: WILLAMETTE,SSE2</description>
+		</mnemonic>
+		<mnemonic name='CMPNEQPD'>
+			<description>TODO: WILLAMETTE,SSE2,SO</description>
+		</mnemonic>
+		<mnemonic name='CMPNEQSD'>
+			<description>TODO: WILLAMETTE,SSE2</description>
+		</mnemonic>
+		<mnemonic name='CMPNLEPD'>
+			<description>TODO: WILLAMETTE,SSE2,SO</description>
+		</mnemonic>
+		<mnemonic name='CMPNLESD'>
+			<description>TODO: WILLAMETTE,SSE2</description>
+		</mnemonic>
+		<mnemonic name='CMPNLTPD'>
+			<description>TODO: WILLAMETTE,SSE2,SO</description>
+		</mnemonic>
+		<mnemonic name='CMPNLTSD'>
+			<description>TODO: WILLAMETTE,SSE2</description>
+		</mnemonic>
+		<mnemonic name='CMPORDPD'>
+			<description>TODO: WILLAMETTE,SSE2,SO</description>
+		</mnemonic>
+		<mnemonic name='CMPORDSD'>
+			<description>TODO: WILLAMETTE,SSE2</description>
+		</mnemonic>
+		<mnemonic name='CMPUNORDPD'>
+			<description>TODO: WILLAMETTE,SSE2,SO</description>
+		</mnemonic>
+		<mnemonic name='CMPUNORDSD'>
+			<description>TODO: WILLAMETTE,SSE2</description>
+		</mnemonic>
+		<mnemonic name='CLGI'>
+			<description>TODO: VMX,AMD</description>
+		</mnemonic>
+		<mnemonic name='STGI'>
+			<description>TODO: VMX,AMD</description>
+		</mnemonic>
+		<mnemonic name='VMCALL'>
+			<description>TODO: VMX</description>
+		</mnemonic>
+		<mnemonic name='VMCLEAR'>
+			<description>TODO: VMX</description>
+		</mnemonic>
+		<mnemonic name='VMFUNC'>
+			<description>TODO: VMX</description>
+		</mnemonic>
+		<mnemonic name='VMLAUNCH'>
+			<description>TODO: VMX</description>
+		</mnemonic>
+		<mnemonic name='VMLOAD'>
+			<description>TODO: VMX,AMD</description>
+		</mnemonic>
+		<mnemonic name='VMMCALL'>
+			<description>TODO: VMX,AMD</description>
+		</mnemonic>
+		<mnemonic name='VMPTRLD'>
+			<description>TODO: VMX</description>
+		</mnemonic>
+		<mnemonic name='VMPTRST'>
+			<description>TODO: VMX</description>
+		</mnemonic>
+		<mnemonic name='VMREAD'>
+			<description>TODO: VMX,NOLONG,SD,X64</description>
+		</mnemonic>
+		<mnemonic name='VMRESUME'>
+			<description>TODO: VMX</description>
+		</mnemonic>
+		<mnemonic name='VMRUN'>
+			<description>TODO: VMX,AMD</description>
+		</mnemonic>
+		<mnemonic name='VMSAVE'>
+			<description>TODO: VMX,AMD</description>
+		</mnemonic>
+		<mnemonic name='VMWRITE'>
+			<description>TODO: VMX,NOLONG,SD,X64</description>
+		</mnemonic>
+		<mnemonic name='VMXOFF'>
+			<description>TODO: VMX</description>
+		</mnemonic>
+		<mnemonic name='VMXON'>
+			<description>TODO: VMX</description>
+		</mnemonic>
+		<mnemonic name='INVEPT'>
+			<description>TODO: VMX,SO,NOLONG,LONG</description>
+		</mnemonic>
+		<mnemonic name='INVVPID'>
+			<description>TODO: VMX,SO,NOLONG,LONG</description>
+		</mnemonic>
+		<mnemonic name='EXTRQ'>
+			<description>TODO: SSE4A,AMD</description>
+		</mnemonic>
+		<mnemonic name='INSERTQ'>
+			<description>TODO: SSE4A,AMD</description>
+		</mnemonic>
+		<mnemonic name='MOVNTSD'>
+			<description>TODO: SSE4A,AMD</description>
+		</mnemonic>
+		<mnemonic name='MOVNTSS'>
+			<description>TODO: SSE4A,AMD,SD</description>
+		</mnemonic>
+		<mnemonic name='GETSEC'>
+			<description>TODO: KATMAI</description>
+		</mnemonic>
+		<mnemonic name='PFRCPV'>
+			<description>TODO: PENT,3DNOW,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='PFRSQRTV'>
+			<description>TODO: PENT,3DNOW,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='VAESENC'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VAESENCLAST'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VAESDEC'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VAESDECLAST'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VAESIMC'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VAESKEYGENASSIST'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VADDSD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VADDSS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VADDSUBPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VADDSUBPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VANDPD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VANDPS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VANDNPD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VANDNPS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VBLENDPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VBLENDPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VBLENDVPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VBLENDVPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VBROADCASTF128'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPEQ_OSPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPEQPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPLT_OSPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPLTPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPLE_OSPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPLEPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPUNORD_QPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPUNORDPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNEQ_UQPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNEQPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNLT_USPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNLTPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNLE_USPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNLEPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPORD_QPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPORDPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPEQ_UQPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNGE_USPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNGEPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNGT_USPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNGTPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPFALSE_OQPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPFALSEPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNEQ_OQPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPGE_OSPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPGEPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPGT_OSPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPGTPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPTRUE_UQPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPTRUEPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPLT_OQPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPLE_OQPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPUNORD_SPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNEQ_USPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNLT_UQPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNLE_UQPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPORD_SPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPEQ_USPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNGE_UQPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNGT_UQPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPFALSE_OSPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNEQ_OSPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPGE_OQPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPGT_OQPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPTRUE_USPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPEQ_OSPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPEQPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPLT_OSPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPLTPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPLE_OSPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPLEPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPUNORD_QPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPUNORDPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNEQ_UQPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNEQPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNLT_USPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNLTPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNLE_USPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNLEPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPORD_QPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPORDPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPEQ_UQPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNGE_USPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNGEPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNGT_USPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNGTPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPFALSE_OQPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPFALSEPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNEQ_OQPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPGE_OSPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPGEPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPGT_OSPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPGTPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPTRUE_UQPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPTRUEPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPLT_OQPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPLE_OQPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPUNORD_SPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNEQ_USPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNLT_UQPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNLE_UQPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPORD_SPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPEQ_USPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNGE_UQPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNGT_UQPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPFALSE_OSPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNEQ_OSPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPGE_OQPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPGT_OQPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPTRUE_USPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPEQ_OSSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPEQSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPLT_OSSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPLTSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPLE_OSSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPLESD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPUNORD_QSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPUNORDSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNEQ_UQSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNEQSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNLT_USSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNLTSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNLE_USSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNLESD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPORD_QSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPORDSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPEQ_UQSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNGE_USSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNGESD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNGT_USSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNGTSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPFALSE_OQSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPFALSESD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNEQ_OQSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPGE_OSSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPGESD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPGT_OSSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPGTSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPTRUE_UQSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPTRUESD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPLT_OQSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPLE_OQSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPUNORD_SSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNEQ_USSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNLT_UQSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNLE_UQSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPORD_SSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPEQ_USSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNGE_UQSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNGT_UQSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPFALSE_OSSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNEQ_OSSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPGE_OQSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPGT_OQSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPTRUE_USSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPEQ_OSSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPEQSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPLT_OSSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPLTSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPLE_OSSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPLESS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPUNORD_QSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPUNORDSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNEQ_UQSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNEQSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNLT_USSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNLTSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNLE_USSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNLESS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPORD_QSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPORDSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPEQ_UQSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNGE_USSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNGESS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNGT_USSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNGTSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPFALSE_OQSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPFALSESS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNEQ_OQSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPGE_OSSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPGESS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPGT_OSSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPGTSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPTRUE_UQSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPTRUESS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPLT_OQSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPLE_OQSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPUNORD_SSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNEQ_USSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNLT_UQSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNLE_UQSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPORD_SSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPEQ_USSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNGE_UQSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNGT_UQSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPFALSE_OSSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPNEQ_OSSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPGE_OQSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPGT_OQSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPTRUE_USSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VCMPSS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCOMISD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCOMISS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTDQ2PS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTPD2DQ'>
+			<description>TODO: AVX,SANDYBRIDGE,SO,SY,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTPS2DQ'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTSD2SI'>
+			<description>TODO: AVX,SANDYBRIDGE,LONG,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTSD2SS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTSI2SD'>
+			<description>TODO: AVX,SANDYBRIDGE,SD,ND,LONG,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTSI2SS'>
+			<description>TODO: AVX,SANDYBRIDGE,SD,ND,LONG,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTSS2SD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTSS2SI'>
+			<description>TODO: AVX,SANDYBRIDGE,LONG,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTTPD2DQ'>
+			<description>TODO: AVX,SANDYBRIDGE,SO,SY,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTTPS2DQ'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTTSD2SI'>
+			<description>TODO: AVX,SANDYBRIDGE,LONG,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTTSS2SI'>
+			<description>TODO: AVX,SANDYBRIDGE,LONG,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VDIVPD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VDIVPS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VDIVSD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VDIVSS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VDPPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VDPPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VEXTRACTPS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VHADDPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VHADDPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VHSUBPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VHSUBPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VINSERTPS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VLDDQU'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VLDQQU'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VLDMXCSR'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VMASKMOVDQU'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VMAXPD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMAXPS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMAXSD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMAXSS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMINPD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMINPS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMINSD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMINSS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMOVDDUP'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMOVQQA'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VMOVQQU'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VMOVHLPS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMOVHPD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMOVHPS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMOVLHPS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMOVLPD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMOVLPS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMOVMSKPD'>
+			<description>TODO: AVX,SANDYBRIDGE,LONG</description>
+		</mnemonic>
+		<mnemonic name='VMOVMSKPS'>
+			<description>TODO: AVX,SANDYBRIDGE,LONG</description>
+		</mnemonic>
+		<mnemonic name='VMOVNTDQ'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMOVNTQQ'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VMOVNTDQA'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512</description>
+		</mnemonic>
+		<mnemonic name='VMOVNTPD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMOVNTPS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMOVSD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMOVSHDUP'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMOVSLDUP'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMOVSS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMOVUPD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMPSADBW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2</description>
+		</mnemonic>
+		<mnemonic name='VMULSD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMULSS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VORPD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VORPS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPABSB'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPABSW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPABSD'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512</description>
+		</mnemonic>
+		<mnemonic name='VPACKSSWB'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPACKSSDW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPACKUSWB'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPACKUSDW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPADDB'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPADDW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPADDQ'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512</description>
+		</mnemonic>
+		<mnemonic name='VPADDSB'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPADDSW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPADDUSB'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPADDUSW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPALIGNR'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPAND'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2</description>
+		</mnemonic>
+		<mnemonic name='VPANDN'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2</description>
+		</mnemonic>
+		<mnemonic name='VPAVGB'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPAVGW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPBLENDVB'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2</description>
+		</mnemonic>
+		<mnemonic name='VPBLENDW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2</description>
+		</mnemonic>
+		<mnemonic name='VPCMPESTRI'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VPCMPESTRM'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VPCMPISTRI'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VPCMPISTRM'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VPCMPEQB'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPCMPEQW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPCMPEQQ'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512</description>
+		</mnemonic>
+		<mnemonic name='VPCMPGTB'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPCMPGTW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPCMPGTQ'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512</description>
+		</mnemonic>
+		<mnemonic name='VPHADDW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2</description>
+		</mnemonic>
+		<mnemonic name='VPHADDD'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2</description>
+		</mnemonic>
+		<mnemonic name='VPHADDSW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2</description>
+		</mnemonic>
+		<mnemonic name='VPHMINPOSUW'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VPHSUBW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2</description>
+		</mnemonic>
+		<mnemonic name='VPHSUBD'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2</description>
+		</mnemonic>
+		<mnemonic name='VPHSUBSW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2</description>
+		</mnemonic>
+		<mnemonic name='VPINSRB'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPINSRW'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPINSRD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPINSRQ'>
+			<description>TODO: AVX,SANDYBRIDGE,LONG,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMADDWD'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPMADDUBSW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPMAXSB'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPMAXSW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPMAXUB'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPMAXUW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPMINSB'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPMINSW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPMINUB'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPMINUW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPMOVMSKB'>
+			<description>TODO: AVX,SANDYBRIDGE,LONG,FUTURE,AVX2</description>
+		</mnemonic>
+		<mnemonic name='VPMOVSXBW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPMOVSXBD'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512</description>
+		</mnemonic>
+		<mnemonic name='VPMOVSXBQ'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512</description>
+		</mnemonic>
+		<mnemonic name='VPMOVSXWD'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512</description>
+		</mnemonic>
+		<mnemonic name='VPMOVSXWQ'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512</description>
+		</mnemonic>
+		<mnemonic name='VPMOVSXDQ'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512</description>
+		</mnemonic>
+		<mnemonic name='VPMOVZXBW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPMOVZXBD'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512</description>
+		</mnemonic>
+		<mnemonic name='VPMOVZXBQ'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512</description>
+		</mnemonic>
+		<mnemonic name='VPMOVZXWD'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512</description>
+		</mnemonic>
+		<mnemonic name='VPMOVZXWQ'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512</description>
+		</mnemonic>
+		<mnemonic name='VPMOVZXDQ'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512</description>
+		</mnemonic>
+		<mnemonic name='VPMULHUW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPMULHRSW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPMULHW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPMULLW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPMULUDQ'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512</description>
+		</mnemonic>
+		<mnemonic name='VPMULDQ'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512</description>
+		</mnemonic>
+		<mnemonic name='VPOR'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2</description>
+		</mnemonic>
+		<mnemonic name='VPSADBW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPSHUFB'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPSHUFHW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPSHUFLW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPSIGNB'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2</description>
+		</mnemonic>
+		<mnemonic name='VPSIGNW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2</description>
+		</mnemonic>
+		<mnemonic name='VPSIGND'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2</description>
+		</mnemonic>
+		<mnemonic name='VPSLLDQ'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPSRLDQ'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPSLLW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPSLLQ'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512</description>
+		</mnemonic>
+		<mnemonic name='VPSRAW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPSRLW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPSRLQ'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512</description>
+		</mnemonic>
+		<mnemonic name='VPTEST'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VPSUBB'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPSUBW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPSUBQ'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512</description>
+		</mnemonic>
+		<mnemonic name='VPSUBSB'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPSUBSW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPSUBUSB'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPSUBUSW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPUNPCKHBW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPUNPCKHWD'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPUNPCKHDQ'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512</description>
+		</mnemonic>
+		<mnemonic name='VPUNPCKHQDQ'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512</description>
+		</mnemonic>
+		<mnemonic name='VPUNPCKLBW'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPUNPCKLWD'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512BW</description>
+		</mnemonic>
+		<mnemonic name='VPUNPCKLDQ'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512</description>
+		</mnemonic>
+		<mnemonic name='VPUNPCKLQDQ'>
+			<description>TODO: AVX,SANDYBRIDGE,FUTURE,AVX2,AVX512VL,AVX512</description>
+		</mnemonic>
+		<mnemonic name='VRCPPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VRCPSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VRSQRTPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VRSQRTSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VROUNDPD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VROUNDPS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VROUNDSD'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VROUNDSS'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VSHUFPD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VSHUFPS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VSQRTPD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VSQRTPS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VSQRTSD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VSQRTSS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VSUBSD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VSUBSS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VUCOMISD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VUCOMISS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VUNPCKHPD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VUNPCKHPS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VUNPCKLPD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VUNPCKLPS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VXORPD'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VXORPS'>
+			<description>TODO: AVX,SANDYBRIDGE,AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='PCLMULLQLQDQ'>
+			<description>TODO: SSE,WESTMERE</description>
+		</mnemonic>
+		<mnemonic name='PCLMULHQLQDQ'>
+			<description>TODO: SSE,WESTMERE</description>
+		</mnemonic>
+		<mnemonic name='PCLMULLQHQDQ'>
+			<description>TODO: SSE,WESTMERE</description>
+		</mnemonic>
+		<mnemonic name='PCLMULHQHQDQ'>
+			<description>TODO: SSE,WESTMERE</description>
+		</mnemonic>
+		<mnemonic name='VPCLMULLQLQDQ'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VPCLMULHQLQDQ'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VPCLMULLQHQDQ'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VPCLMULHQHQDQ'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VPCLMULQDQ'>
+			<description>TODO: AVX,SANDYBRIDGE</description>
+		</mnemonic>
+		<mnemonic name='VFMADD312PS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMADD312PD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMADD123PS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMADD123PD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMADD321PS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMADD321PD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMADDSUB312PS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMADDSUB312PD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMADDSUB123PS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMADDSUB123PD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMADDSUB321PS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMADDSUB321PD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMSUB312PS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMSUB312PD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMSUB123PS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMSUB123PD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMSUB321PS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMSUB321PD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMSUBADD312PS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMSUBADD312PD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMSUBADD123PS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMSUBADD123PD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMSUBADD321PS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMSUBADD321PD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFNMADD312PS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFNMADD312PD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFNMADD123PS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFNMADD123PD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFNMADD321PS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFNMADD321PD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFNMSUB312PS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFNMSUB312PD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFNMSUB123PS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFNMSUB123PD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFNMSUB321PS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFNMSUB321PD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMADD312SS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMADD312SD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMADD123SS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMADD123SD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMADD321SS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMADD321SD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMSUB312SS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMSUB312SD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMSUB123SS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMSUB123SD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMSUB321SS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFMSUB321SD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFNMADD312SS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFNMADD312SD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFNMADD123SS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFNMADD123SD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFNMADD321SS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFNMADD321SD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFNMSUB312SS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFNMSUB312SD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFNMSUB123SS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFNMSUB123SD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFNMSUB321SS'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFNMSUB321SD'>
+			<description>TODO: FMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='XSTORE'>
+			<description>TODO: PENT,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='XCRYPTECB'>
+			<description>TODO: PENT,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='XCRYPTCBC'>
+			<description>TODO: PENT,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='XCRYPTCTR'>
+			<description>TODO: PENT,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='XCRYPTCFB'>
+			<description>TODO: PENT,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='XCRYPTOFB'>
+			<description>TODO: PENT,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='MONTMUL'>
+			<description>TODO: PENT,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='XSHA1'>
+			<description>TODO: PENT,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='XSHA256'>
+			<description>TODO: PENT,CYRIX</description>
+		</mnemonic>
+		<mnemonic name='LLWPCB'>
+			<description>TODO: AMD,386,X64</description>
+		</mnemonic>
+		<mnemonic name='SLWPCB'>
+			<description>TODO: AMD,386,X64</description>
+		</mnemonic>
+		<mnemonic name='LWPVAL'>
+			<description>TODO: AMD,386,X64</description>
+		</mnemonic>
+		<mnemonic name='LWPINS'>
+			<description>TODO: AMD,386,X64</description>
+		</mnemonic>
+		<mnemonic name='VFMADDPD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VFMADDPS'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VFMADDSD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VFMADDSS'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VFMADDSUBPD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VFMADDSUBPS'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VFMSUBADDPD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VFMSUBADDPS'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VFMSUBPD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VFMSUBPS'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VFMSUBSD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VFMSUBSS'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VFNMADDPD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VFNMADDPS'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VFNMADDSD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VFNMADDSS'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VFNMSUBPD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VFNMSUBPS'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VFNMSUBSD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VFNMSUBSS'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VFRCZPD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VFRCZPS'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VFRCZSD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VFRCZSS'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPCMOV'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPCOMB'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPCOMD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPCOMQ'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPCOMUB'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPCOMUD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPCOMUQ'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPCOMUW'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPCOMW'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPHADDBD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPHADDBQ'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPHADDBW'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPHADDDQ'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPHADDUBD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPHADDUBQ'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPHADDUBW'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPHADDUDQ'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPHADDUWD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPHADDUWQ'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPHADDWD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPHADDWQ'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPHSUBBW'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPHSUBDQ'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPHSUBWD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPMACSDD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPMACSDQH'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPMACSDQL'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPMACSSDD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPMACSSDQH'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPMACSSDQL'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPMACSSWD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPMACSSWW'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPMACSWD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPMACSWW'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPMADCSSWD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPMADCSWD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPPERM'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPROTB'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPROTD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPROTQ'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPROTW'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPSHAB'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPSHAD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPSHAQ'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPSHAW'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPSHLB'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPSHLD'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPSHLQ'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='VPSHLW'>
+			<description>TODO: AMD,SSE5</description>
+		</mnemonic>
+		<mnemonic name='BLCI'>
+			<description>TODO: FUTURE,TBM,LONG</description>
+		</mnemonic>
+		<mnemonic name='BLCIC'>
+			<description>TODO: FUTURE,TBM,LONG</description>
+		</mnemonic>
+		<mnemonic name='BLSIC'>
+			<description>TODO: FUTURE,TBM,LONG</description>
+		</mnemonic>
+		<mnemonic name='BLCFILL'>
+			<description>TODO: FUTURE,TBM,LONG</description>
+		</mnemonic>
+		<mnemonic name='BLSFILL'>
+			<description>TODO: FUTURE,TBM,LONG</description>
+		</mnemonic>
+		<mnemonic name='BLCMSK'>
+			<description>TODO: FUTURE,TBM,LONG</description>
+		</mnemonic>
+		<mnemonic name='BLCS'>
+			<description>TODO: FUTURE,TBM,LONG</description>
+		</mnemonic>
+		<mnemonic name='TZMSK'>
+			<description>TODO: FUTURE,TBM,LONG</description>
+		</mnemonic>
+		<mnemonic name='T1MSKC'>
+			<description>TODO: FUTURE,TBM,LONG</description>
+		</mnemonic>
+		<mnemonic name='BNDMK'>
+			<description>TODO: MPX,MIB,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='BNDCL'>
+			<description>TODO: MPX,FUTURE,NOLONG,LONG</description>
+		</mnemonic>
+		<mnemonic name='BNDCU'>
+			<description>TODO: MPX,FUTURE,NOLONG,LONG</description>
+		</mnemonic>
+		<mnemonic name='BNDCN'>
+			<description>TODO: MPX,FUTURE,NOLONG,LONG</description>
+		</mnemonic>
+		<mnemonic name='BNDMOV'>
+			<description>TODO: MPX,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='BNDLDX'>
+			<description>TODO: MPX,MIB,FUTURE,NOLONG,LONG</description>
+		</mnemonic>
+		<mnemonic name='BNDSTX'>
+			<description>TODO: MPX,MIB,FUTURE,NOLONG,LONG</description>
+		</mnemonic>
+		<mnemonic name='KADDB'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KADDD'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KADDQ'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KADDW'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KANDB'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KANDD'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KANDNB'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KANDND'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KANDNQ'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KANDNW'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KANDQ'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KANDW'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KMOVB'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KMOVD'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KMOVQ'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KMOVW'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KNOTB'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KNOTD'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KNOTQ'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KNOTW'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KORB'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KORD'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KORQ'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KORTESTB'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KORTESTD'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KORTESTQ'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KORTESTW'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KORW'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KSHIFTLB'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KSHIFTLD'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KSHIFTLQ'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KSHIFTLW'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KSHIFTRB'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KSHIFTRD'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KSHIFTRQ'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KSHIFTRW'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KTESTB'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KTESTD'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KTESTQ'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KTESTW'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KUNPCKBW'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KUNPCKDQ'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KUNPCKWD'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KXNORB'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KXNORD'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KXNORQ'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KXNORW'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KXORB'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KXORD'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KXORQ'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='KXORW'>
+			<description>TODO: FUTURE</description>
+		</mnemonic>
+		<mnemonic name='SHA1MSG1'>
+			<description>TODO: SHA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='SHA1MSG2'>
+			<description>TODO: SHA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='SHA1NEXTE'>
+			<description>TODO: SHA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='SHA1RNDS4'>
+			<description>TODO: SHA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='SHA256MSG1'>
+			<description>TODO: SHA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='SHA256MSG2'>
+			<description>TODO: SHA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='SHA256RNDS2'>
+			<description>TODO: SHA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VALIGNQ'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VBROADCASTF32X2'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VBROADCASTF32X8'>
+			<description>TODO: AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VBROADCASTF64X2'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VBROADCASTI32X2'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VBROADCASTI32X8'>
+			<description>TODO: AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VBROADCASTI64X2'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCOMPRESSPD'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCOMPRESSPS'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTPD2QQ'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTPD2UDQ'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTPD2UQQ'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTPS2QQ'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTPS2UDQ'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTPS2UQQ'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTQQ2PD'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTQQ2PS'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTSD2USI'>
+			<description>TODO: AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTSS2USI'>
+			<description>TODO: AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTTPD2QQ'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTTPD2UDQ'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTTPD2UQQ'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTTPS2QQ'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTTPS2UDQ'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTTPS2UQQ'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTTSD2USI'>
+			<description>TODO: AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTTSS2USI'>
+			<description>TODO: AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTUDQ2PS'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTUQQ2PD'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTUQQ2PS'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTUSI2SD'>
+			<description>TODO: AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VCVTUSI2SS'>
+			<description>TODO: AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VDBPSADBW'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VEXP2PD'>
+			<description>TODO: AVX512ER,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VEXP2PS'>
+			<description>TODO: AVX512ER,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VEXPANDPD'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VEXPANDPS'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VEXTRACTF32X4'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VEXTRACTF32X8'>
+			<description>TODO: AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VEXTRACTF64X2'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VEXTRACTF64X4'>
+			<description>TODO: AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VEXTRACTI32X4'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VEXTRACTI32X8'>
+			<description>TODO: AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VEXTRACTI64X2'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VEXTRACTI64X4'>
+			<description>TODO: AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFIXUPIMMPD'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFIXUPIMMPS'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFIXUPIMMSD'>
+			<description>TODO: AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFIXUPIMMSS'>
+			<description>TODO: AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFPCLASSPD'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFPCLASSPS'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFPCLASSSD'>
+			<description>TODO: AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VFPCLASSSS'>
+			<description>TODO: AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VGATHERPF0DPD'>
+			<description>TODO: AVX512PF,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VGATHERPF0QPD'>
+			<description>TODO: AVX512PF,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VGATHERPF0QPS'>
+			<description>TODO: AVX512PF,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VGATHERPF1DPD'>
+			<description>TODO: AVX512PF,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VGATHERPF1QPD'>
+			<description>TODO: AVX512PF,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VGATHERPF1QPS'>
+			<description>TODO: AVX512PF,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VGETEXPSD'>
+			<description>TODO: AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VGETEXPSS'>
+			<description>TODO: AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VGETMANTSD'>
+			<description>TODO: AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VGETMANTSS'>
+			<description>TODO: AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VINSERTF32X4'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VINSERTF32X8'>
+			<description>TODO: AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VINSERTF64X2'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VINSERTF64X4'>
+			<description>TODO: AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VINSERTI32X4'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VINSERTI32X8'>
+			<description>TODO: AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VINSERTI64X2'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VINSERTI64X4'>
+			<description>TODO: AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMOVDQU16'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMOVDQU32'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMOVDQU64'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VMOVDQU8'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPABSQ'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPBLENDMB'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPBLENDMW'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPBROADCASTMB2Q'>
+			<description>TODO: AVX512VL,AVX512CD,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPBROADCASTMW2D'>
+			<description>TODO: AVX512VL,AVX512CD,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPCMPB'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPCMPQ'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPCMPUB'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPCMPUQ'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPCMPUW'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPCMPW'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPCOMPRESSD'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPCOMPRESSQ'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPCONFLICTD'>
+			<description>TODO: AVX512VL,AVX512CD,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPCONFLICTQ'>
+			<description>TODO: AVX512VL,AVX512CD,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPERMB'>
+			<description>TODO: AVX512VL,AVX512VBMI,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPERMI2B'>
+			<description>TODO: AVX512VL,AVX512VBMI,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPERMI2D'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPERMI2PD'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPERMI2PS'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPERMI2Q'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPERMI2W'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPERMT2B'>
+			<description>TODO: AVX512VL,AVX512VBMI,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPERMT2D'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPERMT2PD'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPERMT2PS'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPERMT2Q'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPERMT2W'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPERMW'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPEXPANDD'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPEXPANDQ'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPLZCNTD'>
+			<description>TODO: AVX512VL,AVX512CD,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPLZCNTQ'>
+			<description>TODO: AVX512VL,AVX512CD,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMADD52HUQ'>
+			<description>TODO: AVX512VL,AVX512IFMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMADD52LUQ'>
+			<description>TODO: AVX512VL,AVX512IFMA,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMAXSQ'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMAXUQ'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMINSQ'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMINUQ'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVB2M'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVD2M'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVDB'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVDW'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVM2B'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVM2D'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVM2Q'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVM2W'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVQ2M'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVQB'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVQD'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVQW'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVSDB'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVSDW'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVSQB'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVSQD'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVSQW'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVSWB'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVUSDB'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVUSDW'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVUSQB'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVUSQD'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVUSQW'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVUSWB'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVW2M'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMOVWB'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMULLQ'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPMULTISHIFTQB'>
+			<description>TODO: AVX512VL,AVX512VBMI,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPROLD'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPROLQ'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPROLVD'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPROLVQ'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPRORD'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPRORQ'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPRORVD'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPRORVQ'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPSCATTERQD'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPSCATTERQQ'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPSLLVW'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPSRAQ'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPSRAVQ'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPSRAVW'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPSRLVW'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPTERNLOGD'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPTERNLOGQ'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPTESTMB'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPTESTMQ'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPTESTMW'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPTESTNMB'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPTESTNMD'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPTESTNMQ'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VPTESTNMW'>
+			<description>TODO: AVX512VL,AVX512BW,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VRANGEPD'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VRANGEPS'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VRANGESD'>
+			<description>TODO: AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VRANGESS'>
+			<description>TODO: AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VRCP14PD'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VRCP14PS'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VRCP14SD'>
+			<description>TODO: AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VRCP14SS'>
+			<description>TODO: AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VRCP28PD'>
+			<description>TODO: AVX512ER,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VRCP28PS'>
+			<description>TODO: AVX512ER,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VRCP28SD'>
+			<description>TODO: AVX512ER,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VRCP28SS'>
+			<description>TODO: AVX512ER,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VREDUCEPD'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VREDUCEPS'>
+			<description>TODO: AVX512VL,AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VREDUCESD'>
+			<description>TODO: AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VREDUCESS'>
+			<description>TODO: AVX512DQ,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VRNDSCALEPD'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VRNDSCALEPS'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VRNDSCALESD'>
+			<description>TODO: AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VRNDSCALESS'>
+			<description>TODO: AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VRSQRT14PD'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VRSQRT14PS'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VRSQRT14SD'>
+			<description>TODO: AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VRSQRT14SS'>
+			<description>TODO: AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VRSQRT28PD'>
+			<description>TODO: AVX512ER,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VRSQRT28PS'>
+			<description>TODO: AVX512ER,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VRSQRT28SD'>
+			<description>TODO: AVX512ER,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VRSQRT28SS'>
+			<description>TODO: AVX512ER,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VSCALEFPD'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VSCALEFPS'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VSCALEFSD'>
+			<description>TODO: AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VSCALEFSS'>
+			<description>TODO: AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VSCATTERPF0DPD'>
+			<description>TODO: AVX512PF,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VSCATTERPF0QPD'>
+			<description>TODO: AVX512PF,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VSCATTERPF0QPS'>
+			<description>TODO: AVX512PF,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VSCATTERPF1DPD'>
+			<description>TODO: AVX512PF,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VSCATTERPF1QPD'>
+			<description>TODO: AVX512PF,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VSCATTERPF1QPS'>
+			<description>TODO: AVX512PF,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VSCATTERQPD'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VSCATTERQPS'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VSHUFF32X4'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VSHUFF64X2'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VSHUFI32X4'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='VSHUFI64X2'>
+			<description>TODO: AVX512VL,AVX512,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='RDPKRU'>
+			<description>TODO: X64,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='WRPKRU'>
+			<description>TODO: X64,FUTURE</description>
+		</mnemonic>
+		<mnemonic name='CLZERO'>
+			<description>TODO: X64,FUTURE,AMD</description>
+		</mnemonic>
+
+	</mnemonics>
+
+	<registers>
 		<register name='CS' bits='16'>
 			<description>Segment Register (Code Segment)</description>
 		</register>

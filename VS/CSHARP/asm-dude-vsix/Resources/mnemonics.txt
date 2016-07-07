@@ -1402,23 +1402,15 @@ XOR              mem,imm16                8086,LOCK
 XOR              mem,sbytedword32         386,LOCK,ND 
 XOR              mem,imm32                386,LOCK 
 XOR              rm8,imm                  8086,LOCK,ND,NOLONG 
-CMOVcc           reg16,mem                P6 
-CMOVcc           reg16,reg16              P6 
-CMOVcc           reg32,mem                P6 
-CMOVcc           reg32,reg32              P6 
-CMOVcc           reg64,mem                X64 
-CMOVcc           reg64,reg64              X64 
+CMOVcc           reg16,rm16               P6 
+CMOVcc           reg32,rm32               P6 
+CMOVcc           reg64,rm64               X64 
 Jcc              imm|near                 386,BND 
 Jcc              imm16|near               386,NOLONG,BND 
 Jcc              imm32|near               386,NOLONG,BND 
 Jcc              imm64|near               X64,BND 
 Jcc              imm|short                8086,ND,BND 
-Jcc              imm                      8086,ND,BND 
-Jcc              imm                      386,ND,BND 
-Jcc              imm                      8086,ND,BND 
-Jcc              imm                      8086,BND 
-SETcc            mem                      386 
-SETcc            reg8                     386
+SETcc            rm8                      386 
 
 ;B.1.3 Katmai Streaming SIMD instructions (SSE -- a.k.a. KNI, XMM, MMX2)
 
