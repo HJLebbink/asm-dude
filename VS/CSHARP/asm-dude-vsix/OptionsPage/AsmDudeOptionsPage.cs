@@ -91,18 +91,68 @@ namespace AsmDude.OptionsPage {
 
             #region Code Completion
             this._asmDudeOptionsPageUI.useCodeCompletion = Settings.Default.CodeCompletion_On;
-            this._asmDudeOptionsPageUI.useCodeCompletion_x86 = Settings.Default.CodeCompletion_x86;
-            this._asmDudeOptionsPageUI.useCodeCompletion_i686 = Settings.Default.CodeCompletion_i686;
-            this._asmDudeOptionsPageUI.useCodeCompletion_MMX = Settings.Default.CodeCompletion_mmx;
-            this._asmDudeOptionsPageUI.useCodeCompletion_SSE = Settings.Default.CodeCompletion_sse;
-            this._asmDudeOptionsPageUI.useCodeCompletion_SSE2 = Settings.Default.CodeCompletion_sse2;
-            this._asmDudeOptionsPageUI.useCodeCompletion_SSE3 = Settings.Default.CodeCompletion_sse3;
-            this._asmDudeOptionsPageUI.useCodeCompletion_SSSE3 = Settings.Default.CodeCompletion_ssse3;
-            this._asmDudeOptionsPageUI.useCodeCompletion_SSE41 = Settings.Default.CodeCompletion_sse41;
-            this._asmDudeOptionsPageUI.useCodeCompletion_SSE42 = Settings.Default.CodeCompletion_sse42;
-            this._asmDudeOptionsPageUI.useCodeCompletion_AVX = Settings.Default.CodeCompletion_avx;
-            this._asmDudeOptionsPageUI.useCodeCompletion_AVX2 = Settings.Default.CodeCompletion_avx2;
-            this._asmDudeOptionsPageUI.useCodeCompletion_KNC = Settings.Default.CodeCompletion_knc;
+            this._asmDudeOptionsPageUI.useSignatureHelp = Settings.Default.SignatureHelp_On;
+
+            this._asmDudeOptionsPageUI.useArch_8086 = Settings.Default.ARCH_8086;
+            this._asmDudeOptionsPageUI.useArch_186 = Settings.Default.ARCH_186;
+            this._asmDudeOptionsPageUI.useArch_286 = Settings.Default.ARCH_286;
+            this._asmDudeOptionsPageUI.useArch_386 = Settings.Default.ARCH_386;
+            this._asmDudeOptionsPageUI.useArch_486 = Settings.Default.ARCH_486;
+            this._asmDudeOptionsPageUI.useArch_MMX = Settings.Default.ARCH_MMX;
+            this._asmDudeOptionsPageUI.useArch_SSE = Settings.Default.ARCH_SSE;
+            this._asmDudeOptionsPageUI.useArch_SSE2 = Settings.Default.ARCH_SSE2;
+            this._asmDudeOptionsPageUI.useArch_SSE3 = Settings.Default.ARCH_SSE3;
+            this._asmDudeOptionsPageUI.useArch_SSSE3 = Settings.Default.ARCH_SSSE3;
+            this._asmDudeOptionsPageUI.useArch_SSE41 = Settings.Default.ARCH_SSE41;
+            this._asmDudeOptionsPageUI.useArch_SSE42 = Settings.Default.ARCH_SSE42;
+            this._asmDudeOptionsPageUI.useArch_SSE4A = Settings.Default.ARCH_SSE4A;
+            this._asmDudeOptionsPageUI.useArch_SSE5 = Settings.Default.ARCH_SSE5;
+            this._asmDudeOptionsPageUI.useArch_AVX = Settings.Default.ARCH_AVX;
+            this._asmDudeOptionsPageUI.useArch_AVX2 = Settings.Default.ARCH_AVX2;
+            this._asmDudeOptionsPageUI.useArch_AVX512 = Settings.Default.ARCH_AVX512;
+
+            this._asmDudeOptionsPageUI.useArch_AVX512VL = Settings.Default.ARCH_AVX512VL;
+            this._asmDudeOptionsPageUI.useArch_AVX512DQ = Settings.Default.ARCH_AVX512DQ;
+            this._asmDudeOptionsPageUI.useArch_AVX512BW = Settings.Default.ARCH_AVX512BW;
+            this._asmDudeOptionsPageUI.useArch_AVX512ER = Settings.Default.ARCH_AVX512ER;
+            this._asmDudeOptionsPageUI.useArch_AVX512PF = Settings.Default.ARCH_AVX512PF;
+            this._asmDudeOptionsPageUI.useArch_AVX512CD = Settings.Default.ARCH_AVX512CD;
+            this._asmDudeOptionsPageUI.useArch_AVX512VBMI = Settings.Default.ARCH_AVX512VBMI;
+            this._asmDudeOptionsPageUI.useArch_AVX512IFMA = Settings.Default.ARCH_AVX512IFMA;
+
+            this._asmDudeOptionsPageUI.useArch_X64 = Settings.Default.ARCH_X64;
+            this._asmDudeOptionsPageUI.useArch_BMI1 = Settings.Default.ARCH_BMI1;
+            this._asmDudeOptionsPageUI.useArch_BMI2 = Settings.Default.ARCH_BMI2;
+            this._asmDudeOptionsPageUI.useArch_P6 = Settings.Default.ARCH_P6;
+            this._asmDudeOptionsPageUI.useArch_X86_64 = Settings.Default.ARCH_X86_64;
+            this._asmDudeOptionsPageUI.useArch_IA64 = Settings.Default.ARCH_IA64;
+            this._asmDudeOptionsPageUI.useArch_FPU = Settings.Default.ARCH_FPU;
+            this._asmDudeOptionsPageUI.useArch_FMA = Settings.Default.ARCH_FMA;
+            this._asmDudeOptionsPageUI.useArch_TBM = Settings.Default.ARCH_TBM;
+            this._asmDudeOptionsPageUI.useArch_AMD = Settings.Default.ARCH_AMD;
+            this._asmDudeOptionsPageUI.useArch_PRIV = Settings.Default.ARCH_PRIV;
+            this._asmDudeOptionsPageUI.useArch_PENT = Settings.Default.ARCH_PENT;
+            this._asmDudeOptionsPageUI.useArch_PENTM = Settings.Default.ARCH_PENTM;
+            this._asmDudeOptionsPageUI.useArch_NEHALEM = Settings.Default.ARCH_NEHALEM;
+            this._asmDudeOptionsPageUI.useArch_WILLAMETTE = Settings.Default.ARCH_WILLAMETTE;
+            this._asmDudeOptionsPageUI.useArch_PRESCOTT = Settings.Default.ARCH_PRESCOTT;
+            this._asmDudeOptionsPageUI.useArch_WESTMERE = Settings.Default.ARCH_WESTMERE;
+            this._asmDudeOptionsPageUI.useArch_SANDYBRIDGE = Settings.Default.ARCH_SANDYBRIDGE;
+            this._asmDudeOptionsPageUI.useArch_KATMAI = Settings.Default.ARCH_KATMAI;
+            this._asmDudeOptionsPageUI.useArch_FUTURE = Settings.Default.ARCH_FUTURE;
+            this._asmDudeOptionsPageUI.useArch_OPT = Settings.Default.ARCH_OPT;
+            this._asmDudeOptionsPageUI.useArch_NOHLE = Settings.Default.ARCH_NOHLE;
+            this._asmDudeOptionsPageUI.useArch_3DNOW = Settings.Default.ARCH_3DNOW;
+            this._asmDudeOptionsPageUI.useArch_PROT = Settings.Default.ARCH_PROT;
+            this._asmDudeOptionsPageUI.useArch_CYRIX = Settings.Default.ARCH_CYRIX;
+            this._asmDudeOptionsPageUI.useArch_INVPCID = Settings.Default.ARCH_INVPCID;
+            this._asmDudeOptionsPageUI.useArch_CYRIXM = Settings.Default.ARCH_CYRIXM;
+            this._asmDudeOptionsPageUI.useArch_VMX = Settings.Default.ARCH_VMX;
+            this._asmDudeOptionsPageUI.useArch_RTM = Settings.Default.ARCH_RTM;
+            this._asmDudeOptionsPageUI.useArch_HLE = Settings.Default.ARCH_HLE;
+            this._asmDudeOptionsPageUI.useArch_MPX = Settings.Default.ARCH_MPX;
+            this._asmDudeOptionsPageUI.useArch_MIB = Settings.Default.ARCH_MIB;
+            this._asmDudeOptionsPageUI.useArch_SHA = Settings.Default.ARCH_SHA;
             #endregion
 
             #region Intellisense
@@ -222,54 +272,6 @@ namespace AsmDude.OptionsPage {
             #region Code Completion
             if (Settings.Default.CodeCompletion_On != this._asmDudeOptionsPageUI.useCodeCompletion) {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useCodeCompletion=" + this._asmDudeOptionsPageUI.useCodeCompletion);
-                changed = true;
-            }
-            if (Settings.Default.CodeCompletion_x86 != this._asmDudeOptionsPageUI.useCodeCompletion_x86) {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useCodeCompletion_x86=" + this._asmDudeOptionsPageUI.useCodeCompletion_x86);
-                changed = true;
-            }
-            if (Settings.Default.CodeCompletion_i686 != this._asmDudeOptionsPageUI.useCodeCompletion_i686) {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useCodeCompletion_i686=" + this._asmDudeOptionsPageUI.useCodeCompletion_i686);
-                changed = true;
-            }
-            if (Settings.Default.CodeCompletion_mmx != this._asmDudeOptionsPageUI.useCodeCompletion_MMX) {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useCodeCompletion_MMX=" + this._asmDudeOptionsPageUI.useCodeCompletion_MMX);
-                changed = true;
-            }
-            if (Settings.Default.CodeCompletion_sse != this._asmDudeOptionsPageUI.useCodeCompletion_SSE) {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useCodeCompletion_SSE=" + this._asmDudeOptionsPageUI.useCodeCompletion_SSE);
-                changed = true;
-            }
-            if (Settings.Default.CodeCompletion_sse2 != this._asmDudeOptionsPageUI.useCodeCompletion_SSE2) {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useCodeCompletion_SSE2=" + this._asmDudeOptionsPageUI.useCodeCompletion_SSE2);
-                changed = true;
-            }
-            if (Settings.Default.CodeCompletion_sse3 != this._asmDudeOptionsPageUI.useCodeCompletion_SSE3) {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useCodeCompletion_SSE3=" + this._asmDudeOptionsPageUI.useCodeCompletion_SSE3);
-                changed = true;
-            }
-            if (Settings.Default.CodeCompletion_ssse3 != this._asmDudeOptionsPageUI.useCodeCompletion_SSSE3) {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useCodeCompletion_SSSE3=" + this._asmDudeOptionsPageUI.useCodeCompletion_SSSE3);
-                changed = true;
-            }
-            if (Settings.Default.CodeCompletion_sse41 != this._asmDudeOptionsPageUI.useCodeCompletion_SSE41) {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useCodeCompletion_SSE41=" + this._asmDudeOptionsPageUI.useCodeCompletion_SSE41);
-                changed = true;
-            }
-            if (Settings.Default.CodeCompletion_sse42 != this._asmDudeOptionsPageUI.useCodeCompletion_SSE42) {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useCodeCompletion_SSE42=" + this._asmDudeOptionsPageUI.useCodeCompletion_SSE42);
-                changed = true;
-            }
-            if (Settings.Default.CodeCompletion_avx != this._asmDudeOptionsPageUI.useCodeCompletion_AVX) {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useCodeCompletion_AVX=" + this._asmDudeOptionsPageUI.useCodeCompletion_AVX);
-                changed = true;
-            }
-            if (Settings.Default.CodeCompletion_avx2 != this._asmDudeOptionsPageUI.useCodeCompletion_AVX2) {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useCodeCompletion_AVX2=" + this._asmDudeOptionsPageUI.useCodeCompletion_AVX2);
-                changed = true;
-            }
-            if (Settings.Default.CodeCompletion_knc != this._asmDudeOptionsPageUI.useCodeCompletion_KNC) {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useCodeCompletion_KNC=" + this._asmDudeOptionsPageUI.useCodeCompletion_KNC);
                 changed = true;
             }
             #endregion
@@ -425,66 +427,6 @@ namespace AsmDude.OptionsPage {
             if (Settings.Default.CodeCompletion_On != this._asmDudeOptionsPageUI.useCodeCompletion) {
                 Settings.Default.CodeCompletion_On = this._asmDudeOptionsPageUI.useCodeCompletion;
                 changed = true;
-            }
-            if (Settings.Default.CodeCompletion_x86 != this._asmDudeOptionsPageUI.useCodeCompletion_x86) {
-                Settings.Default.CodeCompletion_x86 = this._asmDudeOptionsPageUI.useCodeCompletion_x86;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.CodeCompletion_i686 != this._asmDudeOptionsPageUI.useCodeCompletion_i686) {
-                Settings.Default.CodeCompletion_i686 = this._asmDudeOptionsPageUI.useCodeCompletion_i686;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.CodeCompletion_mmx != this._asmDudeOptionsPageUI.useCodeCompletion_MMX) {
-                Settings.Default.CodeCompletion_mmx = this._asmDudeOptionsPageUI.useCodeCompletion_MMX;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.CodeCompletion_sse != this._asmDudeOptionsPageUI.useCodeCompletion_SSE) {
-                Settings.Default.CodeCompletion_sse = this._asmDudeOptionsPageUI.useCodeCompletion_SSE;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.CodeCompletion_sse2 != this._asmDudeOptionsPageUI.useCodeCompletion_SSE2) {
-                Settings.Default.CodeCompletion_sse2 = this._asmDudeOptionsPageUI.useCodeCompletion_SSE2;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.CodeCompletion_sse3 != this._asmDudeOptionsPageUI.useCodeCompletion_SSE3) {
-                Settings.Default.CodeCompletion_sse3 = this._asmDudeOptionsPageUI.useCodeCompletion_SSE3;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.CodeCompletion_ssse3 != this._asmDudeOptionsPageUI.useCodeCompletion_SSSE3) {
-                Settings.Default.CodeCompletion_ssse3 = this._asmDudeOptionsPageUI.useCodeCompletion_SSSE3;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.CodeCompletion_sse41 != this._asmDudeOptionsPageUI.useCodeCompletion_SSE41) {
-                Settings.Default.CodeCompletion_sse41 = this._asmDudeOptionsPageUI.useCodeCompletion_SSE41;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.CodeCompletion_sse42 != this._asmDudeOptionsPageUI.useCodeCompletion_SSE42) {
-                Settings.Default.CodeCompletion_sse42 = this._asmDudeOptionsPageUI.useCodeCompletion_SSE42;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.CodeCompletion_avx != this._asmDudeOptionsPageUI.useCodeCompletion_AVX) {
-                Settings.Default.CodeCompletion_avx = this._asmDudeOptionsPageUI.useCodeCompletion_AVX;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.CodeCompletion_avx2 != this._asmDudeOptionsPageUI.useCodeCompletion_AVX2) {
-                Settings.Default.CodeCompletion_avx2 = this._asmDudeOptionsPageUI.useCodeCompletion_AVX2;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.CodeCompletion_knc != this._asmDudeOptionsPageUI.useCodeCompletion_KNC) {
-                Settings.Default.CodeCompletion_knc = this._asmDudeOptionsPageUI.useCodeCompletion_KNC;
-                changed = true;
-                restartNeeded = true;
             }
             #endregion
 

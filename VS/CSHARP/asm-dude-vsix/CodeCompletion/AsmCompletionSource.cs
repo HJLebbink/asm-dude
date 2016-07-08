@@ -23,17 +23,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Diagnostics;
 using System.IO;
 
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using System.Windows.Media;
-using System.Globalization;
 
 using AsmTools;
 using AsmDude.Tools;
-using System.Collections;
 using AsmDude.SignatureHelp;
 
 namespace AsmDude {
@@ -76,6 +73,7 @@ namespace AsmDude {
                 ITextSnapshotLine line = triggerPoint.GetContainingLine();
 
                 //1] check if current position is in a remark; if we are in a remark, no code completion
+                #region
                 if (triggerPoint.Position > 1) {
                     char currentTypedChar = (triggerPoint - 1).GetChar();
                     //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:AugmentCompletionSession: current char = {1}", this.ToString(), currentTypedChar));
@@ -86,12 +84,14 @@ namespace AsmDude {
                         }
                     }
                 }
+                #endregion
 
                 //2] find the start of the current keyword
                 SnapshotPoint start = triggerPoint;
                 while ((start > line.Start) && !AsmTools.AsmSourceTools.isSeparatorChar((start - 1).GetChar())) {
                     start -= 1;
                 }
+
                 //3] get the word that is currently being typed
                 ITrackingSpan applicableTo = snapshot.CreateTrackingSpan(new SnapshotSpan(start, triggerPoint), SpanTrackingMode.EdgeInclusive);
                 string partialKeyword = applicableTo.GetText(snapshot);
@@ -139,7 +139,7 @@ namespace AsmDude {
                     var t = AsmSourceTools.parseLine(lineStr);
                     Mnemonic mnemonic = t.Item2;
 
-                    AsmDudeToolsStatic.Output("INFO: AsmCompletionSource:AugmentCompletionSession; mnemonic="+ mnemonic);
+                    //AsmDudeToolsStatic.Output("INFO: AsmCompletionSource:AugmentCompletionSession; mnemonic="+ mnemonic);
 
                     if (mnemonic == Mnemonic.UNKNOWN) {
                         HashSet<AsmTokenType> selected = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic, AsmTokenType.Register };
@@ -158,7 +158,10 @@ namespace AsmDude {
                             IList<Operand> operands = AsmSourceTools.makeOperands(t.Item3);
                             ISet<AsmSignatureEnum> allowed = new HashSet<AsmSignatureEnum>();
                             int commaCount = AsmSignature.countCommas(lineStr);
-                            foreach (AsmSignatureElement se in AsmSignatureHelpSource.constrainSignatures(this._asmDudeTools.signatureStore.get(mnemonic), operands)) {
+                            IList<AsmSignatureElement> allSignatures = this._asmDudeTools.signatureStore.get(mnemonic);
+
+                            ISet<Arch> selectedArchitectures = AsmDudeToolsStatic.getArchSwithedOn();
+                            foreach (AsmSignatureElement se in AsmSignatureHelpSource.constrainSignatures(allSignatures, operands, selectedArchitectures)) {
                                 if (commaCount < se.operands.Count) {
                                     foreach (AsmSignatureEnum s in se.operands[commaCount]) {
                                         allowed.Add(s);
@@ -189,17 +192,13 @@ namespace AsmDude {
 
         private SortedSet<Completion> mnemonicOperandCompletions(bool useCapitals, ISet<AsmSignatureEnum> allowedOperands) {
 
-            foreach (AsmSignatureEnum s in allowedOperands) {
-                AsmDudeToolsStatic.Output(string.Format("INFO: AsmCompletionSource:AugmentCompletionSession; allowedOperands:" + s));
-            }
-
             SortedSet<Completion> completions = new SortedSet<Completion>(new CompletionComparer());
             foreach (string keyword in this._asmDudeTools.getKeywords()) {
 
                 Arch arch = this._asmDudeTools.getArchitecture(keyword);
                 AsmTokenType type = this._asmDudeTools.getTokenType(keyword);
 
-                bool selected = this.isArchSwitchedOn(arch);
+                bool selected = AsmDudeToolsStatic.isArchSwitchedOn(arch);
 
                 if (selected) {
                     switch (type) {
@@ -281,7 +280,7 @@ namespace AsmDude {
                 AsmTokenType type = this._asmDudeTools.getTokenType(keyword);
                 if (selectedTypes.Contains(type)) {
                     Arch arch = this._asmDudeTools.getArchitecture(keyword);
-                    bool selected = this.isArchSwitchedOn(arch);
+                    bool selected = AsmDudeToolsStatic.isArchSwitchedOn(arch);
 
                     if (selected && (type == AsmTokenType.Directive)) {
                         AssemblerEnum assembler = this._asmDudeTools.getAssembler(keyword);
@@ -332,51 +331,6 @@ namespace AsmDude {
         private bool isLabel(string previousKeyword) {
             return false;
             //TODO
-        }
-
-
-        private bool isArchSwitchedOn(Arch arch) {
-            if (false) {
-                /*
-                switch (arch) {
-                    case Arch.X86: return this._package.OptionsPageCodeCompletion._x86;
-                    case Arch.I686: return this._package.OptionsPageCodeCompletion._i686;
-                    case Arch.MMX: return this._package.OptionsPageCodeCompletion._mmx;
-                    case Arch.SSE: return this._package.OptionsPageCodeCompletion._sse;
-                    case Arch.SSE2: return this._package.OptionsPageCodeCompletion._sse2;
-                    case Arch.SSE3: return this._package.OptionsPageCodeCompletion._sse3;
-                    case Arch.SSSE3: return this._package.OptionsPageCodeCompletion._ssse3;
-                    case Arch.SSE41: return this._package.OptionsPageCodeCompletion._sse41;
-                    case Arch.SSE42: return this._package.OptionsPageCodeCompletion._sse42;
-                    case Arch.AVX: return this._package.OptionsPageCodeCompletion._avx;
-                    case Arch.AVX2: return this._package.OptionsPageCodeCompletion._avx2;
-                    case Arch.KNC: return this._package.OptionsPageCodeCompletion._knc;
-                    case Arch.NONE: return true;
-                    default:
-                        Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:isArchSwitchedOn; unsupported arch {0}", arch));
-                        return true;
-                }
-                */
-            } else {
-                switch (arch) {
-                    case Arch.X86: return Settings.Default.CodeCompletion_x86;
-                    case Arch.I686: return Settings.Default.CodeCompletion_x86;
-                    case Arch.MMX: return Settings.Default.CodeCompletion_mmx;
-                    case Arch.SSE: return Settings.Default.CodeCompletion_sse;
-                    case Arch.SSE2: return Settings.Default.CodeCompletion_sse2;
-                    case Arch.SSE3: return Settings.Default.CodeCompletion_sse3;
-                    case Arch.SSSE3: return Settings.Default.CodeCompletion_ssse3;
-                    case Arch.SSE41: return Settings.Default.CodeCompletion_sse41;
-                    case Arch.SSE42: return Settings.Default.CodeCompletion_sse42;
-                    case Arch.AVX: return Settings.Default.CodeCompletion_avx;
-                    case Arch.AVX2: return Settings.Default.CodeCompletion_avx2;
-                    case Arch.KNC: return Settings.Default.CodeCompletion_knc;
-                    case Arch.NONE: return true;
-                    default:
-                        Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:isArchSwitchedOn; unsupported arch {0}", arch));
-                        return true;
-                }
-            }
         }
 
         private void loadIcons() {

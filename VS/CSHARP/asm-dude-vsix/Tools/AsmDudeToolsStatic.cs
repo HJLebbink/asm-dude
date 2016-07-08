@@ -33,6 +33,7 @@ using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Windows.Media;
@@ -343,5 +344,98 @@ namespace AsmDude.Tools {
             errorListProvider.Show(); // do not use BringToFront since that will select the error window.
             errorListProvider.Refresh();
         }
+
+
+        public static ISet<Arch> getArchSwithedOn() {
+            ISet<Arch> set = new HashSet<Arch>();
+            foreach (Arch arch in Enum.GetValues(typeof(Arch))) {
+                if (isArchSwitchedOn(arch)) {
+                    set.Add(arch);
+                }
+            }
+            return set;
+        }
+
+        public static bool isArchSwitchedOn(Arch arch) {
+            switch (arch) {
+                case Arch.ARCH_8086: return Settings.Default.ARCH_8086;
+                case Arch.ARCH_186: return Settings.Default.ARCH_186;
+                case Arch.ARCH_286: return Settings.Default.ARCH_286;
+                case Arch.ARCH_386: return Settings.Default.ARCH_386;
+                case Arch.ARCH_486: return Settings.Default.ARCH_486;
+                case Arch.MMX: return Settings.Default.ARCH_MMX;
+                case Arch.SSE: return Settings.Default.ARCH_SSE;
+                case Arch.SSE2: return Settings.Default.ARCH_SSE2;
+                case Arch.SSE3: return Settings.Default.ARCH_SSE3;
+                case Arch.SSSE3: return Settings.Default.ARCH_SSSE3;
+                case Arch.SSE41: return Settings.Default.ARCH_SSE41;
+                case Arch.SSE42: return Settings.Default.ARCH_SSE42;
+                case Arch.SSE4A: return Settings.Default.ARCH_SSE4A;
+                case Arch.SSE5: return Settings.Default.ARCH_SSE5;
+                case Arch.AVX: return Settings.Default.ARCH_AVX;
+                case Arch.AVX2: return Settings.Default.ARCH_AVX2;
+                case Arch.AVX512VL: return Settings.Default.ARCH_AVX512VL;
+                case Arch.AVX512: return Settings.Default.ARCH_AVX512;
+                case Arch.AVX512DQ: return Settings.Default.ARCH_AVX512DQ;
+                case Arch.AVX512BW: return Settings.Default.ARCH_AVX512BW;
+                case Arch.AVX512ER: return Settings.Default.ARCH_AVX512ER;
+                case Arch.AVX512PF: return Settings.Default.ARCH_AVX512PF;
+                case Arch.AVX512CD: return Settings.Default.ARCH_AVX512CD;
+                case Arch.AVX512VBMI: return Settings.Default.ARCH_AVX512VBMI;
+                case Arch.AVX512IFMA: return Settings.Default.ARCH_AVX512IFMA;
+                case Arch.X64: return Settings.Default.ARCH_X64;
+                case Arch.BMI1: return Settings.Default.ARCH_BMI1;
+                case Arch.BMI2: return Settings.Default.ARCH_BMI2;
+                case Arch.P6: return Settings.Default.ARCH_P6;
+                case Arch.X86_64: return Settings.Default.ARCH_X86_64;
+                case Arch.IA64: return Settings.Default.ARCH_IA64;
+                case Arch.FPU: return Settings.Default.ARCH_FPU;
+                case Arch.FMA: return Settings.Default.ARCH_FMA;
+                case Arch.TBM: return Settings.Default.ARCH_TBM;
+                case Arch.AMD: return Settings.Default.ARCH_AMD;
+                case Arch.PRIV: return Settings.Default.ARCH_PRIV;
+                case Arch.PENT: return Settings.Default.ARCH_PENT;
+                case Arch.PENTM: return Settings.Default.ARCH_PENTM;
+                case Arch.NEHALEM: return Settings.Default.ARCH_NEHALEM;
+                case Arch.WILLAMETTE: return Settings.Default.ARCH_WILLAMETTE;
+                case Arch.PRESCOTT: return Settings.Default.ARCH_PRESCOTT;
+                case Arch.WESTMERE: return Settings.Default.ARCH_WESTMERE;
+                case Arch.SANDYBRIDGE: return Settings.Default.ARCH_SANDYBRIDGE;
+                case Arch.KATMAI: return Settings.Default.ARCH_KATMAI;
+                case Arch.FUTURE: return Settings.Default.ARCH_FUTURE;
+                case Arch.OPT: return Settings.Default.ARCH_OPT;
+                case Arch.NOHLE: return Settings.Default.ARCH_NOHLE;
+                case Arch.ARCH_3DNOW: return Settings.Default.ARCH_3DNOW;
+                case Arch.PROT: return Settings.Default.ARCH_PROT;
+                case Arch.CYRIX: return Settings.Default.ARCH_CYRIX;
+                case Arch.INVPCID: return Settings.Default.ARCH_INVPCID;
+                case Arch.CYRIXM: return Settings.Default.ARCH_CYRIXM;
+                case Arch.VMX: return Settings.Default.ARCH_VMX;
+                case Arch.RTM: return Settings.Default.ARCH_RTM;
+                case Arch.HLE: return Settings.Default.ARCH_HLE;
+                case Arch.MPX: return Settings.Default.ARCH_MPX;
+                case Arch.MIB: return Settings.Default.ARCH_MIB;
+                case Arch.SHA: return Settings.Default.ARCH_SHA;
+                case Arch.SO: return Settings.Default.ARCH_SO;
+                case Arch.SW: return Settings.Default.ARCH_SW;
+                case Arch.SD: return Settings.Default.ARCH_SD;
+                case Arch.SX: return Settings.Default.ARCH_SX;
+                case Arch.SY: return Settings.Default.ARCH_SY;
+                case Arch.ND: return Settings.Default.ARCH_ND;
+                case Arch.LONG: return Settings.Default.ARCH_LONG;
+                case Arch.NOLONG: return Settings.Default.ARCH_NOLONG;
+                case Arch.SIZE: return Settings.Default.ARCH_SIZE;
+                case Arch.LOCK: return Settings.Default.ARCH_LOCK;
+                case Arch.BND: return Settings.Default.ARCH_BND;
+                case Arch.UNDOC: return Settings.Default.ARCH_UNDOC;
+                case Arch.PREFETCHWT1: return Settings.Default.ARCH_PREFETCHWT1;
+                case Arch.AR0: return Settings.Default.ARCH_AR0;
+                case Arch.AR1: return Settings.Default.ARCH_AR1;
+                default:
+                    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:isArch2SwitchedOn; unsupported arch {0}", arch));
+                    return false;
+            }
+        }
+
     }
 }

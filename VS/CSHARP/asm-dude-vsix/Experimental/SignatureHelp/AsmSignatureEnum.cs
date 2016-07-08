@@ -632,12 +632,27 @@ namespace AsmDude.SignatureHelp {
                 case AsmSignatureEnum.ymmreg: return "ymm";
                 case AsmSignatureEnum.zmmreg: return "zmm";
                 case AsmSignatureEnum.XMMRM: return "xmm/m128";
+                case AsmSignatureEnum.XMMRM8: return "xmm/m8";
                 case AsmSignatureEnum.XMMRM16: return "xmm/m16";
                 case AsmSignatureEnum.XMMRM32: return "xmm/m32";
                 case AsmSignatureEnum.XMMRM64: return "xmm/m64";
                 case AsmSignatureEnum.XMMRM128: return "xmm/m128";
+                case AsmSignatureEnum.YMMRM: return "ymm/m256";
                 case AsmSignatureEnum.YMMRM256: return "ymm/m256";
                 case AsmSignatureEnum.ZMMRM512: return "zmm/m512";
+
+                case AsmSignatureEnum.xmem32: return "xmem32";
+                case AsmSignatureEnum.xmem64: return "xmem64";
+                case AsmSignatureEnum.ymem32: return "ymem32";
+                case AsmSignatureEnum.ymem64: return "ymem64";
+                case AsmSignatureEnum.zmem32: return "zmem32";
+                case AsmSignatureEnum.zmem64: return "zmem64";
+
+                case AsmSignatureEnum.krm8: return "krm8";
+                case AsmSignatureEnum.krm16: return "krm16";
+                case AsmSignatureEnum.krm32: return "krm32";
+                case AsmSignatureEnum.krm64: return "krm64";
+
                 case AsmSignatureEnum.b32: return "b32";
                 case AsmSignatureEnum.b64: return "b32";
                 case AsmSignatureEnum.reg_sreg: return "reg_sreg";
@@ -647,8 +662,21 @@ namespace AsmDude.SignatureHelp {
                 case AsmSignatureEnum.reg_treg: return "reg_treg";
                 case AsmSignatureEnum.reg32na: return "reg32na";
 
+                case AsmSignatureEnum.MMXREG: return "mmxreg";
+                case AsmSignatureEnum.MMXRM: return "mmx/mem";
+                case AsmSignatureEnum.bndreg: return "bndreg";
+                    
+                case AsmSignatureEnum.fpureg: return "fpureg";
+                case AsmSignatureEnum.to: return "to";
+                case AsmSignatureEnum.fpu0: return "FPU0";
+
+                case AsmSignatureEnum.kreg: return "kreg";
+                case AsmSignatureEnum.sae: return "sae";
+
+
+
                 default:
-                    AsmDudeToolsStatic.Output("WARNING: SignatureStore:ToString: " + operandType);
+                    AsmDudeToolsStatic.Output("WARNING: AsmSignatureTools:ToString: " + operandType);
                     return operandType.ToString();
             }
         }

@@ -42,18 +42,28 @@ namespace AsmDude.SignatureHelp {
             this._store = AsmDudeTools.Instance.signatureStore;
         }
 
-        public static IList<AsmSignatureElement> constrainSignatures(IList<AsmSignatureElement> data, IList<Operand> operands) {
+        /// <summary>
+        /// Constrain the list of signatures given the operands and the selected architectures
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="operands"></param>
+        /// <returns></returns>
+        public static IList<AsmSignatureElement> constrainSignatures(
+                IList<AsmSignatureElement> data, 
+                IList<Operand> operands,
+                ISet<Arch> selectedArchitectures) 
+            {
             if ((operands == null) || (operands.Count == 0)) {
                 return data;
             } else {
                 IList<AsmSignatureElement> list = new List<AsmSignatureElement>();
                 foreach (AsmSignatureElement se in data) {
-                    bool allowed = false;
+                    bool allowed = true;
                     for (int i = 0; i < operands.Count; ++i) {
                         Operand op = operands[i];
                         if (op != null) {
-                            if (se.isAllowed(op, i)) {
-                                allowed = true;
+                            if (!se.isAllowed(op, i)) {
+                                allowed = false;
                                 break;
                             }
                         }
@@ -80,7 +90,8 @@ namespace AsmDude.SignatureHelp {
             IList<Operand> operands = AsmSourceTools.makeOperands(t.Item3);
             Mnemonic mnemonic = t.Item2;
 
-            foreach (AsmSignatureElement se in AsmSignatureHelpSource.constrainSignatures(this._store.get(mnemonic), operands)) {
+            ISet<Arch> selectedArchitectures = AsmDudeToolsStatic.getArchSwithedOn();
+            foreach (AsmSignatureElement se in AsmSignatureHelpSource.constrainSignatures(this._store.get(mnemonic), operands, selectedArchitectures)) {
                 string description = AsmDudeTools.Instance.getDescription(mnemonic.ToString());
                 signatures.Add(this.createSignature(_textBuffer, se, description, applicableToSpan));
             }
@@ -125,12 +136,12 @@ namespace AsmDude.SignatureHelp {
                 if (i < nOperands - 1) sb.Append(", ");
             }
 
-            AsmSignature sig = new AsmSignature(textBuffer, sb.ToString() + " ["+signatureElement.remark+"]", methodDoc, null);
+            AsmSignature sig = new AsmSignature(textBuffer, sb.ToString() + " ["+signatureElement.archStr+"]", methodDoc, null);
             textBuffer.Changed += new EventHandler<TextContentChangedEventArgs>(sig.OnSubjectBufferChanged);
 
             List<IParameter> paramList = new List<IParameter>();
             for (int i = 0; i < nOperands; ++i) {
-                paramList.Add(new AsmParameter(AsmSignatureElement.getDoc(signatureElement.operands[i]), locus[i], operandStr[i], sig));
+                paramList.Add(new AsmParameter(AsmSignatureElement.makeDoc(signatureElement.operands[i]), locus[i], operandStr[i], sig));
             }
 
             sig.Parameters = new ReadOnlyCollection<IParameter>(paramList);

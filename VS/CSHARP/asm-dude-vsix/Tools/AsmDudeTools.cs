@@ -67,31 +67,61 @@ namespace AsmDude {
             #endregion
 
             #region load signature store
-            string filename = AsmDudeToolsStatic.getInstallPath() + "Resources" + Path.DirectorySeparatorChar + "mnemonics.txt";
+            string filename = AsmDudeToolsStatic.getInstallPath() + "Resources" + Path.DirectorySeparatorChar + "mnemonics2.txt";
             this._signatureStore = new AsmSignatureStore(filename);
             #endregion
 
             this.initData();
 
+            #region Experiments
 
             if (false) {
+                foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic))) {
+                    string keyword = mnemonic.ToString().ToUpper();
+                    if (this._description.ContainsKey(keyword)) {
+                        string description = this._description[keyword];
+                        string reference = this.getUrl(keyword);
+
+                        this.signatureStore.setDescription(mnemonic, description);
+                        this.signatureStore.setHtmlRef(mnemonic, reference);
+
+                    }
+                }
+                AsmDudeToolsStatic.Output(this.signatureStore.ToString());
+            }
+            if (false) {
+
+                ISet<string> archs = new HashSet<string>();
+
                 foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic))) {
                     if (!this._signatureStore.hasElement(mnemonic)) {
                         AsmDudeToolsStatic.Output("INFO: AsmDudeTools constructor: mnemonic " + mnemonic + " is not present");
                     }
+                    foreach (AsmSignatureElement e in this._signatureStore.get(mnemonic)) {
+                        foreach (string s in e.archStr.Split(',')) {
+                            archs.Add(s.Trim());
+                        }
+                    }
                 }
+
+                foreach (string s in archs) {
+                    AsmDudeToolsStatic.Output(s+ ",");
+                }
+
             }
-            if (true) {
+            if (false) {
                 // do some tests
 
                 foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic))) {
                     if (!this._description.ContainsKey(mnemonic.ToString())) {
                         AsmDudeToolsStatic.Output("		<mnemonic name='" + mnemonic + "'>");
-                        AsmDudeToolsStatic.Output("			<description>TODO: "+ string.Join(",", this._signatureStore.getDescriptions(mnemonic))+"</description>");
+                        AsmDudeToolsStatic.Output("			<description>TODO: " + string.Join(",", this._signatureStore.getDescriptions(mnemonic)) + "</description>");
                         AsmDudeToolsStatic.Output("		</mnemonic>");
                     }
                 }
             }
+
+            #endregion
         }
 
         #region Public Methods
