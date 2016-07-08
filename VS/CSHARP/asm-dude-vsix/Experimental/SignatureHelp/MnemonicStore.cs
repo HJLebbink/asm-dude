@@ -31,14 +31,17 @@ using System.Windows;
 namespace AsmDude.SignatureHelp {
     //the data is retrieved from http://www.nasm.us/doc/nasmdocb.html
 
-    public class AsmSignatureStore {
+    public class MnemonicStore {
         private readonly IDictionary<Mnemonic, IList<AsmSignatureElement>> _data;
+        private readonly IDictionary<Mnemonic, IList<Arch>> _arch;
         private readonly IDictionary<Mnemonic, string> _htmlRef;
- 
-        public AsmSignatureStore(string filename) {
-            this._data = new Dictionary<Mnemonic, IList<AsmSignatureElement>>();
-            this._htmlRef = new Dictionary<Mnemonic, string>();
+        private readonly IDictionary<Mnemonic, string> _description;
 
+        public MnemonicStore(string filename) {
+            this._data = new Dictionary<Mnemonic, IList<AsmSignatureElement>>();
+            this._arch = new Dictionary<Mnemonic, IList<Arch>>();
+            this._htmlRef = new Dictionary<Mnemonic, string>();
+            this._description = new Dictionary<Mnemonic, string>();
             this.load(filename);
         }
 
@@ -46,22 +49,59 @@ namespace AsmDude.SignatureHelp {
             return this._data.ContainsKey(mnemonic);
         }
 
-        public ISet<string> getDescriptions(Mnemonic mnemonic) {
-            ISet<string> set = new HashSet<string>();
-            foreach (AsmSignatureElement e in this.get(mnemonic)) {
-                foreach (string str in e.archStr.Split(',')) {
-                    set.Add(str);
-                }
-            }
-            return set;
-        }
-
-        public IList<AsmSignatureElement> get(Mnemonic mnemonic) {
+        public IList<AsmSignatureElement> getSignatures(Mnemonic mnemonic) {
             IList<AsmSignatureElement> list;
             if (this._data.TryGetValue(mnemonic, out list)) {
                 return list;
             }
             return new List<AsmSignatureElement>(0);
+        }
+
+        public IList<Arch> getArch(Mnemonic mnemonic) {
+            IList<Arch> value;
+            if (this._arch.TryGetValue(mnemonic, out value)) {
+                return value;
+            }
+            return new List<Arch>(0);
+        }
+
+        public string getHtmlRef(Mnemonic mnemonic) {
+            string value;
+            if (this._htmlRef.TryGetValue(mnemonic, out value)) {
+                return value;
+            }
+            return "";
+        }
+
+        public void setHtmlRef(Mnemonic mnemonic, string value) {
+            this._htmlRef[mnemonic] = value;
+        }
+        public void setDescription(Mnemonic mnemonic, string value) {
+            this._description[mnemonic] = value;
+            if (this._data.ContainsKey(mnemonic)) {
+                foreach (AsmSignatureElement e in _data[mnemonic]) {
+                    e.doc = value;
+                }
+            }
+        }
+
+        public string getDescription(Mnemonic mnemonic) {
+
+            //TODO
+
+            // for the time being, the the description of the first signatureElement
+            if (this.hasElement(mnemonic)) {
+                return this._data[mnemonic][0].doc;
+            } else {
+                return "";
+            }
+            /*
+            string value;
+            if (this._description.TryGetValue(mnemonic, out value)) {
+                return value;
+            }
+            return "";
+            */
         }
 
         public override string ToString() {
@@ -76,32 +116,15 @@ namespace AsmDude.SignatureHelp {
                     string s3 = sig.archStr;
                     string s4 = sig.docSignature;
                     string s5 = sig.doc;
-                    sb.AppendLine(s1 + "\t" + s2 + "\t" + s3 + "\t" + s4 + "\t" + s5 +"\t" +s6);
+                    sb.AppendLine(s1 + "\t" + s2 + "\t" + s3 + "\t" + s4 + "\t" + s5 + "\t" + s6);
                 }
             }
             return sb.ToString();
         }
 
-        public string getHtmlRef(Mnemonic mnemonic) {
-            if (this._data.ContainsKey(mnemonic)) {
-                return this._htmlRef[mnemonic];
-            } else {
-                return "";
-            }
-        }
-        public void setHtmlRef(Mnemonic mnemonic, string value) {
-            this._htmlRef[mnemonic] = value;
-        }
-        public void setDescription(Mnemonic mnemonic, string value) {
-            if (this._data.ContainsKey(mnemonic)) {
-                foreach (AsmSignatureElement e in _data[mnemonic]) {
-                    e.doc = value;
-                }
-            }
-        }
 
         private void load(string filename) {
-            AsmDudeToolsStatic.Output("INFO: SignatureStore:load: filename=" + filename);
+            //AsmDudeToolsStatic.Output("INFO: SignatureStore:load: filename=" + filename);
             try {
                 System.IO.StreamReader file = new System.IO.StreamReader(filename);
                 string line;
@@ -129,6 +152,23 @@ namespace AsmDude.SignatureHelp {
                     }
                 }
                 file.Close();
+
+                #region Fill Arch
+                foreach (KeyValuePair<Mnemonic, IList<AsmSignatureElement>> pair in this._data) {
+                    ISet<Arch> archs = new HashSet<Arch>();
+                    foreach (AsmSignatureElement signatureElement in pair.Value) {
+                        foreach (string arch in signatureElement.archStr.Split(',')) {
+                            archs.Add(AsmSourceTools.parseArch(arch));
+                        }
+                    }
+                    IList<Arch> list = new List<Arch>();
+                    foreach (Arch a in archs) {
+                        list.Add(a);
+                    }
+                    this._arch[pair.Key] = list;
+                }
+                #endregion
+
             } catch (FileNotFoundException) {
                 MessageBox.Show("ERROR: AsmTokenTagger: could not find file \"" + filename + "\".");
             } catch (Exception e) {

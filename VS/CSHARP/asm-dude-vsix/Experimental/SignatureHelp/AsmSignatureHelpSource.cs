@@ -31,15 +31,14 @@ using System.Text;
 
 namespace AsmDude.SignatureHelp {
 
-
     internal class AsmSignatureHelpSource : ISignatureHelpSource {
         private readonly ITextBuffer _textBuffer;
-        private readonly AsmSignatureStore _store;
+        private readonly MnemonicStore _store;
 
         public AsmSignatureHelpSource(ITextBuffer textBuffer) {
             //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource:constructor");
             this._textBuffer = textBuffer;
-            this._store = AsmDudeTools.Instance.signatureStore;
+            this._store = AsmDudeTools.Instance.mnemonicStore;
         }
 
         /// <summary>
@@ -59,12 +58,21 @@ namespace AsmDude.SignatureHelp {
                 IList<AsmSignatureElement> list = new List<AsmSignatureElement>();
                 foreach (AsmSignatureElement se in data) {
                     bool allowed = true;
-                    for (int i = 0; i < operands.Count; ++i) {
-                        Operand op = operands[i];
-                        if (op != null) {
-                            if (!se.isAllowed(op, i)) {
-                                allowed = false;
-                                break;
+
+                    //1] constrain on architecture
+                    if (!se.isAllowed(selectedArchitectures)) {
+                        allowed = false;
+                    }
+
+                    //2] constrain on operands
+                    if (allowed) { 
+                        for (int i = 0; i < operands.Count; ++i) {
+                            Operand op = operands[i];
+                            if (op != null) {
+                                if (!se.isAllowed(op, i)) {
+                                    allowed = false;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -91,9 +99,8 @@ namespace AsmDude.SignatureHelp {
             Mnemonic mnemonic = t.Item2;
 
             ISet<Arch> selectedArchitectures = AsmDudeToolsStatic.getArchSwithedOn();
-            foreach (AsmSignatureElement se in AsmSignatureHelpSource.constrainSignatures(this._store.get(mnemonic), operands, selectedArchitectures)) {
-                string description = AsmDudeTools.Instance.getDescription(mnemonic.ToString());
-                signatures.Add(this.createSignature(_textBuffer, se, description, applicableToSpan));
+            foreach (AsmSignatureElement se in AsmSignatureHelpSource.constrainSignatures(this._store.getSignatures(mnemonic), operands, selectedArchitectures)) {
+                signatures.Add(this.createSignature(_textBuffer, se, applicableToSpan));
             }
         }
 
@@ -116,7 +123,7 @@ namespace AsmDude.SignatureHelp {
             return null;
         }
 
-        private AsmSignature createSignature(ITextBuffer textBuffer, AsmSignatureElement signatureElement, string methodDoc, ITrackingSpan span) {
+        private AsmSignature createSignature(ITextBuffer textBuffer, AsmSignatureElement signatureElement, ITrackingSpan span) {
             int nOperands = signatureElement.operands.Count;
             Span[] locus = new Span[nOperands];
             string[] operandStr = new string[nOperands];
@@ -136,7 +143,7 @@ namespace AsmDude.SignatureHelp {
                 if (i < nOperands - 1) sb.Append(", ");
             }
 
-            AsmSignature sig = new AsmSignature(textBuffer, sb.ToString() + " ["+signatureElement.archStr+"]", methodDoc, null);
+            AsmSignature sig = new AsmSignature(textBuffer, sb.ToString() + " ["+signatureElement.archStr+"]", signatureElement.doc, null);
             textBuffer.Changed += new EventHandler<TextContentChangedEventArgs>(sig.OnSubjectBufferChanged);
 
             List<IParameter> paramList = new List<IParameter>();

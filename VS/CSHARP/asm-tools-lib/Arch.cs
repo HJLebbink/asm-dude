@@ -188,5 +188,19 @@ namespace AsmTools {
             }
             return Arch.NONE;
         }
+
+        public static string ToString(Arch arch) {
+            switch (arch) {
+                case Arch.ARCH_8086: return "8086";
+                case Arch.ARCH_186: return "186";
+                case Arch.ARCH_286: return "286";
+                case Arch.ARCH_386: return "386";
+                case Arch.ARCH_486: return "486";
+                case Arch.ARCH_3DNOW: return "3DNOW";
+                default:
+                    break;
+            }
+            return arch.ToString();
+        }
     }
 }

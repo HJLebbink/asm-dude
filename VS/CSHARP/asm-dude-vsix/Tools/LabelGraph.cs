@@ -50,8 +50,8 @@ namespace AsmDude.Tools {
 
         private readonly IDictionary<string, IList<uint>> _usedAt;
         private readonly IDictionary<string, IList<uint>> _defAt;
-        private readonly HashSet<uint> _hasLabel;
-        private readonly HashSet<uint> _hasDef;
+        private readonly ISet<uint> _hasLabel;
+        private readonly ISet<uint> _hasDef;
 
         private object _updateLock = new object();
         private bool _enabled;

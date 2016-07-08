@@ -44,7 +44,7 @@ namespace AsmDude {
         private IDictionary<string, string> _description;
         private readonly ErrorListProvider _errorListProvider;
 
-        private readonly AsmSignatureStore _signatureStore;
+        private readonly MnemonicStore _mnemonicStore;
 
 
         #region Singleton Stuff
@@ -68,7 +68,7 @@ namespace AsmDude {
 
             #region load signature store
             string filename = AsmDudeToolsStatic.getInstallPath() + "Resources" + Path.DirectorySeparatorChar + "mnemonics2.txt";
-            this._signatureStore = new AsmSignatureStore(filename);
+            this._mnemonicStore = new MnemonicStore(filename);
             #endregion
 
             this.initData();
@@ -82,22 +82,21 @@ namespace AsmDude {
                         string description = this._description[keyword];
                         string reference = this.getUrl(keyword);
 
-                        this.signatureStore.setDescription(mnemonic, description);
-                        this.signatureStore.setHtmlRef(mnemonic, reference);
+                        this.mnemonicStore.setHtmlRef(mnemonic, reference);
 
                     }
                 }
-                AsmDudeToolsStatic.Output(this.signatureStore.ToString());
+                AsmDudeToolsStatic.Output(this.mnemonicStore.ToString());
             }
             if (false) {
 
                 ISet<string> archs = new HashSet<string>();
 
                 foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic))) {
-                    if (!this._signatureStore.hasElement(mnemonic)) {
+                    if (!this._mnemonicStore.hasElement(mnemonic)) {
                         AsmDudeToolsStatic.Output("INFO: AsmDudeTools constructor: mnemonic " + mnemonic + " is not present");
                     }
-                    foreach (AsmSignatureElement e in this._signatureStore.get(mnemonic)) {
+                    foreach (AsmSignatureElement e in this._mnemonicStore.getSignatures(mnemonic)) {
                         foreach (string s in e.archStr.Split(',')) {
                             archs.Add(s.Trim());
                         }
@@ -109,18 +108,6 @@ namespace AsmDude {
                 }
 
             }
-            if (false) {
-                // do some tests
-
-                foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic))) {
-                    if (!this._description.ContainsKey(mnemonic.ToString())) {
-                        AsmDudeToolsStatic.Output("		<mnemonic name='" + mnemonic + "'>");
-                        AsmDudeToolsStatic.Output("			<description>TODO: " + string.Join(",", this._signatureStore.getDescriptions(mnemonic)) + "</description>");
-                        AsmDudeToolsStatic.Output("		</mnemonic>");
-                    }
-                }
-            }
-
             #endregion
         }
 
@@ -128,7 +115,7 @@ namespace AsmDude {
 
         public ErrorListProvider errorListProvider { get { return this._errorListProvider; } }
 
-        public AsmSignatureStore signatureStore {  get { return this._signatureStore; } }
+        public MnemonicStore mnemonicStore {  get { return this._mnemonicStore; } }
 
         public ICollection<string> getKeywords() {
             if (this._type == null) initData();
@@ -136,8 +123,12 @@ namespace AsmDude {
         }
 
         public AsmTokenType getTokenType(string keyword) {
+            string keyword2 = keyword.ToUpper();
+            if (AsmSourceTools.parseMnemonic(keyword2) != Mnemonic.UNKNOWN) {
+                return AsmTokenType.Mnemonic;
+            } 
             AsmTokenType tokenType;
-            if (this._type.TryGetValue(keyword.ToUpper(), out tokenType)) {
+            if (this._type.TryGetValue(keyword2, out tokenType)) {
                 return tokenType;
             }
             return AsmTokenType.UNKNOWN;

@@ -341,7 +341,7 @@
     <Compile Include="Experimental\SignatureHelp\AsmSignatureHelpCommand.cs" />
     <Compile Include="Experimental\SignatureHelp\AsmSignatureHelpCommandProvider.cs" />
     <Compile Include="Experimental\SignatureHelp\AsmSignatureHelpSourceProvider.cs" />
-    <Compile Include="Experimental\SignatureHelp\AsmSignatureStore.cs" />
+    <Compile Include="Experimental\SignatureHelp\MnemonicStore.cs" />
     <Compile Include="OptionsPage\AsmDudeOptionPageUI.xaml.cs">
       <DependentUpon>AsmDudeOptionPageUI.xaml</DependentUpon>
     </Compile>

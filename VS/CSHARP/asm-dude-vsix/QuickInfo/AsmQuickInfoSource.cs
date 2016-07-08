@@ -140,7 +140,7 @@ namespace AsmDude.QuickInfo {
                                 description.Inlines.Add(makeRun1("Mnemonic "));
                                 description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Opcode));
 
-                                string descr = this._asmDudeTools.getDescription(keywordUpper);
+                                string descr = this._asmDudeTools.mnemonicStore.getDescription(AsmSourceTools.parseMnemonic(keywordUpper));
                                 if (descr.Length > 0) {
                                     description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                                 }

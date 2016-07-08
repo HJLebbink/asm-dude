@@ -70,7 +70,7 @@ namespace AsmDude.SignatureHelp {
         }
 
         /// <summary>Return true if this Signature Element is allowed in the provided architectures</summary>
-        public bool isAllowed(HashSet<Arch> selectedArchitectures) {
+        public bool isAllowed(ISet<Arch> selectedArchitectures) {
             foreach (Arch a in _arch) {
                 if (selectedArchitectures.Contains(a)) {
                     return true;

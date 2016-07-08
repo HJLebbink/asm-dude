@@ -1472,6 +1472,13 @@ XOR	mem,imm16	8086,LOCK	XOR mem, imm16	Logical Exclusive OR	XOR.html
 XOR	mem,sbytedword32	386,LOCK,ND	XOR mem, sbytedword32	Logical Exclusive OR	XOR.html
 XOR	mem,imm32	386,LOCK	XOR mem, imm32	Logical Exclusive OR	XOR.html
 XOR	rm8,imm	8086,LOCK,ND,NOLONG	XOR r/m8, imm	Logical Exclusive OR	XOR.html
+
+;
+CMOVA	reg16,rm16	P6	CMOVA r16, r/m16	Move if above (CF=0 and ZF=0) (CMOVA=CMOVNBE)	CMOVcc.html
+CMOVAE	reg16,rm16	P6	CMOVAE r16, r/m16	Move if above or equal (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc.html
+CMOVB	reg16,rm16	P6	CMOVB r16, r/m16	Move if below (CF=1) (CMOVB=CMOVC=CMOVNAE)	CMOVcc.html
+CMOVBE	reg16,rm16	P6	CMOVBE r16, r/m16	Move if below or equal (CF=1 or ZF=1) (CMOVBE=CMOVNA)	CMOVcc.html
+
 CMOVCC	reg16,rm16	P6	CMOVCC r16, r/m16	TODO: P6,X64	
 CMOVCC	reg32,rm32	P6	CMOVCC r32, r/m32	TODO: P6,X64	
 CMOVCC	reg64,rm64	X64	CMOVCC r64, r/m64	TODO: P6,X64	
@@ -1481,6 +1488,9 @@ JCC	imm32|near	386,NOLONG,BND	JCC imm32|near	TODO: 386,BND,NOLONG,X64,8086,ND
 JCC	imm64|near	X64,BND	JCC imm64|near	TODO: 386,BND,NOLONG,X64,8086,ND	
 JCC	imm|short	8086,ND,BND	JCC imm|short	TODO: 386,BND,NOLONG,X64,8086,ND	
 SETCC	rm8	386	SETCC r/m8	TODO: 386	
+
+
+;
 ADDPS	xmmreg,xmmrm128	KATMAI,SSE	ADDPS xmm, xmm/m128	Add Packed Single-Precision Floating-Point Values	ADDPS.html
 ADDSS	xmmreg,xmmrm32	KATMAI,SSE	ADDSS xmm, xmm/m32	Add Scalar Single-Precision Floating-Point Values	ADDSS.html
 ANDNPS	xmmreg,xmmrm128	KATMAI,SSE	ANDNPS xmm, xmm/m128	Bitwise Logical AND NOT of Packed Single-Precision Floating-Point Values	ANDNPS.html
