@@ -801,9 +801,6 @@ namespace AsmTools {
         WRSHR,
         WRMSR,
         XBTS,
-        CMOVCC,
-        JCC,
-        SETCC,
         ADDPS,
         ADDSS,
         ANDNPS,
@@ -2118,6 +2115,52 @@ namespace AsmTools {
 
     public static partial class AsmSourceTools {
 
+        public static bool isJump(Mnemonic mnemonic) {
+            switch (mnemonic) {
+                case Mnemonic.JMP:
+                case Mnemonic.JE:
+                case Mnemonic.JZ:
+                case Mnemonic.JNE:
+                case Mnemonic.JNZ:
+                case Mnemonic.JA:
+                case Mnemonic.JNBE:
+                case Mnemonic.JAE:
+                case Mnemonic.JNB:
+                case Mnemonic.JB:
+                case Mnemonic.JNAE:
+                case Mnemonic.JBE:
+                case Mnemonic.JNA:
+                case Mnemonic.JG:
+                case Mnemonic.JNLE:
+                case Mnemonic.JGE:
+                case Mnemonic.JNL:
+                case Mnemonic.JL:
+                case Mnemonic.JNGE:
+                case Mnemonic.JLE:
+                case Mnemonic.JNG:
+                case Mnemonic.JC:
+                case Mnemonic.JNC:
+                case Mnemonic.JO:
+                case Mnemonic.JNO:
+                case Mnemonic.JS:
+                case Mnemonic.JNS:
+                case Mnemonic.JPO:
+                case Mnemonic.JNP:
+                case Mnemonic.JPE:
+                case Mnemonic.JP:
+                case Mnemonic.JCXZ:
+                case Mnemonic.JECXZ:
+                case Mnemonic.JRCXZ:
+                case Mnemonic.LOOP:
+                case Mnemonic.LOOPZ:
+                case Mnemonic.LOOPE:
+                case Mnemonic.LOOPNZ:
+                case Mnemonic.LOOPNE:
+                case Mnemonic.CALL: return true;
+                default: return false;
+            }
+        }
+
         public static Mnemonic parseMnemonic(string str) {
             switch (str.ToUpper()) {
                 case "UNKNOWN": return Mnemonic.UNKNOWN;
@@ -2655,9 +2698,6 @@ namespace AsmTools {
                 case "WRSHR": return Mnemonic.WRSHR;
                 case "WRMSR": return Mnemonic.WRMSR;
                 case "XBTS": return Mnemonic.XBTS;
-                case "CMOVCC": return Mnemonic.CMOVCC;
-                case "JCC": return Mnemonic.JCC;
-                case "SETCC": return Mnemonic.SETCC;
                 case "ADDPS": return Mnemonic.ADDPS;
                 case "ADDSS": return Mnemonic.ADDSS;
                 case "ANDNPS": return Mnemonic.ANDNPS;

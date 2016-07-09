@@ -32,12 +32,12 @@ using System.Text;
 namespace AsmDude.SignatureHelp {
 
     internal class AsmSignatureHelpSource : ISignatureHelpSource {
-        private readonly ITextBuffer _textBuffer;
+        private readonly ITextBuffer _buffer;
         private readonly MnemonicStore _store;
 
-        public AsmSignatureHelpSource(ITextBuffer textBuffer) {
+        public AsmSignatureHelpSource(ITextBuffer buffer) {
             //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource:constructor");
-            this._textBuffer = textBuffer;
+            this._buffer = buffer;
             this._store = AsmDudeTools.Instance.mnemonicStore;
         }
 
@@ -85,22 +85,31 @@ namespace AsmDude.SignatureHelp {
         public void AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures) {
             //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: AugmentSignatureHelpSession");
 
-            ITextSnapshot snapshot = _textBuffer.CurrentSnapshot;
-            int position = session.GetTriggerPoint(_textBuffer).GetPosition(snapshot);
-            ITrackingSpan applicableToSpan = _textBuffer.CurrentSnapshot.CreateTrackingSpan(new Span(position, 0), SpanTrackingMode.EdgeInclusive, 0);
+            if (true) return;
+            if (!Settings.Default.SignatureHelp_On) return;
 
-            ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
-            string lineStr = line.GetText();
-            int positionInLine = position - line.Start;
-            //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: fill: lineStr=" + lineStr+ "; positionInLine=" + positionInLine);
+            try {
+                DateTime time1 = DateTime.Now;
+                ITextSnapshot snapshot = this._buffer.CurrentSnapshot;
+                int position = session.GetTriggerPoint(_buffer).GetPosition(snapshot);
+                ITrackingSpan applicableToSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(new Span(position, 0), SpanTrackingMode.EdgeInclusive, 0);
 
-            var t = AsmSourceTools.parseLine(lineStr);
-            IList<Operand> operands = AsmSourceTools.makeOperands(t.Item3);
-            Mnemonic mnemonic = t.Item2;
+                ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
+                string lineStr = line.GetText();
+                int positionInLine = position - line.Start;
+                //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: fill: lineStr=" + lineStr+ "; positionInLine=" + positionInLine);
 
-            ISet<Arch> selectedArchitectures = AsmDudeToolsStatic.getArchSwithedOn();
-            foreach (AsmSignatureElement se in AsmSignatureHelpSource.constrainSignatures(this._store.getSignatures(mnemonic), operands, selectedArchitectures)) {
-                signatures.Add(this.createSignature(_textBuffer, se, applicableToSpan));
+                var t = AsmSourceTools.parseLine(lineStr);
+                IList<Operand> operands = AsmSourceTools.makeOperands(t.Item3);
+                Mnemonic mnemonic = t.Item2;
+
+                ISet<Arch> selectedArchitectures = AsmDudeToolsStatic.getArchSwithedOn();
+                foreach (AsmSignatureElement se in AsmSignatureHelpSource.constrainSignatures(this._store.getSignatures(mnemonic), operands, selectedArchitectures)) {
+                    signatures.Add(this.createSignature(_buffer, se, applicableToSpan));
+                }
+                AsmDudeToolsStatic.printSpeedWarning(time1, "Signature Help");
+            } catch (Exception e) {
+                AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:AugmentSignatureHelpSession; e={1}", this.ToString(), e.ToString()));
             }
         }
 

@@ -20,36 +20,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude.Tools;
+using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Tagging;
+using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
-using System;
 using System.ComponentModel.Composition;
+using System.Diagnostics;
 
-namespace AsmDude {
+namespace AsmDude.CodeCompletion {
 
-    [Export(typeof(ICompletionSourceProvider))]
+    [Export(typeof(IVsTextViewCreationListener))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
-    [Name("asmCompletion")]
-    public sealed class AsmCompletionSourceProvider : ICompletionSourceProvider {
+    [TextViewRole(PredefinedTextViewRoles.Interactive)]
+    internal sealed class VsTextViewCreationListener : IVsTextViewCreationListener {
 
         [Import]
-        private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
+        private IVsEditorAdaptersFactoryService _adaptersFactory = null;
 
         [Import]
-        private ITextDocumentFactoryService _docFactory = null;
+        private ICompletionBroker _completionBroker = null;
 
-        [Import]
-        private IContentTypeRegistryService _contentService = null;
-
-        public ICompletionSource TryCreateCompletionSource(ITextBuffer buffer) {
-            Func<AsmCompletionSource> sc = delegate () {
-                ILabelGraph labelGraph = AsmDudeToolsStatic.getLabelGraph(buffer, _aggregatorFactory, _docFactory, _contentService);
-                return new AsmCompletionSource(buffer, labelGraph);
-            };
-            return buffer.Properties.GetOrCreateSingletonProperty(sc);
+        public void VsTextViewCreated(IVsTextView textViewAdapter) {
+            IWpfTextView view = _adaptersFactory.GetWpfTextView(textViewAdapter);
+            Debug.Assert(view != null);
+            CodeCompletionCommandFilter filter = new CodeCompletionCommandFilter(view, _completionBroker);
+            IOleCommandTarget next;
+            textViewAdapter.AddCommandFilter(filter, out next);
+            filter._nextCommandHandler = next;
         }
     }
 }

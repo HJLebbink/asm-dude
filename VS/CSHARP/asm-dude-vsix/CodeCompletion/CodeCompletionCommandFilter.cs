@@ -21,45 +21,19 @@
 // SOFTWARE.
 
 using System;
-using System.ComponentModel.Composition;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.TextManager.Interop;
-using Microsoft.VisualStudio.Utilities;
-using System.Diagnostics;
 
 namespace AsmDude {
 
-    [Export(typeof(IVsTextViewCreationListener))]
-    [ContentType(AsmDudePackage.AsmDudeContentType)]
-    [TextViewRole(PredefinedTextViewRoles.Interactive)]
-    internal sealed class VsTextViewCreationListener : IVsTextViewCreationListener {
-
-        [Import]
-        private IVsEditorAdaptersFactoryService _adaptersFactory = null;
-
-        [Import]
-        private ICompletionBroker _completionBroker = null;
-
-        public void VsTextViewCreated(IVsTextView textViewAdapter) {
-            IWpfTextView view = _adaptersFactory.GetWpfTextView(textViewAdapter);
-            Debug.Assert(view != null);
-            AsmCommandFilter filter = new AsmCommandFilter(view, _completionBroker);
-            IOleCommandTarget next;
-            textViewAdapter.AddCommandFilter(filter, out next);
-            filter._nextCommandHandler = next;
-        }
-    }
-
-    internal sealed class AsmCommandFilter : IOleCommandTarget {
+    internal sealed class CodeCompletionCommandFilter : IOleCommandTarget {
         private ICompletionSession _currentSession;
 
-        public AsmCommandFilter(IWpfTextView textView, ICompletionBroker broker) {
+        public CodeCompletionCommandFilter(IWpfTextView textView, ICompletionBroker broker) {
             this._currentSession = null;
             this._textView = textView;
             this._broker = broker;

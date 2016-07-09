@@ -20,37 +20,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Microsoft.VisualStudio.Editor;
+using AsmDude.Tools;
 using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.TextManager.Interop;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
+using System;
 using System.ComponentModel.Composition;
 
-namespace AsmDude.SignatureHelp {
+namespace AsmDude {
 
-    [Export(typeof(IVsTextViewCreationListener))]
-    [Name("Signature Help controller")]
-    [TextViewRole(PredefinedTextViewRoles.Editable)]
+    [Export(typeof(ICompletionSourceProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
-    internal sealed class AsmSignatureHelpCommandProvider : IVsTextViewCreationListener {
+    [Name("asmCompletion")]
+    public sealed class CodeCompletionSourceProvider : ICompletionSourceProvider {
 
         [Import]
-        private IVsEditorAdaptersFactoryService _adapterService = null;
+        private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
 
         [Import]
-        private ISignatureHelpBroker _signatureHelpBroker = null;
+        private ITextDocumentFactoryService _docFactory = null;
 
-        public void VsTextViewCreated(IVsTextView textViewAdapter) {
-            if (Settings.Default.SignatureHelp_On) {
-                ITextView textView = _adapterService.GetWpfTextView(textViewAdapter);
-                if (textView == null) {
-                    return;
-                }
-                textView.Properties.GetOrCreateSingletonProperty(
-                     () => new AsmSignatureHelpCommandFilter(textViewAdapter, textView, _signatureHelpBroker)
-                );
-            }
+        [Import]
+        private IContentTypeRegistryService _contentService = null;
+
+        public ICompletionSource TryCreateCompletionSource(ITextBuffer buffer) {
+            Func<CodeCompletionSource> sc = delegate () {
+                ILabelGraph labelGraph = AsmDudeToolsStatic.getLabelGraph(buffer, _aggregatorFactory, _docFactory, _contentService);
+                return new CodeCompletionSource(buffer, labelGraph);
+            };
+            return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
     }
 }

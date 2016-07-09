@@ -81,13 +81,20 @@ namespace AsmTools {
         }
 
         public static IList<Operand> makeOperands(string[] operandStrArray) {
-            IList<Operand> operands = new List<Operand>(operandStrArray.Length);
-            foreach (string opStr in operandStrArray) {
-                if (opStr.Length > 0) {
-                    operands.Add(new Operand(opStr));
+            int nOperands = operandStrArray.Length;
+            if (nOperands <= 1) {
+                return new List<Operand>(0);
+            } else {
+                nOperands--;
+                IList<Operand> operands = new List<Operand>(nOperands);
+                for (int i = 0; i < nOperands; ++i) {
+                    string opStr = operandStrArray[i];
+                    if (opStr.Length > 0) {
+                        operands.Add(new Operand(opStr));
+                    }
                 }
+                return operands;
             }
-            return operands;
         }
 
         public static IList<Tuple<int, int, bool>> splitIntoKeywordPos(string line) {

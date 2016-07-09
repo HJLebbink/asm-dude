@@ -732,7 +732,8 @@ MONITOR	reg_eax,reg_ecx,reg_edx	PRESCOTT,NOLONG,ND	MONITOR EAX, ECX, EDX	Set Up 
 MONITOR	reg_rax,reg_ecx,reg_edx	X64,ND	MONITOR RAX, ECX, EDX	Set Up Monitor Address	MONITOR.html
 MONITORX	none	X64,AMD	MONITORX 	TODO: X64,AMD,ND	
 MONITORX	reg_rax,reg_ecx,reg_edx	X64,AMD,ND	MONITORX RAX, ECX, EDX	TODO: X64,AMD,ND	
-MOV	mem,reg_sreg	8086,SW	MOV mem, reg_sreg	Move	MOV.html
+
+MOV	mem,reg_sreg	8086,SW	MOV mem, reg_sreg	Move 	MOV.html
 MOV	reg16,reg_sreg	8086	MOV r16, reg_sreg	Move	MOV.html
 MOV	reg32,reg_sreg	386	MOV r32, reg_sreg	Move	MOV.html
 MOV	reg64,reg_sreg	X64,OPT,ND	MOV r64, reg_sreg	Move	MOV.html
@@ -744,6 +745,7 @@ MOV	reg_sreg,reg64	X64,OPT,ND	MOV reg_sreg, r64	Move	MOV.html
 MOV	reg_sreg,reg16	8086	MOV reg_sreg, r16	Move	MOV.html
 MOV	reg_sreg,reg32	386	MOV reg_sreg, r32	Move	MOV.html
 MOV	reg_sreg,rm64	X64	MOV reg_sreg, r/m64	Move	MOV.html
+
 MOV	reg_al,mem_offs	8086	MOV AL, mem_offs	Move	MOV.html
 MOV	reg_ax,mem_offs	8086	MOV AX, mem_offs	Move	MOV.html
 MOV	reg_eax,mem_offs	386	MOV EAX, mem_offs	Move	MOV.html
@@ -1472,24 +1474,282 @@ XOR	mem,imm16	8086,LOCK	XOR mem, imm16	Logical Exclusive OR	XOR.html
 XOR	mem,sbytedword32	386,LOCK,ND	XOR mem, sbytedword32	Logical Exclusive OR	XOR.html
 XOR	mem,imm32	386,LOCK	XOR mem, imm32	Logical Exclusive OR	XOR.html
 XOR	rm8,imm	8086,LOCK,ND,NOLONG	XOR r/m8, imm	Logical Exclusive OR	XOR.html
-
 ;
 CMOVA	reg16,rm16	P6	CMOVA r16, r/m16	Move if above (CF=0 and ZF=0) (CMOVA=CMOVNBE)	CMOVcc.html
 CMOVAE	reg16,rm16	P6	CMOVAE r16, r/m16	Move if above or equal (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc.html
 CMOVB	reg16,rm16	P6	CMOVB r16, r/m16	Move if below (CF=1) (CMOVB=CMOVC=CMOVNAE)	CMOVcc.html
 CMOVBE	reg16,rm16	P6	CMOVBE r16, r/m16	Move if below or equal (CF=1 or ZF=1) (CMOVBE=CMOVNA)	CMOVcc.html
-
-CMOVCC	reg16,rm16	P6	CMOVCC r16, r/m16	TODO: P6,X64	
-CMOVCC	reg32,rm32	P6	CMOVCC r32, r/m32	TODO: P6,X64	
-CMOVCC	reg64,rm64	X64	CMOVCC r64, r/m64	TODO: P6,X64	
-JCC	imm|near	386,BND	JCC imm|near	TODO: 386,BND,NOLONG,X64,8086,ND	
-JCC	imm16|near	386,NOLONG,BND	JCC imm16|near	TODO: 386,BND,NOLONG,X64,8086,ND	
-JCC	imm32|near	386,NOLONG,BND	JCC imm32|near	TODO: 386,BND,NOLONG,X64,8086,ND	
-JCC	imm64|near	X64,BND	JCC imm64|near	TODO: 386,BND,NOLONG,X64,8086,ND	
-JCC	imm|short	8086,ND,BND	JCC imm|short	TODO: 386,BND,NOLONG,X64,8086,ND	
-SETCC	rm8	386	SETCC r/m8	TODO: 386	
-
-
+CMOVE	reg16,rm16	P6	CMOVE r16, r/m16	Move if equal (ZF=1) (CMOVE=CMOVZ)	CMOVcc.html
+CMOVG	reg16,rm16	P6	CMOVG r16, r/m16	Move if greater (ZF=0 and SF=OF) (CMOVG=CMOVNLE)	CMOVcc.html
+CMOVGE	reg16,rm16	P6	CMOVGE r16, r/m16	Move if greater or equal (SF=OF) (CMOVGE=CMOVNL)	CMOVcc.html
+CMOVL	reg16,rm16	P6	CMOVL r16, r/m16	Move if less (SF!=OF) (CMOVL=CMOVNGE)	CMOVcc.html
+CMOVLE	reg16,rm16	P6	CMOVLE r16, r/m16	Move if less or equal (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)	CMOVcc.html
+CMOVNA	reg16,rm16	P6	CMOVNA r16, r/m16	Move if not above (CF=1 or ZF=1) (CMOVBE=CMOVNA)	CMOVcc.html
+CMOVNAE	reg16,rm16	P6	CMOVNAE r16, r/m16	Move if not above or equal (CF=1) (CMOVB=CMOVC=CMOVNAE)	CMOVcc.html
+CMOVNB	reg16,rm16	P6	CMOVNB r16, r/m16	Move if not below (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc.html
+CMOVNBE	reg16,rm16	P6	CMOVNBE r16, r/m16	Move if not below or equal (CF=0 and ZF=0) (CMOVA=CMOVNBE)	CMOVcc.html
+CMOVNC	reg16,rm16	P6	CMOVNC r16, r/m16	Move if not carry (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc.html
+CMOVNE	reg16,rm16	P6	CMOVNE r16, r/m16	Move if not equal (ZF=0) (CMOVNE=CMOVNZ)	CMOVcc.html
+CMOVNG	reg16,rm16	P6	CMOVNG r16, r/m16	Move if not greater (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)	CMOVcc.html
+CMOVNGE	reg16,rm16	P6	CMOVNGE r16, r/m16	Move if not greater or equal (SF!=OF) (CMOVL=CMOVNGE)	CMOVcc.html
+CMOVNL	reg16,rm16	P6	CMOVNL r16, r/m16	Move if not less (SF=OF) (CMOVGE=CMOVNL)	CMOVcc.html
+CMOVNLE	reg16,rm16	P6	CMOVNLE r16, r/m16	Move if not less or equal (ZF=0 and SF=OF) (CMOVG=CMOVNLE)	CMOVcc.html
+CMOVNO	reg16,rm16	P6	CMOVNO r16, r/m16	Move if not overflow (OF=0)	CMOVcc.html
+CMOVNP	reg16,rm16	P6	CMOVNP r16, r/m16	Move if not parity (PF=0) (CMOVNP=CMOVPO)	CMOVcc.html
+CMOVNS	reg16,rm16	P6	CMOVNS r16, r/m16	Move if not sign (SF=0)	CMOVcc.html
+CMOVNZ	reg16,rm16	P6	CMOVNZ r16, r/m16	Move if not zero (ZF=0 CMOVNE=CMOVNZ)	CMOVcc.html
+CMOVO	reg16,rm16	P6	CMOVO r16, r/m16	Move if overflow (OF=1)	CMOVcc.html
+CMOVP	reg16,rm16	P6	CMOVP r16, r/m16	Move if parity (PF=1) (CMOVP=CMOVPE)	CMOVcc.html
+CMOVPE	reg16,rm16	P6	CMOVPE r16, r/m16	Move if parity even (PF=1) (CMOVP=CMOVPE)	CMOVcc.html
+CMOVPO	reg16,rm16	P6	CMOVPO r16, r/m16	Move if parity odd (PF=0) (CMOVNP=CMOVPO)	CMOVcc.html
+CMOVS	reg16,rm16	P6	CMOVS r16, r/m16	Move if sign (SF=1)	CMOVcc.html
+CMOVZ	reg16,rm16	P6	CMOVZ r16, r/m16	Move if zero (ZF=1) (CMOVE=CMOVZ)	CMOVcc.html
+;
+CMOVA	reg32,rm32	P6	CMOVA r32, r/m32	Move if above (CF=0 and ZF=0) (CMOVA=CMOVNBE)	CMOVcc.html
+CMOVAE	reg32,rm32	P6	CMOVAE r32, r/m32	Move if above or equal (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc.html
+CMOVB	reg32,rm32	P6	CMOVB r32, r/m32	Move if below (CF=1) (CMOVB=CMOVC=CMOVNAE)	CMOVcc.html
+CMOVBE	reg32,rm32	P6	CMOVBE r32, r/m32	Move if below or equal (CF=1 or ZF=1) (CMOVBE=CMOVNA)	CMOVcc.html
+CMOVE	reg32,rm32	P6	CMOVE r32, r/m32	Move if equal (ZF=1) (CMOVE=CMOVZ)	CMOVcc.html
+CMOVG	reg32,rm32	P6	CMOVG r32, r/m32	Move if greater (ZF=0 and SF=OF) (CMOVG=CMOVNLE)	CMOVcc.html
+CMOVGE	reg32,rm32	P6	CMOVGE r32, r/m32	Move if greater or equal (SF=OF) (CMOVGE=CMOVNL)	CMOVcc.html
+CMOVL	reg32,rm32	P6	CMOVL r32, r/m32	Move if less (SF!=OF) (CMOVL=CMOVNGE)	CMOVcc.html
+CMOVLE	reg32,rm32	P6	CMOVLE r32, r/m32	Move if less or equal (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)	CMOVcc.html
+CMOVNA	reg32,rm32	P6	CMOVNA r32, r/m32	Move if not above (CF=1 or ZF=1) (CMOVBE=CMOVNA)	CMOVcc.html
+CMOVNAE	reg32,rm32	P6	CMOVNAE r32, r/m32	Move if not above or equal (CF=1) (CMOVB=CMOVC=CMOVNAE)	CMOVcc.html
+CMOVNB	reg32,rm32	P6	CMOVNB r32, r/m32	Move if not below (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc.html
+CMOVNBE	reg32,rm32	P6	CMOVNBE r32, r/m32	Move if not below or equal (CF=0 and ZF=0) (CMOVA=CMOVNBE)	CMOVcc.html
+CMOVNC	reg32,rm32	P6	CMOVNC r32, r/m32	Move if not carry (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc.html
+CMOVNE	reg32,rm32	P6	CMOVNE r32, r/m32	Move if not equal (ZF=0) (CMOVNE=CMOVNZ)	CMOVcc.html
+CMOVNG	reg32,rm32	P6	CMOVNG r32, r/m32	Move if not greater (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)	CMOVcc.html
+CMOVNGE	reg32,rm32	P6	CMOVNGE r32, r/m32	Move if not greater or equal (SF!=OF) (CMOVL=CMOVNGE)	CMOVcc.html
+CMOVNL	reg32,rm32	P6	CMOVNL r32, r/m32	Move if not less (SF=OF) (CMOVGE=CMOVNL)	CMOVcc.html
+CMOVNLE	reg32,rm32	P6	CMOVNLE r32, r/m32	Move if not less or equal (ZF=0 and SF=OF) (CMOVG=CMOVNLE)	CMOVcc.html
+CMOVNO	reg32,rm32	P6	CMOVNO r32, r/m32	Move if not overflow (OF=0)	CMOVcc.html
+CMOVNP	reg32,rm32	P6	CMOVNP r32, r/m32	Move if not parity (PF=0) (CMOVNP=CMOVPO)	CMOVcc.html
+CMOVNS	reg32,rm32	P6	CMOVNS r32, r/m32	Move if not sign (SF=0)	CMOVcc.html
+CMOVNZ	reg32,rm32	P6	CMOVNZ r32, r/m32	Move if not zero (ZF=0 CMOVNE=CMOVNZ)	CMOVcc.html
+CMOVO	reg32,rm32	P6	CMOVO r32, r/m32	Move if overflow (OF=1)	CMOVcc.html
+CMOVP	reg32,rm32	P6	CMOVP r32, r/m32	Move if parity (PF=1) (CMOVP=CMOVPE)	CMOVcc.html
+CMOVPE	reg32,rm32	P6	CMOVPE r32, r/m32	Move if parity even (PF=1) (CMOVP=CMOVPE)	CMOVcc.html
+CMOVPO	reg32,rm32	P6	CMOVPO r32, r/m32	Move if parity odd (PF=0) (CMOVNP=CMOVPO)	CMOVcc.html
+CMOVS	reg32,rm32	P6	CMOVS r32, r/m32	Move if sign (SF=1)	CMOVcc.html
+CMOVZ	reg32,rm32	P6	CMOVZ r32, r/m32	Move if zero (ZF=1) (CMOVE=CMOVZ)	CMOVcc.html
+;
+CMOVA	reg64,rm64	X64	CMOVA r64, r/m64	Move if above (CF=0 and ZF=0) (CMOVA=CMOVNBE)	CMOVcc.html
+CMOVAE	reg64,rm64	X64	CMOVAE r64, r/m64	Move if above or equal (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc.html
+CMOVB	reg64,rm64	X64	CMOVB r64, r/m64	Move if below (CF=1) (CMOVB=CMOVC=CMOVNAE)	CMOVcc.html
+CMOVBE	reg64,rm64	X64	CMOVBE r64, r/m64	Move if below or equal (CF=1 or ZF=1) (CMOVBE=CMOVNA)	CMOVcc.html
+CMOVE	reg64,rm64	X64	CMOVE r64, r/m64	Move if equal (ZF=1) (CMOVE=CMOVZ)	CMOVcc.html
+CMOVG	reg64,rm64	X64	CMOVG r64, r/m64	Move if greater (ZF=0 and SF=OF) (CMOVG=CMOVNLE)	CMOVcc.html
+CMOVGE	reg64,rm64	X64	CMOVGE r64, r/m64	Move if greater or equal (SF=OF) (CMOVGE=CMOVNL)	CMOVcc.html
+CMOVL	reg64,rm64	X64	CMOVL r64, r/m64	Move if less (SF!=OF) (CMOVL=CMOVNGE)	CMOVcc.html
+CMOVLE	reg64,rm64	X64	CMOVLE r64, r/m64	Move if less or equal (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)	CMOVcc.html
+CMOVNA	reg64,rm64	X64	CMOVNA r64, r/m64	Move if not above (CF=1 or ZF=1) (CMOVBE=CMOVNA)	CMOVcc.html
+CMOVNAE	reg64,rm64	X64	CMOVNAE r64, r/m64	Move if not above or equal (CF=1) (CMOVB=CMOVC=CMOVNAE)	CMOVcc.html
+CMOVNB	reg64,rm64	X64	CMOVNB r64, r/m64	Move if not below (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc.html
+CMOVNBE	reg64,rm64	X64	CMOVNBE r64, r/m64	Move if not below or equal (CF=0 and ZF=0) (CMOVA=CMOVNBE)	CMOVcc.html
+CMOVNC	reg64,rm64	X64	CMOVNC r64, r/m64	Move if not carry (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc.html
+CMOVNE	reg64,rm64	X64	CMOVNE r64, r/m64	Move if not equal (ZF=0) (CMOVNE=CMOVNZ)	CMOVcc.html
+CMOVNG	reg64,rm64	X64	CMOVNG r64, r/m64	Move if not greater (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)	CMOVcc.html
+CMOVNGE	reg64,rm64	X64	CMOVNGE r64, r/m64	Move if not greater or equal (SF!=OF) (CMOVL=CMOVNGE)	CMOVcc.html
+CMOVNL	reg64,rm64	X64	CMOVNL r64, r/m64	Move if not less (SF=OF) (CMOVGE=CMOVNL)	CMOVcc.html
+CMOVNLE	reg64,rm64	X64	CMOVNLE r64, r/m64	Move if not less or equal (ZF=0 and SF=OF) (CMOVG=CMOVNLE)	CMOVcc.html
+CMOVNO	reg64,rm64	X64	CMOVNO r64, r/m64	Move if not overflow (OF=0)	CMOVcc.html
+CMOVNP	reg64,rm64	X64	CMOVNP r64, r/m64	Move if not parity (PF=0) (CMOVNP=CMOVPO)	CMOVcc.html
+CMOVNS	reg64,rm64	X64	CMOVNS r64, r/m64	Move if not sign (SF=0)	CMOVcc.html
+CMOVNZ	reg64,rm64	X64	CMOVNZ r64, r/m64	Move if not zero (ZF=0 CMOVNE=CMOVNZ)	CMOVcc.html
+CMOVO	reg64,rm64	X64	CMOVO r64, r/m64	Move if overflow (OF=1)	CMOVcc.html
+CMOVP	reg64,rm64	X64	CMOVP r64, r/m64	Move if parity (PF=1) (CMOVP=CMOVPE)	CMOVcc.html
+CMOVPE	reg64,rm64	X64	CMOVPE r64, r/m64	Move if parity even (PF=1) (CMOVP=CMOVPE)	CMOVcc.html
+CMOVPO	reg64,rm64	X64	CMOVPO r64, r/m64	Move if parity odd (PF=0) (CMOVNP=CMOVPO)	CMOVcc.html
+CMOVS	reg64,rm64	X64	CMOVS r64, r/m64	Move if sign (SF=1)	CMOVcc.html
+CMOVZ	reg64,rm64	X64	CMOVZ r64, r/m64	Move if zero (ZF=1) (CMOVE=CMOVZ)	CMOVcc.html
+;
+JA	imm|near	386	JA imm|near	Jump if above (CF=0 and ZF=0) (JA=JNBE)	Jcc.html
+JAE	imm|near	386	JAE imm|near	Jump if above or equal (CF=0) (JAE=JNB)	Jcc.html
+JB	imm|near	386	JB imm|near	Jump if below (CF=1) (JB=JNAE)	Jcc.html
+JBE	imm|near	386	JBE imm|near	Jump if below or equal (CF=1 or ZF=1) (JBE=JNA)	Jcc.html
+JC	imm|near	386	JC imm|near	Jump if carry (CF=1)	Jcc.html
+JE	imm|near	386	JE imm|near	Jump if equal (ZF=1) (JE=JZ)	Jcc.html
+JG	imm|near	386	JG imm|near	Jump if greater (ZF=0 and SF=OF) (JG=JNLE)	Jcc.html
+JGE	imm|near	386	JGE imm|near	Jump if greater or equal (SF=OF) (JGE=JNL)	Jcc.html
+JL	imm|near	386	JL imm|near	Jump if less (SF!=OF) (JL=JNGE)	Jcc.html
+JLE	imm|near	386	JLE imm|near	Jump if less or equal (ZF=1 or SF!=OF) (JLE=JNG)	Jcc.html
+JNA	imm|near	386	JNA imm|near	Jump if not above (CF=1 or ZF=1) (JBE=JNA)	Jcc.html
+JNAE	imm|near	386	JNAE imm|near	Jump if not above or equal (CF=1) (JB=JNAE)	Jcc.html
+JNB	imm|near	386	JNB imm|near	Jump if not below (CF=0) (JAE=JNB)	Jcc.html
+JNBE	imm|near	386	JNBE imm|near	Jump if not below or equal (CF=0 and ZF=0) (JA=JNBE)	Jcc.html
+JNC	imm|near	386	JNC imm|near	Jump if not carry (CF=0)	Jcc.html
+JNE	imm|near	386	JNE imm|near	Jump if not equal (ZF=0) (JNE=JNZ)	Jcc.html
+JNG	imm|near	386	JNG imm|near	Jump if not greater (ZF=1 or SF!=OF) (JLE=JNG)	Jcc.html
+JNGE	imm|near	386	JNGE imm|near	Jump if not greater or equal (SF!=OF) (JL=JNGE)	Jcc.html
+JNL	imm|near	386	JNL imm|near	Jump if not less (SF=OF) (JGE=JNL)	Jcc.html
+JNLE	imm|near	386	JNLE imm|near	Jump if not less or equal (ZF=0 and SF=OF) (JG=JNLE)	Jcc.html
+JNO	imm|near	386	JNO imm|near	Jump if not overflow (OF=0)	Jcc.html
+JNP	imm|near	386	JNP imm|near	Jump if not parity (PF=0) (JNP=JPO)	Jcc.html
+JNS	imm|near	386	JNS imm|near	Jump if not sign (SF=0)	Jcc.html
+JNZ	imm|near	386	JNZ imm|near	Jump if not zero (ZF=0) (JNE=JNZ)	Jcc.html
+JO	imm|near	386	JO imm|near	Jump if overflow (OF=1)	Jcc.html
+JP	imm|near	386	JP imm|near	Jump if parity (PF=1) (JP=JPE)	Jcc.html
+JPE	imm|near	386	JPE imm|near	Jump if parity even (PF=1) (JP=JPE)	Jcc.html
+JPO	imm|near	386	JPO imm|near	Jump if parity odd (PF=0) (JNP=JPO)	Jcc.html
+JS	imm|near	386	JS imm|near	Jump if sign (SF=1)	Jcc.html
+JZ	imm|near	386	JZ imm|near	Jump if zero (ZF=1) (JE=JZ)	Jcc.html
+;
+JA	imm16|near	386	JA imm16|near	Jump if above (CF=0 and ZF=0) (JA=JNBE)	Jcc.html
+JAE	imm16|near	386	JAE imm16|near	Jump if above or equal (CF=0) (JAE=JNB)	Jcc.html
+JB	imm16|near	386	JB imm16|near	Jump if below (CF=1) (JB=JNAE)	Jcc.html
+JBE	imm16|near	386	JBE imm16|near	Jump if below or equal (CF=1 or ZF=1) (JBE=JNA)	Jcc.html
+JC	imm16|near	386	JC imm16|near	Jump if carry (CF=1)	Jcc.html
+JE	imm16|near	386	JE imm16|near	Jump if equal (ZF=1) (JE=JZ)	Jcc.html
+JG	imm16|near	386	JG imm16|near	Jump if greater (ZF=0 and SF=OF) (JG=JNLE)	Jcc.html
+JGE	imm16|near	386	JGE imm16|near	Jump if greater or equal (SF=OF) (JGE=JNL)	Jcc.html
+JL	imm16|near	386	JL imm16|near	Jump if less (SF!=OF) (JL=JNGE)	Jcc.html
+JLE	imm16|near	386	JLE imm16|near	Jump if less or equal (ZF=1 or SF!=OF) (JLE=JNG)	Jcc.html
+JNA	imm16|near	386	JNA imm16|near	Jump if not above (CF=1 or ZF=1) (JBE=JNA)	Jcc.html
+JNAE	imm16|near	386	JNAE imm16|near	Jump if not above or equal (CF=1) (JB=JNAE)	Jcc.html
+JNB	imm16|near	386	JNB imm16|near	Jump if not below (CF=0) (JAE=JNB)	Jcc.html
+JNBE	imm16|near	386	JNBE imm16|near	Jump if not below or equal (CF=0 and ZF=0) (JA=JNBE)	Jcc.html
+JNC	imm16|near	386	JNC imm16|near	Jump if not carry (CF=0)	Jcc.html
+JNE	imm16|near	386	JNE imm16|near	Jump if not equal (ZF=0) (JNE=JNZ)	Jcc.html
+JNG	imm16|near	386	JNG imm16|near	Jump if not greater (ZF=1 or SF!=OF) (JLE=JNG)	Jcc.html
+JNGE	imm16|near	386	JNGE imm16|near	Jump if not greater or equal (SF!=OF) (JL=JNGE)	Jcc.html
+JNL	imm16|near	386	JNL imm16|near	Jump if not less (SF=OF) (JGE=JNL)	Jcc.html
+JNLE	imm16|near	386	JNLE imm16|near	Jump if not less or equal (ZF=0 and SF=OF) (JG=JNLE)	Jcc.html
+JNO	imm16|near	386	JNO imm16|near	Jump if not overflow (OF=0)	Jcc.html
+JNP	imm16|near	386	JNP imm16|near	Jump if not parity (PF=0) (JNP=JPO)	Jcc.html
+JNS	imm16|near	386	JNS imm16|near	Jump if not sign (SF=0)	Jcc.html
+JNZ	imm16|near	386	JNZ imm16|near	Jump if not zero (ZF=0) (JNE=JNZ)	Jcc.html
+JO	imm16|near	386	JO imm16|near	Jump if overflow (OF=1)	Jcc.html
+JP	imm16|near	386	JP imm16|near	Jump if parity (PF=1) (JP=JPE)	Jcc.html
+JPE	imm16|near	386	JPE imm16|near	Jump if parity even (PF=1) (JP=JPE)	Jcc.html
+JPO	imm16|near	386	JPO imm16|near	Jump if parity odd (PF=0) (JNP=JPO)	Jcc.html
+JS	imm16|near	386	JS imm16|near	Jump if sign (SF=1)	Jcc.html
+JZ	imm16|near	386	JZ imm16|near	Jump if zero (ZF=1) (JE=JZ)	Jcc.html
+;
+JA	imm32|near	386	JA imm32|near	Jump if above (CF=0 and ZF=0) (JA=JNBE)	Jcc.html
+JAE	imm32|near	386	JAE imm32|near	Jump if above or equal (CF=0) (JAE=JNB)	Jcc.html
+JB	imm32|near	386	JB imm32|near	Jump if below (CF=1) (JB=JNAE)	Jcc.html
+JBE	imm32|near	386	JBE imm32|near	Jump if below or equal (CF=1 or ZF=1) (JBE=JNA)	Jcc.html
+JC	imm32|near	386	JC imm32|near	Jump if carry (CF=1)	Jcc.html
+JE	imm32|near	386	JE imm32|near	Jump if equal (ZF=1) (JE=JZ)	Jcc.html
+JG	imm32|near	386	JG imm32|near	Jump if greater (ZF=0 and SF=OF) (JG=JNLE)	Jcc.html
+JGE	imm32|near	386	JGE imm32|near	Jump if greater or equal (SF=OF) (JGE=JNL)	Jcc.html
+JL	imm32|near	386	JL imm32|near	Jump if less (SF!=OF) (JL=JNGE)	Jcc.html
+JLE	imm32|near	386	JLE imm32|near	Jump if less or equal (ZF=1 or SF!=OF) (JLE=JNG)	Jcc.html
+JNA	imm32|near	386	JNA imm32|near	Jump if not above (CF=1 or ZF=1) (JBE=JNA)	Jcc.html
+JNAE	imm32|near	386	JNAE imm32|near	Jump if not above or equal (CF=1) (JB=JNAE)	Jcc.html
+JNB	imm32|near	386	JNB imm32|near	Jump if not below (CF=0) (JAE=JNB)	Jcc.html
+JNBE	imm32|near	386	JNBE imm32|near	Jump if not below or equal (CF=0 and ZF=0) (JA=JNBE)	Jcc.html
+JNC	imm32|near	386	JNC imm32|near	Jump if not carry (CF=0)	Jcc.html
+JNE	imm32|near	386	JNE imm32|near	Jump if not equal (ZF=0) (JNE=JNZ)	Jcc.html
+JNG	imm32|near	386	JNG imm32|near	Jump if not greater (ZF=1 or SF!=OF) (JLE=JNG)	Jcc.html
+JNGE	imm32|near	386	JNGE imm32|near	Jump if not greater or equal (SF!=OF) (JL=JNGE)	Jcc.html
+JNL	imm32|near	386	JNL imm32|near	Jump if not less (SF=OF) (JGE=JNL)	Jcc.html
+JNLE	imm32|near	386	JNLE imm32|near	Jump if not less or equal (ZF=0 and SF=OF) (JG=JNLE)	Jcc.html
+JNO	imm32|near	386	JNO imm32|near	Jump if not overflow (OF=0)	Jcc.html
+JNP	imm32|near	386	JNP imm32|near	Jump if not parity (PF=0) (JNP=JPO)	Jcc.html
+JNS	imm32|near	386	JNS imm32|near	Jump if not sign (SF=0)	Jcc.html
+JNZ	imm32|near	386	JNZ imm32|near	Jump if not zero (ZF=0) (JNE=JNZ)	Jcc.html
+JO	imm32|near	386	JO imm32|near	Jump if overflow (OF=1)	Jcc.html
+JP	imm32|near	386	JP imm32|near	Jump if parity (PF=1) (JP=JPE)	Jcc.html
+JPE	imm32|near	386	JPE imm32|near	Jump if parity even (PF=1) (JP=JPE)	Jcc.html
+JPO	imm32|near	386	JPO imm32|near	Jump if parity odd (PF=0) (JNP=JPO)	Jcc.html
+JS	imm32|near	386	JS imm32|near	Jump if sign (SF=1)	Jcc.html
+JZ	imm32|near	386	JZ imm32|near	Jump if zero (ZF=1) (JE=JZ)	Jcc.html
+;
+JA	imm64|near	X64	JA imm64|near	Jump if above (CF=0 and ZF=0) (JA=JNBE)	Jcc.html
+JAE	imm64|near	X64	JAE imm64|near	Jump if above or equal (CF=0) (JAE=JNB)	Jcc.html
+JB	imm64|near	X64	JB imm64|near	Jump if below (CF=1) (JB=JNAE)	Jcc.html
+JBE	imm64|near	X64	JBE imm64|near	Jump if below or equal (CF=1 or ZF=1) (JBE=JNA)	Jcc.html
+JC	imm64|near	X64	JC imm64|near	Jump if carry (CF=1)	Jcc.html
+JE	imm64|near	X64	JE imm64|near	Jump if equal (ZF=1) (JE=JZ)	Jcc.html
+JG	imm64|near	X64	JG imm64|near	Jump if greater (ZF=0 and SF=OF) (JG=JNLE)	Jcc.html
+JGE	imm64|near	X64	JGE imm64|near	Jump if greater or equal (SF=OF) (JGE=JNL)	Jcc.html
+JL	imm64|near	X64	JL imm64|near	Jump if less (SF!=OF) (JL=JNGE)	Jcc.html
+JLE	imm64|near	X64	JLE imm64|near	Jump if less or equal (ZF=1 or SF!=OF) (JLE=JNG)	Jcc.html
+JNA	imm64|near	X64	JNA imm64|near	Jump if not above (CF=1 or ZF=1) (JBE=JNA)	Jcc.html
+JNAE	imm64|near	X64	JNAE imm64|near	Jump if not above or equal (CF=1) (JB=JNAE)	Jcc.html
+JNB	imm64|near	X64	JNB imm64|near	Jump if not below (CF=0) (JAE=JNB)	Jcc.html
+JNBE	imm64|near	X64	JNBE imm64|near	Jump if not below or equal (CF=0 and ZF=0) (JA=JNBE)	Jcc.html
+JNC	imm64|near	X64	JNC imm64|near	Jump if not carry (CF=0)	Jcc.html
+JNE	imm64|near	X64	JNE imm64|near	Jump if not equal (ZF=0) (JNE=JNZ)	Jcc.html
+JNG	imm64|near	X64	JNG imm64|near	Jump if not greater (ZF=1 or SF!=OF) (JLE=JNG)	Jcc.html
+JNGE	imm64|near	X64	JNGE imm64|near	Jump if not greater or equal (SF!=OF) (JL=JNGE)	Jcc.html
+JNL	imm64|near	X64	JNL imm64|near	Jump if not less (SF=OF) (JGE=JNL)	Jcc.html
+JNLE	imm64|near	X64	JNLE imm64|near	Jump if not less or equal (ZF=0 and SF=OF) (JG=JNLE)	Jcc.html
+JNO	imm64|near	X64	JNO imm64|near	Jump if not overflow (OF=0)	Jcc.html
+JNP	imm64|near	X64	JNP imm64|near	Jump if not parity (PF=0) (JNP=JPO)	Jcc.html
+JNS	imm64|near	X64	JNS imm64|near	Jump if not sign (SF=0)	Jcc.html
+JNZ	imm64|near	X64	JNZ imm64|near	Jump if not zero (ZF=0) (JNE=JNZ)	Jcc.html
+JO	imm64|near	X64	JO imm64|near	Jump if overflow (OF=1)	Jcc.html
+JP	imm64|near	X64	JP imm64|near	Jump if parity (PF=1) (JP=JPE)	Jcc.html
+JPE	imm64|near	X64	JPE imm64|near	Jump if parity even (PF=1) (JP=JPE)	Jcc.html
+JPO	imm64|near	X64	JPO imm64|near	Jump if parity odd (PF=0) (JNP=JPO)	Jcc.html
+JS	imm64|near	X64	JS imm64|near	Jump if sign (SF=1)	Jcc.html
+JZ	imm64|near	X64	JZ imm64|near	Jump if zero (ZF=1) (JE=JZ)	Jcc.html
+;
+JA	imm|short	8086	JA imm|short	Jump if above (CF=0 and ZF=0) (JA=JNBE)	Jcc.html
+JAE	imm|short	8086	JAE imm|short	Jump if above or equal (CF=0) (JAE=JNB)	Jcc.html
+JB	imm|short	8086	JB imm|short	Jump if below (CF=1) (JB=JNAE)	Jcc.html
+JBE	imm|short	8086	JBE imm|short	Jump if below or equal (CF=1 or ZF=1) (JBE=JNA)	Jcc.html
+JC	imm|short	8086	JC imm|short	Jump if carry (CF=1)	Jcc.html
+JE	imm|short	8086	JE imm|short	Jump if equal (ZF=1) (JE=JZ)	Jcc.html
+JG	imm|short	8086	JG imm|short	Jump if greater (ZF=0 and SF=OF) (JG=JNLE)	Jcc.html
+JGE	imm|short	8086	JGE imm|short	Jump if greater or equal (SF=OF) (JGE=JNL)	Jcc.html
+JL	imm|short	8086	JL imm|short	Jump if less (SF!=OF) (JL=JNGE)	Jcc.html
+JLE	imm|short	8086	JLE imm|short	Jump if less or equal (ZF=1 or SF!=OF) (JLE=JNG)	Jcc.html
+JNA	imm|short	8086	JNA imm|short	Jump if not above (CF=1 or ZF=1) (JBE=JNA)	Jcc.html
+JNAE	imm|short	8086	JNAE imm|short	Jump if not above or equal (CF=1) (JB=JNAE)	Jcc.html
+JNB	imm|short	8086	JNB imm|short	Jump if not below (CF=0) (JAE=JNB)	Jcc.html
+JNBE	imm|short	8086	JNBE imm|short	Jump if not below or equal (CF=0 and ZF=0) (JA=JNBE)	Jcc.html
+JNC	imm|short	8086	JNC imm|short	Jump if not carry (CF=0)	Jcc.html
+JNE	imm|short	8086	JNE imm|short	Jump if not equal (ZF=0) (JNE=JNZ)	Jcc.html
+JNG	imm|short	8086	JNG imm|short	Jump if not greater (ZF=1 or SF!=OF) (JLE=JNG)	Jcc.html
+JNGE	imm|short	8086	JNGE imm|short	Jump if not greater or equal (SF!=OF) (JL=JNGE)	Jcc.html
+JNL	imm|short	8086	JNL imm|short	Jump if not less (SF=OF) (JGE=JNL)	Jcc.html
+JNLE	imm|short	8086	JNLE imm|short	Jump if not less or equal (ZF=0 and SF=OF) (JG=JNLE)	Jcc.html
+JNO	imm|short	8086	JNO imm|short	Jump if not overflow (OF=0)	Jcc.html
+JNP	imm|short	8086	JNP imm|short	Jump if not parity (PF=0) (JNP=JPO)	Jcc.html
+JNS	imm|short	8086	JNS imm|short	Jump if not sign (SF=0)	Jcc.html
+JNZ	imm|short	8086	JNZ imm|short	Jump if not zero (ZF=0) (JNE=JNZ)	Jcc.html
+JO	imm|short	8086	JO imm|short	Jump if overflow (OF=1)	Jcc.html
+JP	imm|short	8086	JP imm|short	Jump if parity (PF=1) (JP=JPE)	Jcc.html
+JPE	imm|short	8086	JPE imm|short	Jump if parity even (PF=1) (JP=JPE)	Jcc.html
+JPO	imm|short	8086	JPO imm|short	Jump if parity odd (PF=0) (JNP=JPO)	Jcc.html
+JS	imm|short	8086	JS imm|short	Jump if sign (SF=1)	Jcc.html
+JZ	imm|short	8086	JZ imm|short	Jump if zero (ZF=1) (JE=JZ)	Jcc.html
+;
+SETA	rm8	386	SETA r/m8	Set byte if above (CF=0 and ZF=0) (SETA=SETNBE)	SETcc.html
+SETAE	rm8	386	SETAE r/m8	Set byte if above or equal (CF=0) (SETAE=SETNC=SETNB)	SETcc.html
+SETB	rm8	386	SETB r/m8	Set byte if below (CF=1) (SETB=SETC=SETNAE)	SETcc.html
+SETBE	rm8	386	SETBE r/m8	Set byte if below or equal (CF=1 or ZF=1) (SETBE=SETNA)	SETcc.html
+SETC	rm8	386	SETC r/m8	Set byte if carry (CF=1 SETB=SETC=SETNAE)	SETcc.html
+SETE	rm8	386	SETE r/m8	Set byte if equal (ZF=1) (SETE=SETZ)	SETcc.html
+SETG	rm8	386	SETG r/m8	Set byte if greater (ZF=0 and SF=OF) (SETG=SETNLE)	SETcc.html
+SETGE	rm8	386	SETGE r/m8	Set byte if greater or equal (SF=OF) (SETGE=SETNL)	SETcc.html
+SETL	rm8	386	SETL r/m8	Set byte if less (SF!=OF) (SETL=SETNGE)	SETcc.html
+SETLE	rm8	386	SETLE r/m8	Set byte if less or equal (ZF=1 or SF!=OF) (SETLE=SETNG)	SETcc.html
+SETNA	rm8	386	SETNA r/m8	Set byte if not above (CF=1 or ZF=1) (SETBE=SETNA)	SETcc.html
+SETNAE	rm8	386	SETNAE r/m8	Set byte if not above or equal (CF=1) (SETB=SETC=SETNAE)	SETcc.html
+SETNB	rm8	386	SETNB r/m8	Set byte if not below (CF=0) (SETAE=SETNC=SETNB)	SETcc.html
+SETNBE	rm8	386	SETNBE r/m8	Set byte if not below or equal (CF=0 and ZF=0) (SETA=SETNBE)	SETcc.html
+SETNC	rm8	386	SETNC r/m8	Set byte if not carry (CF=0) (SETAE=SETNC=SETNB)	SETcc.html
+SETNE	rm8	386	SETNE r/m8	Set byte if not equal (ZF=0) (SETNE=SETNZ)	SETcc.html
+SETNG	rm8	386	SETNG r/m8	Set byte if not greater (ZF=1 or SF!=OF) (SETLE=SETNG)	SETcc.html
+SETNGE	rm8	386	SETNGE r/m8	Set byte if not greater or equal (SF!=OF) (SETL=SETNGE)	SETcc.html
+SETNL	rm8	386	SETNL r/m8	Set byte if not less (SF=OF) (SETGE=SETNL)	SETcc.html
+SETNLE	rm8	386	SETNLE r/m8	Set byte if not less or equal (ZF=0 and SF=OF) (SETG=SETNLE)	SETcc.html
+SETNO	rm8	386	SETNO r/m8	Set byte if not overflow (OF=0)	SETcc.html
+SETNP	rm8	386	SETNP r/m8	Set byte if not parity (PF=0) (SETNP=SETPO)	SETcc.html
+SETNS	rm8	386	SETNS r/m8	Set byte if not sign (SF=0)	SETcc.html
+SETNZ	rm8	386	SETNZ r/m8	Set byte if not zero (ZF=0) (SETNE=SETNZ)	SETcc.html
+SETO	rm8	386	SETO r/m8	Set byte if overflow (OF=1)	SETcc.html
+SETP	rm8	386	SETP r/m8	Set byte if parity (PF=1) (SETP=SETPE)	SETcc.html
+SETPE	rm8	386	SETPE r/m8	Set byte if parity even (PF=1) (SETP=SETPE)	SETcc.html
+SETPO	rm8	386	SETPO r/m8	Set byte if parity odd (PF=0 SETNP=SETPO)	SETcc.html
+SETS	rm8	386	SETS r/m8	Set byte if sign (SF=1)	SETcc.html
+SETZ	rm8	386	SETZ r/m8	Set byte if zero (ZF=1) (SETE=SETZ)	SETcc.html
 ;
 ADDPS	xmmreg,xmmrm128	KATMAI,SSE	ADDPS xmm, xmm/m128	Add Packed Single-Precision Floating-Point Values	ADDPS.html
 ADDSS	xmmreg,xmmrm32	KATMAI,SSE	ADDSS xmm, xmm/m32	Add Scalar Single-Precision Floating-Point Values	ADDSS.html
@@ -4025,28 +4285,33 @@ TZMSK	reg64,rm64	LONG,FUTURE,TBM	TZMSK r64, r/m64	TODO: FUTURE,TBM,LONG
 T1MSKC	reg32,rm32	FUTURE,TBM	T1MSKC r32, r/m32	TODO: FUTURE,TBM,LONG	
 T1MSKC	reg64,rm64	LONG,FUTURE,TBM	T1MSKC r64, r/m64	TODO: FUTURE,TBM,LONG	
 PREFETCHWT1	mem8	PREFETCHWT1,FUTURE	PREFETCHWT1 mem8	Prefetch Vector Data Into Caches with Intent to Write and T1 Hint	PREFETCHWT1.html
-BNDMK	bndreg,mem	MPX,MIB,FUTURE	BNDMK bndreg, mem	TODO: MPX,MIB,FUTURE	
-BNDCL	bndreg,mem	MPX,FUTURE	BNDCL bndreg, mem	TODO: MPX,FUTURE,NOLONG,LONG	
-BNDCL	bndreg,reg32	MPX,NOLONG,FUTURE	BNDCL bndreg, r32	TODO: MPX,FUTURE,NOLONG,LONG	
-BNDCL	bndreg,reg64	MPX,LONG,FUTURE	BNDCL bndreg, r64	TODO: MPX,FUTURE,NOLONG,LONG	
-BNDCU	bndreg,mem	MPX,FUTURE	BNDCU bndreg, mem	TODO: MPX,FUTURE,NOLONG,LONG	
-BNDCU	bndreg,reg32	MPX,NOLONG,FUTURE	BNDCU bndreg, r32	TODO: MPX,FUTURE,NOLONG,LONG	
-BNDCU	bndreg,reg64	MPX,LONG,FUTURE	BNDCU bndreg, r64	TODO: MPX,FUTURE,NOLONG,LONG	
-BNDCN	bndreg,mem	MPX,FUTURE	BNDCN bndreg, mem	TODO: MPX,FUTURE,NOLONG,LONG	
-BNDCN	bndreg,reg32	MPX,NOLONG,FUTURE	BNDCN bndreg, r32	TODO: MPX,FUTURE,NOLONG,LONG	
-BNDCN	bndreg,reg64	MPX,LONG,FUTURE	BNDCN bndreg, r64	TODO: MPX,FUTURE,NOLONG,LONG	
-BNDMOV	bndreg,bndreg	MPX,FUTURE	BNDMOV bndreg, bndreg	TODO: MPX,FUTURE	
-BNDMOV	bndreg,mem	MPX,FUTURE	BNDMOV bndreg, mem	TODO: MPX,FUTURE	
-BNDMOV	bndreg,bndreg	MPX,FUTURE	BNDMOV bndreg, bndreg	TODO: MPX,FUTURE	
-BNDMOV	mem,bndreg	MPX,FUTURE	BNDMOV mem, bndreg	TODO: MPX,FUTURE	
-BNDLDX	bndreg,mem	MPX,MIB,FUTURE	BNDLDX bndreg, mem	TODO: MPX,MIB,FUTURE,NOLONG,LONG	
-BNDLDX	bndreg,mem,reg32	MPX,MIB,NOLONG,FUTURE	BNDLDX bndreg, mem, r32	TODO: MPX,MIB,FUTURE,NOLONG,LONG	
-BNDLDX	bndreg,mem,reg64	MPX,MIB,LONG,FUTURE	BNDLDX bndreg, mem, r64	TODO: MPX,MIB,FUTURE,NOLONG,LONG	
-BNDSTX	mem,bndreg	MPX,MIB,FUTURE	BNDSTX mem, bndreg	TODO: MPX,MIB,FUTURE,NOLONG,LONG	
-BNDSTX	mem,reg32,bndreg	MPX,MIB,NOLONG,FUTURE	BNDSTX mem, r32, bndreg	TODO: MPX,MIB,FUTURE,NOLONG,LONG	
-BNDSTX	mem,reg64,bndreg	MPX,MIB,LONG,FUTURE	BNDSTX mem, r64, bndreg	TODO: MPX,MIB,FUTURE,NOLONG,LONG	
-BNDSTX	mem,bndreg,reg32	MPX,MIB,NOLONG,FUTURE	BNDSTX mem, bndreg, r32	TODO: MPX,MIB,FUTURE,NOLONG,LONG	
-BNDSTX	mem,bndreg,reg64	MPX,MIB,LONG,FUTURE	BNDSTX mem, bndreg, r64	TODO: MPX,MIB,FUTURE,NOLONG,LONG	
+
+BNDMK	bndreg,mem	MPX,MIB,FUTURE	BNDMK b, m	Create LowerBound (LB) and UpperBound (UB) in the bounds register b	
+
+BNDCL	bndreg,mem	MPX,FUTURE	BNDCL b, mem	 Checks the address of a memory reference or address in r against the lower bound 	
+BNDCL	bndreg,reg32	MPX,NOLONG,FUTURE	BNDCL b, r32	 Checks the address of a memory reference or address in r against the lower bound 	
+BNDCL	bndreg,reg64	MPX,LONG,FUTURE	BNDCL b, r64	 Checks the address of a memory reference or address in r against the lower bound 	
+
+BNDCU	bndreg,mem	MPX,FUTURE	BNDCU bndreg, mem	Checks the address of a memory reference or address in r against the upper bound in 1's complement form	
+BNDCU	bndreg,reg32	MPX,NOLONG,FUTURE	BNDCU bndreg, r32	Checks the address of a memory reference or address in r against the upper bound in 1's complement form	
+BNDCU	bndreg,reg64	MPX,LONG,FUTURE	BNDCU bndreg, r64	Checks the address of a memory reference or address in r against the upper bound in 1's complement form	
+BNDCN	bndreg,mem	MPX,FUTURE	BNDCN bndreg, mem	Checks the address of a memory reference or address in r against the upper bound in 1's complement formChecks the address of a memory reference or address in r against the upper bound not in 1's complement form	
+BNDCN	bndreg,reg32	MPX,NOLONG,FUTURE	BNDCN bndreg, r32	Checks the address of a memory reference or address in r against the upper bound in 1's complement formChecks the address of a memory reference or address in r against the upper bound not in 1's complement form	
+BNDCN	bndreg,reg64	MPX,LONG,FUTURE	BNDCN bndreg, r64	Checks the address of a memory reference or address in r against the upper bound in 1's complement formChecks the address of a memory reference or address in r against the upper bound not in 1's complement form	
+
+BNDMOV	bndreg,bndreg	MPX,FUTURE	BNDMOV bndreg, bndreg	Copy/load LB and UB bounds from memory or a bounds register	
+BNDMOV	bndreg,mem	MPX,FUTURE	BNDMOV bndreg, mem	Copy/load LB and UB bounds from memory or a bounds register	
+BNDMOV	mem,bndreg	MPX,FUTURE	BNDMOV mem, bndreg	Store LB and UB bounds in a bounds register to memory or another register	
+
+BNDLDX	bndreg,mem	MPX,MIB,FUTURE	BNDLDX bndreg, mem	Load bounds using address translation using an sib-addressing expression mib	
+BNDLDX	bndreg,mem,reg32	MPX,MIB,NOLONG,FUTURE	BNDLDX bndreg, mem, r32	Load bounds using address translation using an sib-addressing expression mib	
+BNDLDX	bndreg,mem,reg64	MPX,MIB,LONG,FUTURE	BNDLDX bndreg, mem, r64	Load bounds using address translation using an sib-addressing expression mib	
+BNDSTX	mem,bndreg	MPX,MIB,FUTURE	BNDSTX mem, bndreg	Store bounds using address translation using an sib-addressing expression mib	
+BNDSTX	mem,reg32,bndreg	MPX,MIB,NOLONG,FUTURE	BNDSTX mem, r32, bndreg	Store bounds using address translation using an sib-addressing expression mib	
+BNDSTX	mem,reg64,bndreg	MPX,MIB,LONG,FUTURE	BNDSTX mem, r64, bndreg	Store bounds using address translation using an sib-addressing expression mib	
+BNDSTX	mem,bndreg,reg32	MPX,MIB,NOLONG,FUTURE	BNDSTX mem, bndreg, r32	Store bounds using address translation using an sib-addressing expression mib	
+BNDSTX	mem,bndreg,reg64	MPX,MIB,LONG,FUTURE	BNDSTX mem, bndreg, r64	Store bounds using address translation using an sib-addressing expression mib	
+
 KADDB	kreg,kreg,kreg	FUTURE	KADDB kreg, kreg, kreg	TODO: FUTURE	
 KADDD	kreg,kreg,kreg	FUTURE	KADDD kreg, kreg, kreg	TODO: FUTURE	
 KADDQ	kreg,kreg,kreg	FUTURE	KADDQ kreg, kreg, kreg	TODO: FUTURE	

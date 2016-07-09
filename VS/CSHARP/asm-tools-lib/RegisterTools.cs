@@ -3,7 +3,7 @@
 namespace AsmTools {
 
     public enum RegisterType {
-        UNKNOWN, BIT8, BIT16, BIT32, BIT64, MMX, XMM, YMM, ZMM, MASK, SEGMENT
+        UNKNOWN, BIT8, BIT16, BIT32, BIT64, MMX, XMM, YMM, ZMM, SEGMENT, MASK, CONTROL, DEBUG, BOUND
     }
 
     public static class RegisterTools {
@@ -42,13 +42,6 @@ namespace AsmTools {
                 case "DX": return Rn.DX;
                 case "DL": return Rn.DL;
                 case "DH": return Rn.DH;
-
-                case "CS": return Rn.CS;
-                case "DS": return Rn.DS;
-                case "ES": return Rn.ES;
-                case "SS": return Rn.SS;
-                case "FS": return Rn.FS;
-                case "GS": return Rn.GS;
 
                 case "RSI": return Rn.RSI;
                 case "ESI": return Rn.ESI;
@@ -189,8 +182,48 @@ namespace AsmTools {
                 case "ZMM28": return Rn.ZMM28;
                 case "ZMM29": return Rn.ZMM29;
                 case "ZMM30": return Rn.ZMM30;
-                case "ZMM31":
-                    return Rn.ZMM31;
+                case "ZMM31": return Rn.ZMM31;
+
+                case "K0": return Rn.K0;
+                case "K1": return Rn.K1;
+                case "K2": return Rn.K2;
+                case "K3": return Rn.K3;
+                case "K4": return Rn.K4;
+                case "K5": return Rn.K5;
+                case "K6": return Rn.K6;
+                case "K7": return Rn.K7;
+
+                case "CS": return Rn.CS;
+                case "DS": return Rn.DS;
+                case "ES": return Rn.ES;
+                case "SS": return Rn.SS;
+                case "FS": return Rn.FS;
+                case "GS": return Rn.GS;
+
+                case "CR0": return Rn.CR0;
+                case "CR1": return Rn.CR1;
+                case "CR2": return Rn.CR2;
+                case "CR3": return Rn.CR3;
+                case "CR4": return Rn.CR4;
+                case "CR5": return Rn.CR5;
+                case "CR6": return Rn.CR6;
+                case "CR7": return Rn.CR7;
+                case "CR8": return Rn.CR8;
+
+                case "DR0": return Rn.DR0;
+                case "DR1": return Rn.DR1;
+                case "DR2": return Rn.DR2;
+                case "DR3": return Rn.DR3;
+                case "DR4": return Rn.DR4;
+                case "DR5": return Rn.DR5;
+                case "DR6": return Rn.DR6;
+                case "DR7": return Rn.DR7;
+
+                case "BND0": return Rn.BND0;
+                case "BND1": return Rn.BND1;
+                case "BND2": return Rn.BND2;
+                case "BND3": return Rn.BND3;
+
                 default:
                     return Rn.NOREG;
             }
@@ -522,332 +555,6 @@ namespace AsmTools {
             }
         }
 
-        private static bool isRegisterMethod1(string keyword) {
-            //TODO  get this info from AsmDudeData.xml
-            switch (keyword.ToUpper()) {
-
-                #region GPR
-                case "RAX"://
-                case "EAX"://
-                case "AX"://
-                case "AL"://
-                case "AH"://
-
-                case "RBX"://
-                case "EBX"://
-                case "BX"://
-                case "BL"://
-                case "BH"://
-
-                case "RCX"://
-                case "ECX"://
-                case "CX"://
-                case "CL"://
-                case "CH"://
-
-                case "RDX"://
-                case "EDX"://
-                case "DX"://
-                case "DL"://
-                case "DH"://
-
-                case "RSI"://
-                case "ESI"://
-                case "SI"://
-                case "SIL"://
-
-                case "RDI"://
-                case "EDI"://
-                case "DI"://
-                case "DIL"://
-
-                case "RBP"://
-                case "EBP"://
-                case "BP"://
-                case "BPL"://
-
-                case "RSP"://
-                case "ESP"://
-                case "SP"://
-                case "SPL"://
-
-                case "R8"://
-                case "R8D"://
-                case "R8W"://
-                case "R8B"://
-
-                case "R9"://
-                case "R9D"://
-                case "R9W"://
-                case "R9B"://
-
-                case "R10"://
-                case "R10D"://
-                case "R10W"://
-                case "R10B"://
-
-                case "R11"://
-                case "R11D"://
-                case "R11W"://
-                case "R11B"://
-
-                case "R12"://
-                case "R12D"://
-                case "R12W"://
-                case "R12B"://
-
-                case "R13"://
-                case "R13D"://
-                case "R13W"://
-                case "R13B"://
-
-                case "R14"://
-                case "R14D"://
-                case "R14W"://
-                case "R14B"://
-
-                case "R15"://
-                case "R15D"://
-                case "R15W"://
-                case "R15B"://
-
-                #endregion GPR
-                #region SIMD
-
-                case "MM0"://
-                case "MM1"://
-                case "MM2"://
-                case "MM3"://
-                case "MM4"://
-                case "MM5"://
-                case "MM6"://
-                case "MM7"://
-
-                case "XMM0"://
-                case "XMM1"://
-                case "XMM2"://
-                case "XMM3"://
-                case "XMM4"://
-                case "XMM5"://
-                case "XMM6"://
-                case "XMM7"://
-
-                case "XMM8"://
-                case "XMM9"://
-                case "XMM10"://
-                case "XMM11"://
-                case "XMM12"://
-                case "XMM13"://
-                case "XMM14"://
-                case "XMM15"://
-
-                case "YMM0"://
-                case "YMM1"://
-                case "YMM2"://
-                case "YMM3"://
-                case "YMM4"://
-                case "YMM5"://
-                case "YMM6"://
-                case "YMM7"://
-
-                case "YMM8"://
-                case "YMM9"://
-                case "YMM10"://
-                case "YMM11"://
-                case "YMM12"://
-                case "YMM13"://
-                case "YMM14"://
-                case "YMM15"://
-
-                case "ZMM0"://
-                case "ZMM1"://
-                case "ZMM2"://
-                case "ZMM3"://
-                case "ZMM4"://
-                case "ZMM5"://
-                case "ZMM6"://
-                case "ZMM7"://
-
-                case "ZMM8"://
-                case "ZMM9"://
-                case "ZMM10":
-                case "ZMM11":
-                case "ZMM12":
-                case "ZMM13":
-                case "ZMM14":
-                case "ZMM15":
-
-                case "ZMM16":
-                case "ZMM17":
-                case "ZMM18":
-                case "ZMM19":
-                case "ZMM20":
-                case "ZMM21":
-                case "ZMM22":
-                case "ZMM23":
-
-                case "ZMM24":
-                case "ZMM25":
-                case "ZMM26":
-                case "ZMM27":
-                case "ZMM28":
-                case "ZMM29":
-                case "ZMM30":
-                case "ZMM31":
-                    #endregion SIMD
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        private static bool isRegisterMethod2(string keyword) {
-            int length = keyword.Length;
-            string str = keyword.ToUpper();
-            char c1 = str[0];
-            char c2 = str[1];
-            char c3 = (length > 2) ? str[2] : ' ';
-            char c4 = (length > 3) ? str[3] : ' ';
-            char c5 = (length > 4) ? str[4] : ' ';
-
-            switch (length) {
-                #region length2
-                case 2:
-                    switch (c1) {
-                        case 'A': return (c2 == 'X') || (c2 == 'H') || (c2 == 'L');
-                        case 'B': return (c2 == 'X') || (c2 == 'H') || (c2 == 'L') || (c2 == 'P');
-                        case 'C': return (c2 == 'X') || (c2 == 'H') || (c2 == 'L');
-                        case 'D': return (c2 == 'X') || (c2 == 'H') || (c2 == 'L') || (c2 == 'I');
-                        case 'S': return (c2 == 'I') || (c2 == 'P');
-                        case 'R': return (c2 == '8') || (c2 == '9');
-                    }
-                    break;
-                #endregion
-                #region length3
-                case 3:
-                    switch (c1) {
-                        case 'R':
-                            switch (c2) {
-                                case 'A': return (c3 == 'X');
-                                case 'B': return (c3 == 'X') || (c3 == 'P');
-                                case 'C': return (c3 == 'X');
-                                case 'D': return (c3 == 'X') || (c3 == 'I');
-                                case 'S': return (c3 == 'I') || (c3 == 'P');
-                                case '8': return (c3 == 'D') || (c3 == 'W') || (c3 == 'B');
-                                case '9': return (c3 == 'D') || (c3 == 'W') || (c3 == 'B');
-                                case '1': return (c3 == '0') || (c3 == '1') || (c3 == '2') || (c3 == '3') || (c3 == '4');
-                            }
-                            break;
-                        case 'E':
-                            switch (c2) {
-                                case 'A': return (c3 == 'X');
-                                case 'B': return (c3 == 'X') || (c3 == 'P');
-                                case 'C': return (c3 == 'X');
-                                case 'D': return (c3 == 'X') || (c3 == 'I');
-                                case 'S': return (c3 == 'I') || (c3 == 'P');
-                            }
-                            break;
-                        case 'B': return (c2 == 'P') && (c3 == 'L');
-                        case 'S':
-                            switch (c2) {
-                                case 'P': return (c3 == 'L');
-                                case 'I': return (c3 == 'L');
-                            }
-                            break;
-                        case 'D': return (c2 == 'I') && (c3 == 'L');
-                        case 'M':
-                            if (c2 == 'M') {
-                                switch (c3) {
-                                    case '0':
-                                    case '1':
-                                    case '2':
-                                    case '3':
-                                    case '4':
-                                    case '5':
-                                    case '6':
-                                    case '7': return true;
-                                }
-                            }
-                            break;
-                    }
-                    break;
-                #endregion
-                #region length4
-                case 4:
-                    switch (c1) {
-                        case 'R':
-                            if (c2 == '1') {
-                                switch (c3) {
-                                    case '0': return (c4 == 'D') || (c4 == 'W') || (c4 == 'B');
-                                    case '1': return (c4 == 'D') || (c4 == 'W') || (c4 == 'B');
-                                    case '2': return (c4 == 'D') || (c4 == 'W') || (c4 == 'B');
-                                    case '3': return (c4 == 'D') || (c4 == 'W') || (c4 == 'B');
-                                    case '4': return (c4 == 'D') || (c4 == 'W') || (c4 == 'B');
-                                    case '5': return (c4 == 'D') || (c4 == 'W') || (c4 == 'B');
-                                }
-                            }
-                            break;
-                        case 'X':
-                            if ((c2 == 'M') && (c3 == 'M')) {
-                                return isNumber(c4);
-                            }
-                            break;
-                        case 'Y':
-                            if ((c2 == 'M') && (c3 == 'M')) {
-                                return isNumber(c4);
-                            }
-                            break;
-                        case 'Z':
-                            if ((c2 == 'M') && (c3 == 'M')) {
-                                return isNumber(c4);
-                            }
-                            break;
-                    }
-                    break;
-                #endregion
-                #region length5
-                case 5:
-                    switch (c1) {
-                        case 'X':
-                            if ((c2 == 'M') && (c3 == 'M') && (c4 == '1')) {
-                                switch (c5) {
-                                    case '0':
-                                    case '1':
-                                    case '2':
-                                    case '3':
-                                    case '4':
-                                    case '5': return true;
-                                }
-                            }
-                            break;
-                        case 'Y':
-                            if ((c2 == 'M') && (c3 == 'M') && (c4 == '1')) {
-                                switch (c5) {
-                                    case '0':
-                                    case '1':
-                                    case '2':
-                                    case '3':
-                                    case '4':
-                                    case '5': return true;
-                                }
-                            }
-                            break;
-                        case 'Z':
-                            if ((c2 == 'M') && (c3 == 'M')) {
-                                switch (c4) {
-                                    case '1': return isNumber(c5);
-                                    case '2': return isNumber(c5);
-                                    case '3': return ((c5 == '0') || (c5 == '1'));
-                                }
-                            }
-                            break;
-                    }
-                    break;
-                    #endregion
-            }
-            return false;
-        }
-
         private static bool isNumber(char c) {
             switch (c) {
                 case '0':
@@ -865,15 +572,7 @@ namespace AsmTools {
         }
 
         public static bool isRegister(string keyword) {
-            int length = keyword.Length;
-            if ((length > 5) || (length < 2)) {
-                return false;
-            }
-            bool b2 = isRegisterMethod2(keyword);
-#           if _DEBUG
-            if (b2 != isRegisterMethod1(keyword)) Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: isRegister; unequal responses"));
-#           endif
-            return b2;
+            return RegisterTools.parseRn(keyword) != Rn.NOREG;
         }
 
         public static RegisterType getRegisterType(Rn rn) {
@@ -957,14 +656,6 @@ namespace AsmTools {
                 case Rn.R15:
                     return RegisterType.BIT64;
 
-                case Rn.CS:
-                case Rn.DS:
-                case Rn.ES:
-                case Rn.SS:
-                case Rn.FS:
-                case Rn.GS:
-                    return RegisterType.SEGMENT;
-
                 case Rn.MM0:
                 case Rn.MM1:
                 case Rn.MM2:
@@ -1045,6 +736,51 @@ namespace AsmTools {
                 case Rn.ZMM31:
                     return RegisterType.ZMM;
 
+                case Rn.CS:
+                case Rn.DS:
+                case Rn.ES:
+                case Rn.SS:
+                case Rn.FS:
+                case Rn.GS:
+                    return RegisterType.SEGMENT;
+
+                case Rn.CR0:
+                case Rn.CR1:
+                case Rn.CR2:
+                case Rn.CR3:
+                case Rn.CR4:
+                case Rn.CR5:
+                case Rn.CR6:
+                case Rn.CR7:
+                case Rn.CR8:
+                    return RegisterType.CONTROL;
+
+                case Rn.DR0:
+                case Rn.DR1:
+                case Rn.DR2:
+                case Rn.DR3:
+                case Rn.DR4:
+                case Rn.DR5:
+                case Rn.DR6:
+                case Rn.DR7:
+                    return RegisterType.DEBUG;
+
+                case Rn.K0:
+                case Rn.K1:
+                case Rn.K2:
+                case Rn.K3:
+                case Rn.K4:
+                case Rn.K5:
+                case Rn.K6:
+                case Rn.K7:
+                    return RegisterType.MASK;
+
+                case Rn.BND0:
+                case Rn.BND1:
+                case Rn.BND2:
+                case Rn.BND3:
+                    return RegisterType.BOUND;
+
                 default:
                     break;
 
@@ -1052,7 +788,146 @@ namespace AsmTools {
             return RegisterType.UNKNOWN;
         }
 
-        public static bool isMmx(Rn rn) {
+        public static bool isOpmaskRegister(Rn rn) {
+            switch (rn) {
+                case Rn.K0:
+                case Rn.K1:
+                case Rn.K2:
+                case Rn.K3:
+                case Rn.K4:
+                case Rn.K5:
+                case Rn.K6:
+                case Rn.K7:
+                    return true;
+                default: return false;
+            }
+        }
+        public static bool isBoundRegister(Rn rn) {
+            switch (rn) {
+                case Rn.BND0:
+                case Rn.BND1:
+                case Rn.BND2:
+                case Rn.BND3:
+                    return true;
+                default: return false;
+            }
+        }
+        public static bool isControlRegister(Rn rn) {
+            switch (rn) {
+                case Rn.CR0:
+                case Rn.CR1:
+                case Rn.CR2:
+                case Rn.CR3:
+                case Rn.CR4:
+                case Rn.CR5:
+                case Rn.CR6:
+                case Rn.CR7:
+                case Rn.CR8:  return true;
+                default:
+                    return false;
+            }
+        }
+        public static bool isDebugRegister(Rn rn) {
+            switch (rn) {
+                case Rn.DR0:
+                case Rn.DR1:
+                case Rn.DR2:
+                case Rn.DR3:
+                case Rn.DR4:
+                case Rn.DR5:
+                case Rn.DR6:
+                case Rn.DR7: return true;
+                default:
+                    return false;
+            }
+        }
+        public static bool isSegmentRegister(Rn rn) {
+            switch (rn) {
+                case Rn.CS:
+                case Rn.DS:
+                case Rn.ES:
+                case Rn.SS:
+                case Rn.FS:
+                case Rn.GS: return true;
+                default:
+                    return false;
+            }
+        }
+        public static bool isGeneralPurposeRegister(Rn rn) {
+            switch (rn) {
+                case Rn.RAX:
+                case Rn.EAX:
+                case Rn.AX:
+                case Rn.AL:
+                case Rn.AH:
+                case Rn.RBX:
+                case Rn.EBX:
+                case Rn.BX:
+                case Rn.BL:
+                case Rn.BH:
+                case Rn.RCX:
+                case Rn.ECX:
+                case Rn.CX:
+                case Rn.CL:
+                case Rn.CH:
+                case Rn.RDX:
+                case Rn.EDX:
+                case Rn.DX:
+                case Rn.DL:
+                case Rn.DH:
+                case Rn.RSI:
+                case Rn.ESI:
+                case Rn.SI:
+                case Rn.SIL:
+                case Rn.RDI:
+                case Rn.EDI:
+                case Rn.DI:
+                case Rn.DIL:
+                case Rn.RBP:
+                case Rn.EBP:
+                case Rn.BP:
+                case Rn.BPL:
+                case Rn.RSP:
+                case Rn.ESP:
+                case Rn.SP:
+                case Rn.SPL:
+                case Rn.R8:
+                case Rn.R8D:
+                case Rn.R8W:
+                case Rn.R8B:
+                case Rn.R9:
+                case Rn.R9D:
+                case Rn.R9W:
+                case Rn.R9B:
+                case Rn.R10:
+                case Rn.R10D:
+                case Rn.R10W:
+                case Rn.R10B:
+                case Rn.R11:
+                case Rn.R11D:
+                case Rn.R11W:
+                case Rn.R11B:
+                case Rn.R12:
+                case Rn.R12D:
+                case Rn.R12W:
+                case Rn.R12B:
+                case Rn.R13:
+                case Rn.R13D:
+                case Rn.R13W:
+                case Rn.R13B:
+                case Rn.R14:
+                case Rn.R14D:
+                case Rn.R14W:
+                case Rn.R14B:
+                case Rn.R15:
+                case Rn.R15D:
+                case Rn.R15W:
+                case Rn.R15B:
+                    return true;
+                default: return false;
+            }
+        }
+        public static bool isMmxRegister(Rn rn) {
             switch (rn) {
                 case Rn.MM0:
                 case Rn.MM1:
@@ -1065,7 +940,7 @@ namespace AsmTools {
                 default: return false;
             }
         }
-        public static bool isSse(Rn rn) {
+        public static bool isSseRegister(Rn rn) {
             switch (rn) {
                 case Rn.XMM0:
                 case Rn.XMM1:
@@ -1086,7 +961,7 @@ namespace AsmTools {
                 default: return false;
             }
         }
-        public static bool isAvx(Rn rn) {
+        public static bool isAvxRegister(Rn rn) {
             switch (rn) {
                 case Rn.YMM0:
                 case Rn.YMM1:
@@ -1107,7 +982,7 @@ namespace AsmTools {
                 default: return false;
             }
         }
-        public static bool isAvx512(Rn rn) {
+        public static bool isAvx512Register(Rn rn) {
             switch (rn) {
                 case Rn.ZMM0:
                 case Rn.ZMM1:
@@ -1144,6 +1019,5 @@ namespace AsmTools {
                 default: return false;
             }
         }
-
     }
 }

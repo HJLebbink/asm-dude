@@ -333,12 +333,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsmDudePackage.cs" />
+    <Compile Include="CodeCompletion\VsTextViewCreationListener.cs" />
     <Compile Include="ErrorSquiggles\AsmErrorEnum.cs" />
     <Compile Include="Experimental\SignatureHelp\AsmParameter.cs" />
     <Compile Include="Experimental\SignatureHelp\AsmSignature.cs" />
     <Compile Include="Experimental\SignatureHelp\AsmSignatureElement.cs" />
     <Compile Include="Experimental\SignatureHelp\AsmSignatureEnum.cs" />
-    <Compile Include="Experimental\SignatureHelp\AsmSignatureHelpCommand.cs" />
+    <Compile Include="Experimental\SignatureHelp\AsmSignatureHelpCommandFilter.cs" />
     <Compile Include="Experimental\SignatureHelp\AsmSignatureHelpCommandProvider.cs" />
     <Compile Include="Experimental\SignatureHelp\AsmSignatureHelpSourceProvider.cs" />
     <Compile Include="Experimental\SignatureHelp\MnemonicStore.cs" />
@@ -377,9 +378,9 @@
     <Compile Include="SyntaxHighlighting\MasmTokenTagger.cs" />
     <Compile Include="SyntaxHighlighting\AsmTokenTaggerProvider.cs" />
     <Compile Include="SyntaxHighlighting\AsmTokenTypes.cs" />
-    <Compile Include="CodeCompletion\AsmCompletionSource.cs" />
-    <Compile Include="CodeCompletion\AsmCompletionSourceProvider.cs" />
-    <Compile Include="CodeCompletion\CompletionController.cs" />
+    <Compile Include="CodeCompletion\CodeCompletionSource.cs" />
+    <Compile Include="CodeCompletion\CodeCompletionSourceProvider.cs" />
+    <Compile Include="CodeCompletion\CodeCompletionCommandFilter.cs" />
     <Compile Include="SyntaxHighlighting\AsmClassifier.cs" />
     <Compile Include="SyntaxHighlighting\ClassificationFormat.cs" />
     <Compile Include="CodeFolding\CodeFoldingTagger.cs" />

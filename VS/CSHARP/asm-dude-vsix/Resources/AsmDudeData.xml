@@ -523,227 +523,319 @@
 	</directives>
 
 	<registers>
-		<register name='CS' bits='16'>
+		<register name='CS' bits='16' arch='8086'>
 			<description>Segment Register (Code Segment)</description>
 		</register>
-		<register name='DS' bits='16'>
+		<register name='DS' bits='16' arch='8086'>
 			<description>Segment Register (Data Segment)</description>
 		</register>
-		<register name='ES' bits='16'>
+		<register name='ES' bits='16' arch='8086'>
 			<description>Segment Register (Extra Segment)</description>
 		</register>
-		<register name='FS' bits='16'>
+		<register name='FS' bits='16' arch='8086'>
 			<description>Segment Register (General Purpose)</description>
 		</register>
-		<register name='GS' bits='16'>
+		<register name='GS' bits='16' arch='8086'>
 			<description>Segment Register (General Purpose)</description>
 		</register>
-		<register name='SS' bits='16'>
+		<register name='SS' bits='16' arch='8086'>
 			<description>Segment Register (Stack Segment)</description>
 		</register>
 
-		<register name='RAX' bits='64'>
+		<register name='CR0' bits='16' arch='186'>
+			<description>Control Register 0</description>
+		</register>
+		<register name='CR1' bits='16' arch='186'>
+			<description>Control Register 1</description>
+		</register>
+		<register name='CR2' bits='16' arch='186'>
+			<description>Control Register 2</description>
+		</register>
+		<register name='CR3' bits='16' arch='186'>
+			<description>Control Register 3</description>
+		</register>
+		<register name='CR4' bits='16' arch='186'>
+			<description>Control Register 4</description>
+		</register>
+		<register name='CR5' bits='16' arch='186'>
+			<description>Control Register 5</description>
+		</register>
+		<register name='CR6' bits='16' arch='186'>
+			<description>Control Register 6</description>
+		</register>
+		<register name='CR7' bits='16' arch='186'>
+			<description>Control Register 7</description>
+		</register>
+		<register name='CR8' bits='16' arch='186'>
+			<description>Control Register 8</description>
+		</register>
+
+		<register name='DR0' bits='16' arch='186'>
+			<description>Debug Register 0</description>
+		</register>
+		<register name='DR1' bits='16' arch='186'>
+			<description>Debug Register 1</description>
+		</register>
+		<register name='DR2' bits='16' arch='186'>
+			<description>Debug Register 2</description>
+		</register>
+		<register name='DR3' bits='16' arch='186'>
+			<description>Debug Register 3</description>
+		</register>
+		<register name='DR4' bits='16' arch='186'>
+			<description>Debug Register 4</description>
+		</register>
+		<register name='DR5' bits='16' arch='186'>
+			<description>Debug Register 5</description>
+		</register>
+		<register name='DR6' bits='16' arch='186'>
+			<description>Debug Register 6</description>
+		</register>
+		<register name='DR7' bits='16' arch='186'>
+			<description>Debug Register 7</description>
+		</register>
+
+		<register name='K0' bits='64' arch='AVX512'>
+			<description>Opmask Register 0</description>
+		</register>
+		<register name='K1' bits='64' arch='AVX512'>
+			<description>Opmask Register 1</description>
+		</register>
+		<register name='K2' bits='64' arch='AVX512'>
+			<description>Opmask Register 2</description>
+		</register>
+		<register name='K3' bits='64' arch='AVX512'>
+			<description>Opmask Register 3</description>
+		</register>
+		<register name='K4' bits='64' arch='AVX512'>
+			<description>Opmask Register 4</description>
+		</register>
+		<register name='K5' bits='64' arch='AVX512'>
+			<description>Opmask Register 5</description>
+		</register>
+		<register name='K6' bits='64' arch='AVX512'>
+			<description>Opmask Register 6</description>
+		</register>
+		<register name='K7' bits='64' arch='AVX512'>
+			<description>Opmask Register 7</description>
+		</register>
+
+		<register name='BND0' bits='128' arch='MPX'>
+			<description>MPX Bound Register 0</description>
+		</register>
+		<register name='BND1' bits='128' arch='MPX'>
+			<description>MPX Bound Register 1</description>
+		</register>
+		<register name='BND2' bits='128' arch='MPX'>
+			<description>MPX Bound Register 2</description>
+		</register>
+		<register name='BND3' bits='128' arch='MPX'>
+			<description>MPX Bound Register 3</description>
+		</register>
+
+
+		<register name='RAX' bits='64' arch='X64'>
 			<description>64-bit GPR (Accumulator)</description>
 		</register>
-		<register name='RBX' bits='64'>
+		<register name='RBX' bits='64' arch='X64'>
 			<description>64-bit GPR (Base Register)</description>
 		</register>
-		<register name='RCX' bits='64'>
+		<register name='RCX' bits='64' arch='X64'>
 			<description>64-bit GPR (Count Register)</description>
 		</register>
-		<register name='RDX' bits='64'>
+		<register name='RDX' bits='64' arch='X64'>
 			<description>64-bit GPR (Data Register)</description>
 		</register>
-		<register name='RSI' bits='64'>
+		<register name='RSI' bits='64' arch='X64'>
 			<description>64-bit Index Register (Source Index)</description>
 		</register>
-		<register name='RDI' bits='64'>
+		<register name='RDI' bits='64' arch='X64'>
 			<description>64-bit Index Register (Destination Index)</description>
 		</register>
-		<register name='RBP' bits='64'>
+		<register name='RBP' bits='64' arch='X64'>
 			<description>64-bit Pointer Register (Base Pointer)</description>
 		</register>
-		<register name='RSP' bits='64'>
+		<register name='RSP' bits='64' arch='X64'>
 			<description>64-bit Pointer Register (Stack Pointer) </description>
 		</register>
-		<register name='R8' bits='64'>
+		<register name='R8' bits='64' arch='X64'>
 			<description>64-bit GPR</description>
 		</register>
-		<register name='R9' bits='64'>
+		<register name='R9' bits='64' arch='X64'>
 			<description>64-bit GPR</description>
 		</register>
-		<register name='R10' bits='64'>
+		<register name='R10' bits='64' arch='X64'>
 			<description>64-bit GPR</description>
 		</register>
-		<register name='R11' bits='64'>
+		<register name='R11' bits='64' arch='X64'>
 			<description>64-bit GPR</description>
 		</register>
-		<register name='R12' bits='64'>
+		<register name='R12' bits='64' arch='X64'>
 			<description>64-bit GPR</description>
 		</register>
-		<register name='R13' bits='64'>
+		<register name='R13' bits='64' arch='X64'>
 			<description>64-bit GPR</description>
 		</register>
-		<register name='R14' bits='64'>
+		<register name='R14' bits='64' arch='X64'>
 			<description>64-bit GPR</description>
 		</register>
-		<register name='R15' bits='64'>
+		<register name='R15' bits='64' arch='X64'>
 			<description>64-bit GPR</description>
 		</register>
-		<register name='EAX' bits='32'>
+		<register name='EAX' bits='32' arch='386'>
 			<description>32-bit GPR (Accumulator)</description>
 		</register>
-		<register name='EBX' bits='32'>
+		<register name='EBX' bits='32' arch='386'>
 			<description>32-bit GPR (Base Register)</description>
 		</register>
-		<register name='ECX' bits='32'>
+		<register name='ECX' bits='32' arch='386'>
 			<description>32-bit GPR (Count Register)</description>
 		</register>
-		<register name='EDX' bits='32'>
+		<register name='EDX' bits='32' arch='386'>
 			<description>32-bit GPR (Data Register)</description>
 		</register>
-		<register name='ESI' bits='32'>
+		<register name='ESI' bits='32' arch='386'>
 			<description>32-bit Index Register (Source Index)</description>
 		</register>
-		<register name='EDI' bits='32'>
+		<register name='EDI' bits='32' arch='386'>
 			<description>32-bit Index Register (Destination Index)</description>
 		</register>
-		<register name='EBP' bits='32'>
+		<register name='EBP' bits='32' arch='386'>
 			<description>32-bit Pointer Register (Base Pointer)</description>
 		</register>
-		<register name='ESP' bits='32'>
+		<register name='ESP' bits='32' arch='386'>
 			<description>32-bit Pointer Register (Stack Pointer) </description>
 		</register>
-		<register name='R8D' bits='32'>
+		<register name='R8D' bits='32' arch='X64'>
 			<description>32-bit GPR</description>
 		</register>
-		<register name='R9D' bits='32'>
+		<register name='R9D' bits='32' arch='X64'>
 			<description>32-bit GPR</description>
 		</register>
-		<register name='R10D' bits='32'>
+		<register name='R10D' bits='32' arch='X64'>
 			<description>32-bit GPR</description>
 		</register>
-		<register name='R11D' bits='32'>
+		<register name='R11D' bits='32' arch='X64'>
 			<description>32-bit GPR</description>
 		</register>
-		<register name='R12D' bits='32'>
+		<register name='R12D' bits='32' arch='X64'>
 			<description>32-bit GPR</description>
 		</register>
-		<register name='R13D' bits='32'>
+		<register name='R13D' bits='32' arch='X64'>
 			<description>32-bit GPR</description>
 		</register>
-		<register name='R14D' bits='32'>
+		<register name='R14D' bits='32' arch='X64'>
 			<description>32-bit GPR</description>
 		</register>
-		<register name='R15D' bits='32'>
+		<register name='R15D' bits='32' arch='X64'>
 			<description>32-bit GPR</description>
 		</register>
-		<register name='AX' bits='16'>
+		<register name='AX' bits='16' arch='8086'>
 			<description>16-bit GPR (Accumulator)</description>
 		</register>
-		<register name='BX' bits='16'>
+		<register name='BX' bits='16' arch='8086'>
 			<description>16-bit GPR (Base Register)</description>
 		</register>
-		<register name='CX' bits='16'>
+		<register name='CX' bits='16' arch='8086'>
 			<description>16-bit GPR (Count Register)</description>
 		</register>
-		<register name='DX' bits='16'>
+		<register name='DX' bits='16' arch='8086'>
 			<description>16-bit GPR (Data Register)</description>
 		</register>
-		<register name='SI' bits='16'>
+		<register name='SI' bits='16' arch='8086'>
 			<description>16-bit Index Register (Source Index)</description>
 		</register>
-		<register name='DI' bits='16'>
+		<register name='DI' bits='16' arch='8086'>
 			<description>16-bit Index Register (Destination Index)</description>
 		</register>
-		<register name='BP' bits='16'>
+		<register name='BP' bits='16' arch='8086'>
 			<description>16-bit Pointer Register (Base Pointer)</description>
 		</register>
-		<register name='SP' bits='16'>
+		<register name='SP' bits='16' arch='8086'>
 			<description>16-bit Pointer Register (Stack Pointer) </description>
 		</register>
-		<register name='R8W' bits='16'>
+		<register name='R8W' bits='16' arch='8086'>
 			<description>16-bit GPR</description>
 		</register>
-		<register name='R9W' bits='16'>
+		<register name='R9W' bits='16' arch='X64'>
 			<description>16-bit GPR</description>
 		</register>
-		<register name='R10W' bits='16'>
+		<register name='R10W' bits='16' arch='X64'>
 			<description>16-bit GPR</description>
 		</register>
-		<register name='R11W' bits='16'>
+		<register name='R11W' bits='16' arch='X64'>
 			<description>16-bit GPR</description>
 		</register>
-		<register name='R12W' bits='16'>
+		<register name='R12W' bits='16' arch='X64'>
 			<description>16-bit GPR</description>
 		</register>
-		<register name='R13W' bits='16'>
+		<register name='R13W' bits='16' arch='X64'>
 			<description>16-bit GPR</description>
 		</register>
-		<register name='R14W' bits='16'>
+		<register name='R14W' bits='16' arch='X64'>
 			<description>16-bit GPR</description>
 		</register>
-		<register name='R15W' bits='16'>
+		<register name='R15W' bits='16' arch='X64'>
 			<description>16-bit GPR</description>
 		</register>
-		<register name='AH' bits='8'>
+		<register name='AH' bits='8' arch='8086'>
 			<description>8-bit GPR (Accumulator)</description>
 		</register>
-		<register name='BH' bits='8'>
+		<register name='BH' bits='8' arch='8086'>
 			<description>8-bit GPR (Base Register)</description>
 		</register>
-		<register name='CH' bits='8'>
+		<register name='CH' bits='8' arch='8086'>
 			<description>8-bit GPR (Count Register)</description>
 		</register>
-		<register name='DH' bits='8'>
+		<register name='DH' bits='8' arch='8086'>
 			<description>8-bit GPR (Data Register)</description>
 		</register>
-		<register name='AL' bits='8'>
+		<register name='AL' bits='8' arch='8086'>
 			<description>8-bit GPR (Accumulator)</description>
 		</register>
-		<register name='BL' bits='8'>
+		<register name='BL' bits='8' arch='8086'>
 			<description>8-bit GPR (Base Register)</description>
 		</register>
-		<register name='CL' bits='8'>
+		<register name='CL' bits='8' arch='8086'>
 			<description>8-bit GPR (Count Register)</description>
 		</register>
-		<register name='DL' bits='8'>
+		<register name='DL' bits='8' arch='8086'>
 			<description>8-bit GPR (Data Register)</description>
 		</register>
-		<register name='SIL' bits='8'>
+		<register name='SIL' bits='8' arch='8086'>
 			<description>8-bit Index Register (Source Index)</description>
 		</register>
-		<register name='DIL' bits='8'>
+		<register name='DIL' bits='8' arch='8086'>
 			<description>8-bit Index Register (Destination Index)</description>
 		</register>
-		<register name='BPL' bits='8'>
+		<register name='BPL' bits='8' arch='8086'>
 			<description>8-bit Pointer Register (Base Pointer)</description>
 		</register>
-		<register name='SPL' bits='8'>
+		<register name='SPL' bits='8' arch='8086'>
 			<description>8-bit Pointer Register (Stack Pointer) </description>
 		</register>
-		<register name='R8B' bits='8'>
+		<register name='R8B' bits='8' arch='X64'>
 			<description>8-bit GPR</description>
 		</register>
-		<register name='R9B' bits='8'>
+		<register name='R9B' bits='8' arch='X64'>
 			<description>8-bit GPR</description>
 		</register>
-		<register name='R10B' bits='8'>
+		<register name='R10B' bits='8' arch='X64'>
 			<description>8-bit GPR</description>
 		</register>
-		<register name='R11B' bits='8'>
+		<register name='R11B' bits='8' arch='X64'>
 			<description>8-bit GPR</description>
 		</register>
-		<register name='R12B' bits='8'>
+		<register name='R12B' bits='8' arch='X64'>
 			<description>8-bit GPR</description>
 		</register>
-		<register name='R13B' bits='8'>
+		<register name='R13B' bits='8' arch='X64'>
 			<description>8-bit GPR</description>
 		</register>
-		<register name='R14B' bits='8'>
+		<register name='R14B' bits='8' arch='X64'>
 			<description>8-bit GPR</description>
 		</register>
-		<register name='R15B' bits='8'>
+		<register name='R15B' bits='8' arch='X64'>
 			<description>8-bit GPR</description>
 		</register>
 		<register name='MM0' bits='64' arch='MMX'>
@@ -866,100 +958,100 @@
 		<register name='YMM15' bits='256' arch='AVX'>
 			<description>256-bit avx Register</description>
 		</register>
-		<register name='ZMM0' bits='512' arch='KNC'>
+		<register name='ZMM0' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM1' bits='512' arch='KNC'>
+		<register name='ZMM1' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM2' bits='512' arch='KNC'>
+		<register name='ZMM2' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM3' bits='512' arch='KNC'>
+		<register name='ZMM3' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM4' bits='512' arch='KNC'>
+		<register name='ZMM4' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM5' bits='512' arch='KNC'>
+		<register name='ZMM5' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM6' bits='512' arch='KNC'>
+		<register name='ZMM6' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM7' bits='512' arch='KNC'>
+		<register name='ZMM7' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM8' bits='512' arch='KNC'>
+		<register name='ZMM8' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM9' bits='512' arch='KNC'>
+		<register name='ZMM9' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM10' bits='512' arch='KNC'>
+		<register name='ZMM10' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM11' bits='512' arch='KNC'>
+		<register name='ZMM11' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM12' bits='512' arch='KNC'>
+		<register name='ZMM12' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM13' bits='512' arch='KNC'>
+		<register name='ZMM13' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM14' bits='512' arch='KNC'>
+		<register name='ZMM14' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM15' bits='512' arch='KNC'>
+		<register name='ZMM15' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM16' bits='512' arch='KNC'>
+		<register name='ZMM16' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM17' bits='512' arch='KNC'>
+		<register name='ZMM17' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM18' bits='512' arch='KNC'>
+		<register name='ZMM18' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM19' bits='512' arch='KNC'>
+		<register name='ZMM19' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM20' bits='512' arch='KNC'>
+		<register name='ZMM20' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM21' bits='512' arch='KNC'>
+		<register name='ZMM21' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM22' bits='512' arch='KNC'>
+		<register name='ZMM22' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM23' bits='512' arch='KNC'>
+		<register name='ZMM23' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM24' bits='512' arch='KNC'>
+		<register name='ZMM24' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM25' bits='512' arch='KNC'>
+		<register name='ZMM25' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM26' bits='512' arch='KNC'>
+		<register name='ZMM26' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM27' bits='512' arch='KNC'>
+		<register name='ZMM27' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM28' bits='512' arch='KNC'>
+		<register name='ZMM28' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM29' bits='512' arch='KNC'>
+		<register name='ZMM29' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM30' bits='512' arch='KNC'>
+		<register name='ZMM30' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM31' bits='512' arch='KNC'>
+		<register name='ZMM31' bits='512' arch='AVX512'>
 			<description>512-bit avx-512 Register</description>
 		</register>
 	</registers>

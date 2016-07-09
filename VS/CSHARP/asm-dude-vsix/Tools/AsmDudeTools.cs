@@ -182,31 +182,6 @@ namespace AsmDude {
         }
 
         /// <summary>
-        /// Determine whether the provided keyword is a jump mnemonic.
-        /// </summary>
-        public bool isJumpMnenomic(string keyword) {
-            AsmTokenType tokenType;
-            if (this._type.TryGetValue(keyword.ToUpper(), out tokenType)) {
-                return tokenType == AsmTokenType.Jump;
-            } else {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Determine whether the provided keyword is a mnemonic (but not a jump)
-        /// </summary>
-        public bool isMnemonic(string keyword) {
-            AsmTokenType tokenType;
-            if (this._type.TryGetValue(keyword.ToUpper(), out tokenType)) {
-                return tokenType == AsmTokenType.Mnemonic;
-            } else {
-                return false;
-            }
-        }
-
-
-        /// <summary>
         /// Get architecture of the provided keyword
         /// </summary>
         public Arch getArchitecture(string keyword) {

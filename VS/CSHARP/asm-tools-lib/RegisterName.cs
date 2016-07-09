@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AsmTools {
+﻿namespace AsmTools {
 
     /// <summary>Register Name Enumeration</summary>
     public enum Rn {
@@ -13,8 +7,6 @@ namespace AsmTools {
         RBX, EBX, BX, BL, BH,
         RCX, ECX, CX, CL, CH,
         RDX, EDX, DX, DL, DH,
-
-        CS, DS, ES, SS, FS, GS,
 
         RSI, ESI, SI, SIL,
         RDI, EDI, DI, DIL,
@@ -41,6 +33,14 @@ namespace AsmTools {
         ZMM0, ZMM1, ZMM2, ZMM3, ZMM4, ZMM5, ZMM6, ZMM7,
         ZMM8, ZMM9, ZMM10, ZMM11, ZMM12, ZMM13, ZMM14, ZMM15,
         ZMM16, ZMM17, ZMM18, ZMM19, ZMM20, ZMM21, ZMM22, ZMM23,
-        ZMM24, ZMM25, ZMM26, ZMM27, ZMM28, ZMM29, ZMM30, ZMM31
+        ZMM24, ZMM25, ZMM26, ZMM27, ZMM28, ZMM29, ZMM30, ZMM31,
+
+        K0, K1, K2, K3, K4, K5, K6, K7,
+
+        CS, DS, ES, SS, FS, GS,
+
+        CR0, CR1, CR2, CR3, CR4, CR5, CR6, CR7, CR8,
+        DR0, DR1, DR2, DR3, DR4, DR5, DR6, DR7,
+        BND0, BND1, BND2, BND3
     };
 }

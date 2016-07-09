@@ -89,7 +89,7 @@ namespace AsmDude.SignatureHelp {
 
             //TODO
 
-            // for the time being, the the description of the first signatureElement
+            // for the time being, the description of the first signatureElement
             if (this.hasElement(mnemonic)) {
                 return this._data[mnemonic][0].doc;
             } else {
@@ -133,21 +133,25 @@ namespace AsmDude.SignatureHelp {
                         //string cleanedString = System.Text.RegularExpressions.Regex.Replace(line, @"\s+", " ");
                         //string[] s = cleanedString.Trim().Split('\t');
                         string[] s = line.Trim().Split('\t');
+                        if ((s.Length == 5) || (s.Length == 6)) {
 
-                        Mnemonic mnemonic = AsmSourceTools.parseMnemonic(s[0]);
-                        if (mnemonic == Mnemonic.UNKNOWN) {
-                            AsmDudeToolsStatic.Output("WARNING: SignatureStore:load: unknown mnemonic in line" + line);
-                        } else {
-                            AsmSignatureElement se = new AsmSignatureElement(mnemonic, s[1], s[2]);
-                            se.docSignature = s[3];
-                            se.doc = s[4];
-                            if (s.Length > 5) this.setHtmlRef(mnemonic, s[5]);
-                            IList<AsmSignatureElement> signatureElementList = null;
-                            if (this._data.TryGetValue(mnemonic, out signatureElementList)) {
-                                signatureElementList.Add(se);
+                            Mnemonic mnemonic = AsmSourceTools.parseMnemonic(s[0]);
+                            if (mnemonic == Mnemonic.UNKNOWN) {
+                                AsmDudeToolsStatic.Output("WARNING: SignatureStore:load: unknown mnemonic in line" + line);
                             } else {
-                                this._data.Add(mnemonic, new List<AsmSignatureElement> { se });
+                                AsmSignatureElement se = new AsmSignatureElement(mnemonic, s[1], s[2]);
+                                se.docSignature = s[3];
+                                se.doc = s[4];
+                                if (s.Length > 5) this.setHtmlRef(mnemonic, s[5]);
+                                IList<AsmSignatureElement> signatureElementList = null;
+                                if (this._data.TryGetValue(mnemonic, out signatureElementList)) {
+                                    signatureElementList.Add(se);
+                                } else {
+                                    this._data.Add(mnemonic, new List<AsmSignatureElement> { se });
+                                }
                             }
+                        } else {
+                            AsmDudeToolsStatic.Output("WARNING: SignatureStore:load: s.Length="+s.Length+"; funky line" + line);
                         }
                     }
                 }

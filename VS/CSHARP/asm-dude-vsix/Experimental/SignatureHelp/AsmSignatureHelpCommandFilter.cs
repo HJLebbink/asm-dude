@@ -32,14 +32,14 @@ using System.Runtime.InteropServices;
 
 namespace AsmDude.SignatureHelp {
 
-    internal sealed class AsmSignatureHelpCommand : IOleCommandTarget {
+    internal sealed class AsmSignatureHelpCommandFilter : IOleCommandTarget {
         private readonly ITextView _textView;
         private readonly ISignatureHelpBroker _broker;
 
         private ISignatureHelpSession _session;
         private IOleCommandTarget _nextCommandHandler;
 
-        internal AsmSignatureHelpCommand(IVsTextView textViewAdapter, ITextView textView, ISignatureHelpBroker broker) {
+        internal AsmSignatureHelpCommandFilter(IVsTextView textViewAdapter, ITextView textView, ISignatureHelpBroker broker) {
             this._textView = textView;
             this._broker = broker;
 

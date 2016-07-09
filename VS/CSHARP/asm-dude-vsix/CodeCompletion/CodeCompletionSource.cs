@@ -42,7 +42,7 @@ namespace AsmDude {
         }
     }
 
-    public sealed class AsmCompletionSource : ICompletionSource {
+    public sealed class CodeCompletionSource : ICompletionSource {
 
         private readonly ITextBuffer _buffer;
         private readonly ILabelGraph _labelGraph;
@@ -50,7 +50,7 @@ namespace AsmDude {
         private readonly AsmDudeTools _asmDudeTools;
         private bool _disposed = false;
 
-        public AsmCompletionSource(ITextBuffer buffer, ILabelGraph labelGraph) {
+        public CodeCompletionSource(ITextBuffer buffer, ILabelGraph labelGraph) {
             this._buffer = buffer;
             this._labelGraph = labelGraph;
             this._icons = new Dictionary<AsmTokenType, ImageSource>();
@@ -88,10 +88,12 @@ namespace AsmDude {
                 #endregion
 
                 //2] find the start of the current keyword
+                #region
                 SnapshotPoint start = triggerPoint;
                 while ((start > line.Start) && !AsmTools.AsmSourceTools.isSeparatorChar((start - 1).GetChar())) {
                     start -= 1;
                 }
+                #endregion
 
                 //3] get the word that is currently being typed
                 ITrackingSpan applicableTo = snapshot.CreateTrackingSpan(new SnapshotSpan(start, triggerPoint), SpanTrackingMode.EdgeInclusive);
@@ -104,14 +106,15 @@ namespace AsmDude {
                 var t = AsmSourceTools.parseLine(lineStr);
                 Mnemonic mnemonic = t.Item2;
 
-                //AsmDudeToolsStatic.Output("INFO: AsmCompletionSource:AugmentCompletionSession; mnemonic="+ mnemonic);
-
                 if (mnemonic == Mnemonic.UNKNOWN) {
-                    ISet<AsmTokenType> selected = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic, AsmTokenType.Register };
+                    ISet<AsmTokenType> selected = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic /*, AsmTokenType.Register */};
                     completions = this.selectedCompletions(useCapitals, selected);
                 } else {
                     string previousKeyword = AsmDudeToolsStatic.getPreviousKeyword(line.Start, start);
-                    if (this.isJump(previousKeyword)) {
+                    //AsmDudeToolsStatic.Output("INFO: AsmCompletionSource:AugmentCompletionSession; mnemonic=" + mnemonic+ "; previousKeyword="+ previousKeyword);
+
+                    if (AsmSourceTools.isJump(AsmSourceTools.parseMnemonic(previousKeyword))) {
+                        //AsmDudeToolsStatic.Output("INFO: AsmCompletionSource:AugmentCompletionSession; previous keyword is a jump mnemonic");
                         // previous keyword is jump (or call) mnemonic. Suggest "SHORT" or a label
                         completions = this.labelCompletions();
                         completions.Add(new Completion("SHORT", (useCapitals) ? "SHORT" : "short", null, this._icons[AsmTokenType.Misc], ""));
@@ -136,6 +139,7 @@ namespace AsmDude {
                         completions = this.mnemonicOperandCompletions(useCapitals, allowed);
                     }
                 }
+                //AsmDudeToolsStatic.Output("INFO: AsmCompletionSource:AugmentCompletionSession; nCompletions=" + completions.Count);
                 #endregion
                 completionSets.Add(new CompletionSet("Tokens", "Tokens", applicableTo, completions, Enumerable.Empty<Completion>()));
 
@@ -163,10 +167,12 @@ namespace AsmDude {
                 AsmTokenType type = this._asmDudeTools.getTokenType(keyword);
 
                 bool selected = AsmDudeToolsStatic.isArchSwitchedOn(arch);
+                //AsmDudeToolsStatic.Output("INFO: AsmCompletionSource:mnemonicOperandCompletions; keyword=" + keyword +"; selected="+selected +"; arch="+arch);
 
                 if (selected) {
                     switch (type) {
                         case AsmTokenType.Register:
+                            //AsmDudeToolsStatic.Output("INFO: AsmCompletionSource:mnemonicOperandCompletions; rn=" + keyword);
                             Rn regName = RegisterTools.parseRn(keyword);
                             if (AsmSignatureTools.isAllowedReg(regName, allowedOperands)) {
                                 //AsmDudeToolsStatic.Output(string.Format("INFO: AsmCompletionSource:mnemonicOperandCompletions; rn="+ keyword + " is selected"));
@@ -191,7 +197,7 @@ namespace AsmDude {
 
                     // by default, the entry.Key is with capitals
                     string insertionText = (useCapitals) ? keyword : keyword.ToLower();
-                    string archStr = (arch == Arch.NONE) ? "" : " [" + arch + "]";
+                    string archStr = (arch == Arch.NONE) ? "" : " [" + AsmSourceTools.ToString(arch) + "]";
                     string descriptionStr = this._asmDudeTools.getDescription(keyword);
                     descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
                     String displayText = keyword + archStr + descriptionStr;
@@ -327,10 +333,6 @@ namespace AsmDude {
             #endregion
 
             return completions;
-        }
-
-        private bool isJump(string previousKeyword) {
-            return this._asmDudeTools.isJumpMnenomic(previousKeyword);
         }
 
         private void loadIcons() {
