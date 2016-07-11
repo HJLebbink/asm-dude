@@ -67,7 +67,7 @@ namespace AsmDude {
             #endregion
 
             #region load signature store
-            string filename = AsmDudeToolsStatic.getInstallPath() + "Resources" + Path.DirectorySeparatorChar + "mnemonics2.txt";
+            string filename = AsmDudeToolsStatic.getInstallPath() + "Resources" + Path.DirectorySeparatorChar + "mnemonics.txt";
             this._mnemonicStore = new MnemonicStore(filename);
             #endregion
 
@@ -252,28 +252,6 @@ namespace AsmDude {
                     this._type[name] = AsmTokenType.Directive;
                     this._arch[name] = this.retrieveArch(node);
                     this._assembler[name] = this.retrieveAssembler(node);
-                    this._description[name] = this.retrieveDescription(node);
-                }
-            }
-            foreach (XmlNode node in xmlDoc.SelectNodes("//mnemonic")) {
-                var nameAttribute = node.Attributes["name"];
-                if (nameAttribute == null) {
-                    Debug.WriteLine("WARNING: AsmTokenTagger: found mnemonic with no name");
-                } else {
-                    string name = nameAttribute.Value.ToUpper();
-                    //Debug.WriteLine("INFO: AsmTokenTagger: found mnemonic " + name);
-
-                    var typeAttribute = node.Attributes["type"];
-                    if (typeAttribute == null) {
-                        this._type[name] = AsmTokenType.Mnemonic;
-                    } else {
-                        if (typeAttribute.Value.ToUpper().Equals("JUMP")) {
-                            this._type[name] = AsmTokenType.Jump;
-                        } else {
-                            this._type[name] = AsmTokenType.Mnemonic;
-                        }
-                    }
-                    this._arch[name] = this.retrieveArch(node);
                     this._description[name] = this.retrieveDescription(node);
                 }
             }

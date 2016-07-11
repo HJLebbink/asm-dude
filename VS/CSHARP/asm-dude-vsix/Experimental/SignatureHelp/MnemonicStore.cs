@@ -122,7 +122,6 @@ namespace AsmDude.SignatureHelp {
             return sb.ToString();
         }
 
-
         private void load(string filename) {
             //AsmDudeToolsStatic.Output("INFO: SignatureStore:load: filename=" + filename);
             try {
