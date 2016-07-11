@@ -1,4 +1,27 @@
-﻿using System;
+﻿// The MIT License (MIT)
+//
+// Copyright (c) 2016 H.J. Lebbink
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+using System.Collections.Generic;
+using System.Text;
 
 namespace AsmTools {
 
@@ -12,7 +35,9 @@ namespace AsmTools {
         ARCH_386,
         ARCH_486,
 
+        ARCH_3DNOW,
         MMX,
+
         SSE,
         SSE2,
         SSE3,
@@ -34,54 +59,61 @@ namespace AsmTools {
         AVX512VBMI,
         AVX512IFMA,
 
+        #region Specific Processors
+        /// <summary>1993 (also knonw as i586)</summary>
+        PENT,
+        /// <summary>1995 (also known as i686)</summary>
+        P6,
+        /// <summary>Pentium III (SSE, 1999)</summary>
+        KATMAI,
+        /// <summary>Pentium IV (SSE2, 2002)</summary>
+        WILLAMETTE,
+        /// <summary>(SSE3, 2004)</summary>
+        PRESCOTT,
+        /// <summary>(SSE4.2, 2008)</summary>
+        NEHALEM,
+        /// <summary>(AES-NI, 2010)</summary>
+        WESTMERE,
+        /// <summary>(AVX, 2011)</summary>
+        SANDYBRIDGE,
+        FUTURE,
+        #endregion
 
         X64,
-        BMI1,
-        BMI2,
-        P6,
         X86_64,
         IA64,
+        BMI1,
+        BMI2,
         FPU,
         FMA,
         TBM,
+        RTM,
         AMD,
         /// <summary>Privileged instructions</summary>
         PRIV,
 
-        #region Specific Processors
-        PENT,
-        PENTM,
-        NEHALEM,
-        WILLAMETTE,
-        PRESCOTT,
-        WESTMERE,
-        SANDYBRIDGE,
-        KATMAI,
-        FUTURE,
-        #endregion
-
-
-        OPT,
-        NOHLE,
-        ARCH_3DNOW,
         PROT,
         CYRIX,
-        INVPCID,
         CYRIXM,
         VMX,
 
-        RTM,
-        HLE,
         MPX,
         MIB,
         SHA,
 
         #region unused
+
+        HLE,
+        INVPCID,
+        OPT,
+        NOHLE,
+
         SO,
         SW,
         SD,
         SX,
         SY,
+
         ND,
         LONG,
         NOLONG,
@@ -96,8 +128,37 @@ namespace AsmTools {
         #endregion
     }
 
-    public static partial class AsmSourceTools {
+    public static class ArchTools {
 
+        public static bool ignoreArch(Arch arch) {
+            switch (arch) {
+                case Arch.NONE:
+                case Arch.HLE:
+                case Arch.INVPCID:
+                case Arch.OPT:
+                case Arch.NOHLE:
+
+                case Arch.SO:
+                case Arch.SW:
+                case Arch.SD:
+                case Arch.SX:
+                case Arch.SY:
+
+                case Arch.ND:
+                case Arch.LONG:
+                case Arch.NOLONG:
+                case Arch.BND:
+                case Arch.SHA:
+                case Arch.SIZE:
+                case Arch.LOCK:
+                case Arch.UNDOC:
+                case Arch.PREFETCHWT1:
+                case Arch.AR0:
+                case Arch.AR1:
+                    return true;
+                default: return false;
+            }
+        }
         public static Arch parseArch(string str) {
             switch (str.ToUpper()) {
                 case "8086": return Arch.ARCH_8086;
@@ -106,7 +167,9 @@ namespace AsmTools {
                 case "386": return Arch.ARCH_386;
                 case "486": return Arch.ARCH_486;
 
+                case "3DNOW": return Arch.ARCH_3DNOW;
                 case "MMX": return Arch.MMX;
+
                 case "SSE": return Arch.SSE;
                 case "SSE2": return Arch.SSE2;
                 case "SSE3": return Arch.SSE3;
@@ -138,12 +201,10 @@ namespace AsmTools {
                 case "FMA": return Arch.FMA;
                 case "TBM": return Arch.TBM;
                 case "AMD": return Arch.AMD;
-                /// <summary>Privileged instructions</summary>
                 case "PRIV": return Arch.PRIV;
 
                 #region Specific Processors
                 case "PENT": return Arch.PENT;
-                case "PENTM": return Arch.PENTM;
                 case "NEHALEM": return Arch.NEHALEM;
                 case "WILLAMETTE": return Arch.WILLAMETTE;
                 case "PRESCOTT": return Arch.PRESCOTT;
@@ -155,20 +216,20 @@ namespace AsmTools {
 
                 case "OPT": return Arch.OPT;
                 case "NOHLE": return Arch.NOHLE;
-                case "3DNOW": return Arch.ARCH_3DNOW;
                 case "PROT": return Arch.PROT;
                 case "CYRIX": return Arch.CYRIX;
                 case "INVPCID": return Arch.INVPCID;
                 case "CYRIXM": return Arch.CYRIXM;
                 case "VMX": return Arch.VMX;
 
-                case "RTM": return Arch.RTM;
-                case "HLE": return Arch.HLE;
                 case "MPX": return Arch.MPX;
                 case "MIB": return Arch.MIB;
                 case "SHA": return Arch.SHA;
 
                 #region unused
+                case "RTM": return Arch.RTM;
+                case "HLE": return Arch.HLE;
+
                 case "SO": return Arch.SO;
                 case "SW": return Arch.SW;
                 case "SD": return Arch.SD;
@@ -187,6 +248,25 @@ namespace AsmTools {
                 #endregion
             }
             return Arch.NONE;
+        }
+
+        public static string ToString(IEnumerable<Arch> archs) {
+            bool empty = true;
+            StringBuilder sb = new StringBuilder();
+            foreach (Arch arch in archs) {
+                if (!ArchTools.ignoreArch(arch)) {
+                    sb.Append(ArchTools.ToString(arch));
+                    sb.Append(",");
+                    empty = false;
+                }
+            }
+            if (empty) {
+                return "";
+            } else {
+                sb.Length--; // get rid of the last comma;
+                sb.Append("]");
+                return " [" + sb.ToString();
+            }
         }
 
         public static string ToString(Arch arch) {

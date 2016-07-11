@@ -161,8 +161,8 @@ namespace AsmDude.SignatureHelp {
                 foreach (KeyValuePair<Mnemonic, IList<AsmSignatureElement>> pair in this._data) {
                     ISet<Arch> archs = new HashSet<Arch>();
                     foreach (AsmSignatureElement signatureElement in pair.Value) {
-                        foreach (string arch in signatureElement.archStr.Split(',')) {
-                            archs.Add(AsmSourceTools.parseArch(arch));
+                        foreach (Arch arch in signatureElement.arch) {
+                            archs.Add(arch);
                         }
                     }
                     IList<Arch> list = new List<Arch>();

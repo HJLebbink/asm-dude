@@ -76,6 +76,25 @@ namespace AsmDude {
             #region Experiments
 
             if (false) {
+                foreach (Arch arch in Enum.GetValues(typeof(Arch))) {
+                    int counter = 0;
+                    ISet<Mnemonic> usedMnemonics = new HashSet<Mnemonic>();
+                    foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic))) {
+                        if (this.mnemonicStore.getArch(mnemonic).Contains(arch)) {
+                            //AsmDudeToolsStatic.Output("INFO: AsmDudeTools constructor: arch="+arch+"; mnemonic=" + mnemonic);
+                            counter++;
+                            usedMnemonics.Add(mnemonic);
+                        }
+                    }
+                    string str = "";
+                    foreach (Mnemonic mnemonic in usedMnemonics) {
+                        str += mnemonic.ToString() + ",";
+                    }
+                    AsmDudeToolsStatic.Output("INFO: AsmDudeTools constructor: Architecture Option " + arch + " enables mnemonics "+str);
+                }
+            }
+
+            if (false) {
                 foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic))) {
                     string keyword = mnemonic.ToString().ToUpper();
                     if (this._description.ContainsKey(keyword)) {
@@ -124,7 +143,11 @@ namespace AsmDude {
 
         public AsmTokenType getTokenType(string keyword) {
             string keyword2 = keyword.ToUpper();
-            if (AsmSourceTools.parseMnemonic(keyword2) != Mnemonic.UNKNOWN) {
+            Mnemonic mnemonic = AsmSourceTools.parseMnemonic(keyword2);
+            if (mnemonic != Mnemonic.UNKNOWN) {
+                if (AsmSourceTools.isJump(mnemonic)) {
+                    return AsmTokenType.Jump;
+                }
                 return AsmTokenType.Mnemonic;
             } 
             AsmTokenType tokenType;
@@ -274,7 +297,7 @@ namespace AsmDude {
                 if (archAttribute == null) {
                     return Arch.NONE;
                 } else {
-                    return AsmTools.AsmSourceTools.parseArch(archAttribute.Value.ToUpper());
+                    return AsmTools.ArchTools.parseArch(archAttribute.Value.ToUpper());
                 }
             } catch (Exception) {
                 return Arch.NONE;

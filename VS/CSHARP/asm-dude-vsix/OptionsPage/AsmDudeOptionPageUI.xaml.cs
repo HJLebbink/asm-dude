@@ -187,7 +187,7 @@ namespace AsmDude.OptionsPage {
         #endregion Syntax Highlighting
 
         #region Keyword Highlighting
-        public bool useCodeKeywordHighlighting {
+        public bool useKeywordHighlighting {
             get { return (useKeywordHighlighting_UI.IsChecked.HasValue) ? useKeywordHighlighting_UI.IsChecked.Value : false; }
             set { useKeywordHighlighting_UI.IsChecked = value; }
         }
@@ -365,10 +365,6 @@ namespace AsmDude.OptionsPage {
             get { return (useArch_PENT_UI.IsChecked.HasValue) ? useArch_PENT_UI.IsChecked.Value : false; }
             set { useArch_PENT_UI.IsChecked = value; }
         }
-        public bool useArch_PENTM {
-            get { return (useArch_PENTM_UI.IsChecked.HasValue) ? useArch_PENTM_UI.IsChecked.Value : false; }
-            set { useArch_PENTM_UI.IsChecked = value; }
-        }
         public bool useArch_NEHALEM {
             get { return (useArch_NEHALEM_UI.IsChecked.HasValue) ? useArch_NEHALEM_UI.IsChecked.Value : false; }
             set { useArch_NEHALEM_UI.IsChecked = value; }
@@ -398,14 +394,6 @@ namespace AsmDude.OptionsPage {
             get { return (useArch_FUTURE_UI.IsChecked.HasValue) ? useArch_FUTURE_UI.IsChecked.Value : false; }
             set { useArch_FUTURE_UI.IsChecked = value; }
         }
-        public bool useArch_OPT {
-            get { return (useArch_OPT_UI.IsChecked.HasValue) ? useArch_OPT_UI.IsChecked.Value : false; }
-            set { useArch_OPT_UI.IsChecked = value; }
-        }
-        public bool useArch_NOHLE {
-            get { return (useArch_NOHLE_UI.IsChecked.HasValue) ? useArch_NOHLE_UI.IsChecked.Value : false; }
-            set { useArch_NOHLE_UI.IsChecked = value; }
-        }
         public bool useArch_3DNOW {
             get { return (useArch_3DNOW_UI.IsChecked.HasValue) ? useArch_3DNOW_UI.IsChecked.Value : false; }
             set { useArch_3DNOW_UI.IsChecked = value; }
@@ -418,10 +406,6 @@ namespace AsmDude.OptionsPage {
             get { return (useArch_CYRIX_UI.IsChecked.HasValue) ? useArch_CYRIX_UI.IsChecked.Value : false; }
             set { useArch_CYRIX_UI.IsChecked = value; }
         }
-        public bool useArch_INVPCID {
-            get { return (useArch_INVPCID_UI.IsChecked.HasValue) ? useArch_INVPCID_UI.IsChecked.Value : false; }
-            set { useArch_INVPCID_UI.IsChecked = value; }
-        }
         public bool useArch_CYRIXM {
             get { return (useArch_CYRIXM_UI.IsChecked.HasValue) ? useArch_CYRIXM_UI.IsChecked.Value : false; }
             set { useArch_CYRIXM_UI.IsChecked = value; }
@@ -433,10 +417,6 @@ namespace AsmDude.OptionsPage {
         public bool useArch_RTM {
             get { return (useArch_RTM_UI.IsChecked.HasValue) ? useArch_RTM_UI.IsChecked.Value : false; }
             set { useArch_RTM_UI.IsChecked = value; }
-        }
-        public bool useArch_HLE {
-            get { return (useArch_HLE_UI.IsChecked.HasValue) ? useArch_HLE_UI.IsChecked.Value : false; }
-            set { useArch_HLE_UI.IsChecked = value; }
         }
         public bool useArch_MPX {
             get { return (useArch_MPX_UI.IsChecked.HasValue) ? useArch_MPX_UI.IsChecked.Value : false; }

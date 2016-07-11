@@ -48,29 +48,15 @@ namespace AsmTools {
                 if (firstKeyword.Length > 0) {
                     mnemonic = AsmTools.AsmSourceTools.parseMnemonic(firstKeyword);
                     if (mnemonic == Mnemonic.UNKNOWN) {
-                        Console.WriteLine("INFO: ToolsZ3:parseLine: found unknown first Keyword \"" + firstKeyword + "\". Ignoring this line.");
+                        //Console.WriteLine("INFO: ToolsZ3:parseLine: found unknown first Keyword \"" + firstKeyword + "\". Ignoring this line.");
                     } else {
                         //Console.WriteLine("INFO: ToolsZ3:parseLine: found codeStr " + codeStr);
                         if (codeStr.Length > 0) {
                             string argsStr = codeStr.Substring(t.Item2, codeStr.Length - t.Item2);
                             if (argsStr.Length > 0) {
-
-                                string[] argsTmp = argsStr.Split(',');
-                                int j = 0;
-                                for (int i = 0; i < argsTmp.Length; ++i) {
-                                    string arg = argsTmp[i].Trim();
-                                    argsTmp[i] = arg;
-                                    if (arg.Length > 0) ++j;
-                                }
-                                if (j >= argsTmp.Length) {
-                                    for (int i = 0; i < argsTmp.Length; ++i) {
-                                        args = argsTmp;
-                                    }
-                                } else {
-                                    args = new string[j];
-                                    for (int i = 0; i < j; ++i) {
-                                        args[i] = argsTmp[i];
-                                    }
+                                args = argsStr.Split(',');
+                                for (int i = 0; i < args.Length; ++i) {
+                                    args[i] = args[i].Trim();
                                 }
                             }
                         }
@@ -89,7 +75,9 @@ namespace AsmTools {
                 IList<Operand> operands = new List<Operand>(nOperands);
                 for (int i = 0; i < nOperands; ++i) {
                     string opStr = operandStrArray[i];
-                    if (opStr.Length > 0) {
+                    if (opStr.Length == 0) {
+                        operands.Add(null);
+                    } else {
                         operands.Add(new Operand(opStr));
                     }
                 }
@@ -97,6 +85,9 @@ namespace AsmTools {
             }
         }
 
+        /// <summary>
+        /// Split the provided line into keyword positions: first: begin pos; second: end pos; third whether the keyword is the first keyword
+        /// </summary>
         public static IList<Tuple<int, int, bool>> splitIntoKeywordPos(string line) {
             IList<Tuple<int, int, bool>> list = new List<Tuple<int, int, bool>>();
 

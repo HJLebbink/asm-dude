@@ -42,7 +42,7 @@ namespace AsmDude.SignatureHelp {
         private ISignatureHelpBroker _signatureHelpBroker = null;
 
         public void VsTextViewCreated(IVsTextView textViewAdapter) {
-            if (Settings.Default.SignatureHelp_On) {
+            //if (Settings.Default.SignatureHelp_On) {
                 ITextView textView = _adapterService.GetWpfTextView(textViewAdapter);
                 if (textView == null) {
                     return;
@@ -50,7 +50,7 @@ namespace AsmDude.SignatureHelp {
                 textView.Properties.GetOrCreateSingletonProperty(
                      () => new AsmSignatureHelpCommandFilter(textViewAdapter, textView, _signatureHelpBroker)
                 );
-            }
+            //}
         }
     }
 }

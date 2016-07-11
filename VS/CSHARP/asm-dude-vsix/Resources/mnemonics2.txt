@@ -583,7 +583,6 @@ INC	rm8	8086,LOCK	INC r/m8	Increment by 1	INC.html
 INC	rm16	8086,LOCK	INC r/m16	Increment by 1	INC.html
 INC	rm32	386,LOCK	INC r/m32	Increment by 1	INC.html
 INC	rm64	X64,LOCK	INC r/m64	Increment by 1	INC.html
-INCBIN	none	none	INCBIN 	TODO: none	
 INSB	none	186	INSB 	Input from Port to String	INS:INSB:INSW:INSD.html
 INSD	none	386	INSD 	Input from Port to String	INS:INSB:INSW:INSD.html
 INSW	none	186	INSW 	Input from Port to String	INS:INSB:INSW:INSD.html
@@ -762,8 +761,6 @@ MOV	reg32,reg_dreg	386,PRIV,NOLONG	MOV r32, reg_dreg	Move	MOV.html
 MOV	reg64,reg_dreg	X64,PRIV	MOV r64, reg_dreg	Move	MOV.html
 MOV	reg_dreg,reg32	386,PRIV,NOLONG	MOV reg_dreg, r32	Move	MOV.html
 MOV	reg_dreg,reg64	X64,PRIV	MOV reg_dreg, r64	Move	MOV.html
-MOV	reg32,reg_treg	386,NOLONG,ND	MOV r32, reg_treg	Move	MOV.html
-MOV	reg_treg,reg32	386,NOLONG,ND	MOV reg_treg, r32	Move	MOV.html
 MOV	mem,reg8	8086	MOV mem, r8	Move	MOV.html
 MOV	reg8,reg8	8086	MOV r8, r8	Move	MOV.html
 MOV	mem,reg16	8086	MOV mem, r16	Move	MOV.html
@@ -1151,7 +1148,7 @@ ROR	rm64,imm8	X64	ROR r/m64, imm8	Rotate Right	RCL:RCR:ROL:ROR.html
 RDM	none	P6,CYRIX,ND	RDM 	TODO: P6,CYRIX,ND	
 RSDC	reg_sreg,mem80	486,CYRIXM	RSDC reg_sreg, mem80	TODO: 486,CYRIXM	
 RSLDT	mem80	486,CYRIXM	RSLDT mem80	TODO: 486,CYRIXM	
-RSM	none	PENTM	RSM 	Resume from System Management Mode	RSM.html
+RSM	none	PENT	RSM 	Resume from System Management Mode	RSM.html
 RSTS	mem80	486,CYRIXM	RSTS mem80	TODO: 486,CYRIXM	
 SAHF	none	8086	SAHF 	Store AH into Flags	SAHF.html
 SAL	rm8,unity	8086,ND	SAL r/m8, unity	Shift Arithmetic Left	SAL:SAR:SHL:SHR.html
@@ -1237,12 +1234,12 @@ SHL	rm32,imm8	386	SHL r/m32, imm8	Shift Logical Left	SAL:SAR:SHL:SHR.html
 SHL	rm64,unity	X64	SHL r/m64, unity	Shift Logical Left	SAL:SAR:SHL:SHR.html
 SHL	rm64,reg_cl	X64	SHL r/m64, CL	Shift Logical Left	SAL:SAR:SHL:SHR.html
 SHL	rm64,imm8	X64	SHL r/m64, imm8	Shift Logical Left	SAL:SAR:SHL:SHR.html
-SHLD	mem,reg16,imm	3862	SHLD mem, r16, imm	Double Precision Shift Left	SHLD.html
-SHLD	reg16,reg16,imm	3862	SHLD r16, r16, imm	Double Precision Shift Left	SHLD.html
-SHLD	mem,reg32,imm	3862	SHLD mem, r32, imm	Double Precision Shift Left	SHLD.html
-SHLD	reg32,reg32,imm	3862	SHLD r32, r32, imm	Double Precision Shift Left	SHLD.html
-SHLD	mem,reg64,imm	X642	SHLD mem, r64, imm	Double Precision Shift Left	SHLD.html
-SHLD	reg64,reg64,imm	X642	SHLD r64, r64, imm	Double Precision Shift Left	SHLD.html
+SHLD	mem,reg16,imm	386	SHLD mem, r16, imm	Double Precision Shift Left	SHLD.html
+SHLD	reg16,reg16,imm	386	SHLD r16, r16, imm	Double Precision Shift Left	SHLD.html
+SHLD	mem,reg32,imm	386	SHLD mem, r32, imm	Double Precision Shift Left	SHLD.html
+SHLD	reg32,reg32,imm	386	SHLD r32, r32, imm	Double Precision Shift Left	SHLD.html
+SHLD	mem,reg64,imm	X64	SHLD mem, r64, imm	Double Precision Shift Left	SHLD.html
+SHLD	reg64,reg64,imm	X64	SHLD r64, r64, imm	Double Precision Shift Left	SHLD.html
 SHLD	mem,reg16,reg_cl	386	SHLD mem, r16, CL	Double Precision Shift Left	SHLD.html
 SHLD	reg16,reg16,reg_cl	386	SHLD r16, r16, CL	Double Precision Shift Left	SHLD.html
 SHLD	mem,reg32,reg_cl	386	SHLD mem, r32, CL	Double Precision Shift Left	SHLD.html
@@ -1261,12 +1258,12 @@ SHR	rm32,imm8	386	SHR r/m32, imm8	Shift Logical Right	SAL:SAR:SHL:SHR.html
 SHR	rm64,unity	X64	SHR r/m64, unity	Shift Logical Right	SAL:SAR:SHL:SHR.html
 SHR	rm64,reg_cl	X64	SHR r/m64, CL	Shift Logical Right	SAL:SAR:SHL:SHR.html
 SHR	rm64,imm8	X64	SHR r/m64, imm8	Shift Logical Right	SAL:SAR:SHL:SHR.html
-SHRD	mem,reg16,imm	3862	SHRD mem, r16, imm	Double Precision Shift Right	SHRD.html
-SHRD	reg16,reg16,imm	3862	SHRD r16, r16, imm	Double Precision Shift Right	SHRD.html
-SHRD	mem,reg32,imm	3862	SHRD mem, r32, imm	Double Precision Shift Right	SHRD.html
-SHRD	reg32,reg32,imm	3862	SHRD r32, r32, imm	Double Precision Shift Right	SHRD.html
-SHRD	mem,reg64,imm	X642	SHRD mem, r64, imm	Double Precision Shift Right	SHRD.html
-SHRD	reg64,reg64,imm	X642	SHRD r64, r64, imm	Double Precision Shift Right	SHRD.html
+SHRD	mem,reg16,imm	386	SHRD mem, r16, imm	Double Precision Shift Right	SHRD.html
+SHRD	reg16,reg16,imm	386	SHRD r16, r16, imm	Double Precision Shift Right	SHRD.html
+SHRD	mem,reg32,imm	386	SHRD mem, r32, imm	Double Precision Shift Right	SHRD.html
+SHRD	reg32,reg32,imm	386	SHRD r32, r32, imm	Double Precision Shift Right	SHRD.html
+SHRD	mem,reg64,imm	X64	SHRD mem, r64, imm	Double Precision Shift Right	SHRD.html
+SHRD	reg64,reg64,imm	X64	SHRD r64, r64, imm	Double Precision Shift Right	SHRD.html
 SHRD	mem,reg16,reg_cl	386	SHRD mem, r16, CL	Double Precision Shift Right	SHRD.html
 SHRD	reg16,reg16,reg_cl	386	SHRD r16, r16, CL	Double Precision Shift Right	SHRD.html
 SHRD	mem,reg32,reg_cl	386	SHRD mem, r32, CL	Double Precision Shift Right	SHRD.html
@@ -1371,11 +1368,6 @@ TEST	rm64,imm	X64	TEST r/m64, imm	Logical Compare	TEST.html
 TEST	mem,imm8	8086	TEST mem, imm8	Logical Compare	TEST.html
 TEST	mem,imm16	8086	TEST mem, imm16	Logical Compare	TEST.html
 TEST	mem,imm32	386	TEST mem, imm32	Logical Compare	TEST.html
-UD0	none	186,UNDOC	UD0 	TODO: 186,UNDOC	
-UD1	none	186,UNDOC	UD1 	TODO: 186,UNDOC	
-UD2B	none	186,UNDOC,ND	UD2B 	TODO: 186,UNDOC,ND	
-UD2	none	186	UD2 	Undefined Instruction	UD2.html
-UD2A	none	186,ND	UD2A 	TODO: 186,ND	
 UMOV	mem,reg8	386,UNDOC,ND	UMOV mem, r8	TODO: 386,UNDOC,ND	
 UMOV	reg8,reg8	386,UNDOC,ND	UMOV r8, r8	TODO: 386,UNDOC,ND	
 UMOV	mem,reg16	386,UNDOC,ND	UMOV mem, r16	TODO: 386,UNDOC,ND	
@@ -1882,7 +1874,7 @@ PMULHUW	mmxreg,mmxrm	KATMAI,MMX	PMULHUW mmxreg, mmx/mem	Multiply Packed Unsigned
 PMULHUW	xmmreg,xmmrm	WILLAMETTE,SSE2,SO	PMULHUW xmm, xmm/m128	Multiply Packed Unsigned Integers and Store High Result	PMULHUW.html
 PSADBW	mmxreg,mmxrm	KATMAI,MMX	PSADBW mmxreg, mmx/mem	Compute Sum of Absolute Differences	PSADBW.html
 PSADBW	xmmreg,xmmrm	WILLAMETTE,SSE2,SO	PSADBW xmm, xmm/m128	Compute Sum of Absolute Differences	PSADBW.html
-PSHUFW	mmxreg,mmxrm,imm	KATMAI,MMX2	PSHUFW mmxreg, mmx/mem, imm	Shuffle Packed Words	PSHUFW.html
+PSHUFW	mmxreg,mmxrm,imm	KATMAI,MMX	PSHUFW mmxreg, mmx/mem, imm	Shuffle Packed Words	PSHUFW.html
 PF2IW	mmxreg,mmxrm	PENT,3DNOW	PF2IW mmxreg, mmx/mem	TODO: PENT,3DNOW	
 PFNACC	mmxreg,mmxrm	PENT,3DNOW	PFNACC mmxreg, mmx/mem	TODO: PENT,3DNOW	
 PFPNACC	mmxreg,mmxrm	PENT,3DNOW	PFPNACC mmxreg, mmx/mem	TODO: PENT,3DNOW	
@@ -1909,11 +1901,11 @@ PADDQ	xmmreg,xmmrm	WILLAMETTE,SSE2,SO	PADDQ xmm, xmm/m128	Add Packed Quadword In
 PMULUDQ	mmxreg,mmxrm	WILLAMETTE,SSE2,SO	PMULUDQ mmxreg, mmx/mem	Multiply Packed Unsigned Doubleword Integers	PMULUDQ.html
 PMULUDQ	xmmreg,xmmrm	WILLAMETTE,SSE2,SO	PMULUDQ xmm, xmm/m128	Multiply Packed Unsigned Doubleword Integers	PMULUDQ.html
 PSHUFD	xmmreg,xmmreg,imm	WILLAMETTE,SSE2	PSHUFD xmm, xmm, imm	Shuffle Packed Doublewords	PSHUFD.html
-PSHUFD	xmmreg,mem,imm	WILLAMETTE,SSE22	PSHUFD xmm, mem, imm	Shuffle Packed Doublewords	PSHUFD.html
+PSHUFD	xmmreg,mem,imm	WILLAMETTE,SSE2	PSHUFD xmm, mem, imm	Shuffle Packed Doublewords	PSHUFD.html
 PSHUFHW	xmmreg,xmmreg,imm	WILLAMETTE,SSE2	PSHUFHW xmm, xmm, imm	Shuffle Packed High Words	PSHUFHW.html
-PSHUFHW	xmmreg,mem,imm	WILLAMETTE,SSE22	PSHUFHW xmm, mem, imm	Shuffle Packed High Words	PSHUFHW.html
+PSHUFHW	xmmreg,mem,imm	WILLAMETTE,SSE2	PSHUFHW xmm, mem, imm	Shuffle Packed High Words	PSHUFHW.html
 PSHUFLW	xmmreg,xmmreg,imm	WILLAMETTE,SSE2	PSHUFLW xmm, xmm, imm	Shuffle Packed Low Words	PSHUFLW.html
-PSHUFLW	xmmreg,mem,imm	WILLAMETTE,SSE22	PSHUFLW xmm, mem, imm	Shuffle Packed Low Words	PSHUFLW.html
+PSHUFLW	xmmreg,mem,imm	WILLAMETTE,SSE2	PSHUFLW xmm, mem, imm	Shuffle Packed Low Words	PSHUFLW.html
 PSLLDQ	xmmreg,imm	WILLAMETTE,SSE2,AR1	PSLLDQ xmm, imm	Shift Double Quadword Left Logical	PSLLDQ.html
 PSRLDQ	xmmreg,imm	WILLAMETTE,SSE2,AR1	PSRLDQ xmm, imm	Shift Double Quadword Right Logical	PSRLDQ.html
 PSUBQ	mmxreg,mmxrm	WILLAMETTE,SSE2,SO	PSUBQ mmxreg, mmx/mem	Subtract Packed Quadword Integers	PSUBQ.html

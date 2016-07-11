@@ -78,7 +78,7 @@ namespace AsmDude.SignatureHelp {
         #endregion
 
         mem_offs,
-        reg_sreg, reg_creg, reg_dreg, reg_treg,
+        reg_sreg, reg_creg, reg_dreg,
         reg32na
     }
 
@@ -213,7 +213,6 @@ namespace AsmDude.SignatureHelp {
                 case "REG_SREG": return AsmSignatureEnum.reg_sreg;
                 case "REG_CREG": return AsmSignatureEnum.reg_creg;
                 case "REG_DREG": return AsmSignatureEnum.reg_dreg;
-                case "REG_TREG": return AsmSignatureEnum.reg_treg;
                 case "REG32NA": return AsmSignatureEnum.reg32na;
                 case "MEM_OFFS": return AsmSignatureEnum.mem_offs;
 
@@ -301,7 +300,6 @@ namespace AsmDude.SignatureHelp {
                 case AsmSignatureEnum.reg_sreg: return "segment register";
                 case AsmSignatureEnum.reg_creg: return "control register";
                 case AsmSignatureEnum.reg_dreg: return "debug register";
-                case AsmSignatureEnum.reg_treg: return "trace register";
                 case AsmSignatureEnum.reg32na: return "reg32na";
                 default:
                     AsmDudeToolsStatic.Output("WARNING: SignatureStore:getDoc: add " + operandType);
@@ -323,6 +321,119 @@ namespace AsmDude.SignatureHelp {
                     if (i < nOperands - 1) sb.Append(concat);
                 }
                 return sb.ToString();
+            }
+        }
+
+        public static string ToString(AsmSignatureEnum operandType) {
+            switch (operandType) {
+                case AsmSignatureEnum.UNKNOWN: return "unknown";
+                case AsmSignatureEnum.MEM: return "mem";
+                case AsmSignatureEnum.MEM8: return "mem8";
+                case AsmSignatureEnum.MEM16: return "mem16";
+                case AsmSignatureEnum.MEM32: return "mem32";
+                case AsmSignatureEnum.MEM64: return "mem64";
+                case AsmSignatureEnum.MEM80: return "mem80";
+                case AsmSignatureEnum.MEM128: return "mem128";
+                case AsmSignatureEnum.MEM256: return "mem256";
+                case AsmSignatureEnum.MEM512: return "mem512";
+
+                case AsmSignatureEnum.REG8: return "r8";
+                case AsmSignatureEnum.REG16: return "r16";
+                case AsmSignatureEnum.REG32: return "r32";
+                case AsmSignatureEnum.REG64: return "r64";
+                case AsmSignatureEnum.REG_AL: return "AL";
+                case AsmSignatureEnum.REG_AX: return "AX";
+                case AsmSignatureEnum.REG_EAX: return "EAX";
+                case AsmSignatureEnum.REG_RAX: return "RAX";
+                case AsmSignatureEnum.REG_CL: return "CL";
+                case AsmSignatureEnum.REG_CX: return "CX";
+                case AsmSignatureEnum.REG_ECX: return "ECX";
+                case AsmSignatureEnum.REG_RCX: return "RCX";
+                case AsmSignatureEnum.REG_DX: return "DX";
+                case AsmSignatureEnum.REG_EDX: return "EDX";
+                case AsmSignatureEnum.REG_CS: return "CS";
+                case AsmSignatureEnum.REG_DS: return "DS";
+                case AsmSignatureEnum.REG_ES: return "ES";
+                case AsmSignatureEnum.REG_SS: return "SS";
+                case AsmSignatureEnum.REG_FS: return "FS";
+                case AsmSignatureEnum.REG_GS: return "GS";
+                case AsmSignatureEnum.IMM: return "imm";
+                case AsmSignatureEnum.IMM8: return "imm8";
+                case AsmSignatureEnum.IMM16: return "imm16";
+                case AsmSignatureEnum.IMM32: return "imm32";
+                case AsmSignatureEnum.IMM64: return "imm64";
+                case AsmSignatureEnum.imm_imm: return "imm:imm";
+                case AsmSignatureEnum.imm16_imm: return "imm16:imm";
+                case AsmSignatureEnum.imm_imm16: return "imm:imm16";
+                case AsmSignatureEnum.imm32_imm: return "imm32:imm";
+                case AsmSignatureEnum.imm_imm32: return "imm:imm32";
+                case AsmSignatureEnum.RM8: return "r/m8";
+                case AsmSignatureEnum.RM16: return "r/m16";
+                case AsmSignatureEnum.RM32: return "r/m32";
+                case AsmSignatureEnum.RM64: return "r/m64";
+                case AsmSignatureEnum.sbyteword: return "sbyteword";
+                case AsmSignatureEnum.sbytedword: return "sbytedword";
+                case AsmSignatureEnum.sbyteword16: return "sbyteword16";
+                case AsmSignatureEnum.sbytedword16: return "sbytedword16";
+                case AsmSignatureEnum.sbytedword32: return "sbytedword32";
+                case AsmSignatureEnum.sbytedword64: return "sbytedword64";
+                case AsmSignatureEnum.udword: return "udword";
+                case AsmSignatureEnum.sdword: return "sdword";
+                case AsmSignatureEnum.near: return "near";
+                case AsmSignatureEnum.far: return "far";
+                case AsmSignatureEnum.short_ENUM: return "short";
+                case AsmSignatureEnum.unity: return "unity 1";
+                case AsmSignatureEnum.mask: return "mask";
+                case AsmSignatureEnum.z: return "z";
+                case AsmSignatureEnum.er: return "er";
+                case AsmSignatureEnum.REG_XMM0: return "XMM0";
+                case AsmSignatureEnum.xmmreg: return "xmm";
+                case AsmSignatureEnum.ymmreg: return "ymm";
+                case AsmSignatureEnum.zmmreg: return "zmm";
+                case AsmSignatureEnum.XMMRM: return "xmm/m128";
+                case AsmSignatureEnum.XMMRM8: return "xmm/m8";
+                case AsmSignatureEnum.XMMRM16: return "xmm/m16";
+                case AsmSignatureEnum.XMMRM32: return "xmm/m32";
+                case AsmSignatureEnum.XMMRM64: return "xmm/m64";
+                case AsmSignatureEnum.XMMRM128: return "xmm/m128";
+                case AsmSignatureEnum.YMMRM: return "ymm/m256";
+                case AsmSignatureEnum.YMMRM256: return "ymm/m256";
+                case AsmSignatureEnum.ZMMRM512: return "zmm/m512";
+
+                case AsmSignatureEnum.xmem32: return "xmem32";
+                case AsmSignatureEnum.xmem64: return "xmem64";
+                case AsmSignatureEnum.ymem32: return "ymem32";
+                case AsmSignatureEnum.ymem64: return "ymem64";
+                case AsmSignatureEnum.zmem32: return "zmem32";
+                case AsmSignatureEnum.zmem64: return "zmem64";
+
+                case AsmSignatureEnum.krm8: return "krm8";
+                case AsmSignatureEnum.krm16: return "krm16";
+                case AsmSignatureEnum.krm32: return "krm32";
+                case AsmSignatureEnum.krm64: return "krm64";
+
+                case AsmSignatureEnum.b32: return "b32";
+                case AsmSignatureEnum.b64: return "b32";
+                case AsmSignatureEnum.mem_offs: return "mem_offs";
+                case AsmSignatureEnum.reg_sreg: return "segment register";
+                case AsmSignatureEnum.reg_creg: return "control register";
+                case AsmSignatureEnum.reg_dreg: return "debug register";
+                case AsmSignatureEnum.reg32na: return "reg32na";
+
+                case AsmSignatureEnum.MMXREG: return "mmx register";
+                case AsmSignatureEnum.MMXRM: return "mmx/mem";
+                case AsmSignatureEnum.bndreg: return "bound register";
+
+                case AsmSignatureEnum.fpureg: return "fpureg";
+                case AsmSignatureEnum.to: return "to";
+                case AsmSignatureEnum.fpu0: return "FPU0";
+
+                case AsmSignatureEnum.kreg: return "kreg";
+                case AsmSignatureEnum.sae: return "sae";
+
+                default:
+                    AsmDudeToolsStatic.Output("WARNING: AsmSignatureTools:ToString: " + operandType);
+                    return operandType.ToString();
             }
         }
 
@@ -415,7 +526,6 @@ namespace AsmDude.SignatureHelp {
                 case AsmSignatureEnum.reg_sreg: return (op.isReg && (RegisterTools.isSegmentRegister(op.rn)));
                 case AsmSignatureEnum.reg_creg: return (op.isReg && (RegisterTools.isControlRegister(op.rn)));
                 case AsmSignatureEnum.reg_dreg: return (op.isReg && (RegisterTools.isDebugRegister(op.rn)));
-                case AsmSignatureEnum.reg_treg: return true;
                 case AsmSignatureEnum.bndreg: return (op.isReg && (RegisterTools.isBoundRegister(op.rn)));
                 case AsmSignatureEnum.reg32na: return true;
 
@@ -585,120 +695,5 @@ namespace AsmDude.SignatureHelp {
             return false;
         }
 
-        public static string ToString(AsmSignatureEnum operandType) {
-            switch (operandType) {
-                case AsmSignatureEnum.UNKNOWN: return "unknown";
-                case AsmSignatureEnum.MEM: return "mem";
-                case AsmSignatureEnum.MEM8: return "mem8";
-                case AsmSignatureEnum.MEM16: return "mem16";
-                case AsmSignatureEnum.MEM32: return "mem32";
-                case AsmSignatureEnum.MEM64: return "mem64";
-                case AsmSignatureEnum.MEM80: return "mem80";
-                case AsmSignatureEnum.MEM128: return "mem128";
-                case AsmSignatureEnum.MEM256: return "mem256";
-                case AsmSignatureEnum.MEM512: return "mem512";
-
-                case AsmSignatureEnum.REG8: return "r8";
-                case AsmSignatureEnum.REG16: return "r16";
-                case AsmSignatureEnum.REG32: return "r32";
-                case AsmSignatureEnum.REG64: return "r64";
-                case AsmSignatureEnum.REG_AL: return "AL";
-                case AsmSignatureEnum.REG_AX: return "AX";
-                case AsmSignatureEnum.REG_EAX: return "EAX";
-                case AsmSignatureEnum.REG_RAX: return "RAX";
-                case AsmSignatureEnum.REG_CL: return "CL";
-                case AsmSignatureEnum.REG_CX: return "CX";
-                case AsmSignatureEnum.REG_ECX: return "ECX";
-                case AsmSignatureEnum.REG_RCX: return "RCX";
-                case AsmSignatureEnum.REG_DX: return "DX";
-                case AsmSignatureEnum.REG_EDX: return "EDX";
-                case AsmSignatureEnum.REG_CS: return "CS";
-                case AsmSignatureEnum.REG_DS: return "DS";
-                case AsmSignatureEnum.REG_ES: return "ES";
-                case AsmSignatureEnum.REG_SS: return "SS";
-                case AsmSignatureEnum.REG_FS: return "FS";
-                case AsmSignatureEnum.REG_GS: return "GS";
-                case AsmSignatureEnum.IMM: return "imm";
-                case AsmSignatureEnum.IMM8: return "imm8";
-                case AsmSignatureEnum.IMM16: return "imm16";
-                case AsmSignatureEnum.IMM32: return "imm32";
-                case AsmSignatureEnum.IMM64: return "imm64";
-                case AsmSignatureEnum.imm_imm: return "imm:imm";
-                case AsmSignatureEnum.imm16_imm: return "imm16:imm";
-                case AsmSignatureEnum.imm_imm16: return "imm:imm16";
-                case AsmSignatureEnum.imm32_imm: return "imm32:imm";
-                case AsmSignatureEnum.imm_imm32: return "imm:imm32";
-                case AsmSignatureEnum.RM8: return "r/m8";
-                case AsmSignatureEnum.RM16: return "r/m16";
-                case AsmSignatureEnum.RM32: return "r/m32";
-                case AsmSignatureEnum.RM64: return "r/m64";
-                case AsmSignatureEnum.sbyteword: return "sbyteword";
-                case AsmSignatureEnum.sbytedword: return "sbytedword";
-                case AsmSignatureEnum.sbyteword16: return "sbyteword16";
-                case AsmSignatureEnum.sbytedword16: return "sbytedword16";
-                case AsmSignatureEnum.sbytedword32: return "sbytedword32";
-                case AsmSignatureEnum.sbytedword64: return "sbytedword64";
-                case AsmSignatureEnum.udword: return "udword";
-                case AsmSignatureEnum.sdword: return "sdword";
-                case AsmSignatureEnum.near: return "near";
-                case AsmSignatureEnum.far: return "far";
-                case AsmSignatureEnum.short_ENUM: return "short";
-                case AsmSignatureEnum.unity: return "unity";
-                case AsmSignatureEnum.mask: return "mask";
-                case AsmSignatureEnum.z: return "z";
-                case AsmSignatureEnum.er: return "er";
-                case AsmSignatureEnum.REG_XMM0: return "XMM0";
-                case AsmSignatureEnum.xmmreg: return "xmm";
-                case AsmSignatureEnum.ymmreg: return "ymm";
-                case AsmSignatureEnum.zmmreg: return "zmm";
-                case AsmSignatureEnum.XMMRM: return "xmm/m128";
-                case AsmSignatureEnum.XMMRM8: return "xmm/m8";
-                case AsmSignatureEnum.XMMRM16: return "xmm/m16";
-                case AsmSignatureEnum.XMMRM32: return "xmm/m32";
-                case AsmSignatureEnum.XMMRM64: return "xmm/m64";
-                case AsmSignatureEnum.XMMRM128: return "xmm/m128";
-                case AsmSignatureEnum.YMMRM: return "ymm/m256";
-                case AsmSignatureEnum.YMMRM256: return "ymm/m256";
-                case AsmSignatureEnum.ZMMRM512: return "zmm/m512";
-
-                case AsmSignatureEnum.xmem32: return "xmem32";
-                case AsmSignatureEnum.xmem64: return "xmem64";
-                case AsmSignatureEnum.ymem32: return "ymem32";
-                case AsmSignatureEnum.ymem64: return "ymem64";
-                case AsmSignatureEnum.zmem32: return "zmem32";
-                case AsmSignatureEnum.zmem64: return "zmem64";
-
-                case AsmSignatureEnum.krm8: return "krm8";
-                case AsmSignatureEnum.krm16: return "krm16";
-                case AsmSignatureEnum.krm32: return "krm32";
-                case AsmSignatureEnum.krm64: return "krm64";
-
-                case AsmSignatureEnum.b32: return "b32";
-                case AsmSignatureEnum.b64: return "b32";
-                case AsmSignatureEnum.mem_offs: return "mem_offs";
-                case AsmSignatureEnum.reg_sreg: return "segment register";
-                case AsmSignatureEnum.reg_creg: return "control register";
-                case AsmSignatureEnum.reg_dreg: return "debug register";
-                case AsmSignatureEnum.reg_treg: return "reg_treg";
-                case AsmSignatureEnum.reg32na: return "reg32na";
-
-                case AsmSignatureEnum.MMXREG: return "mmxreg";
-                case AsmSignatureEnum.MMXRM: return "mmx/mem";
-                case AsmSignatureEnum.bndreg: return "bndreg";
-                    
-                case AsmSignatureEnum.fpureg: return "fpureg";
-                case AsmSignatureEnum.to: return "to";
-                case AsmSignatureEnum.fpu0: return "FPU0";
-
-                case AsmSignatureEnum.kreg: return "kreg";
-                case AsmSignatureEnum.sae: return "sae";
-
-
-
-                default:
-                    AsmDudeToolsStatic.Output("WARNING: AsmSignatureTools:ToString: " + operandType);
-                    return operandType.ToString();
-            }
-        }
     }
 }

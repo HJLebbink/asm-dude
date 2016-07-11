@@ -197,7 +197,7 @@ namespace AsmDude {
 
                     // by default, the entry.Key is with capitals
                     string insertionText = (useCapitals) ? keyword : keyword.ToLower();
-                    string archStr = (arch == Arch.NONE) ? "" : " [" + AsmSourceTools.ToString(arch) + "]";
+                    string archStr = (arch == Arch.NONE) ? "" : " [" + ArchTools.ToString(arch) + "]";
                     string descriptionStr = this._asmDudeTools.getDescription(keyword);
                     descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
                     String displayText = keyword + archStr + descriptionStr;
@@ -226,9 +226,10 @@ namespace AsmDude {
         }
 
         private IList<Mnemonic> getAllowedMnemonics(ISet<Arch> selectedArchitectures) {
+            MnemonicStore store = this._asmDudeTools.mnemonicStore;
             IList<Mnemonic> list = new List<Mnemonic>();
             foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic))) {
-                foreach (Arch a in this._asmDudeTools.mnemonicStore.getArch(mnemonic)) {
+                foreach (Arch a in store.getArch(mnemonic)) {
                     if (selectedArchitectures.Contains(a)) {
                         list.Add(mnemonic);
                         break;
@@ -236,22 +237,6 @@ namespace AsmDude {
                 }
             }
             return list;
-        }
-
-        private string archToString(IList<Arch> archs) {
-            int nElements = archs.Count;
-            if (nElements == 0) {
-                return "";
-            } else {
-                StringBuilder sb = new StringBuilder();
-                sb.Append(" [");
-                for (int i = 0; i < nElements; ++i) {
-                    sb.Append(AsmSourceTools.ToString(archs[i]));
-                    if (i < nElements - 1) sb.Append(",");
-                }
-                sb.Append("]");
-                return sb.ToString();
-            }
         }
 
         private SortedSet<Completion> selectedCompletions(bool useCapitals, ISet<AsmTokenType> selectedTypes) {
@@ -274,16 +259,18 @@ namespace AsmDude {
             #endregion
             AssemblerEnum usedAssember = AsmDudeToolsStatic.usedAssembler;
 
-            //Add the completions that are defined in the xml file
             #region
 
             if (selectedTypes.Contains(AsmTokenType.Mnemonic)) {
-                foreach (Mnemonic mnemonic in getAllowedMnemonics(AsmDudeToolsStatic.getArchSwithedOn())) {
+                ISet<Arch> selectedArchs = AsmDudeToolsStatic.getArchSwithedOn();
+                IList<Mnemonic> allowedMnemonics = this.getAllowedMnemonics(selectedArchs);
+                //AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:selectedCompletions; allowedMnemonics.Count=" + allowedMnemonics.Count + "; selectedArchs="+ArchTools.ToString(selectedArchs));
+                foreach (Mnemonic mnemonic in allowedMnemonics) {
 
                     string keyword = mnemonic.ToString();
 
                     string insertionText = (useCapitals) ? keyword : keyword.ToLower();
-                    string archStr = this.archToString(this._asmDudeTools.mnemonicStore.getArch(mnemonic));
+                    string archStr = ArchTools.ToString(this._asmDudeTools.mnemonicStore.getArch(mnemonic));
                     string descriptionStr = this._asmDudeTools.mnemonicStore.getDescription(mnemonic);
                     descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
                     String displayText = keyword + archStr + descriptionStr;
@@ -295,6 +282,7 @@ namespace AsmDude {
                 }
             }
 
+            //Add the completions that are defined in the xml file
             foreach (string keyword in this._asmDudeTools.getKeywords()) {
                 AsmTokenType type = this._asmDudeTools.getTokenType(keyword);
                 if (selectedTypes.Contains(type)) {
@@ -311,14 +299,14 @@ namespace AsmDude {
                                 break;
                         }
                     }
-                    //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:AugmentCompletionSession; keyword={1}; arch={2}; selected={3}", this.ToString(), keyword, arch, selected));
+                    //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:selectedCompletions; keyword={1}; arch={2}; selected={3}", this.ToString(), keyword, arch, selected));
 
                     if (selected) {
                         //Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: name keyword \"" + entry.Key + "\"");
 
                         // by default, the entry.Key is with capitals
                         string insertionText = (useCapitals) ? keyword : keyword.ToLower();
-                        string archStr = (arch == Arch.NONE) ? "" : " [" + AsmSourceTools.ToString(arch) + "]";
+                        string archStr = (arch == Arch.NONE) ? "" : " [" + ArchTools.ToString(arch) + "]";
                         string descriptionStr = this._asmDudeTools.getDescription(keyword);
                         descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
                         String displayText = keyword + archStr + descriptionStr;

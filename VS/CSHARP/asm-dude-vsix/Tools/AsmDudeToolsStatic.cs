@@ -395,7 +395,6 @@ namespace AsmDude.Tools {
                 case Arch.AMD: return Settings.Default.ARCH_AMD;
                 case Arch.PRIV: return Settings.Default.ARCH_PRIV;
                 case Arch.PENT: return Settings.Default.ARCH_PENT;
-                case Arch.PENTM: return Settings.Default.ARCH_PENTM;
                 case Arch.NEHALEM: return Settings.Default.ARCH_NEHALEM;
                 case Arch.WILLAMETTE: return Settings.Default.ARCH_WILLAMETTE;
                 case Arch.PRESCOTT: return Settings.Default.ARCH_PRESCOTT;

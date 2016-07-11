@@ -55,14 +55,14 @@ namespace AsmDude {
             //this.changeFontAutoComplete();
 
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat(" _____           ____        _     \n");
-            sb.AppendFormat("|  _  |___ _____|    \\ _ _ _| |___ \n");
-            sb.AppendFormat("|     |_ -|     |  |  | | | . | -_|\n");
-            sb.AppendFormat("|__|__|___|_|_|_|____/|___|___|___|\n");
-            sb.AppendFormat("INFO: Loaded AsmDude version {0}.\n", typeof(AsmDudePackage).Assembly.GetName().Version);
-            sb.AppendFormat("INFO: Open source assembly extension. Making programming in assembler bearable.\n");
-            sb.AppendFormat("INFO: More info at https://github.com/HJLebbink/asm-dude \n");
-            sb.AppendFormat("----------------------------------");
+            sb.Append(" _____          ____        _     \n");
+            sb.Append("|  _  |___ _____|    \\ _ _ _| |___ \n");
+            sb.Append("|     |_ -|     |  |  | | | . | -_|\n");
+            sb.Append("|__|__|___|_|_|_|____/|___|___|___|\n");
+            sb.Append("INFO: Loaded AsmDude version " + typeof(AsmDudePackage).Assembly.GetName().Version +" ("+ ApplicationInformation.CompileDate.ToString()+")\n");
+            sb.Append("INFO: Open source assembly extension. Making programming in assembler bearable.\n");
+            sb.Append("INFO: More info at https://github.com/HJLebbink/asm-dude \n");
+            sb.Append("----------------------------------");
             AsmDudeToolsStatic.Output(sb.ToString());
         }
 

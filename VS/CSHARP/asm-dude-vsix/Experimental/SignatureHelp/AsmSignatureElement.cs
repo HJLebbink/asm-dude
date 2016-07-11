@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using AsmDude.Tools;
 using AsmTools;
 using System;
 using System.Collections.Generic;
@@ -28,14 +29,13 @@ using System.Text;
 namespace AsmDude.SignatureHelp {
 
     public class AsmSignatureElement {
-        public readonly Mnemonic _mnemonic;
-        public readonly IList<IList<AsmSignatureEnum>> _operands;
+        private readonly Mnemonic _mnemonic;
+        private readonly IList<IList<AsmSignatureEnum>> _operands;
         private readonly IList<Arch> _arch;
 
-        private string _archStr;
         private string _docSignature;
         private string _doc;
-        private string _operandStr;
+//        private string _operandStr;
 
         public AsmSignatureElement(Mnemonic mnem, string operandStr2, string archStr) {
             this._mnemonic = mnem;
@@ -71,8 +71,9 @@ namespace AsmDude.SignatureHelp {
 
         /// <summary>Return true if this Signature Element is allowed in the provided architectures</summary>
         public bool isAllowed(ISet<Arch> selectedArchitectures) {
-            foreach (Arch a in _arch) {
+            foreach (Arch a in this._arch) {
                 if (selectedArchitectures.Contains(a)) {
+                    //AsmDudeToolsStatic.Output("INFO: AsmSignatureElement: isAllowed: selected architectures=" + ArchTools.ToString(selectedArchitectures) + "; arch = " + ArchTools.ToString(_arch));
                     return true;
                 }
             }
@@ -85,23 +86,30 @@ namespace AsmDude.SignatureHelp {
         }
         public string doc { get { return this._doc; } set { this._doc = value; } }
         public string archStr {
-            get { return this._archStr; }
+            get { return ArchTools.ToString(this._arch); }
             set {
-                this._archStr = value;
                 this._arch.Clear();
                 foreach (string arch2 in value.Split(',')) {
-                    this._arch.Add(AsmSourceTools.parseArch(arch2));
+                    this._arch.Add(ArchTools.parseArch(arch2));
                 }
             }
         }
+        public IList<Arch> arch { get { return this._arch; } }
 
         public Mnemonic mnemonic { get { return this._mnemonic; } }
 
         public string operandsStr {
-            get { return this._operandStr; } 
+            get {
+                StringBuilder sb = new StringBuilder();
+                int nOperands = this._operands.Count;
+                for (int i = 0; i < nOperands; ++i) {
+                    sb.Append(AsmSignatureTools.ToString(this._operands[i], "|"));
+                    if (i < nOperands - 1) sb.Append(", ");
+                }
+                return sb.ToString();
+            }
             set {
-                this._operandStr = value;
-                this.operands.Clear();
+                this._operands.Clear();
                 foreach (string operandStr in value.Split(',')) {
                     if (operandStr.Length > 0) {
                         //AsmDudeToolsStatic.Output("INFO: SignatureStore:load: operandStr " + operandStr);
@@ -115,7 +123,7 @@ namespace AsmDude.SignatureHelp {
                             }
                         }
                         if (operandList.Count > 0) {
-                            this.operands.Add(operandList);
+                            this._operands.Add(operandList);
                         }
                     }
                 }
@@ -125,13 +133,7 @@ namespace AsmDude.SignatureHelp {
         public IList<IList<AsmSignatureEnum>> operands { get { return this._operands; } }
 
         public override String ToString() {
-            StringBuilder sb = new StringBuilder(this.mnemonic.ToString() + " ");
-            int nOperands = this._operands.Count;
-            for (int i = 0; i < nOperands; ++i) {
-                sb.Append(AsmSignatureTools.ToString(this._operands[i], "|"));
-                if (i < nOperands - 1) sb.Append(", ");
-            }
-            return sb.ToString();
+            return this.mnemonic.ToString() + " " + this.operandsStr;
         }
     }
 }

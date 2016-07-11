@@ -48,24 +48,24 @@ namespace AsmDude.SignatureHelp {
         /// <param name="operands"></param>
         /// <returns></returns>
         public static IList<AsmSignatureElement> constrainSignatures(
-                IList<AsmSignatureElement> data, 
+                IList<AsmSignatureElement> data,
                 IList<Operand> operands,
-                ISet<Arch> selectedArchitectures) 
-            {
-            if ((operands == null) || (operands.Count == 0)) {
-                return data;
-            } else {
-                IList<AsmSignatureElement> list = new List<AsmSignatureElement>();
-                foreach (AsmSignatureElement se in data) {
-                    bool allowed = true;
+                ISet<Arch> selectedArchitectures) {
 
-                    //1] constrain on architecture
-                    if (!se.isAllowed(selectedArchitectures)) {
-                        allowed = false;
-                    }
+            IList<AsmSignatureElement> list = new List<AsmSignatureElement>();
+            foreach (AsmSignatureElement se in data) {
+                bool allowed = true;
 
-                    //2] constrain on operands
-                    if (allowed) { 
+                //1] constrain on architecture
+                if (!se.isAllowed(selectedArchitectures)) {
+                    allowed = false;
+                }
+
+                //2] constrain on operands
+                if (allowed) {
+                    if ((operands == null) || (operands.Count == 0)) {
+                        // do nothing
+                    } else {
                         for (int i = 0; i < operands.Count; ++i) {
                             Operand op = operands[i];
                             if (op != null) {
@@ -76,16 +76,15 @@ namespace AsmDude.SignatureHelp {
                             }
                         }
                     }
-                    if (allowed) list.Add(se);
                 }
-                return list;
+                if (allowed) list.Add(se);
             }
+            return list;
         }
 
         public void AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures) {
             //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: AugmentSignatureHelpSession");
 
-            if (true) return;
             if (!Settings.Default.SignatureHelp_On) return;
 
             try {
@@ -96,14 +95,15 @@ namespace AsmDude.SignatureHelp {
 
                 ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
                 string lineStr = line.GetText();
-                int positionInLine = position - line.Start;
-                //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: fill: lineStr=" + lineStr+ "; positionInLine=" + positionInLine);
+                //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: AugmentSignatureHelpSession: lineStr=" + lineStr+ "; positionInLine=" + positionInLine);
 
                 var t = AsmSourceTools.parseLine(lineStr);
                 IList<Operand> operands = AsmSourceTools.makeOperands(t.Item3);
                 Mnemonic mnemonic = t.Item2;
 
                 ISet<Arch> selectedArchitectures = AsmDudeToolsStatic.getArchSwithedOn();
+                //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: AugmentSignatureHelpSession: selected architectures=" + ArchTools.ToString(selectedArchitectures));
+
                 foreach (AsmSignatureElement se in AsmSignatureHelpSource.constrainSignatures(this._store.getSignatures(mnemonic), operands, selectedArchitectures)) {
                     signatures.Add(this.createSignature(_buffer, se, applicableToSpan));
                 }
@@ -152,7 +152,8 @@ namespace AsmDude.SignatureHelp {
                 if (i < nOperands - 1) sb.Append(", ");
             }
 
-            AsmSignature sig = new AsmSignature(textBuffer, sb.ToString() + " ["+signatureElement.archStr+"]", signatureElement.doc, null);
+            sb.Append(ArchTools.ToString(signatureElement.arch));
+            AsmSignature sig = new AsmSignature(textBuffer, sb.ToString(), signatureElement.doc, null);
             textBuffer.Changed += new EventHandler<TextContentChangedEventArgs>(sig.OnSubjectBufferChanged);
 
             List<IParameter> paramList = new List<IParameter>();

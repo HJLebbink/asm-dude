@@ -532,66 +532,66 @@
 		<register name='ES' bits='16' arch='8086'>
 			<description>Segment Register (Extra Segment)</description>
 		</register>
-		<register name='FS' bits='16' arch='8086'>
-			<description>Segment Register (General Purpose)</description>
-		</register>
-		<register name='GS' bits='16' arch='8086'>
-			<description>Segment Register (General Purpose)</description>
-		</register>
 		<register name='SS' bits='16' arch='8086'>
 			<description>Segment Register (Stack Segment)</description>
 		</register>
+		<register name='FS' bits='16' arch='386'>
+			<description>Segment Register (General Purpose)</description>
+		</register>
+		<register name='GS' bits='16' arch='386'>
+			<description>Segment Register (General Purpose)</description>
+		</register>
 
-		<register name='CR0' bits='16' arch='186'>
+		<register name='CR0' bits='32' arch='386'>
 			<description>Control Register 0</description>
 		</register>
-		<register name='CR1' bits='16' arch='186'>
+		<register name='CR1' bits='32' arch='386'>
 			<description>Control Register 1</description>
 		</register>
-		<register name='CR2' bits='16' arch='186'>
+		<register name='CR2' bits='32' arch='386'>
 			<description>Control Register 2</description>
 		</register>
-		<register name='CR3' bits='16' arch='186'>
+		<register name='CR3' bits='32' arch='386'>
 			<description>Control Register 3</description>
 		</register>
-		<register name='CR4' bits='16' arch='186'>
+		<register name='CR4' bits='32' arch='386'>
 			<description>Control Register 4</description>
 		</register>
-		<register name='CR5' bits='16' arch='186'>
+		<register name='CR5' bits='32' arch='386'>
 			<description>Control Register 5</description>
 		</register>
-		<register name='CR6' bits='16' arch='186'>
+		<register name='CR6' bits='32' arch='386'>
 			<description>Control Register 6</description>
 		</register>
-		<register name='CR7' bits='16' arch='186'>
+		<register name='CR7' bits='32' arch='386'>
 			<description>Control Register 7</description>
 		</register>
-		<register name='CR8' bits='16' arch='186'>
+		<register name='CR8' bits='64' arch='X64'>
 			<description>Control Register 8</description>
 		</register>
 
-		<register name='DR0' bits='16' arch='186'>
+		<register name='DR0' bits='16' arch='386'>
 			<description>Debug Register 0</description>
 		</register>
-		<register name='DR1' bits='16' arch='186'>
+		<register name='DR1' bits='16' arch='386'>
 			<description>Debug Register 1</description>
 		</register>
-		<register name='DR2' bits='16' arch='186'>
+		<register name='DR2' bits='16' arch='386'>
 			<description>Debug Register 2</description>
 		</register>
-		<register name='DR3' bits='16' arch='186'>
+		<register name='DR3' bits='16' arch='386'>
 			<description>Debug Register 3</description>
 		</register>
-		<register name='DR4' bits='16' arch='186'>
-			<description>Debug Register 4</description>
+		<register name='DR4' bits='16' arch='386'>
+			<description>Debug Register 4 (alias for DR6)</description>
 		</register>
-		<register name='DR5' bits='16' arch='186'>
-			<description>Debug Register 5</description>
+		<register name='DR5' bits='16' arch='386'>
+			<description>Debug Register 5 (alias for DR7)</description>
 		</register>
-		<register name='DR6' bits='16' arch='186'>
+		<register name='DR6' bits='16' arch='386'>
 			<description>Debug Register 6</description>
 		</register>
-		<register name='DR7' bits='16' arch='186'>
+		<register name='DR7' bits='16' arch='386'>
 			<description>Debug Register 7</description>
 		</register>
 
