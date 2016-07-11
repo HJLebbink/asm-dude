@@ -41,13 +41,7 @@ namespace AsmDude.SignatureHelp {
         IMM, IMM8, IMM16, IMM32, IMM64,
         imm_imm, imm16_imm, imm_imm16, imm32_imm, imm_imm32,
 
-
         RM8, RM16, RM32, RM64,
-        sbyteword, sbytedword,
-        sbyteword16, sbytedword16,
-        sbytedword32,
-        sbytedword64,
-        udword, sdword,
 
         near, far, short_ENUM,
         unity,
@@ -79,7 +73,6 @@ namespace AsmDude.SignatureHelp {
 
         mem_offs,
         reg_sreg, reg_creg, reg_dreg,
-        reg32na
     }
 
     public static class AsmSignatureTools {
@@ -139,16 +132,6 @@ namespace AsmDude.SignatureHelp {
                 case "RM16": return AsmSignatureEnum.RM16;
                 case "RM32": return AsmSignatureEnum.RM32;
                 case "RM64": return AsmSignatureEnum.RM64;
-
-                case "SBYTEWORD": return AsmSignatureEnum.sbyteword;
-                case "SBYTEWORD16": return AsmSignatureEnum.sbyteword16;
-
-                case "SBYTEDWORD": return AsmSignatureEnum.sbytedword;
-                case "SBYTEDWORD16": return AsmSignatureEnum.sbytedword16;
-                case "SBYTEDWORD32": return AsmSignatureEnum.sbytedword32;
-                case "SBYTEDWORD64": return AsmSignatureEnum.sbytedword64;
-                case "UDWORD": return AsmSignatureEnum.udword;
-                case "SDWORD": return AsmSignatureEnum.sdword;
 
                 case "NEAR": return AsmSignatureEnum.near;
                 case "FAR": return AsmSignatureEnum.far;
@@ -213,7 +196,6 @@ namespace AsmDude.SignatureHelp {
                 case "REG_SREG": return AsmSignatureEnum.reg_sreg;
                 case "REG_CREG": return AsmSignatureEnum.reg_creg;
                 case "REG_DREG": return AsmSignatureEnum.reg_dreg;
-                case "REG32NA": return AsmSignatureEnum.reg32na;
                 case "MEM_OFFS": return AsmSignatureEnum.mem_offs;
 
                 default:
@@ -267,14 +249,6 @@ namespace AsmDude.SignatureHelp {
                 case AsmSignatureEnum.RM16: return "16-bits register or memory operand";
                 case AsmSignatureEnum.RM32: return "32-bits register or memory operand";
                 case AsmSignatureEnum.RM64: return "64-bits register or memory operand";
-                case AsmSignatureEnum.sbyteword: return "sbyteword constant";
-                case AsmSignatureEnum.sbytedword: return "sbytedword constant";
-                case AsmSignatureEnum.sbyteword16: return "sbyteword16 constant";
-                case AsmSignatureEnum.sbytedword16: return "sbytedword16 constant";
-                case AsmSignatureEnum.sbytedword32: return "sbytedword32 constant";
-                case AsmSignatureEnum.sbytedword64: return "sbytedword64 constant";
-                case AsmSignatureEnum.udword: return "udword constant";
-                case AsmSignatureEnum.sdword: return "sdword constant";
                 case AsmSignatureEnum.near: return "near ptr";
                 case AsmSignatureEnum.far: return "far ptr";
                 case AsmSignatureEnum.short_ENUM: return "short ptr";
@@ -300,7 +274,6 @@ namespace AsmDude.SignatureHelp {
                 case AsmSignatureEnum.reg_sreg: return "segment register";
                 case AsmSignatureEnum.reg_creg: return "control register";
                 case AsmSignatureEnum.reg_dreg: return "debug register";
-                case AsmSignatureEnum.reg32na: return "reg32na";
                 default:
                     AsmDudeToolsStatic.Output("WARNING: SignatureStore:getDoc: add " + operandType);
                     return operandType.ToString();
@@ -371,14 +344,6 @@ namespace AsmDude.SignatureHelp {
                 case AsmSignatureEnum.RM16: return "r/m16";
                 case AsmSignatureEnum.RM32: return "r/m32";
                 case AsmSignatureEnum.RM64: return "r/m64";
-                case AsmSignatureEnum.sbyteword: return "sbyteword";
-                case AsmSignatureEnum.sbytedword: return "sbytedword";
-                case AsmSignatureEnum.sbyteword16: return "sbyteword16";
-                case AsmSignatureEnum.sbytedword16: return "sbytedword16";
-                case AsmSignatureEnum.sbytedword32: return "sbytedword32";
-                case AsmSignatureEnum.sbytedword64: return "sbytedword64";
-                case AsmSignatureEnum.udword: return "udword";
-                case AsmSignatureEnum.sdword: return "sdword";
                 case AsmSignatureEnum.near: return "near";
                 case AsmSignatureEnum.far: return "far";
                 case AsmSignatureEnum.short_ENUM: return "short";
@@ -418,7 +383,6 @@ namespace AsmDude.SignatureHelp {
                 case AsmSignatureEnum.reg_sreg: return "segment register";
                 case AsmSignatureEnum.reg_creg: return "control register";
                 case AsmSignatureEnum.reg_dreg: return "debug register";
-                case AsmSignatureEnum.reg32na: return "reg32na";
 
                 case AsmSignatureEnum.MMXREG: return "mmx register";
                 case AsmSignatureEnum.MMXRM: return "mmx/mem";
@@ -479,25 +443,16 @@ namespace AsmDude.SignatureHelp {
                 case AsmSignatureEnum.IMM32: return (op.isImm && op.nBits == 32);
                 case AsmSignatureEnum.IMM64: return (op.isImm && op.nBits == 64);
 
-                case AsmSignatureEnum.imm_imm: return op.isImm;
-                case AsmSignatureEnum.imm16_imm: return op.isImm;
-                case AsmSignatureEnum.imm_imm16: return op.isImm;
-                case AsmSignatureEnum.imm32_imm: return op.isImm;
-                case AsmSignatureEnum.imm_imm32: return op.isImm;
+                case AsmSignatureEnum.imm_imm: return true;
+                case AsmSignatureEnum.imm16_imm: return true;
+                case AsmSignatureEnum.imm_imm16: return true;
+                case AsmSignatureEnum.imm32_imm: return true;
+                case AsmSignatureEnum.imm_imm32: return true;
 
                 case AsmSignatureEnum.RM8: return ((op.isReg || op.isMem) && op.nBits == 8);
                 case AsmSignatureEnum.RM16: return ((op.isReg || op.isMem) && op.nBits == 16);
                 case AsmSignatureEnum.RM32: return ((op.isReg || op.isMem) && op.nBits == 32);
                 case AsmSignatureEnum.RM64: return ((op.isReg || op.isMem) && op.nBits == 64);
-
-                case AsmSignatureEnum.sbyteword: return (op.isImm);
-                case AsmSignatureEnum.sbytedword: return (op.isImm);
-                case AsmSignatureEnum.sbyteword16: return (op.isImm);
-                case AsmSignatureEnum.sbytedword16: return (op.isImm);
-                case AsmSignatureEnum.sbytedword32: return (op.isImm);
-                case AsmSignatureEnum.sbytedword64: return (op.isImm);
-                case AsmSignatureEnum.udword: return (op.isImm);
-                case AsmSignatureEnum.sdword: return (op.isImm);
 
                 case AsmSignatureEnum.near: return (op.isImm);
                 case AsmSignatureEnum.far: return (op.isImm);
@@ -527,7 +482,6 @@ namespace AsmDude.SignatureHelp {
                 case AsmSignatureEnum.reg_creg: return (op.isReg && (RegisterTools.isControlRegister(op.rn)));
                 case AsmSignatureEnum.reg_dreg: return (op.isReg && (RegisterTools.isDebugRegister(op.rn)));
                 case AsmSignatureEnum.bndreg: return (op.isReg && (RegisterTools.isBoundRegister(op.rn)));
-                case AsmSignatureEnum.reg32na: return true;
 
                 default:
                     AsmDudeToolsStatic.Output("WARNING: AsmSignatureTools:isAllowed: add " + operandType);

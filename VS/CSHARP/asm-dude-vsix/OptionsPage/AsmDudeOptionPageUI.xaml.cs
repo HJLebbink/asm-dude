@@ -32,7 +32,7 @@ namespace AsmDude.OptionsPage {
 
         public AsmDudeOptionsPageUI() {
             InitializeComponent();
-            version_UI.Content = "AsmDude v" + typeof(AsmDudePackage).Assembly.GetName().Version.ToString() + "; compile date: " + ApplicationInformation.CompileDate.ToString();
+            version_UI.Content = "AsmDude v" + typeof(AsmDudePackage).Assembly.GetName().Version.ToString() + " (" + ApplicationInformation.CompileDate.ToString()+")";
         }
 
         #region Asm Documentation
@@ -214,7 +214,6 @@ namespace AsmDude.OptionsPage {
             get { return (useSignatureHelp_UI.IsChecked.HasValue) ? useSignatureHelp_UI.IsChecked.Value : false; }
             set { useSignatureHelp_UI.IsChecked = value; }
         }
-
         public bool useArch_8086 {
             get { return (useArch_8086_UI.IsChecked.HasValue) ? useArch_8086_UI.IsChecked.Value : false; }
             set { useArch_8086_UI.IsChecked = value; }

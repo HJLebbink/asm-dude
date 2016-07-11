@@ -85,6 +85,8 @@ namespace AsmDude.SignatureHelp {
         public void AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures) {
             //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: AugmentSignatureHelpSession");
 
+            if (true) return;
+
             if (!Settings.Default.SignatureHelp_On) return;
 
             try {

@@ -86,6 +86,8 @@
 				<GroupBox Header="Intellisense" BorderBrush="DarkGray" Margin="5" >
 					<Grid VerticalAlignment="Top" Margin="5">
 						<StackPanel VerticalAlignment="Top">
+							<CheckBox x:Name="useCodeCompletion_UI" Content="Enable Code Completion" ToolTip="Code Completion Enabled" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+							<CheckBox x:Name="useSignatureHelp_UI" Content="Enable Signature Help" ToolTip="Signature Help Enabled" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
 							<CheckBox x:Name="showUndefinedLabels_UI" Content="Show undefined labels in error task" ToolTip="Show undefined labels in error task" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
 							<CheckBox x:Name="decorateUndefinedLabels_UI" Content="Decorate undefined labels" ToolTip="Decorate undefined labels with error squiggles"  Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
 							<CheckBox x:Name="showClashingLabels_UI" Content="Show clashing labels in error task" ToolTip="Show clashing labels in error task"  Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
@@ -93,67 +95,81 @@
 						</StackPanel>
 					</Grid>
 				</GroupBox>
-				<GroupBox Header="Code Completion" BorderBrush="DarkGray" Margin="5" >
+				<GroupBox Header="Architectures" BorderBrush="DarkGray" Margin="5" >
 					<Grid VerticalAlignment="Top" Margin="5">
+						
 						<StackPanel VerticalAlignment="Top">
-							<CheckBox x:Name="useCodeCompletion_UI" Content="Enable Code Completion" ToolTip="Code Completion Enabled" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useSignatureHelp_UI" Content="Enable Signature Help" ToolTip="Signature Help Enabled" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-
-							<CheckBox x:Name="useArch_8086_UI" Content="8086" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_186_UI" Content="186" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_286_UI" Content="286" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_386_UI" Content="386" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_486_UI" Content="486" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_3DNOW_UI" Content="3DNOW" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_MMX_UI" Content="MMX" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_SSE_UI" Content="SSE" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_SSE2_UI" Content="SSE2" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_SSE3_UI" Content="SSE3" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_SSSE3_UI" Content="SSSE3" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_SSE41_UI" Content="SSE41" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_SSE42_UI" Content="SSE42" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_SSE4A_UI" Content="SSE4A" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_SSE5_UI" Content="SSE5" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_AVX_UI" Content="AVX" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_AVX2_UI" Content="AVX2" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_AVX512_UI" Content="AVX512" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_AVX512VL_UI" Content="AVX512VL" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_AVX512DQ_UI" Content="AVX512DQ" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_AVX512BW_UI" Content="AVX512BW" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_AVX512ER_UI" Content="AVX512ER" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_AVX512PF_UI" Content="AVX512PF" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_AVX512CD_UI" Content="AVX512CD" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_AVX512VBMI_UI" Content="AVX512VBMI" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_AVX512IFMA_UI" Content="AVX512IFMA" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-
-							<CheckBox x:Name="useArch_PENT_UI" Content="PENT" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_P6_UI" Content="P6" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_KATMAI_UI" Content="KATMAI" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_WILLAMETTE_UI" Content="WILLAMETTE" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_PRESCOTT_UI" Content="PRESCOTT" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_NEHALEM_UI" Content="NEHALEM" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_WESTMERE_UI" Content="WESTMERE" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_SANDYBRIDGE_UI" Content="SANDYBRIDGE" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_FUTURE_UI" Content="FUTURE" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-
-							<CheckBox x:Name="useArch_X64_UI" Content="X64" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_X86_64_UI" Content="X86-64" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_BMI1_UI" Content="BMI1" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_BMI2_UI" Content="BMI2" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_IA64_UI" Content="IA64" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_FPU_UI" Content="FPU" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_FMA_UI" Content="FMA" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_TBM_UI" Content="TBM" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_AMD_UI" Content="AMD" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_PRIV_UI" Content="PRIV" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_PROT_UI" Content="PROT" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_CYRIX_UI" Content="CYRIX" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_CYRIXM_UI" Content="CYRIXM" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_VMX_UI" Content="VMX" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_RTM_UI" Content="RTM" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_MPX_UI" Content="MPX" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_MIB_UI" Content="MIB" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useArch_SHA_UI" Content="SHA" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+							<GroupBox Header="Processors" BorderBrush="DarkGray" Margin="5" >
+								<Grid VerticalAlignment="Top" Margin="5">
+									<StackPanel VerticalAlignment="Top">
+										<CheckBox x:Name="useArch_8086_UI" Content="8086" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_186_UI" Content="186" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_286_UI" Content="286" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_386_UI" Content="386" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_486_UI" Content="486" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_PENT_UI" Content="PENT" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_P6_UI" Content="P6" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_KATMAI_UI" Content="KATMAI" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_WILLAMETTE_UI" Content="WILLAMETTE" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_PRESCOTT_UI" Content="PRESCOTT" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_NEHALEM_UI" Content="NEHALEM" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_WESTMERE_UI" Content="WESTMERE" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_SANDYBRIDGE_UI" Content="SANDYBRIDGE" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_FUTURE_UI" Content="FUTURE" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+									</StackPanel>
+								</Grid>
+							</GroupBox>
+							<GroupBox Header="SIMD" BorderBrush="DarkGray" Margin="5" >
+								<Grid VerticalAlignment="Top" Margin="5">
+									<StackPanel VerticalAlignment="Top">
+										<CheckBox x:Name="useArch_3DNOW_UI" Content="3DNOW" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_MMX_UI" Content="MMX" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_SSE_UI" Content="SSE" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_SSE2_UI" Content="SSE2" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_SSE3_UI" Content="SSE3" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_SSSE3_UI" Content="SSSE3" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_SSE41_UI" Content="SSE41" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_SSE42_UI" Content="SSE42" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_SSE4A_UI" Content="SSE4A" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_SSE5_UI" Content="SSE5" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_AVX_UI" Content="AVX" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_AVX2_UI" Content="AVX2" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_AVX512_UI" Content="AVX512" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_AVX512VL_UI" Content="AVX512VL" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_AVX512DQ_UI" Content="AVX512DQ" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_AVX512BW_UI" Content="AVX512BW" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_AVX512ER_UI" Content="AVX512ER" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_AVX512PF_UI" Content="AVX512PF" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_AVX512CD_UI" Content="AVX512CD" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_AVX512VBMI_UI" Content="AVX512VBMI" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_AVX512IFMA_UI" Content="AVX512IFMA" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+									</StackPanel>
+								</Grid>
+							</GroupBox>
+							<GroupBox Header="Misc" BorderBrush="DarkGray" Margin="5" >
+								<Grid VerticalAlignment="Top" Margin="5">
+									<StackPanel VerticalAlignment="Top">
+										<CheckBox x:Name="useArch_X64_UI" Content="X64" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_X86_64_UI" Content="X86-64" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_BMI1_UI" Content="BMI1" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_BMI2_UI" Content="BMI2" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_IA64_UI" Content="IA64" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_FPU_UI" Content="FPU" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_FMA_UI" Content="FMA" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_TBM_UI" Content="TBM" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_AMD_UI" Content="AMD" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_PRIV_UI" Content="PRIV" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_PROT_UI" Content="PROT" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_CYRIX_UI" Content="CYRIX" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_CYRIXM_UI" Content="CYRIXM" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_VMX_UI" Content="VMX" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_RTM_UI" Content="RTM" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_MPX_UI" Content="MPX" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_MIB_UI" Content="MIB" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+										<CheckBox x:Name="useArch_SHA_UI" Content="SHA" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+									</StackPanel>
+								</Grid>
+							</GroupBox>
 						</StackPanel>
 					</Grid>
 				</GroupBox>

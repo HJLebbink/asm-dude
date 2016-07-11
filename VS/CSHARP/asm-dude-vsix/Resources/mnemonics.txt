@@ -24,23 +24,15 @@ ADC	rm16,imm8	8086,LOCK	ADC r/m16, imm8	Add with Carry	ADC.html
 ADC	rm32,imm8	386,LOCK	ADC r/m32, imm8	Add with Carry	ADC.html
 ADC	rm64,imm8	X64,LOCK	ADC r/m64, imm8	Add with Carry	ADC.html
 ADC	reg_al,imm	8086	ADC AL, imm	Add with Carry	ADC.html
-ADC	reg_ax,sbyteword	8086,ND	ADC AX, sbyteword	Add with Carry	ADC.html
 ADC	reg_ax,imm	8086	ADC AX, imm	Add with Carry	ADC.html
-ADC	reg_eax,sbytedword	386,ND	ADC EAX, sbytedword	Add with Carry	ADC.html
 ADC	reg_eax,imm	386	ADC EAX, imm	Add with Carry	ADC.html
-ADC	reg_rax,sbytedword	X64,ND	ADC RAX, sbytedword	Add with Carry	ADC.html
 ADC	reg_rax,imm	X64	ADC RAX, imm	Add with Carry	ADC.html
 ADC	rm8,imm	8086,LOCK	ADC r/m8, imm	Add with Carry	ADC.html
-ADC	rm16,sbyteword	8086,LOCK,ND	ADC r/m16, sbyteword	Add with Carry	ADC.html
 ADC	rm16,imm	8086,LOCK	ADC r/m16, imm	Add with Carry	ADC.html
-ADC	rm32,sbytedword	386,LOCK,ND	ADC r/m32, sbytedword	Add with Carry	ADC.html
 ADC	rm32,imm	386,LOCK	ADC r/m32, imm	Add with Carry	ADC.html
-ADC	rm64,sbytedword	X64,LOCK,ND	ADC r/m64, sbytedword	Add with Carry	ADC.html
 ADC	rm64,imm	X64,LOCK	ADC r/m64, imm	Add with Carry	ADC.html
 ADC	mem,imm8	8086,LOCK,ND	ADC mem, imm8	Add with Carry	ADC.html
-ADC	mem,sbyteword16	8086,LOCK,ND	ADC mem, sbyteword16	Add with Carry	ADC.html
 ADC	mem,imm16	8086,LOCK	ADC mem, imm16	Add with Carry	ADC.html
-ADC	mem,sbytedword32	386,LOCK,ND	ADC mem, sbytedword32	Add with Carry	ADC.html
 ADC	mem,imm32	386,LOCK	ADC mem, imm32	Add with Carry	ADC.html
 ADC	rm8,imm	8086,LOCK,ND,NOLONG	ADC r/m8, imm	Add with Carry	ADC.html
 ADD	mem,reg8	8086,LOCK	ADD mem, r8	Add	ADD.html
@@ -63,23 +55,15 @@ ADD	rm16,imm8	8086,LOCK	ADD r/m16, imm8	Add	ADD.html
 ADD	rm32,imm8	386,LOCK	ADD r/m32, imm8	Add	ADD.html
 ADD	rm64,imm8	X64,LOCK	ADD r/m64, imm8	Add	ADD.html
 ADD	reg_al,imm	8086	ADD AL, imm	Add	ADD.html
-ADD	reg_ax,sbyteword	8086,ND	ADD AX, sbyteword	Add	ADD.html
 ADD	reg_ax,imm	8086	ADD AX, imm	Add	ADD.html
-ADD	reg_eax,sbytedword	386,ND	ADD EAX, sbytedword	Add	ADD.html
 ADD	reg_eax,imm	386	ADD EAX, imm	Add	ADD.html
-ADD	reg_rax,sbytedword	X64,ND	ADD RAX, sbytedword	Add	ADD.html
 ADD	reg_rax,imm	X64	ADD RAX, imm	Add	ADD.html
 ADD	rm8,imm	8086,LOCK	ADD r/m8, imm	Add	ADD.html
-ADD	rm16,sbyteword	8086,LOCK,ND	ADD r/m16, sbyteword	Add	ADD.html
 ADD	rm16,imm	8086,LOCK	ADD r/m16, imm	Add	ADD.html
-ADD	rm32,sbytedword	386,LOCK,ND	ADD r/m32, sbytedword	Add	ADD.html
 ADD	rm32,imm	386,LOCK	ADD r/m32, imm	Add	ADD.html
-ADD	rm64,sbytedword	X64,LOCK,ND	ADD r/m64, sbytedword	Add	ADD.html
 ADD	rm64,imm	X64,LOCK	ADD r/m64, imm	Add	ADD.html
 ADD	mem,imm8	8086,LOCK	ADD mem, imm8	Add	ADD.html
-ADD	mem,sbyteword16	8086,LOCK,ND	ADD mem, sbyteword16	Add	ADD.html
 ADD	mem,imm16	8086,LOCK	ADD mem, imm16	Add	ADD.html
-ADD	mem,sbytedword32	386,LOCK,ND	ADD mem, sbytedword32	Add	ADD.html
 ADD	mem,imm32	386,LOCK	ADD mem, imm32	Add	ADD.html
 ADD	rm8,imm	8086,LOCK,ND,NOLONG	ADD r/m8, imm	Add	ADD.html
 AND	mem,reg8	8086,LOCK	AND mem, r8	Logical AND	AND.html
@@ -102,23 +86,15 @@ AND	rm16,imm8	8086,LOCK	AND r/m16, imm8	Logical AND	AND.html
 AND	rm32,imm8	386,LOCK	AND r/m32, imm8	Logical AND	AND.html
 AND	rm64,imm8	X64,LOCK	AND r/m64, imm8	Logical AND	AND.html
 AND	reg_al,imm	8086	AND AL, imm	Logical AND	AND.html
-AND	reg_ax,sbyteword	8086,ND	AND AX, sbyteword	Logical AND	AND.html
 AND	reg_ax,imm	8086	AND AX, imm	Logical AND	AND.html
-AND	reg_eax,sbytedword	386,ND	AND EAX, sbytedword	Logical AND	AND.html
 AND	reg_eax,imm	386	AND EAX, imm	Logical AND	AND.html
-AND	reg_rax,sbytedword	X64,ND	AND RAX, sbytedword	Logical AND	AND.html
 AND	reg_rax,imm	X64	AND RAX, imm	Logical AND	AND.html
 AND	rm8,imm	8086,LOCK	AND r/m8, imm	Logical AND	AND.html
-AND	rm16,sbyteword	8086,LOCK,ND	AND r/m16, sbyteword	Logical AND	AND.html
 AND	rm16,imm	8086,LOCK	AND r/m16, imm	Logical AND	AND.html
-AND	rm32,sbytedword	386,LOCK,ND	AND r/m32, sbytedword	Logical AND	AND.html
 AND	rm32,imm	386,LOCK	AND r/m32, imm	Logical AND	AND.html
-AND	rm64,sbytedword	X64,LOCK,ND	AND r/m64, sbytedword	Logical AND	AND.html
 AND	rm64,imm	X64,LOCK	AND r/m64, imm	Logical AND	AND.html
 AND	mem,imm8	8086,LOCK	AND mem, imm8	Logical AND	AND.html
-AND	mem,sbyteword16	8086,LOCK,ND	AND mem, sbyteword16	Logical AND	AND.html
 AND	mem,imm16	8086,LOCK	AND mem, imm16	Logical AND	AND.html
-AND	mem,sbytedword32	386,LOCK,ND	AND mem, sbytedword32	Logical AND	AND.html
 AND	mem,imm32	386,LOCK	AND mem, imm32	Logical AND	AND.html
 AND	rm8,imm	8086,LOCK,ND,NOLONG	AND r/m8, imm	Logical AND	AND.html
 ARPL	mem,reg16	286,PROT,NOLONG	ARPL mem, r16	Adjust RPL Field of Segment Selector	ARPL.html
@@ -234,23 +210,15 @@ CMP	rm16,imm8	8086	CMP r/m16, imm8	Compare Two Operands	CMP.html
 CMP	rm32,imm8	386	CMP r/m32, imm8	Compare Two Operands	CMP.html
 CMP	rm64,imm8	X64	CMP r/m64, imm8	Compare Two Operands	CMP.html
 CMP	reg_al,imm	8086	CMP AL, imm	Compare Two Operands	CMP.html
-CMP	reg_ax,sbyteword	8086,ND	CMP AX, sbyteword	Compare Two Operands	CMP.html
 CMP	reg_ax,imm	8086	CMP AX, imm	Compare Two Operands	CMP.html
-CMP	reg_eax,sbytedword	386,ND	CMP EAX, sbytedword	Compare Two Operands	CMP.html
 CMP	reg_eax,imm	386	CMP EAX, imm	Compare Two Operands	CMP.html
-CMP	reg_rax,sbytedword	X64,ND	CMP RAX, sbytedword	Compare Two Operands	CMP.html
 CMP	reg_rax,imm	X64	CMP RAX, imm	Compare Two Operands	CMP.html
 CMP	rm8,imm	8086	CMP r/m8, imm	Compare Two Operands	CMP.html
-CMP	rm16,sbyteword	8086,ND	CMP r/m16, sbyteword	Compare Two Operands	CMP.html
 CMP	rm16,imm	8086	CMP r/m16, imm	Compare Two Operands	CMP.html
-CMP	rm32,sbytedword	386,ND	CMP r/m32, sbytedword	Compare Two Operands	CMP.html
 CMP	rm32,imm	386	CMP r/m32, imm	Compare Two Operands	CMP.html
-CMP	rm64,sbytedword	X64,ND	CMP r/m64, sbytedword	Compare Two Operands	CMP.html
 CMP	rm64,imm	X64	CMP r/m64, imm	Compare Two Operands	CMP.html
 CMP	mem,imm8	8086	CMP mem, imm8	Compare Two Operands	CMP.html
-CMP	mem,sbyteword16	8086,ND	CMP mem, sbyteword16	Compare Two Operands	CMP.html
 CMP	mem,imm16	8086	CMP mem, imm16	Compare Two Operands	CMP.html
-CMP	mem,sbytedword32	386,ND	CMP mem, sbytedword32	Compare Two Operands	CMP.html
 CMP	mem,imm32	386	CMP mem, imm32	Compare Two Operands	CMP.html
 CMP	rm8,imm	8086,ND,NOLONG	CMP r/m8, imm	Compare Two Operands	CMP.html
 CMPSB	none	8086	CMPSB 	Compare String Operands	CMPS:CMPSB:CMPSW:CMPSD:CMPSQ.html
@@ -536,39 +504,30 @@ IMUL	reg32,reg32	386	IMUL r32, r32	Signed Multiply	IMUL.html
 IMUL	reg64,mem	X64	IMUL r64, mem	Signed Multiply	IMUL.html
 IMUL	reg64,reg64	X64	IMUL r64, r64	Signed Multiply	IMUL.html
 IMUL	reg16,mem,imm8	186	IMUL r16, mem, imm8	Signed Multiply	IMUL.html
-IMUL	reg16,mem,sbyteword	186,ND	IMUL r16, mem, sbyteword	Signed Multiply	IMUL.html
 IMUL	reg16,mem,imm16	186	IMUL r16, mem, imm16	Signed Multiply	IMUL.html
 IMUL	reg16,mem,imm	186,ND	IMUL r16, mem, imm	Signed Multiply	IMUL.html
 IMUL	reg16,reg16,imm8	186	IMUL r16, r16, imm8	Signed Multiply	IMUL.html
-IMUL	reg16,reg16,sbyteword	186,ND	IMUL r16, r16, sbyteword	Signed Multiply	IMUL.html
 IMUL	reg16,reg16,imm16	186	IMUL r16, r16, imm16	Signed Multiply	IMUL.html
 IMUL	reg16,reg16,imm	186,ND	IMUL r16, r16, imm	Signed Multiply	IMUL.html
 IMUL	reg32,mem,imm8	386	IMUL r32, mem, imm8	Signed Multiply	IMUL.html
-IMUL	reg32,mem,sbytedword	386,ND	IMUL r32, mem, sbytedword	Signed Multiply	IMUL.html
 IMUL	reg32,mem,imm32	386	IMUL r32, mem, imm32	Signed Multiply	IMUL.html
 IMUL	reg32,mem,imm	386,ND	IMUL r32, mem, imm	Signed Multiply	IMUL.html
 IMUL	reg32,reg32,imm8	386	IMUL r32, r32, imm8	Signed Multiply	IMUL.html
-IMUL	reg32,reg32,sbytedword	386,ND	IMUL r32, r32, sbytedword	Signed Multiply	IMUL.html
 IMUL	reg32,reg32,imm32	386	IMUL r32, r32, imm32	Signed Multiply	IMUL.html
 IMUL	reg32,reg32,imm	386,ND	IMUL r32, r32, imm	Signed Multiply	IMUL.html
 IMUL	reg64,mem,imm8	X64	IMUL r64, mem, imm8	Signed Multiply	IMUL.html
-IMUL	reg64,mem,sbytedword	X64,ND	IMUL r64, mem, sbytedword	Signed Multiply	IMUL.html
 IMUL	reg64,mem,imm32	X64	IMUL r64, mem, imm32	Signed Multiply	IMUL.html
 IMUL	reg64,mem,imm	X64,ND	IMUL r64, mem, imm	Signed Multiply	IMUL.html
 IMUL	reg64,reg64,imm8	X64	IMUL r64, r64, imm8	Signed Multiply	IMUL.html
-IMUL	reg64,reg64,sbytedword	X64,ND	IMUL r64, r64, sbytedword	Signed Multiply	IMUL.html
 IMUL	reg64,reg64,imm32	X64	IMUL r64, r64, imm32	Signed Multiply	IMUL.html
 IMUL	reg64,reg64,imm	X64,ND	IMUL r64, r64, imm	Signed Multiply	IMUL.html
 IMUL	reg16,imm8	186	IMUL r16, imm8	Signed Multiply	IMUL.html
-IMUL	reg16,sbyteword	186,ND	IMUL r16, sbyteword	Signed Multiply	IMUL.html
 IMUL	reg16,imm16	186	IMUL r16, imm16	Signed Multiply	IMUL.html
 IMUL	reg16,imm	186,ND	IMUL r16, imm	Signed Multiply	IMUL.html
 IMUL	reg32,imm8	386	IMUL r32, imm8	Signed Multiply	IMUL.html
-IMUL	reg32,sbytedword	386,ND	IMUL r32, sbytedword	Signed Multiply	IMUL.html
 IMUL	reg32,imm32	386	IMUL r32, imm32	Signed Multiply	IMUL.html
 IMUL	reg32,imm	386,ND	IMUL r32, imm	Signed Multiply	IMUL.html
 IMUL	reg64,imm8	X64	IMUL r64, imm8	Signed Multiply	IMUL.html
-IMUL	reg64,sbytedword	X64,ND	IMUL r64, sbytedword	Signed Multiply	IMUL.html
 IMUL	reg64,imm32	X64	IMUL r64, imm32	Signed Multiply	IMUL.html
 IMUL	reg64,imm	X64,ND	IMUL r64, imm	Signed Multiply	IMUL.html
 IN	reg_al,imm	8086	IN AL, imm	Input from Port	IN.html
@@ -587,10 +546,6 @@ INSB	none	186	INSB 	Input from Port to String	INS:INSB:INSW:INSD.html
 INSD	none	386	INSD 	Input from Port to String	INS:INSB:INSW:INSD.html
 INSW	none	186	INSW 	Input from Port to String	INS:INSB:INSW:INSD.html
 INT	imm	8086	INT imm	Call to Interrupt Procedure	INT n:INTO:INT 3.html
-INT01	none	386,ND	INT01 	TODO: 386,ND	
-INT1	none	386	INT1 	TODO: 386	
-INT03	none	8086,ND	INT03 	TODO: 8086,ND	
-INT3	none	8086	INT3 	TODO: 8086	
 INTO	none	8086,NOLONG	INTO 	Call to Interrupt Procedure	INT n:INTO:INT 3.html
 INVD	none	486,PRIV	INVD 	Invalidate Internal Caches	INVD.html
 INVPCID	reg32,mem128	FUTURE,INVPCID,PRIV,NOLONG	INVPCID r32, mem128	Invalidate Process-Context Identifier	INVPCID.html
@@ -780,8 +735,6 @@ MOV	reg64,reg64	X64	MOV r64, r64	Move	MOV.html
 MOV	reg8,imm	8086	MOV r8, imm	Move	MOV.html
 MOV	reg16,imm	8086	MOV r16, imm	Move	MOV.html
 MOV	reg32,imm	386	MOV r32, imm	Move	MOV.html
-MOV	reg64,udword	X64,OPT,ND	MOV r64, udword	Move	MOV.html
-MOV	reg64,sdword	X64,OPT,ND	MOV r64, sdword	Move	MOV.html
 MOV	reg64,imm	X64	MOV r64, imm	Move	MOV.html
 MOV	rm8,imm	8086	MOV r/m8, imm	Move	MOV.html
 MOV	rm16,imm	8086	MOV r/m16, imm	Move	MOV.html
@@ -871,23 +824,15 @@ OR	rm16,imm8	8086,LOCK	OR r/m16, imm8	Logical Inclusive OR	OR.html
 OR	rm32,imm8	386,LOCK	OR r/m32, imm8	Logical Inclusive OR	OR.html
 OR	rm64,imm8	X64,LOCK	OR r/m64, imm8	Logical Inclusive OR	OR.html
 OR	reg_al,imm	8086	OR AL, imm	Logical Inclusive OR	OR.html
-OR	reg_ax,sbyteword	8086,ND	OR AX, sbyteword	Logical Inclusive OR	OR.html
 OR	reg_ax,imm	8086	OR AX, imm	Logical Inclusive OR	OR.html
-OR	reg_eax,sbytedword	386,ND	OR EAX, sbytedword	Logical Inclusive OR	OR.html
 OR	reg_eax,imm	386	OR EAX, imm	Logical Inclusive OR	OR.html
-OR	reg_rax,sbytedword	X64,ND	OR RAX, sbytedword	Logical Inclusive OR	OR.html
 OR	reg_rax,imm	X64	OR RAX, imm	Logical Inclusive OR	OR.html
 OR	rm8,imm	8086,LOCK	OR r/m8, imm	Logical Inclusive OR	OR.html
-OR	rm16,sbyteword	8086,LOCK,ND	OR r/m16, sbyteword	Logical Inclusive OR	OR.html
 OR	rm16,imm	8086,LOCK	OR r/m16, imm	Logical Inclusive OR	OR.html
-OR	rm32,sbytedword	386,LOCK,ND	OR r/m32, sbytedword	Logical Inclusive OR	OR.html
 OR	rm32,imm	386,LOCK	OR r/m32, imm	Logical Inclusive OR	OR.html
-OR	rm64,sbytedword	X64,LOCK,ND	OR r/m64, sbytedword	Logical Inclusive OR	OR.html
 OR	rm64,imm	X64,LOCK	OR r/m64, imm	Logical Inclusive OR	OR.html
 OR	mem,imm8	8086,LOCK	OR mem, imm8	Logical Inclusive OR	OR.html
-OR	mem,sbyteword16	8086,LOCK,ND	OR mem, sbyteword16	Logical Inclusive OR	OR.html
 OR	mem,imm16	8086,LOCK	OR mem, imm16	Logical Inclusive OR	OR.html
-OR	mem,sbytedword32	386,LOCK,ND	OR mem, sbytedword32	Logical Inclusive OR	OR.html
 OR	mem,imm32	386,LOCK	OR mem, imm32	Logical Inclusive OR	OR.html
 OR	rm8,imm	8086,LOCK,ND,NOLONG	OR r/m8, imm	Logical Inclusive OR	OR.html
 OUT	imm,reg_al	8086	OUT imm, AL	Output to Port	OUT.html
@@ -1067,15 +1012,10 @@ PUSH	reg_ds	8086,NOLONG	PUSH DS	Push Word, Doubleword or Quadword Onto the Stack
 PUSH	reg_fs	386	PUSH FS	Push Word, Doubleword or Quadword Onto the Stack	PUSH.html
 PUSH	reg_gs	386	PUSH GS	Push Word, Doubleword or Quadword Onto the Stack	PUSH.html
 PUSH	imm8	186	PUSH imm8	Push Word, Doubleword or Quadword Onto the Stack	PUSH.html
-PUSH	sbyteword16	186,AR0,SIZE,ND	PUSH sbyteword16	Push Word, Doubleword or Quadword Onto the Stack	PUSH.html
 PUSH	imm16	186,AR0,SIZE	PUSH imm16	Push Word, Doubleword or Quadword Onto the Stack	PUSH.html
-PUSH	sbytedword32	386,NOLONG,AR0,SIZE,ND	PUSH sbytedword32	Push Word, Doubleword or Quadword Onto the Stack	PUSH.html
 PUSH	imm32	386,NOLONG,AR0,SIZE	PUSH imm32	Push Word, Doubleword or Quadword Onto the Stack	PUSH.html
-PUSH	sbytedword32	386,NOLONG,SD,ND	PUSH sbytedword32	Push Word, Doubleword or Quadword Onto the Stack	PUSH.html
 PUSH	imm32	386,NOLONG,SD	PUSH imm32	Push Word, Doubleword or Quadword Onto the Stack	PUSH.html
-PUSH	sbytedword64	X64,AR0,SIZE,ND	PUSH sbytedword64	Push Word, Doubleword or Quadword Onto the Stack	PUSH.html
 PUSH	imm64	X64,AR0,SIZE	PUSH imm64	Push Word, Doubleword or Quadword Onto the Stack	PUSH.html
-PUSH	sbytedword32	X64,AR0,SIZE,ND	PUSH sbytedword32	Push Word, Doubleword or Quadword Onto the Stack	PUSH.html
 PUSH	imm32	X64,AR0,SIZE	PUSH imm32	Push Word, Doubleword or Quadword Onto the Stack	PUSH.html
 PUSHA	none	186,NOLONG	PUSHA 	Push All General-Purpose Registers	PUSHA:PUSHAD.html
 PUSHAD	none	386,NOLONG	PUSHAD 	Push All General-Purpose Registers	PUSHA:PUSHAD.html
@@ -1196,23 +1136,15 @@ SBB	rm16,imm8	8086,LOCK	SBB r/m16, imm8	Integer Subtraction with Borrow	SBB.html
 SBB	rm32,imm8	386,LOCK	SBB r/m32, imm8	Integer Subtraction with Borrow	SBB.html
 SBB	rm64,imm8	X64,LOCK	SBB r/m64, imm8	Integer Subtraction with Borrow	SBB.html
 SBB	reg_al,imm	8086	SBB AL, imm	Integer Subtraction with Borrow	SBB.html
-SBB	reg_ax,sbyteword	8086,ND	SBB AX, sbyteword	Integer Subtraction with Borrow	SBB.html
 SBB	reg_ax,imm	8086	SBB AX, imm	Integer Subtraction with Borrow	SBB.html
-SBB	reg_eax,sbytedword	386,ND	SBB EAX, sbytedword	Integer Subtraction with Borrow	SBB.html
 SBB	reg_eax,imm	386	SBB EAX, imm	Integer Subtraction with Borrow	SBB.html
-SBB	reg_rax,sbytedword	X64,ND	SBB RAX, sbytedword	Integer Subtraction with Borrow	SBB.html
 SBB	reg_rax,imm	X64	SBB RAX, imm	Integer Subtraction with Borrow	SBB.html
 SBB	rm8,imm	8086,LOCK	SBB r/m8, imm	Integer Subtraction with Borrow	SBB.html
-SBB	rm16,sbyteword	8086,LOCK,ND	SBB r/m16, sbyteword	Integer Subtraction with Borrow	SBB.html
 SBB	rm16,imm	8086,LOCK	SBB r/m16, imm	Integer Subtraction with Borrow	SBB.html
-SBB	rm32,sbytedword	386,LOCK,ND	SBB r/m32, sbytedword	Integer Subtraction with Borrow	SBB.html
 SBB	rm32,imm	386,LOCK	SBB r/m32, imm	Integer Subtraction with Borrow	SBB.html
-SBB	rm64,sbytedword	X64,LOCK,ND	SBB r/m64, sbytedword	Integer Subtraction with Borrow	SBB.html
 SBB	rm64,imm	X64,LOCK	SBB r/m64, imm	Integer Subtraction with Borrow	SBB.html
 SBB	mem,imm8	8086,LOCK	SBB mem, imm8	Integer Subtraction with Borrow	SBB.html
-SBB	mem,sbyteword16	8086,LOCK,ND	SBB mem, sbyteword16	Integer Subtraction with Borrow	SBB.html
 SBB	mem,imm16	8086,LOCK	SBB mem, imm16	Integer Subtraction with Borrow	SBB.html
-SBB	mem,sbytedword32	386,LOCK,ND	SBB mem, sbytedword32	Integer Subtraction with Borrow	SBB.html
 SBB	mem,imm32	386,LOCK	SBB mem, imm32	Integer Subtraction with Borrow	SBB.html
 SBB	rm8,imm	8086,LOCK,ND,NOLONG	SBB r/m8, imm	Integer Subtraction with Borrow	SBB.html
 SCASB	none	8086	SCASB 	Scan String	SCAS:SCASB:SCASW:SCASD.html
@@ -1318,23 +1250,15 @@ SUB	rm16,imm8	8086,LOCK	SUB r/m16, imm8	Subtract	SUB.html
 SUB	rm32,imm8	386,LOCK	SUB r/m32, imm8	Subtract	SUB.html
 SUB	rm64,imm8	X64,LOCK	SUB r/m64, imm8	Subtract	SUB.html
 SUB	reg_al,imm	8086	SUB AL, imm	Subtract	SUB.html
-SUB	reg_ax,sbyteword	8086,ND	SUB AX, sbyteword	Subtract	SUB.html
 SUB	reg_ax,imm	8086	SUB AX, imm	Subtract	SUB.html
-SUB	reg_eax,sbytedword	386,ND	SUB EAX, sbytedword	Subtract	SUB.html
 SUB	reg_eax,imm	386	SUB EAX, imm	Subtract	SUB.html
-SUB	reg_rax,sbytedword	X64,ND	SUB RAX, sbytedword	Subtract	SUB.html
 SUB	reg_rax,imm	X64	SUB RAX, imm	Subtract	SUB.html
 SUB	rm8,imm	8086,LOCK	SUB r/m8, imm	Subtract	SUB.html
-SUB	rm16,sbyteword	8086,LOCK,ND	SUB r/m16, sbyteword	Subtract	SUB.html
 SUB	rm16,imm	8086,LOCK	SUB r/m16, imm	Subtract	SUB.html
-SUB	rm32,sbytedword	386,LOCK,ND	SUB r/m32, sbytedword	Subtract	SUB.html
 SUB	rm32,imm	386,LOCK	SUB r/m32, imm	Subtract	SUB.html
-SUB	rm64,sbytedword	X64,LOCK,ND	SUB r/m64, sbytedword	Subtract	SUB.html
 SUB	rm64,imm	X64,LOCK	SUB r/m64, imm	Subtract	SUB.html
 SUB	mem,imm8	8086,LOCK	SUB mem, imm8	Subtract	SUB.html
-SUB	mem,sbyteword16	8086,LOCK,ND	SUB mem, sbyteword16	Subtract	SUB.html
 SUB	mem,imm16	8086,LOCK	SUB mem, imm16	Subtract	SUB.html
-SUB	mem,sbytedword32	386,LOCK,ND	SUB mem, sbytedword32	Subtract	SUB.html
 SUB	mem,imm32	386,LOCK	SUB mem, imm32	Subtract	SUB.html
 SUB	rm8,imm	8086,LOCK,ND,NOLONG	SUB r/m8, imm	Subtract	SUB.html
 SVDC	mem80,reg_sreg	486,CYRIXM	SVDC mem80, reg_sreg	TODO: 486,CYRIXM	
@@ -1403,10 +1327,10 @@ XBTS	reg16,reg16	386,UNDOC,ND	XBTS r16, r16	TODO: 386,SW,UNDOC,ND,SD
 XBTS	reg32,mem	386,SD,UNDOC,ND	XBTS r32, mem	TODO: 386,SW,UNDOC,ND,SD	
 XBTS	reg32,reg32	386,UNDOC,ND	XBTS r32, r32	TODO: 386,SW,UNDOC,ND,SD	
 XCHG	reg_ax,reg16	8086	XCHG AX, r16	Exchange Register/Memory with Register	XCHG.html
-XCHG	reg_eax,reg32na	386	XCHG EAX, reg32na	Exchange Register/Memory with Register	XCHG.html
+XCHG	reg_eax,reg32	386	XCHG EAX, reg32	Exchange Register/Memory with Register	XCHG.html
 XCHG	reg_rax,reg64	X64	XCHG RAX, r64	Exchange Register/Memory with Register	XCHG.html
 XCHG	reg16,reg_ax	8086	XCHG r16, AX	Exchange Register/Memory with Register	XCHG.html
-XCHG	reg32na,reg_eax	386	XCHG reg32na, EAX	Exchange Register/Memory with Register	XCHG.html
+XCHG	reg32,reg_eax	386	XCHG reg32, EAX	Exchange Register/Memory with Register	XCHG.html
 XCHG	reg64,reg_rax	X64	XCHG r64, RAX	Exchange Register/Memory with Register	XCHG.html
 XCHG	reg_eax,reg_eax	386,NOLONG	XCHG EAX, EAX	Exchange Register/Memory with Register	XCHG.html
 XCHG	reg8,mem	8086,LOCK	XCHG r8, mem	Exchange Register/Memory with Register	XCHG.html
@@ -1447,23 +1371,15 @@ XOR	rm16,imm8	8086,LOCK	XOR r/m16, imm8	Logical Exclusive OR	XOR.html
 XOR	rm32,imm8	386,LOCK	XOR r/m32, imm8	Logical Exclusive OR	XOR.html
 XOR	rm64,imm8	X64,LOCK	XOR r/m64, imm8	Logical Exclusive OR	XOR.html
 XOR	reg_al,imm	8086	XOR AL, imm	Logical Exclusive OR	XOR.html
-XOR	reg_ax,sbyteword	8086,ND	XOR AX, sbyteword	Logical Exclusive OR	XOR.html
 XOR	reg_ax,imm	8086	XOR AX, imm	Logical Exclusive OR	XOR.html
-XOR	reg_eax,sbytedword	386,ND	XOR EAX, sbytedword	Logical Exclusive OR	XOR.html
 XOR	reg_eax,imm	386	XOR EAX, imm	Logical Exclusive OR	XOR.html
-XOR	reg_rax,sbytedword	X64,ND	XOR RAX, sbytedword	Logical Exclusive OR	XOR.html
 XOR	reg_rax,imm	X64	XOR RAX, imm	Logical Exclusive OR	XOR.html
 XOR	rm8,imm	8086,LOCK	XOR r/m8, imm	Logical Exclusive OR	XOR.html
-XOR	rm16,sbyteword	8086,LOCK,ND	XOR r/m16, sbyteword	Logical Exclusive OR	XOR.html
 XOR	rm16,imm	8086,LOCK	XOR r/m16, imm	Logical Exclusive OR	XOR.html
-XOR	rm32,sbytedword	386,LOCK,ND	XOR r/m32, sbytedword	Logical Exclusive OR	XOR.html
 XOR	rm32,imm	386,LOCK	XOR r/m32, imm	Logical Exclusive OR	XOR.html
-XOR	rm64,sbytedword	X64,LOCK,ND	XOR r/m64, sbytedword	Logical Exclusive OR	XOR.html
 XOR	rm64,imm	X64,LOCK	XOR r/m64, imm	Logical Exclusive OR	XOR.html
 XOR	mem,imm8	8086,LOCK	XOR mem, imm8	Logical Exclusive OR	XOR.html
-XOR	mem,sbyteword16	8086,LOCK,ND	XOR mem, sbyteword16	Logical Exclusive OR	XOR.html
 XOR	mem,imm16	8086,LOCK	XOR mem, imm16	Logical Exclusive OR	XOR.html
-XOR	mem,sbytedword32	386,LOCK,ND	XOR mem, sbytedword32	Logical Exclusive OR	XOR.html
 XOR	mem,imm32	386,LOCK	XOR mem, imm32	Logical Exclusive OR	XOR.html
 XOR	rm8,imm	8086,LOCK,ND,NOLONG	XOR r/m8, imm	Logical Exclusive OR	XOR.html
 ;
