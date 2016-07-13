@@ -64,16 +64,17 @@ Studio will launch under the experimental hive.
 * ~~No code completion in remarks.~~
 * ~~Improved syntax highlighting. Add label highlights.~~
 * ~~Code completion for labels in jumps. Provide a list of existing labels from which one can choose.~~
-* ~~Support for segment registers.~~
+* ~~Support for segment registers, debug registers and control registers.~~
 * ~~Label analysis. When jumping to a label, check if the label exists. Check if labels are unique. Provide error squiggles if something is wrong.~~
+* ~~Code folding for documentation blocks, folding for Masm procedure blocks and and Masm segments definitions.~~ 
+* ~~Code completion restrictions. E.g. opcode movss can only be followed by an xmm register and not by a GPR such as rax.~~
+* Signature Help. Provide help which operands (type of registers, mem etc) are allowed for a given mnemonic).
 * Label rename assistance.
 * Create new file item with .asm extension.
-* Code folding for documentation blocks, folding for Masm procedure blocks and and Masm segments definitions.  
 * Add syntax highlighting for AT&T syntax.
 * Syntax highlighting in quickinfo tooltips.
 * Code formatting.
 * Syntax highlighting for the Debug/Windows/Disassembly view.
-* Code completion restrictions. E.g. opcode movss can only be followed by an xmm register and not by a GPR such as rax.
 * Track flag influence. Select an opcode that uses a flag (as input), find the opcodes that produce this flag (as output). E.g.  select opcode cmovc or setc , highlight all opcodes such as btr, sal, sar, shl, shr, etc.
 * Register rename assistance. Highly desirable but very challenging. E.g. rename GPR rdx to rbx, find which rdx, edx, dx, dl and dh will need to be renamed, check if renames will clash with existing occurances of rbx, ebx, bx, bl and bh.
 * Arm support.
