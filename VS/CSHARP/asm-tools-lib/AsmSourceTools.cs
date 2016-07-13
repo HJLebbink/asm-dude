@@ -146,12 +146,13 @@ namespace AsmTools {
             return list;
         }
 
-        public static bool isRemarkChar(char c) {
-            return c.Equals('#') || c.Equals(';');
-        }
-
         public static bool isSeparatorChar(char c) {
             return char.IsWhiteSpace(c) || c.Equals(',') || c.Equals('[') || c.Equals(']') || c.Equals('(') || c.Equals(')') || c.Equals('+') || c.Equals('-') || c.Equals('*') || c.Equals(':');
+        }
+
+        #region Remark Methods
+        public static bool isRemarkChar(char c) {
+            return c.Equals('#') || c.Equals(';');
         }
 
         /// <summary>
@@ -171,6 +172,40 @@ namespace AsmTools {
             }
             return false;
         }
+
+        /// <summary>
+        /// Returns true if the provided line only contains a remark (and no labels or code, it may have white space)
+        /// </summary>
+        /// <param name="line"></param>
+        /// <returns></returns>
+        public static bool isRemarkOnly(string line) {
+            int nChars = line.Length;
+            for (int i = 0; i < nChars; ++i) {
+                char c = line[i];
+                if (AsmSourceTools.isRemarkChar(c)) {
+                    return true;
+                } else {
+                    if (char.IsWhiteSpace(c)) {
+                        // OK
+                    } else {
+                        return false;
+                    }
+                }
+            }
+            // did not find a remark character; this line is not a remark.
+            return false;
+        }
+
+        public static int getRemarkCharPosition(string line) {
+            for (int i = 0; i < line.Length; ++i) {
+                if (AsmSourceTools.isRemarkChar(line[i])) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        #endregion Remark Methods
 
         public static bool isConstant(string token) { // todo merge this with toConstant
             string token2;
