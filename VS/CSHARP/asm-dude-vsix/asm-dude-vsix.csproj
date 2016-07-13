@@ -331,17 +331,18 @@
     <Compile Include="AsmDudePackage.cs" />
     <Compile Include="CodeCompletion\VsTextViewCreationListener.cs" />
     <Compile Include="ErrorSquiggles\AsmErrorEnum.cs" />
-    <Compile Include="Experimental\SignatureHelp\AsmParameter.cs" />
-    <Compile Include="Experimental\SignatureHelp\AsmSignature.cs" />
-    <Compile Include="Experimental\SignatureHelp\AsmSignatureElement.cs" />
-    <Compile Include="Experimental\SignatureHelp\AsmSignatureEnum.cs" />
-    <Compile Include="Experimental\SignatureHelp\AsmSignatureHelpCommandFilter.cs" />
-    <Compile Include="Experimental\SignatureHelp\AsmSignatureHelpCommandProvider.cs" />
-    <Compile Include="Experimental\SignatureHelp\AsmSignatureHelpSourceProvider.cs" />
-    <Compile Include="Experimental\SignatureHelp\MnemonicStore.cs" />
     <Compile Include="OptionsPage\AsmDudeOptionPageUI.xaml.cs">
       <DependentUpon>AsmDudeOptionPageUI.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SignatureHelp\AsmParameter.cs" />
+    <Compile Include="SignatureHelp\AsmSignature.cs" />
+    <Compile Include="SignatureHelp\AsmSignatureElement.cs" />
+    <Compile Include="SignatureHelp\AsmSignatureEnum.cs" />
+    <Compile Include="SignatureHelp\AsmSignatureHelpCommandFilter.cs" />
+    <Compile Include="SignatureHelp\AsmSignatureHelpCommandProvider.cs" />
+    <Compile Include="SignatureHelp\AsmSignatureHelpSource.cs" />
+    <Compile Include="SignatureHelp\AsmSignatureHelpSourceProvider.cs" />
+    <Compile Include="SignatureHelp\MnemonicStore.cs" />
     <Compile Include="SyntaxHighlighting\NasmTokenTagger.cs" />
     <Compile Include="Tools\ApplicationInformation.cs" />
     <Compile Include="Tools\AsmDudeTools.cs" />
@@ -364,7 +365,6 @@
       <DependentUpon>PkgCmd.vsct</DependentUpon>
     </Compile>
     <Compile Include="Settings.cs" />
-    <Compile Include="Experimental\SignatureHelp\AsmSignatureHelpSource.cs" />
     <Compile Include="source.extension.cs">
       <DependentUpon>source.extension.vsixmanifest</DependentUpon>
     </Compile>

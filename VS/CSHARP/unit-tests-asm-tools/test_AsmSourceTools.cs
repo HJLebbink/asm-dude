@@ -243,7 +243,7 @@ namespace unit_tests {
         [TestMethod]
         public void Test_AsmSourceTools_parseArch() {
             foreach (Arch x in Enum.GetValues(typeof(Arch))) {
-                Assert.AreEqual(AsmTools.AsmSourceTools.parseArch(x.ToString()), x,
+                Assert.AreEqual(AsmTools.ArchTools.parseArch(ArchTools.ToString(x)), x,
                     "Parsing string " + x.ToString() + " does not yield the same enumeration.");
             }
         }

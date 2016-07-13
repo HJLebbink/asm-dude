@@ -54,31 +54,34 @@ namespace AsmDude.SignatureHelp {
 
         public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
             try {
-                SnapshotPoint point = _textView.Caret.Position.BufferPosition - 1;
-                if (point.Position > 1) {
-                    ITextSnapshotLine line = point.Snapshot.GetLineFromPosition(point.Position);
-                    string lineStr = line.GetText();
+                SnapshotPoint currentPoint = _textView.Caret.Position.BufferPosition;
+                if (currentPoint != null) {
+                    SnapshotPoint point = currentPoint - 1;
+                    if (point.Position > 1) {
+                        ITextSnapshotLine line = point.Snapshot.GetLineFromPosition(point.Position);
+                        string lineStr = line.GetText();
 
-                    int pos = point.Position - line.Start;
-                    if (!AsmSourceTools.isInRemark(pos, lineStr)) { //check if current position is in a remark; if we are in a remark, no signature help
+                        int pos = point.Position - line.Start;
+                        if (!AsmSourceTools.isInRemark(pos, lineStr)) { //check if current position is in a remark; if we are in a remark, no signature help
 
-                        if ((pguidCmdGroup == VSConstants.VSStd2K) && (nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR)) {
-                            char typedChar = this.GetTypeChar(pvaIn);
-                            if (char.IsWhiteSpace(typedChar) || typedChar.Equals(',')) {
-                                var t = AsmSourceTools.parseLine(lineStr);
-                                if (this._session != null) this._session.Dismiss(); // cleanup previous session
-                                if (t.Item2 != Mnemonic.UNKNOWN) {
-                                    this._session = _broker.TriggerSignatureHelp(_textView);
+                            if ((pguidCmdGroup == VSConstants.VSStd2K) && (nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR)) {
+                                char typedChar = this.GetTypeChar(pvaIn);
+                                if (char.IsWhiteSpace(typedChar) || typedChar.Equals(',')) {
+                                    var t = AsmSourceTools.parseLine(lineStr);
+                                    if (this._session != null) this._session.Dismiss(); // cleanup previous session
+                                    if (t.Item2 != Mnemonic.UNKNOWN) {
+                                        this._session = _broker.TriggerSignatureHelp(_textView);
+                                    }
+                                } else if (AsmSourceTools.isRemarkChar(typedChar) && (this._session != null)) {
+                                    this._session.Dismiss();
+                                    this._session = null;
                                 }
-                            } else if (AsmSourceTools.isRemarkChar(typedChar) && (this._session != null)) {
-                                this._session.Dismiss();
-                                this._session = null;
-                            }
-                        } else {
-                            bool enterPressed = (nCmdID == (uint)VSConstants.VSStd2KCmdID.RETURN);
-                            if (enterPressed && (this._session != null)) {
-                                this._session.Dismiss();
-                                this._session = null;
+                            } else {
+                                bool enterPressed = (nCmdID == (uint)VSConstants.VSStd2KCmdID.RETURN);
+                                if (enterPressed && (this._session != null)) {
+                                    this._session.Dismiss();
+                                    this._session = null;
+                                }
                             }
                         }
                     }

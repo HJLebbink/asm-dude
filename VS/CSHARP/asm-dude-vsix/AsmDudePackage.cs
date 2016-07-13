@@ -33,7 +33,7 @@ namespace AsmDude {
         #region Global Constants
 
         internal const string AsmDudeContentType = "asm!";
-        internal const double slowWarningThresholdSec = 0.3; // threshold to warn that actions are considered slow
+        internal const double slowWarningThresholdSec = 0.4; // threshold to warn that actions are considered slow
         internal const double slowShutdownThresholdSec = 4.0; // threshold to switch of components
         internal const int maxNumberOfCharsInToolTips = 150;
         internal const int msSleepBeforeAsyncExecution = 1000;

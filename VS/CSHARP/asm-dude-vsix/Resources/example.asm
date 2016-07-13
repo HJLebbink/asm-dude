@@ -15,6 +15,15 @@ include "inc\example.inc"
 
 	#endregion Things TODO
 
+	; Singleline comment
+
+	; Multiline comment 1a
+	; Multiline comment 2a
+
+	; Multiline comment 1b
+	; Multiline comment 2b
+	; Multiline comment 3b
+
 	vfnmadd213sd xmm0, xmm10, xmm11, ; ds
 	;vfnmadd213sd xmmreg|mask|z,xmmreg,xmmrm64|er
 
@@ -88,8 +97,6 @@ segment_name ENDS
 	alias label_alias = FOO
 	jmp label_alias
 	@@:
-
-	ja 
 
 	#endregion
 
