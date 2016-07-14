@@ -62,7 +62,7 @@ namespace AsmDude.SignatureHelp {
                 return false;
             }
             foreach (AsmSignatureEnum operandType in this.operands[operandIndex]) {
-                if (AsmSignatureTools.isAllowed(op, operandType)) {
+                if (AsmSignatureTools.isAllowedOperand(op, operandType)) {
                     return true;
                 }
             }

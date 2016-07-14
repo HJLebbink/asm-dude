@@ -209,9 +209,9 @@ namespace AsmTools {
 
         public static bool isConstant(string token) { // todo merge this with toConstant
             string token2;
-            if (token.StartsWith("0x", StringComparison.CurrentCultureIgnoreCase)) {
+            if (token.StartsWith("0x", StringComparison.OrdinalIgnoreCase)) {
                 token2 = token.Substring(2);
-            } else if (token.EndsWith("h", StringComparison.CurrentCultureIgnoreCase)) {
+            } else if (token.EndsWith("h", StringComparison.OrdinalIgnoreCase)) {
                 token2 = token.Substring(0, token.Length - 1);
             } else {
                 token2 = token;
@@ -229,10 +229,10 @@ namespace AsmTools {
         public static Tuple<bool, ulong, int> toConstant(string token) {
             string token2;
             bool isHex = false;
-            if (token.StartsWith("0x", StringComparison.CurrentCultureIgnoreCase)) {
+            if (token.StartsWith("0x", StringComparison.OrdinalIgnoreCase)) {
                 token2 = token.Substring(2);
                 isHex = true;
-            } else if (token.EndsWith("h", StringComparison.CurrentCultureIgnoreCase)) {
+            } else if (token.EndsWith("h", StringComparison.OrdinalIgnoreCase)) {
                 token2 = token.Substring(0, token.Length - 1);
                 isHex = true;
             } else {
@@ -274,22 +274,24 @@ namespace AsmTools {
             string s = token.TrimStart().ToUpper();
             if (s.StartsWith("PTR")) token = token.Substring(3, token.Length - 3).TrimStart();
 
-            if (s.StartsWith("BYTE")) return 8;
+            if (s.StartsWith("BYTE")) return 8; //nasm
             if (s.StartsWith("SBYTE")) return 8;
-            if (s.StartsWith("WORD")) return 16;
+            if (s.StartsWith("WORD")) return 16; //nasm
             if (s.StartsWith("SWORD")) return 16;
 
-            if (s.StartsWith("DWORD")) return 32;
+            if (s.StartsWith("DWORD")) return 32; //nasm
             if (s.StartsWith("SDWORD")) return 32;
-            if (s.StartsWith("QWORD")) return 64;
-            if (s.StartsWith("TWORD")) return 80;
+            if (s.StartsWith("QWORD")) return 64; //nasm
+            if (s.StartsWith("TWORD")) return 80; //nasm
 
+            if (s.StartsWith("DQWORD")) return 128;
+            if (s.StartsWith("OWORD")) return 128; //nasm
             if (s.StartsWith("XMMWORD")) return 128;
             if (s.StartsWith("XWORD")) return 128;
             if (s.StartsWith("YMMWORD")) return 256;
-            if (s.StartsWith("YWORD")) return 256;
+            if (s.StartsWith("YWORD")) return 256; //nasm
             if (s.StartsWith("ZMMWORD")) return 512;
-            if (s.StartsWith("ZWORD")) return 512;
+            if (s.StartsWith("ZWORD")) return 512; //nasm
 
             return 32;
         }

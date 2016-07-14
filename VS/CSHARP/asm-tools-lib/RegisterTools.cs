@@ -130,6 +130,24 @@ namespace AsmTools {
                 case "XMM14": return Rn.XMM14;
                 case "XMM15": return Rn.XMM15;
 
+                case "XMM16": return Rn.XMM16;
+                case "XMM17": return Rn.XMM17;
+                case "XMM18": return Rn.XMM18;
+                case "XMM19": return Rn.XMM19;
+                case "XMM20": return Rn.XMM20;
+                case "XMM21": return Rn.XMM21;
+                case "XMM22": return Rn.XMM22;
+                case "XMM23": return Rn.XMM23;
+
+                case "XMM24": return Rn.XMM24;
+                case "XMM25": return Rn.XMM25;
+                case "XMM26": return Rn.XMM26;
+                case "XMM27": return Rn.XMM27;
+                case "XMM28": return Rn.XMM28;
+                case "XMM29": return Rn.XMM29;
+                case "XMM30": return Rn.XMM30;
+                case "XMM31": return Rn.XMM31;
+
                 case "YMM0": return Rn.YMM0;
                 case "YMM1": return Rn.YMM1;
                 case "YMM2": return Rn.YMM2;
@@ -147,6 +165,24 @@ namespace AsmTools {
                 case "YMM13": return Rn.YMM13;
                 case "YMM14": return Rn.YMM14;
                 case "YMM15": return Rn.YMM15;
+
+                case "YMM16": return Rn.YMM16;
+                case "YMM17": return Rn.YMM17;
+                case "YMM18": return Rn.YMM18;
+                case "YMM19": return Rn.YMM19;
+                case "YMM20": return Rn.YMM20;
+                case "YMM21": return Rn.YMM21;
+                case "YMM22": return Rn.YMM22;
+                case "YMM23": return Rn.YMM23;
+
+                case "YMM24": return Rn.YMM24;
+                case "YMM25": return Rn.YMM25;
+                case "YMM26": return Rn.YMM26;
+                case "YMM27": return Rn.YMM27;
+                case "YMM28": return Rn.YMM28;
+                case "YMM29": return Rn.YMM29;
+                case "YMM30": return Rn.YMM30;
+                case "YMM31": return Rn.YMM31;
 
                 case "ZMM0": return Rn.ZMM0;
                 case "ZMM1": return Rn.ZMM1;
@@ -550,6 +586,70 @@ namespace AsmTools {
                 case "YMM15":
                 case "ZMM15":
                     return "\\b(XMM15|YMM15|ZMM15)\\b";
+                case "XMM16":
+                case "YMM16":
+                case "ZMM16":
+                    return "\\b(XMM16|YMM16|ZMM16)\\b";
+                case "XMM17":
+                case "YMM17":
+                case "ZMM17":
+                    return "\\b(XMM17|YMM17|ZMM17)\\b";
+                case "XMM18":
+                case "YMM18":
+                case "ZMM18":
+                    return "\\b(XMM18|YMM18|ZMM18)\\b";
+                case "XMM19":
+                case "YMM19":
+                case "ZMM19":
+                    return "\\b(XMM19|YMM19|ZMM19)\\b";
+                case "XMM20":
+                case "YMM20":
+                case "ZMM20":
+                    return "\\b(XMM20|YMM20|ZMM20)\\b";
+                case "XMM21":
+                case "YMM21":
+                case "ZMM21":
+                    return "\\b(XMM21|YMM21|ZMM21)\\b";
+                case "XMM22":
+                case "YMM22":
+                case "ZMM22":
+                    return "\\b(XMM22|YMM22|ZMM22)\\b";
+                case "XMM23":
+                case "YMM23":
+                case "ZMM23":
+                    return "\\b(XMM23|YMM23|ZMM23)\\b";
+                case "XMM24":
+                case "YMM24":
+                case "ZMM24":
+                    return "\\b(XMM24|YMM24|ZMM24)\\b";
+                case "XMM25":
+                case "YMM25":
+                case "ZMM25":
+                    return "\\b(XMM25|YMM25|ZMM25)\\b";
+                case "XMM26":
+                case "YMM26":
+                case "ZMM26":
+                    return "\\b(XMM26|YMM26|ZMM26)\\b";
+                case "XMM27":
+                case "YMM27":
+                case "ZMM27":
+                    return "\\b(XMM27|YMM27|ZMM27)\\b";
+                case "XMM28":
+                case "YMM28":
+                case "ZMM28":
+                    return "\\b(XMM28|YMM28|ZMM28)\\b";
+                case "XMM29":
+                case "YMM29":
+                case "ZMM29":
+                    return "\\b(XMM29|YMM29|ZMM29)\\b";
+                case "XMM30":
+                case "YMM30":
+                case "ZMM30":
+                    return "\\b(XMM30|YMM30|ZMM30)\\b";
+                case "XMM31":
+                case "YMM31":
+                case "ZMM31":
+                    return "\\b(XMM31|YMM31|ZMM31)\\b";
 
                 default: return reg;
             }
@@ -682,6 +782,22 @@ namespace AsmTools {
                 case Rn.XMM13:
                 case Rn.XMM14:
                 case Rn.XMM15:
+                case Rn.XMM16:
+                case Rn.XMM17:
+                case Rn.XMM18:
+                case Rn.XMM19:
+                case Rn.XMM20:
+                case Rn.XMM21:
+                case Rn.XMM22:
+                case Rn.XMM23:
+                case Rn.XMM24:
+                case Rn.XMM25:
+                case Rn.XMM26:
+                case Rn.XMM27:
+                case Rn.XMM28:
+                case Rn.XMM29:
+                case Rn.XMM30:
+                case Rn.XMM31:
                     return RegisterType.XMM;
 
                 case Rn.YMM0:
@@ -700,6 +816,22 @@ namespace AsmTools {
                 case Rn.YMM13:
                 case Rn.YMM14:
                 case Rn.YMM15:
+                case Rn.YMM16:
+                case Rn.YMM17:
+                case Rn.YMM18:
+                case Rn.YMM19:
+                case Rn.YMM20:
+                case Rn.YMM21:
+                case Rn.YMM22:
+                case Rn.YMM23:
+                case Rn.YMM24:
+                case Rn.YMM25:
+                case Rn.YMM26:
+                case Rn.YMM27:
+                case Rn.YMM28:
+                case Rn.YMM29:
+                case Rn.YMM30:
+                case Rn.YMM31:
                     return RegisterType.YMM;
 
                 case Rn.ZMM0:
@@ -957,7 +1089,24 @@ namespace AsmTools {
                 case Rn.XMM12:
                 case Rn.XMM13:
                 case Rn.XMM14:
-                case Rn.XMM15: return true;
+                case Rn.XMM15:
+                case Rn.XMM16:
+                case Rn.XMM17:
+                case Rn.XMM18:
+                case Rn.XMM19:
+                case Rn.XMM20:
+                case Rn.XMM21:
+                case Rn.XMM22:
+                case Rn.XMM23:
+                case Rn.XMM24:
+                case Rn.XMM25:
+                case Rn.XMM26:
+                case Rn.XMM27:
+                case Rn.XMM28:
+                case Rn.XMM29:
+                case Rn.XMM30:
+                case Rn.XMM31:
+                    return true;
                 default: return false;
             }
         }
@@ -978,7 +1127,24 @@ namespace AsmTools {
                 case Rn.YMM12:
                 case Rn.YMM13:
                 case Rn.YMM14:
-                case Rn.YMM15: return true;
+                case Rn.YMM15:
+                case Rn.YMM16:
+                case Rn.YMM17:
+                case Rn.YMM18:
+                case Rn.YMM19:
+                case Rn.YMM20:
+                case Rn.YMM21:
+                case Rn.YMM22:
+                case Rn.YMM23:
+                case Rn.YMM24:
+                case Rn.YMM25:
+                case Rn.YMM26:
+                case Rn.YMM27:
+                case Rn.YMM28:
+                case Rn.YMM29:
+                case Rn.YMM30:
+                case Rn.YMM31:
+                    return true;
                 default: return false;
             }
         }
@@ -1015,7 +1181,8 @@ namespace AsmTools {
                 case Rn.ZMM28:
                 case Rn.ZMM29:
                 case Rn.ZMM30:
-                case Rn.ZMM31: return true;
+                case Rn.ZMM31:
+                    return true;
                 default: return false;
             }
         }

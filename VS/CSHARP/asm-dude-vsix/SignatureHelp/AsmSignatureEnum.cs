@@ -68,7 +68,11 @@ namespace AsmDude.SignatureHelp {
         XMMRM, XMMRM8, XMMRM16, XMMRM32, XMMRM64, XMMRM128,
         YMMRM, YMMRM256,
         ZMMRM512,
-        b32, b64,
+
+        /// <summary>vector broadcasted from a 32-bit memory location</summary>
+        b32,
+        /// <summary>vector broadcasted from a 64-bit memory location</summary>
+        b64,
         #endregion
 
         mem_offs,
@@ -240,11 +244,11 @@ namespace AsmDude.SignatureHelp {
                 case AsmSignatureEnum.IMM16: return "16-bits immediate constant";
                 case AsmSignatureEnum.IMM32: return "32-bits immediate constant";
                 case AsmSignatureEnum.IMM64: return "64-bits immediate constant";
-                case AsmSignatureEnum.imm_imm: return "immediate constant";
-                case AsmSignatureEnum.imm16_imm: return "immediate constant";
-                case AsmSignatureEnum.imm_imm16: return "immediate constant";
-                case AsmSignatureEnum.imm32_imm: return "immediate constant";
-                case AsmSignatureEnum.imm_imm32: return "immediate constant";
+                case AsmSignatureEnum.imm_imm: return "immediate constants";
+                case AsmSignatureEnum.imm16_imm: return "immediate constants";
+                case AsmSignatureEnum.imm_imm16: return "immediate constants";
+                case AsmSignatureEnum.imm32_imm: return "immediate constants";
+                case AsmSignatureEnum.imm_imm32: return "immediate constants";
                 case AsmSignatureEnum.RM8: return "8-bits register or memory operand";
                 case AsmSignatureEnum.RM16: return "16-bits register or memory operand";
                 case AsmSignatureEnum.RM32: return "32-bits register or memory operand";
@@ -254,23 +258,23 @@ namespace AsmDude.SignatureHelp {
                 case AsmSignatureEnum.short_ENUM: return "short ptr";
                 case AsmSignatureEnum.unity: return "immediate value 1";
                 case AsmSignatureEnum.mask: return "mask register";
-                case AsmSignatureEnum.z: return "z";
+                case AsmSignatureEnum.z: return "zero mask (no mask register)";
                 case AsmSignatureEnum.er: return "er";
                 case AsmSignatureEnum.REG_XMM0: return "XMM0 register";
                 case AsmSignatureEnum.xmmreg: return "xmm register";
                 case AsmSignatureEnum.ymmreg: return "ymm register";
                 case AsmSignatureEnum.zmmreg: return "zmm register";
 
-                case AsmSignatureEnum.XMMRM: return "xmm register or memory operand";
-                case AsmSignatureEnum.XMMRM16: return "xmm register or 16-bits memory operand";
-                case AsmSignatureEnum.XMMRM32: return "xmm register or 32-bits memory operand";
-                case AsmSignatureEnum.XMMRM64: return "xmm register or 64-bits memory operand";
-                case AsmSignatureEnum.XMMRM128: return "xmm register or 128-bits memory operand";
-                case AsmSignatureEnum.YMMRM256: return "ymm register or 256-bits memory operand";
-                case AsmSignatureEnum.ZMMRM512: return "zmm register or 512-bits memory operand";
-                case AsmSignatureEnum.b32: return "b32";
-                case AsmSignatureEnum.b64: return "b64";
-                case AsmSignatureEnum.mem_offs: return "memory offs";
+                case AsmSignatureEnum.XMMRM: return "xmm register or memory location";
+                case AsmSignatureEnum.XMMRM16: return "xmm register or 16-bits memory location";
+                case AsmSignatureEnum.XMMRM32: return "xmm register or 32-bits memory location";
+                case AsmSignatureEnum.XMMRM64: return "xmm register or 64-bits memory location";
+                case AsmSignatureEnum.XMMRM128: return "xmm register or 128-bits memory location";
+                case AsmSignatureEnum.YMMRM256: return "ymm register or 256-bits memory location";
+                case AsmSignatureEnum.ZMMRM512: return "zmm register or 512-bits memory location";
+                case AsmSignatureEnum.b32: return "vector broadcasted from a 32-bit memory location";
+                case AsmSignatureEnum.b64: return "vector broadcasted from a 64-bit memory location";
+                case AsmSignatureEnum.mem_offs: return "memory offset";
                 case AsmSignatureEnum.reg_sreg: return "segment register";
                 case AsmSignatureEnum.reg_creg: return "control register";
                 case AsmSignatureEnum.reg_dreg: return "debug register";
@@ -377,8 +381,8 @@ namespace AsmDude.SignatureHelp {
                 case AsmSignatureEnum.krm32: return "krm32";
                 case AsmSignatureEnum.krm64: return "krm64";
 
-                case AsmSignatureEnum.b32: return "b32";
-                case AsmSignatureEnum.b64: return "b32";
+                case AsmSignatureEnum.b32: return "m32bcst";
+                case AsmSignatureEnum.b64: return "m64bcst";
                 case AsmSignatureEnum.mem_offs: return "mem_offs";
                 case AsmSignatureEnum.reg_sreg: return "segment register";
                 case AsmSignatureEnum.reg_creg: return "control register";
@@ -401,7 +405,7 @@ namespace AsmDude.SignatureHelp {
             }
         }
 
-        public static bool isAllowed(Operand op, AsmSignatureEnum operandType) {
+        public static bool isAllowedOperand(Operand op, AsmSignatureEnum operandType) {
             switch (operandType) {
                 case AsmSignatureEnum.UNKNOWN: return true;
                 case AsmSignatureEnum.MEM: return op.isMem;
@@ -461,6 +465,11 @@ namespace AsmDude.SignatureHelp {
 
                 case AsmSignatureEnum.mask: return (op.isReg && (RegisterTools.isOpmaskRegister(op.rn)));
                 case AsmSignatureEnum.z: return true;
+                case AsmSignatureEnum.kreg: return true;
+                case AsmSignatureEnum.krm8: return true;
+                case AsmSignatureEnum.krm16: return true;
+                case AsmSignatureEnum.krm32: return true;
+                case AsmSignatureEnum.krm64: return true;
 
                 case AsmSignatureEnum.xmmreg: return (op.isReg && RegisterTools.isSseRegister(op.rn));
                 case AsmSignatureEnum.ymmreg: return (op.isReg && RegisterTools.isAvxRegister(op.rn));
@@ -475,8 +484,8 @@ namespace AsmDude.SignatureHelp {
                 case AsmSignatureEnum.YMMRM256: return ((op.isReg && RegisterTools.isAvxRegister(op.rn)) || (op.isMem && op.nBits == 256));
                 case AsmSignatureEnum.ZMMRM512: return ((op.isReg && RegisterTools.isAvx512Register(op.rn)) || (op.isMem && op.nBits == 512));
 
-                case AsmSignatureEnum.b32: return true;
-                case AsmSignatureEnum.b64: return true;
+                case AsmSignatureEnum.b32: return (op.isMem && op.nBits == 32);
+                case AsmSignatureEnum.b64: return (op.isMem && op.nBits == 64);
                 case AsmSignatureEnum.mem_offs: return (op.isImm);
                 case AsmSignatureEnum.reg_sreg: return (op.isReg && (RegisterTools.isSegmentRegister(op.rn)));
                 case AsmSignatureEnum.reg_creg: return (op.isReg && (RegisterTools.isControlRegister(op.rn)));
