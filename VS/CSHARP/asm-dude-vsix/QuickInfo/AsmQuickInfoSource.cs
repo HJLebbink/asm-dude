@@ -191,6 +191,9 @@ namespace AsmDude.QuickInfo {
                             break;
                     }
                     if (description != null) {
+                        description.FontSize = AsmDudeToolsStatic.getFontSize() + 2;
+                        description.FontFamily = AsmDudeToolsStatic.getFontType();
+                        //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:AugmentQuickInfoSession; setting description fontSize={1}; fontFamily={2}", this.ToString(), description.FontSize, description.FontFamily));
                         quickInfoContent.Add(description);
                     }
                 }

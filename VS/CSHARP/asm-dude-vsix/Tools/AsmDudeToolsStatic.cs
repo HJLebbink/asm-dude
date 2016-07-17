@@ -132,6 +132,23 @@ namespace AsmDude.Tools {
             }
         }
 
+        public static int getFontSize() {
+            DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
+            EnvDTE.Properties propertiesList = dte.get_Properties("FontsAndColors", "TextEditor");
+            Property prop = propertiesList.Item("FontSize");
+            int fontSize = (System.Int16)prop.Value;
+            return fontSize;
+        }
+
+        public static FontFamily getFontType() {
+            DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
+            EnvDTE.Properties propertiesList = dte.get_Properties("FontsAndColors", "TextEditor");
+            Property prop = propertiesList.Item("FontFamily");
+            string font = (string)prop.Value;
+            //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "ERROR: AsmDudeToolsStatic:getFontType {0}", font));
+            return new FontFamily(font);
+        }
+
         public static void errorTaskNavigateHandler(object sender, EventArgs arguments) {
             Microsoft.VisualStudio.Shell.Task task = sender as Microsoft.VisualStudio.Shell.Task;
 
