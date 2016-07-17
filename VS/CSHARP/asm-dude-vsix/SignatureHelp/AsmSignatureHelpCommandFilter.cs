@@ -55,7 +55,7 @@ namespace AsmDude.SignatureHelp {
         public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
             try {
                 SnapshotPoint currentPoint = _textView.Caret.Position.BufferPosition;
-                if (currentPoint != null) {
+                if ((currentPoint != null) && (currentPoint > 0)) {
                     SnapshotPoint point = currentPoint - 1;
                     if (point.Position > 1) {
                         ITextSnapshotLine line = point.Snapshot.GetLineFromPosition(point.Position);
