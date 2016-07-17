@@ -36,7 +36,7 @@ namespace AsmDude {
         
         public OpcodeP() {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: Entering constructor for: {0}", this.ToString()));
-            DisplayName = "mnemonic"; //human readable version of the name
+            DisplayName = "AsmDude - Mnemonic"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
             ForegroundColor = AsmDudeToolsStatic.convertColor(Settings.Default.SyntaxHighlighting_Opcode);
         }
     }
@@ -48,7 +48,7 @@ namespace AsmDude {
     [Order(Before = Priority.Default)]
     internal sealed class RegisterP : ClassificationFormatDefinition {
         public RegisterP() {
-            DisplayName = "register"; //human readable version of the name
+            DisplayName = "AsmDude - Register"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
             ForegroundColor = AsmDudeToolsStatic.convertColor(Settings.Default.SyntaxHighlighting_Register);
         }
     }
@@ -60,7 +60,7 @@ namespace AsmDude {
     [Order(Before = Priority.Default)]
     internal sealed class RemarkP : ClassificationFormatDefinition {
         public RemarkP() {
-            DisplayName = "remark"; //human readable version of the name
+            DisplayName = "AsmDude - Remark"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
             ForegroundColor = AsmDudeToolsStatic.convertColor(Settings.Default.SyntaxHighlighting_Remark);
             IsItalic = true;
         }
@@ -73,7 +73,7 @@ namespace AsmDude {
     [Order(Before = Priority.Default)]
     internal sealed class DirectiveP : ClassificationFormatDefinition {
         public DirectiveP() {
-            DisplayName = "directive"; //human readable version of the name
+            DisplayName = "AsmDude - Directive"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
             ForegroundColor = AsmDudeToolsStatic.convertColor(Settings.Default.SyntaxHighlighting_Directive);
             IsItalic = true;
         }
@@ -86,7 +86,7 @@ namespace AsmDude {
     [Order(Before = Priority.Default)]
     internal sealed class JumpP : ClassificationFormatDefinition {
         public JumpP() {
-            DisplayName = "jump"; //human readable version of the name
+            DisplayName = "AsmDude - Jump"; //human readable version of the name
             ForegroundColor = AsmDudeToolsStatic.convertColor(Settings.Default.SyntaxHighlighting_Jump);
         }
     }
@@ -98,7 +98,7 @@ namespace AsmDude {
     [Order(Before = Priority.Default)]
     internal sealed class LabelP : ClassificationFormatDefinition {
         public LabelP() {
-            DisplayName = "Display label"; //human readable version of the name
+            DisplayName = "AsmDude - Label"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
             ForegroundColor = AsmDudeToolsStatic.convertColor(Settings.Default.SyntaxHighlighting_Label);
             //TextDecorations = System.Windows.TextDecorations.Underline;
         }
@@ -111,7 +111,7 @@ namespace AsmDude {
     [Order(Before = Priority.Default)]
     internal sealed class LabelDefP : ClassificationFormatDefinition {
         public LabelDefP() {
-            DisplayName = "Display label Def"; //human readable version of the name
+            DisplayName = "AsmDude - Label Definition"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
             ForegroundColor = AsmDudeToolsStatic.convertColor(Settings.Default.SyntaxHighlighting_Label);
             //TextDecorations = System.Windows.TextDecorations.Underline;
         }
@@ -124,7 +124,7 @@ namespace AsmDude {
     [Order(Before = Priority.Default)]
     internal sealed class ConstantP : ClassificationFormatDefinition {
         public ConstantP() {
-            DisplayName = "constant"; //human readable version of the name
+            DisplayName = "AsmDude - Constant"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
             ForegroundColor = AsmDudeToolsStatic.convertColor(Settings.Default.SyntaxHighlighting_Constant);
         }
     }
@@ -136,7 +136,7 @@ namespace AsmDude {
     [Order(Before = Priority.Default)]
     internal sealed class MiscP : ClassificationFormatDefinition {
         public MiscP() {
-            DisplayName = "misc"; //human readable version of the name
+            DisplayName = "AsmDude - Misc"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
             ForegroundColor = AsmDudeToolsStatic.convertColor(Settings.Default.SyntaxHighlighting_Misc);
         }
     }
