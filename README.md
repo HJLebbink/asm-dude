@@ -48,9 +48,9 @@ clashing label definitions. Red error squiggles appear and entries in the error 
 
 ![label-analysis](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude-label-clash.png?raw=true "Label Clashes")
 
-## Where is the Source
-If you are reading this you are most likely an assembly programmer, if you are still interested in some dirty c# 
-you can run the extension from source code. To do that, Visual Studio 2015 SDK needs to be installed. 
+## Where is the Source (Are you sure this is not a honeypot?!)
+If you are reading this you are most likely an assembly programmer, if you are still interested in some dirty c#, 
+or you are just cautious, you can run the extension from source code. To do that, Visual Studio 2015 SDK needs to be installed. 
 To run the extension, hit F5 or choose the Debug > Start Debugging menu command. A new instance of Visual 
 Studio will launch under the experimental hive.
 
@@ -72,7 +72,7 @@ Studio will launch under the experimental hive.
 * Label rename assistance.
 * Create new file item with .asm extension.
 * Add syntax highlighting for AT&T syntax.
-* Syntax highlighting in quickinfo tooltips.
+* Syntax highlighting in quickinfo tooltips, code folding block previews.
 * Code formatting.
 * Syntax highlighting for the Debug/Windows/Disassembly view.
 * Track flag influence. Select an opcode that uses a flag (as input), find the opcodes that produce this flag (as output). E.g.  select opcode cmovc or setc , highlight all opcodes such as btr, sal, sar, shl, shr, etc.
