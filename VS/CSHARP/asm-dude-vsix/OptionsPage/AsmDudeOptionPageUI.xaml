@@ -5,168 +5,178 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			 xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
              xmlns:local="clr-namespace:AsmDude.OptionsPage">
-	<Grid RenderTransformOrigin="0.5,0.818" VerticalAlignment="Top" Margin="0">
-		<ScrollViewer Margin="0,-4,0,4">
-			<StackPanel Margin="10">
+	<Grid RenderTransformOrigin="0.5,0.818" VerticalAlignment="Top">
+		<ScrollViewer>
+			<StackPanel>
 				<Label x:Name="version_UI" Content="AsmDude version" />
-				<GroupBox Header="Syntax Highlighting" BorderBrush="DarkGray" Margin="5" >
-					<Grid VerticalAlignment="Top" Margin="5">
-						<StackPanel Margin="0">
-							<Grid Height="24">
-								<CheckBox x:Name="useSyntaxHighlighting_UI" ToolTip="Syntax Highlighting Enabled" Content="Enable Syntax Highlighting" Margin="4,3,6,-3" />
+				<GroupBox Header="Syntax Highlighting" BorderBrush="DarkGray">
+					<Grid>
+						<StackPanel>
+							<CheckBox x:Name="useSyntaxHighlighting_UI" ToolTip="Syntax Highlighting Enabled" Content="Enable Syntax Highlighting"/>
+							<Grid>
+								<Label Content="Compiler:" HorizontalAlignment="Left"/>
+								<RadioButton x:Name="usedAssemblerMasm_UI" GroupName="usedAssembler_UI" ToolTip="Enable syntax highlighting for MASM" Content="Masm" Margin="140,0,0,0" HorizontalAlignment="Left" Width="188"/>
+								<RadioButton x:Name="usedAssemblerNasm_UI" GroupName="usedAssembler_UI" ToolTip="Enable syntax highlighting for NASM" Content="Nasm" Margin="190,0,0,0"/>
 							</Grid>
-							<Grid Height="22">
-								<Label Content="Compiler:" Margin="0,-4,0,0" HorizontalAlignment="Left" Width="120" Height="26" VerticalAlignment="Top" />
-								<RadioButton x:Name="usedAssemblerMasm_UI" GroupName="usedAssembler_UI" ToolTip="Syntax Highlighting for MASM" Content="Masm" Height="22" VerticalAlignment="Top" Margin="120,2,0,-2" HorizontalAlignment="Left" Width="188"/>
-								<RadioButton x:Name="usedAssemblerNasm_UI" GroupName="usedAssembler_UI" ToolTip="Syntax Highlighting for NASM" Content="Nasm" Height="22" VerticalAlignment="Top" Margin="179,2,0,-2"/>
+							<Grid>
+								<Label Content="Mnemonic:" HorizontalAlignment="Left"/>
+								<xctk:ColorPicker x:Name="colorMnemonic_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for mnemonics." Margin="140,0,0,0"/>
 							</Grid>
-							<Grid Grid.ColumnSpan="2" Height="26">
-								<xctk:ColorPicker x:Name="colorMnemonic_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for mnemonics" Margin="120,0,10,2" Height="24"/>
-								<Label Content="Mnemonic:" HorizontalAlignment="Left" Width="120" />
+							<Grid>
+								<Label Content="Register:" HorizontalAlignment="Left"/>
+								<xctk:ColorPicker x:Name="colorRegister_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for registers" Margin="140,0,0,0"/>
 							</Grid>
-							<Grid Grid.ColumnSpan="2" Height="26">
-								<xctk:ColorPicker x:Name="colorRegister_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for registers" Margin="120,0,10,2" Height="24"/>
-								<Label Content="Register:" HorizontalAlignment="Left"  Width="120" />
+							<Grid>
+								<Label Content="Remark:" HorizontalAlignment="Left"/>
+								<xctk:ColorPicker x:Name="colorRemark_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for remarks" Margin="140,0,0,0"/>
 							</Grid>
-							<Grid Grid.ColumnSpan="2" Height="26">
-								<xctk:ColorPicker x:Name="colorRemark_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for remarks" Margin="120,0,10,2" Height="24"/>
-								<Label Content="Remark:" HorizontalAlignment="Left" Width="120" />
+							<Grid>
+								<Label Content="Directive:" HorizontalAlignment="Left"/>
+								<xctk:ColorPicker x:Name="colorDirective_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for compiler directives" Margin="140,0,0,0"/>
 							</Grid>
-							<Grid Grid.ColumnSpan="2" Height="26">
-								<xctk:ColorPicker x:Name="colorDirective_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for compiler directives" Margin="120,0,10,2" Height="24"/>
-								<Label Content="Directive:" HorizontalAlignment="Left" Width="120" />
+							<Grid>
+								<Label Content="Constant:" HorizontalAlignment="Left"/>
+								<xctk:ColorPicker x:Name="colorConstant_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for constants" Margin="140,0,0,0"/>
 							</Grid>
-							<Grid Grid.ColumnSpan="2" Height="26">
-								<xctk:ColorPicker x:Name="colorConstant_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for constants" Margin="120,0,10,2" Height="24"/>
-								<Label Content="Constant:" HorizontalAlignment="Left"  Width="120" />
+							<Grid>
+								<Label Content="Jump:" HorizontalAlignment="Left"/>
+								<xctk:ColorPicker x:Name="colorJump_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for jump mnemonics" Margin="140,0,0,0"/>
 							</Grid>
-							<Grid Grid.ColumnSpan="2" Height="26">
-								<xctk:ColorPicker x:Name="colorJump_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for jump mnemonics" Margin="120,0,10,2" Height="24"/>
-								<Label Content="Jump:" HorizontalAlignment="Left"  Width="120" />
+							<Grid>
+								<Label Content="Label:" HorizontalAlignment="Left"/>
+								<xctk:ColorPicker x:Name="colorLabel_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for labels" Margin="140,0,0,0"/>
 							</Grid>
-							<Grid Grid.ColumnSpan="2" Height="26">
-								<xctk:ColorPicker x:Name="colorLabel_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for labels" Margin="120,0,10,2" Height="24"/>
-								<Label Content="Label:" HorizontalAlignment="Left"  Width="120" />
+							<Grid>
+								<Label Content="Misc:" HorizontalAlignment="Left"/>
+								<xctk:ColorPicker x:Name="colorMisc_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for misc" Margin="140,0,0,0"/>
 							</Grid>
-							<Grid Grid.ColumnSpan="2" Height="26">
-								<xctk:ColorPicker x:Name="colorMisc_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for misc" Margin="120,0,10,2" Height="24"/>
-								<Label Content="Misc:" HorizontalAlignment="Left"  Width="120" />
+							<TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" Width="auto">To edit other properties of these keywords such as font families, go to Tools>Options>Environment>Fonts and Colors>Text Editor.</TextBlock>
+						</StackPanel>
+					</Grid>
+				</GroupBox>
+				<GroupBox Header="Documentation" BorderBrush="DarkGray">
+					<Grid>
+						<StackPanel>
+							<CheckBox x:Name="useAsmDoc_UI" ToolTip="Assembly Documentation Enabled" Content="Enable Documentation"/>
+							<Grid>
+								<Label Content="Documentation URL:" HorizontalAlignment="Left"/>
+								<TextBox x:Name="asmDocUrl_UI" ToolTip="URL to the documentation. E.g. http://www.felixcloutier.com/x86/" TextWrapping="Wrap" Text="http://www.felixcloutier.com/x86/" Margin="140,0,0,0"/>
 							</Grid>
 						</StackPanel>
 					</Grid>
 				</GroupBox>
-				<GroupBox Header="Documentation" BorderBrush="DarkGray" Margin="5" Height="76" >
-					<Grid VerticalAlignment="Top" Margin="5">
-						<CheckBox x:Name="useAsmDoc_UI" ToolTip="Assembly Documentation Enabled" Content="Enable Documentation" Height="20" VerticalAlignment="Top" />
-						<Label Content="Documentation URL:" HorizontalAlignment="Left" Width="120" Margin="0,20,0,0" Height="25" VerticalAlignment="Top" />
-						<TextBox x:Name="asmDocUrl_UI" ToolTip="URL to the documentation. E.g. http://www.felixcloutier.com/x86/" TextWrapping="Wrap" Text="http://www.felixcloutier.com/x86/" Height="20" Margin="120,24,10,0" VerticalAlignment="Top" />
-					</Grid>
-				</GroupBox>
-				<GroupBox Header="Folding" BorderBrush="DarkGray" Margin="5" >
-					<Grid VerticalAlignment="Top" Margin="5">
-						<CheckBox x:Name="useCodeFolding_UI" ToolTip="Code Folding Enabled" Content="Enable Code Folding" Height="20" VerticalAlignment="Top" />
-						<CheckBox x:Name="isDefaultCollaped_UI" ToolTip="Whether folding regions are collapsed by default" Content="Default Collapsed" Height="20" VerticalAlignment="Top" Margin="149,0,10,0" />
-						<Label Content="Start Tag:"  HorizontalAlignment="Left" Width="120" Height="26" Margin="0,20,0,23" />
-						<TextBox x:Name="beginTag_UI" ToolTip="The characters that start the outlining region. E.g. #region" Margin="120,23,10,0" Height="20" VerticalAlignment="Top" />
-						<Label Content="End Tag:"  HorizontalAlignment="Left" Width="120" Height="26" Margin="0,46,0,-3" />
-						<TextBox x:Name="endTag_UI" ToolTip="The characters that start the outlining region. E.g. #endregion" Margin="120,51,10,-2" Height="20" VerticalAlignment="Top"/>
-					</Grid>
-				</GroupBox>
-				<GroupBox Header="Keyword Highlighting" BorderBrush="DarkGray" Margin="5" Height="77" >
-					<Grid VerticalAlignment="Top" Margin="5">
-						<Grid Height="24">
-							<CheckBox x:Name="useKeywordHighlighting_UI" ToolTip="Keyword Highlighting Enabled" Content="Enable Keyword Highlighting" Height="20" VerticalAlignment="Top" />
-						</Grid>
-						<Grid Grid.ColumnSpan="2" Height="26">
-							<Label Content="Background Color:" Margin="0,22,0,-22" HorizontalAlignment="Left" Width="120" Height="26" VerticalAlignment="Top" />
-							<xctk:ColorPicker x:Name="backgroundColor_UI" DisplayColorAndName="True" ToolTip="The background color for keyword highlighting" Margin="120,24,10,-22" Height="24" VerticalAlignment="Top"/>
-						</Grid>
-					</Grid>
-				</GroupBox>
-				<GroupBox Header="Intellisense" BorderBrush="DarkGray" Margin="5" >
-					<Grid VerticalAlignment="Top" Margin="5">
-						<StackPanel VerticalAlignment="Top">
-							<CheckBox x:Name="useCodeCompletion_UI" Content="Enable Code Completion" ToolTip="Code Completion Enabled" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="useSignatureHelp_UI" Content="Enable Signature Help" ToolTip="Signature Help Enabled" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="showUndefinedLabels_UI" Content="Show undefined labels in error task" ToolTip="Show undefined labels in error task" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="decorateUndefinedLabels_UI" Content="Decorate undefined labels" ToolTip="Decorate undefined labels with error squiggles"  Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="showClashingLabels_UI" Content="Show clashing labels in error task" ToolTip="Show clashing labels in error task"  Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-							<CheckBox x:Name="decorateClashingLabels_UI" Content="Decorate clashing labels" ToolTip="Decorate clashing labels with error squiggle"  Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+				<GroupBox Header="Folding" BorderBrush="DarkGray">
+					<Grid>
+						<StackPanel>
+							<Grid>
+								<CheckBox x:Name="useCodeFolding_UI" ToolTip="Code Folding Enabled" Content="Enable Code Folding" />
+								<CheckBox x:Name="isDefaultCollaped_UI" ToolTip="Whether folding regions are collapsed by default" Content="Default Collapsed" Margin="140,0,0,0"/>
+							</Grid>
+							<Grid>
+								<Label Content="Start Tag:" HorizontalAlignment="Left"/>
+								<TextBox x:Name="beginTag_UI" ToolTip="The characters that start the outlining region. E.g. #region" Margin="140,0,0,0"/>
+							</Grid>
+							<Grid>
+								<Label Content="End Tag:" HorizontalAlignment="Left"/>
+								<TextBox x:Name="endTag_UI" ToolTip="The characters that start the outlining region. E.g. #endregion" Margin="140,0,0,0"/>
+							</Grid>
 						</StackPanel>
 					</Grid>
 				</GroupBox>
-				<GroupBox Header="Architectures" BorderBrush="DarkGray" Margin="5" >
-					<Grid VerticalAlignment="Top" Margin="5">
-						
-						<StackPanel VerticalAlignment="Top">
-							<GroupBox Header="Processors" BorderBrush="DarkGray" Margin="5" >
-								<Grid VerticalAlignment="Top" Margin="5">
-									<StackPanel VerticalAlignment="Top">
-										<CheckBox x:Name="useArch_8086_UI" Content="8086" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_186_UI" Content="186" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_286_UI" Content="286" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_386_UI" Content="386" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_486_UI" Content="486" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_PENT_UI" Content="PENT" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_P6_UI" Content="P6" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_KATMAI_UI" Content="KATMAI" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_WILLAMETTE_UI" Content="WILLAMETTE" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_PRESCOTT_UI" Content="PRESCOTT" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_NEHALEM_UI" Content="NEHALEM" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_WESTMERE_UI" Content="WESTMERE" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_SANDYBRIDGE_UI" Content="SANDYBRIDGE" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_FUTURE_UI" Content="FUTURE" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+				<GroupBox Header="Keyword Highlighting" BorderBrush="DarkGray">
+					<Grid>
+						<StackPanel>
+							<CheckBox x:Name="useKeywordHighlighting_UI" ToolTip="Keyword Highlighting Enabled" Content="Enable Keyword Highlighting"/>
+							<Grid>
+								<Label Content="Background Color:" HorizontalAlignment="Left"/>
+								<xctk:ColorPicker x:Name="backgroundColor_UI" DisplayColorAndName="True" ToolTip="The background color for keyword highlighting" Margin="140,0,0,0"/>
+							</Grid>
+						</StackPanel>
+					</Grid>
+				</GroupBox>
+				<GroupBox Header="Intellisense" BorderBrush="DarkGray">
+					<Grid>
+						<StackPanel>
+							<CheckBox x:Name="useCodeCompletion_UI" Content="Enable Code Completion" ToolTip="Code Completion Enabled"/>
+							<CheckBox x:Name="useSignatureHelp_UI" Content="Enable Signature Help" ToolTip="Signature Help Enabled"/>
+							<CheckBox x:Name="showUndefinedLabels_UI" Content="Show undefined labels in error task" ToolTip="Show undefined labels in error task"/>
+							<CheckBox x:Name="decorateUndefinedLabels_UI" Content="Decorate undefined labels" ToolTip="Decorate undefined labels with error squiggles"/>
+							<CheckBox x:Name="showClashingLabels_UI" Content="Show clashing labels in error task" ToolTip="Show clashing labels in error task"/>
+							<CheckBox x:Name="decorateClashingLabels_UI" Content="Decorate clashing labels" ToolTip="Decorate clashing labels with error squiggle"/>
+						</StackPanel>
+					</Grid>
+				</GroupBox>
+				<GroupBox Header="Architectures" BorderBrush="DarkGray">
+					<Grid>
+						<StackPanel>
+							<GroupBox Header="Processors" BorderBrush="DarkGray">
+								<Grid>
+									<StackPanel>
+										<CheckBox x:Name="useArch_8086_UI" Content="8086"/>
+										<CheckBox x:Name="useArch_186_UI" Content="186"/>
+										<CheckBox x:Name="useArch_286_UI" Content="286"/>
+										<CheckBox x:Name="useArch_386_UI" Content="386"/>
+										<CheckBox x:Name="useArch_486_UI" Content="486"/>
+										<CheckBox x:Name="useArch_PENT_UI" Content="PENT"/>
+										<CheckBox x:Name="useArch_P6_UI" Content="P6"/>
+										<CheckBox x:Name="useArch_KATMAI_UI" Content="KATMAI"/>
+										<CheckBox x:Name="useArch_WILLAMETTE_UI" Content="WILLAMETTE"/>
+										<CheckBox x:Name="useArch_PRESCOTT_UI" Content="PRESCOTT"/>
+										<CheckBox x:Name="useArch_NEHALEM_UI" Content="NEHALEM"/>
+										<CheckBox x:Name="useArch_WESTMERE_UI" Content="WESTMERE"/>
+										<CheckBox x:Name="useArch_SANDYBRIDGE_UI" Content="SANDYBRIDGE"/>
+										<CheckBox x:Name="useArch_FUTURE_UI" Content="FUTURE"/>
 									</StackPanel>
 								</Grid>
 							</GroupBox>
-							<GroupBox Header="SIMD" BorderBrush="DarkGray" Margin="5" >
-								<Grid VerticalAlignment="Top" Margin="5">
-									<StackPanel VerticalAlignment="Top">
-										<CheckBox x:Name="useArch_3DNOW_UI" Content="3DNOW" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_MMX_UI" Content="MMX" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_SSE_UI" Content="SSE" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_SSE2_UI" Content="SSE2" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_SSE3_UI" Content="SSE3" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_SSSE3_UI" Content="SSSE3" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_SSE41_UI" Content="SSE41" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_SSE42_UI" Content="SSE42" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_SSE4A_UI" Content="SSE4A" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_SSE5_UI" Content="SSE5" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_AVX_UI" Content="AVX" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_AVX2_UI" Content="AVX2" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_AVX512_UI" Content="AVX512" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_AVX512VL_UI" Content="AVX512VL" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_AVX512DQ_UI" Content="AVX512DQ" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_AVX512BW_UI" Content="AVX512BW" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_AVX512ER_UI" Content="AVX512ER" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_AVX512PF_UI" Content="AVX512PF" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_AVX512CD_UI" Content="AVX512CD" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_AVX512VBMI_UI" Content="AVX512VBMI" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_AVX512IFMA_UI" Content="AVX512IFMA" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+							<GroupBox Header="SIMD" BorderBrush="DarkGray">
+								<Grid>
+									<StackPanel>
+										<CheckBox x:Name="useArch_3DNOW_UI" Content="3DNOW"/>
+										<CheckBox x:Name="useArch_MMX_UI" Content="MMX"/>
+										<CheckBox x:Name="useArch_SSE_UI" Content="SSE"/>
+										<CheckBox x:Name="useArch_SSE2_UI" Content="SSE2"/>
+										<CheckBox x:Name="useArch_SSE3_UI" Content="SSE3"/>
+										<CheckBox x:Name="useArch_SSSE3_UI" Content="SSSE3"/>
+										<CheckBox x:Name="useArch_SSE41_UI" Content="SSE41"/>
+										<CheckBox x:Name="useArch_SSE42_UI" Content="SSE42"/>
+										<CheckBox x:Name="useArch_SSE4A_UI" Content="SSE4A"/>
+										<CheckBox x:Name="useArch_SSE5_UI" Content="SSE5"/>
+										<CheckBox x:Name="useArch_AVX_UI" Content="AVX"/>
+										<CheckBox x:Name="useArch_AVX2_UI" Content="AVX2"/>
+										<CheckBox x:Name="useArch_AVX512_UI" Content="AVX512"/>
+										<CheckBox x:Name="useArch_AVX512VL_UI" Content="AVX512VL"/>
+										<CheckBox x:Name="useArch_AVX512DQ_UI" Content="AVX512DQ"/>
+										<CheckBox x:Name="useArch_AVX512BW_UI" Content="AVX512BW"/>
+										<CheckBox x:Name="useArch_AVX512ER_UI" Content="AVX512ER"/>
+										<CheckBox x:Name="useArch_AVX512PF_UI" Content="AVX512PF"/>
+										<CheckBox x:Name="useArch_AVX512CD_UI" Content="AVX512CD"/>
+										<CheckBox x:Name="useArch_AVX512VBMI_UI" Content="AVX512VBMI"/>
+										<CheckBox x:Name="useArch_AVX512IFMA_UI" Content="AVX512IFMA"/>
 									</StackPanel>
 								</Grid>
 							</GroupBox>
-							<GroupBox Header="Misc" BorderBrush="DarkGray" Margin="5" >
-								<Grid VerticalAlignment="Top" Margin="5">
-									<StackPanel VerticalAlignment="Top">
-										<CheckBox x:Name="useArch_X64_UI" Content="X64" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_X86_64_UI" Content="X86-64" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_BMI1_UI" Content="BMI1" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_BMI2_UI" Content="BMI2" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_IA64_UI" Content="IA64" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_FPU_UI" Content="FPU" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_FMA_UI" Content="FMA" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_TBM_UI" Content="TBM" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_AMD_UI" Content="AMD" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_PRIV_UI" Content="PRIV" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_PROT_UI" Content="PROT" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_CYRIX_UI" Content="CYRIX" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_CYRIXM_UI" Content="CYRIXM" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_VMX_UI" Content="VMX" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_RTM_UI" Content="RTM" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_MPX_UI" Content="MPX" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_MIB_UI" Content="MIB" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
-										<CheckBox x:Name="useArch_SHA_UI" Content="SHA" Margin="0,5,0,0" Height="20" VerticalAlignment="Top" />
+							<GroupBox Header="Misc" BorderBrush="DarkGray">
+								<Grid >
+									<StackPanel>
+										<CheckBox x:Name="useArch_X64_UI" Content="X64"/>
+										<CheckBox x:Name="useArch_X86_64_UI" Content="X86-64"/>
+										<CheckBox x:Name="useArch_BMI1_UI" Content="BMI1"/>
+										<CheckBox x:Name="useArch_BMI2_UI" Content="BMI2"/>
+										<CheckBox x:Name="useArch_IA64_UI" Content="IA64"/>
+										<CheckBox x:Name="useArch_FPU_UI" Content="FPU"/>
+										<CheckBox x:Name="useArch_FMA_UI" Content="FMA"/>
+										<CheckBox x:Name="useArch_TBM_UI" Content="TBM"/>
+										<CheckBox x:Name="useArch_AMD_UI" Content="AMD"/>
+										<CheckBox x:Name="useArch_PRIV_UI" Content="PRIV"/>
+										<CheckBox x:Name="useArch_PROT_UI" Content="PROT"/>
+										<CheckBox x:Name="useArch_CYRIX_UI" Content="CYRIX"/>
+										<CheckBox x:Name="useArch_CYRIXM_UI" Content="CYRIXM"/>
+										<CheckBox x:Name="useArch_VMX_UI" Content="VMX"/>
+										<CheckBox x:Name="useArch_RTM_UI" Content="RTM"/>
+										<CheckBox x:Name="useArch_MPX_UI" Content="MPX"/>
+										<CheckBox x:Name="useArch_MIB_UI" Content="MIB"/>
+										<CheckBox x:Name="useArch_SHA_UI" Content="SHA"/>
 									</StackPanel>
 								</Grid>
 							</GroupBox>
