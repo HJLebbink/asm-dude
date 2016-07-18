@@ -48,6 +48,7 @@ namespace AsmDude.BraceMatching {
             this._braceList = new Dictionary<char, char>();
             this._braceList.Add('[', ']');
             this._braceList.Add('(', ')');
+            this._braceList.Add('{', '}');
 
             this._view.Caret.PositionChanged += CaretPositionChanged;
             this._view.LayoutChanged += ViewLayoutChanged;
