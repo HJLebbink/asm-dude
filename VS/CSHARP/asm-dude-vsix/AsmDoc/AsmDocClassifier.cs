@@ -43,7 +43,7 @@ namespace AsmDude.AsmDoc {
     {
         public UnderlineFormatDefinition()
         {
-            this.DisplayName = "Underline";
+            this.DisplayName = "AsmDude - Documentation Link";
             this.TextDecorations = System.Windows.TextDecorations.Underline;
             //this.ForegroundColor = Colors.Blue;
         }
@@ -67,20 +67,20 @@ namespace AsmDude.AsmDoc {
         static IClassificationType UnderlineClassification;
         public static UnderlineClassifier GetClassifierForView(ITextView view)
         {
-            if (UnderlineClassification == null)
+            if (UnderlineClassification == null) {
                 return null;
-
+            }
             return view.Properties.GetOrCreateSingletonProperty(() => new UnderlineClassifier(view, UnderlineClassification));
         }
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
-            if (UnderlineClassification == null)
+            if (UnderlineClassification == null) {
                 UnderlineClassification = ClassificationRegistry.GetClassificationType("UnderlineClassification");
-
-            if (textView.TextBuffer != buffer)
+            }
+            if (textView.TextBuffer != buffer) {
                 return null;
-
+            }
             return GetClassifierForView(textView) as ITagger<T>;
         }
     }
