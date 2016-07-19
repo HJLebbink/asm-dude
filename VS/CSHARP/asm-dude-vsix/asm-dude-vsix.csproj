@@ -296,9 +296,11 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Resources\mnemonics.txt">
-      <SubType>Designer</SubType>
-      <Generator>MSDataSetGenerator</Generator>
+    <Content Include="Resources\mnemonics-nasm.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\signature-june2016.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -342,7 +344,6 @@
     <Compile Include="SignatureHelp\AsmSignatureHelpCommandProvider.cs" />
     <Compile Include="SignatureHelp\AsmSignatureHelpSource.cs" />
     <Compile Include="SignatureHelp\AsmSignatureHelpSourceProvider.cs" />
-    <Compile Include="SignatureHelp\MnemonicStore.cs" />
     <Compile Include="SyntaxHighlighting\NasmTokenTagger.cs" />
     <Compile Include="Tools\ApplicationInformation.cs" />
     <Compile Include="Tools\AsmDudeTools.cs" />
@@ -398,6 +399,7 @@
     <Compile Include="Tools\CustomEventArgs.cs" />
     <Compile Include="Tools\ILabelGraph.cs" />
     <Compile Include="Tools\LabelGraph.cs" />
+    <Compile Include="Tools\MnemonicStore.cs" />
     <Compile Include="VsPackage.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

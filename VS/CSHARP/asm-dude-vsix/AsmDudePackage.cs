@@ -20,7 +20,7 @@ namespace AsmDude {
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("AsmDude", Vsix.Description, Vsix.Version)] // for the help about information
 
-    [ProvideMenuResource("Menus.ctmenu", 1)] // needed when showing menus
+    [ProvideMenuResource("Menus.ctmenu", 1001)] // needed when showing menus
     [ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
     [Guid(Guids.GuidPackage_str)]
     [ComVisible(false)]
@@ -55,8 +55,9 @@ namespace AsmDude {
             //this.changeFontAutoComplete();
 
             StringBuilder sb = new StringBuilder();
-            sb.Append(" _____          ____        _     \n");
-            sb.Append("|  _  |___ _____|    \\ _ _ _| |___ \n");
+            sb.Append("Welcome to\n");
+            sb.Append(" _____           ____        _     \n");
+            sb.Append("|  _  |___ _____|    \\ _ _ _| |___\n");
             sb.Append("|     |_ -|     |  |  | | | . | -_|\n");
             sb.Append("|__|__|___|_|_|_|____/|___|___|___|\n");
             sb.Append("INFO: Loaded AsmDude version " + typeof(AsmDudePackage).Assembly.GetName().Version +" ("+ ApplicationInformation.CompileDate.ToString()+")\n");
@@ -73,8 +74,8 @@ namespace AsmDude {
         /// https://msdn.microsoft.com/en-us/library/bb166382.aspx
         /// </summary>
         /// 
+        
         /*
-
         private void changeFontAutoComplete() {
             // experiments to change the font of the autocomplate
             try {
@@ -112,6 +113,18 @@ namespace AsmDude {
                     //EnvDTE.Property prop = propertiesList.Item("Scheme");
                     //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString(), prop.Value));
 
+                    EnvDTE.Properties propertiesList = vsEnvironment.get_Properties("Environment", "FontsAndColors");
+                    if (propertiesList != null) {
+                        AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString()));
+                    }
+                    //EnvDTE.Property prop = propertiesList.Item("Scheme");
+                    //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString(), prop.Value));
+                }
+                if (true) {
+                    //EnvDTE.Properties propertiesList = vsEnvironment.get_Properties("Environment", "Keyboard");
+                    //EnvDTE.Property prop = propertiesList.Item("Scheme");
+                    //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString(), prop.Value));
+
                     EnvDTE.Properties propertiesList = vsEnvironment.get_Properties("Environment", "Fonts and Colors");
                     if (propertiesList != null) {
                         AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString()));
@@ -119,6 +132,9 @@ namespace AsmDude {
                     //EnvDTE.Property prop = propertiesList.Item("Scheme");
                     //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString(), prop.Value));
                 }
+
+
+
             } catch (Exception e) {
                 AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "ERROR: {0}:changeFontAutoComplete {1}", this.ToString(), e.Message));
             }

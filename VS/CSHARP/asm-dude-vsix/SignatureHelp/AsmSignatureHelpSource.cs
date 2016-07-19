@@ -137,30 +137,29 @@ namespace AsmDude.SignatureHelp {
         private AsmSignature createSignature(ITextBuffer textBuffer, AsmSignatureElement signatureElement, ITrackingSpan span) {
             int nOperands = signatureElement.operands.Count;
             Span[] locus = new Span[nOperands];
-            string[] operandStr = new string[nOperands];
 
             StringBuilder sb = new StringBuilder();
             sb.Append(signatureElement.mnemonic.ToString());
             sb.Append(" ");
-            //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: createSignature: sb=" + sb.ToString());
+            AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: createSignature: sb=" + sb.ToString());
 
             for (int i = 0; i < nOperands; ++i) {
-                IList<AsmSignatureEnum> operand = signatureElement.operands[i];
-                operandStr[i] = AsmSignatureTools.ToString(operand, "|");
                 int locusStart = sb.Length;
-                sb.Append(operandStr[i]);
-                //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: createSignature: i="+i+"; sb=" + sb.ToString());
+                sb.Append(signatureElement.getOperandDoc(i));
+                AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: createSignature: i="+i+"; sb=" + sb.ToString());
                 locus[i] = new Span(locusStart, sb.Length - locusStart);
                 if (i < nOperands - 1) sb.Append(", ");
             }
 
             sb.Append(ArchTools.ToString(signatureElement.arch));
-            AsmSignature sig = new AsmSignature(textBuffer, sb.ToString(), signatureElement.doc, null);
+            AsmSignature sig = new AsmSignature(textBuffer, sb.ToString(), signatureElement.documentation, null);
             textBuffer.Changed += new EventHandler<TextContentChangedEventArgs>(sig.OnSubjectBufferChanged);
 
             List<IParameter> paramList = new List<IParameter>();
             for (int i = 0; i < nOperands; ++i) {
-                paramList.Add(new AsmParameter(AsmSignatureElement.makeDoc(signatureElement.operands[i]), locus[i], operandStr[i], sig));
+                string documentation = AsmSignatureElement.makeDoc(signatureElement.operands[i]);
+                string operandName = signatureElement.getOperandStr(i);
+                paramList.Add(new AsmParameter(documentation, locus[i], operandName, sig));
             }
 
             sig.Parameters = new ReadOnlyCollection<IParameter>(paramList);

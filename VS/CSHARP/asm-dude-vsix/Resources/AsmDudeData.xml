@@ -94,6 +94,34 @@
 		<misc name="DZ">
 			<description>(64 bytes, 512 bit). DZ is a synonym of ZWORD.</description>
 		</misc>
+
+		<misc name="z" arch="AVX512">
+			<description>Zero mask</description>
+		</misc>
+		<misc name="sae" arch="AVX512">
+			<description>TODO</description>
+		</misc>
+		<misc name="rn-sae" arch="AVX512">
+			<description>TODO</description>
+		</misc>
+		<misc name="ru-sae" arch="AVX512">
+			<description>TODO</description>
+		</misc>
+		<misc name="rd-sae" arch="AVX512">
+			<description>TODO</description>
+		</misc>
+		<misc name="rz-sae" arch="AVX512">
+			<description>TODO</description>
+		</misc>
+		<misc name="1to16" arch="AVX512">
+			<description>TODO</description>
+		</misc>
+		<misc name="1to8" arch="AVX512">
+			<description>TODO</description>
+		</misc>
+		<misc name="1to4" arch="AVX512">
+			<description>TODO</description>
+		</misc>
 	</miscs>
 
 	<directives>

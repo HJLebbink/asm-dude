@@ -195,10 +195,10 @@ GENERAL	FCMOVNE	Floating-Point Conditional Move	FCMOVcc.html
 GENERAL	FCMOVE	Floating-Point Conditional Move	FCMOVcc.html
 GENERAL	FCMOVU	Floating-Point Conditional Move	FCMOVcc.html
 GENERAL	FCMOVB	Floating-Point Conditional Move	FCMOVcc.html
-GENERAL	FCOMI	Compare Floating Point Values and Set EFLAGS	FCOMI_FCOMIP_ FUCOMI_FUCOMIP.html
-GENERAL	FCOMIP	Compare Floating Point Values and Set EFLAGS	FCOMI_FCOMIP_ FUCOMI_FUCOMIP.html
-GENERAL	FUCOMIP	Compare Floating Point Values and Set EFLAGS	FCOMI_FCOMIP_ FUCOMI_FUCOMIP.html
-GENERAL	 FUCOMI	Compare Floating Point Values and Set EFLAGS	FCOMI_FCOMIP_ FUCOMI_FUCOMIP.html
+GENERAL	FCOMI	Compare Floating Point Values and Set EFLAGS	FCOMI_FCOMIP_FUCOMI_FUCOMIP.html
+GENERAL	FCOMIP	Compare Floating Point Values and Set EFLAGS	FCOMI_FCOMIP_FUCOMI_FUCOMIP.html
+GENERAL	FUCOMIP	Compare Floating Point Values and Set EFLAGS	FCOMI_FCOMIP_FUCOMI_FUCOMIP.html
+GENERAL	FUCOMI	Compare Floating Point Values and Set EFLAGS	FCOMI_FCOMIP_FUCOMI_FUCOMIP.html
 GENERAL	FCOMPP	Compare Floating Point Values	FCOM_FCOMP_FCOMPP.html
 GENERAL	FCOM	Compare Floating Point Values	FCOM_FCOMP_FCOMPP.html
 GENERAL	FCOMP	Compare Floating Point Values	FCOM_FCOMP_FCOMPP.html

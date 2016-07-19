@@ -15,17 +15,88 @@ include "inc\example.inc"
 
 	#endregion Things TODO
 
-	; Singleline comment
 
-	; Multiline comment 1a
-	; Multiline comment 2a
 
-	; Multiline comment 1b
-	; Multiline comment 2b
-	; Multiline comment 3b
+	#region Calc Frequency with Avx512
+	vcvttss2usi r8,xmm30,{sae}
 
-	vfnmadd213sd xmm0, xmm10, xmm11, ; ds
-	;vfnmadd213sd xmmreg|mask|z,xmmreg,xmmrm64|er
+
+	vpaddd 
+	valignq 
+
+	#endregion
+
+	#region Comment examples
+	# Singleline comment
+
+	# Multiline comment 1a
+	# Multiline comment 2a
+
+	# Multiline comment 1b
+	# Multiline comment 2b
+	# Multiline comment 3b
+	#endregion
+
+	#region AVX-512 examples
+	VALIGNQ zmm0 {k1}, zmm1, zmm2, 5 ; ok
+	VALIGNQ zmm0, zmm1, zword [rax], 5			; packed 512-bit memory
+	VALIGNQ zmm0, zmm1, qword [rax]{1to8}, 5 	; double-precision float broadcasted
+
+
+	VDIVPS xmm4, xmm5, oword [rbx] 			; packed 128-bit memory
+	VDIVPS ymm4, ymm5, yword [rbx] 			; packed 256-bit memory
+	VDIVPS zmm4, zmm5, zword [rbx]          ; packed 512-bit memory
+
+	VDIVPS xmm4, xmm5, dword [rbx]{1to4} 	; single-precision float broadcasted
+	VDIVPS ymm4, ymm5, dword [rbx]{1to8} 	; single-precision float broadcasted
+	VDIVPS zmm4, zmm5, dword [rbx]{1to16}   ; single-precision float broadcasted
+
+	;VCVTPH2PS zmm1 {k1}{z}, ymm2/m256 {sae}
+	;
+	; Convert sixteen packed half precision (16-bit) floating-point values in ymm2/m256 to packed
+	; single-precision floating-point values in zmm1.
+
+	VCVTPH2PS zmm0{k1}, ymm1
+	;VCVTPH2PS zmm0, ymm1 {0}
+	vpconflictq zmm0{k7}{z},zmm1
+
+	vcvttss2usi r8,xmm30 
+	vcvttss2usi rax,xmm1,{sae} 
+ 
+	vcvtss2usi rax,xmm30
+	vcvtss2usi rax,xmm30,{rn-sae}
+	vcvtss2usi rax,xmm30,{ru-sae}
+	vcvtss2usi rax,xmm30,{rd-sae}
+	vcvtss2usi rax,xmm30,{rz-sae} 
+
+
+	;#region VCVTPS2UDQ
+	;VCVTPS2UDQ zmm1 {k1}{z}, zmm2/m512/m32bcst{er}
+	;Convert sixteen packed single-precision floating-point
+	;values from zmm2/m512/m32bcst to sixteen packed
+	;unsigned doubleword values in zmm1 subject to
+	;writemask k1.
+	vcvtps2udq zmm0,zmm1
+	vcvtps2udq zmm0,zmm1,{rz-sae}
+	vcvtps2udq xmm0,xmm1
+	vcvtps2udq zmm0{k7},zmm1
+	vcvtps2udq zmm0{k7}{z},zmm1
+	vcvtps2udq zmm0,zmm1,{rn-sae}
+	vcvtps2udq zmm0,zmm1,{ru-sae}
+	vcvtps2udq zmm0,zmm1,{rd-sae}
+	vcvtps2udq zmm0,zmm1,{rz-sae}
+	vcvtps2udq zmm0,ZWORD [rcx]
+	vcvtps2udq zmm0,DWORD [rcx]{1to16}
+	;vcvtps2udq zmm0,ZWORD [rcx],{rz-sae} ;error: Embedded rounding is available only with reg-reg op.
+
+
+	;#endregion
+
+	vpscatterdd  [r14+zmm31*8+0x7b]{k1},zmm30
+
+
+	#endregion
+
 
 	#region Jump Examples
 	jmp			$LL9@run.cpu$om
@@ -67,7 +138,6 @@ _str_ri:
     lodsb
 
 	#endregion 
-
 
 	#region Masm Examples
 

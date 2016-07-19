@@ -67,7 +67,8 @@ namespace AsmDude {
             #endregion
 
             #region load signature store
-            string filename = AsmDudeToolsStatic.getInstallPath() + "Resources" + Path.DirectorySeparatorChar + "mnemonics.txt";
+            //string filename = AsmDudeToolsStatic.getInstallPath() + "Resources" + Path.DirectorySeparatorChar + "mnemonics.txt";
+            string filename = AsmDudeToolsStatic.getInstallPath() + "Resources" + Path.DirectorySeparatorChar + "signature-june2016.txt";
             this._mnemonicStore = new MnemonicStore(filename);
             #endregion
 

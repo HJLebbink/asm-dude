@@ -2108,9 +2108,32 @@ namespace AsmTools {
         VSHUFI64X2,
         RDPKRU,
         WRPKRU,
-        CLZERO
-        #endregion
+        CLZERO,
 
+        XRELEASE,
+        XACQUIRE,
+        WAIT,
+        LOCK,
+
+        PABSQ,
+        PMAXSQ,
+        PMAXUQ,
+        PMINSQ,
+        PMINUQ,
+        PMULLQ,
+        PROLVD,
+        PROLVQ,
+        PROLD,
+        PROLQ,
+        PRORQ,
+        PRORD,
+        PRORVQ,
+        PRORVD,
+        PSRAQ,
+        PTWRITE,
+        RDPID
+
+        #endregion
     }
 
     public static partial class AsmSourceTools {
@@ -4006,6 +4029,29 @@ namespace AsmTools {
                 case "RDPKRU": return Mnemonic.RDPKRU;
                 case "WRPKRU": return Mnemonic.WRPKRU;
                 case "CLZERO": return Mnemonic.CLZERO;
+
+                case "XRELEASE": return Mnemonic.XRELEASE;
+                case "XACQUIRE": return Mnemonic.XACQUIRE;
+                case "WAIT": return Mnemonic.WAIT;
+                case "LOCK": return Mnemonic.LOCK;
+
+                case "PABSQ": return Mnemonic.PABSQ;
+                case "PMAXSQ": return Mnemonic.PMAXSQ;
+                case "PMAXUQ": return Mnemonic.PMAXUQ;
+                case "PMINSQ": return Mnemonic.PMINSQ;
+                case "PMINUQ": return Mnemonic.PMINUQ;
+                case "PMULLQ": return Mnemonic.PMULLQ;
+                case "PROLVD": return Mnemonic.PROLVD;
+                case "PROLVQ": return Mnemonic.PROLVQ;
+                case "PROLD": return Mnemonic.PROLD;
+                case "PROLQ": return Mnemonic.PROLQ;
+                case "PRORQ": return Mnemonic.PRORQ;
+                case "PRORD": return Mnemonic.PRORD;
+                case "PRORVQ": return Mnemonic.PRORVQ;
+                case "PRORVD": return Mnemonic.PRORVD;
+                case "PSRAQ": return Mnemonic.PSRAQ;
+                case "PTWRITE": return Mnemonic.PTWRITE;
+                case "RDPID": return Mnemonic.RDPID;
 
                 default:
                     Console.WriteLine("WARNING;parseMnemonic. unknown str=\"" + str + "\".");
