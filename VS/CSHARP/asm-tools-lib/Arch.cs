@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -34,6 +35,10 @@ namespace AsmTools {
         ARCH_286,
         ARCH_386,
         ARCH_486,
+        /// <summary>1993 (also knonw as i586)</summary>
+        PENT,
+        /// <summary>1995 (also known as i686)</summary>
+        P6,
 
         ARCH_3DNOW,
         MMX,
@@ -42,52 +47,50 @@ namespace AsmTools {
         SSE2,
         SSE3,
         SSSE3,
-        SSE41,
-        SSE42,
+        SSE4_1,
+        SSE4_2,
         SSE4A,
         SSE5,
 
         AVX,
         AVX2,
-        AVX512VL,
         AVX512,
-        AVX512DQ,
         AVX512BW,
-        AVX512ER,
-        AVX512PF,
         AVX512CD,
-        AVX512VBMI,
-        AVX512IFMA,
+        AVX512DQ,
+        AVX512ER,
+        AVX512F,
+        AVX512PF,
+        AVX512VL,
 
-        #region Specific Processors
-        /// <summary>1993 (also knonw as i586)</summary>
-        PENT,
-        /// <summary>1995 (also known as i686)</summary>
-        P6,
-        /// <summary>Pentium III (SSE, 1999)</summary>
-        KATMAI,
-        /// <summary>Pentium IV (SSE2, 2002)</summary>
-        WILLAMETTE,
-        /// <summary>(SSE3, 2004)</summary>
-        PRESCOTT,
-        /// <summary>(SSE4.2, 2008)</summary>
-        NEHALEM,
-        /// <summary>(AES-NI, 2010)</summary>
-        WESTMERE,
-        /// <summary>(AVX, 2011)</summary>
-        SANDYBRIDGE,
-        FUTURE,
+        #region Misc Intel
+        ADX,
+        AES,
+        BMI1,
+        BMI2,
+        F16C,
+        FMA,
+        FSGSBASE,
+        HLE,
+        INVPCID,
+        LZCNT,
+        MPX,
+        PCL_MULQDQ,
+        PREFETCHWT1,
+        PRFCHW,
+        RDPID,
+        RDRAND,
+        RDSEED,
+        RTM,
+        SHA,
+        XSAVEOPT,
         #endregion
 
+        #region Misc Other
         X64,
         X86_64,
         IA64,
-        BMI1,
-        BMI2,
-        FPU,
-        FMA,
         TBM,
-        RTM,
         AMD,
         /// <summary>Privileged instructions</summary>
         PRIV,
@@ -96,15 +99,11 @@ namespace AsmTools {
         CYRIX,
         CYRIXM,
         VMX,
-
-        MPX,
         MIB,
-        SHA,
+        #endregion 
 
         #region unused
 
-        HLE,
-        INVPCID,
         OPT,
         NOHLE,
 
@@ -121,10 +120,8 @@ namespace AsmTools {
         LOCK,
         BND,
         UNDOC,
-        PREFETCHWT1,
         AR0,
         AR1
-
         #endregion
     }
 
@@ -133,8 +130,6 @@ namespace AsmTools {
         public static bool ignoreArch(Arch arch) {
             switch (arch) {
                 case Arch.NONE:
-                case Arch.HLE:
-                case Arch.INVPCID:
                 case Arch.OPT:
                 case Arch.NOHLE:
 
@@ -148,7 +143,6 @@ namespace AsmTools {
                 case Arch.LONG:
                 case Arch.NOLONG:
                 case Arch.BND:
-                case Arch.SHA:
                 case Arch.SIZE:
                 case Arch.LOCK:
                 case Arch.UNDOC:
@@ -174,8 +168,8 @@ namespace AsmTools {
                 case "SSE2": return Arch.SSE2;
                 case "SSE3": return Arch.SSE3;
                 case "SSSE3": return Arch.SSSE3;
-                case "SSE41": return Arch.SSE41;
-                case "SSE42": return Arch.SSE42;
+                case "SSE4_1": return Arch.SSE4_1;
+                case "SSE4_2": return Arch.SSE4_2;
                 case "SSE4A": return Arch.SSE4A;
                 case "SSE5": return Arch.SSE5;
 
@@ -188,8 +182,6 @@ namespace AsmTools {
                 case "AVX512ER": return Arch.AVX512ER;
                 case "AVX512PF": return Arch.AVX512PF;
                 case "AVX512CD": return Arch.AVX512CD;
-                case "AVX512VBMI": return Arch.AVX512VBMI;
-                case "AVX512IFMA": return Arch.AVX512IFMA;
 
                 case "X64": return Arch.X64;
                 case "BMI1": return Arch.BMI1;
@@ -197,7 +189,6 @@ namespace AsmTools {
                 case "P6": return Arch.P6;
                 case "X86_64": return Arch.X86_64;
                 case "IA64": return Arch.IA64;
-                case "FPU": return Arch.FPU;
                 case "FMA": return Arch.FMA;
                 case "TBM": return Arch.TBM;
                 case "AMD": return Arch.AMD;
@@ -205,13 +196,6 @@ namespace AsmTools {
 
                 #region Specific Processors
                 case "PENT": return Arch.PENT;
-                case "NEHALEM": return Arch.NEHALEM;
-                case "WILLAMETTE": return Arch.WILLAMETTE;
-                case "PRESCOTT": return Arch.PRESCOTT;
-                case "WESTMERE": return Arch.WESTMERE;
-                case "SANDYBRIDGE": return Arch.SANDYBRIDGE;
-                case "KATMAI": return Arch.KATMAI;
-                case "FUTURE": return Arch.FUTURE;
                 #endregion
 
                 case "OPT": return Arch.OPT;
@@ -247,6 +231,9 @@ namespace AsmTools {
                 case "AR1": return Arch.AR1;
                 #endregion
             }
+            Console.WriteLine("WARNING: parseArch: no arch for str " + str);
+
+
             return Arch.NONE;
         }
 

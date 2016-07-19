@@ -3,7 +3,7 @@
 namespace AsmTools {
 
     public enum RegisterType {
-        UNKNOWN, BIT8, BIT16, BIT32, BIT64, MMX, XMM, YMM, ZMM, SEGMENT, MASK, CONTROL, DEBUG, BOUND
+        UNKNOWN, BIT8, BIT16, BIT32, BIT64, MMX, XMM, YMM, ZMM, SEGMENT, OPMASK, CONTROL, DEBUG, BOUND
     }
 
     public static class RegisterTools {
@@ -905,7 +905,7 @@ namespace AsmTools {
                 case Rn.K5:
                 case Rn.K6:
                 case Rn.K7:
-                    return RegisterType.MASK;
+                    return RegisterType.OPMASK;
 
                 case Rn.BND0:
                 case Rn.BND1:

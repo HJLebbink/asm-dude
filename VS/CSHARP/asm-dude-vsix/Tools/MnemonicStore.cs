@@ -44,6 +44,7 @@ namespace AsmDude.Tools {
             this._htmlRef = new Dictionary<Mnemonic, string>();
             this._description = new Dictionary<Mnemonic, string>();
             this.load_data_intel(filename);
+            //this.load_data_nasm(filename);
         }
 
         public bool hasElement(Mnemonic mnemonic) {
@@ -232,7 +233,7 @@ namespace AsmDude.Tools {
                 }
                 #endregion
 
-                if (false) {
+                if (true) {
                     ISet<string> operandTypes = new SortedSet<String>();
                     foreach (KeyValuePair<Mnemonic, IList<AsmSignatureElement>> pair in this._data) {
                         //AsmDudeToolsStatic.Output("INFO: MnemonicStore:load_data_intel: mnemonic " + pair.Key);

@@ -118,9 +118,9 @@ namespace AsmDude.OptionsPage {
             this._asmDudeOptionsPageUI.useArch_SSSE3 = Settings.Default.ARCH_SSSE3;
             this._asmDudeOptionsPageUI.useArch_SSSE3_UI.ToolTip = this.makeToolTip(Arch.SSSE3);
             this._asmDudeOptionsPageUI.useArch_SSE41 = Settings.Default.ARCH_SSE41;
-            this._asmDudeOptionsPageUI.useArch_SSE41_UI.ToolTip = this.makeToolTip(Arch.SSE41);
+            this._asmDudeOptionsPageUI.useArch_SSE41_UI.ToolTip = this.makeToolTip(Arch.SSE4_1);
             this._asmDudeOptionsPageUI.useArch_SSE42 = Settings.Default.ARCH_SSE42;
-            this._asmDudeOptionsPageUI.useArch_SSE42_UI.ToolTip = this.makeToolTip(Arch.SSE42);
+            this._asmDudeOptionsPageUI.useArch_SSE42_UI.ToolTip = this.makeToolTip(Arch.SSE4_2);
             this._asmDudeOptionsPageUI.useArch_SSE4A = Settings.Default.ARCH_SSE4A;
             this._asmDudeOptionsPageUI.useArch_SSE4A_UI.ToolTip = this.makeToolTip(Arch.SSE4A);
             this._asmDudeOptionsPageUI.useArch_SSE5 = Settings.Default.ARCH_SSE5;
@@ -144,10 +144,6 @@ namespace AsmDude.OptionsPage {
             this._asmDudeOptionsPageUI.useArch_AVX512PF_UI.ToolTip = this.makeToolTip(Arch.AVX512PF);
             this._asmDudeOptionsPageUI.useArch_AVX512CD = Settings.Default.ARCH_AVX512CD;
             this._asmDudeOptionsPageUI.useArch_AVX512CD_UI.ToolTip = this.makeToolTip(Arch.AVX512CD);
-            this._asmDudeOptionsPageUI.useArch_AVX512VBMI = Settings.Default.ARCH_AVX512VBMI;
-            this._asmDudeOptionsPageUI.useArch_AVX512VBMI_UI.ToolTip = this.makeToolTip(Arch.AVX512VBMI);
-            this._asmDudeOptionsPageUI.useArch_AVX512IFMA = Settings.Default.ARCH_AVX512IFMA;
-            this._asmDudeOptionsPageUI.useArch_AVX512IFMA_UI.ToolTip = this.makeToolTip(Arch.AVX512IFMA);
 
             this._asmDudeOptionsPageUI.useArch_X64 = Settings.Default.ARCH_X64;
             this._asmDudeOptionsPageUI.useArch_X64_UI.ToolTip = this.makeToolTip(Arch.X64);
@@ -161,8 +157,6 @@ namespace AsmDude.OptionsPage {
             this._asmDudeOptionsPageUI.useArch_X86_64_UI.ToolTip = this.makeToolTip(Arch.X86_64);
             this._asmDudeOptionsPageUI.useArch_IA64 = Settings.Default.ARCH_IA64;
             this._asmDudeOptionsPageUI.useArch_IA64_UI.ToolTip = this.makeToolTip(Arch.IA64);
-            this._asmDudeOptionsPageUI.useArch_FPU = Settings.Default.ARCH_FPU;
-            this._asmDudeOptionsPageUI.useArch_FPU_UI.ToolTip = this.makeToolTip(Arch.FPU);
             this._asmDudeOptionsPageUI.useArch_FMA = Settings.Default.ARCH_FMA;
             this._asmDudeOptionsPageUI.useArch_FMA_UI.ToolTip = this.makeToolTip(Arch.FMA);
             this._asmDudeOptionsPageUI.useArch_TBM = Settings.Default.ARCH_TBM;
@@ -173,20 +167,6 @@ namespace AsmDude.OptionsPage {
             this._asmDudeOptionsPageUI.useArch_PRIV_UI.ToolTip = this.makeToolTip(Arch.PRIV);
             this._asmDudeOptionsPageUI.useArch_PENT = Settings.Default.ARCH_PENT;
             this._asmDudeOptionsPageUI.useArch_PENT_UI.ToolTip = this.makeToolTip(Arch.PENT);
-            this._asmDudeOptionsPageUI.useArch_NEHALEM = Settings.Default.ARCH_NEHALEM;
-            this._asmDudeOptionsPageUI.useArch_NEHALEM_UI.ToolTip = this.makeToolTip(Arch.NEHALEM);
-            this._asmDudeOptionsPageUI.useArch_WILLAMETTE = Settings.Default.ARCH_WILLAMETTE;
-            this._asmDudeOptionsPageUI.useArch_WILLAMETTE_UI.ToolTip = this.makeToolTip(Arch.WILLAMETTE);
-            this._asmDudeOptionsPageUI.useArch_PRESCOTT = Settings.Default.ARCH_PRESCOTT;
-            this._asmDudeOptionsPageUI.useArch_PRESCOTT_UI.ToolTip = this.makeToolTip(Arch.PRESCOTT);
-            this._asmDudeOptionsPageUI.useArch_WESTMERE = Settings.Default.ARCH_WESTMERE;
-            this._asmDudeOptionsPageUI.useArch_WESTMERE_UI.ToolTip = this.makeToolTip(Arch.WESTMERE);
-            this._asmDudeOptionsPageUI.useArch_SANDYBRIDGE = Settings.Default.ARCH_SANDYBRIDGE;
-            this._asmDudeOptionsPageUI.useArch_SANDYBRIDGE_UI.ToolTip = this.makeToolTip(Arch.SANDYBRIDGE);
-            this._asmDudeOptionsPageUI.useArch_KATMAI = Settings.Default.ARCH_KATMAI;
-            this._asmDudeOptionsPageUI.useArch_KATMAI_UI.ToolTip = this.makeToolTip(Arch.KATMAI);
-            this._asmDudeOptionsPageUI.useArch_FUTURE = Settings.Default.ARCH_FUTURE;
-            this._asmDudeOptionsPageUI.useArch_FUTURE_UI.ToolTip = this.makeToolTip(Arch.FUTURE);
             this._asmDudeOptionsPageUI.useArch_3DNOW = Settings.Default.ARCH_3DNOW;
             this._asmDudeOptionsPageUI.useArch_3DNOW_UI.ToolTip = this.makeToolTip(Arch.ARCH_3DNOW);
             this._asmDudeOptionsPageUI.useArch_PROT = Settings.Default.ARCH_PROT;

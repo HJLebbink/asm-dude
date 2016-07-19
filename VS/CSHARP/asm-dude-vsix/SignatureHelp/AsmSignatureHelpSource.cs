@@ -141,12 +141,12 @@ namespace AsmDude.SignatureHelp {
             StringBuilder sb = new StringBuilder();
             sb.Append(signatureElement.mnemonic.ToString());
             sb.Append(" ");
-            AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: createSignature: sb=" + sb.ToString());
+            //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: createSignature: sb=" + sb.ToString());
 
             for (int i = 0; i < nOperands; ++i) {
                 int locusStart = sb.Length;
                 sb.Append(signatureElement.getOperandDoc(i));
-                AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: createSignature: i="+i+"; sb=" + sb.ToString());
+                //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: createSignature: i="+i+"; sb=" + sb.ToString());
                 locus[i] = new Span(locusStart, sb.Length - locusStart);
                 if (i < nOperands - 1) sb.Append(", ");
             }

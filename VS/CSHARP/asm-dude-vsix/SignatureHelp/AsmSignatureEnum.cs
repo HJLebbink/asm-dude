@@ -520,7 +520,6 @@ namespace AsmDude.SignatureHelp {
                 case AsmSignatureEnum.Z: return false;
 
                 case AsmSignatureEnum.K: return (op.isReg && (RegisterTools.isOpmaskRegister(op.rn)));
-
                 case AsmSignatureEnum.XMMREG: return (op.isReg && RegisterTools.isSseRegister(op.rn));
                 case AsmSignatureEnum.YMMREG: return (op.isReg && RegisterTools.isAvxRegister(op.rn));
                 case AsmSignatureEnum.ZMMREG: return (op.isReg && RegisterTools.isAvx512Register(op.rn));
@@ -631,6 +630,9 @@ namespace AsmDude.SignatureHelp {
                     break;
                 case RegisterType.ZMM:
                     if (allowedOperands.Contains(AsmSignatureEnum.ZMMREG)) return true;
+                    break;
+                case RegisterType.OPMASK:
+                    if (allowedOperands.Contains(AsmSignatureEnum.K)) return true;
                     break;
                 case RegisterType.SEGMENT:
                     if (allowedOperands.Contains(AsmSignatureEnum.reg_sreg)) return true;

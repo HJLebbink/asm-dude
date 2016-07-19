@@ -67,7 +67,7 @@ namespace AsmDude {
             #endregion
 
             #region load signature store
-            //string filename = AsmDudeToolsStatic.getInstallPath() + "Resources" + Path.DirectorySeparatorChar + "mnemonics.txt";
+            //string filename = AsmDudeToolsStatic.getInstallPath() + "Resources" + Path.DirectorySeparatorChar + "mnemonics-nasm.txt";
             string filename = AsmDudeToolsStatic.getInstallPath() + "Resources" + Path.DirectorySeparatorChar + "signature-june2016.txt";
             this._mnemonicStore = new MnemonicStore(filename);
             #endregion
@@ -76,6 +76,34 @@ namespace AsmDude {
 
             #region Experiments
 
+            if (true) {
+                string filename2 = AsmDudeToolsStatic.getInstallPath() + "Resources" + Path.DirectorySeparatorChar + "mnemonics-nasm.txt";
+                MnemonicStore store2 = new MnemonicStore(filename2);
+
+                ISet<String> archs = new SortedSet<String>();
+
+                foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic))) {
+                    IList<AsmSignatureElement> intel = this._mnemonicStore.getSignatures(mnemonic);
+                    IList<AsmSignatureElement> nasm = store2.getSignatures(mnemonic);
+
+                    foreach (AsmSignatureElement e in intel) {
+                        foreach (String str in e.archStr.Split(',')) {
+                            archs.Add(str);
+                        }
+                    }
+                    if (intel.Count != nasm.Count) {
+                        foreach (AsmSignatureElement e in intel) {
+                            AsmDudeToolsStatic.Output("INTEL " + mnemonic + ": " + e);
+                        }
+                        foreach (AsmSignatureElement e in nasm) {
+                            AsmDudeToolsStatic.Output("NASM " + mnemonic + ": " + e);
+                        }
+                    }
+                }
+                foreach (String str in archs) {
+                    AsmDudeToolsStatic.Output("INTEL arch " + str);
+                }
+            }
             if (false) {
                 foreach (Arch arch in Enum.GetValues(typeof(Arch))) {
                     int counter = 0;
