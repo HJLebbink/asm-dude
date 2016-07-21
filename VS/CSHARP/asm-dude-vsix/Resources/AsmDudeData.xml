@@ -95,31 +95,31 @@
 			<description>(64 bytes, 512 bit). DZ is a synonym of ZWORD.</description>
 		</misc>
 
-		<misc name="z" arch="AVX512">
+		<misc name="z" arch="AVX512VL">
 			<description>Zero mask</description>
 		</misc>
-		<misc name="sae" arch="AVX512">
+		<misc name="sae" arch="AVX512VL">
 			<description>TODO</description>
 		</misc>
-		<misc name="rn-sae" arch="AVX512">
+		<misc name="rn-sae" arch="AVX512VL">
 			<description>TODO</description>
 		</misc>
-		<misc name="ru-sae" arch="AVX512">
+		<misc name="ru-sae" arch="AVX512VL">
 			<description>TODO</description>
 		</misc>
-		<misc name="rd-sae" arch="AVX512">
+		<misc name="rd-sae" arch="AVX512VL">
 			<description>TODO</description>
 		</misc>
-		<misc name="rz-sae" arch="AVX512">
+		<misc name="rz-sae" arch="AVX512VL">
 			<description>TODO</description>
 		</misc>
-		<misc name="1to16" arch="AVX512">
+		<misc name="1to16" arch="AVX512VL">
 			<description>TODO</description>
 		</misc>
-		<misc name="1to8" arch="AVX512">
+		<misc name="1to8" arch="AVX512VL">
 			<description>TODO</description>
 		</misc>
-		<misc name="1to4" arch="AVX512">
+		<misc name="1to4" arch="AVX512VL">
 			<description>TODO</description>
 		</misc>
 	</miscs>
@@ -623,28 +623,28 @@
 			<description>Debug Register 7</description>
 		</register>
 
-		<register name='K0' bits='64' arch='AVX512'>
+		<register name='K0' bits='64' arch='AVX512VL'>
 			<description>Opmask Register 0</description>
 		</register>
-		<register name='K1' bits='64' arch='AVX512'>
+		<register name='K1' bits='64' arch='AVX512VL'>
 			<description>Opmask Register 1</description>
 		</register>
-		<register name='K2' bits='64' arch='AVX512'>
+		<register name='K2' bits='64' arch='AVX512VL'>
 			<description>Opmask Register 2</description>
 		</register>
-		<register name='K3' bits='64' arch='AVX512'>
+		<register name='K3' bits='64' arch='AVX512VL'>
 			<description>Opmask Register 3</description>
 		</register>
-		<register name='K4' bits='64' arch='AVX512'>
+		<register name='K4' bits='64' arch='AVX512VL'>
 			<description>Opmask Register 4</description>
 		</register>
-		<register name='K5' bits='64' arch='AVX512'>
+		<register name='K5' bits='64' arch='AVX512VL'>
 			<description>Opmask Register 5</description>
 		</register>
-		<register name='K6' bits='64' arch='AVX512'>
+		<register name='K6' bits='64' arch='AVX512VL'>
 			<description>Opmask Register 6</description>
 		</register>
-		<register name='K7' bits='64' arch='AVX512'>
+		<register name='K7' bits='64' arch='AVX512VL'>
 			<description>Opmask Register 7</description>
 		</register>
 
@@ -938,52 +938,52 @@
 		<register name='XMM15' bits='128' arch='SSE2'>
 			<description>128-bit sse Register</description>
 		</register>
-		<register name='XMM16' bits='128' arch='AVX512'>
+		<register name='XMM16' bits='128' arch='AVX512VL'>
 			<description>128-bit sse Register</description>
 		</register>
-		<register name='XMM17' bits='128' arch='AVX512'>
+		<register name='XMM17' bits='128' arch='AVX512VL'>
 			<description>128-bit sse Register</description>
 		</register>
-		<register name='XMM18' bits='128' arch='AVX512'>
+		<register name='XMM18' bits='128' arch='AVX512VL'>
 			<description>128-bit sse Register</description>
 		</register>
-		<register name='XMM19' bits='128' arch='AVX512'>
+		<register name='XMM19' bits='128' arch='AVX512VL'>
 			<description>128-bit sse Register</description>
 		</register>
-		<register name='XMM20' bits='128' arch='AVX512'>
+		<register name='XMM20' bits='128' arch='AVX512VL'>
 			<description>128-bit sse Register</description>
 		</register>
-		<register name='XMM21' bits='128' arch='AVX512'>
+		<register name='XMM21' bits='128' arch='AVX512VL'>
 			<description>128-bit sse Register</description>
 		</register>
-		<register name='XMM22' bits='128' arch='AVX512'>
+		<register name='XMM22' bits='128' arch='AVX512VL'>
 			<description>128-bit sse Register</description>
 		</register>
-		<register name='XMM23' bits='128' arch='AVX512'>
+		<register name='XMM23' bits='128' arch='AVX512VL'>
 			<description>128-bit sse Register</description>
 		</register>
-		<register name='XMM24' bits='128' arch='AVX512'>
+		<register name='XMM24' bits='128' arch='AVX512VL'>
 			<description>128-bit sse Register</description>
 		</register>
-		<register name='XMM25' bits='128' arch='AVX512'>
+		<register name='XMM25' bits='128' arch='AVX512VL'>
 			<description>128-bit sse Register</description>
 		</register>
-		<register name='XMM26' bits='128' arch='AVX512'>
+		<register name='XMM26' bits='128' arch='AVX512VL'>
 			<description>128-bit sse Register</description>
 		</register>
-		<register name='XMM27' bits='128' arch='AVX512'>
+		<register name='XMM27' bits='128' arch='AVX512VL'>
 			<description>128-bit sse Register</description>
 		</register>
-		<register name='XMM28' bits='128' arch='AVX512'>
+		<register name='XMM28' bits='128' arch='AVX512VL'>
 			<description>128-bit sse Register</description>
 		</register>
-		<register name='XMM29' bits='128' arch='AVX512'>
+		<register name='XMM29' bits='128' arch='AVX512VL'>
 			<description>128-bit sse Register</description>
 		</register>
-		<register name='XMM30' bits='128' arch='AVX512'>
+		<register name='XMM30' bits='128' arch='AVX512VL'>
 			<description>128-bit sse Register</description>
 		</register>
-		<register name='XMM31' bits='128' arch='AVX512'>
+		<register name='XMM31' bits='128' arch='AVX512VL'>
 			<description>128-bit sse Register</description>
 		</register>
 
@@ -1035,149 +1035,149 @@
 		<register name='YMM15' bits='256' arch='AVX'>
 			<description>256-bit avx Register</description>
 		</register>
-		<register name='YMM16' bits='256' arch='AVX512'>
+		<register name='YMM16' bits='256' arch='AVX512VL'>
 			<description>256-bit avx Register</description>
 		</register>
-		<register name='YMM17' bits='256' arch='AVX512'>
+		<register name='YMM17' bits='256' arch='AVX512VL'>
 			<description>256-bit avx Register</description>
 		</register>
-		<register name='YMM18' bits='256' arch='AVX512'>
+		<register name='YMM18' bits='256' arch='AVX512VL'>
 			<description>256-bit avx Register</description>
 		</register>
-		<register name='YMM19' bits='256' arch='AVX512'>
+		<register name='YMM19' bits='256' arch='AVX512VL'>
 			<description>256-bit avx Register</description>
 		</register>
-		<register name='YMM20' bits='256' arch='AVX512'>
+		<register name='YMM20' bits='256' arch='AVX512VL'>
 			<description>256-bit avx Register</description>
 		</register>
-		<register name='YMM21' bits='256' arch='AVX512'>
+		<register name='YMM21' bits='256' arch='AVX512VL'>
 			<description>256-bit avx Register</description>
 		</register>
-		<register name='YMM22' bits='256' arch='AVX512'>
+		<register name='YMM22' bits='256' arch='AVX512VL'>
 			<description>256-bit avx Register</description>
 		</register>
-		<register name='YMM23' bits='256' arch='AVX512'>
+		<register name='YMM23' bits='256' arch='AVX512VL'>
 			<description>256-bit avx Register</description>
 		</register>
-		<register name='YMM24' bits='256' arch='AVX512'>
+		<register name='YMM24' bits='256' arch='AVX512VL'>
 			<description>256-bit avx Register</description>
 		</register>
-		<register name='YMM25' bits='256' arch='AVX512'>
+		<register name='YMM25' bits='256' arch='AVX512VL'>
 			<description>256-bit avx Register</description>
 		</register>
-		<register name='YMM26' bits='256' arch='AVX512'>
+		<register name='YMM26' bits='256' arch='AVX512VL'>
 			<description>256-bit avx Register</description>
 		</register>
-		<register name='YMM27' bits='256' arch='AVX512'>
+		<register name='YMM27' bits='256' arch='AVX512VL'>
 			<description>256-bit avx Register</description>
 		</register>
-		<register name='YMM28' bits='256' arch='AVX512'>
+		<register name='YMM28' bits='256' arch='AVX512VL'>
 			<description>256-bit avx Register</description>
 		</register>
-		<register name='YMM29' bits='256' arch='AVX512'>
+		<register name='YMM29' bits='256' arch='AVX512VL'>
 			<description>256-bit avx Register</description>
 		</register>
-		<register name='YMM30' bits='256' arch='AVX512'>
+		<register name='YMM30' bits='256' arch='AVX512VL'>
 			<description>256-bit avx Register</description>
 		</register>
-		<register name='YMM31' bits='256' arch='AVX512'>
+		<register name='YMM31' bits='256' arch='AVX512VL'>
 			<description>256-bit avx Register</description>
 		</register>
 
-		<register name='ZMM0' bits='512' arch='AVX512'>
+		<register name='ZMM0' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM1' bits='512' arch='AVX512'>
+		<register name='ZMM1' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM2' bits='512' arch='AVX512'>
+		<register name='ZMM2' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM3' bits='512' arch='AVX512'>
+		<register name='ZMM3' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM4' bits='512' arch='AVX512'>
+		<register name='ZMM4' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM5' bits='512' arch='AVX512'>
+		<register name='ZMM5' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM6' bits='512' arch='AVX512'>
+		<register name='ZMM6' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM7' bits='512' arch='AVX512'>
+		<register name='ZMM7' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM8' bits='512' arch='AVX512'>
+		<register name='ZMM8' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM9' bits='512' arch='AVX512'>
+		<register name='ZMM9' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM10' bits='512' arch='AVX512'>
+		<register name='ZMM10' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM11' bits='512' arch='AVX512'>
+		<register name='ZMM11' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM12' bits='512' arch='AVX512'>
+		<register name='ZMM12' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM13' bits='512' arch='AVX512'>
+		<register name='ZMM13' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM14' bits='512' arch='AVX512'>
+		<register name='ZMM14' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM15' bits='512' arch='AVX512'>
+		<register name='ZMM15' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM16' bits='512' arch='AVX512'>
+		<register name='ZMM16' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM17' bits='512' arch='AVX512'>
+		<register name='ZMM17' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM18' bits='512' arch='AVX512'>
+		<register name='ZMM18' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM19' bits='512' arch='AVX512'>
+		<register name='ZMM19' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM20' bits='512' arch='AVX512'>
+		<register name='ZMM20' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM21' bits='512' arch='AVX512'>
+		<register name='ZMM21' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM22' bits='512' arch='AVX512'>
+		<register name='ZMM22' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM23' bits='512' arch='AVX512'>
+		<register name='ZMM23' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM24' bits='512' arch='AVX512'>
+		<register name='ZMM24' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM25' bits='512' arch='AVX512'>
+		<register name='ZMM25' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM26' bits='512' arch='AVX512'>
+		<register name='ZMM26' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM27' bits='512' arch='AVX512'>
+		<register name='ZMM27' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM28' bits='512' arch='AVX512'>
+		<register name='ZMM28' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM29' bits='512' arch='AVX512'>
+		<register name='ZMM29' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM30' bits='512' arch='AVX512'>
+		<register name='ZMM30' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
-		<register name='ZMM31' bits='512' arch='AVX512'>
+		<register name='ZMM31' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
 	</registers>

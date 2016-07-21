@@ -42,7 +42,7 @@ namespace AsmDude.SignatureHelp {
         }
 
         /// <summary>
-        /// Constrain the list of signatures given the operands and the selected architectures
+        /// Constrain the list of signatures given: 1) the currently operands provided by the user; and 2) the selected architectures
         /// </summary>
         /// <param name="data"></param>
         /// <param name="operands"></param>
@@ -53,11 +53,11 @@ namespace AsmDude.SignatureHelp {
                 ISet<Arch> selectedArchitectures) {
 
             IList<AsmSignatureElement> list = new List<AsmSignatureElement>();
-            foreach (AsmSignatureElement se in data) {
+            foreach (AsmSignatureElement asmSignatureElement in data) {
                 bool allowed = true;
 
                 //1] constrain on architecture
-                if (!se.isAllowed(selectedArchitectures)) {
+                if (!asmSignatureElement.isAllowed(selectedArchitectures)) {
                     allowed = false;
                 }
 
@@ -67,9 +67,9 @@ namespace AsmDude.SignatureHelp {
                         // do nothing
                     } else {
                         for (int i = 0; i < operands.Count; ++i) {
-                            Operand op = operands[i];
-                            if (op != null) {
-                                if (!se.isAllowed(op, i)) {
+                            Operand operand = operands[i];
+                            if (operand != null) {
+                                if (!asmSignatureElement.isAllowed(operand, i)) {
                                     allowed = false;
                                     break;
                                 }
@@ -77,7 +77,7 @@ namespace AsmDude.SignatureHelp {
                         }
                     }
                 }
-                if (allowed) list.Add(se);
+                if (allowed) list.Add(asmSignatureElement);
             }
             return list;
         }
@@ -86,7 +86,6 @@ namespace AsmDude.SignatureHelp {
             //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: AugmentSignatureHelpSession");
 
             //if (true) return;
-
             if (!Settings.Default.SignatureHelp_On) return;
 
             try {

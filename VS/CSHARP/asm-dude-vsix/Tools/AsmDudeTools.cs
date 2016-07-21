@@ -67,36 +67,79 @@ namespace AsmDude {
             #endregion
 
             #region load signature store
-            //string filename = AsmDudeToolsStatic.getInstallPath() + "Resources" + Path.DirectorySeparatorChar + "mnemonics-nasm.txt";
-            string filename = AsmDudeToolsStatic.getInstallPath() + "Resources" + Path.DirectorySeparatorChar + "signature-june2016.txt";
-            this._mnemonicStore = new MnemonicStore(filename);
+            string path = AsmDudeToolsStatic.getInstallPath() + "Resources" + Path.DirectorySeparatorChar;
+            //string filename = path + "mnemonics-nasm.txt";
+            string filename_Regular = path + "signature-june2016.txt";
+            string filename_Hand = path + "signature-hand-1.txt";
+            this._mnemonicStore = new MnemonicStore(filename_Regular, filename_Hand);
             #endregion
 
             this.initData();
 
             #region Experiments
 
-            if (true) {
+            if (false) {
                 string filename2 = AsmDudeToolsStatic.getInstallPath() + "Resources" + Path.DirectorySeparatorChar + "mnemonics-nasm.txt";
-                MnemonicStore store2 = new MnemonicStore(filename2);
+                MnemonicStore store2 = new MnemonicStore(filename2, null);
 
                 ISet<String> archs = new SortedSet<String>();
+                IDictionary<string, string> signaturesIntel = new Dictionary<string, string>();
+                IDictionary<string, string> signaturesNasm = new Dictionary<string, string>();
 
                 foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic))) {
                     IList<AsmSignatureElement> intel = this._mnemonicStore.getSignatures(mnemonic);
                     IList<AsmSignatureElement> nasm = store2.getSignatures(mnemonic);
 
+                    signaturesIntel.Clear();
+                    signaturesNasm.Clear();
+
                     foreach (AsmSignatureElement e in intel) {
-                        foreach (String str in e.archStr.Split(',')) {
-                            archs.Add(str);
+                        string instruction = e.mnemonic.ToString() + " " + e.operandsStr;
+                        if (signaturesIntel.ContainsKey(instruction)) {
+                            AsmDudeToolsStatic.Output("WARNING: Intel " + instruction + ": is already present with arch "+ signaturesIntel[instruction] +"; new arch "+ e.archStr);
+                        } else {
+                            signaturesIntel.Add(instruction, e.archStr);
                         }
                     }
-                    if (intel.Count != nasm.Count) {
-                        foreach (AsmSignatureElement e in intel) {
-                            AsmDudeToolsStatic.Output("INTEL " + mnemonic + ": " + e);
+                    foreach (AsmSignatureElement e in nasm) {
+                        string instruction = e.mnemonic.ToString() + " " + e.operandsStr;
+                        if (signaturesNasm.ContainsKey(instruction)) {
+                           // AsmDudeToolsStatic.Output("WARNING: Nasm " + instruction + ": is already present with arch " + signaturesNasm[instruction] + "; new arch " + e.archStr);
+                        } else {
+                            signaturesNasm.Add(instruction, e.archStr);
                         }
-                        foreach (AsmSignatureElement e in nasm) {
-                            AsmDudeToolsStatic.Output("NASM " + mnemonic + ": " + e);
+                    }
+
+                    foreach (AsmSignatureElement e in intel) {
+                        string instruction = e.mnemonic.ToString() + " " + e.operandsStr;
+
+
+                        //AsmDudeToolsStatic.Output("Intel " + instruction + ": arch" + e.archStr);
+                        if ((e.archStr == null) || (e.archStr.Length == 0)) {
+                            if (signaturesNasm.ContainsKey(instruction)) {
+                                AsmDudeToolsStatic.Output("Intel " + instruction + " has no arch, but NASM has \"" + signaturesNasm[instruction] + "\".");
+                            } else {
+                                if (signaturesNasm.Count == 1) {
+                                    AsmDudeToolsStatic.Output("Intel " + instruction + " has no arch, but NASM has \"" + signaturesNasm.GetEnumerator().Current+"\".");
+                                } else {
+                                    AsmDudeToolsStatic.Output("Intel " + instruction + " has no arch:");
+                                    foreach (KeyValuePair<string, string> pair in signaturesNasm) {
+                                        AsmDudeToolsStatic.Output("\tNASM has " + pair.Key + ": \"" + pair.Value + "\".");
+                                    }
+                                    AsmDudeToolsStatic.Output("    ----");
+                                }
+                            }
+                        }
+                    }
+
+                    if (false) {
+                        if (intel.Count != nasm.Count) {
+                            foreach (AsmSignatureElement e in intel) {
+                                AsmDudeToolsStatic.Output("INTEL " + mnemonic + ": " + e);
+                            }
+                            foreach (AsmSignatureElement e in nasm) {
+                                AsmDudeToolsStatic.Output("NASM " + mnemonic + ": " + e);
+                            }
                         }
                     }
                 }

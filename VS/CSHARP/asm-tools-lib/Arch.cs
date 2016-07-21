@@ -50,47 +50,113 @@ namespace AsmTools {
         SSE4_1,
         SSE4_2,
         SSE4A,
+        /// <summary>AMD</summary>
         SSE5,
 
         AVX,
         AVX2,
-        AVX512,
-        AVX512BW,
-        AVX512CD,
-        AVX512DQ,
-        AVX512ER,
+
+        ///<summary>AVX512 foundation (Knights Landing, Intel Xeon)</summary>
         AVX512F,
+
+        ///<summary>AVX512 conflict detection (Knights Landing, Intel Xeon)</summary>
+        AVX512CD,
+
+        ///<summary>AVX512 exponential and reciprocal (Knights Landing)</summary>
+        AVX512ER,
+
+        ///<summary>AVX512 prefetch (Knights Landing)</summary>
         AVX512PF,
+
+        ///<summary>AVX512 byte and word (Intel Xeon)</summary>
+        AVX512BW,
+
+        ///<summary>AVX512 doubleword and quadword (Intel Xeon)</summary>
+        AVX512DQ,
+        
+        ///<summary>AVX512 Vector Length Extensions (Intel Xeon)</summary>
+        ///An additional orthogonal capability known as Vector Length Extensions provide for most AVX-512 instructions 
+        ///to operate on 128 or 256 bits, instead of only 512. Vector Length Extensions can currently be applied to
+        ///most Foundation Instructions, the Conflict Detection Instructions as well as the new Byte, Word, Doubleword 
+        ///and Quadword instructions. These AVX-512 Vector Length Extensions are indicated by the AVX512VL CPUID flag. 
+        ///The use of Vector Length Extensions extends most AVX-512 operations to also operate on XMM (128-bit, SSE) 
+        ///registers and YMM (256-bit, AVX) registers. The use of Vector Length Extensions allows the capabilities of 
+        ///EVEX encodings, including the use of mask registers and access to registers 16..31, to be applied to XMM 
+        ///and YMM registers instead of only to ZMM registers.
         AVX512VL,
 
+
         #region Misc Intel
+        /// <summary>Two instruction ADCX and ADOX</summary>
         ADX,
+
+        /// <summary>Advanced Encryption Standard Instruction Set </summary>
         AES,
+
+        /// <summary>Bit Manipulation Instructions Sets 1</summary>
         BMI1,
+
+        /// <summary>Bit Manipulation Instructions Sets 2</summary>
         BMI2,
+
+        /// <summary>half precision floating point conversion (also known as CVT16) </summary>
         F16C,
+
+        /// <summary>Fused Multiply-Add</summary>
         FMA,
+
+        /// <summary>TODO</summary>
         FSGSBASE,
+
+        ///<summary>Hardware Lock Elision</summary>
         HLE,
+        
+        /// <summary>Invalidates TLBs, two instructions</summary>
         INVPCID,
-        LZCNT,
-        MPX,
-        PCL_MULQDQ,
-        PREFETCHWT1,
-        PRFCHW,
-        RDPID,
-        RDRAND,
-        RDSEED,
-        RTM,
+        
+        /// <summary>Secure Hash Algorithm Extensions</summary>
         SHA,
+
+        /// <summary>Transactional Synchronization Extensions</summary>
+        RTM,
+
+        /// <summary>Memory Protection Extensions</summary>
+        MPX,
+        
+        /// <summary>Two instruction PCLMULQDQ (Carry-Less Multiplication Quadword)</summary>
+        PCLMULQDQ,
+
+        /// <summary>One instruction LZCNT</summary>
+        LZCNT,
+
+        /// <summary>One instruction: PREFETCHWT1</summary>
+        PREFETCHWT1,
+
+        /// <summary>One instruction: PREFETCHW</summary>
+        PRFCHW,
+
+        /// <summary>One instruction: RDPID (Read Processor ID)</summary>
+        RDPID,
+
+        /// <summary>One instruction: RDRAND (Read Random Number)</summary>
+        RDRAND,
+
+        /// <summary>One instruction: RDSEED (Read Random SEED)</summary>
+        RDSEED,
+
+        /// <summary>One instruction: XSAVEOPT (Save Processor Extended States Optimized)</summary>
         XSAVEOPT,
         #endregion
 
         #region Misc Other
         X64,
+        /// <summary>AMD</summary>
         X86_64,
         IA64,
+
+        /// <summary>AMD: Trailing Bit Manipulation</summary>
         TBM,
+
         AMD,
         /// <summary>Privileged instructions</summary>
         PRIV,
@@ -103,25 +169,11 @@ namespace AsmTools {
         #endregion 
 
         #region unused
-
         OPT,
-        NOHLE,
-
-        SO,
-        SW,
-        SD,
-        SX,
-        SY,
-
         ND,
         LONG,
         NOLONG,
-        SIZE,
-        LOCK,
-        BND,
         UNDOC,
-        AR0,
-        AR1
         #endregion
     }
 
@@ -131,30 +183,18 @@ namespace AsmTools {
             switch (arch) {
                 case Arch.NONE:
                 case Arch.OPT:
-                case Arch.NOHLE:
-
-                case Arch.SO:
-                case Arch.SW:
-                case Arch.SD:
-                case Arch.SX:
-                case Arch.SY:
-
                 case Arch.ND:
                 case Arch.LONG:
                 case Arch.NOLONG:
-                case Arch.BND:
-                case Arch.SIZE:
-                case Arch.LOCK:
                 case Arch.UNDOC:
-                case Arch.PREFETCHWT1:
-                case Arch.AR0:
-                case Arch.AR1:
                     return true;
                 default: return false;
             }
         }
         public static Arch parseArch(string str) {
             switch (str.ToUpper()) {
+                case "NONE": return Arch.NONE;
+
                 case "8086": return Arch.ARCH_8086;
                 case "186": return Arch.ARCH_186;
                 case "286": return Arch.ARCH_286;
@@ -175,21 +215,22 @@ namespace AsmTools {
 
                 case "AVX": return Arch.AVX;
                 case "AVX2": return Arch.AVX2;
-                case "AVX512": return Arch.AVX512;
                 case "AVX512VL": return Arch.AVX512VL;
                 case "AVX512DQ": return Arch.AVX512DQ;
                 case "AVX512BW": return Arch.AVX512BW;
                 case "AVX512ER": return Arch.AVX512ER;
-                case "AVX512PF": return Arch.AVX512PF;
+                case "AVX512F": return Arch.AVX512F;
                 case "AVX512CD": return Arch.AVX512CD;
+                case "AVX512PF": return Arch.AVX512PF;
 
-                case "X64": return Arch.X64;
+                case "HLE": return Arch.HLE;
                 case "BMI1": return Arch.BMI1;
                 case "BMI2": return Arch.BMI2;
                 case "P6": return Arch.P6;
                 case "X86_64": return Arch.X86_64;
                 case "IA64": return Arch.IA64;
                 case "FMA": return Arch.FMA;
+                case "AES": return Arch.AES;
                 case "TBM": return Arch.TBM;
                 case "AMD": return Arch.AMD;
                 case "PRIV": return Arch.PRIV;
@@ -198,37 +239,37 @@ namespace AsmTools {
                 case "PENT": return Arch.PENT;
                 #endregion
 
+
                 case "OPT": return Arch.OPT;
-                case "NOHLE": return Arch.NOHLE;
                 case "PROT": return Arch.PROT;
                 case "CYRIX": return Arch.CYRIX;
                 case "INVPCID": return Arch.INVPCID;
                 case "CYRIXM": return Arch.CYRIXM;
                 case "VMX": return Arch.VMX;
+                case "ADX": return Arch.ADX;
 
+                case "X64": return Arch.X64;
+                case "PCLMULQDQ": return Arch.PCLMULQDQ;
+                case "PRFCHW": return Arch.PRFCHW;
+                case "RDPID": return Arch.RDPID;
+                case "RDRAND": return Arch.RDRAND;
+                case "RDSEED": return Arch.RDSEED;
+                case "XSAVEOPT": return Arch.XSAVEOPT;
+                case "FSGSBASE": return Arch.FSGSBASE;
+                case "LZCNT": return Arch.LZCNT;
+                case "F16C": return Arch.F16C;
                 case "MPX": return Arch.MPX;
                 case "MIB": return Arch.MIB;
                 case "SHA": return Arch.SHA;
 
                 #region unused
                 case "RTM": return Arch.RTM;
-                case "HLE": return Arch.HLE;
 
-                case "SO": return Arch.SO;
-                case "SW": return Arch.SW;
-                case "SD": return Arch.SD;
-                case "SX": return Arch.SX;
-                case "SY": return Arch.SY;
                 case "ND": return Arch.ND;
                 case "LONG": return Arch.LONG;
                 case "NOLONG": return Arch.NOLONG;
-                case "SIZE": return Arch.SIZE;
-                case "LOCK": return Arch.LOCK;
-                case "BND": return Arch.BND;
                 case "UNDOC": return Arch.UNDOC;
                 case "PREFETCHWT1": return Arch.PREFETCHWT1;
-                case "AR0": return Arch.AR0;
-                case "AR1": return Arch.AR1;
                 #endregion
             }
             Console.WriteLine("WARNING: parseArch: no arch for str " + str);

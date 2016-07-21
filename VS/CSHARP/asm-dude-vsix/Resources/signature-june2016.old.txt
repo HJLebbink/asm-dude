@@ -1,5 +1,3 @@
-; This file is machine generated at 2016/07/21 15:48:25
-;
 GENERAL	AAA	ASCII Adjust After Addition	AAA.html
 GENERAL	AAD	ASCII Adjust AX Before Division	AAD.html
 GENERAL	AAM	ASCII Adjust AX After Multiply	AAM.html
@@ -198,9 +196,9 @@ GENERAL	FCMOVE	Floating-Point Conditional Move	FCMOVcc.html
 GENERAL	FCMOVU	Floating-Point Conditional Move	FCMOVcc.html
 GENERAL	FCMOVB	Floating-Point Conditional Move	FCMOVcc.html
 GENERAL	FCOMI	Compare Floating Point Values and Set EFLAGS	FCOMI_FCOMIP_FUCOMI_FUCOMIP.html
-GENERAL	FUCOMI	Compare Floating Point Values and Set EFLAGS	FCOMI_FCOMIP_FUCOMI_FUCOMIP.html
 GENERAL	FCOMIP	Compare Floating Point Values and Set EFLAGS	FCOMI_FCOMIP_FUCOMI_FUCOMIP.html
 GENERAL	FUCOMIP	Compare Floating Point Values and Set EFLAGS	FCOMI_FCOMIP_FUCOMI_FUCOMIP.html
+GENERAL	FUCOMI	Compare Floating Point Values and Set EFLAGS	FCOMI_FCOMIP_FUCOMI_FUCOMIP.html
 GENERAL	FCOMPP	Compare Floating Point Values	FCOM_FCOMP_FCOMPP.html
 GENERAL	FCOM	Compare Floating Point Values	FCOM_FCOMP_FCOMPP.html
 GENERAL	FCOMP	Compare Floating Point Values	FCOM_FCOMP_FCOMPP.html
@@ -435,9 +433,7 @@ GENERAL	VMINSD	Return Minimum Scalar Double-Precision Floating-Point Value	MINSD
 GENERAL	VMINSS	Return Minimum Scalar Single-Precision Floating-Point Value	MINSS.html
 GENERAL	MINSS	Return Minimum Scalar Single-Precision Floating-Point Value	MINSS.html
 GENERAL	MONITOR	Set Up Monitor Address	MONITOR.html
-GENERAL	MOV-1	Move to/from Control Registers	MOV-1.html
-GENERAL	MOV-2	Move to/from Debug Registers	MOV-2.html
-GENERAL	MOV	Move	MOV.html
+GENERAL	MOV	Move to/from Debug Registers	MOV.html
 GENERAL	MOVAPD	Move Aligned Packed Double-Precision Floating-Point Values	MOVAPD.html
 GENERAL	VMOVAPD	Move Aligned Packed Double-Precision Floating-Point Values	MOVAPD.html
 GENERAL	MOVAPS	Move Aligned Packed Single-Precision Floating-Point Values	MOVAPS.html
@@ -586,8 +582,8 @@ GENERAL	VPBLENDVB	Variable Blend Packed Bytes	PBLENDVB.html
 GENERAL	PBLENDVB	Variable Blend Packed Bytes	PBLENDVB.html
 GENERAL	VPBLENDW	Blend Packed Words	PBLENDW.html
 GENERAL	PBLENDW	Blend Packed Words	PBLENDW.html
-GENERAL	VPCLMULQDQ	PCLMULQDQ - Carry-Less Multiplication Quadword 	PCLMULQDQ.html
-GENERAL	PCLMULQDQ	PCLMULQDQ - Carry-Less Multiplication Quadword 	PCLMULQDQ.html
+GENERAL	VPCLMULQDQ	Carry-Less Multiplication Quadword 	PCLMULQDQ.html
+GENERAL	PCLMULQDQ	Carry-Less Multiplication Quadword 	PCLMULQDQ.html
 GENERAL	VPCMPEQW	Compare Packed Data for Equal	PCMPEQB_PCMPEQW_PCMPEQD.html
 GENERAL	VPCMPEQD	Compare Packed Data for Equal	PCMPEQB_PCMPEQW_PCMPEQD.html
 GENERAL	VPCMPEQB	Compare Packed Data for Equal	PCMPEQB_PCMPEQW_PCMPEQD.html
@@ -960,6 +956,7 @@ GENERAL	STOSQ	Store String	STOS_STOSB_STOSW_STOSD_STOSQ.html
 GENERAL	STOSD	Store String	STOS_STOSB_STOSW_STOSD_STOSQ.html
 GENERAL	STOSW	Store String	STOS_STOSB_STOSW_STOSD_STOSQ.html
 GENERAL	STR	Store Task Register	STR.html
+GENERAL	style		style.css
 GENERAL	SUB	Subtract	SUB.html
 GENERAL	VSUBPD	Subtract Packed Double-Precision Floating-Point Values	SUBPD.html
 GENERAL	SUBPD	Subtract Packed Double-Precision Floating-Point Values	SUBPD.html
@@ -1427,7 +1424,7 @@ ANDPS	XMM,XMM/M128	SSE	ANDPS XMM1,XMM2/M128	Return the bitwise logical AND of pa
 ARPL	R/M16,R16		ARPL R/M16,R16	Adjust RPL of r/m16 to not less than RPL of r16.
 BLENDPD	XMM,XMM/M128,IMM8	SSE4_1	BLENDPD XMM1,XMM2/M128,IMM8	Select packed DP-FP values from xmm1 and xmm2/m128 from mask specified in imm8 and store the values into xmm1.
 BLENDPS	XMM,XMM/M128,IMM8	SSE4_1	BLENDPS XMM1,XMM2/M128,IMM8	Select packed single precision floating-point values from xmm1 and xmm2/m128 from mask specified in imm8 and store the values into xmm1.
-BLENDVPD	XMM,XMM/M128,XMM_ZERO	SSE4_1	BLENDVPD XMM1,XMM2/M128,XMM_ZERO	Select packed DP FP values from xmm1 and xmm2 from mask specified in XMM0 and store the values in xmm1.
+BLENDVPD	XMM,XMM/M128	SSE4_1	BLENDVPD XMM1,XMM2/M128	Select packed DP FP values from xmm1 and xmm2 from mask specified in XMM0 and store the values in xmm1.
 BLENDVPS	XMM,XMM/M128,XMM_ZERO	SSE4_1	BLENDVPS XMM1,XMM2/M128,XMM_ZERO	Select packed single precision floating-point values from xmm1 and xmm2/m128 from mask specified in XMM0 and store the values into xmm1.
 BLSI	R32,R/M32	BMI1	BLSI R32,R/M32	Extract lowest set bit from r/m32 and set that bit in r32.
 BLSI	R64,R/M64	BMI1	BLSI R64,R/M64	Extract lowest set bit from r/m64, and set that bit in r64.
@@ -1504,45 +1501,6 @@ CLFLUSHOPT	M8		CLFLUSHOPT M8	Flushes cache line containing m8.
 CLI			CLI 	Clear interrupt flag; interrupts disabled when interrupt flag cleared.
 CLTS			CLTS 	Clears TS flag in CR0.
 CMC			CMC 	Complement CF flag.
-CMOVA	R16,R/M16		CMOVA R16,R/M16	Move if above (CF=0 and ZF=0).
-CMOVA	R32,R/M32		CMOVA R32,R/M32	Move if above (CF=0 and ZF=0).
-CMOVA	R64,R/M64		CMOVA R64,R/M64	Move if above (CF=0 and ZF=0).
-CMOVAE	R16,R/M16		CMOVAE R16,R/M16	Move if above or equal (CF=0).
-CMOVAE	R32,R/M32		CMOVAE R32,R/M32	Move if above or equal (CF=0).
-CMOVAE	R64,R/M64		CMOVAE R64,R/M64	Move if above or equal (CF=0).
-CMOVB	R16,R/M16		CMOVB R16,R/M16	Move if below (CF=1).
-CMOVB	R32,R/M32		CMOVB R32,R/M32	Move if below (CF=1).
-CMOVB	R64,R/M64		CMOVB R64,R/M64	Move if below (CF=1).
-CMOVBE	R16,R/M16		CMOVBE R16,R/M16	Move if below or equal (CF=1 or ZF=1).
-CMOVBE	R32,R/M32		CMOVBE R32,R/M32	Move if below or equal (CF=1 or ZF=1).
-CMOVBE	R64,R/M64		CMOVBE R64,R/M64	Move if below or equal (CF=1 or ZF=1).
-CMOVC	R16,R/M16		CMOVC R16,R/M16	Move if carry (CF=1).
-CMOVC	R32,R/M32		CMOVC R32,R/M32	Move if carry (CF=1).
-CMOVC	R64,R/M64		CMOVC R64,R/M64	Move if carry (CF=1).
-CMOVE	R16,R/M16		CMOVE R16,R/M16	Move if equal (ZF=1).
-CMOVE	R32,R/M32		CMOVE R32,R/M32	Move if equal (ZF=1).
-CMOVE	R64,R/M64		CMOVE R64,R/M64	Move if equal (ZF=1).
-CMOVG	R16,R/M16		CMOVG R16,R/M16	Move if greater (ZF=0 and SF=OF).
-CMOVG	R32,R/M32		CMOVG R32,R/M32	Move if greater (ZF=0 and SF=OF).
-CMOVG	R64,R/M64		CMOVG R64,R/M64	Move if greater (ZF=0 and SF=OF).
-CMOVGE	R16,R/M16		CMOVGE R16,R/M16	Move if greater or equal (SF=OF).
-CMOVGE	R32,R/M32		CMOVGE R32,R/M32	Move if greater or equal (SF=OF).
-CMOVGE	R64,R/M64		CMOVGE R64,R/M64	Move if greater or equal (SF=OF).
-CMOVL	R16,R/M16		CMOVL R16,R/M16	Move if less (SF≠ OF).
-CMOVL	R32,R/M32		CMOVL R32,R/M32	Move if less (SF≠ OF).
-CMOVL	R64,R/M64		CMOVL R64,R/M64	Move if less (SF≠ OF).
-CMOVLE	R16,R/M16		CMOVLE R16,R/M16	Move if less or equal (ZF=1 or SF≠ OF).
-CMOVLE	R32,R/M32		CMOVLE R32,R/M32	Move if less or equal (ZF=1 or SF≠ OF).
-CMOVLE	R64,R/M64		CMOVLE R64,R/M64	Move if less or equal (ZF=1 or SF≠ OF).
-CMOVNA	R16,R/M16		CMOVNA R16,R/M16	Move if not above (CF=1 or ZF=1).
-CMOVNA	R32,R/M32		CMOVNA R32,R/M32	Move if not above (CF=1 or ZF=1).
-CMOVNA	R64,R/M64		CMOVNA R64,R/M64	Move if not above (CF=1 or ZF=1).
-CMOVNAE	R16,R/M16		CMOVNAE R16,R/M16	Move if not above or equal (CF=1).
-CMOVNAE	R32,R/M32		CMOVNAE R32,R/M32	Move if not above or equal (CF=1).
-CMOVNAE	R64,R/M64		CMOVNAE R64,R/M64	Move if not above or equal (CF=1).
-CMOVNB	R16,R/M16		CMOVNB R16,R/M16	Move if not below (CF=0).
-CMOVNB	R32,R/M32		CMOVNB R32,R/M32	Move if not below (CF=0).
-CMOVNB	R64,R/M64		CMOVNB R64,R/M64	Move if not below (CF=0).
 CMP	AL,IMM8		CMP AL,IMM8	Compare imm8 with AL.
 CMP	AX,IMM16		CMP AX,IMM16	Compare imm16 with AX.
 CMP	EAX,IMM32		CMP EAX,IMM32	Compare imm32 with EAX.
@@ -1780,7 +1738,6 @@ FSUBRP	ST(I),ST(0)		FSUBRP ST(I),ST(0)	Subtract ST(i) from ST(0), store result i
 FTST			FTST 	Compare ST(0) with 0.0.
 FUCOM			FUCOM 	Compare ST(0) with ST(1).
 FUCOM	ST(I)		FUCOM ST(I)	Compare ST(0) with ST(i).
-FUCOMI	ST,ST(I)		FUCOMI ST,ST(I)	Compare ST(0) with ST(i), check for ordered values, and set status flags accordingly.
 FUCOMIP	ST,ST(I)		FUCOMIP ST,ST(I)	Compare ST(0) with ST(i), check for ordered values, set status flags accordingly, and pop register stack.
 FUCOMP			FUCOMP 	Compare ST(0) with ST(1) and pop register stack.
 FUCOMP	ST(I)		FUCOMP ST(I)	Compare ST(0) with ST(i) and pop register stack.
@@ -1837,37 +1794,245 @@ INSERTPS	XMM,XMM/M32,IMM8	SSE4_1	INSERTPS XMM1,XMM2/M32,IMM8	Insert a single-pre
 INSW			INSW 	Input word from I/O port specified in DX into memory location specified in ES:(E)DI or RDI.1
 INTO			INTO 	Interrupt 4—if overflow flag is 1.
 INVD			INVD 	Flush internal caches; initiate flushing of external caches.
-INVLPG	MEM		INVLPG MEM	Invalidate TLB entries for page containing m.
+INVLPG	MEM		INVLPG M	Invalidate TLB entries for page containing m.
 INVPCID	R32,M128	INVPCID	INVPCID R32,M128	Invalidates entries in the TLBs and paging-structure caches based on invalidation type in r32 and descrip-tor in m128.
 INVPCID	R64,M128	INVPCID	INVPCID R64,M128	Invalidates entries in the TLBs and paging-structure caches based on invalidation type in r64 and descrip-tor in m128.
 IRET			IRET 	Interrupt return (16-bit operand size).
 IRETD			IRETD 	Interrupt return (32-bit operand size).
-JA	REL16		JA REL16	Jump near if above (CF=0 and ZF=0). Not supported in 64-bit mode.
-JA	REL32		JA REL32	Jump near if above (CF=0 and ZF=0).
-JA	REL8		JA REL8	Jump short if above (CF=0 and ZF=0).
-JAE	REL16		JAE REL16	Jump near if above or equal (CF=0). Not supported in 64-bit mode.
-JAE	REL8		JAE REL8	Jump short if above or equal (CF=0).
-JB	REL8		JB REL8	Jump short if below (CF=1).
-JBE	REL8		JBE REL8	Jump short if below or equal (CF=1 or ZF=1).
-JC	REL8		JC REL8	Jump short if carry (CF=1).
+
 JCXZ	REL8		JCXZ REL8	Jump short if CX register is 0.
-JE	REL8		JE REL8	Jump short if equal (ZF=1).
 JECXZ	REL8		JECXZ REL8	Jump short if ECX register is 0.
-JG	REL8		JG REL8	Jump short if greater (ZF=0 and SF=OF).
-JGE	REL8		JGE REL8	Jump short if greater or equal (SF=OF).
-JL	REL8		JL REL8	Jump short if less (SF≠ OF).
-JLE	REL8		JLE REL8	Jump short if less or equal (ZF=1 or SF≠ OF).
-JMP	M16:16		JMP M16:16	Jump far, absolute indirect, address given in m16:16
-JMP	M16:32		JMP M16:32	Jump far, absolute indirect, address given in m16:32.
-JMP	M16:64		JMP M16:64	Jump far, absolute indirect, address given in m16:64.
-JMP	PTR16:16		JMP PTR16:16	Jump far, absolute, address given in operand
-JMP	PTR16:32		JMP PTR16:32	Jump far, absolute, address given in operand
-JMP	R/M16		JMP R/M16	Jump near, absolute indirect, address = zero-extended r/m16. Not supported in 64-bit mode.
-JMP	R/M32		JMP R/M32	Jump near, absolute indirect, address given in r/m32. Not supported in 64-bit mode.
-JMP	R/M64		JMP R/M64	Jump near, absolute indirect, RIP = 64-Bit offset from register or memory
-JMP	REL16		JMP REL16	Jump near, relative, displacement relative to next instruction. Not supported in 64-bit mode.
-JMP	REL32		JMP REL32	Jump near, relative, RIP = RIP + 32-bit displacement sign extended to 64-bits
-JMP	REL8		JMP REL8	Jump short, RIP = RIP + 8-bit displacement sign extended to 64-bits
+
+JMP	M16	8086	JMP M16:16	Jump far, absolute indirect, address given in M16
+JMP	M32	386	JMP M16:32	Jump far, absolute indirect, address given in M32.
+JMP	M64	X64	JMP M16:64	Jump far, absolute indirect, address given in M64.
+
+JMP	R/M16	8086	JMP R/M16	Jump near, absolute indirect, address = zero-extended r/m16. Not supported in 64-bit mode.
+JMP	R/M32	386	JMP R/M32	Jump near, absolute indirect, address given in r/m32. Not supported in 64-bit mode.
+JMP	R/M64	X64	JMP R/M64	Jump near, absolute indirect, RIP = 64-Bit offset from register or memory
+
+JMP	REL8	8086	JMP REL8	Jump short, RIP = RIP + 8-bit displacement sign extended to 64-bits
+JMP	REL16	8086	JMP REL16	Jump near, relative, displacement relative to next instruction. Not supported in 64-bit mode.
+JMP	REL32	386	JMP REL32	Jump near, relative, RIP = RIP + 32-bit displacement sign extended to 64-bits
+;
+CMOVA	R16,R/M16	P6	CMOVA R16, r/m16	Move if above (CF=0 and ZF=0) (CMOVA=CMOVNBE)	CMOVcc.html
+CMOVAE	R16,R/M16	P6	CMOVAE R16, r/m16	Move if above or equal (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc.html
+CMOVB	R16,R/M16	P6	CMOVB R16, r/m16	Move if below (CF=1) (CMOVB=CMOVC=CMOVNAE)	CMOVcc.html
+CMOVBE	R16,R/M16	P6	CMOVBE R16, r/m16	Move if below or equal (CF=1 or ZF=1) (CMOVBE=CMOVNA)	CMOVcc.html
+CMOVE	R16,R/M16	P6	CMOVE R16, r/m16	Move if equal (ZF=1) (CMOVE=CMOVZ)	CMOVcc.html
+CMOVG	R16,R/M16	P6	CMOVG R16, r/m16	Move if greater (ZF=0 and SF=OF) (CMOVG=CMOVNLE)	CMOVcc.html
+CMOVGE	R16,R/M16	P6	CMOVGE R16, r/m16	Move if greater or equal (SF=OF) (CMOVGE=CMOVNL)	CMOVcc.html
+CMOVL	R16,R/M16	P6	CMOVL R16, r/m16	Move if less (SF!=OF) (CMOVL=CMOVNGE)	CMOVcc.html
+CMOVLE	R16,R/M16	P6	CMOVLE R16, r/m16	Move if less or equal (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)	CMOVcc.html
+CMOVNA	R16,R/M16	P6	CMOVNA R16, r/m16	Move if not above (CF=1 or ZF=1) (CMOVBE=CMOVNA)	CMOVcc.html
+CMOVNAE	R16,R/M16	P6	CMOVNAE R16, r/m16	Move if not above or equal (CF=1) (CMOVB=CMOVC=CMOVNAE)	CMOVcc.html
+CMOVNB	R16,R/M16	P6	CMOVNB R16, r/m16	Move if not below (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc.html
+CMOVNBE	R16,R/M16	P6	CMOVNBE R16, r/m16	Move if not below or equal (CF=0 and ZF=0) (CMOVA=CMOVNBE)	CMOVcc.html
+CMOVNC	R16,R/M16	P6	CMOVNC R16, r/m16	Move if not carry (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc.html
+CMOVNE	R16,R/M16	P6	CMOVNE R16, r/m16	Move if not equal (ZF=0) (CMOVNE=CMOVNZ)	CMOVcc.html
+CMOVNG	R16,R/M16	P6	CMOVNG R16, r/m16	Move if not greater (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)	CMOVcc.html
+CMOVNGE	R16,R/M16	P6	CMOVNGE R16, r/m16	Move if not greater or equal (SF!=OF) (CMOVL=CMOVNGE)	CMOVcc.html
+CMOVNL	R16,R/M16	P6	CMOVNL R16, r/m16	Move if not less (SF=OF) (CMOVGE=CMOVNL)	CMOVcc.html
+CMOVNLE	R16,R/M16	P6	CMOVNLE R16, r/m16	Move if not less or equal (ZF=0 and SF=OF) (CMOVG=CMOVNLE)	CMOVcc.html
+CMOVNO	R16,R/M16	P6	CMOVNO R16, r/m16	Move if not overflow (OF=0)	CMOVcc.html
+CMOVNP	R16,R/M16	P6	CMOVNP R16, r/m16	Move if not parity (PF=0) (CMOVNP=CMOVPO)	CMOVcc.html
+CMOVNS	R16,R/M16	P6	CMOVNS R16, r/m16	Move if not sign (SF=0)	CMOVcc.html
+CMOVNZ	R16,R/M16	P6	CMOVNZ R16, r/m16	Move if not zero (ZF=0 CMOVNE=CMOVNZ)	CMOVcc.html
+CMOVO	R16,R/M16	P6	CMOVO R16, r/m16	Move if overflow (OF=1)	CMOVcc.html
+CMOVP	R16,R/M16	P6	CMOVP R16, r/m16	Move if parity (PF=1) (CMOVP=CMOVPE)	CMOVcc.html
+CMOVPE	R16,R/M16	P6	CMOVPE R16, r/m16	Move if parity even (PF=1) (CMOVP=CMOVPE)	CMOVcc.html
+CMOVPO	R16,R/M16	P6	CMOVPO R16, r/m16	Move if parity odd (PF=0) (CMOVNP=CMOVPO)	CMOVcc.html
+CMOVS	R16,R/M16	P6	CMOVS R16, r/m16	Move if sign (SF=1)	CMOVcc.html
+CMOVZ	R16,R/M16	P6	CMOVZ R16, r/m16	Move if zero (ZF=1) (CMOVE=CMOVZ)	CMOVcc.html
+;
+CMOVA	R32,R/M32	P6	CMOVA R32, R/M32	Move if above (CF=0 and ZF=0) (CMOVA=CMOVNBE)	CMOVcc.html
+CMOVAE	R32,R/M32	P6	CMOVAE R32, R/M32	Move if above or equal (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc.html
+CMOVB	R32,R/M32	P6	CMOVB R32, R/M32	Move if below (CF=1) (CMOVB=CMOVC=CMOVNAE)	CMOVcc.html
+CMOVBE	R32,R/M32	P6	CMOVBE R32, R/M32	Move if below or equal (CF=1 or ZF=1) (CMOVBE=CMOVNA)	CMOVcc.html
+CMOVE	R32,R/M32	P6	CMOVE R32, R/M32	Move if equal (ZF=1) (CMOVE=CMOVZ)	CMOVcc.html
+CMOVG	R32,R/M32	P6	CMOVG R32, R/M32	Move if greater (ZF=0 and SF=OF) (CMOVG=CMOVNLE)	CMOVcc.html
+CMOVGE	R32,R/M32	P6	CMOVGE R32, R/M32	Move if greater or equal (SF=OF) (CMOVGE=CMOVNL)	CMOVcc.html
+CMOVL	R32,R/M32	P6	CMOVL R32, R/M32	Move if less (SF!=OF) (CMOVL=CMOVNGE)	CMOVcc.html
+CMOVLE	R32,R/M32	P6	CMOVLE R32, R/M32	Move if less or equal (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)	CMOVcc.html
+CMOVNA	R32,R/M32	P6	CMOVNA R32, R/M32	Move if not above (CF=1 or ZF=1) (CMOVBE=CMOVNA)	CMOVcc.html
+CMOVNAE	R32,R/M32	P6	CMOVNAE R32, R/M32	Move if not above or equal (CF=1) (CMOVB=CMOVC=CMOVNAE)	CMOVcc.html
+CMOVNB	R32,R/M32	P6	CMOVNB R32, R/M32	Move if not below (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc.html
+CMOVNBE	R32,R/M32	P6	CMOVNBE R32, R/M32	Move if not below or equal (CF=0 and ZF=0) (CMOVA=CMOVNBE)	CMOVcc.html
+CMOVNC	R32,R/M32	P6	CMOVNC R32, R/M32	Move if not carry (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc.html
+CMOVNE	R32,R/M32	P6	CMOVNE R32, R/M32	Move if not equal (ZF=0) (CMOVNE=CMOVNZ)	CMOVcc.html
+CMOVNG	R32,R/M32	P6	CMOVNG R32, R/M32	Move if not greater (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)	CMOVcc.html
+CMOVNGE	R32,R/M32	P6	CMOVNGE R32, R/M32	Move if not greater or equal (SF!=OF) (CMOVL=CMOVNGE)	CMOVcc.html
+CMOVNL	R32,R/M32	P6	CMOVNL R32, R/M32	Move if not less (SF=OF) (CMOVGE=CMOVNL)	CMOVcc.html
+CMOVNLE	R32,R/M32	P6	CMOVNLE R32, R/M32	Move if not less or equal (ZF=0 and SF=OF) (CMOVG=CMOVNLE)	CMOVcc.html
+CMOVNO	R32,R/M32	P6	CMOVNO R32, R/M32	Move if not overflow (OF=0)	CMOVcc.html
+CMOVNP	R32,R/M32	P6	CMOVNP R32, R/M32	Move if not parity (PF=0) (CMOVNP=CMOVPO)	CMOVcc.html
+CMOVNS	R32,R/M32	P6	CMOVNS R32, R/M32	Move if not sign (SF=0)	CMOVcc.html
+CMOVNZ	R32,R/M32	P6	CMOVNZ R32, R/M32	Move if not zero (ZF=0 CMOVNE=CMOVNZ)	CMOVcc.html
+CMOVO	R32,R/M32	P6	CMOVO R32, R/M32	Move if overflow (OF=1)	CMOVcc.html
+CMOVP	R32,R/M32	P6	CMOVP R32, R/M32	Move if parity (PF=1) (CMOVP=CMOVPE)	CMOVcc.html
+CMOVPE	R32,R/M32	P6	CMOVPE R32, R/M32	Move if parity even (PF=1) (CMOVP=CMOVPE)	CMOVcc.html
+CMOVPO	R32,R/M32	P6	CMOVPO R32, R/M32	Move if parity odd (PF=0) (CMOVNP=CMOVPO)	CMOVcc.html
+CMOVS	R32,R/M32	P6	CMOVS R32, R/M32	Move if sign (SF=1)	CMOVcc.html
+CMOVZ	R32,R/M32	P6	CMOVZ R32, R/M32	Move if zero (ZF=1) (CMOVE=CMOVZ)	CMOVcc.html
+;
+CMOVA	R64,R/M64	X64	CMOVA r64, r/m64	Move if above (CF=0 and ZF=0) (CMOVA=CMOVNBE)	CMOVcc.html
+CMOVAE	R64,R/M64	X64	CMOVAE r64, r/m64	Move if above or equal (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc.html
+CMOVB	R64,R/M64	X64	CMOVB r64, r/m64	Move if below (CF=1) (CMOVB=CMOVC=CMOVNAE)	CMOVcc.html
+CMOVBE	R64,R/M64	X64	CMOVBE r64, r/m64	Move if below or equal (CF=1 or ZF=1) (CMOVBE=CMOVNA)	CMOVcc.html
+CMOVE	R64,R/M64	X64	CMOVE r64, r/m64	Move if equal (ZF=1) (CMOVE=CMOVZ)	CMOVcc.html
+CMOVG	R64,R/M64	X64	CMOVG r64, r/m64	Move if greater (ZF=0 and SF=OF) (CMOVG=CMOVNLE)	CMOVcc.html
+CMOVGE	R64,R/M64	X64	CMOVGE r64, r/m64	Move if greater or equal (SF=OF) (CMOVGE=CMOVNL)	CMOVcc.html
+CMOVL	R64,R/M64	X64	CMOVL r64, r/m64	Move if less (SF!=OF) (CMOVL=CMOVNGE)	CMOVcc.html
+CMOVLE	R64,R/M64	X64	CMOVLE r64, r/m64	Move if less or equal (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)	CMOVcc.html
+CMOVNA	R64,R/M64	X64	CMOVNA r64, r/m64	Move if not above (CF=1 or ZF=1) (CMOVBE=CMOVNA)	CMOVcc.html
+CMOVNAE	R64,R/M64	X64	CMOVNAE r64, r/m64	Move if not above or equal (CF=1) (CMOVB=CMOVC=CMOVNAE)	CMOVcc.html
+CMOVNB	R64,R/M64	X64	CMOVNB r64, r/m64	Move if not below (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc.html
+CMOVNBE	R64,R/M64	X64	CMOVNBE r64, r/m64	Move if not below or equal (CF=0 and ZF=0) (CMOVA=CMOVNBE)	CMOVcc.html
+CMOVNC	R64,R/M64	X64	CMOVNC r64, r/m64	Move if not carry (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc.html
+CMOVNE	R64,R/M64	X64	CMOVNE r64, r/m64	Move if not equal (ZF=0) (CMOVNE=CMOVNZ)	CMOVcc.html
+CMOVNG	R64,R/M64	X64	CMOVNG r64, r/m64	Move if not greater (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)	CMOVcc.html
+CMOVNGE	R64,R/M64	X64	CMOVNGE r64, r/m64	Move if not greater or equal (SF!=OF) (CMOVL=CMOVNGE)	CMOVcc.html
+CMOVNL	R64,R/M64	X64	CMOVNL r64, r/m64	Move if not less (SF=OF) (CMOVGE=CMOVNL)	CMOVcc.html
+CMOVNLE	R64,R/M64	X64	CMOVNLE r64, r/m64	Move if not less or equal (ZF=0 and SF=OF) (CMOVG=CMOVNLE)	CMOVcc.html
+CMOVNO	R64,R/M64	X64	CMOVNO r64, r/m64	Move if not overflow (OF=0)	CMOVcc.html
+CMOVNP	R64,R/M64	X64	CMOVNP r64, r/m64	Move if not parity (PF=0) (CMOVNP=CMOVPO)	CMOVcc.html
+CMOVNS	R64,R/M64	X64	CMOVNS r64, r/m64	Move if not sign (SF=0)	CMOVcc.html
+CMOVNZ	R64,R/M64	X64	CMOVNZ r64, r/m64	Move if not zero (ZF=0 CMOVNE=CMOVNZ)	CMOVcc.html
+CMOVO	R64,R/M64	X64	CMOVO r64, r/m64	Move if overflow (OF=1)	CMOVcc.html
+CMOVP	R64,R/M64	X64	CMOVP r64, r/m64	Move if parity (PF=1) (CMOVP=CMOVPE)	CMOVcc.html
+CMOVPE	R64,R/M64	X64	CMOVPE r64, r/m64	Move if parity even (PF=1) (CMOVP=CMOVPE)	CMOVcc.html
+CMOVPO	R64,R/M64	X64	CMOVPO r64, r/m64	Move if parity odd (PF=0) (CMOVNP=CMOVPO)	CMOVcc.html
+CMOVS	R64,R/M64	X64	CMOVS r64, r/m64	Move if sign (SF=1)	CMOVcc.html
+CMOVZ	R64,R/M64	X64	CMOVZ r64, r/m64	Move if zero (ZF=1) (CMOVE=CMOVZ)	CMOVcc.html
+
+;
+JA	IMM8	8086	JA IMM8	Jump if above (CF=0 and ZF=0) (JA=JNBE)
+JAE	IMM8	8086	JAE IMM8	Jump if above or equal (CF=0) (JAE=JNB)
+JB	IMM8	8086	JB IMM8	Jump if below (CF=1) (JB=JNAE)
+JBE	IMM8	8086	JBE IMM8	Jump if below or equal (CF=1 or ZF=1) (JBE=JNA)
+JC	IMM8	8086	JC IMM8	Jump if carry (CF=1)
+JE	IMM8	8086	JE IMM8	Jump if equal (ZF=1) (JE=JZ)
+JG	IMM8	8086	JG IMM8	Jump if greater (ZF=0 and SF=OF) (JG=JNLE)
+JGE	IMM8	8086	JGE IMM8	Jump if greater or equal (SF=OF) (JGE=JNL)
+JL	IMM8	8086	JL IMM8	Jump if less (SF!=OF) (JL=JNGE)
+JLE	IMM8	8086	JLE IMM8	Jump if less or equal (ZF=1 or SF!=OF) (JLE=JNG)
+JNA	IMM8	8086	JNA IMM8	Jump if not above (CF=1 or ZF=1) (JBE=JNA)
+JNAE	IMM8	8086	JNAE IMM8	Jump if not above or equal (CF=1) (JB=JNAE)
+JNB	IMM8	8086	JNB IMM8	Jump if not below (CF=0) (JAE=JNB)
+JNBE	IMM8	8086	JNBE IMM8	Jump if not below or equal (CF=0 and ZF=0) (JA=JNBE)
+JNC	IMM8	8086	JNC IMM8	Jump if not carry (CF=0)
+JNE	IMM8	8086	JNE IMM8	Jump if not equal (ZF=0) (JNE=JNZ)
+JNG	IMM8	8086	JNG IMM8	Jump if not greater (ZF=1 or SF!=OF) (JLE=JNG)
+JNGE	IMM8	8086	JNGE IMM8	Jump if not greater or equal (SF!=OF) (JL=JNGE)
+JNL	IMM8	8086	JNL IMM8	Jump if not less (SF=OF) (JGE=JNL)
+JNLE	IMM8	8086	JNLE IMM8	Jump if not less or equal (ZF=0 and SF=OF) (JG=JNLE)
+JNO	IMM8	8086	JNO IMM8	Jump if not overflow (OF=0)
+JNP	IMM8	8086	JNP IMM8	Jump if not parity (PF=0) (JNP=JPO)
+JNS	IMM8	8086	JNS IMM8	Jump if not sign (SF=0)
+JNZ	IMM8	8086	JNZ IMM8	Jump if not zero (ZF=0) (JNE=JNZ)
+JO	IMM8	8086	JO IMM8	Jump if overflow (OF=1)
+JP	IMM8	8086	JP IMM8	Jump if parity (PF=1) (JP=JPE)
+JPE	IMM8	8086	JPE IMM8	Jump if parity even (PF=1) (JP=JPE)
+JPO	IMM8	8086	JPO IMM8	Jump if parity odd (PF=0) (JNP=JPO)
+JS	IMM8	8086	JS IMM8	Jump if sign (SF=1)
+JZ	IMM8	8086	JZ IMM8	Jump if zero (ZF=1) (JE=JZ)
+;
+JA	IMM	386	JA IMM	Jump if above (CF=0 and ZF=0) (JA=JNBE)
+JAE	IMM	386	JAE IMM	Jump if above or equal (CF=0) (JAE=JNB)
+JB	IMM	386	JB IMM	Jump if below (CF=1) (JB=JNAE)
+JBE	IMM	386	JBE IMM	Jump if below or equal (CF=1 or ZF=1) (JBE=JNA)
+JC	IMM	386	JC IMM	Jump if carry (CF=1)
+JE	IMM	386	JE IMM	Jump if equal (ZF=1) (JE=JZ)
+JG	IMM	386	JG IMM	Jump if greater (ZF=0 and SF=OF) (JG=JNLE)
+JGE	IMM	386	JGE IMM	Jump if greater or equal (SF=OF) (JGE=JNL)
+JL	IMM	386	JL IMM	Jump if less (SF!=OF) (JL=JNGE)
+JLE	IMM	386	JLE IMM	Jump if less or equal (ZF=1 or SF!=OF) (JLE=JNG)
+JNA	IMM	386	JNA IMM	Jump if not above (CF=1 or ZF=1) (JBE=JNA)
+JNAE	IMM	386	JNAE IMM	Jump if not above or equal (CF=1) (JB=JNAE)
+JNB	IMM	386	JNB IMM	Jump if not below (CF=0) (JAE=JNB)
+JNBE	IMM	386	JNBE IMM	Jump if not below or equal (CF=0 and ZF=0) (JA=JNBE)
+JNC	IMM	386	JNC IMM	Jump if not carry (CF=0)
+JNE	IMM	386	JNE IMM	Jump if not equal (ZF=0) (JNE=JNZ)
+JNG	IMM	386	JNG IMM	Jump if not greater (ZF=1 or SF!=OF) (JLE=JNG)
+JNGE	IMM	386	JNGE IMM	Jump if not greater or equal (SF!=OF) (JL=JNGE)
+JNL	IMM	386	JNL IMM	Jump if not less (SF=OF) (JGE=JNL)
+JNLE	IMM	386	JNLE IMM	Jump if not less or equal (ZF=0 and SF=OF) (JG=JNLE)
+JNO	IMM	386	JNO IMM	Jump if not overflow (OF=0)
+JNP	IMM	386	JNP IMM	Jump if not parity (PF=0) (JNP=JPO)
+JNS	IMM	386	JNS IMM	Jump if not sign (SF=0)
+JNZ	IMM	386	JNZ IMM	Jump if not zero (ZF=0) (JNE=JNZ)
+JO	IMM	386	JO IMM	Jump if overflow (OF=1)
+JP	IMM	386	JP IMM	Jump if parity (PF=1) (JP=JPE)
+JPE	IMM	386	JPE IMM	Jump if parity even (PF=1) (JP=JPE)
+JPO	IMM	386	JPO IMM	Jump if parity odd (PF=0) (JNP=JPO)
+JS	IMM	386	JS IMM	Jump if sign (SF=1)
+JZ	IMM	386	JZ IMM	Jump if zero (ZF=1) (JE=JZ)
+;
+JA	IMM64	X64	JA IMM64	Jump if above (CF=0 and ZF=0) (JA=JNBE)
+JAE	IMM64	X64	JAE IMM64	Jump if above or equal (CF=0) (JAE=JNB)
+JB	IMM64	X64	JB IMM64	Jump if below (CF=1) (JB=JNAE)
+JBE	IMM64	X64	JBE IMM64	Jump if below or equal (CF=1 or ZF=1) (JBE=JNA)
+JC	IMM64	X64	JC IMM64	Jump if carry (CF=1)
+JE	IMM64	X64	JE IMM64	Jump if equal (ZF=1) (JE=JZ)
+JG	IMM64	X64	JG IMM64	Jump if greater (ZF=0 and SF=OF) (JG=JNLE)
+JGE	IMM64	X64	JGE IMM64	Jump if greater or equal (SF=OF) (JGE=JNL)
+JL	IMM64	X64	JL IMM64	Jump if less (SF!=OF) (JL=JNGE)
+JLE	IMM64	X64	JLE IMM64	Jump if less or equal (ZF=1 or SF!=OF) (JLE=JNG)
+JNA	IMM64	X64	JNA IMM64	Jump if not above (CF=1 or ZF=1) (JBE=JNA)
+JNAE	IMM64	X64	JNAE IMM64	Jump if not above or equal (CF=1) (JB=JNAE)
+JNB	IMM64	X64	JNB IMM64	Jump if not below (CF=0) (JAE=JNB)
+JNBE	IMM64	X64	JNBE IMM64	Jump if not below or equal (CF=0 and ZF=0) (JA=JNBE)
+JNC	IMM64	X64	JNC IMM64	Jump if not carry (CF=0)
+JNE	IMM64	X64	JNE IMM64	Jump if not equal (ZF=0) (JNE=JNZ)
+JNG	IMM64	X64	JNG IMM64	Jump if not greater (ZF=1 or SF!=OF) (JLE=JNG)
+JNGE	IMM64	X64	JNGE IMM64	Jump if not greater or equal (SF!=OF) (JL=JNGE)
+JNL	IMM64	X64	JNL IMM64	Jump if not less (SF=OF) (JGE=JNL)
+JNLE	IMM64	X64	JNLE IMM64	Jump if not less or equal (ZF=0 and SF=OF) (JG=JNLE)
+JNO	IMM64	X64	JNO IMM64	Jump if not overflow (OF=0)
+JNP	IMM64	X64	JNP IMM64	Jump if not parity (PF=0) (JNP=JPO)
+JNS	IMM64	X64	JNS IMM64	Jump if not sign (SF=0)
+JNZ	IMM64	X64	JNZ IMM64	Jump if not zero (ZF=0) (JNE=JNZ)
+JO	IMM64	X64	JO IMM64	Jump if overflow (OF=1)
+JP	IMM64	X64	JP IMM64	Jump if parity (PF=1) (JP=JPE)
+JPE	IMM64	X64	JPE IMM64	Jump if parity even (PF=1) (JP=JPE)
+JPO	IMM64	X64	JPO IMM64	Jump if parity odd (PF=0) (JNP=JPO)
+JS	IMM64	X64	JS IMM64	Jump if sign (SF=1)
+JZ	IMM64	X64	JZ IMM64	Jump if zero (ZF=1) (JE=JZ)
+;
+SETA	R/M8	386	SETA r/m8	Set byte if above (CF=0 and ZF=0) (SETA=SETNBE)
+SETAE	R/M8	386	SETAE r/m8	Set byte if above or equal (CF=0) (SETAE=SETNC=SETNB)
+SETB	R/M8	386	SETB r/m8	Set byte if below (CF=1) (SETB=SETC=SETNAE)
+SETBE	R/M8	386	SETBE r/m8	Set byte if below or equal (CF=1 or ZF=1) (SETBE=SETNA)
+SETC	R/M8	386	SETC r/m8	Set byte if carry (CF=1 SETB=SETC=SETNAE)
+SETE	R/M8	386	SETE r/m8	Set byte if equal (ZF=1) (SETE=SETZ)
+SETG	R/M8	386	SETG r/m8	Set byte if greater (ZF=0 and SF=OF) (SETG=SETNLE)
+SETGE	R/M8	386	SETGE r/m8	Set byte if greater or equal (SF=OF) (SETGE=SETNL)
+SETL	R/M8	386	SETL r/m8	Set byte if less (SF!=OF) (SETL=SETNGE)
+SETLE	R/M8	386	SETLE r/m8	Set byte if less or equal (ZF=1 or SF!=OF) (SETLE=SETNG)
+SETNA	R/M8	386	SETNA r/m8	Set byte if not above (CF=1 or ZF=1) (SETBE=SETNA)
+SETNAE	R/M8	386	SETNAE r/m8	Set byte if not above or equal (CF=1) (SETB=SETC=SETNAE)
+SETNB	R/M8	386	SETNB r/m8	Set byte if not below (CF=0) (SETAE=SETNC=SETNB)
+SETNBE	R/M8	386	SETNBE r/m8	Set byte if not below or equal (CF=0 and ZF=0) (SETA=SETNBE)
+SETNC	R/M8	386	SETNC r/m8	Set byte if not carry (CF=0) (SETAE=SETNC=SETNB)
+SETNE	R/M8	386	SETNE r/m8	Set byte if not equal (ZF=0) (SETNE=SETNZ)
+SETNG	R/M8	386	SETNG r/m8	Set byte if not greater (ZF=1 or SF!=OF) (SETLE=SETNG)
+SETNGE	R/M8	386	SETNGE r/m8	Set byte if not greater or equal (SF!=OF) (SETL=SETNGE)
+SETNL	R/M8	386	SETNL r/m8	Set byte if not less (SF=OF) (SETGE=SETNL)
+SETNLE	R/M8	386	SETNLE r/m8	Set byte if not less or equal (ZF=0 and SF=OF) (SETG=SETNLE)
+SETNO	R/M8	386	SETNO r/m8	Set byte if not overflow (OF=0)
+SETNP	R/M8	386	SETNP r/m8	Set byte if not parity (PF=0) (SETNP=SETPO)
+SETNS	R/M8	386	SETNS r/m8	Set byte if not sign (SF=0)
+SETNZ	R/M8	386	SETNZ r/m8	Set byte if not zero (ZF=0) (SETNE=SETNZ)
+SETO	R/M8	386	SETO r/m8	Set byte if overflow (OF=1)
+SETP	R/M8	386	SETP r/m8	Set byte if parity (PF=1) (SETP=SETPE)
+SETPE	R/M8	386	SETPE r/m8	Set byte if parity even (PF=1) (SETP=SETPE)
+SETPO	R/M8	386	SETPO r/m8	Set byte if parity odd (PF=0 SETNP=SETPO)
+SETS	R/M8	386	SETS r/m8	Set byte if sign (SF=1)
+SETZ	R/M8	386	SETZ r/m8	Set byte if zero (ZF=1) (SETE=SETZ)
+
+
+
+
 JNA	REL8		JNA REL8	Jump short if not above (CF=1 or ZF=1).
 JNAE	REL8		JNAE REL8	Jump short if not above or equal (CF=1).
 JNB	REL8		JNB REL8	Jump short if not below (CF=0).
@@ -1959,9 +2124,9 @@ LDDQU	XMM,MEM	SSE3	LDDQU XMM1,MEM	Load unaligned data from mem and return double
 LDMXCSR	M32	SSE	LDMXCSR M32	Load MXCSR register from m32.
 LDS	R16,M16:16		LDS R16,M16:16	Load DS:r16 with far pointer from memory.
 LDS	R32,M16:32		LDS R32,M16:32	Load DS:r32 with far pointer from memory.
-LEA	R16,MEM		LEA R16,MEM	Store effective address for m in register r16.
-LEA	R32,MEM		LEA R32,MEM	Store effective address for m in register r32.
-LEA	R64,MEM		LEA R64,MEM	Store effective address for m in register r64.
+LEA	R16,MEM		LEA R16,M	Store effective address for m in register r16.
+LEA	R32,MEM		LEA R32,M	Store effective address for m in register r32.
+LEA	R64,MEM		LEA R64,M	Store effective address for m in register r64.
 LEAVE			LEAVE 	Set SP to BP, then pop BP.
 LES	R16,M16:16		LES R16,M16:16	Load ES:r16 with far pointer from memory.
 LES	R32,M16:32		LES R32,M16:32	Load ES:r32 with far pointer from memory.
@@ -2010,34 +2175,10 @@ MINPS	XMM,XMM/M128	SSE	MINPS XMM1,XMM2/M128	Return the minimum single-precision 
 MINSD	XMM,XMM/M64	SSE2	MINSD XMM1,XMM2/M64	Return the minimum scalar double-precision floating-point value between xmm2/m64 and xmm1.
 MINSS	XMM,XMM/M32	SSE	MINSS XMM1,XMM2/M32	Return the minimum scalar single-precision floating-point value between xmm2/m32 and xmm1.
 MONITOR			MONITOR 	Sets up a linear address range to be monitored by hardware and activates the monitor. The address range should be a write-back memory caching type. The address is DS:EAX (DS:RAX in 64-bit mode).
-MOV	AL,MOFFS8		MOV AL,MOFFS8	Move byte at (seg:offset) to AL.
-MOV	AX,MOFFS16		MOV AX,MOFFS16	Move word at (seg:offset) to AX.
-MOV	EAX,MOFFS32		MOV EAX,MOFFS32	Move doubleword at (seg:offset) to EAX.
-MOV	MOFFS16,AX		MOV MOFFS16,AX	Move AX to (seg:offset).
-MOV	MOFFS32,EAX		MOV MOFFS32,EAX	Move EAX to (seg:offset).
-MOV	MOFFS64,RAX		MOV MOFFS64,RAX	Move RAX to (offset).
-MOV	MOFFS8,AL		MOV MOFFS8,AL	Move AL to (seg:offset).
-MOV	R/M16,IMM16		MOV R/M16,IMM16	Move imm16 to r/m16.
-MOV	R/M16,R16		MOV R/M16,R16	Move r16 to r/m16.
-MOV	R/M16,SREG		MOV R/M16,SREG	Move segment register to r/m16.
-MOV	R/M32,IMM32		MOV R/M32,IMM32	Move imm32 to r/m32.
-MOV	R/M32,R32		MOV R/M32,R32	Move r32 to r/m32.
-MOV	R/M64,IMM32		MOV R/M64,IMM32	Move imm32 sign extended to 64-bits to r/m64.
-MOV	R/M64,R64		MOV R/M64,R64	Move r64 to r/m64.
-MOV	R/M64,SREG		MOV R/M64,SREG	Move zero extended 16-bit segment register to r/m64.
-MOV	R/M8,IMM8		MOV R/M8,IMM8	Move imm8 to r/m8.
-MOV	R/M8,R8		MOV R/M8,R8	Move r8 to r/m8.
-MOV	R16,IMM16		MOV R16,IMM16	Move imm16 to r16.
-MOV	R16,R/M16		MOV R16,R/M16	Move r/m16 to r16.
-MOV	R32,IMM32		MOV R32,IMM32	Move imm32 to r32.
-MOV	R32,R/M32		MOV R32,R/M32	Move r/m32 to r32.
-MOV	R64,IMM64		MOV R64,IMM64	Move imm64 to r64.
-MOV	R64,R/M64		MOV R64,R/M64	Move r/m64 to r64.
-MOV	R8,IMM8		MOV R8,IMM8	Move imm8 to r8.
-MOV	R8,R/M8		MOV R8,R/M8	Move r/m8 to r8.
-MOV	RAX,MOFFS64		MOV RAX,MOFFS64	Move quadword at (offset) to RAX.
-MOV	SREG,R/M16		MOV SREG,R/M16	Move r/m16 to segment register.
-MOV	SREG,R/M64		MOV SREG,R/M64	Move lower 16 bits of r/m64 to segment register.
+MOV	DR0–DR7,R32		MOV DR0–DR7,R32	Move r32 to debug register.
+MOV	DR0–DR7,R64		MOV DR0–DR7,R64	Move r64 to extended debug register.
+MOV	R32,DR0–DR7		MOV R32,DR0–DR7	Move debug register to r32.
+MOV	R64,DR0–DR7		MOV R64,DR0–DR7	Move extended debug register to r64.
 MOVAPD	XMM,XMM/M128	SSE2	MOVAPD XMM1,XMM2/M128	Move aligned packed double-precision floating-point values from xmm2/mem to xmm1.
 MOVAPD	XMM/M128,XMM	SSE2	MOVAPD XMM2/M128,XMM1	Move aligned packed double-precision floating-point values from xmm1 to xmm2/mem.
 MOVAPS	XMM,XMM/M128	SSE	MOVAPS XMM1,XMM2/M128	Move aligned packed single-precision floating-point values from xmm2/mem to xmm1.
@@ -2213,7 +2354,7 @@ PAVGW	MM,MM/M64	SSE	PAVGW MM1,MM2/M64	Average packed unsigned word integers from
 PAVGW	XMM,XMM/M128	SSE2	PAVGW XMM1,XMM2/M128	Average packed unsigned word integers from xmm2/m128 and xmm1 with rounding.
 PBLENDVB	XMM,XMM/M128,XMM_ZERO	SSE4_1	PBLENDVB XMM1,XMM2/M128,XMM_ZERO	Select byte values from xmm1 and xmm2/m128 from mask specified in the high bit of each byte in XMM0 and store the values into xmm1.
 PBLENDW	XMM,XMM/M128,IMM8	SSE4_1	PBLENDW XMM1,XMM2/M128,IMM8	Select words from xmm1 and xmm2/m128 from mask specified in imm8 and store the values into xmm1.
-PCLMULQDQ	XMM,XMM/M128,IMM8	PCLMULQDQ	PCLMULQDQ XMM1,XMM2/M128,IMM8	Carry-less multiplication of one quadword of xmm1 by one quadword of xmm2/m128, stores the 128-bit result in xmm1. The imme-diate is used to determine which quadwords of xmm1 and xmm2/m128 should be used.
+PCLMULQDQ	XMM,XMM/M128,IMM8		PCLMULQDQ XMM1,XMM2/M128,IMM8	Carry-less multiplication of one quadword of xmm1 by one quadword of xmm2/m128, stores the 128-bit result in xmm1. The imme-diate is used to determine which quadwords of xmm1 and xmm2/m128 should be used.
 PCMPEQB	MM,MM/M64	MMX	PCMPEQB MM,MM/M64	Compare packed bytes in mm/m64 and mm for equality.
 PCMPEQB	XMM,XMM/M128	SSE2	PCMPEQB XMM1,XMM2/M128	Compare packed bytes in xmm2/m128 and xmm1 for equality.
 PCMPEQD	MM,MM/M64	MMX	PCMPEQD MM,MM/M64	Compare packed doublewords in mm/m64 and mm for equality.
@@ -2417,8 +2558,8 @@ PUSH	DS		PUSH DS	Push DS.
 PUSH	ES		PUSH ES	Push ES.
 PUSH	FS		PUSH FS	Push FS.
 PUSH	GS		PUSH GS	Push GS.
-PUSH	IMM16		PUSH IMM16	Push imm16.
 PUSH	IMM32		PUSH IMM32	Push imm32.
+PUSH	IMM16		PUSH IMM16	Push imm16.
 PUSH	IMM8		PUSH IMM8	Push imm8.
 PUSH	R/M16		PUSH R/M16	Push r/m16.
 PUSH	R/M32		PUSH R/M32	Push r/m32.
@@ -2541,27 +2682,8 @@ SCAS	M8		SCAS M8	Compare AL with byte at ES:(E)DI or RDI, then set status flags.
 SCASB			SCASB 	Compare AL with byte at ES:(E)DI or RDI then set status flags.
 SCASD			SCASD 	Compare EAX with doubleword at ES:(E)DI or RDI then set status flags.
 SCASW			SCASW 	Compare AX with word at ES:(E)DI or RDI then set status flags.
-SETA	R/M8		SETA R/M8	Set byte if above (CF=0 and ZF=0).
-SETAE	R/M8		SETAE R/M8	Set byte if above or equal (CF=0).
-SETB	R/M8		SETB R/M8	Set byte if below (CF=1).
-SETBE	R/M8		SETBE R/M8	Set byte if below or equal (CF=1 or ZF=1).
-SETC	R/M8		SETC R/M8	Set byte if carry (CF=1).
-SETE	R/M8		SETE R/M8	Set byte if equal (ZF=1).
-SETG	R/M8		SETG R/M8	Set byte if greater (ZF=0 and SF=OF).
-SETGE	R/M8		SETGE R/M8	Set byte if greater or equal (SF=OF).
-SETL	R/M8		SETL R/M8	Set byte if less (SF≠ OF).
-SETLE	R/M8		SETLE R/M8	Set byte if less or equal (ZF=1 or SF≠ OF).
-SETNA	R/M8		SETNA R/M8	Set byte if not above (CF=1 or ZF=1).
-SETNAE	R/M8		SETNAE R/M8	Set byte if not above or equal (CF=1).
-SETNB	R/M8		SETNB R/M8	Set byte if not below (CF=0).
-SETNBE	R/M8		SETNBE R/M8	Set byte if not below or equal (CF=0 and ZF=0).
-SETNC	R/M8		SETNC R/M8	Set byte if not carry (CF=0).
-SETNE	R/M8		SETNE R/M8	Set byte if not equal (ZF=0).
-SETNG	R/M8		SETNG R/M8	Set byte if not greater (ZF=1 or SF≠ OF)
-SETNGE	R/M8		SETNGE R/M8	Set byte if not greater or equal (SF≠ OF).
-SETNL	R/M8		SETNL R/M8	Set byte if not less (SF=OF).
 SFENCE			SFENCE 	Serializes store operations.
-SGDT	MEM		SGDT MEM	Store GDTR to m.
+SGDT	MEM		SGDT M	Store GDTR to m.
 SHA1MSG1	XMM,XMM/M128	SHA	SHA1MSG1 XMM1,XMM2/M128	Performs an intermediate calculation for the next four SHA1 message dwords using previous message dwords from xmm1 and xmm2/m128, storing the result in xmm1.
 SHA1MSG2	XMM,XMM/M128	SHA	SHA1MSG2 XMM1,XMM2/M128	Performs the final calculation for the next four SHA1 message dwords using intermediate results from xmm1 and the previous message dwords from xmm2/m128, storing the result in xmm1.
 SHA1NEXTE	XMM,XMM/M128	SHA	SHA1NEXTE XMM1,XMM2/M128	Calculates SHA1 state variable E after four rounds of operation from the current SHA1 state variable A in xmm1. The calculated value of the SHA1 state variable E is added to the scheduled dwords in xmm2/m128, and stored with some of the scheduled dwords in xmm1.
@@ -2590,7 +2712,7 @@ SHRD	R/M64,R64,CL		SHRD R/M64,R64,CL	Shift r/m64 to right CL places while shifti
 SHRD	R/M64,R64,IMM8		SHRD R/M64,R64,IMM8	Shift r/m64 to right imm8 places while shifting bits from r64 in from the left.
 SHUFPD	XMM,XMM/M128,IMM8	SSE2	SHUFPD XMM1,XMM2/M128,IMM8	Shuffle two pairs of double-precision floating-point values from xmm1 and xmm2/m128 using imm8 to select from each pair, interleaved result is stored in xmm1.
 SHUFPS	XMM,XMM/M128,IMM8	SSE	SHUFPS XMM1,XMM3/M128,IMM8	Select from quadruplet of single-precision floating-point values in xmm1 and xmm2/m128 using imm8, interleaved result pairs are stored in xmm1.
-SIDT	MEM		SIDT MEM	Store IDTR to m.
+SIDT	MEM		SIDT M	Store IDTR to m.
 SLDT	R/M16		SLDT R/M16	Stores segment selector from LDTR in r/m16.
 SLDT	R64/M16		SLDT R64/M16	Stores segment selector from LDTR in r64/m16.
 SMSW	R/M16		SMSW R/M16	Store machine status word to r/m16.
@@ -3347,7 +3469,7 @@ VMOVDQU16	YMM/M256{K}{Z},YMM	AVX512VL,AVX512BW	VMOVDQU16 YMM2/M256{K1}{Z},YMM1	M
 VMOVDQU16	YMM{K}{Z},YMM/M256	AVX512VL,AVX512BW	VMOVDQU16 YMM1{K1}{Z},YMM2/M256	Move unaligned packed word integer values from ymm2/m256 to ymm1 using writemask k1.
 VMOVDQU16	ZMM/M512{K}{Z},ZMM	AVX512BW	VMOVDQU16 ZMM2/M512{K1}{Z},ZMM1	Move unaligned packed word integer values from zmm1 to zmm2/m512 using writemask k1.
 VMOVDQU16	ZMM{K}{Z},ZMM/M512	AVX512BW	VMOVDQU16 ZMM1{K1}{Z},ZMM2/M512	Move unaligned packed word integer values from zmm2/m512 to zmm1 using writemask k1.
-VMOVDQU32	XMM{K}{Z},XMM/M128	AVX512VL,AVX512F	VMOVDQU32 XMM1{K1}{Z},XMM2/M128	Move unaligned packed doubleword integer values from xmm2/m128 to xmm1 using writemask k1.
+VMOVDQU32	XMM{K}{Z},XMM/M128	AVX512VL,AVX512F	VMOVDQU32 XMM1{K1}{Z},XMM2/MM128	Move unaligned packed doubleword integer values from xmm2/m128 to xmm1 using writemask k1.
 VMOVDQU8	XMM/M128{K}{Z},XMM	AVX512VL,AVX512BW	VMOVDQU8 XMM2/M128{K1}{Z},XMM1	Move unaligned packed byte integer values from xmm1 to xmm2/m128 using writemask k1.
 VMOVDQU8	XMM{K}{Z},XMM/M128	AVX512VL,AVX512BW	VMOVDQU8 XMM1{K1}{Z},XMM2/M128	Move unaligned packed byte integer values from xmm2/m128 to xmm1 using writemask k1.
 VMOVDQU8	YMM/M256{K}{Z},YMM	AVX512VL,AVX512BW	VMOVDQU8 YMM2/M256{K1}{Z},YMM1	Move unaligned packed byte integer values from ymm1 to ymm2/m256 using writemask k1.

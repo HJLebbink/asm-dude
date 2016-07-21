@@ -279,9 +279,9 @@ namespace AsmDude.OptionsPage {
             get { return (useArch_AVX2_UI.IsChecked.HasValue) ? useArch_AVX2_UI.IsChecked.Value : false; }
             set { useArch_AVX2_UI.IsChecked = value; }
         }
-        public bool useArch_AVX512 {
-            get { return (useArch_AVX512_UI.IsChecked.HasValue) ? useArch_AVX512_UI.IsChecked.Value : false; }
-            set { useArch_AVX512_UI.IsChecked = value; }
+        public bool useArch_AVX512PF {
+            get { return (useArch_AVX512PF_UI.IsChecked.HasValue) ? useArch_AVX512PF_UI.IsChecked.Value : false; }
+            set { useArch_AVX512PF_UI.IsChecked = value; }
         }
         public bool useArch_AVX512VL {
             get { return (useArch_AVX512VL_UI.IsChecked.HasValue) ? useArch_AVX512VL_UI.IsChecked.Value : false; }
@@ -300,21 +300,13 @@ namespace AsmDude.OptionsPage {
             get { return (useArch_AVX512ER_UI.IsChecked.HasValue) ? useArch_AVX512ER_UI.IsChecked.Value : false; }
             set { useArch_AVX512ER_UI.IsChecked = value; }
         }
-        public bool useArch_AVX512PF {
-            get { return (useArch_AVX512PF_UI.IsChecked.HasValue) ? useArch_AVX512PF_UI.IsChecked.Value : false; }
-            set { useArch_AVX512PF_UI.IsChecked = value; }
+        public bool useArch_AVX512F {
+            get { return (useArch_AVX512F_UI.IsChecked.HasValue) ? useArch_AVX512F_UI.IsChecked.Value : false; }
+            set { useArch_AVX512F_UI.IsChecked = value; }
         }
         public bool useArch_AVX512CD {
             get { return (useArch_AVX512CD_UI.IsChecked.HasValue) ? useArch_AVX512CD_UI.IsChecked.Value : false; }
             set { useArch_AVX512CD_UI.IsChecked = value; }
-        }
-        public bool useArch_AVX512VBMI {
-            get { return (useArch_AVX512VBMI_UI.IsChecked.HasValue) ? useArch_AVX512VBMI_UI.IsChecked.Value : false; }
-            set { useArch_AVX512VBMI_UI.IsChecked = value; }
-        }
-        public bool useArch_AVX512IFMA {
-            get { return (useArch_AVX512IFMA_UI.IsChecked.HasValue) ? useArch_AVX512IFMA_UI.IsChecked.Value : false; }
-            set { useArch_AVX512IFMA_UI.IsChecked = value; }
         }
         public bool useArch_X64 {
             get { return (useArch_X64_UI.IsChecked.HasValue) ? useArch_X64_UI.IsChecked.Value : false; }
@@ -364,36 +356,7 @@ namespace AsmDude.OptionsPage {
             get { return (useArch_PENT_UI.IsChecked.HasValue) ? useArch_PENT_UI.IsChecked.Value : false; }
             set { useArch_PENT_UI.IsChecked = value; }
         }
-        public bool useArch_NEHALEM {
-            get { return (useArch_NEHALEM_UI.IsChecked.HasValue) ? useArch_NEHALEM_UI.IsChecked.Value : false; }
-            set { useArch_NEHALEM_UI.IsChecked = value; }
-        }
-        public bool useArch_WILLAMETTE {
-            get { return (useArch_WILLAMETTE_UI.IsChecked.HasValue) ? useArch_WILLAMETTE_UI.IsChecked.Value : false; }
-            set { useArch_WILLAMETTE_UI.IsChecked = value; }
-        }
-        public bool useArch_PRESCOTT {
-            get { return (useArch_PRESCOTT_UI.IsChecked.HasValue) ? useArch_PRESCOTT_UI.IsChecked.Value : false; }
-            set { useArch_PRESCOTT_UI.IsChecked = value; }
-        }
-        public bool useArch_WESTMERE {
-            get { return (useArch_WESTMERE_UI.IsChecked.HasValue) ? useArch_WESTMERE_UI.IsChecked.Value : false; }
-            set { useArch_WESTMERE_UI.IsChecked = value; }
-        }
-
-        public bool useArch_SANDYBRIDGE {
-            get { return (useArch_SANDYBRIDGE_UI.IsChecked.HasValue) ? useArch_SANDYBRIDGE_UI.IsChecked.Value : false; }
-            set { useArch_SANDYBRIDGE_UI.IsChecked = value; }
-        }
-        public bool useArch_KATMAI {
-            get { return (useArch_KATMAI_UI.IsChecked.HasValue) ? useArch_KATMAI_UI.IsChecked.Value : false; }
-            set { useArch_KATMAI_UI.IsChecked = value; }
-        }
-        public bool useArch_FUTURE {
-            get { return (useArch_FUTURE_UI.IsChecked.HasValue) ? useArch_FUTURE_UI.IsChecked.Value : false; }
-            set { useArch_FUTURE_UI.IsChecked = value; }
-        }
-        public bool useArch_3DNOW {
+         public bool useArch_3DNOW {
             get { return (useArch_3DNOW_UI.IsChecked.HasValue) ? useArch_3DNOW_UI.IsChecked.Value : false; }
             set { useArch_3DNOW_UI.IsChecked = value; }
         }

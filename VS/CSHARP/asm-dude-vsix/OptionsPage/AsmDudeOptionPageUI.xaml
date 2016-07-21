@@ -119,13 +119,6 @@
 										<CheckBox x:Name="useArch_486_UI" Content="486"/>
 										<CheckBox x:Name="useArch_PENT_UI" Content="PENT"/>
 										<CheckBox x:Name="useArch_P6_UI" Content="P6"/>
-										<CheckBox x:Name="useArch_KATMAI_UI" Content="KATMAI"/>
-										<CheckBox x:Name="useArch_WILLAMETTE_UI" Content="WILLAMETTE"/>
-										<CheckBox x:Name="useArch_PRESCOTT_UI" Content="PRESCOTT"/>
-										<CheckBox x:Name="useArch_NEHALEM_UI" Content="NEHALEM"/>
-										<CheckBox x:Name="useArch_WESTMERE_UI" Content="WESTMERE"/>
-										<CheckBox x:Name="useArch_SANDYBRIDGE_UI" Content="SANDYBRIDGE"/>
-										<CheckBox x:Name="useArch_FUTURE_UI" Content="FUTURE"/>
 									</StackPanel>
 								</Grid>
 							</GroupBox>
@@ -144,15 +137,13 @@
 										<CheckBox x:Name="useArch_SSE5_UI" Content="SSE5"/>
 										<CheckBox x:Name="useArch_AVX_UI" Content="AVX"/>
 										<CheckBox x:Name="useArch_AVX2_UI" Content="AVX2"/>
-										<CheckBox x:Name="useArch_AVX512_UI" Content="AVX512"/>
-										<CheckBox x:Name="useArch_AVX512VL_UI" Content="AVX512VL"/>
-										<CheckBox x:Name="useArch_AVX512DQ_UI" Content="AVX512DQ"/>
-										<CheckBox x:Name="useArch_AVX512BW_UI" Content="AVX512BW"/>
+										<CheckBox x:Name="useArch_AVX512F_UI" Content="AVX512F"/>
+										<CheckBox x:Name="useArch_AVX512CD_UI" Content="AVX512CD"/>
 										<CheckBox x:Name="useArch_AVX512ER_UI" Content="AVX512ER"/>
 										<CheckBox x:Name="useArch_AVX512PF_UI" Content="AVX512PF"/>
-										<CheckBox x:Name="useArch_AVX512CD_UI" Content="AVX512CD"/>
-										<CheckBox x:Name="useArch_AVX512VBMI_UI" Content="AVX512VBMI"/>
-										<CheckBox x:Name="useArch_AVX512IFMA_UI" Content="AVX512IFMA"/>
+										<CheckBox x:Name="useArch_AVX512BW_UI" Content="AVX512BW"/>
+										<CheckBox x:Name="useArch_AVX512DQ_UI" Content="AVX512DQ"/>
+										<CheckBox x:Name="useArch_AVX512VL_UI" Content="AVX512VL"/>
 									</StackPanel>
 								</Grid>
 							</GroupBox>

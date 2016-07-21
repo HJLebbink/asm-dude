@@ -96,12 +96,13 @@ namespace AsmDude {
                 #endregion
 
                 //3] get the word that is currently being typed
+                #region
                 ITrackingSpan applicableTo = snapshot.CreateTrackingSpan(new SnapshotSpan(start, triggerPoint), SpanTrackingMode.EdgeInclusive);
                 string partialKeyword = applicableTo.GetText(snapshot);
                 bool useCapitals = AsmDudeToolsStatic.isAllUpper(partialKeyword);
 
                 SortedSet<Completion> completions = null;
-                #region
+
                 string lineStr = line.GetText();
                 var t = AsmSourceTools.parseLine(lineStr);
                 Mnemonic mnemonic = t.Item2;
@@ -109,7 +110,7 @@ namespace AsmDude {
                 if (mnemonic == Mnemonic.UNKNOWN) {
                     ISet<AsmTokenType> selected = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic /*, AsmTokenType.Register */};
                     completions = this.selectedCompletions(useCapitals, selected);
-                } else {
+                } else { // the current line contains a mnemonic
                     string previousKeyword = AsmDudeToolsStatic.getPreviousKeyword(line.Start, start);
                     //AsmDudeToolsStatic.Output("INFO: AsmCompletionSource:AugmentCompletionSession; mnemonic=" + mnemonic+ "; previousKeyword="+ previousKeyword);
 
@@ -141,6 +142,7 @@ namespace AsmDude {
                 }
                 //AsmDudeToolsStatic.Output("INFO: AsmCompletionSource:AugmentCompletionSession; nCompletions=" + completions.Count);
                 #endregion
+
                 completionSets.Add(new CompletionSet("Tokens", "Tokens", applicableTo, completions, Enumerable.Empty<Completion>()));
 
                 AsmDudeToolsStatic.printSpeedWarning(time1, "Code Completion");

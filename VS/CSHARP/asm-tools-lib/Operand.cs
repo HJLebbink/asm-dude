@@ -12,21 +12,39 @@ namespace AsmTools {
         private readonly Tuple<Rn, Rn, int, long> _mem;
 
         public Operand(string token) {
+
+            //TODO: properly handle optional elements {K}{Z} {AES}{ER}
+            string token2 = token.
+                Replace("{K0}", "").
+                Replace("{K1}", "").
+                Replace("{K2}", "").
+                Replace("{K3}", "").
+                Replace("{K4}", "").
+                Replace("{K5}", "").
+                Replace("{K6}", "").
+                Replace("{K7}", "").
+                Replace("{Z}", "").
+                Replace("{ER}", "").
+                Replace("{SAE}", "").
+                Replace("{1TO4}", "").
+                Replace("{1TO8}", "").
+                Replace("{1TO16}", "");
+
             this._str = token;
 
-            Tuple<bool, Rn, int> t0 = RegisterTools.toRn(token);
+            Tuple<bool, Rn, int> t0 = RegisterTools.toRn(token2);
             if (t0.Item1) {
                 this._type = Ot.reg;
                 this._rn = t0.Item2;
                 this._nBits = t0.Item3;
             } else {
-                Tuple<bool, ulong, int> t1 = AsmSourceTools.toConstant(token);
+                Tuple<bool, ulong, int> t1 = AsmSourceTools.toConstant(token2);
                 if (t1.Item1) {
                     this._type = Ot.imm;
                     this._imm = t1.Item2;
                     this._nBits = t1.Item3;
                 } else {
-                    Tuple<bool, Rn, Rn, int, long, int> t2 = AsmSourceTools.parseMemOperand(token);
+                    Tuple<bool, Rn, Rn, int, long, int> t2 = AsmSourceTools.parseMemOperand(token2);
                     if (t2.Item1) {
                         this._type = Ot.mem;
                         this._mem = new Tuple<Rn, Rn, int, long>(t2.Item2, t2.Item3, t2.Item4, t2.Item5);

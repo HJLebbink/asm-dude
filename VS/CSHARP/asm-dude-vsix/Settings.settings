@@ -111,7 +111,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ARCH_SSE4A" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="ARCH_SSE5" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -125,7 +125,7 @@
     <Setting Name="ARCH_AVX512VL" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="ARCH_AVX512" Type="System.Boolean" Scope="User">
+    <Setting Name="ARCH_AVX512PF" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ARCH_AVX512DQ" Type="System.Boolean" Scope="User">
@@ -137,16 +137,10 @@
     <Setting Name="ARCH_AVX512ER" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="ARCH_AVX512PF" Type="System.Boolean" Scope="User">
+    <Setting Name="ARCH_AVX512F" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ARCH_AVX512CD" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="ARCH_AVX512VBMI" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="ARCH_AVX512IFMA" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ARCH_X64" Type="System.Boolean" Scope="User">
@@ -165,7 +159,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ARCH_IA64" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="ARCH_FPU" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -177,33 +171,12 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ARCH_AMD" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="ARCH_PRIV" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ARCH_PENT" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="ARCH_NEHALEM" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="ARCH_WILLAMETTE" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="ARCH_PRESCOTT" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="ARCH_WESTMERE" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="ARCH_SANDYBRIDGE" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="ARCH_KATMAI" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="ARCH_FUTURE" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ARCH_3DNOW" Type="System.Boolean" Scope="User">
