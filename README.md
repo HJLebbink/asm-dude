@@ -1,5 +1,5 @@
 # Asm-Dude
-Assembly syntax highlighting, code completion and folding for Visual Studio 2015. This extension can be found in the [visual studio extensions gallery](https://visualstudiogallery.msdn.microsoft.com/ff839577-2b68-416a-b761-72f9b1ca7c8e) or download latest installer [AsmDude.vsix (v1.5.3.0)](https://github.com/HJLebbink/asm-dude/releases/download/1.5.3.0/AsmDude.vsix)
+Assembly syntax highlighting, code completion and folding for Visual Studio 2015. This extension can be found in the [visual studio extensions gallery](https://visualstudiogallery.msdn.microsoft.com/ff839577-2b68-416a-b761-72f9b1ca7c8e) or download latest installer [AsmDude.vsix (v1.6.1.1)](https://github.com/HJLebbink/asm-dude/releases/download/1.6.1.1/AsmDude.vsix)
 
 ###Features
 
@@ -68,7 +68,7 @@ Studio will launch under the experimental hive.
 * ~~Label analysis. When jumping to a label, check if the label exists. Check if labels are unique. Provide error squiggles if something is wrong.~~
 * ~~Code folding for documentation blocks, folding for Masm procedure blocks and and Masm segments definitions.~~ 
 * ~~Code completion restrictions. E.g. opcode movss can only be followed by an xmm register and not by a GPR such as rax.~~
-* Signature Help. Provide help which operands (type of registers, mem etc) are allowed for a given mnemonic).
+* ~~Signature Help. Provide help which operands (type of registers, mem etc) are allowed for a given mnemonic).~~
 * Label rename assistance.
 * Create new file item with .asm extension.
 * Add syntax highlighting for AT&T syntax.
@@ -96,4 +96,4 @@ Studio will launch under the experimental hive.
 * 14 March 2016: bugfixes and anoyances fixes [v1.4.6]
 * 21 March 2016: Added code completion for labels in jumps [v1.4.8]
 * 8 May 2016: Added Label analysis [v1.5.0.0]
-
+* 22 July 2016: Added Signature Help [v1.6.1.1]
