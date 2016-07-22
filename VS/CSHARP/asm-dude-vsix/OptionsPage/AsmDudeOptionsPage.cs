@@ -153,8 +153,6 @@ namespace AsmDude.OptionsPage {
             this._asmDudeOptionsPageUI.useArch_BMI2_UI.ToolTip = this.makeToolTip(Arch.BMI2);
             this._asmDudeOptionsPageUI.useArch_P6 = Settings.Default.ARCH_P6;
             this._asmDudeOptionsPageUI.useArch_P6_UI.ToolTip = this.makeToolTip(Arch.P6);
-            this._asmDudeOptionsPageUI.useArch_X86_64 = Settings.Default.ARCH_X86_64;
-            this._asmDudeOptionsPageUI.useArch_X86_64_UI.ToolTip = this.makeToolTip(Arch.X86_64);
             this._asmDudeOptionsPageUI.useArch_IA64 = Settings.Default.ARCH_IA64;
             this._asmDudeOptionsPageUI.useArch_IA64_UI.ToolTip = this.makeToolTip(Arch.IA64);
             this._asmDudeOptionsPageUI.useArch_FMA = Settings.Default.ARCH_FMA;
@@ -163,14 +161,10 @@ namespace AsmDude.OptionsPage {
             this._asmDudeOptionsPageUI.useArch_TBM_UI.ToolTip = this.makeToolTip(Arch.TBM);
             this._asmDudeOptionsPageUI.useArch_AMD = Settings.Default.ARCH_AMD;
             this._asmDudeOptionsPageUI.useArch_AMD_UI.ToolTip = this.makeToolTip(Arch.AMD);
-            this._asmDudeOptionsPageUI.useArch_PRIV = Settings.Default.ARCH_PRIV;
-            this._asmDudeOptionsPageUI.useArch_PRIV_UI.ToolTip = this.makeToolTip(Arch.PRIV);
             this._asmDudeOptionsPageUI.useArch_PENT = Settings.Default.ARCH_PENT;
             this._asmDudeOptionsPageUI.useArch_PENT_UI.ToolTip = this.makeToolTip(Arch.PENT);
             this._asmDudeOptionsPageUI.useArch_3DNOW = Settings.Default.ARCH_3DNOW;
             this._asmDudeOptionsPageUI.useArch_3DNOW_UI.ToolTip = this.makeToolTip(Arch.ARCH_3DNOW);
-            this._asmDudeOptionsPageUI.useArch_PROT = Settings.Default.ARCH_PROT;
-            this._asmDudeOptionsPageUI.useArch_PROT_UI.ToolTip = this.makeToolTip(Arch.PROT);
             this._asmDudeOptionsPageUI.useArch_CYRIX = Settings.Default.ARCH_CYRIX;
             this._asmDudeOptionsPageUI.useArch_CYRIX_UI.ToolTip = this.makeToolTip(Arch.CYRIX);
             this._asmDudeOptionsPageUI.useArch_CYRIXM = Settings.Default.ARCH_CYRIXM;
@@ -181,10 +175,39 @@ namespace AsmDude.OptionsPage {
             this._asmDudeOptionsPageUI.useArch_RTM_UI.ToolTip = this.makeToolTip(Arch.RTM);
             this._asmDudeOptionsPageUI.useArch_MPX = Settings.Default.ARCH_MPX;
             this._asmDudeOptionsPageUI.useArch_MPX_UI.ToolTip = this.makeToolTip(Arch.MPX);
-            this._asmDudeOptionsPageUI.useArch_MIB = Settings.Default.ARCH_MIB;
-            this._asmDudeOptionsPageUI.useArch_MIB_UI.ToolTip = this.makeToolTip(Arch.MIB);
             this._asmDudeOptionsPageUI.useArch_SHA = Settings.Default.ARCH_SHA;
             this._asmDudeOptionsPageUI.useArch_SHA_UI.ToolTip = this.makeToolTip(Arch.SHA);
+
+            this._asmDudeOptionsPageUI.useArch_ADX = Settings.Default.ARCH_ADX;
+            this._asmDudeOptionsPageUI.useArch_ADX_UI.ToolTip = this.makeToolTip(Arch.ADX);
+            this._asmDudeOptionsPageUI.useArch_F16C = Settings.Default.ARCH_F16C;
+            this._asmDudeOptionsPageUI.useArch_F16C_UI.ToolTip = this.makeToolTip(Arch.F16C);
+            this._asmDudeOptionsPageUI.useArch_FSGSBASE = Settings.Default.ARCH_FSGSBASE;
+            this._asmDudeOptionsPageUI.useArch_FSGSBASE_UI.ToolTip = this.makeToolTip(Arch.FSGSBASE);
+            this._asmDudeOptionsPageUI.useArch_HLE = Settings.Default.ARCH_HLE;
+            this._asmDudeOptionsPageUI.useArch_HLE_UI.ToolTip = this.makeToolTip(Arch.HLE);
+            this._asmDudeOptionsPageUI.useArch_INVPCID = Settings.Default.ARCH_INVPCID;
+            this._asmDudeOptionsPageUI.useArch_INVPCID_UI.ToolTip = this.makeToolTip(Arch.INVPCID);
+            this._asmDudeOptionsPageUI.useArch_PCLMULQDQ = Settings.Default.ARCH_PCLMULQDQ;
+            this._asmDudeOptionsPageUI.useArch_PCLMULQDQ_UI.ToolTip = this.makeToolTip(Arch.PCLMULQDQ);
+            this._asmDudeOptionsPageUI.useArch_LZCNT = Settings.Default.ARCH_LZCNT;
+            this._asmDudeOptionsPageUI.useArch_LZCNT_UI.ToolTip = this.makeToolTip(Arch.LZCNT);
+            this._asmDudeOptionsPageUI.useArch_PREFETCHWT1 = Settings.Default.ARCH_PREFETCHWT1;
+            this._asmDudeOptionsPageUI.useArch_PREFETCHWT1_UI.ToolTip = this.makeToolTip(Arch.PREFETCHWT1);
+            this._asmDudeOptionsPageUI.useArch_PREFETCHW = Settings.Default.ARCH_PREFETCHW;
+            this._asmDudeOptionsPageUI.useArch_PREFETCHW_UI.ToolTip = this.makeToolTip(Arch.PRFCHW);
+            this._asmDudeOptionsPageUI.useArch_RDPID = Settings.Default.ARCH_RDPID;
+            this._asmDudeOptionsPageUI.useArch_RDPID_UI.ToolTip = this.makeToolTip(Arch.RDPID);
+            this._asmDudeOptionsPageUI.useArch_RDRAND = Settings.Default.ARCH_RDRAND;
+            this._asmDudeOptionsPageUI.useArch_RDRAND_UI.ToolTip = this.makeToolTip(Arch.RDRAND);
+            this._asmDudeOptionsPageUI.useArch_RDSEED = Settings.Default.ARCH_RDSEED;
+            this._asmDudeOptionsPageUI.useArch_RDSEED_UI.ToolTip = this.makeToolTip(Arch.RDSEED);
+            this._asmDudeOptionsPageUI.useArch_XSAVEOPT = Settings.Default.ARCH_XSAVEOPT;
+            this._asmDudeOptionsPageUI.useArch_XSAVEOPT_UI.ToolTip = this.makeToolTip(Arch.XSAVEOPT);
+            this._asmDudeOptionsPageUI.useArch_UNDOC = Settings.Default.ARCH_UNDOC;
+            this._asmDudeOptionsPageUI.useArch_UNDOC_UI.ToolTip = this.makeToolTip(Arch.UNDOC);
+            this._asmDudeOptionsPageUI.useArch_AES = Settings.Default.ARCH_AES;
+            this._asmDudeOptionsPageUI.useArch_AES_UI.ToolTip = this.makeToolTip(Arch.AES);
 
             #endregion
 
@@ -204,7 +227,11 @@ namespace AsmDude.OptionsPage {
                     usedMnemonics.Add(mnemonic);
                 }
             }
-            StringBuilder sb = new StringBuilder("Option "+ArchTools.ToString(arch) +" adds mnemonics: ");
+            StringBuilder sb = new StringBuilder();
+            string docArch = ArchTools.ArchDocumentation(arch);
+            if (docArch.Length > 0) {
+                sb.Append(docArch + ": ");
+            }
             foreach (Mnemonic mnemonic in usedMnemonics) {
                 sb.Append(mnemonic.ToString());
                 sb.Append(", ");
@@ -437,16 +464,8 @@ namespace AsmDude.OptionsPage {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_P6=" + this._asmDudeOptionsPageUI.useArch_P6);
                 changed = true;
             }
-            if (Settings.Default.ARCH_X86_64 != this._asmDudeOptionsPageUI.useArch_X86_64) {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_X86_64=" + this._asmDudeOptionsPageUI.useArch_X86_64);
-                changed = true;
-            }
             if (Settings.Default.ARCH_IA64 != this._asmDudeOptionsPageUI.useArch_IA64) {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_IA64=" + this._asmDudeOptionsPageUI.useArch_IA64);
-                changed = true;
-            }
-            if (Settings.Default.ARCH_FPU != this._asmDudeOptionsPageUI.useArch_FPU) {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_FPU=" + this._asmDudeOptionsPageUI.useArch_FPU);
                 changed = true;
             }
             if (Settings.Default.ARCH_FMA != this._asmDudeOptionsPageUI.useArch_FMA) {
@@ -461,20 +480,12 @@ namespace AsmDude.OptionsPage {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_AMD=" + this._asmDudeOptionsPageUI.useArch_AMD);
                 changed = true;
             }
-            if (Settings.Default.ARCH_PRIV != this._asmDudeOptionsPageUI.useArch_PRIV) {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_PRIV=" + this._asmDudeOptionsPageUI.useArch_PRIV);
-                changed = true;
-            }
             if (Settings.Default.ARCH_PENT != this._asmDudeOptionsPageUI.useArch_PENT) {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_PENT=" + this._asmDudeOptionsPageUI.useArch_PENT);
                 changed = true;
             }
             if (Settings.Default.ARCH_3DNOW != this._asmDudeOptionsPageUI.useArch_3DNOW) {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_3DNOW=" + this._asmDudeOptionsPageUI.useArch_3DNOW);
-                changed = true;
-            }
-            if (Settings.Default.ARCH_PROT != this._asmDudeOptionsPageUI.useArch_PROT) {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_PROT=" + this._asmDudeOptionsPageUI.useArch_PROT);
                 changed = true;
             }
             if (Settings.Default.ARCH_CYRIX != this._asmDudeOptionsPageUI.useArch_CYRIX) {
@@ -497,15 +508,72 @@ namespace AsmDude.OptionsPage {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_MPX=" + this._asmDudeOptionsPageUI.useArch_MPX);
                 changed = true;
             }
-            if (Settings.Default.ARCH_MIB != this._asmDudeOptionsPageUI.useArch_MIB) {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_MIB=" + this._asmDudeOptionsPageUI.useArch_MIB);
-                changed = true;
-            }
             if (Settings.Default.ARCH_SHA != this._asmDudeOptionsPageUI.useArch_SHA) {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_SHA=" + this._asmDudeOptionsPageUI.useArch_SHA);
                 changed = true;
             }
-            #endregion
+
+            if (Settings.Default.ARCH_ADX != this._asmDudeOptionsPageUI.useArch_ADX) {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_ADX=" + this._asmDudeOptionsPageUI.useArch_ADX);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_F16C != this._asmDudeOptionsPageUI.useArch_F16C) {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_F16C=" + this._asmDudeOptionsPageUI.useArch_F16C);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_FSGSBASE != this._asmDudeOptionsPageUI.useArch_FSGSBASE) {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_FSGSBASE=" + this._asmDudeOptionsPageUI.useArch_FSGSBASE);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_HLE != this._asmDudeOptionsPageUI.useArch_HLE) {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_HLE=" + this._asmDudeOptionsPageUI.useArch_HLE);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_INVPCID != this._asmDudeOptionsPageUI.useArch_INVPCID) {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_INVPCID=" + this._asmDudeOptionsPageUI.useArch_INVPCID);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_PCLMULQDQ != this._asmDudeOptionsPageUI.useArch_PCLMULQDQ) {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_PCLMULQDQ=" + this._asmDudeOptionsPageUI.useArch_PCLMULQDQ);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_LZCNT != this._asmDudeOptionsPageUI.useArch_LZCNT) {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_LZCNT=" + this._asmDudeOptionsPageUI.useArch_LZCNT);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_PREFETCHWT1 != this._asmDudeOptionsPageUI.useArch_PREFETCHWT1) {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_PREFETCHWT1=" + this._asmDudeOptionsPageUI.useArch_PREFETCHWT1);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_PREFETCHW != this._asmDudeOptionsPageUI.useArch_PREFETCHW) {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_PREFETCHW=" + this._asmDudeOptionsPageUI.useArch_PREFETCHW);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_RDPID != this._asmDudeOptionsPageUI.useArch_RDPID) {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_RDPID=" + this._asmDudeOptionsPageUI.useArch_RDPID);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_RDRAND != this._asmDudeOptionsPageUI.useArch_RDRAND) {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_RDRAND=" + this._asmDudeOptionsPageUI.useArch_RDRAND);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_RDSEED != this._asmDudeOptionsPageUI.useArch_RDSEED) {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_RDSEED=" + this._asmDudeOptionsPageUI.useArch_RDSEED);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_XSAVEOPT != this._asmDudeOptionsPageUI.useArch_XSAVEOPT) {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_XSAVEOPT=" + this._asmDudeOptionsPageUI.useArch_XSAVEOPT);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_UNDOC != this._asmDudeOptionsPageUI.useArch_UNDOC) {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_UNDOC=" + this._asmDudeOptionsPageUI.useArch_UNDOC);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_AES != this._asmDudeOptionsPageUI.useArch_AES) {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_AES=" + this._asmDudeOptionsPageUI.useArch_AES);
+                changed = true;
+            }
+             #endregion
 
             #region Intellisense
             if (Settings.Default.IntelliSenseShowUndefinedLabels != this._asmDudeOptionsPageUI.showUndefinedLabels) {
@@ -771,16 +839,8 @@ namespace AsmDude.OptionsPage {
                 Settings.Default.ARCH_P6 = this._asmDudeOptionsPageUI.useArch_P6;
                 changed = true;
             }
-            if (Settings.Default.ARCH_X86_64 != this._asmDudeOptionsPageUI.useArch_X86_64) {
-                Settings.Default.ARCH_X86_64 = this._asmDudeOptionsPageUI.useArch_X86_64;
-                changed = true;
-            }
             if (Settings.Default.ARCH_IA64 != this._asmDudeOptionsPageUI.useArch_IA64) {
                 Settings.Default.ARCH_IA64 = this._asmDudeOptionsPageUI.useArch_IA64;
-                changed = true;
-            }
-            if (Settings.Default.ARCH_FPU != this._asmDudeOptionsPageUI.useArch_FPU) {
-                Settings.Default.ARCH_FPU = this._asmDudeOptionsPageUI.useArch_FPU;
                 changed = true;
             }
             if (Settings.Default.ARCH_FMA != this._asmDudeOptionsPageUI.useArch_FMA) {
@@ -795,20 +855,12 @@ namespace AsmDude.OptionsPage {
                 Settings.Default.ARCH_AMD = this._asmDudeOptionsPageUI.useArch_AMD;
                 changed = true;
             }
-            if (Settings.Default.ARCH_PRIV != this._asmDudeOptionsPageUI.useArch_PRIV) {
-                Settings.Default.ARCH_PRIV = this._asmDudeOptionsPageUI.useArch_PRIV;
-                changed = true;
-            }
             if (Settings.Default.ARCH_PENT != this._asmDudeOptionsPageUI.useArch_PENT) {
                 Settings.Default.ARCH_PENT = this._asmDudeOptionsPageUI.useArch_PENT;
                 changed = true;
             }
             if (Settings.Default.ARCH_3DNOW != this._asmDudeOptionsPageUI.useArch_3DNOW) {
                 Settings.Default.ARCH_3DNOW = this._asmDudeOptionsPageUI.useArch_3DNOW;
-                changed = true;
-            }
-            if (Settings.Default.ARCH_PROT != this._asmDudeOptionsPageUI.useArch_PROT) {
-                Settings.Default.ARCH_PROT = this._asmDudeOptionsPageUI.useArch_PROT;
                 changed = true;
             }
             if (Settings.Default.ARCH_CYRIX != this._asmDudeOptionsPageUI.useArch_CYRIX) {
@@ -831,12 +883,69 @@ namespace AsmDude.OptionsPage {
                 Settings.Default.ARCH_MPX = this._asmDudeOptionsPageUI.useArch_MPX;
                 changed = true;
             }
-            if (Settings.Default.ARCH_MIB != this._asmDudeOptionsPageUI.useArch_MIB) {
-                Settings.Default.ARCH_MIB = this._asmDudeOptionsPageUI.useArch_MIB;
-                changed = true;
-            }
             if (Settings.Default.ARCH_SHA != this._asmDudeOptionsPageUI.useArch_SHA) {
                 Settings.Default.ARCH_SHA = this._asmDudeOptionsPageUI.useArch_SHA;
+                changed = true;
+            }
+
+            if (Settings.Default.ARCH_ADX != this._asmDudeOptionsPageUI.useArch_ADX) {
+                Settings.Default.ARCH_ADX = this._asmDudeOptionsPageUI.useArch_ADX;
+                changed = true;
+            }
+            if (Settings.Default.ARCH_F16C != this._asmDudeOptionsPageUI.useArch_F16C) {
+                Settings.Default.ARCH_F16C = this._asmDudeOptionsPageUI.useArch_F16C;
+                changed = true;
+            }
+            if (Settings.Default.ARCH_FSGSBASE != this._asmDudeOptionsPageUI.useArch_FSGSBASE) {
+                Settings.Default.ARCH_FSGSBASE = this._asmDudeOptionsPageUI.useArch_FSGSBASE;
+                changed = true;
+            }
+            if (Settings.Default.ARCH_HLE != this._asmDudeOptionsPageUI.useArch_HLE) {
+                Settings.Default.ARCH_HLE = this._asmDudeOptionsPageUI.useArch_HLE;
+                changed = true;
+            }
+            if (Settings.Default.ARCH_INVPCID != this._asmDudeOptionsPageUI.useArch_INVPCID) {
+                Settings.Default.ARCH_INVPCID = this._asmDudeOptionsPageUI.useArch_INVPCID;
+                changed = true;
+            }
+            if (Settings.Default.ARCH_PCLMULQDQ != this._asmDudeOptionsPageUI.useArch_PCLMULQDQ) {
+                Settings.Default.ARCH_PCLMULQDQ = this._asmDudeOptionsPageUI.useArch_PCLMULQDQ;
+                changed = true;
+            }
+            if (Settings.Default.ARCH_LZCNT != this._asmDudeOptionsPageUI.useArch_LZCNT) {
+                Settings.Default.ARCH_LZCNT = this._asmDudeOptionsPageUI.useArch_LZCNT;
+                changed = true;
+            }
+            if (Settings.Default.ARCH_PREFETCHWT1 != this._asmDudeOptionsPageUI.useArch_PREFETCHWT1) {
+                Settings.Default.ARCH_PREFETCHWT1 = this._asmDudeOptionsPageUI.useArch_PREFETCHWT1;
+                changed = true;
+            }
+            if (Settings.Default.ARCH_PREFETCHW != this._asmDudeOptionsPageUI.useArch_PREFETCHW) {
+                Settings.Default.ARCH_PREFETCHW = this._asmDudeOptionsPageUI.useArch_PREFETCHW;
+                changed = true;
+            }
+            if (Settings.Default.ARCH_RDPID != this._asmDudeOptionsPageUI.useArch_RDPID) {
+                Settings.Default.ARCH_RDPID = this._asmDudeOptionsPageUI.useArch_RDPID;
+                changed = true;
+            }
+            if (Settings.Default.ARCH_RDRAND != this._asmDudeOptionsPageUI.useArch_RDRAND) {
+                Settings.Default.ARCH_RDRAND = this._asmDudeOptionsPageUI.useArch_RDRAND;
+                changed = true;
+            }
+            if (Settings.Default.ARCH_RDSEED != this._asmDudeOptionsPageUI.useArch_RDSEED) {
+                Settings.Default.ARCH_RDSEED = this._asmDudeOptionsPageUI.useArch_RDSEED;
+                changed = true;
+            }
+            if (Settings.Default.ARCH_XSAVEOPT != this._asmDudeOptionsPageUI.useArch_XSAVEOPT) {
+                Settings.Default.ARCH_XSAVEOPT = this._asmDudeOptionsPageUI.useArch_XSAVEOPT;
+                changed = true;
+            }
+            if (Settings.Default.ARCH_UNDOC != this._asmDudeOptionsPageUI.useArch_UNDOC) {
+                Settings.Default.ARCH_UNDOC = this._asmDudeOptionsPageUI.useArch_UNDOC;
+                changed = true;
+            }
+            if (Settings.Default.ARCH_AES != this._asmDudeOptionsPageUI.useArch_AES) {
+                Settings.Default.ARCH_AES = this._asmDudeOptionsPageUI.useArch_AES;
                 changed = true;
             }
             #endregion

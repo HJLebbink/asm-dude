@@ -1,4 +1,4 @@
-; This file is machine generated at 2016/07/21 15:48:25
+; This file is machine generated at 2016/07/21 16:50:52
 ;
 GENERAL	AAA	ASCII Adjust After Addition	AAA.html
 GENERAL	AAD	ASCII Adjust AX Before Division	AAD.html
@@ -409,8 +409,11 @@ GENERAL	LODSD	Load String	LODS_LODSB_LODSW_LODSD_LODSQ.html
 GENERAL	LODSB	Load String	LODS_LODSB_LODSW_LODSD_LODSQ.html
 GENERAL	LODSW	Load String	LODS_LODSB_LODSW_LODSD_LODSQ.html
 GENERAL	LODSQ	Load String	LODS_LODSB_LODSW_LODSD_LODSQ.html
+GENERAL	LOOPZ	Loop According to ECX Counter	LOOP_LOOPcc.html
+GENERAL	LOOPE	Loop According to ECX Counter	LOOP_LOOPcc.html
+GENERAL	LOOPNE	Loop According to ECX Counter	LOOP_LOOPcc.html
 GENERAL	LOOP	Loop According to ECX Counter	LOOP_LOOPcc.html
-GENERAL	LOOPcc	Loop According to ECX Counter	LOOP_LOOPcc.html
+GENERAL	LOOPNZ	Loop According to ECX Counter	LOOP_LOOPcc.html
 GENERAL	LSL	Load Segment Limit	LSL.html
 GENERAL	LTR	Load Task Register	LTR.html
 GENERAL	LZCNT	Count the Number of Leading Zero Bits	LZCNT.html
@@ -435,8 +438,8 @@ GENERAL	VMINSD	Return Minimum Scalar Double-Precision Floating-Point Value	MINSD
 GENERAL	VMINSS	Return Minimum Scalar Single-Precision Floating-Point Value	MINSS.html
 GENERAL	MINSS	Return Minimum Scalar Single-Precision Floating-Point Value	MINSS.html
 GENERAL	MONITOR	Set Up Monitor Address	MONITOR.html
-GENERAL	MOV-1	Move to/from Control Registers	MOV-1.html
-GENERAL	MOV-2	Move to/from Debug Registers	MOV-2.html
+GENERAL	MOV	Move to/from Control Registers	MOV-1.html
+GENERAL	MOV	Move to/from Debug Registers	MOV-2.html
 GENERAL	MOV	Move	MOV.html
 GENERAL	MOVAPD	Move Aligned Packed Double-Precision Floating-Point Values	MOVAPD.html
 GENERAL	VMOVAPD	Move Aligned Packed Double-Precision Floating-Point Values	MOVAPD.html
@@ -1988,6 +1991,8 @@ LODSD			LODSD 	For legacy mode, Load dword at address DS:(E)SI into EAX. For 64-
 LODSQ			LODSQ 	Load qword at address (R)SI into RAX.
 LODSW			LODSW 	For legacy mode, Load word at address DS:(E)SI into AX. For 64-bit mode load word at address (R)SI into AX.
 LOOP	REL8		LOOP REL8	Decrement count; jump short if count ≠ 0.
+LOOPE	REL8		LOOPE REL8	Decrement count; jump short if count ≠ 0 and ZF = 1.
+LOOPNE	REL8		LOOPNE REL8	Decrement count; jump short if count ≠ 0 and ZF = 0.
 LSL	R16,R16/M16		LSL R16,R16/M16	Load: r16 ← segment limit, selector r16/m16.
 LSL	R32,R32/M16		LSL R32,R32/M16	Load: r32 ← segment limit, selector r32/m16.
 LSL	R64,R32/M16		LSL R64,R32/M16	Load: r64 ← segment limit, selector r32/m16
@@ -2012,6 +2017,11 @@ MINSS	XMM,XMM/M32	SSE	MINSS XMM1,XMM2/M32	Return the minimum scalar single-preci
 MONITOR			MONITOR 	Sets up a linear address range to be monitored by hardware and activates the monitor. The address range should be a write-back memory caching type. The address is DS:EAX (DS:RAX in 64-bit mode).
 MOV	AL,MOFFS8		MOV AL,MOFFS8	Move byte at (seg:offset) to AL.
 MOV	AX,MOFFS16		MOV AX,MOFFS16	Move word at (seg:offset) to AX.
+MOV	CR0–CR7,R32		MOV CR0–CR7,R32	Move r32 to control register.
+MOV	CR0–CR7,R64		MOV CR0–CR7,R64	Move r64 to extended control register.
+MOV	CR8,R64		MOV CR8,R64	Move r64 to extended CR8.1
+MOV	DR0–DR7,R32		MOV DR0–DR7,R32	Move r32 to debug register.
+MOV	DR0–DR7,R64		MOV DR0–DR7,R64	Move r64 to extended debug register.
 MOV	EAX,MOFFS32		MOV EAX,MOFFS32	Move doubleword at (seg:offset) to EAX.
 MOV	MOFFS16,AX		MOV MOFFS16,AX	Move AX to (seg:offset).
 MOV	MOFFS32,EAX		MOV MOFFS32,EAX	Move EAX to (seg:offset).
@@ -2029,8 +2039,13 @@ MOV	R/M8,IMM8		MOV R/M8,IMM8	Move imm8 to r/m8.
 MOV	R/M8,R8		MOV R/M8,R8	Move r8 to r/m8.
 MOV	R16,IMM16		MOV R16,IMM16	Move imm16 to r16.
 MOV	R16,R/M16		MOV R16,R/M16	Move r/m16 to r16.
+MOV	R32,CR0–CR7		MOV R32,CR0–CR7	Move control register to r32.
+MOV	R32,DR0–DR7		MOV R32,DR0–DR7	Move debug register to r32.
 MOV	R32,IMM32		MOV R32,IMM32	Move imm32 to r32.
 MOV	R32,R/M32		MOV R32,R/M32	Move r/m32 to r32.
+MOV	R64,CR0–CR7		MOV R64,CR0–CR7	Move extended control register to r64.
+MOV	R64,CR8		MOV R64,CR8	Move extended CR8 to r64.1
+MOV	R64,DR0–DR7		MOV R64,DR0–DR7	Move extended debug register to r64.
 MOV	R64,IMM64		MOV R64,IMM64	Move imm64 to r64.
 MOV	R64,R/M64		MOV R64,R/M64	Move r/m64 to r64.
 MOV	R8,IMM8		MOV R8,IMM8	Move imm8 to r8.

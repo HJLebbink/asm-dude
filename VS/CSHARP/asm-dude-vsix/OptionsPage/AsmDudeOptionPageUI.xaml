@@ -125,25 +125,39 @@
 							<GroupBox Header="SIMD" BorderBrush="DarkGray">
 								<Grid>
 									<StackPanel>
-										<CheckBox x:Name="useArch_3DNOW_UI" Content="3DNOW"/>
 										<CheckBox x:Name="useArch_MMX_UI" Content="MMX"/>
 										<CheckBox x:Name="useArch_SSE_UI" Content="SSE"/>
 										<CheckBox x:Name="useArch_SSE2_UI" Content="SSE2"/>
 										<CheckBox x:Name="useArch_SSE3_UI" Content="SSE3"/>
 										<CheckBox x:Name="useArch_SSSE3_UI" Content="SSSE3"/>
-										<CheckBox x:Name="useArch_SSE41_UI" Content="SSE41"/>
-										<CheckBox x:Name="useArch_SSE42_UI" Content="SSE42"/>
-										<CheckBox x:Name="useArch_SSE4A_UI" Content="SSE4A"/>
-										<CheckBox x:Name="useArch_SSE5_UI" Content="SSE5"/>
+										<CheckBox x:Name="useArch_SSE41_UI" Content="SSE4.1"/>
+										<CheckBox x:Name="useArch_SSE42_UI" Content="SSE4.2"/>
+										<CheckBox x:Name="useArch_SSE4A_UI" Content="SSE4A - AMD"/>
+										<CheckBox x:Name="useArch_SSE5_UI" Content="SSE5 - AMD"/>
 										<CheckBox x:Name="useArch_AVX_UI" Content="AVX"/>
 										<CheckBox x:Name="useArch_AVX2_UI" Content="AVX2"/>
-										<CheckBox x:Name="useArch_AVX512F_UI" Content="AVX512F"/>
-										<CheckBox x:Name="useArch_AVX512CD_UI" Content="AVX512CD"/>
-										<CheckBox x:Name="useArch_AVX512ER_UI" Content="AVX512ER"/>
-										<CheckBox x:Name="useArch_AVX512PF_UI" Content="AVX512PF"/>
-										<CheckBox x:Name="useArch_AVX512BW_UI" Content="AVX512BW"/>
-										<CheckBox x:Name="useArch_AVX512DQ_UI" Content="AVX512DQ"/>
-										<CheckBox x:Name="useArch_AVX512VL_UI" Content="AVX512VL"/>
+										<CheckBox x:Name="useArch_AVX512F_UI" Content="AVX512F - AVX512 Foundation  (Knights Landing, Intel Xeon)"/>
+										<CheckBox x:Name="useArch_AVX512CD_UI" Content="AVX512CD - AVX512 Conflict Detection (Knights Landing, Intel Xeon)"/>
+										<CheckBox x:Name="useArch_AVX512ER_UI" Content="AVX512ER - AVX512 Exponential and Reciprocal (Knights Landing)"/>
+										<CheckBox x:Name="useArch_AVX512PF_UI" Content="AVX512PF - AVX512 Prefetch (Knights Landing)"/>
+										<CheckBox x:Name="useArch_AVX512BW_UI" Content="AVX512BW - AVX512 Byte and Word (Intel Xeon)"/>
+										<CheckBox x:Name="useArch_AVX512DQ_UI" Content="AVX512DQ - AVX512 Doubleword and QuadWord (Intel Xeon)"/>
+										<CheckBox x:Name="useArch_AVX512VL_UI" Content="AVX512VL - AVX512 Vector Length Extensions (Intel Xeon)"/>
+									</StackPanel>
+								</Grid>
+							</GroupBox>
+							<GroupBox Header="Intel Extensions" BorderBrush="DarkGray">
+								<Grid >
+									<StackPanel>
+										<CheckBox x:Name="useArch_ADX_UI" Content="ADX - Multi-Precision Add-Carry Instruction Extensions"/>
+										<CheckBox x:Name="useArch_AES_UI" Content="AES - Advanced Encryption Standard"/>
+										<CheckBox x:Name="useArch_BMI1_UI" Content="BMI1 - Bit Manipulation Instructions Sets 1"/>
+										<CheckBox x:Name="useArch_BMI2_UI" Content="BMI2 - Bit Manipulation Instructions Sets 2"/>
+										<CheckBox x:Name="useArch_HLE_UI" Content="HLE - Hardware Lock Elision"/>
+										<CheckBox x:Name="useArch_MPX_UI" Content="MPX - Memory Protection Extensions"/>
+										<CheckBox x:Name="useArch_RTM_UI" Content="RTM - Transactional Synchronization Extensions"/>
+										<CheckBox x:Name="useArch_SHA_UI" Content="SHA - Secure Hash Algorithm Extension"/>
+										<CheckBox x:Name="useArch_VMX_UI" Content="VMX - Virtual Machine Extensions"/>
 									</StackPanel>
 								</Grid>
 							</GroupBox>
@@ -151,23 +165,25 @@
 								<Grid >
 									<StackPanel>
 										<CheckBox x:Name="useArch_X64_UI" Content="X64"/>
-										<CheckBox x:Name="useArch_X86_64_UI" Content="X86-64"/>
-										<CheckBox x:Name="useArch_BMI1_UI" Content="BMI1"/>
-										<CheckBox x:Name="useArch_BMI2_UI" Content="BMI2"/>
-										<CheckBox x:Name="useArch_IA64_UI" Content="IA64"/>
-										<CheckBox x:Name="useArch_FPU_UI" Content="FPU"/>
-										<CheckBox x:Name="useArch_FMA_UI" Content="FMA"/>
-										<CheckBox x:Name="useArch_TBM_UI" Content="TBM"/>
+										<CheckBox x:Name="useArch_FMA_UI" Content="FMA - Fused Multiply-Add"/>
+										<CheckBox x:Name="useArch_F16C_UI" Content="F16C - Half Precision FP Conversion"/>
+										<CheckBox x:Name="useArch_FSGSBASE_UI" Content="FSGSBASE"/>
+										<CheckBox x:Name="useArch_INVPCID_UI" Content="INVPCID - Invalidates TLBs"/>
+										<CheckBox x:Name="useArch_PCLMULQDQ_UI" Content="PCLMULQDQ - Carry-Less Multiplication Quadword"/>
+										<CheckBox x:Name="useArch_LZCNT_UI" Content="LZCNT - Leading Zero Count"/>
+										<CheckBox x:Name="useArch_PREFETCHWT1_UI" Content="PREFETCHWT1"/>
+										<CheckBox x:Name="useArch_PREFETCHW_UI" Content="PREFETCHW"/>
+										<CheckBox x:Name="useArch_RDPID_UI" Content="RDPID - Read Processor ID"/>
+										<CheckBox x:Name="useArch_RDRAND_UI" Content="RDRAND - Read Random Number"/>
+										<CheckBox x:Name="useArch_RDSEED_UI" Content="RDSEED - Read Random Seed"/>
+										<CheckBox x:Name="useArch_XSAVEOPT_UI" Content="XSAVEOPT - Save Processor Extended States Optimized"/>
+										<CheckBox x:Name="useArch_UNDOC_UI" Content="UNDOC - undocumented instructions"/>
 										<CheckBox x:Name="useArch_AMD_UI" Content="AMD"/>
-										<CheckBox x:Name="useArch_PRIV_UI" Content="PRIV"/>
-										<CheckBox x:Name="useArch_PROT_UI" Content="PROT"/>
+										<CheckBox x:Name="useArch_TBM_UI" Content="TBM - Trailing Bit Manipulation (AMD)"/>
+										<CheckBox x:Name="useArch_3DNOW_UI" Content="3DNOW"/>
+										<CheckBox x:Name="useArch_IA64_UI" Content="IA64"/>
 										<CheckBox x:Name="useArch_CYRIX_UI" Content="CYRIX"/>
 										<CheckBox x:Name="useArch_CYRIXM_UI" Content="CYRIXM"/>
-										<CheckBox x:Name="useArch_VMX_UI" Content="VMX"/>
-										<CheckBox x:Name="useArch_RTM_UI" Content="RTM"/>
-										<CheckBox x:Name="useArch_MPX_UI" Content="MPX"/>
-										<CheckBox x:Name="useArch_MIB_UI" Content="MIB"/>
-										<CheckBox x:Name="useArch_SHA_UI" Content="SHA"/>
 									</StackPanel>
 								</Grid>
 							</GroupBox>

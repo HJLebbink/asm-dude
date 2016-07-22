@@ -144,7 +144,7 @@ namespace AsmDude.Tools {
                 string line;
                 while ((line = file.ReadLine()) != null) {
                     if ((line.Length > 0) && (!line.StartsWith(";"))) {
-                        string[] columns = line.Trim().Split('\t');
+                        string[] columns = line.Split('\t');
                         if (columns.Length == 4) { // general description
                             #region
                             Mnemonic mnemonic = AsmSourceTools.parseMnemonic(columns[1]);
@@ -213,7 +213,7 @@ namespace AsmDude.Tools {
                 string line;
                 while ((line = file.ReadLine()) != null) {
                     if ((line.Length > 0) && (!line.StartsWith(";"))) {
-                        string[] columns = line.Trim().Split('\t');
+                        string[] columns = line.Split('\t');
                         if (columns.Length == 4) { // general description
                             #region
                             Mnemonic mnemonic = AsmSourceTools.parseMnemonic(columns[1]);

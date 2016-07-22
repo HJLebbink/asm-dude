@@ -40,7 +40,6 @@ namespace AsmTools {
         /// <summary>1995 (also known as i686)</summary>
         P6,
 
-        ARCH_3DNOW,
         MMX,
 
         SSE,
@@ -73,7 +72,7 @@ namespace AsmTools {
 
         ///<summary>AVX512 doubleword and quadword (Intel Xeon)</summary>
         AVX512DQ,
-        
+
         ///<summary>AVX512 Vector Length Extensions (Intel Xeon)</summary>
         ///An additional orthogonal capability known as Vector Length Extensions provide for most AVX-512 instructions 
         ///to operate on 128 or 256 bits, instead of only 512. Vector Length Extensions can currently be applied to
@@ -87,11 +86,14 @@ namespace AsmTools {
 
 
         #region Misc Intel
-        /// <summary>Two instruction ADCX and ADOX</summary>
+        /// <summary>Multi-Precision Add-Carry Instruction Extensions</summary>
         ADX,
 
         /// <summary>Advanced Encryption Standard Instruction Set </summary>
         AES,
+
+        /// <summary>Virtual Machine Extensions (VMX)</summary>
+        VMX,
 
         /// <summary>Bit Manipulation Instructions Sets 1</summary>
         BMI1,
@@ -110,10 +112,10 @@ namespace AsmTools {
 
         ///<summary>Hardware Lock Elision</summary>
         HLE,
-        
+
         /// <summary>Invalidates TLBs, two instructions</summary>
         INVPCID,
-        
+
         /// <summary>Secure Hash Algorithm Extensions</summary>
         SHA,
 
@@ -122,7 +124,7 @@ namespace AsmTools {
 
         /// <summary>Memory Protection Extensions</summary>
         MPX,
-        
+
         /// <summary>Two instruction PCLMULQDQ (Carry-Less Multiplication Quadword)</summary>
         PCLMULQDQ,
 
@@ -150,47 +152,28 @@ namespace AsmTools {
 
         #region Misc Other
         X64,
-        /// <summary>AMD</summary>
-        X86_64,
+
         IA64,
+
+        UNDOC,
+        #endregion 
+
+
+        #region AMD
+        AMD,
 
         /// <summary>AMD: Trailing Bit Manipulation</summary>
         TBM,
 
-        AMD,
-        /// <summary>Privileged instructions</summary>
-        PRIV,
+        ARCH_3DNOW,
 
-        PROT,
+        #endregion
         CYRIX,
         CYRIXM,
-        VMX,
-        MIB,
-        #endregion 
-
-        #region unused
-        OPT,
-        ND,
-        LONG,
-        NOLONG,
-        UNDOC,
-        #endregion
     }
 
     public static class ArchTools {
 
-        public static bool ignoreArch(Arch arch) {
-            switch (arch) {
-                case Arch.NONE:
-                case Arch.OPT:
-                case Arch.ND:
-                case Arch.LONG:
-                case Arch.NOLONG:
-                case Arch.UNDOC:
-                    return true;
-                default: return false;
-            }
-        }
         public static Arch parseArch(string str) {
             switch (str.ToUpper()) {
                 case "NONE": return Arch.NONE;
@@ -200,10 +183,10 @@ namespace AsmTools {
                 case "286": return Arch.ARCH_286;
                 case "386": return Arch.ARCH_386;
                 case "486": return Arch.ARCH_486;
+                case "PENT": return Arch.PENT;
+                case "P6": return Arch.P6;
 
-                case "3DNOW": return Arch.ARCH_3DNOW;
                 case "MMX": return Arch.MMX;
-
                 case "SSE": return Arch.SSE;
                 case "SSE2": return Arch.SSE2;
                 case "SSE3": return Arch.SSE3;
@@ -226,25 +209,17 @@ namespace AsmTools {
                 case "HLE": return Arch.HLE;
                 case "BMI1": return Arch.BMI1;
                 case "BMI2": return Arch.BMI2;
-                case "P6": return Arch.P6;
-                case "X86_64": return Arch.X86_64;
-                case "IA64": return Arch.IA64;
                 case "FMA": return Arch.FMA;
                 case "AES": return Arch.AES;
                 case "TBM": return Arch.TBM;
+
                 case "AMD": return Arch.AMD;
-                case "PRIV": return Arch.PRIV;
+                case "3DNOW": return Arch.ARCH_3DNOW;
+                case "IA64": return Arch.IA64;
 
-                #region Specific Processors
-                case "PENT": return Arch.PENT;
-                #endregion
-
-
-                case "OPT": return Arch.OPT;
-                case "PROT": return Arch.PROT;
                 case "CYRIX": return Arch.CYRIX;
-                case "INVPCID": return Arch.INVPCID;
                 case "CYRIXM": return Arch.CYRIXM;
+                case "INVPCID": return Arch.INVPCID;
                 case "VMX": return Arch.VMX;
                 case "ADX": return Arch.ADX;
 
@@ -259,18 +234,11 @@ namespace AsmTools {
                 case "LZCNT": return Arch.LZCNT;
                 case "F16C": return Arch.F16C;
                 case "MPX": return Arch.MPX;
-                case "MIB": return Arch.MIB;
                 case "SHA": return Arch.SHA;
-
-                #region unused
                 case "RTM": return Arch.RTM;
-
-                case "ND": return Arch.ND;
-                case "LONG": return Arch.LONG;
-                case "NOLONG": return Arch.NOLONG;
-                case "UNDOC": return Arch.UNDOC;
                 case "PREFETCHWT1": return Arch.PREFETCHWT1;
-                #endregion
+
+                case "UNDOC": return Arch.UNDOC;
             }
             Console.WriteLine("WARNING: parseArch: no arch for str " + str);
 
@@ -278,15 +246,75 @@ namespace AsmTools {
             return Arch.NONE;
         }
 
+        public static string ArchDocumentation(Arch arch) {
+            switch (arch) {
+                case Arch.NONE: return "";
+                case Arch.ARCH_8086: return "";
+                case Arch.ARCH_186: return "";
+                case Arch.ARCH_286: return "";
+                case Arch.ARCH_386: return "";
+                case Arch.ARCH_486: return "";
+                case Arch.PENT: return "Instruction set of the Pentium, 1994 (also known as i585)";
+                case Arch.P6: return "Instruction set of the Pentium 6, 1995 (also knows as i686)";
+                case Arch.MMX: return "";
+                case Arch.SSE: return "";
+                case Arch.SSE2: return "";
+                case Arch.SSE3: return "";
+                case Arch.SSSE3: return "";
+                case Arch.SSE4_1: return "";
+                case Arch.SSE4_2: return "";
+                case Arch.SSE4A: return "Instruction set SSE4A, AMD";
+                case Arch.SSE5: return "Instruction set SSE5, AMD";
+                case Arch.AVX: return "";
+                case Arch.AVX2: return "";
+                case Arch.AVX512F: return "Instruction set AVX512 Foundation (Knights Landing, Intel Xeon)";
+                case Arch.AVX512CD: return "Instruction set AVX512 Conflict Detection (Knights Landing, Intel Xeon)";
+                case Arch.AVX512ER: return "Instruction set AVX512 Exponential and Reciprocal (Knights Landing)";
+                case Arch.AVX512PF: return "Instruction set AVX512 Prefetch (Knights Landing)";
+                case Arch.AVX512BW: return "Instruction set AVX512 Byte and Word (Intel Xeon)";
+                case Arch.AVX512DQ: return "Instruction set AVX512 Doubleword and QuadWord (Intel Xeon)";
+                case Arch.AVX512VL: return "Instruction set AVX512 Vector Length Extensions (Intel Xeon)";
+                case Arch.ADX: return "Multi-Precision Add-Carry Instruction Extension";
+                case Arch.AES: return "Advanced Encryption Standard Extension";
+                case Arch.VMX: return "Virtual Machine Extension";
+                case Arch.BMI1: return "Bit Manipulation Instruction Set 1";
+                case Arch.BMI2: return "Bit Manipulation Instruction Set 2";
+                case Arch.F16C: return "Half Precision Floating Point Conversion Instructions";
+                case Arch.FMA: return "Fused Multiply-Add Instructions";
+                case Arch.FSGSBASE: return "";
+                case Arch.HLE: return "Hardware Lock Elision Instructions";
+                case Arch.INVPCID: return "Invalidate Translation Lookaside Buffers (TLBs)";
+                case Arch.SHA: return "Secure Hash Algorithm Extensions";
+                case Arch.RTM: return "Transactional Synchronization Extensions";
+                case Arch.MPX: return "Memory Protection Extensions";
+                case Arch.PCLMULQDQ: return "Carry-Less Multiplication Instructions";
+                case Arch.LZCNT: return "";
+                case Arch.PREFETCHWT1: return "";
+                case Arch.PRFCHW: return "";
+                case Arch.RDPID: return "Read processor ID";
+                case Arch.RDRAND: return "Read random number";
+                case Arch.RDSEED: return "Reed random seed";
+                case Arch.XSAVEOPT: return "Save Processor Extended States Optimized";
+                case Arch.X64: return "64-bit Mode Instructions";
+                case Arch.IA64: return "Intel Architecture 64";
+                case Arch.UNDOC: return "Undocumented Instructions";
+                case Arch.AMD: return "AMD";
+                case Arch.TBM: return "Trailing Bit Manipulation (AMD)";
+                case Arch.ARCH_3DNOW: return "3DNow (AMD)";
+                case Arch.CYRIX: return "Cyrix Instructions Set";
+                case Arch.CYRIXM: return "Cyrix M Instruction Set";
+                default:
+                    return "";
+            }
+        }
+
         public static string ToString(IEnumerable<Arch> archs) {
             bool empty = true;
             StringBuilder sb = new StringBuilder();
             foreach (Arch arch in archs) {
-                if (!ArchTools.ignoreArch(arch)) {
-                    sb.Append(ArchTools.ToString(arch));
-                    sb.Append(",");
-                    empty = false;
-                }
+                sb.Append(ArchTools.ToString(arch));
+                sb.Append(",");
+                empty = false;
             }
             if (empty) {
                 return "";

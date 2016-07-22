@@ -529,7 +529,7 @@ namespace AsmDude {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool ARCH_AVX512DQ {
             get {
                 return ((bool)(this["ARCH_AVX512DQ"]));
@@ -541,7 +541,7 @@ namespace AsmDude {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool ARCH_AVX512BW {
             get {
                 return ((bool)(this["ARCH_AVX512BW"]));
@@ -637,18 +637,6 @@ namespace AsmDude {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ARCH_X86_64 {
-            get {
-                return ((bool)(this["ARCH_X86_64"]));
-            }
-            set {
-                this["ARCH_X86_64"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool ARCH_IA64 {
             get {
@@ -656,18 +644,6 @@ namespace AsmDude {
             }
             set {
                 this["ARCH_IA64"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ARCH_FPU {
-            get {
-                return ((bool)(this["ARCH_FPU"]));
-            }
-            set {
-                this["ARCH_FPU"] = value;
             }
         }
         
@@ -710,18 +686,6 @@ namespace AsmDude {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ARCH_PRIV {
-            get {
-                return ((bool)(this["ARCH_PRIV"]));
-            }
-            set {
-                this["ARCH_PRIV"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool ARCH_PENT {
             get {
                 return ((bool)(this["ARCH_PENT"]));
@@ -740,18 +704,6 @@ namespace AsmDude {
             }
             set {
                 this["ARCH_3DNOW"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ARCH_PROT {
-            get {
-                return ((bool)(this["ARCH_PROT"]));
-            }
-            set {
-                this["ARCH_PROT"] = value;
             }
         }
         
@@ -818,18 +770,6 @@ namespace AsmDude {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ARCH_MIB {
-            get {
-                return ((bool)(this["ARCH_MIB"]));
-            }
-            set {
-                this["ARCH_MIB"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool ARCH_SHA {
             get {
                 return ((bool)(this["ARCH_SHA"]));
@@ -841,7 +781,7 @@ namespace AsmDude {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool ARCH_BND {
             get {
                 return ((bool)(this["ARCH_BND"]));
@@ -860,6 +800,186 @@ namespace AsmDude {
             }
             set {
                 this["SignatureHelp_On"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ARCH_ADX {
+            get {
+                return ((bool)(this["ARCH_ADX"]));
+            }
+            set {
+                this["ARCH_ADX"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ARCH_F16C {
+            get {
+                return ((bool)(this["ARCH_F16C"]));
+            }
+            set {
+                this["ARCH_F16C"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ARCH_FSGSBASE {
+            get {
+                return ((bool)(this["ARCH_FSGSBASE"]));
+            }
+            set {
+                this["ARCH_FSGSBASE"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ARCH_HLE {
+            get {
+                return ((bool)(this["ARCH_HLE"]));
+            }
+            set {
+                this["ARCH_HLE"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ARCH_INVPCID {
+            get {
+                return ((bool)(this["ARCH_INVPCID"]));
+            }
+            set {
+                this["ARCH_INVPCID"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ARCH_PCLMULQDQ {
+            get {
+                return ((bool)(this["ARCH_PCLMULQDQ"]));
+            }
+            set {
+                this["ARCH_PCLMULQDQ"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ARCH_LZCNT {
+            get {
+                return ((bool)(this["ARCH_LZCNT"]));
+            }
+            set {
+                this["ARCH_LZCNT"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ARCH_PREFETCHWT1 {
+            get {
+                return ((bool)(this["ARCH_PREFETCHWT1"]));
+            }
+            set {
+                this["ARCH_PREFETCHWT1"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ARCH_PREFETCHW {
+            get {
+                return ((bool)(this["ARCH_PREFETCHW"]));
+            }
+            set {
+                this["ARCH_PREFETCHW"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ARCH_RDPID {
+            get {
+                return ((bool)(this["ARCH_RDPID"]));
+            }
+            set {
+                this["ARCH_RDPID"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ARCH_RDRAND {
+            get {
+                return ((bool)(this["ARCH_RDRAND"]));
+            }
+            set {
+                this["ARCH_RDRAND"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ARCH_RDSEED {
+            get {
+                return ((bool)(this["ARCH_RDSEED"]));
+            }
+            set {
+                this["ARCH_RDSEED"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ARCH_XSAVEOPT {
+            get {
+                return ((bool)(this["ARCH_XSAVEOPT"]));
+            }
+            set {
+                this["ARCH_XSAVEOPT"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ARCH_UNDOC {
+            get {
+                return ((bool)(this["ARCH_UNDOC"]));
+            }
+            set {
+                this["ARCH_UNDOC"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ARCH_AES {
+            get {
+                return ((bool)(this["ARCH_AES"]));
+            }
+            set {
+                this["ARCH_AES"] = value;
             }
         }
     }

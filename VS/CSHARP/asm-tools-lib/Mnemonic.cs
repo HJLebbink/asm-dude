@@ -679,7 +679,6 @@ namespace AsmTools {
         PADDB,
         PADDD,
         PADDSB,
-        PADDSIW,
         PADDSW,
         PADDUSB,
         PADDUSW,
@@ -687,7 +686,6 @@ namespace AsmTools {
         PAND,
         PANDN,
         PAUSE,
-        PAVEB,
         PAVGUSB,
         PCMPEQB,
         PCMPEQD,
@@ -695,7 +693,6 @@ namespace AsmTools {
         PCMPGTB,
         PCMPGTD,
         PCMPGTW,
-        PDISTIB,
         PF2ID,
         PFACC,
         PFADD,
@@ -713,18 +710,11 @@ namespace AsmTools {
         PFSUB,
         PFSUBR,
         PI2FD,
-        PMACHRIW,
         PMADDWD,
-        PMAGW,
-        PMULHRIW,
         PMULHRWA,
         PMULHRWC,
         PMULHW,
         PMULLW,
-        PMVGEZB,
-        PMVLZB,
-        PMVNZB,
-        PMVZB,
         POPAW,
         POPFQ,
         POPFW,
@@ -741,7 +731,6 @@ namespace AsmTools {
         PSUBB,
         PSUBD,
         PSUBSB,
-        PSUBSIW,
         PSUBSW,
         PSUBUSB,
         PSUBUSW,
@@ -756,7 +745,6 @@ namespace AsmTools {
         PUSHFQ,
         PUSHFW,
         PXOR,
-        RDSHR,
         RDMSR,
         RDPMC,
         RDTSC,
@@ -2131,12 +2119,43 @@ namespace AsmTools {
         PRORVD,
         PSRAQ,
         PTWRITE,
-        RDPID
-
+        RDPID,
         #endregion
+
+        #region CYRIX
+        /// <summary>CYRIX: Packed Add with Saturation.</summary>
+        PADDSIW,
+        /// <summary>CYRIX: Packed Subtract with Saturation.</summary>
+        PSUBSIW,
+        /// <summary>CYRIX: Packed Average.</summary>
+        PAVEB,
+        /// <summary>CYRIX: Packed Distance and Accumulate.</summary>
+        PDISTIB,
+        /// <summary>CYRIX: Packed Multiply and Accumulate with Rounding.</summary>
+        PMACHRIW,
+        /// <summary>CYRIX: Packed Magnitude.</summary>
+        PMAGW,
+        /// <summary>CYRIX: Packed Multiply High with Rounding.</summary>
+        PMULHRW,
+        /// <summary>CYRIX: Packed Multiply High with Rounding using implied destination.</summary>
+        PMULHRIW,
+        /// <summary>CYRIX: Packed Conditional Move(zero).</summary>
+        PMVZB,
+        /// <summary>CYRIX: Packed Conditional Move(not zero).</summary>
+        PMVNZB,
+        /// <summary>CYRIX: Packed Conditional Move(less than zero).</summary>
+        PMVLZB,
+        /// <summary>CYRIX: Packed Conditional Move(greater than or equal to zero).</summary>
+        PMVGEZB,
+
+        /// <summary>CYRIXM</summary>
+        RDSHR,
+        #endregion
+        PPMULHRWA
+
     }
 
-    public static partial class AsmSourceTools {
+public static partial class AsmSourceTools {
 
         public static bool isJump(Mnemonic mnemonic) {
             switch (mnemonic) {
@@ -2443,7 +2462,6 @@ namespace AsmTools {
                 case "SHRX": return Mnemonic.SHRX;
                 case "TZCNT": return Mnemonic.TZCNT;
 
-
                 case "ARPL": return Mnemonic.ARPL;
                 case "BB0_RESET": return Mnemonic.BB0_RESET;
                 case "BB1_RESET": return Mnemonic.BB1_RESET;
@@ -2676,7 +2694,6 @@ namespace AsmTools {
                 case "PUSHFQ": return Mnemonic.PUSHFQ;
                 case "PUSHFW": return Mnemonic.PUSHFW;
                 case "PXOR": return Mnemonic.PXOR;
-                case "RDSHR": return Mnemonic.RDSHR;
                 case "RDMSR": return Mnemonic.RDMSR;
                 case "RDPMC": return Mnemonic.RDPMC;
                 case "RDTSC": return Mnemonic.RDTSC;
@@ -4053,6 +4070,9 @@ namespace AsmTools {
                 case "PTWRITE": return Mnemonic.PTWRITE;
                 case "RDPID": return Mnemonic.RDPID;
 
+                case "PMULHRW": return Mnemonic.PMULHRW;
+                case "RDSHR": return Mnemonic.RDSHR;
+                case "PPMULHRWA": return Mnemonic.PPMULHRWA;
                 default:
                     Console.WriteLine("WARNING;parseMnemonic. unknown str=\"" + str + "\".");
                     return Mnemonic.UNKNOWN;

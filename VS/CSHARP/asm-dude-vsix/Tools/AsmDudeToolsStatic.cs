@@ -407,14 +407,10 @@ namespace AsmDude.Tools {
                 case Arch.X64: return Settings.Default.ARCH_X64;
                 case Arch.BMI1: return Settings.Default.ARCH_BMI1;
                 case Arch.BMI2: return Settings.Default.ARCH_BMI2;
-                case Arch.X86_64: return Settings.Default.ARCH_X86_64;
                 case Arch.IA64: return Settings.Default.ARCH_IA64;
                 case Arch.FMA: return Settings.Default.ARCH_FMA;
                 case Arch.TBM: return Settings.Default.ARCH_TBM;
                 case Arch.AMD: return Settings.Default.ARCH_AMD;
-                case Arch.PRIV: return Settings.Default.ARCH_PRIV;
-                case Arch.OPT: return false;
-                case Arch.PROT: return Settings.Default.ARCH_PROT;
                 case Arch.CYRIX: return Settings.Default.ARCH_CYRIX;
                 case Arch.INVPCID: return false;
                 case Arch.CYRIXM: return Settings.Default.ARCH_CYRIXM;
@@ -422,11 +418,7 @@ namespace AsmDude.Tools {
                 case Arch.RTM: return Settings.Default.ARCH_RTM;
                 case Arch.HLE: return false;
                 case Arch.MPX: return Settings.Default.ARCH_MPX;
-                case Arch.MIB: return Settings.Default.ARCH_MIB;
                 case Arch.SHA: return Settings.Default.ARCH_SHA;
-                case Arch.ND: return false;
-                case Arch.LONG: return false;
-                case Arch.NOLONG: return false;
                 case Arch.UNDOC: return false;
                 case Arch.PREFETCHWT1: return false;
                 default:
