@@ -95,32 +95,32 @@
 			<description>(64 bytes, 512 bit). DZ is a synonym of ZWORD.</description>
 		</misc>
 
-		<misc name="z" arch="AVX512VL">
-			<description>Zero mask</description>
+		<misc name="Z" arch="AVX512VL">
+			<description>Zero Mask {Z}</description>
 		</misc>
-		<misc name="sae" arch="AVX512VL">
-			<description>TODO</description>
+		<misc name="SAE" arch="AVX512VL">
+			<description>Suppress all Exceptions {SAE}</description>
 		</misc>
-		<misc name="rn-sae" arch="AVX512VL">
-			<description>TODO</description>
+		<misc name="RN-SAE" arch="AVX512VL">
+			<description>Rounding Mode: round nearest even {RN-SAE}</description>
 		</misc>
-		<misc name="ru-sae" arch="AVX512VL">
-			<description>TODO</description>
+		<misc name="RU-SAE" arch="AVX512VL">
+			<description>Rounding Mode: round up {RU-SAE}</description>
 		</misc>
-		<misc name="rd-sae" arch="AVX512VL">
-			<description>TODO</description>
+		<misc name="RD-SAE" arch="AVX512VL">
+			<description>Rounding Mode: round down {RD-SAE}</description>
 		</misc>
-		<misc name="rz-sae" arch="AVX512VL">
-			<description>TODO</description>
+		<misc name="RZ-SAE" arch="AVX512VL">
+			<description>Rounding Mode: truncate / round to zero {RZ-SAE}</description>
 		</misc>
-		<misc name="1to16" arch="AVX512VL">
-			<description>TODO</description>
+		<misc name="1TO16" arch="AVX512VL">
+			<description>Broadcast 1 to 16 {1TO16}</description>
 		</misc>
-		<misc name="1to8" arch="AVX512VL">
-			<description>TODO</description>
+		<misc name="1TO8" arch="AVX512VL">
+			<description>Broadcast 1 to 8 {1TO8}</description>
 		</misc>
-		<misc name="1to4" arch="AVX512VL">
-			<description>TODO</description>
+		<misc name="1TO4" arch="AVX512VL">
+			<description>Broadcast 1 to 4 {1TO4}</description>
 		</misc>
 	</miscs>
 
@@ -1180,5 +1180,7 @@
 		<register name='ZMM31' bits='512' arch='AVX512F'>
 			<description>512-bit avx-512 Register</description>
 		</register>
+
+
 	</registers>
 </asmdudedata>

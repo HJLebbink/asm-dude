@@ -149,7 +149,8 @@ namespace AsmDude.Tools {
                             #region
                             Mnemonic mnemonic = AsmSourceTools.parseMnemonic(columns[1]);
                             if (mnemonic == Mnemonic.UNKNOWN) {
-                                AsmDudeToolsStatic.Output("WARNING: MnemonicStore:loadRegularData: unknown mnemonic in line" + line);
+                                // ignore the unknown mnemonic
+                                //AsmDudeToolsStatic.Output("WARNING: MnemonicStore:loadRegularData: unknown mnemonic in line: " + line);
                             } else {
                                 if (!this._description.ContainsKey(mnemonic)) {
                                     this._description.Add(mnemonic, columns[2]);
@@ -169,7 +170,7 @@ namespace AsmDude.Tools {
                             #region
                             Mnemonic mnemonic = AsmSourceTools.parseMnemonic(columns[0]);
                             if (mnemonic == Mnemonic.UNKNOWN) {
-                                AsmDudeToolsStatic.Output("WARNING: MnemonicStore:loadRegularData: unknown mnemonic in line" + line);
+                                AsmDudeToolsStatic.Output("WARNING: MnemonicStore:loadRegularData: unknown mnemonic in line: " + line);
                             } else {
                                 AsmSignatureElement se = new AsmSignatureElement(mnemonic, columns[1], columns[2], columns[3], columns[4]);
                                 if (this.add(se)) {

@@ -356,7 +356,7 @@ namespace AsmDude.SignatureHelp {
                     return new AsmSignatureEnum[] { AsmSignatureEnum.UNKNOWN };
             }
         }
-
+        /// <summary>Get brief description of the operand</summary>
         public static string getDoc(AsmSignatureEnum operandType) {
             switch (operandType) {
                 case AsmSignatureEnum.MEM: return "memory operand";
@@ -404,9 +404,9 @@ namespace AsmDude.SignatureHelp {
                 case AsmSignatureEnum.UNITY: return "immediate value 1";
                 case AsmSignatureEnum.ZERO: return "immediate value 0";
 
-                case AsmSignatureEnum.SAE: return "{SAE}";
-                case AsmSignatureEnum.ER: return "{RN-SAE}{RU-SAE}{RD-SAE}{RZ-SAE}";
-                case AsmSignatureEnum.Z: return "{Z}";
+                case AsmSignatureEnum.SAE: return "Optional Suppress All Exceptions {SAE}";
+                case AsmSignatureEnum.ER: return "Optional Rounding Mode {RN-SAE}/{RU-SAE}/{RD-SAE}/{RZ-SAE}";
+                case AsmSignatureEnum.Z: return "Optional Zero Mask {Z}";
 
                 case AsmSignatureEnum.REG_XMM0: return "XMM0 register";
                 case AsmSignatureEnum.XMMREG: return "xmm register";
@@ -565,6 +565,8 @@ namespace AsmDude.SignatureHelp {
                 case AsmSignatureEnum.UNITY: return (op.isImm && (op.imm == 1));
 
                 case AsmSignatureEnum.Z: return false;
+                case AsmSignatureEnum.ER: return false;
+                case AsmSignatureEnum.SAE: return false;
 
                 case AsmSignatureEnum.K: return (op.isReg && (RegisterTools.isOpmaskRegister(op.rn)));
                 case AsmSignatureEnum.XMMREG: return (op.isReg && RegisterTools.isSseRegister(op.rn));
