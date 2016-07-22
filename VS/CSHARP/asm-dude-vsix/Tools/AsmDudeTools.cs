@@ -32,6 +32,7 @@ using AsmTools;
 using AsmDude.Tools;
 using Microsoft.VisualStudio.Shell;
 using AsmDude.SignatureHelp;
+using Amib.Threading;
 
 namespace AsmDude {
 
@@ -45,7 +46,7 @@ namespace AsmDude {
         private readonly ErrorListProvider _errorListProvider;
 
         private readonly MnemonicStore _mnemonicStore;
-
+        private readonly SmartThreadPool _smartThreadPool;
 
         #region Singleton Stuff
         private static readonly Lazy<AsmDudeTools> lazy = new Lazy<AsmDudeTools>(() => new AsmDudeTools());
@@ -65,6 +66,8 @@ namespace AsmDude {
             this._errorListProvider.ProviderName = "Asm Errors";
             this._errorListProvider.ProviderGuid = new Guid(EnvDTE.Constants.vsViewKindCode);
             #endregion
+
+            this._smartThreadPool = new SmartThreadPool();
 
             #region load signature store
             string path = AsmDudeToolsStatic.getInstallPath() + "Resources" + Path.DirectorySeparatorChar;
@@ -206,7 +209,9 @@ namespace AsmDude {
 
         public ErrorListProvider errorListProvider { get { return this._errorListProvider; } }
 
-        public MnemonicStore mnemonicStore {  get { return this._mnemonicStore; } }
+        public MnemonicStore mnemonicStore { get { return this._mnemonicStore; } }
+
+        public SmartThreadPool threadPool { get { return this._smartThreadPool; } }
 
         public ICollection<string> getKeywords() {
             if (this._type == null) initData();

@@ -210,10 +210,17 @@ namespace AsmDude.Tools {
                 this._scheduled = true;
             } else {
                 //AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:reset_delayed: going to execute this call."));
-                ThreadPool.QueueUserWorkItem(this.reset);
+                if (true) {
+                    AsmDudeTools.Instance.threadPool.QueueWorkItem(this.reset2);
+                } else {
+                    ThreadPool.QueueUserWorkItem(this.reset);
+                }
             }
         }
 
+        private void reset2() {
+            this.reset(null);
+        }
         private void reset(object threadContext) {
             if (!this._enabled) return;
 

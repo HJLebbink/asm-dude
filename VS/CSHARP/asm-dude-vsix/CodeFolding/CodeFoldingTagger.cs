@@ -32,6 +32,7 @@ using System.Threading;
 using System.Text;
 using Microsoft.VisualStudio.Shell;
 using AsmTools;
+using Amib.Threading;
 
 namespace AsmDude.CodeFolding {
 
@@ -261,10 +262,17 @@ namespace AsmDude.CodeFolding {
                 this._scheduled = true;
             } else {
                 //AsmDudeToolsStatic.Output("INFO: CodeFoldingTagger:reparse_delayed: going to execute this call.");
-                ThreadPool.QueueUserWorkItem(this.parse);
+                if (true) {
+                    AsmDudeTools.Instance.threadPool.QueueWorkItem(this.parse2);
+                } else {
+                    ThreadPool.QueueUserWorkItem(this.parse);
+                }
             }
         }
 
+        private void parse2() {
+            this.parse(null);
+        }
         private void parse(object threadContext) {
             if (!this._enabled) return;
 

@@ -140,9 +140,18 @@ namespace AsmDude.HighlightWord {
                     this._requestedPoint = point.Value;
                     this._newWord = newWord;
                     this._newWordSpan = newWordExtend.Value.Span;
-                    ThreadPool.QueueUserWorkItem(UpdateWordAdornments);
+
+                    if (true) {
+                        AsmDudeTools.Instance.threadPool.QueueWorkItem(this.UpdateWordAdornments2);
+                    } else {
+                        ThreadPool.QueueUserWorkItem(this.UpdateWordAdornments);
+                    }
                 }
             }
+        }
+
+        private void UpdateWordAdornments2() {
+            this.UpdateWordAdornments(null);
         }
 
         /// <summary>
