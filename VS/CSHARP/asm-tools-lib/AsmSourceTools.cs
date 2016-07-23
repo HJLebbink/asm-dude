@@ -165,7 +165,7 @@ namespace AsmTools {
             // check if the line contains a remark character before the current point
             int nChars = line.Length;
             int startPos = (pos >= nChars) ? nChars - 1 : pos;
-            for (int i = startPos; i > 0; --i) {
+            for (int i = startPos; i >= 0; --i) {
                 if (AsmSourceTools.isRemarkChar(line[i])) {
                     return true;
                 }

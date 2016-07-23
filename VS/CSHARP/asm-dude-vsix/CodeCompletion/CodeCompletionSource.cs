@@ -77,11 +77,14 @@ namespace AsmDude {
                 #region
                 if (triggerPoint.Position > 1) {
                     char currentTypedChar = (triggerPoint - 1).GetChar();
-                    //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:AugmentCompletionSession: current char = {1}", this.ToString(), currentTypedChar));
+                    //AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:AugmentCompletionSession: current char = "+ currentTypedChar);
                     if (!currentTypedChar.Equals('#')) { //TODO UGLY since the user can configure this starting character
                         int pos = triggerPoint.Position - line.Start;
                         if (AsmSourceTools.isInRemark(pos, line.GetText())) {
+                            //AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:AugmentCompletionSession: currently in a remark section");
                             return;
+                        } else {
+                           / /AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:AugmentCompletionSession: not in a remark section");
                         }
                     }
                 }
