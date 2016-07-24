@@ -180,6 +180,7 @@ namespace AsmDude {
 
                                     switch (nextKeyword) {
                                         case "PROC":
+                                        case "PROTO":
                                         case "EQU":
                                         case "LABEL":
                                             yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.newSpan(pos[k - 1], offset, curSpan), this._labelDef);

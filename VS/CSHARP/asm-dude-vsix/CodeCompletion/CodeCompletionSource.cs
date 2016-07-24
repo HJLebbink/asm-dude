@@ -84,7 +84,7 @@ namespace AsmDude {
                             //AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:AugmentCompletionSession: currently in a remark section");
                             return;
                         } else {
-                           / /AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:AugmentCompletionSession: not in a remark section");
+                           // AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:AugmentCompletionSession: not in a remark section");
                         }
                     }
                 }

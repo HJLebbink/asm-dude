@@ -578,9 +578,9 @@ namespace AsmTools {
             string line2 = line.TrimStart();
             int displacement = 0;
 
-            if (line2.StartsWith("EXTRN", StringComparison.CurrentCultureIgnoreCase)) {
+            if (line2.StartsWith("EXTRN", StringComparison.OrdinalIgnoreCase)) {
                 displacement = 5;
-            } else if (line2.StartsWith("EXTERN", StringComparison.CurrentCultureIgnoreCase)) {
+            } else if (line2.StartsWith("EXTERN", StringComparison.OrdinalIgnoreCase)) {
                 displacement = 6;
             } else {
                 return new Tuple<bool, int, int>(false, 0, 0);
