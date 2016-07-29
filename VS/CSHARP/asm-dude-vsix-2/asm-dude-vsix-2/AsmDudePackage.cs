@@ -1,0 +1,343 @@
+﻿//------------------------------------------------------------------------------
+// <copyright file="AsmDudePackage.cs" company="Company">
+//     Copyright (c) Company.  All rights reserved.
+// </copyright>
+//------------------------------------------------------------------------------
+
+using System;
+using System.ComponentModel.Design;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.Runtime.InteropServices;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.Win32;
+using AsmDude.OptionsPage;
+using System.Text;
+using AsmDude.Tools;
+
+namespace AsmDude
+{
+    /// <summary>
+    /// This is the class that implements the package exposed by this assembly.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The minimum requirement for a class to be considered a valid package for Visual Studio
+    /// is to implement the IVsPackage interface and register itself with the shell.
+    /// This package uses the helper classes defined inside the Managed Package Framework (MPF)
+    /// to do it: it derives from the Package class that provides the implementation of the
+    /// IVsPackage interface and uses the registration attributes defined in the framework to
+    /// register itself and its components with the shell. These attributes tell the pkgdef creation
+    /// utility what data to put into .pkgdef file.
+    /// </para>
+    /// <para>
+    /// To get loaded into VS, the package must be referred by &lt;Asset Type="Microsoft.VisualStudio.VsPackage" ...&gt; in .vsixmanifest file.
+    /// </para>
+    /// </remarks>
+    [PackageRegistration(UseManagedResourcesOnly = true)]
+    [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
+    [Guid(AsmDudePackage.PackageGuidString)]
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
+
+    [ProvideOptionPage(typeof(AsmDudeOptionsPage), "AsmDude", "General", 0, 0, true)]
+
+    public sealed class AsmDudePackage : Package
+    {
+        /// <summary>
+        /// AsmDudePackage GUID string.
+        /// </summary>
+        public const string PackageGuidString = "27e0e7ef-ecaf-4b87-a574-6a909383f99f";
+
+        #region Global Constants
+
+        internal const string AsmDudeContentType = "asm!";
+        internal const double slowWarningThresholdSec = 0.4; // threshold to warn that actions are considered slow
+        internal const double slowShutdownThresholdSec = 4.0; // threshold to switch of components
+        internal const int maxNumberOfCharsInToolTips = 150;
+        internal const int msSleepBeforeAsyncExecution = 1000;
+
+        #endregion Global Constants
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AsmDudePackage"/> class.
+        /// </summary>
+        public AsmDudePackage()
+        {
+            // Inside this method you can place any initialization code that does not require
+            // any Visual Studio service because at this point the package object is created but
+            // not sited yet inside Visual Studio environment. The place to do all the other
+            // initialization is the Initialize method.
+
+            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "=========================================\nINFO: AsmDudePackage: Entering constructor"));
+            //AsmDudeToolsStatic.Output("INFO: AsmDudePackage: Entering constructor");
+        }
+
+        #region Package Members
+
+        /// <summary>
+        /// Initialization of the package; this method is called right after the package is sited, so this is the place
+        /// where you can put all the initialization code that rely on services provided by VisualStudio.
+        /// </summary>
+        protected override void Initialize()
+        {
+            base.Initialize();
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append("Welcome to\n");
+            sb.Append(" _____           ____        _     \n");
+            sb.Append("|  _  |___ _____|    \\ _ _ _| |___\n");
+            sb.Append("|     |_ -|     |  |  | | | . | -_|\n");
+            sb.Append("|__|__|___|_|_|_|____/|___|___|___|\n");
+            sb.Append("INFO: Loaded AsmDude version " + typeof(AsmDudePackage).Assembly.GetName().Version + " (" + ApplicationInformation.CompileDate.ToString() + ")\n");
+            sb.Append("INFO: Open source assembly extension. Making programming in assembler bearable.\n");
+            sb.Append("INFO: More info at https://github.com/HJLebbink/asm-dude \n");
+            sb.Append("----------------------------------");
+            AsmDudeToolsStatic.Output(sb.ToString());
+        }
+
+        #endregion
+
+
+        #region Font Change Experiments
+        /// <summary>
+        /// Set font of code completion
+        /// tools>options>Environment>Fonts and Colors>statement completion>courier new.
+        /// https://msdn.microsoft.com/en-us/library/bb166382.aspx
+        /// </summary>
+        /// 
+
+        /*
+        private void changeFontAutoComplete() {
+            // experiments to change the font of the autocomplate
+            try {
+                DTE vsEnvironment = (DTE)GetService(typeof(SDTE));
+
+                if (false) { // test to retrieve asm dude properties
+                    EnvDTE.Properties asmDudePropertiesList = vsEnvironment.get_Properties("AsmDude", "Asm Documentation");
+                    if (asmDudePropertiesList != null) {
+                        string url = asmDudePropertiesList.Item("_asmDocUrl").Value as string;
+                        AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete. url=", this.ToString(), url));
+                    }
+                }
+                if (false) {
+                    EnvDTE.Properties propertiesList = vsEnvironment.get_Properties("TextEditor", "Basic");
+                    if (propertiesList != null) {
+
+                        Property tabSize = propertiesList.Item("TabSize");
+                        short oldSize = (short)tabSize.Value;
+
+                        string message;
+                        if (oldSize != 4) {
+                            tabSize.Value = 4;
+                            message = string.Format(CultureInfo.CurrentUICulture,
+                                "For Basic, the Text Editor had a tab size of {0}" +
+                                " and now has a tab size of {1}.", oldSize, tabSize.Value);
+                        } else {
+                            message = string.Format(CultureInfo.CurrentUICulture,
+                                "For Basic, the Text Editor has a tab size of {0}.", tabSize.Value);
+                        }
+                        AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, message));
+                    }
+                }
+                if (false) {
+                    //EnvDTE.Properties propertiesList = vsEnvironment.get_Properties("Environment", "Keyboard");
+                    //EnvDTE.Property prop = propertiesList.Item("Scheme");
+                    //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString(), prop.Value));
+
+                    EnvDTE.Properties propertiesList = vsEnvironment.get_Properties("Environment", "FontsAndColors");
+                    if (propertiesList != null) {
+                        AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString()));
+                    }
+                    //EnvDTE.Property prop = propertiesList.Item("Scheme");
+                    //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString(), prop.Value));
+                }
+                if (true) {
+                    //EnvDTE.Properties propertiesList = vsEnvironment.get_Properties("Environment", "Keyboard");
+                    //EnvDTE.Property prop = propertiesList.Item("Scheme");
+                    //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString(), prop.Value));
+
+                    EnvDTE.Properties propertiesList = vsEnvironment.get_Properties("Environment", "Fonts and Colors");
+                    if (propertiesList != null) {
+                        AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString()));
+                    }
+                    //EnvDTE.Property prop = propertiesList.Item("Scheme");
+                    //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString(), prop.Value));
+                }
+
+
+
+            } catch (Exception e) {
+                AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "ERROR: {0}:changeFontAutoComplete {1}", this.ToString(), e.Message));
+            }
+        }
+        */
+        #endregion
+
+        #region Menus and Commands Actions
+        /*
+        private void initMenus() {
+            // Now get the OleCommandService object provided by the MPF; this object is the one
+            // responsible for handling the collection of commands implemented by the package.
+            OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+            if (null == mcs) {
+                AsmDudeToolsStatic.Output("WARNING: could not retrieve the IMenuCommandService.");
+            } else {
+                //AsmDudeToolsStatic.Output("INFO: retrieved the IMenuCommandService.");
+                // Now create one object derived from MenuCommand for each command defined in
+                // the VSCT file and add it to the command service.
+
+                // For each command we have to define its id that is a unique Guid/integer pair.
+                CommandID id = new CommandID(Guids.guidMenuAndCommandsCmdSet, PkgCmdIDList.cmdidMyCommand);
+                // Now create the OleMenuCommand object for this command. The EventHandler object is the
+                // function that will be called when the user will select the command.
+                OleMenuCommand command = new OleMenuCommand(new EventHandler(MenuCommandCallback), id);
+                // Add the command to the command service.
+                mcs.AddCommand(command);
+
+                
+                // Create the MenuCommand object for the command placed in the main toolbar.
+                id = new CommandID(Guids.guidMenuAndCommandsCmdSet, PkgCmdIDList.cmdidMyGraph);
+                command = new OleMenuCommand(new EventHandler(GraphCommandCallback), id);
+                mcs.AddCommand(command);
+
+                // Create the MenuCommand object for the command placed in our toolbar.
+                id = new CommandID(Guids.guidMenuAndCommandsCmdSet, PkgCmdIDList.cmdidMyZoom);
+                command = new OleMenuCommand(new EventHandler(ZoomCommandCallback), id);
+                mcs.AddCommand(command);
+
+                // Create the DynamicMenuCommand object for the command defined with the TextChanges
+                // flag.
+                id = new CommandID(Guids.guidMenuAndCommandsCmdSet, PkgCmdIDList.cmdidDynamicTxt);
+                command = new DynamicTextCommand(id, VsPackage.ResourceManager.GetString("DynamicTextBaseText"));
+                mcs.AddCommand(command);
+
+                // Now create two OleMenuCommand objects for the two commands with dynamic visibility
+                id = new CommandID(Guids.guidMenuAndCommandsCmdSet, PkgCmdIDList.cmdidDynVisibility1);
+                dynamicVisibilityCommand1 = new OleMenuCommand(new EventHandler(DynamicVisibilityCallback), id);
+                mcs.AddCommand(dynamicVisibilityCommand1);
+
+                id = new CommandID(Guids.guidMenuAndCommandsCmdSet, PkgCmdIDList.cmdidDynVisibility2);
+                dynamicVisibilityCommand2 = new OleMenuCommand(new EventHandler(DynamicVisibilityCallback), id);
+                // This command is the one that is invisible by default, so we have to set its visible
+                // property to false because the default value of this property for every object derived
+                // from MenuCommand is true.
+                dynamicVisibilityCommand2.Visible = false;
+                mcs.AddCommand(dynamicVisibilityCommand2);
+
+            }
+        }
+
+        /// <summary>
+        /// This function prints text on the debug ouput and on the generic pane of the 
+        /// Output window.
+        /// </summary>
+        /// <param name="text"></param>
+        private void OutputCommandString(string text) {
+            // Build the string to write on the debugger and Output window.
+            StringBuilder outputText = new StringBuilder();
+            outputText.Append(" ================================================\n");
+            outputText.AppendFormat("  MenuAndCommands: {0}\n", text);
+            outputText.Append(" ================================================\n\n");
+
+            IVsOutputWindowPane windowPane = (IVsOutputWindowPane)GetService(typeof(SVsGeneralOutputWindowPane));
+            if (null == windowPane) {
+                Debug.WriteLine("Failed to get a reference to the Output window General pane");
+                return;
+            }
+            if (Microsoft.VisualStudio.ErrorHandler.Failed(windowPane.OutputString(outputText.ToString()))) {
+                Debug.WriteLine("Failed to write on the Output window");
+            }
+        }
+
+        /// <summary>
+        /// Event handler called when the user selects the Sample command.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", MessageId = "Microsoft.Samples.VisualStudio.MenuCommands.MenuCommandsPackage.OutputCommandString(System.String)")]
+        private void MenuCommandCallback(object caller, EventArgs args) {
+            OutputCommandString("Sample Command Callback.");
+        }
+
+        /// <summary>
+        /// Event handler called when the user selects the Graph command.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", MessageId = "Microsoft.Samples.VisualStudio.MenuCommands.MenuCommandsPackage.OutputCommandString(System.String)")]
+        private void GraphCommandCallback(object caller, EventArgs args) {
+            OutputCommandString("Graph Command Callback.");
+        }
+
+        /// <summary>
+        /// Event handler called when the user selects the Zoom command.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", MessageId = "Microsoft.Samples.VisualStudio.MenuCommands.MenuCommandsPackage.OutputCommandString(System.String)")]
+        private void ZoomCommandCallback(object caller, EventArgs args) {
+            OutputCommandString("Zoom Command Callback.");
+        }
+
+        /// <summary>
+        /// Event handler called when the user selects one of the two menus with
+        /// dynamic visibility.
+        /// </summary>
+        private void DynamicVisibilityCallback(object caller, EventArgs args) {
+            // This callback is supposed to be called only from the two menus with dynamic visibility
+            // defined inside this package, so first we have to verify that the caller is correct.
+
+            // Check that the type of the caller is the expected one.
+            OleMenuCommand command = caller as OleMenuCommand;
+            if (null == command)
+                return;
+
+            // Now check the command set.
+            if (command.CommandID.Guid != Guids.guidMenuAndCommandsCmdSet)
+                return;
+
+            // This is one of our commands. Now what we want to do is to switch the visibility status
+            // of the two menus with dynamic visibility, so that if the user clicks on one, then this 
+            // will make it invisible and the other one visible.
+            if (command.CommandID.ID == PkgCmdIDList.cmdidDynVisibility1) {
+                // The user clicked on the first one; make it invisible and show the second one.
+                dynamicVisibilityCommand1.Visible = false;
+                dynamicVisibilityCommand2.Visible = true;
+            } else if (command.CommandID.ID == PkgCmdIDList.cmdidDynVisibility2) {
+                // The user clicked on the second one; make it invisible and show the first one.
+                dynamicVisibilityCommand2.Visible = false;
+                dynamicVisibilityCommand1.Visible = true;
+            }
+        }
+        */
+        #endregion
+
+        #region OptionPage getters
+        /*
+        public OptionsPageCodeCompletion OptionsPageCodeCompletion {
+            get {
+                return GetDialogPage(typeof(OptionsPageCodeCompletion)) as OptionsPageCodeCompletion;
+            }
+        }
+        public OptionsPageSyntaxHighlighting OptionsPageSyntaxHighlighting {
+            get {
+                return GetDialogPage(typeof(OptionsPageSyntaxHighlighting)) as OptionsPageSyntaxHighlighting;
+            }
+        }
+        public OptionsPageCodeFolding OptionsPageCodeFolding {
+            get {
+                return GetDialogPage(typeof(OptionsPageCodeFolding)) as OptionsPageCodeFolding;
+            }
+        }
+        public OptionsPageAsmDoc OptionsPageAsmDoc {
+            get {
+                return GetDialogPage(typeof(OptionsPageAsmDoc)) as OptionsPageAsmDoc;
+            }
+        }
+        public OptionsPageKeywordHighlighting OptionsPageKeywordHighlighting {
+            get {
+                return GetDialogPage(typeof(OptionsPageKeywordHighlighting)) as OptionsPageKeywordHighlighting;
+            }
+        }
+        */
+        #endregion
+    }
+}
