@@ -217,18 +217,6 @@ namespace AsmDude {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Cyan")]
-        public global::System.Drawing.Color KeywordHighlightColor {
-            get {
-                return ((global::System.Drawing.Color)(this["KeywordHighlightColor"]));
-            }
-            set {
-                this["KeywordHighlightColor"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool CodeFolding_IsDefaultCollapsed {
             get {
@@ -980,6 +968,18 @@ namespace AsmDude {
             }
             set {
                 this["ARCH_AES"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Magenta")]
+        public global::System.Drawing.Color KeywordHighlightColor {
+            get {
+                return ((global::System.Drawing.Color)(this["KeywordHighlightColor"]));
+            }
+            set {
+                this["KeywordHighlightColor"] = value;
             }
         }
     }

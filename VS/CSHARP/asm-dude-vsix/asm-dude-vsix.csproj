@@ -10,7 +10,8 @@
     </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>source.extension.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -276,12 +277,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CustomMoniker.vsct" />
-    <Content Include="PkgCmd.vsct">
-      <SubType>Designer</SubType>
-      <Generator>VsctGenerator</Generator>
-      <LastGenOutput>PkgCmd.cs</LastGenOutput>
-    </Content>
+    <Resource Include="AsmDudePackage.ico" />
     <Content Include="Resources\AsmDudeData.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -308,9 +304,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Resource Include="source.extension.ico">
-      <DependentUpon>source.extension.vsixmanifest</DependentUpon>
-    </Resource>
     <Resource Include="Resources\images\icon-D.png" />
     <Resource Include="Resources\images\icon-I.png" />
     <Content Include="Resources\images\icon-L.png">
@@ -362,21 +355,11 @@
     <Compile Include="BraceMatching\BraceMatchingTaggerProvider.cs" />
     <Compile Include="ErrorSquiggles\LabelErrorTagger.cs" />
     <Compile Include="ErrorSquiggles\LabelErrorTaggerProvider.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Experimental\LightBulb\AsmLightBulb.cs" />
     <Compile Include="Experimental\Menu\DynamicTextCommand.cs" />
     <Compile Include="Experimental\Menu\PkgCmdId.cs" />
     <Compile Include="OptionsPage\AsmDudeOptionsPage.cs">
       <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="PkgCmd.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>PkgCmd.vsct</DependentUpon>
-    </Compile>
-    <Compile Include="Settings.cs" />
-    <Compile Include="source.extension.cs">
-      <DependentUpon>source.extension.vsixmanifest</DependentUpon>
     </Compile>
     <Compile Include="SyntaxHighlighting\AsmClassificationDefinition.cs" />
     <Compile Include="SyntaxHighlighting\AsmClassifierProvider.cs" />
@@ -404,15 +387,10 @@
     <Compile Include="Tools\ILabelGraph.cs" />
     <Compile Include="Tools\LabelGraph.cs" />
     <Compile Include="Tools\MnemonicStore.cs" />
-    <Compile Include="VsPackage.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>VsPackage.resx</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="CustomMoniker.imagemanifest" />
+    <None Include="Key.snk" />
     <None Include="packages.config" />
     <None Include="Resources\inc\example.inc" />
     <None Include="Settings.settings">
@@ -426,17 +404,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="source.extension.resx">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>source.extension.vsixmanifest</DependentUpon>
-      <MergeWithCTO>true</MergeWithCTO>
-      <ManifestResourceName>VSPackage</ManifestResourceName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="VsPackage.resx">
+    <EmbeddedResource Include="VSPackage.resx">
       <SubType>Designer</SubType>
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>VsPackage.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

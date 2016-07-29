@@ -54,7 +54,8 @@ namespace AsmDude
         {
             get
             {
-                return string.Format(CultureInfo.CurrentCulture, VsPackage.ResourceManager.GetString("DynamicTextFormat"), base.Text, clickCount);
+                //return string.Format(CultureInfo.CurrentCulture, VsPackage.ResourceManager.GetString("DynamicTextFormat"), base.Text, clickCount);
+                return "";
             }
             set { base.Text = value; }
         }
