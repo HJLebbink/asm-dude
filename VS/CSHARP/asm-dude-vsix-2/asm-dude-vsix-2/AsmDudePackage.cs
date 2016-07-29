@@ -5,16 +5,12 @@
 //------------------------------------------------------------------------------
 
 using System;
-using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.Win32;
 using AsmDude.OptionsPage;
 using System.Text;
 using AsmDude.Tools;
@@ -39,10 +35,15 @@ namespace AsmDude
     /// </para>
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true)]
-    [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
+    [InstalledProductRegistration("#110", "#112", "1.1", IconResourceID = 400)] // Info on this package for Help/About
+
+
+    [ProvideMenuResource("Menus.ctmenu", 1)] // needed when showing menus
+    [ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
     [Guid(AsmDudePackage.PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
 
+    //[ComVisible(false)]
     [ProvideOptionPage(typeof(AsmDudeOptionsPage), "AsmDude", "General", 0, 0, true)]
 
     public sealed class AsmDudePackage : Package
@@ -89,7 +90,7 @@ namespace AsmDude
             StringBuilder sb = new StringBuilder();
             sb.Append("Welcome to\n");
             sb.Append(" _____           ____        _     \n");
-            sb.Append("|  _  |___ _____|    \\ _ _ _| |___\n");
+            sb.Append("|  _  |___ _____|    \\ _ _ _| |___ \n");
             sb.Append("|     |_ -|     |  |  | | | . | -_|\n");
             sb.Append("|__|__|___|_|_|_|____/|___|___|___|\n");
             sb.Append("INFO: Loaded AsmDude version " + typeof(AsmDudePackage).Assembly.GetName().Version + " (" + ApplicationInformation.CompileDate.ToString() + ")\n");

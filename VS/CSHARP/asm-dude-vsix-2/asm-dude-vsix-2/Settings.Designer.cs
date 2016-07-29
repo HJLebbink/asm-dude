@@ -217,7 +217,7 @@ namespace AsmDude {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Yellow")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Magenta")]
         public global::System.Drawing.Color KeywordHighlightColor {
             get {
                 return ((global::System.Drawing.Color)(this["KeywordHighlightColor"]));

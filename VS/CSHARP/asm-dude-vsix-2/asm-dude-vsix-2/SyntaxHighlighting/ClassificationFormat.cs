@@ -30,8 +30,8 @@ namespace AsmDude {
     [Export(typeof(EditorFormatDefinition))] // export as EditorFormatDefinition otherwise the syntax coloring does not work
     [ClassificationType(ClassificationTypeNames = "mnemonic")]
     [Name("mnemonic")]  //this should be visible to the end user
-    [UserVisible(true)] //set the priority to be after the default classifiers
-    [Order(Before = Priority.Default)]
+    [UserVisible(true)] // sets this editor format definition visible for the user (in Tools>Options>Environment>Fonts and Colors>Text Editor
+    [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
     internal sealed class OpcodeP : ClassificationFormatDefinition {
         
         public OpcodeP() {
@@ -44,8 +44,8 @@ namespace AsmDude {
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = "register")]
     [Name("register")] //this should be visible to the end user
-    [UserVisible(true)] //set the priority to be after the default classifiers
-    [Order(Before = Priority.Default)]
+    [UserVisible(true)] // sets this editor format definition visible for the user (in Tools>Options>Environment>Fonts and Colors>Text Editor
+    [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
     internal sealed class RegisterP : ClassificationFormatDefinition {
         public RegisterP() {
             DisplayName = "AsmDude - Syntax Highlighting - Register"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
@@ -56,8 +56,8 @@ namespace AsmDude {
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = "remark")]
     [Name("remark")] //this should be visible to the end user
-    [UserVisible(true)] //set the priority to be after the default classifiers
-    [Order(Before = Priority.Default)]
+    [UserVisible(true)] // sets this editor format definition visible for the user (in Tools>Options>Environment>Fonts and Colors>Text Editor
+    [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
     internal sealed class RemarkP : ClassificationFormatDefinition {
         public RemarkP() {
             DisplayName = "AsmDude - Syntax Highlighting - Remark"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
@@ -69,8 +69,8 @@ namespace AsmDude {
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = "directive")]
     [Name("directive")] //this should be visible to the end user
-    [UserVisible(true)] //set the priority to be after the default classifiers
-    [Order(Before = Priority.Default)]
+    [UserVisible(true)] // sets this editor format definition visible for the user (in Tools>Options>Environment>Fonts and Colors>Text Editor
+    [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
     internal sealed class DirectiveP : ClassificationFormatDefinition {
         public DirectiveP() {
             DisplayName = "AsmDude - Syntax Highlighting - Directive"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
@@ -82,8 +82,8 @@ namespace AsmDude {
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = "jump")]
     [Name("jump")] //this should be visible to the end user
-    [UserVisible(true)] //set the priority to be after the default classifiers
-    [Order(Before = Priority.Default)]
+    [UserVisible(true)] // sets this editor format definition visible for the user (in Tools>Options>Environment>Fonts and Colors>Text Editor
+    [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
     internal sealed class JumpP : ClassificationFormatDefinition {
         public JumpP() {
             DisplayName = "AsmDude - Syntax Highlighting - Jump"; //human readable version of the name
@@ -94,8 +94,8 @@ namespace AsmDude {
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = "label")]
     [Name("label")] //this should be visible to the end user
-    [UserVisible(true)] //set the priority to be after the default classifiers
-    [Order(Before = Priority.Default)]
+    [UserVisible(true)] // sets this editor format definition visible for the user (in Tools>Options>Environment>Fonts and Colors>Text Editor
+    [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
     internal sealed class LabelP : ClassificationFormatDefinition {
         public LabelP() {
             DisplayName = "AsmDude - Syntax Highlighting - Label"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
@@ -107,8 +107,8 @@ namespace AsmDude {
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = "labelDef")]
     [Name("labelDef")] //this should be visible to the end user
-    [UserVisible(true)] //set the priority to be after the default classifiers
-    [Order(Before = Priority.Default)]
+    [UserVisible(true)] // sets this editor format definition visible for the user (in Tools>Options>Environment>Fonts and Colors>Text Editor
+    [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
     internal sealed class LabelDefP : ClassificationFormatDefinition {
         public LabelDefP() {
             DisplayName = "AsmDude - Syntax Highlighting - Label Definition"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
@@ -120,8 +120,8 @@ namespace AsmDude {
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = "constant")]
     [Name("constant")] //this should be visible to the end user
-    [UserVisible(true)] //set the priority to be after the default classifiers
-    [Order(Before = Priority.Default)]
+    [UserVisible(true)] // sets this editor format definition visible for the user (in Tools>Options>Environment>Fonts and Colors>Text Editor
+    [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
     internal sealed class ConstantP : ClassificationFormatDefinition {
         public ConstantP() {
             DisplayName = "AsmDude - Syntax Highlighting - Constant"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
@@ -132,8 +132,8 @@ namespace AsmDude {
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = "misc")]
     [Name("misc")] //this should be visible to the end user
-    [UserVisible(true)] //set the priority to be after the default classifiers
-    [Order(Before = Priority.Default)]
+    [UserVisible(true)] // sets this editor format definition visible for the user (in Tools>Options>Environment>Fonts and Colors>Text Editor
+    [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
     internal sealed class MiscP : ClassificationFormatDefinition {
         public MiscP() {
             DisplayName = "AsmDude - Syntax Highlighting - Misc"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
