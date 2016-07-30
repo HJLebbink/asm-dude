@@ -38,7 +38,7 @@ namespace AsmDude
     [InstalledProductRegistration("#110", "#112", "1.1", IconResourceID = 400)] // Info on this package for Help/About
 
 
-    [ProvideMenuResource("Menus.ctmenu", 1)] // needed when showing menus
+    //[ProvideMenuResource("Menus.ctmenu", 1)] // needed when showing menus
     [ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
     [Guid(AsmDudePackage.PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
