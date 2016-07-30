@@ -1,4 +1,4 @@
-// The MIT License (MIT)
+﻿// The MIT License (MIT)
 //
 // Copyright (c) 2016 Henk-Jan Lebbink
 // 
@@ -34,20 +34,21 @@ using AsmDude.Tools;
 namespace AsmDude {
 
     [PackageRegistration(UseManagedResourcesOnly = true)]
-    [InstalledProductRegistration("#110", "#112", "1.1", IconResourceID = 400)] // Info on this package for Help/About
+    [InstalledProductRegistration("#110", "#112", Vsix.Version, IconResourceID = 400)] // Info on this package for Help/About
 
-    //[ProvideMenuResource("Menus.ctmenu", 1001)] // needed when showing menus
+    //[ProvideMenuResource("Menus.ctmenu", 1)] // needed when showing menus
     [ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
     [Guid(PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
 
-    [ComVisible(false)]
-    
+	[ComVisible(false)]
+
     [ProvideOptionPage(typeof(AsmDudeOptionsPage), "AsmDude", "General", 0, 0, true)]
     //[ProvideProfile(typeof(AsmDudeOptionsPage), "AsmDude", "General", 100, 104, isToolsOptionPage: false, DescriptionResourceID = 100)]
 
     public sealed class AsmDudePackage : Package {
 
+	
         #region Global Constants
         public const string PackageGuidString = "27e0e7ef-ecaf-4b87-a574-6a909383f99f";
 
@@ -64,7 +65,7 @@ namespace AsmDude {
             //AsmDudeToolsStatic.Output("INFO: AsmDudePackage: Entering constructor");
         }
 
-		#region Package Members
+        #region Package Members
 
         protected override void Initialize() {
             base.Initialize();
@@ -74,10 +75,10 @@ namespace AsmDude {
             StringBuilder sb = new StringBuilder();
             sb.Append("Welcome to\n");
             sb.Append(" _____           ____        _     \n");
-            sb.Append("|  _  |___ _____|    \\ _ _ _| |___\n");
+            sb.Append("|  _  |___ _____|    \\ _ _ _| |___ \n");
             sb.Append("|     |_ -|     |  |  | | | . | -_|\n");
             sb.Append("|__|__|___|_|_|_|____/|___|___|___|\n");
-            sb.Append("INFO: Loaded AsmDude version " + typeof(AsmDudePackage).Assembly.GetName().Version +" ("+ ApplicationInformation.CompileDate.ToString()+")\n");
+            sb.Append("INFO: Loaded AsmDude version " + typeof(AsmDudePackage).Assembly.GetName().Version + " (" + ApplicationInformation.CompileDate.ToString() + ")\n");
             sb.Append("INFO: Open source assembly extension. Making programming in assembler bearable.\n");
             sb.Append("INFO: More info at https://github.com/HJLebbink/asm-dude \n");
             sb.Append("----------------------------------");
@@ -93,7 +94,7 @@ namespace AsmDude {
         /// https://msdn.microsoft.com/en-us/library/bb166382.aspx
         /// </summary>
         /// 
-        
+
         /*
         private void changeFontAutoComplete() {
             // experiments to change the font of the autocomplate

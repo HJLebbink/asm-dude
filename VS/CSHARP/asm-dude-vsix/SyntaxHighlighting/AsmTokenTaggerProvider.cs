@@ -38,7 +38,10 @@ namespace AsmDude {
     internal sealed class AsmTokenTagProvider : ITaggerProvider {
 
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag {
-            Func<ITagger<T>> sc = delegate () {
+
+            AsmDudeToolsStatic.Output("INFO: AsmTokenTagProvider:CreateTagger");
+
+            Func <ITagger<T>> sc = delegate () {
                 switch (AsmDudeToolsStatic.usedAssembler) {
                     case AssemblerEnum.MASM: return new MasmTokenTagger(buffer) as ITagger<T>;
                     case AssemblerEnum.NASM: return new NasmTokenTagger(buffer) as ITagger<T>;
