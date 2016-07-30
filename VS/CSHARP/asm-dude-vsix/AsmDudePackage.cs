@@ -1,29 +1,46 @@
+// The MIT License (MIT)
+//
+// Copyright (c) 2016 Henk-Jan Lebbink
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+using System;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using System;
-using System.Runtime.InteropServices;
-using System.Diagnostics;
-using System.Globalization;
-using System.Text;
-
-using AsmDude.Tools;
 using AsmDude.OptionsPage;
-using EnvDTE;
+using System.Text;
+using AsmDude.Tools;
 
 namespace AsmDude {
 
-    /// <summary>
-    /// This class implements a Visual Studio package that is registered for the Visual Studio IDE.
-    /// The package class uses a number of registration attributes to specify integration parameters.
-    /// </summary>
-
     [PackageRegistration(UseManagedResourcesOnly = true)]
-//    [InstalledProductRegistration("AsmDude", Vsix.Description, Vsix.Version)] // for the help about information
     [InstalledProductRegistration("#110", "#112", "1.1", IconResourceID = 400)] // Info on this package for Help/About
 
-    [ProvideMenuResource("Menus.ctmenu", 1001)] // needed when showing menus
+    //[ProvideMenuResource("Menus.ctmenu", 1001)] // needed when showing menus
     [ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
-    [Guid(Guids.GuidPackage_str)]
+    [Guid(PackageGuidString)]
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
+
     [ComVisible(false)]
     
     [ProvideOptionPage(typeof(AsmDudeOptionsPage), "AsmDude", "General", 0, 0, true)]
@@ -32,6 +49,7 @@ namespace AsmDude {
     public sealed class AsmDudePackage : Package {
 
         #region Global Constants
+        public const string PackageGuidString = "27e0e7ef-ecaf-4b87-a574-6a909383f99f";
 
         internal const string AsmDudeContentType = "asm!";
         internal const double slowWarningThresholdSec = 0.4; // threshold to warn that actions are considered slow
@@ -46,10 +64,8 @@ namespace AsmDude {
             //AsmDudeToolsStatic.Output("INFO: AsmDudePackage: Entering constructor");
         }
 
-        /// <summary>
-        /// Initialization of the package. This is where you should put all initialization
-        /// code that depends on VS services.
-        /// </summary>
+		#region Package Members
+
         protected override void Initialize() {
             base.Initialize();
             //this.initMenus();
@@ -67,6 +83,8 @@ namespace AsmDude {
             sb.Append("----------------------------------");
             AsmDudeToolsStatic.Output(sb.ToString());
         }
+
+        #endregion
 
         #region Font Change Experiments
         /// <summary>

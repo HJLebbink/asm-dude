@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2016 H.J. Lebbink
+// Copyright (c) 2016 Henk-Jan Lebbink
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,14 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-//
 [assembly: AssemblyTitle("AsmDude")]
 [assembly: AssemblyDescription("AsmDude")]
 [assembly: AssemblyConfiguration("")]
@@ -46,8 +44,7 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-//[assembly: AssemblyVersion(Vsix.Version)]
-//[assembly: AssemblyFileVersion(Vsix.Version)]
+// [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
@@ -58,4 +55,5 @@ using System.Runtime.InteropServices;
 
 // Mark the assembly as not CLSCompliant
 //[assembly: System.CLSCompliant(false)]
+[assembly: Guid("c729d6b2-f412-49ed-893d-a8f61f25db98")]
 
