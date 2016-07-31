@@ -397,6 +397,7 @@ namespace AsmDude {
 
         public void Dispose() {
             this._errorListProvider.Dispose();
+            this._smartThreadPool.Dispose();
         }
 
         #endregion
