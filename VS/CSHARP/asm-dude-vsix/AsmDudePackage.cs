@@ -41,14 +41,13 @@ namespace AsmDude {
     [Guid(PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
 
-	[ComVisible(false)]
+    [ComVisible(false)]
 
     [ProvideOptionPage(typeof(AsmDudeOptionsPage), "AsmDude", "General", 0, 0, true)]
     //[ProvideProfile(typeof(AsmDudeOptionsPage), "AsmDude", "General", 100, 104, isToolsOptionPage: false, DescriptionResourceID = 100)]
 
     public sealed class AsmDudePackage : Package {
 
-	
         #region Global Constants
         public const string PackageGuidString = "27e0e7ef-ecaf-4b87-a574-6a909383f99f";
 
