@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude.SignatureHelp;
 using AsmDude.Tools;
 using AsmTools;
 using Microsoft.VisualStudio;
@@ -31,10 +30,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Windows;
-using System.Windows.Controls;
 
-namespace AsmDude.OptionsPage {
+namespace AsmDude.OptionsPage
+{
 
     [Guid(Guids.GuidOptionsPageAsmDude)]
     public class AsmDudeOptionsPage : UIElementDialogPage {
