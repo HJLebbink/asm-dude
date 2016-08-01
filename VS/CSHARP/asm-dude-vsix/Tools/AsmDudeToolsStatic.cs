@@ -263,7 +263,7 @@ namespace AsmDude.Tools {
             } else {
                 Guid paneGuid = Microsoft.VisualStudio.VSConstants.OutputWindowPaneGuid.GeneralPane_guid;
                 IVsOutputWindowPane pane;
-                outputWindow.CreatePane(paneGuid, "AsmDude", 1, 0);
+                outputWindow.CreatePane(paneGuid, "Asm Dude", 1, 0);
                 outputWindow.GetPane(paneGuid, out pane);
                 pane.OutputString(msg2);
                 pane.Activate();

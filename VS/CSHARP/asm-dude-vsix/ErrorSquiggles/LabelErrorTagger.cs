@@ -243,8 +243,8 @@ namespace AsmDude.ErrorSquiggles {
                                 }
                             }
                             if (errorExists) {
-                                this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
                                 this._errorListProvider.Refresh();
+                                this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
                             }
                         }
                         #endregion Update Error Tasks

@@ -92,8 +92,6 @@ namespace AsmDude.Tools {
 
             this._buffer.ChangedLowPriority += this.BufferChanged;
             this.reset_Delayed();
-
-            this.addInfoToErrorTask();
         }
 
         public int getLinenumber(uint id) {
@@ -291,29 +289,6 @@ namespace AsmDude.Tools {
         #endregion Public Methods
 
         #region Private Methods
-
-        private void addInfoToErrorTask() {
-            //TODO this method should not be here
-            string msg = "Is the Tools>Options>AsmDude options pane not visible? Disable and enable this plugin to make it visible again...";
-
-            bool alreadyPresent = false;
-            foreach (ErrorTask task in this._errorListProvider.Tasks) {
-                if (task.Text.Equals(msg)) {
-                    alreadyPresent = true;
-                    break;
-                }
-            }
-            if (!alreadyPresent) {
-                ErrorTask errorTask = new ErrorTask();
-                errorTask.SubcategoryIndex = (int)AsmErrorEnum.OTHER;
-                errorTask.Text = msg;
-                errorTask.ErrorCategory = TaskErrorCategory.Message;
-                this._errorListProvider.Tasks.Add(errorTask);
-
-                this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
-                this._errorListProvider.Refresh();
-            }
-        }
 
         private void disable() {
             string msg = string.Format("Performance of LabelGraph is horrible: disabling label analysis for {0}.", this._thisFilename);
