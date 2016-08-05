@@ -24,44 +24,57 @@ using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 
-namespace AsmDude.SyntaxHighlighting {
-
-    internal static class AsmClassificationDefinition {
+namespace AsmDude.SyntaxHighlighting
+{
+    internal static class AsmClassificationDefinition
+    {
+        internal static class ClassificationTypeNames
+        {
+            public const string Mnemonic = "mnemonic-D74860FA-F0BC-4441-9D76-DF4ECB19CF71";
+            public const string Register = "register-D74860FA-F0BC-4441-9D76-DF4ECB19CF71";
+            public const string Remark = "remark-D74860FA-F0BC-4441-9D76-DF4ECB19CF71";
+            public const string Directive = "directive-D74860FA-F0BC-4441-9D76-DF4ECB19CF71";
+            public const string Constant = "constant-D74860FA-F0BC-4441-9D76-DF4ECB19CF71";
+            public const string Jump = "jump-D74860FA-F0BC-4441-9D76-DF4ECB19CF71";
+            public const string Label = "label-D74860FA-F0BC-4441-9D76-DF4ECB19CF71";
+            public const string LabelDef = "labelDef-D74860FA-F0BC-4441-9D76-DF4ECB19CF71";
+            public const string Misc = "misc-D74860FA-F0BC-4441-9D76-DF4ECB19CF71";
+        }
 
         [Export(typeof(ClassificationTypeDefinition))]
-        [Name("mnemonic")]
+        [Name(ClassificationTypeNames.Mnemonic)]
         internal static ClassificationTypeDefinition mnemonic = null;
 
         [Export(typeof(ClassificationTypeDefinition))]
-        [Name("register")]
+        [Name(ClassificationTypeNames.Register)]
         internal static ClassificationTypeDefinition register = null;
 
         [Export(typeof(ClassificationTypeDefinition))]
-        [Name("remark")]
+        [Name(ClassificationTypeNames.Remark)]
         internal static ClassificationTypeDefinition remark = null;
 
         [Export(typeof(ClassificationTypeDefinition))]
-        [Name("directive")]
+        [Name(ClassificationTypeNames.Directive)]
         internal static ClassificationTypeDefinition directive = null;
 
         [Export(typeof(ClassificationTypeDefinition))]
-        [Name("constant")]
+        [Name(ClassificationTypeNames.Constant)]
         internal static ClassificationTypeDefinition constant = null;
 
         [Export(typeof(ClassificationTypeDefinition))]
-        [Name("jump")]
+        [Name(ClassificationTypeNames.Jump)]
         internal static ClassificationTypeDefinition jump = null;
 
         [Export(typeof(ClassificationTypeDefinition))]
-        [Name("label")]
+        [Name(ClassificationTypeNames.Label)]
         internal static ClassificationTypeDefinition label = null;
 
         [Export(typeof(ClassificationTypeDefinition))]
-        [Name("labelDef")]
+        [Name(ClassificationTypeNames.LabelDef)]
         internal static ClassificationTypeDefinition labelDef = null;
 
         [Export(typeof(ClassificationTypeDefinition))]
-        [Name("misc")]
+        [Name(ClassificationTypeNames.Misc)]
         internal static ClassificationTypeDefinition misc = null;
     }
 }

@@ -57,15 +57,15 @@ namespace AsmDude {
             this._buffer = buffer;
             this._aggregator = asmTagAggregator;
 
-            this._mnemonic = new ClassificationTag(typeService.GetClassificationType("mnemonic"));
-            this._register = new ClassificationTag(typeService.GetClassificationType("register"));
-            this._remark = new ClassificationTag(typeService.GetClassificationType("remark"));
-            this._directive = new ClassificationTag(typeService.GetClassificationType("directive"));
-            this._constant = new ClassificationTag(typeService.GetClassificationType("constant"));
-            this._jump = new ClassificationTag(typeService.GetClassificationType("jump"));
-            this._label = new ClassificationTag(typeService.GetClassificationType("label"));
-            this._labelDef = new ClassificationTag(typeService.GetClassificationType("labelDef"));
-            this._misc = new ClassificationTag(typeService.GetClassificationType("misc"));
+            this._mnemonic = new ClassificationTag(typeService.GetClassificationType(AsmClassificationDefinition.ClassificationTypeNames.Mnemonic));
+            this._register = new ClassificationTag(typeService.GetClassificationType(AsmClassificationDefinition.ClassificationTypeNames.Register));
+            this._remark = new ClassificationTag(typeService.GetClassificationType(AsmClassificationDefinition.ClassificationTypeNames.Remark));
+            this._directive = new ClassificationTag(typeService.GetClassificationType(AsmClassificationDefinition.ClassificationTypeNames.Directive));
+            this._constant = new ClassificationTag(typeService.GetClassificationType(AsmClassificationDefinition.ClassificationTypeNames.Constant));
+            this._jump = new ClassificationTag(typeService.GetClassificationType(AsmClassificationDefinition.ClassificationTypeNames.Jump));
+            this._label = new ClassificationTag(typeService.GetClassificationType(AsmClassificationDefinition.ClassificationTypeNames.Label));
+            this._labelDef = new ClassificationTag(typeService.GetClassificationType(AsmClassificationDefinition.ClassificationTypeNames.LabelDef));
+            this._misc = new ClassificationTag(typeService.GetClassificationType(AsmClassificationDefinition.ClassificationTypeNames.Misc));
         }
 
         event EventHandler<SnapshotSpanEventArgs> ITagger<ClassificationTag>.TagsChanged {
