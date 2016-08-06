@@ -30,17 +30,21 @@ using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 
-namespace AsmDude.AsmDoc {
-
+namespace AsmDude.AsmDoc
+{
     #region Classification type/format exports
 
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = "UnderlineClassification")]
-    [Name("UnderlineClassificationFormat")]
+    [ClassificationType(ClassificationTypeNames = ClassificationTypeNames.Underline)]
+    [Name("AsmDude-UnderlineClassificationFormat")]
     [UserVisible(true)]
     [Order(After = Priority.High)]
     internal sealed class UnderlineFormatDefinition : ClassificationFormatDefinition
     {
+        internal static class ClassificationTypeNames
+        {
+            public const string Underline = "UnderlineClassification-D74860FA-F0BC-4441-9D76-DF4ECB19CF71";
+        }
         public UnderlineFormatDefinition()
         {
             this.DisplayName = "AsmDude - Documentation Link";
@@ -53,21 +57,23 @@ namespace AsmDude.AsmDoc {
 
     #region Provider definition
     [Export(typeof(IViewTaggerProvider))]
-    [ContentType("text")]
     [TagType(typeof(ClassificationTag))]
+    [Name("AsmDude-UnderlineClassifierProvider")]
+    [ContentType(AsmDudePackage.AsmDudeContentType)]
     internal class UnderlineClassifierProvider : IViewTaggerProvider
     {
         [Import]
         internal IClassificationTypeRegistryService ClassificationRegistry = null;
 
         [Export(typeof(ClassificationTypeDefinition))]
-        [Name("UnderlineClassification")]
+        [Name(UnderlineFormatDefinition.ClassificationTypeNames.Underline)]
         internal static ClassificationTypeDefinition underlineClassificationType = null;
 
         static IClassificationType UnderlineClassification;
         public static UnderlineClassifier GetClassifierForView(ITextView view)
         {
-            if (UnderlineClassification == null) {
+            if (UnderlineClassification == null)
+            {
                 return null;
             }
             return view.Properties.GetOrCreateSingletonProperty(() => new UnderlineClassifier(view, UnderlineClassification));
@@ -75,10 +81,12 @@ namespace AsmDude.AsmDoc {
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
-            if (UnderlineClassification == null) {
+            if (UnderlineClassification == null)
+            {
                 UnderlineClassification = ClassificationRegistry.GetClassificationType("UnderlineClassification");
             }
-            if (textView.TextBuffer != buffer) {
+            if (textView.TextBuffer != buffer)
+            {
                 return null;
             }
             return GetClassifierForView(textView) as ITagger<T>;
@@ -86,12 +94,14 @@ namespace AsmDude.AsmDoc {
     }
     #endregion
 
-    internal sealed class UnderlineClassifier : ITagger<ClassificationTag> {
+    internal sealed class UnderlineClassifier : ITagger<ClassificationTag>
+    {
         private readonly IClassificationType _classificationType;
         private readonly ITextView _textView;
         private SnapshotSpan? _underlineSpan;
 
-        internal UnderlineClassifier(ITextView textView, IClassificationType classificationType) {
+        internal UnderlineClassifier(ITextView textView, IClassificationType classificationType)
+        {
             _textView = textView;
             _classificationType = classificationType;
             _underlineSpan = null;
@@ -99,9 +109,11 @@ namespace AsmDude.AsmDoc {
 
         #region Private helpers
 
-        void SendEvent(SnapshotSpan span) {
+        void SendEvent(SnapshotSpan span)
+        {
             var temp = this.TagsChanged;
-            if (temp != null) {
+            if (temp != null)
+            {
                 temp(this, new SnapshotSpanEventArgs(span));
             }
         }
@@ -112,20 +124,28 @@ namespace AsmDude.AsmDoc {
 
         public SnapshotSpan? CurrentUnderlineSpan { get { return _underlineSpan; } }
 
-        public void SetUnderlineSpan(SnapshotSpan? span) {
+        public void SetUnderlineSpan(SnapshotSpan? span)
+        {
             var oldSpan = _underlineSpan;
             _underlineSpan = span;
 
-            if (!oldSpan.HasValue && !_underlineSpan.HasValue) {
-                return;
-            } else if (oldSpan.HasValue && _underlineSpan.HasValue && oldSpan == _underlineSpan) {
+            if (!oldSpan.HasValue && !_underlineSpan.HasValue)
+            {
                 return;
             }
-            if (!_underlineSpan.HasValue) {
+            else if (oldSpan.HasValue && _underlineSpan.HasValue && oldSpan == _underlineSpan)
+            {
+                return;
+            }
+            if (!_underlineSpan.HasValue)
+            {
                 this.SendEvent(oldSpan.Value);
-            } else {
+            }
+            else
+            {
                 SnapshotSpan updateSpan = _underlineSpan.Value;
-                if (oldSpan.HasValue) {
+                if (oldSpan.HasValue)
+                {
                     updateSpan = new SnapshotSpan(updateSpan.Snapshot,
                         Span.FromBounds(Math.Min(updateSpan.Start, oldSpan.Value.Start),
                                         Math.Max(updateSpan.End, oldSpan.Value.End)));
@@ -136,13 +156,16 @@ namespace AsmDude.AsmDoc {
 
         #endregion
 
-        public IEnumerable<ITagSpan<ClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
-            if (!_underlineSpan.HasValue || (spans.Count == 0)) {
+        public IEnumerable<ITagSpan<ClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
+        {
+            if (!_underlineSpan.HasValue || (spans.Count == 0))
+            {
                 yield break;
             }
             SnapshotSpan request = new SnapshotSpan(spans[0].Start, spans[spans.Count - 1].End);
             SnapshotSpan underline = _underlineSpan.Value.TranslateTo(request.Snapshot, SpanTrackingMode.EdgeInclusive);
-            if (underline.IntersectsWith(request)) { 
+            if (underline.IntersectsWith(request))
+            {
                 yield return new TagSpan<ClassificationTag>(underline, new ClassificationTag(_classificationType));
             }
         }
