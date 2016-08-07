@@ -37,7 +37,7 @@ the outlining feature of the Visual Studio Code Editor. In longer code files, it
 collapse or hide one or more regions so that you can focus on the part of the file that you are currently 
 working on. 
 
-### Signature Help
+#### Signature Help
 Signature Help (also known as Parameter Info) displays the signature of a method in a tooltip when a user types the parameter list start character (eg in c++ an opening parenthesis). As a parameter and parameter separator (typically a comma) are typed, the tooltip is updated to show the next parameter in bold.
 
 TODO picture
