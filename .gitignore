@@ -29,3 +29,4 @@ _ReSharper*/
 [Tt]est[Rr]esult*
 VS/packages/*
 VS/CSHARP/asm-dude-vsix-2/packages/*
+*.dropbox.attr
