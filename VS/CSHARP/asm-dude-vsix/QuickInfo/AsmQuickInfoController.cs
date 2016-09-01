@@ -30,14 +30,14 @@ namespace AsmDude.QuickInfo {
     internal sealed class AsmQuickInfoController : IIntellisenseController {
 
         private readonly IList<ITextBuffer> _subjectBuffers;
-        private readonly AsmQuickInfoControllerProvider _componentContext;
+        private readonly IQuickInfoBroker _quickInfoBroker;
         private IQuickInfoSession _session;
         private ITextView _textView;
 
-        internal AsmQuickInfoController(ITextView textView, IList<ITextBuffer> subjectBuffers, AsmQuickInfoControllerProvider componentContext) {
+        internal AsmQuickInfoController(ITextView textView, IList<ITextBuffer> subjectBuffers, IQuickInfoBroker quickInfoBroker) {
             _textView = textView;
             _subjectBuffers = subjectBuffers;
-            _componentContext = componentContext;
+            _quickInfoBroker = quickInfoBroker;
             _textView.MouseHover += OnTextViewMouseHover;
         }
 
@@ -65,8 +65,8 @@ namespace AsmDude.QuickInfo {
                 ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(point.Value.Position, PointTrackingMode.Positive);
 
                 // Find the broker for this buffer
-                if (!this._componentContext._quickInfoBroker.IsQuickInfoActive(_textView)) {
-                    this._session = this._componentContext._quickInfoBroker.CreateQuickInfoSession(this._textView, triggerPoint, true);
+                if (!this._quickInfoBroker.IsQuickInfoActive(_textView)) {
+                    this._session = this._quickInfoBroker.CreateQuickInfoSession(this._textView, triggerPoint, true);
                     this._session.Start();
                 }
             }
