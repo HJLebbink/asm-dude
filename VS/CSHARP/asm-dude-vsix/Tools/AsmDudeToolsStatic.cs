@@ -261,7 +261,6 @@ namespace AsmDude.Tools {
             if (outputWindow == null) {
                 Debug.Write(msg2);
             } else {
-                //Guid paneGuid = Microsoft.VisualStudio.VSConstants.OutputWindowPaneGuid.GeneralPane_guid;
                 Guid paneGuid = new Guid("1188E5D2-96AA-4DD3-9ECF-BBD6657A43C9");
                 IVsOutputWindowPane pane;
                 outputWindow.CreatePane(paneGuid, "Asm Dude", 1, 0);
@@ -413,15 +412,15 @@ namespace AsmDude.Tools {
                 case Arch.TBM: return Settings.Default.ARCH_TBM;
                 case Arch.AMD: return Settings.Default.ARCH_AMD;
                 case Arch.CYRIX: return Settings.Default.ARCH_CYRIX;
-                case Arch.INVPCID: return false;
+                case Arch.INVPCID: return Settings.Default.ARCH_INVPCID;
                 case Arch.CYRIXM: return Settings.Default.ARCH_CYRIXM;
                 case Arch.VMX: return Settings.Default.ARCH_VMX;
                 case Arch.RTM: return Settings.Default.ARCH_RTM;
-                case Arch.HLE: return false;
+                case Arch.HLE: return Settings.Default.ARCH_HLE;
                 case Arch.MPX: return Settings.Default.ARCH_MPX;
                 case Arch.SHA: return Settings.Default.ARCH_SHA;
-                case Arch.UNDOC: return false;
-                case Arch.PREFETCHWT1: return false;
+                case Arch.UNDOC: return Settings.Default.ARCH_UNDOC;
+                case Arch.PREFETCHWT1: return Settings.Default.ARCH_PREFETCHWT1;
                 default:
                     Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:isArch2SwitchedOn; unsupported arch {0}", arch));
                     return false;

@@ -27,13 +27,14 @@ using Microsoft.VisualStudio.Utilities;
 using System;
 using System.ComponentModel.Composition;
 
-namespace AsmDude.SyntaxHighlighting {
-
+namespace AsmDude.SyntaxHighlighting
+{
     [Export(typeof(ITaggerProvider))]
+    [Name("AsmDude-AsmTaggerProvider")]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [TagType(typeof(ClassificationTag))]
-    internal sealed class AsmClassifierProvider : ITaggerProvider {
-
+    internal sealed class AsmTaggerProvider : ITaggerProvider
+    {
         [Export]
         [Name("asm!")]
         [BaseDefinition("code")]
@@ -60,8 +61,8 @@ namespace AsmDude.SyntaxHighlighting {
         [Import]
         private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
 
-        public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag {
-
+        public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
+        {
             Func<ITagger<T>> sc = delegate () {
                 Func<ITagAggregator<AsmTokenTag>> sc2 = delegate () {
                     return _aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);

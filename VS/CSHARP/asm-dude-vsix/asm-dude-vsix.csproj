@@ -151,8 +151,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AsmDoc\AsmDocClassifier.cs" />
+    <Compile Include="AsmDoc\AsmDocClassificationFormat.cs" />
+    <Compile Include="AsmDoc\AsmDocClassificationDefinition.cs" />
     <Compile Include="AsmDoc\AsmDocMouseHandler.cs" />
+    <Compile Include="AsmDoc\AsmDocUnderlineTagger.cs" />
+    <Compile Include="AsmDoc\AsmDocUnderlineTaggerProvider.cs" />
     <Compile Include="AsmDudePackage.cs" />
     <Compile Include="BraceMatching\BraceMatchingTagger.cs" />
     <Compile Include="BraceMatching\BraceMatchingTaggerProvider.cs" />
@@ -196,12 +199,12 @@
     <Compile Include="SignatureHelp\AsmSignatureHelpSource.cs" />
     <Compile Include="SignatureHelp\AsmSignatureHelpSourceProvider.cs" />
     <Compile Include="SyntaxHighlighting\AsmClassificationDefinition.cs" />
-    <Compile Include="SyntaxHighlighting\AsmClassifier.cs" />
-    <Compile Include="SyntaxHighlighting\AsmClassifierProvider.cs" />
+    <Compile Include="SyntaxHighlighting\AsmTagger.cs" />
+    <Compile Include="SyntaxHighlighting\AsmTaggerProvider.cs" />
     <Compile Include="SyntaxHighlighting\AsmTokenTag.cs" />
     <Compile Include="SyntaxHighlighting\AsmTokenTaggerProvider.cs" />
     <Compile Include="SyntaxHighlighting\AsmTokenTypes.cs" />
-    <Compile Include="SyntaxHighlighting\ClassificationFormat.cs" />
+    <Compile Include="SyntaxHighlighting\AsmClassificationFormat.cs" />
     <Compile Include="SyntaxHighlighting\MasmTokenTagger.cs" />
     <Compile Include="SyntaxHighlighting\NasmTokenTagger.cs" />
     <Compile Include="Tools\ApplicationInformation.cs" />

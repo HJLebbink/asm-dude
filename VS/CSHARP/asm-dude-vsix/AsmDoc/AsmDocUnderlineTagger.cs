@@ -20,87 +20,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Windows.Media;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
-using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
+using System;
+using System.Collections.Generic;
 
 namespace AsmDude.AsmDoc
 {
-    #region Classification type/format exports
-
-    [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = ClassificationTypeNames.Underline)]
-    [Name("AsmDude-UnderlineClassificationFormat")]
-    [UserVisible(true)]
-    [Order(After = Priority.High)]
-    internal sealed class UnderlineFormatDefinition : ClassificationFormatDefinition
-    {
-        internal static class ClassificationTypeNames
-        {
-            public const string Underline = "UnderlineClassification-D74860FA-F0BC-4441-9D76-DF4ECB19CF71";
-        }
-        public UnderlineFormatDefinition()
-        {
-            this.DisplayName = "AsmDude - Documentation Link";
-            this.TextDecorations = System.Windows.TextDecorations.Underline;
-            //this.ForegroundColor = Colors.Blue;
-        }
-    }
-
-    #endregion
-
-    #region Provider definition
-    [Export(typeof(IViewTaggerProvider))]
-    [TagType(typeof(ClassificationTag))]
-    [Name("AsmDude-UnderlineClassifierProvider")]
-    [ContentType(AsmDudePackage.AsmDudeContentType)]
-    internal class UnderlineClassifierProvider : IViewTaggerProvider
-    {
-        [Import]
-        internal IClassificationTypeRegistryService ClassificationRegistry = null;
-
-        [Export(typeof(ClassificationTypeDefinition))]
-        [Name(UnderlineFormatDefinition.ClassificationTypeNames.Underline)]
-        internal static ClassificationTypeDefinition underlineClassificationType = null;
-
-        static IClassificationType UnderlineClassification;
-        public static UnderlineClassifier GetClassifierForView(ITextView view)
-        {
-            if (UnderlineClassification == null)
-            {
-                return null;
-            }
-            return view.Properties.GetOrCreateSingletonProperty(() => new UnderlineClassifier(view, UnderlineClassification));
-        }
-
-        public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
-        {
-            if (UnderlineClassification == null)
-            {
-                UnderlineClassification = ClassificationRegistry.GetClassificationType("UnderlineClassification");
-            }
-            if (textView.TextBuffer != buffer)
-            {
-                return null;
-            }
-            return GetClassifierForView(textView) as ITagger<T>;
-        }
-    }
-    #endregion
-
-    internal sealed class UnderlineClassifier : ITagger<ClassificationTag>
+    internal sealed class AsmDocUnderlineTagger : ITagger<ClassificationTag>
     {
         private readonly IClassificationType _classificationType;
         private readonly ITextView _textView;
         private SnapshotSpan? _underlineSpan;
 
-        internal UnderlineClassifier(ITextView textView, IClassificationType classificationType)
+        internal AsmDocUnderlineTagger(ITextView textView, IClassificationType classificationType)
         {
             _textView = textView;
             _classificationType = classificationType;
@@ -132,16 +67,14 @@ namespace AsmDude.AsmDoc
             if (!oldSpan.HasValue && !_underlineSpan.HasValue)
             {
                 return;
-            }
-            else if (oldSpan.HasValue && _underlineSpan.HasValue && oldSpan == _underlineSpan)
+            } else if (oldSpan.HasValue && _underlineSpan.HasValue && oldSpan == _underlineSpan)
             {
                 return;
             }
             if (!_underlineSpan.HasValue)
             {
                 this.SendEvent(oldSpan.Value);
-            }
-            else
+            } else
             {
                 SnapshotSpan updateSpan = _underlineSpan.Value;
                 if (oldSpan.HasValue)

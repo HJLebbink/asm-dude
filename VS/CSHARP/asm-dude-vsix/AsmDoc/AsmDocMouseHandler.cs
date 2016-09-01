@@ -306,7 +306,7 @@ namespace AsmDude.AsmDoc {
 
         private SnapshotSpan? CurrentUnderlineSpan {
             get {
-                var classifier = UnderlineClassifierProvider.GetClassifierForView(_view);
+                var classifier = AsmDocUnderlineTaggerProvider.GetClassifierForView(_view);
                 if (classifier != null && classifier.CurrentUnderlineSpan.HasValue) {
                     return classifier.CurrentUnderlineSpan.Value.TranslateTo(_view.TextSnapshot, SpanTrackingMode.EdgeExclusive);
                 } else {
@@ -316,7 +316,7 @@ namespace AsmDude.AsmDoc {
         }
 
         private bool SetHighlightSpan(SnapshotSpan? span) {
-            var classifier = UnderlineClassifierProvider.GetClassifierForView(_view);
+            var classifier = AsmDocUnderlineTaggerProvider.GetClassifierForView(_view);
             if (classifier != null) {
                 Mouse.OverrideCursor = (span.HasValue) ? Cursors.Hand : null;
                 classifier.SetUnderlineSpan(span);

@@ -35,7 +35,6 @@ namespace AsmDude
     [Order(Before = Priority.High)] //set the priority to be after the default classifiers
     internal sealed class OpcodeP : ClassificationFormatDefinition
     {
-
         public OpcodeP()
         {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: Entering constructor for: {0}", this.ToString()));
