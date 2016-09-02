@@ -1,5 +1,5 @@
 # Asm-Dude
-Assembly syntax highlighting, code completion and folding for Visual Studio 2015. This extension can be found in the [visual studio extensions gallery](https://visualstudiogallery.msdn.microsoft.com/ff839577-2b68-416a-b761-72f9b1ca7c8e) or download latest installer [AsmDude.vsix (v1.7.0.7)](https://github.com/HJLebbink/asm-dude/releases/download/1.7.0.7/AsmDude.vsix). If assembly is too much of a hassle but you still want access to specific machine instructions, consider [Intrinsics-Dude](https://github.com/HJLebbink/intrinsics-dude).
+Assembly syntax highlighting, code completion and folding for Visual Studio 2015. This extension can be found in the [visual studio extensions gallery](https://visualstudiogallery.msdn.microsoft.com/ff839577-2b68-416a-b761-72f9b1ca7c8e) or download latest installer [AsmDude.vsix (v1.7.1.1)](https://github.com/HJLebbink/asm-dude/releases/download/1.7.1.1/AsmDude.vsix). If assembly is too much of a hassle but you still want access to specific machine instructions, consider [Intrinsics-Dude](https://github.com/HJLebbink/intrinsics-dude).
 
 ###Features
 
@@ -62,6 +62,9 @@ Studio will launch under the experimental hive.
 ###Currently in development:
 * Considering [Irony](https://irony.codeplex.com/) for proper parsing and error handling.
 * Considering [Z3](https://github.com/Z3Prover/z3) for proof tree induction to track propagation of register and flag state-change trough time.
+
+###Known Issues:
+* Incomplete descriptions. E.g. PMOVSX, the source [html](https://hjlebbink.github.io/x86doc/html/PMOVSX.html) has a split table and only the first table is used as source.
 
 ###Feature Requests: (desire something - let me know)
 * ~~Documentation for opcodes. Hit F12 to get full official documentation of the selected opcode~~.
