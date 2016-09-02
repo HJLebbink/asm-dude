@@ -63,6 +63,9 @@ Studio will launch under the experimental hive.
 * Considering [Irony](https://irony.codeplex.com/) for proper parsing and error handling.
 * Considering [Z3](https://github.com/Z3Prover/z3) for proof tree induction to track propagation of register and flag state-change trough time.
 
+###Known Issues:
+* Incomplete descriptions. E.g. PMOVSX, the source [html](https://hjlebbink.github.io/x86doc/html/PMOVSX.html) has a split table and only the first table is used for as source.
+
 ###Feature Requests: (desire something - let me know)
 * ~~Documentation for opcodes. Hit F12 to get full official documentation of the selected opcode~~.
 * ~~Proper Register Highlighting. E.g. When you select GPR rax, GPR al is also highlighted.~~
