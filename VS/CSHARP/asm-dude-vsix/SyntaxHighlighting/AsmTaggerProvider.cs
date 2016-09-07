@@ -30,9 +30,10 @@ using System.ComponentModel.Composition;
 namespace AsmDude.SyntaxHighlighting
 {
     [Export(typeof(ITaggerProvider))]
-    [Name("AsmDude-AsmTaggerProvider")]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [TagType(typeof(ClassificationTag))]
+    [Name("AsmDude-AsmTaggerProvider")]
+    [Order(After = Priority.High)]
     internal sealed class AsmTaggerProvider : ITaggerProvider
     {
         [Export]
@@ -43,6 +44,7 @@ namespace AsmDude.SyntaxHighlighting
         [Export]
         [FileExtension(".asm")]
         [ContentType(AsmDudePackage.AsmDudeContentType)]
+        [Order(After = "default")]
         internal static FileExtensionToContentTypeDefinition AsmFileType = null;
 
         [Export]

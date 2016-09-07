@@ -36,7 +36,7 @@ namespace AsmDude {
 
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#110", "#112", Vsix.Version, IconResourceID = 400)] // Info on this package for Help/About
-    //[ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
+    [ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
     [Guid(PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ComVisible(false)]
@@ -84,6 +84,7 @@ namespace AsmDude {
         #endregion
 
         #region Disassembly window experiments
+        /*
         private void disassemblyWindow() {
             //IDebugDisassemblyStream2
             //https://msdn.microsoft.com/en-us/library/bb145934(v=vs.110).aspx
@@ -92,12 +93,11 @@ namespace AsmDude {
             DTE vsEnvironment = (DTE)GetService(typeof(SDTE));
             vsEnvironment.ExecuteCommand("Debug.Disassembly");
 
-//            IVsDebugger4 debugger = (IVsDebugger4)GetService(typeof(IVsDebugger));
+            //IVsDebugger4 debugger = (IVsDebugger4)GetService(typeof(IVsDebugger));
 
-
+            //https://social.msdn.microsoft.com/Forums/vstudio/en-US/8fa0b4bc-7d75-452c-b1ca-b0bf6385baf0/displaying-data-tooltip-or-quickinfo-in-debug-mode?forum=vsx
         }
-
-
+        */
         #endregion
 
 

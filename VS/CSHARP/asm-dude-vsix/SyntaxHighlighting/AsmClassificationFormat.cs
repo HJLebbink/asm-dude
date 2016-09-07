@@ -32,7 +32,7 @@ namespace AsmDude
     [ClassificationType(ClassificationTypeNames = AsmClassificationDefinition.ClassificationTypeNames.Mnemonic)]
     [Name("mnemonic-961E99C2-2082-4140-ACBD-966AEDEB60A2")]
     [UserVisible(true)] // sets this editor format definition visible for the user (in Tools>Options>Environment>Fonts and Colors>Text Editor
-    [Order(Before = Priority.High)] //set the priority to be after the default classifiers
+    [Order(After = Priority.High)] //set the priority to be after the default classifiers
     internal sealed class OpcodeP : ClassificationFormatDefinition
     {
         public OpcodeP()
@@ -47,7 +47,7 @@ namespace AsmDude
     [ClassificationType(ClassificationTypeNames = AsmClassificationDefinition.ClassificationTypeNames.Register)]
     [Name("register-961E99C2-2082-4140-ACBD-966AEDEB60A2")]
     [UserVisible(true)] // sets this editor format definition visible for the user (in Tools>Options>Environment>Fonts and Colors>Text Editor
-    [Order(Before = Priority.High)] //set the priority to be after the default classifiers
+    [Order(After = Priority.High)] //set the priority to be after the default classifiers
     internal sealed class RegisterP : ClassificationFormatDefinition
     {
         public RegisterP()
@@ -61,7 +61,7 @@ namespace AsmDude
     [ClassificationType(ClassificationTypeNames = AsmClassificationDefinition.ClassificationTypeNames.Remark)]
     [Name("remark-961E99C2-2082-4140-ACBD-966AEDEB60A2")]
     [UserVisible(true)] // sets this editor format definition visible for the user (in Tools>Options>Environment>Fonts and Colors>Text Editor
-    [Order(Before = Priority.High)] //set the priority to be after the default classifiers
+    [Order(After = Priority.High)] //set the priority to be after the default classifiers
     internal sealed class RemarkP : ClassificationFormatDefinition
     {
         public RemarkP()
@@ -76,7 +76,7 @@ namespace AsmDude
     [ClassificationType(ClassificationTypeNames = AsmClassificationDefinition.ClassificationTypeNames.Directive)]
     [Name("directive-961E99C2-2082-4140-ACBD-966AEDEB60A2")]
     [UserVisible(true)] // sets this editor format definition visible for the user (in Tools>Options>Environment>Fonts and Colors>Text Editor
-    [Order(Before = Priority.High)] //set the priority to be after the default classifiers
+    [Order(After = Priority.High)] //set the priority to be after the default classifiers
     internal sealed class DirectiveP : ClassificationFormatDefinition
     {
         public DirectiveP()
@@ -91,7 +91,7 @@ namespace AsmDude
     [ClassificationType(ClassificationTypeNames = AsmClassificationDefinition.ClassificationTypeNames.Jump)]
     [Name("jump-961E99C2-2082-4140-ACBD-966AEDEB60A2")]
     [UserVisible(true)] // sets this editor format definition visible for the user (in Tools>Options>Environment>Fonts and Colors>Text Editor
-    [Order(Before = Priority.High)] //set the priority to be after the default classifiers
+    [Order(After = Priority.High)] //set the priority to be after the default classifiers
     internal sealed class JumpP : ClassificationFormatDefinition
     {
         public JumpP()
@@ -105,7 +105,7 @@ namespace AsmDude
     [ClassificationType(ClassificationTypeNames = AsmClassificationDefinition.ClassificationTypeNames.Label)]
     [Name("label-961E99C2-2082-4140-ACBD-966AEDEB60A2")]
     [UserVisible(true)] // sets this editor format definition visible for the user (in Tools>Options>Environment>Fonts and Colors>Text Editor
-    [Order(Before = Priority.High)] //set the priority to be after the default classifiers
+    [Order(After = Priority.High)] //set the priority to be after the default classifiers
     internal sealed class LabelP : ClassificationFormatDefinition
     {
         public LabelP()
@@ -120,7 +120,7 @@ namespace AsmDude
     [ClassificationType(ClassificationTypeNames = AsmClassificationDefinition.ClassificationTypeNames.LabelDef)]
     [Name("labelDef-961E99C2-2082-4140-ACBD-966AEDEB60A2")]
     [UserVisible(true)] // sets this editor format definition visible for the user (in Tools>Options>Environment>Fonts and Colors>Text Editor
-    [Order(Before = Priority.High)] //set the priority to be after the default classifiers
+    [Order(After = Priority.High)] //set the priority to be after the default classifiers
     internal sealed class LabelDefP : ClassificationFormatDefinition
     {
         public LabelDefP()
@@ -135,7 +135,7 @@ namespace AsmDude
     [ClassificationType(ClassificationTypeNames = AsmClassificationDefinition.ClassificationTypeNames.Constant)]
     [Name("constant-961E99C2-2082-4140-ACBD-966AEDEB60A2")]
     [UserVisible(true)] // sets this editor format definition visible for the user (in Tools>Options>Environment>Fonts and Colors>Text Editor
-    [Order(Before = Priority.High)] //set the priority to be after the default classifiers
+    [Order(After = Priority.High)] //set the priority to be after the default classifiers
     internal sealed class ConstantP : ClassificationFormatDefinition
     {
         public ConstantP()
@@ -149,7 +149,7 @@ namespace AsmDude
     [ClassificationType(ClassificationTypeNames = AsmClassificationDefinition.ClassificationTypeNames.Misc)]
     [Name("misc-961E99C2-2082-4140-ACBD-966AEDEB60A2")]
     [UserVisible(true)] // sets this editor format definition visible for the user (in Tools>Options>Environment>Fonts and Colors>Text Editor
-    [Order(Before = Priority.High)] //set the priority to be after the default classifiers
+    [Order(After = Priority.High)] //set the priority to be after the default classifiers
     internal sealed class MiscP : ClassificationFormatDefinition
     {
         public MiscP()
