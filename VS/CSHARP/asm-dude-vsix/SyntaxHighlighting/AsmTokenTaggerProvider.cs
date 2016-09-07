@@ -30,17 +30,21 @@ using System;
 using AsmDude.Tools;
 using AsmTools;
 
-namespace AsmDude {
-
+namespace AsmDude
+{
     [Export(typeof(ITaggerProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [TagType(typeof(AsmTokenTag))]
-    internal sealed class AsmTokenTagProvider : ITaggerProvider {
-
-        public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag {
+    [Name("Assembly Token Tag Provider")]
+    [Order(After = "default")]
+    internal sealed class AsmTokenTagProvider : ITaggerProvider
+    {
+        public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
+        {
             //AsmDudeToolsStatic.Output("INFO: AsmTokenTagProvider:CreateTagger");
-            Func <ITagger<T>> sc = delegate () {
-                switch (AsmDudeToolsStatic.usedAssembler) {
+            Func<ITagger<T>> sc = delegate () {
+                switch (AsmDudeToolsStatic.usedAssembler)
+                {
                     case AssemblerEnum.MASM: return new MasmTokenTagger(buffer) as ITagger<T>;
                     case AssemblerEnum.NASM: return new NasmTokenTagger(buffer) as ITagger<T>;
                     case AssemblerEnum.UNKNOWN:

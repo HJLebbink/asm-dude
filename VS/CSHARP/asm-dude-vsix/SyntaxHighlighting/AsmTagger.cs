@@ -30,9 +30,10 @@ using Microsoft.VisualStudio.Text.Tagging;
 using AsmDude.SyntaxHighlighting;
 using AsmDude.Tools;
 
-namespace AsmDude {
-
-    internal sealed class AsmClassifier : ITagger<ClassificationTag> {
+namespace AsmDude
+{
+    internal sealed class AsmClassifier : ITagger<ClassificationTag>
+    {
 
         private readonly ITextBuffer _buffer;
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
@@ -51,9 +52,10 @@ namespace AsmDude {
         /// Construct the classifier and define search tokens
         /// </summary>
         internal AsmClassifier(
-                ITextBuffer buffer, 
+                ITextBuffer buffer,
                 ITagAggregator<AsmTokenTag> asmTagAggregator,
-                IClassificationTypeRegistryService typeService) {
+                IClassificationTypeRegistryService typeService)
+        {
             this._buffer = buffer;
             this._aggregator = asmTagAggregator;
 
@@ -76,24 +78,29 @@ namespace AsmDude {
         /// <summary>
         /// Search the given span for any instances of classified tags
         /// </summary>
-        public IEnumerable<ITagSpan<ClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
-            if (Settings.Default.SyntaxHighlighting_On) {
-                if (spans.Count == 0) {  //there is no content in the buffer
+        public IEnumerable<ITagSpan<ClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
+        {
+            if (Settings.Default.SyntaxHighlighting_On)
+            {
+                if (spans.Count == 0)
+                {  //there is no content in the buffer
                     yield break;
                 }
                 DateTime time1 = DateTime.Now;
-                foreach (IMappingTagSpan<AsmTokenTag> tagSpan in _aggregator.GetTags(spans)) {
+                foreach (IMappingTagSpan<AsmTokenTag> tagSpan in _aggregator.GetTags(spans))
+                {
                     NormalizedSnapshotSpanCollection tagSpans = tagSpan.Span.GetSpans(spans[0].Snapshot);
-                    switch (tagSpan.Tag.type) {
+                    switch (tagSpan.Tag.type)
+                    {
                         case AsmTokenType.Mnemonic: yield return new TagSpan<ClassificationTag>(tagSpans[0], _mnemonic); break;
                         case AsmTokenType.Register: yield return new TagSpan<ClassificationTag>(tagSpans[0], _register); break;
                         case AsmTokenType.Remark: yield return new TagSpan<ClassificationTag>(tagSpans[0], _remark); break;
                         case AsmTokenType.Directive: yield return new TagSpan<ClassificationTag>(tagSpans[0], _directive); break;
                         case AsmTokenType.Constant: yield return new TagSpan<ClassificationTag>(tagSpans[0], _constant); break;
                         case AsmTokenType.Jump: yield return new TagSpan<ClassificationTag>(tagSpans[0], _jump); break;
-                        case AsmTokenType.Label : yield return new TagSpan<ClassificationTag>(tagSpans[0], _label); break;
-                        case AsmTokenType.LabelDef : yield return new TagSpan<ClassificationTag>(tagSpans[0], _labelDef); break;
-                        case AsmTokenType.Misc : yield return new TagSpan<ClassificationTag>(tagSpans[0], _misc); break;
+                        case AsmTokenType.Label: yield return new TagSpan<ClassificationTag>(tagSpans[0], _label); break;
+                        case AsmTokenType.LabelDef: yield return new TagSpan<ClassificationTag>(tagSpans[0], _labelDef); break;
+                        case AsmTokenType.Misc: yield return new TagSpan<ClassificationTag>(tagSpans[0], _misc); break;
                         default:
                             break;
                     }

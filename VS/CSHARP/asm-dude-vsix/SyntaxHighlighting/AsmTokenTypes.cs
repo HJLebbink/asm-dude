@@ -20,12 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmDude {
-
+namespace AsmDude
+{
     /// <summary>
     /// Types of token used in assembly source files. Mnemonic, Register, Remark, Directive, Constant, Jump, Label, LabelDef, Misc, UNKNOWN
     /// </summary>
-    public enum AsmTokenType {
+    public enum AsmTokenType
+    {
         Mnemonic, Register, Remark, Directive, Constant, Jump, Label, LabelDef, Misc, UNKNOWN
     }
 }
