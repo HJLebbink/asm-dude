@@ -90,6 +90,7 @@ Studio will launch under the experimental hive.
 * Provide one (large) label graph for the complete solution such that label usage can be tracked throughout the solution.
 * Add pragmas to disable warnings such as "#pragma AsmDude warning disable/restore".
 * Add support for MASM keyword "comment".
+* Add syntax highlighting, statement completion and syntax checks for struct member fields.
 
 ###Updates:
 * 19 February 2016: Initial alpha release. Basic highlighting and descriptions for i368 instructions are available.
