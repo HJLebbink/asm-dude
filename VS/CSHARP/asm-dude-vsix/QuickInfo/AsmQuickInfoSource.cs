@@ -95,7 +95,7 @@ namespace AsmDude.QuickInfo {
                     SnapshotSpan tagSpan = asmTokenTag.Span.GetSpans(_sourceBuffer).First();
                     keyword = tagSpan.GetText();
 
-                    //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:AugmentQuickInfoSession. keyword=\"{1}\"", this.ToString(), keyword));
+                    //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:AugmentQuickInfoSession. keyword=\"{1}\"; type={2}", this.ToString(), keyword, asmTokenTag.Tag.type));
                     string keywordUpper = keyword.ToUpper();
                     applicableToSpan = snapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
 
@@ -135,23 +135,14 @@ namespace AsmDude.QuickInfo {
                                 }
                                 break;
                             }
-                        case AsmTokenType.Mnemonic: {
+                        case AsmTokenType.Mnemonic:
+                        case AsmTokenType.Jump:
+                            {
                                 description = new TextBlock();
                                 description.Inlines.Add(makeRun1("Mnemonic "));
                                 description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Opcode));
 
                                 string descr = this._asmDudeTools.mnemonicStore.getDescription(AsmSourceTools.parseMnemonic(keywordUpper));
-                                if (descr.Length > 0) {
-                                    description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
-                                }
-                                break;
-                            }
-                        case AsmTokenType.Jump: {
-                                description = new TextBlock();
-                                description.Inlines.Add(makeRun1("Mnemonic "));
-                                description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Jump));
-
-                                string descr = this._asmDudeTools.getDescription(keywordUpper);
                                 if (descr.Length > 0) {
                                     description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                                 }
