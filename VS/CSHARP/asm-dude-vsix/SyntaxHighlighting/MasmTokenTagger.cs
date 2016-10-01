@@ -130,7 +130,7 @@ namespace AsmDude
                             {
                                 switch (asmToken2)
                                 {
-                                    case "@":
+                                    case "$":
                                     case "@B":
                                     case "@F":
                                         // TODO: special MASM label, for the moment, ignore it, later: check whether it is used etc.
@@ -149,7 +149,7 @@ namespace AsmDude
                                         {
                                             switch (asmToken3)
                                             {
-                                                case "@":
+                                                case "$":
                                                 case "@B":
                                                 case "@F":
                                                     // TODO: special MASM label, for the moment, ignore it, later: check whether it is used etc.
