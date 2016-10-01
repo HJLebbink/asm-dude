@@ -7,6 +7,9 @@ using AsmDude;
 
 namespace Winterdom.VisualStudio.Extensions.Text
 {
+    /*
+
+
     static class CurrentLineClassificationDefinition
     {
         [Export(typeof(ClassificationTypeDefinition))]
@@ -52,4 +55,6 @@ namespace Winterdom.VisualStudio.Extensions.Text
             new LineHighlight(textView, map, classification);
         }
     }
+
+    */
 }
