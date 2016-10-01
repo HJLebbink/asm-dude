@@ -38,6 +38,7 @@ namespace AsmDude.ErrorSquiggles {
     [Export(typeof(IViewTaggerProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [TagType(typeof(ErrorTag))]
+    [TextViewRole(PredefinedTextViewRoles.Document)]
     internal sealed class LabelErrorTaggerProvider : IViewTaggerProvider {
 
         [Import]

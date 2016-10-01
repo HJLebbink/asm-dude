@@ -23,6 +23,7 @@
 using AsmDude.Tools;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using System;
@@ -33,6 +34,7 @@ namespace AsmDude {
     [Export(typeof(ICompletionSourceProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [Name("asmCompletion")]
+    [TextViewRole(PredefinedTextViewRoles.Document)]
     public sealed class CodeCompletionSourceProvider : ICompletionSourceProvider {
 
         [Import]

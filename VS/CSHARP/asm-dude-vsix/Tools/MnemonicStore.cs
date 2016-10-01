@@ -21,7 +21,6 @@
 // SOFTWARE.
 
 using AsmDude.SignatureHelp;
-using AsmDude.Tools;
 using AsmTools;
 using System;
 using System.Collections.Generic;
@@ -29,7 +28,8 @@ using System.IO;
 using System.Text;
 using System.Windows;
 
-namespace AsmDude.Tools {
+namespace AsmDude.Tools
+{
     //the data is retrieved from http://www.nasm.us/doc/nasmdocb.html
 
     public class MnemonicStore {

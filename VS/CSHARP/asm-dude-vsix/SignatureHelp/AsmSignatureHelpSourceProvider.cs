@@ -22,6 +22,7 @@
 
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
@@ -32,6 +33,7 @@ namespace AsmDude.SignatureHelp {
     [Name("Signature Help source")]
     [Order(Before = "default")]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
+    [TextViewRole(PredefinedTextViewRoles.Document)]
     internal class AsmSignatureHelpSourceProvider : ISignatureHelpSourceProvider {
 
         public ISignatureHelpSource TryCreateSignatureHelpSource(ITextBuffer textBuffer) {

@@ -32,6 +32,8 @@ namespace AsmDude.QuickInfo {
     [Export(typeof(IIntellisenseControllerProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [Name("QuickInfo Controller")]
+//    [TextViewRole(PredefinedTextViewRoles.Debuggable)]
+    [TextViewRole(PredefinedTextViewRoles.Document)]
     internal sealed class AsmQuickInfoControllerProvider : IIntellisenseControllerProvider {
 
         [Import]

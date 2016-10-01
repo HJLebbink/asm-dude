@@ -23,7 +23,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
@@ -34,8 +33,8 @@ using Microsoft.VisualStudio.Text.Classification;
 using System.Runtime.InteropServices;
 using AsmDude.Tools;
 
-namespace AsmDude.HighlightWord {
-
+namespace AsmDude.HighlightWord
+{
     [Export(typeof(EditorFormatDefinition))]
     [Name("AsmDude.HighlightWordFormatDefinition")]
     [UserVisible(true)]
@@ -141,23 +140,15 @@ namespace AsmDude.HighlightWord {
                     this._newWord = newWord;
                     this._newWordSpan = newWordExtend.Value.Span;
 
-                    if (true) {
-                        AsmDudeTools.Instance.threadPool.QueueWorkItem(this.UpdateWordAdornments2);
-                    } else {
-                        ThreadPool.QueueUserWorkItem(this.UpdateWordAdornments);
-                    }
+                    AsmDudeTools.Instance.threadPool.QueueWorkItem(this.UpdateWordAdornments);
                 }
             }
-        }
-
-        private void UpdateWordAdornments2() {
-            this.UpdateWordAdornments(null);
         }
 
         /// <summary>
         /// The currently highlighted word has changed. Update the adornments to reflect this change
         /// </summary>
-        private void UpdateWordAdornments(object threadContext) {
+        private void UpdateWordAdornments() {
             try {
                 DateTime time1 = DateTime.Now;
 

@@ -68,6 +68,7 @@ namespace AsmDude {
             #endregion
 
             this._smartThreadPool = new SmartThreadPool();
+            //this._smartThreadPool.Start();
 
             #region load signature store
             string path = AsmDudeToolsStatic.getInstallPath() + "Resources" + Path.DirectorySeparatorChar;

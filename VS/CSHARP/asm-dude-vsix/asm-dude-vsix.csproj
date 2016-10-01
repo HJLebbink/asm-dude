@@ -38,7 +38,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AsmDude</RootNamespace>
     <AssemblyName>AsmDude</AssemblyName>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <GeneratePkgDefFile>true</GeneratePkgDefFile>
@@ -165,6 +165,8 @@
     <Compile Include="CodeCompletion\VsTextViewCreationListener.cs" />
     <Compile Include="CodeFolding\CodeFoldingTagger.cs" />
     <Compile Include="CodeFolding\CodeFoldingTaggerProvider.cs" />
+    <Compile Include="CurrentLine\AdornmentFactory.cs" />
+    <Compile Include="CurrentLine\LineHighlight.cs" />
     <Compile Include="ErrorSquiggles\AsmErrorEnum.cs" />
     <Compile Include="ErrorSquiggles\LabelErrorTagger.cs" />
     <Compile Include="ErrorSquiggles\LabelErrorTaggerProvider.cs" />

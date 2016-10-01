@@ -23,6 +23,7 @@
 using AsmDude.SyntaxHighlighting;
 using AsmDude.Tools;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using System;
@@ -36,6 +37,7 @@ namespace AsmDude.CodeFolding {
     [Export(typeof(ITaggerProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [TagType(typeof(IOutliningRegionTag))]
+    [TextViewRole(PredefinedTextViewRoles.Document)]
     internal sealed class CodeFoldingTaggerProvider : ITaggerProvider {
 
         [Import]

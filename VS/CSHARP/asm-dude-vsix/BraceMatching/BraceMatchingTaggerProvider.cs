@@ -32,6 +32,8 @@ namespace AsmDude.BraceMatching {
     [Export(typeof(IViewTaggerProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [TagType(typeof(TextMarkerTag))]
+    [TextViewRole(PredefinedTextViewRoles.Document)]
+
     internal sealed class BraceMatchingTaggerProvider : IViewTaggerProvider {
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag {
             if (textView == null) {

@@ -33,13 +33,13 @@ namespace AsmDude.AsmDoc
     [Name("AsmDude-AsmDocUnderlineTaggerProvider")]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [TagType(typeof(ClassificationTag))]
+    [TextViewRole(PredefinedTextViewRoles.Document)]
     internal class AsmDocUnderlineTaggerProvider : IViewTaggerProvider
     {
-
         [Import]
         private IClassificationTypeRegistryService _classificationTypeRegistry = null;
 
-        static IClassificationType UnderlineClassification;
+        private static IClassificationType UnderlineClassification;
         public static AsmDocUnderlineTagger GetClassifierForView(ITextView view)
         {
             if (UnderlineClassification == null)

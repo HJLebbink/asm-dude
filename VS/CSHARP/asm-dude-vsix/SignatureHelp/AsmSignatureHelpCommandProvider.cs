@@ -33,6 +33,7 @@ namespace AsmDude.SignatureHelp {
     [Name("Signature Help controller")]
     [TextViewRole(PredefinedTextViewRoles.Editable)]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
+    [TextViewRole(PredefinedTextViewRoles.Document)]
     internal sealed class AsmSignatureHelpCommandProvider : IVsTextViewCreationListener {
 
         [Import]

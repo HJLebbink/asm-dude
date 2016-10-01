@@ -130,9 +130,9 @@ namespace AsmDude
                             {
                                 switch (asmToken2)
                                 {
-                                    case "$":
-                                    case "$B":
-                                    case "$F":
+                                    case "@":
+                                    case "@B":
+                                    case "@F":
                                         // TODO: special MASM label, for the moment, ignore it, later: check whether it is used etc.
                                         break;
                                     case "WORD":
@@ -149,9 +149,9 @@ namespace AsmDude
                                         {
                                             switch (asmToken3)
                                             {
-                                                case "$":
-                                                case "$B":
-                                                case "$F":
+                                                case "@":
+                                                case "@B":
+                                                case "@F":
                                                     // TODO: special MASM label, for the moment, ignore it, later: check whether it is used etc.
                                                     break;
                                                 case "PTR":
