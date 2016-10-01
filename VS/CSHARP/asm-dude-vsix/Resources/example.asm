@@ -17,6 +17,8 @@ include "inc\example.inc"
 
 
 
+
+
 	#region Calc Frequency with Avx512
 	vcvttss2usi r8,xmm30,{sae}
 
@@ -141,6 +143,12 @@ _str_ri:
 
 	#region Masm Examples
 
+vertex STRUCT 
+    .x  resq 1
+    .y  resq 1
+    .z  resq 1
+vertex ENDS
+
 segment_name SEGMENT USE64
     ASSUME gs:NOTHING
     mov eax, dword ptr gs:[0]
@@ -162,8 +170,8 @@ proc_name ENDP
 segment_name ENDS
 
 	@@:
-	jmp $F
-	jmp $B
+	jmp @F
+	jmp @B
 	alias label_alias = FOO
 	jmp label_alias
 	@@:
