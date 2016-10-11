@@ -24,17 +24,17 @@ using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 
-namespace AsmDude.AsmDoc {
-
-    internal static class AsmDocClassificationDefinition {
-
-        internal static class ClassificationTypeNames {
+namespace AsmDude.AsmDoc
+{
+    internal static class AsmDocClassificationDefinition
+    {
+        internal static class ClassificationTypeNames
+        {
             public const string Underline = "underline-D74860FA-F0BC-4441-9D76-DF4ECB19CF71";
         }
 
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(ClassificationTypeNames.Underline)]
         internal static ClassificationTypeDefinition underlineClassificationType = null;
-
     }
 }

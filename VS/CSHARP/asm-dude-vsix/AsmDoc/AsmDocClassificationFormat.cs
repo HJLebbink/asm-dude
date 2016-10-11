@@ -21,20 +21,20 @@
 // SOFTWARE.
 
 using System.ComponentModel.Composition;
-using System.Windows.Media;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
-using AsmDude.Tools;
 
-namespace AsmDude.AsmDoc {
-
+namespace AsmDude.AsmDoc
+{
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = AsmDocClassificationDefinition.ClassificationTypeNames.Underline)]
     [Name("underline-693485E0-B4BC-47D2-B4E1-177E9AF0C445")]
     [UserVisible(true)] // sets this editor format definition visible for the user (in Tools>Options>Environment>Fonts and Colors>Text Editor
     [Order(Before = Priority.High)] //set the priority to be after the default classifiers
-    internal sealed class UnderlineFormatDefinition : ClassificationFormatDefinition {
-        public UnderlineFormatDefinition() {
+    internal sealed class UnderlineFormatDefinition : ClassificationFormatDefinition
+    {
+        public UnderlineFormatDefinition()
+        {
             this.DisplayName = "AsmDude - Documentation Link";
             this.TextDecorations = System.Windows.TextDecorations.Underline;
         }

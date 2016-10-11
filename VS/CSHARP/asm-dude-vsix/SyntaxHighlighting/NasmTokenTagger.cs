@@ -27,8 +27,8 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 
 using AsmDude.SyntaxHighlighting;
-using AsmTools;
 using AsmDude.Tools;
+using AsmTools;
 
 namespace AsmDude
 {

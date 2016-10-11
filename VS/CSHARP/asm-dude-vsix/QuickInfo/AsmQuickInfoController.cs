@@ -24,34 +24,41 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using AsmDude.Tools;
 
-namespace AsmDude.QuickInfo {
-
-    internal sealed class AsmQuickInfoController : IIntellisenseController {
-
+namespace AsmDude.QuickInfo
+{
+    internal sealed class AsmQuickInfoController : IIntellisenseController
+    {
         private readonly IList<ITextBuffer> _subjectBuffers;
         private readonly IQuickInfoBroker _quickInfoBroker;
         private IQuickInfoSession _session;
         private ITextView _textView;
 
-        internal AsmQuickInfoController(ITextView textView, IList<ITextBuffer> subjectBuffers, IQuickInfoBroker quickInfoBroker) {
+        internal AsmQuickInfoController(ITextView textView, IList<ITextBuffer> subjectBuffers, IQuickInfoBroker quickInfoBroker)
+        {
+            //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoController:constructor: file=" + AsmDudeToolsStatic.GetFileName(textView.TextBuffer));
             _textView = textView;
             _subjectBuffers = subjectBuffers;
             _quickInfoBroker = quickInfoBroker;
-            _textView.MouseHover += OnTextViewMouseHover;
+            _textView.MouseHover += this.OnTextViewMouseHover;
         }
 
-        public void ConnectSubjectBuffer(ITextBuffer subjectBuffer) {
+        public void ConnectSubjectBuffer(ITextBuffer subjectBuffer)
+        {
             //empty
         }
 
-        public void DisconnectSubjectBuffer(ITextBuffer subjectBuffer) {
+        public void DisconnectSubjectBuffer(ITextBuffer subjectBuffer)
+        {
             //empty
         }
 
-        public void Detach(ITextView textView) {
-            if (_textView == textView) {
-                _textView.MouseHover -= OnTextViewMouseHover;
+        public void Detach(ITextView textView)
+        {
+            if (_textView == textView)
+            {
+                _textView.MouseHover -= this.OnTextViewMouseHover;
                 _textView = null;
             }
         }
@@ -59,23 +66,34 @@ namespace AsmDude.QuickInfo {
         /// <summary>
         /// Determine if the mouse is hovering over a token. If so, highlight the token and display QuickInfo
         /// </summary>
-        private void OnTextViewMouseHover(object sender, MouseHoverEventArgs e) {
+        private void OnTextViewMouseHover(object sender, MouseHoverEventArgs e)
+        {
+            //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoController:OnTextViewMouseHover: file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
             SnapshotPoint? point = this.GetMousePosition(new SnapshotPoint(this._textView.TextSnapshot, e.Position));
-            if (point != null) {
+            if (point != null)
+            {
                 ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(point.Value.Position, PointTrackingMode.Positive);
-
                 // Find the broker for this buffer
-                if (!this._quickInfoBroker.IsQuickInfoActive(_textView)) {
-                    this._session = this._quickInfoBroker.CreateQuickInfoSession(this._textView, triggerPoint, true);
+                if (!this._quickInfoBroker.IsQuickInfoActive(_textView))
+                {
+                    //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoController:OnTextViewMouseHover: CreateQuickInfoSession for triggerPoint "+triggerPoint.TextBuffer+"; file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
+                    this._session = this._quickInfoBroker.CreateQuickInfoSession(this._textView, triggerPoint, false);
                     this._session.Start();
+                } else
+                {
+                    //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoController:OnTextViewMouseHover: quickInfoBroker is already active; file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
                 }
+            } else
+            {
+                //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoController:OnTextViewMouseHover: point is null; file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
             }
         }
 
         /// <summary>
         /// get mouse location on screen. Used to determine what word the cursor is currently hovering over
         /// </summary>
-        private SnapshotPoint? GetMousePosition(SnapshotPoint topPosition) {
+        private SnapshotPoint? GetMousePosition(SnapshotPoint topPosition)
+        {
             // Map this point down to the appropriate subject buffer.
 
             return _textView.BufferGraph.MapDownToFirstMatch(

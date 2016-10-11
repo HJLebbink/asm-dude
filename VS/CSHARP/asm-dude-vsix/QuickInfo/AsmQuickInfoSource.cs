@@ -27,7 +27,6 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
-using System.ComponentModel.Composition;
 using AsmDude.SyntaxHighlighting;
 using System.Text;
 using AsmDude.Tools;
@@ -38,13 +37,13 @@ using System.Windows.Media;
 using AsmTools;
 using System.IO;
 
-namespace AsmDude.QuickInfo {
-
+namespace AsmDude.QuickInfo
+{
     /// <summary>
     /// Provides QuickInfo information to be displayed in a text buffer
     /// </summary>
-    internal sealed class AsmQuickInfoSource : IQuickInfoSource {
-
+    internal sealed class AsmQuickInfoSource : IQuickInfoSource
+    {
         private readonly ITextBuffer _sourceBuffer;
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
         private readonly ILabelGraph _labelGraph;
@@ -53,10 +52,10 @@ namespace AsmDude.QuickInfo {
         public object CSharpEditorResources { get; private set; }
 
         public AsmQuickInfoSource(
-                ITextBuffer buffer, 
+                ITextBuffer buffer,
                 ITagAggregator<AsmTokenTag> aggregator,
-                ILabelGraph labelGraph) {
-
+                ILabelGraph labelGraph)
+        {
             this._sourceBuffer = buffer;
             this._aggregator = aggregator;
             this._labelGraph = labelGraph;
@@ -66,26 +65,36 @@ namespace AsmDude.QuickInfo {
         /// <summary>
         /// Determine which pieces of Quickinfo content should be displayed
         /// </summary>
-        public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan) {
+        public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan)
+        {
+            //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoSource:AugmentQuickInfoSession");
+
             applicableToSpan = null;
-            try {
+            try
+            {
                 DateTime time1 = DateTime.Now;
 
                 ITextSnapshot snapshot = _sourceBuffer.CurrentSnapshot;
                 var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(snapshot);
-                if (triggerPoint == null) {
+                if (triggerPoint == null)
+                {
+                    AsmDudeToolsStatic.Output("INFO: AsmQuickInfoSource:AugmentQuickInfoSession: trigger point is null");
                     return;
                 }
                 string keyword = "";
 
                 IEnumerable<IMappingTagSpan<AsmTokenTag>> enumerator = this._aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint));
+                //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoSource:AugmentQuickInfoSession: enumerator.Count="+ enumerator.Count());
 
-                if (enumerator.Count() > 0) {
-                    
-                    if (false) {
+                if (enumerator.Count() > 0)
+                {
+                    if (false)
+                    {
                         // TODO: multiple tags at the provided triggerPoint is most likely the result of a bug in AsmTokenTagger, but it seems harmless...
-                        if (enumerator.Count() > 1) {
-                            foreach (IMappingTagSpan<AsmTokenTag> v in enumerator) {
+                        if (enumerator.Count() > 1)
+                        {
+                            foreach (IMappingTagSpan<AsmTokenTag> v in enumerator)
+                            {
                                 AsmDudeToolsStatic.Output(string.Format("WARNING: {0}:AugmentQuickInfoSession. more than one tag! \"{1}\"", this.ToString(), v.Span.GetSpans(_sourceBuffer).First().GetText()));
                             }
                         }
@@ -95,42 +104,49 @@ namespace AsmDude.QuickInfo {
                     SnapshotSpan tagSpan = asmTokenTag.Span.GetSpans(_sourceBuffer).First();
                     keyword = tagSpan.GetText();
 
-                    //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:AugmentQuickInfoSession. keyword=\"{1}\"; type={2}", this.ToString(), keyword, asmTokenTag.Tag.type));
+                    //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoSource:AugmentQuickInfoSession: keyword=\""+ keyword + "\"; type=" + asmTokenTag.Tag.type);
                     string keywordUpper = keyword.ToUpper();
                     applicableToSpan = snapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
 
                     TextBlock description = null;
 
-                    switch (asmTokenTag.Tag.type) {
-                        case AsmTokenType.Misc: {
+                    switch (asmTokenTag.Tag.type)
+                    {
+                        case AsmTokenType.Misc:
+                            {
                                 description = new TextBlock();
                                 description.Inlines.Add(makeRun1("Keyword "));
                                 description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Misc));
 
                                 string descr = this._asmDudeTools.getDescription(keywordUpper);
-                                if (descr.Length > 0) {
+                                if (descr.Length > 0)
+                                {
                                     description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                                 }
                                 break;
                             }
-                        case AsmTokenType.Directive: {
+                        case AsmTokenType.Directive:
+                            {
                                 description = new TextBlock();
                                 description.Inlines.Add(makeRun1("Directive "));
                                 description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Directive));
 
                                 string descr = this._asmDudeTools.getDescription(keywordUpper);
-                                if (descr.Length > 0) {
+                                if (descr.Length > 0)
+                                {
                                     description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                                 }
                                 break;
                             }
-                        case AsmTokenType.Register: {
+                        case AsmTokenType.Register:
+                            {
                                 description = new TextBlock();
                                 description.Inlines.Add(makeRun1("Register "));
                                 description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Register));
 
                                 string descr = this._asmDudeTools.getDescription(keywordUpper);
-                                if (descr.Length > 0) {
+                                if (descr.Length > 0)
+                                {
                                     description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                                 }
                                 break;
@@ -143,34 +159,40 @@ namespace AsmDude.QuickInfo {
                                 description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Opcode));
 
                                 string descr = this._asmDudeTools.mnemonicStore.getDescription(AsmSourceTools.parseMnemonic(keywordUpper));
-                                if (descr.Length > 0) {
+                                if (descr.Length > 0)
+                                {
                                     description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                                 }
                                 break;
                             }
-                        case AsmTokenType.Label: {
+                        case AsmTokenType.Label:
+                            {
                                 description = new TextBlock();
                                 description.Inlines.Add(makeRun1("Label "));
                                 description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Label));
 
                                 string descr = this.getLabelDescription(keyword);
-                                if (descr.Length > 0) {
+                                if (descr.Length > 0)
+                                {
                                     description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                                 }
                                 break;
                             }
-                        case AsmTokenType.LabelDef: {
+                        case AsmTokenType.LabelDef:
+                            {
                                 description = new TextBlock();
                                 description.Inlines.Add(makeRun1("Label "));
                                 description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Label));
 
                                 string descr = this.getLabelDefDescription(keyword);
-                                if (descr.Length > 0) {
+                                if (descr.Length > 0)
+                                {
                                     description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                                 }
                                 break;
                             }
-                        case AsmTokenType.Constant: {
+                        case AsmTokenType.Constant:
+                            {
                                 description = new TextBlock();
                                 description.Inlines.Add(makeRun1("Constant "));
                                 description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Constant));
@@ -181,7 +203,8 @@ namespace AsmDude.QuickInfo {
                             //description.Inlines.Add(makeRun1("Unused tagType " + asmTokenTag.Tag.type));
                             break;
                     }
-                    if (description != null) {
+                    if (description != null)
+                    {
                         description.FontSize = AsmDudeToolsStatic.getFontSize() + 2;
                         description.FontFamily = AsmDudeToolsStatic.getFontType();
                         //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:AugmentQuickInfoSession; setting description fontSize={1}; fontFamily={2}", this.ToString(), description.FontSize, description.FontFamily));
@@ -189,70 +212,88 @@ namespace AsmDude.QuickInfo {
                     }
                 }
                 AsmDudeToolsStatic.printSpeedWarning(time1, "QuickInfo");
-            } catch (Exception e) {
+            } catch (Exception e)
+            {
                 AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:AugmentQuickInfoSession; e={1}", this.ToString(), e.ToString()));
             }
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             //empty
         }
 
         #region Private Methods
 
-        private static Run makeRun1(string str) {
+        private static Run makeRun1(string str)
+        {
             Run r1 = new Run(str);
             r1.FontWeight = FontWeights.Bold;
             return r1;
         }
 
-        private static Run makeRun2(string str, System.Drawing.Color color) {
+        private static Run makeRun2(string str, System.Drawing.Color color)
+        {
             Run r1 = new Run(str);
             r1.FontWeight = FontWeights.Bold;
             r1.Foreground = new SolidColorBrush(AsmDudeToolsStatic.convertColor(color));
             return r1;
         }
 
-        private string getLabelDescription(string label) {
-            if (this._labelGraph.isEnabled) {
+        private string getLabelDescription(string label)
+        {
+            if (this._labelGraph.isEnabled)
+            {
                 StringBuilder sb = new StringBuilder();
                 SortedSet<uint> labelDefs = this._labelGraph.getLabelDefLineNumbers(label);
-                if (labelDefs.Count > 1) {
+                if (labelDefs.Count > 1)
+                {
                     sb.AppendLine("");
                 }
-                foreach (uint id in labelDefs) {
+                foreach (uint id in labelDefs)
+                {
                     int lineNumber = this._labelGraph.getLinenumber(id);
                     string filename = Path.GetFileName(this._labelGraph.getFilename(id));
                     string lineContent;
-                    if (this._labelGraph.isFromMainFile(id)) {
+                    if (this._labelGraph.isFromMainFile(id))
+                    {
                         lineContent = " :" + this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
-                    } else {
+                    } else
+                    {
                         lineContent = "";
                     }
                     sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Defined at LINE {0} ({1}){2}", lineNumber + 1, filename, lineContent)));
                 }
                 string result = sb.ToString();
                 return result.TrimEnd(Environment.NewLine.ToCharArray());
-            } else {
+            } else
+            {
                 return "Label analysis is disabled";
             }
         }
 
-        private string getLabelDefDescription(string label) {
-            if (this._labelGraph.isEnabled) {
+        private string getLabelDefDescription(string label)
+        {
+            if (this._labelGraph.isEnabled)
+            {
                 SortedSet<uint> usage = this._labelGraph.labelUsedAtInfo(label);
-                if (usage.Count > 0) {
+                if (usage.Count > 0)
+                {
                     StringBuilder sb = new StringBuilder();
-                    if (usage.Count > 1) {
+                    if (usage.Count > 1)
+                    {
                         sb.AppendLine("");
                     }
-                    foreach (uint id in usage) {
+                    foreach (uint id in usage)
+                    {
                         int lineNumber = this._labelGraph.getLinenumber(id);
                         string filename = Path.GetFileName(this._labelGraph.getFilename(id));
                         string lineContent;
-                        if (this._labelGraph.isFromMainFile(id)) {
+                        if (this._labelGraph.isFromMainFile(id))
+                        {
                             lineContent = " :" + this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
-                        } else {
+                        } else
+                        {
                             lineContent = "";
                         }
                         sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Used at LINE {0} ({1}){2}", lineNumber + 1, filename, lineContent)));
@@ -260,10 +301,12 @@ namespace AsmDude.QuickInfo {
                     }
                     string result = sb.ToString();
                     return result.TrimEnd(Environment.NewLine.ToCharArray());
-                } else {
+                } else
+                {
                     return "Not used";
                 }
-            } else {
+            } else
+            {
                 return "Label analysis is disabled";
             }
         }
@@ -271,4 +314,3 @@ namespace AsmDude.QuickInfo {
         #endregion Private Methods
     }
 }
-
