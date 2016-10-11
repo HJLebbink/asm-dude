@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using AsmDude.Tools;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
@@ -27,10 +28,75 @@ using Microsoft.VisualStudio.Utilities;
 using System;
 using System.ComponentModel.Composition;
 
+
+/*
+ * existing contentTypes
+ * 
+INFO: AsmTaggerProvider:CreateTagger: contentType=UNKNOWN
+INFO: AsmTaggerProvider:CreateTagger: contentType=Roslyn Languages
+INFO: AsmTaggerProvider:CreateTagger: contentType=TypeScript
+INFO: AsmTaggerProvider:CreateTagger: contentType=sighelp
+INFO: AsmTaggerProvider:CreateTagger: contentType=TypeScript Signature Help
+INFO: AsmTaggerProvider:CreateTagger: contentType=code
+INFO: AsmTaggerProvider:CreateTagger: contentType=asm!
+INFO: AsmTaggerProvider:CreateTagger: contentType=text
+INFO: AsmTaggerProvider:CreateTagger: contentType=Interactive Content
+INFO: AsmTaggerProvider:CreateTagger: contentType=projection
+INFO: AsmTaggerProvider:CreateTagger: contentType=Interactive Output
+INFO: AsmTaggerProvider:CreateTagger: contentType=Interactive Command
+INFO: AsmTaggerProvider:CreateTagger: contentType=CSharp
+INFO: AsmTaggerProvider:CreateTagger: contentType=CSharp Signature Help
+INFO: AsmTaggerProvider:CreateTagger: contentType=RoslynPreviewContentType
+INFO: AsmTaggerProvider:CreateTagger: contentType=Basic
+INFO: AsmTaggerProvider:CreateTagger: contentType=Basic Signature Help
+INFO: AsmTaggerProvider:CreateTagger: contentType=InBoxPowerShell
+INFO: AsmTaggerProvider:CreateTagger: contentType=JavaScript
+INFO: AsmTaggerProvider:CreateTagger: contentType=ResJSON
+INFO: AsmTaggerProvider:CreateTagger: contentType=code++
+INFO: AsmTaggerProvider:CreateTagger: contentType=BreakpointFilterExpression
+INFO: AsmTaggerProvider:CreateTagger: contentType=Python
+INFO: AsmTaggerProvider:CreateTagger: contentType=htmlx
+INFO: AsmTaggerProvider:CreateTagger: contentType=Django Templates
+INFO: AsmTaggerProvider:CreateTagger: contentType=DjangoTemplateTag
+INFO: AsmTaggerProvider:CreateTagger: contentType=intellisense
+INFO: AsmTaggerProvider:CreateTagger: contentType=sighelp-doc
+INFO: AsmTaggerProvider:CreateTagger: contentType=any
+INFO: AsmTaggerProvider:CreateTagger: contentType=plaintext
+INFO: AsmTaggerProvider:CreateTagger: contentType=inert
+INFO: AsmTaggerProvider:CreateTagger: contentType=Specialized CSharp and VB Interactive Command
+INFO: AsmTaggerProvider:CreateTagger: contentType=quickinfo
+INFO: AsmTaggerProvider:CreateTagger: contentType=Output
+INFO: AsmTaggerProvider:CreateTagger: contentType=ConsoleOutput
+INFO: AsmTaggerProvider:CreateTagger: contentType=FindResults
+INFO: AsmTaggerProvider:CreateTagger: contentType=Command
+INFO: AsmTaggerProvider:CreateTagger: contentType=Immediate
+INFO: AsmTaggerProvider:CreateTagger: contentType=snippet picker
+INFO: AsmTaggerProvider:CreateTagger: contentType=C/C++
+INFO: AsmTaggerProvider:CreateTagger: contentType=ENC
+INFO: AsmTaggerProvider:CreateTagger: contentType=Fortran
+INFO: AsmTaggerProvider:CreateTagger: contentType=HTML
+INFO: AsmTaggerProvider:CreateTagger: contentType=Memory
+INFO: AsmTaggerProvider:CreateTagger: contentType=Register
+INFO: AsmTaggerProvider:CreateTagger: contentType=T-SQL90
+INFO: AsmTaggerProvider:CreateTagger: contentType=VBScript
+INFO: AsmTaggerProvider:CreateTagger: contentType=XAML
+INFO: AsmTaggerProvider:CreateTagger: contentType=XML
+INFO: AsmTaggerProvider:CreateTagger: contentType=XOML
+INFO: AsmTaggerProvider:CreateTagger: contentType=TFSourceControlOutput
+INFO: AsmTaggerProvider:CreateTagger: contentType=BuildOutput
+INFO: AsmTaggerProvider:CreateTagger: contentType=BuildOrderOutput
+INFO: AsmTaggerProvider:CreateTagger: contentType=DatabaseOutput
+INFO: AsmTaggerProvider:CreateTagger: contentType=TestsOutput
+INFO: AsmTaggerProvider:CreateTagger: contentType=SourceControlOutput
+INFO: AsmTaggerProvider:CreateTagger: contentType=DebugOutput
+*/
+
+
 namespace AsmDude.SyntaxHighlighting
 {
     [Export(typeof(ITaggerProvider))]
-    [ContentType(AsmDudePackage.AsmDudeContentType)]
+    //[ContentType(AsmDudePackage.AsmDudeContentType)]
+    [ContentType("code")]
     [TagType(typeof(ClassificationTag))]
     [Name("AsmDude-AsmTaggerProvider")]
     [Order(After = Priority.High)]
@@ -63,17 +129,29 @@ namespace AsmDude.SyntaxHighlighting
         [Import]
         private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
 
+        //[Import]
+        //private IContentTypeRegistryService _contentTypeRegistryService = null;
+
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
-            Func<ITagger<T>> sc = delegate () {
-                Func<ITagAggregator<AsmTokenTag>> sc2 = delegate () {
-                    return _aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
-                };
-                ITagAggregator<AsmTokenTag> aggregator = buffer.Properties.GetOrCreateSingletonProperty(sc2);
+            //foreach (IContentType ct in _contentTypeRegistryService.ContentTypes)
+            //    AsmDudeToolsStatic.Output("INFO: AsmTaggerProvider:CreateTagger: contentType=" + ct.DisplayName);
 
-                return new AsmClassifier(buffer, aggregator, _classificationTypeRegistry) as ITagger<T>;
-            };
-            return buffer.Properties.GetOrCreateSingletonProperty(sc);
+            if (AsmDudeToolsStatic.properFile(buffer))
+            {
+                Func<ITagger<T>> sc = delegate () {
+                    Func<ITagAggregator<AsmTokenTag>> sc2 = delegate () {
+                        return _aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
+                    };
+                    ITagAggregator<AsmTokenTag> aggregator = buffer.Properties.GetOrCreateSingletonProperty(sc2);
+
+                    return new AsmClassifier(buffer, aggregator, _classificationTypeRegistry) as ITagger<T>;
+                };
+                return buffer.Properties.GetOrCreateSingletonProperty(sc);
+            } else
+            {
+                return null;
+            }
         }
     }
 }

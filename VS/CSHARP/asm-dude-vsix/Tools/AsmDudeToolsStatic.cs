@@ -123,6 +123,20 @@ namespace AsmDude.Tools {
             }
         }
 
+        public static bool properFile(ITextBuffer buffer)
+        {
+            string filename = GetFileName(buffer);
+            if ((filename == null) ||
+                (filename.Length == 0) ||
+                (filename.EndsWith(".asm", StringComparison.OrdinalIgnoreCase)) ||
+                (filename.EndsWith(".cod", StringComparison.OrdinalIgnoreCase)) ||
+                (filename.EndsWith(".inc", StringComparison.OrdinalIgnoreCase)))
+            {
+                return true;
+            }
+            return false;
+        }
+
         public static void openDisassembler() {
             try {
                 DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;

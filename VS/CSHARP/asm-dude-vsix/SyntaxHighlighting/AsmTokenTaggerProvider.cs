@@ -33,22 +33,32 @@ using AsmTools;
 namespace AsmDude
 {
     [Export(typeof(ITaggerProvider))]
-    [ContentType(AsmDudePackage.AsmDudeContentType)]
+    //[ContentType(AsmDudePackage.AsmDudeContentType)]
+    [ContentType("code")]
     [TagType(typeof(AsmTokenTag))]
     [Name("Assembly Token Tag Provider")]
-    [Order(After = "default")]
+    [Order(Before = "default")]
     internal sealed class AsmTokenTagProvider : ITaggerProvider
     {
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
             //AsmDudeToolsStatic.Output("INFO: AsmTokenTagProvider:CreateTagger");
             Func<ITagger<T>> sc = delegate () {
-                switch (AsmDudeToolsStatic.usedAssembler)
+
+                string filename = AsmDudeToolsStatic.GetFileName(buffer);
+                if ((filename == null) || (filename.Length == 0))
                 {
-                    case AssemblerEnum.MASM: return new MasmTokenTagger(buffer) as ITagger<T>;
-                    case AssemblerEnum.NASM: return new NasmTokenTagger(buffer) as ITagger<T>;
-                    case AssemblerEnum.UNKNOWN:
-                    default: return new MasmTokenTagger(buffer) as ITagger<T>;
+                    //AsmDudeToolsStatic.Output("INFO: AsmTokenTagProvider:CreateTagger: found a buffer without a filename");
+                    return new DebugTokenTagger(buffer) as ITagger<T>;
+                } else
+                {
+                    switch (AsmDudeToolsStatic.usedAssembler)
+                    {
+                        case AssemblerEnum.MASM: return new MasmTokenTagger(buffer) as ITagger<T>;
+                        case AssemblerEnum.NASM: return new DebugTokenTagger(buffer) as ITagger<T>;
+                        case AssemblerEnum.UNKNOWN:
+                        default: return new MasmTokenTagger(buffer) as ITagger<T>;
+                    }
                 }
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
