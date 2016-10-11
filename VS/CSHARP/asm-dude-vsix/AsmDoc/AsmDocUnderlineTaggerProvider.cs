@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using AsmDude.Tools;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
@@ -31,15 +32,16 @@ namespace AsmDude.AsmDoc
 {
     [Export(typeof(IViewTaggerProvider))]
     [Name("AsmDude-AsmDocUnderlineTaggerProvider")]
-    [ContentType(AsmDudePackage.AsmDudeContentType)]
+    //[ContentType(AsmDudePackage.AsmDudeContentType)]
+    [ContentType("code")]
     [TagType(typeof(ClassificationTag))]
-    [TextViewRole(PredefinedTextViewRoles.Document)]
     internal class AsmDocUnderlineTaggerProvider : IViewTaggerProvider
     {
         [Import]
         private IClassificationTypeRegistryService _classificationTypeRegistry = null;
 
-        private static IClassificationType UnderlineClassification;
+        private static IClassificationType UnderlineClassification = null;
+
         public static AsmDocUnderlineTagger GetClassifierForView(ITextView view)
         {
             if (UnderlineClassification == null)
@@ -51,6 +53,9 @@ namespace AsmDude.AsmDoc
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
+            if (!AsmDudeToolsStatic.properFile(buffer)) return null;
+
+            //AsmDudeToolsStatic.Output("INFO: AsmDocUnderlineTaggerProvider:CreateTagger: file=" + AsmDudeToolsStatic.GetFileName(buffer));
             if (UnderlineClassification == null)
             {
                 UnderlineClassification = _classificationTypeRegistry.GetClassificationType(AsmDocClassificationDefinition.ClassificationTypeNames.Underline);
