@@ -95,8 +95,8 @@ INFO: AsmTaggerProvider:CreateTagger: contentType=DebugOutput
 namespace AsmDude.SyntaxHighlighting
 {
     [Export(typeof(ITaggerProvider))]
-    //[ContentType(AsmDudePackage.AsmDudeContentType)]
-    [ContentType("code")]
+    [ContentType(AsmDudePackage.AsmDudeContentType)]
+    //[ContentType("code")]
     [TagType(typeof(ClassificationTag))]
     [Name("AsmDude-AsmTaggerProvider")]
     [Order(After = Priority.High)]

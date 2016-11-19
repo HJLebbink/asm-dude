@@ -68,7 +68,6 @@ namespace AsmDude.QuickInfo
         public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan)
         {
             //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoSource:AugmentQuickInfoSession");
-
             applicableToSpan = null;
             try
             {
@@ -78,7 +77,7 @@ namespace AsmDude.QuickInfo
                 var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(snapshot);
                 if (triggerPoint == null)
                 {
-                    AsmDudeToolsStatic.Output("INFO: AsmQuickInfoSource:AugmentQuickInfoSession: trigger point is null");
+                    //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoSource:AugmentQuickInfoSession: trigger point is null");
                     return;
                 }
                 string keyword = "";
@@ -104,7 +103,7 @@ namespace AsmDude.QuickInfo
                     SnapshotSpan tagSpan = asmTokenTag.Span.GetSpans(_sourceBuffer).First();
                     keyword = tagSpan.GetText();
 
-                    //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoSource:AugmentQuickInfoSession: keyword=\""+ keyword + "\"; type=" + asmTokenTag.Tag.type);
+                    //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoSource:AugmentQuickInfoSession: keyword=\""+ keyword + "\"; type=" + asmTokenTag.Tag.type +"; file="+AsmDudeToolsStatic.GetFileName(session.TextView.TextBuffer));
                     string keywordUpper = keyword.ToUpper();
                     applicableToSpan = snapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
 
@@ -211,6 +210,7 @@ namespace AsmDude.QuickInfo
                         quickInfoContent.Add(description);
                     }
                 }
+                //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoSource:AugmentQuickInfoSession: applicableToSpan=\"" + applicableToSpan + "\"; quickInfoContent,Count=" + quickInfoContent.Count);
                 AsmDudeToolsStatic.printSpeedWarning(time1, "QuickInfo");
             } catch (Exception e)
             {

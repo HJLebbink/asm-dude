@@ -33,8 +33,8 @@ using AsmTools;
 namespace AsmDude
 {
     [Export(typeof(ITaggerProvider))]
-    //[ContentType(AsmDudePackage.AsmDudeContentType)]
-    [ContentType("code")]
+    [ContentType(AsmDudePackage.AsmDudeContentType)]
+    //[ContentType("code")]
     [TagType(typeof(AsmTokenTag))]
     [Name("Assembly Token Tag Provider")]
     [Order(Before = "default")]
@@ -43,8 +43,8 @@ namespace AsmDude
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
             //AsmDudeToolsStatic.Output("INFO: AsmTokenTagProvider:CreateTagger");
-            Func<ITagger<T>> sc = delegate () {
-
+            Func<ITagger<T>> sc = delegate () 
+            {
                 string filename = AsmDudeToolsStatic.GetFileName(buffer);
                 if ((filename == null) || (filename.Length == 0))
                 {

@@ -32,8 +32,8 @@ namespace AsmDude.AsmDoc
 {
     [Export(typeof(IViewTaggerProvider))]
     [Name("AsmDude-AsmDocUnderlineTaggerProvider")]
-    //[ContentType(AsmDudePackage.AsmDudeContentType)]
-    [ContentType("code")]
+    [ContentType(AsmDudePackage.AsmDudeContentType)]
+    //[ContentType("code")]
     [TagType(typeof(ClassificationTag))]
     internal class AsmDocUnderlineTaggerProvider : IViewTaggerProvider
     {

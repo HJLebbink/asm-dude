@@ -23,23 +23,25 @@
 using AsmDude.SyntaxHighlighting;
 using AsmDude.Tools;
 using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using System;
 using System.ComponentModel.Composition;
 
-namespace AsmDude.QuickInfo {
-
+namespace AsmDude.QuickInfo
+{
     /// <summary>
     /// Factory for quick info sources
     /// </summary>
     [Export(typeof(IQuickInfoSourceProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
+    //[ContentType("code")] // use contenttype "code" to use quickinfo controller in disassembly window
+    [TextViewRole(PredefinedTextViewRoles.Debuggable)]
     [Name("asmQuickInfo")]
-    internal sealed class AsmQuickInfoSourceProvider : IQuickInfoSourceProvider {
-
+    internal sealed class AsmQuickInfoSourceProvider : IQuickInfoSourceProvider
+    {
         [Import]
         private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
 
@@ -49,7 +51,9 @@ namespace AsmDude.QuickInfo {
         [Import]
         private IContentTypeRegistryService _contentService = null;
 
-        public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer buffer) {
+        public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer buffer)
+        {
+            //if (!AsmDudeToolsStatic.properFile(buffer)) return null;
 
             Func<AsmQuickInfoSource> sc = delegate () {
                 ITagAggregator<AsmTokenTag> aggregator = AsmDudeToolsStatic.getAggregator(buffer, _aggregatorFactory);

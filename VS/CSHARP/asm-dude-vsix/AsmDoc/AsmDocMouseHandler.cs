@@ -40,8 +40,8 @@ using AsmDude.Tools;
 namespace AsmDude.AsmDoc
 {
     [Export(typeof(IKeyProcessorProvider))]
-    //[ContentType(AsmDudePackage.AsmDudeContentType)]
-    [ContentType("code")]
+    [ContentType(AsmDudePackage.AsmDudeContentType)]
+    //[ContentType("code")]
     [Name("AsmDoc")]
     [Order(Before = "VisualStudioKeyboardProcessor")]
     internal sealed class AsmDocKeyProcessorProvider : IKeyProcessorProvider
@@ -124,8 +124,8 @@ namespace AsmDude.AsmDoc
     }
 
     [Export(typeof(IMouseProcessorProvider))]
-    //[ContentType(AsmDudePackage.AsmDudeContentType)]
-    [ContentType("code")]
+    [ContentType(AsmDudePackage.AsmDudeContentType)]
+    //[ContentType("code")]
     [Name("AsmDoc")]
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]
     [Order(Before = "WordSelection")]
