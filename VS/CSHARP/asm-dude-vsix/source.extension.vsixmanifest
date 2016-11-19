@@ -12,10 +12,10 @@
     <Tags>Assembly, Assembler, Syntax Highlighting, Code Completion, Folding, Label Analysis, Visual Studio 2015</Tags>
   </Metadata>
   <Installation>
-    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[14.0]" />
+    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[14.0,15.0]" />
     <InstallationTarget Version="[14.0,15.0)" Id="Microsoft.VisualStudio.IntegratedShell" />
-    <InstallationTarget Version="[13.0,15.0)" Id="Microsoft.VisualStudio.Pro" />
-    <InstallationTarget Version="[13.0,15.0)" Id="Microsoft.VisualStudio.Enterprise" />
+    <InstallationTarget Version="[13.0,15.0]" Id="Microsoft.VisualStudio.Pro" />
+    <InstallationTarget Version="[13.0,15.0]" Id="Microsoft.VisualStudio.Enterprise" />
     <InstallationTarget Version="[13.0,15.0)" Id="Microsoft.VisualStudio.VWDExpress" />
     <InstallationTarget Version="[13.0,15.0)" Id="Microsoft.VisualStudio.VSWinDesktopExpress" />
   </Installation>
