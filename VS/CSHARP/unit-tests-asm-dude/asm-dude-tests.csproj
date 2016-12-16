@@ -56,12 +56,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="test_AsmDudeTools.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\ScHJ\Csharp\asm-sim\VS\CSHARP\asm-sim-lib-tests\asm-sim-lib-tests.csproj">
-      <Project>{6b3e5423-e049-4951-8e58-cf10d49612c7}</Project>
-      <Name>asm-sim-lib-tests</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

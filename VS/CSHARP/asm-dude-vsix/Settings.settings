@@ -51,7 +51,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="KeywordHighlightColor" Type="System.Drawing.Color" Scope="User">
-      <Value Profile="(Default)">Magenta</Value>
+      <Value Profile="(Default)">Yellow</Value>
     </Setting>
     <Setting Name="CodeFolding_IsDefaultCollapsed" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
