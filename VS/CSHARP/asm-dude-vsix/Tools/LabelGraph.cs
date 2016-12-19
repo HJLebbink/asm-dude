@@ -71,7 +71,7 @@ namespace AsmDude.Tools {
                 ITextDocumentFactoryService docFactory,
                 IContentType contentType) {
 
-            //AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph: constructor: creating a label graph for {0}", AsmDudeToolsStatic.GetFileName(buffer)));
+            //AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:constructor: creating a label graph for {0}", AsmDudeToolsStatic.GetFileName(buffer)));
             this._buffer = buffer;
             this._aggregatorFactory = aggregatorFactory;
             this._errorListProvider = errorListProvider;
@@ -419,6 +419,7 @@ namespace AsmDude.Tools {
                             } else {
                                 this._defAt.Add(label, new List<uint> { id });
                             }
+                            //AsmDudeToolsStatic.Output("INFO: LabelGraph:addLineNumber: found label \"" +label +"\" at line " + lineNumber);
                             this._hasDef.Add(id);
                         }
                         break;
@@ -430,6 +431,7 @@ namespace AsmDude.Tools {
                             } else {
                                 this._usedAt.Add(label, new List<uint> { id });
                             }
+                            //AsmDudeToolsStatic.Output("INFO: LabelGraph:addLineNumber: used label \"" + label + "\" at line " + lineNumber);
                             this._hasLabel.Add(id);
                         }
                         break;
@@ -440,7 +442,9 @@ namespace AsmDude.Tools {
                             }
                         }
                         break;
-                    default: break;
+                    default:
+                        //AsmDudeToolsStatic.Output("INFO: LabelGraph:addLineNumber: found text \"" + getText(buffer, asmTokenSpan) + "\" at line " + lineNumber);
+                        break;
                 }
             }
         }
