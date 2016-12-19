@@ -45,21 +45,21 @@ namespace AsmDude
             //AsmDudeToolsStatic.Output("INFO: AsmTokenTagProvider:CreateTagger");
             Func<ITagger<T>> sc = delegate () 
             {
-                string filename = AsmDudeToolsStatic.GetFileName(buffer);
-                if ((filename == null) || (filename.Length == 0))
-                {
-                    //AsmDudeToolsStatic.Output("INFO: AsmTokenTagProvider:CreateTagger: found a buffer without a filename");
-                    return new DebugTokenTagger(buffer) as ITagger<T>;
-                } else
-                {
+                //string filename = AsmDudeToolsStatic.GetFileName(buffer);
+                //if ((filename == null) || (filename.Length == 0))
+                //{
+                //    AsmDudeToolsStatic.Output("INFO: AsmTokenTagProvider:CreateTagger: found a buffer without a filename");
+                //    return new DebugTokenTagger(buffer) as ITagger<T>;
+                //} else {
+
                     switch (AsmDudeToolsStatic.usedAssembler)
                     {
                         case AssemblerEnum.MASM: return new MasmTokenTagger(buffer) as ITagger<T>;
-                        case AssemblerEnum.NASM: return new DebugTokenTagger(buffer) as ITagger<T>;
+                        case AssemblerEnum.NASM: return new NasmTokenTagger(buffer) as ITagger<T>;
                         case AssemblerEnum.UNKNOWN:
                         default: return new MasmTokenTagger(buffer) as ITagger<T>;
                     }
-                }
+                //}
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
