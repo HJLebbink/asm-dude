@@ -34,9 +34,11 @@ using Microsoft.VisualStudio.Shell;
 using AsmTools;
 using Amib.Threading;
 
-namespace AsmDude.CodeFolding {
+namespace AsmDude.CodeFolding
+{
 
-    class PartialRegion {
+    class PartialRegion
+    {
         public int StartLine { get; set; }
         public int StartOffset { get; set; }
         public int StartOffsetHoverText { get; set; }
@@ -44,11 +46,13 @@ namespace AsmDude.CodeFolding {
         public PartialRegion PartialParent { get; set; }
     }
 
-    class Region : PartialRegion {
+    class Region : PartialRegion
+    {
         public int EndLine { get; set; }
     }
 
-    internal sealed class CodeFoldingTagger : ITagger<IOutliningRegionTag> {
+    internal sealed class CodeFoldingTagger : ITagger<IOutliningRegionTag>
+    {
 
         #region Private Fields
         private string startRegionTag = Settings.Default.CodeFolding_BeginTag;  //the characters that start the outlining region
@@ -73,9 +77,9 @@ namespace AsmDude.CodeFolding {
         public CodeFoldingTagger(
             ITextBuffer buffer,
             ITagAggregator<AsmTokenTag> aggregator,
-            ErrorListProvider errorListProvider) {
-
-            //Debug.WriteLine("INFO:OutliningTagger: constructor");
+            ErrorListProvider errorListProvider)
+        {
+            AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger: constructor");
             this._buffer = buffer;
             this._aggregator = aggregator;
             this._errorListProvider = errorListProvider;
@@ -87,31 +91,37 @@ namespace AsmDude.CodeFolding {
             this._waiting = false;
             this._scheduled = false;
 
-            this.parse_Delayed();
-            this._buffer.ChangedLowPriority += this.BufferChanged;
+            this.Parse_Delayed();
+            this._buffer.ChangedLowPriority += this.Buffer_Changed;
         }
 
-        public IEnumerable<ITagSpan<IOutliningRegionTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
-            if (spans.Count == 0) {
+        public IEnumerable<ITagSpan<IOutliningRegionTag>> GetTags(NormalizedSnapshotSpanCollection spans)
+        {
+            if (spans.Count == 0)
+            {
                 yield break;
             }
-            if (Settings.Default.CodeFolding_On && this._enabled) {
-                //AsmDudeToolsStatic.Output(string.Format("INFO: GetTags:entering: IsDefaultCollapsed={0}", Settings.Default.CodeFolding_IsDefaultCollapsed));
+            if (Settings.Default.CodeFolding_On && this._enabled)
+            {
+                AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger:GetTags:entering: IsDefaultCollapsed= " + Settings.Default.CodeFolding_IsDefaultCollapsed);
 
-                lock (_updateLock) {
+                lock (_updateLock)
+                {
                     SnapshotSpan entire = new SnapshotSpan(spans[0].Start, spans[spans.Count - 1].End).TranslateTo(this._snapshot, SpanTrackingMode.EdgeExclusive);
                     int startLineNumber = entire.Start.GetContainingLine().LineNumber;
                     int endLineNumber = entire.End.GetContainingLine().LineNumber;
 
-                    Region[] regionArray = this._regions.ToArray();//TODO expensive and ugly ToArray here to prevent a modification exception
-                    foreach (Region region in regionArray) {
-                        if ((region.StartLine <= endLineNumber) && (region.EndLine >= startLineNumber)) {
-
+                    //Region[] regionArray = this._regions.ToArray();//TODO expensive and ugly ToArray here to prevent a modification exception
+                    //foreach (Region region in regionArray)
+                    foreach (Region region in this._regions)
+                    {
+                        if ((region.StartLine <= endLineNumber) && (region.EndLine >= startLineNumber))
+                        {
                             ITextSnapshotLine startLine = this._snapshot.GetLineFromLineNumber(region.StartLine);
                             ITextSnapshotLine endLine = this._snapshot.GetLineFromLineNumber(region.EndLine);
 
-                            var replacement = this.getRegionDescription(startLine.GetText(), region.StartOffsetHoverText);
-                            var hover = this.getHoverText(region.StartLine, region.EndLine, this._snapshot);
+                            var replacement = this.Get_Region_Description(startLine.GetText(), region.StartOffsetHoverText);
+                            var hover = this.Get_Hover_Text(region.StartLine, region.EndLine, this._snapshot);
 
                             yield return new TagSpan<IOutliningRegionTag>(
                                 new SnapshotSpan(startLine.Start + region.StartOffset, endLine.End),
@@ -123,19 +133,23 @@ namespace AsmDude.CodeFolding {
         }
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
-        public bool isEnabled { get { return this._enabled; } }
+        public bool Is_Enabled { get { return this._enabled; } }
 
         #region Private Methods
 
         /// <summary>
         /// Get the description of the region that starts at the provided line content
         /// </summary>
-        private string getRegionDescription(string line, int startPos) {
+        private string Get_Region_Description(string line, int startPos)
+        {
             string description = "";
-            //AsmDudeToolsStatic.Output("getRegionDescription: startPos=" + startPos + "; line=" + line);
-            if (startPos < 0) {
+            AsmDudeToolsStatic.Output_INFO("getRegionDescription: startPos=" + startPos + "; line=" + line);
+            if (startPos < 0)
+            {
                 description = line;
-            } else if (startPos < line.Length) {
+            }
+            else if (startPos < line.Length)
+            {
                 description = line.Substring(startPos).Trim();
             }
             return (description.Length > 0) ? description : "...";
@@ -144,12 +158,14 @@ namespace AsmDude.CodeFolding {
         /// <summary>
         /// Get the text to be displayed when hovering over a closed region
         /// </summary>
-        private TextBlock getHoverText(int beginLineNumber, int endLineNumber, ITextSnapshot snapshot) {
+        private TextBlock Get_Hover_Text(int beginLineNumber, int endLineNumber, ITextSnapshot snapshot)
+        {
             TextBlock description = new TextBlock();
             StringBuilder str = new StringBuilder();
 
             int numberOfLines = Math.Min((endLineNumber + 1) - beginLineNumber, 40); // do not show more than 40 lines 
-            for (int i = 0; i < numberOfLines; ++i) {
+            for (int i = 0; i < numberOfLines; ++i)
+            {
                 str.AppendLine(snapshot.GetLineFromLineNumber(beginLineNumber + i).GetText());
             }
 
@@ -160,22 +176,28 @@ namespace AsmDude.CodeFolding {
             return description;
         }
 
-        private void BufferChanged(object sender, TextContentChangedEventArgs e) {
+        private void Buffer_Changed(object sender, TextContentChangedEventArgs e)
+        {
             // If this isn't the most up-to-date version of the buffer, then ignore it for now (we'll eventually get another change event).
-            if (e.After != _buffer.CurrentSnapshot) {
+            if (e.After != _buffer.CurrentSnapshot)
+            {
                 return;
             }
-            this.parse_Delayed();
+            this.Parse_Delayed();
         }
 
         /// <summary>
         /// Return start positions of the provided line content. Tuple has: 1) start of the folding position; 2) start of the description position.
         /// </summary>
-        private Tuple<int, int> isStartKeyword(string lineContent, int lineNumber) {
-            var tup = this.isStartDirectiveKeyword(lineContent);
-            if (tup.Item1 == -1) {
-                return this.isStartMasmKeyword(lineContent, lineNumber);
-            } else {
+        private Tuple<int, int> IsStartKeyword(string lineContent, int lineNumber)
+        {
+            var tup = this.Is_Start_Directive_Keyword(lineContent);
+            if (tup.Item1 == -1)
+            {
+                return this.Is_Start_Masm_Keyword(lineContent, lineNumber);
+            }
+            else
+            {
                 return tup;
             }
         }
@@ -183,11 +205,15 @@ namespace AsmDude.CodeFolding {
         /// <summary>
         /// Return start positions of the provided line content. Tuple has: 1) start of the folding position; 2) start of the description position.
         /// </summary>
-        private Tuple<int, int> isStartDirectiveKeyword(string lineContent) {
+        private Tuple<int, int> Is_Start_Directive_Keyword(string lineContent)
+        {
             int i1 = lineContent.IndexOf(startRegionTag, StringComparison.OrdinalIgnoreCase);
-            if (i1 == -1) {
+            if (i1 == -1)
+            {
                 return new Tuple<int, int>(-1, -1);
-            } else {
+            }
+            else
+            {
                 return new Tuple<int, int>(i1, i1 + startRegionTag.Length);
             }
         }
@@ -195,21 +221,37 @@ namespace AsmDude.CodeFolding {
         /// <summary>
         /// Return start positions of the provided line content. Tuple has: 1) start of the folding position; 2) start of the description position.
         /// </summary>
-        private Tuple<int, int> isStartMasmKeyword(string lineContent, int lineNumber) {
+        private Tuple<int, int> Is_Start_Masm_Keyword(string lineContent, int lineNumber)
+        {
             IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent);
-            foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in tags) {
-                if (asmTokenSpan.Tag.type == AsmTokenType.Directive) {
+            foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in tags)
+            {
+                if (asmTokenSpan.Tag.type == AsmTokenType.Directive)
+                {
                     string tokenStr = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText();
-                    if (tokenStr.Equals("SEGMENT", StringComparison.OrdinalIgnoreCase)) {
+                    AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger:IsStartMasmKeyword: tokenStr=" + tokenStr);
+
+                    if (tokenStr.Equals("SEGMENT", StringComparison.OrdinalIgnoreCase))
+                    {
                         //return lineContent.IndexOf("SEGMENT", StringComparison.OrdinalIgnoreCase);
                         return new Tuple<int, int>(lineContent.Length, lineContent.Length);
                     }
-                    if (tokenStr.Equals("PROC", StringComparison.OrdinalIgnoreCase)) {
+                    if (tokenStr.Equals("PROC", StringComparison.OrdinalIgnoreCase))
+                    {
                         //return lineContent.IndexOf("PROC", StringComparison.OrdinalIgnoreCase);
                         return new Tuple<int, int>(lineContent.Length, lineContent.Length);
                     }
-                    if (tokenStr.Equals("MACRO", StringComparison.OrdinalIgnoreCase)) {
+                    if (tokenStr.Equals("MACRO", StringComparison.OrdinalIgnoreCase))
+                    {
                         //return lineContent.IndexOf("MACRO", StringComparison.OrdinalIgnoreCase);
+                        return new Tuple<int, int>(lineContent.Length, lineContent.Length);
+                    }
+                    if (tokenStr.Equals(".IF", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return new Tuple<int, int>(lineContent.Length, lineContent.Length);
+                    }
+                    if (tokenStr.Equals(".WHILE", StringComparison.OrdinalIgnoreCase))
+                    {
                         return new Tuple<int, int>(lineContent.Length, lineContent.Length);
                     }
                 }
@@ -217,32 +259,51 @@ namespace AsmDude.CodeFolding {
             return new Tuple<int, int>(-1, -1);
         }
 
-        private int isEndKeyword(string lineContent, int lineNumber) {
-            int i1 = isEndDirectiveKeyword(lineContent);
-            if (i1 == -1) {
-                return isEndMasmKeyword(lineContent, lineNumber);
-            } else {
+        private int Is_End_Keyword(string lineContent, int lineNumber)
+        {
+            int i1 = Is_End_Directive_Keyword(lineContent);
+            if (i1 == -1)
+            {
+                return Is_End_Masm_Keyword(lineContent, lineNumber);
+            }
+            else
+            {
                 return i1;
             }
         }
 
-        private int isEndDirectiveKeyword(string lineContent) {
+        private int Is_End_Directive_Keyword(string lineContent)
+        {
             return lineContent.IndexOf(endRegionTag, StringComparison.OrdinalIgnoreCase);
         }
 
-        private int isEndMasmKeyword(string lineContent, int lineNumber) {
+        private int Is_End_Masm_Keyword(string lineContent, int lineNumber)
+        {
             IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent);
-            foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in tags) {
-                if (asmTokenSpan.Tag.type == AsmTokenType.Directive) {
+            foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in tags)
+            {
+                if (asmTokenSpan.Tag.type == AsmTokenType.Directive)
+                {
                     string tokenStr = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText();
-                    if (tokenStr.Equals("ENDS", StringComparison.OrdinalIgnoreCase)) {
+                    if (tokenStr.Equals("ENDS", StringComparison.OrdinalIgnoreCase))
+                    {
                         return lineContent.IndexOf("ENDS", StringComparison.OrdinalIgnoreCase);
                     }
-                    if (tokenStr.Equals("ENDP", StringComparison.OrdinalIgnoreCase)) {
+                    if (tokenStr.Equals("ENDP", StringComparison.OrdinalIgnoreCase))
+                    {
                         return lineContent.IndexOf("ENDP", StringComparison.OrdinalIgnoreCase);
                     }
-                    if (tokenStr.Equals("ENDM", StringComparison.OrdinalIgnoreCase)) {
+                    if (tokenStr.Equals("ENDM", StringComparison.OrdinalIgnoreCase))
+                    {
                         return lineContent.IndexOf("ENDM", StringComparison.OrdinalIgnoreCase);
+                    }
+                    if (tokenStr.Equals(".ENDIF", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return lineContent.IndexOf(".ENDIF", StringComparison.OrdinalIgnoreCase);
+                    }
+                    if (tokenStr.Equals(".ENDW", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return lineContent.IndexOf(".ENDW", StringComparison.OrdinalIgnoreCase);
                     }
                 }
             }
@@ -252,28 +313,37 @@ namespace AsmDude.CodeFolding {
         /// <summary>
         /// execute the parse method with a delay.
         /// </summary>
-        private void parse_Delayed() {
-            if (this._waiting) {
-                //AsmDudeToolsStatic.Output("INFO: CodeFoldingTagger:reparse_delayed: already waiting for execution. Skipping this call.");
+        private void Parse_Delayed()
+        {
+            if (this._waiting)
+            {
+                AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger:reparse_delayed: already waiting for execution. Skipping this call.");
                 return;
             }
-            if (this._busy) {
-                //AsmDudeToolsStatic.Output("INFO: CodeFoldingTagger:reparse_delayed: busy; scheduling this call.");
+            if (this._busy)
+            {
+                AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger:reparse_delayed: busy; scheduling this call.");
                 this._scheduled = true;
-            } else {
-                //AsmDudeToolsStatic.Output("INFO: CodeFoldingTagger:reparse_delayed: going to execute this call.");
-                if (true) {
-                    AsmDudeTools.Instance.threadPool.QueueWorkItem(this.parse2);
-                } else {
-                    ThreadPool.QueueUserWorkItem(this.parse);
+            }
+            else
+            {
+                AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger:reparse_delayed: going to execute this call.");
+                if (true)
+                {
+                    AsmDudeTools.Instance.threadPool.QueueWorkItem(this.Parse2);
+                }
+                else
+                {
+                    ThreadPool.QueueUserWorkItem(this.Parse);
                 }
             }
         }
-
-        private void parse2() {
-            this.parse(null);
+        private void Parse2()
+        {
+            this.Parse(null);
         }
-        private void parse(object threadContext) {
+        private void Parse(object threadContext)
+        {
             if (!this._enabled) return;
 
             this._waiting = true;
@@ -282,7 +352,8 @@ namespace AsmDude.CodeFolding {
             this._waiting = false;
 
             #region Payload
-            lock (_updateLock) {
+            lock (_updateLock)
+            {
                 DateTime time1 = DateTime.Now;
 
                 ITextSnapshot newSnapshot = _buffer.CurrentSnapshot;
@@ -299,51 +370,64 @@ namespace AsmDude.CodeFolding {
                 bool already_advanced = true;
                 if (hasNext) line = enumerator.Current;
 
-                while (hasNext) {
+                while (hasNext)
+                {
                     already_advanced = false;
 
                     #region Parse Line
-                    if (line.Length > 0) {
+                    if (line.Length > 0)
+                    {
                         string lineContent = line.GetText();
                         int lineNumber = line.LineNumber;
 
-                        Tuple<int, int> tup = this.isStartKeyword(lineContent, lineNumber);
+                        Tuple<int, int> tup = this.IsStartKeyword(lineContent, lineNumber);
                         int regionStart = tup.Item1;
                         int regionStartHoverText = tup.Item2;
 
-                        if (regionStart != -1) {
-                            this.addStartRegion(lineContent, regionStart, lineNumber, regionStartHoverText, ref currentRegion, newRegions);
-                        } else {
-                            int regionEnd = this.isEndKeyword(lineContent, lineNumber);
-                            if (regionEnd != -1) {
-                                this.addEndRegion(lineContent, regionEnd, lineNumber, ref currentRegion, newRegions);
-                            } else {
+                        if (regionStart != -1)
+                        {
+                            this.Add_Start_Region(lineContent, regionStart, lineNumber, regionStartHoverText, ref currentRegion, newRegions);
+                        }
+                        else
+                        {
+                            int regionEnd = this.Is_End_Keyword(lineContent, lineNumber);
+                            if (regionEnd != -1)
+                            {
+                                this.Add_End_Region(lineContent, regionEnd, lineNumber, ref currentRegion, newRegions);
+                            }
+                            else
+                            {
                                 #region Search for multi-line Remark
-                                if (AsmSourceTools.isRemarkOnly(lineContent)) {
-                                   
+                                if (AsmSourceTools.isRemarkOnly(lineContent))
+                                {
+
                                     int lineNumber2 = -1;
                                     string lineContent2 = null;
 
-                                    while (enumerator.MoveNext()) {
+                                    while (enumerator.MoveNext())
+                                    {
                                         line = enumerator.Current;
                                         string lineContent3 = line.GetText();
-                                        if (    AsmSourceTools.isRemarkOnly(lineContent3) && 
-                                                (this.isStartDirectiveKeyword(lineContent3).Item1 == -1) && 
-                                                (this.isEndDirectiveKeyword(lineContent3) == -1)) 
+                                        if (AsmSourceTools.isRemarkOnly(lineContent3) &&
+                                                (this.Is_Start_Directive_Keyword(lineContent3).Item1 == -1) &&
+                                                (this.Is_End_Directive_Keyword(lineContent3) == -1))
                                         {
                                             lineNumber2 = line.LineNumber;
                                             lineContent2 = lineContent3;
                                             already_advanced = false;
-                                        } else {
+                                        }
+                                        else
+                                        {
                                             already_advanced = true;
                                             break;
                                         }
                                     }
-                                    if (lineNumber2 != -1) {
+                                    if (lineNumber2 != -1)
+                                    {
                                         int regionStartPos = AsmSourceTools.getRemarkCharPosition(lineContent);
-                                        this.addStartRegion(lineContent, regionStartPos, lineNumber, regionStartPos, ref currentRegion, newRegions);
+                                        this.Add_Start_Region(lineContent, regionStartPos, lineNumber, regionStartPos, ref currentRegion, newRegions);
                                         //this.updateChangedSpans(newSnapshot, newRegions);
-                                        this.addEndRegion(lineContent2, 0, lineNumber2, ref currentRegion, newRegions);
+                                        this.Add_End_Region(lineContent2, 0, lineNumber2, ref currentRegion, newRegions);
                                     }
                                 }
                                 #endregion
@@ -353,11 +437,12 @@ namespace AsmDude.CodeFolding {
                     #endregion Parse Line
 
                     #region Update Changed Spans
-                    this.updateChangedSpans(newSnapshot, newRegions);
+                    this.Update_Changed_Spans(newSnapshot, newRegions);
                     #endregion
 
                     #region Advance to next line
-                    if (!already_advanced) {
+                    if (!already_advanced)
+                    {
                         hasNext = enumerator.MoveNext();
                         if (hasNext) line = enumerator.Current;
                     }
@@ -366,35 +451,39 @@ namespace AsmDude.CodeFolding {
                 AsmDudeToolsStatic.printSpeedWarning(time1, "CodeFoldingTagger");
 
                 double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
-                if (elapsedSec > AsmDudePackage.slowShutdownThresholdSec) {
-                    this.disable();
+                if (elapsedSec > AsmDudePackage.slowShutdownThresholdSec)
+                {
+                    this.Disable();
                 }
             }
             #endregion Payload
 
             this._busy = false;
-            if (this._scheduled) {
+            if (this._scheduled)
+            {
                 this._scheduled = false;
-                this.parse_Delayed();
+                this.Parse_Delayed();
             }
         }
 
-        private void addStartRegion(
-            string lineContent, 
-            int regionStart, 
-            int lineNumber, 
+        private void Add_Start_Region(
+            string lineContent,
+            int regionStart,
+            int lineNumber,
             int regionStartHoverText,
-            ref PartialRegion currentRegion, 
-            IList<Region> newRegions) 
+            ref PartialRegion currentRegion,
+            IList<Region> newRegions)
         {
-            //AsmDudeToolsStatic.Output("INFO: CodeFoldingTagger: addStartRegion");
+            AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger: addStartRegion");
             int currentLevel = (currentRegion != null) ? currentRegion.Level : 1;
             int newLevel = currentLevel + 1;
 
             //levels are the same and we have an existing region;
             //end the current region and start the next
-            if ((currentLevel == newLevel) && (currentRegion != null)) {
-                newRegions.Add(new Region() {
+            if ((currentLevel == newLevel) && (currentRegion != null))
+            {
+                newRegions.Add(new Region()
+                {
                     Level = currentRegion.Level,
                     StartLine = currentRegion.StartLine,
                     StartOffset = currentRegion.StartOffset,
@@ -402,7 +491,8 @@ namespace AsmDude.CodeFolding {
                     EndLine = lineNumber
                 });
 
-                currentRegion = new PartialRegion() {
+                currentRegion = new PartialRegion()
+                {
                     Level = newLevel,
                     StartLine = lineNumber,
                     StartOffset = regionStart,
@@ -411,8 +501,10 @@ namespace AsmDude.CodeFolding {
                 };
             }
             //this is a new (sub)region
-            else {
-                currentRegion = new PartialRegion() {
+            else
+            {
+                currentRegion = new PartialRegion()
+                {
                     Level = newLevel,
                     StartLine = lineNumber,
                     StartOffset = regionStart,
@@ -422,16 +514,18 @@ namespace AsmDude.CodeFolding {
             }
         }
 
-        private void addEndRegion(
+        private void Add_End_Region(
             string lineContent,
             int regionEnd,
             int lineNumber,
             ref PartialRegion currentRegion,
             IList<Region> newRegions)
         {
-            //AsmDudeToolsStatic.Output("INFO: CodeFoldingTagger: addEndRegion: lineContent="+lineContent +"; regionEnd="+regionEnd +"; lineNumber="+lineNumber);
-            if (currentRegion != null) {
-                newRegions.Add(new Region() {
+            AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger: addEndRegion: lineContent=" + lineContent + "; regionEnd=" + regionEnd + "; lineNumber=" + lineNumber);
+            if (currentRegion != null)
+            {
+                newRegions.Add(new Region()
+                {
                     Level = currentRegion.Level,
                     StartLine = currentRegion.StartLine,
                     StartOffset = currentRegion.StartOffset,
@@ -442,13 +536,14 @@ namespace AsmDude.CodeFolding {
             }
         }
 
-        private void updateChangedSpans(ITextSnapshot newSnapshot, IList<Region> newRegions) {
+        private void Update_Changed_Spans(ITextSnapshot newSnapshot, IList<Region> newRegions)
+        {
             //determine the changed span, and send a changed event with the new spans
             IList<Span> oldSpans =
-                    new List<Span>(this._regions.Select(r => CodeFoldingTagger.AsSnapshotSpan(r, this._snapshot)
+                    new List<Span>(this._regions.Select(r => CodeFoldingTagger.As_Snapshot_Span(r, this._snapshot)
                         .TranslateTo(newSnapshot, SpanTrackingMode.EdgeExclusive)
                         .Span));
-            IList<Span> newSpans = new List<Span>(newRegions.Select(r => CodeFoldingTagger.AsSnapshotSpan(r, newSnapshot).Span));
+            IList<Span> newSpans = new List<Span>(newRegions.Select(r => CodeFoldingTagger.As_Snapshot_Span(r, newSnapshot).Span));
 
             NormalizedSpanCollection oldSpanCollection = new NormalizedSpanCollection(oldSpans);
             NormalizedSpanCollection newSpanCollection = new NormalizedSpanCollection(newSpans);
@@ -459,41 +554,49 @@ namespace AsmDude.CodeFolding {
             int changeStart = int.MaxValue;
             int changeEnd = -1;
 
-            if (removed.Count > 0) {
+            if (removed.Count > 0)
+            {
                 changeStart = removed[0].Start;
                 changeEnd = removed[removed.Count - 1].End;
             }
-            if (newSpans.Count > 0) {
+            if (newSpans.Count > 0)
+            {
                 changeStart = Math.Min(changeStart, newSpans[0].Start);
                 changeEnd = Math.Max(changeEnd, newSpans[newSpans.Count - 1].End);
             }
 
             this._snapshot = newSnapshot;
             this._regions = newRegions;
-            if (changeStart <= changeEnd) {
-                if (this.TagsChanged != null) {
+            if (changeStart <= changeEnd)
+            {
+                if (this.TagsChanged != null)
+                {
                     this.TagsChanged(this, new SnapshotSpanEventArgs(new SnapshotSpan(this._snapshot, Span.FromBounds(changeStart, changeEnd))));
-                } else {
-                    AsmDudeToolsStatic.Output("reparse_Sync: TagsChanged is null");
+                }
+                else
+                {
+                    AsmDudeToolsStatic.Output_WARNING("CodeFoldingTagger:updateChangedSpans: TagsChanged is null");
                 }
             }
         }
 
-        private static SnapshotSpan AsSnapshotSpan(Region region, ITextSnapshot snapshot) {
+        private static SnapshotSpan As_Snapshot_Span(Region region, ITextSnapshot snapshot)
+        {
             var startLine = snapshot.GetLineFromLineNumber(region.StartLine);
             var endLine = (region.StartLine == region.EndLine) ? startLine : snapshot.GetLineFromLineNumber(region.EndLine);
             return new SnapshotSpan(startLine.Start + region.StartOffset, endLine.End);
         }
 
-        private void disable() {
-
+        private void Disable()
+        {
             string filename = AsmDudeToolsStatic.GetFileName(this._buffer);
             string msg = string.Format("Performance of CodeFoldingTagger is horrible: disabling folding for {0}.", filename);
-            AsmDudeToolsStatic.Output(string.Format("WARNING: " + msg));
+            AsmDudeToolsStatic.Output_WARNING(msg);
 
             this._enabled = false;
-            lock (this._updateLock) {
-                this._buffer.ChangedLowPriority -= this.BufferChanged;
+            lock (this._updateLock)
+            {
+                this._buffer.ChangedLowPriority -= this.Buffer_Changed;
                 this._regions.Clear();
             }
             AsmDudeToolsStatic.disableMessage(msg, filename, this._errorListProvider);

@@ -3,7 +3,13 @@
 	<info>General info here</info>
 	<miscs>
 		<misc name="PTR"/>
-		<misc name="BYTE">
+    <misc name="BOOLEAN" tool="MASM">
+      <description>MASM: Boolean</description>
+    </misc>
+    <misc name="HWND" tool="MASM">
+      <description>MASM: A handle to a window</description>
+    </misc>    
+    <misc name="BYTE">
 			<description>Byte (1 byte, 8 bit)</description>
 		</misc>
 		<misc name="SBYTE">
@@ -215,7 +221,10 @@
 		<directive name=".ELSIF" tool="MASM">
 			<description>MASM: Generates code that tests condition1 (for example, AX > 7) and executes the statements if that condition is true.</description>
 		</directive>
-		<directive name=".ENDIF" tool="MASM">
+    <directive name=".ELSEIF" tool="MASM">
+      <description>MASM: Generates code that tests condition1 (for example, AX > 7) and executes the statements if that condition is true.</description>
+    </directive>
+    <directive name=".ENDIF" tool="MASM">
 			<description>MASM:</description>
 		</directive>
 		<directive name=".ENDW" tool="MASM">
