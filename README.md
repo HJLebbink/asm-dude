@@ -65,6 +65,7 @@ Studio will launch under the experimental hive.
 
 ###Known Issues:
 * Incomplete descriptions. E.g. PMOVSX, the source [html](https://hjlebbink.github.io/x86doc/html/PMOVSX.html) has a split table and only the first table is used as source.
+* MASM versions 6.0 and later treat all statement labels inside a procedure as local. AsmDude however does not yet honor this freedom, and will diligently complain about label clashes.
 
 ###Feature Requests: (desire something - let me know)
 * ~~Documentation for opcodes. Hit F12 to get full official documentation of the selected opcode~~.
