@@ -189,7 +189,7 @@ namespace AsmDude.CodeFolding
         /// <summary>
         /// Return start positions of the provided line content. Tuple has: 1) start of the folding position; 2) start of the description position.
         /// </summary>
-        private Tuple<int, int> IsStartKeyword(string lineContent, int lineNumber)
+        private Tuple<int, int> Is_Start_Keyword(string lineContent, int lineNumber)
         {
             var tup = this.Is_Start_Directive_Keyword(lineContent);
             if (tup.Item1 == -1)
@@ -226,33 +226,19 @@ namespace AsmDude.CodeFolding
             IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent);
             foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in tags)
             {
-                if (asmTokenSpan.Tag.type == AsmTokenType.Directive)
+                if (asmTokenSpan.Tag.Type == AsmTokenType.Directive)
                 {
-                    string tokenStr = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText();
-                    AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger:IsStartMasmKeyword: tokenStr=" + tokenStr);
-
-                    if (tokenStr.Equals("SEGMENT", StringComparison.OrdinalIgnoreCase))
+                    string tokenStr = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText().ToUpper();
+                    //AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger:IsStartMasmKeyword: tokenStr=" + tokenStr);
+                    switch (tokenStr)
                     {
-                        //return lineContent.IndexOf("SEGMENT", StringComparison.OrdinalIgnoreCase);
-                        return new Tuple<int, int>(lineContent.Length, lineContent.Length);
-                    }
-                    if (tokenStr.Equals("PROC", StringComparison.OrdinalIgnoreCase))
-                    {
-                        //return lineContent.IndexOf("PROC", StringComparison.OrdinalIgnoreCase);
-                        return new Tuple<int, int>(lineContent.Length, lineContent.Length);
-                    }
-                    if (tokenStr.Equals("MACRO", StringComparison.OrdinalIgnoreCase))
-                    {
-                        //return lineContent.IndexOf("MACRO", StringComparison.OrdinalIgnoreCase);
-                        return new Tuple<int, int>(lineContent.Length, lineContent.Length);
-                    }
-                    if (tokenStr.Equals(".IF", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return new Tuple<int, int>(lineContent.Length, lineContent.Length);
-                    }
-                    if (tokenStr.Equals(".WHILE", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return new Tuple<int, int>(lineContent.Length, lineContent.Length);
+                        case "SEGMENT":
+                        case "PROC":
+                        case "MACRO":
+                        case ".IF":
+                        case ".WHILE":
+                            return new Tuple<int, int>(lineContent.Length, lineContent.Length);
+                        default: break;
                     }
                 }
             }
@@ -262,14 +248,7 @@ namespace AsmDude.CodeFolding
         private int Is_End_Keyword(string lineContent, int lineNumber)
         {
             int i1 = Is_End_Directive_Keyword(lineContent);
-            if (i1 == -1)
-            {
-                return Is_End_Masm_Keyword(lineContent, lineNumber);
-            }
-            else
-            {
-                return i1;
-            }
+            return (i1 == -1) ? Is_End_Masm_Keyword(lineContent, lineNumber) : i1;
         }
 
         private int Is_End_Directive_Keyword(string lineContent)
@@ -282,28 +261,18 @@ namespace AsmDude.CodeFolding
             IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent);
             foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in tags)
             {
-                if (asmTokenSpan.Tag.type == AsmTokenType.Directive)
+                if (asmTokenSpan.Tag.Type == AsmTokenType.Directive)
                 {
-                    string tokenStr = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText();
-                    if (tokenStr.Equals("ENDS", StringComparison.OrdinalIgnoreCase))
+                    string tokenStr = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText().ToUpper();
+                    switch (tokenStr)
                     {
-                        return lineContent.IndexOf("ENDS", StringComparison.OrdinalIgnoreCase);
-                    }
-                    if (tokenStr.Equals("ENDP", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return lineContent.IndexOf("ENDP", StringComparison.OrdinalIgnoreCase);
-                    }
-                    if (tokenStr.Equals("ENDM", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return lineContent.IndexOf("ENDM", StringComparison.OrdinalIgnoreCase);
-                    }
-                    if (tokenStr.Equals(".ENDIF", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return lineContent.IndexOf(".ENDIF", StringComparison.OrdinalIgnoreCase);
-                    }
-                    if (tokenStr.Equals(".ENDW", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return lineContent.IndexOf(".ENDW", StringComparison.OrdinalIgnoreCase);
+                        case "ENDS":
+                        case "ENDP":
+                        case "ENDM":
+                        case ".ENDIF":
+                        case ".ENDW":
+                            return lineContent.IndexOf(tokenStr, StringComparison.OrdinalIgnoreCase);
+                        default: break;
                     }
                 }
             }
@@ -330,7 +299,7 @@ namespace AsmDude.CodeFolding
                 AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger:reparse_delayed: going to execute this call.");
                 if (true)
                 {
-                    AsmDudeTools.Instance.threadPool.QueueWorkItem(this.Parse2);
+                    AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Parse2);
                 }
                 else
                 {
@@ -380,7 +349,7 @@ namespace AsmDude.CodeFolding
                         string lineContent = line.GetText();
                         int lineNumber = line.LineNumber;
 
-                        Tuple<int, int> tup = this.IsStartKeyword(lineContent, lineNumber);
+                        Tuple<int, int> tup = this.Is_Start_Keyword(lineContent, lineNumber);
                         int regionStart = tup.Item1;
                         int regionStartHoverText = tup.Item2;
 
@@ -448,7 +417,7 @@ namespace AsmDude.CodeFolding
                     }
                     #endregion
                 }
-                AsmDudeToolsStatic.printSpeedWarning(time1, "CodeFoldingTagger");
+                AsmDudeToolsStatic.Print_Speed_Warning(time1, "CodeFoldingTagger");
 
                 double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
                 if (elapsedSec > AsmDudePackage.slowShutdownThresholdSec)
@@ -475,7 +444,9 @@ namespace AsmDude.CodeFolding
             IList<Region> newRegions)
         {
             AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger: addStartRegion");
+#pragma warning disable IDE0030 // Use null propagation
             int currentLevel = (currentRegion != null) ? currentRegion.Level : 1;
+#pragma warning restore IDE0030 // Use null propagation
             int newLevel = currentLevel + 1;
 
             //levels are the same and we have an existing region;
@@ -599,7 +570,7 @@ namespace AsmDude.CodeFolding
                 this._buffer.ChangedLowPriority -= this.Buffer_Changed;
                 this._regions.Clear();
             }
-            AsmDudeToolsStatic.disableMessage(msg, filename, this._errorListProvider);
+            AsmDudeToolsStatic.Disable_Message(msg, filename, this._errorListProvider);
         }
 
         #endregion Private Methods

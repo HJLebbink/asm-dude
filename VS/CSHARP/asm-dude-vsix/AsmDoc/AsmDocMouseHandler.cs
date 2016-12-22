@@ -82,11 +82,7 @@ namespace AsmDude.AsmDoc
                 _enabled = value;
                 if (oldVal != _enabled)
                 {
-                    var temp = CtrlKeyStateChanged;
-                    if (temp != null)
-                    {
-                        temp(this, new EventArgs());
-                    }
+                    CtrlKeyStateChanged?.Invoke(this, new EventArgs());
                 }
             }
         }
@@ -211,13 +207,13 @@ namespace AsmDude.AsmDoc
                     this.TryHighlightItemUnderMouse(RelativeToView(Mouse.PrimaryDevice.GetPosition(_view.VisualElement)));
                 } else
                 {
-                    this.SetHighlightSpan(null);
+                    this.Set_Highlight_Span(null);
                 }
             };
 
             // Some other points to clear the highlight span:
-            _view.LostAggregateFocus += (sender, args) => this.SetHighlightSpan(null);
-            _view.VisualElement.MouseLeave += (sender, args) => this.SetHighlightSpan(null);
+            _view.LostAggregateFocus += (sender, args) => this.Set_Highlight_Span(null);
+            _view.VisualElement.MouseLeave += (sender, args) => this.Set_Highlight_Span(null);
 
         }
 
@@ -244,7 +240,7 @@ namespace AsmDude.AsmDoc
                 if (InDragOperation(_mouseDownAnchorPoint.Value, currentMousePosition))
                 {
                     _mouseDownAnchorPoint = null;
-                    this.SetHighlightSpan(null);
+                    this.Set_Highlight_Span(null);
                 }
             }
         }
@@ -276,12 +272,12 @@ namespace AsmDude.AsmDoc
 
                         ITextViewLine line = this._view.TextViewLines.GetTextViewLineContainingYCoordinate(currentMousePosition.Y);
                         SnapshotPoint? bufferPosition = line.GetBufferPositionFromXCoordinate(currentMousePosition.X);
-                        string keyword = AsmDudeToolsStatic.getKeywordStr(bufferPosition);
+                        string keyword = AsmDudeToolsStatic.Get_Keyword_Str(bufferPosition);
                         if (keyword != null)
                         {
-                            this.DispatchGoToDoc(keyword);
+                            this.Dispatch_Goto_Doc(keyword);
                         }
-                        this.SetHighlightSpan(null);
+                        this.Set_Highlight_Span(null);
                         this._view.Selection.Clear();
                         e.Handled = true;
                     }
@@ -341,9 +337,9 @@ namespace AsmDude.AsmDoc
                 {
                     string keyword = classification.Span.GetText();
                     //string type = classification.ClassificationType.Classification.ToLower();
-                    string url = this.getUrl(keyword);
+                    string url = this.Get_Url(keyword);
                     //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:TryHighlightItemUnderMouse: keyword={1}; type={2}; url={3}", this.ToString(), keyword, type, url));
-                    if ((url != null) && SetHighlightSpan(classification.Span))
+                    if ((url != null) && Set_Highlight_Span(classification.Span))
                     {
                         updated = true;
                         return true;
@@ -356,7 +352,7 @@ namespace AsmDude.AsmDoc
             {
                 if (!updated)
                 {
-                    SetHighlightSpan(null);
+                    Set_Highlight_Span(null);
                 }
             }
         }
@@ -374,7 +370,7 @@ namespace AsmDude.AsmDoc
             }
         }
 
-        private bool SetHighlightSpan(SnapshotSpan? span)
+        private bool Set_Highlight_Span(SnapshotSpan? span)
         {
             var classifier = AsmDocUnderlineTaggerProvider.GetClassifierForView(_view);
             if (classifier != null)
@@ -386,24 +382,24 @@ namespace AsmDude.AsmDoc
             return false;
         }
 
-        private bool DispatchGoToDoc(string keyword)
+        private bool Dispatch_Goto_Doc(string keyword)
         {
             //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:DispatchGoToDoc; keyword=\"{1}\".", this.ToString(), keyword));
-            int hr = this.openFile(keyword);
+            int hr = this.Open_File(keyword);
             return ErrorHandler.Succeeded(hr);
         }
 
-        private string getUrl(string keyword)
+        private string Get_Url(string keyword)
         {
-            string reference = this._asmDudeTools.getUrl(keyword);
+            string reference = this._asmDudeTools.Get_Url(keyword);
             if (reference.Length == 0) return null;
             return Settings.Default.AsmDoc_url + reference;
             //return AsmDudeToolsStatic.getInstallPath() + "html" + Path.DirectorySeparatorChar + reference;
         }
 
-        private int openFile(string keyword)
+        private int Open_File(string keyword)
         {
-            string url = this.getUrl(keyword);
+            string url = this.Get_Url(keyword);
             if (url == null)
             { // this situation happens for all keywords (such as registers) that do not have an url specified.
                 //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:openFile; url for keyword \"{1}\" is null.", this.ToString(), keyword));

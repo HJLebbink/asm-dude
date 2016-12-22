@@ -53,8 +53,8 @@ namespace AsmDude.CodeFolding {
 
             //Debug.WriteLine("INFO: TaggerProvider:CreateTagger: entering");
             Func<ITagger<T>> sc = delegate () {
-                ITagAggregator<AsmTokenTag> aggregator = AsmDudeToolsStatic.getAggregator(buffer, this._aggregatorFactory);
-                return new CodeFoldingTagger(buffer, aggregator, AsmDudeTools.Instance.errorListProvider) as ITagger<T>;
+                ITagAggregator<AsmTokenTag> aggregator = AsmDudeToolsStatic.Get_Aggregator(buffer, this._aggregatorFactory);
+                return new CodeFoldingTagger(buffer, aggregator, AsmDudeTools.Instance.Error_List_Provider) as ITagger<T>;
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }

@@ -46,11 +46,7 @@ namespace AsmDude.AsmDoc
 
         void SendEvent(SnapshotSpan span)
         {
-            var temp = this.TagsChanged;
-            if (temp != null)
-            {
-                temp(this, new SnapshotSpanEventArgs(span));
-            }
+            this.TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(span));
         }
 
         #endregion

@@ -52,7 +52,7 @@ namespace AsmDude
                 //    return new DebugTokenTagger(buffer) as ITagger<T>;
                 //} else {
 
-                    switch (AsmDudeToolsStatic.usedAssembler)
+                    switch (AsmDudeToolsStatic.Used_Assembler)
                     {
                         case AssemblerEnum.MASM: return new MasmTokenTagger(buffer) as ITagger<T>;
                         case AssemblerEnum.NASM: return new NasmTokenTagger(buffer) as ITagger<T>;

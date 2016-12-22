@@ -125,7 +125,7 @@ namespace AsmDude.SignatureHelp {
 
     public static class AsmSignatureTools {
 
-        public static AsmSignatureEnum[] parseOperandTypeEnum(string str) {
+        public static AsmSignatureEnum[] Parse_Operand_Type_Enum(string str) {
 
             switch (str.ToUpper().Trim()) {
 
@@ -357,7 +357,7 @@ namespace AsmDude.SignatureHelp {
             }
         }
         /// <summary>Get brief description of the operand</summary>
-        public static string getDoc(AsmSignatureEnum operandType) {
+        public static string Get_Doc(AsmSignatureEnum operandType) {
             switch (operandType) {
                 case AsmSignatureEnum.MEM: return "memory operand";
                 case AsmSignatureEnum.M8: return "8-bits memory operand";
@@ -511,7 +511,7 @@ namespace AsmDude.SignatureHelp {
             }
         }
 
-        public static bool isAllowedOperand(Operand op, AsmSignatureEnum operandType) {
+        public static bool Is_Allowed_Operand(Operand op, AsmSignatureEnum operandType) {
             switch (operandType) {
                 case AsmSignatureEnum.UNKNOWN: return true;
                 case AsmSignatureEnum.MEM: return op.isMem;
@@ -596,7 +596,7 @@ namespace AsmDude.SignatureHelp {
             return true;
         }
 
-        public static bool isAllowedMisc(string misc, ISet<AsmSignatureEnum> allowedOperands) {
+        public static bool Is_Allowed_Misc(string misc, ISet<AsmSignatureEnum> allowedOperands) {
             switch (misc) {
                 case "PTR":
                     if (allowedOperands.Contains(AsmSignatureEnum.MEM)) return true;
@@ -647,7 +647,7 @@ namespace AsmDude.SignatureHelp {
             return false;
         }
 
-        public static bool isAllowedReg(Rn regName, ISet<AsmSignatureEnum> allowedOperands) {
+        public static bool Is_Allowed_Reg(Rn regName, ISet<AsmSignatureEnum> allowedOperands) {
             RegisterType type = RegisterTools.getRegisterType(regName);
             switch (type) {
                 case RegisterType.UNKNOWN:

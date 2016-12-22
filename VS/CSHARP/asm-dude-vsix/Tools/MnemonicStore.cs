@@ -84,7 +84,7 @@ namespace AsmDude.Tools
             this._description[mnemonic] = value;
             if (this._data.ContainsKey(mnemonic)) {
                 foreach (AsmSignatureElement e in _data[mnemonic]) {
-                    e.documentation = value;
+                    e.Documentation = value;
                 }
             }
         }
@@ -105,10 +105,10 @@ namespace AsmDude.Tools
                 string s6 = this._htmlRef[mnemonic];
 
                 foreach (AsmSignatureElement sig in element.Value) {
-                    string s2 = sig.operandsStr;
-                    string s3 = sig.archStr;
-                    string s4 = sig.sigatureDoc();
-                    string s5 = sig.documentation;
+                    string s2 = sig.Operands_Str;
+                    string s3 = sig.Arch_Str;
+                    string s4 = sig.Sigature_Doc();
+                    string s5 = sig.Documentation;
                     sb.AppendLine(s1 + "\t" + s2 + "\t" + s3 + "\t" + s4 + "\t" + s5 + "\t" + s6);
                 }
             }
@@ -120,7 +120,7 @@ namespace AsmDude.Tools
         /// </summary>
         /// <param name="asmSignatureElement"></param>
         private bool add(AsmSignatureElement asmSignatureElement) {
-            Mnemonic mnemonic = asmSignatureElement.mnemonic;
+            Mnemonic mnemonic = asmSignatureElement.Mnemonic;
             IList<AsmSignatureElement> signatureElementList = null;
             bool result = false;
 
@@ -189,7 +189,7 @@ namespace AsmDude.Tools
                 foreach (KeyValuePair<Mnemonic, IList<AsmSignatureElement>> pair in this._data) {
                     ISet<Arch> archs = new HashSet<Arch>();
                     foreach (AsmSignatureElement signatureElement in pair.Value) {
-                        foreach (Arch arch in signatureElement.arch) {
+                        foreach (Arch arch in signatureElement.Arch) {
                             archs.Add(arch);
                         }
                     }
@@ -253,7 +253,7 @@ namespace AsmDude.Tools
                 foreach (KeyValuePair<Mnemonic, IList<AsmSignatureElement>> pair in this._data) {
                     ISet<Arch> archs = new HashSet<Arch>();
                     foreach (AsmSignatureElement signatureElement in pair.Value) {
-                        foreach (Arch arch in signatureElement.arch) {
+                        foreach (Arch arch in signatureElement.Arch) {
                             archs.Add(arch);
                         }
                     }

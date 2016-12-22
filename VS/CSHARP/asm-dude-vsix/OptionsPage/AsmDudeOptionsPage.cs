@@ -75,7 +75,7 @@ namespace AsmDude.OptionsPage
 
             #region Syntax Highlighting
             this._asmDudeOptionsPageUI.useSyntaxHighlighting = Settings.Default.SyntaxHighlighting_On;
-            this._asmDudeOptionsPageUI.usedAssembler = AsmDudeToolsStatic.usedAssembler;
+            this._asmDudeOptionsPageUI.usedAssembler = AsmDudeToolsStatic.Used_Assembler;
             this._asmDudeOptionsPageUI.colorMnemonic = Settings.Default.SyntaxHighlighting_Opcode;
             this._asmDudeOptionsPageUI.colorRegister = Settings.Default.SyntaxHighlighting_Register;
             this._asmDudeOptionsPageUI.colorRemark = Settings.Default.SyntaxHighlighting_Remark;
@@ -218,7 +218,7 @@ namespace AsmDude.OptionsPage
         }
 
         private string makeToolTip(Arch arch) {
-            MnemonicStore store = AsmDudeTools.Instance.mnemonicStore;
+            MnemonicStore store = AsmDudeTools.Instance.Mnemonic_Store;
             ISet<Mnemonic> usedMnemonics = new HashSet<Mnemonic>();
             foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic))) {
                 if (store.getArch(mnemonic).Contains(arch)) {
@@ -295,7 +295,7 @@ namespace AsmDude.OptionsPage
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useSyntaxHighlighting=" + this._asmDudeOptionsPageUI.useSyntaxHighlighting);
                 changed = true;
             }
-            if (AsmDudeToolsStatic.usedAssembler != this._asmDudeOptionsPageUI.usedAssembler) {
+            if (AsmDudeToolsStatic.Used_Assembler != this._asmDudeOptionsPageUI.usedAssembler) {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: usedAssembler=" + this._asmDudeOptionsPageUI.usedAssembler);
                 changed = true;
             }
@@ -661,8 +661,8 @@ namespace AsmDude.OptionsPage
                 changed = true;
                 restartNeeded = true;
             }
-            if (AsmDudeToolsStatic.usedAssembler != this._asmDudeOptionsPageUI.usedAssembler) {
-                AsmDudeToolsStatic.usedAssembler = this._asmDudeOptionsPageUI.usedAssembler;
+            if (AsmDudeToolsStatic.Used_Assembler != this._asmDudeOptionsPageUI.usedAssembler) {
+                AsmDudeToolsStatic.Used_Assembler = this._asmDudeOptionsPageUI.usedAssembler;
                 changed = true;
                 restartNeeded = true;
             }

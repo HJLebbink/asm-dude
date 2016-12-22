@@ -24,39 +24,40 @@ using Microsoft.VisualStudio.Shell;
 using System;
 using System.Collections.Generic;
 
-namespace AsmDude.Tools {
-
-    public interface ILabelGraph {
-        SortedSet<uint> getLabelDefLineNumbers(string label);
-        IList<int> getAllRelatedLineNumber();
+namespace AsmDude.Tools
+{
+    public interface ILabelGraph
+    {
+        SortedSet<uint> Get_Label_Def_Linenumbers(string label);
+        IList<int> Get_All_Related_Linenumber();
 
         /// <summary>
         /// Return whether this label graph is enabled
         /// </summary>
-        bool isEnabled { get; }
+        bool Is_Enabled { get; }
 
-        int getLinenumber(uint id);
-        string getFilename(uint id);
-        bool isFromMainFile(uint id);
+        int Get_Linenumber(uint id);
+        string Get_Filename(uint id);
+        bool Is_From_Main_File(uint id);
 
 
-        bool hasLabel(string label);
-        bool hasLabelClash(string label);
-        SortedSet<uint> labelUsedAtInfo(string label);
+        bool Has_Label(string label);
+        bool Has_Label_Clash(string label);
+        SortedSet<uint> Label_Used_At_Info(string label);
 
         /// <summary>
         /// Return dictionary of line numbers with label clash descriptions
         /// </summary>
-        SortedDictionary<uint, string> labelClashes { get; }
+        SortedDictionary<uint, string> Label_Clashes { get; }
 
         /// <summary>
         /// Return dictionary of line numbers with undefined label descriptions
         /// </summary>
-        SortedDictionary<uint, string> undefinedLabels { get; }
+        SortedDictionary<uint, string> Undefined_Labels { get; }
 
-        SortedDictionary<string, string> getLabelDescriptions { get; }
+        SortedDictionary<string, string> Label_Descriptions { get; }
 
-        void reset_Delayed();
-        event EventHandler<CustomEventArgs> ResetDoneEvent;
+        void Reset_Delayed();
+        event EventHandler<CustomEventArgs> Reset_Done_Event;
     }
 }

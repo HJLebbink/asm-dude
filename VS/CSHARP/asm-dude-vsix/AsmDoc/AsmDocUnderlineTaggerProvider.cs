@@ -53,7 +53,7 @@ namespace AsmDude.AsmDoc
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
-            if (!AsmDudeToolsStatic.properFile(buffer)) return null;
+            if (!AsmDudeToolsStatic.Proper_File(buffer)) return null;
 
             //AsmDudeToolsStatic.Output("INFO: AsmDocUnderlineTaggerProvider:CreateTagger: file=" + AsmDudeToolsStatic.GetFileName(buffer));
             if (UnderlineClassification == null)

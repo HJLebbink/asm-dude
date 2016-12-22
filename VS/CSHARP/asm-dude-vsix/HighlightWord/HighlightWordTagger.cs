@@ -40,7 +40,7 @@ namespace AsmDude.HighlightWord
     [UserVisible(true)]
     internal class HighlightWordFormatDefinition : MarkerFormatDefinition {
         public HighlightWordFormatDefinition() {
-            this.BackgroundColor = AsmDudeToolsStatic.convertColor(Settings.Default.KeywordHighlightColor);
+            this.BackgroundColor = AsmDudeToolsStatic.Convert_Color(Settings.Default.KeywordHighlightColor);
             this.DisplayName = "AsmDude - Highlight Word";
             this.ZOrder = 5;
         }
@@ -70,14 +70,14 @@ namespace AsmDude.HighlightWord
         // The current set of words to highlight
         private NormalizedSnapshotSpanCollection _wordSpans;
 
-        private string _currentWord { get; set; }
+        private string CurrentWord { get; set; }
         private SnapshotSpan? _currentWordSpan;
 
-        private string _newWord { get; set; }
-        private SnapshotSpan? _newWordSpan { get; set; }
+        private string NewWord { get; set; }
+        private SnapshotSpan? NewWordSpan { get; set; }
 
         // The current request, from the last cursor movement or view render
-        private SnapshotPoint _requestedPoint { get; set; }
+        private SnapshotPoint RequestedPoint { get; set; }
 
         public HighlightWordTagger(ITextView view, ITextBuffer sourceBuffer, ITextSearchService textSearchService) {
             _view = view;
@@ -86,10 +86,10 @@ namespace AsmDude.HighlightWord
 
             _wordSpans = new NormalizedSnapshotSpanCollection();
 
-            _currentWord = null;
+            CurrentWord = null;
             _currentWordSpan = null;
-            _newWord = null;
-            _newWordSpan = null;
+            NewWord = null;
+            NewWordSpan = null;
 
             // Subscribe to both change events in the view - any time the view is updated
             // or the caret is moved, we refresh our list of highlighted words.
@@ -129,18 +129,18 @@ namespace AsmDude.HighlightWord
 
             // If the new cursor position is still within the current word (and on the same snapshot),
             // we don't need to check it.
-            TextExtent? newWordExtend = AsmDudeToolsStatic.getKeyword(point);
+            TextExtent? newWordExtend = AsmDudeToolsStatic.Get_Keyword(point);
             if (newWordExtend.HasValue) {
                 string newWord = newWordExtend.Value.Span.GetText();
 
-                if ((this._currentWord != null) && newWord.Equals(this._currentWord)) {
+                if ((this.CurrentWord != null) && newWord.Equals(this.CurrentWord)) {
                     return;
                 } else {
-                    this._requestedPoint = point.Value;
-                    this._newWord = newWord;
-                    this._newWordSpan = newWordExtend.Value.Span;
+                    this.RequestedPoint = point.Value;
+                    this.NewWord = newWord;
+                    this.NewWordSpan = newWordExtend.Value.Span;
 
-                    AsmDudeTools.Instance.threadPool.QueueWorkItem(this.UpdateWordAdornments);
+                    AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Update_Word_Adornments);
                 }
             }
         }
@@ -148,27 +148,32 @@ namespace AsmDude.HighlightWord
         /// <summary>
         /// The currently highlighted word has changed. Update the adornments to reflect this change
         /// </summary>
-        private void UpdateWordAdornments() {
+        private void Update_Word_Adornments() {
             try {
                 DateTime time1 = DateTime.Now;
 
-                if (this._newWord.Length > 0) {
+                if (this.NewWord.Length > 0) {
 
-                    ITextSnapshot s = this._requestedPoint.Snapshot;
-                    SnapshotSpan sp = this._newWordSpan.Value;
+                    ITextSnapshot s = this.RequestedPoint.Snapshot;
+                    SnapshotSpan sp = this.NewWordSpan.Value;
 
                     // Find the new spans
                     FindData findData;
-                    if (AsmTools.RegisterTools.isRegister(this._newWord)) {
+                    if (AsmTools.RegisterTools.isRegister(this.NewWord)) {
                         //Debug.WriteLine(string.Format("INFO: {0}:SynchronousUpdate. Register={1}", this.ToString(), currentWordStr));
-                        findData = new FindData(AsmTools.RegisterTools.getRelatedRegister(this._newWord), s);
-                        findData.FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions;
-                    } else {
+                        findData = new FindData(AsmTools.RegisterTools.getRelatedRegister(this.NewWord), s)
+                        {
+                            FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions
+                        };
+                    }
+                    else {
                         //Debug.WriteLine(string.Format("INFO: {0}:SynchronousUpdate. Keyword={1}", this.ToString(), currentWordStr));
                         //We have to replace all occurrences of special characters with escaped versions of that char since we cannot use verbatim strings.
-                        string t = this._newWord.Replace(".", "\\.").Replace("$", "\\$").Replace("?", "\\?").Replace("/", "\\/"); //TODO escape backslashes
-                        findData = new FindData(t, s);
-                        findData.FindOptions = FindOptions.SingleLine | FindOptions.UseRegularExpressions;
+                        string t = this.NewWord.Replace(".", "\\.").Replace("$", "\\$").Replace("?", "\\?").Replace("/", "\\/"); //TODO escape backslashes
+                        findData = new FindData(t, s)
+                        {
+                            FindOptions = FindOptions.SingleLine | FindOptions.UseRegularExpressions
+                        };
                     }
 
                     List<SnapshotSpan> wordSpans = new List<SnapshotSpan>();
@@ -177,12 +182,12 @@ namespace AsmDude.HighlightWord
                     } catch (Exception e2) {
                         AsmDudeToolsStatic.Output(string.Format("WARNING: could not highlight string \"{0}\"; e={1}", findData.SearchString, e2.InnerException.Message));
                     }
-                    this.SynchronousUpdate(this._requestedPoint, new NormalizedSnapshotSpanCollection(wordSpans), this._newWord, sp);
+                    this.SynchronousUpdate(this.RequestedPoint, new NormalizedSnapshotSpanCollection(wordSpans), this.NewWord, sp);
                 } else {
                     // If we couldn't find a word, just clear out the existing markers
-                    this.SynchronousUpdate(this._requestedPoint, new NormalizedSnapshotSpanCollection(), null, null);
+                    this.SynchronousUpdate(this.RequestedPoint, new NormalizedSnapshotSpanCollection(), null, null);
                 }
-                AsmDudeToolsStatic.printSpeedWarning(time1, "HighlightWordTagger");
+                AsmDudeToolsStatic.Print_Speed_Warning(time1, "HighlightWordTagger");
             } catch (Exception e) {
                 AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:UpdateWordAdornments; e={1}", this.ToString(), e.ToString()));
             }
@@ -200,17 +205,14 @@ namespace AsmDude.HighlightWord
         /// </summary>
         private void SynchronousUpdate(SnapshotPoint currentRequest, NormalizedSnapshotSpanCollection newSpans, string newCurrentWord, SnapshotSpan? newCurrentWordSpan) {
             lock (_updateLock) {
-                if (currentRequest != _requestedPoint) {
+                if (currentRequest != RequestedPoint) {
                     return;
                 }
                 _wordSpans = newSpans;
-                _currentWord = newCurrentWord;
+                CurrentWord = newCurrentWord;
                 _currentWordSpan = newCurrentWordSpan;
 
-                var tempEvent = TagsChanged;
-                if (tempEvent != null) {
-                    tempEvent(this, new SnapshotSpanEventArgs(new SnapshotSpan(_sourceBuffer.CurrentSnapshot, 0, _sourceBuffer.CurrentSnapshot.Length)));
-                }
+                TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(new SnapshotSpan(_sourceBuffer.CurrentSnapshot, 0, _sourceBuffer.CurrentSnapshot.Length)));
             }
         }
 
@@ -223,7 +225,7 @@ namespace AsmDude.HighlightWord
         /// </summary>
         /// <param name="spans">A read-only span of text to be searched for instances of CurrentWord</param>
         public IEnumerable<ITagSpan<HighlightWordTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
-            if (_currentWord == null) {
+            if (CurrentWord == null) {
                 yield break;
             }
             if ((spans.Count == 0) || (_wordSpans.Count == 0)) {

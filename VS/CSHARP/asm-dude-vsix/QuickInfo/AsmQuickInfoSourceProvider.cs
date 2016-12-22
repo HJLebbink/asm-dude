@@ -56,8 +56,8 @@ namespace AsmDude.QuickInfo
             //if (!AsmDudeToolsStatic.properFile(buffer)) return null;
 
             Func<AsmQuickInfoSource> sc = delegate () {
-                ITagAggregator<AsmTokenTag> aggregator = AsmDudeToolsStatic.getAggregator(buffer, _aggregatorFactory);
-                ILabelGraph labelGraph = AsmDudeToolsStatic.getLabelGraph(buffer, _aggregatorFactory, _docFactory, _contentService);
+                ITagAggregator<AsmTokenTag> aggregator = AsmDudeToolsStatic.Get_Aggregator(buffer, _aggregatorFactory);
+                ILabelGraph labelGraph = AsmDudeToolsStatic.Get_Label_Graph(buffer, _aggregatorFactory, _docFactory, _contentService);
                 return new AsmQuickInfoSource(buffer, aggregator, labelGraph);
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);

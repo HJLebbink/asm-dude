@@ -45,11 +45,12 @@ namespace AsmDude.BraceMatching {
             this._currentChar = null;
 
             //here the keys are the open braces, and the values are the close braces
-            this._braceList = new Dictionary<char, char>();
-            this._braceList.Add('[', ']');
-            this._braceList.Add('(', ')');
-            this._braceList.Add('{', '}');
-
+            this._braceList = new Dictionary<char, char>
+            {
+                { '[', ']' },
+                { '(', ')' },
+                { '{', '}' }
+            };
             this._view.Caret.PositionChanged += CaretPositionChanged;
             this._view.LayoutChanged += ViewLayoutChanged;
         }
@@ -71,11 +72,7 @@ namespace AsmDude.BraceMatching {
             if (!_currentChar.HasValue) {
                 return;
             }
-            var tempEvent = TagsChanged;
-            if (tempEvent != null) {
-                tempEvent(this, new SnapshotSpanEventArgs(new SnapshotSpan(_sourceBuffer.CurrentSnapshot, 0,
-                    _sourceBuffer.CurrentSnapshot.Length)));
-            }
+            TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(new SnapshotSpan(_sourceBuffer.CurrentSnapshot, 0, _sourceBuffer.CurrentSnapshot.Length)));
         }
 
         public IEnumerable<ITagSpan<TextMarkerTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
@@ -101,8 +98,7 @@ namespace AsmDude.BraceMatching {
             SnapshotSpan pairSpan = new SnapshotSpan();
 
             if (_braceList.ContainsKey(currentText)) {  //the key is the open brace
-                char closeChar;
-                _braceList.TryGetValue(currentText, out closeChar);
+                _braceList.TryGetValue(currentText, out char closeChar);
                 if (BraceMatchingTagger.FindMatchingCloseChar(currentChar, currentText, closeChar, _view.TextViewLines.Count, out pairSpan) == true) {
                     yield return new TagSpan<TextMarkerTag>(new SnapshotSpan(currentChar, 1), new TextMarkerTag("blue"));
                     yield return new TagSpan<TextMarkerTag>(pairSpan, new TextMarkerTag("blue"));

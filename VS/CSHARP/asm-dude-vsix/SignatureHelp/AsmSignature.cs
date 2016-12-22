@@ -59,13 +59,10 @@ namespace AsmDude.SignatureHelp {
         }
 
         private void RaiseCurrentParameterChanged(IParameter prevCurrentParameter, IParameter newCurrentParameter) {
-            EventHandler<CurrentParameterChangedEventArgs> tempHandler = this.CurrentParameterChanged;
-            if (tempHandler != null) {
-                tempHandler(this, new CurrentParameterChangedEventArgs(prevCurrentParameter, newCurrentParameter));
-            }
+            this.CurrentParameterChanged?.Invoke(this, new CurrentParameterChangedEventArgs(prevCurrentParameter, newCurrentParameter));
         }
 
-        public static int countCommas(string str) {
+        public static int Count_Commas(string str) {
             int currentIndex = 0;
             int commaCount = 0;
             while (currentIndex < str.Length) {
@@ -79,7 +76,7 @@ namespace AsmDude.SignatureHelp {
             return commaCount;
         }
 
-        internal void computeCurrentParameter() {
+        internal void Compute_Current_Parameter() {
             //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: computeCurrentParameter");
 
             int nParameters = this.Parameters.Count;
@@ -93,7 +90,7 @@ namespace AsmDude.SignatureHelp {
             string lineStr = _subjectBuffer.CurrentSnapshot.GetLineFromPosition(position).GetText();
             //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: computeCurrentParameter. lineStr=" + lineStr);
 
-            int commaCount = AsmSignature.countCommas(lineStr);
+            int commaCount = AsmSignature.Count_Commas(lineStr);
             //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: computeCurrentParameter. commaCount="+ commaCount);
 
             if (commaCount < nParameters) {
@@ -104,7 +101,7 @@ namespace AsmDude.SignatureHelp {
         }
 
         internal void OnSubjectBufferChanged(object sender, TextContentChangedEventArgs e) {
-            this.computeCurrentParameter();
+            this.Compute_Current_Parameter();
         }
 
         public ITrackingSpan ApplicableToSpan {

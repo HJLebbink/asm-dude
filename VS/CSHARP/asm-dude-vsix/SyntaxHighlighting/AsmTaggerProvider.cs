@@ -137,7 +137,7 @@ namespace AsmDude.SyntaxHighlighting
             //foreach (IContentType ct in _contentTypeRegistryService.ContentTypes)
             //    AsmDudeToolsStatic.Output("INFO: AsmTaggerProvider:CreateTagger: contentType=" + ct.DisplayName);
 
-            if (AsmDudeToolsStatic.properFile(buffer))
+            if (AsmDudeToolsStatic.Proper_File(buffer))
             {
                 Func<ITagger<T>> sc = delegate () {
                     Func<ITagAggregator<AsmTokenTag>> sc2 = delegate () {

@@ -75,26 +75,26 @@ namespace AsmDude
 
                 for (int k = 0; k < nKeywords; k++)
                 {
-                    string asmToken = keyword(pos[k], line);
-                    AsmTokenType keywordType = this._asmDudeTools.getTokenType(asmToken);
+                    string asmToken = Keyword(pos[k], line);
+                    AsmTokenType keywordType = this._asmDudeTools.Get_Token_Type(asmToken);
                     if ((keywordType == AsmTokenType.Mnemonic) ||
                         (keywordType == AsmTokenType.Jump))
                     {
-                        yield return new TagSpan<AsmTokenTag>(newSpan(pos[k], offset, curSpan), new AsmTokenTag(keywordType));
+                        yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), new AsmTokenTag(keywordType));
                     }
                 }
             }
-            AsmDudeToolsStatic.printSpeedWarning(time1, "DebugTokenTagger");
+            AsmDudeToolsStatic.Print_Speed_Warning(time1, "DebugTokenTagger");
         }
 
         #region Public Static Methods
 
-        public static string keyword(Tuple<int, int, bool> pos, string line)
+        public static string Keyword(Tuple<int, int, bool> pos, string line)
         {
             return line.Substring(pos.Item1, pos.Item2 - pos.Item1);
         }
 
-        public static SnapshotSpan newSpan(Tuple<int, int, bool> pos, int offset, SnapshotSpan lineSnapShot)
+        public static SnapshotSpan New_Span(Tuple<int, int, bool> pos, int offset, SnapshotSpan lineSnapShot)
         {
             return new SnapshotSpan(lineSnapShot.Snapshot, new Span(pos.Item1 + offset, pos.Item2 - pos.Item1));
         }

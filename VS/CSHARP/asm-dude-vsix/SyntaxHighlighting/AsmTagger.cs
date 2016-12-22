@@ -88,7 +88,7 @@ namespace AsmDude
                 foreach (IMappingTagSpan<AsmTokenTag> tagSpan in _aggregator.GetTags(spans))
                 {
                     NormalizedSnapshotSpanCollection tagSpans = tagSpan.Span.GetSpans(spans[0].Snapshot);
-                    switch (tagSpan.Tag.type)
+                    switch (tagSpan.Tag.Type)
                     {
                         case AsmTokenType.Mnemonic: yield return new TagSpan<ClassificationTag>(tagSpans[0], _mnemonic); break;
                         case AsmTokenType.Register: yield return new TagSpan<ClassificationTag>(tagSpans[0], _register); break;
@@ -103,7 +103,7 @@ namespace AsmDude
                             break;
                     }
                 }
-                AsmDudeToolsStatic.printSpeedWarning(time1, "Asm Classifier");
+                AsmDudeToolsStatic.Print_Speed_Warning(time1, "Asm Classifier");
             }
         }
     }

@@ -109,15 +109,15 @@ namespace AsmDude.QuickInfo
 
                     TextBlock description = null;
 
-                    switch (asmTokenTag.Tag.type)
+                    switch (asmTokenTag.Tag.Type)
                     {
                         case AsmTokenType.Misc:
                             {
                                 description = new TextBlock();
-                                description.Inlines.Add(makeRun1("Keyword "));
-                                description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Misc));
+                                description.Inlines.Add(Make_Run1("Keyword "));
+                                description.Inlines.Add(Make_Run2(keyword, Settings.Default.SyntaxHighlighting_Misc));
 
-                                string descr = this._asmDudeTools.getDescription(keywordUpper);
+                                string descr = this._asmDudeTools.Get_Description(keywordUpper);
                                 if (descr.Length > 0)
                                 {
                                     description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
@@ -127,10 +127,10 @@ namespace AsmDude.QuickInfo
                         case AsmTokenType.Directive:
                             {
                                 description = new TextBlock();
-                                description.Inlines.Add(makeRun1("Directive "));
-                                description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Directive));
+                                description.Inlines.Add(Make_Run1("Directive "));
+                                description.Inlines.Add(Make_Run2(keyword, Settings.Default.SyntaxHighlighting_Directive));
 
-                                string descr = this._asmDudeTools.getDescription(keywordUpper);
+                                string descr = this._asmDudeTools.Get_Description(keywordUpper);
                                 if (descr.Length > 0)
                                 {
                                     description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
@@ -140,10 +140,10 @@ namespace AsmDude.QuickInfo
                         case AsmTokenType.Register:
                             {
                                 description = new TextBlock();
-                                description.Inlines.Add(makeRun1("Register "));
-                                description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Register));
+                                description.Inlines.Add(Make_Run1("Register "));
+                                description.Inlines.Add(Make_Run2(keyword, Settings.Default.SyntaxHighlighting_Register));
 
-                                string descr = this._asmDudeTools.getDescription(keywordUpper);
+                                string descr = this._asmDudeTools.Get_Description(keywordUpper);
                                 if (descr.Length > 0)
                                 {
                                     description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
@@ -154,10 +154,10 @@ namespace AsmDude.QuickInfo
                         case AsmTokenType.Jump:
                             {
                                 description = new TextBlock();
-                                description.Inlines.Add(makeRun1("Mnemonic "));
-                                description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Opcode));
+                                description.Inlines.Add(Make_Run1("Mnemonic "));
+                                description.Inlines.Add(Make_Run2(keyword, Settings.Default.SyntaxHighlighting_Opcode));
 
-                                string descr = this._asmDudeTools.mnemonicStore.getDescription(AsmSourceTools.parseMnemonic(keywordUpper));
+                                string descr = this._asmDudeTools.Mnemonic_Store.getDescription(AsmSourceTools.parseMnemonic(keywordUpper));
                                 if (descr.Length > 0)
                                 {
                                     description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
@@ -167,10 +167,10 @@ namespace AsmDude.QuickInfo
                         case AsmTokenType.Label:
                             {
                                 description = new TextBlock();
-                                description.Inlines.Add(makeRun1("Label "));
-                                description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Label));
+                                description.Inlines.Add(Make_Run1("Label "));
+                                description.Inlines.Add(Make_Run2(keyword, Settings.Default.SyntaxHighlighting_Label));
 
-                                string descr = this.getLabelDescription(keyword);
+                                string descr = this.Get_Label_Description(keyword);
                                 if (descr.Length > 0)
                                 {
                                     description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
@@ -180,10 +180,10 @@ namespace AsmDude.QuickInfo
                         case AsmTokenType.LabelDef:
                             {
                                 description = new TextBlock();
-                                description.Inlines.Add(makeRun1("Label "));
-                                description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Label));
+                                description.Inlines.Add(Make_Run1("Label "));
+                                description.Inlines.Add(Make_Run2(keyword, Settings.Default.SyntaxHighlighting_Label));
 
-                                string descr = this.getLabelDefDescription(keyword);
+                                string descr = this.Get_Label_Def_Description(keyword);
                                 if (descr.Length > 0)
                                 {
                                     description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
@@ -193,8 +193,8 @@ namespace AsmDude.QuickInfo
                         case AsmTokenType.Constant:
                             {
                                 description = new TextBlock();
-                                description.Inlines.Add(makeRun1("Constant "));
-                                description.Inlines.Add(makeRun2(keyword, Settings.Default.SyntaxHighlighting_Constant));
+                                description.Inlines.Add(Make_Run1("Constant "));
+                                description.Inlines.Add(Make_Run2(keyword, Settings.Default.SyntaxHighlighting_Constant));
                                 break;
                             }
                         default:
@@ -204,14 +204,14 @@ namespace AsmDude.QuickInfo
                     }
                     if (description != null)
                     {
-                        description.FontSize = AsmDudeToolsStatic.getFontSize() + 2;
-                        description.FontFamily = AsmDudeToolsStatic.getFontType();
+                        description.FontSize = AsmDudeToolsStatic.Get_Font_Size() + 2;
+                        description.FontFamily = AsmDudeToolsStatic.Get_Font_Type();
                         //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:AugmentQuickInfoSession; setting description fontSize={1}; fontFamily={2}", this.ToString(), description.FontSize, description.FontFamily));
                         quickInfoContent.Add(description);
                     }
                 }
                 //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoSource:AugmentQuickInfoSession: applicableToSpan=\"" + applicableToSpan + "\"; quickInfoContent,Count=" + quickInfoContent.Count);
-                AsmDudeToolsStatic.printSpeedWarning(time1, "QuickInfo");
+                AsmDudeToolsStatic.Print_Speed_Warning(time1, "QuickInfo");
             } catch (Exception e)
             {
                 AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:AugmentQuickInfoSession; e={1}", this.ToString(), e.ToString()));
@@ -225,44 +225,46 @@ namespace AsmDude.QuickInfo
 
         #region Private Methods
 
-        private static Run makeRun1(string str)
+        private static Run Make_Run1(string str)
         {
-            Run r1 = new Run(str);
-            r1.FontWeight = FontWeights.Bold;
-            return r1;
+            return new Run(str)
+            {
+                FontWeight = FontWeights.Bold
+            };
         }
 
-        private static Run makeRun2(string str, System.Drawing.Color color)
+        private static Run Make_Run2(string str, System.Drawing.Color color)
         {
-            Run r1 = new Run(str);
-            r1.FontWeight = FontWeights.Bold;
-            r1.Foreground = new SolidColorBrush(AsmDudeToolsStatic.convertColor(color));
-            return r1;
+            return new Run(str)
+            {
+                FontWeight = FontWeights.Bold,
+                Foreground = new SolidColorBrush(AsmDudeToolsStatic.Convert_Color(color))
+            };
         }
 
-        private string getLabelDescription(string label)
+        private string Get_Label_Description(string label)
         {
-            if (this._labelGraph.isEnabled)
+            if (this._labelGraph.Is_Enabled)
             {
                 StringBuilder sb = new StringBuilder();
-                SortedSet<uint> labelDefs = this._labelGraph.getLabelDefLineNumbers(label);
+                SortedSet<uint> labelDefs = this._labelGraph.Get_Label_Def_Linenumbers(label);
                 if (labelDefs.Count > 1)
                 {
                     sb.AppendLine("");
                 }
                 foreach (uint id in labelDefs)
                 {
-                    int lineNumber = this._labelGraph.getLinenumber(id);
-                    string filename = Path.GetFileName(this._labelGraph.getFilename(id));
+                    int lineNumber = this._labelGraph.Get_Linenumber(id);
+                    string filename = Path.GetFileName(this._labelGraph.Get_Filename(id));
                     string lineContent;
-                    if (this._labelGraph.isFromMainFile(id))
+                    if (this._labelGraph.Is_From_Main_File(id))
                     {
                         lineContent = " :" + this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
                     } else
                     {
                         lineContent = "";
                     }
-                    sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Defined at LINE {0} ({1}){2}", lineNumber + 1, filename, lineContent)));
+                    sb.AppendLine(AsmDudeToolsStatic.Cleanup(string.Format("Defined at LINE {0} ({1}){2}", lineNumber + 1, filename, lineContent)));
                 }
                 string result = sb.ToString();
                 return result.TrimEnd(Environment.NewLine.ToCharArray());
@@ -272,11 +274,11 @@ namespace AsmDude.QuickInfo
             }
         }
 
-        private string getLabelDefDescription(string label)
+        private string Get_Label_Def_Description(string label)
         {
-            if (this._labelGraph.isEnabled)
+            if (this._labelGraph.Is_Enabled)
             {
-                SortedSet<uint> usage = this._labelGraph.labelUsedAtInfo(label);
+                SortedSet<uint> usage = this._labelGraph.Label_Used_At_Info(label);
                 if (usage.Count > 0)
                 {
                     StringBuilder sb = new StringBuilder();
@@ -286,17 +288,17 @@ namespace AsmDude.QuickInfo
                     }
                     foreach (uint id in usage)
                     {
-                        int lineNumber = this._labelGraph.getLinenumber(id);
-                        string filename = Path.GetFileName(this._labelGraph.getFilename(id));
+                        int lineNumber = this._labelGraph.Get_Linenumber(id);
+                        string filename = Path.GetFileName(this._labelGraph.Get_Filename(id));
                         string lineContent;
-                        if (this._labelGraph.isFromMainFile(id))
+                        if (this._labelGraph.Is_From_Main_File(id))
                         {
                             lineContent = " :" + this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
                         } else
                         {
                             lineContent = "";
                         }
-                        sb.AppendLine(AsmDudeToolsStatic.cleanup(string.Format("Used at LINE {0} ({1}){2}", lineNumber + 1, filename, lineContent)));
+                        sb.AppendLine(AsmDudeToolsStatic.Cleanup(string.Format("Used at LINE {0} ({1}){2}", lineNumber + 1, filename, lineContent)));
                         //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:getLabelDefDescription; sb=\"{1}\"", this.ToString(), sb.ToString()));
                     }
                     string result = sb.ToString();

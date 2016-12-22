@@ -45,7 +45,7 @@ namespace AsmDude.Tools {
 
         #region Singleton Factories
 
-        public static ITagAggregator<AsmTokenTag> getAggregator(
+        public static ITagAggregator<AsmTokenTag> Get_Aggregator(
             ITextBuffer buffer, 
             IBufferTagAggregatorFactoryService aggregatorFactory) {
 
@@ -55,7 +55,7 @@ namespace AsmDude.Tools {
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
 
-        public static ILabelGraph getLabelGraph(
+        public static ILabelGraph Get_Label_Graph(
             ITextBuffer buffer,
             IBufferTagAggregatorFactoryService aggregatorFactory,
             ITextDocumentFactoryService docFactory,
@@ -63,21 +63,21 @@ namespace AsmDude.Tools {
 
             Func<LabelGraph> sc1 = delegate () {
                 IContentType contentType = contentService.GetContentType(AsmDudePackage.AsmDudeContentType);
-                return new LabelGraph(buffer, aggregatorFactory, AsmDudeTools.Instance.errorListProvider, docFactory, contentType);
+                return new LabelGraph(buffer, aggregatorFactory, AsmDudeTools.Instance.Error_List_Provider, docFactory, contentType);
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc1);
         }
         
-        public static void printSpeedWarning(DateTime startTime, string component) {
+        public static void Print_Speed_Warning(DateTime startTime, string component) {
             double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
             if (elapsedSec > AsmDudePackage.slowWarningThresholdSec) {
-                AsmDudeToolsStatic.Output(string.Format("WARNING: SLOW: took {0} {1:F3} seconds to finish", component, elapsedSec));
+                AsmDudeToolsStatic.Output_WARNING(string.Format("SLOW: took {0} {1:F3} seconds to finish", component, elapsedSec));
             }
         }
 
         #endregion Singleton Factories
 
-        public static AssemblerEnum usedAssembler {
+        public static AssemblerEnum Used_Assembler {
             get {
                 if (Settings.Default.useAssemblerMasm) {
                     return AssemblerEnum.MASM;
@@ -107,15 +107,13 @@ namespace AsmDude.Tools {
         /// get the full filename (with path) for the provided buffer
         /// </summary>
         public static string GetFileName(ITextBuffer buffer) {
-            Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer bufferAdapter;
-            buffer.Properties.TryGetProperty(typeof(Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer), out bufferAdapter);
+            buffer.Properties.TryGetProperty(typeof(Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer), out IVsTextBuffer bufferAdapter);
             if (bufferAdapter != null) {
                 IPersistFileFormat persistFileFormat = bufferAdapter as IPersistFileFormat;
 
                 string filename = null;
-                uint dummyInteger;
                 if (persistFileFormat != null) {
-                    persistFileFormat.GetCurFile(out filename, out dummyInteger);
+                    persistFileFormat.GetCurFile(out filename, out uint dummyInteger);
                 }
                 return filename;
             } else {
@@ -123,7 +121,7 @@ namespace AsmDude.Tools {
             }
         }
 
-        public static bool properFile(ITextBuffer buffer)
+        public static bool Proper_File(ITextBuffer buffer)
         {
             string filename = GetFileName(buffer);
             if ((filename == null) ||
@@ -137,7 +135,7 @@ namespace AsmDude.Tools {
             return false;
         }
 
-        public static void openDisassembler() {
+        public static void Open_Disassembler() {
             try {
                 DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
                 dte.ExecuteCommand("Debug.Disassembly");
@@ -146,7 +144,7 @@ namespace AsmDude.Tools {
             }
         }
 
-        public static int getFontSize() {
+        public static int Get_Font_Size() {
             DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
             EnvDTE.Properties propertiesList = dte.get_Properties("FontsAndColors", "TextEditor");
             Property prop = propertiesList.Item("FontSize");
@@ -154,7 +152,7 @@ namespace AsmDude.Tools {
             return fontSize;
         }
 
-        public static FontFamily getFontType() {
+        public static FontFamily Get_Font_Type() {
             DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
             EnvDTE.Properties propertiesList = dte.get_Properties("FontsAndColors", "TextEditor");
             Property prop = propertiesList.Item("FontFamily");
@@ -163,7 +161,7 @@ namespace AsmDude.Tools {
             return new FontFamily(font);
         }
 
-        public static void errorTaskNavigateHandler(object sender, EventArgs arguments) {
+        public static void Error_Task_Navigate_Handler(object sender, EventArgs arguments) {
             Microsoft.VisualStudio.Shell.Task task = sender as Microsoft.VisualStudio.Shell.Task;
 
             if (task == null) {
@@ -180,30 +178,25 @@ namespace AsmDude.Tools {
                 return;
             }
 
-            IVsWindowFrame frame;
-            Microsoft.VisualStudio.OLE.Interop.IServiceProvider serviceProvider;
-            IVsUIHierarchy hierarchy;
-            uint itemId;
             Guid logicalView = VSConstants.LOGVIEWID_Code;
 
-            int hr = openDoc.OpenDocumentViaProject(task.Document, ref logicalView, out serviceProvider, out hierarchy, out itemId, out frame);
+            int hr = openDoc.OpenDocumentViaProject(task.Document, ref logicalView, out var serviceProvider, out var hierarchy, out uint itemId, out var frame);
             if (ErrorHandler.Failed(hr) || (frame == null)) {
                 Output("INFO: AsmDudeToolsStatic:errorTaskNavigateHandler: OpenDocumentViaProject failed");
                 return;
             }
 
-            object docData;
-            frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out docData);
+            frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out object docData);
 
             VsTextBuffer buffer = docData as VsTextBuffer;
             if (buffer == null) {
-                IVsTextBufferProvider bufferProvider = docData as IVsTextBufferProvider;
-                if (bufferProvider != null) {
-                    IVsTextLines lines;
-                    ErrorHandler.ThrowOnFailure(bufferProvider.GetTextBuffer(out lines));
+                if (docData is IVsTextBufferProvider bufferProvider)
+                {
+                    ErrorHandler.ThrowOnFailure(bufferProvider.GetTextBuffer(out var lines));
                     buffer = lines as VsTextBuffer;
 
-                    if (buffer == null) {
+                    if (buffer == null)
+                    {
                         Output("INFO: AsmDudeToolsStatic:errorTaskNavigateHandler: buffer is null");
                         return;
                     }
@@ -224,7 +217,7 @@ namespace AsmDude.Tools {
         /// <summary>
         /// Get the path where this visual studio extension is installed.
         /// </summary>
-        public static string getInstallPath() {
+        public static string Get_Install_Path() {
             try {
                 string fullPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
                 string filenameDll = "AsmDude.dll";
@@ -234,15 +227,15 @@ namespace AsmDude.Tools {
             }
         }
 
-        public static System.Windows.Media.Color convertColor(System.Drawing.Color drawingColor) {
+        public static System.Windows.Media.Color Convert_Color(System.Drawing.Color drawingColor) {
             return System.Windows.Media.Color.FromArgb(drawingColor.A, drawingColor.R, drawingColor.G, drawingColor.B);
         }
 
-        public static System.Drawing.Color convertColor(System.Windows.Media.Color mediaColor) {
+        public static System.Drawing.Color Convert_Color(System.Windows.Media.Color mediaColor) {
             return System.Drawing.Color.FromArgb(mediaColor.A, mediaColor.R, mediaColor.G, mediaColor.B);
         }
 
-        public static ImageSource bitmapFromUri(Uri bitmapUri) {
+        public static ImageSource Bitmap_From_Uri(Uri bitmapUri) {
             var bitmap = new BitmapImage();
             try {
                 bitmap.BeginInit();
@@ -258,13 +251,30 @@ namespace AsmDude.Tools {
         /// <summary>
         /// Cleans the provided line by removing multiple white spaces and cropping if the line is too long
         /// </summary>
-        public static string cleanup(string line) {
+        public static string Cleanup(string line) {
             string cleanedString = System.Text.RegularExpressions.Regex.Replace(line, @"\s+", " ");
             if (cleanedString.Length > AsmDudePackage.maxNumberOfCharsInToolTips) {
                 return cleanedString.Substring(0, AsmDudePackage.maxNumberOfCharsInToolTips - 3) + "...";
             } else {
                 return cleanedString;
             }
+        }
+
+        /// <summary>Output message to the AsmDude window</summary>
+        public static void Output_INFO(string msg) {
+#           if DEBUG
+            Output("INFO: " + msg);
+#           endif
+        }
+        /// <summary>Output message to the AsmDude window</summary>
+        public static void Output_WARNING(string msg)
+        {
+            Output("WARNING: " + msg);
+        }
+        /// <summary>Output message to the AsmDude window</summary>
+        public static void Output_ERROR(string msg)
+        {
+            Output("ERROR: " + msg);
         }
         /// <summary>
         /// Output message to the AsmDude window
@@ -276,15 +286,14 @@ namespace AsmDude.Tools {
                 Debug.Write(msg2);
             } else {
                 Guid paneGuid = new Guid("1188E5D2-96AA-4DD3-9ECF-BBD6657A43C9");
-                IVsOutputWindowPane pane;
                 outputWindow.CreatePane(paneGuid, "Asm Dude", 1, 0);
-                outputWindow.GetPane(paneGuid, out pane);
+                outputWindow.GetPane(paneGuid, out var pane);
                 pane.OutputString(msg2);
                 pane.Activate();
             }
         }
 
-        public static string getKeywordStr(SnapshotPoint? bufferPosition) {
+        public static string Get_Keyword_Str(SnapshotPoint? bufferPosition) {
 
             if (bufferPosition != null) {
                 string line = bufferPosition.Value.GetContainingLine().GetText();
@@ -304,7 +313,7 @@ namespace AsmDude.Tools {
             return null;
         }
 
-        public static TextExtent? getKeyword(SnapshotPoint? bufferPosition) {
+        public static TextExtent? Get_Keyword(SnapshotPoint? bufferPosition) {
 
             if (bufferPosition != null) {
                 string line = bufferPosition.Value.GetContainingLine().GetText();
@@ -335,7 +344,7 @@ namespace AsmDude.Tools {
         /// <param name="begin"></param>
         /// <param name="end"></param>
         /// <returns></returns>
-        public static string getPreviousKeyword(SnapshotPoint begin, SnapshotPoint end) {
+        public static string Get_Previous_Keyword(SnapshotPoint begin, SnapshotPoint end) {
             // return getPreviousKeyword(begin.GetContainingLine.)
             if (end == 0) return "";
 
@@ -345,7 +354,7 @@ namespace AsmDude.Tools {
             return AsmSourceTools.getPreviousKeyword(beginPos, endPos, begin.GetContainingLine().GetText());
         }
 
-        public static bool isAllUpper(string input) {
+        public static bool Is_All_Upper(string input) {
             for (int i = 0; i < input.Length; i++) {
                 if (Char.IsLetter(input[i]) && !Char.IsUpper(input[i])) {
                     return false;
@@ -354,7 +363,7 @@ namespace AsmDude.Tools {
             return true;
         }
 
-        public static void disableMessage(string msg, string filename, ErrorListProvider errorListProvider) {
+        public static void Disable_Message(string msg, string filename, ErrorListProvider errorListProvider) {
             AsmDudeToolsStatic.Output(string.Format("WARNING: " + msg));
 
             for (int i = 0; i < errorListProvider.Tasks.Count; ++i) {
@@ -364,12 +373,14 @@ namespace AsmDude.Tools {
                 }
             }
 
-            ErrorTask errorTask = new ErrorTask();
-            errorTask.SubcategoryIndex = (int)AsmErrorEnum.OTHER;
-            errorTask.Text = msg;
-            errorTask.ErrorCategory = TaskErrorCategory.Message;
-            errorTask.Document = filename;
-            errorTask.Navigate += AsmDudeToolsStatic.errorTaskNavigateHandler;
+            ErrorTask errorTask = new ErrorTask()
+            {
+                SubcategoryIndex = (int)AsmErrorEnum.OTHER,
+                Text = msg,
+                ErrorCategory = TaskErrorCategory.Message,
+                Document = filename
+            };
+            errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
 
             errorListProvider.Tasks.Add(errorTask);
             errorListProvider.Show(); // do not use BringToFront since that will select the error window.
@@ -377,17 +388,17 @@ namespace AsmDude.Tools {
         }
 
 
-        public static ISet<Arch> getArchSwithedOn() {
+        public static ISet<Arch> Get_Arch_Swithed_On() {
             ISet<Arch> set = new HashSet<Arch>();
             foreach (Arch arch in Enum.GetValues(typeof(Arch))) {
-                if (isArchSwitchedOn(arch)) {
+                if (Is_Arch_Switched_On(arch)) {
                     set.Add(arch);
                 }
             }
             return set;
         }
 
-        public static bool isArchSwitchedOn(Arch arch) {
+        public static bool Is_Arch_Switched_On(Arch arch) {
             switch (arch) {
                 case Arch.ARCH_8086: return Settings.Default.ARCH_8086;
                 case Arch.ARCH_186: return Settings.Default.ARCH_186;

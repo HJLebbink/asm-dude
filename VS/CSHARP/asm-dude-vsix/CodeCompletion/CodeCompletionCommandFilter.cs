@@ -35,14 +35,14 @@ namespace AsmDude {
 
         public CodeCompletionCommandFilter(IWpfTextView textView, ICompletionBroker broker) {
             this._currentSession = null;
-            this._textView = textView;
-            this._broker = broker;
+            this.TextView = textView;
+            this.Broker = broker;
             //Debug.WriteLine(string.Format("INFO: {0}:constructor", this.ToString()));
         }
 
-        public IWpfTextView _textView { get; private set; }
-        public ICompletionBroker _broker { get; private set; }
-        public IOleCommandTarget _nextCommandHandler { get; set; }
+        public IWpfTextView TextView { get; private set; }
+        public ICompletionBroker Broker { get; private set; }
+        public IOleCommandTarget NextCommandHandler { get; set; }
 
         private char GetTypeChar(IntPtr pvaIn) {
             return (char)(ushort)Marshal.GetObjectForNativeVariant(pvaIn);
@@ -85,7 +85,7 @@ namespace AsmDude {
 
                         //pass along the command so the char is added to the buffer, except if the command is an enter
                         if (nCmdID != (uint)VSConstants.VSStd2KCmdID.RETURN) {
-                            this._nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+                            this.NextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
                         }
                         return VSConstants.S_OK;
                     } else { //if there is no selection, dismiss the session
@@ -94,7 +94,7 @@ namespace AsmDude {
                 }
             }
             //pass along the command so the char is added to the buffer
-            int retVal = this._nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+            int retVal = this.NextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
             bool handled = false;
             if (!typedChar.Equals(char.MinValue) && char.IsLetterOrDigit(typedChar)) {
                 if (this._currentSession == null || this._currentSession.IsDismissed) { // If there is no active session, bring up completion
@@ -161,7 +161,7 @@ namespace AsmDude {
 
             #region 2. Handle the typed char
             if (!handledChar) {
-                hresult = this._nextCommandHandler.Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+                hresult = this.NextCommandHandler.Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 
                 if (!typedChar.Equals(char.MinValue) && char.IsLetterOrDigit(typedChar)) {
                 //if (!typedChar.Equals(char.MinValue)) {
@@ -201,15 +201,15 @@ namespace AsmDude {
             if (this._currentSession != null) {
                 return false;
             }
-            SnapshotPoint caret = this._textView.Caret.Position.BufferPosition;
+            SnapshotPoint caret = this.TextView.Caret.Position.BufferPosition;
             ITextSnapshot snapshot = caret.Snapshot;
 
-            if (this._broker.IsCompletionActive(this._textView)) {
+            if (this.Broker.IsCompletionActive(this.TextView)) {
                 //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:StartSession. Recycling an existing auto-complete session", this.ToString()));
-                this._currentSession = this._broker.GetSessions(this._textView)[0];
+                this._currentSession = this.Broker.GetSessions(this.TextView)[0];
             } else {
                 //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:StartSession. Creating a new auto-complete session", this.ToString()));
-                this._currentSession = this._broker.CreateCompletionSession(this._textView, snapshot.CreateTrackingPoint(caret, PointTrackingMode.Positive), true);
+                this._currentSession = this.Broker.CreateCompletionSession(this.TextView, snapshot.CreateTrackingPoint(caret, PointTrackingMode.Positive), true);
             }
             this._currentSession.Dismissed += (sender, args) => _currentSession = null;
             this._currentSession.Start();
@@ -266,7 +266,7 @@ namespace AsmDude {
                         return VSConstants.S_OK;
                 }
             }
-            return _nextCommandHandler.QueryStatus(pguidCmdGroup, cCmds, prgCmds, pCmdText);
+            return NextCommandHandler.QueryStatus(pguidCmdGroup, cCmds, prgCmds, pCmdText);
         }
     }
 }
