@@ -11,7 +11,7 @@ namespace AsmDude
         public const string Name = "AsmDude";
         public const string Description = "Syntax highlighting, code completion and code folding for assembly (.asm, .cod, .inc) source code.";
         public const string Language = "en-US";
-        public const string Version = "1.7.2.7";
+        public const string Version = "1.7.3.0";
         public const string Author = "Henk-Jan Lebbink";
         public const string Tags = "Assembly, Assembler, ASM, Syntax Highlighting, Code Completion, Folding, Label Analysis";
     }

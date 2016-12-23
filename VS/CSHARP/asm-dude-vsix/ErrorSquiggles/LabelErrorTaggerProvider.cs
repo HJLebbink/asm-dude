@@ -30,8 +30,8 @@ using System.ComponentModel.Composition;
 using AsmDude.SyntaxHighlighting;
 using AsmDude.Tools;
 
-namespace AsmDude.ErrorSquiggles {
-
+namespace AsmDude.ErrorSquiggles
+{
     /// <summary>
     /// Export a <see cref="IViewTaggerProvider"/>
     /// </summary>
@@ -39,8 +39,8 @@ namespace AsmDude.ErrorSquiggles {
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [TagType(typeof(ErrorTag))]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    internal sealed class LabelErrorTaggerProvider : IViewTaggerProvider {
-
+    internal sealed class LabelErrorTaggerProvider : IViewTaggerProvider
+    {
         [Import]
         private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
 
@@ -50,9 +50,10 @@ namespace AsmDude.ErrorSquiggles {
         [Import]
         private IContentTypeRegistryService _contentService = null;
 
-        public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag {
-
-            Func<ITagger<T>> sc = delegate () {
+        public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
+        {
+            Func<ITagger<T>> sc = delegate ()
+            {
                 ITagAggregator<AsmTokenTag> aggregator = AsmDudeToolsStatic.Get_Aggregator(buffer, this._aggregatorFactory);
                 ILabelGraph labelGraph = AsmDudeToolsStatic.Get_Label_Graph(buffer, this._aggregatorFactory, this._docFactory, this._contentService);
                 return new LabelErrorTagger(buffer, aggregator, labelGraph) as ITagger<T>;

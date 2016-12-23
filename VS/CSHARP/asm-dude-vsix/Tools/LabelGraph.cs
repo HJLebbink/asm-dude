@@ -49,6 +49,7 @@ namespace AsmDude.Tools
 
         private readonly string _thisFilename;
         private readonly IDictionary<uint, string> _filenames;
+        private readonly IList<Undefined_Label_Struct> _undefined_includes;
 
         private readonly IDictionary<string, IList<uint>> _usedAt;
         private readonly IDictionary<string, IList<uint>> _defAt;
@@ -86,6 +87,7 @@ namespace AsmDude.Tools
             this._defAt = new Dictionary<string, IList<uint>>();
             this._hasLabel = new HashSet<uint>();
             this._hasDef = new HashSet<uint>();
+            this._undefined_includes = new List<Undefined_Label_Struct>();
 
             this._thisFilename = AsmDudeToolsStatic.GetFileName(this._buffer);
             this._enabled = true;
@@ -272,6 +274,7 @@ namespace AsmDude.Tools
                 this._hasDef.Clear();
                 this._filenames.Clear();
                 this._filenames.Add(0, AsmDudeToolsStatic.GetFileName(this._buffer));
+                this._undefined_includes.Clear();
 
                 const uint fileId = 0; // use fileId=0 for the main file (and use numbers higher than 0 for included files)
                 Add_All(this._buffer, fileId);
@@ -303,6 +306,8 @@ namespace AsmDude.Tools
         public event EventHandler<CustomEventArgs> Reset_Done_Event;
 
         public ErrorListProvider Error_List_Provider { get { return this._errorListProvider; } }
+
+        public IList<Undefined_Label_Struct> Get_Undefined_Includes { get { return this._undefined_includes; } }
 
         public IList<int> Get_All_Related_Linenumber()
         {
@@ -518,7 +523,7 @@ namespace AsmDude.Tools
                     {
                         if (enumerator.MoveNext())
                         {
-                            string currentFilename = ""; //TODO
+                            string currentFilename = Get_Filename(id);
                             string includeFilename = Get_Text(buffer, enumerator.Current);
                             Handle_Include(includeFilename, lineNumber, currentFilename);
                         }
@@ -533,20 +538,13 @@ namespace AsmDude.Tools
 
         private void Add_Error_Task_Missing_Include(string filename, string filePath, int lineNumber, string currentFilename)
         {
-            string label = "Could not find included file " + filename + " (" + filePath + ")";
-
-            ErrorTask errorTask = new ErrorTask()
+            this._undefined_includes.Add(new Undefined_Label_Struct()
             {
-                SubcategoryIndex = (int)AsmErrorEnum.LABEL_UNDEFINED,
-                Line = lineNumber,
-                Column = 0,
-                Text = "Could not find included file " + filename + " (" + filePath + ")",
-                ErrorCategory = TaskErrorCategory.Warning,
-                Document = currentFilename
-            };
-            errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
-
-            this._errorListProvider.Tasks.Add(errorTask);
+                include_filename = filename,
+                path = filePath,
+                source_filename = currentFilename,
+                linenumber = lineNumber
+            });
         }
 
         private void Handle_Include(string includeFilename, int lineNumber, string currentFilename)
@@ -573,7 +571,7 @@ namespace AsmDude.Tools
                 if (!File.Exists(filePath))
                 {
                     AsmDudeToolsStatic.Output_WARNING("LabelGraph:Handle_Include: file " + filePath + " does not exist");
-                    Add_Error_Task_Missing_Include(includeFilename, filePath, lineNumber, currentFilename);
+                    this.Add_Error_Task_Missing_Include(includeFilename, filePath, lineNumber, currentFilename);
                     return;
                 }
 

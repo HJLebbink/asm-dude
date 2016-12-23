@@ -29,8 +29,8 @@ using Microsoft.VisualStudio.Utilities;
 using System;
 using System.ComponentModel.Composition;
 
-namespace AsmDude.CodeFolding {
-
+namespace AsmDude.CodeFolding
+{
     /// <summary>
     /// Export a <see cref="ITaggerProvider"/>
     /// </summary>
@@ -38,8 +38,8 @@ namespace AsmDude.CodeFolding {
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [TagType(typeof(IOutliningRegionTag))]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    internal sealed class CodeFoldingTaggerProvider : ITaggerProvider {
-
+    internal sealed class CodeFoldingTaggerProvider : ITaggerProvider
+    {
         [Import]
         private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
 
@@ -49,10 +49,10 @@ namespace AsmDude.CodeFolding {
         /// <typeparam name="T"></typeparam>
         /// <param name="textView"> The text view we are creating a tagger for</param>
         /// <returns> Returns a OutliningTagger instance</returns>
-        public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag {
-
-            //Debug.WriteLine("INFO: TaggerProvider:CreateTagger: entering");
-            Func<ITagger<T>> sc = delegate () {
+        public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
+        {
+            Func<ITagger<T>> sc = delegate ()
+            {
                 ITagAggregator<AsmTokenTag> aggregator = AsmDudeToolsStatic.Get_Aggregator(buffer, this._aggregatorFactory);
                 return new CodeFoldingTagger(buffer, aggregator, AsmDudeTools.Instance.Error_List_Provider) as ITagger<T>;
             };

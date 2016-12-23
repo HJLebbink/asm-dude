@@ -146,8 +146,7 @@ namespace AsmDude.CodeFolding
             if (startPos < 0)
             {
                 description = line;
-            }
-            else if (startPos < line.Length)
+            } else if (startPos < line.Length)
             {
                 description = line.Substring(startPos).Trim();
             }
@@ -194,8 +193,7 @@ namespace AsmDude.CodeFolding
             if (tup.Item1 == -1)
             {
                 return Is_Start_Masm_Keyword(lineContent, lineNumber);
-            }
-            else
+            } else
             {
                 return tup;
             }
@@ -210,8 +208,7 @@ namespace AsmDude.CodeFolding
             if (i1 == -1)
             {
                 return new Tuple<int, int>(-1, -1);
-            }
-            else
+            } else
             {
                 return new Tuple<int, int>(i1, i1 + this.startRegionTag.Length);
             }
@@ -234,9 +231,10 @@ namespace AsmDude.CodeFolding
                         case "SEGMENT":
                         case "PROC":
                         case "MACRO":
+                        case "STRUCT":
                         case ".IF":
                         case ".WHILE":
-                            return new Tuple<int, int>(lineContent.Length, lineContent.Length);
+                        return new Tuple<int, int>(lineContent.Length, lineContent.Length);
                         default: break;
                     }
                 }
@@ -265,12 +263,13 @@ namespace AsmDude.CodeFolding
                     string tokenStr = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText().ToUpper();
                     switch (tokenStr)
                     {
-                        case "ENDS":
-                        case "ENDP":
-                        case "ENDM":
-                        case ".ENDIF":
-                        case ".ENDW":
-                            return lineContent.IndexOf(tokenStr, StringComparison.OrdinalIgnoreCase);
+                        case "ENDS": // end token for SEGMENT
+                        case "ENDP": // end token for PROC
+                        case "ENDM": // end token for MACRO
+                        //case "ENDS": // end token for STRUCT
+                        case ".ENDIF": // end token for .IF
+                        case ".ENDW": // end token for .WHILE
+                        return lineContent.IndexOf(tokenStr, StringComparison.OrdinalIgnoreCase);
                         default: break;
                     }
                 }
@@ -292,15 +291,13 @@ namespace AsmDude.CodeFolding
             {
                 AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger:Parse_Delayed: busy; scheduling this call.");
                 this._scheduled = true;
-            }
-            else
+            } else
             {
                 AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger:Parse_Delayed: going to execute this call.");
                 if (true)
                 {
                     AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Parse2);
-                }
-                else
+                } else
                 {
                     ThreadPool.QueueUserWorkItem(this.Parse);
                 }
@@ -355,15 +352,13 @@ namespace AsmDude.CodeFolding
                         if (regionStart != -1)
                         {
                             Add_Start_Region(lineContent, regionStart, lineNumber, regionStartHoverText, ref currentRegion, newRegions);
-                        }
-                        else
+                        } else
                         {
                             int regionEnd = Is_End_Keyword(lineContent, lineNumber);
                             if (regionEnd != -1)
                             {
                                 Add_End_Region(lineContent, regionEnd, lineNumber, ref currentRegion, newRegions);
-                            }
-                            else
+                            } else
                             {
                                 #region Search for multi-line Remark
                                 if (AsmSourceTools.isRemarkOnly(lineContent))
@@ -383,8 +378,7 @@ namespace AsmDude.CodeFolding
                                             lineNumber2 = line.LineNumber;
                                             lineContent2 = lineContent3;
                                             already_advanced = false;
-                                        }
-                                        else
+                                        } else
                                         {
                                             already_advanced = true;
                                             break;
@@ -546,8 +540,7 @@ namespace AsmDude.CodeFolding
                 if (TagsChanged != null)
                 {
                     TagsChanged(this, new SnapshotSpanEventArgs(new SnapshotSpan(this._snapshot, Span.FromBounds(changeStart, changeEnd))));
-                }
-                else
+                } else
                 {
                     AsmDudeToolsStatic.Output_WARNING("CodeFoldingTagger:updateChangedSpans: TagsChanged is null");
                 }
@@ -576,6 +569,6 @@ namespace AsmDude.CodeFolding
             AsmDudeToolsStatic.Disable_Message(msg, filename, this._errorListProvider);
         }
 
-#endregion Private Methods
+        #endregion Private Methods
     }
 }

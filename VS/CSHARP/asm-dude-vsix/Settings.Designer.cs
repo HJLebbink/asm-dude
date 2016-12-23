@@ -982,5 +982,17 @@ namespace AsmDude {
                 this["ARCH_AES"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IntelliSenseShowUndefinedIncludes {
+            get {
+                return ((bool)(this["IntelliSenseShowUndefinedIncludes"]));
+            }
+            set {
+                this["IntelliSenseShowUndefinedIncludes"] = value;
+            }
+        }
     }
 }

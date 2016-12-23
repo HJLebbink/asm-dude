@@ -168,13 +168,16 @@ namespace AsmDude.Tools {
                 throw new ArgumentException("sender parm cannot be null");
             }
             if (String.IsNullOrEmpty(task.Document)) {
-                Output("INFO: AsmDudeToolsStatic:errorTaskNavigateHandler: task.Document is empty");
+                Output("INFO: AsmDudeToolsStatic:Error_Task_Navigate_Handler: task.Document is empty");
                 return;
             }
 
+            Output_INFO("AsmDudeToolsStatic: Error_Task_Navigate_Handler: task.Document="+task.Document);
+
+
             IVsUIShellOpenDocument openDoc = Package.GetGlobalService(typeof(IVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
             if (openDoc == null) {
-                Output("INFO: AsmDudeToolsStatic:errorTaskNavigateHandler: openDoc is null");
+                Output("INFO: AsmDudeToolsStatic:Error_Task_Navigate_Handler: openDoc is null");
                 return;
             }
 
@@ -182,7 +185,7 @@ namespace AsmDude.Tools {
 
             int hr = openDoc.OpenDocumentViaProject(task.Document, ref logicalView, out var serviceProvider, out var hierarchy, out uint itemId, out var frame);
             if (ErrorHandler.Failed(hr) || (frame == null)) {
-                Output("INFO: AsmDudeToolsStatic:errorTaskNavigateHandler: OpenDocumentViaProject failed");
+                Output("INFO: AsmDudeToolsStatic:Error_Task_Navigate_Handler: OpenDocumentViaProject failed");
                 return;
             }
 
@@ -197,14 +200,14 @@ namespace AsmDude.Tools {
 
                     if (buffer == null)
                     {
-                        Output("INFO: AsmDudeToolsStatic:errorTaskNavigateHandler: buffer is null");
+                        Output("INFO: AsmDudeToolsStatic:Error_Task_Navigate_Handler: buffer is null");
                         return;
                     }
                 }
             }
             IVsTextManager mgr = Package.GetGlobalService(typeof(SVsTextManager)) as IVsTextManager;
             if (mgr == null) {
-                Output("INFO: AsmDudeToolsStatic:errorTaskNavigateHandler: IVsTextManager is null");
+                Output("INFO: AsmDudeToolsStatic:Error_Task_Navigate_Handler: IVsTextManager is null");
                 return;
             }
 
