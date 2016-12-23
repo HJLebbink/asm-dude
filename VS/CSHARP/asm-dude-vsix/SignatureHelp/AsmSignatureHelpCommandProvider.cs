@@ -44,12 +44,12 @@ namespace AsmDude.SignatureHelp {
 
         public void VsTextViewCreated(IVsTextView textViewAdapter) {
             //if (Settings.Default.SignatureHelp_On) {
-                ITextView textView = _adapterService.GetWpfTextView(textViewAdapter);
+                ITextView textView = this._adapterService.GetWpfTextView(textViewAdapter);
                 if (textView == null) {
                     return;
                 }
                 textView.Properties.GetOrCreateSingletonProperty(
-                     () => new AsmSignatureHelpCommandFilter(textViewAdapter, textView, _signatureHelpBroker)
+                     () => new AsmSignatureHelpCommandFilter(textViewAdapter, textView, this._signatureHelpBroker)
                 );
             //}
         }

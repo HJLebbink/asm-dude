@@ -71,16 +71,16 @@ namespace AsmDude.AsmDoc
                 // Check and see if ctrl is down but we missed it somehow.
                 bool ctrlDown = (Keyboard.Modifiers & ModifierKeys.Control) != 0 &&
                                 (Keyboard.Modifiers & ModifierKeys.Shift) == 0;
-                if (ctrlDown != _enabled)
+                if (ctrlDown != this._enabled)
                 {
-                    Enabled = ctrlDown;
+                    this.Enabled = ctrlDown;
                 }
-                return _enabled;
+                return this._enabled;
             }
             set {
-                bool oldVal = _enabled;
-                _enabled = value;
-                if (oldVal != _enabled)
+                bool oldVal = this._enabled;
+                this._enabled = value;
+                if (oldVal != this._enabled)
                 {
                     CtrlKeyStateChanged?.Invoke(this, new EventArgs());
                 }
@@ -99,12 +99,12 @@ namespace AsmDude.AsmDoc
 
         public AsmDocKeyProcessor(CtrlKeyState state)
         {
-            _state = state;
+            this._state = state;
         }
 
         void UpdateState(KeyEventArgs args)
         {
-            _state.Enabled = (args.KeyboardDevice.Modifiers & ModifierKeys.Control) != 0 &&
+            this._state.Enabled = (args.KeyboardDevice.Modifiers & ModifierKeys.Control) != 0 &&
                              (args.KeyboardDevice.Modifiers & ModifierKeys.Shift) == 0;
         }
 
@@ -152,8 +152,8 @@ namespace AsmDude.AsmDoc
             return new AsmDocMouseHandler(
                 view,
                 shellCommandDispatcher,
-                AggregatorFactory.GetClassifier(buffer),
-                NavigatorService.GetTextStructureNavigator(buffer),
+                this.AggregatorFactory.GetClassifier(buffer),
+                this.NavigatorService.GetTextStructureNavigator(buffer),
                 CtrlKeyState.GetStateForView(view),
                 AsmDudeTools.Instance);
         }
@@ -165,7 +165,7 @@ namespace AsmDude.AsmDoc
         /// </summary>
         IOleCommandTarget GetShellCommandDispatcher(ITextView view)
         {
-            return GlobalServiceProvider.GetService(typeof(SUIHostCommandDispatcher)) as IOleCommandTarget;
+            return this.GlobalServiceProvider.GetService(typeof(SUIHostCommandDispatcher)) as IOleCommandTarget;
         }
 
         #endregion
@@ -202,18 +202,18 @@ namespace AsmDude.AsmDoc
 
             this._state.CtrlKeyStateChanged += (sender, args) =>
             {
-                if (_state.Enabled)
+                if (this._state.Enabled)
                 {
-                    this.TryHighlightItemUnderMouse(RelativeToView(Mouse.PrimaryDevice.GetPosition(_view.VisualElement)));
+                    TryHighlightItemUnderMouse(RelativeToView(Mouse.PrimaryDevice.GetPosition(this._view.VisualElement)));
                 } else
                 {
-                    this.Set_Highlight_Span(null);
+                    Set_Highlight_Span(null);
                 }
             };
 
             // Some other points to clear the highlight span:
-            _view.LostAggregateFocus += (sender, args) => this.Set_Highlight_Span(null);
-            _view.VisualElement.MouseLeave += (sender, args) => this.Set_Highlight_Span(null);
+            this._view.LostAggregateFocus += (sender, args) => Set_Highlight_Span(null);
+            this._view.VisualElement.MouseLeave += (sender, args) => Set_Highlight_Span(null);
 
         }
 
@@ -225,22 +225,22 @@ namespace AsmDude.AsmDoc
 
         public override void PostprocessMouseLeftButtonDown(MouseButtonEventArgs e)
         {
-            _mouseDownAnchorPoint = RelativeToView(e.GetPosition(_view.VisualElement));
+            this._mouseDownAnchorPoint = RelativeToView(e.GetPosition(this._view.VisualElement));
         }
 
         public override void PreprocessMouseMove(MouseEventArgs e)
         {
-            if (!_mouseDownAnchorPoint.HasValue && _state.Enabled && e.LeftButton == MouseButtonState.Released)
+            if (!this._mouseDownAnchorPoint.HasValue && this._state.Enabled && e.LeftButton == MouseButtonState.Released)
             {
-                TryHighlightItemUnderMouse(RelativeToView(e.GetPosition(_view.VisualElement)));
-            } else if (_mouseDownAnchorPoint.HasValue)
+                TryHighlightItemUnderMouse(RelativeToView(e.GetPosition(this._view.VisualElement)));
+            } else if (this._mouseDownAnchorPoint.HasValue)
             {
                 // Check and see if this is a drag; if so, clear out the highlight.
-                var currentMousePosition = RelativeToView(e.GetPosition(_view.VisualElement));
-                if (InDragOperation(_mouseDownAnchorPoint.Value, currentMousePosition))
+                var currentMousePosition = RelativeToView(e.GetPosition(this._view.VisualElement));
+                if (InDragOperation(this._mouseDownAnchorPoint.Value, currentMousePosition))
                 {
-                    _mouseDownAnchorPoint = null;
-                    this.Set_Highlight_Span(null);
+                    this._mouseDownAnchorPoint = null;
+                    Set_Highlight_Span(null);
                 }
             }
         }
@@ -254,7 +254,7 @@ namespace AsmDude.AsmDoc
 
         public override void PreprocessMouseLeave(MouseEventArgs e)
         {
-            _mouseDownAnchorPoint = null;
+            this._mouseDownAnchorPoint = null;
         }
 
 
@@ -262,11 +262,11 @@ namespace AsmDude.AsmDoc
         {
             try
             {
-                if (_mouseDownAnchorPoint.HasValue && this._state.Enabled)
+                if (this._mouseDownAnchorPoint.HasValue && this._state.Enabled)
                 {
-                    var currentMousePosition = RelativeToView(e.GetPosition(_view.VisualElement));
+                    var currentMousePosition = RelativeToView(e.GetPosition(this._view.VisualElement));
 
-                    if (!InDragOperation(_mouseDownAnchorPoint.Value, currentMousePosition))
+                    if (!InDragOperation(this._mouseDownAnchorPoint.Value, currentMousePosition))
                     {
                         this._state.Enabled = false;
 
@@ -275,17 +275,17 @@ namespace AsmDude.AsmDoc
                         string keyword = AsmDudeToolsStatic.Get_Keyword_Str(bufferPosition);
                         if (keyword != null)
                         {
-                            this.Dispatch_Goto_Doc(keyword);
+                            Dispatch_Goto_Doc(keyword);
                         }
-                        this.Set_Highlight_Span(null);
+                        Set_Highlight_Span(null);
                         this._view.Selection.Clear();
                         e.Handled = true;
                     }
                 }
-                _mouseDownAnchorPoint = null;
+                this._mouseDownAnchorPoint = null;
             } catch (Exception ex)
             {
-                AsmDudeToolsStatic.Output(string.Format("ERROR:{0} PreprocessMouseUp; e={1}", this.ToString(), ex.ToString()));
+                AsmDudeToolsStatic.Output(string.Format("ERROR:{0} PreprocessMouseUp; e={1}", ToString(), ex.ToString()));
             }
         }
 
@@ -295,7 +295,7 @@ namespace AsmDude.AsmDoc
 
         private Point RelativeToView(Point position)
         {
-            return new Point(position.X + _view.ViewportLeft, position.Y + _view.ViewportTop);
+            return new Point(position.X + this._view.ViewportLeft, position.Y + this._view.ViewportTop);
         }
 
         private bool TryHighlightItemUnderMouse(Point position)
@@ -307,7 +307,7 @@ namespace AsmDude.AsmDoc
 
             try
             {
-                var line = _view.TextViewLines.GetTextViewLineContainingYCoordinate(position.Y);
+                var line = this._view.TextViewLines.GetTextViewLineContainingYCoordinate(position.Y);
                 if (line == null)
                 {
                     return false;
@@ -319,25 +319,25 @@ namespace AsmDude.AsmDoc
                 }
 
                 // Quick check - if the mouse is still inside the current underline span, we're already set
-                var currentSpan = CurrentUnderlineSpan;
+                var currentSpan = this.CurrentUnderlineSpan;
                 if (currentSpan.HasValue && currentSpan.Value.Contains(bufferPosition.Value))
                 {
                     updated = true;
                     return true;
                 }
 
-                var extent = _navigator.GetExtentOfWord(bufferPosition.Value);
+                var extent = this._navigator.GetExtentOfWord(bufferPosition.Value);
                 if (!extent.IsSignificant)
                 {
                     return false;
                 }
 
                 //  check for valid classification type.
-                foreach (var classification in _aggregator.GetClassificationSpans(extent.Span))
+                foreach (var classification in this._aggregator.GetClassificationSpans(extent.Span))
                 {
                     string keyword = classification.Span.GetText();
                     //string type = classification.ClassificationType.Classification.ToLower();
-                    string url = this.Get_Url(keyword);
+                    string url = Get_Url(keyword);
                     //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:TryHighlightItemUnderMouse: keyword={1}; type={2}; url={3}", this.ToString(), keyword, type, url));
                     if ((url != null) && Set_Highlight_Span(classification.Span))
                     {
@@ -359,10 +359,10 @@ namespace AsmDude.AsmDoc
 
         private SnapshotSpan? CurrentUnderlineSpan {
             get {
-                var classifier = AsmDocUnderlineTaggerProvider.GetClassifierForView(_view);
+                var classifier = AsmDocUnderlineTaggerProvider.GetClassifierForView(this._view);
                 if (classifier != null && classifier.CurrentUnderlineSpan.HasValue)
                 {
-                    return classifier.CurrentUnderlineSpan.Value.TranslateTo(_view.TextSnapshot, SpanTrackingMode.EdgeExclusive);
+                    return classifier.CurrentUnderlineSpan.Value.TranslateTo(this._view.TextSnapshot, SpanTrackingMode.EdgeExclusive);
                 } else
                 {
                     return null;
@@ -372,7 +372,7 @@ namespace AsmDude.AsmDoc
 
         private bool Set_Highlight_Span(SnapshotSpan? span)
         {
-            var classifier = AsmDocUnderlineTaggerProvider.GetClassifierForView(_view);
+            var classifier = AsmDocUnderlineTaggerProvider.GetClassifierForView(this._view);
             if (classifier != null)
             {
                 Mouse.OverrideCursor = (span.HasValue) ? Cursors.Hand : null;
@@ -385,7 +385,7 @@ namespace AsmDude.AsmDoc
         private bool Dispatch_Goto_Doc(string keyword)
         {
             //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:DispatchGoToDoc; keyword=\"{1}\".", this.ToString(), keyword));
-            int hr = this.Open_File(keyword);
+            int hr = Open_File(keyword);
             return ErrorHandler.Succeeded(hr);
         }
 
@@ -399,7 +399,7 @@ namespace AsmDude.AsmDoc
 
         private int Open_File(string keyword)
         {
-            string url = this.Get_Url(keyword);
+            string url = Get_Url(keyword);
             if (url == null)
             { // this situation happens for all keywords (such as registers) that do not have an url specified.
                 //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:openFile; url for keyword \"{1}\" is null.", this.ToString(), keyword));
@@ -410,7 +410,7 @@ namespace AsmDude.AsmDoc
             var dte2 = Package.GetGlobalService(typeof(SDTE)) as DTE2;
             if (dte2 == null)
             {
-                AsmDudeToolsStatic.Output(string.Format("WARNING: {0}:openFile; dte2 is null.", this.ToString()));
+                AsmDudeToolsStatic.Output(string.Format("WARNING: {0}:openFile; dte2 is null.", ToString()));
                 return 1;
             } else
             {
@@ -420,7 +420,7 @@ namespace AsmDude.AsmDoc
                     dte2.ItemOperations.Navigate(url, EnvDTE.vsNavigateOptions.vsNavigateOptionsNewWindow);
                 } catch (Exception e)
                 {
-                    AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:openFile; exception={1}", this.ToString(), e));
+                    AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:openFile; exception={1}", ToString(), e));
                     return 2;
                 }
                 return 0;

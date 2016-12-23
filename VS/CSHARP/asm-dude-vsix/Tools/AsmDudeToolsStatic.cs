@@ -364,7 +364,7 @@ namespace AsmDude.Tools {
         }
 
         public static void Disable_Message(string msg, string filename, ErrorListProvider errorListProvider) {
-            AsmDudeToolsStatic.Output(string.Format("WARNING: " + msg));
+            AsmDudeToolsStatic.Output_WARNING(msg);
 
             for (int i = 0; i < errorListProvider.Tasks.Count; ++i) {
                 Task t = errorListProvider.Tasks[i];
@@ -386,7 +386,6 @@ namespace AsmDude.Tools {
             errorListProvider.Show(); // do not use BringToFront since that will select the error window.
             errorListProvider.Refresh();
         }
-
 
         public static ISet<Arch> Get_Arch_Swithed_On() {
             ISet<Arch> set = new HashSet<Arch>();

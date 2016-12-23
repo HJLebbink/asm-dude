@@ -45,7 +45,7 @@ namespace AsmDude.SignatureHelp {
             this._broker = broker;
 
             //add this to the filter chain
-            textViewAdapter.AddCommandFilter(this, out _nextCommandHandler);
+            textViewAdapter.AddCommandFilter(this, out this._nextCommandHandler);
         }
 
         private char GetTypeChar(IntPtr pvaIn) {
@@ -54,7 +54,7 @@ namespace AsmDude.SignatureHelp {
 
         public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
             try {
-                SnapshotPoint currentPoint = _textView.Caret.Position.BufferPosition;
+                SnapshotPoint currentPoint = this._textView.Caret.Position.BufferPosition;
                 if ((currentPoint != null) && (currentPoint > 0)) {
                     SnapshotPoint point = currentPoint - 1;
                     if (point.Position > 1) {
@@ -65,12 +65,12 @@ namespace AsmDude.SignatureHelp {
                         if (!AsmSourceTools.isInRemark(pos, lineStr)) { //check if current position is in a remark; if we are in a remark, no signature help
 
                             if ((pguidCmdGroup == VSConstants.VSStd2K) && (nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR)) {
-                                char typedChar = this.GetTypeChar(pvaIn);
+                                char typedChar = GetTypeChar(pvaIn);
                                 if (char.IsWhiteSpace(typedChar) || typedChar.Equals(',')) {
                                     var t = AsmSourceTools.parseLine(lineStr);
                                     if (this._session != null) this._session.Dismiss(); // cleanup previous session
                                     if (t.Item2 != Mnemonic.UNKNOWN) {
-                                        this._session = _broker.TriggerSignatureHelp(_textView);
+                                        this._session = this._broker.TriggerSignatureHelp(this._textView);
                                     }
                                 } else if (AsmSourceTools.isRemarkChar(typedChar) && (this._session != null)) {
                                     this._session.Dismiss();
@@ -87,13 +87,13 @@ namespace AsmDude.SignatureHelp {
                     }
                 }
             } catch (Exception e) {
-                AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:Exec; e={1}", this.ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:Exec; e={1}", ToString(), e.ToString()));
             }
-            return _nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+            return this._nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
         }
 
         public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText) {
-            return _nextCommandHandler.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
+            return this._nextCommandHandler.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
         }
     }
 }

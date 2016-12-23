@@ -38,10 +38,10 @@ namespace AsmDude.QuickInfo
         internal AsmQuickInfoController(ITextView textView, IList<ITextBuffer> subjectBuffers, IQuickInfoBroker quickInfoBroker)
         {
             //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoController:constructor: file=" + AsmDudeToolsStatic.GetFileName(textView.TextBuffer));
-            _textView = textView;
-            _subjectBuffers = subjectBuffers;
-            _quickInfoBroker = quickInfoBroker;
-            _textView.MouseHover += this.OnTextViewMouseHover;
+            this._textView = textView;
+            this._subjectBuffers = subjectBuffers;
+            this._quickInfoBroker = quickInfoBroker;
+            this._textView.MouseHover += this.OnTextViewMouseHover;
         }
 
         public void ConnectSubjectBuffer(ITextBuffer subjectBuffer)
@@ -56,10 +56,10 @@ namespace AsmDude.QuickInfo
 
         public void Detach(ITextView textView)
         {
-            if (_textView == textView)
+            if (this._textView == textView)
             {
-                _textView.MouseHover -= this.OnTextViewMouseHover;
-                _textView = null;
+                this._textView.MouseHover -= this.OnTextViewMouseHover;
+                this._textView = null;
             }
         }
 
@@ -69,12 +69,12 @@ namespace AsmDude.QuickInfo
         private void OnTextViewMouseHover(object sender, MouseHoverEventArgs e)
         {
             //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoController:OnTextViewMouseHover: file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
-            SnapshotPoint? point = this.GetMousePosition(new SnapshotPoint(this._textView.TextSnapshot, e.Position));
+            SnapshotPoint? point = GetMousePosition(new SnapshotPoint(this._textView.TextSnapshot, e.Position));
             if (point != null)
             {
                 ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(point.Value.Position, PointTrackingMode.Positive);
                 // Find the broker for this buffer
-                if (!this._quickInfoBroker.IsQuickInfoActive(_textView))
+                if (!this._quickInfoBroker.IsQuickInfoActive(this._textView))
                 {
                     //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoController:OnTextViewMouseHover: CreateQuickInfoSession for triggerPoint "+triggerPoint.TextBuffer+"; file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
                     this._session = this._quickInfoBroker.CreateQuickInfoSession(this._textView, triggerPoint, false);
@@ -96,10 +96,10 @@ namespace AsmDude.QuickInfo
         {
             // Map this point down to the appropriate subject buffer.
 
-            return _textView.BufferGraph.MapDownToFirstMatch(
+            return this._textView.BufferGraph.MapDownToFirstMatch(
                 topPosition,
                 PointTrackingMode.Positive,
-                snapshot => _subjectBuffers.Contains(snapshot.TextBuffer),
+                snapshot => this._subjectBuffers.Contains(snapshot.TextBuffer),
                 PositionAffinity.Predecessor
             );
         }

@@ -48,14 +48,14 @@ namespace AsmDude.Tools
         /// <summary>
         /// Return dictionary of line numbers with label clash descriptions
         /// </summary>
-        SortedDictionary<uint, string> Label_Clashes { get; }
+        SortedDictionary<uint, string> Get_Label_Clashes { get; }
 
         /// <summary>
         /// Return dictionary of line numbers with undefined label descriptions
         /// </summary>
-        SortedDictionary<uint, string> Undefined_Labels { get; }
+        SortedDictionary<uint, string> Get_Undefined_Labels { get; }
 
-        SortedDictionary<string, string> Label_Descriptions { get; }
+        SortedDictionary<string, string> Get_Label_Descriptions { get; }
 
         void Reset_Delayed();
         event EventHandler<CustomEventArgs> Reset_Done_Event;

@@ -53,8 +53,8 @@ namespace AsmDude.ErrorSquiggles {
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag {
 
             Func<ITagger<T>> sc = delegate () {
-                ITagAggregator<AsmTokenTag> aggregator = AsmDudeToolsStatic.Get_Aggregator(buffer, _aggregatorFactory);
-                ILabelGraph labelGraph = AsmDudeToolsStatic.Get_Label_Graph(buffer, _aggregatorFactory, _docFactory, _contentService);
+                ITagAggregator<AsmTokenTag> aggregator = AsmDudeToolsStatic.Get_Aggregator(buffer, this._aggregatorFactory);
+                ILabelGraph labelGraph = AsmDudeToolsStatic.Get_Label_Graph(buffer, this._aggregatorFactory, this._docFactory, this._contentService);
                 return new LabelErrorTagger(buffer, aggregator, labelGraph) as ITagger<T>;
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);

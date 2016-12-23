@@ -44,8 +44,8 @@ namespace AsmDude.Tools
             this._htmlRef = new Dictionary<Mnemonic, string>();
             this._description = new Dictionary<Mnemonic, string>();
 
-            this.loadRegularData(filename_RegularData);
-            if (filename_HandcraftedData != null) this.loadHandcraftedData(filename_HandcraftedData);
+            loadRegularData(filename_RegularData);
+            if (filename_HandcraftedData != null) loadHandcraftedData(filename_HandcraftedData);
         }
 
         public bool hasElement(Mnemonic mnemonic) {
@@ -83,7 +83,7 @@ namespace AsmDude.Tools
         public void setDescription(Mnemonic mnemonic, string value) {
             this._description[mnemonic] = value;
             if (this._data.ContainsKey(mnemonic)) {
-                foreach (AsmSignatureElement e in _data[mnemonic]) {
+                foreach (AsmSignatureElement e in this._data[mnemonic]) {
                     e.Documentation = value;
                 }
             }
@@ -99,7 +99,7 @@ namespace AsmDude.Tools
 
         public override string ToString() {
             StringBuilder sb = new StringBuilder();
-            foreach (KeyValuePair<Mnemonic, IList<AsmSignatureElement>> element in _data) {
+            foreach (KeyValuePair<Mnemonic, IList<AsmSignatureElement>> element in this._data) {
                 Mnemonic mnemonic = element.Key;
                 string s1 = mnemonic.ToString().ToUpper();
                 string s6 = this._htmlRef[mnemonic];
@@ -173,7 +173,7 @@ namespace AsmDude.Tools
                                 AsmDudeToolsStatic.Output("WARNING: MnemonicStore:loadRegularData: unknown mnemonic in line: " + line);
                             } else {
                                 AsmSignatureElement se = new AsmSignatureElement(mnemonic, columns[1], columns[2], columns[3], columns[4]);
-                                if (this.add(se)) {
+                                if (add(se)) {
                                     AsmDudeToolsStatic.Output("WARNING: MnemonicStore:loadRegularData: signature already exists" + se.ToString());
                                 }
                             }
@@ -239,7 +239,7 @@ namespace AsmDude.Tools
                                 AsmDudeToolsStatic.Output("WARNING: MnemonicStore:loadHandcraftedData: unknown mnemonic in line" + line);
                             } else {
                                 AsmSignatureElement se = new AsmSignatureElement(mnemonic, columns[1], columns[2], columns[3], columns[4]);
-                                this.add(se);
+                                add(se);
                             }
                             #endregion
                         } else {

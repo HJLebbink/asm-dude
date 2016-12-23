@@ -113,7 +113,7 @@ namespace AsmDude.SignatureHelp {
                 StringBuilder sb = new StringBuilder();
                 int nOperands = this._operandStr.Length;
                 for (int i = 0; i < nOperands; ++i) {
-                    sb.Append(_operandStr[i]);
+                    sb.Append(this._operandStr[i]);
                     if (i < nOperands - 1) sb.Append(", ");
                 }
                 return sb.ToString();
@@ -122,7 +122,7 @@ namespace AsmDude.SignatureHelp {
                 this._operands.Clear();
                 this._operandStr = value.Split(',');
 
-                for (int i = 0; i< this._operandStr.Length; ++i) { 
+                for (int i = 0; i< this._operandStr.Length; ++i) {
                     this._operandStr[i] = this._operandStr[i].Trim();
                     if (this._operandStr[i].Length > 0) {
                         //AsmDudeToolsStatic.Output("INFO: SignatureStore:load: operandStr " + operandStr);
@@ -146,7 +146,7 @@ namespace AsmDude.SignatureHelp {
         public IList<IList<AsmSignatureEnum>> Operands { get { return this._operands; } }
 
         public string Get_Operand_Str(int index) {
-            return _operandStr[index];
+            return this._operandStr[index];
         }
 
         public string Sigature_Doc() {

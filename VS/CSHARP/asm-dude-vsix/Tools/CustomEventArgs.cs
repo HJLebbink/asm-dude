@@ -26,13 +26,13 @@ namespace AsmDude.Tools {
 
     public class CustomEventArgs : EventArgs {
         public CustomEventArgs(string s) {
-            message = s;
+            this.message = s;
         }
         private string message;
 
         public string Message {
-            get { return message; }
-            set { message = value; }
+            get { return this.message; }
+            set { this.message = value; }
         }
     }
 }

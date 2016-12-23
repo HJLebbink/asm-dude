@@ -37,49 +37,49 @@ namespace AsmDude.AsmDoc
 
         internal AsmDocUnderlineTagger(ITextView textView, IClassificationType classificationType)
         {
-            _textView = textView;
-            _classificationType = classificationType;
-            _underlineSpan = null;
+            this._textView = textView;
+            this._classificationType = classificationType;
+            this._underlineSpan = null;
         }
 
         #region Private helpers
 
         void SendEvent(SnapshotSpan span)
         {
-            this.TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(span));
+            TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(span));
         }
 
         #endregion
 
         #region UnderlineClassification public members
 
-        public SnapshotSpan? CurrentUnderlineSpan { get { return _underlineSpan; } }
+        public SnapshotSpan? CurrentUnderlineSpan { get { return this._underlineSpan; } }
 
         public void SetUnderlineSpan(SnapshotSpan? span)
         {
-            var oldSpan = _underlineSpan;
-            _underlineSpan = span;
+            var oldSpan = this._underlineSpan;
+            this._underlineSpan = span;
 
-            if (!oldSpan.HasValue && !_underlineSpan.HasValue)
+            if (!oldSpan.HasValue && !this._underlineSpan.HasValue)
             {
                 return;
-            } else if (oldSpan.HasValue && _underlineSpan.HasValue && oldSpan == _underlineSpan)
+            } else if (oldSpan.HasValue && this._underlineSpan.HasValue && oldSpan == this._underlineSpan)
             {
                 return;
             }
-            if (!_underlineSpan.HasValue)
+            if (!this._underlineSpan.HasValue)
             {
-                this.SendEvent(oldSpan.Value);
+                SendEvent(oldSpan.Value);
             } else
             {
-                SnapshotSpan updateSpan = _underlineSpan.Value;
+                SnapshotSpan updateSpan = this._underlineSpan.Value;
                 if (oldSpan.HasValue)
                 {
                     updateSpan = new SnapshotSpan(updateSpan.Snapshot,
                         Span.FromBounds(Math.Min(updateSpan.Start, oldSpan.Value.Start),
                                         Math.Max(updateSpan.End, oldSpan.Value.End)));
                 }
-                this.SendEvent(updateSpan);
+                SendEvent(updateSpan);
             }
         }
 
@@ -87,15 +87,15 @@ namespace AsmDude.AsmDoc
 
         public IEnumerable<ITagSpan<ClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
-            if (!_underlineSpan.HasValue || (spans.Count == 0))
+            if (!this._underlineSpan.HasValue || (spans.Count == 0))
             {
                 yield break;
             }
             SnapshotSpan request = new SnapshotSpan(spans[0].Start, spans[spans.Count - 1].End);
-            SnapshotSpan underline = _underlineSpan.Value.TranslateTo(request.Snapshot, SpanTrackingMode.EdgeInclusive);
+            SnapshotSpan underline = this._underlineSpan.Value.TranslateTo(request.Snapshot, SpanTrackingMode.EdgeInclusive);
             if (underline.IntersectsWith(request))
             {
-                yield return new TagSpan<ClassificationTag>(underline, new ClassificationTag(_classificationType));
+                yield return new TagSpan<ClassificationTag>(underline, new ClassificationTag(this._classificationType));
             }
         }
 

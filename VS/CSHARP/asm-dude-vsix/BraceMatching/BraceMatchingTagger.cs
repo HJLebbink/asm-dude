@@ -51,15 +51,15 @@ namespace AsmDude.BraceMatching {
                 { '(', ')' },
                 { '{', '}' }
             };
-            this._view.Caret.PositionChanged += CaretPositionChanged;
-            this._view.LayoutChanged += ViewLayoutChanged;
+            this._view.Caret.PositionChanged += this.CaretPositionChanged;
+            this._view.LayoutChanged += this.ViewLayoutChanged;
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
         private void ViewLayoutChanged(object sender, TextViewLayoutChangedEventArgs e) {
             if (e.NewSnapshot != e.OldSnapshot) { //make sure that there has really been a change
-                UpdateAtCaretPosition(_view.Caret.Position);
+                UpdateAtCaretPosition(this._view.Caret.Position);
             }
         }
 
@@ -67,12 +67,12 @@ namespace AsmDude.BraceMatching {
             UpdateAtCaretPosition(e.NewPosition);
         }
         private void UpdateAtCaretPosition(CaretPosition caretPosition) {
-            _currentChar = caretPosition.Point.GetPoint(_sourceBuffer, caretPosition.Affinity);
+            this._currentChar = caretPosition.Point.GetPoint(this._sourceBuffer, caretPosition.Affinity);
 
-            if (!_currentChar.HasValue) {
+            if (!this._currentChar.HasValue) {
                 return;
             }
-            TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(new SnapshotSpan(_sourceBuffer.CurrentSnapshot, 0, _sourceBuffer.CurrentSnapshot.Length)));
+            TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(new SnapshotSpan(this._sourceBuffer.CurrentSnapshot, 0, this._sourceBuffer.CurrentSnapshot.Length)));
         }
 
         public IEnumerable<ITagSpan<TextMarkerTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
@@ -80,11 +80,11 @@ namespace AsmDude.BraceMatching {
                 yield break;
             }
             //don't do anything if the current SnapshotPoint is not initialized or at the end of the buffer
-            if (!_currentChar.HasValue || _currentChar.Value.Position >= _currentChar.Value.Snapshot.Length) {
+            if (!this._currentChar.HasValue || this._currentChar.Value.Position >= this._currentChar.Value.Snapshot.Length) {
                 yield break;
             }
             //hold on to a snapshot of the current character
-            SnapshotPoint currentChar = _currentChar.Value;
+            SnapshotPoint currentChar = this._currentChar.Value;
 
             //if the requested snapshot isn't the same as the one the brace is on, translate our spans to the expected snapshot
             if (spans[0].Snapshot != currentChar.Snapshot) {
@@ -97,17 +97,17 @@ namespace AsmDude.BraceMatching {
             char lastText = lastChar.GetChar();
             SnapshotSpan pairSpan = new SnapshotSpan();
 
-            if (_braceList.ContainsKey(currentText)) {  //the key is the open brace
-                _braceList.TryGetValue(currentText, out char closeChar);
-                if (BraceMatchingTagger.FindMatchingCloseChar(currentChar, currentText, closeChar, _view.TextViewLines.Count, out pairSpan) == true) {
+            if (this._braceList.ContainsKey(currentText)) {  //the key is the open brace
+                this._braceList.TryGetValue(currentText, out char closeChar);
+                if (BraceMatchingTagger.FindMatchingCloseChar(currentChar, currentText, closeChar, this._view.TextViewLines.Count, out pairSpan) == true) {
                     yield return new TagSpan<TextMarkerTag>(new SnapshotSpan(currentChar, 1), new TextMarkerTag("blue"));
                     yield return new TagSpan<TextMarkerTag>(pairSpan, new TextMarkerTag("blue"));
                 }
-            } else if (_braceList.ContainsValue(lastText)) {   //the value is the close brace, which is the *previous* character 
+            } else if (this._braceList.ContainsValue(lastText)) {   //the value is the close brace, which is the *previous* character 
                 var open = from n in _braceList
                            where n.Value.Equals(lastText)
                            select n.Key;
-                if (BraceMatchingTagger.FindMatchingOpenChar(lastChar, (char)open.ElementAt<char>(0), lastText, _view.TextViewLines.Count, out pairSpan) == true) {
+                if (BraceMatchingTagger.FindMatchingOpenChar(lastChar, (char)open.ElementAt<char>(0), lastText, this._view.TextViewLines.Count, out pairSpan) == true) {
                     yield return new TagSpan<TextMarkerTag>(new SnapshotSpan(lastChar, 1), new TextMarkerTag("blue"));
                     yield return new TagSpan<TextMarkerTag>(pairSpan, new TextMarkerTag("blue"));
                 }

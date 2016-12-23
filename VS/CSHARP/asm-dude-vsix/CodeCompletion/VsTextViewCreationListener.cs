@@ -43,9 +43,9 @@ namespace AsmDude.CodeCompletion {
         private ICompletionBroker _completionBroker = null;
 
         public void VsTextViewCreated(IVsTextView textViewAdapter) {
-            IWpfTextView view = _adaptersFactory.GetWpfTextView(textViewAdapter);
+            IWpfTextView view = this._adaptersFactory.GetWpfTextView(textViewAdapter);
             Debug.Assert(view != null);
-            CodeCompletionCommandFilter filter = new CodeCompletionCommandFilter(view, _completionBroker);
+            CodeCompletionCommandFilter filter = new CodeCompletionCommandFilter(view, this._completionBroker);
             textViewAdapter.AddCommandFilter(filter, out var next);
             filter.NextCommandHandler = next;
         }

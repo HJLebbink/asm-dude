@@ -91,8 +91,8 @@ namespace AsmDude.SignatureHelp {
             try {
                 DateTime time1 = DateTime.Now;
                 ITextSnapshot snapshot = this._buffer.CurrentSnapshot;
-                int position = session.GetTriggerPoint(_buffer).GetPosition(snapshot);
-                ITrackingSpan applicableToSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(new Span(position, 0), SpanTrackingMode.EdgeInclusive, 0);
+                int position = session.GetTriggerPoint(this._buffer).GetPosition(snapshot);
+                ITrackingSpan applicableToSpan = this._buffer.CurrentSnapshot.CreateTrackingSpan(new Span(position, 0), SpanTrackingMode.EdgeInclusive, 0);
 
                 ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
                 string lineStr = line.GetText();
@@ -106,11 +106,11 @@ namespace AsmDude.SignatureHelp {
                 //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: AugmentSignatureHelpSession: selected architectures=" + ArchTools.ToString(selectedArchitectures));
 
                 foreach (AsmSignatureElement se in AsmSignatureHelpSource.Constrain_Signatures(this._store.getSignatures(mnemonic), operands, selectedArchitectures)) {
-                    signatures.Add(this.Create_Signature(_buffer, se, applicableToSpan));
+                    signatures.Add(Create_Signature(this._buffer, se, applicableToSpan));
                 }
                 AsmDudeToolsStatic.Print_Speed_Warning(time1, "Signature Help");
             } catch (Exception e) {
-                AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:AugmentSignatureHelpSession; e={1}", this.ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:AugmentSignatureHelpSession; e={1}", ToString(), e.ToString()));
             }
         }
 
@@ -169,9 +169,9 @@ namespace AsmDude.SignatureHelp {
 
         private bool _isDisposed;
         public void Dispose() {
-            if (!_isDisposed) {
+            if (!this._isDisposed) {
                 GC.SuppressFinalize(this);
-                _isDisposed = true;
+                this._isDisposed = true;
             }
         }
     }

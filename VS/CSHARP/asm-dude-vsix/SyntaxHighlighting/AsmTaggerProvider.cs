@@ -141,11 +141,11 @@ namespace AsmDude.SyntaxHighlighting
             {
                 Func<ITagger<T>> sc = delegate () {
                     Func<ITagAggregator<AsmTokenTag>> sc2 = delegate () {
-                        return _aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
+                        return this._aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
                     };
                     ITagAggregator<AsmTokenTag> aggregator = buffer.Properties.GetOrCreateSingletonProperty(sc2);
 
-                    return new AsmClassifier(buffer, aggregator, _classificationTypeRegistry) as ITagger<T>;
+                    return new AsmClassifier(buffer, aggregator, this._classificationTypeRegistry) as ITagger<T>;
                 };
                 return buffer.Properties.GetOrCreateSingletonProperty(sc);
             } else

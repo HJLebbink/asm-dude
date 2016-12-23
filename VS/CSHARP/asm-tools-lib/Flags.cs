@@ -22,9 +22,9 @@
     public abstract class FlagValue {
         private Bt _value;
         public FlagValue(Bt v) {
-            _value = v;
+            this._value = v;
         }
-        public Bt val { get { return _value; } set { _value = value; } }
+        public Bt val { get { return this._value; } set { this._value = value; } }
     }
 
     public sealed class CarryFlag : FlagValue {

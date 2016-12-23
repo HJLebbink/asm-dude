@@ -39,11 +39,11 @@ namespace AsmDude.SignatureHelp {
         private string _printContent;
 
         internal AsmSignature(ITextBuffer subjectBuffer, string content, string doc, ReadOnlyCollection<IParameter> parameters) {
-            _subjectBuffer = subjectBuffer;
-            _content = content;
-            _documentation = doc;
-            _parameters = parameters;
-            _subjectBuffer.Changed += new EventHandler<TextContentChangedEventArgs>(this.OnSubjectBufferChanged);
+            this._subjectBuffer = subjectBuffer;
+            this._content = content;
+            this._documentation = doc;
+            this._parameters = parameters;
+            this._subjectBuffer.Changed += new EventHandler<TextContentChangedEventArgs>(this.OnSubjectBufferChanged);
         }
         public event EventHandler<CurrentParameterChangedEventArgs> CurrentParameterChanged;
 
@@ -53,13 +53,13 @@ namespace AsmDude.SignatureHelp {
                 if (this._currentParameter != value) {
                     IParameter prevCurrentParameter = this._currentParameter;
                     this._currentParameter = value;
-                    this.RaiseCurrentParameterChanged(prevCurrentParameter, this._currentParameter);
+                    RaiseCurrentParameterChanged(prevCurrentParameter, this._currentParameter);
                 }
             }
         }
 
         private void RaiseCurrentParameterChanged(IParameter prevCurrentParameter, IParameter newCurrentParameter) {
-            this.CurrentParameterChanged?.Invoke(this, new CurrentParameterChangedEventArgs(prevCurrentParameter, newCurrentParameter));
+            CurrentParameterChanged?.Invoke(this, new CurrentParameterChangedEventArgs(prevCurrentParameter, newCurrentParameter));
         }
 
         public static int Count_Commas(string str) {
@@ -86,8 +86,8 @@ namespace AsmDude.SignatureHelp {
             }
 
             //the number of commas in the current line is the index of the current parameter
-            SnapshotPoint position = _applicableToSpan.GetStartPoint(_subjectBuffer.CurrentSnapshot);
-            string lineStr = _subjectBuffer.CurrentSnapshot.GetLineFromPosition(position).GetText();
+            SnapshotPoint position = this._applicableToSpan.GetStartPoint(this._subjectBuffer.CurrentSnapshot);
+            string lineStr = this._subjectBuffer.CurrentSnapshot.GetLineFromPosition(position).GetText();
             //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: computeCurrentParameter. lineStr=" + lineStr);
 
             int commaCount = AsmSignature.Count_Commas(lineStr);
@@ -101,7 +101,7 @@ namespace AsmDude.SignatureHelp {
         }
 
         internal void OnSubjectBufferChanged(object sender, TextContentChangedEventArgs e) {
-            this.Compute_Current_Parameter();
+            Compute_Current_Parameter();
         }
 
         public ITrackingSpan ApplicableToSpan {
@@ -110,23 +110,23 @@ namespace AsmDude.SignatureHelp {
         }
 
         public string Content {
-            get { return (_content); }
-            internal set { _content = value; }
+            get { return (this._content); }
+            internal set { this._content = value; }
         }
 
         public string Documentation {
-            get { return (_documentation); }
-            internal set { _documentation = value; }
+            get { return (this._documentation); }
+            internal set { this._documentation = value; }
         }
 
         public ReadOnlyCollection<IParameter> Parameters {
-            get { return (_parameters); }
-            internal set { _parameters = value; }
+            get { return (this._parameters); }
+            internal set { this._parameters = value; }
         }
 
         public string PrettyPrintedContent {
-            get { return (_printContent); }
-            internal set { _printContent = value; }
+            get { return (this._printContent); }
+            internal set { this._printContent = value; }
         }
     }
 }

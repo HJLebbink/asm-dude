@@ -55,7 +55,7 @@ namespace AsmDude.HighlightWord {
             }
 
             Func<ITagger<T>> sc = delegate () {
-                return new HighlightWordTagger(textView, buffer, _textSearchService) as ITagger<T>;
+                return new HighlightWordTagger(textView, buffer, this._textSearchService) as ITagger<T>;
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }

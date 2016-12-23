@@ -73,7 +73,7 @@ namespace AsmDude.QuickInfo
             {
                 DateTime time1 = DateTime.Now;
 
-                ITextSnapshot snapshot = _sourceBuffer.CurrentSnapshot;
+                ITextSnapshot snapshot = this._sourceBuffer.CurrentSnapshot;
                 var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(snapshot);
                 if (triggerPoint == null)
                 {
@@ -94,13 +94,13 @@ namespace AsmDude.QuickInfo
                         {
                             foreach (IMappingTagSpan<AsmTokenTag> v in enumerator)
                             {
-                                AsmDudeToolsStatic.Output(string.Format("WARNING: {0}:AugmentQuickInfoSession. more than one tag! \"{1}\"", this.ToString(), v.Span.GetSpans(_sourceBuffer).First().GetText()));
+                                AsmDudeToolsStatic.Output(string.Format("WARNING: {0}:AugmentQuickInfoSession. more than one tag! \"{1}\"", ToString(), v.Span.GetSpans(this._sourceBuffer).First().GetText()));
                             }
                         }
                     }
 
                     IMappingTagSpan<AsmTokenTag> asmTokenTag = enumerator.First();
-                    SnapshotSpan tagSpan = asmTokenTag.Span.GetSpans(_sourceBuffer).First();
+                    SnapshotSpan tagSpan = asmTokenTag.Span.GetSpans(this._sourceBuffer).First();
                     keyword = tagSpan.GetText();
 
                     //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoSource:AugmentQuickInfoSession: keyword=\""+ keyword + "\"; type=" + asmTokenTag.Tag.type +"; file="+AsmDudeToolsStatic.GetFileName(session.TextView.TextBuffer));
@@ -170,7 +170,7 @@ namespace AsmDude.QuickInfo
                                 description.Inlines.Add(Make_Run1("Label "));
                                 description.Inlines.Add(Make_Run2(keyword, Settings.Default.SyntaxHighlighting_Label));
 
-                                string descr = this.Get_Label_Description(keyword);
+                                string descr = Get_Label_Description(keyword);
                                 if (descr.Length > 0)
                                 {
                                     description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
@@ -183,7 +183,7 @@ namespace AsmDude.QuickInfo
                                 description.Inlines.Add(Make_Run1("Label "));
                                 description.Inlines.Add(Make_Run2(keyword, Settings.Default.SyntaxHighlighting_Label));
 
-                                string descr = this.Get_Label_Def_Description(keyword);
+                                string descr = Get_Label_Def_Description(keyword);
                                 if (descr.Length > 0)
                                 {
                                     description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
@@ -214,7 +214,7 @@ namespace AsmDude.QuickInfo
                 AsmDudeToolsStatic.Print_Speed_Warning(time1, "QuickInfo");
             } catch (Exception e)
             {
-                AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:AugmentQuickInfoSession; e={1}", this.ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:AugmentQuickInfoSession; e={1}", ToString(), e.ToString()));
             }
         }
 

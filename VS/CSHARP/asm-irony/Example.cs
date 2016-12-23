@@ -24,7 +24,7 @@ namespace asm_irony {
             //RegexBasedTerminal label = new RegexBasedTerminal("LABEL", "[A-Za-z_][A-Za-z_0-9]+");
 
             CommentTerminal SingleLineComment = new CommentTerminal("SingleLineComment", ";", "#");
-            NonGrammarTerminals.Add(SingleLineComment);
+            this.NonGrammarTerminals.Add(SingleLineComment);
 
             KeyTerm COMMA = ToTerm(",", "COMMA");
             KeyTerm PLUS = ToTerm("+", "PLUS");
@@ -115,13 +115,13 @@ namespace asm_irony {
             line.Rule = directive;
             line.Rule |= label_def_opt + instruction_opt;
 
-            label_def_opt.Rule = Empty;
+            label_def_opt.Rule = this.Empty;
             label_def_opt.Rule |= label_def;
 
             label_def.Rule = label + ":";
             label_def.Rule |= label + "::";
 
-            instruction_opt.Rule = Empty;
+            instruction_opt.Rule = this.Empty;
             instruction_opt.Rule |= instruction;
 
             #region Memory Operand
@@ -130,7 +130,7 @@ namespace asm_irony {
             m32.Rule = "dword" + mem_ptr + BSL + mem_op + BSR;
             m64.Rule = "qword" + mem_ptr + BSL + mem_op + BSR;
 
-            mem_ptr.Rule = Empty;
+            mem_ptr.Rule = this.Empty;
             mem_ptr.Rule |= "ptr";
 
             mem_op.Rule  = mem_base_64 + PLUS + mem_scale_index_bracket_64 + mem_disp; //ABC
@@ -211,7 +211,7 @@ namespace asm_irony {
             #endregion Rules
 
 
-            label.ValidateToken += label_ValidateToken;
+            label.ValidateToken += this.label_ValidateToken;
         }
 
         private void findTimesChar(ParsingContext context, CustomParserAction customAction) {

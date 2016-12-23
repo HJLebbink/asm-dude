@@ -27,11 +27,11 @@ namespace AsmDude.SignatureHelp {
 
     internal class AsmParameter : IParameter {
         public AsmParameter(string documentation, Span locus, string name, ISignature signature) {
-            Documentation = documentation;
-            Locus = locus;
-            Name = name;
-            Signature = signature;
-            PrettyPrintedLocus = locus;
+            this.Documentation = documentation;
+            this.Locus = locus;
+            this.Name = name;
+            this.Signature = signature;
+            this.PrettyPrintedLocus = locus;
         }
         public string Documentation { get; private set; }
         public Span Locus { get; private set; }

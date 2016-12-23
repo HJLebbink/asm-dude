@@ -80,7 +80,7 @@ namespace AsmDude {
             this._mnemonicStore = new MnemonicStore(filename_Regular, filename_Hand);
             #endregion
 
-            this.Init_Data();
+            Init_Data();
 
             #region Experiments
 
@@ -177,7 +177,7 @@ namespace AsmDude {
                     string keyword = mnemonic.ToString().ToUpper();
                     if (this._description.ContainsKey(keyword)) {
                         string description = this._description[keyword];
-                        string reference = this.Get_Url(keyword);
+                        string reference = Get_Url(keyword);
 
                         this.Mnemonic_Store.setHtmlRef(mnemonic, reference);
 
@@ -259,7 +259,7 @@ namespace AsmDude {
                 }
                 return "";
             } catch (Exception e) {
-                AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:getUrl: exception {1}.", this.ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:getUrl: exception {1}.", ToString(), e.ToString()));
                 return "";
             }
         }
@@ -298,7 +298,7 @@ namespace AsmDude {
             this._description = new Dictionary<string, string>();
 
             // fill the dictionary with keywords
-            XmlDocument xmlDoc = this.Get_Xml_Data();
+            XmlDocument xmlDoc = Get_Xml_Data();
             foreach (XmlNode node in xmlDoc.SelectNodes("//misc")) {
                 var nameAttribute = node.Attributes["name"];
                 if (nameAttribute == null) {
@@ -307,8 +307,8 @@ namespace AsmDude {
                     string name = nameAttribute.Value.ToUpper();
                     //Debug.WriteLine("INFO: AsmTokenTagger: found misc " + name);
                     this._type[name] = AsmTokenType.Misc;
-                    this._arch[name] = this.Retrieve_Arch(node);
-                    this._description[name] = this.Retrieve_Description(node);
+                    this._arch[name] = Retrieve_Arch(node);
+                    this._description[name] = Retrieve_Description(node);
                 }
             }
 
@@ -320,9 +320,9 @@ namespace AsmDude {
                     string name = nameAttribute.Value.ToUpper();
                     //Debug.WriteLine("INFO: AsmTokenTagger: found directive " + name);
                     this._type[name] = AsmTokenType.Directive;
-                    this._arch[name] = this.Retrieve_Arch(node);
-                    this._assembler[name] = this.Retrieve_Assembler(node);
-                    this._description[name] = this.Retrieve_Description(node);
+                    this._arch[name] = Retrieve_Arch(node);
+                    this._assembler[name] = Retrieve_Assembler(node);
+                    this._description[name] = Retrieve_Description(node);
                 }
             }
             foreach (XmlNode node in xmlDoc.SelectNodes("//register")) {
@@ -333,7 +333,7 @@ namespace AsmDude {
                     string name = nameAttribute.Value.ToUpper();
                     //Debug.WriteLine("INFO: AsmTokenTagger: found register " + name);
                     this._type[name] = AsmTokenType.Register;
-                    this._arch[name] = this.Retrieve_Arch(node);
+                    this._arch[name] = Retrieve_Arch(node);
                     this._description[name] = Retrieve_Description(node);
                 }
             }

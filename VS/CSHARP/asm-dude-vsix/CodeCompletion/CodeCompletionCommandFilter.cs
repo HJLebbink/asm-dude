@@ -67,7 +67,7 @@ namespace AsmDude {
 
             //make sure the input is a char before getting it
             if ((pguidCmdGroup == VSConstants.VSStd2K) && (nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR)) {
-                typedChar = this.GetTypeChar(pvaIn);
+                typedChar = GetTypeChar(pvaIn);
             }
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:Exec: typedChar={1}", this.ToString(), typedChar));
 
@@ -98,7 +98,7 @@ namespace AsmDude {
             bool handled = false;
             if (!typedChar.Equals(char.MinValue) && char.IsLetterOrDigit(typedChar)) {
                 if (this._currentSession == null || this._currentSession.IsDismissed) { // If there is no active session, bring up completion
-                    if (this.StartSession()) {
+                    if (StartSession()) {
                         if (this._currentSession != null) {
                             this._currentSession.Filter();
                         }
@@ -130,28 +130,28 @@ namespace AsmDude {
                 switch ((VSConstants.VSStd2KCmdID)nCmdID) {
                     case VSConstants.VSStd2KCmdID.AUTOCOMPLETE:
                     case VSConstants.VSStd2KCmdID.COMPLETEWORD:
-                        handledChar = this.StartSession();
+                        handledChar = StartSession();
                         break;
                     case VSConstants.VSStd2KCmdID.RETURN:
-                        handledChar = this.Complete(true);
+                        handledChar = Complete(true);
                         break;
                     case VSConstants.VSStd2KCmdID.TAB:
-                        this.Complete(true);
+                        Complete(true);
                         handledChar = false;
                         break;
                     case VSConstants.VSStd2KCmdID.CANCEL:
-                        handledChar = this.Cancel();
+                        handledChar = Cancel();
                         break;
                     case VSConstants.VSStd2KCmdID.TYPECHAR:
                         typedChar = GetTypeChar(pvaIn);
                         if (char.IsWhiteSpace(typedChar)) {
-                            this.Complete(true);
+                            Complete(true);
                             handledChar = false;
                         } else if (AsmTools.AsmSourceTools.isSeparatorChar(typedChar)) {
-                            this.Complete(false);
+                            Complete(false);
                             handledChar = false;
                         } else if (AsmTools.AsmSourceTools.isRemarkChar(typedChar)) {
-                            this.Complete(true);
+                            Complete(true);
                             handledChar = false;
                         }
                         break;
@@ -166,14 +166,14 @@ namespace AsmDude {
                 if (!typedChar.Equals(char.MinValue) && char.IsLetterOrDigit(typedChar)) {
                 //if (!typedChar.Equals(char.MinValue)) {
                     if ((this._currentSession == null) || this._currentSession.IsDismissed) { // If there is no active session, bring up completion
-                        this.StartSession();
+                        StartSession();
                     }
-                    this.Filter();
+                    Filter();
                     hresult = VSConstants.S_OK;
                 } else if (nCmdID == (uint)VSConstants.VSStd2KCmdID.BACKSPACE   //redo the filter if there is a deletion
                         || nCmdID == (uint)VSConstants.VSStd2KCmdID.DELETE) {
                     if ((this._currentSession != null) && !this._currentSession.IsDismissed) {
-                        this.Filter();
+                        Filter();
                     }
                     hresult = VSConstants.S_OK;
                 }
@@ -187,7 +187,7 @@ namespace AsmDude {
                         case VSConstants.VSStd2KCmdID.TYPECHAR:
                         case VSConstants.VSStd2KCmdID.BACKSPACE:
                         case VSConstants.VSStd2KCmdID.DELETE:
-                            this.Filter();
+                            Filter();
                             break;
                     }
                 }
@@ -211,7 +211,7 @@ namespace AsmDude {
                 //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:StartSession. Creating a new auto-complete session", this.ToString()));
                 this._currentSession = this.Broker.CreateCompletionSession(this.TextView, snapshot.CreateTrackingPoint(caret, PointTrackingMode.Positive), true);
             }
-            this._currentSession.Dismissed += (sender, args) => _currentSession = null;
+            this._currentSession.Dismissed += (sender, args) => this._currentSession = null;
             this._currentSession.Start();
             //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:StartSession", this.ToString()));
             return true;
@@ -226,7 +226,7 @@ namespace AsmDude {
             if (this._currentSession == null) {
                 return false;
             }
-            if (!_currentSession.SelectedCompletionSet.SelectionStatus.IsSelected && !force) {
+            if (!this._currentSession.SelectedCompletionSet.SelectionStatus.IsSelected && !force) {
                 this._currentSession.Dismiss();
                 return false;
             } else {
@@ -250,7 +250,7 @@ namespace AsmDude {
             if (this._currentSession == null) {
                 return;
             }
-           // this._currentSession.SelectedCompletionSet.SelectBestMatch();
+            // this._currentSession.SelectedCompletionSet.SelectBestMatch();
             //this._currentSession.SelectedCompletionSet.Recalculate();
             this._currentSession.Filter();
         }
@@ -266,7 +266,7 @@ namespace AsmDude {
                         return VSConstants.S_OK;
                 }
             }
-            return NextCommandHandler.QueryStatus(pguidCmdGroup, cCmds, prgCmds, pCmdText);
+            return this.NextCommandHandler.QueryStatus(pguidCmdGroup, cCmds, prgCmds, pCmdText);
         }
     }
 }

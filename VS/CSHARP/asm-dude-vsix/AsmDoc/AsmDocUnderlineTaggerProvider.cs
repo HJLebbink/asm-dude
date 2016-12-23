@@ -58,7 +58,7 @@ namespace AsmDude.AsmDoc
             //AsmDudeToolsStatic.Output("INFO: AsmDocUnderlineTaggerProvider:CreateTagger: file=" + AsmDudeToolsStatic.GetFileName(buffer));
             if (UnderlineClassification == null)
             {
-                UnderlineClassification = _classificationTypeRegistry.GetClassificationType(AsmDocClassificationDefinition.ClassificationTypeNames.Underline);
+                UnderlineClassification = this._classificationTypeRegistry.GetClassificationType(AsmDocClassificationDefinition.ClassificationTypeNames.Underline);
             }
             if (textView.TextBuffer != buffer)
             {

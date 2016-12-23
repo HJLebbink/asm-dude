@@ -75,8 +75,8 @@ namespace AsmDude.ErrorSquiggles {
 
             DateTime time1 = DateTime.Now;
             
-            foreach (IMappingTagSpan<AsmTokenTag> asmTokenTag in _aggregator.GetTags(spans)) {
-                SnapshotSpan tagSpan = asmTokenTag.Span.GetSpans(_sourceBuffer)[0];
+            foreach (IMappingTagSpan<AsmTokenTag> asmTokenTag in this._aggregator.GetTags(spans)) {
+                SnapshotSpan tagSpan = asmTokenTag.Span.GetSpans(this._sourceBuffer)[0];
                 //AsmDudeToolsStatic.Output(string.Format("INFO: ErrorTagger:GetTags: found keyword \"{0}\"", tagSpan.GetText()));
 
                 switch (asmTokenTag.Tag.Type) {
@@ -144,7 +144,7 @@ namespace AsmDude.ErrorSquiggles {
                 Run r2 = new Run(msg);
                 textBlock.Inlines.Add(r2);
             } catch (Exception e) {
-                AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:labelClashToolTipContent; e={1}", this.ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:labelClashToolTipContent; e={1}", ToString(), e.ToString()));
             }
             return textBlock;
         }
@@ -176,8 +176,8 @@ namespace AsmDude.ErrorSquiggles {
         }
 
         private void Handle_Label_Graph_Reset_Done_Event(object sender, CustomEventArgs e) {
-            //AsmDudeToolsStatic.Output(string.Format("INFO: LabelErrorTagger: received an event from labelGraph {0}", e.Message));
-            this.Update_Error_Tasks_Async();
+            //AsmDudeToolsStatic.Output_INFO("LabelErrorTagger: received an event from labelGraph "+ e.Message);
+            Update_Error_Tasks_Async();
         }
 
         async private void Update_Error_Tasks_Async() {
@@ -187,7 +187,7 @@ namespace AsmDude.ErrorSquiggles {
                 lock (this._updateLock) {
                     try {
                         #region Update Tags
-                        var temp = this.TagsChanged;
+                        var temp = TagsChanged;
                         if (temp != null) {
                             // is this code even reached?
                             foreach (uint id in this._labelGraph.Get_All_Related_Linenumber()) {
@@ -213,7 +213,7 @@ namespace AsmDude.ErrorSquiggles {
                             bool errorExists = false;
 
                             if (Settings.Default.IntelliSenseShowClashingLabels) {
-                                foreach (KeyValuePair<uint, string> entry in this._labelGraph.Label_Clashes) {
+                                foreach (KeyValuePair<uint, string> entry in this._labelGraph.Get_Label_Clashes) {
                                     string label = entry.Value;
                                     int lineNumber = this._labelGraph.Get_Linenumber(entry.Key);
 
@@ -232,7 +232,7 @@ namespace AsmDude.ErrorSquiggles {
                                 }
                             }
                             if (Settings.Default.IntelliSenseShowUndefinedLabels) {
-                                foreach (KeyValuePair<uint, string> entry in this._labelGraph.Undefined_Labels) {
+                                foreach (KeyValuePair<uint, string> entry in this._labelGraph.Get_Undefined_Labels) {
                                     string label = entry.Value;
                                     int lineNumber = this._labelGraph.Get_Linenumber(entry.Key);
 
@@ -258,7 +258,7 @@ namespace AsmDude.ErrorSquiggles {
                         #endregion Update Error Tasks
 
                     } catch (Exception e) {
-                        AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:updateErrorTasks; e={1}", this.ToString(), e.ToString()));
+                        AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:updateErrorTasks; e={1}", ToString(), e.ToString()));
                     }
                 }
             });

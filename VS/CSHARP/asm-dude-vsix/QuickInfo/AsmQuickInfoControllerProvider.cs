@@ -42,7 +42,7 @@ namespace AsmDude.QuickInfo {
 
         public IIntellisenseController TryCreateIntellisenseController(ITextView textView, IList<ITextBuffer> subjectBuffers) {
             //if (!AsmDudeToolsStatic.properFile(textView.TextBuffer)) return null;
-            return new AsmQuickInfoController(textView, subjectBuffers, _quickInfoBroker);
+            return new AsmQuickInfoController(textView, subjectBuffers, this._quickInfoBroker);
         }
     }
 }

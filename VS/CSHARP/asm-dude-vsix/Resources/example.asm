@@ -3,8 +3,8 @@
 include "inc\example.inc"
 	jmp			FOO		# FOO is defined in an included file
 
-	#region Things TODO
-
+#region Things TODO
+#######################################################
 	mov			r13, QWORD PTR lennyOptions$[rsp]
 	mov 		rsi, QWORD PTR [network_c_mp_network_neurons]
 	vmovups		xmm4, XMMWORD PTR [.T1737_.0.17+64] # label not recognized
@@ -13,9 +13,19 @@ include "inc\example.inc"
 	lea			rcx, OFFSET FLAT:??_C@_0FE@OJFGMKFJ@ERROR?3?5dataset?3?3HexDataSet?3?3getV@
 	mov			rax, -4616189618054758400		; negative constants not recognized bff0000000000000H
 
-	#endregion Things TODO
+#endregion Things TODO
+
+#region MASM relative jumps @@ jumps
+#######################################################
+	@@:
+	jmp @F
+	jmp @B
+	xor rax, rax
+	@@:
+#endregion
 
 
+	RemoveFileFromProject		PROTO :HWND, 	:BOOLEAN
 
 
 
@@ -28,18 +38,10 @@ include "inc\example.inc"
 
 	#endregion
 
-	#region Comment examples
-	# Singleline comment
 
-	# Multiline comment 1a
-	# Multiline comment 2a
+#region AVX-512 examples
+#######################################################
 
-	# Multiline comment 1b
-	# Multiline comment 2b
-	# Multiline comment 3b
-	#endregion
-
-	#region AVX-512 examples
 	VALIGNQ zmm0 {k1}, zmm1, zmm2, 5 ; ok
 	VALIGNQ zmm0, zmm1, zword [rax], 5			; packed 512-bit memory
 	VALIGNQ zmm0, zmm1, qword [rax]{1to8}, 5 	; double-precision float broadcasted
@@ -70,9 +72,10 @@ include "inc\example.inc"
 	vcvtss2usi rax,xmm30,{ru-sae}
 	vcvtss2usi rax,xmm30,{rd-sae}
 	vcvtss2usi rax,xmm30,{rz-sae} 
+#endregion
 
-
-	;#region VCVTPS2UDQ
+#region VCVTPS2UDQ
+#######################################################
 	;VCVTPS2UDQ zmm1 {k1}{z}, zmm2/m512/m32bcst{er}
 	;Convert sixteen packed single-precision floating-point
 	;values from zmm2/m512/m32bcst to sixteen packed
@@ -90,17 +93,11 @@ include "inc\example.inc"
 	vcvtps2udq zmm0,ZWORD [rcx]
 	vcvtps2udq zmm0,DWORD [rcx]{1to16}
 	;vcvtps2udq zmm0,ZWORD [rcx],{rz-sae} ;error: Embedded rounding is available only with reg-reg op.
-
-
-	;#endregion
-
 	vpscatterdd  [r14+zmm31*8+0x7b]{k1},zmm30
+#endregion
 
-
-	#endregion
-
-
-	#region Jump Examples
+#region Jump Examples
+#######################################################
 	jmp			$LL9@run.cpu$om
 	jmp			SHORT $LL9@run.cpu$om
 	jmp			$
@@ -110,10 +107,10 @@ include "inc\example.inc"
 
 	??$?6U?$char_traits@D@std@@@std@@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@0@AEAV10@PEBD@Z:
 	call		??$?6U?$char_traits@D@std@@@std@@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@0@AEAV10@PEBD@Z
+#endregion
 
-	#endregion
-
-	#region Nasm Examples
+#region Nasm Examples
+#######################################################
 
 _str_wi:
     enter 16,0
@@ -141,7 +138,8 @@ _str_ri:
 
 	#endregion 
 
-	#region Masm Examples
+#region Masm Examples
+#######################################################
 
 vertex STRUCT 
     .x  resq 1
@@ -169,22 +167,57 @@ proc_name PROC # add id to label graph and make code folding
 proc_name ENDP
 segment_name ENDS
 
-	@@:
-	jmp @F
-	jmp @B
+#region MASM Alias
+#######################################################
 	alias label_alias = FOO
 	jmp label_alias
-	@@:
+#endregion
 
-	#endregion
+#region MASM keywords folding
+#######################################################
+	.While BYTE PTR [EDI]!=0
+		.If BYTE PTR [EDI]==" "
+			MOV BYTE PTR [EDI],0
+						
+			;Check if not aready in the list
+			Invoke SendMessage,hListVariables,LVM_FINDITEM,-1,ADDR lvfi
+			.If EAX==-1 ;i.e if there is NOT such text in the list
+				Invoke SendMessage,hListVariables,LVM_INSERTITEM,0,ADDR lvi
+			.EndIf
+			MOV BYTE PTR [EDI]," "
+			INC EDI
+						
+			MOV lvi.pszText,EDI
+			MOV lvfi.psz,EDI
+		.EndIf
+		INC EDI
+	.EndW
+	.If BYTE PTR [EDI]==":"
+		MOV BYTE PTR [EDI],0
+		INC EDI
+		MOV EBX,EDI
+		JMP @B
+		;JMP NextOne
+	.ElseIf BYTE PTR [EDI]==","
+		MOV BYTE PTR [EDI],0
+		MOV ESI,EDI
+		INC ESI
+	.Else
+		.If BYTE PTR [EDI]!=0
+			INC EDI
+			JMP @B;NextOne
+		.EndIf
+	.EndIf
+#endregion 
 
-	#region Label Clash Example
+#region Label Clash Example
+#######################################################
 $LL9@run.cpu$om: # multiple label definitions
 $LL9@run.cpu$om: xor rax, rax
-	#endregion
+#endregion
 
-	#region All Registers
-
+#region All Registers
+#######################################################
 	rax 
 	Rax
 	RAX
@@ -354,14 +387,23 @@ $LL9@run.cpu$om: xor rax, rax
     ZMM31 
 	#endregion
 
-	#region Real Example Handcoded
+#region Comment examples
+	# Singleline comment
 
+	# Multiline comment 1a
+	# Multiline comment 2a
+
+	# Multiline comment 1b
+	# Multiline comment 2b
+	# Multiline comment 3b
+#endregion
+
+#region Real Example Handcoded
+#######################################################
 # void bitswap_gas(unsigned int * const data, const unsigned long long pos1, const unsigned long long pos2) // rcx, rdx, r8, r9
 # rcx <= data
 # rdx <= pos1
 # r8 <= pos2
-# https://msdn.microsoft.com/en-us/library/9z1stfyw.aspx
-# https://software.intel.com/sites/landingpage/IntrinsicsGuide/
 
 .text                                           # Code section
 .global bitswap_gas
@@ -388,19 +430,4 @@ label2:
 label3:
 	ret
 .att_syntax
-
-#000000013F2CB440 4C 8B CA             mov         r9,rdx  
-#000000013F2CB443 4D 8B D0             mov         r10,r8  
-#000000013F2CB446 48 C1 EA 05          shr         rdx,5  
-#000000013F2CB44A 49 C1 E8 05          shr         r8,5  
-#000000013F2CB44E 49 83 E1 1F          and         r9,1Fh  
-#000000013F2CB452 49 83 E2 1F          and         r10,1Fh  
-#000000013F2CB456 44 0F B3 0C 91       btr         dword ptr [rcx+rdx*4],r9d  
-#000000013F2CB45B 73 07                jae         bitswap_asm+24h (013F2CB464h)  
-#000000013F2CB45D 46 0F AB 14 81       bts         dword ptr [rcx+r8*4],r10d  
-#000000013F2CB462 EB 05                jmp         bitswap_asm+29h (013F2CB469h)  
-#000000013F2CB464 46 0F B3 14 81       btr         dword ptr [rcx+r8*4],r10d  
-#000000013F2CB469 73 05                jae         bitswap_asm+30h (013F2CB470h)  
-#000000013F2CB46B 44 0F AB 0C 91       bts         dword ptr [rcx+rdx*4],r9d  
-#000000013F2CB470 C3                   ret  
 #endregion
