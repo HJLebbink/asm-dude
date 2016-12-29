@@ -13,7 +13,7 @@ namespace AsmTools {
         /// <summary>
         /// Parse the provided line. Returns label, mnemonic, args, remarks
         /// </summary>
-        public static Tuple<string, Mnemonic, string[], string> parseLine(string line) {
+        public static Tuple<string, Mnemonic, string[], string> ParseLine(string line) {
             string label = "";
             Mnemonic mnemonic = Mnemonic.UNKNOWN;
             string[] args = new string[0] { };
@@ -85,8 +85,48 @@ namespace AsmTools {
             }
         }
 
+
         /// <summary>
-        /// Split the provided line into keyword positions: first: begin pos; second: end pos; third whether the keyword is the first keyword
+        /// return label definition position
+        /// </summary>
+        public static Tuple<int, int, bool> getLabel(string line)
+        {
+            bool started = false;
+            int keywordBegin = 0;
+
+            for (int i = 0; i < line.Length; ++i)
+            {
+                char c = line[i];
+                if (isRemarkChar(c)) return new Tuple<int, int, bool>(0, 0, false);
+                if (c.Equals('"')) return new Tuple<int, int, bool>(0, 0, false);
+                if (c.Equals(':'))
+                {
+                    if (started)
+                    {
+                        return new Tuple<int, int, bool>(keywordBegin, i, true);
+                    } else
+                    {
+                        return new Tuple<int, int, bool>(0, 0, false);
+                    }
+                } else if (IsSeparatorChar(c))
+                {
+                    if (started)
+                    {
+                        return new Tuple<int, int, bool>(0, 0, false);
+                    } else
+                    {
+                        keywordBegin = i;
+                    }
+                } else
+                {
+                    started = true;
+                }
+            }
+            return new Tuple<int, int, bool>(0, 0, false);
+        }
+
+        /// <summary>
+        /// Split the provided line into keyword positions: first: begin pos; second: end pos; third whether the keyword is a label
         /// </summary>
         public static IList<Tuple<int, int, bool>> splitIntoKeywordPos(string line) {
             IList<Tuple<int, int, bool>> list = new List<Tuple<int, int, bool>>();
@@ -122,7 +162,7 @@ namespace AsmTools {
                         }
                         inStringDef = true;
                         keywordBegin = i; // '"' is part of the keyword
-                    } else if (isSeparatorChar(c)) {
+                    } else if (IsSeparatorChar(c)) {
                         if (keywordBegin < i) {
                             if (c.Equals(':')) {
                                 if (isFirstKeyword) {
@@ -146,7 +186,7 @@ namespace AsmTools {
             return list;
         }
 
-        public static bool isSeparatorChar(char c) {
+        public static bool IsSeparatorChar(char c) {
             return char.IsWhiteSpace(c) || c.Equals(',') || c.Equals('[') || c.Equals(']') || c.Equals('(') || c.Equals(')') || c.Equals('+') || c.Equals('-') || c.Equals('*') || c.Equals('{') || c.Equals('}') || c.Equals(':');
         }
 
@@ -216,8 +256,8 @@ namespace AsmTools {
             } else {
                 token2 = token;
             }
-            ulong dummy;
-            bool parsedSuccessfully = ulong.TryParse(token2, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out dummy);
+
+            bool parsedSuccessfully = ulong.TryParse(token2, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out ulong dummy);
             return parsedSuccessfully;
         }
 
@@ -449,7 +489,7 @@ namespace AsmTools {
 
             // find the end of current keyword; i.e. read until a separator
             while (pos >= begin) {
-                if (AsmTools.AsmSourceTools.isSeparatorChar(line[pos])) {
+                if (AsmTools.AsmSourceTools.IsSeparatorChar(line[pos])) {
                     //Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; pos={1} has a separator. Found end of current keyword", line, pos));
                     pos--;
                     break;
@@ -462,7 +502,7 @@ namespace AsmTools {
             // find the end of previous keyword; i.e. read until a non separator
             int endPrevious = begin;
             while (pos >= begin) {
-                if (AsmTools.AsmSourceTools.isSeparatorChar(line[pos])) {
+                if (AsmTools.AsmSourceTools.IsSeparatorChar(line[pos])) {
                     //Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; pos={1} has a separator.", line, pos));
                     pos--;
                 } else {
@@ -476,7 +516,7 @@ namespace AsmTools {
             // find the begin of the previous keyword; i.e. read until a separator
             int beginPrevious = begin; // set the begin of the previous keyword to the begin of search window, such that if no separator is found this will be the begin
             while (pos >= begin) {
-                if (AsmTools.AsmSourceTools.isSeparatorChar(line[pos])) {
+                if (AsmTools.AsmSourceTools.IsSeparatorChar(line[pos])) {
                     beginPrevious = pos+1;
                     //Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; beginPrevious={1}; pos={2}", line, beginPrevious, pos));
                     break;
@@ -508,7 +548,7 @@ namespace AsmTools {
             int beginPos = 0;
             for (int i1 = pos - 1; i1 >= 0; --i1) {
                 char c = line[i1];
-                if (AsmSourceTools.isSeparatorChar(c) || Char.IsControl(c) || AsmSourceTools.isRemarkChar(c)) {
+                if (AsmSourceTools.IsSeparatorChar(c) || Char.IsControl(c) || AsmSourceTools.isRemarkChar(c)) {
                     beginPos = i1 + 1;
                     break;
                 }
@@ -517,7 +557,7 @@ namespace AsmTools {
             int endPos = line.Length;
             for (int i2 = pos; i2 < line.Length; ++i2) {
                 char c = line[i2];
-                if (AsmSourceTools.isSeparatorChar(c) || Char.IsControl(c) || AsmSourceTools.isRemarkChar(c)) {
+                if (AsmSourceTools.IsSeparatorChar(c) || Char.IsControl(c) || AsmSourceTools.isRemarkChar(c)) {
                     endPos = i2;
                     break;
                 }
@@ -565,7 +605,7 @@ namespace AsmTools {
                     }
                 } else if (AsmSourceTools.isRemarkChar(c)) {
                     return new Tuple<bool, int, int>(false, 0, 0);
-                } else if (AsmSourceTools.isSeparatorChar(c)) {
+                } else if (AsmSourceTools.IsSeparatorChar(c)) {
                     // found another keyword: labels can only be the first keyword on a line
                     break;
                 }

@@ -98,7 +98,7 @@ namespace AsmDude.SignatureHelp {
                 string lineStr = line.GetText();
                 //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: AugmentSignatureHelpSession: lineStr=" + lineStr+ "; positionInLine=" + positionInLine);
 
-                var t = AsmSourceTools.parseLine(lineStr);
+                var t = AsmSourceTools.ParseLine(lineStr);
                 IList<Operand> operands = AsmSourceTools.makeOperands(t.Item3);
                 Mnemonic mnemonic = t.Item2;
 

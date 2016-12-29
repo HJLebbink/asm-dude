@@ -72,7 +72,6 @@ namespace AsmDude
 
         public IEnumerable<ITagSpan<AsmTokenTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
-
             DateTime time1 = DateTime.Now;
 
             if (spans.Count == 0)
@@ -92,23 +91,22 @@ namespace AsmDude
 
                 for (int k = 0; k < nKeywords; k++)
                 {
+                    string asmToken = Keyword(pos[k], line);
 
+                    // keyword k is the first keyword on a line
                     if (pos[k].Item3)
                     {
-                        SnapshotSpan label = New_Span(pos[k], offset, curSpan);
-                        string labelString = label.GetText();
-                        //AsmDudeToolsStatic.Output(string.Format("INFO: found label {0}", labelString));
-                        if (labelString.StartsWith("."))
-                        {
-                            // TODO: special NASM local labels, for the moment, ignore them.
-                        } else
-                        {
-                            yield return new TagSpan<AsmTokenTag>(label, this._labelDef);
-                        }
+                        SnapshotSpan labelDefSpan = New_Span(pos[k], offset, curSpan);
+
+                        //AsmDudeToolsStatic.Output_INFO("NasmTokenTagger:GetTags: found label " +labelString);
+                        AsmTokenTag asmTokenTag = (asmToken.StartsWith("."))
+                            ? new AsmTokenTag(AsmTokenType.LabelDef, get_Last_Non_Local_Label(containingLine.LineNumber))
+                            : this._labelDef;
+                        yield return new TagSpan<AsmTokenTag>(labelDefSpan, asmTokenTag);
                         continue;
                     }
 
-                    string asmToken = Keyword(pos[k], line);
+                    // keyword starts with a remark char
                     if (AsmSourceTools.isRemarkChar(asmToken[0]))
                     {
                         yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._remark);
@@ -119,56 +117,58 @@ namespace AsmDude
                     switch (keywordType)
                     {
                         case AsmTokenType.Jump:
-                            #region Jump
+                        {
                             yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._jump);
 
-                            k++;
-                            if (k == nKeywords) break;
+                            k++; // goto the next word
+                            if (k == nKeywords) break; // there are no next words
 
                             string asmToken2 = Keyword(pos[k], line);
-                            if (!asmToken2[0].Equals('.'))
+                            switch (asmToken2)
                             {
-                                switch (asmToken2)
+                                case "WORD":
+                                case "DWORD":
+                                case "QWORD":
+                                case "SHORT":
+                                case "NEAR":
                                 {
-                                    case "WORD":
-                                    case "DWORD":
-                                    case "QWORD":
-                                    case "SHORT":
-                                    case "NEAR":
+                                    yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._misc);
+
+                                    k++;
+                                    if (k == nKeywords) break;
+                                    string asmToken3 = Keyword(pos[k], line);
+                                    if (asmToken3.Equals("PTR"))
+                                    {
                                         yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._misc);
-
-                                        k++;
-                                        if (k == nKeywords) break;
-                                        string asmToken3 = Keyword(pos[k], line);
-                                        if (!asmToken3[0].Equals('.'))
-                                        {
-                                            switch (asmToken3)
-                                            {
-                                                case "PTR":
-                                                    yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._misc);
-                                                    break;
-                                                default:
-                                                    yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._label);
-                                                    break;
-                                            }
-                                        }
-                                        break;
-
-                                    default:
-                                        if (RegisterTools.isRegister(asmToken2))
-                                        {
-                                            yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._register);
-                                        } else
-                                        {
-                                            yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._label);
-                                        }
-                                        break;
+                                    } else
+                                    {
+                                        AsmTokenTag asmTokenTag = (asmToken3[0].Equals('.'))
+                                            ? new AsmTokenTag(AsmTokenType.Label, get_Last_Non_Local_Label(containingLine.LineNumber))
+                                            : this._label;
+                                        yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), asmTokenTag);
+                                    }
+                                    break;
+                                }
+                                default:
+                                {
+                                    if (RegisterTools.isRegister(asmToken2))
+                                    {
+                                        yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._register);
+                                    } else
+                                    {
+                                        AsmTokenTag asmTokenTag = (asmToken2[0].Equals('.'))
+                                            ? new AsmTokenTag(AsmTokenType.Label, get_Last_Non_Local_Label(containingLine.LineNumber))
+                                            : this._label;
+                                        yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), asmTokenTag);
+                                    }
+                                    break;
                                 }
                             }
-                            break;
-                        #endregion Jump
+                        }
+                        break;
+                    
                         case AsmTokenType.UNKNOWN: // asmToken is not a known keyword, check if it is numerical
-                            #region UNKNOWN
+                        {
                             if (AsmTools.AsmSourceTools.isConstant(asmToken))
                             {
                                 yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._constant);
@@ -190,14 +190,14 @@ namespace AsmDude
                                     switch (nextKeyword)
                                     {
                                         case "LABEL":
-                                            yield return new TagSpan<AsmTokenTag>(New_Span(pos[k - 1], offset, curSpan), this._labelDef);
-                                            yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._directive);
-                                            isUnknown = false;
-                                            break;
+                                        yield return new TagSpan<AsmTokenTag>(New_Span(pos[k - 1], offset, curSpan), this._labelDef);
+                                        yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._directive);
+                                        isUnknown = false;
+                                        break;
 
                                         default:
-                                            k--;
-                                            break;
+                                        k--;
+                                        break;
                                     }
                                 }
 
@@ -208,11 +208,11 @@ namespace AsmDude
                                     switch (previousKeyword)
                                     {
                                         case "ALIAS":
-                                            yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._labelDef);
-                                            isUnknown = false;
-                                            break;
+                                        yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._labelDef);
+                                        isUnknown = false;
+                                        break;
                                         default:
-                                            break;
+                                        break;
                                     }
 
                                 }
@@ -223,23 +223,25 @@ namespace AsmDude
                                 }
                             }
                             break;
-                        #endregion UNKNOWN
+                        }
                         case AsmTokenType.Directive:
-                            #region Directive
+                        {
                             switch (this._asmDudeTools.Get_Assembler(asmToken))
                             {
                                 case AssemblerEnum.NASM:
                                 case AssemblerEnum.UNKNOWN:
-                                    yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._directive);
-                                    break;
+                                yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._directive);
+                                break;
                                 default:
-                                    break;
+                                break;
                             }
                             break;
-                        #endregion Directive
+                        }
                         default:
+                        {
                             yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), new AsmTokenTag(keywordType));
                             break;
+                        }
                     }
                 }
             }
@@ -257,7 +259,6 @@ namespace AsmDude
             string[] tokens,
             SnapshotSpan curSpan)
         {
-
             var tup = Get_Next_Token(tokenId, nextLoc, tokens);
             tokenId = tup.Item2;
             nextLoc = tup.Item3;
@@ -272,11 +273,12 @@ namespace AsmDude
                 return true;
                 //TODO find out what it means if not asmTokenSpan.Value.IntersectsWith(curSpan)
                 //}
+            } else
+            {
+                asmToken = null;
+                asmTokenSpan = null;
+                return false;
             }
-
-            asmTokenSpan = null;
-            asmToken = null;
-            return false;
         }
 
         // return true, nextTokenId, tokenEndPos, tokenString
@@ -289,7 +291,6 @@ namespace AsmDude
             {
                 string asmToken = tokens[nextTokenId];
                 nextTokenId++;
-                //Debug.WriteLine("getNextToken:nextTokenId=" + nextTokenId+ "; asmToken=\""+asmToken+"\"");
                 if (asmToken.Length > 0)
                 {
                     nextLoc += asmToken.Length + 1; //add an extra char location because of the separator
@@ -312,5 +313,28 @@ namespace AsmDude
             return new SnapshotSpan(lineSnapShot.Snapshot, new Span(pos.Item1 + offset, pos.Item2 - pos.Item1));
         }
         #endregion Public Static Methods
+
+        private string get_Last_Non_Local_Label(int lineNumber)
+        {
+            //AsmDudeToolsStatic.Output_INFO("NasmTokenTagger:get_Last_Non_Local_Label: lineNumber=" + lineNumber);
+
+            for (int i = lineNumber; i >= 0; --i)
+            {
+                string line = this._buffer.CurrentSnapshot.GetLineFromLineNumber(i).GetText();
+                Tuple<int, int, bool> pos = AsmSourceTools.getLabel(line);
+                if (pos.Item3)
+                {
+                    string labelString = Keyword(pos, line);
+                    //AsmDudeToolsStatic.Output_INFO("NasmTokenTagger:get_Last_Non_Local_Label: found label " + labelString + " at lineNumber "+i +"; beginPos="+pos.Item1 +"; endPos="+pos.Item2);
+
+                    if (!labelString[0].Equals('.'))
+                    {
+                        return labelString;
+                    }
+                }
+            }
+            //AsmDudeToolsStatic.Output_INFO("NasmTokenTagger:get_Last_Non_Local_Label: could not find regular label before lineNumber " + lineNumber);
+            return "";
+        }
     }
 }

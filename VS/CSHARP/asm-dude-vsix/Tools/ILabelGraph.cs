@@ -34,8 +34,8 @@ namespace AsmDude.Tools
         public string path;
         // full path and name of the source file in which the include is defined
         public string source_filename;
-        // the linenumber at which the include is defined.
-        public int linenumber;
+        // the lineNumber at which the include is defined.
+        public int lineNumber;
     }
 
     public interface ILabelGraph

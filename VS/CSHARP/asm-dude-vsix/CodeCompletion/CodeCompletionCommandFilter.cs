@@ -147,7 +147,7 @@ namespace AsmDude {
                         if (char.IsWhiteSpace(typedChar)) {
                             Complete(true);
                             handledChar = false;
-                        } else if (AsmTools.AsmSourceTools.isSeparatorChar(typedChar)) {
+                        } else if (AsmTools.AsmSourceTools.IsSeparatorChar(typedChar)) {
                             Complete(false);
                             handledChar = false;
                         } else if (AsmTools.AsmSourceTools.isRemarkChar(typedChar)) {

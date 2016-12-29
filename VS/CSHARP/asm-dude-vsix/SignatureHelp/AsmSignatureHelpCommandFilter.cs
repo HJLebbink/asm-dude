@@ -67,7 +67,7 @@ namespace AsmDude.SignatureHelp {
                             if ((pguidCmdGroup == VSConstants.VSStd2K) && (nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR)) {
                                 char typedChar = GetTypeChar(pvaIn);
                                 if (char.IsWhiteSpace(typedChar) || typedChar.Equals(',')) {
-                                    var t = AsmSourceTools.parseLine(lineStr);
+                                    var t = AsmSourceTools.ParseLine(lineStr);
                                     if (this._session != null) this._session.Dismiss(); // cleanup previous session
                                     if (t.Item2 != Mnemonic.UNKNOWN) {
                                         this._session = this._broker.TriggerSignatureHelp(this._textView);

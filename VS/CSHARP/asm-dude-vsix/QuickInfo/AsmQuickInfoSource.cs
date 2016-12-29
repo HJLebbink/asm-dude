@@ -166,11 +166,13 @@ namespace AsmDude.QuickInfo
                             }
                         case AsmTokenType.Label:
                             {
+                                string full_Qualified_Label = asmTokenTag.Tag.Misc + keyword;
+
                                 description = new TextBlock();
                                 description.Inlines.Add(Make_Run1("Label "));
-                                description.Inlines.Add(Make_Run2(keyword, Settings.Default.SyntaxHighlighting_Label));
+                                description.Inlines.Add(Make_Run2(full_Qualified_Label, Settings.Default.SyntaxHighlighting_Label));
 
-                                string descr = Get_Label_Description(keyword);
+                                string descr = Get_Label_Description(full_Qualified_Label);
                                 if (descr.Length > 0)
                                 {
                                     description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
@@ -179,11 +181,13 @@ namespace AsmDude.QuickInfo
                             }
                         case AsmTokenType.LabelDef:
                             {
+                                string full_Qualified_Label = asmTokenTag.Tag.Misc + keyword;
+
                                 description = new TextBlock();
                                 description.Inlines.Add(Make_Run1("Label "));
-                                description.Inlines.Add(Make_Run2(keyword, Settings.Default.SyntaxHighlighting_Label));
+                                description.Inlines.Add(Make_Run2(full_Qualified_Label, Settings.Default.SyntaxHighlighting_Label));
 
-                                string descr = Get_Label_Def_Description(keyword);
+                                string descr = Get_Label_Def_Description(full_Qualified_Label);
                                 if (descr.Length > 0)
                                 {
                                     description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));

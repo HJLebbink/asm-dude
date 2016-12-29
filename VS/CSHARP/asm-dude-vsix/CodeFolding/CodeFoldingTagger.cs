@@ -219,7 +219,8 @@ namespace AsmDude.CodeFolding
         /// </summary>
         private Tuple<int, int> Is_Start_Masm_Keyword(string lineContent, int lineNumber)
         {
-            IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent);
+            ITextSnapshotLine line = this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
+            IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(line.Extent);
             foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in tags)
             {
                 if (asmTokenSpan.Tag.Type == AsmTokenType.Directive)

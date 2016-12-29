@@ -90,7 +90,9 @@ namespace AsmDude.ErrorSquiggles
                         if (Settings.Default.IntelliSenseDecorateUndefinedLabels)
                         {
                             string label = tagSpan.GetText();
-                            if (!this._labelGraph.Has_Label(label))
+                            string full_Qualified_Label = asmTokenTag.Tag.Misc + label;
+
+                            if (!this._labelGraph.Has_Label(full_Qualified_Label))
                             {
                                 var toolTipContent = Undefined_Label_Tool_Tip_Content();
                                 yield return new TagSpan<ErrorTag>(tagSpan, new ErrorTag("warning", toolTipContent));
@@ -103,9 +105,11 @@ namespace AsmDude.ErrorSquiggles
                         if (Settings.Default.IntelliSenseDecorateClashingLabels)
                         {
                             string label = tagSpan.GetText();
-                            if (this._labelGraph.Has_Label_Clash(label))
+                            string full_Qualified_Label = asmTokenTag.Tag.Misc + label;
+
+                            if (this._labelGraph.Has_Label_Clash(full_Qualified_Label))
                             {
-                                var toolTipContent = Label_Clash_Tool_Tip_Content(label);
+                                var toolTipContent = Label_Clash_Tool_Tip_Content(full_Qualified_Label);
                                 yield return new TagSpan<ErrorTag>(tagSpan, new ErrorTag("warning", toolTipContent));
                             }
                         }
@@ -181,7 +185,7 @@ namespace AsmDude.ErrorSquiggles
         {
             int lengthKeyword = keyword.Length;
             string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
-            AsmDudeToolsStatic.Output_INFO("LabelErrorTagger:Get_Keyword_Begin_End lineContent=" + lineContent);
+            //AsmDudeToolsStatic.Output_INFO("LabelErrorTagger:Get_Keyword_Begin_End lineContent=" + lineContent);
 
             int startPos = -1;
             for (int i = 0; i < lineContent.Length - lengthKeyword; ++i)
@@ -298,9 +302,9 @@ namespace AsmDude.ErrorSquiggles
                                     ErrorTask errorTask = new ErrorTask()
                                     {
                                         SubcategoryIndex = (int)AsmErrorEnum.INCLUDE_UNDEFINED,
-                                        Line = undefinedLabelStruct.linenumber,
-                                        Column = Get_Keyword_Begin_End(undefinedLabelStruct.linenumber, undefinedLabelStruct.include_filename),
-                                        Text = "Could not resolve include \"" + undefinedLabelStruct.include_filename + "\" at line " + (undefinedLabelStruct.linenumber + 1) + " in file \"" + undefinedLabelStruct.source_filename + "\"",
+                                        Line = undefinedLabelStruct.lineNumber,
+                                        Column = Get_Keyword_Begin_End(undefinedLabelStruct.lineNumber, undefinedLabelStruct.include_filename),
+                                        Text = "Could not resolve include \"" + undefinedLabelStruct.include_filename + "\" at line " + (undefinedLabelStruct.lineNumber + 1) + " in file \"" + undefinedLabelStruct.source_filename + "\"",
                                         ErrorCategory = TaskErrorCategory.Warning,
                                         Document = undefinedLabelStruct.source_filename
                                     };

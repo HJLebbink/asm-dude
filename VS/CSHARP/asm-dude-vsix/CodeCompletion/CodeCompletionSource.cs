@@ -93,7 +93,7 @@ namespace AsmDude {
                 //2] find the start of the current keyword
                 #region
                 SnapshotPoint start = triggerPoint;
-                while ((start > line.Start) && !AsmTools.AsmSourceTools.isSeparatorChar((start - 1).GetChar())) {
+                while ((start > line.Start) && !AsmTools.AsmSourceTools.IsSeparatorChar((start - 1).GetChar())) {
                     start -= 1;
                 }
                 #endregion
@@ -107,7 +107,7 @@ namespace AsmDude {
                 SortedSet<Completion> completions = null;
 
                 string lineStr = line.GetText();
-                var t = AsmSourceTools.parseLine(lineStr);
+                var t = AsmSourceTools.ParseLine(lineStr);
                 Mnemonic mnemonic = t.Item2;
 
                 if (mnemonic == Mnemonic.UNKNOWN) {

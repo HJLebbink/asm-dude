@@ -29,11 +29,49 @@ include "bla"
 #endregion
 
 
+#region Masm has local labels in procedures
+#######################################################
+proc_name1 PROC # add id to label graph and make code folding
+    xor rax, rax
+	local_label1:
+    ret
+proc_name1 ENDP
+
+proc_name2 PROC # add id to label graph and make code folding
+    xor rax, rax
+	local_label1:
+    ret
+proc_name2 ENDP
+#endregion
+
+#region Nasm has local labels when prefixed with a dot
+#######################################################
+
+global_label1:
+.loop:
+    jne     .loop
+    ret 
+
+	jmp dword ptr 
+
+
+global_label2:
+.loop:
+    jne     .loop
+	jae     global_label1.loop
+	jc loop.end
+    ret 
+
+#endregion
+
+
+
+
 	RemoveFileFromProject		PROTO :HWND, 	:BOOLEAN
 
 
 
-	#region Calc Frequency with Avx512
+#region Calc Frequency with Avx512
 	vcvttss2usi r8,xmm30,{sae}
 
 
@@ -122,7 +160,7 @@ _str_wi:
     mov ecx,[ebp + 12]
     mov dl,[ebp + 16]
     cmp ecx,0
-    je .end
+    je .end		#nasm local label
 
 loop:
     inc ebx
@@ -136,7 +174,7 @@ _str_ri:
     enter 12,0
     mov si,[ebp + 8]
     mov ecx,[ebp + 12]
-    loop .loop
+    loop .loop    #nasm local label
 .loop:
     lodsb
 

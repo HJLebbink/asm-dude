@@ -27,10 +27,15 @@ namespace AsmDude.SyntaxHighlighting
     public class AsmTokenTag : ITag
     {
         public AsmTokenType Type { get; private set; }
-
+        public string Misc { get; private set; }
         public AsmTokenTag(AsmTokenType type)
         {
             this.Type = type;
+        }
+        public AsmTokenTag(AsmTokenType type, string misc)
+        {
+            this.Type = type;
+            this.Misc = misc;
         }
     }
 }
