@@ -112,99 +112,99 @@ namespace AsmDude.QuickInfo
                     switch (asmTokenTag.Tag.Type)
                     {
                         case AsmTokenType.Misc:
-                            {
-                                description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("Keyword "));
-                                description.Inlines.Add(Make_Run2(keyword, Settings.Default.SyntaxHighlighting_Misc));
+                        {
+                            description = new TextBlock();
+                            description.Inlines.Add(Make_Run1("Keyword "));
+                            description.Inlines.Add(Make_Run2(keyword, Settings.Default.SyntaxHighlighting_Misc));
 
-                                string descr = this._asmDudeTools.Get_Description(keywordUpper);
-                                if (descr.Length > 0)
-                                {
-                                    description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
-                                }
-                                break;
+                            string descr = this._asmDudeTools.Get_Description(keywordUpper);
+                            if (descr.Length > 0)
+                            {
+                                description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                             }
+                            break;
+                        }
                         case AsmTokenType.Directive:
-                            {
-                                description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("Directive "));
-                                description.Inlines.Add(Make_Run2(keyword, Settings.Default.SyntaxHighlighting_Directive));
+                        {
+                            description = new TextBlock();
+                            description.Inlines.Add(Make_Run1("Directive "));
+                            description.Inlines.Add(Make_Run2(keyword, Settings.Default.SyntaxHighlighting_Directive));
 
-                                string descr = this._asmDudeTools.Get_Description(keywordUpper);
-                                if (descr.Length > 0)
-                                {
-                                    description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
-                                }
-                                break;
+                            string descr = this._asmDudeTools.Get_Description(keywordUpper);
+                            if (descr.Length > 0)
+                            {
+                                description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                             }
+                            break;
+                        }
                         case AsmTokenType.Register:
-                            {
-                                description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("Register "));
-                                description.Inlines.Add(Make_Run2(keyword, Settings.Default.SyntaxHighlighting_Register));
+                        {
+                            description = new TextBlock();
+                            description.Inlines.Add(Make_Run1("Register "));
+                            description.Inlines.Add(Make_Run2(keyword, Settings.Default.SyntaxHighlighting_Register));
 
-                                string descr = this._asmDudeTools.Get_Description(keywordUpper);
-                                if (descr.Length > 0)
-                                {
-                                    description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
-                                }
-                                break;
+                            string descr = this._asmDudeTools.Get_Description(keywordUpper);
+                            if (descr.Length > 0)
+                            {
+                                description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                             }
+                            break;
+                        }
                         case AsmTokenType.Mnemonic:
                         case AsmTokenType.Jump:
+                        {
+                            description = new TextBlock();
+                            description.Inlines.Add(Make_Run1("Mnemonic "));
+                            description.Inlines.Add(Make_Run2(keyword, Settings.Default.SyntaxHighlighting_Opcode));
+
+                            string descr = this._asmDudeTools.Mnemonic_Store.getDescription(AsmSourceTools.parseMnemonic(keywordUpper));
+                            if (descr.Length > 0)
                             {
-                                description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("Mnemonic "));
-                                description.Inlines.Add(Make_Run2(keyword, Settings.Default.SyntaxHighlighting_Opcode));
-
-                                string descr = this._asmDudeTools.Mnemonic_Store.getDescription(AsmSourceTools.parseMnemonic(keywordUpper));
-                                if (descr.Length > 0)
-                                {
-                                    description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
-                                }
-                                break;
+                                description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                             }
-                        case AsmTokenType.Label:
-                            {
-                                string full_Qualified_Label = asmTokenTag.Tag.Misc + keyword;
-
-                                description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("Label "));
-                                description.Inlines.Add(Make_Run2(full_Qualified_Label, Settings.Default.SyntaxHighlighting_Label));
-
-                                string descr = Get_Label_Description(full_Qualified_Label);
-                                if (descr.Length > 0)
-                                {
-                                    description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
-                                }
-                                break;
-                            }
-                        case AsmTokenType.LabelDef:
-                            {
-                                string full_Qualified_Label = asmTokenTag.Tag.Misc + keyword;
-
-                                description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("Label "));
-                                description.Inlines.Add(Make_Run2(full_Qualified_Label, Settings.Default.SyntaxHighlighting_Label));
-
-                                string descr = Get_Label_Def_Description(full_Qualified_Label);
-                                if (descr.Length > 0)
-                                {
-                                    description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
-                                }
-                                break;
-                            }
-                        case AsmTokenType.Constant:
-                            {
-                                description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("Constant "));
-                                description.Inlines.Add(Make_Run2(keyword, Settings.Default.SyntaxHighlighting_Constant));
-                                break;
-                            }
-                        default:
-                            //description = new TextBlock();
-                            //description.Inlines.Add(makeRun1("Unused tagType " + asmTokenTag.Tag.type));
                             break;
+                        }
+                        case AsmTokenType.Label:
+                        {
+                            string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(asmTokenTag.Tag.Misc, keyword, AsmDudeToolsStatic.Used_Assembler);
+
+                            description = new TextBlock();
+                            description.Inlines.Add(Make_Run1("Label "));
+                            description.Inlines.Add(Make_Run2(full_Qualified_Label, Settings.Default.SyntaxHighlighting_Label));
+
+                            string descr = Get_Label_Description(full_Qualified_Label);
+                            if (descr.Length > 0)
+                            {
+                                description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
+                            }
+                            break;
+                        }
+                        case AsmTokenType.LabelDef:
+                        {
+                            string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(asmTokenTag.Tag.Misc, keyword, AsmDudeToolsStatic.Used_Assembler);
+
+                            description = new TextBlock();
+                            description.Inlines.Add(Make_Run1("Label "));
+                            description.Inlines.Add(Make_Run2(full_Qualified_Label, Settings.Default.SyntaxHighlighting_Label));
+
+                            string descr = Get_Label_Def_Description(full_Qualified_Label);
+                            if (descr.Length > 0)
+                            {
+                                description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
+                            }
+                            break;
+                        }
+                        case AsmTokenType.Constant:
+                        {
+                            description = new TextBlock();
+                            description.Inlines.Add(Make_Run1("Constant "));
+                            description.Inlines.Add(Make_Run2(keyword, Settings.Default.SyntaxHighlighting_Constant));
+                            break;
+                        }
+                        default:
+                        //description = new TextBlock();
+                        //description.Inlines.Add(makeRun1("Unused tagType " + asmTokenTag.Tag.type));
+                        break;
                     }
                     if (description != null)
                     {

@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using AsmTools;
 
 namespace AsmDude.Tools
 {
@@ -108,7 +109,15 @@ namespace AsmDude.Tools
         }
         public string Get_Filename(uint id)
         {
-            return this._filenames[Get_File_Id(id)];
+            uint fileId = Get_File_Id(id);
+            if (this._filenames.TryGetValue(fileId, out string filename))
+            {
+                return filename;
+            } else
+            {
+                AsmDudeToolsStatic.Output_WARNING("LabelGraph:Get_Filename: no filename for id=" + id + " (fileId " + fileId + "; line " + Get_Linenumber(id) + ")");
+                return "";
+            }
         }
         public uint Make_Id(int lineNumber, uint fileId)
         {
@@ -156,7 +165,13 @@ namespace AsmDude.Tools
                         {
                             foreach (uint id in entry.Value)
                             {
-                                result.Add(id, label);
+                                if (result.ContainsKey(id))
+                                {
+                                    AsmDudeToolsStatic.Output_WARNING("LabelGraph:Get_Undefined_Labels: id=" + id + " ("+Get_Filename(id) +"; line "+ Get_Linenumber(id)+") with label \"" +label + "\" already exists and has key \""+result[id]+"\".");
+                                } else
+                                {
+                                    result.Add(id, label);
+                                }
                             }
                         }
                     }
@@ -479,18 +494,20 @@ namespace AsmDude.Tools
 
         private void Add_Linenumber(ITextBuffer buffer, ITagAggregator<AsmTokenTag> aggregator, int lineNumber, uint id)
         {
+            AssemblerEnum usedAssember = AsmDudeToolsStatic.Used_Assembler;
+
             IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = aggregator.GetTags(buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent);
             var enumerator = tags.GetEnumerator();
 
             while (enumerator.MoveNext())
             {
-                var asmTokenSpan = enumerator.Current;
-                switch (asmTokenSpan.Tag.Type)
+                var asmTokenTag = enumerator.Current;
+                switch (asmTokenTag.Tag.Type)
                 {
                     case AsmTokenType.LabelDef:
                     {
-                        string label = Get_Text(buffer, asmTokenSpan);
-                        string full_Qualified_Label = asmTokenSpan.Tag.Misc + label;
+                        string label = Get_Text(buffer, asmTokenTag);
+                        string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(asmTokenTag.Tag.Misc, label, usedAssember);
 
                         //AsmDudeToolsStatic.Output_INFO("LabelGraph:Add_Linenumber: found labelDef \"" + label + "\" at line " + lineNumber + "; full_Qualified_Label = \"" + full_Qualified_Label + "\".");
 
@@ -501,16 +518,14 @@ namespace AsmDude.Tools
                     }
                     case AsmTokenType.Label:
                     {
-                        string label = Get_Text(buffer, asmTokenSpan);
-                        string full_Qualified_Label = asmTokenSpan.Tag.Misc + label;
-
-                        //AsmDudeToolsStatic.Output_INFO("LabelGraph:Add_Linenumber: found label \"" + label + "\" at line " + lineNumber + "; full_Qualified_Label = \"" + full_Qualified_Label + "\".");
+                        string label = Get_Text(buffer, asmTokenTag);
+                        string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(asmTokenTag.Tag.Misc, label, usedAssember);
 
                         Add_To_Dictionary(full_Qualified_Label, id, this._usedAt);
 
-                        if (asmTokenSpan.Tag.Misc != null)
+                        if (asmTokenTag.Tag.Misc != null)
                         {
-                            Add_To_Dictionary(asmTokenSpan.Tag.Misc, id, this._usedAt);
+                           Add_To_Dictionary(asmTokenTag.Tag.Misc, id, this._usedAt);
                         }
 
                         //AsmDudeToolsStatic.Output_INFO("LabelGraph:Add_Linenumber: used label \"" + label + "\" at line " + lineNumber);
@@ -519,7 +534,7 @@ namespace AsmDude.Tools
                     }
                     case AsmTokenType.Directive:
                     {
-                        if (Get_Text(buffer, asmTokenSpan).Equals("INCLUDE", StringComparison.OrdinalIgnoreCase))
+                        if (Get_Text(buffer, asmTokenTag).Equals("INCLUDE", StringComparison.OrdinalIgnoreCase))
                         {
                             if (enumerator.MoveNext()) // check whether a word exists after the include keyword
                             {
@@ -531,8 +546,10 @@ namespace AsmDude.Tools
                         break;
                     }
                     default:
-                    //AsmDudeToolsStatic.Output("INFO: LabelGraph:addLineNumber: found text \"" + getText(buffer, asmTokenSpan) + "\" at line " + lineNumber);
-                    break;
+                    {
+                        //AsmDudeToolsStatic.Output("INFO: LabelGraph:addLineNumber: found text \"" + getText(buffer, asmTokenSpan) + "\" at line " + lineNumber);
+                        break;
+                    }
                 }
             }
         }

@@ -32,6 +32,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using AsmTools;
 
 namespace AsmDude.ErrorSquiggles
 {
@@ -77,6 +78,9 @@ namespace AsmDude.ErrorSquiggles
             }
 
             DateTime time1 = DateTime.Now;
+            AssemblerEnum usedAssember = AsmDudeToolsStatic.Used_Assembler;
+
+
 
             foreach (IMappingTagSpan<AsmTokenTag> asmTokenTag in this._aggregator.GetTags(spans))
             {
@@ -90,7 +94,7 @@ namespace AsmDude.ErrorSquiggles
                         if (Settings.Default.IntelliSenseDecorateUndefinedLabels)
                         {
                             string label = tagSpan.GetText();
-                            string full_Qualified_Label = asmTokenTag.Tag.Misc + label;
+                            string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(asmTokenTag.Tag.Misc, label, usedAssember);
 
                             if (!this._labelGraph.Has_Label(full_Qualified_Label))
                             {
@@ -105,7 +109,7 @@ namespace AsmDude.ErrorSquiggles
                         if (Settings.Default.IntelliSenseDecorateClashingLabels)
                         {
                             string label = tagSpan.GetText();
-                            string full_Qualified_Label = asmTokenTag.Tag.Misc + label;
+                            string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(asmTokenTag.Tag.Misc, label, usedAssember);
 
                             if (this._labelGraph.Has_Label_Clash(full_Qualified_Label))
                             {
@@ -237,12 +241,13 @@ namespace AsmDude.ErrorSquiggles
                         #endregion Update Tags
 
                         #region Update Error Tasks
-                        if (Settings.Default.IntelliSenseShowClashingLabels || 
-                            Settings.Default.IntelliSenseShowUndefinedLabels || 
+                        if (Settings.Default.IntelliSenseShowClashingLabels ||
+                            Settings.Default.IntelliSenseShowUndefinedLabels ||
                             Settings.Default.IntelliSenseShowUndefinedIncludes)
                         {
                             var errorTasks = this._errorListProvider.Tasks;
 
+                            #region Remove stale error tasks
                             for (int i = errorTasks.Count - 1; i >= 0; --i)
                             {
                                 AsmErrorEnum subCategory = (AsmErrorEnum)errorTasks[i].SubcategoryIndex;
@@ -252,6 +257,7 @@ namespace AsmDude.ErrorSquiggles
                                 }
                             }
                             bool errorExists = false;
+                            #endregion
 
                             if (Settings.Default.IntelliSenseShowClashingLabels)
                             {
@@ -265,7 +271,7 @@ namespace AsmDude.ErrorSquiggles
                                         SubcategoryIndex = (int)AsmErrorEnum.LABEL_CLASH,
                                         Line = this._labelGraph.Get_Linenumber(entry.Key),
                                         Column = Get_Keyword_Begin_End(lineNumber, label),
-                                        Text = "Label Clash: " + label,
+                                        Text = "Label Clash: \"" + label + "\"",
                                         ErrorCategory = TaskErrorCategory.Warning,
                                         Document = this._labelGraph.Get_Filename(entry.Key)
                                     };
@@ -286,7 +292,7 @@ namespace AsmDude.ErrorSquiggles
                                         SubcategoryIndex = (int)AsmErrorEnum.LABEL_UNDEFINED,
                                         Line = lineNumber,
                                         Column = Get_Keyword_Begin_End(lineNumber, label),
-                                        Text = "Undefined Label: " + label,
+                                        Text = "Undefined Label: \"" + label + "\"",
                                         ErrorCategory = TaskErrorCategory.Warning,
                                         Document = this._labelGraph.Get_Filename(entry.Key)
                                     };
@@ -323,12 +329,11 @@ namespace AsmDude.ErrorSquiggles
 
                     } catch (Exception e)
                     {
-                        AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:updateErrorTasks; e={1}", ToString(), e.ToString()));
+                        AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Update_Error_Tasks_Async; e={1}", ToString(), e.ToString()));
                     }
                 }
             });
         }
-
         #endregion Private Methods
     }
 }

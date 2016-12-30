@@ -454,5 +454,67 @@ namespace AsmDude.Tools {
             }
         }
 
+        public static string Make_Full_Qualified_Label(string label1, string label2, AssemblerEnum assembler)
+        {
+            switch (assembler)
+            {
+                case AssemblerEnum.MASM:
+                {
+                    if ((label1 != null) && (label1.Length > 0))
+                    {
+                        return "[" + label1 + "]" + label2;
+                    } else
+                    {
+                        return label2;
+                    }
+                }
+                case AssemblerEnum.NASM:
+                {
+                    if ((label1 != null) && (label1.Length > 0))
+                    {
+                        return label1 + label2;
+                    } else
+                    {
+                        return label2;
+                    }
+                }
+            }
+            return label1 + label2;
+        }
+
+        public static string Retrieve_Local_Label(string label, AssemblerEnum assembler)
+        {
+            switch (assembler)
+            {
+                case AssemblerEnum.MASM:
+                {
+                    if ((label.Length > 0) && label[0].Equals('['))
+                    {
+                        for (int i = 1; i < label.Length; ++i)
+                        {
+                            char c = label[i];
+                            if (c.Equals(']'))
+                            {
+                                return label.Substring(i + 1);
+                            }
+                        }
+                    }
+                    break;
+                }
+                case AssemblerEnum.NASM:
+                {
+                    for (int i = 0; i < label.Length; ++i)
+                    {
+                        char c = label[i];
+                        if (c.Equals('.'))
+                        {
+                            return label.Substring(i);
+                        }
+                    }
+                    break;
+                }
+            }
+            return label;
+        }
     }
 }

@@ -287,7 +287,6 @@ namespace AsmDude {
             this._description = null;
         }
 
-
         #endregion Public Methods
         #region Private Methods
 

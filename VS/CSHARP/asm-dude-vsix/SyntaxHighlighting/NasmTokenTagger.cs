@@ -93,12 +93,12 @@ namespace AsmDude
                 {
                     string asmToken = Keyword(pos[k], line);
 
-                    // keyword k is the first keyword on a line
+                    // keyword k is a label definition
                     if (pos[k].Item3)
                     {
-                        SnapshotSpan labelDefSpan = New_Span(pos[k], offset, curSpan);
+                        SnapshotSpan labelDefSpan = NasmTokenTagger.New_Span(pos[k], offset, curSpan);
 
-                        //AsmDudeToolsStatic.Output_INFO("NasmTokenTagger:GetTags: found label " +labelString);
+                        //AsmDudeToolsStatic.Output_INFO("NasmTokenTagger:GetTags: found label " +asmToken);
                         AsmTokenTag asmTokenTag = (asmToken.StartsWith("."))
                             ? new AsmTokenTag(AsmTokenType.LabelDef, get_Last_Non_Local_Label(containingLine.LineNumber))
                             : this._labelDef;
@@ -123,7 +123,7 @@ namespace AsmDude
                             k++; // goto the next word
                             if (k == nKeywords) break; // there are no next words
 
-                            string asmToken2 = Keyword(pos[k], line);
+                            string asmToken2 = NasmTokenTagger.Keyword(pos[k], line);
                             switch (asmToken2)
                             {
                                 case "WORD":
@@ -136,7 +136,7 @@ namespace AsmDude
 
                                     k++;
                                     if (k == nKeywords) break;
-                                    string asmToken3 = Keyword(pos[k], line);
+                                    string asmToken3 = NasmTokenTagger.Keyword(pos[k], line);
                                     if (asmToken3.Equals("PTR"))
                                     {
                                         yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._misc);
@@ -164,9 +164,8 @@ namespace AsmDude
                                     break;
                                 }
                             }
+                            break;
                         }
-                        break;
-                    
                         case AsmTokenType.UNKNOWN: // asmToken is not a known keyword, check if it is numerical
                         {
                             if (AsmTools.AsmSourceTools.isConstant(asmToken))
@@ -324,7 +323,7 @@ namespace AsmDude
                 Tuple<int, int, bool> pos = AsmSourceTools.getLabel(line);
                 if (pos.Item3)
                 {
-                    string labelString = Keyword(pos, line);
+                    string labelString = NasmTokenTagger.Keyword(pos, line);
                     //AsmDudeToolsStatic.Output_INFO("NasmTokenTagger:get_Last_Non_Local_Label: found label " + labelString + " at lineNumber "+i +"; beginPos="+pos.Item1 +"; endPos="+pos.Item2);
 
                     if (!labelString[0].Equals('.'))
