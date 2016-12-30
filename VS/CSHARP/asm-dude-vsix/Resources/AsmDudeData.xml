@@ -522,9 +522,212 @@
 		</directive>
 
 		<directive name="BITS" tool="NASM"/>
-		<directive name="%DEFINE" tool="NASM"/>
+    <directive name="%DEFINE" tool="NASM">
+      <description>NASM: Define Single-line macros that is resolved at the time the embedded macro is expanded.</description>
+    </directive>
+    <directive name="%XDEFINE" tool="NASM">
+      <description>NASM: Define Single-line macros that is resolved at the time the embedded macro is defined.</description>
+    </directive>
+    <directive name="%IXDEFINE" tool="NASM">
+      <description>NASM: Define case-insensitive single-line macros that is resolved at the time the embedded macro is defined.</description>
+    </directive>
+    <directive name="%UNDEF" tool="NASM">
+      <description>NASM: Define Single-line macros can be removed with the %undef directive.</description>
+    </directive>
+    <directive name="%UNDEF" tool="NASM">
+      <description>NASM: Single-line macros can be removed with the %undef directive.</description>
+    </directive>
+    <directive name="%ASSIGN" tool="NASM">
+      <description>NASM: Define single-line macros.</description>
+    </directive>
+    <directive name="%IASSIGN" tool="NASM">
+      <description>NASM: Define case-insensitive single-line macros.</description>
+    </directive>
+    <directive name="%DEFSTR" tool="NASM">
+      <description>NASM: %defstr, and its case-insensitive counterpart %idefstr, define or redefine a single-line macro without parameters but converts the entire right-hand side, after macro expansion, to a quoted string before definition.</description>
+    </directive>
+    <directive name="%IDEFSTR" tool="NASM">
+      <description>NASM: %defstr, and its case-insensitive counterpart %idefstr, define or redefine a single-line macro without parameters but converts the entire right-hand side, after macro expansion, to a quoted string before definition.</description>
+    </directive>
+    <directive name="%DEFTOK" tool="NASM">
+      <description>NASM: %deftok, and its case-insensitive counterpart %ideftok, define or redefine a single-line macro without parameters but converts the second parameter, after string conversion, to a sequence of tokens.</description>
+    </directive>
+    <directive name="%IDEFTOK" tool="NASM">
+      <description>NASM: %deftok, and its case-insensitive counterpart %ideftok, define or redefine a single-line macro without parameters but converts the second parameter, after string conversion, to a sequence of tokens.</description>
+    </directive>
+    <directive name="%STRCAT" tool="NASM">
+      <description>NASM: The %strcat operator concatenates quoted strings and assign them to a single-line macro.</description>
+    </directive>
+    <directive name="%STRLEN" tool="NASM">
+      <description>NASM: The %strlen operator assigns the length of a string to a macro.</description>
+    </directive>
+    <directive name="%SUBSTR" tool="NASM">
+      <description>NASM: Individual letters or substrings in strings can be extracted using the %substr operator.</description>
+    </directive>
+    <directive name="%MACRO" tool="NASM">
+      <description>NASM: Start a multiline macro</description>
+    </directive>
+    <directive name="%ENDMACRO" tool="NASM">
+      <description>NASM: End a multiline macro, started with %macro.</description>
+    </directive>
+    <directive name="%UNMACRO" tool="NASM">
+      <description>NASM: Multi-line macros can be removed with the %unmacro directive. Unlike the %undef directive, however, %unmacro takes an argument specification, and will only remove exact matches with that argument specification.</description>
+    </directive>
 
-		<directive name="READ"/>
+    <directive name="%IF" tool="NASM">
+      <description>NASM: Conditional Assembly.</description>
+    </directive>
+    <directive name="%ELIF" tool="NASM">
+      <description>NASM: Conditional Assembly.</description>
+    </directive>
+    <directive name="%ELSE" tool="NASM">
+      <description>NASM: Conditional Assembly.</description>
+    </directive>
+    <directive name="%ENDIF" tool="NASM">
+      <description>NASM: Conditional Assembly.</description>
+    </directive>
+    <directive name="%IFDEF" tool="NASM">
+      <description>NASM: Testing Single-Line Macro Existence.</description>
+    </directive>
+    <directive name="%IFMACRO" tool="NASM">
+      <description>NASM: Testing Multi-Line Macro Existence. The %ifmacro directive operates in the same way as the %ifdef directive, except that it checks for the existence of a multi-line macro.</description>
+    </directive>
+    <directive name="%IFCTX" tool="NASM">
+      <description>NASM: Testing the Context Stack. The %ifmacro directive operates in the same way as the %ifdef directive, except that it checks for the existence of a multi-line macro.</description>
+    </directive>
+
+    <directive name="%IFIDN" tool="NASM">
+      <description>NASM: Testing Exact Text Identity. The construct %ifidn text1,text2 will cause the subsequent code to be assembled if and only if text1 and text2, after expanding single-line macros, are identical pieces of text. Differences in white space are not counted.</description>
+    </directive>
+    <directive name="%IFIDNI" tool="NASM">
+      <description>NASM: Testing Exact Text Identity. The construct %ifidni text1,text2 will cause the subsequent code to be assembled if and only if text1 and text2, after expanding single-line macros, are identical pieces of text (case-insensitive). Differences in white space are not counted.</description>
+    </directive>
+    <directive name="%IFID" tool="NASM">
+      <description>NASM: Testing Token Types. The conditional assembly construct %ifid, taking one parameter (which may be blank), assembles the subsequent code if and only if the first token in the parameter exists and is an identifier.</description>
+    </directive>
+    <directive name="%IFNUM" tool="NASM">
+      <description>NASM: Testing Token Types. The conditional assembly construct %ifnum, taking one parameter (which may be blank), assembles the subsequent code if and only if the first token in the parameter exists and is a number.</description>
+    </directive>
+    <directive name="%IFSTR" tool="NASM">
+      <description>NASM: Testing Token Types. The conditional assembly construct %ifstr, taking one parameter (which may be blank), assembles the subsequent code if and only if the first token in the parameter exists and is a string.</description>
+    </directive>
+    <directive name="%IFTOKEN" tool="NASM">
+      <description>NASM: Test for a Single Token. The conditional assembly construct %iftoken assembles the subsequent code if and only if the expanded parameters consist of exactly one token, possibly surrounded by whitespace.</description>
+    </directive>
+    <directive name="%IFEMPTY" tool="NASM">
+      <description>NASM: Test for Empty Expansion. The conditional assembly construct %ifempty assembles the subsequent code if and only if the expanded parameters do not contain any tokens at all, whitespace excepted.</description>
+    </directive>
+    <directive name="%IFENV" tool="NASM">
+      <description>NASM: Test If Environment Variable Exists. The conditional assembly construct %ifenv assembles the subsequent code if and only if the environment variable referenced by the %!env directive exists.</description>
+    </directive>
+    <directive name="%REP" tool="NASM">
+      <description>NASM: The directives %rep and %endrep (%rep takes a numeric argument, which can be an expression; %endrep takes no arguments) can be used to enclose a chunk of code, which is then replicated as many times as specified by the preprocessor.</description>
+    </directive>
+    <directive name="%INCLUDE" tool="NASM">
+      <description>NASM: Including Other Files.</description>
+    </directive>
+    <directive name="%PATHSEARCH" tool="NASM">
+      <description>NASM: Search the Include Path.</description>
+    </directive>
+    <directive name="%DEPEND" tool="NASM">
+      <description>NASM: Add Dependent Files.</description>
+    </directive>
+    <directive name="%USE" tool="NASM">
+      <description>NASM: Include Standard Macro Package.</description>
+    </directive>
+    <directive name="%PUSH" tool="NASM">
+      <description>NASM: Creating and Removing Contexts.</description>
+    </directive>
+    <directive name="%POP" tool="NASM">
+      <description>NASM: Creating and Removing Contexts.</description>
+    </directive>
+    <directive name="%REPL" tool="NASM">
+      <description>NASM: Renaming a Context.</description>
+    </directive>
+    <directive name="%ARG" tool="NASM">
+      <description>NASM: The %arg directive is used to simplify the handling of parameters passed on the stack.</description>
+    </directive>
+    <directive name="%STACKSIZE" tool="NASM">
+      <description>NASM:</description>
+    </directive>
+    <directive name="%LOCAL" tool="NASM">
+      <description>NASM:</description>
+    </directive>
+    <directive name="%ERROR" tool="NASM">
+      <description>NASM: The preprocessor directive %error will cause NASM to report an error if it occurs in assembled code.</description>
+    </directive>
+    <directive name="%WARNING" tool="NASM">
+      <description>NASM: The preprocessor directive %warning will cause NASM to report an warning (but allows assembly to continue) if it occurs in assembled code.</description>
+    </directive>
+    <directive name="%FATAL" tool="NASM">
+      <description>NASM: The preprocessor directive %warning will cause NASM to terminate immediately, regardless of pass.</description>
+    </directive>
+    <directive name="%LINE" tool="NASM">
+      <description>NASM: The %line directive is used to notify NASM that the input line corresponds to a specific line number in another file.</description>
+    </directive>
+    <directive name="__NASM_MAJOR__" tool="NASM">
+      <description>NASM:</description>
+    </directive>
+    <directive name="__NASM_MINOR__" tool="NASM">
+      <description>NASM:</description>
+    </directive>
+    <directive name="__NASM_SUBMINOR__" tool="NASM">
+      <description>NASM:</description>
+    </directive>
+    <directive name="___NASM_PATCHLEVEL__" tool="NASM">
+      <description>NASM:</description>
+    </directive>
+    <directive name="__NASM_VERSION_ID__" tool="NASM">
+      <description>NASM:</description>
+    </directive>
+    <directive name="__NASM_VER__" tool="NASM">
+      <description>NASM:</description>
+    </directive>
+    <directive name="__FILE__" tool="NASM">
+      <description>NASM:</description>
+    </directive>
+    <directive name="__LINE__" tool="NASM">
+      <description>NASM:</description>
+    </directive>
+    <directive name="__BITS__" tool="NASM">
+      <description>NASM: The __BITS__ standard macro is updated every time that the BITS mode is set using the BITS XX or [BITS XX] directive, where XX is a valid mode number of 16, 32 or 64.</description>
+    </directive>
+    <directive name="__OUTPUT_FORMAT__" tool="NASM">
+      <description>NASM: The __OUTPUT_FORMAT__ standard macro holds the current Output Format, as given by the -f option or NASM's default.</description>
+    </directive>
+    <directive name="__DATE__" tool="NASM">
+      <description>NASM:</description>
+    </directive>
+    <directive name="__TIME__" tool="NASM">
+      <description>NASM:</description>
+    </directive>
+    <directive name="__DATE_NUM__" tool="NASM">
+      <description>NASM:</description>
+    </directive>
+    <directive name="__TIME_NUM__" tool="NASM">
+      <description>NASM:</description>
+    </directive>
+    <directive name="__UTC_DATE__" tool="NASM">
+      <description>NASM:</description>
+    </directive>
+    <directive name="__UTC_TIME__" tool="NASM">
+      <description>NASM:</description>
+    </directive>
+    <directive name="__UTC_DATE_NUM__" tool="NASM">
+      <description>NASM:</description>
+    </directive>
+    <directive name="__UTC_TIME_NUM__" tool="NASM">
+      <description>NASM:</description>
+    </directive>
+    <directive name="__POSIX_TIME__" tool="NASM">
+      <description>NASM:</description>
+    </directive>
+
+
+
+
+
+    <directive name="READ"/>
 
 		<directive name=".186"/>
 		<directive name=".286"/>
