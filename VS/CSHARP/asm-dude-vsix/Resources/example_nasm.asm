@@ -19,6 +19,31 @@ global_label2:
 
 #endregion
 
+
+struc   mytype 
+  mt_long:      resd    1 
+  mt_word:      resw    1 
+  mt_byte:      resb    1 
+  mt_str:       resb    32 
+endstruc
+
+struc mytype 
+  .long:        resd    1 
+  .word:        resw    1 
+  .byte:        resb    1 
+  .str:         resb    32 
+endstruc
+
+mystruc: 
+    istruc mytype 
+        at mt_long, dd      123456 
+        at mt_word, dw      1024 
+        at mt_byte, db      'x' 
+        at mt_str,  db      'hello, world', 13, 10, 0 
+    iend
+
+
+
 #region Nasm Examples
 #######################################################
 

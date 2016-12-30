@@ -200,7 +200,6 @@ namespace AsmDude
             SortedSet<Completion> completions = new SortedSet<Completion>(new CompletionComparer());
             foreach (string keyword in this._asmDudeTools.Get_Keywords())
             {
-
                 Arch arch = this._asmDudeTools.Get_Architecture(keyword);
                 AsmTokenType type = this._asmDudeTools.Get_Token_Type(keyword);
 
@@ -212,28 +211,34 @@ namespace AsmDude
                     switch (type)
                     {
                         case AsmTokenType.Register:
-                        //AsmDudeToolsStatic.Output("INFO: AsmCompletionSource:mnemonicOperandCompletions; rn=" + keyword);
-                        Rn regName = RegisterTools.parseRn(keyword);
-                        if (AsmSignatureTools.Is_Allowed_Reg(regName, allowedOperands))
                         {
-                            //AsmDudeToolsStatic.Output(string.Format("INFO: AsmCompletionSource:mnemonicOperandCompletions; rn="+ keyword + " is selected"));
-                        } else
-                        {
-                            selected = false;
+                            //AsmDudeToolsStatic.Output("INFO: AsmCompletionSource:mnemonicOperandCompletions; rn=" + keyword);
+                            Rn regName = RegisterTools.parseRn(keyword);
+                            if (AsmSignatureTools.Is_Allowed_Reg(regName, allowedOperands))
+                            {
+                                //AsmDudeToolsStatic.Output(string.Format("INFO: AsmCompletionSource:mnemonicOperandCompletions; rn="+ keyword + " is selected"));
+                            } else
+                            {
+                                selected = false;
+                            }
+                            break;
                         }
-                        break;
                         case AsmTokenType.Misc:
-                        if (AsmSignatureTools.Is_Allowed_Misc(keyword, allowedOperands))
                         {
-                            //AsmDudeToolsStatic.Output(string.Format("INFO: AsmCompletionSource:mnemonicOperandCompletions; rn="+ keyword + " is selected"));
-                        } else
+                            if (AsmSignatureTools.Is_Allowed_Misc(keyword, allowedOperands))
+                            {
+                                //AsmDudeToolsStatic.Output(string.Format("INFO: AsmCompletionSource:mnemonicOperandCompletions; rn="+ keyword + " is selected"));
+                            } else
+                            {
+                                selected = false;
+                            }
+                            break;
+                        }
+                        default:
                         {
                             selected = false;
+                            break;
                         }
-                        break;
-                        default:
-                        selected = false;
-                        break;
                     }
                 }
                 if (selected)

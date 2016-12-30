@@ -190,12 +190,17 @@ namespace AsmDude.CodeFolding
         private Tuple<int, int> Is_Start_Keyword(string lineContent, int lineNumber)
         {
             var tup = Is_Start_Directive_Keyword(lineContent);
-            if (tup.Item1 == -1)
-            {
-                return Is_Start_Masm_Keyword(lineContent, lineNumber);
-            } else
+            if (tup.Item1 != -1)
             {
                 return tup;
+            } else
+            {
+                switch (AsmDudeToolsStatic.Used_Assembler)
+                {
+                    case AssemblerEnum.MASM: return Is_Start_Masm_Keyword(lineContent, lineNumber);
+                    case AssemblerEnum.NASM: return Is_Start_Nasm_Keyword(lineContent, lineNumber);
+                    default: return new Tuple<int, int>(-1, -1);
+                }
             }
         }
 
@@ -235,7 +240,36 @@ namespace AsmDude.CodeFolding
                         case "STRUCT":
                         case ".IF":
                         case ".WHILE":
-                        return new Tuple<int, int>(lineContent.Length, lineContent.Length);
+                        {
+                            return new Tuple<int, int>(lineContent.Length, lineContent.Length);
+                        }
+                        default: break;
+                    }
+                }
+            }
+            return new Tuple<int, int>(-1, -1);
+        }
+
+        /// <summary>
+        /// Return start positions of the provided line content. Tuple has: 1) start of the folding position; 2) start of the description position.
+        /// </summary>
+        private Tuple<int, int> Is_Start_Nasm_Keyword(string lineContent, int lineNumber)
+        {
+            ITextSnapshotLine line = this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
+            IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(line.Extent);
+            foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in tags)
+            {
+                if (asmTokenSpan.Tag.Type == AsmTokenType.Directive)
+                {
+                    string tokenStr = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText().ToUpper();
+                    //AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger:IsStartMasmKeyword: tokenStr=" + tokenStr);
+                    switch (tokenStr)
+                    {
+                        case "STRUC":
+                        case "ISTRUC":
+                        {
+                            return new Tuple<int, int>(lineContent.Length, lineContent.Length);
+                        }
                         default: break;
                     }
                 }
@@ -246,7 +280,18 @@ namespace AsmDude.CodeFolding
         private int Is_End_Keyword(string lineContent, int lineNumber)
         {
             int i1 = Is_End_Directive_Keyword(lineContent);
-            return (i1 == -1) ? Is_End_Masm_Keyword(lineContent, lineNumber) : i1;
+            if (i1 != -1)
+            {
+                return i1;
+            } else
+            {
+                switch (AsmDudeToolsStatic.Used_Assembler)
+                {
+                    case AssemblerEnum.MASM: return Is_End_Masm_Keyword(lineContent, lineNumber);
+                    case AssemblerEnum.NASM: return Is_End_Nasm_Keyword(lineContent, lineNumber);
+                    default: return -1;
+                }
+            }
         }
 
         private int Is_End_Directive_Keyword(string lineContent)
@@ -270,7 +315,31 @@ namespace AsmDude.CodeFolding
                         //case "ENDS": // end token for STRUCT
                         case ".ENDIF": // end token for .IF
                         case ".ENDW": // end token for .WHILE
-                        return lineContent.IndexOf(tokenStr, StringComparison.OrdinalIgnoreCase);
+                        {
+                            return lineContent.IndexOf(tokenStr, StringComparison.OrdinalIgnoreCase);
+                        }
+                        default: break;
+                    }
+                }
+            }
+            return -1;
+        }
+
+        private int Is_End_Nasm_Keyword(string lineContent, int lineNumber)
+        {
+            IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent);
+            foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in tags)
+            {
+                if (asmTokenSpan.Tag.Type == AsmTokenType.Directive)
+                {
+                    string tokenStr = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText().ToUpper();
+                    switch (tokenStr)
+                    {
+                        case "ENDSTRUC": // end token for STRUC
+                        case "IEND":    // end token for ISTRUC
+                        {
+                            return lineContent.IndexOf(tokenStr, StringComparison.OrdinalIgnoreCase);
+                        }
                         default: break;
                     }
                 }

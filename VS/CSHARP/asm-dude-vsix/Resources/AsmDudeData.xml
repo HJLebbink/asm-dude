@@ -722,7 +722,18 @@
     <directive name="__POSIX_TIME__" tool="NASM">
       <description>NASM:</description>
     </directive>
-
+    <directive name="STRUC" tool="NASM">
+      <description>NASM:</description>
+    </directive>
+    <directive name="ENDSTRUC" tool="NASM">
+      <description>NASM:</description>
+    </directive>
+    <directive name="ISTRUC" tool="NASM">
+      <description>NASM:</description>
+    </directive>
+    <directive name="IEND" tool="NASM">
+      <description>NASM:</description>
+    </directive>
 
 
 
