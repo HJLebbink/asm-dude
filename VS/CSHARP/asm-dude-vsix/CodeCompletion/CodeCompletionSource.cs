@@ -88,7 +88,7 @@ namespace AsmDude
                     if (!currentTypedChar.Equals('#'))
                     { //TODO UGLY since the user can configure this starting character
                         int pos = triggerPoint.Position - line.Start;
-                        if (AsmSourceTools.isInRemark(pos, line.GetText()))
+                        if (AsmSourceTools.IsInRemark(pos, line.GetText()))
                         {
                             //AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:AugmentCompletionSession: currently in a remark section");
                             return;
@@ -141,7 +141,7 @@ namespace AsmDude
                 { // the current line contains a mnemonic
                     //AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:AugmentCompletionSession; mnemonic=" + mnemonic+ "; previousKeyword="+ previousKeyword);
 
-                    if (AsmSourceTools.isJump(AsmSourceTools.parseMnemonic(previousKeyword)))
+                    if (AsmSourceTools.IsJump(AsmSourceTools.ParseMnemonic(previousKeyword)))
                     {
                         //AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:AugmentCompletionSession; previous keyword is a jump mnemonic");
                         // previous keyword is jump (or call) mnemonic. Suggest "SHORT" or a label
@@ -154,10 +154,10 @@ namespace AsmDude
                         completions = Label_Completions();
                     } else
                     {
-                        IList<Operand> operands = AsmSourceTools.makeOperands(t.Item3);
+                        IList<Operand> operands = AsmSourceTools.MakeOperands(t.Item3);
                         ISet<AsmSignatureEnum> allowed = new HashSet<AsmSignatureEnum>();
                         int commaCount = AsmSignature.Count_Commas(lineStr);
-                        IList<AsmSignatureElement> allSignatures = this._asmDudeTools.Mnemonic_Store.getSignatures(mnemonic);
+                        IList<AsmSignatureElement> allSignatures = this._asmDudeTools.Mnemonic_Store.GetSignatures(mnemonic);
 
                         ISet<Arch> selectedArchitectures = AsmDudeToolsStatic.Get_Arch_Swithed_On();
                         foreach (AsmSignatureElement se in AsmSignatureHelpSource.Constrain_Signatures(allSignatures, operands, selectedArchitectures))
@@ -213,7 +213,7 @@ namespace AsmDude
                         case AsmTokenType.Register:
                         {
                             //AsmDudeToolsStatic.Output("INFO: AsmCompletionSource:mnemonicOperandCompletions; rn=" + keyword);
-                            Rn regName = RegisterTools.parseRn(keyword);
+                            Rn regName = RegisterTools.ParseRn(keyword);
                             if (AsmSignatureTools.Is_Allowed_Reg(regName, allowedOperands))
                             {
                                 //AsmDudeToolsStatic.Output(string.Format("INFO: AsmCompletionSource:mnemonicOperandCompletions; rn="+ keyword + " is selected"));
@@ -282,7 +282,7 @@ namespace AsmDude
             IList<Mnemonic> list = new List<Mnemonic>();
             foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
             {
-                foreach (Arch a in store.getArch(mnemonic))
+                foreach (Arch a in store.GetArch(mnemonic))
                 {
                     if (selectedArchitectures.Contains(a))
                     {
@@ -329,8 +329,8 @@ namespace AsmDude
                     string keyword = mnemonic.ToString();
 
                     string insertionText = (useCapitals) ? keyword : keyword.ToLower();
-                    string archStr = ArchTools.ToString(this._asmDudeTools.Mnemonic_Store.getArch(mnemonic));
-                    string descriptionStr = this._asmDudeTools.Mnemonic_Store.getDescription(mnemonic);
+                    string archStr = ArchTools.ToString(this._asmDudeTools.Mnemonic_Store.GetArch(mnemonic));
+                    string descriptionStr = this._asmDudeTools.Mnemonic_Store.GetDescription(mnemonic);
                     descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
                     String displayText = keyword + archStr + descriptionStr;
                     //String description = keyword.PadRight(15) + archStr.PadLeft(8) + descriptionStr;

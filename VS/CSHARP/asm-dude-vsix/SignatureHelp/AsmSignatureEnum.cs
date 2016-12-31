@@ -568,15 +568,15 @@ namespace AsmDude.SignatureHelp {
                 case AsmSignatureEnum.ER: return false;
                 case AsmSignatureEnum.SAE: return false;
 
-                case AsmSignatureEnum.K: return (op.isReg && (RegisterTools.isOpmaskRegister(op.rn)));
-                case AsmSignatureEnum.XMMREG: return (op.isReg && RegisterTools.isSseRegister(op.rn));
-                case AsmSignatureEnum.YMMREG: return (op.isReg && RegisterTools.isAvxRegister(op.rn));
-                case AsmSignatureEnum.ZMMREG: return (op.isReg && RegisterTools.isAvx512Register(op.rn));
+                case AsmSignatureEnum.K: return (op.isReg && (RegisterTools.IsOpmaskRegister(op.rn)));
+                case AsmSignatureEnum.XMMREG: return (op.isReg && RegisterTools.IsSseRegister(op.rn));
+                case AsmSignatureEnum.YMMREG: return (op.isReg && RegisterTools.IsAvxRegister(op.rn));
+                case AsmSignatureEnum.ZMMREG: return (op.isReg && RegisterTools.IsAvx512Register(op.rn));
 
                 case AsmSignatureEnum.M32BCST: return (op.isMem && op.nBits == 32);
                 case AsmSignatureEnum.M64BCST: return (op.isMem && op.nBits == 64);
                 case AsmSignatureEnum.MEM_OFFSET: return (op.isImm);
-                case AsmSignatureEnum.REG_SREG: return (op.isReg && (RegisterTools.isSegmentRegister(op.rn)));
+                case AsmSignatureEnum.REG_SREG: return (op.isReg && (RegisterTools.IsSegmentRegister(op.rn)));
                 case AsmSignatureEnum.CR0: return (op.isReg && (op.rn == Rn.CR0));
                 case AsmSignatureEnum.CR1: return (op.isReg && (op.rn == Rn.CR1));
                 case AsmSignatureEnum.CR2: return (op.isReg && (op.rn == Rn.CR2));
@@ -586,8 +586,8 @@ namespace AsmDude.SignatureHelp {
                 case AsmSignatureEnum.CR6: return (op.isReg && (op.rn == Rn.CR6));
                 case AsmSignatureEnum.CR7: return (op.isReg && (op.rn == Rn.CR7));
                 case AsmSignatureEnum.CR8: return (op.isReg && (op.rn == Rn.CR8));
-                case AsmSignatureEnum.REG_DREG: return (op.isReg && (RegisterTools.isDebugRegister(op.rn)));
-                case AsmSignatureEnum.BNDREG: return (op.isReg && (RegisterTools.isBoundRegister(op.rn)));
+                case AsmSignatureEnum.REG_DREG: return (op.isReg && (RegisterTools.IsDebugRegister(op.rn)));
+                case AsmSignatureEnum.BNDREG: return (op.isReg && (RegisterTools.IsBoundRegister(op.rn)));
 
                 default:
                     AsmDudeToolsStatic.Output("WARNING: AsmSignatureTools:isAllowed: add " + operandType);
@@ -648,7 +648,7 @@ namespace AsmDude.SignatureHelp {
         }
 
         public static bool Is_Allowed_Reg(Rn regName, ISet<AsmSignatureEnum> allowedOperands) {
-            RegisterType type = RegisterTools.getRegisterType(regName);
+            RegisterType type = RegisterTools.GetRegisterType(regName);
             switch (type) {
                 case RegisterType.UNKNOWN:
                     AsmDudeToolsStatic.Output("INFO: AsmSignatureTools: isAllowedReg: registername " + regName +" could not be classified");

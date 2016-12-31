@@ -99,13 +99,13 @@ namespace AsmDude.SignatureHelp {
                 //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: AugmentSignatureHelpSession: lineStr=" + lineStr+ "; positionInLine=" + positionInLine);
 
                 var t = AsmSourceTools.ParseLine(lineStr);
-                IList<Operand> operands = AsmSourceTools.makeOperands(t.Item3);
+                IList<Operand> operands = AsmSourceTools.MakeOperands(t.Item3);
                 Mnemonic mnemonic = t.Item2;
 
                 ISet<Arch> selectedArchitectures = AsmDudeToolsStatic.Get_Arch_Swithed_On();
                 //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: AugmentSignatureHelpSession: selected architectures=" + ArchTools.ToString(selectedArchitectures));
 
-                foreach (AsmSignatureElement se in AsmSignatureHelpSource.Constrain_Signatures(this._store.getSignatures(mnemonic), operands, selectedArchitectures)) {
+                foreach (AsmSignatureElement se in AsmSignatureHelpSource.Constrain_Signatures(this._store.GetSignatures(mnemonic), operands, selectedArchitectures)) {
                     signatures.Add(Create_Signature(this._buffer, se, applicableToSpan));
                 }
                 AsmDudeToolsStatic.Print_Speed_Warning(time1, "Signature Help");
@@ -115,6 +115,8 @@ namespace AsmDude.SignatureHelp {
         }
 
         public ISignature GetBestMatch(ISignatureHelpSession session) {
+            //NOT USED!!
+
             AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: GetBestMatch");
 
             if (session.Signatures.Count > 0) {

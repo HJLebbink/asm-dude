@@ -174,7 +174,7 @@ namespace AsmTools {
 
     public static class ArchTools {
 
-        public static Arch parseArch(string str) {
+        public static Arch ParseArch(string str) {
             switch (str.ToUpper()) {
                 case "NONE": return Arch.NONE;
 

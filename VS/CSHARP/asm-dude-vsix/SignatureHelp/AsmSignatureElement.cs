@@ -99,7 +99,7 @@ namespace AsmDude.SignatureHelp {
                     //this._arch.Add(Arch.ARCH_486);
                 } else {
                     foreach (string arch2 in value.Split(',')) {
-                        this._arch.Add(ArchTools.parseArch(arch2));
+                        this._arch.Add(ArchTools.ParseArch(arch2));
                     }
                 }
             }

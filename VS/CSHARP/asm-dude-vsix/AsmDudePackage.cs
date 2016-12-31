@@ -100,7 +100,6 @@ namespace AsmDude {
         */
         #endregion
 
-
         #region Font Change Experiments
         /// <summary>
         /// Set font of code completion

@@ -20,7 +20,7 @@ namespace AsmTools {
             string remark = "";
 
             if (line.Length > 0) {
-                Tuple<bool, int, int> labelPos = AsmTools.AsmSourceTools.getLabelDefPos(line);
+                Tuple<bool, int, int> labelPos = AsmTools.AsmSourceTools.GetLabelDefPos(line);
                 int codeBeginPos = 0;
                 if (labelPos.Item1) {
                     label = line.Substring(labelPos.Item2, labelPos.Item3 - labelPos.Item2);
@@ -31,7 +31,7 @@ namespace AsmTools {
                     //Console.WriteLine("found label " + label);
                 }
 
-                Tuple<bool, int, int> remarkPos = AsmTools.AsmSourceTools.getRemarkPos(line);
+                Tuple<bool, int, int> remarkPos = AsmTools.AsmSourceTools.GetRemarkPos(line);
                 int codeEndPos = line.Length;
                 if (remarkPos.Item1) {
                     remark = line.Substring(remarkPos.Item2, remarkPos.Item3 - remarkPos.Item2);
@@ -43,10 +43,10 @@ namespace AsmTools {
                 //Console.WriteLine("code string \"" + codeStr + "\".");
 
                 // get the first keyword, check if it is a mnemonic
-                Tuple<int, int> t = AsmTools.AsmSourceTools.getKeywordPos(0, codeStr);
+                Tuple<int, int> t = AsmTools.AsmSourceTools.GetKeywordPos(0, codeStr);
                 string firstKeyword = codeStr.Substring(t.Item1, t.Item2 - t.Item1);
                 if (firstKeyword.Length > 0) {
-                    mnemonic = AsmTools.AsmSourceTools.parseMnemonic(firstKeyword);
+                    mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(firstKeyword);
                     if (mnemonic == Mnemonic.UNKNOWN) {
                         //Console.WriteLine("INFO: ToolsZ3:parseLine: found unknown first Keyword \"" + firstKeyword + "\". Ignoring this line.");
                     } else {
@@ -66,7 +66,7 @@ namespace AsmTools {
             return new Tuple<string, Mnemonic, string[], string>(label, mnemonic, args, remark);
         }
 
-        public static IList<Operand> makeOperands(string[] operandStrArray) {
+        public static IList<Operand> MakeOperands(string[] operandStrArray) {
             int nOperands = operandStrArray.Length;
             if (nOperands <= 1) {
                 return new List<Operand>(0);
@@ -89,7 +89,7 @@ namespace AsmTools {
         /// <summary>
         /// return label definition position
         /// </summary>
-        public static Tuple<int, int, bool> getLabel(string line)
+        public static Tuple<int, int, bool> GetLabel(string line)
         {
             bool started = false;
             int keywordBegin = 0;
@@ -97,7 +97,7 @@ namespace AsmTools {
             for (int i = 0; i < line.Length; ++i)
             {
                 char c = line[i];
-                if (isRemarkChar(c)) return new Tuple<int, int, bool>(0, 0, false);
+                if (IsRemarkChar(c)) return new Tuple<int, int, bool>(0, 0, false);
                 if (c.Equals('"')) return new Tuple<int, int, bool>(0, 0, false);
                 if (c.Equals(':'))
                 {
@@ -128,7 +128,7 @@ namespace AsmTools {
         /// <summary>
         /// Split the provided line into keyword positions: first: begin pos; second: end pos; third whether the keyword is a label
         /// </summary>
-        public static IList<Tuple<int, int, bool>> splitIntoKeywordPos(string line) {
+        public static IList<Tuple<int, int, bool>> SplitIntoKeywordPos(string line) {
             IList<Tuple<int, int, bool>> list = new List<Tuple<int, int, bool>>();
 
             int keywordBegin = 0;
@@ -148,7 +148,7 @@ namespace AsmTools {
                         keywordBegin = i + 1; // next keyword starts at the next char
                     }
                 } else {
-                    if (isRemarkChar(c)) {
+                    if (IsRemarkChar(c)) {
                         if (keywordBegin < i) {
                             list.Add(new Tuple<int, int, bool>(keywordBegin, i, false));
                             isFirstKeyword = false;
@@ -191,7 +191,7 @@ namespace AsmTools {
         }
 
         #region Remark Methods
-        public static bool isRemarkChar(char c) {
+        public static bool IsRemarkChar(char c) {
             return c.Equals('#') || c.Equals(';');
         }
 
@@ -201,12 +201,12 @@ namespace AsmTools {
         /// <param name="triggerPoint"></param>
         /// <param name="lineStart"></param>
         /// <returns></returns>
-        public static bool isInRemark(int pos, string line) {
+        public static bool IsInRemark(int pos, string line) {
             // check if the line contains a remark character before the current point
             int nChars = line.Length;
             int startPos = (pos >= nChars) ? nChars - 1 : pos;
             for (int i = startPos; i >= 0; --i) {
-                if (AsmSourceTools.isRemarkChar(line[i])) {
+                if (AsmSourceTools.IsRemarkChar(line[i])) {
                     return true;
                 }
             }
@@ -218,11 +218,11 @@ namespace AsmTools {
         /// </summary>
         /// <param name="line"></param>
         /// <returns></returns>
-        public static bool isRemarkOnly(string line) {
+        public static bool IsRemarkOnly(string line) {
             int nChars = line.Length;
             for (int i = 0; i < nChars; ++i) {
                 char c = line[i];
-                if (AsmSourceTools.isRemarkChar(c)) {
+                if (AsmSourceTools.IsRemarkChar(c)) {
                     return true;
                 } else {
                     if (char.IsWhiteSpace(c)) {
@@ -236,9 +236,9 @@ namespace AsmTools {
             return false;
         }
 
-        public static int getRemarkCharPosition(string line) {
+        public static int GetRemarkCharPosition(string line) {
             for (int i = 0; i < line.Length; ++i) {
-                if (AsmSourceTools.isRemarkChar(line[i])) {
+                if (AsmSourceTools.IsRemarkChar(line[i])) {
                     return i;
                 }
             }
@@ -247,7 +247,7 @@ namespace AsmTools {
 
         #endregion Remark Methods
 
-        public static bool isConstant(string token) { // todo merge this with toConstant
+        public static bool IsConstant(string token) { // todo merge this with toConstant
             string token2;
             if (token.StartsWith("0x", StringComparison.OrdinalIgnoreCase)) {
                 token2 = token.Substring(2);
@@ -266,7 +266,7 @@ namespace AsmTools {
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static Tuple<bool, ulong, int> toConstant(string token) {
+        public static Tuple<bool, ulong, int> ToConstant(string token) {
             string token2;
             bool isHex = false;
             if (token.StartsWith("0x", StringComparison.OrdinalIgnoreCase)) {
@@ -286,11 +286,11 @@ namespace AsmTools {
                 parsedSuccessfully = ulong.TryParse(token2.Replace("_", string.Empty), NumberStyles.Integer, CultureInfo.CurrentCulture, out v);
             }
 
-            int nBits = (parsedSuccessfully) ? nBitsStorageNeeded(v) : -1;
+            int nBits = (parsedSuccessfully) ? NBitsStorageNeeded(v) : -1;
             return new Tuple<bool, ulong, int>(parsedSuccessfully, v, nBits);
         }
 
-        public static int nBitsStorageNeeded(ulong v) {
+        public static int NBitsStorageNeeded(ulong v) {
             int nBits = -1;
             if ((v & 0xFFFFFFFFFFFFFF00ul) == 0) {
                 nBits = 8;
@@ -309,7 +309,7 @@ namespace AsmTools {
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static int getNbitsMemOperand(string token) {
+        public static int GetNbitsMemOperand(string token) {
 
             string s = token.TrimStart().ToUpper();
             if (s.StartsWith("PTR")) token = token.Substring(3, token.Length - 3).TrimStart();
@@ -339,7 +339,7 @@ namespace AsmTools {
         /// <summary>
         /// return Offset = Base + (Index * Scale) + Displacement
         /// </summary>
-        public static Tuple<bool, Rn, Rn, int, long, int> parseMemOperand(string token) {
+        public static Tuple<bool, Rn, Rn, int, long, int> ParseMemOperand(string token) {
 
             int length = token.Length;
             if (length < 3) {
@@ -353,7 +353,7 @@ namespace AsmTools {
                 if (token[i] == '[') beginPos = i+1;
             }
 
-            int nBits = getNbitsMemOperand(token);
+            int nBits = GetNbitsMemOperand(token);
 
             int endPos = length;
             for (int i = beginPos; i < length; ++i) {
@@ -391,7 +391,7 @@ namespace AsmTools {
             for (int i = 0; i < x.Length; ++i) {
                 string y = x[i].Trim();
 
-                var t2 = AsmSourceTools.toConstant(y);
+                var t2 = AsmSourceTools.ToConstant(y);
                 if (t2.Item1) {
                     if (foundDisplacement) {
                         // found an second displacement, error
@@ -401,7 +401,7 @@ namespace AsmTools {
                         displacement = (negativeDisplacement) ? -(long)t2.Item2 : (long)t2.Item2;
                     }
                 } else {
-                    Rn t1 = RegisterTools.parseRn(y);
+                    Rn t1 = RegisterTools.ParseRn(y);
                     if (t1 != Rn.NOREG) {
                         if (baseRn == Rn.NOREG) {
                             baseRn = t1;
@@ -415,15 +415,15 @@ namespace AsmTools {
                         string[] z = y.Split('*');
                         string z0 = z[0].Trim();
                         string z1 = z[1].Trim();
-                        Rn z0r = RegisterTools.parseRn(z0);
+                        Rn z0r = RegisterTools.ParseRn(z0);
                         if (z0r != Rn.NOREG) {
                             indexRn = z0r;
-                            scale = parseScale(z1);
+                            scale = ParseScale(z1);
                         } else {
-                            Rn z1r = RegisterTools.parseRn(z1);
+                            Rn z1r = RegisterTools.ParseRn(z1);
                             if (z1r != Rn.NOREG) {
                                 indexRn = z1r;
-                                scale = parseScale(z0);
+                                scale = ParseScale(z0);
                             }
                         }
                     }
@@ -434,14 +434,14 @@ namespace AsmTools {
                 return new Tuple<bool, Rn, Rn, int, long, int>(false, Rn.NOREG, Rn.NOREG, 0, 0, 0);
             }
             if ((baseRn != Rn.NOREG) && (indexRn != Rn.NOREG)) {
-                if (RegisterTools.nBits(baseRn) != RegisterTools.nBits(indexRn)) {
+                if (RegisterTools.NBits(baseRn) != RegisterTools.NBits(indexRn)) {
                     return new Tuple<bool, Rn, Rn, int, long, int>(false, Rn.NOREG, Rn.NOREG, 0, 0, 0);
                 }
             }
             return new Tuple<bool, Rn, Rn, int, long, int>(true, baseRn, indexRn, scale, displacement, nBits);
         }
 
-        private static int parseScale(string str) {
+        private static int ParseScale(string str) {
             switch (str) {
                 case "0": return 0;
                 case "1": return 1;
@@ -452,7 +452,7 @@ namespace AsmTools {
             }
         }
 
-        private static int findEndNextWord(string str, int begin) {
+        private static int FindEndNextWord(string str, int begin) {
             for (int i = begin; i < str.Length; ++i) {
                 char c = str[i];
                 if (char.IsWhiteSpace(c) || c.Equals('+') || c.Equals('*') || c.Equals('-') || c.Equals('[') || c.Equals(']') || c.Equals('(') || c.Equals(')') || c.Equals(':')) { 
@@ -462,8 +462,8 @@ namespace AsmTools {
             return str.Length;
         }
 
-        public static string getKeyword(int pos, string line) {
-            var t = AsmSourceTools.getKeywordPos(pos, line);
+        public static string GetKeyword(int pos, string line) {
+            var t = AsmSourceTools.GetKeywordPos(pos, line);
             int beginPos = t.Item1;
             int endPos = t.Item2;
             string result = line.Substring(beginPos, endPos - beginPos);
@@ -473,7 +473,7 @@ namespace AsmTools {
         /// <summary>
         /// Return the previous keyword between begin and end. 
         /// </summary>
-        public static string getPreviousKeyword(int begin, int end, string line) {
+        public static string GetPreviousKeyword(int begin, int end, string line) {
             Debug.Assert(begin >= 0);
             Debug.Assert(begin <= line.Length);
             Debug.Assert(end <= line.Length);
@@ -539,7 +539,7 @@ namespace AsmTools {
         /// <summary>
         /// Return the begin and end of the keyword
         /// </summary>
-        public static Tuple<int, int> getKeywordPos(int pos, string line) {
+        public static Tuple<int, int> GetKeywordPos(int pos, string line) {
             //Debug.WriteLine(string.Format("INFO: getKeyword; pos={0}; line=\"{1}\"", pos, new string(line)));
             if ((pos < 0) || (pos >= line.Length)) {
                 return new Tuple<int, int>(pos, pos);
@@ -548,7 +548,7 @@ namespace AsmTools {
             int beginPos = 0;
             for (int i1 = pos - 1; i1 >= 0; --i1) {
                 char c = line[i1];
-                if (AsmSourceTools.IsSeparatorChar(c) || Char.IsControl(c) || AsmSourceTools.isRemarkChar(c)) {
+                if (AsmSourceTools.IsSeparatorChar(c) || Char.IsControl(c) || AsmSourceTools.IsRemarkChar(c)) {
                     beginPos = i1 + 1;
                     break;
                 }
@@ -557,7 +557,7 @@ namespace AsmTools {
             int endPos = line.Length;
             for (int i2 = pos; i2 < line.Length; ++i2) {
                 char c = line[i2];
-                if (AsmSourceTools.IsSeparatorChar(c) || Char.IsControl(c) || AsmSourceTools.isRemarkChar(c)) {
+                if (AsmSourceTools.IsSeparatorChar(c) || Char.IsControl(c) || AsmSourceTools.IsRemarkChar(c)) {
                     endPos = i2;
                     break;
                 }
@@ -565,22 +565,22 @@ namespace AsmTools {
             return new Tuple<int, int>(beginPos, endPos);
         }
 
-        public static Tuple<bool, int, int> getLabelDefPos(string line) {
-            var tup = getLabelDefPos_Regular(line);
+        public static Tuple<bool, int, int> GetLabelDefPos(string line) {
+            var tup = GetLabelDefPos_Regular(line);
             if (tup.Item1) {
                 return tup;
             }
-            return getLabelDefPos_Masm(line);
+            return GetLabelDefPos_Masm(line);
         }
 
-        private static Tuple<bool, int, int> getLabelDefPos_Regular(string line) {
+        private static Tuple<bool, int, int> GetLabelDefPos_Regular(string line) {
             int nChars = line.Length;
             int i = 0;
 
             // find the start of the first keyword
             for (; i < nChars; ++i) {
                 char c = line[i];
-                if (AsmSourceTools.isRemarkChar(c)) {
+                if (AsmSourceTools.IsRemarkChar(c)) {
                     return new Tuple<bool, int, int>(false, 0, 0);
                 } else if (char.IsWhiteSpace(c)) {
                     // do nothing
@@ -603,7 +603,7 @@ namespace AsmTools {
                     } else {
                         return new Tuple<bool, int, int>(true, beginPos, i);
                     }
-                } else if (AsmSourceTools.isRemarkChar(c)) {
+                } else if (AsmSourceTools.IsRemarkChar(c)) {
                     return new Tuple<bool, int, int>(false, 0, 0);
                 } else if (AsmSourceTools.IsSeparatorChar(c)) {
                     // found another keyword: labels can only be the first keyword on a line
@@ -613,7 +613,7 @@ namespace AsmTools {
             return new Tuple<bool, int, int>(false, 0, 0);
         }
 
-        private static Tuple<bool, int, int> getLabelDefPos_Masm(string line) {
+        private static Tuple<bool, int, int> GetLabelDefPos_Masm(string line) {
 
             string line2 = line.TrimStart();
             int displacement = 0;
@@ -627,7 +627,7 @@ namespace AsmTools {
             }
 
             string line3 = line2.Substring(displacement);
-            var tup = getLabelDefPos_Regular(line3);
+            var tup = GetLabelDefPos_Regular(line3);
             if (tup.Item1) {
                 return new Tuple<bool, int, int>(true, tup.Item2 + displacement, tup.Item3 + displacement);
             } else {
@@ -635,10 +635,10 @@ namespace AsmTools {
             }
         }
 
-        public static Tuple<bool, int, int> getRemarkPos(string line) {
+        public static Tuple<bool, int, int> GetRemarkPos(string line) {
             int nChars = line.Length;
             for (int i = 0; i < nChars; ++i) {
-                if (AsmSourceTools.isRemarkChar(line[i])) {
+                if (AsmSourceTools.IsRemarkChar(line[i])) {
                     return new Tuple<bool, int, int>(true, i, nChars);
                 }
             }
@@ -652,8 +652,8 @@ namespace AsmTools {
         /// <param name="str">The string to wrap.</param>
         /// <param name="maxLength">The maximum number of characters per line.</param>
         /// <returns></returns>
-        public static string linewrap(this string str, int maxLength) {
-            return linewrap(str, maxLength, "");
+        public static string Linewrap(this string str, int maxLength) {
+            return Linewrap(str, maxLength, "");
         }
 
         /// <summary>
@@ -663,7 +663,7 @@ namespace AsmTools {
         /// <param name="maxLength">The maximum number of characters per line.</param>
         /// <param name="prefix">Adds this string to the beginning of each line.</param>
         /// <returns></returns>
-        private static string linewrap(string str, int maxLength, string prefix) {
+        private static string Linewrap(string str, int maxLength, string prefix) {
             if (string.IsNullOrEmpty(str)) return "";
             if (maxLength <= 0) return prefix + str;
 
@@ -673,7 +673,7 @@ namespace AsmTools {
             foreach (string line in str.Split("\n".ToCharArray())) {
                 var remainingLine = line.Trim();
                 do {
-                    var newLine = getLine(remainingLine, maxLength - prefix.Length);
+                    var newLine = GetLine(remainingLine, maxLength - prefix.Length);
                     lines.Add(newLine);
                     remainingLine = remainingLine.Substring(newLine.Length).Trim();
                     // Keep iterating as int as we've got words remaining 
@@ -683,7 +683,7 @@ namespace AsmTools {
 
             return string.Join(Environment.NewLine + prefix, lines.ToArray());
         }
-        private static string getLine(string str, int maxLength) {
+        private static string GetLine(string str, int maxLength) {
             // The string is less than the max length so just return it.
             if (str.Length <= maxLength) return str;
 
@@ -691,7 +691,7 @@ namespace AsmTools {
             // starting with the char one after the maximum length
             // (if the next char is a whitespace, the last word fits).
             for (int i = maxLength; i >= 0; i--) {
-                if (isTextSeparatorChar(str[i]))
+                if (IsTextSeparatorChar(str[i]))
                     return str.Substring(0, i).TrimEnd();
             }
 
@@ -699,7 +699,7 @@ namespace AsmTools {
             return str.Substring(0, maxLength);
         }
 
-        private static bool isTextSeparatorChar(char c) {
+        private static bool IsTextSeparatorChar(char c) {
             return char.IsWhiteSpace(c) || c.Equals('.') || c.Equals(',') || c.Equals(';') || c.Equals('?') || c.Equals('!') || c.Equals(')') || c.Equals(']') || c.Equals('-');
         }
 

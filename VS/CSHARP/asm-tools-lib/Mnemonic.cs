@@ -2157,7 +2157,7 @@ namespace AsmTools {
 
 public static partial class AsmSourceTools {
 
-        public static bool isJump(Mnemonic mnemonic) {
+        public static bool IsJump(Mnemonic mnemonic) {
             switch (mnemonic) {
                 case Mnemonic.JMP:
                 case Mnemonic.JE:
@@ -2203,7 +2203,7 @@ public static partial class AsmSourceTools {
             }
         }
 
-        public static Mnemonic parseMnemonic(string str) {
+        public static Mnemonic ParseMnemonic(string str) {
             switch (str.ToUpper()) {
                 case "UNKNOWN": return Mnemonic.UNKNOWN;
                 case "MOV": return Mnemonic.MOV;

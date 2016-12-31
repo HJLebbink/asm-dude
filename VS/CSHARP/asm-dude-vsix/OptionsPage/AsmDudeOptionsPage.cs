@@ -221,7 +221,7 @@ namespace AsmDude.OptionsPage
             MnemonicStore store = AsmDudeTools.Instance.Mnemonic_Store;
             ISet<Mnemonic> usedMnemonics = new HashSet<Mnemonic>();
             foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic))) {
-                if (store.getArch(mnemonic).Contains(arch)) {
+                if (store.GetArch(mnemonic).Contains(arch)) {
                     usedMnemonics.Add(mnemonic);
                 }
             }
@@ -235,7 +235,7 @@ namespace AsmDude.OptionsPage
                 sb.Append(", ");
             }
             sb.Length -= 2; // get rid of last comma.
-            return AsmSourceTools.linewrap(sb.ToString(), AsmDudePackage.maxNumberOfCharsInToolTips);
+            return AsmSourceTools.Linewrap(sb.ToString(), AsmDudePackage.maxNumberOfCharsInToolTips);
         }
 
         /// <summary>

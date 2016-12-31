@@ -68,7 +68,7 @@ namespace AsmDude
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
 
                 string line = containingLine.GetText().ToUpper();
-                IList<Tuple<int, int, bool>> pos = AsmSourceTools.splitIntoKeywordPos(line);
+                IList<Tuple<int, int, bool>> pos = AsmSourceTools.SplitIntoKeywordPos(line);
 
                 int offset = containingLine.Start.Position;
                 int nKeywords = pos.Count;

@@ -46,7 +46,7 @@ namespace unit_tests {
             {
                 const string line = "    db \"This string contains the word jmp inside of it\",0";
 
-                IList<Tuple<int, int, bool>> result = AsmSourceTools.splitIntoKeywordPos(line);
+                IList<Tuple<int, int, bool>> result = AsmSourceTools.SplitIntoKeywordPos(line);
                 for (int i = 0; i < result.Count; ++i) {
                     Console.WriteLine(line.Substring(result[i].Item1, result[i].Item2 - result[i].Item1));
                 }
@@ -58,7 +58,7 @@ namespace unit_tests {
             {
                 const string line = "	call		??$?6U?$char_traits@D@std@@@std@@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@0@AEAV10@PEBD@Z";
 
-                IList<Tuple<int, int, bool>> result = AsmSourceTools.splitIntoKeywordPos(line);
+                IList<Tuple<int, int, bool>> result = AsmSourceTools.SplitIntoKeywordPos(line);
                 for (int i = 0; i < result.Count; ++i) {
                     Console.WriteLine(line.Substring(result[i].Item1, result[i].Item2 - result[i].Item1));
                 }
@@ -75,42 +75,42 @@ namespace unit_tests {
             {
                 int begin = 0;
                 int end = 8;
-                string result = AsmTools.AsmSourceTools.getPreviousKeyword(begin, end, line);
+                string result = AsmTools.AsmSourceTools.GetPreviousKeyword(begin, end, line);
                 string msg = "line=\"" + line + "\"; result=\"" + result + "\"; begin=" + begin + "; end=" + end;
                 Assert.AreEqual("mov", result, msg);
             }
             {
                 int begin = 4;
                 int end = 8;
-                string result = AsmTools.AsmSourceTools.getPreviousKeyword(begin, end, line);
+                string result = AsmTools.AsmSourceTools.GetPreviousKeyword(begin, end, line);
                 string msg = "line=\"" + line + "\"; result=\"" + result + "\"; begin=" + begin + "; end=" + end;
                 Assert.AreEqual("mov", result, msg);
             }
             {
                 int begin = 5;
                 int end = 8;
-                string result = AsmTools.AsmSourceTools.getPreviousKeyword(begin, end, line);
+                string result = AsmTools.AsmSourceTools.GetPreviousKeyword(begin, end, line);
                 string msg = "line=\"" + line + "\"; result=\"" + result + "\"; begin=" + begin + "; end=" + end;
                 Assert.AreEqual("ov", result, msg);
             }
             {
                 int begin = 0;
                 int end = 7;
-                string result = AsmTools.AsmSourceTools.getPreviousKeyword(begin, end, line);
+                string result = AsmTools.AsmSourceTools.GetPreviousKeyword(begin, end, line);
                 string msg = "line=\"" + line + "\"; result=\"" + result + "\"; begin=" + begin + "; end=" + end;
                 Assert.AreEqual("mov", result, msg);
             }
             {
                 int begin = 0;
                 int end = 6;
-                string result = AsmTools.AsmSourceTools.getPreviousKeyword(begin, end, line);
+                string result = AsmTools.AsmSourceTools.GetPreviousKeyword(begin, end, line);
                 string msg = "line=\"" + line + "\"; result=\"" + result + "\"; begin=" + begin + "; end=" + end;
                 Assert.AreEqual("", result, msg);
             }
             {
                 int begin = 0;
                 int end = 11;
-                string result = AsmTools.AsmSourceTools.getPreviousKeyword(begin, end, line);
+                string result = AsmTools.AsmSourceTools.GetPreviousKeyword(begin, end, line);
                 string msg = "line=\"" + line + "\"; result=\"" + result + "\"; begin=" + begin + "; end=" + end;
                 Assert.AreEqual("rax", result, msg);
             }
@@ -122,7 +122,7 @@ namespace unit_tests {
             {
                 ulong i = 0ul;
                 string s = i + "";
-                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.toConstant(s);
+                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
                 Assert.IsTrue(t.Item1);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(8, t.Item3, s);
@@ -130,7 +130,7 @@ namespace unit_tests {
             {
                 ulong i = 0ul;
                 string s = "0x" + i.ToString("X");
-                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.toConstant(s);
+                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
                 Assert.IsTrue(t.Item1);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(8, t.Item3, s);
@@ -138,7 +138,7 @@ namespace unit_tests {
             {
                 ulong i = 0ul;
                 string s = i.ToString("X") + "h";
-                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.toConstant(s);
+                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
                 Assert.IsTrue(t.Item1);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(8, t.Item3, s);
@@ -146,7 +146,7 @@ namespace unit_tests {
             {
                 ulong i = 1ul;
                 string s = i.ToString("X") + "h";
-                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.toConstant(s);
+                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
                 Assert.IsTrue(t.Item1);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(8, t.Item3, s);
@@ -154,7 +154,7 @@ namespace unit_tests {
             {
                 ulong i = 1ul;
                 string s = "0x" + i.ToString("X"); ;
-                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.toConstant(s);
+                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
                 Assert.IsTrue(t.Item1);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(8, t.Item3, s);
@@ -162,7 +162,7 @@ namespace unit_tests {
             {
                 ulong i = 1ul;
                 string s = i.ToString("X") + "h";
-                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.toConstant(s);
+                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
                 Assert.IsTrue(t.Item1);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(8, t.Item3, s);
@@ -171,7 +171,7 @@ namespace unit_tests {
             {
                 ulong i = 0xFFul;
                 string s = "0x" + i.ToString("X"); ;
-                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.toConstant(s);
+                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
                 Assert.IsTrue(t.Item1);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(8, t.Item3, s);
@@ -179,7 +179,7 @@ namespace unit_tests {
             {
                 ulong i = 0xFFul;
                 string s = i.ToString("X") + "h";
-                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.toConstant(s);
+                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
                 Assert.IsTrue(t.Item1);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(8, t.Item3, s);
@@ -187,7 +187,7 @@ namespace unit_tests {
             {
                 ulong i = 0x100ul;
                 string s = "0x" + i.ToString("X");
-                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.toConstant(s);
+                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
                 Assert.IsTrue(t.Item1);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(16, t.Item3, s);
@@ -195,7 +195,7 @@ namespace unit_tests {
             {
                 ulong i = 0xFFFFul;
                 string s = "0x" + i.ToString("X");
-                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.toConstant(s);
+                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
                 Assert.IsTrue(t.Item1);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(16, t.Item3, s);
@@ -203,7 +203,7 @@ namespace unit_tests {
             {
                 ulong i = 0x10000ul;
                 string s = "0x" + i.ToString("X");
-                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.toConstant(s);
+                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
                 Assert.IsTrue(t.Item1);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(32, t.Item3, s);
@@ -211,7 +211,7 @@ namespace unit_tests {
             {
                 ulong i = 0xFFFFFFFFul;
                 string s = "0x" + i.ToString("X");
-                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.toConstant(s);
+                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
                 Assert.IsTrue(t.Item1);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(32, t.Item3, s);
@@ -219,7 +219,7 @@ namespace unit_tests {
             {
                 ulong i = 0x100000000ul;
                 string s = "0x" + i.ToString("X");
-                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.toConstant(s);
+                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
                 Assert.IsTrue(t.Item1);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(64, t.Item3, s);
@@ -227,7 +227,7 @@ namespace unit_tests {
             {
                 ulong i = 0xFFFFFFFFFFFFFFFFul;
                 string s = "0x" + i.ToString("X");
-                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.toConstant(s);
+                Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
                 Assert.IsTrue(t.Item1);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(64, t.Item3, s);
@@ -236,14 +236,14 @@ namespace unit_tests {
         [TestMethod]
         public void Test_AsmSourceTools_parseMnemonic() {
             foreach (Mnemonic x in Enum.GetValues(typeof(Mnemonic))) {
-                Assert.AreEqual(AsmTools.AsmSourceTools.parseMnemonic(x.ToString()), x,
+                Assert.AreEqual(AsmTools.AsmSourceTools.ParseMnemonic(x.ToString()), x,
                     "Parsing string " + x.ToString() + " does not yield the same enumeration.");
             }
         }
         [TestMethod]
         public void Test_AsmSourceTools_parseArch() {
             foreach (Arch x in Enum.GetValues(typeof(Arch))) {
-                Assert.AreEqual(AsmTools.ArchTools.parseArch(ArchTools.ToString(x)), x,
+                Assert.AreEqual(AsmTools.ArchTools.ParseArch(ArchTools.ToString(x)), x,
                     "Parsing string " + x.ToString() + " does not yield the same enumeration.");
             }
         }
@@ -290,7 +290,7 @@ namespace unit_tests {
 
                 {
                     string str = "[" + b + "]";
-                    var t = AsmSourceTools.parseMemOperand(str);
+                    var t = AsmSourceTools.ParseMemOperand(str);
                     Assert.AreEqual(true, t.Item1, str);
                     Assert.AreEqual(b, t.Item2, "base: " + str);
                     Assert.AreEqual(Rn.NOREG, t.Item3, "index: " + str);
@@ -303,7 +303,7 @@ namespace unit_tests {
 
                     {
                         string str = "[" + b + "+" + idx + "]";
-                        var t = AsmSourceTools.parseMemOperand(str);
+                        var t = AsmSourceTools.ParseMemOperand(str);
                         Assert.AreEqual(true, t.Item1, str);
                         Assert.AreEqual(b, t.Item2, "base: " + str);
                         Assert.AreEqual(idx, t.Item3, "index: " + str);
@@ -312,7 +312,7 @@ namespace unit_tests {
                     }
                     {
                         string str = "[" + idx + "+" + b + "]";
-                        var t = AsmSourceTools.parseMemOperand(str);
+                        var t = AsmSourceTools.ParseMemOperand(str);
                         Assert.AreEqual(true, t.Item1, str);
                         //idx and base can be interchanged
                         //Assert.AreEqual(b, t.Item2, "base: " + str); 
@@ -327,7 +327,7 @@ namespace unit_tests {
                         //Offset = Base + (Index * Scale) + Displacement
                         {
                             string str = "[" + b + "+" + idx + " * " + s + "]";
-                            var t = AsmSourceTools.parseMemOperand(str);
+                            var t = AsmSourceTools.ParseMemOperand(str);
                             Assert.AreEqual(true, t.Item1, str);
                             Assert.AreEqual(b, t.Item2, "base: " + str);
                             Assert.AreEqual(idx, t.Item3, "index: " + str);
@@ -336,7 +336,7 @@ namespace unit_tests {
                         }
                         {
                             string str = "[" + b + "+" + s + " * " + idx + "]";
-                            var t = AsmSourceTools.parseMemOperand(str);
+                            var t = AsmSourceTools.ParseMemOperand(str);
                             Assert.AreEqual(true, t.Item1, str);
                             Assert.AreEqual(b, t.Item2, "base: " + str);
                             Assert.AreEqual(idx, t.Item3, "index: " + str);
@@ -345,7 +345,7 @@ namespace unit_tests {
                         }
                         {
                             string str = "[" + s + " * " + idx + "+" + b + "]";
-                            var t = AsmSourceTools.parseMemOperand(str);
+                            var t = AsmSourceTools.ParseMemOperand(str);
                             Assert.AreEqual(true, t.Item1, str);
                             Assert.AreEqual(b, t.Item2, "base: " + str);
                             Assert.AreEqual(idx, t.Item3, "index: " + str);
@@ -354,7 +354,7 @@ namespace unit_tests {
                         }
                         {
                             string str = "[" + idx + " * " + s + "+" + b + "]";
-                            var t = AsmSourceTools.parseMemOperand(str);
+                            var t = AsmSourceTools.ParseMemOperand(str);
                             Assert.AreEqual(true, t.Item1, str);
                             Assert.AreEqual(b, t.Item2, "base: " + str);
                             Assert.AreEqual(idx, t.Item3, "index: " + str);
@@ -367,7 +367,7 @@ namespace unit_tests {
                             {
                                 {
                                     string str = "[" + b + "+" + idx + " * " + s + "+" + disp + "]";
-                                    var t = AsmSourceTools.parseMemOperand(str);
+                                    var t = AsmSourceTools.ParseMemOperand(str);
                                     Assert.AreEqual(true, t.Item1, str);
                                     Assert.AreEqual(b, t.Item2, "base: " + str);
                                     Assert.AreEqual(idx, t.Item3, "index: " + str);
@@ -376,7 +376,7 @@ namespace unit_tests {
                                 }
                                 {
                                     string str = "[" + b + "+" + s + " * " + idx + "+" + disp + "]";
-                                    var t = AsmSourceTools.parseMemOperand(str);
+                                    var t = AsmSourceTools.ParseMemOperand(str);
                                     Assert.AreEqual(true, t.Item1, str);
                                     Assert.AreEqual(b, t.Item2, "base: " + str);
                                     Assert.AreEqual(idx, t.Item3, "index: " + str);
@@ -385,7 +385,7 @@ namespace unit_tests {
                                 }
                                 {
                                     string str = "[" + s + " * " + idx + "+" + b + "+" + disp + "]";
-                                    var t = AsmSourceTools.parseMemOperand(str);
+                                    var t = AsmSourceTools.ParseMemOperand(str);
                                     Assert.AreEqual(true, t.Item1, str);
                                     Assert.AreEqual(b, t.Item2, "base: " + str);
                                     Assert.AreEqual(idx, t.Item3, "index: " + str);
@@ -394,7 +394,7 @@ namespace unit_tests {
                                 }
                                 {
                                     string str = "[" + idx + " * " + s + "+" + b + "+" + disp + "]";
-                                    var t = AsmSourceTools.parseMemOperand(str);
+                                    var t = AsmSourceTools.ParseMemOperand(str);
                                     Assert.AreEqual(true, t.Item1, str);
                                     Assert.AreEqual(b, t.Item2, "base: " + str);
                                     Assert.AreEqual(idx, t.Item3, "index: " + str);
@@ -405,7 +405,7 @@ namespace unit_tests {
                             {
                                 {
                                     string str = "[" + disp + "+" + b + "+" + idx + " * " + s + "]";
-                                    var t = AsmSourceTools.parseMemOperand(str);
+                                    var t = AsmSourceTools.ParseMemOperand(str);
                                     Assert.AreEqual(true, t.Item1, str);
                                     Assert.AreEqual(b, t.Item2, "base: " + str);
                                     Assert.AreEqual(idx, t.Item3, "index: " + str);
@@ -414,7 +414,7 @@ namespace unit_tests {
                                 }
                                 {
                                     string str = "[" + b + "+" + disp + "+" + idx + " * " + s + "]";
-                                    var t = AsmSourceTools.parseMemOperand(str);
+                                    var t = AsmSourceTools.ParseMemOperand(str);
                                     Assert.AreEqual(true, t.Item1, str);
                                     Assert.AreEqual(b, t.Item2, "base: " + str);
                                     Assert.AreEqual(idx, t.Item3, "index: " + str);
@@ -423,7 +423,7 @@ namespace unit_tests {
                                 }
                                 {
                                     string str = "[" + b + "+" + disp + "+" + s + " * " + idx + "]";
-                                    var t = AsmSourceTools.parseMemOperand(str);
+                                    var t = AsmSourceTools.ParseMemOperand(str);
                                     Assert.AreEqual(true, t.Item1, str);
                                     Assert.AreEqual(b, t.Item2, "base: " + str);
                                     Assert.AreEqual(idx, t.Item3, "index: " + str);
@@ -432,7 +432,7 @@ namespace unit_tests {
                                 }
                                 {
                                     string str = "[" + s + " * " + idx + "+" + disp + "+" + b + "]";
-                                    var t = AsmSourceTools.parseMemOperand(str);
+                                    var t = AsmSourceTools.ParseMemOperand(str);
                                     Assert.AreEqual(true, t.Item1, str);
                                     Assert.AreEqual(b, t.Item2, "base: " + str);
                                     Assert.AreEqual(idx, t.Item3, "index: " + str);
@@ -441,7 +441,7 @@ namespace unit_tests {
                                 }
                                 {
                                     string str = "[" + idx + " * " + s + "+" + disp +"+" + b + "]";
-                                    var t = AsmSourceTools.parseMemOperand(str);
+                                    var t = AsmSourceTools.ParseMemOperand(str);
                                     Assert.AreEqual(true, t.Item1, str);
                                     Assert.AreEqual(b, t.Item2, "base: " + str);
                                     Assert.AreEqual(idx, t.Item3, "index: " + str);

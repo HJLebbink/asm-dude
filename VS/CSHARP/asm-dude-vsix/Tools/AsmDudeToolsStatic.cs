@@ -303,7 +303,7 @@ namespace AsmDude.Tools {
                 int startLine = bufferPosition.Value.GetContainingLine().Start;
                 int currentPos = bufferPosition.Value.Position;
 
-                Tuple<int, int> t = AsmTools.AsmSourceTools.getKeywordPos(currentPos - startLine, line);
+                Tuple<int, int> t = AsmTools.AsmSourceTools.GetKeywordPos(currentPos - startLine, line);
 
                 int beginPos = t.Item1;
                 int endPos = t.Item2;
@@ -323,7 +323,7 @@ namespace AsmDude.Tools {
                 int startLine = bufferPosition.Value.GetContainingLine().Start;
                 int currentPos = bufferPosition.Value.Position;
 
-                Tuple<int, int> t = AsmTools.AsmSourceTools.getKeywordPos(currentPos - startLine, line);
+                Tuple<int, int> t = AsmTools.AsmSourceTools.GetKeywordPos(currentPos - startLine, line);
                 //AsmDudeToolsStatic.Output(string.Format("INFO: getKeywordPos: beginPos={0}; endPos={1}.", t.Item1, t.Item2));
 
                 int beginPos = t.Item1 + startLine;
@@ -354,7 +354,7 @@ namespace AsmDude.Tools {
             int beginLine = begin.GetContainingLine().Start;
             int beginPos = begin.Position - beginLine;
             int endPos = end.Position - beginLine;
-            return AsmSourceTools.getPreviousKeyword(beginPos, endPos, begin.GetContainingLine().GetText());
+            return AsmSourceTools.GetPreviousKeyword(beginPos, endPos, begin.GetContainingLine().GetText());
         }
 
         public static bool Is_All_Upper(string input) {

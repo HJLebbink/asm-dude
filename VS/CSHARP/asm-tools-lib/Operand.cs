@@ -32,19 +32,19 @@ namespace AsmTools {
 
             this._str = token;
 
-            Tuple<bool, Rn, int> t0 = RegisterTools.toRn(token2);
+            Tuple<bool, Rn, int> t0 = RegisterTools.ToRn(token2);
             if (t0.Item1) {
                 this._type = Ot.reg;
                 this._rn = t0.Item2;
                 this._nBits = t0.Item3;
             } else {
-                Tuple<bool, ulong, int> t1 = AsmSourceTools.toConstant(token2);
+                Tuple<bool, ulong, int> t1 = AsmSourceTools.ToConstant(token2);
                 if (t1.Item1) {
                     this._type = Ot.imm;
                     this._imm = t1.Item2;
                     this._nBits = t1.Item3;
                 } else {
-                    Tuple<bool, Rn, Rn, int, long, int> t2 = AsmSourceTools.parseMemOperand(token2);
+                    Tuple<bool, Rn, Rn, int, long, int> t2 = AsmSourceTools.ParseMemOperand(token2);
                     if (t2.Item1) {
                         this._type = Ot.mem;
                         this._mem = new Tuple<Rn, Rn, int, long>(t2.Item2, t2.Item3, t2.Item4, t2.Item5);

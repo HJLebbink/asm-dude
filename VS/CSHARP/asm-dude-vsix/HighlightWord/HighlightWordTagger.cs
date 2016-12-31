@@ -159,9 +159,9 @@ namespace AsmDude.HighlightWord
 
                     // Find the new spans
                     FindData findData;
-                    if (AsmTools.RegisterTools.isRegister(this.NewWord)) {
+                    if (AsmTools.RegisterTools.IsRegister(this.NewWord)) {
                         //Debug.WriteLine(string.Format("INFO: {0}:SynchronousUpdate. Register={1}", this.ToString(), currentWordStr));
-                        findData = new FindData(AsmTools.RegisterTools.getRelatedRegister(this.NewWord), s)
+                        findData = new FindData(AsmTools.RegisterTools.GetRelatedRegister(this.NewWord), s)
                         {
                             FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions
                         };

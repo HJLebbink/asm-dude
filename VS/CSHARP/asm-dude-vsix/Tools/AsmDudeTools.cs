@@ -93,8 +93,8 @@ namespace AsmDude {
                 IDictionary<string, string> signaturesNasm = new Dictionary<string, string>();
 
                 foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic))) {
-                    IList<AsmSignatureElement> intel = this._mnemonicStore.getSignatures(mnemonic);
-                    IList<AsmSignatureElement> nasm = store2.getSignatures(mnemonic);
+                    IList<AsmSignatureElement> intel = this._mnemonicStore.GetSignatures(mnemonic);
+                    IList<AsmSignatureElement> nasm = store2.GetSignatures(mnemonic);
 
                     signaturesIntel.Clear();
                     signaturesNasm.Clear();
@@ -158,7 +158,7 @@ namespace AsmDude {
                     int counter = 0;
                     ISet<Mnemonic> usedMnemonics = new HashSet<Mnemonic>();
                     foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic))) {
-                        if (this.Mnemonic_Store.getArch(mnemonic).Contains(arch)) {
+                        if (this.Mnemonic_Store.GetArch(mnemonic).Contains(arch)) {
                             //AsmDudeToolsStatic.Output("INFO: AsmDudeTools constructor: arch="+arch+"; mnemonic=" + mnemonic);
                             counter++;
                             usedMnemonics.Add(mnemonic);
@@ -179,7 +179,7 @@ namespace AsmDude {
                         string description = this._description[keyword];
                         string reference = Get_Url(keyword);
 
-                        this.Mnemonic_Store.setHtmlRef(mnemonic, reference);
+                        this.Mnemonic_Store.SetHtmlRef(mnemonic, reference);
 
                     }
                 }
@@ -190,10 +190,10 @@ namespace AsmDude {
                 ISet<string> archs = new HashSet<string>();
 
                 foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic))) {
-                    if (!this._mnemonicStore.hasElement(mnemonic)) {
+                    if (!this._mnemonicStore.HasElement(mnemonic)) {
                         AsmDudeToolsStatic.Output("INFO: AsmDudeTools constructor: mnemonic " + mnemonic + " is not present");
                     }
-                    foreach (AsmSignatureElement e in this._mnemonicStore.getSignatures(mnemonic)) {
+                    foreach (AsmSignatureElement e in this._mnemonicStore.GetSignatures(mnemonic)) {
                         foreach (string s in e.Arch_Str.Split(',')) {
                             archs.Add(s.Trim());
                         }
@@ -223,9 +223,9 @@ namespace AsmDude {
 
         public AsmTokenType Get_Token_Type(string keyword) {
             string keyword2 = keyword.ToUpper();
-            Mnemonic mnemonic = AsmSourceTools.parseMnemonic(keyword2);
+            Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword2);
             if (mnemonic != Mnemonic.UNKNOWN) {
-                if (AsmSourceTools.isJump(mnemonic)) {
+                if (AsmSourceTools.IsJump(mnemonic)) {
                     return AsmTokenType.Jump;
                 }
                 return AsmTokenType.Mnemonic;
@@ -251,9 +251,9 @@ namespace AsmDude {
             // no need to pre-process this information.
             try {
                 string keywordUpper = keyword.ToUpper();
-                Mnemonic mnemonic = AsmSourceTools.parseMnemonic(keyword);
+                Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword);
                 if (mnemonic != Mnemonic.UNKNOWN) {
-                    string url = this.Mnemonic_Store.getHtmlRef(mnemonic);
+                    string url = this.Mnemonic_Store.GetHtmlRef(mnemonic);
                     //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:getUrl: keyword {1}; url {2}.", this.ToString(), keyword, url));
                     return url;
                 }
@@ -344,7 +344,7 @@ namespace AsmDude {
                 if (archAttribute == null) {
                     return Arch.NONE;
                 } else {
-                    return AsmTools.ArchTools.parseArch(archAttribute.Value.ToUpper());
+                    return AsmTools.ArchTools.ParseArch(archAttribute.Value.ToUpper());
                 }
             } catch (Exception) {
                 return Arch.NONE;

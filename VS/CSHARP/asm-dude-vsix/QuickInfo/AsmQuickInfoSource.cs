@@ -120,7 +120,7 @@ namespace AsmDude.QuickInfo
                             string descr = this._asmDudeTools.Get_Description(keywordUpper);
                             if (descr.Length > 0)
                             {
-                                description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
+                                description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                             }
                             break;
                         }
@@ -133,7 +133,7 @@ namespace AsmDude.QuickInfo
                             string descr = this._asmDudeTools.Get_Description(keywordUpper);
                             if (descr.Length > 0)
                             {
-                                description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
+                                description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                             }
                             break;
                         }
@@ -146,7 +146,7 @@ namespace AsmDude.QuickInfo
                             string descr = this._asmDudeTools.Get_Description(keywordUpper);
                             if (descr.Length > 0)
                             {
-                                description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
+                                description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                             }
                             break;
                         }
@@ -157,13 +157,13 @@ namespace AsmDude.QuickInfo
                             description.Inlines.Add(Make_Run1("Mnemonic "));
                             description.Inlines.Add(Make_Run2(keyword, Settings.Default.SyntaxHighlighting_Opcode));
 
-                            Mnemonic mmemonic = AsmSourceTools.parseMnemonic(keywordUpper);
+                            Mnemonic mmemonic = AsmSourceTools.ParseMnemonic(keywordUpper);
 
                             string archStr = ":" + ArchTools.ToString(this._asmDudeTools.Mnemonic_Store.GetArch(mmemonic)) +" ";
                             string descr = this._asmDudeTools.Mnemonic_Store.GetDescription(mmemonic);
                             if (descr.Length > 0)
                             {
-                                description.Inlines.Add(new Run(AsmSourceTools.linewrap(archStr + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
+                                description.Inlines.Add(new Run(AsmSourceTools.Linewrap(archStr + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                             }
                             break;
                         }
@@ -178,7 +178,7 @@ namespace AsmDude.QuickInfo
                             string descr = Get_Label_Description(full_Qualified_Label);
                             if (descr.Length > 0)
                             {
-                                description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
+                                description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                             }
                             break;
                         }
@@ -193,7 +193,7 @@ namespace AsmDude.QuickInfo
                             string descr = Get_Label_Def_Description(full_Qualified_Label);
                             if (descr.Length > 0)
                             {
-                                description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
+                                description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                             }
                             break;
                         }

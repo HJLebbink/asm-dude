@@ -62,7 +62,7 @@ namespace AsmDude.SignatureHelp {
                         string lineStr = line.GetText();
 
                         int pos = point.Position - line.Start;
-                        if (!AsmSourceTools.isInRemark(pos, lineStr)) { //check if current position is in a remark; if we are in a remark, no signature help
+                        if (!AsmSourceTools.IsInRemark(pos, lineStr)) { //check if current position is in a remark; if we are in a remark, no signature help
 
                             if ((pguidCmdGroup == VSConstants.VSStd2K) && (nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR)) {
                                 char typedChar = GetTypeChar(pvaIn);
@@ -72,7 +72,7 @@ namespace AsmDude.SignatureHelp {
                                     if (t.Item2 != Mnemonic.UNKNOWN) {
                                         this._session = this._broker.TriggerSignatureHelp(this._textView);
                                     }
-                                } else if (AsmSourceTools.isRemarkChar(typedChar) && (this._session != null)) {
+                                } else if (AsmSourceTools.IsRemarkChar(typedChar) && (this._session != null)) {
                                     this._session.Dismiss();
                                     this._session = null;
                                 }

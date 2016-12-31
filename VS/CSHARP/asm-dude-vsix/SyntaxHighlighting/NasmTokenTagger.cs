@@ -84,7 +84,7 @@ namespace AsmDude
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
 
                 string line = containingLine.GetText().ToUpper();
-                IList<Tuple<int, int, bool>> pos = AsmSourceTools.splitIntoKeywordPos(line);
+                IList<Tuple<int, int, bool>> pos = AsmSourceTools.SplitIntoKeywordPos(line);
 
                 int offset = containingLine.Start.Position;
                 int nKeywords = pos.Count;
@@ -107,7 +107,7 @@ namespace AsmDude
                     }
 
                     // keyword starts with a remark char
-                    if (AsmSourceTools.isRemarkChar(asmToken[0]))
+                    if (AsmSourceTools.IsRemarkChar(asmToken[0]))
                     {
                         yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._remark);
                         continue;
@@ -151,7 +151,7 @@ namespace AsmDude
                                 }
                                 default:
                                 {
-                                    if (RegisterTools.isRegister(asmToken2))
+                                    if (RegisterTools.IsRegister(asmToken2))
                                     {
                                         yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._register);
                                     } else
@@ -168,7 +168,7 @@ namespace AsmDude
                         }
                         case AsmTokenType.UNKNOWN: // asmToken is not a known keyword, check if it is numerical
                         {
-                            if (AsmTools.AsmSourceTools.isConstant(asmToken))
+                            if (AsmTools.AsmSourceTools.IsConstant(asmToken))
                             {
                                 yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._constant);
 
@@ -320,7 +320,7 @@ namespace AsmDude
             for (int i = lineNumber; i >= 0; --i)
             {
                 string line = this._buffer.CurrentSnapshot.GetLineFromLineNumber(i).GetText();
-                Tuple<int, int, bool> pos = AsmSourceTools.getLabel(line);
+                Tuple<int, int, bool> pos = AsmSourceTools.GetLabel(line);
                 if (pos.Item3)
                 {
                     string labelString = NasmTokenTagger.Keyword(pos, line);

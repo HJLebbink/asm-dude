@@ -431,7 +431,7 @@ namespace AsmDude.CodeFolding
                             } else
                             {
                                 #region Search for multi-line Remark
-                                if (AsmSourceTools.isRemarkOnly(lineContent))
+                                if (AsmSourceTools.IsRemarkOnly(lineContent))
                                 {
 
                                     int lineNumber2 = -1;
@@ -441,7 +441,7 @@ namespace AsmDude.CodeFolding
                                     {
                                         line = enumerator.Current;
                                         string lineContent3 = line.GetText();
-                                        if (AsmSourceTools.isRemarkOnly(lineContent3) &&
+                                        if (AsmSourceTools.IsRemarkOnly(lineContent3) &&
                                                 (Is_Start_Directive_Keyword(lineContent3).Item1 == -1) &&
                                                 (Is_End_Directive_Keyword(lineContent3) == -1))
                                         {
@@ -456,7 +456,7 @@ namespace AsmDude.CodeFolding
                                     }
                                     if (lineNumber2 != -1)
                                     {
-                                        int regionStartPos = AsmSourceTools.getRemarkCharPosition(lineContent);
+                                        int regionStartPos = AsmSourceTools.GetRemarkCharPosition(lineContent);
                                         Add_Start_Region(lineContent, regionStartPos, lineNumber, regionStartPos, ref currentRegion, newRegions);
                                         //this.updateChangedSpans(newSnapshot, newRegions);
                                         Add_End_Region(lineContent2, 0, lineNumber2, ref currentRegion, newRegions);
