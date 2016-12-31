@@ -67,7 +67,7 @@ namespace AsmDude.QuickInfo
         /// </summary>
         public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan)
         {
-            //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoSource:AugmentQuickInfoSession");
+            //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoSource:AugmentQuickInfoSession");
             applicableToSpan = null;
             try
             {
@@ -157,10 +157,13 @@ namespace AsmDude.QuickInfo
                             description.Inlines.Add(Make_Run1("Mnemonic "));
                             description.Inlines.Add(Make_Run2(keyword, Settings.Default.SyntaxHighlighting_Opcode));
 
-                            string descr = this._asmDudeTools.Mnemonic_Store.getDescription(AsmSourceTools.parseMnemonic(keywordUpper));
+                            Mnemonic mmemonic = AsmSourceTools.parseMnemonic(keywordUpper);
+
+                            string archStr = ":" + ArchTools.ToString(this._asmDudeTools.Mnemonic_Store.GetArch(mmemonic)) +" ";
+                            string descr = this._asmDudeTools.Mnemonic_Store.GetDescription(mmemonic);
                             if (descr.Length > 0)
                             {
-                                description.Inlines.Add(new Run(AsmSourceTools.linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
+                                description.Inlines.Add(new Run(AsmSourceTools.linewrap(archStr + descr, AsmDudePackage.maxNumberOfCharsInToolTips)));
                             }
                             break;
                         }
