@@ -73,33 +73,6 @@
 
 		<misc name="STRICT"/>
 
-		<misc name="DB">
-			<description>Byte (1 byte, 8 bit). DB is a synonym of BYTE</description>
-		</misc>
-		<misc name="DW">
-			<description>Word, Half Precision (2 bytes, 16 bit). DW is a synonym of WORD.</description>
-		</misc>
-		<misc name="DD">
-			<description>Double Word, Single Precision (4 bytes, 32 bit). DD is a synonym of DWORD.</description>
-		</misc>
-		<misc name="DF">
-			<description>(6 bytes, 48 bit). DF is a synonym of FWORD.</description>
-		</misc>
-		<misc name="DQ">
-			<description>Quad word, Double Precision (8 bytes, 64 bit). DQ is a synonym of QWORD.</description>
-		</misc>
-		<misc name="DT">
-			<description>Extended (Double) Precision (10 bytes, 80 bit). DT is a synonym of TBYTE.</description>
-		</misc>
-		<misc name="DO">
-			<description>IEEE 754-2008 Quad Precision (16 bytes, 128 bit), DO is a synonym of OWORD.</description>
-		</misc>
-		<misc name="DY">
-			<description>(32 bytes, 256 bit). DY is a synonym of YWORD.</description>
-		</misc>
-		<misc name="DZ">
-			<description>(64 bytes, 512 bit). DZ is a synonym of ZWORD.</description>
-		</misc>
 
 		<misc name="Z" arch="AVX512VL">
 			<description>Zero Mask {Z}</description>
@@ -521,6 +494,59 @@
 			<description>MASM: Declares a union of one or more data types. The fielddeclarations must be valid data definitions. Omit the ENDS name label on nested UNION definitions.</description>
 		</directive>
 
+    <directive name="DB" tool="MASM,NASM">
+			<description>Pseudo-Instruction declaring initialized data. Byte (1 byte, 8 bit). DB is a synonym of BYTE</description>
+		</directive>
+		<directive name="DW" tool="MASM,NASM">
+			<description>Pseudo-Instruction declaring initialized data. Word, Half Precision (2 bytes, 16 bit). DW is a synonym of WORD.</description>
+		</directive>
+		<directive name="DD" tool="MASM,NASM">
+			<description>Pseudo-Instruction declaring initialized data. Double Word, Single Precision (4 bytes, 32 bit). DD is a synonym of DWORD.</description>
+		</directive>
+		<directive name="DF" tool="MASM">
+			<description>Pseudo-Instruction declaring initialized data. (6 bytes, 48 bit). DF is a synonym of FWORD.</description>
+		</directive>
+		<directive name="DQ" tool="MASM,NASM">
+			<description>Pseudo-Instruction declaring initialized data. Quad word, Double Precision (8 bytes, 64 bit). DQ is a synonym of QWORD.</description>
+		</directive>
+		<directive name="DT" tool="MASM,NASM">
+			<description>Pseudo-Instruction declaring initialized data. Extended (Double) Precision (10 bytes, 80 bit). DT is a synonym of TBYTE.</description>
+		</directive>
+		<directive name="DO" tool="MASM,NASM">
+			<description>Pseudo-Instruction declaring initialized data. IEEE 754-2008 Quad Precision (16 bytes, 128 bit), DO is a synonym of OWORD.</description>
+		</directive>
+		<directive name="DY" tool="MASM,NASM">
+			<description>Pseudo-Instruction declaring initialized data. (32 bytes, 256 bit). DY is a synonym of YWORD.</description>
+		</directive>
+		<directive name="DZ" tool="MASM,NASM">
+			<description>Pseudo-Instruction declaring initialized data. (64 bytes, 512 bit). DZ is a synonym of ZWORD.</description>
+		</directive>
+
+    <directive name="RESB" tool="MASM,NASM">
+			<description>Pseudo-Instruction declaring uninitialized data. Byte (1 byte, 8 bit). RESB is a synonym of BYTE</description>
+		</directive>
+		<directive name="RESW" tool="MASM,NASM">
+			<description>Pseudo-Instruction declaring uninitialized data. Word, Half Precision (2 bytes, 16 bit). RESW is a synonym of WORD.</description>
+		</directive>
+		<directive name="RESD" tool="MASM,NASM">
+			<description>Pseudo-Instruction declaring uninitialized data. Double Word, Single Precision (4 bytes, 32 bit). RESD is a synonym of DWORD.</description>
+		</directive>
+		<directive name="RESQ" tool="MASM,NASM">
+			<description>Pseudo-Instruction declaring uninitialized data. Quad word, Double Precision (8 bytes, 64 bit). RESQ is a synonym of QWORD.</description>
+		</directive>
+		<directive name="REST" tool="MASM,NASM">
+			<description>Pseudo-Instruction declaring uninitialized data. Extended (Double) Precision (10 bytes, 80 bit). REST is a synonym of TBYTE.</description>
+		</directive>
+		<directive name="RESO" tool="MASM,NASM">
+			<description>Pseudo-Instruction declaring uninitialized data. IEEE 754-2008 Quad Precision (16 bytes, 128 bit), RESO is a synonym of OWORD.</description>
+		</directive>
+		<directive name="RESY" tool="MASM,NASM">
+			<description>Pseudo-Instruction declaring uninitialized data. (32 bytes, 256 bit). RESY is a synonym of YWORD.</description>
+		</directive>
+		<directive name="RESZ" tool="MASM,NASM">
+			<description>Pseudo-Instruction declaring uninitialized data. (64 bytes, 512 bit). RESZ is a synonym of ZWORD.</description>
+		</directive>
+
 		<directive name="BITS" tool="NASM"/>
     <directive name="%DEFINE" tool="NASM">
       <description>NASM: Define Single-line macros that is resolved at the time the embedded macro is expanded.</description>
@@ -734,10 +760,26 @@
     <directive name="IEND" tool="NASM">
       <description>NASM:</description>
     </directive>
-
-
-
-
+    <directive name="ALIGN" tool="NASM">
+      <description>NASM: The ALIGN and ALIGNB macros provides a convenient way to align code or data on a word, longword, paragraph or other boundary. Normally, you can just use ALIGN in code and data sections and ALIGNB in BSS sections, and never need the second argument except for special purposes.</description>
+    </directive>
+    <directive name="ALIGNB" tool="NASM">
+      <description>NASM: The ALIGN and ALIGNB macros provides a convenient way to align code or data on a word, longword, paragraph or other boundary. Normally, you can just use ALIGN in code and data sections and ALIGNB in BSS sections, and never need the second argument except for special purposes.</description>
+    </directive>
+    <directive name="SECTALIGN" tool="NASM">
+      <description>NASM: The SECTALIGN macros provides a way to modify alignment attribute of output file section.</description>
+    </directive>
+    <directive name="INCBIN" tool="NASM">
+      <description>NASM: Includes a binary file verbatim into the output file.</description>
+    </directive>
+    <directive name="EQU" tool="MASM,NASM">
+      <description>EQU defines a symbol to a given constant value: when EQU is used, the source line must contain a label. The action of EQU is to define the given label name to the value of its (only) operand. This definition is absolute, and cannot change later.</description>
+    </directive>
+    <directive name="TIMES" tool="MASM,NASM">
+      <description>The TIMES prefix causes the instruction to be assembled multiple times.</description>
+    </directive>
+    
+    
     <directive name="READ"/>
 
 		<directive name=".186"/>

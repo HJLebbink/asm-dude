@@ -20,7 +20,7 @@ global_label2:
 #endregion
 
 
-struc   mytype 
+struc mytype 
   mt_long:      resd    1 
   mt_word:      resw    1 
   mt_byte:      resb    1 
@@ -42,6 +42,45 @@ mystruc:
         at mt_str,  db      'hello, world', 13, 10, 0 
     iend
 
+
+#region Numeric Constants
+#######################################################
+	mov     ax,200          ; decimal 
+	mov     ax,0200         ; still decimal 
+	mov     ax,0200d        ; explicitly decimal 
+	mov     ax,0d200        ; also decimal 
+	mov     ax,0c8h         ; hex 
+	mov     ax,$0c8         ; hex again: the 0 is required 
+	mov     ax,0xc8         ; hex yet again 
+	mov     ax,0hc8         ; still hex 
+	mov     ax,310q         ; octal 
+	mov     ax,310o         ; octal again 
+	mov     ax,0o310        ; octal yet again 
+	mov     ax,0q310        ; octal yet again 
+	mov     ax,11001000b    ; binary 
+	mov     ax,1100_1000b   ; same binary constant 
+	mov     ax,1100_1000y   ; same binary constant once more 
+	mov     ax,0b1100_1000  ; same binary constant yet again 
+	mov     ax,0y1100_1000  ; same binary constant yet again
+#endregion
+
+#region Floating-point Constants
+#######################################################
+	db    -0.2                    ; "Quarter precision" 
+	dw    -0.5                    ; IEEE 754r/SSE5 half precision 
+	dd    1.2                     ; an easy one 
+	dd    1.222_222_222           ; underscores are permitted 
+	dd    0x1p+2                  ; 1.0x2^2 = 4.0 
+	dq    0x1p+32                 ; 1.0x2^32 = 4 294 967 296.0 
+	dq    1.e10                   ; 10 000 000 000.0 
+	dq    1.e+10                  ; synonymous with 1.e10 
+	dq    1.e-10                  ; 0.000 000 000 1 
+	dt    3.141592653589793238462 ; pi 
+	do    1.e+4000                ; IEEE 754r quad precision
+
+	mov    rax,__float64__(3.141592653589793238462)
+	mov    rax,0x400921fb54442d18
+#endregion
 
 
 #region Nasm Examples
