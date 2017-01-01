@@ -89,7 +89,7 @@ namespace AsmTools {
         /// <summary>
         /// return label definition position
         /// </summary>
-        public static Tuple<int, int, bool> GetLabel(string line)
+        public static Tuple<int, int, bool> Get_First_Keyword(string line)
         {
             bool started = false;
             int keywordBegin = 0;
@@ -112,10 +112,10 @@ namespace AsmTools {
                 {
                     if (started)
                     {
-                        return new Tuple<int, int, bool>(0, 0, false);
+                        return new Tuple<int, int, bool>(keywordBegin, i, false);
                     } else
                     {
-                        keywordBegin = i;
+                        keywordBegin = i + 1;
                     }
                 } else
                 {
