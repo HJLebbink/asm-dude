@@ -93,24 +93,22 @@ namespace AsmDude
                 {
                     string asmToken = Keyword(pos[k], line);
 
-                    // keyword k is a label definition
-                    if (pos[k].Item3)
-                    {
-                        SnapshotSpan labelDefSpan = NasmTokenTagger.New_Span(pos[k], offset, curSpan);
-
-                        //AsmDudeToolsStatic.Output_INFO("NasmTokenTagger:GetTags: found label " +asmToken);
-                        AsmTokenTag asmTokenTag = (asmToken.StartsWith("."))
-                            ? new AsmTokenTag(AsmTokenType.LabelDef, get_Last_Non_Local_Label(containingLine.LineNumber))
-                            : this._labelDef;
-                        yield return new TagSpan<AsmTokenTag>(labelDefSpan, asmTokenTag);
-                        continue;
-                    }
-
                     // keyword starts with a remark char
                     if (AsmSourceTools.IsRemarkChar(asmToken[0]))
                     {
                         yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._remark);
                         continue;
+                    }
+
+                    // keyword k is a label definition
+                    if (pos[k].Item3)
+                    {
+                        //AsmDudeToolsStatic.Output_INFO("NasmTokenTagger:GetTags: found label " +asmToken);
+                        if (IsProperLabelDef(asmToken, containingLine.LineNumber, out AsmTokenTag asmTokenTag))
+                        {
+                            yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), asmTokenTag);
+                            continue;
+                        }
                     }
 
                     AsmTokenType keywordType = this._asmDudeTools.Get_Token_Type(asmToken);
@@ -142,10 +140,10 @@ namespace AsmDude
                                         yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._misc);
                                     } else
                                     {
-                                        AsmTokenTag asmTokenTag = (asmToken3[0].Equals('.'))
-                                            ? new AsmTokenTag(AsmTokenType.Label, get_Last_Non_Local_Label(containingLine.LineNumber))
-                                            : this._label;
-                                        yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), asmTokenTag);
+                                        if (IsProperLabel(asmToken3, containingLine.LineNumber, out AsmTokenTag asmTokenTag))
+                                        {
+                                            yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), asmTokenTag);
+                                        }
                                     }
                                     break;
                                 }
@@ -156,10 +154,10 @@ namespace AsmDude
                                         yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._register);
                                     } else
                                     {
-                                        AsmTokenTag asmTokenTag = (asmToken2[0].Equals('.'))
-                                            ? new AsmTokenTag(AsmTokenType.Label, get_Last_Non_Local_Label(containingLine.LineNumber))
-                                            : this._label;
-                                        yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), asmTokenTag);
+                                        if (IsProperLabel(asmToken2, containingLine.LineNumber, out AsmTokenTag asmTokenTag))
+                                        {
+                                            yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), asmTokenTag);
+                                        }
                                     }
                                     break;
                                 }
@@ -189,14 +187,17 @@ namespace AsmDude
                                     switch (nextKeyword)
                                     {
                                         case "LABEL":
-                                        yield return new TagSpan<AsmTokenTag>(New_Span(pos[k - 1], offset, curSpan), this._labelDef);
-                                        yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._directive);
-                                        isUnknown = false;
-                                        break;
-
+                                        {
+                                            yield return new TagSpan<AsmTokenTag>(New_Span(pos[k - 1], offset, curSpan), this._labelDef);
+                                            yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._directive);
+                                            isUnknown = false;
+                                            break;
+                                        }
                                         default:
-                                        k--;
-                                        break;
+                                        {
+                                            k--;
+                                            break;
+                                        }
                                     }
                                 }
 
@@ -207,13 +208,16 @@ namespace AsmDude
                                     switch (previousKeyword)
                                     {
                                         case "ALIAS":
-                                        yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._labelDef);
-                                        isUnknown = false;
-                                        break;
+                                        {
+                                            yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._labelDef);
+                                            isUnknown = false;
+                                            break;
+                                        }
                                         default:
-                                        break;
+                                        {
+                                            break;
+                                        }
                                     }
-
                                 }
 
                                 if (isUnknown)
@@ -229,10 +233,14 @@ namespace AsmDude
                             {
                                 case AssemblerEnum.NASM:
                                 case AssemblerEnum.UNKNOWN:
-                                yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._directive);
-                                break;
+                                {
+                                    yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._directive);
+                                    break;
+                                }
                                 default:
-                                break;
+                                {
+                                    break;
+                                }
                             }
                             break;
                         }
@@ -313,27 +321,104 @@ namespace AsmDude
         }
         #endregion Public Static Methods
 
-        private string get_Last_Non_Local_Label(int lineNumber)
-        {
-            //AsmDudeToolsStatic.Output_INFO("NasmTokenTagger:get_Last_Non_Local_Label: lineNumber=" + lineNumber);
+        #region Private Member Methods
 
-            for (int i = lineNumber; i >= 0; --i)
+        private bool IsProperLabelDef(string asmToken, int lineNumber, out AsmTokenTag labelDefSpan)
+        {
+            labelDefSpan = null;
+            if (!IsExecutableCode(lineNumber)) return false;
+
+            if (asmToken.StartsWith("."))
+            {
+                if (Get_Last_Non_Local_Label(lineNumber, out string lastNonLocalLabel))
+                {
+                    labelDefSpan = new AsmTokenTag(AsmTokenType.LabelDef, lastNonLocalLabel);
+                    return true;
+                }
+            } else
+            {
+                labelDefSpan = this._labelDef;
+                return true;
+            }
+            return false;
+        }
+
+        private bool IsProperLabel(string asmToken, int lineNumber, out AsmTokenTag labelSpan)
+        {
+            labelSpan = null;
+
+            //AsmDudeToolsStatic.Output_INFO("NasmTokenTagger:GetTags: found label " +asmToken);
+            if (asmToken.StartsWith("."))
+            {
+                if (Get_Last_Non_Local_Label(lineNumber, out string lastNonLocalLabel))
+                {
+                    labelSpan = new AsmTokenTag(AsmTokenType.Label, lastNonLocalLabel);
+                    return true;
+                }
+            } else
+            {
+                labelSpan = this._label;
+                return true;
+            }
+            labelSpan = null;
+            return false;
+        }
+
+        private bool IsExecutableCode(int lineNumber)
+        {
+            for (int i = lineNumber - 1; i >= 0; --i)
             {
                 string line = this._buffer.CurrentSnapshot.GetLineFromLineNumber(i).GetText();
-                Tuple<int, int, bool> pos = AsmSourceTools.GetLabel(line);
+                IList<Tuple<int, int, bool>> pos = AsmSourceTools.SplitIntoKeywordPos(line);
+                if ((pos.Count > 0) && !pos[0].Item3)
+                {
+                    string keywordString = NasmTokenTagger.Keyword(pos[0], line).ToUpper();
+                    if (AsmSourceTools.ParseMnemonic(keywordString) != Mnemonic.UNKNOWN)
+                    {
+                        return true;
+                    }
+                    switch (keywordString)
+                    {
+                        case "STRUC": return false;
+                        case "ENDSTRUC": return true;
+                    }
+                }
+                if ((pos.Count > 1) && !pos[1].Item3)
+                {
+                    string keywordString = NasmTokenTagger.Keyword(pos[1], line).ToUpper();
+                    if (AsmSourceTools.ParseMnemonic(keywordString) != Mnemonic.UNKNOWN)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return true;
+        }
+
+        private bool Get_Last_Non_Local_Label(int lineNumber, out string lastNonLocalLabel)
+        {
+            //AsmDudeToolsStatic.Output_INFO("NasmTokenTagger:get_Last_Non_Local_Label: lineNumber=" + lineNumber);
+            lastNonLocalLabel = null;
+
+            for (int i = lineNumber-1; i >= 0; --i)
+            {
+                string line = this._buffer.CurrentSnapshot.GetLineFromLineNumber(i).GetText();
+                Tuple<int, int, bool> pos = AsmSourceTools.Get_First_Keyword(line);
+                string keywordString = NasmTokenTagger.Keyword(pos, line);
+
                 if (pos.Item3)
                 {
-                    string labelString = NasmTokenTagger.Keyword(pos, line);
-                    //AsmDudeToolsStatic.Output_INFO("NasmTokenTagger:get_Last_Non_Local_Label: found label " + labelString + " at lineNumber "+i +"; beginPos="+pos.Item1 +"; endPos="+pos.Item2);
-
-                    if (!labelString[0].Equals('.'))
+                    if (!keywordString[0].Equals('.'))
                     {
-                        return labelString;
+                        AsmDudeToolsStatic.Output_INFO("NasmTokenTagger:Get_Last_Non_Local_Label: found label \"" + keywordString + "\" at lineNumber " + i + "; beginPos=" + pos.Item1 + "; endPos=" + pos.Item2);
+                        lastNonLocalLabel = keywordString;
+                        return true;
                     }
                 }
             }
             //AsmDudeToolsStatic.Output_INFO("NasmTokenTagger:get_Last_Non_Local_Label: could not find regular label before lineNumber " + lineNumber);
-            return "";
+            return false;
         }
+        #endregion
     }
 }
