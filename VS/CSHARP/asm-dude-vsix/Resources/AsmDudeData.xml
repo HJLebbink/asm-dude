@@ -674,10 +674,10 @@
       <description>NASM: The %arg directive is used to simplify the handling of parameters passed on the stack.</description>
     </directive>
     <directive name="%STACKSIZE" tool="NASM">
-      <description>NASM:</description>
+      <description>NASM: TODO</description>
     </directive>
     <directive name="%LOCAL" tool="NASM">
-      <description>NASM:</description>
+      <description>NASM: TODO</description>
     </directive>
     <directive name="%ERROR" tool="NASM">
       <description>NASM: The preprocessor directive %error will cause NASM to report an error if it occurs in assembled code.</description>
@@ -692,28 +692,28 @@
       <description>NASM: The %line directive is used to notify NASM that the input line corresponds to a specific line number in another file.</description>
     </directive>
     <directive name="__NASM_MAJOR__" tool="NASM">
-      <description>NASM:</description>
+      <description>NASM: TODO</description>
     </directive>
     <directive name="__NASM_MINOR__" tool="NASM">
-      <description>NASM:</description>
+      <description>NASM: TODO</description>
     </directive>
     <directive name="__NASM_SUBMINOR__" tool="NASM">
-      <description>NASM:</description>
+      <description>NASM: TODO</description>
     </directive>
     <directive name="___NASM_PATCHLEVEL__" tool="NASM">
-      <description>NASM:</description>
+      <description>NASM: TODO</description>
     </directive>
     <directive name="__NASM_VERSION_ID__" tool="NASM">
-      <description>NASM:</description>
+      <description>NASM: TODO</description>
     </directive>
     <directive name="__NASM_VER__" tool="NASM">
-      <description>NASM:</description>
+      <description>NASM: TODO</description>
     </directive>
     <directive name="__FILE__" tool="NASM">
-      <description>NASM:</description>
+      <description>NASM: TODO</description>
     </directive>
     <directive name="__LINE__" tool="NASM">
-      <description>NASM:</description>
+      <description>NASM: TODO</description>
     </directive>
     <directive name="__BITS__" tool="NASM">
       <description>NASM: The __BITS__ standard macro is updated every time that the BITS mode is set using the BITS XX or [BITS XX] directive, where XX is a valid mode number of 16, 32 or 64.</description>
@@ -722,43 +722,43 @@
       <description>NASM: The __OUTPUT_FORMAT__ standard macro holds the current Output Format, as given by the -f option or NASM's default.</description>
     </directive>
     <directive name="__DATE__" tool="NASM">
-      <description>NASM:</description>
+      <description>NASM: TODO</description>
     </directive>
     <directive name="__TIME__" tool="NASM">
       <description>NASM:</description>
     </directive>
     <directive name="__DATE_NUM__" tool="NASM">
-      <description>NASM:</description>
+      <description>NASM: TODO</description>
     </directive>
     <directive name="__TIME_NUM__" tool="NASM">
-      <description>NASM:</description>
+      <description>NASM: TODO</description>
     </directive>
     <directive name="__UTC_DATE__" tool="NASM">
-      <description>NASM:</description>
+      <description>NASM: TODO</description>
     </directive>
     <directive name="__UTC_TIME__" tool="NASM">
-      <description>NASM:</description>
+      <description>NASM: TODO</description>
     </directive>
     <directive name="__UTC_DATE_NUM__" tool="NASM">
-      <description>NASM:</description>
+      <description>NASM: TODO</description>
     </directive>
     <directive name="__UTC_TIME_NUM__" tool="NASM">
-      <description>NASM:</description>
+      <description>NASM: TODO</description>
     </directive>
     <directive name="__POSIX_TIME__" tool="NASM">
-      <description>NASM:</description>
+      <description>NASM: TODO</description>
     </directive>
     <directive name="STRUC" tool="NASM">
-      <description>NASM:</description>
+      <description>NASM: TODO</description>
     </directive>
     <directive name="ENDSTRUC" tool="NASM">
-      <description>NASM:</description>
+      <description>NASM: TODO</description>
     </directive>
     <directive name="ISTRUC" tool="NASM">
-      <description>NASM:</description>
+      <description>NASM: TODO</description>
     </directive>
     <directive name="IEND" tool="NASM">
-      <description>NASM:</description>
+      <description>NASM: TODO</description>
     </directive>
     <directive name="ALIGN" tool="NASM">
       <description>NASM: The ALIGN and ALIGNB macros provides a convenient way to align code or data on a word, longword, paragraph or other boundary. Normally, you can just use ALIGN in code and data sections and ALIGNB in BSS sections, and never need the second argument except for special purposes.</description>
@@ -778,8 +778,10 @@
     <directive name="TIMES" tool="MASM,NASM">
       <description>The TIMES prefix causes the instruction to be assembled multiple times.</description>
     </directive>
-    
-    
+    <directive name="AT" tool="NASM">
+      <description>NASM: TODO</description>
+    </directive>
+        
     <directive name="READ"/>
 
 		<directive name=".186"/>

@@ -20,14 +20,21 @@ global_label2:
 #endregion
 
 
-struc mytype 
+struc mytype1
   mt_long:      resd    1 
   mt_word:      resw    1 
   mt_byte:      resb    1 
   mt_str:       resb    32 
 endstruc
 
-struc mytype 
+struc mytype2 
+  mt_long:      resd    1 
+  mt_word:      resw    1 
+  mt_byte:      resb    1 
+  mt_str:       resb    32 
+endstruc
+
+struc mytype3 
   .long:        resd    1 
   .word:        resw    1 
   .byte:        resb    1 
@@ -35,7 +42,7 @@ struc mytype
 endstruc
 
 mystruc: 
-    istruc mytype 
+    istruc mytype1 
         at mt_long, dd      123456 
         at mt_word, dw      1024 
         at mt_byte, db      'x' 
