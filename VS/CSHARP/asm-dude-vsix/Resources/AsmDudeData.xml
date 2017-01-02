@@ -325,8 +325,8 @@
 		<directive name=".FPO" tool="MASM">
 			<description>MASM: The .FPO directive controls the emission of debug records to the .debug$F segment or section.</description>
 		</directive>
-		<directive name="INCLUDE" tool="MASM">
-			<description>MASM: Inserts source code from the source file given by filename into the current source file during assembly.</description>
+		<directive name="INCLUDE" tool="MASM,NASM">
+			<description>Inserts source code from the source file given by filename into the current source file during assembly.</description>
 		</directive>
 		<directive name="INCLUDELIB" tool="MASM">
 			<description>MASM: Informs the linker that the current module should be linked with libraryname.</description>
