@@ -161,6 +161,34 @@ namespace AsmDude.Tools {
             return new FontFamily(font);
         }
 
+        public static Brush GetFontColor()
+        {
+            try
+            {
+                DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
+                EnvDTE.Properties propertiesList = dte.get_Properties("FontsAndColors", "TextEditor");
+                Property prop = propertiesList.Item("FontsAndColorsItems");
+
+                FontsAndColorsItems fci = (FontsAndColorsItems)prop.Object;
+
+                for (int i = 1; i < fci.Count; ++i)
+                {
+                    ColorableItems ci = fci.Item(i);
+                    if (ci.Name.Equals("PLAIN TEXT", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return new SolidColorBrush(ConvertColor(System.Drawing.ColorTranslator.FromOle((int)ci.Foreground)));
+                    }
+                }
+            } catch (Exception e)
+            {
+                AsmDudeToolsStatic.Output_ERROR("AsmDudeToolsStatic:GetFontColor "+ e.Message);
+            }
+            AsmDudeToolsStatic.Output_WARNING("AsmDudeToolsStatic:GetFontColor: could not retrieve text color");
+            return new SolidColorBrush(Colors.Gray);
+        }
+
+
+
         public static void Error_Task_Navigate_Handler(object sender, EventArgs arguments) {
             Microsoft.VisualStudio.Shell.Task task = sender as Microsoft.VisualStudio.Shell.Task;
 
@@ -230,11 +258,11 @@ namespace AsmDude.Tools {
             }
         }
 
-        public static System.Windows.Media.Color Convert_Color(System.Drawing.Color drawingColor) {
+        public static System.Windows.Media.Color ConvertColor(System.Drawing.Color drawingColor) {
             return System.Windows.Media.Color.FromArgb(drawingColor.A, drawingColor.R, drawingColor.G, drawingColor.B);
         }
 
-        public static System.Drawing.Color Convert_Color(System.Windows.Media.Color mediaColor) {
+        public static System.Drawing.Color ConvertColor(System.Windows.Media.Color mediaColor) {
             return System.Drawing.Color.FromArgb(mediaColor.A, mediaColor.R, mediaColor.G, mediaColor.B);
         }
 

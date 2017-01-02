@@ -40,7 +40,7 @@ namespace AsmDude.HighlightWord
     [UserVisible(true)]
     internal class HighlightWordFormatDefinition : MarkerFormatDefinition {
         public HighlightWordFormatDefinition() {
-            this.BackgroundColor = AsmDudeToolsStatic.Convert_Color(Settings.Default.KeywordHighlightColor);
+            this.BackgroundColor = AsmDudeToolsStatic.ConvertColor(Settings.Default.KeywordHighlightColor);
             this.DisplayName = "AsmDude - Highlight Word";
             this.ZOrder = 5;
         }

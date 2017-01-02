@@ -33,6 +33,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using AsmTools;
+using System.Windows.Media;
 
 namespace AsmDude.ErrorSquiggles
 {
@@ -44,6 +45,7 @@ namespace AsmDude.ErrorSquiggles
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
         private readonly ErrorListProvider _errorListProvider;
         private readonly ILabelGraph _labelGraph;
+        private readonly Brush _foreground;
 
         private object _updateLock = new object();
 
@@ -62,6 +64,8 @@ namespace AsmDude.ErrorSquiggles
             this._aggregator = aggregator;
             this._errorListProvider = AsmDudeTools.Instance.Error_List_Provider;
             this._labelGraph = labelGraph;
+            this._foreground = AsmDudeToolsStatic.GetFontColor();
+
             this._labelGraph.Reset_Done_Event += this.Handle_Label_Graph_Reset_Done_Event;
             this._labelGraph.Reset_Delayed();
         }
@@ -130,11 +134,11 @@ namespace AsmDude.ErrorSquiggles
         private TextBlock Undefined_Label_Tool_Tip_Content()
         {
             TextBlock textBlock = new TextBlock();
-            Run r1 = new Run("Undefined Label")
+            textBlock.Inlines.Add(new Run("Undefined Label")
             {
-                FontWeight = FontWeights.Bold
-            };
-            textBlock.Inlines.Add(r1);
+                FontWeight = FontWeights.Bold,
+                Foreground = this._foreground
+            });
             return textBlock;
         }
 
@@ -143,11 +147,11 @@ namespace AsmDude.ErrorSquiggles
             TextBlock textBlock = new TextBlock();
             try
             {
-                Run r1 = new Run("Label Clash:" + Environment.NewLine)
+                textBlock.Inlines.Add(new Run("Label Clash:" + Environment.NewLine)
                 {
-                    FontWeight = FontWeights.Bold
-                };
-                textBlock.Inlines.Add(r1);
+                    FontWeight = FontWeights.Bold,
+                    Foreground = this._foreground
+                });
 
                 StringBuilder sb = new StringBuilder();
                 foreach (uint id in this._labelGraph.Get_Label_Def_Linenumbers(label))
@@ -166,8 +170,10 @@ namespace AsmDude.ErrorSquiggles
                 }
                 string msg = sb.ToString().TrimEnd(Environment.NewLine.ToCharArray());
 
-                Run r2 = new Run(msg);
-                textBlock.Inlines.Add(r2);
+                textBlock.Inlines.Add(new Run(msg)
+                {
+                    Foreground = this._foreground
+                });
             } catch (Exception e)
             {
                 AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:labelClashToolTipContent; e={1}", ToString(), e.ToString()));

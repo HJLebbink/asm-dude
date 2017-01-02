@@ -39,7 +39,7 @@ namespace AsmDude
         {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: Entering constructor for: {0}", this.ToString()));
             this.DisplayName = "AsmDude - Syntax Highlighting - Mnemonic"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
-            this.ForegroundColor = AsmDudeToolsStatic.Convert_Color(Settings.Default.SyntaxHighlighting_Opcode);
+            this.ForegroundColor = AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Opcode);
         }
     }
 
@@ -53,7 +53,7 @@ namespace AsmDude
         public RegisterP()
         {
             this.DisplayName = "AsmDude - Syntax Highlighting - Register"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
-            this.ForegroundColor = AsmDudeToolsStatic.Convert_Color(Settings.Default.SyntaxHighlighting_Register);
+            this.ForegroundColor = AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Register);
         }
     }
 
@@ -67,7 +67,7 @@ namespace AsmDude
         public RemarkP()
         {
             this.DisplayName = "AsmDude - Syntax Highlighting - Remark"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
-            this.ForegroundColor = AsmDudeToolsStatic.Convert_Color(Settings.Default.SyntaxHighlighting_Remark);
+            this.ForegroundColor = AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Remark);
             this.IsItalic = true;
         }
     }
@@ -82,8 +82,8 @@ namespace AsmDude
         public DirectiveP()
         {
             this.DisplayName = "AsmDude - Syntax Highlighting - Directive"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
-            this.ForegroundColor = AsmDudeToolsStatic.Convert_Color(Settings.Default.SyntaxHighlighting_Directive);
-            this.IsItalic = true;
+            this.ForegroundColor = AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Directive);
+            //this.IsItalic = true;
         }
     }
 
@@ -97,7 +97,7 @@ namespace AsmDude
         public JumpP()
         {
             this.DisplayName = "AsmDude - Syntax Highlighting - Jump"; //human readable version of the name
-            this.ForegroundColor = AsmDudeToolsStatic.Convert_Color(Settings.Default.SyntaxHighlighting_Jump);
+            this.ForegroundColor = AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Jump);
         }
     }
 
@@ -111,7 +111,7 @@ namespace AsmDude
         public LabelP()
         {
             this.DisplayName = "AsmDude - Syntax Highlighting - Label"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
-            this.ForegroundColor = AsmDudeToolsStatic.Convert_Color(Settings.Default.SyntaxHighlighting_Label);
+            this.ForegroundColor = AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Label);
             //TextDecorations = System.Windows.TextDecorations.Underline;
         }
     }
@@ -126,7 +126,7 @@ namespace AsmDude
         public LabelDefP()
         {
             this.DisplayName = "AsmDude - Syntax Highlighting - Label Definition"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
-            this.ForegroundColor = AsmDudeToolsStatic.Convert_Color(Settings.Default.SyntaxHighlighting_Label);
+            this.ForegroundColor = AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Label);
             //TextDecorations = System.Windows.TextDecorations.Underline;
         }
     }
@@ -141,7 +141,7 @@ namespace AsmDude
         public ConstantP()
         {
             this.DisplayName = "AsmDude - Syntax Highlighting - Constant"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
-            this.ForegroundColor = AsmDudeToolsStatic.Convert_Color(Settings.Default.SyntaxHighlighting_Constant);
+            this.ForegroundColor = AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Constant);
         }
     }
 
@@ -155,7 +155,7 @@ namespace AsmDude
         public MiscP()
         {
             this.DisplayName = "AsmDude - Syntax Highlighting - Misc"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
-            this.ForegroundColor = AsmDudeToolsStatic.Convert_Color(Settings.Default.SyntaxHighlighting_Misc);
+            this.ForegroundColor = AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Misc);
         }
     }
 }
