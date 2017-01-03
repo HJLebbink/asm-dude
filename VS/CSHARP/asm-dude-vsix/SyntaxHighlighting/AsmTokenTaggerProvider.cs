@@ -51,13 +51,14 @@ namespace AsmDude
                 //    AsmDudeToolsStatic.Output("INFO: AsmTokenTagProvider:CreateTagger: found a buffer without a filename");
                 //    return new DebugTokenTagger(buffer) as ITagger<T>;
                 //} else {
-
-                    switch (AsmDudeToolsStatic.Used_Assembler)
+                    if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.MASM)) {
+                        return new MasmTokenTagger(buffer) as ITagger<T>;
+                    } else if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.NASM))
                     {
-                        case AssemblerEnum.MASM: return new MasmTokenTagger(buffer) as ITagger<T>;
-                        case AssemblerEnum.NASM: return new NasmTokenTagger(buffer) as ITagger<T>;
-                        case AssemblerEnum.UNKNOWN:
-                        default: return new MasmTokenTagger(buffer) as ITagger<T>;
+                        return new NasmTokenTagger(buffer) as ITagger<T>;
+                    } else
+                    {
+                        return new MasmTokenTagger(buffer) as ITagger<T>;
                     }
                 //}
             };

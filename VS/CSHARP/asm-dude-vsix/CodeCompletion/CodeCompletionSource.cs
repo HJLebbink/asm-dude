@@ -345,20 +345,18 @@ namespace AsmDude
                 AsmTokenType type = this._asmDudeTools.Get_Token_Type(keyword);
                 if (selectedTypes.Contains(type))
                 {
-
                     Arch arch = Arch.NONE;
                     bool selected = true;
 
                     if (type == AsmTokenType.Directive)
                     {
                         AssemblerEnum assembler = this._asmDudeTools.Get_Assembler(keyword);
-                        switch (assembler)
+                        if (assembler.HasFlag(AssemblerEnum.MASM))
                         {
-                            case AssemblerEnum.MASM: if (usedAssember != AssemblerEnum.MASM) selected = false; break;
-                            case AssemblerEnum.NASM: if (usedAssember != AssemblerEnum.NASM) selected = false; break;
-                            case AssemblerEnum.UNKNOWN:
-                            default:
-                            break;
+                            if (!usedAssember.HasFlag(AssemblerEnum.MASM)) selected = false;
+                        } else if (assembler.HasFlag(AssemblerEnum.NASM))
+                        {
+                            if (!usedAssember.HasFlag(AssemblerEnum.NASM)) selected = false;
                         }
                     } else
                     {

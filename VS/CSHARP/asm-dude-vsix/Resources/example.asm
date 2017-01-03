@@ -308,5 +308,6 @@ label2:
 	bts         dword [rcx+4*rdx],r9d
 label3:
 	ret
-.att_syntax
 #endregion
+
+.att_syntax

@@ -2475,7 +2475,6 @@ public static partial class AsmSourceTools {
                 case "CQO": return Mnemonic.CQO;
                 case "DMINT": return Mnemonic.DMINT;
                 case "EMMS": return Mnemonic.EMMS;
-                case "EQU": return Mnemonic.EQU;
                 case "F2XM1": return Mnemonic.F2XM1;
                 case "FABS": return Mnemonic.FABS;
                 case "FADD": return Mnemonic.FADD;

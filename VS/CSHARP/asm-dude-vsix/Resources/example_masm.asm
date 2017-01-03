@@ -1,4 +1,8 @@
-.intel_syntax noprefix
+
+include "inc\example.inc"
+
+	jmp	FOO
+
 
 
 RemoveFileFromProject PROTO :HWND, 	:BOOLEAN
@@ -8,7 +12,6 @@ RemoveFileFromProject Proc Uses EBX EDI hChild:HWND, AskToSaveFirst:BOOLEAN
     ret
 RemoveFileFromProject endP
 
-
 #region MASM relative jumps @@ jumps
 #######################################################
 	@@:
@@ -17,7 +20,6 @@ RemoveFileFromProject endP
 	xor rax, rax
 	@@:
 #endregion
-
 
 #region Masm has local labels in procedures
 #######################################################
@@ -33,9 +35,6 @@ proc_name2 PROC # add id to label graph and make code folding
     ret
 proc_name2 ENDP
 #endregion
-
-#region Masm Examples
-#######################################################
 
 vertex STRUCT 
     .x  resq 1
@@ -105,8 +104,6 @@ segment_name ENDS
 		.EndIf
 	.EndIf
 #endregion
-
-
 
 ProjectPropertiesDlgProc_EndDialog Proc hDlg:DWORD
 Local Buffer[32]:BYTE

@@ -1,5 +1,8 @@
 .intel_syntax noprefix
 
+include "inc\example.inc"
+%include "bla"
+
 #region Nasm has local labels when prefixed with a dot
 #######################################################
 
@@ -117,7 +120,7 @@ _str_ri:
 .loop:
     lodsb
 
-	#endregion 
+#endregion 
 
 #region Real Example Handcoded
 #######################################################

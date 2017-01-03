@@ -518,8 +518,8 @@ namespace AsmDude.Tools
                     }
                     case AsmTokenType.Label:
                     {
-                        string label = Get_Text(buffer, asmTokenTag);
-                        string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(asmTokenTag.Tag.Misc, label, usedAssember);
+                        string labelStr = Get_Text(buffer, asmTokenTag);
+                        string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(asmTokenTag.Tag.Misc, labelStr, usedAssember);
 
                         Add_To_Dictionary(full_Qualified_Label, id, this._usedAt);
 
@@ -534,13 +534,24 @@ namespace AsmDude.Tools
                     }
                     case AsmTokenType.Directive:
                     {
-                        if (Get_Text(buffer, asmTokenTag).Equals("INCLUDE", StringComparison.OrdinalIgnoreCase))
+                        string directiveStr = Get_Text(buffer, asmTokenTag).ToUpper();
+
+                        switch (directiveStr)
                         {
-                            if (enumerator.MoveNext()) // check whether a word exists after the include keyword
+                            case "%INCLUDE":
+                            case "INCLUDE":
                             {
-                                string currentFilename = Get_Filename(id);
-                                string includeFilename = Get_Text(buffer, enumerator.Current);
-                                Handle_Include(includeFilename, lineNumber, currentFilename);
+                                if (enumerator.MoveNext()) // check whether a word exists after the include keyword
+                                {
+                                    string currentFilename = Get_Filename(id);
+                                    string includeFilename = Get_Text(buffer, enumerator.Current);
+                                    Handle_Include(includeFilename, lineNumber, currentFilename);
+                                }
+                                break;
+                            }
+                            default:
+                            {
+                                break;
                             }
                         }
                         break;

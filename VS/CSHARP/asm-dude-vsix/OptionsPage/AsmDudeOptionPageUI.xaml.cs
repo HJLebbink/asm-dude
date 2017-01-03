@@ -83,15 +83,14 @@ namespace AsmDude.OptionsPage {
                 return AssemblerEnum.MASM;
             }
             set {
-                switch (value) {
-                    case AssemblerEnum.MASM:
+                if (value.HasFlag(AssemblerEnum.MASM))
+                {
                     this.usedAssemblerMasm_UI.IsChecked = true;
                     this.usedAssemblerNasm_UI.IsChecked = false;
-                        break;
-                    case AssemblerEnum.NASM:
+                } else if (value.HasFlag(AssemblerEnum.NASM))
+                {
                     this.usedAssemblerMasm_UI.IsChecked = false;
                     this.usedAssemblerNasm_UI.IsChecked = true;
-                        break;
                 }
             }
         }

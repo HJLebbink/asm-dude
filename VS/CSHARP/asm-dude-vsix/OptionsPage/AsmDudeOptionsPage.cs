@@ -37,7 +37,7 @@ namespace AsmDude.OptionsPage
     [Guid(Guids.GuidOptionsPageAsmDude)]
     public class AsmDudeOptionsPage : UIElementDialogPage {
 
-        private const bool logInfo = true;
+        private const bool logInfo = false;
 
         private AsmDudeOptionsPageUI _asmDudeOptionsPageUI;
 

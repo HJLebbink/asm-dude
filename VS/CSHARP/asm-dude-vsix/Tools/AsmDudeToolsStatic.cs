@@ -86,19 +86,21 @@ namespace AsmDude.Tools {
                     return AssemblerEnum.NASM;
                 }
                 Output("WARNING: AsmDudeToolsStatic.usedAssebler: no assembler specified, assuming MASM");
-
                 return AssemblerEnum.MASM;
             }
             set {
                 Settings.Default.useAssemblerMasm = false;
                 Settings.Default.useAssemblerNasm = false;
 
-                switch (value) {
-                    case AssemblerEnum.MASM: Settings.Default.useAssemblerMasm = true; break;
-                    case AssemblerEnum.NASM: Settings.Default.useAssemblerNasm = true; break;
-                    case AssemblerEnum.UNKNOWN:
-                    default:
-                        Settings.Default.useAssemblerMasm = true; break;
+                if (value.HasFlag(AssemblerEnum.MASM))
+                {
+                    Settings.Default.useAssemblerMasm = true;
+                } else if (value.HasFlag(AssemblerEnum.NASM))
+                {
+                    Settings.Default.useAssemblerNasm = true;
+                } else
+                {
+                    Settings.Default.useAssemblerMasm = true;
                 }
             }
         }
@@ -186,8 +188,6 @@ namespace AsmDude.Tools {
             AsmDudeToolsStatic.Output_WARNING("AsmDudeToolsStatic:GetFontColor: could not retrieve text color");
             return new SolidColorBrush(Colors.Gray);
         }
-
-
 
         public static void Error_Task_Navigate_Handler(object sender, EventArgs arguments) {
             Microsoft.VisualStudio.Shell.Task task = sender as Microsoft.VisualStudio.Shell.Task;
@@ -484,27 +484,23 @@ namespace AsmDude.Tools {
 
         public static string Make_Full_Qualified_Label(string label1, string label2, AssemblerEnum assembler)
         {
-            switch (assembler)
+            if (assembler.HasFlag(AssemblerEnum.MASM))
             {
-                case AssemblerEnum.MASM:
+                if ((label1 != null) && (label1.Length > 0))
                 {
-                    if ((label1 != null) && (label1.Length > 0))
-                    {
-                        return "[" + label1 + "]" + label2;
-                    } else
-                    {
-                        return label2;
-                    }
+                    return "[" + label1 + "]" + label2;
+                } else
+                {
+                    return label2;
                 }
-                case AssemblerEnum.NASM:
+            } else if (assembler.HasFlag(AssemblerEnum.NASM))
+            {
+                if ((label1 != null) && (label1.Length > 0))
                 {
-                    if ((label1 != null) && (label1.Length > 0))
-                    {
-                        return label1 + label2;
-                    } else
-                    {
-                        return label2;
-                    }
+                    return label1 + label2;
+                } else
+                {
+                    return label2;
                 }
             }
             return label1 + label2;
@@ -512,34 +508,27 @@ namespace AsmDude.Tools {
 
         public static string Retrieve_Local_Label(string label, AssemblerEnum assembler)
         {
-            switch (assembler)
+            if (assembler.HasFlag(AssemblerEnum.MASM))
             {
-                case AssemblerEnum.MASM:
+                if ((label.Length > 0) && label[0].Equals('['))
                 {
-                    if ((label.Length > 0) && label[0].Equals('['))
-                    {
-                        for (int i = 1; i < label.Length; ++i)
-                        {
-                            char c = label[i];
-                            if (c.Equals(']'))
-                            {
-                                return label.Substring(i + 1);
-                            }
-                        }
-                    }
-                    break;
-                }
-                case AssemblerEnum.NASM:
-                {
-                    for (int i = 0; i < label.Length; ++i)
+                    for (int i = 1; i < label.Length; ++i)
                     {
                         char c = label[i];
-                        if (c.Equals('.'))
+                        if (c.Equals(']'))
                         {
-                            return label.Substring(i);
+                            return label.Substring(i + 1);
                         }
                     }
-                    break;
+                }
+            } else if (assembler.HasFlag(AssemblerEnum.NASM)) {
+                for (int i = 0; i < label.Length; ++i)
+                {
+                    char c = label[i];
+                    if (c.Equals('.'))
+                    {
+                        return label.Substring(i);
+                    }
                 }
             }
             return label;

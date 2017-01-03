@@ -222,8 +222,7 @@ namespace AsmDude {
         }
 
         public AsmTokenType Get_Token_Type(string keyword) {
-            string keyword2 = keyword.ToUpper();
-            Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword2);
+            Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword);
             if (mnemonic != Mnemonic.UNKNOWN) {
                 if (AsmSourceTools.IsJump(mnemonic)) {
                     return AsmTokenType.Jump;
@@ -231,7 +230,7 @@ namespace AsmDude {
                 return AsmTokenType.Mnemonic;
             }
 
-            if (this._type.TryGetValue(keyword2, out var tokenType)) {
+            if (this._type.TryGetValue(keyword.ToUpper(), out var tokenType)) {
                 return tokenType;
             }
             return AsmTokenType.UNKNOWN;
@@ -357,7 +356,7 @@ namespace AsmDude {
                 if (archAttribute == null) {
                     return AssemblerEnum.UNKNOWN;
                 } else {
-                    return AsmTools.AsmSourceTools.parseAssembler(archAttribute.Value.ToUpper());
+                    return AsmTools.AsmSourceTools.parseAssembler(archAttribute.Value);
                 }
             } catch (Exception) {
                 return AssemblerEnum.UNKNOWN;

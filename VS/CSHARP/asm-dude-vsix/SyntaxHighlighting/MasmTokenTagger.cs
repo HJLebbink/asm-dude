@@ -48,7 +48,6 @@ namespace AsmDude
         private readonly AsmTokenTag _misc;
         private readonly AsmTokenTag _UNKNOWN;
 
-
         internal MasmTokenTagger(ITextBuffer buffer)
         {
             this._buffer = buffer;
@@ -93,6 +92,12 @@ namespace AsmDude
                 for (int k = 0; k < nKeywords; k++)
                 {
                     string asmToken = NasmTokenTagger.Keyword(pos[k], line);
+                    // keyword starts with a remark char
+                    if (AsmSourceTools.IsRemarkChar(asmToken[0]))
+                    {
+                        yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._remark);
+                        continue;
+                    }
 
                     // keyword k is a label definition
                     if (pos[k].Item3)
@@ -109,12 +114,6 @@ namespace AsmDude
                         continue;
                     }
 
-                    // keyword starts with a remark char
-                    if (AsmSourceTools.IsRemarkChar(asmToken[0]))
-                    {
-                        yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._remark);
-                        continue;
-                    }
 
                     AsmTokenType keywordType = this._asmDudeTools.Get_Token_Type(asmToken);
                     switch (keywordType)
@@ -228,46 +227,40 @@ namespace AsmDude
                                     string previousKeyword = NasmTokenTagger.Keyword(pos[k - 1], line);
                                     switch (previousKeyword)
                                     {
-                                        case "ALIAS":
-                                        yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._labelDef);
-                                        isUnknown = false;
-                                        break;
-                                        default:
-                                        break;
+                                        case "ALIAS": 
+										{
+											yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._labelDef);
+											isUnknown = false;
+											break;
+										}
+                                        default: 
+										{
+											break;
+										}
                                     }
-
                                 }
 
                                 if (isUnknown)
                                 {
                                     yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._UNKNOWN);
                                 }
-
                             }
                             break;
                         }
                         case AsmTokenType.Directive:
                         {
-                            switch (this._asmDudeTools.Get_Assembler(asmToken))
+                            AssemblerEnum assember = this._asmDudeTools.Get_Assembler(asmToken);
+                            if (assember.HasFlag(AssemblerEnum.MASM)) // this MASM token-tagger only tags MASM directives
                             {
-                                case AssemblerEnum.MASM: // this Masm token tagger only tags masm directives
+                                yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._directive);
+
+                                if (asmToken.Equals("INVOKE"))
                                 {
-                                    yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._directive);
+                                    k++; // goto the next word
+                                    if (k == nKeywords) break;
 
-                                    if (asmToken.Equals("INVOKE"))
-                                    {
-                                        k++; // goto the next word
-                                        if (k == nKeywords) break;
-
-                                        string asmToken2 = NasmTokenTagger.Keyword(pos[k], line);
-                                        yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._label); // do not use full qualified label!
-
-                                    }
-                                    break;
-                                }
-                                default: // directives of non Masm token are ignored.
-                                {
-                                    break;
+                                    string asmToken2 = NasmTokenTagger.Keyword(pos[k], line);
+                                    yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._label); // do not use full qualified label!
                                 }
                             }
                             break;

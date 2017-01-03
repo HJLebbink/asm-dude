@@ -195,11 +195,15 @@ namespace AsmDude.CodeFolding
                 return tup;
             } else
             {
-                switch (AsmDudeToolsStatic.Used_Assembler)
+                if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.MASM))
                 {
-                    case AssemblerEnum.MASM: return Is_Start_Masm_Keyword(lineContent, lineNumber);
-                    case AssemblerEnum.NASM: return Is_Start_Nasm_Keyword(lineContent, lineNumber);
-                    default: return new Tuple<int, int>(-1, -1);
+                    return Is_Start_Masm_Keyword(lineContent, lineNumber);
+                } else if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.NASM))
+                {
+                    return Is_Start_Nasm_Keyword(lineContent, lineNumber);
+                } else
+                {
+                    return new Tuple<int, int>(-1, -1);
                 }
             }
         }
@@ -285,11 +289,15 @@ namespace AsmDude.CodeFolding
                 return i1;
             } else
             {
-                switch (AsmDudeToolsStatic.Used_Assembler)
+                if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.MASM))
                 {
-                    case AssemblerEnum.MASM: return Is_End_Masm_Keyword(lineContent, lineNumber);
-                    case AssemblerEnum.NASM: return Is_End_Nasm_Keyword(lineContent, lineNumber);
-                    default: return -1;
+                    return Is_End_Masm_Keyword(lineContent, lineNumber);
+                } else if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.NASM))
+                {
+                    return Is_End_Nasm_Keyword(lineContent, lineNumber);
+                } else
+                {
+                    return -1;
                 }
             }
         }
