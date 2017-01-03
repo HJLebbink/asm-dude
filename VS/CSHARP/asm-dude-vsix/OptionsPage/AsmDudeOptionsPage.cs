@@ -37,7 +37,7 @@ namespace AsmDude.OptionsPage
     [Guid(Guids.GuidOptionsPageAsmDude)]
     public class AsmDudeOptionsPage : UIElementDialogPage {
 
-        private const bool logInfo = false;
+        private const bool logInfo = true;
 
         private AsmDudeOptionsPageUI _asmDudeOptionsPageUI;
 
@@ -96,116 +96,116 @@ namespace AsmDude.OptionsPage
             this._asmDudeOptionsPageUI.useSignatureHelp = Settings.Default.SignatureHelp_On;
 
             this._asmDudeOptionsPageUI.useArch_8086 = Settings.Default.ARCH_8086;
-            this._asmDudeOptionsPageUI.useArch_8086_UI.ToolTip = makeToolTip(Arch.ARCH_8086);
+            this._asmDudeOptionsPageUI.useArch_8086_UI.ToolTip = MakeToolTip(Arch.ARCH_8086);
             this._asmDudeOptionsPageUI.useArch_186 = Settings.Default.ARCH_186;
-            this._asmDudeOptionsPageUI.useArch_186_UI.ToolTip = makeToolTip(Arch.ARCH_186);
+            this._asmDudeOptionsPageUI.useArch_186_UI.ToolTip = MakeToolTip(Arch.ARCH_186);
             this._asmDudeOptionsPageUI.useArch_286 = Settings.Default.ARCH_286;
-            this._asmDudeOptionsPageUI.useArch_286_UI.ToolTip = makeToolTip(Arch.ARCH_286);
+            this._asmDudeOptionsPageUI.useArch_286_UI.ToolTip = MakeToolTip(Arch.ARCH_286);
             this._asmDudeOptionsPageUI.useArch_386 = Settings.Default.ARCH_386;
-            this._asmDudeOptionsPageUI.useArch_386_UI.ToolTip = makeToolTip(Arch.ARCH_386);
+            this._asmDudeOptionsPageUI.useArch_386_UI.ToolTip = MakeToolTip(Arch.ARCH_386);
             this._asmDudeOptionsPageUI.useArch_486 = Settings.Default.ARCH_486;
-            this._asmDudeOptionsPageUI.useArch_486_UI.ToolTip = makeToolTip(Arch.ARCH_486);
+            this._asmDudeOptionsPageUI.useArch_486_UI.ToolTip = MakeToolTip(Arch.ARCH_486);
             this._asmDudeOptionsPageUI.useArch_MMX = Settings.Default.ARCH_MMX;
-            this._asmDudeOptionsPageUI.useArch_MMX_UI.ToolTip = makeToolTip(Arch.MMX);
+            this._asmDudeOptionsPageUI.useArch_MMX_UI.ToolTip = MakeToolTip(Arch.MMX);
             this._asmDudeOptionsPageUI.useArch_SSE = Settings.Default.ARCH_SSE;
-            this._asmDudeOptionsPageUI.useArch_SSE_UI.ToolTip = makeToolTip(Arch.SSE);
+            this._asmDudeOptionsPageUI.useArch_SSE_UI.ToolTip = MakeToolTip(Arch.SSE);
             this._asmDudeOptionsPageUI.useArch_SSE2 = Settings.Default.ARCH_SSE2;
-            this._asmDudeOptionsPageUI.useArch_SSE2_UI.ToolTip = makeToolTip(Arch.SSE2);
+            this._asmDudeOptionsPageUI.useArch_SSE2_UI.ToolTip = MakeToolTip(Arch.SSE2);
             this._asmDudeOptionsPageUI.useArch_SSE3 = Settings.Default.ARCH_SSE3;
-            this._asmDudeOptionsPageUI.useArch_SSE3_UI.ToolTip = makeToolTip(Arch.SSE3);
+            this._asmDudeOptionsPageUI.useArch_SSE3_UI.ToolTip = MakeToolTip(Arch.SSE3);
             this._asmDudeOptionsPageUI.useArch_SSSE3 = Settings.Default.ARCH_SSSE3;
-            this._asmDudeOptionsPageUI.useArch_SSSE3_UI.ToolTip = makeToolTip(Arch.SSSE3);
+            this._asmDudeOptionsPageUI.useArch_SSSE3_UI.ToolTip = MakeToolTip(Arch.SSSE3);
             this._asmDudeOptionsPageUI.useArch_SSE41 = Settings.Default.ARCH_SSE41;
-            this._asmDudeOptionsPageUI.useArch_SSE41_UI.ToolTip = makeToolTip(Arch.SSE4_1);
+            this._asmDudeOptionsPageUI.useArch_SSE41_UI.ToolTip = MakeToolTip(Arch.SSE4_1);
             this._asmDudeOptionsPageUI.useArch_SSE42 = Settings.Default.ARCH_SSE42;
-            this._asmDudeOptionsPageUI.useArch_SSE42_UI.ToolTip = makeToolTip(Arch.SSE4_2);
+            this._asmDudeOptionsPageUI.useArch_SSE42_UI.ToolTip = MakeToolTip(Arch.SSE4_2);
             this._asmDudeOptionsPageUI.useArch_SSE4A = Settings.Default.ARCH_SSE4A;
-            this._asmDudeOptionsPageUI.useArch_SSE4A_UI.ToolTip = makeToolTip(Arch.SSE4A);
+            this._asmDudeOptionsPageUI.useArch_SSE4A_UI.ToolTip = MakeToolTip(Arch.SSE4A);
             this._asmDudeOptionsPageUI.useArch_SSE5 = Settings.Default.ARCH_SSE5;
-            this._asmDudeOptionsPageUI.useArch_SSE5_UI.ToolTip = makeToolTip(Arch.SSE5);
+            this._asmDudeOptionsPageUI.useArch_SSE5_UI.ToolTip = MakeToolTip(Arch.SSE5);
             this._asmDudeOptionsPageUI.useArch_AVX = Settings.Default.ARCH_AVX;
-            this._asmDudeOptionsPageUI.useArch_AVX_UI.ToolTip = makeToolTip(Arch.AVX);
+            this._asmDudeOptionsPageUI.useArch_AVX_UI.ToolTip = MakeToolTip(Arch.AVX);
             this._asmDudeOptionsPageUI.useArch_AVX2 = Settings.Default.ARCH_AVX2;
-            this._asmDudeOptionsPageUI.useArch_AVX2_UI.ToolTip = makeToolTip(Arch.AVX2);
+            this._asmDudeOptionsPageUI.useArch_AVX2_UI.ToolTip = MakeToolTip(Arch.AVX2);
 
             this._asmDudeOptionsPageUI.useArch_AVX512F = Settings.Default.ARCH_AVX512F;
-            this._asmDudeOptionsPageUI.useArch_AVX512F_UI.ToolTip = makeToolTip(Arch.AVX512F);
+            this._asmDudeOptionsPageUI.useArch_AVX512F_UI.ToolTip = MakeToolTip(Arch.AVX512F);
             this._asmDudeOptionsPageUI.useArch_AVX512VL = Settings.Default.ARCH_AVX512VL;
-            this._asmDudeOptionsPageUI.useArch_AVX512VL_UI.ToolTip = makeToolTip(Arch.AVX512VL);
+            this._asmDudeOptionsPageUI.useArch_AVX512VL_UI.ToolTip = MakeToolTip(Arch.AVX512VL);
             this._asmDudeOptionsPageUI.useArch_AVX512DQ = Settings.Default.ARCH_AVX512DQ;
-            this._asmDudeOptionsPageUI.useArch_AVX512DQ_UI.ToolTip = makeToolTip(Arch.AVX512DQ);
+            this._asmDudeOptionsPageUI.useArch_AVX512DQ_UI.ToolTip = MakeToolTip(Arch.AVX512DQ);
             this._asmDudeOptionsPageUI.useArch_AVX512BW = Settings.Default.ARCH_AVX512BW;
-            this._asmDudeOptionsPageUI.useArch_AVX512BW_UI.ToolTip = makeToolTip(Arch.AVX512BW);
+            this._asmDudeOptionsPageUI.useArch_AVX512BW_UI.ToolTip = MakeToolTip(Arch.AVX512BW);
             this._asmDudeOptionsPageUI.useArch_AVX512ER = Settings.Default.ARCH_AVX512ER;
-            this._asmDudeOptionsPageUI.useArch_AVX512ER_UI.ToolTip = makeToolTip(Arch.AVX512ER);
+            this._asmDudeOptionsPageUI.useArch_AVX512ER_UI.ToolTip = MakeToolTip(Arch.AVX512ER);
             this._asmDudeOptionsPageUI.useArch_AVX512CD = Settings.Default.ARCH_AVX512CD;
-            this._asmDudeOptionsPageUI.useArch_AVX512CD_UI.ToolTip = makeToolTip(Arch.AVX512CD);
+            this._asmDudeOptionsPageUI.useArch_AVX512CD_UI.ToolTip = MakeToolTip(Arch.AVX512CD);
             this._asmDudeOptionsPageUI.useArch_AVX512PF = Settings.Default.ARCH_AVX512PF;
-            this._asmDudeOptionsPageUI.useArch_AVX512PF_UI.ToolTip = makeToolTip(Arch.AVX512PF);
+            this._asmDudeOptionsPageUI.useArch_AVX512PF_UI.ToolTip = MakeToolTip(Arch.AVX512PF);
 
             this._asmDudeOptionsPageUI.useArch_X64 = Settings.Default.ARCH_X64;
-            this._asmDudeOptionsPageUI.useArch_X64_UI.ToolTip = makeToolTip(Arch.X64);
+            this._asmDudeOptionsPageUI.useArch_X64_UI.ToolTip = MakeToolTip(Arch.X64);
             this._asmDudeOptionsPageUI.useArch_BMI1 = Settings.Default.ARCH_BMI1;
-            this._asmDudeOptionsPageUI.useArch_BMI1_UI.ToolTip = makeToolTip(Arch.BMI1);
+            this._asmDudeOptionsPageUI.useArch_BMI1_UI.ToolTip = MakeToolTip(Arch.BMI1);
             this._asmDudeOptionsPageUI.useArch_BMI2 = Settings.Default.ARCH_BMI2;
-            this._asmDudeOptionsPageUI.useArch_BMI2_UI.ToolTip = makeToolTip(Arch.BMI2);
+            this._asmDudeOptionsPageUI.useArch_BMI2_UI.ToolTip = MakeToolTip(Arch.BMI2);
             this._asmDudeOptionsPageUI.useArch_P6 = Settings.Default.ARCH_P6;
-            this._asmDudeOptionsPageUI.useArch_P6_UI.ToolTip = makeToolTip(Arch.P6);
+            this._asmDudeOptionsPageUI.useArch_P6_UI.ToolTip = MakeToolTip(Arch.P6);
             this._asmDudeOptionsPageUI.useArch_IA64 = Settings.Default.ARCH_IA64;
-            this._asmDudeOptionsPageUI.useArch_IA64_UI.ToolTip = makeToolTip(Arch.IA64);
+            this._asmDudeOptionsPageUI.useArch_IA64_UI.ToolTip = MakeToolTip(Arch.IA64);
             this._asmDudeOptionsPageUI.useArch_FMA = Settings.Default.ARCH_FMA;
-            this._asmDudeOptionsPageUI.useArch_FMA_UI.ToolTip = makeToolTip(Arch.FMA);
+            this._asmDudeOptionsPageUI.useArch_FMA_UI.ToolTip = MakeToolTip(Arch.FMA);
             this._asmDudeOptionsPageUI.useArch_TBM = Settings.Default.ARCH_TBM;
-            this._asmDudeOptionsPageUI.useArch_TBM_UI.ToolTip = makeToolTip(Arch.TBM);
+            this._asmDudeOptionsPageUI.useArch_TBM_UI.ToolTip = MakeToolTip(Arch.TBM);
             this._asmDudeOptionsPageUI.useArch_AMD = Settings.Default.ARCH_AMD;
-            this._asmDudeOptionsPageUI.useArch_AMD_UI.ToolTip = makeToolTip(Arch.AMD);
+            this._asmDudeOptionsPageUI.useArch_AMD_UI.ToolTip = MakeToolTip(Arch.AMD);
             this._asmDudeOptionsPageUI.useArch_PENT = Settings.Default.ARCH_PENT;
-            this._asmDudeOptionsPageUI.useArch_PENT_UI.ToolTip = makeToolTip(Arch.PENT);
+            this._asmDudeOptionsPageUI.useArch_PENT_UI.ToolTip = MakeToolTip(Arch.PENT);
             this._asmDudeOptionsPageUI.useArch_3DNOW = Settings.Default.ARCH_3DNOW;
-            this._asmDudeOptionsPageUI.useArch_3DNOW_UI.ToolTip = makeToolTip(Arch.ARCH_3DNOW);
+            this._asmDudeOptionsPageUI.useArch_3DNOW_UI.ToolTip = MakeToolTip(Arch.ARCH_3DNOW);
             this._asmDudeOptionsPageUI.useArch_CYRIX = Settings.Default.ARCH_CYRIX;
-            this._asmDudeOptionsPageUI.useArch_CYRIX_UI.ToolTip = makeToolTip(Arch.CYRIX);
+            this._asmDudeOptionsPageUI.useArch_CYRIX_UI.ToolTip = MakeToolTip(Arch.CYRIX);
             this._asmDudeOptionsPageUI.useArch_CYRIXM = Settings.Default.ARCH_CYRIXM;
-            this._asmDudeOptionsPageUI.useArch_CYRIXM_UI.ToolTip = makeToolTip(Arch.CYRIXM);
+            this._asmDudeOptionsPageUI.useArch_CYRIXM_UI.ToolTip = MakeToolTip(Arch.CYRIXM);
             this._asmDudeOptionsPageUI.useArch_VMX = Settings.Default.ARCH_VMX;
-            this._asmDudeOptionsPageUI.useArch_VMX_UI.ToolTip = makeToolTip(Arch.VMX);
+            this._asmDudeOptionsPageUI.useArch_VMX_UI.ToolTip = MakeToolTip(Arch.VMX);
             this._asmDudeOptionsPageUI.useArch_RTM = Settings.Default.ARCH_RTM;
-            this._asmDudeOptionsPageUI.useArch_RTM_UI.ToolTip = makeToolTip(Arch.RTM);
+            this._asmDudeOptionsPageUI.useArch_RTM_UI.ToolTip = MakeToolTip(Arch.RTM);
             this._asmDudeOptionsPageUI.useArch_MPX = Settings.Default.ARCH_MPX;
-            this._asmDudeOptionsPageUI.useArch_MPX_UI.ToolTip = makeToolTip(Arch.MPX);
+            this._asmDudeOptionsPageUI.useArch_MPX_UI.ToolTip = MakeToolTip(Arch.MPX);
             this._asmDudeOptionsPageUI.useArch_SHA = Settings.Default.ARCH_SHA;
-            this._asmDudeOptionsPageUI.useArch_SHA_UI.ToolTip = makeToolTip(Arch.SHA);
+            this._asmDudeOptionsPageUI.useArch_SHA_UI.ToolTip = MakeToolTip(Arch.SHA);
 
             this._asmDudeOptionsPageUI.useArch_ADX = Settings.Default.ARCH_ADX;
-            this._asmDudeOptionsPageUI.useArch_ADX_UI.ToolTip = makeToolTip(Arch.ADX);
+            this._asmDudeOptionsPageUI.useArch_ADX_UI.ToolTip = MakeToolTip(Arch.ADX);
             this._asmDudeOptionsPageUI.useArch_F16C = Settings.Default.ARCH_F16C;
-            this._asmDudeOptionsPageUI.useArch_F16C_UI.ToolTip = makeToolTip(Arch.F16C);
+            this._asmDudeOptionsPageUI.useArch_F16C_UI.ToolTip = MakeToolTip(Arch.F16C);
             this._asmDudeOptionsPageUI.useArch_FSGSBASE = Settings.Default.ARCH_FSGSBASE;
-            this._asmDudeOptionsPageUI.useArch_FSGSBASE_UI.ToolTip = makeToolTip(Arch.FSGSBASE);
+            this._asmDudeOptionsPageUI.useArch_FSGSBASE_UI.ToolTip = MakeToolTip(Arch.FSGSBASE);
             this._asmDudeOptionsPageUI.useArch_HLE = Settings.Default.ARCH_HLE;
-            this._asmDudeOptionsPageUI.useArch_HLE_UI.ToolTip = makeToolTip(Arch.HLE);
+            this._asmDudeOptionsPageUI.useArch_HLE_UI.ToolTip = MakeToolTip(Arch.HLE);
             this._asmDudeOptionsPageUI.useArch_INVPCID = Settings.Default.ARCH_INVPCID;
-            this._asmDudeOptionsPageUI.useArch_INVPCID_UI.ToolTip = makeToolTip(Arch.INVPCID);
+            this._asmDudeOptionsPageUI.useArch_INVPCID_UI.ToolTip = MakeToolTip(Arch.INVPCID);
             this._asmDudeOptionsPageUI.useArch_PCLMULQDQ = Settings.Default.ARCH_PCLMULQDQ;
-            this._asmDudeOptionsPageUI.useArch_PCLMULQDQ_UI.ToolTip = makeToolTip(Arch.PCLMULQDQ);
+            this._asmDudeOptionsPageUI.useArch_PCLMULQDQ_UI.ToolTip = MakeToolTip(Arch.PCLMULQDQ);
             this._asmDudeOptionsPageUI.useArch_LZCNT = Settings.Default.ARCH_LZCNT;
-            this._asmDudeOptionsPageUI.useArch_LZCNT_UI.ToolTip = makeToolTip(Arch.LZCNT);
+            this._asmDudeOptionsPageUI.useArch_LZCNT_UI.ToolTip = MakeToolTip(Arch.LZCNT);
             this._asmDudeOptionsPageUI.useArch_PREFETCHWT1 = Settings.Default.ARCH_PREFETCHWT1;
-            this._asmDudeOptionsPageUI.useArch_PREFETCHWT1_UI.ToolTip = makeToolTip(Arch.PREFETCHWT1);
+            this._asmDudeOptionsPageUI.useArch_PREFETCHWT1_UI.ToolTip = MakeToolTip(Arch.PREFETCHWT1);
             this._asmDudeOptionsPageUI.useArch_PREFETCHW = Settings.Default.ARCH_PREFETCHW;
-            this._asmDudeOptionsPageUI.useArch_PREFETCHW_UI.ToolTip = makeToolTip(Arch.PRFCHW);
+            this._asmDudeOptionsPageUI.useArch_PREFETCHW_UI.ToolTip = MakeToolTip(Arch.PRFCHW);
             this._asmDudeOptionsPageUI.useArch_RDPID = Settings.Default.ARCH_RDPID;
-            this._asmDudeOptionsPageUI.useArch_RDPID_UI.ToolTip = makeToolTip(Arch.RDPID);
+            this._asmDudeOptionsPageUI.useArch_RDPID_UI.ToolTip = MakeToolTip(Arch.RDPID);
             this._asmDudeOptionsPageUI.useArch_RDRAND = Settings.Default.ARCH_RDRAND;
-            this._asmDudeOptionsPageUI.useArch_RDRAND_UI.ToolTip = makeToolTip(Arch.RDRAND);
+            this._asmDudeOptionsPageUI.useArch_RDRAND_UI.ToolTip = MakeToolTip(Arch.RDRAND);
             this._asmDudeOptionsPageUI.useArch_RDSEED = Settings.Default.ARCH_RDSEED;
-            this._asmDudeOptionsPageUI.useArch_RDSEED_UI.ToolTip = makeToolTip(Arch.RDSEED);
+            this._asmDudeOptionsPageUI.useArch_RDSEED_UI.ToolTip = MakeToolTip(Arch.RDSEED);
             this._asmDudeOptionsPageUI.useArch_XSAVEOPT = Settings.Default.ARCH_XSAVEOPT;
-            this._asmDudeOptionsPageUI.useArch_XSAVEOPT_UI.ToolTip = makeToolTip(Arch.XSAVEOPT);
+            this._asmDudeOptionsPageUI.useArch_XSAVEOPT_UI.ToolTip = MakeToolTip(Arch.XSAVEOPT);
             this._asmDudeOptionsPageUI.useArch_UNDOC = Settings.Default.ARCH_UNDOC;
-            this._asmDudeOptionsPageUI.useArch_UNDOC_UI.ToolTip = makeToolTip(Arch.UNDOC);
+            this._asmDudeOptionsPageUI.useArch_UNDOC_UI.ToolTip = MakeToolTip(Arch.UNDOC);
             this._asmDudeOptionsPageUI.useArch_AES = Settings.Default.ARCH_AES;
-            this._asmDudeOptionsPageUI.useArch_AES_UI.ToolTip = makeToolTip(Arch.AES);
+            this._asmDudeOptionsPageUI.useArch_AES_UI.ToolTip = MakeToolTip(Arch.AES);
 
             #endregion
 
@@ -217,7 +217,7 @@ namespace AsmDude.OptionsPage
             #endregion
         }
 
-        private string makeToolTip(Arch arch) {
+        private string MakeToolTip(Arch arch) {
             MnemonicStore store = AsmDudeTools.Instance.Mnemonic_Store;
             ISet<Mnemonic> usedMnemonics = new HashSet<Mnemonic>();
             foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic))) {
@@ -597,7 +597,7 @@ namespace AsmDude.OptionsPage
                 string message = "Unsaved changes exist. Would you like to save.";
                 int result = VsShellUtilities.ShowMessageBox(this.Site, message, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                 if (result == (int)VSConstants.MessageBoxResult.IDOK) {
-                    save();
+                    Save();
                 } else if (result == (int)VSConstants.MessageBoxResult.IDCANCEL) {
                     e.Cancel = true;
                 }
@@ -612,11 +612,11 @@ namespace AsmDude.OptionsPage
         /// changes (for example, when the user clicks OK in the dialog).
         /// </devdoc>
         protected override void OnApply(PageApplyEventArgs e) {
-            save();
+            Save();
             base.OnApply(e);
         }
 
-        private void save() {
+        private void Save() {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:save", this.ToString()));
             bool changed = false;
             bool restartNeeded = false;

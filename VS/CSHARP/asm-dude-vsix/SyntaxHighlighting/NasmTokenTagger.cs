@@ -410,7 +410,7 @@ namespace AsmDude
                 {
                     if (!keywordString[0].Equals('.'))
                     {
-                        AsmDudeToolsStatic.Output_INFO("NasmTokenTagger:Get_Last_Non_Local_Label: found label \"" + keywordString + "\" at lineNumber " + i + "; beginPos=" + pos.Item1 + "; endPos=" + pos.Item2);
+                        //AsmDudeToolsStatic.Output_INFO("NasmTokenTagger:Get_Last_Non_Local_Label: found label \"" + keywordString + "\" at lineNumber " + i + "; beginPos=" + pos.Item1 + "; endPos=" + pos.Item2);
                         lastNonLocalLabel = keywordString;
                         return true;
                     }
