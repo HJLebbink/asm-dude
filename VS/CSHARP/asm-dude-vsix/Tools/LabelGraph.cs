@@ -155,22 +155,32 @@ namespace AsmDude.Tools
         {
             get
             {
+                AssemblerEnum usedAssember = AsmDudeToolsStatic.Used_Assembler;
                 SortedDictionary<uint, string> result = new SortedDictionary<uint, string>();
                 lock (this._updateLock)
                 {
                     foreach (KeyValuePair<string, IList<uint>> entry in this._usedAt)
                     {
-                        string label = entry.Key;
-                        if (!this._defAt.ContainsKey(label))
+                        string full_Qualified_Label = entry.Key;
+                        bool Is_Defined_Full_Qualified = this._defAt.ContainsKey(full_Qualified_Label);
+                        if (!Is_Defined_Full_Qualified)
                         {
-                            foreach (uint id in entry.Value)
+                            string regular_Label = AsmDudeToolsStatic.Retrieve_Regular_Label(full_Qualified_Label, usedAssember);
+                            bool Is_Defined_Regular = this._defAt.ContainsKey(regular_Label);
+                            if (!Is_Defined_Regular)
                             {
-                                if (result.ContainsKey(id))
+                                AsmDudeToolsStatic.Output_INFO("LabelGraph:Get_Undefined_Labels: label=\"" + full_Qualified_Label + "\" is undefined.");
+
+                                foreach (uint used_at_id in entry.Value)
                                 {
-                                    AsmDudeToolsStatic.Output_WARNING("LabelGraph:Get_Undefined_Labels: id=" + id + " ("+Get_Filename(id) +"; line "+ Get_Linenumber(id)+") with label \"" +label + "\" already exists and has key \""+result[id]+"\".");
-                                } else
-                                {
-                                    result.Add(id, label);
+                                    if (result.ContainsKey(used_at_id))
+                                    {   // this should not happen: somehow the (file-line) used_at_id has multiple occurances on the same line?!
+                                        AsmDudeToolsStatic.Output_WARNING("LabelGraph:Get_Undefined_Labels: id=" + used_at_id + " (" + Get_Filename(used_at_id) + "; line " + Get_Linenumber(used_at_id) + ") with label \"" + full_Qualified_Label + "\" already exists and has key \"" + result[used_at_id] + "\".");
+                                    }
+                                    else
+                                    {
+                                        result.Add(used_at_id, full_Qualified_Label);
+                                    }
                                 }
                             }
                         }
@@ -234,13 +244,21 @@ namespace AsmDude.Tools
             }
         }
 
-        public SortedSet<uint> Label_Used_At_Info(string label)
+        public SortedSet<uint> Label_Used_At_Info(string full_Qualified_Label, string label)
         {
-            //AsmDudeToolsStatic.Output_INFO("LabelGraph:Label_Used_At_Info: label=" + label);
-            if (this._usedAt.TryGetValue(label, out var lines))
+            AsmDudeToolsStatic.Output_INFO("LabelGraph:Label_Used_At_Info: full_Qualified_Label=" + full_Qualified_Label + "; label=" + label);
+            
+            //TODO what if both labels are used?
+
+            if (this._usedAt.TryGetValue(full_Qualified_Label, out var lines))
             {
                 return new SortedSet<uint>(lines);
-            } else
+            }
+            else if (this._usedAt.TryGetValue(label, out var lines2))
+            {
+                return new SortedSet<uint>(lines2);
+            }
+            else
             {
                 return emptySet;
             }
@@ -523,11 +541,6 @@ namespace AsmDude.Tools
 
                         Add_To_Dictionary(full_Qualified_Label, id, this._usedAt);
 
-                        if (asmTokenTag.Tag.Misc != null)
-                        {
-                           Add_To_Dictionary(asmTokenTag.Tag.Misc, id, this._usedAt);
-                        }
-
                         //AsmDudeToolsStatic.Output_INFO("LabelGraph:Add_Linenumber: used label \"" + label + "\" at line " + lineNumber);
                         this._hasLabel.Add(id);
                         break;
@@ -567,6 +580,10 @@ namespace AsmDude.Tools
 
         private void Add_To_Dictionary(string key, uint id, IDictionary<string, IList<uint>> dict)
         {
+            if ((key == null) || (key.Length == 0))
+            {
+                return;
+            }
             if (dict.TryGetValue(key, out var list))
             {
                 list.Add(id);

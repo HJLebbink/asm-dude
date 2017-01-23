@@ -55,7 +55,14 @@ namespace AsmDude.Tools
 
         bool Has_Label(string label);
         bool Has_Label_Clash(string label);
-        SortedSet<uint> Label_Used_At_Info(string label);
+
+        /// <summary>
+        /// Return file-line identifiers
+        /// </summary>
+        /// <param name="labelPrefix"></param>
+        /// <param name="label"></param>
+        /// <returns></returns>
+        SortedSet<uint> Label_Used_At_Info(string full_Qualified_Label, string label);
 
         /// <summary>
         /// Return dictionary of line numbers with label clash descriptions

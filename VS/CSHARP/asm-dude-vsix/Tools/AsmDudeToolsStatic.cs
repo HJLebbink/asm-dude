@@ -482,31 +482,31 @@ namespace AsmDude.Tools {
             }
         }
 
-        public static string Make_Full_Qualified_Label(string label1, string label2, AssemblerEnum assembler)
+        public static string Make_Full_Qualified_Label(string prefix, string label2, AssemblerEnum assembler)
         {
             if (assembler.HasFlag(AssemblerEnum.MASM))
             {
-                if ((label1 != null) && (label1.Length > 0))
+                if ((prefix != null) && (prefix.Length > 0))
                 {
-                    return "[" + label1 + "]" + label2;
+                    return "[" + prefix + "]" + label2;
                 } else
                 {
                     return label2;
                 }
             } else if (assembler.HasFlag(AssemblerEnum.NASM))
             {
-                if ((label1 != null) && (label1.Length > 0))
+                if ((prefix != null) && (prefix.Length > 0))
                 {
-                    return label1 + label2;
+                    return prefix + label2;
                 } else
                 {
                     return label2;
                 }
             }
-            return label1 + label2;
+            return prefix + label2;
         }
 
-        public static string Retrieve_Local_Label(string label, AssemblerEnum assembler)
+        public static string Retrieve_Regular_Label(string label, AssemblerEnum assembler)
         {
             if (assembler.HasFlag(AssemblerEnum.MASM))
             {

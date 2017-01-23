@@ -260,7 +260,8 @@ namespace AsmDude
                                     if (k == nKeywords) break;
 
                                     string asmToken2 = NasmTokenTagger.Keyword(pos[k], line);
-                                    yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._label); // do not use full qualified label!
+                                    yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), Make_AsmTokenTag_Label(containingLine.LineNumber));
+                                    //yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._label); // do not use full qualified label!
                                 }
                             }
                             break;

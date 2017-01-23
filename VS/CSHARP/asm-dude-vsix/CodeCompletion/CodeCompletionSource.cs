@@ -129,8 +129,9 @@ namespace AsmDude
                 {
                     //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:AugmentCompletionSession; lineStr=" + lineStr + "; previousKeyword=" + previousKeyword);
 
-                    if (previousKeyword.Equals("INVOKE"))
+                    if (previousKeyword.Equals("INVOKE")) //TODO INVOKE is a MASM keyword not a NASM one...
                     {
+                        // Suggest a label
                         completions = Label_Completions();
                     } else
                     {
@@ -270,7 +271,7 @@ namespace AsmDude
             {
                 //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:AugmentCompletionSession; label={1}; description={2}", this.ToString(), entry.Key, entry.Value));
                 string displayText = entry.Key + " - " + entry.Value;
-                string insertionText = AsmDudeToolsStatic.Retrieve_Local_Label(entry.Key, usedAssember);
+                string insertionText = AsmDudeToolsStatic.Retrieve_Regular_Label(entry.Key, usedAssember);
                 completions.Add(new Completion(displayText, insertionText, null, imageSource, ""));
             }
             return completions;

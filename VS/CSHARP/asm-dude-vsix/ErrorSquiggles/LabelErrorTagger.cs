@@ -73,57 +73,79 @@ namespace AsmDude.ErrorSquiggles
         public IEnumerable<ITagSpan<ErrorTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
             if (spans.Count == 0)
-            {  //there is no content in the buffer
+            {  // there is no content in the buffer
                 yield break;
             }
             if (!this._labelGraph.Is_Enabled)
-            {
+            {   // the label graph is disabled
                 yield break;
             }
 
             DateTime time1 = DateTime.Now;
-            AssemblerEnum usedAssember = AsmDudeToolsStatic.Used_Assembler;
 
+            bool Decorate_Undefined_Labels = Settings.Default.IntelliSenseDecorateUndefinedLabels;
+            bool Decorate_Clashing_Labels = Settings.Default.IntelliSenseDecorateClashingLabels;
 
-
-            foreach (IMappingTagSpan<AsmTokenTag> asmTokenTag in this._aggregator.GetTags(spans))
+            if (Decorate_Undefined_Labels || Decorate_Clashing_Labels)
             {
-                SnapshotSpan tagSpan = asmTokenTag.Span.GetSpans(this._sourceBuffer)[0];
-                //AsmDudeToolsStatic.Output(string.Format("INFO: ErrorTagger:GetTags: found keyword \"{0}\"", tagSpan.GetText()));
+                AssemblerEnum usedAssember = AsmDudeToolsStatic.Used_Assembler;
 
-                switch (asmTokenTag.Tag.Type)
+                foreach (IMappingTagSpan<AsmTokenTag> asmTokenTag in this._aggregator.GetTags(spans))
                 {
-                    case AsmTokenType.Label:
-                    {
-                        if (Settings.Default.IntelliSenseDecorateUndefinedLabels)
-                        {
-                            string label = tagSpan.GetText();
-                            string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(asmTokenTag.Tag.Misc, label, usedAssember);
+                    SnapshotSpan tagSpan = asmTokenTag.Span.GetSpans(this._sourceBuffer)[0];
+                    //AsmDudeToolsStatic.Output_INFO(string.Format("LabelErrorTagger:GetTags: found keyword \"{0}\"", tagSpan.GetText()));
 
-                            if (!this._labelGraph.Has_Label(full_Qualified_Label))
-                            {
-                                var toolTipContent = Undefined_Label_Tool_Tip_Content();
-                                yield return new TagSpan<ErrorTag>(tagSpan, new ErrorTag("warning", toolTipContent));
-                            }
-                        }
-                        break;
-                    }
-                    case AsmTokenType.LabelDef:
+                    switch (asmTokenTag.Tag.Type)
                     {
-                        if (Settings.Default.IntelliSenseDecorateClashingLabels)
-                        {
-                            string label = tagSpan.GetText();
-                            string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(asmTokenTag.Tag.Misc, label, usedAssember);
-
-                            if (this._labelGraph.Has_Label_Clash(full_Qualified_Label))
+                        case AsmTokenType.Label:
                             {
-                                var toolTipContent = Label_Clash_Tool_Tip_Content(full_Qualified_Label);
-                                yield return new TagSpan<ErrorTag>(tagSpan, new ErrorTag("warning", toolTipContent));
+                                if (Decorate_Undefined_Labels)
+                                {
+                                    string label = tagSpan.GetText();
+                                    string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(asmTokenTag.Tag.Misc, label, usedAssember);
+
+                                    if (this._labelGraph.Has_Label(full_Qualified_Label))
+                                    {
+                                        // Nothing to report
+                                    } else
+                                    {
+                                        AsmDudeToolsStatic.Output_INFO(string.Format("LabelErrorTagger:GetTags: found label \"{0}\"; full-label \"{1}\"", label, full_Qualified_Label));
+
+                                        if (usedAssember == AssemblerEnum.MASM)
+                                        {
+                                            if (this._labelGraph.Has_Label(label))
+                                            {
+                                                // TODO: is this always a valid label? Nothing to report
+                                            } else {
+                                                var toolTipContent = Undefined_Label_Tool_Tip_Content();
+                                                yield return new TagSpan<ErrorTag>(tagSpan, new ErrorTag("warning", toolTipContent));
+                                            }
+                                        } else
+                                        {
+                                            var toolTipContent = Undefined_Label_Tool_Tip_Content();
+                                            yield return new TagSpan<ErrorTag>(tagSpan, new ErrorTag("warning", toolTipContent));
+                                        }
+                                    }
+                                }
+                                break;
                             }
-                        }
-                        break;
+                        case AsmTokenType.LabelDef:
+                            {
+                                if (Decorate_Clashing_Labels)
+                                {
+                                    string label = tagSpan.GetText();
+                                    string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(asmTokenTag.Tag.Misc, label, usedAssember);
+
+                                    if (this._labelGraph.Has_Label_Clash(full_Qualified_Label))
+                                    {
+                                        var toolTipContent = Label_Clash_Tool_Tip_Content(full_Qualified_Label);
+                                        yield return new TagSpan<ErrorTag>(tagSpan, new ErrorTag("warning", toolTipContent));
+                                    }
+                                }
+                                break;
+                            }
+                        default: break;
                     }
-                    default: break;
                 }
             }
             AsmDudeToolsStatic.Print_Speed_Warning(time1, "LabelErrorTagger");
