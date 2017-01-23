@@ -247,21 +247,32 @@ namespace AsmDude.Tools
         public SortedSet<uint> Label_Used_At_Info(string full_Qualified_Label, string label)
         {
             AsmDudeToolsStatic.Output_INFO("LabelGraph:Label_Used_At_Info: full_Qualified_Label=" + full_Qualified_Label + "; label=" + label);
-            
-            //TODO what if both labels are used?
-
-            if (this._usedAt.TryGetValue(full_Qualified_Label, out var lines))
+            SortedSet<uint> results = new SortedSet<uint>();
             {
-                return new SortedSet<uint>(lines);
+                if (this._usedAt.TryGetValue(full_Qualified_Label, out var lines))
+                {
+                    results.UnionWith(lines);
+                }
             }
-            else if (this._usedAt.TryGetValue(label, out var lines2))
             {
-                return new SortedSet<uint>(lines2);
+                if (this._usedAt.TryGetValue(label, out var lines))
+                {
+                    results.UnionWith(lines);
+                }
             }
-            else
+            if (full_Qualified_Label.Equals(label))
             {
-                return emptySet;
+                AssemblerEnum usedAssember = AsmDudeToolsStatic.Used_Assembler;
+                foreach (KeyValuePair<string, IList<uint>> entry in this._usedAt)
+                {
+                    string regular_Label = AsmDudeToolsStatic.Retrieve_Regular_Label(entry.Key, usedAssember);
+                    if (label.Equals(regular_Label))
+                    {
+                        results.UnionWith(entry.Value);
+                    }
+                }
             }
+            return results;
         }
 
         public void Reset_Delayed()
