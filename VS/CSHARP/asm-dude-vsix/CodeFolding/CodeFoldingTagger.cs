@@ -195,10 +195,11 @@ namespace AsmDude.CodeFolding
                 return tup;
             } else
             {
-                if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.MASM))
+                AssemblerEnum usedAssember = AsmDudeToolsStatic.Used_Assembler;
+                if (usedAssember.HasFlag(AssemblerEnum.MASM))
                 {
                     return Is_Start_Masm_Keyword(lineContent, lineNumber);
-                } else if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.NASM))
+                } else if (usedAssember.HasFlag(AssemblerEnum.NASM))
                 {
                     return Is_Start_Nasm_Keyword(lineContent, lineNumber);
                 } else
@@ -239,14 +240,33 @@ namespace AsmDude.CodeFolding
                     switch (tokenStr)
                     {
                         case "SEGMENT":
-                        case "PROC":
                         case "MACRO":
                         case "STRUCT":
                         case ".IF":
                         case ".WHILE":
+                        case "PROC":
                         {
-                            return new Tuple<int, int>(lineContent.Length, lineContent.Length);
+                                return new Tuple<int, int>(lineContent.Length, lineContent.Length);
                         }
+                            /*
+                        case "PROC":
+                            {
+                                string lineContentCaps = lineContent.ToUpper();
+                                if (lineContentCaps.Contains("EXTERN") || lineContentCaps.Contains("EXTRN"))
+                                {
+                                    // do nothing: extern definitions of PROC do no need to be folded
+                                } else
+                                {
+                                    return new Tuple<int, int>(lineContent.Length, lineContent.Length);
+                                }
+                                break;
+                            }
+                            */
+                        case "EXTERN":
+                        case "EXTRN":
+                            {
+                                return new Tuple<int, int>(-1, -1);
+                            }
                         default: break;
                     }
                 }
@@ -289,10 +309,11 @@ namespace AsmDude.CodeFolding
                 return i1;
             } else
             {
-                if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.MASM))
+                AssemblerEnum usedAssember = AsmDudeToolsStatic.Used_Assembler;
+                if (usedAssember.HasFlag(AssemblerEnum.MASM))
                 {
                     return Is_End_Masm_Keyword(lineContent, lineNumber);
-                } else if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.NASM))
+                } else if (usedAssember.HasFlag(AssemblerEnum.NASM))
                 {
                     return Is_End_Nasm_Keyword(lineContent, lineNumber);
                 } else
@@ -441,7 +462,6 @@ namespace AsmDude.CodeFolding
                                 #region Search for multi-line Remark
                                 if (AsmSourceTools.IsRemarkOnly(lineContent))
                                 {
-
                                     int lineNumber2 = -1;
                                     string lineContent2 = null;
 
