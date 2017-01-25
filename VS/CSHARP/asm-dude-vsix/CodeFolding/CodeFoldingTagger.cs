@@ -146,7 +146,8 @@ namespace AsmDude.CodeFolding
             if (startPos < 0)
             {
                 description = line;
-            } else if (startPos < line.Length)
+            }
+            else if (startPos < line.Length)
             {
                 description = line.Substring(startPos).Trim();
             }
@@ -193,16 +194,19 @@ namespace AsmDude.CodeFolding
             if (tup.Item1 != -1)
             {
                 return tup;
-            } else
+            }
+            else
             {
                 AssemblerEnum usedAssember = AsmDudeToolsStatic.Used_Assembler;
                 if (usedAssember.HasFlag(AssemblerEnum.MASM))
                 {
                     return Is_Start_Masm_Keyword(lineContent, lineNumber);
-                } else if (usedAssember.HasFlag(AssemblerEnum.NASM))
+                }
+                else if (usedAssember.HasFlag(AssemblerEnum.NASM))
                 {
                     return Is_Start_Nasm_Keyword(lineContent, lineNumber);
-                } else
+                }
+                else
                 {
                     return new Tuple<int, int>(-1, -1);
                 }
@@ -218,7 +222,8 @@ namespace AsmDude.CodeFolding
             if (i1 == -1)
             {
                 return new Tuple<int, int>(-1, -1);
-            } else
+            }
+            else
             {
                 return new Tuple<int, int>(i1, i1 + this.startRegionTag.Length);
             }
@@ -245,25 +250,11 @@ namespace AsmDude.CodeFolding
                         case ".IF":
                         case ".WHILE":
                         case "PROC":
-                        {
-                                return new Tuple<int, int>(lineContent.Length, lineContent.Length);
-                        }
-                            /*
-                        case "PROC":
                             {
-                                string lineContentCaps = lineContent.ToUpper();
-                                if (lineContentCaps.Contains("EXTERN") || lineContentCaps.Contains("EXTRN"))
-                                {
-                                    // do nothing: extern definitions of PROC do no need to be folded
-                                } else
-                                {
-                                    return new Tuple<int, int>(lineContent.Length, lineContent.Length);
-                                }
-                                break;
+                                return new Tuple<int, int>(lineContent.Length, lineContent.Length);
                             }
-                            */
                         case "EXTERN":
-                        case "EXTRN":
+                        case "EXTRN": // no start region on a line with EXTERN keyword
                             {
                                 return new Tuple<int, int>(-1, -1);
                             }
@@ -291,9 +282,9 @@ namespace AsmDude.CodeFolding
                     {
                         case "STRUC":
                         case "ISTRUC":
-                        {
-                            return new Tuple<int, int>(lineContent.Length, lineContent.Length);
-                        }
+                            {
+                                return new Tuple<int, int>(lineContent.Length, lineContent.Length);
+                            }
                         default: break;
                     }
                 }
@@ -307,16 +298,19 @@ namespace AsmDude.CodeFolding
             if (i1 != -1)
             {
                 return i1;
-            } else
+            }
+            else
             {
                 AssemblerEnum usedAssember = AsmDudeToolsStatic.Used_Assembler;
                 if (usedAssember.HasFlag(AssemblerEnum.MASM))
                 {
                     return Is_End_Masm_Keyword(lineContent, lineNumber);
-                } else if (usedAssember.HasFlag(AssemblerEnum.NASM))
+                }
+                else if (usedAssember.HasFlag(AssemblerEnum.NASM))
                 {
                     return Is_End_Nasm_Keyword(lineContent, lineNumber);
-                } else
+                }
+                else
                 {
                     return -1;
                 }
@@ -344,9 +338,9 @@ namespace AsmDude.CodeFolding
                         //case "ENDS": // end token for STRUCT
                         case ".ENDIF": // end token for .IF
                         case ".ENDW": // end token for .WHILE
-                        {
-                            return lineContent.IndexOf(tokenStr, StringComparison.OrdinalIgnoreCase);
-                        }
+                            {
+                                return lineContent.IndexOf(tokenStr, StringComparison.OrdinalIgnoreCase);
+                            }
                         default: break;
                     }
                 }
@@ -366,9 +360,9 @@ namespace AsmDude.CodeFolding
                     {
                         case "ENDSTRUC": // end token for STRUC
                         case "IEND":    // end token for ISTRUC
-                        {
-                            return lineContent.IndexOf(tokenStr, StringComparison.OrdinalIgnoreCase);
-                        }
+                            {
+                                return lineContent.IndexOf(tokenStr, StringComparison.OrdinalIgnoreCase);
+                            }
                         default: break;
                     }
                 }
@@ -390,13 +384,15 @@ namespace AsmDude.CodeFolding
             {
                 AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger:Parse_Delayed: busy; scheduling this call.");
                 this._scheduled = true;
-            } else
+            }
+            else
             {
                 AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger:Parse_Delayed: going to execute this call.");
                 if (true)
                 {
                     AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Parse2);
-                } else
+                }
+                else
                 {
                     ThreadPool.QueueUserWorkItem(this.Parse);
                 }
@@ -451,13 +447,15 @@ namespace AsmDude.CodeFolding
                         if (regionStart != -1)
                         {
                             Add_Start_Region(lineContent, regionStart, lineNumber, regionStartHoverText, ref currentRegion, newRegions);
-                        } else
+                        }
+                        else
                         {
                             int regionEnd = Is_End_Keyword(lineContent, lineNumber);
                             if (regionEnd != -1)
                             {
                                 Add_End_Region(lineContent, regionEnd, lineNumber, ref currentRegion, newRegions);
-                            } else
+                            }
+                            else
                             {
                                 #region Search for multi-line Remark
                                 if (AsmSourceTools.IsRemarkOnly(lineContent))
@@ -476,7 +474,8 @@ namespace AsmDude.CodeFolding
                                             lineNumber2 = line.LineNumber;
                                             lineContent2 = lineContent3;
                                             already_advanced = false;
-                                        } else
+                                        }
+                                        else
                                         {
                                             already_advanced = true;
                                             break;
@@ -638,7 +637,8 @@ namespace AsmDude.CodeFolding
                 if (TagsChanged != null)
                 {
                     TagsChanged(this, new SnapshotSpanEventArgs(new SnapshotSpan(this._snapshot, Span.FromBounds(changeStart, changeEnd))));
-                } else
+                }
+                else
                 {
                     AsmDudeToolsStatic.Output_WARNING("CodeFoldingTagger:updateChangedSpans: TagsChanged is null");
                 }
