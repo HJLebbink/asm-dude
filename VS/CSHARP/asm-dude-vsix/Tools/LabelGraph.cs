@@ -37,6 +37,9 @@ namespace AsmDude.Tools
     public sealed class LabelGraph : ILabelGraph
     {
         #region Fields
+        /// <summary>
+        /// immutable empty set to prevent creating one every time you need one
+        /// </summary>
         private static readonly SortedSet<uint> emptySet = new SortedSet<uint>();
 
         private readonly ITextBuffer _buffer;
@@ -51,6 +54,7 @@ namespace AsmDude.Tools
 
         private readonly IDictionary<string, IList<uint>> _usedAt;
         private readonly IDictionary<string, IList<uint>> _defAt;
+        private readonly IDictionary<string, IList<uint>> _defAt_PROTO;
         private readonly ISet<uint> _hasLabel;
         private readonly ISet<uint> _hasDef;
 
@@ -84,6 +88,7 @@ namespace AsmDude.Tools
             this._filenames = new Dictionary<uint, string>();
             this._usedAt = new Dictionary<string, IList<uint>>();
             this._defAt = new Dictionary<string, IList<uint>>();
+            this._defAt_PROTO = new Dictionary<string, IList<uint>>();
             this._hasLabel = new HashSet<uint>();
             this._hasDef = new HashSet<uint>();
             this._undefined_includes = new List<Undefined_Label_Struct>();
@@ -197,7 +202,7 @@ namespace AsmDude.Tools
                 SortedDictionary<string, string> result = new SortedDictionary<string, string>();
                 lock (this._updateLock)
                 {
-                    foreach (KeyValuePair<string, IList<uint>> entry in this._defAt)
+                    foreach (KeyValuePair<string, IList<uint>> entry in this._defAt)  
                     {
                         uint id = entry.Value[0];
                         int lineNumber = Get_Linenumber(id);
@@ -219,7 +224,7 @@ namespace AsmDude.Tools
 
         public bool Has_Label(string label)
         {
-            return this._defAt.ContainsKey(label);
+            return this._defAt.ContainsKey(label) || this._defAt_PROTO.ContainsKey(label);
         }
 
         public bool Has_Label_Clash(string label)
@@ -313,6 +318,7 @@ namespace AsmDude.Tools
 
                 this._usedAt.Clear();
                 this._defAt.Clear();
+                this._defAt_PROTO.Clear();
                 this._hasLabel.Clear();
                 this._hasDef.Clear();
                 this._filenames.Clear();
@@ -395,6 +401,7 @@ namespace AsmDude.Tools
             {
                 this._buffer.ChangedLowPriority -= this.Buffer_Changed;
                 this._defAt.Clear();
+                this._defAt_PROTO.Clear();
                 this._hasDef.Clear();
                 this._usedAt.Clear();
                 this._hasLabel.Clear();
@@ -536,14 +543,24 @@ namespace AsmDude.Tools
                     case AsmTokenType.LabelDef:
                     {
                         string label = Get_Text(buffer, asmTokenTag);
-                        string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(asmTokenTag.Tag.Misc, label, usedAssember);
+                        string extra_Tag_Info = asmTokenTag.Tag.Misc;
 
-                        //AsmDudeToolsStatic.Output_INFO("LabelGraph:Add_Linenumber: found labelDef \"" + label + "\" at line " + lineNumber + "; full_Qualified_Label = \"" + full_Qualified_Label + "\".");
+                        if ((extra_Tag_Info != null) && extra_Tag_Info.Equals(AsmTokenTag.MISC_KEYWORD_PROTO))
+                            {
+                                AsmDudeToolsStatic.Output_INFO("LabelGraph:Add_Linenumber: found PROTO labelDef \"" + label + "\" at line " + lineNumber);
+                                this.Add_To_Dictionary(label, id, this._defAt_PROTO);
+                                this._hasDef.Add(id);
+                            }
+                            else
+                            {
+                                string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(extra_Tag_Info, label, usedAssember);
 
-                        this.Add_To_Dictionary(full_Qualified_Label, id, this._defAt);
-                        this._hasDef.Add(id);
-                        break;
+                                //AsmDudeToolsStatic.Output_INFO("LabelGraph:Add_Linenumber: found labelDef \"" + label + "\" at line " + lineNumber + "; full_Qualified_Label = \"" + full_Qualified_Label + "\".");
 
+                                this.Add_To_Dictionary(full_Qualified_Label, id, this._defAt);
+                                this._hasDef.Add(id);
+                            }
+                            break;
                     }
                     case AsmTokenType.Label:
                     {

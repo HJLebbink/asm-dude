@@ -26,6 +26,9 @@ namespace AsmDude.SyntaxHighlighting
 {
     public class AsmTokenTag : ITag
     {
+        public static readonly string MISC_KEYWORD_PROTO = "PROTO";
+
+
         public AsmTokenType Type { get; private set; }
         public string Misc { get; private set; }
         public AsmTokenTag(AsmTokenType type)

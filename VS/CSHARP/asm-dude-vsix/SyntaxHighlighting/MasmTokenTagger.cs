@@ -45,6 +45,7 @@ namespace AsmDude
         private readonly AsmTokenTag _jump;
         private readonly AsmTokenTag _label;
         private readonly AsmTokenTag _labelDef;
+        private readonly AsmTokenTag _labelDef_PROTO;
         private readonly AsmTokenTag _misc;
         private readonly AsmTokenTag _UNKNOWN;
 
@@ -61,6 +62,7 @@ namespace AsmDude
             this._jump = new AsmTokenTag(AsmTokenType.Jump);
             this._label = new AsmTokenTag(AsmTokenType.Label);
             this._labelDef = new AsmTokenTag(AsmTokenType.LabelDef);
+            this._labelDef_PROTO = new AsmTokenTag(AsmTokenType.LabelDef, AsmTokenTag.MISC_KEYWORD_PROTO); 
             this._misc = new AsmTokenTag(AsmTokenType.Misc);
             this._UNKNOWN = new AsmTokenTag(AsmTokenType.UNKNOWN);
         }
@@ -204,11 +206,17 @@ namespace AsmDude
                                     switch (nextKeyword)
                                     {
                                         case "PROC":
-                                        //case "PROTO": //TODO a proto should not be considered a definition of a label
                                         case "EQU":
                                         case "LABEL":
                                         {
                                             yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k - 1], offset, curSpan), this._labelDef);
+                                            yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._directive);
+                                            isUnknown = false;
+                                            break;
+                                        }
+                                        case "PROTO":
+                                        { // a proto is considered a label definition but it should not clash with other label definitions
+                                            yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k - 1], offset, curSpan), this._labelDef_PROTO);
                                             yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._directive);
                                             isUnknown = false;
                                             break;

@@ -208,8 +208,15 @@ namespace AsmDude.QuickInfo
                         case AsmTokenType.LabelDef:
                             {
                                 string label = keyword;
-                                string labelPrefix = asmTokenTag.Tag.Misc;
-                                string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(labelPrefix, label, AsmDudeToolsStatic.Used_Assembler);
+                                string extra_Tag_Info = asmTokenTag.Tag.Misc;
+                                string full_Qualified_Label;
+                                if ((extra_Tag_Info != null) && extra_Tag_Info.Equals(AsmTokenTag.MISC_KEYWORD_PROTO))
+                                {
+                                    full_Qualified_Label = label;
+                                } else
+                                {
+                                    full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(extra_Tag_Info, label, AsmDudeToolsStatic.Used_Assembler);
+                                }
 
                                 AsmDudeToolsStatic.Output_INFO("AsmQuickInfoSource:AugmentQuickInfoSession: found label def " + full_Qualified_Label);
 
