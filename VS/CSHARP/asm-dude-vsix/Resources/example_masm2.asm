@@ -1,9 +1,9 @@
 
 
+procedure1 PROTO a, b 
+
 global_label1:
 	xor rcx, rcx
-
-
 
 procedure1 PROC a, b 
 	jmp local_label1
