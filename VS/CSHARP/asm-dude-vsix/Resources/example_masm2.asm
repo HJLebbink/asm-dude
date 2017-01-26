@@ -1,18 +1,21 @@
-
+;#region 
+extrn printf : proc
+;#endregion
 
 procedure1 PROTO a, b 
 
 global_label1:
 	xor rcx, rcx
 
-procedure1 PROC a, b 
+procedure1A PROC a, b 
 	jmp local_label1
 	local_label1:
+	call printf
 
-procedure1 ENDP
+procedure1A ENDP
 
 procedure2 PROC
-	call procedure1
+	call procedure1A
 	invoke procedure1
 	jmp local_label1
 
