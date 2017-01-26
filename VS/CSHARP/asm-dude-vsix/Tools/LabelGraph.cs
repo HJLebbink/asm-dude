@@ -167,26 +167,23 @@ namespace AsmDude.Tools
                     foreach (KeyValuePair<string, IList<uint>> entry in this._usedAt)
                     {
                         string full_Qualified_Label = entry.Key;
-                        bool Is_Defined_Full_Qualified = this._defAt.ContainsKey(full_Qualified_Label);
-                        if (!Is_Defined_Full_Qualified)
-                        {
-                            string regular_Label = AsmDudeToolsStatic.Retrieve_Regular_Label(full_Qualified_Label, usedAssember);
-                            bool Is_Defined_Regular = this._defAt.ContainsKey(regular_Label);
-                            if (!Is_Defined_Regular)
-                            {
-                                AsmDudeToolsStatic.Output_INFO("LabelGraph:Get_Undefined_Labels: label=\"" + full_Qualified_Label + "\" is undefined.");
+                        if (this._defAt.ContainsKey(full_Qualified_Label)) continue;
 
-                                foreach (uint used_at_id in entry.Value)
-                                {
-                                    if (result.ContainsKey(used_at_id))
-                                    {   // this should not happen: somehow the (file-line) used_at_id has multiple occurances on the same line?!
-                                        AsmDudeToolsStatic.Output_WARNING("LabelGraph:Get_Undefined_Labels: id=" + used_at_id + " (" + Get_Filename(used_at_id) + "; line " + Get_Linenumber(used_at_id) + ") with label \"" + full_Qualified_Label + "\" already exists and has key \"" + result[used_at_id] + "\".");
-                                    }
-                                    else
-                                    {
-                                        result.Add(used_at_id, full_Qualified_Label);
-                                    }
-                                }
+                        string regular_Label = AsmDudeToolsStatic.Retrieve_Regular_Label(full_Qualified_Label, usedAssember);
+                        if (this._defAt.ContainsKey(regular_Label)) continue;
+                        if (this._defAt_PROTO.ContainsKey(regular_Label)) continue;
+
+                        AsmDudeToolsStatic.Output_INFO("LabelGraph:Get_Undefined_Labels: label=\"" + full_Qualified_Label + "\" is not defined.");
+
+                        foreach (uint used_at_id in entry.Value)
+                        {
+                            if (result.ContainsKey(used_at_id))
+                            {   // this should not happen: somehow the (file-line) used_at_id has multiple occurances on the same line?!
+                                AsmDudeToolsStatic.Output_WARNING("LabelGraph:Get_Undefined_Labels: id=" + used_at_id + " (" + Get_Filename(used_at_id) + "; line " + Get_Linenumber(used_at_id) + ") with label \"" + full_Qualified_Label + "\" already exists and has key \"" + result[used_at_id] + "\".");
+                            }
+                            else
+                            {
+                                result.Add(used_at_id, full_Qualified_Label);
                             }
                         }
                     }
@@ -238,15 +235,22 @@ namespace AsmDude.Tools
 
         public SortedSet<uint> Get_Label_Def_Linenumbers(string label)
         {
-            if (this._defAt.TryGetValue(label, out var list))
+            SortedSet<uint> results = new SortedSet<uint>();
             {
-                //AsmDudeToolsStatic.Output_INFO("LabelGraph:Get_Label_Def_Linenumbers: label=" + label + ": found "+list.Count +" definitions.");
-                return new SortedSet<uint>(list);
-            } else
-            {
-                //AsmDudeToolsStatic.Output_INFO("LabelGraph:Get_Label_Def_Linenumbers: label=" + label + ": found 0 definitions.");
-                return emptySet;
+                if (this._defAt.TryGetValue(label, out var list))
+                {
+                    //AsmDudeToolsStatic.Output_INFO("LabelGraph:Get_Label_Def_Linenumbers: Regular label definitions. label=" + label + ": found "+list.Count +" definitions.");
+                    results.UnionWith(list);
+                }
             }
+            {
+                if (this._defAt_PROTO.TryGetValue(label, out var list))
+                {
+                    //AsmDudeToolsStatic.Output_INFO("LabelGraph:Get_Label_Def_Linenumbers: PROTO label defintions. label=" + label + ": found "+list.Count +" definitions.");
+                    results.UnionWith(list);
+                }
+            }
+            return results;
         }
 
         public SortedSet<uint> Label_Used_At_Info(string full_Qualified_Label, string label)
