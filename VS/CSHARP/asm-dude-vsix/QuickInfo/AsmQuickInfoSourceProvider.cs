@@ -53,8 +53,6 @@ namespace AsmDude.QuickInfo
 
         public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer buffer)
         {
-            //if (!AsmDudeToolsStatic.properFile(buffer)) return null;
-
             Func<AsmQuickInfoSource> sc = delegate () {
                 ITagAggregator<AsmTokenTag> aggregator = AsmDudeToolsStatic.Get_Aggregator(buffer, this._aggregatorFactory);
                 ILabelGraph labelGraph = AsmDudeToolsStatic.Get_Label_Graph(buffer, this._aggregatorFactory, this._docFactory, this._contentService);

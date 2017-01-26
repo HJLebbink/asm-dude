@@ -79,7 +79,7 @@ namespace AsmDude.QuickInfo
                 var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(snapshot);
                 if (triggerPoint == null)
                 {
-                    //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoSource:AugmentQuickInfoSession: trigger point is null");
+                    AsmDudeToolsStatic.Output_INFO("AsmQuickInfoSource:AugmentQuickInfoSession: trigger point is null");
                     return;
                 }
                 string keyword = "";
