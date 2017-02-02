@@ -282,6 +282,7 @@ namespace AsmDude.CodeFolding
                     {
                         case "STRUC":
                         case "ISTRUC":
+                        case "%MACRO":
                             {
                                 return new Tuple<int, int>(lineContent.Length, lineContent.Length);
                             }
@@ -360,6 +361,7 @@ namespace AsmDude.CodeFolding
                     {
                         case "ENDSTRUC": // end token for STRUC
                         case "IEND":    // end token for ISTRUC
+                        case "%ENDMACRO": // end token for %MACRO
                             {
                                 return lineContent.IndexOf(tokenStr, StringComparison.OrdinalIgnoreCase);
                             }
