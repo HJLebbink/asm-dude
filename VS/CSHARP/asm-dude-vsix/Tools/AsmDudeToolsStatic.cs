@@ -106,7 +106,7 @@ namespace AsmDude.Tools {
         }
 
         /// <summary>
-        /// get the full filename (with path) for the provided buffer
+        /// get the full filename (with path) of the provided buffer; returns null if such name does not exist
         /// </summary>
         public static string GetFileName(ITextBuffer buffer) {
             buffer.Properties.TryGetProperty(typeof(Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer), out IVsTextBuffer bufferAdapter);
