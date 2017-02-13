@@ -9,7 +9,7 @@ namespace AsmDude.Tools
 
     public struct PerformanceItem
     {
-        public string _microArch;
+        public MicroArch _microArch;
         public Mnemonic _instr;
         public string _args;
         public string _latency;
@@ -49,7 +49,7 @@ namespace AsmDude.Tools
             return result.AsReadOnly();
         }
 
-        public void AddData(string microArch, string filename)
+        public void AddData(MicroArch microArch, string filename)
         {
             AsmDudeToolsStatic.Output_INFO("PerformanceStore:AddData: microArch=" + microArch + "; filename=" + filename);
             try

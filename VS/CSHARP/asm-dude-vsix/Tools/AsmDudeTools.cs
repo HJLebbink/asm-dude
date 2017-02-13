@@ -83,8 +83,8 @@ namespace AsmDude {
             }
             {
                 this._performanceStore = new PerformanceStore();
-                this._performanceStore.AddData("Broadwell", path + "Performance" + Path.DirectorySeparatorChar + "Broadwell.tsv");
-                this._performanceStore.AddData("Skylake", path + "Performance" + Path.DirectorySeparatorChar + "Skylake.tsv");
+                this._performanceStore.AddData(MicroArch.Broadwell, path + "Performance" + Path.DirectorySeparatorChar + "Broadwell.tsv");
+                this._performanceStore.AddData(MicroArch.Skylake, path + "Performance" + Path.DirectorySeparatorChar + "Skylake.tsv");
             }
             #endregion
 
