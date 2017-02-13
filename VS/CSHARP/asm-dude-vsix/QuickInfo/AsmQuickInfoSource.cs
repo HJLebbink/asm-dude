@@ -185,7 +185,7 @@ namespace AsmDude.QuickInfo
                                         FontFamily family = new FontFamily("Consolas");
                                         IList<Run> list = new List<Run>();
 
-                                        description.Inlines.Add(new Run(string.Format("\n\n{0,-15}{1,-20}{2,-10}{3,-10}\n", "Architecture", "Instruction", "Latency", "Throughput"))
+                                        description.Inlines.Add(new Run(string.Format("\n\n{0,-15}{1,-24}{2,-10}{3,-10}\n", "Architecture", "Instruction", "Latency", "Throughput"))
                                         {
                                             FontFamily = family,
                                             FontStyle = FontStyles.Italic,
@@ -194,7 +194,7 @@ namespace AsmDude.QuickInfo
                                         });
                                         foreach (PerformanceItem item in performanceData)
                                         {
-                                            description.Inlines.Add(new Run(string.Format("{0,-15}{1,-20}{2,-10}{3,-10}{4,-10}\n", item._microArch, item._instr + " " +item._args, item._latency, item._throughput, item._remark))
+                                            description.Inlines.Add(new Run(string.Format("{0,-15}{1,-24}{2,-10}{3,-10}{4,-10}\n", item._microArch, item._instr + " " +item._args, item._latency, item._throughput, item._remark))
                                             {
                                                 FontFamily = family,
                                                 Foreground = this._foreground

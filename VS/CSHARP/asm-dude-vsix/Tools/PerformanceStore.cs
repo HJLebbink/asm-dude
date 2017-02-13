@@ -71,7 +71,7 @@ namespace AsmDude.Tools
                                         Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(mnemonicStr);
                                         if (mnemonic == Mnemonic.UNKNOWN)
                                         {
-                                            AsmDudeToolsStatic.Output_WARNING("PerformanceStore:LoadData: unknown mnemonic " + mnemonicStr + " in line: " + line);
+                                            AsmDudeToolsStatic.Output_WARNING("PerformanceStore:LoadData: microArch="+ microArch + ": unknown mnemonic " + mnemonicStr + " in line: " + line);
                                         }
                                         else
                                         {
