@@ -40,7 +40,7 @@ working on.
 #### Signature Help
 Signature Help (also known as Parameter Info) displays the signature of a method in a tooltip when a user types the parameter list start character (eg in c++ an opening parenthesis). As a parameter and parameter separator (typically a comma) are typed, the tooltip is updated to show the next parameter in bold.
 
-TODO picture
+![label-analysis](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude-signature-help.png?raw=true "Signature Help")
 
 #### Label Analysis
 Quick info tooltips for labels allow you to see where labels are defined. If labels are not defined, red error 
@@ -107,3 +107,4 @@ Studio will launch under the experimental hive.
 * 21 March 2016: Added code completion for labels in jumps [v1.4.8]
 * 8 May 2016: Added Label analysis [v1.5.0.0]
 * 22 July 2016: Added Signature Help [v1.6.1.1]
+* 13 Feb 2016: Added Performance Data for Skylake & Broadwell [v1.7.?] 
