@@ -44,7 +44,6 @@ MOVBE	r64,m64		0.5
 MOVBE	m16,r16		1	
 MOVBE	m32,r32		1	
 MOVBE	m64,r64		1	
-				
 PREFETCHNTA PREFETCHT0 PREFETCHT1 PREFETCHT2	m		0.5	
 PREFETCHW	m		1	
 LFENCE			4	
@@ -133,10 +132,10 @@ SHRD SHLD	m,r,i		2
 SHLD	r,r,cl	3	2	
 SHRD	r,r,cl	4	2	
 SHRD SHLD	m,r,cl		4	
-SHLX SHRX SARX	r,r,r	1	0.5	BMI2
-SHLX SHRX SARX	r,m,r		0.5	BMI2
-RORX	r,r,i	1	0.5	BMI2
-RORX	r,m,i		0.5	BMI2
+SHLX SHRX SARX	r,r,r	1	0.5	
+SHLX SHRX SARX	r,m,r		0.5	
+RORX	r,r,i	1	0.5	
+RORX	r,m,i		0.5	
 BT	r,r/i	1	0.5	
 BT	m,r		5	
 BT	m,i		0.5	
@@ -147,7 +146,7 @@ BSF BSR	r,r	3	1
 BSF BSR	r,m		1	
 SETE SETZ SETNE SETNZ SETA SETNBE SETAE SETNB SETNC SETB SETNAE SETC SETBE SETNA SETG SETNLE SETGE SETNL SETL SETNGE SETLE SETNG SETS SETNS SETO SETNO SETPE SETP SETPO SETNP	r	1	0.5	
 SETE SETZ SETNE SETNZ SETA SETNBE SETAE SETNB SETNC SETB SETNAE SETC SETBE SETNA SETG SETNLE SETGE SETNL SETL SETNGE SETLE SETNG SETS SETNS SETO SETNO SETPE SETP SETPO SETNP	m		1	
-CLC			0.25	
+CLC	r,r		0.25	
 STC			0.25	
 CMC		1	1	
 CLD STD			4	
@@ -168,14 +167,14 @@ PDEP	r,r,m		1
 PEXT	r,r,r	3	1	
 PEXT	r,r,m		1	
 				
-Control transfer instructions				
+;Control transfer instructions				
 JMP	short/near		1-2	
 JMP	r		2	
 JMP	m		2	
-JE JZ JNE JNZ JA JNBE JAE JNB JB JNAE JBE JNA JG JNLE JGE JNL JL JNGE JLE JNG JC JNC JO JNO JS JNS JPO JNP JPE JP	short/near		1-2	predicted taken
-JE JZ JNE JNZ JA JNBE JAE JNB JB JNAE JBE JNA JG JNLE JGE JNL JL JNGE JLE JNG JC JNC JO JNO JS JNS JPO JNP JPE JP	short/near		0.5-1	predicted not taken
-;Fused arithmetic and branch			1-2	predicted taken
-;Fused arithmetic and branch			0.5-1	predicted not taken
+JE JZ JNE JNZ JA JNBE JAE JNB JB JNAE JBE JNA JG JNLE JGE JNL JL JNGE JLE JNG JC JNC JO JNO JS JNS JPO JNP JPE JP	short/near		1-2	prediction taken
+JE JZ JNE JNZ JA JNBE JAE JNB JB JNAE JBE JNA JG JNLE JGE JNL JL JNGE JLE JNG JC JNC JO JNO JS JNS JPO JNP JPE JP	short/near		0.5-1	prediction not taken
+;Fused arithmetic and branch			1-2	prediction taken
+;Fused arithmetic and branch			0.5-1	prediction not taken
 JCXZ JECXZ JRCXZ	short		0.5-2	
 LOOP	short		5	
 LOOPE LOOPNE	short		6	
@@ -204,16 +203,16 @@ CMPS			4
 				
 ;Synchronization instructions				
 XADD	m,r		6	
-LOCK XADD	m,r		21	
-LOCK ADD	m,r		21	
+;LOCK XADD	m,r		21	
+;LOCK ADD	m,r		21	
 CMPXCHG	m,r		7	
-LOCK CMPXCHG	m,r		21	
+;LOCK CMPXCHG	m,r		21	
 CMPXCHG8B	m,r		8	
-LOCK CMPXCHG8B	m,r		21	
+;LOCK CMPXCHG8B	m,r		21	
 CMPXCHG16B	m,r		15	
-LOCK CMPXCHG16B	m,r		27	
+;LOCK CMPXCHG16B	m,r		27	
 				
-Other				
+;Other				
 NOP			0.25	
 ;Long NOP (0F 1F)			0.25	
 PAUSE			9	
@@ -226,8 +225,6 @@ RDTSCP			30
 RDPMC			37	
 RDRAND	r		~230	
 RDSEED	r		~230	
-				
-				
 				
 ;Move instructions				
 FLD	r	1	0.5	
@@ -245,7 +242,7 @@ FISTTP	m	7	2
 FLDZ			1	
 FLD1			2	
 FLDPI FLDL2E			2	
-FCMOVcc	r	2	2	
+FCMOVB FCMOVBE FCMOVE FCMOVNB FCMOVNBE FCMOVNE FCMOVNU FCMOVU	r	2	2	
 FNSTSW	AX	6	1	
 FNSTSW	m16	6	1	
 FLDCW	m16	7	2	
@@ -270,8 +267,8 @@ FCOMPP FUCOMPP			1
 FCOMI FCOMIP FUCOMI FUCOMIP	r	7	1.5	
 FIADD FISUB FISUBR	m		2	
 FIMUL	m		2	
-FIDIV(R)	m			
-FICOM(P)	m		2	
+FIDIV FIDIVR	m			
+FICOM FICOMP	m		2	
 FTST		3	1	
 FXAM		6	2	
 FPREM		20-24	13	
@@ -296,8 +293,6 @@ FNOP			0.5
 WAIT			1	
 FNCLEX			22	
 FNINIT			84	
-				
-				
 				
 ;Move instructions				
 MOVD	r32/64,(x)mm	1	1	
@@ -374,8 +369,8 @@ PINSRB	x,r32,i	2	2
 PINSRB	x,m8,i		1	
 PINSRW	(x)mm,r32,i	2	2	
 PINSRW	(x)mm,m16,i		1	
-PINSRD/Q	x,r32,i	2	2	
-PINSRD/Q	x,m32,i		1	
+PINSRD PINSRQ	x,r32,i	2	2	
+PINSRD PINSRQ	x,m32,i		1	
 VINSERTI128	y,y,x,i	3	1	
 VINSERTI128	y,y,m,i	4	0.5	
 VPBROADCASTB VPBROADCASTW VPBROADCASTD VPBROADCASTQ	x,x	1	1	
@@ -439,7 +434,7 @@ PAND PANDN POR PXOR	v,v / v,v,v	1	0.33
 PAND PANDN POR PXOR	v,m / v,v,m		0.5	
 PTEST	v,v	2	1	
 PTEST	v,m		1	
-PSLLW/D/Q PSRLW/D/Q PSRAW/D/Q	mm,mm	1	1	
+PSLLW PSLLD PSLLQ PSRLW PSRLD PSRLQ PSRAW PSRAD PSRAQ	mm,mm	1	1	
 PSLLW PSLLD PSLLQ PSRLW PSRLD PSRLQ PSRAW PSRAD PSRAQ	mm,m64		1	
 PSLLW PSLLD PSLLQ PSRLW PSRLD PSRLQ PSRAW PSRAD PSRAQ	x,x / v,v,x	2	1	
 PSLLW PSLLD PSLLQ PSRLW PSRLD PSRLQ PSRAW PSRAD PSRAQ	x,m / v,v,m		1	
@@ -468,11 +463,9 @@ AESIMC	x,m		2
 AESKEYGENASSIST	x,x,i	10	9	
 AESKEYGENASSIST	x,m,i		8	
 				
-Other				
+;Other				
 EMMS			12	
 				
-;Floating point XMM and YMM instructions				
-;Instruction	Operands	Latency	Reciprocal throughput	
 ;Move instructions				
 MOVAPS MOVAPD	x,x	0-1	1	
 VMOVAPS VMOVAPD	y,y	0-1	1	
@@ -535,17 +528,17 @@ VINSERTF128	y,y,m128,i	4	2
 VMASKMOVPS VMASKMOVPD	v,v,m	4	2	
 VMASKMOVPS VMASKMOVPD	m128,x,x	15	1	
 VMASKMOVPS VMASKMOVPD	m256,y,y	16	1	
-VPGATHERDPS	x,[r+s*x],x		6	
-VPGATHERDPS	y,[r+s*y],y		7	
-VPGATHERQPS	x,[r+s*x],x		6	
-VPGATHERQPS	x,[r+s*y],x		6	
-VPGATHERDPD	x,[r+s*x],x		5	
-VPGATHERDPD	y,[r+s*x],y		6	
-VPGATHERQPD	x,[r+s*x],x		5	
-VPGATHERQPD	y,[r+s*y],y		6	
+VGATHERDPS	x,[r+s*x],x		6	
+VGATHERDPS	y,[r+s*y],y		7	
+VGATHERQPS	x,[r+s*x],x		6	
+VGATHERQPS	x,[r+s*y],x		6	
+VGATHERDPD	x,[r+s*x],x		5	
+VGATHERDPD	y,[r+s*x],y		6	
+VGATHERQPD	x,[r+s*x],x		5	
+VGATHERQPD	y,[r+s*y],y		6	
 				
 				
-Conversion				
+;Conversion				
 CVTPD2PS	x,x	4	1	
 CVTPD2PS	x,m128		1	
 VCVTPD2PS	x,y	5	1	
