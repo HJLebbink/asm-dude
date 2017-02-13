@@ -46,6 +46,7 @@ namespace AsmDude {
         private readonly ErrorListProvider _errorListProvider;
 
         private readonly MnemonicStore _mnemonicStore;
+        private readonly PerformanceStore _performanceStore;
         private readonly SmartThreadPool _smartThreadPool;
 
         #region Singleton Stuff
@@ -70,14 +71,21 @@ namespace AsmDude {
             #endregion
 
             this._smartThreadPool = new SmartThreadPool();
-            //this._smartThreadPool.Start();
+            //this._smartThreadPool.Start(); // There seems no need to start this threadpool
 
-            #region load signature store
+            #region load Signature Store and Performance Store
             string path = AsmDudeToolsStatic.Get_Install_Path() + "Resources" + Path.DirectorySeparatorChar;
-            //string filename = path + "mnemonics-nasm.txt";
-            string filename_Regular = path + "signature-june2016.txt";
-            string filename_Hand = path + "signature-hand-1.txt";
-            this._mnemonicStore = new MnemonicStore(filename_Regular, filename_Hand);
+            {
+                //string filename = path + "mnemonics-nasm.txt";
+                string filename_Regular = path + "signature-june2016.txt";
+                string filename_Hand = path + "signature-hand-1.txt";
+                this._mnemonicStore = new MnemonicStore(filename_Regular, filename_Hand);
+            }
+            {
+                this._performanceStore = new PerformanceStore();
+                this._performanceStore.AddData("Broadwell", path + "Performance" + Path.DirectorySeparatorChar + "Broadwell.tsv");
+                this._performanceStore.AddData("Skylake", path + "Performance" + Path.DirectorySeparatorChar + "Skylake.tsv");
+            }
             #endregion
 
             Init_Data();
@@ -213,6 +221,8 @@ namespace AsmDude {
         public ErrorListProvider Error_List_Provider { get { return this._errorListProvider; } }
 
         public MnemonicStore Mnemonic_Store { get { return this._mnemonicStore; } }
+
+        public PerformanceStore Performance_Store { get { return this._performanceStore; } }
 
         public SmartThreadPool Thread_Pool { get { return this._smartThreadPool; } }
 

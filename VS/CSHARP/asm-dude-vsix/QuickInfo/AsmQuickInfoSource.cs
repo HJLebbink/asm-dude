@@ -169,15 +169,38 @@ namespace AsmDude.QuickInfo
                                 description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Opcode))));
 
                                 Mnemonic mmemonic = AsmSourceTools.ParseMnemonic(keywordUpper);
-
-                                string archStr = ":" + ArchTools.ToString(this._asmDudeTools.Mnemonic_Store.GetArch(mmemonic)) + " ";
-                                string descr = this._asmDudeTools.Mnemonic_Store.GetDescription(mmemonic);
-                                if (descr.Length > 0)
                                 {
+                                    string archStr = ":" + ArchTools.ToString(this._asmDudeTools.Mnemonic_Store.GetArch(mmemonic)) + " ";
+                                    string descr = this._asmDudeTools.Mnemonic_Store.GetDescription(mmemonic);
+
                                     description.Inlines.Add(new Run(AsmSourceTools.Linewrap(archStr + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
                                     {
                                         Foreground = this._foreground
                                     });
+                                }
+                                {
+                                    IReadOnlyList<PerformanceItem> performanceData = this._asmDudeTools.Performance_Store.GetPerformance(mmemonic);
+                                    if (performanceData.Count > 0)
+                                    {
+                                        FontFamily family = new FontFamily("Consolas");
+                                        IList<Run> list = new List<Run>();
+
+                                        description.Inlines.Add(new Run(string.Format("\n\n{0,-15}{1,-20}{2,-10}{3,-10}\n", "Architecture", "Instruction", "Latency", "Throughput"))
+                                        {
+                                            FontFamily = family,
+                                            FontStyle = FontStyles.Italic,
+                                            FontWeight = FontWeights.Bold,
+                                            Foreground = this._foreground
+                                        });
+                                        foreach (PerformanceItem item in performanceData)
+                                        {
+                                            description.Inlines.Add(new Run(string.Format("{0,-15}{1,-20}{2,-10}{3,-10}{4,-10}\n", item._microArch, item._instr + " " +item._args, item._latency, item._throughput, item._remark))
+                                            {
+                                                FontFamily = family,
+                                                Foreground = this._foreground
+                                            });
+                                        }
+                                    }
                                 }
                                 break;
                             }
