@@ -1,5 +1,5 @@
 # Asm-Dude
-Assembly syntax highlighting, code completion and folding for Visual Studio 2015 and 2017. This extension can be found in the [visual studio extensions gallery](https://visualstudiogallery.msdn.microsoft.com/ff839577-2b68-416a-b761-72f9b1ca7c8e) or download latest installer [AsmDude.vsix (v1.7.3.10)](https://github.com/HJLebbink/asm-dude/releases/download/1.7.3.10/AsmDude.vsix). If assembly is too much of a hassle but you still want access to specific machine instructions, consider [Intrinsics-Dude](https://github.com/HJLebbink/intrinsics-dude).
+Assembly syntax highlighting, code completion and folding for Visual Studio 2015 and 2017. This extension can be found in the [visual studio extensions gallery](https://visualstudiogallery.msdn.microsoft.com/ff839577-2b68-416a-b761-72f9b1ca7c8e) or download latest installer [AsmDude.vsix (v1.7.4.0)](https://github.com/HJLebbink/asm-dude/releases/download/1.7.4.0/AsmDude.vsix). If assembly is too much of a hassle but you still want access to specific machine instructions, consider [Intrinsics-Dude](https://github.com/HJLebbink/intrinsics-dude).
 
 ###Features
 
@@ -107,4 +107,4 @@ Studio will launch under the experimental hive.
 * 21 March 2016: Added code completion for labels in jumps [v1.4.8]
 * 8 May 2016: Added Label analysis [v1.5.0.0]
 * 22 July 2016: Added Signature Help [v1.6.1.1]
-* 13 Feb 2016: Added Performance Data for Skylake & Broadwell [v1.7.?] 
+* 13 Feb 2016: Added Performance Data for Skylake & Broadwell (Data from Agner Fog) [v1.7.4.0] 
