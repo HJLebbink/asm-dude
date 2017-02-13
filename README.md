@@ -21,7 +21,7 @@ C:\Users\<user>\AppData\Local\Microsoft\VisualStudio\14.0\Extensions. Please con
 If you hover the mouse over a mnemonic when the CTRL button is down, mnemonics may become underlined, indicating 
 that an html reference exists that points to a documentation webpage.
 
-![label-analysis](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude-doc-links.png?raw=true "Documentation Links")
+![label-analysis](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude-doc-links-2.png?raw=true "Documentation Links")
 
 #### Code Completion 
 While typing texts completion lists will narrow down to the relevant language keywords. This works for all keywords and 
