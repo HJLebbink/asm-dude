@@ -79,18 +79,18 @@ namespace AsmTools {
             }
         }
 
-        public Ot type { get { return this._type; } }
-        public bool isReg { get { return this._type == Ot.reg; } }
-        public bool isMem { get { return this._type == Ot.mem; } }
-        public bool isImm { get { return this._type == Ot.imm; } }
+        public Ot Type { get { return this._type; } }
+        public bool IsReg { get { return this._type == Ot.reg; } }
+        public bool IsMem { get { return this._type == Ot.mem; } }
+        public bool IsImm { get { return this._type == Ot.imm; } }
 
-        public Rn rn { get { return this._rn; } }
-        public ulong imm { get { return this._imm; } }
+        public Rn Rn { get { return this._rn; } }
+        public ulong Imm { get { return this._imm; } }
         /// <summary>
         /// Return tuple with BaseReg, IndexReg, Scale and Displacement. Offset = Base + (Index * Scale) + Displacement
         /// </summary>
-        public Tuple<Rn, Rn, int, long> mem { get { return this._mem; } }
-        public int nBits { get { return this._nBits; } set { this._nBits = value; } }
+        public Tuple<Rn, Rn, int, long> Mem { get { return this._mem; } }
+        public int NBits { get { return this._nBits; } set { this._nBits = value; } }
 
         public override string ToString() {
             return this._str;

@@ -12,7 +12,7 @@ namespace unit_tests {
 
 
         #region Private Stuff
-        private static ulong randUlong(int nBits, Random rand) {
+        private static ulong RandUlong(int nBits, Random rand) {
             ulong i1 = (ulong)rand.Next();
             if (nBits < 32) {
                 return (i1 & ((1UL << nBits) - 1));
@@ -28,8 +28,8 @@ namespace unit_tests {
                 }
             }
         }
-        private static long randLong(int nBits, Random rand) {
-            ulong raw = randUlong(nBits, rand);
+        private static long RandLong(int nBits, Random rand) {
+            ulong raw = RandUlong(nBits, rand);
             bool sign = ((raw & (1UL << (nBits - 1))) != 0);
             if (sign) {
                 for (int i = nBits; i < 64; ++i) {
@@ -42,7 +42,7 @@ namespace unit_tests {
 
 
         [TestMethod]
-        public void test_AsmSourceTools_splitIntoKeywordsPos() {
+        public void Test_AsmSourceTools_splitIntoKeywordsPos() {
             {
                 const string line = "    db \"This string contains the word jmp inside of it\",0";
 
@@ -251,7 +251,7 @@ namespace unit_tests {
         public void Test_AsmSourceTools_OperandType() {
             foreach (Ot x1 in Enum.GetValues(typeof(Ot))) {
                 foreach (Ot x2 in Enum.GetValues(typeof(Ot))) {
-                    Tuple<Ot, Ot> t = AsmSourceTools.splitOt(AsmSourceTools.mergeOt(x1, x2));
+                    Tuple<Ot, Ot> t = AsmSourceTools.SplitOt(AsmSourceTools.MergeOt(x1, x2));
                     Assert.AreEqual(t.Item1, x1, "");
                     Assert.AreEqual(t.Item2, x2, "");
                 }
@@ -363,7 +363,7 @@ namespace unit_tests {
                         }
 
                         for (int m = 0; m<10; ++m) {
-                            long disp = randLong(32, rnd);
+                            long disp = RandLong(32, rnd);
                             {
                                 {
                                     string str = "[" + b + "+" + idx + " * " + s + "+" + disp + "]";

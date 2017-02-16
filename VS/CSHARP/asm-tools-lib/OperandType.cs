@@ -202,7 +202,7 @@ namespace AsmTools {
             return sb.ToString();
         }
 
-        public static Tuple<Ot, Ot> splitOt(Ot2 operandTuple) {
+        public static Tuple<Ot, Ot> SplitOt(Ot2 operandTuple) {
             switch (operandTuple) {
                 case Ot2.reg_reg: return new Tuple<Ot, Ot>(Ot.reg, Ot.reg);
                 case Ot2.reg_mem: return new Tuple<Ot, Ot>(Ot.reg, Ot.mem);
@@ -224,10 +224,10 @@ namespace AsmTools {
                     return new Tuple<Ot, Ot>(Ot.UNKNOWN, Ot.UNKNOWN);
             }
         }
-        public static Ot2 mergeOt(Ot ot1, Ot ot2) {
+        public static Ot2 MergeOt(Ot ot1, Ot ot2) {
             return (Ot2)(((byte)ot1) | (((byte)ot2) << 4));
         }
-        public static Ot2 mergeOt(Ot ot1, Ot ot2, Ot ot3) {
+        public static Ot2 MergeOt(Ot ot1, Ot ot2, Ot ot3) {
             return (Ot2)(((byte)ot1) | (((byte)ot2) << 4) | (((byte)ot3) << 8));
         }
     }

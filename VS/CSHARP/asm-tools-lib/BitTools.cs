@@ -33,8 +33,8 @@ namespace AsmTools {
 
         #region Conversion
 
-        public static ulong getUlongValue(Bt[] a) {
-            Debug.Assert(isGrounded(a));
+        public static ulong GetUlongValue(Bt[] a) {
+            Debug.Assert(IsGrounded(a));
 
             ulong v = 0;
             ulong mask = 0x1;
@@ -53,8 +53,8 @@ namespace AsmTools {
             }
             return v;
         }
-        public static long getLongValue(Bt[] a) {
-            ulong v = getUlongValue(a);
+        public static long GetLongValue(Bt[] a) {
+            ulong v = GetUlongValue(a);
 
             if (a.Length < 64) {
                 bool sign = (a[a.Length - 1] == Bt.ONE);
@@ -67,11 +67,11 @@ namespace AsmTools {
             }
             return (long)v;
         }
-        public static uint getUintValue(Bt[] a) {
-           return (uint) getUlongValue(a);
+        public static uint GetUintValue(Bt[] a) {
+           return (uint) GetUlongValue(a);
         }
-        public static int getIntValue(Bt[] a) {
-            ulong v = getUlongValue(a);
+        public static int GetIntValue(Bt[] a) {
+            ulong v = GetUlongValue(a);
 
             if (a.Length < 32) {
                 bool sign = (a[a.Length - 1] == Bt.ONE);
@@ -84,11 +84,11 @@ namespace AsmTools {
             }
             return (int)v;
         }
-        public static ushort getUshortValue(Bt[] a) {
-            return (ushort)getUlongValue(a);
+        public static ushort GetUshortValue(Bt[] a) {
+            return (ushort)GetUlongValue(a);
         }
-        public static short getShortValue(Bt[] a) {
-            ulong v = getUlongValue(a);
+        public static short GetShortValue(Bt[] a) {
+            ulong v = GetUlongValue(a);
 
             if (a.Length < 16) {
                 bool sign = (a[a.Length - 1] == Bt.ONE);
@@ -101,11 +101,11 @@ namespace AsmTools {
             }
             return (short)v;
         }
-        public static byte getByteValue(Bt[] a) {
-            return (byte)getUlongValue(a);
+        public static byte GetByteValue(Bt[] a) {
+            return (byte)GetUlongValue(a);
         }
-        public static sbyte getSbyteValue(Bt[] a) {
-            ulong v = getUlongValue(a);
+        public static sbyte GetSbyteValue(Bt[] a) {
+            ulong v = GetUlongValue(a);
 
             if (a.Length < 8) {
                 bool sign = (a[a.Length - 1] == Bt.ONE);
@@ -119,7 +119,7 @@ namespace AsmTools {
             return (sbyte)v;
         }
 
-        public static void setUlongValue(ref Bt[] a, ulong v) {
+        public static void SetUlongValue(ref Bt[] a, ulong v) {
             //Debug.Assert(a.Length < Tools.nBitsStorageNeeded(v));
             ulong mask = 0x1;
             for (int i = 0; i < a.Length; ++i) {
@@ -127,7 +127,7 @@ namespace AsmTools {
                 mask <<= 1;
             }
         }
-        public static void setLongValue(ref Bt[] a, long v) {
+        public static void SetLongValue(ref Bt[] a, long v) {
             //Debug.Assert(a.Length < Tools.nBitsStorageNeeded(v));
             ulong v2 = (ulong)v;
             ulong mask = 0x1;
@@ -140,7 +140,7 @@ namespace AsmTools {
         #endregion Conversion
 
         /// <summary>Returns true if all bits are either ONE, ZERO or KNOWN.</summary>
-        public static bool isKnown(Bt[] a) {
+        public static bool IsKnown(Bt[] a) {
             for (int i = 0; i < a.Length; ++i) {
                 if (a[i] == Bt.UNDEFINED) return false;
             }
@@ -148,7 +148,7 @@ namespace AsmTools {
         }
 
         /// <summary>Returns true if all bits are either ONE or ZERO.</summary>
-        public static bool isGrounded(Bt[] a) {
+        public static bool IsGrounded(Bt[] a) {
             for (int i = 0; i < a.Length; ++i) {
                 if ((a[i] == Bt.ONE) || (a[i] == Bt.ZERO)) {
                     // OK
@@ -159,12 +159,12 @@ namespace AsmTools {
             return true;
         }
 
-        public static void copy(Bt[] src, int srcBegin, Bt[] dst, int dstBegin, int length) {
+        public static void Copy(Bt[] src, int srcBegin, Bt[] dst, int dstBegin, int length) {
             for (int i = 0; i < length; ++i) {
                 dst[dstBegin + i] = src[srcBegin + i];
             }
         }
-        public static void fill(Bt[] src, Bt init) {
+        public static void Fill(Bt[] src, Bt init) {
             for (int i = 0; i < src.Length; ++i) {
                 src[i] = init;
             }
@@ -176,7 +176,7 @@ namespace AsmTools {
         /// <param name="d">DATA</param>
         /// <param name="du">Data UNDEFINED. if bit is 0 then the truth-value is UNDEFINED</param>
         /// <returns></returns>
-        public static Bt[] toBtArray(ulong d, ulong du) {
+        public static Bt[] ToBtArray(ulong d, ulong du) {
             Bt[] a = new Bt[64];
             ulong mask = 1;
 
@@ -187,21 +187,21 @@ namespace AsmTools {
             return a;
         }
 
-        public static int nBitsNeeded(ulong d) {
+        public static int NBitsNeeded(ulong d) {
             for (int i = 0; i < 64; ++i) {
                 if ((d >> i) == 0) return i;
             }
             return 64;
         }
 
-        public static bool getBit(ulong[] data, int bitPos) {
+        public static bool GetBit(ulong[] data, int bitPos) {
             return (((data[bitPos >> 6] >> (bitPos & 0x3F)) & 0x1) == 1);
         }
 
 
 
 
-        public static Tuple<ulong, ulong> toRaw(Bt[] a) {
+        public static Tuple<ulong, ulong> ToRaw(Bt[] a) {
             Debug.Assert(a.Length == 64);
             ulong d = 0;
             ulong du = 0; // init all 64 bits to UNDEFINED
@@ -225,7 +225,7 @@ namespace AsmTools {
 
         #region ToString
 
-        public static char bitToChar(Bt bit) {
+        public static char BitToChar(Bt bit) {
             switch (bit) {
                 case Bt.ZERO: return '0';
                 case Bt.ONE: return '1';
@@ -235,7 +235,7 @@ namespace AsmTools {
             }
         }
 
-        public static char bitToCharHex(Bt b0, Bt b1, Bt b2, Bt b3) {
+        public static char BitToCharHex(Bt b0, Bt b1, Bt b2, Bt b3) {
 
             if ((b3 == Bt.UNDEFINED) || (b2 == Bt.UNDEFINED) || (b1 == Bt.UNDEFINED) || (b0 == Bt.UNDEFINED)) return 'U';
             if ((b3 == Bt.KNOWN) || (b2 == Bt.KNOWN) || (b1 == Bt.KNOWN) || (b0 == Bt.KNOWN)) return 'K';
@@ -264,16 +264,16 @@ namespace AsmTools {
             return '?';
         }
 
-        public static string toStringBin(Bt[] a) {
+        public static string ToStringBin(Bt[] a) {
             StringBuilder sb = new StringBuilder("0b");
             for (int i = (a.Length - 1); i >= 0; --i) {
-                sb.Append(BitTools.bitToChar(a[i]));
+                sb.Append(BitTools.BitToChar(a[i]));
                 if ((i > 0) && (i != a.Length - 1) && (i % 8 == 0)) sb.Append('.');
             }
             return sb.ToString();
         }
 
-        public static string toStringBin(ulong a) {
+        public static string ToStringBin(ulong a) {
             StringBuilder sb = new StringBuilder("0b");
             for (int i = (64 - 1); i >= 0; --i) {
                 sb.Append((((a >> i) & 1) == 1) ? "1" : "0");
@@ -282,19 +282,19 @@ namespace AsmTools {
             return sb.ToString();
         }
 
-        public static string toStringDec(Bt[] a) {
-            if (BitTools.isKnown(a)) {
-                return BitTools.getUlongValue(a) + "";
+        public static string ToStringDec(Bt[] a) {
+            if (BitTools.IsKnown(a)) {
+                return BitTools.GetUlongValue(a) + "";
             }
             //TODO:
             throw new Exception();
         }
 
-        public static string toStringHex(ulong a) {
+        public static string ToStringHex(ulong a) {
             return string.Format("0x{0:X}", a);
         }
 
-        public static string toStringHex(Bt[] a) {
+        public static string ToStringHex(Bt[] a) {
             if ((a.Length % 4) != 0) {
                 Console.WriteLine("WARNING: toStringHex: found odd number of bits:" + a.Length);
                 return "";
@@ -304,7 +304,7 @@ namespace AsmTools {
 
             for (int j = (nChars - 1); j >= 0; --j) {
                 int offset = (j << 2);
-                sb.Append(BitTools.bitToCharHex(a[offset], a[offset + 1], a[offset + 2], a[offset + 3]));
+                sb.Append(BitTools.BitToCharHex(a[offset], a[offset + 1], a[offset + 2], a[offset + 3]));
 
                 if ((j > 0) && ((j % 8) == 0)) sb.Append('.');
             }

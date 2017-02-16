@@ -3,10 +3,35 @@
 include "inc\example.inc"
 include "bla"
 
-CMPEQPS CMPEQSS CMPLEPS CMPLESS CMPLTPS CMPLTSS CMPNEQPS CMPNEQSS CMPNLEPS CMPNLESS CMPNLTPS CMPNLTSS CMPORDPS CMPORDSS CMPUNORDPS CMPUNORDSS
-
-
 	jmp			FOO		# FOO is defined in an included file
+
+
+
+
+
+#region 1 bit full adder
+; ymm0 = A
+; ymm1 = B
+; ymm2 = Cin
+; ymm5 = Sum
+; ymm7 = Cout
+
+pxor ymm3, ymm0, ymm1
+pand ymm4, ymm0, ymm1
+pand ymm6, ymm3, ymm2
+pxor ymm5, ymm3, ymm2
+por ymm7, ymm6, ymm4
+#endregion
+
+#region half adder
+; ymm0 = A
+; ymm1 = B
+; ymm2 = Sum
+; ymm3 = Cout
+pxor ymm2, ymm0, ymm1
+pand ymm3, ymm0, ymm1
+#endregion
+
 
 #region Things TODO
 #######################################################

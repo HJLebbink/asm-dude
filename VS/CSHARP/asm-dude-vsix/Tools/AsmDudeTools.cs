@@ -366,7 +366,7 @@ namespace AsmDude {
                 if (archAttribute == null) {
                     return AssemblerEnum.UNKNOWN;
                 } else {
-                    return AsmTools.AsmSourceTools.parseAssembler(archAttribute.Value);
+                    return AsmTools.AsmSourceTools.ParseAssembler(archAttribute.Value);
                 }
             } catch (Exception) {
                 return AssemblerEnum.UNKNOWN;

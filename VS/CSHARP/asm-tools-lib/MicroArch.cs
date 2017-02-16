@@ -44,7 +44,7 @@ namespace AsmTools
 
     public static partial class AsmSourceTools
     {
-        public static MicroArch parseMicroArch(string str)
+        public static MicroArch ParseMicroArch(string str)
         {
             switch (str.ToUpper())
             {

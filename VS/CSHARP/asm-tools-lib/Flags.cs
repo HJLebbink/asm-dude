@@ -28,7 +28,7 @@ namespace AsmTools {
             return (intVal != 0) && ((intVal & (intVal - 1)) == 0);
         }
 
-        public static Flags parse(string str) {
+        public static Flags Parse(string str) {
             switch (str.ToUpper()) {
                 case "CF": return Flags.CF;
                 case "PF": return Flags.PF;
@@ -46,42 +46,42 @@ namespace AsmTools {
         public FlagValue(Bt v) {
             this._value = v;
         }
-        public Bt val { get { return this._value; } set { this._value = value; } }
+        public Bt Val { get { return this._value; } set { this._value = value; } }
     }
 
     public sealed class CarryFlag : FlagValue {
         public CarryFlag(Bt v) : base(v) { }
-        public static implicit operator Bt(CarryFlag v) { return v.val; }
+        public static implicit operator Bt(CarryFlag v) { return v.Val; }
         public static implicit operator CarryFlag(Bt v) { return new CarryFlag(v); }
     }
     public sealed class AuxiliaryFlag : FlagValue {
         public AuxiliaryFlag(Bt v) : base(v) { }
-        public static implicit operator Bt(AuxiliaryFlag v) { return v.val; }
+        public static implicit operator Bt(AuxiliaryFlag v) { return v.Val; }
         public static implicit operator AuxiliaryFlag(Bt v) { return new AuxiliaryFlag(v); }
     }
     public sealed class ZeroFlag : FlagValue {
         public ZeroFlag(Bt v) : base(v) { }
-        public static implicit operator Bt(ZeroFlag v) { return v.val; }
+        public static implicit operator Bt(ZeroFlag v) { return v.Val; }
         public static implicit operator ZeroFlag(Bt v) { return new ZeroFlag(v); }
     }
     public sealed class SignFlag : FlagValue {
         public SignFlag(Bt v) : base(v) { }
-        public static implicit operator Bt(SignFlag v) { return v.val; }
+        public static implicit operator Bt(SignFlag v) { return v.Val; }
         public static implicit operator SignFlag(Bt v) { return new SignFlag(v); }
     }
     public sealed class ParityFlag : FlagValue {
         public ParityFlag(Bt v) : base(v) { }
-        public static implicit operator Bt(ParityFlag v) { return v.val; }
+        public static implicit operator Bt(ParityFlag v) { return v.Val; }
         public static implicit operator ParityFlag(Bt v) { return new ParityFlag(v); }
     }
     public sealed class OverflowFlag : FlagValue {
         public OverflowFlag(Bt v) : base(v) { }
-        public static implicit operator Bt(OverflowFlag v) { return v.val; }
+        public static implicit operator Bt(OverflowFlag v) { return v.Val; }
         public static implicit operator OverflowFlag(Bt v) { return new OverflowFlag(v); }
     }
     public sealed class DirectionFlag : FlagValue {
         public DirectionFlag(Bt v) : base(v) { }
-        public static implicit operator Bt(DirectionFlag v) { return v.val; }
+        public static implicit operator Bt(DirectionFlag v) { return v.Val; }
         public static implicit operator DirectionFlag(Bt v) { return new DirectionFlag(v); }
     }
 

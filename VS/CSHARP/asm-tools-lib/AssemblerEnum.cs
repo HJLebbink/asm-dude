@@ -33,7 +33,7 @@ namespace AsmTools {
     }
 
     public static partial class AsmSourceTools {
-        public static AssemblerEnum parseAssembler(string str) {
+        public static AssemblerEnum ParseAssembler(string str) {
             if ((str == null) || (str.Length == 0))
             {
                 return AssemblerEnum.UNKNOWN;
