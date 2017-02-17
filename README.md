@@ -107,4 +107,4 @@ Studio will launch under the experimental hive.
 * 21 March 2016: Added code completion for labels in jumps [v1.4.8]
 * 8 May 2016: Added Label analysis [v1.5.0.0]
 * 22 July 2016: Added Signature Help [v1.6.1.1]
-* 13 Feb 2016: Added Performance Data for Skylake & Broadwell (Data from Agner Fog) [v1.7.4.0] 
+* 13 Feb 2017: Added Performance Data for Skylake & Broadwell (Data from Agner Fog) [v1.7.4.0] 
