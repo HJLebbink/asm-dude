@@ -55,9 +55,9 @@ clashing label definitions. Red error squiggles appear and entries in the error 
 
 ## Where is the Source (Are you sure this is not a honeypot?!)
 If you are reading this you are most likely an assembly programmer, if you are still interested in some dirty c#, 
-or you are just cautious, you can run the extension from source code. To do that, Visual Studio 2015 SDK needs to be installed. 
-To run the extension, hit F5 or choose the Debug > Start Debugging menu command. A new instance of Visual 
-Studio will launch under the experimental hive.
+or you are just cautious, you can run the extension from source code. To do that, Visual Studio 2015 SDK (or VS 2017 SDK) 
+needs to be installed. To run the extension, hit F5 or choose the Debug > Start Debugging menu command. A new instance of 
+Visual Studio will launch under the experimental hive.
 
 ###Currently in development:
 * Considering [Irony](https://irony.codeplex.com/) for proper parsing and error handling.
