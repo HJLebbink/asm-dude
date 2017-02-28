@@ -170,26 +170,26 @@ namespace AsmTools {
         #region Bit and Byte Instructions
         //Bit instructions test and modify individual bits in word and doubleword operands. Byte instructions set the value of
         //a byte operand to indicate the status of flags in the EFLAGS register.
-        /// <summary>XXX</summary>
-        BT,// Bit test
-        /// <summary>XXX</summary>
-        BTS,// Bit test and set
-        /// <summary>XXX</summary>
-        BTR,// Bit test and reset
-        /// <summary>XXX</summary>
-        BTC,// Bit test and complement
-        /// <summary>XXX</summary>
-        BSF,// Bit scan forward
-        /// <summary>XXX</summary>
-        BSR,// Bit scan reverse
-        /// <summary>XXX</summary>
+        /// <summary>Bit test</summary>
+        BT,
+        /// <summary>Bit test and set</summary>
+        BTS,
+        /// <summary>Bit test and reset</summary>
+        BTR,
+        /// <summary>Bit test and complement</summary>
+        BTC,
+        /// <summary>Bit scan forward</summary>
+        BSF,
+        /// <summary>Bit scan reverse</summary>
+        BSR,
+        /// <summary>Set byte if equal</summary>
         SETE,
-        /// <summary>XXX</summary>
-        SETZ,// Set byte if equal/Set byte if zero
-        /// <summary>XXX</summary>
+        /// <summary>Set byte if zero</summary>
+        SETZ,
+        /// <summary>Set byte if not equal</summary>
         SETNE,
-        /// <summary>XXX</summary>
-        SETNZ,// Set byte if not equal/Set byte if not zero
+        /// <summary>Set byte if not zero</summary>
+        SETNZ,
         /// <summary>XXX</summary>
         SETA,
         /// <summary>XXX</summary>
@@ -556,7 +556,6 @@ namespace AsmTools {
         CQO,
         DMINT,
         EMMS,
-        EQU,
         F2XM1,
         FABS,
         FADD,

@@ -20,75 +20,117 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmTools {
+using System.Collections.Generic;
+using System.Text;
 
-    public static class FlagTools {
-        public static bool SingleFlag(Flags flags) {
+namespace AsmTools
+{
+    public static class FlagTools
+    {
+        /// <summary>Test whether provided flags is a single flag</summary>
+        public static bool SingleFlag(Flags flags)
+        {
             int intVal = ((int)flags);
             return (intVal != 0) && ((intVal & (intVal - 1)) == 0);
         }
 
-        public static Flags Parse(string str) {
-            switch (str.ToUpper()) {
+        public static Flags Parse(string str)
+        {
+            switch (str.ToUpper())
+            {
                 case "CF": return Flags.CF;
                 case "PF": return Flags.PF;
                 case "AF": return Flags.AF;
                 case "ZF": return Flags.ZF;
                 case "SF": return Flags.SF;
                 case "OF": return Flags.OF;
+                case "DF": return Flags.DF;
                 default: return Flags.NONE;
+            }
+        }
+
+        public static string ToString(Flags flags)
+        {
+            if (flags == Flags.NONE) return "NONE";
+            if (flags == Flags.ALL) return "ALL";
+
+            StringBuilder sb = new StringBuilder();
+            foreach (Flags flag in GetFlags(flags))
+            {
+                sb.Append(flag).Append("|");
+            }
+            if (sb.Length > 1) sb.Length -= 1; // remove the trailing comma space
+            return sb.ToString();
+        }
+
+        public static IEnumerable<Flags> GetFlags(Flags flags)
+        {
+            foreach (Flags value in Flags.GetValues(flags.GetType()))
+            {
+                if (flags.HasFlag(value) && FlagTools.SingleFlag(value))
+                {
+                    yield return value;
+                }
             }
         }
     }
 
-    public abstract class FlagValue {
+    public abstract class FlagValue
+    {
         private Bt _value;
-        public FlagValue(Bt v) {
+        public FlagValue(Bt v)
+        {
             this._value = v;
         }
         public Bt Val { get { return this._value; } set { this._value = value; } }
     }
 
-    public sealed class CarryFlag : FlagValue {
+    public sealed class CarryFlag : FlagValue
+    {
         public CarryFlag(Bt v) : base(v) { }
         public static implicit operator Bt(CarryFlag v) { return v.Val; }
         public static implicit operator CarryFlag(Bt v) { return new CarryFlag(v); }
     }
-    public sealed class AuxiliaryFlag : FlagValue {
+    public sealed class AuxiliaryFlag : FlagValue
+    {
         public AuxiliaryFlag(Bt v) : base(v) { }
         public static implicit operator Bt(AuxiliaryFlag v) { return v.Val; }
         public static implicit operator AuxiliaryFlag(Bt v) { return new AuxiliaryFlag(v); }
     }
-    public sealed class ZeroFlag : FlagValue {
+    public sealed class ZeroFlag : FlagValue
+    {
         public ZeroFlag(Bt v) : base(v) { }
         public static implicit operator Bt(ZeroFlag v) { return v.Val; }
         public static implicit operator ZeroFlag(Bt v) { return new ZeroFlag(v); }
     }
-    public sealed class SignFlag : FlagValue {
+    public sealed class SignFlag : FlagValue
+    {
         public SignFlag(Bt v) : base(v) { }
         public static implicit operator Bt(SignFlag v) { return v.Val; }
         public static implicit operator SignFlag(Bt v) { return new SignFlag(v); }
     }
-    public sealed class ParityFlag : FlagValue {
+    public sealed class ParityFlag : FlagValue
+    {
         public ParityFlag(Bt v) : base(v) { }
         public static implicit operator Bt(ParityFlag v) { return v.Val; }
         public static implicit operator ParityFlag(Bt v) { return new ParityFlag(v); }
     }
-    public sealed class OverflowFlag : FlagValue {
+    public sealed class OverflowFlag : FlagValue
+    {
         public OverflowFlag(Bt v) : base(v) { }
         public static implicit operator Bt(OverflowFlag v) { return v.Val; }
         public static implicit operator OverflowFlag(Bt v) { return new OverflowFlag(v); }
     }
-    public sealed class DirectionFlag : FlagValue {
+    public sealed class DirectionFlag : FlagValue
+    {
         public DirectionFlag(Bt v) : base(v) { }
         public static implicit operator Bt(DirectionFlag v) { return v.Val; }
         public static implicit operator DirectionFlag(Bt v) { return new DirectionFlag(v); }
     }
 
-    /// <summary>
-    /// Flags, CF, PF, AF, ZF, SF, OF, DF
-    /// </summary>
-    public enum Flags : byte {
+    /// <summary>Flags, CF, PF, AF, ZF, SF, OF, DF</summary>
+    public enum Flags : byte
+    {
         NONE = 0,
         /// <summary>
         /// CF (bit 0) Carry flag — Set if an arithmetic operation generates a carry
@@ -127,7 +169,10 @@ namespace AsmTools {
         /// </summary>
         DF = 1 << 6,
 
+        ALL = CF | PF | AF | ZF | SF | OF | DF,
 
-        ALL = CF | PF | AF | ZF | SF | OF | DF
+        CF_PF_AF_SF_OF = CF | PF | AF | SF | OF,
+        CF_PF_AF_ZF_SF_OF = CF | PF | AF | ZF | SF | OF
+
     }
 }
