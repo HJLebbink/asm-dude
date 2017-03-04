@@ -51,6 +51,7 @@ namespace AsmTools
 
         public override string ToString()
         {
+            double totalTime = 0;
             StringBuilder sb = new StringBuilder();
             if (this.On)
             {
@@ -62,8 +63,10 @@ namespace AsmTools
                 {
                     foreach (KeyValuePair<string, double> entry in this._totalTimeInSec)
                     {
+                        totalTime += entry.Value;
                         sb.Append("StopWatch: ").Append(entry.Key).Append(": ").Append(entry.Value).AppendLine(" sec.");
                     }
+                    sb.Append("StopWatch: Total Time: ").Append(totalTime).AppendLine(" sec.");
                 }
             }
             else

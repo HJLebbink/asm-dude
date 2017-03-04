@@ -24,64 +24,112 @@ using System;
 
 namespace AsmTools {
 
-    public enum Mnemonic {
+    public enum Mnemonic
+    {
         UNKNOWN,
         #region Data Transfer Instructions
         //The data transfer instructions move data between memory and the general-purpose and segment registers. They
         //also perform specific operations such as conditional moves, stack access, and data conversion.
 
-        /// <summary>
-        /// Move data between general-purpose registers; move data between memory and general purpose or segment registers; move immediates to general-purpose registers
-        /// </summary>
+        /// <summary>Move data between general-purpose registers; move data between memory and general purpose or segment registers; move immediates to general-purpose registers</summary>
         MOV,
+        /// <summary>Conditional move if equal (ZF=1) (CMOVE=CMOVZ)</summary>
         CMOVE,
-        CMOVZ,// Conditional move if equal/Conditional move if zero
+        /// <summary>Conditional move if zero (ZF=1) (CMOVE=CMOVZ)</summary>
+        CMOVZ,
+        /// <summary>Conditional move if not equal (ZF=0) (CMOVNE=CMOVNZ)</summary>
         CMOVNE,
-        CMOVNZ,// Conditional move if not equal/Conditional move if not zero
+        /// <summary>Conditional move if not zero (ZF=0) (CMOVNE=CMOVNZ)</summary>
+        CMOVNZ,
+        /// <summary>Conditional move if above (CF=0 and ZF=0) (CMOVA=CMOVNBE)</summary>
         CMOVA,
-        CMOVNBE,// Conditional move if above/Conditional move if not below or equal
+        /// <summary>Conditional move if not below or equal (CF=0 and ZF=0) (CMOVA=CMOVNBE)</summary>
+        CMOVNBE,
+        /// <summary>Conditional move if above or equal (CF=0) (CMOVAE=CMOVNB=CMOVNC)</summary>
         CMOVAE,
-        CMOVNB,// Conditional move if above or equal/Conditional move if not below
+        /// <summary>Conditional move if not below (CF=0) (CMOVAE=CMOVNB=CMOVNC)</summary>
+        CMOVNB,
+        /// <summary>Conditional move if below (CF=1) (CMOVB=CMOVC=CMOVNAE)</summary>
         CMOVB,
-        CMOVNAE,// Conditional move if below/Conditional move if not above or equal
+        /// <summary>Conditional move if not above or equal (CF=1) (CMOVB=CMOVC=CMOVNAE)</summary>
+        CMOVNAE,
+        /// <summary>Conditional move if below or equal (CF=1 or ZF=1) (CMOVBE=CMOVNA)</summary>
         CMOVBE,
-        CMOVNA,// Conditional move if below or equal/Conditional move if not above
+        /// <summary>Conditional move if not above (CF=1 or ZF=1) (CMOVBE=CMOVNA)</summary>
+        CMOVNA,
+        /// <summary>Conditional move if greater (ZF=0 or SF=OF) (CMOVG=CMOVNLE)</summary>
         CMOVG,
-        CMOVNLE,// Conditional move if greater/Conditional move if not less or equal
+        /// <summary>Conditional move if not less or equal (ZF=0 and SF=OF) (CMOVG=CMOVNLE)</summary>
+        CMOVNLE,
+        /// <summary>Conditional move if greater or equal (SF=OF) (CMOVGE=CMOVNL)</summary>
         CMOVGE,
-        CMOVNL,// Conditional move if greater or equal/Conditional move if not less
+        /// <summary>Conditional move if not less (SF=OF) (CMOVGE=CMOVNL)</summary>
+        CMOVNL,
+        /// <summary>Conditional move if less (SF!=OF) (CMOVL=CMOVNGE)</summary>
         CMOVL,
-        CMOVNGE,// Conditional move if less/Conditional move if not greater or equal
+        /// <summary>Conditional move if not greater or equal (SF!=OF) (CMOVL=CMOVNGE)</summary>
+        CMOVNGE,
+        /// <summary>Conditional move if less or equal (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)</summary>
         CMOVLE,
-        CMOVNG,// Conditional move if less or equal/Conditional move if not greater
-        CMOVC,// Conditional move if carry
-        CMOVNC,// Conditional move if not carry
-        CMOVO,// Conditional move if overflow
-        CMOVNO,// Conditional move if not overflow
-        CMOVS,// Conditional move if sign(negative)
-        CMOVNS,// Conditional move if not sign(non-negative)
+        /// <summary>Conditional move if not greater (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)</summary>
+        CMOVNG,
+        /// <summary>Conditional move if carry (CF=1) (CMOVB=CMOVC=CMOVNAE)</summary>
+        CMOVC,
+        /// <summary>Conditional move if not carry (CF=0) (CMOVAE=CMOVNB=CMOVNC)</summary>
+        CMOVNC,
+        /// <summary>Conditional move if overflow (OF=1)</summary>
+        CMOVO,
+        /// <summary>Conditional move if not overflow (OF=0)</summary>
+        CMOVNO,
+        /// <summary>Conditional move if sign(negative) (SF=1)</summary>
+        CMOVS,
+        /// <summary>Conditional move if not sign(non-negative) (SF=0)</summary>
+        CMOVNS,
+        /// <summary>Conditional move if parity (PF=1) (CMOVP=CMOVPE)</summary>
         CMOVP,
-        CMOVPE,// Conditional move if parity/Conditional move if parity even
+        /// <summary>Conditional move if parity even (PF=1) (CMOVP=CMOVPE)</summary>
+        CMOVPE,
+        /// <summary>Conditional move if not parity (PF=0) (CMOVNP=CMOVPO)</summary>
         CMOVNP,
-        CMOVPO,// Conditional move if not parity/Conditional move if parity odd
-        XCHG,// Exchange
-        BSWAP,// Byte swap
-        XADD,// Exchange and add
-        CMPXCHG,// Compare and exchange
-        CMPXCHG8B,// Compare and exchange 8 bytes
-        PUSH,// Push onto stack
-        POP,// Pop off of stack
+        /// <summary>Conditional move if parity odd (PF=0) (CMOVNP=CMOVPO)</summary>
+        CMOVPO,
+        /// <summary>Exchange</summary>
+        XCHG,
+        /// <summary>Byte swap</summary>
+        BSWAP,
+        /// <summary>Exchange and add</summary>
+        XADD,
+        /// <summary>Compare and exchange</summary>
+        CMPXCHG,
+        /// <summary>Compare and exchange 8 bytes</summary>
+        CMPXCHG8B,
+        /// <summary> Push onto stack</summary>
+        PUSH,
+        /// <summary>Pop off of stack</summary>
+        POP,
+        /// <summary>Push general-purpose registers onto stack</summary>
         PUSHA,
-        PUSHAD,// Push general-purpose registers onto stack
+        /// <summary>Push general-purpose registers onto stack</summary>
+        PUSHAD,
+        /// <summary> Pop general-purpose registers from stack</summary>
         POPA,
-        POPAD,// Pop general-purpose registers from stack
+        /// <summary> Pop general-purpose registers from stack</summary>
+        POPAD,
+        /// <summary>Convert word to doubleword</summary>
         CWD,
-        CDQ,// Convert word to doubleword/Convert doubleword to quadword
+        /// <summary>Convert doubleword to quadword</summary>
+        CDQ,
+        /// <summary>Convert byte to word</summary>
         CBW,
-        CWDE,// Convert byte to word/Convert word to doubleword in EAX register
-        MOVSX,// Move and sign extend
+        /// <summary>Convert word to doubleword in EAX register</summary>
+        CWDE,
+        /// <summary>Move and sign extend</summary>
+        MOVSX,
+        /// <summary>Move and sign extend</summary>
         MOVSXD,
-        MOVZX,// Move and zero extend
+        /// <summary>Move and zero extend</summary>
+        MOVZX,
+        /// <summary>Move and zero extend</summary>
         MOVZXD,
         #endregion
         #region Binary Arithmetic Instructions
@@ -146,26 +194,26 @@ namespace AsmTools {
         #endregion
         #region Shift and Rotate Instructions
         //The shift and rotate instructions shift and rotate the bits in word and doubleword operands.
-        /// <summary>XXX</summary>
-        SAR,// Shift arithmetic right
-        /// <summary>XXX</summary>
-        SHR,// Shift logical right
-        /// <summary>XXX</summary>
+        /// <summary>Shift arithmetic right</summary>
+        SAR,
+        /// <summary>Shift logical right</summary>
+        SHR,
+        /// <summary>Shift arithmetic left</summary>
         SAL,
-        /// <summary>XXX</summary>
-        SHL,// Shift arithmetic left/Shift logical left
-        /// <summary>XXX</summary>
-        SHRD,// Shift right double
-        /// <summary>XXX</summary>
-        SHLD,//Shift left double
-        /// <summary>XXX</summary>
-        ROR,// Rotate right
-        /// <summary>XXX</summary>
-        ROL,// Rotate left
-        /// <summary>XXX</summary>
-        RCR,// Rotate through carry right
-        /// <summary>XXX</summary>
-        RCL,// Rotate through carry left
+        /// <summary>Shift logical left</summary>
+        SHL,
+        /// <summary> Shift right double</summary>
+        SHRD,
+        /// <summary>/Shift left double</summary>
+        SHLD,
+        /// <summary>Rotate right</summary>
+        ROR,
+        /// <summary> Rotate left</summary>
+        ROL,
+        /// <summary> Rotate through carry right</summary>
+        RCR,
+        /// <summary>Rotate through carry left</summary>
+        RCL,
         #endregion
         #region Bit and Byte Instructions
         //Bit instructions test and modify individual bits in word and doubleword operands. Byte instructions set the value of

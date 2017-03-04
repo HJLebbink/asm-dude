@@ -977,6 +977,99 @@ namespace AsmTools {
             return RegisterType.UNKNOWN;
         }
 
+        public static Rn Get8BitsLowerPart(Rn rn)
+        {
+            switch (rn)
+            {
+                case Rn.RAX:
+                case Rn.EAX:
+                case Rn.AX:
+                case Rn.AL:
+                    return Rn.AL;
+                case Rn.RBX:
+                case Rn.EBX:
+                case Rn.BX:
+                case Rn.BL:
+                    return Rn.BL;
+                case Rn.RCX:
+                case Rn.ECX:
+                case Rn.CX:
+                case Rn.CL:
+                    return Rn.CL;
+                case Rn.RDX:
+                case Rn.EDX:
+                case Rn.DX:
+                case Rn.DL:
+                    return Rn.DL;
+                case Rn.RSI:
+                case Rn.ESI:
+                case Rn.SI:
+                case Rn.SIL:
+                    return Rn.SIL;
+                case Rn.RDI:
+                case Rn.EDI:
+                case Rn.DI:
+                case Rn.DIL:
+                    return Rn.DIL;
+                case Rn.RBP:
+                case Rn.EBP:
+                case Rn.BP:
+                case Rn.BPL:
+                    return Rn.BPL;
+                case Rn.RSP:
+                case Rn.ESP:
+                case Rn.SP:
+                case Rn.SPL:
+                    return Rn.SPL;
+                case Rn.R8:
+                case Rn.R8D:
+                case Rn.R8W:
+                case Rn.R8B:
+                    return Rn.R8B;
+                case Rn.R9:
+                case Rn.R9D:
+                case Rn.R9W:
+                case Rn.R9B:
+                    return Rn.R9B;
+                case Rn.R10:
+                case Rn.R10D:
+                case Rn.R10W:
+                case Rn.R10B:
+                    return Rn.R10B;
+                case Rn.R11:
+                case Rn.R11D:
+                case Rn.R11W:
+                case Rn.R11B:
+                    return Rn.R11B;
+                case Rn.R12:
+                case Rn.R12D:
+                case Rn.R12W:
+                case Rn.R12B:
+                    return Rn.R12B;
+                case Rn.R13:
+                case Rn.R13D:
+                case Rn.R13W:
+                case Rn.R13B:
+                    return Rn.R13B;
+                case Rn.R14:
+                case Rn.R14D:
+                case Rn.R14W:
+                case Rn.R14B:
+                    return Rn.R14B;
+                case Rn.R15:
+                case Rn.R15D:
+                case Rn.R15W:
+                case Rn.R15B:
+                    return Rn.R15B;
+
+                default:
+                    return Rn.NOREG;
+            }
+
+        }
+
+
+        #region Register Classifications
         public static bool IsOpmaskRegister(Rn rn) {
             switch (rn) {
                 case Rn.K0:
@@ -1243,5 +1336,6 @@ namespace AsmTools {
                 default: return false;
             }
         }
+        #endregion
     }
 }
