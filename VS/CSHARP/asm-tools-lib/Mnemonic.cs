@@ -218,78 +218,66 @@ namespace AsmTools {
         #region Bit and Byte Instructions
         //Bit instructions test and modify individual bits in word and doubleword operands. Byte instructions set the value of
         //a byte operand to indicate the status of flags in the EFLAGS register.
-        /// <summary>Bit test</summary>
-        BT,
-        /// <summary>Bit test and set</summary>
-        BTS,
-        /// <summary>Bit test and reset</summary>
-        BTR,
-        /// <summary>Bit test and complement</summary>
-        BTC,
-        /// <summary>Bit scan forward</summary>
-        BSF,
-        /// <summary>Bit scan reverse</summary>
-        BSR,
-        /// <summary>Set byte if equal</summary>
+        /// <summary>Set byte if equal (ZF=1) (SETE=ZETZ)</summary>
         SETE,
-        /// <summary>Set byte if zero</summary>
+        /// <summary>Set byte if zero (ZF=1) (SETE=ZETZ)</summary>
         SETZ,
-        /// <summary>Set byte if not equal</summary>
+        /// <summary>Set byte if not equal (ZF=0) (SETNE=SETNZ)</summary>
         SETNE,
-        /// <summary>Set byte if not zero</summary>
+        /// <summary>Set byte if not zero (ZF=0) (SETNE=SETNZ)</summary>
         SETNZ,
-        /// <summary>XXX</summary>
+        /// <summary>Set byte if above (CF=0 and ZF=0) (SETA=SETNBE)</summary>
         SETA,
-        /// <summary>XXX</summary>
-        SETNBE,// Set byte if above/Set byte if not below or equal
-        /// <summary>XXX</summary>
+        /// <summary>Set byte if not below or equal (CF=0 and ZF=0) (SETA=SETNBE)</summary>
+        SETNBE,
+        /// <summary>Set byte if above or equal (CF=0) (SETAE=SETNC=SETNB)</summary>
         SETAE,
-        /// <summary>XXX</summary>
+        /// <summary>Set byte if not below (CF=0) (SETAE=SETNC=SETNB)</summary>
         SETNB,
-        /// <summary>XXX</summary>
-        SETNC,// Set byte if above or equal/Set byte if not below/Set byte if not carry
-        /// <summary>XXX</summary>
+        /// <summary>Set byte if not carry (CF=0) (SETAE=SETNC=SETNB)</summary>
+        SETNC,
+        /// <summary>Set byte if below (CF=1) (SETB=SETC=SETNAE)</summary>
         SETB,
-        /// <summary>XXX</summary>
+        /// <summary>Set byte if not above or equal (CF=1) (SETB=SETC=SETNAE)</summary>
         SETNAE,
-        /// <summary>XXX</summary>
-        SETC,//Set byte if below/Set byte if not above or equal/Set byte if carry
-        /// <summary>XXX</summary>
+        /// <summary>Set byte if carry (CF=1) (SETB=SETC=SETNAE)</summary>
+        SETC,
+        /// <summary>Set byte if below or equal (CF=1 or ZF=1) (SETBE=SETNA)</summary>
         SETBE,
-        /// <summary>XXX</summary>
-        SETNA,// Set byte if below or equal/Set byte if not above
-        /// <summary>XXX</summary>
+        /// <summary>Set byte if not above (CF=1 or ZF=1) (SETBE=SETNA)</summary>
+        SETNA,
+        /// <summary>Set byte if greater (ZF=0 and SF=OF) (SETG=SETNLE)</summary>
         SETG,
-        /// <summary>XXX</summary>
-        SETNLE,// Set byte if greater/Set byte if not less or equal
-        /// <summary>XXX</summary>
+        /// <summary>Set byte if not less or equal (ZF=0 and SF=OF) (SETG=SETNLE)summary>
+        SETNLE,
+        /// <summary>Set byte if greater or equal (SF=OF) (SETGE=SETNL)</summary>
         SETGE,
-        /// <summary>XXX</summary>
-        SETNL,// Set byte if greater or equal/Set byte if not less
-        /// <summary>XXX</summary>
+        /// <summary>Set byte if not less (SF=OF) (SETGE=SETNL)(</summary>
+        SETNL,
+        /// <summary>Set byte if less (SF!=OF) (SETL=SETNGE)</summary>
         SETL,
-        /// <summary>XXX</summary>
-        SETNGE,// Set byte if less/Set byte if not greater or equal
-        /// <summary>XXX</summary>
+        /// <summary>Set byte if not greater or equal (SF!=OF) (SETL=SETNGE)</summary>
+        SETNGE,
+        /// <summary>Set byte if less or equal (ZF=1, SF!=OF) (SETLE=SETNG)</summary>
         SETLE,
-        /// <summary>XXX</summary>
-        SETNG,// Set byte if less or equal/Set byte if not greater
-        /// <summary>XXX</summary>
-        SETS,// Set byte if sign (negative)
-        /// <summary>XXX</summary>
-        SETNS,// Set byte if not sign (non-negative)
-        /// <summary>XXX</summary>
-        SETO,// Set byte if overflow
-        /// <summary>XXX</summary>
-        SETNO,// Set byte if not overflow
-        /// <summary>XXX</summary>
+        /// <summary>Set byte if not greater (ZF=1, SF!=OF) (SETLE=SETNG)</summary>
+        SETNG,
+        /// <summary>Set byte if sign (negative) (SF=1) (</summary>
+        SETS,
+        /// <summary>Set byte if not sign (non-negative) (SF=0)</summary>
+        SETNS,
+        /// <summary>Set byte if overflow (OF=1)</summary>
+        SETO,
+        /// <summary>Set byte if not overflow (OF=0)</summary>
+        SETNO,
+        /// <summary>Set byte if parity even (PF=1) (SETP=SETPE)</summary>
         SETPE,
-        /// <summary>XXX</summary>
-        SETP,// Set byte if parity even/Set byte if parity
-        /// <summary>XXX</summary>
+        /// <summary>Set byte if parity (PF=1) (SETP=SETPE)</summary>
+        SETP,
+        /// <summary>Set byte if parity odd (PF=0) (SETNP=SETPO)</summary>
         SETPO,
-        /// <summary>XXX</summary>
-        SETNP,// Set byte if parity odd/Set byte if not parity
+        /// <summary>Set byte if not parity (PF=0) (SETNP=SETPO)</summary>
+        SETNP,
         /// <summary>XXX</summary>
         TEST,// Logical compare
         /// <summary>XXX</summary>
