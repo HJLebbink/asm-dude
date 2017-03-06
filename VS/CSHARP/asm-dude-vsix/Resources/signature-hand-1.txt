@@ -6,6 +6,7 @@ GENERAL	CMOVA	Move if above (CF=0 and ZF=0) (CMOVA=CMOVNBE)	CMOVcc.html
 GENERAL	CMOVAE	Move if above or equal (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc.html
 GENERAL	CMOVB	Move if below (CF=1) (CMOVB=CMOVC=CMOVNAE)	CMOVcc.html
 GENERAL	CMOVBE	Move if below or equal (CF=1 or ZF=1) (CMOVBE=CMOVNA)	CMOVcc.html
+GENERAL	CMOVC	Move if carry (CF=1) (CMOVB=CMOVC=CMOVNAE)	CMOVcc.html
 GENERAL	CMOVE	Move if equal (ZF=1) (CMOVE=CMOVZ)	CMOVcc.html
 GENERAL	CMOVG	Move if greater (ZF=0 and SF=OF) (CMOVG=CMOVNLE)	CMOVcc.html
 GENERAL	CMOVGE	Move if greater or equal (SF=OF) (CMOVGE=CMOVNL)	CMOVcc.html
@@ -109,7 +110,7 @@ GENERAL	SETNZ	Set byte if not zero (ZF=0) (SETNE=SETNZ)	SETcc.html
 GENERAL	SETO	Set byte if overflow (OF=1)	SETcc.html
 GENERAL	SETP	Set byte if parity (PF=1) (SETP=SETPE)	SETcc.html
 GENERAL	SETPE	Set byte if parity even (PF=1) (SETP=SETPE)	SETcc.html
-GENERAL	SETPO	Set byte if parity odd (PF=0 SETNP=SETPO)	SETcc.html
+GENERAL	SETPO	Set byte if parity odd (PF=0) (SETNP=SETPO)	SETcc.html
 GENERAL	SETS	Set byte if sign (SF=1)	SETcc.html
 GENERAL	SETZ	Set byte if zero (ZF=1) (SETE=SETZ)	SETcc.html
 ;CYRIX EMMX ====================================================================
@@ -609,6 +610,7 @@ CMOVA	R16,R/M16	P6	CMOVA R16, R/M16	Move r/m16 to r16 if above (CF=0 and ZF=0) (
 CMOVAE	R16,R/M16	P6	CMOVAE R16, R/M16	Move r/m16 to r16 if above or equal (CF=0) (CMOVAE=CMOVNB=CMOVNC)
 CMOVB	R16,R/M16	P6	CMOVB R16, R/M16	Move r/m16 to r16 if below (CF=1) (CMOVB=CMOVC=CMOVNAE)
 CMOVBE	R16,R/M16	P6	CMOVBE R16, R/M16	Move r/m16 to r16 if below or equal (CF=1 or ZF=1) (CMOVBE=CMOVNA)
+CMOVC	R16,R/M16	P6	CMOVC R16, R/M16	Move r/m16 to r16 if carry (CF=1) (CMOVB=CMOVC=CMOVNAE)
 CMOVE	R16,R/M16	P6	CMOVE R16, R/M16	Move r/m16 to r16 if equal (ZF=1) (CMOVE=CMOVZ)
 CMOVG	R16,R/M16	P6	CMOVG R16, R/M16	Move r/m16 to r16 if greater (ZF=0 and SF=OF) (CMOVG=CMOVNLE)
 CMOVGE	R16,R/M16	P6	CMOVGE R16, R/M16	Move r/m16 to r16 if greater or equal (SF=OF) (CMOVGE=CMOVNL)
@@ -639,6 +641,7 @@ CMOVA	R32,R/M32	P6	CMOVA R32, R/M32	Move r/m32 to r32 if above (CF=0 and ZF=0) (
 CMOVAE	R32,R/M32	P6	CMOVAE R32, R/M32	Move r/m32 to r32 if above or equal (CF=0) (CMOVAE=CMOVNB=CMOVNC)
 CMOVB	R32,R/M32	P6	CMOVB R32, R/M32	Move r/m32 to r32 if below (CF=1) (CMOVB=CMOVC=CMOVNAE)
 CMOVBE	R32,R/M32	P6	CMOVBE R32, R/M32	Move r/m32 to r32 if below or equal (CF=1 or ZF=1) (CMOVBE=CMOVNA)
+CMOVC	R32,R/M32	P6	CMOVC R32, R/M32	Move r/m32 to r32 if carry (CF=1) (CMOVB=CMOVC=CMOVNAE)
 CMOVE	R32,R/M32	P6	CMOVE R32, R/M32	Move r/m32 to r32 if equal (ZF=1) (CMOVE=CMOVZ)
 CMOVG	R32,R/M32	P6	CMOVG R32, R/M32	Move r/m32 to r32 if greater (ZF=0 and SF=OF) (CMOVG=CMOVNLE)
 CMOVGE	R32,R/M32	P6	CMOVGE R32, R/M32	Move r/m32 to r32 if greater or equal (SF=OF) (CMOVGE=CMOVNL)
@@ -669,6 +672,7 @@ CMOVA	R64,R/M64	X64	CMOVA R64, R/M64	Move r/m64 to r64 if above (CF=0 and ZF=0) 
 CMOVAE	R64,R/M64	X64	CMOVAE R64, R/M64	Move r/m64 to r64 if above or equal (CF=0) (CMOVAE=CMOVNB=CMOVNC)
 CMOVB	R64,R/M64	X64	CMOVB R64, R/M64	Move r/m64 to r64 if below (CF=1) (CMOVB=CMOVC=CMOVNAE)
 CMOVBE	R64,R/M64	X64	CMOVBE R64, R/M64	Move r/m64 to r64 if below or equal (CF=1 or ZF=1) (CMOVBE=CMOVNA)
+CMOVC	R64,R/M64	x64	CMOVC R64, R/M64	Move r/m64 to r64 if carry (CF=1) (CMOVB=CMOVC=CMOVNAE)
 CMOVE	R64,R/M64	X64	CMOVE R64, R/M64	Move r/m64 to r64 if equal (ZF=1) (CMOVE=CMOVZ)
 CMOVG	R64,R/M64	X64	CMOVG R64, R/M64	Move r/m64 to r64 if greater (ZF=0 and SF=OF) (CMOVG=CMOVNLE)
 CMOVGE	R64,R/M64	X64	CMOVGE R64, R/M64	Move r/m64 to r64 if greater or equal (SF=OF) (CMOVGE=CMOVNL)
@@ -1320,6 +1324,7 @@ PUSHA		186	PUSHA	Push AX, CX, DX, BX, original SP, BP, SI, and DI.
 PUSHAD		386	PUSHAD	Push EAX, ECX, EDX, EBX, original ESP, EBP, ESI, and EDI.
 PUSHF		8086	PUSHF	Push lower 16 bits of EFLAGS.
 PUSHFD		386	PUSHFD	Push EFLAGS.
+
 RCL	R/M16,1	8086	RCL R/M16,1	Rotate 17 bits (CF, r/m16) left once.
 RCL	R/M16,CL	8086	RCL R/M16,CL	Rotate 17 bits (CF, r/m16) left CL times.
 RCL	R/M16,IMM8	186	RCL R/M16,IMM8	Rotate 17 bits (CF, r/m16) left imm8 times.
@@ -1354,9 +1359,33 @@ RDTSCP		X64	RDTSCP	Read 64-bit time-stamp counter and IA32_TSC_AUX value into ED
 
 RET		8086	RET	Near return to calling procedure.
 RET	IMM16	8086	RET IMM16	Near return to calling procedure and pop imm16 bytes from stack.
+
 ROL	R/M8,1	8086	ROL R/M8,1	Rotate 8 bits r/m8 left once.
 ROL	R/M8,CL	186	ROL R/M8,CL	Rotate 8 bits r/m8 left CL times.
 ROL	R/M8,IMM8	8086	ROL R/M8,IMM8	Rotate 8 bits r/m8 left imm8 times.
+ROL	R/M16,1	8086	ROL R/M16,1	Rotate 16 bits r/m16 left once.
+ROL	R/M16,CL	186	ROL R/M16,CL	Rotate 16 bits r/m16 left CL times.
+ROL	R/M16,IMM8	8086	ROL R/M16,IMM8	Rotate 16 bits r/m16 left imm8 times.
+ROL	R/M32,1	386	ROL R/M32,1	Rotate 32 bits r/m32 left once.
+ROL	R/M32,CL	386	ROL R/M32,CL	Rotate 32 bits r/m32 left CL times.
+ROL	R/M32,IMM8	386	ROL R/M32,IMM8	Rotate 32 bits r/m32 left imm8 times.
+ROL	R/M64,1	X64	ROL R/M64,1	Rotate 64 bits r/m64 left once. Uses a 6 bit count.
+ROL	R/M64,CL	X64	ROL R/M64,CL	Rotate 64 bits r/m64 left CL times. Uses a 6 bit count.
+ROL	R/M64,IMM8	X64	ROL R/M64,IMM8	Rotate 64 bits r/m64 left imm8 times. Uses a 6 bit count.
+
+ROR	R/M8,1	8086	ROL R/M8,1	Rotate 8 bits r/m8 right once.
+ROR	R/M8,CL	186	ROL R/M8,CL	Rotate 8 bits r/m8 right CL times.
+ROR	R/M8,IMM8	8086	ROL R/M8,IMM8	Rotate 8 bits r/m8 right imm8 times.
+ROR	R/M16,1	8086	ROR R/M16,1	Rotate 16 bits r/m16 right once.
+ROR	R/M16,CL	186	ROR R/M16,CL	Rotate 16 bits r/m16 right CL times.
+ROR	R/M16,IMM8	8086	ROR R/M16,IMM8	Rotate 16 bits r/m16 right imm8 times.
+ROR	R/M32,1	386	ROR R/M32,1	Rotate 32 bits r/m32 right once.
+ROR	R/M32,CL	386	ROR R/M32,CL	Rotate 32 bits r/m32 right CL times.
+ROR	R/M32,IMM8	386	ROR R/M32,IMM8	Rotate 32 bits r/m32 right imm8 times.
+ROR	R/M64,1	X64	ROR R/M64,1	Rotate 64 bits r/m64 right once. Uses a 6 bit count.
+ROR	R/M64,CL	X64	ROR R/M64,CL	Rotate 64 bits r/m64 right CL times. Uses a 6 bit count.
+ROR	R/M64,IMM8	X64	ROR R/M64,IMM8	Rotate 64 bits r/m64 right imm8 times. Uses a 6 bit count.
+
 RSM		PENT	RSM	Resume operation of interrupted program.
 SAHF		8086	SAHF	Loads SF, ZF, AF, PF, and CF from AH into EFLAGS register.
 

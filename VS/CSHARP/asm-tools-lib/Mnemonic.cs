@@ -218,6 +218,18 @@ namespace AsmTools {
         #region Bit and Byte Instructions
         //Bit instructions test and modify individual bits in word and doubleword operands. Byte instructions set the value of
         //a byte operand to indicate the status of flags in the EFLAGS register.
+        /// <summary>Bit test</summary>
+        BT,
+        /// <summary>Bit test and set</summary>
+        BTS,
+        /// <summary>Bit test and reset</summary>
+        BTR,
+        /// <summary>Bit test and complement</summary>
+        BTC,
+        /// <summary>Bit scan forward</summary>
+        BSF,
+        /// <summary>Bit scan reverse</summary>
+        BSR,
         /// <summary>Set byte if equal (ZF=1) (SETE=ZETZ)</summary>
         SETE,
         /// <summary>Set byte if zero (ZF=1) (SETE=ZETZ)</summary>
