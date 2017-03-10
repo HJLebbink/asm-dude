@@ -22,19 +22,20 @@
 
 using System;
 
-namespace AsmTools {
-
-    public class Operand {
-
+namespace AsmTools
+{
+    public class Operand
+    {
         private readonly string _str;
         private readonly Ot _type;
         private readonly Rn _rn;
-        private readonly ulong _imm;
+        private ulong _imm;
         private int _nBits;
         private readonly Tuple<Rn, Rn, int, long> _mem;
 
-        public Operand(string token) {
-
+        /// <summary>constructor</summary>
+        public Operand(string token)
+        {
             //TODO: properly handle optional elements {K}{Z} {AES}{ER}
             string token2 = token.
                 Replace("{K0}", "").
@@ -55,23 +56,32 @@ namespace AsmTools {
             this._str = token;
 
             Tuple<bool, Rn, int> t0 = RegisterTools.ToRn(token2);
-            if (t0.Item1) {
+            if (t0.Item1)
+            {
                 this._type = Ot.reg;
                 this._rn = t0.Item2;
                 this._nBits = t0.Item3;
-            } else {
+            }
+            else
+            {
                 Tuple<bool, ulong, int> t1 = AsmSourceTools.ToConstant(token2);
-                if (t1.Item1) {
+                if (t1.Item1)
+                {
                     this._type = Ot.imm;
                     this._imm = t1.Item2;
                     this._nBits = t1.Item3;
-                } else {
+                }
+                else
+                {
                     Tuple<bool, Rn, Rn, int, long, int> t2 = AsmSourceTools.ParseMemOperand(token2);
-                    if (t2.Item1) {
+                    if (t2.Item1)
+                    {
                         this._type = Ot.mem;
                         this._mem = new Tuple<Rn, Rn, int, long>(t2.Item2, t2.Item3, t2.Item4, t2.Item5);
                         this._nBits = t2.Item6;
-                    } else {
+                    }
+                    else
+                    {
                         this._type = Ot.UNKNOWN;
                         this._nBits = -1;
                     }
@@ -86,13 +96,59 @@ namespace AsmTools {
 
         public Rn Rn { get { return this._rn; } }
         public ulong Imm { get { return this._imm; } }
-        /// <summary>
-        /// Return tuple with BaseReg, IndexReg, Scale and Displacement. Offset = Base + (Index * Scale) + Displacement
-        /// </summary>
+        
+        /// <summary> Return tuple with BaseReg, IndexReg, Scale and Displacement. Offset = Base + (Index * Scale) + Displacement </summary>
         public Tuple<Rn, Rn, int, long> Mem { get { return this._mem; } }
-        public int NBits { get { return this._nBits; } set { this._nBits = value; } }
 
-        public override string ToString() {
+        public int NBits
+        {
+            get { return this._nBits; }
+            set { this._nBits = value; }
+        }
+
+        /// <summary> Sign Extend the imm to the provided number of bits;</summary>
+        public void SignExtend(int nBits)
+        {
+            if (this.IsImm)
+            {
+                if (nBits > this._nBits)
+                {
+                    bool signBit = (this._imm >> (this._nBits - 1) & 1) == 1;
+                    if (signBit)
+                    {
+                        for (int bit = this._nBits; bit < nBits; ++bit)
+                        {
+                            this._imm |= (1ul << bit);
+                        }
+                    } else
+                    {
+                        // no need to change _imm
+                    }
+                    this._nBits = nBits;
+                }
+            }
+            else
+            {
+                Console.WriteLine("WARNING: Operand:SignExtend: can only sign extend imm.");
+            }
+        }
+
+        /// <summary> Zero Extend the imm to the provided number of bits;</summary>
+        public void ZeroExtend(int nBits)
+        {
+            if (this.IsImm)
+            {
+                if (nBits > this._nBits)
+                {
+                    this._nBits = nBits;
+                }
+            } else
+            {
+                Console.WriteLine("WARNING: Operand:ZeroExtend: can only zero extend imm.");
+            }
+        }
+        public override string ToString()
+        {
             return this._str;
         }
     }

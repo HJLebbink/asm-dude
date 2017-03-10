@@ -360,29 +360,96 @@ namespace AsmTools
         {
             string token2;
             bool isHex = false;
-            if (token.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
-            {
-                token2 = token.Substring(2);
-                isHex = true;
-            }
-            else if (token.EndsWith("h", StringComparison.OrdinalIgnoreCase))
+            bool isBinary = false;
+            bool isDecimal = false;
+            bool isOctal = false;
+
+            // note the special case of token 0h (zero hex) should not be confused with the prefix 0h;
+            if (token.EndsWith("h", StringComparison.OrdinalIgnoreCase))
             {
                 token2 = token.Substring(0, token.Length - 1);
                 isHex = true;
             }
-            else
+            else if (token.StartsWith("0h", StringComparison.OrdinalIgnoreCase) || token.StartsWith("0x", StringComparison.OrdinalIgnoreCase) || token.StartsWith("$0"))
+            {
+                token2 = token.Substring(2);
+                isHex = true;
+            }
+            else if (token.StartsWith("0b", StringComparison.OrdinalIgnoreCase) || token.StartsWith("0y", StringComparison.OrdinalIgnoreCase))
+            {
+                token2 = token.Substring(2);
+                isBinary = true;
+            }
+            else if (token.EndsWith("b", StringComparison.OrdinalIgnoreCase) || token.EndsWith("y", StringComparison.OrdinalIgnoreCase))
+            {
+                token2 = token.Substring(0, token.Length - 1);
+                isBinary = true;
+            }
+            else if (token.StartsWith("0o", StringComparison.OrdinalIgnoreCase) || token.StartsWith("0q", StringComparison.OrdinalIgnoreCase))
+            {
+                token2 = token.Substring(2);
+                isOctal = true;
+            }
+            else if (token.EndsWith("q", StringComparison.OrdinalIgnoreCase) || token.EndsWith("o", StringComparison.OrdinalIgnoreCase))
+            {
+                token2 = token.Substring(0, token.Length - 1);
+                isOctal = true;
+            }
+            else if (token.StartsWith("0d", StringComparison.OrdinalIgnoreCase))
+            {
+                token2 = token.Substring(2);
+                isDecimal = true;
+            }
+            else if (token.EndsWith("d", StringComparison.OrdinalIgnoreCase))
             {
                 token2 = token;
+                isDecimal = true;
             }
-            ulong v;
+            else
+            {   // assume decimal
+                token2 = token;
+                isDecimal = true;
+            }
+
+            token2 = token2.Replace("_", string.Empty).Replace(".", string.Empty);
+
+            ulong v = 0;
             bool parsedSuccessfully;
             if (isHex)
             {
-                parsedSuccessfully = ulong.TryParse(token2.Replace("_", string.Empty), NumberStyles.HexNumber, CultureInfo.CurrentCulture, out v);
+                parsedSuccessfully = ulong.TryParse(token2, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out v);
+            }
+            else if (isOctal)
+            {
+                try
+                {
+                    v = Convert.ToUInt64(token2, 8);
+                    parsedSuccessfully = true;
+                } catch
+                {
+                    parsedSuccessfully = false;
+                }
+            }
+            else if (isBinary)
+            {
+                try
+                {
+                    v = Convert.ToUInt64(token2, 2);
+                    parsedSuccessfully = true;
+                }
+                catch
+                {
+                    parsedSuccessfully = false;
+                }
+            }
+            else if (isDecimal)
+            {
+                parsedSuccessfully = ulong.TryParse(token2.Replace("_", string.Empty), NumberStyles.Integer, CultureInfo.CurrentCulture, out v);
             }
             else
             {
-                parsedSuccessfully = ulong.TryParse(token2.Replace("_", string.Empty), NumberStyles.Integer, CultureInfo.CurrentCulture, out v);
+                // unreachable
+                parsedSuccessfully = false;
             }
 
             int nBits = (parsedSuccessfully) ? NBitsStorageNeeded(v) : -1;

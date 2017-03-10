@@ -123,7 +123,7 @@ namespace unit_tests {
                 ulong i = 0ul;
                 string s = i + "";
                 Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1);
+                Assert.IsTrue(t.Item1, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(8, t.Item3, s);
             }
@@ -131,7 +131,7 @@ namespace unit_tests {
                 ulong i = 0ul;
                 string s = "0x" + i.ToString("X");
                 Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1);
+                Assert.IsTrue(t.Item1, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(8, t.Item3, s);
             }
@@ -139,7 +139,7 @@ namespace unit_tests {
                 ulong i = 0ul;
                 string s = i.ToString("X") + "h";
                 Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1);
+                Assert.IsTrue(t.Item1, "could not parse: s="+s);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(8, t.Item3, s);
             }
@@ -147,7 +147,7 @@ namespace unit_tests {
                 ulong i = 1ul;
                 string s = i.ToString("X") + "h";
                 Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1);
+                Assert.IsTrue(t.Item1, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(8, t.Item3, s);
             }
@@ -155,7 +155,7 @@ namespace unit_tests {
                 ulong i = 1ul;
                 string s = "0x" + i.ToString("X"); ;
                 Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1);
+                Assert.IsTrue(t.Item1, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(8, t.Item3, s);
             }
@@ -163,7 +163,7 @@ namespace unit_tests {
                 ulong i = 1ul;
                 string s = i.ToString("X") + "h";
                 Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1);
+                Assert.IsTrue(t.Item1, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(8, t.Item3, s);
             }
@@ -172,7 +172,7 @@ namespace unit_tests {
                 ulong i = 0xFFul;
                 string s = "0x" + i.ToString("X"); ;
                 Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1);
+                Assert.IsTrue(t.Item1, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(8, t.Item3, s);
             }
@@ -180,7 +180,7 @@ namespace unit_tests {
                 ulong i = 0xFFul;
                 string s = i.ToString("X") + "h";
                 Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1);
+                Assert.IsTrue(t.Item1, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(8, t.Item3, s);
             }
@@ -188,7 +188,7 @@ namespace unit_tests {
                 ulong i = 0x100ul;
                 string s = "0x" + i.ToString("X");
                 Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1);
+                Assert.IsTrue(t.Item1, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(16, t.Item3, s);
             }
@@ -196,7 +196,7 @@ namespace unit_tests {
                 ulong i = 0xFFFFul;
                 string s = "0x" + i.ToString("X");
                 Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1);
+                Assert.IsTrue(t.Item1, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(16, t.Item3, s);
             }
@@ -204,7 +204,7 @@ namespace unit_tests {
                 ulong i = 0x10000ul;
                 string s = "0x" + i.ToString("X");
                 Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1);
+                Assert.IsTrue(t.Item1, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(32, t.Item3, s);
             }
@@ -220,7 +220,7 @@ namespace unit_tests {
                 ulong i = 0x100000000ul;
                 string s = "0x" + i.ToString("X");
                 Tuple<bool, ulong, int> t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1);
+                Assert.IsTrue(t.Item1, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Item2, s);
                 Assert.AreEqual(64, t.Item3, s);
             }
