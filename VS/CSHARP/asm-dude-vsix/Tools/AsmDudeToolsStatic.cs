@@ -476,8 +476,23 @@ namespace AsmDude.Tools {
                 case Arch.SHA: return Settings.Default.ARCH_SHA;
                 case Arch.UNDOC: return Settings.Default.ARCH_UNDOC;
                 case Arch.PREFETCHWT1: return Settings.Default.ARCH_PREFETCHWT1;
+
+                case Arch.ADX: return Settings.Default.ARCH_ADX;
+                case Arch.AES: return Settings.Default.ARCH_AES;
+                case Arch.F16C: return Settings.Default.ARCH_F16C;
+                case Arch.FSGSBASE: return Settings.Default.ARCH_FSGSBASE;
+                case Arch.PCLMULQDQ: return Settings.Default.ARCH_PCLMULQDQ;
+                case Arch.LZCNT: return Settings.Default.ARCH_LZCNT;
+                case Arch.PRFCHW: return Settings.Default.ARCH_PRFCHW;
+                case Arch.RDPID: return Settings.Default.ARCH_RDPID;
+                case Arch.RDRAND: return Settings.Default.ARCH_RDRAND;
+                case Arch.RDSEED: return Settings.Default.ARCH_RDSEED;
+                case Arch.XSAVEOPT: return Settings.Default.ARCH_XSAVEOPT;
+
+                case Arch.NONE: return true;
+
                 default:
-                    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:isArch2SwitchedOn; unsupported arch {0}", arch));
+                    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:AsmDudeToolsStatic::Is_Arch_Switched_On: unsupported arch {0}", arch));
                     return false;
             }
         }

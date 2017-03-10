@@ -192,7 +192,7 @@ namespace AsmDude.OptionsPage
             this._asmDudeOptionsPageUI.useArch_LZCNT_UI.ToolTip = MakeToolTip(Arch.LZCNT);
             this._asmDudeOptionsPageUI.useArch_PREFETCHWT1 = Settings.Default.ARCH_PREFETCHWT1;
             this._asmDudeOptionsPageUI.useArch_PREFETCHWT1_UI.ToolTip = MakeToolTip(Arch.PREFETCHWT1);
-            this._asmDudeOptionsPageUI.useArch_PREFETCHW = Settings.Default.ARCH_PREFETCHW;
+            this._asmDudeOptionsPageUI.useArch_PREFETCHW = Settings.Default.ARCH_PRFCHW;
             this._asmDudeOptionsPageUI.useArch_PREFETCHW_UI.ToolTip = MakeToolTip(Arch.PRFCHW);
             this._asmDudeOptionsPageUI.useArch_RDPID = Settings.Default.ARCH_RDPID;
             this._asmDudeOptionsPageUI.useArch_RDPID_UI.ToolTip = MakeToolTip(Arch.RDPID);
@@ -543,7 +543,7 @@ namespace AsmDude.OptionsPage
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_PREFETCHWT1=" + this._asmDudeOptionsPageUI.useArch_PREFETCHWT1);
                 changed = true;
             }
-            if (Settings.Default.ARCH_PREFETCHW != this._asmDudeOptionsPageUI.useArch_PREFETCHW) {
+            if (Settings.Default.ARCH_PRFCHW != this._asmDudeOptionsPageUI.useArch_PREFETCHW) {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_PREFETCHW=" + this._asmDudeOptionsPageUI.useArch_PREFETCHW);
                 changed = true;
             }
@@ -918,8 +918,8 @@ namespace AsmDude.OptionsPage
                 Settings.Default.ARCH_PREFETCHWT1 = this._asmDudeOptionsPageUI.useArch_PREFETCHWT1;
                 changed = true;
             }
-            if (Settings.Default.ARCH_PREFETCHW != this._asmDudeOptionsPageUI.useArch_PREFETCHW) {
-                Settings.Default.ARCH_PREFETCHW = this._asmDudeOptionsPageUI.useArch_PREFETCHW;
+            if (Settings.Default.ARCH_PRFCHW != this._asmDudeOptionsPageUI.useArch_PREFETCHW) {
+                Settings.Default.ARCH_PRFCHW = this._asmDudeOptionsPageUI.useArch_PREFETCHW;
                 changed = true;
             }
             if (Settings.Default.ARCH_RDPID != this._asmDudeOptionsPageUI.useArch_RDPID) {

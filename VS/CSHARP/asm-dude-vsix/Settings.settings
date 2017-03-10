@@ -221,7 +221,7 @@
     <Setting Name="ARCH_PREFETCHWT1" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="ARCH_PREFETCHW" Type="System.Boolean" Scope="User">
+    <Setting Name="ARCH_PRFCHW" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="ARCH_RDPID" Type="System.Boolean" Scope="User">

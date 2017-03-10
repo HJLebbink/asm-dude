@@ -902,12 +902,12 @@ namespace AsmDude {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ARCH_PREFETCHW {
+        public bool ARCH_PRFCHW {
             get {
-                return ((bool)(this["ARCH_PREFETCHW"]));
+                return ((bool)(this["ARCH_PRFCHW"]));
             }
             set {
-                this["ARCH_PREFETCHW"] = value;
+                this["ARCH_PRFCHW"] = value;
             }
         }
         
