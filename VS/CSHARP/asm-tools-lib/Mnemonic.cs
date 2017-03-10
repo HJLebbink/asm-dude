@@ -515,28 +515,28 @@ namespace AsmTools {
         #region Miscellaneous Instructions
         //The miscellaneous instructions provide such functions as loading an effective address, executing a “no-operation,”
         //and retrieving processor identification information.
-        /// <summary>XXX</summary>
-        LEA,// Load effective address
-        /// <summary>XXX</summary>
-        NOP,// No operation
+        /// <summary>Load effective address</summary>
+        LEA,
+        /// <summary> No operation</summary>
+        NOP,
         /// <summary>Generates an invalid opcode. This instruction is provided for software testing to explicitly generate an invalid opcode. The opcode for this instruction is reserved for this purpose. Other than raising the invalid opcode exception, this instruction is the same as the NOP instruction.</summary>
         UD2,
-        /// <summary>XXX</summary>
+        /// <summary>Table lookup translation</summary>
         XLAT,
-        /// <summary>XXX</summary>
-        XLATB,// Table lookup translation
-        /// <summary>XXX</summary>
-        CPUID,// Processor identification
-        /// <summary>XXX</summary>
-        MOVBE,// Move data after swapping data bytes
-        /// <summary>XXX</summary>
-        PREFETCHW,// Prefetch data into cache in anticipation of write
-        /// <summary>XXX</summary>
-        PREFETCHWT1,// Prefetch hint T1 with intent to write
-        /// <summary>XXX</summary>
-        CLFLUSH,//Flushes and invalidates a memory operand and its associated cache line from all levels of the processor’s cache hierarchy
-        /// <summary>XXX</summary>
-        CLFLUSHOPT,// Flushes and invalidates a memory operand and its associated cache line from all levels of the processor’s cache hierarchy with optimized memory system throughput.
+        /// <summary>Table lookup translation</summary>
+        XLATB, 
+        /// <summary>Processor identification</summary>
+        CPUID,
+        /// <summary>Move data after swapping data bytes</summary>
+        MOVBE,
+        /// <summary>Prefetch data into cache in anticipation of write</summary>
+        PREFETCHW,
+        /// <summary>Prefetch hint T1 with intent to write</summary>
+        PREFETCHWT1,
+        /// <summary>Flushes and invalidates a memory operand and its associated cache line from all levels of the processor’s cache hierarchy</summary>
+        CLFLUSH,
+        /// <summary>Flushes and invalidates a memory operand and its associated cache line from all levels of the processor’s cache hierarchy with optimized memory system throughput</summary>
+        CLFLUSHOPT,
         #endregion
         #region User Mode Extended Sate Save/Restore Instructions
         /// <summary>XXX</summary>
