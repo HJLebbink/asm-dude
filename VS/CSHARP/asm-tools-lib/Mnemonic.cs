@@ -314,50 +314,50 @@ namespace AsmTools {
         JA,
         /// <summary>Jump if not below or equal</summary>
         JNBE,
-        /// <summary>XXX</summary>
+        /// <summary>Jump if above or equal</summary>
         JAE,
-        /// <summary>XXX</summary>
-        JNB,// Jump if above or equal/Jump if not below
-        /// <summary>XXX</summary>
+        /// <summary>Jump if not below</summary>
+        JNB,
+        /// <summary>Jump if below</summary>
         JB,
-        /// <summary>XXX</summary>
-        JNAE,// Jump if below/Jump if not above or equal
-        /// <summary>XXX</summary>
+        /// <summary>Jump if not above or equal</summary>
+        JNAE,
+        /// <summary>Jump if below or equal</summary>
         JBE,
-        /// <summary>XXX</summary>
-        JNA,// Jump if below or equal/Jump if not above
-        /// <summary>XXX</summary>
+        /// <summary>Jump if not above</summary>
+        JNA,
+        /// <summary>Jump if greater</summary>
         JG,
-        /// <summary>XXX</summary>
-        JNLE,// Jump if greater/Jump if not less or equal
-        /// <summary>XXX</summary>
+        /// <summary>Jump if not less or equal</summary>
+        JNLE,
+        /// <summary>Jump if greater or equal</summary>
         JGE,
-        /// <summary>XXX</summary>
-        JNL,// Jump if greater or equal/Jump if not less
-        /// <summary>XXX</summary>
+        /// <summary>Jump if not less</summary>
+        JNL,
+        /// <summary>Jump if less</summary>
         JL,
-        /// <summary>XXX</summary>
-        JNGE,// Jump if less/Jump if not greater or equal
-        /// <summary>XXX</summary>
+        /// <summary>Jump if not greater or equal</summary>
+        JNGE,
+        /// <summary>Jump if less or equal</summary>
         JLE,
-        /// <summary>XXX</summary>
-        JNG,// Jump if less or equal/Jump if not greater
-        /// <summary>XXX</summary>
-        JC,// Jump if carry
-        /// <summary>XXX</summary>
-        JNC,// Jump if not carry
-        /// <summary>XXX</summary>
-        JO,// Jump if overflow
-        /// <summary>XXX</summary>
-        JNO,// Jump if not overflow
-        /// <summary>XXX</summary>
-        JS,// Jump if sign (negative)
-        /// <summary>XXX</summary>
-        JNS,// Jump if not sign (non-negative)
-        /// <summary>XXX</summary>
+        /// <summary>Jump if not greater</summary>
+        JNG,
+        /// <summary>Jump if carry</summary>
+        JC,
+        /// <summary>Jump if not carry</summary>
+        JNC,
+        /// <summary>Jump if overflow</summary>
+        JO,
+        /// <summary>Jump if not overflow</summary>
+        JNO, 
+        /// <summary>Jump if sign (negative)</summary>
+        JS,
+        /// <summary>Jump if not sign (non-negative)</summary>
+        JNS, 
+        /// <summary>Jump if parity odd</summary>
         JPO,
-        /// <summary>XXX</summary>
-        JNP,// Jump if parity odd/Jump if not parity
+        /// <summary>Jump if not parity</summary>
+        JNP,
         /// <summary>Jump if parity eve</summary>
         JPE,
         /// <summary>Jump if parity</summary>
@@ -388,7 +388,7 @@ namespace AsmTools {
         INT,
         /// <summary>Interrupt on overflow</summary>
         INTO,
-        /// <summary> Detect value out of range</summary>
+        /// <summary>Detect value out of range</summary>
         BOUND,
         /// <summary>High-level procedure entry</summary>
         ENTER,

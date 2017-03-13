@@ -27,16 +27,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AsmTools {
+namespace AsmTools
+{
 
     /// <summary>
     /// Operand Type: reg, mem, imm, UNKNOWN
     /// </summary>
     [Flags]
-    public enum Ot : byte {
-        reg     = 1 << 0,
-        mem     = 1 << 1,
-        imm     = 1 << 2,
+    public enum Ot : byte
+    {
+        reg = 1 << 0,
+        mem = 1 << 1,
+        imm = 1 << 2,
         UNKNOWN = 1 << 3
     }
 
@@ -44,7 +46,8 @@ namespace AsmTools {
     /// Operand Type tuple (OperandType x OperandType)
     /// </summary>
     [Flags]
-    public enum Ot2 : byte {
+    public enum Ot2 : byte
+    {
         [Description("Reg-Reg")]
         reg_reg = Ot.reg | (Ot.reg << 4),
         [Description("Reg-Mem")]
@@ -85,7 +88,8 @@ namespace AsmTools {
     ///  Operand Type tuple (OperandType x OperandType x OperandType)
     /// </summary>
     [Flags]
-    public enum Ot3 : short {
+    public enum Ot3 : short
+    {
         reg_reg_reg = Ot.reg | (Ot.reg << 4) | (Ot.reg << 8),
         reg_mem_reg = Ot.reg | (Ot.mem << 4) | (Ot.reg << 8),
         reg_imm_reg = Ot.reg | (Ot.imm << 4) | (Ot.reg << 8),
@@ -169,32 +173,42 @@ namespace AsmTools {
     }
 
 
-    public static partial class AsmSourceTools {
+    public static partial class AsmSourceTools
+    {
 
-        public static string ToString(Ot ot) {
+        public static string ToString(Ot ot)
+        {
             StringBuilder sb = new StringBuilder();
-            foreach (Ot value in Enum.GetValues(ot.GetType())) {
-                if (ot.HasFlag(value)) {
+            foreach (Ot value in Enum.GetValues(ot.GetType()))
+            {
+                if (ot.HasFlag(value))
+                {
                     sb.Append(value.ToString() + ", ");
                 }
             }
             if (sb.Length > 2) sb.Length -= 2;
             return sb.ToString();
         }
-        public static string ToString(Ot2 ot2) {
+        public static string ToString(Ot2 ot2)
+        {
             StringBuilder sb = new StringBuilder();
-            foreach (Ot2 value in Enum.GetValues(ot2.GetType())) {
-                if (ot2.HasFlag(value)) {
+            foreach (Ot2 value in Enum.GetValues(ot2.GetType()))
+            {
+                if (ot2.HasFlag(value))
+                {
                     sb.Append(value.ToString() + ", ");
                 }
             }
             if (sb.Length > 2) sb.Length -= 2;
             return sb.ToString();
         }
-        public static string ToString(Ot3 ot) {
+        public static string ToString(Ot3 ot)
+        {
             StringBuilder sb = new StringBuilder();
-            foreach (Ot3 value in Enum.GetValues(ot.GetType())) {
-                if (ot.HasFlag(value)) {
+            foreach (Ot3 value in Enum.GetValues(ot.GetType()))
+            {
+                if (ot.HasFlag(value))
+                {
                     sb.Append(value.ToString() + ", ");
                 }
             }
@@ -202,8 +216,10 @@ namespace AsmTools {
             return sb.ToString();
         }
 
-        public static Tuple<Ot, Ot> SplitOt(Ot2 operandTuple) {
-            switch (operandTuple) {
+        public static Tuple<Ot, Ot> SplitOt(Ot2 operandTuple)
+        {
+            switch (operandTuple)
+            {
                 case Ot2.reg_reg: return new Tuple<Ot, Ot>(Ot.reg, Ot.reg);
                 case Ot2.reg_mem: return new Tuple<Ot, Ot>(Ot.reg, Ot.mem);
                 case Ot2.reg_imm: return new Tuple<Ot, Ot>(Ot.reg, Ot.imm);
@@ -224,11 +240,13 @@ namespace AsmTools {
                     return new Tuple<Ot, Ot>(Ot.UNKNOWN, Ot.UNKNOWN);
             }
         }
-        public static Ot2 MergeOt(Ot ot1, Ot ot2) {
+        public static Ot2 MergeOt(Ot ot1, Ot ot2)
+        {
             return (Ot2)(((byte)ot1) | (((byte)ot2) << 4));
         }
-        public static Ot2 MergeOt(Ot ot1, Ot ot2, Ot ot3) {
-            return (Ot2)(((byte)ot1) | (((byte)ot2) << 4) | (((byte)ot3) << 8));
+        public static Ot3 MergeOt(Ot ot1, Ot ot2, Ot ot3)
+        {
+            return (Ot3)(((byte)ot1) | (((byte)ot2) << 4) | (((byte)ot3) << 8));
         }
     }
 }
