@@ -31,7 +31,7 @@ namespace AsmTools
         private readonly Rn _rn;
         private ulong _imm;
         private int _nBits;
-        private readonly (Rn, Rn, int, long) _mem;
+        private readonly (Rn baseReg, Rn indexReg, int scale, long displacement) _mem;
 
         /// <summary>constructor</summary>
         public Operand(string token)
@@ -64,21 +64,21 @@ namespace AsmTools
             }
             else
             {
-                (bool, ulong, int) t1 = AsmSourceTools.ToConstant(token2);
-                if (t1.Item1)
+                (bool valid, ulong value, int nBits) t1 = AsmSourceTools.ToConstant(token2);
+                if (t1.valid)
                 {
                     this._type = Ot.imm;
-                    this._imm = t1.Item2;
-                    this._nBits = t1.Item3;
+                    this._imm = t1.value;
+                    this._nBits = t1.nBits;
                 }
                 else
                 {
-                    (bool, Rn, Rn, int, long, int) t2 = AsmSourceTools.ParseMemOperand(token2);
-                    if (t2.Item1)
+                    (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits) t2 = AsmSourceTools.ParseMemOperand(token2);
+                    if (t2.valid)
                     {
                         this._type = Ot.mem;
-                        this._mem = (t2.Item2, t2.Item3, t2.Item4, t2.Item5);
-                        this._nBits = t2.Item6;
+                        this._mem = (t2.baseReg, t2.indexReg, t2.scale, t2.displacement);
+                        this._nBits = t2.nBits;
                     }
                     else
                     {

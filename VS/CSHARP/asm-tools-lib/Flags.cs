@@ -172,7 +172,8 @@ namespace AsmTools
         ALL = CF | PF | AF | ZF | SF | OF | DF,
 
         CF_PF_AF_SF_OF = CF | PF | AF | SF | OF,
-        CF_PF_AF_ZF_SF_OF = CF | PF | AF | ZF | SF | OF
+        CF_PF_AF_ZF_SF_OF = CF | PF | AF | ZF | SF | OF,
+        PF_AF_ZF_SF_OF = PF | AF | ZF | SF | OF
 
     }
 }

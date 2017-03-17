@@ -86,7 +86,7 @@ namespace AsmDude
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
 
                 string line = containingLine.GetText().ToUpper();
-                IList<(int, int, bool)> pos = AsmSourceTools.SplitIntoKeywordPos(line);
+                IList<(int beginPos, int length, bool isLabel)> pos = AsmSourceTools.SplitIntoKeywordPos(line);
 
                 int offset = containingLine.Start.Position;
                 int nKeywords = pos.Count;
@@ -102,7 +102,7 @@ namespace AsmDude
                     }
 
                     // keyword k is a label definition
-                    if (pos[k].Item3)
+                    if (pos[k].isLabel)
                     {
                         SnapshotSpan labelDefSpan = NasmTokenTagger.New_Span(pos[k], offset, curSpan);
                         //AsmDudeToolsStatic.Output_INFO("MasmTokenTagger:GetTags: found label " + asmToken +" at line "+containingLine.LineNumber);

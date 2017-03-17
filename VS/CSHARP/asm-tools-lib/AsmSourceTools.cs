@@ -33,7 +33,7 @@ namespace AsmTools
         /// <summary>
         /// Parse the provided line. Returns label, mnemonic, args, remarks
         /// </summary>
-        public static (string, Mnemonic, string[], string) ParseLine(string line)
+        public static (string label, Mnemonic mnemonic, string[] args, string remark) ParseLine(string line)
         {
             string label = "";
             Mnemonic mnemonic = Mnemonic.UNKNOWN;
@@ -69,8 +69,8 @@ namespace AsmTools
                 if (codeStr.Length > 0)
                 {
                     // get the first keyword, check if it is a mnemonic
-                    (int, int) t = AsmTools.AsmSourceTools.GetKeywordPos(0, codeStr);
-                    string firstKeyword = codeStr.Substring(t.Item1, t.Item2 - t.Item1);
+                    (int beginPos, int endPos) = AsmTools.AsmSourceTools.GetKeywordPos(0, codeStr);
+                    string firstKeyword = codeStr.Substring(beginPos, endPos - beginPos);
                     if (firstKeyword.Length > 0)
                     {
                         mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(firstKeyword);
@@ -83,7 +83,7 @@ namespace AsmTools
                             //Console.WriteLine("INFO: ToolsZ3:parseLine: found codeStr " + codeStr);
                             if (codeStr.Length > 0)
                             {
-                                string argsStr = codeStr.Substring(t.Item2, codeStr.Length - t.Item2);
+                                string argsStr = codeStr.Substring(endPos, codeStr.Length - endPos);
                                 if (argsStr.Length > 0)
                                 {
                                     args = argsStr.Split(',');
@@ -97,7 +97,7 @@ namespace AsmTools
                     }
                 }
             }
-            return (label, mnemonic, args, remark);
+            return (label: label, mnemonic: mnemonic, args: args, remark: remark);
         }
 
         public static IList<Operand> MakeOperands(string[] operandStrArray)
@@ -131,7 +131,7 @@ namespace AsmTools
         /// <summary>
         /// return label definition position
         /// </summary>
-        public static (int, int, bool) Get_First_Keyword(string line)
+        public static (int beginPos, int length, bool isLabel) Get_First_Keyword(string line)
         {
             bool started = false;
             int keywordBegin = 0;
@@ -139,24 +139,24 @@ namespace AsmTools
             for (int i = 0; i < line.Length; ++i)
             {
                 char c = line[i];
-                if (IsRemarkChar(c)) return (0, 0, false);
-                if (c.Equals('"')) return (0, 0, false);
+                if (IsRemarkChar(c)) return (beginPos: 0, length: 0, isLabel: false);
+                if (c.Equals('"')) return (beginPos: 0, length: 0, isLabel: false);
                 if (c.Equals(':'))
                 {
                     if (started)
                     {
-                        return (keywordBegin, i, true);
+                        return (beginPos: keywordBegin, length: i, isLabel: true);
                     }
                     else
                     {
-                        return (0, 0, false);
+                        return (beginPos: 0, length: 0, isLabel: false);
                     }
                 }
                 else if (IsSeparatorChar(c))
                 {
                     if (started)
                     {
-                        return (keywordBegin, i, false);
+                        return (keywordBegin, length: i, false);
                     }
                     else
                     {
@@ -168,13 +168,13 @@ namespace AsmTools
                     started = true;
                 }
             }
-            return (0, 0, false);
+            return (beginPos: 0, length: 0, isLabel: false);
         }
 
         /// <summary>
         /// Split the provided line into keyword positions: first: begin pos; second: end pos; third whether the keyword is a label
         /// </summary>
-        public static IList<(int, int, bool)> SplitIntoKeywordPos(string line)
+        public static IList<(int beginPos, int length, bool isLabel)> SplitIntoKeywordPos(string line)
         {
             IList<(int, int, bool)> list = new List<(int, int, bool)>();
 
@@ -356,7 +356,7 @@ namespace AsmTools
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static (bool, ulong, int) ToConstant(string token)
+        public static (bool valid, ulong value, int nBits) ToConstant(string token)
         {
             string token2;
             bool isHex = false;
@@ -413,19 +413,20 @@ namespace AsmTools
 
             token2 = token2.Replace("_", string.Empty).Replace(".", string.Empty);
 
-            ulong v = 0;
+            ulong value = 0;
             bool parsedSuccessfully;
             if (isHex)
             {
-                parsedSuccessfully = ulong.TryParse(token2, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out v);
+                parsedSuccessfully = ulong.TryParse(token2, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out value);
             }
             else if (isOctal)
             {
                 try
                 {
-                    v = Convert.ToUInt64(token2, 8);
+                    value = Convert.ToUInt64(token2, 8);
                     parsedSuccessfully = true;
-                } catch
+                }
+                catch
                 {
                     parsedSuccessfully = false;
                 }
@@ -434,7 +435,7 @@ namespace AsmTools
             {
                 try
                 {
-                    v = Convert.ToUInt64(token2, 2);
+                    value = Convert.ToUInt64(token2, 2);
                     parsedSuccessfully = true;
                 }
                 catch
@@ -444,7 +445,7 @@ namespace AsmTools
             }
             else if (isDecimal)
             {
-                parsedSuccessfully = ulong.TryParse(token2.Replace("_", string.Empty), NumberStyles.Integer, CultureInfo.CurrentCulture, out v);
+                parsedSuccessfully = ulong.TryParse(token2.Replace("_", string.Empty), NumberStyles.Integer, CultureInfo.CurrentCulture, out value);
             }
             else
             {
@@ -452,8 +453,8 @@ namespace AsmTools
                 parsedSuccessfully = false;
             }
 
-            int nBits = (parsedSuccessfully) ? NBitsStorageNeeded(v) : -1;
-            return (parsedSuccessfully, v, nBits);
+            int nBits = (parsedSuccessfully) ? NBitsStorageNeeded(value) : -1;
+            return (valid: parsedSuccessfully, value: value, nBits: nBits);
         }
 
         public static int NBitsStorageNeeded(ulong v)
@@ -513,13 +514,13 @@ namespace AsmTools
         /// <summary>
         /// return Offset = Base + (Index * Scale) + Displacement
         /// </summary>
-        public static (bool, Rn, Rn, int, long, int) ParseMemOperand(string token)
+        public static (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits) ParseMemOperand(string token)
         {
 
             int length = token.Length;
             if (length < 3)
             {
-                return (false, Rn.NOREG, Rn.NOREG, 0, 0, 0);
+                return (valid: false, baseReg: Rn.NOREG, indexReg: Rn.NOREG, scale: 0, displacement: 0, nBits: 0);
             }
 
             // 1] select everything between []
@@ -542,7 +543,7 @@ namespace AsmTools
             length = token.Length;
             if (length == 0)
             {
-                return (false, Rn.NOREG, Rn.NOREG, 0, 0, 0);
+                return (valid: false, baseReg: Rn.NOREG, indexReg: Rn.NOREG, scale: 0, displacement: 0, nBits: 0);
             }
 
             // 2] check if the displacement is negative
@@ -579,7 +580,7 @@ namespace AsmTools
                     if (foundDisplacement)
                     {
                         // found an second displacement, error
-                        return (false, Rn.NOREG, Rn.NOREG, 0, 0, 0);
+                        return (valid: false, baseReg: Rn.NOREG, indexReg: Rn.NOREG, scale: 0, displacement: 0, nBits: 0);
                     }
                     else
                     {
@@ -629,16 +630,16 @@ namespace AsmTools
 
             if (scale == -1)
             {
-                return (false, Rn.NOREG, Rn.NOREG, 0, 0, 0);
+                return (valid: false, baseReg: Rn.NOREG, indexReg: Rn.NOREG, scale: 0, displacement: 0, nBits: 0);
             }
             if ((baseRn != Rn.NOREG) && (indexRn != Rn.NOREG))
             {
                 if (RegisterTools.NBits(baseRn) != RegisterTools.NBits(indexRn))
                 {
-                    return (false, Rn.NOREG, Rn.NOREG, 0, 0, 0);
+                    return (valid: false, baseReg: Rn.NOREG, indexReg: Rn.NOREG, scale: 0, displacement: 0, nBits: 0);
                 }
             }
-            return (true, baseRn, indexRn, scale, displacement, nBits);
+            return (valid: true, baseReg: baseRn, indexReg: indexRn, scale: scale, displacement: displacement, nBits: nBits);
         }
 
         private static int ParseScale(string str)
@@ -669,11 +670,8 @@ namespace AsmTools
 
         public static string GetKeyword(int pos, string line)
         {
-            var t = AsmSourceTools.GetKeywordPos(pos, line);
-            int beginPos = t.Item1;
-            int endPos = t.Item2;
-            string result = line.Substring(beginPos, endPos - beginPos);
-            return result;
+            (int beginPos, int endPos) = AsmSourceTools.GetKeywordPos(pos, line);
+            return line.Substring(beginPos, endPos - beginPos);
         }
 
         /// <summary>
@@ -760,10 +758,8 @@ namespace AsmTools
             }
         }
 
-        /// <summary>
-        /// Return the begin and end of the keyword
-        /// </summary>
-        public static (int, int) GetKeywordPos(int pos, string line)
+        /// <summary>Return the begin and end of the keyword</summary>
+        public static (int beginPos, int endPos) GetKeywordPos(int pos, string line)
         {
             //Debug.WriteLine(string.Format("INFO: getKeyword; pos={0}; line=\"{1}\"", pos, new string(line)));
             if ((pos < 0) || (pos >= line.Length))
@@ -792,20 +788,20 @@ namespace AsmTools
                     break;
                 }
             }
-            return (beginPos, endPos);
+            return (beginPos: beginPos, endPos: endPos);
         }
 
-        public static (bool, int, int) GetLabelDefPos(string line)
+        public static (bool valid, int beginPos, int endPos) GetLabelDefPos(string line)
         {
             var tup = GetLabelDefPos_Regular(line);
-            if (tup.Item1)
+            if (tup.valid)
             {
                 return tup;
             }
             return GetLabelDefPos_Masm(line);
         }
 
-        private static (bool, int, int) GetLabelDefPos_Regular(string line)
+        private static (bool valid, int beginPos, int endPos) GetLabelDefPos_Regular(string line)
         {
             int nChars = line.Length;
             int i = 0;
@@ -816,7 +812,7 @@ namespace AsmTools
                 char c = line[i];
                 if (AsmSourceTools.IsRemarkChar(c))
                 {
-                    return (false, 0, 0);
+                    return (valid: false, beginPos: 0, endPos: 0);
                 }
                 else if (char.IsWhiteSpace(c))
                 {
@@ -829,7 +825,7 @@ namespace AsmTools
             }
             if (i >= nChars)
             {
-                return (false, 0, 0);
+                return (valid: false, beginPos: 0, endPos: 0);
             }
             int beginPos = i;
             // position i points to the start of the current keyword
@@ -842,16 +838,16 @@ namespace AsmTools
                 {
                     if (i == 0)
                     { // we found an empty label
-                        return (false, 0, 0);
+                        return (valid: false, beginPos: 0, endPos: 0);
                     }
                     else
                     {
-                        return (true, beginPos, i);
+                        return (valid: true, beginPos: beginPos, endPos: i);
                     }
                 }
                 else if (AsmSourceTools.IsRemarkChar(c))
                 {
-                    return (false, 0, 0);
+                    return (valid: false, beginPos: 0, endPos: 0);
                 }
                 else if (AsmSourceTools.IsSeparatorChar(c))
                 {
@@ -859,10 +855,10 @@ namespace AsmTools
                     break;
                 }
             }
-            return (false, 0, 0);
+            return (valid: false, beginPos: 0, endPos: 0);
         }
 
-        private static (bool, int, int) GetLabelDefPos_Masm(string line)
+        private static (bool valid, int beginPos, int endPos) GetLabelDefPos_Masm(string line)
         {
             string line2 = line.TrimStart();
             int displacement = 0;
@@ -877,14 +873,14 @@ namespace AsmTools
             }
             else
             {
-                return (false, 0, 0);
+                return (valid: false, beginPos: 0, endPos: 0);
             }
 
             string line3 = line2.Substring(displacement);
             var tup = GetLabelDefPos_Regular(line3);
             if (tup.Item1)
             {
-                return (true, tup.Item2 + displacement, tup.Item3 + displacement);
+                return (valid: true, beginPos: tup.Item2 + displacement, endPos: tup.Item3 + displacement);
             }
             else
             {
@@ -892,17 +888,17 @@ namespace AsmTools
             }
         }
 
-        public static (bool, int, int) GetRemarkPos(string line)
+        public static (bool valid, int beginPos, int endPos) GetRemarkPos(string line)
         {
             int nChars = line.Length;
             for (int i = 0; i < nChars; ++i)
             {
                 if (AsmSourceTools.IsRemarkChar(line[i]))
                 {
-                    return (true, i, nChars);
+                    return (valid: true, beginPos: i, endPos: nChars);
                 }
             }
-            return (false, nChars, nChars);
+            return (valid: false, beginPos: nChars, endPos: nChars);
         }
 
         #region Text Wrap
