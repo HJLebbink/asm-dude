@@ -331,7 +331,7 @@ namespace AsmDude.Tools {
                 int startLine = bufferPosition.Value.GetContainingLine().Start;
                 int currentPos = bufferPosition.Value.Position;
 
-                Tuple<int, int> t = AsmTools.AsmSourceTools.GetKeywordPos(currentPos - startLine, line);
+                (int, int) t = AsmTools.AsmSourceTools.GetKeywordPos(currentPos - startLine, line);
 
                 int beginPos = t.Item1;
                 int endPos = t.Item2;
@@ -351,7 +351,7 @@ namespace AsmDude.Tools {
                 int startLine = bufferPosition.Value.GetContainingLine().Start;
                 int currentPos = bufferPosition.Value.Position;
 
-                Tuple<int, int> t = AsmTools.AsmSourceTools.GetKeywordPos(currentPos - startLine, line);
+                (int, int) t = AsmTools.AsmSourceTools.GetKeywordPos(currentPos - startLine, line);
                 //AsmDudeToolsStatic.Output(string.Format("INFO: getKeywordPos: beginPos={0}; endPos={1}.", t.Item1, t.Item2));
 
                 int beginPos = t.Item1 + startLine;

@@ -84,7 +84,7 @@ namespace AsmDude
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
 
                 string line = containingLine.GetText().ToUpper();
-                IList<Tuple<int, int, bool>> pos = AsmSourceTools.SplitIntoKeywordPos(line);
+                IList<(int, int, bool)> pos = AsmSourceTools.SplitIntoKeywordPos(line);
 
                 int offset = containingLine.Start.Position;
                 int nKeywords = pos.Count;
@@ -279,7 +279,7 @@ namespace AsmDude
         }
 
         // return true, nextTokenId, tokenEndPos, tokenString
-        public static Tuple<bool, int, int, string> Get_Next_Token(int tokenId, int startLoc, string[] tokens)
+        public static (bool, int, int, string) Get_Next_Token(int tokenId, int startLoc, string[] tokens)
         {
             int nextTokenId = tokenId;
             int nextLoc = startLoc;
@@ -291,21 +291,21 @@ namespace AsmDude
                 if (asmToken.Length > 0)
                 {
                     nextLoc += asmToken.Length + 1; //add an extra char location because of the separator
-                    return new Tuple<bool, int, int, string>(true, nextTokenId, nextLoc, asmToken.ToUpper());
+                    return (true, nextTokenId, nextLoc, asmToken.ToUpper());
                 } else
                 {
                     nextLoc++;
                 }
             }
-            return new Tuple<bool, int, int, string>(false, nextTokenId, nextLoc, "");
+            return (false, nextTokenId, nextLoc, "");
         }
 
-        public static string Keyword(Tuple<int, int, bool> pos, string line)
+        public static string Keyword((int, int, bool) pos, string line)
         {
             return line.Substring(pos.Item1, pos.Item2 - pos.Item1);
         }
 
-        public static SnapshotSpan New_Span(Tuple<int, int, bool> pos, int offset, SnapshotSpan lineSnapShot)
+        public static SnapshotSpan New_Span((int, int, bool) pos, int offset, SnapshotSpan lineSnapShot)
         {
             return new SnapshotSpan(lineSnapShot.Snapshot, new Span(pos.Item1 + offset, pos.Item2 - pos.Item1));
         }
@@ -359,7 +359,7 @@ namespace AsmDude
             for (int i = lineNumber - 1; i >= 0; --i)
             {
                 string line = this._buffer.CurrentSnapshot.GetLineFromLineNumber(i).GetText();
-                IList<Tuple<int, int, bool>> pos = AsmSourceTools.SplitIntoKeywordPos(line);
+                IList<(int, int, bool)> pos = AsmSourceTools.SplitIntoKeywordPos(line);
                 if ((pos.Count > 0) && !pos[0].Item3)
                 {
                     string keywordString = NasmTokenTagger.Keyword(pos[0], line).ToUpper();
@@ -393,7 +393,7 @@ namespace AsmDude
             for (int i = lineNumber-1; i >= 0; --i)
             {
                 string line = this._buffer.CurrentSnapshot.GetLineFromLineNumber(i).GetText();
-                Tuple<int, int, bool> pos = AsmSourceTools.Get_First_Keyword(line);
+                (int, int, bool) pos = AsmSourceTools.Get_First_Keyword(line);
                 string keywordString = NasmTokenTagger.Keyword(pos, line);
 
                 if (pos.Item3)

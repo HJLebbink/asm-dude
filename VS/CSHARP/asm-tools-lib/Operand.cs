@@ -31,7 +31,7 @@ namespace AsmTools
         private readonly Rn _rn;
         private ulong _imm;
         private int _nBits;
-        private readonly Tuple<Rn, Rn, int, long> _mem;
+        private readonly (Rn, Rn, int, long) _mem;
 
         /// <summary>constructor</summary>
         public Operand(string token)
@@ -55,7 +55,7 @@ namespace AsmTools
 
             this._str = token;
 
-            Tuple<bool, Rn, int> t0 = RegisterTools.ToRn(token2);
+            (bool, Rn, int) t0 = RegisterTools.ToRn(token2);
             if (t0.Item1)
             {
                 this._type = Ot.reg;
@@ -64,7 +64,7 @@ namespace AsmTools
             }
             else
             {
-                Tuple<bool, ulong, int> t1 = AsmSourceTools.ToConstant(token2);
+                (bool, ulong, int) t1 = AsmSourceTools.ToConstant(token2);
                 if (t1.Item1)
                 {
                     this._type = Ot.imm;
@@ -73,11 +73,11 @@ namespace AsmTools
                 }
                 else
                 {
-                    Tuple<bool, Rn, Rn, int, long, int> t2 = AsmSourceTools.ParseMemOperand(token2);
+                    (bool, Rn, Rn, int, long, int) t2 = AsmSourceTools.ParseMemOperand(token2);
                     if (t2.Item1)
                     {
                         this._type = Ot.mem;
-                        this._mem = new Tuple<Rn, Rn, int, long>(t2.Item2, t2.Item3, t2.Item4, t2.Item5);
+                        this._mem = (t2.Item2, t2.Item3, t2.Item4, t2.Item5);
                         this._nBits = t2.Item6;
                     }
                     else
@@ -97,8 +97,8 @@ namespace AsmTools
         public Rn Rn { get { return this._rn; } }
         public ulong Imm { get { return this._imm; } }
         
-        /// <summary> Return tuple with BaseReg, IndexReg, Scale and Displacement. Offset = Base + (Index * Scale) + Displacement </summary>
-        public Tuple<Rn, Rn, int, long> Mem { get { return this._mem; } }
+        /// <summary> Return tup with BaseReg, IndexReg, Scale and Displacement. Offset = Base + (Index * Scale) + Displacement </summary>
+        public (Rn, Rn, int, long) Mem { get { return this._mem; } }
 
         public int NBits
         {

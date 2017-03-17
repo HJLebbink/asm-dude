@@ -43,7 +43,7 @@ namespace AsmTools
     }
 
     /// <summary>
-    /// Operand Type tuple (OperandType x OperandType)
+    /// Operand Type tup (OperandType x OperandType)
     /// </summary>
     [Flags]
     public enum Ot2 : byte
@@ -85,7 +85,7 @@ namespace AsmTools
         UNKNOWN_UNKNOWN = Ot.UNKNOWN | (Ot.UNKNOWN << 4),
     }
     /// <summary>
-    ///  Operand Type tuple (OperandType x OperandType x OperandType)
+    ///  Operand Type tup (OperandType x OperandType x OperandType)
     /// </summary>
     [Flags]
     public enum Ot3 : short
@@ -216,28 +216,28 @@ namespace AsmTools
             return sb.ToString();
         }
 
-        public static Tuple<Ot, Ot> SplitOt(Ot2 operandTuple)
+        public static (Ot, Ot) SplitOt(Ot2 optup)
         {
-            switch (operandTuple)
+            switch (optup)
             {
-                case Ot2.reg_reg: return new Tuple<Ot, Ot>(Ot.reg, Ot.reg);
-                case Ot2.reg_mem: return new Tuple<Ot, Ot>(Ot.reg, Ot.mem);
-                case Ot2.reg_imm: return new Tuple<Ot, Ot>(Ot.reg, Ot.imm);
-                case Ot2.reg_UNKNOWN: return new Tuple<Ot, Ot>(Ot.reg, Ot.UNKNOWN);
-                case Ot2.mem_reg: return new Tuple<Ot, Ot>(Ot.mem, Ot.reg);
-                case Ot2.mem_mem: return new Tuple<Ot, Ot>(Ot.mem, Ot.mem);
-                case Ot2.mem_imm: return new Tuple<Ot, Ot>(Ot.mem, Ot.imm);
-                case Ot2.mem_UNKNOWN: return new Tuple<Ot, Ot>(Ot.mem, Ot.UNKNOWN);
-                case Ot2.imm_reg: return new Tuple<Ot, Ot>(Ot.imm, Ot.reg);
-                case Ot2.imm_mem: return new Tuple<Ot, Ot>(Ot.imm, Ot.mem);
-                case Ot2.imm_imm: return new Tuple<Ot, Ot>(Ot.imm, Ot.imm);
-                case Ot2.imm_UNKNOWN: return new Tuple<Ot, Ot>(Ot.imm, Ot.UNKNOWN);
-                case Ot2.UNKNOWN_reg: return new Tuple<Ot, Ot>(Ot.UNKNOWN, Ot.reg);
-                case Ot2.UNKNOWN_mem: return new Tuple<Ot, Ot>(Ot.UNKNOWN, Ot.mem);
-                case Ot2.UNKNOWN_imm: return new Tuple<Ot, Ot>(Ot.UNKNOWN, Ot.imm);
+                case Ot2.reg_reg: return (Ot.reg, Ot.reg);
+                case Ot2.reg_mem: return (Ot.reg, Ot.mem);
+                case Ot2.reg_imm: return (Ot.reg, Ot.imm);
+                case Ot2.reg_UNKNOWN: return (Ot.reg, Ot.UNKNOWN);
+                case Ot2.mem_reg: return (Ot.mem, Ot.reg);
+                case Ot2.mem_mem: return (Ot.mem, Ot.mem);
+                case Ot2.mem_imm: return (Ot.mem, Ot.imm);
+                case Ot2.mem_UNKNOWN: return (Ot.mem, Ot.UNKNOWN);
+                case Ot2.imm_reg: return (Ot.imm, Ot.reg);
+                case Ot2.imm_mem: return (Ot.imm, Ot.mem);
+                case Ot2.imm_imm: return (Ot.imm, Ot.imm);
+                case Ot2.imm_UNKNOWN: return (Ot.imm, Ot.UNKNOWN);
+                case Ot2.UNKNOWN_reg: return (Ot.UNKNOWN, Ot.reg);
+                case Ot2.UNKNOWN_mem: return (Ot.UNKNOWN, Ot.mem);
+                case Ot2.UNKNOWN_imm: return (Ot.UNKNOWN, Ot.imm);
                 case Ot2.UNKNOWN_UNKNOWN:
                 default:
-                    return new Tuple<Ot, Ot>(Ot.UNKNOWN, Ot.UNKNOWN);
+                    return (Ot.UNKNOWN, Ot.UNKNOWN);
             }
         }
         public static Ot2 MergeOt(Ot ot1, Ot ot2)

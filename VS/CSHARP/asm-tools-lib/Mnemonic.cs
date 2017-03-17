@@ -395,7 +395,7 @@ namespace AsmTools {
         /// <summary> High-level procedure exit</summary>
         LEAVE,
         #endregion
-        #region String Instructions
+        #region string Instructions
         //The string instructions operate on strings of bytes, allowing them to be moved to and from memory.
         /// <summary>XXX</summary>
         MOVS,

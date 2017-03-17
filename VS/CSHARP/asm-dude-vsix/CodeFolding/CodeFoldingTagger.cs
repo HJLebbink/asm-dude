@@ -186,9 +186,9 @@ namespace AsmDude.CodeFolding
         }
 
         /// <summary>
-        /// Return start positions of the provided line content. Tuple has: 1) start of the folding position; 2) start of the description position.
+        /// Return start positions of the provided line content. tup has: 1) start of the folding position; 2) start of the description position.
         /// </summary>
-        private Tuple<int, int> Is_Start_Keyword(string lineContent, int lineNumber)
+        private (int, int) Is_Start_Keyword(string lineContent, int lineNumber)
         {
             var tup = Is_Start_Directive_Keyword(lineContent);
             if (tup.Item1 != -1)
@@ -208,31 +208,31 @@ namespace AsmDude.CodeFolding
                 }
                 else
                 {
-                    return new Tuple<int, int>(-1, -1);
+                    return (-1, -1);
                 }
             }
         }
 
         /// <summary>
-        /// Return start positions of the provided line content. Tuple has: 1) start of the folding position; 2) start of the description position.
+        /// Return start positions of the provided line content. tup has: 1) start of the folding position; 2) start of the description position.
         /// </summary>
-        private Tuple<int, int> Is_Start_Directive_Keyword(string lineContent)
+        private (int, int) Is_Start_Directive_Keyword(string lineContent)
         {
             int i1 = lineContent.IndexOf(this.startRegionTag, StringComparison.OrdinalIgnoreCase);
             if (i1 == -1)
             {
-                return new Tuple<int, int>(-1, -1);
+                return (-1, -1);
             }
             else
             {
-                return new Tuple<int, int>(i1, i1 + this.startRegionTag.Length);
+                return (i1, i1 + this.startRegionTag.Length);
             }
         }
 
         /// <summary>
-        /// Return start positions of the provided line content. Tuple has: 1) start of the folding position; 2) start of the description position.
+        /// Return start positions of the provided line content. tup has: 1) start of the folding position; 2) start of the description position.
         /// </summary>
-        private Tuple<int, int> Is_Start_Masm_Keyword(string lineContent, int lineNumber)
+        private (int, int) Is_Start_Masm_Keyword(string lineContent, int lineNumber)
         {
             ITextSnapshotLine line = this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
             IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(line.Extent);
@@ -251,24 +251,24 @@ namespace AsmDude.CodeFolding
                         case ".WHILE":
                         case "PROC":
                             {
-                                return new Tuple<int, int>(lineContent.Length, lineContent.Length);
+                                return (lineContent.Length, lineContent.Length);
                             }
                         case "EXTERN":
                         case "EXTRN": // no start region on a line with EXTERN keyword
                             {
-                                return new Tuple<int, int>(-1, -1);
+                                return (-1, -1);
                             }
                         default: break;
                     }
                 }
             }
-            return new Tuple<int, int>(-1, -1);
+            return (-1, -1);
         }
 
         /// <summary>
-        /// Return start positions of the provided line content. Tuple has: 1) start of the folding position; 2) start of the description position.
+        /// Return start positions of the provided line content. tup has: 1) start of the folding position; 2) start of the description position.
         /// </summary>
-        private Tuple<int, int> Is_Start_Nasm_Keyword(string lineContent, int lineNumber)
+        private (int, int) Is_Start_Nasm_Keyword(string lineContent, int lineNumber)
         {
             ITextSnapshotLine line = this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
             IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(line.Extent);
@@ -284,13 +284,13 @@ namespace AsmDude.CodeFolding
                         case "ISTRUC":
                         case "%MACRO":
                             {
-                                return new Tuple<int, int>(lineContent.Length, lineContent.Length);
+                                return (lineContent.Length, lineContent.Length);
                             }
                         default: break;
                     }
                 }
             }
-            return new Tuple<int, int>(-1, -1);
+            return (-1, -1);
         }
 
         private int Is_End_Keyword(string lineContent, int lineNumber)
@@ -442,7 +442,7 @@ namespace AsmDude.CodeFolding
                         string lineContent = line.GetText();
                         int lineNumber = line.LineNumber;
 
-                        Tuple<int, int> tup = Is_Start_Keyword(lineContent, lineNumber);
+                        (int, int) tup = Is_Start_Keyword(lineContent, lineNumber);
                         int regionStart = tup.Item1;
                         int regionStartHoverText = tup.Item2;
 

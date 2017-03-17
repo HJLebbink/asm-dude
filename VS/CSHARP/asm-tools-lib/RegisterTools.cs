@@ -30,12 +30,12 @@ namespace AsmTools {
 
     public static class RegisterTools {
 
-        public static Tuple<bool, Rn, int> ToRn(string str) {
+        public static (bool, Rn, int) ToRn(string str) {
             Rn rn = ParseRn(str);
             if (rn == Rn.NOREG) {
-                return new Tuple<bool, Rn, int>(false, Rn.NOREG, 0);
+                return (false, Rn.NOREG, 0);
             } else {
-                return new Tuple<bool, Rn, int>(true, rn, NBits(rn));
+                return (true, rn, NBits(rn));
             }
         }
 

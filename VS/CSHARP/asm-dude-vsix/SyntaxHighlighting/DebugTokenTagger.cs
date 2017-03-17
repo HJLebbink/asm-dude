@@ -68,7 +68,7 @@ namespace AsmDude
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
 
                 string line = containingLine.GetText().ToUpper();
-                IList<Tuple<int, int, bool>> pos = AsmSourceTools.SplitIntoKeywordPos(line);
+                IList<(int, int, bool)> pos = AsmSourceTools.SplitIntoKeywordPos(line);
 
                 int offset = containingLine.Start.Position;
                 int nKeywords = pos.Count;
@@ -89,12 +89,12 @@ namespace AsmDude
 
         #region Public Static Methods
 
-        public static string Keyword(Tuple<int, int, bool> pos, string line)
+        public static string Keyword((int, int, bool) pos, string line)
         {
             return line.Substring(pos.Item1, pos.Item2 - pos.Item1);
         }
 
-        public static SnapshotSpan New_Span(Tuple<int, int, bool> pos, int offset, SnapshotSpan lineSnapShot)
+        public static SnapshotSpan New_Span((int, int, bool) pos, int offset, SnapshotSpan lineSnapShot)
         {
             return new SnapshotSpan(lineSnapShot.Snapshot, new Span(pos.Item1 + offset, pos.Item2 - pos.Item1));
         }

@@ -92,7 +92,7 @@ namespace unit_tests {
                 long aValue = RandLong(64, rnd);
                 BitTools.SetLongValue(ref a, aValue);
 
-                Tuple<ulong, ulong> t1 = BitTools.ToRaw(a);
+                (ulong, ulong) t1 = BitTools.ToRaw(a);
                 Bt[] t2 = BitTools.ToBtArray(t1.Item1, t1.Item2);
 
                 for (int i = 0; i<64; ++i) {

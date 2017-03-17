@@ -201,7 +201,7 @@ namespace AsmTools {
 
 
 
-        public static Tuple<ulong, ulong> ToRaw(Bt[] a) {
+        public static (ulong, ulong) ToRaw(Bt[] a) {
             Debug.Assert(a.Length == 64);
             ulong d = 0;
             ulong du = 0; // init all 64 bits to UNDEFINED
@@ -220,7 +220,7 @@ namespace AsmTools {
                 }
                 mask <<= 1;
             }
-            return new Tuple<ulong, ulong>(d, du);
+            return (d, du);
         }
 
         #region ToString
