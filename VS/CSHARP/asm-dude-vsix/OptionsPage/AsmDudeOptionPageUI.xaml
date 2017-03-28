@@ -12,7 +12,7 @@
 				<GroupBox Header="Syntax Highlighting" BorderBrush="DarkGray">
 					<Grid>
 						<StackPanel>
-							<CheckBox x:Name="useSyntaxHighlighting_UI" ToolTip="Syntax Highlighting Enabled" Content="Enable Syntax Highlighting" Margin="0,4,0,4"/>
+							<CheckBox x:Name="syntaxHighlighting_On_UI" ToolTip="Syntax Highlighting Enabled" Content="Enable Syntax Highlighting" Margin="0,4,0,4"/>
 							<Grid>
 								<Label Content="Compiler:" HorizontalAlignment="Left"/>
 								<RadioButton x:Name="usedAssemblerMasm_UI" GroupName="usedAssembler_UI" ToolTip="Enable syntax highlighting for MASM" Content="Masm" Margin="140,5,0,0" HorizontalAlignment="Left" Width="188"/>
@@ -57,10 +57,10 @@
 				<GroupBox Header="Documentation" BorderBrush="DarkGray">
 					<Grid>
 						<StackPanel>
-							<CheckBox x:Name="useAsmDoc_UI" ToolTip="Assembly Documentation Enabled" Content="Enable Documentation" Margin="0,4,0,4" />
+							<CheckBox x:Name="asmDoc_On_UI" ToolTip="Assembly Documentation Enabled" Content="Enable Documentation" Margin="0,4,0,4" />
 							<Grid>
 								<Label Content="Documentation URL:" HorizontalAlignment="Left"/>
-								<TextBox x:Name="asmDocUrl_UI" ToolTip="URL to the documentation. E.g. https://hjlebbink.github.io/x86doc/html/" TextWrapping="Wrap" Text="https://hjlebbink.github.io/x86doc/html/" Margin="140,3,0,2"/>
+								<TextBox x:Name="asmDoc_Url_UI" ToolTip="URL to the documentation. E.g. https://hjlebbink.github.io/x86doc/html/" TextWrapping="Wrap" Text="https://hjlebbink.github.io/x86doc/html/" Margin="140,3,0,2"/>
 							</Grid>
 						</StackPanel>
 					</Grid>
@@ -69,16 +69,16 @@
 					<Grid>
 						<StackPanel>
 							<Grid>
-								<CheckBox x:Name="useCodeFolding_UI" ToolTip="Code Folding Enabled" Content="Enable Code Folding" Margin="0,4,0,4" />
-								<CheckBox x:Name="isDefaultCollaped_UI" ToolTip="Whether folding regions are collapsed by default" Content="Default Collapsed" Margin="140,4,0,4"/>
+								<CheckBox x:Name="codeFolding_On_UI" ToolTip="Code Folding Enabled" Content="Enable Code Folding" Margin="0,4,0,4" />
+								<CheckBox x:Name="codeFolding_IsDefaultCollaped_UI" ToolTip="Whether folding regions are collapsed by default" Content="Default Collapsed" Margin="140,4,0,4"/>
 							</Grid>
 							<Grid>
 								<Label Content="Start Tag:" HorizontalAlignment="Left"/>
-								<TextBox x:Name="beginTag_UI" ToolTip="The characters that start the outlining region. E.g. #region" Margin="140,3,0,2"/>
+								<TextBox x:Name="codeFolding_BeginTag_UI" ToolTip="The characters that start the outlining region. E.g. #region" Margin="140,3,0,2"/>
 							</Grid>
 							<Grid>
 								<Label Content="End Tag:" HorizontalAlignment="Left"/>
-								<TextBox x:Name="endTag_UI" ToolTip="The characters that start the outlining region. E.g. #endregion" Margin="140,3,0,2"/>
+								<TextBox x:Name="codeFolding_EndTag_UI" ToolTip="The characters that start the outlining region. E.g. #endregion" Margin="140,3,0,2"/>
 							</Grid>
 						</StackPanel>
 					</Grid>
@@ -89,9 +89,13 @@
 							<CheckBox x:Name="useKeywordHighlighting_UI" ToolTip="Keyword Highlighting Enabled" Content="Enable Keyword Highlighting" Margin="0,4,0,4" />
 							<Grid>
 								<Label Content="Background Color:" HorizontalAlignment="Left"/>
-								<xctk:ColorPicker x:Name="backgroundColor_UI" DisplayColorAndName="True" ToolTip="The background color for keyword highlighting" Margin="140,0,0,0"/>
+								<xctk:ColorPicker x:Name="backgroundColor_UI" DisplayColorAndName="True" ToolTip="The background color for keyword highlighting" Margin="140,3,0,2"/>
 							</Grid>
-						</StackPanel>
+                            <Grid>
+                                <Label Content="Font Color:" HorizontalAlignment="Left"/>
+                                <xctk:ColorPicker x:Name="fontColor_UI" DisplayColorAndName="True" ToolTip="The font color for keyword highlighting" Margin="140,3,0,2"/>
+                            </Grid>
+                        </StackPanel>
 					</Grid>
 				</GroupBox>
 				<GroupBox Header="Intellisense" BorderBrush="DarkGray">

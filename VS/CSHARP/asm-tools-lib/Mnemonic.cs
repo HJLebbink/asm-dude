@@ -130,7 +130,7 @@ namespace AsmTools {
         /// <summary>Move and zero extend</summary>
         MOVZX,
         /// <summary>Move and zero extend</summary>
-        MOVZXD,
+        //MOVZXD, TODO: does this instruction realy exists? if it does it does it implements just a mov
         #endregion
         #region Binary Arithmetic Instructions
         // The binary arithmetic instructions perform basic binary integer computations on byte, word, and doubleword integers
@@ -2324,7 +2324,7 @@ public static partial class AsmSourceTools {
                 case "MOVSX": return Mnemonic.MOVSX;
                 case "MOVSXD": return Mnemonic.MOVSXD;
                 case "MOVZX": return Mnemonic.MOVZX;
-                case "MOVZXD": return Mnemonic.MOVZXD;
+                //case "MOVZXD": return Mnemonic.MOVZXD;
                 case "ADCX": return Mnemonic.ADCX;
                 case "ADOX": return Mnemonic.ADOX;
                 case "ADD": return Mnemonic.ADD;

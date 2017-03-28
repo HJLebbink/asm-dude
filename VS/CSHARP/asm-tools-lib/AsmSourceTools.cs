@@ -363,9 +363,20 @@ namespace AsmTools
             bool isBinary = false;
             bool isDecimal = false;
             bool isOctal = false;
+            bool isNegative = false;
 
+            //Console.WriteLine("AsmSourceTools:ToConstant token=" + token);
+
+            token = token.Trim();
+
+            if (token.StartsWith("-"))
+            {
+                token2 = token;
+                isDecimal = true;
+                isNegative = true;
+            }
             // note the special case of token 0h (zero hex) should not be confused with the prefix 0h;
-            if (token.EndsWith("h", StringComparison.OrdinalIgnoreCase))
+            else if (token.EndsWith("h", StringComparison.OrdinalIgnoreCase))
             {
                 token2 = token.Substring(0, token.Length - 1);
                 isHex = true;
@@ -445,7 +456,16 @@ namespace AsmTools
             }
             else if (isDecimal)
             {
-                parsedSuccessfully = ulong.TryParse(token2.Replace("_", string.Empty), NumberStyles.Integer, CultureInfo.CurrentCulture, out value);
+                if (isNegative)
+                {
+                    parsedSuccessfully = long.TryParse(token2, NumberStyles.Integer, CultureInfo.CurrentCulture, out long signedValue);
+                    value = (ulong)signedValue;
+                    //Console.WriteLine("AsmSourceTools:ToConstant token2=" + token2 + "; signed value = " + Convert.ToString(signedValue, 16) + "; unsigned value = " + string.Format("{0:X}", value));
+                }
+                else
+                {
+                    parsedSuccessfully = ulong.TryParse(token2, NumberStyles.Integer, CultureInfo.CurrentCulture, out value);
+                }
             }
             else
             {
@@ -453,30 +473,26 @@ namespace AsmTools
                 parsedSuccessfully = false;
             }
 
-            int nBits = (parsedSuccessfully) ? NBitsStorageNeeded(value) : -1;
+            int nBits = (parsedSuccessfully) ? NBitsStorageNeeded(value, isNegative) : -1;
             return (valid: parsedSuccessfully, value: value, nBits: nBits);
         }
 
-        public static int NBitsStorageNeeded(ulong v)
+        public static int NBitsStorageNeeded(ulong v, bool isNegative)
         {
-            int nBits = -1;
-            if ((v & 0xFFFFFFFFFFFFFF00ul) == 0)
+            if (isNegative)
             {
-                nBits = 8;
-            }
-            else if ((v & 0xFFFFFFFFFFFF0000ul) == 0)
-            {
-                nBits = 16;
-            }
-            else if ((v & 0xFFFFFFFF00000000ul) == 0)
-            {
-                nBits = 32;
+                if ((v | 0x0000_0000_0000_007Ful) == 0xFFFF_FFFF_FFFF_FFFFul) return 8;
+                if ((v | 0x0000_0000_0000_7FFFul) == 0xFFFF_FFFF_FFFF_FFFFul) return 16;
+                if ((v | 0x0000_0000_7FFF_FFFFul) == 0xFFFF_FFFF_FFFF_FFFFul) return 32;
+                return 64;
             }
             else
             {
-                nBits = 64;
+                if ((v & 0xFFFF_FFFF_FFFF_FF00ul) == 0) return 8;
+                if ((v & 0xFFFF_FFFF_FFFF_0000ul) == 0) return 16;
+                if ((v & 0xFFFF_FFFF_0000_0000ul) == 0) return 32;
+                return 64;
             }
-            return nBits;
         }
 
         /// <summary>

@@ -28,12 +28,13 @@ using Microsoft.VisualStudio.Utilities;
 using System;
 using System.ComponentModel.Composition;
 
-namespace AsmDude.HighlightWord {
-
+namespace AsmDude.HighlightWord
+{
     [Export(typeof(IViewTaggerProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [TagType(typeof(HighlightWordTag))]
-    public class HighlightWordTaggerProvider : IViewTaggerProvider {
+    public class HighlightWordTaggerProvider : IViewTaggerProvider
+    {
 
         [Import]
         private ITextSearchService _textSearchService = null;
@@ -45,16 +46,20 @@ namespace AsmDude.HighlightWord {
         /// <param name="textView"> The text view we are creating a tagger for</param>
         /// <param name="buffer"> The buffer that the tagger will examine for instances of the current word</param>
         /// <returns> Returns a HighlightWordTagger instance</returns>
-        public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag {
-            if (textView == null) {
+        public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
+        {
+            if (textView == null)
+            {
                 return null;
             }
             // Only provide highlighting on the top-level buffer
-            if (textView.TextBuffer != buffer) {
+            if (textView.TextBuffer != buffer)
+            {
                 return null;
             }
 
-            Func<ITagger<T>> sc = delegate () {
+            Func<ITagger<T>> sc = delegate ()
+            {
                 return new HighlightWordTagger(textView, buffer, this._textSearchService) as ITagger<T>;
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);

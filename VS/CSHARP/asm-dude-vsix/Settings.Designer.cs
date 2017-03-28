@@ -218,12 +218,12 @@ namespace AsmDude {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Yellow")]
-        public global::System.Drawing.Color KeywordHighlightColor {
+        public global::System.Drawing.Color KeywordHighlight_BackgroundColor {
             get {
-                return ((global::System.Drawing.Color)(this["KeywordHighlightColor"]));
+                return ((global::System.Drawing.Color)(this["KeywordHighlight_BackgroundColor"]));
             }
             set {
-                this["KeywordHighlightColor"] = value;
+                this["KeywordHighlight_BackgroundColor"] = value;
             }
         }
         
@@ -992,6 +992,18 @@ namespace AsmDude {
             }
             set {
                 this["IntelliSenseShowUndefinedIncludes"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Black")]
+        public global::System.Drawing.Color KeywordHighlight_FontColor {
+            get {
+                return ((global::System.Drawing.Color)(this["KeywordHighlight_FontColor"]));
+            }
+            set {
+                this["KeywordHighlight_FontColor"] = value;
             }
         }
     }

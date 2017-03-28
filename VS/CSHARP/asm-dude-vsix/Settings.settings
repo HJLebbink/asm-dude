@@ -50,7 +50,7 @@
     <Setting Name="KeywordHighlight_On" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="KeywordHighlightColor" Type="System.Drawing.Color" Scope="User">
+    <Setting Name="KeywordHighlight_BackgroundColor" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">Yellow</Value>
     </Setting>
     <Setting Name="CodeFolding_IsDefaultCollapsed" Type="System.Boolean" Scope="User">
@@ -244,6 +244,9 @@
     </Setting>
     <Setting Name="IntelliSenseShowUndefinedIncludes" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="KeywordHighlight_FontColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Black</Value>
     </Setting>
   </Settings>
 </SettingsFile>
