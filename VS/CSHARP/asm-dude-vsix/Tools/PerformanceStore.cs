@@ -31,12 +31,12 @@ namespace AsmDude.Tools
             this._data.Clear();
         }
 
-        public IReadOnlyList<PerformanceItem> GetPerformance(Mnemonic mnemonic)
+        public IReadOnlyList<PerformanceItem> GetPerformance(Mnemonic mnemonic, MicroArch selectedArchitectures)
         {
             List<PerformanceItem> result = new List<PerformanceItem>();
             foreach (PerformanceItem item in this._data)
             {
-                if (item._instr == mnemonic)
+                if ((item._instr == mnemonic) && selectedArchitectures.HasFlag(item._microArch))
                 {
                     result.Add(item);
                 }
@@ -45,7 +45,6 @@ namespace AsmDude.Tools
             {
                 AsmDudeToolsStatic.Output_INFO("PerformanceStore:GetPerformance: mnemonic " + mnemonic + " has no performance info");
             }
-
             return result.AsReadOnly();
         }
 

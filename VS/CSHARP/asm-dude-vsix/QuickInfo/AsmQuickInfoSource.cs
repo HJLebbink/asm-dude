@@ -178,8 +178,9 @@ namespace AsmDude.QuickInfo
                                         Foreground = this._foreground
                                     });
                                 }
-                                {
-                                    IReadOnlyList<PerformanceItem> performanceData = this._asmDudeTools.Performance_Store.GetPerformance(mmemonic);
+                                {   // show performance information
+                                    MicroArch selectedMicroarchitures = AsmDudeToolsStatic.Get_MicroArch_Switched_On();
+                                    IReadOnlyList<PerformanceItem> performanceData = this._asmDudeTools.Performance_Store.GetPerformance(mmemonic, selectedMicroarchitures);
                                     if (performanceData.Count > 0)
                                     {
                                         FontFamily family = new FontFamily("Consolas");

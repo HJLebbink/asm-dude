@@ -25,21 +25,21 @@ using System;
 namespace AsmTools
 {
     [Flags]
-    public enum MicroArch
+    public enum MicroArch : UInt32
     {
-        UNKNOWN,
-        SandyBridge,
-        IvyBridge,
-        Haswell,
-        Broadwell,
-        Skylake,
-        Kabylake,
-        Cannonlake,
-        Icelake,
-        Tigerlake,
+        NONE = 0,
+        SandyBridge = 1 << 0,
+        IvyBridge = 1 << 1,
+        Haswell = 1 << 2,
+        Broadwell = 1 << 3,
+        Skylake = 1 << 4,
+        Kabylake = 1 << 5,
+        Cannonlake = 1 << 6,
+        Icelake = 1 << 7,
+        Tigerlake = 1 << 8,
 
-        KnightsCorner,
-        KnightsLanding
+        KnightsCorner = 1 << 9,
+        KnightsLanding = 1 << 10
     }
 
     public static partial class AsmSourceTools
@@ -59,7 +59,7 @@ namespace AsmTools
                 case "TIGERLAKE": return MicroArch.Tigerlake;
                 case "KNIGHTSCORNER": return MicroArch.KnightsCorner;
                 case "KNIGHTSLANDING": return MicroArch.KnightsLanding;
-                default: return MicroArch.UNKNOWN;
+                default: return MicroArch.NONE;
             }
         }
     }

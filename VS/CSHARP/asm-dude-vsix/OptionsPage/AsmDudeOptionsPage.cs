@@ -92,16 +92,25 @@ namespace AsmDude.OptionsPage
             this._asmDudeOptionsPageUI.KeywordHighlight_fontColor = Settings.Default.KeywordHighlight_FontColor;
             #endregion
 
+            #region Latency and Throughput Information (Performance Info)
+            this._asmDudeOptionsPageUI.PerformanceInfo_SandyBridge_On = Settings.Default.PerformanceInfo_SandyBridge_On;
+            this._asmDudeOptionsPageUI.PerformanceInfo_IvyBridge_On = Settings.Default.PerformanceInfo_IvyBridge_On;
+            this._asmDudeOptionsPageUI.PerformanceInfo_Haswell_On = Settings.Default.PerformanceInfo_Haswell_On;
+            this._asmDudeOptionsPageUI.PerformanceInfo_Broadwell_On = Settings.Default.PerformanceInfo_Broadwell_On;
+            this._asmDudeOptionsPageUI.PerformanceInfo_Skylake_On = Settings.Default.PerformanceInfo_Skylake_On;
+            this._asmDudeOptionsPageUI.PerformanceInfo_KnightsLanding_On = Settings.Default.PerformanceInfo_KnightsLanding_On;
+            #endregion
+
             #region Code Completion
             this._asmDudeOptionsPageUI.UseCodeCompletion = Settings.Default.CodeCompletion_On;
             this._asmDudeOptionsPageUI.UseSignatureHelp = Settings.Default.SignatureHelp_On;
 
             this._asmDudeOptionsPageUI.UseArch_8086 = Settings.Default.ARCH_8086;
-            this._asmDudeOptionsPageUI.useArch_8086_UI.ToolTip = MakeToolTip(Arch.ARCH_8086);
+            this._asmDudeOptionsPageUI.UseArch_8086_UI.ToolTip = MakeToolTip(Arch.ARCH_8086);
             this._asmDudeOptionsPageUI.UseArch_186 = Settings.Default.ARCH_186;
-            this._asmDudeOptionsPageUI.useArch_186_UI.ToolTip = MakeToolTip(Arch.ARCH_186);
+            this._asmDudeOptionsPageUI.UseArch_186_UI.ToolTip = MakeToolTip(Arch.ARCH_186);
             this._asmDudeOptionsPageUI.UseArch_286 = Settings.Default.ARCH_286;
-            this._asmDudeOptionsPageUI.useArch_286_UI.ToolTip = MakeToolTip(Arch.ARCH_286);
+            this._asmDudeOptionsPageUI.UseArch_286_UI.ToolTip = MakeToolTip(Arch.ARCH_286);
             this._asmDudeOptionsPageUI.UseArch_386 = Settings.Default.ARCH_386;
             this._asmDudeOptionsPageUI.useArch_386_UI.ToolTip = MakeToolTip(Arch.ARCH_386);
             this._asmDudeOptionsPageUI.UseArch_486 = Settings.Default.ARCH_486;
@@ -346,6 +355,39 @@ namespace AsmDude.OptionsPage
             if (Settings.Default.KeywordHighlight_FontColor.ToArgb() != this._asmDudeOptionsPageUI.KeywordHighlight_fontColor.ToArgb())
             {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: KeywordHighlight_FontColor=" + this._asmDudeOptionsPageUI.KeywordHighlight_fontColor);
+                changed = true;
+            }
+            #endregion
+
+            #region Latency and Throughput Information (Performance Info)
+            if (Settings.Default.PerformanceInfo_SandyBridge_On != this._asmDudeOptionsPageUI.PerformanceInfo_SandyBridge_On)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: PerformanceInfo_SandyBridge_On=" + this._asmDudeOptionsPageUI.PerformanceInfo_SandyBridge_On);
+                changed = true;
+            }
+            if (Settings.Default.PerformanceInfo_IvyBridge_On != this._asmDudeOptionsPageUI.PerformanceInfo_IvyBridge_On)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: PerformanceInfo_IvyBridge_On=" + this._asmDudeOptionsPageUI.PerformanceInfo_IvyBridge_On);
+                changed = true;
+            }
+            if (Settings.Default.PerformanceInfo_Haswell_On != this._asmDudeOptionsPageUI.PerformanceInfo_Haswell_On)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: PerformanceInfo_Haswell_On=" + this._asmDudeOptionsPageUI.PerformanceInfo_Haswell_On);
+                changed = true;
+            }
+            if (Settings.Default.PerformanceInfo_Broadwell_On != this._asmDudeOptionsPageUI.PerformanceInfo_Broadwell_On)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: PerformanceInfo_Broadwell_On=" + this._asmDudeOptionsPageUI.PerformanceInfo_Broadwell_On);
+                changed = true;
+            }
+            if (Settings.Default.PerformanceInfo_Skylake_On != this._asmDudeOptionsPageUI.PerformanceInfo_Skylake_On)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: PerformanceInfo_Skylake_On=" + this._asmDudeOptionsPageUI.PerformanceInfo_Skylake_On);
+                changed = true;
+            }
+            if (Settings.Default.PerformanceInfo_KnightsLanding_On != this._asmDudeOptionsPageUI.PerformanceInfo_KnightsLanding_On)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: PerformanceInfo_KnightsLanding_On=" + this._asmDudeOptionsPageUI.PerformanceInfo_KnightsLanding_On);
                 changed = true;
             }
             #endregion
@@ -729,6 +771,39 @@ namespace AsmDude.OptionsPage
                 Settings.Default.KeywordHighlight_FontColor = this._asmDudeOptionsPageUI.KeywordHighlight_fontColor;
                 changed = true;
                 restartNeeded = true;
+            }
+            #endregion
+
+            #region Latency and Throughput Information (Performance Info)
+            if (Settings.Default.PerformanceInfo_SandyBridge_On != this._asmDudeOptionsPageUI.PerformanceInfo_SandyBridge_On)
+            {
+                Settings.Default.PerformanceInfo_SandyBridge_On = this._asmDudeOptionsPageUI.PerformanceInfo_SandyBridge_On;
+                changed = true;
+            }
+            if (Settings.Default.PerformanceInfo_IvyBridge_On != this._asmDudeOptionsPageUI.PerformanceInfo_IvyBridge_On)
+            {
+                Settings.Default.PerformanceInfo_IvyBridge_On = this._asmDudeOptionsPageUI.PerformanceInfo_IvyBridge_On;
+                changed = true;
+            }
+            if (Settings.Default.PerformanceInfo_Haswell_On != this._asmDudeOptionsPageUI.PerformanceInfo_Haswell_On)
+            {
+                Settings.Default.PerformanceInfo_Haswell_On = this._asmDudeOptionsPageUI.PerformanceInfo_Haswell_On;
+                changed = true;
+            }
+            if (Settings.Default.PerformanceInfo_Broadwell_On != this._asmDudeOptionsPageUI.PerformanceInfo_Broadwell_On)
+            {
+                Settings.Default.PerformanceInfo_Broadwell_On = this._asmDudeOptionsPageUI.PerformanceInfo_Broadwell_On;
+                changed = true;
+            }
+            if (Settings.Default.PerformanceInfo_Skylake_On != this._asmDudeOptionsPageUI.PerformanceInfo_Skylake_On)
+            {
+                Settings.Default.PerformanceInfo_Skylake_On = this._asmDudeOptionsPageUI.PerformanceInfo_Skylake_On;
+                changed = true;
+            }
+            if (Settings.Default.PerformanceInfo_KnightsLanding_On != this._asmDudeOptionsPageUI.PerformanceInfo_KnightsLanding_On)
+            {
+                Settings.Default.PerformanceInfo_KnightsLanding_On = this._asmDudeOptionsPageUI.PerformanceInfo_KnightsLanding_On;
+                changed = true;
             }
             #endregion
 

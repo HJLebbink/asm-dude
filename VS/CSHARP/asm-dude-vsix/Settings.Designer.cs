@@ -1006,5 +1006,77 @@ namespace AsmDude {
                 this["KeywordHighlight_FontColor"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool PerformanceInfo_SandyBridge_On {
+            get {
+                return ((bool)(this["PerformanceInfo_SandyBridge_On"]));
+            }
+            set {
+                this["PerformanceInfo_SandyBridge_On"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool PerformanceInfo_IvyBridge_On {
+            get {
+                return ((bool)(this["PerformanceInfo_IvyBridge_On"]));
+            }
+            set {
+                this["PerformanceInfo_IvyBridge_On"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool PerformanceInfo_Haswell_On {
+            get {
+                return ((bool)(this["PerformanceInfo_Haswell_On"]));
+            }
+            set {
+                this["PerformanceInfo_Haswell_On"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool PerformanceInfo_Broadwell_On {
+            get {
+                return ((bool)(this["PerformanceInfo_Broadwell_On"]));
+            }
+            set {
+                this["PerformanceInfo_Broadwell_On"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool PerformanceInfo_Skylake_On {
+            get {
+                return ((bool)(this["PerformanceInfo_Skylake_On"]));
+            }
+            set {
+                this["PerformanceInfo_Skylake_On"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool PerformanceInfo_KnightsLanding_On {
+            get {
+                return ((bool)(this["PerformanceInfo_KnightsLanding_On"]));
+            }
+            set {
+                this["PerformanceInfo_KnightsLanding_On"] = value;
+            }
+        }
     }
 }

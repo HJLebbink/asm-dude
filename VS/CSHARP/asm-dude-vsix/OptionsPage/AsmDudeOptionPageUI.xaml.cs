@@ -208,7 +208,47 @@ namespace AsmDude.OptionsPage {
             }
             set { this.fontColor_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
+        #endregion
 
+        #region Latency and Throughput Information (Performance Info)
+        public bool PerformanceInfo_SandyBridge_On
+        {
+            get { return false; }
+            set { }
+            //get { return this.PerformanceInfo_SandyBridge_UI.IsChecked ?? false; }
+            //set { this.PerformanceInfo_SandyBridge_UI.IsChecked = value; }
+        }
+        public bool PerformanceInfo_IvyBridge_On
+        {
+            get { return false; }
+            set { }
+            //get { return this.PerformanceInfo_IvyBridge_UI.IsChecked ?? false; }
+            //set { this.PerformanceInfo_IvyBridge_UI.IsChecked = value; }
+        }
+        public bool PerformanceInfo_Haswell_On
+        {
+            get { return false; }
+            set { }
+            //get { return this.PerformanceInfo_Haswell_UI.IsChecked ?? false; }
+            //set { this.PerformanceInfo_Haswell_UI.IsChecked = value; }
+        }
+        public bool PerformanceInfo_Broadwell_On
+        {
+            get { return this.PerformanceInfo_Broadwell_UI.IsChecked ?? false; }
+            set { this.PerformanceInfo_Broadwell_UI.IsChecked = value; }
+        }
+        public bool PerformanceInfo_Skylake_On
+        {
+            get { return this.PerformanceInfo_Skylake_UI.IsChecked ?? false; }
+            set { this.PerformanceInfo_Skylake_UI.IsChecked = value; }
+        }
+        public bool PerformanceInfo_KnightsLanding_On
+        {
+            get { return false; }
+            set { }
+            //get { return this.PerformanceInfo_KnightsLanding_UI.IsChecked ?? false; }
+            //set { this.PerformanceInfo_KnightsLanding_UI.IsChecked = value; }
+        }
         #endregion
 
         #region Code Completion
@@ -222,16 +262,16 @@ namespace AsmDude.OptionsPage {
         }
 
         public bool UseArch_8086 {
-            get { return this.useArch_8086_UI.IsChecked ?? false; }
-            set { this.useArch_8086_UI.IsChecked = value; }
+            get { return this.UseArch_8086_UI.IsChecked ?? false; }
+            set { this.UseArch_8086_UI.IsChecked = value; }
         }
         public bool UseArch_186 {
-            get { return this.useArch_186_UI.IsChecked ?? false; }
-            set { this.useArch_186_UI.IsChecked = value; }
+            get { return this.UseArch_186_UI.IsChecked ?? false; }
+            set { this.UseArch_186_UI.IsChecked = value; }
         }
         public bool UseArch_286 {
-            get { return this.useArch_286_UI.IsChecked ?? false; }
-            set { this.useArch_286_UI.IsChecked = value; }
+            get { return this.UseArch_286_UI.IsChecked ?? false; }
+            set { this.UseArch_286_UI.IsChecked = value; }
         }
         public bool UseArch_386 {
             get { return this.useArch_386_UI.IsChecked ?? false; }
