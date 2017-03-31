@@ -83,8 +83,8 @@ namespace AsmDude.ErrorSquiggles
 
             DateTime time1 = DateTime.Now;
 
-            bool Decorate_Undefined_Labels = Settings.Default.IntelliSenseDecorateUndefinedLabels;
-            bool Decorate_Clashing_Labels = Settings.Default.IntelliSenseDecorateClashingLabels;
+            bool Decorate_Undefined_Labels = Settings.Default.IntelliSense_Decorate_UndefinedLabels;
+            bool Decorate_Clashing_Labels = Settings.Default.IntelliSense_Decorate_ClashingLabels;
 
             if (Decorate_Undefined_Labels || Decorate_Clashing_Labels)
             {
@@ -269,9 +269,9 @@ namespace AsmDude.ErrorSquiggles
                         #endregion Update Tags
 
                         #region Update Error Tasks
-                        if (Settings.Default.IntelliSenseShowClashingLabels ||
-                            Settings.Default.IntelliSenseShowUndefinedLabels ||
-                            Settings.Default.IntelliSenseShowUndefinedIncludes)
+                        if (Settings.Default.IntelliSense_Show_ClashingLabels ||
+                            Settings.Default.IntelliSense_Show_UndefinedLabels ||
+                            Settings.Default.IntelliSense_Show_UndefinedIncludes)
                         {
                             var errorTasks = this._errorListProvider.Tasks;
 
@@ -287,7 +287,7 @@ namespace AsmDude.ErrorSquiggles
                             bool errorExists = false;
                             #endregion
 
-                            if (Settings.Default.IntelliSenseShowClashingLabels)
+                            if (Settings.Default.IntelliSense_Show_ClashingLabels)
                             {
                                 foreach (KeyValuePair<uint, string> entry in this._labelGraph.Get_Label_Clashes)
                                 {
@@ -308,7 +308,7 @@ namespace AsmDude.ErrorSquiggles
                                     errorExists = true;
                                 }
                             }
-                            if (Settings.Default.IntelliSenseShowUndefinedLabels)
+                            if (Settings.Default.IntelliSense_Show_UndefinedLabels)
                             {
                                 foreach (KeyValuePair<uint, string> entry in this._labelGraph.Get_Undefined_Labels)
                                 {
@@ -329,7 +329,7 @@ namespace AsmDude.ErrorSquiggles
                                     errorExists = true;
                                 }
                             }
-                            if (Settings.Default.IntelliSenseShowUndefinedIncludes)
+                            if (Settings.Default.IntelliSense_Show_UndefinedIncludes)
                             {
                                 foreach (Undefined_Label_Struct undefinedLabelStruct in this._labelGraph.Get_Undefined_Includes)
                                 {

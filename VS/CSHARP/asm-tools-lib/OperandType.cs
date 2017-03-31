@@ -34,7 +34,7 @@ namespace AsmTools
     /// Operand Type: reg, mem, imm, UNKNOWN
     /// </summary>
     [Flags]
-    public enum Ot : byte
+    public enum Ot1 : byte
     {
         reg = 1 << 0,
         mem = 1 << 1,
@@ -49,40 +49,40 @@ namespace AsmTools
     public enum Ot2 : byte
     {
         [Description("Reg-Reg")]
-        reg_reg = Ot.reg | (Ot.reg << 4),
+        reg_reg = Ot1.reg | (Ot1.reg << 4),
         [Description("Reg-Mem")]
-        reg_mem = Ot.reg | (Ot.mem << 4),
+        reg_mem = Ot1.reg | (Ot1.mem << 4),
         [Description("Reg-Imm")]
-        reg_imm = Ot.reg | (Ot.imm << 4),
+        reg_imm = Ot1.reg | (Ot1.imm << 4),
         [Description("Reg-Unknown")]
-        reg_UNKNOWN = Ot.reg | (Ot.UNKNOWN << 4),
+        reg_UNKNOWN = Ot1.reg | (Ot1.UNKNOWN << 4),
 
         [Description("Mem-Reg")]
-        mem_reg = Ot.mem | (Ot.reg << 4),
+        mem_reg = Ot1.mem | (Ot1.reg << 4),
         [Description("Mem-Mem")]
-        mem_mem = Ot.mem | (Ot.mem << 4),
+        mem_mem = Ot1.mem | (Ot1.mem << 4),
         [Description("Mem-Imm")]
-        mem_imm = Ot.mem | (Ot.imm << 4),
+        mem_imm = Ot1.mem | (Ot1.imm << 4),
         [Description("Mem-Unknown")]
-        mem_UNKNOWN = Ot.mem | (Ot.UNKNOWN << 4),
+        mem_UNKNOWN = Ot1.mem | (Ot1.UNKNOWN << 4),
 
         [Description("Imm-Reg")]
-        imm_reg = Ot.imm | (Ot.reg << 4),
+        imm_reg = Ot1.imm | (Ot1.reg << 4),
         [Description("Imm-Mem")]
-        imm_mem = Ot.imm | (Ot.mem << 4),
+        imm_mem = Ot1.imm | (Ot1.mem << 4),
         [Description("Imm-Imm")]
-        imm_imm = Ot.imm | (Ot.imm << 4),
+        imm_imm = Ot1.imm | (Ot1.imm << 4),
         [Description("Imm-Unknown")]
-        imm_UNKNOWN = Ot.imm | (Ot.UNKNOWN << 4),
+        imm_UNKNOWN = Ot1.imm | (Ot1.UNKNOWN << 4),
 
         [Description("Unknown-Reg")]
-        UNKNOWN_reg = Ot.UNKNOWN | (Ot.reg << 4),
+        UNKNOWN_reg = Ot1.UNKNOWN | (Ot1.reg << 4),
         [Description("Unknown-Unknown")]
-        UNKNOWN_mem = Ot.UNKNOWN | (Ot.mem << 4),
+        UNKNOWN_mem = Ot1.UNKNOWN | (Ot1.mem << 4),
         [Description("Unknown-Unknown")]
-        UNKNOWN_imm = Ot.UNKNOWN | (Ot.imm << 4),
+        UNKNOWN_imm = Ot1.UNKNOWN | (Ot1.imm << 4),
         [Description("Unknown-Unknown")]
-        UNKNOWN_UNKNOWN = Ot.UNKNOWN | (Ot.UNKNOWN << 4),
+        UNKNOWN_UNKNOWN = Ot1.UNKNOWN | (Ot1.UNKNOWN << 4),
     }
     /// <summary>
     ///  Operand Type tup (OperandType x OperandType x OperandType)
@@ -90,85 +90,85 @@ namespace AsmTools
     [Flags]
     public enum Ot3 : short
     {
-        reg_reg_reg = Ot.reg | (Ot.reg << 4) | (Ot.reg << 8),
-        reg_mem_reg = Ot.reg | (Ot.mem << 4) | (Ot.reg << 8),
-        reg_imm_reg = Ot.reg | (Ot.imm << 4) | (Ot.reg << 8),
-        reg_UNKNOWN_reg = Ot.reg | (Ot.UNKNOWN << 4) | (Ot.reg << 8),
+        reg_reg_reg = Ot1.reg | (Ot1.reg << 4) | (Ot1.reg << 8),
+        reg_mem_reg = Ot1.reg | (Ot1.mem << 4) | (Ot1.reg << 8),
+        reg_imm_reg = Ot1.reg | (Ot1.imm << 4) | (Ot1.reg << 8),
+        reg_UNKNOWN_reg = Ot1.reg | (Ot1.UNKNOWN << 4) | (Ot1.reg << 8),
 
-        mem_reg_reg = Ot.mem | (Ot.reg << 4) | (Ot.reg << 8),
-        mem_mem_reg = Ot.mem | (Ot.mem << 4) | (Ot.reg << 8),
-        mem_imm_reg = Ot.mem | (Ot.imm << 4) | (Ot.reg << 8),
-        mem_UNKNOWN_reg = Ot.mem | (Ot.UNKNOWN << 4) | (Ot.reg << 8),
+        mem_reg_reg = Ot1.mem | (Ot1.reg << 4) | (Ot1.reg << 8),
+        mem_mem_reg = Ot1.mem | (Ot1.mem << 4) | (Ot1.reg << 8),
+        mem_imm_reg = Ot1.mem | (Ot1.imm << 4) | (Ot1.reg << 8),
+        mem_UNKNOWN_reg = Ot1.mem | (Ot1.UNKNOWN << 4) | (Ot1.reg << 8),
 
-        imm_reg_reg = Ot.imm | (Ot.reg << 4) | (Ot.reg << 8),
-        imm_mem_reg = Ot.imm | (Ot.mem << 4) | (Ot.reg << 8),
-        imm_imm_reg = Ot.imm | (Ot.imm << 4) | (Ot.reg << 8),
-        imm_UNKNOWN_reg = Ot.imm | (Ot.UNKNOWN << 4) | (Ot.reg << 8),
+        imm_reg_reg = Ot1.imm | (Ot1.reg << 4) | (Ot1.reg << 8),
+        imm_mem_reg = Ot1.imm | (Ot1.mem << 4) | (Ot1.reg << 8),
+        imm_imm_reg = Ot1.imm | (Ot1.imm << 4) | (Ot1.reg << 8),
+        imm_UNKNOWN_reg = Ot1.imm | (Ot1.UNKNOWN << 4) | (Ot1.reg << 8),
 
-        UNKNOWN_reg_reg = Ot.UNKNOWN | (Ot.reg << 4) | (Ot.reg << 8),
-        UNKNOWN_mem_reg = Ot.UNKNOWN | (Ot.mem << 4) | (Ot.reg << 8),
-        UNKNOWN_imm_reg = Ot.UNKNOWN | (Ot.imm << 4) | (Ot.reg << 8),
-        UNKNOWN_UNKNOWN_reg = Ot.UNKNOWN | (Ot.UNKNOWN << 4) | (Ot.reg << 8),
+        UNKNOWN_reg_reg = Ot1.UNKNOWN | (Ot1.reg << 4) | (Ot1.reg << 8),
+        UNKNOWN_mem_reg = Ot1.UNKNOWN | (Ot1.mem << 4) | (Ot1.reg << 8),
+        UNKNOWN_imm_reg = Ot1.UNKNOWN | (Ot1.imm << 4) | (Ot1.reg << 8),
+        UNKNOWN_UNKNOWN_reg = Ot1.UNKNOWN | (Ot1.UNKNOWN << 4) | (Ot1.reg << 8),
         ///
-        reg_rem_mem = Ot.reg | (Ot.reg << 4) | (Ot.mem << 8),
-        reg_mem_mem = Ot.reg | (Ot.mem << 4) | (Ot.mem << 8),
-        reg_imm_mem = Ot.reg | (Ot.imm << 4) | (Ot.mem << 8),
-        reg_UNKNOWN_mem = Ot.reg | (Ot.UNKNOWN << 4) | (Ot.mem << 8),
+        reg_rem_mem = Ot1.reg | (Ot1.reg << 4) | (Ot1.mem << 8),
+        reg_mem_mem = Ot1.reg | (Ot1.mem << 4) | (Ot1.mem << 8),
+        reg_imm_mem = Ot1.reg | (Ot1.imm << 4) | (Ot1.mem << 8),
+        reg_UNKNOWN_mem = Ot1.reg | (Ot1.UNKNOWN << 4) | (Ot1.mem << 8),
 
-        mem_reg_mem = Ot.mem | (Ot.reg << 4) | (Ot.mem << 8),
-        mem_mem_mem = Ot.mem | (Ot.mem << 4) | (Ot.mem << 8),
-        mem_imm_mem = Ot.mem | (Ot.imm << 4) | (Ot.mem << 8),
-        mem_UNKNOWN_mem = Ot.mem | (Ot.UNKNOWN << 4) | (Ot.mem << 8),
+        mem_reg_mem = Ot1.mem | (Ot1.reg << 4) | (Ot1.mem << 8),
+        mem_mem_mem = Ot1.mem | (Ot1.mem << 4) | (Ot1.mem << 8),
+        mem_imm_mem = Ot1.mem | (Ot1.imm << 4) | (Ot1.mem << 8),
+        mem_UNKNOWN_mem = Ot1.mem | (Ot1.UNKNOWN << 4) | (Ot1.mem << 8),
 
-        imm_reg_mem = Ot.imm | (Ot.reg << 4) | (Ot.mem << 8),
-        imm_mem_mem = Ot.imm | (Ot.mem << 4) | (Ot.mem << 8),
-        imm_imm_mem = Ot.imm | (Ot.imm << 4) | (Ot.mem << 8),
-        imm_UNKNOWN_mem = Ot.imm | (Ot.UNKNOWN << 4) | (Ot.mem << 8),
+        imm_reg_mem = Ot1.imm | (Ot1.reg << 4) | (Ot1.mem << 8),
+        imm_mem_mem = Ot1.imm | (Ot1.mem << 4) | (Ot1.mem << 8),
+        imm_imm_mem = Ot1.imm | (Ot1.imm << 4) | (Ot1.mem << 8),
+        imm_UNKNOWN_mem = Ot1.imm | (Ot1.UNKNOWN << 4) | (Ot1.mem << 8),
 
-        UNKNOWN_reg_mem = Ot.UNKNOWN | (Ot.reg << 4) | (Ot.mem << 8),
-        UNKNOWN_mem_mem = Ot.UNKNOWN | (Ot.mem << 4) | (Ot.mem << 8),
-        UNKNOWN_imm_mem = Ot.UNKNOWN | (Ot.imm << 4) | (Ot.mem << 8),
-        UNKNOWN_UNKNOWN_mem = Ot.UNKNOWN | (Ot.UNKNOWN << 4) | (Ot.mem << 8),
+        UNKNOWN_reg_mem = Ot1.UNKNOWN | (Ot1.reg << 4) | (Ot1.mem << 8),
+        UNKNOWN_mem_mem = Ot1.UNKNOWN | (Ot1.mem << 4) | (Ot1.mem << 8),
+        UNKNOWN_imm_mem = Ot1.UNKNOWN | (Ot1.imm << 4) | (Ot1.mem << 8),
+        UNKNOWN_UNKNOWN_mem = Ot1.UNKNOWN | (Ot1.UNKNOWN << 4) | (Ot1.mem << 8),
         ///
-        reg_reg_imm = Ot.reg | (Ot.reg << 4) | (Ot.imm << 8),
-        reg_mem_imm = Ot.reg | (Ot.mem << 4) | (Ot.imm << 8),
-        reg_imm_imm = Ot.reg | (Ot.imm << 4) | (Ot.imm << 8),
-        reg_UNKNOWN_imm = Ot.reg | (Ot.UNKNOWN << 4) | (Ot.imm << 8),
+        reg_reg_imm = Ot1.reg | (Ot1.reg << 4) | (Ot1.imm << 8),
+        reg_mem_imm = Ot1.reg | (Ot1.mem << 4) | (Ot1.imm << 8),
+        reg_imm_imm = Ot1.reg | (Ot1.imm << 4) | (Ot1.imm << 8),
+        reg_UNKNOWN_imm = Ot1.reg | (Ot1.UNKNOWN << 4) | (Ot1.imm << 8),
 
-        mem_reg_imm = Ot.mem | (Ot.reg << 4) | (Ot.imm << 8),
-        mem_mem_imm = Ot.mem | (Ot.mem << 4) | (Ot.imm << 8),
-        mem_imm_imm = Ot.mem | (Ot.imm << 4) | (Ot.imm << 8),
-        mem_UNKNOWN_imm = Ot.mem | (Ot.UNKNOWN << 4) | (Ot.imm << 8),
+        mem_reg_imm = Ot1.mem | (Ot1.reg << 4) | (Ot1.imm << 8),
+        mem_mem_imm = Ot1.mem | (Ot1.mem << 4) | (Ot1.imm << 8),
+        mem_imm_imm = Ot1.mem | (Ot1.imm << 4) | (Ot1.imm << 8),
+        mem_UNKNOWN_imm = Ot1.mem | (Ot1.UNKNOWN << 4) | (Ot1.imm << 8),
 
-        imm_reg_imm = Ot.imm | (Ot.reg << 4) | (Ot.imm << 8),
-        imm_mem_imm = Ot.imm | (Ot.mem << 4) | (Ot.imm << 8),
-        imm_imm_imm = Ot.imm | (Ot.imm << 4) | (Ot.imm << 8),
-        imm_UNKNOWN_imm = Ot.imm | (Ot.UNKNOWN << 4) | (Ot.imm << 8),
+        imm_reg_imm = Ot1.imm | (Ot1.reg << 4) | (Ot1.imm << 8),
+        imm_mem_imm = Ot1.imm | (Ot1.mem << 4) | (Ot1.imm << 8),
+        imm_imm_imm = Ot1.imm | (Ot1.imm << 4) | (Ot1.imm << 8),
+        imm_UNKNOWN_imm = Ot1.imm | (Ot1.UNKNOWN << 4) | (Ot1.imm << 8),
 
-        UNKNOWN_reg_imm = Ot.UNKNOWN | (Ot.reg << 4) | (Ot.imm << 8),
-        UNKNOWN_mem_imm = Ot.UNKNOWN | (Ot.mem << 4) | (Ot.imm << 8),
-        UNKNOWN_imm_imm = Ot.UNKNOWN | (Ot.imm << 4) | (Ot.imm << 8),
-        UNKNOWN_UNKNOWN_imm = Ot.UNKNOWN | (Ot.UNKNOWN << 4) | (Ot.imm << 8),
+        UNKNOWN_reg_imm = Ot1.UNKNOWN | (Ot1.reg << 4) | (Ot1.imm << 8),
+        UNKNOWN_mem_imm = Ot1.UNKNOWN | (Ot1.mem << 4) | (Ot1.imm << 8),
+        UNKNOWN_imm_imm = Ot1.UNKNOWN | (Ot1.imm << 4) | (Ot1.imm << 8),
+        UNKNOWN_UNKNOWN_imm = Ot1.UNKNOWN | (Ot1.UNKNOWN << 4) | (Ot1.imm << 8),
         ///
-        reg_reg_UNKNOWN = Ot.reg | (Ot.reg << 4) | (Ot.UNKNOWN << 8),
-        reg_mem_UNKNOWN = Ot.reg | (Ot.mem << 4) | (Ot.UNKNOWN << 8),
-        reg_imm_UNKNOWN = Ot.reg | (Ot.imm << 4) | (Ot.UNKNOWN << 8),
-        reg_UNKNOWN_UNKNOWN = Ot.reg | (Ot.UNKNOWN << 4) | (Ot.UNKNOWN << 8),
+        reg_reg_UNKNOWN = Ot1.reg | (Ot1.reg << 4) | (Ot1.UNKNOWN << 8),
+        reg_mem_UNKNOWN = Ot1.reg | (Ot1.mem << 4) | (Ot1.UNKNOWN << 8),
+        reg_imm_UNKNOWN = Ot1.reg | (Ot1.imm << 4) | (Ot1.UNKNOWN << 8),
+        reg_UNKNOWN_UNKNOWN = Ot1.reg | (Ot1.UNKNOWN << 4) | (Ot1.UNKNOWN << 8),
 
-        mem_reg_UNKNOWN = Ot.mem | (Ot.reg << 4) | (Ot.UNKNOWN << 8),
-        mem_mem_UNKNOWN = Ot.mem | (Ot.mem << 4) | (Ot.UNKNOWN << 8),
-        mem_imm_UNKNOWN = Ot.mem | (Ot.imm << 4) | (Ot.UNKNOWN << 8),
-        mem_UNKNOWN_UNKNOWN = Ot.mem | (Ot.UNKNOWN << 4) | (Ot.UNKNOWN << 8),
+        mem_reg_UNKNOWN = Ot1.mem | (Ot1.reg << 4) | (Ot1.UNKNOWN << 8),
+        mem_mem_UNKNOWN = Ot1.mem | (Ot1.mem << 4) | (Ot1.UNKNOWN << 8),
+        mem_imm_UNKNOWN = Ot1.mem | (Ot1.imm << 4) | (Ot1.UNKNOWN << 8),
+        mem_UNKNOWN_UNKNOWN = Ot1.mem | (Ot1.UNKNOWN << 4) | (Ot1.UNKNOWN << 8),
 
-        imm_reg_UNKNOWN = Ot.imm | (Ot.reg << 4) | (Ot.UNKNOWN << 8),
-        imm_mem_UNKNOWN = Ot.imm | (Ot.mem << 4) | (Ot.UNKNOWN << 8),
-        imm_imm_UNKNOWN = Ot.imm | (Ot.imm << 4) | (Ot.UNKNOWN << 8),
-        imm_UNKNOWN_UNKNOWN = Ot.imm | (Ot.UNKNOWN << 4) | (Ot.UNKNOWN << 8),
+        imm_reg_UNKNOWN = Ot1.imm | (Ot1.reg << 4) | (Ot1.UNKNOWN << 8),
+        imm_mem_UNKNOWN = Ot1.imm | (Ot1.mem << 4) | (Ot1.UNKNOWN << 8),
+        imm_imm_UNKNOWN = Ot1.imm | (Ot1.imm << 4) | (Ot1.UNKNOWN << 8),
+        imm_UNKNOWN_UNKNOWN = Ot1.imm | (Ot1.UNKNOWN << 4) | (Ot1.UNKNOWN << 8),
 
-        UNKNOWN_reg_UNKNOWN = Ot.UNKNOWN | (Ot.reg << 4) | (Ot.UNKNOWN << 8),
-        UNKNOWN_mem_UNKNOWN = Ot.UNKNOWN | (Ot.mem << 4) | (Ot.UNKNOWN << 8),
-        UNKNOWN_imm_UNKNOWN = Ot.UNKNOWN | (Ot.imm << 4) | (Ot.UNKNOWN << 8),
-        UNKNOWN_UNKNOWN_UNKNOWN = Ot.UNKNOWN | (Ot.UNKNOWN << 4) | (Ot.UNKNOWN << 8),
+        UNKNOWN_reg_UNKNOWN = Ot1.UNKNOWN | (Ot1.reg << 4) | (Ot1.UNKNOWN << 8),
+        UNKNOWN_mem_UNKNOWN = Ot1.UNKNOWN | (Ot1.mem << 4) | (Ot1.UNKNOWN << 8),
+        UNKNOWN_imm_UNKNOWN = Ot1.UNKNOWN | (Ot1.imm << 4) | (Ot1.UNKNOWN << 8),
+        UNKNOWN_UNKNOWN_UNKNOWN = Ot1.UNKNOWN | (Ot1.UNKNOWN << 4) | (Ot1.UNKNOWN << 8),
 
     }
 
@@ -176,10 +176,10 @@ namespace AsmTools
     public static partial class AsmSourceTools
     {
 
-        public static string ToString(Ot ot)
+        public static string ToString(Ot1 ot)
         {
             StringBuilder sb = new StringBuilder();
-            foreach (Ot value in Enum.GetValues(ot.GetType()))
+            foreach (Ot1 value in Enum.GetValues(ot.GetType()))
             {
                 if (ot.HasFlag(value))
                 {
@@ -216,35 +216,35 @@ namespace AsmTools
             return sb.ToString();
         }
 
-        public static (Ot, Ot) SplitOt(Ot2 optup)
+        public static (Ot1, Ot1) SplitOt(Ot2 optup)
         {
             switch (optup)
             {
-                case Ot2.reg_reg: return (Ot.reg, Ot.reg);
-                case Ot2.reg_mem: return (Ot.reg, Ot.mem);
-                case Ot2.reg_imm: return (Ot.reg, Ot.imm);
-                case Ot2.reg_UNKNOWN: return (Ot.reg, Ot.UNKNOWN);
-                case Ot2.mem_reg: return (Ot.mem, Ot.reg);
-                case Ot2.mem_mem: return (Ot.mem, Ot.mem);
-                case Ot2.mem_imm: return (Ot.mem, Ot.imm);
-                case Ot2.mem_UNKNOWN: return (Ot.mem, Ot.UNKNOWN);
-                case Ot2.imm_reg: return (Ot.imm, Ot.reg);
-                case Ot2.imm_mem: return (Ot.imm, Ot.mem);
-                case Ot2.imm_imm: return (Ot.imm, Ot.imm);
-                case Ot2.imm_UNKNOWN: return (Ot.imm, Ot.UNKNOWN);
-                case Ot2.UNKNOWN_reg: return (Ot.UNKNOWN, Ot.reg);
-                case Ot2.UNKNOWN_mem: return (Ot.UNKNOWN, Ot.mem);
-                case Ot2.UNKNOWN_imm: return (Ot.UNKNOWN, Ot.imm);
+                case Ot2.reg_reg: return (Ot1.reg, Ot1.reg);
+                case Ot2.reg_mem: return (Ot1.reg, Ot1.mem);
+                case Ot2.reg_imm: return (Ot1.reg, Ot1.imm);
+                case Ot2.reg_UNKNOWN: return (Ot1.reg, Ot1.UNKNOWN);
+                case Ot2.mem_reg: return (Ot1.mem, Ot1.reg);
+                case Ot2.mem_mem: return (Ot1.mem, Ot1.mem);
+                case Ot2.mem_imm: return (Ot1.mem, Ot1.imm);
+                case Ot2.mem_UNKNOWN: return (Ot1.mem, Ot1.UNKNOWN);
+                case Ot2.imm_reg: return (Ot1.imm, Ot1.reg);
+                case Ot2.imm_mem: return (Ot1.imm, Ot1.mem);
+                case Ot2.imm_imm: return (Ot1.imm, Ot1.imm);
+                case Ot2.imm_UNKNOWN: return (Ot1.imm, Ot1.UNKNOWN);
+                case Ot2.UNKNOWN_reg: return (Ot1.UNKNOWN, Ot1.reg);
+                case Ot2.UNKNOWN_mem: return (Ot1.UNKNOWN, Ot1.mem);
+                case Ot2.UNKNOWN_imm: return (Ot1.UNKNOWN, Ot1.imm);
                 case Ot2.UNKNOWN_UNKNOWN:
                 default:
-                    return (Ot.UNKNOWN, Ot.UNKNOWN);
+                    return (Ot1.UNKNOWN, Ot1.UNKNOWN);
             }
         }
-        public static Ot2 MergeOt(Ot ot1, Ot ot2)
+        public static Ot2 MergeOt(Ot1 ot1, Ot1 ot2)
         {
             return (Ot2)(((byte)ot1) | (((byte)ot2) << 4));
         }
-        public static Ot3 MergeOt(Ot ot1, Ot ot2, Ot ot3)
+        public static Ot3 MergeOt(Ot1 ot1, Ot1 ot2, Ot1 ot3)
         {
             return (Ot3)(((byte)ot1) | (((byte)ot2) << 4) | (((byte)ot3) << 8));
         }

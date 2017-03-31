@@ -5,99 +5,98 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			 xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
              xmlns:local="clr-namespace:AsmDude.OptionsPage">
-	<Grid RenderTransformOrigin="0.5,0.818" VerticalAlignment="Top">
-		<ScrollViewer>
-			<StackPanel>
-				<Label x:Name="version_UI" Content="AsmDude version" />
-				<GroupBox Header="Syntax Highlighting" BorderBrush="DarkGray">
-					<Grid>
-						<StackPanel>
-							<CheckBox x:Name="syntaxHighlighting_On_UI" ToolTip="Syntax Highlighting Enabled" Content="Enable Syntax Highlighting" Margin="0,4,0,4"/>
-							<Grid>
-								<Label Content="Compiler:" HorizontalAlignment="Left"/>
-								<RadioButton x:Name="usedAssemblerMasm_UI" GroupName="usedAssembler_UI" ToolTip="Enable syntax highlighting for MASM" Content="Masm" Margin="140,5,0,0" HorizontalAlignment="Left" Width="188"/>
-								<RadioButton x:Name="usedAssemblerNasm_UI" GroupName="usedAssembler_UI" ToolTip="Enable syntax highlighting for NASM" Content="Nasm" Margin="240,5,0,0"/>
-							</Grid>
-							<Grid>
-								<Label Content="Mnemonic:" HorizontalAlignment="Left"/>
-								<xctk:ColorPicker x:Name="colorMnemonic_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for mnemonics." Margin="140,0,0,0"/>
-							</Grid>
-							<Grid>
-								<Label Content="Register:" HorizontalAlignment="Left"/>
-								<xctk:ColorPicker x:Name="colorRegister_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for registers" Margin="140,0,0,0"/>
-							</Grid>
-							<Grid>
-								<Label Content="Remark:" HorizontalAlignment="Left"/>
-								<xctk:ColorPicker x:Name="colorRemark_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for remarks" Margin="140,0,0,0"/>
-							</Grid>
-							<Grid>
-								<Label Content="Directive:" HorizontalAlignment="Left"/>
-								<xctk:ColorPicker x:Name="colorDirective_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for compiler directives" Margin="140,0,0,0"/>
-							</Grid>
-							<Grid>
-								<Label Content="Constant:" HorizontalAlignment="Left"/>
-								<xctk:ColorPicker x:Name="colorConstant_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for constants" Margin="140,0,0,0"/>
-							</Grid>
-							<Grid>
-								<Label Content="Jump:" HorizontalAlignment="Left"/>
-								<xctk:ColorPicker x:Name="colorJump_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for jump mnemonics" Margin="140,0,0,0"/>
-							</Grid>
-							<Grid>
-								<Label Content="Label:" HorizontalAlignment="Left"/>
-								<xctk:ColorPicker x:Name="colorLabel_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for labels" Margin="140,0,0,0"/>
-							</Grid>
-							<Grid>
-								<Label Content="Misc:" HorizontalAlignment="Left"/>
-								<xctk:ColorPicker x:Name="colorMisc_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for misc" Margin="140,0,0,0"/>
-							</Grid>
-							<TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" Width="auto" Margin="5,4,0,4" ><Run Text="To edit other properties of these keywords such as font families, go to Tools&gt;Options&gt;Environment&gt;Fonts and Colors&gt;Text Editor."/></TextBlock>
-						</StackPanel>
-					</Grid>
-				</GroupBox>
-				<GroupBox Header="Documentation" BorderBrush="DarkGray">
-					<Grid>
-						<StackPanel>
-							<CheckBox x:Name="asmDoc_On_UI" ToolTip="Assembly Documentation Enabled" Content="Enable Documentation" Margin="0,4,0,4" />
-							<Grid>
-								<Label Content="Documentation URL:" HorizontalAlignment="Left"/>
-								<TextBox x:Name="asmDoc_Url_UI" ToolTip="URL to the documentation. E.g. https://hjlebbink.github.io/x86doc/html/" TextWrapping="Wrap" Text="https://hjlebbink.github.io/x86doc/html/" Margin="140,3,0,2"/>
-							</Grid>
-						</StackPanel>
-					</Grid>
-				</GroupBox>
-				<GroupBox Header="Folding" BorderBrush="DarkGray">
-					<Grid>
-						<StackPanel>
-							<Grid>
-								<CheckBox x:Name="codeFolding_On_UI" ToolTip="Code Folding Enabled" Content="Enable Code Folding" Margin="0,4,0,4" />
-								<CheckBox x:Name="codeFolding_IsDefaultCollaped_UI" ToolTip="Whether folding regions are collapsed by default" Content="Default Collapsed" Margin="140,4,0,4"/>
-							</Grid>
-							<Grid>
-								<Label Content="Start Tag:" HorizontalAlignment="Left"/>
-								<TextBox x:Name="codeFolding_BeginTag_UI" ToolTip="The characters that start the outlining region. E.g. #region" Margin="140,3,0,2"/>
-							</Grid>
-							<Grid>
-								<Label Content="End Tag:" HorizontalAlignment="Left"/>
-								<TextBox x:Name="codeFolding_EndTag_UI" ToolTip="The characters that start the outlining region. E.g. #endregion" Margin="140,3,0,2"/>
-							</Grid>
-						</StackPanel>
-					</Grid>
-				</GroupBox>
-				<GroupBox Header="Keyword Highlighting" BorderBrush="DarkGray">
-					<Grid>
-						<StackPanel>
-							<CheckBox x:Name="useKeywordHighlighting_UI" ToolTip="Keyword Highlighting Enabled" Content="Enable Keyword Highlighting" Margin="0,4,0,4" />
-							<Grid>
-								<Label Content="Background Color:" HorizontalAlignment="Left"/>
-								<xctk:ColorPicker x:Name="backgroundColor_UI" DisplayColorAndName="True" ToolTip="The background color for keyword highlighting" Margin="140,3,0,2"/>
-							</Grid>
+    <Grid RenderTransformOrigin="0.5,0.818" VerticalAlignment="Top">
+        <ScrollViewer>
+            <StackPanel>
+                <Label x:Name="version_UI" Content="AsmDude version" />
+                <GroupBox Header="Syntax Highlighting" BorderBrush="DarkGray">
+                    <Grid>
+                        <StackPanel>
+                            <CheckBox x:Name="SyntaxHighlighting_On_UI" ToolTip="Syntax highlighting enabled" Content="Enable syntax highlighting" Margin="0,4,0,4"/>
                             <Grid>
-                                <Label Content="Font Color:" HorizontalAlignment="Left"/>
-                                <xctk:ColorPicker x:Name="fontColor_UI" DisplayColorAndName="True" ToolTip="The font color for keyword highlighting" Margin="140,3,0,2"/>
+                                <Label Content="Compiler:" HorizontalAlignment="Left"/>
+                                <RadioButton x:Name="usedAssemblerMasm_UI" GroupName="usedAssembler_UI" ToolTip="Enable syntax highlighting for MASM" Content="Masm" Margin="140,5,0,0" HorizontalAlignment="Left" Width="188"/>
+                                <RadioButton x:Name="usedAssemblerNasm_UI" GroupName="usedAssembler_UI" ToolTip="Enable syntax highlighting for NASM" Content="Nasm" Margin="240,5,0,0"/>
+                            </Grid>
+                            <Grid>
+                                <Label Content="Mnemonic:" HorizontalAlignment="Left"/>
+                                <xctk:ColorPicker x:Name="colorMnemonic_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for mnemonics." Margin="140,0,0,0"/>
+                            </Grid>
+                            <Grid>
+                                <Label Content="Register:" HorizontalAlignment="Left"/>
+                                <xctk:ColorPicker x:Name="colorRegister_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for registers" Margin="140,0,0,0"/>
+                            </Grid>
+                            <Grid>
+                                <Label Content="Remark:" HorizontalAlignment="Left"/>
+                                <xctk:ColorPicker x:Name="colorRemark_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for remarks" Margin="140,0,0,0"/>
+                            </Grid>
+                            <Grid>
+                                <Label Content="Directive:" HorizontalAlignment="Left"/>
+                                <xctk:ColorPicker x:Name="colorDirective_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for compiler directives" Margin="140,0,0,0"/>
+                            </Grid>
+                            <Grid>
+                                <Label Content="Constant:" HorizontalAlignment="Left"/>
+                                <xctk:ColorPicker x:Name="colorConstant_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for constants" Margin="140,0,0,0"/>
+                            </Grid>
+                            <Grid>
+                                <Label Content="Jump:" HorizontalAlignment="Left"/>
+                                <xctk:ColorPicker x:Name="colorJump_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for jump mnemonics" Margin="140,0,0,0"/>
+                            </Grid>
+                            <Grid>
+                                <Label Content="Label:" HorizontalAlignment="Left"/>
+                                <xctk:ColorPicker x:Name="colorLabel_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for labels" Margin="140,0,0,0"/>
+                            </Grid>
+                            <Grid>
+                                <Label Content="Misc:" HorizontalAlignment="Left"/>
+                                <xctk:ColorPicker x:Name="colorMisc_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for misc" Margin="140,0,0,0"/>
+                            </Grid>
+                            <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" Width="auto" Margin="5,4,0,4" ><Run Text="To edit other properties of these keywords such as font families, go to Tools&gt;Options&gt;Environment&gt;Fonts and Colors&gt;Text Editor."/></TextBlock>
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Header="Documentation" BorderBrush="DarkGray">
+                    <Grid>
+                        <StackPanel>
+                            <CheckBox x:Name="asmDoc_On_UI" ToolTip="Assembly documentation enabled" Content="Enable documentation" Margin="0,4,0,4" />
+                            <Grid>
+                                <Label Content="Documentation URL:" HorizontalAlignment="Left"/>
+                                <TextBox x:Name="asmDoc_Url_UI" ToolTip="URL to the documentation. E.g. https://hjlebbink.github.io/x86doc/html/" TextWrapping="Wrap" Text="https://hjlebbink.github.io/x86doc/html/" Margin="140,3,0,2"/>
                             </Grid>
                         </StackPanel>
-					</Grid>
-				</GroupBox>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Header="Folding" BorderBrush="DarkGray">
+                    <Grid>
+                        <StackPanel>
+                            <Grid>
+                                <CheckBox x:Name="codeFolding_On_UI" ToolTip="Code folding enabled" Content="Enable code folding" Margin="0,4,0,4" />
+                                <CheckBox x:Name="codeFolding_IsDefaultCollaped_UI" ToolTip="Whether folding regions are collapsed by default" Content="Default collapsed" Margin="140,4,0,4"/>
+                            </Grid>
+                            <Grid>
+                                <Label Content="Start tag:" HorizontalAlignment="Left"/>
+                                <TextBox x:Name="codeFolding_BeginTag_UI" ToolTip="The characters that start the outlining region. E.g. #region" Margin="140,3,0,2"/>
+                            </Grid>
+                            <Grid>
+                                <Label Content="End tag:" HorizontalAlignment="Left"/>
+                                <TextBox x:Name="codeFolding_EndTag_UI" ToolTip="The characters that start the outlining region. E.g. #endregion" Margin="140,3,0,2"/>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Header="Keyword Highlighting" BorderBrush="DarkGray">
+                    <Grid>
+                        <StackPanel>
+                            <Grid>
+                                <CheckBox x:Name="KeywordHighlighting_BackgroundColor_On_UI" ToolTip="Background color for highlighting enabled" Content="Use background color" Margin="0,4,0,4"/>
+                                <xctk:ColorPicker x:Name="KeywordHighling_BackgroundColor_UI" IsEnabled="True" DisplayColorAndName="True" ToolTip="The background color for keyword highlighting" Margin="180,0,0,0"/>
+                            </Grid>
+                            <Grid>
+                                <CheckBox x:Name="KeywordHighlighting_BorderColor_On_UI" ToolTip="Border color for highlighting enabled" Content="Use border color" Margin="0,4,0,4"/>
+                                <xctk:ColorPicker x:Name="KeywordHighling_BorderColor_UI" IsEnabled="True" DisplayColorAndName="True" ToolTip="The font color for keyword highlighting" Margin="180,0,0,0" />
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
                 <GroupBox Header="Latency and Throughput Information" BorderBrush="DarkGray">
                     <Grid>
                         <StackPanel>
@@ -105,110 +104,110 @@
                             <CheckBox x:Name="PerformanceInfo_IvyBridge_UI" ToolTip="Show performance information for Ivy Bridge in instruction QuickInfo tooltips" Content="Ivy Bridge (Intel 3nd gen Core)" Margin="0,2,0,2" />
                             <CheckBox x:Name="PerformanceInfo_Haswell_UI" ToolTip="Show performance information for Haswell in instruction QuickInfo tooltips" Content="Haswell (Intel 4nd gen Core)" Margin="0,2,0,2" />
                             -->
-                            <CheckBox x:Name="PerformanceInfo_Broadwell_UI" ToolTip="Show performance information for Broadwell in instruction QuickInfo tooltips" Content="Broadwell (Intel 5nd gen Core)" Margin="0,2,0,2" />
-                            <CheckBox x:Name="PerformanceInfo_Skylake_UI" ToolTip="Show performance information for Skylake in instruction QuickInfo tooltips" Content="Skylake (Intel 6nd gen Core)" Margin="0,2,0,2" />
+                            <CheckBox x:Name="PerformanceInfo_Broadwell_UI" ToolTip="Show performance information for Broadwell in instruction QuickInfo tooltips" Content="Broadwell (Intel 5nd gen Core)" Margin="0,4,0,2" />
+                            <CheckBox x:Name="PerformanceInfo_Skylake_UI" ToolTip="Show performance information for Skylake in instruction QuickInfo tooltips" Content="Skylake (Intel 6nd gen Core)" Margin="0,2,0,4" />
                             <!--<CheckBox x:Name="PerformanceInfo_KnightsLanding_UI" ToolTip="Show performance information for Knights Landing in instruction QuickInfo tooltips" Content="Knights Landing (Intel Xeon Phi)" Margin="0,2,0,4" />
                             -->
                         </StackPanel>
                     </Grid>
                 </GroupBox>
                 <GroupBox Header="Intellisense" BorderBrush="DarkGray">
-					<Grid>
-						<StackPanel>
-							<CheckBox x:Name="useCodeCompletion_UI" Content="Enable Code Completion" ToolTip="Code Completion Enabled" Margin="0,4,0,2" />
-							<CheckBox x:Name="useSignatureHelp_UI" Content="Enable Signature Help" ToolTip="Signature Help Enabled" Margin="0,2,0,2" />
-							<CheckBox x:Name="showUndefinedLabels_UI" Content="Show undefined labels in error task" ToolTip="Show undefined labels in error task" Margin="0,2,0,2" />
-							<CheckBox x:Name="decorateUndefinedLabels_UI" Content="Decorate undefined labels" ToolTip="Decorate undefined labels with error squiggles" Margin="0,2,0,2" />
-							<CheckBox x:Name="showClashingLabels_UI" Content="Show clashing labels in error task" ToolTip="Show clashing labels in error task" Margin="0,2,0,2" />
-							<CheckBox x:Name="decorateClashingLabels_UI" Content="Decorate clashing labels" ToolTip="Decorate clashing labels with error squiggle" Margin="0,2,0,4" />
-						</StackPanel>
-					</Grid>
-				</GroupBox>
-				<GroupBox Header="Architectures (used for Code Completion and Signature Help)" BorderBrush="DarkGray">
-					<Grid>
-						<StackPanel>
-							<GroupBox Header="Processors" BorderBrush="DarkGray">
-								<Grid>
-									<StackPanel>
-										<CheckBox x:Name="UseArch_8086_UI" Content="8086" Margin="0,4,0,2" />
-										<CheckBox x:Name="UseArch_186_UI" Content="186" Margin="0,2,0,2"/>
-										<CheckBox x:Name="UseArch_286_UI" Content="286" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_386_UI" Content="386" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_486_UI" Content="486" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_PENT_UI" Content="PENT" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_P6_UI" Content="P6" Margin="0,2,0,2"/>
-									</StackPanel>
-								</Grid>
-							</GroupBox>
-							<GroupBox Header="SIMD" BorderBrush="DarkGray">
-								<Grid>
-									<StackPanel>
-										<CheckBox x:Name="useArch_MMX_UI" Content="MMX" Margin="0,4,0,2"/>
-										<CheckBox x:Name="useArch_SSE_UI" Content="SSE" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_SSE2_UI" Content="SSE2" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_SSE3_UI" Content="SSE3" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_SSSE3_UI" Content="SSSE3" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_SSE41_UI" Content="SSE4.1" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_SSE42_UI" Content="SSE4.2" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_SSE4A_UI" Content="SSE4A - AMD" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_SSE5_UI" Content="SSE5 - AMD" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_AVX_UI" Content="AVX" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_AVX2_UI" Content="AVX2" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_AVX512F_UI" Content="AVX512F - AVX512 Foundation  (Knights Landing, Intel Xeon)" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_AVX512CD_UI" Content="AVX512CD - AVX512 Conflict Detection (Knights Landing, Intel Xeon)" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_AVX512ER_UI" Content="AVX512ER - AVX512 Exponential and Reciprocal (Knights Landing)" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_AVX512PF_UI" Content="AVX512PF - AVX512 Prefetch (Knights Landing)" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_AVX512BW_UI" Content="AVX512BW - AVX512 Byte and Word (Intel Xeon)" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_AVX512DQ_UI" Content="AVX512DQ - AVX512 Doubleword and QuadWord (Intel Xeon)" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_AVX512VL_UI" Content="AVX512VL - AVX512 Vector Length Extensions (Intel Xeon)" Margin="0,2,0,2"/>
-									</StackPanel>
-								</Grid>
-							</GroupBox>
-							<GroupBox Header="Intel Extensions" BorderBrush="DarkGray">
-								<Grid >
-									<StackPanel>
-										<CheckBox x:Name="useArch_ADX_UI" Content="ADX - Multi-Precision Add-Carry Instruction Extensions" Margin="0,4,0,2"/>
-										<CheckBox x:Name="useArch_AES_UI" Content="AES - Advanced Encryption Standard" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_BMI1_UI" Content="BMI1 - Bit Manipulation Instructions Sets 1" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_BMI2_UI" Content="BMI2 - Bit Manipulation Instructions Sets 2" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_HLE_UI" Content="HLE - Hardware Lock Elision" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_MPX_UI" Content="MPX - Memory Protection Extensions" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_RTM_UI" Content="RTM - Transactional Synchronization Extensions" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_SHA_UI" Content="SHA - Secure Hash Algorithm Extension" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_VMX_UI" Content="VMX - Virtual Machine Extensions" Margin="0,2,0,2"/>
-									</StackPanel>
-								</Grid>
-							</GroupBox>
-							<GroupBox Header="Misc" BorderBrush="DarkGray">
-								<Grid >
-									<StackPanel>
-										<CheckBox x:Name="useArch_X64_UI" Content="X64" Margin="0,4,0,2"/>
-										<CheckBox x:Name="useArch_FMA_UI" Content="FMA - Fused Multiply-Add" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_F16C_UI" Content="F16C - Half Precision FP Conversion" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_FSGSBASE_UI" Content="FSGSBASE" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_INVPCID_UI" Content="INVPCID - Invalidates TLBs" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_PCLMULQDQ_UI" Content="PCLMULQDQ - Carry-Less Multiplication Quadword" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_LZCNT_UI" Content="LZCNT - Leading Zero Count" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_PREFETCHWT1_UI" Content="PREFETCHWT1" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_PREFETCHW_UI" Content="PREFETCHW" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_RDPID_UI" Content="RDPID - Read Processor ID" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_RDRAND_UI" Content="RDRAND - Read Random Number" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_RDSEED_UI" Content="RDSEED - Read Random Seed" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_XSAVEOPT_UI" Content="XSAVEOPT - Save Processor Extended States Optimized" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_UNDOC_UI" Content="UNDOC - undocumented instructions" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_AMD_UI" Content="AMD" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_TBM_UI" Content="TBM - Trailing Bit Manipulation (AMD)" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_3DNOW_UI" Content="3DNOW" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_IA64_UI" Content="IA64" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_CYRIX_UI" Content="CYRIX" Margin="0,2,0,2"/>
-										<CheckBox x:Name="useArch_CYRIXM_UI" Content="CYRIXM" Margin="0,2,0,2"/>
-									</StackPanel>
-								</Grid>
-							</GroupBox>
-						</StackPanel>
-					</Grid>
-				</GroupBox>
-			</StackPanel>
-		</ScrollViewer>
-	</Grid>
+                    <Grid>
+                        <StackPanel>
+                            <CheckBox x:Name="useCodeCompletion_UI" Content="Enable code completion" ToolTip="Code completion eabled" Margin="0,4,0,2" />
+                            <CheckBox x:Name="useSignatureHelp_UI" Content="Enable signature help" ToolTip="Signature help enabled" Margin="0,2,0,2" />
+                            <CheckBox x:Name="showUndefinedLabels_UI" Content="Show undefined labels in error task" ToolTip="Show undefined labels in error task" Margin="0,2,0,2" />
+                            <CheckBox x:Name="decorateUndefinedLabels_UI" Content="Decorate undefined labels" ToolTip="Decorate undefined labels with error squiggles" Margin="0,2,0,2" />
+                            <CheckBox x:Name="showClashingLabels_UI" Content="Show clashing labels in error task" ToolTip="Show clashing labels in error task" Margin="0,2,0,2" />
+                            <CheckBox x:Name="decorateClashingLabels_UI" Content="Decorate clashing labels" ToolTip="Decorate clashing labels with error squiggle" Margin="0,2,0,4" />
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Header="Architectures (used for Code Completion and Signature Help)" BorderBrush="DarkGray">
+                    <Grid>
+                        <StackPanel>
+                            <GroupBox Header="Processors" BorderBrush="DarkGray">
+                                <Grid>
+                                    <StackPanel>
+                                        <CheckBox x:Name="UseArch_8086_UI" Content="8086" Margin="0,4,0,2" />
+                                        <CheckBox x:Name="UseArch_186_UI" Content="186" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="UseArch_286_UI" Content="286" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_386_UI" Content="386" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_486_UI" Content="486" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_PENT_UI" Content="PENT" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_P6_UI" Content="P6" Margin="0,2,0,2"/>
+                                    </StackPanel>
+                                </Grid>
+                            </GroupBox>
+                            <GroupBox Header="SIMD" BorderBrush="DarkGray">
+                                <Grid>
+                                    <StackPanel>
+                                        <CheckBox x:Name="useArch_MMX_UI" Content="MMX" Margin="0,4,0,2"/>
+                                        <CheckBox x:Name="useArch_SSE_UI" Content="SSE" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_SSE2_UI" Content="SSE2" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_SSE3_UI" Content="SSE3" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_SSSE3_UI" Content="SSSE3" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_SSE41_UI" Content="SSE4.1" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_SSE42_UI" Content="SSE4.2" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_SSE4A_UI" Content="SSE4A - AMD" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_SSE5_UI" Content="SSE5 - AMD" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_AVX_UI" Content="AVX" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_AVX2_UI" Content="AVX2" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_AVX512F_UI" Content="AVX512F - AVX512 Foundation  (Knights Landing, Intel Xeon)" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_AVX512CD_UI" Content="AVX512CD - AVX512 Conflict Detection (Knights Landing, Intel Xeon)" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_AVX512ER_UI" Content="AVX512ER - AVX512 Exponential and Reciprocal (Knights Landing)" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_AVX512PF_UI" Content="AVX512PF - AVX512 Prefetch (Knights Landing)" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_AVX512BW_UI" Content="AVX512BW - AVX512 Byte and Word (Intel Xeon)" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_AVX512DQ_UI" Content="AVX512DQ - AVX512 Doubleword and QuadWord (Intel Xeon)" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_AVX512VL_UI" Content="AVX512VL - AVX512 Vector Length Extensions (Intel Xeon)" Margin="0,2,0,2"/>
+                                    </StackPanel>
+                                </Grid>
+                            </GroupBox>
+                            <GroupBox Header="Intel Extensions" BorderBrush="DarkGray">
+                                <Grid >
+                                    <StackPanel>
+                                        <CheckBox x:Name="useArch_ADX_UI" Content="ADX - Multi-Precision Add-Carry Instruction Extensions" Margin="0,4,0,2"/>
+                                        <CheckBox x:Name="useArch_AES_UI" Content="AES - Advanced Encryption Standard" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_BMI1_UI" Content="BMI1 - Bit Manipulation Instructions Sets 1" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_BMI2_UI" Content="BMI2 - Bit Manipulation Instructions Sets 2" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_HLE_UI" Content="HLE - Hardware Lock Elision" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_MPX_UI" Content="MPX - Memory Protection Extensions" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_RTM_UI" Content="RTM - Transactional Synchronization Extensions" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_SHA_UI" Content="SHA - Secure Hash Algorithm Extension" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_VMX_UI" Content="VMX - Virtual Machine Extensions" Margin="0,2,0,2"/>
+                                    </StackPanel>
+                                </Grid>
+                            </GroupBox>
+                            <GroupBox Header="Misc" BorderBrush="DarkGray">
+                                <Grid >
+                                    <StackPanel>
+                                        <CheckBox x:Name="useArch_X64_UI" Content="X64" Margin="0,4,0,2"/>
+                                        <CheckBox x:Name="useArch_FMA_UI" Content="FMA - Fused Multiply-Add" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_F16C_UI" Content="F16C - Half Precision FP Conversion" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_FSGSBASE_UI" Content="FSGSBASE" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_INVPCID_UI" Content="INVPCID - Invalidates TLBs" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_PCLMULQDQ_UI" Content="PCLMULQDQ - Carry-Less Multiplication Quadword" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_LZCNT_UI" Content="LZCNT - Leading Zero Count" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_PREFETCHWT1_UI" Content="PREFETCHWT1" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_PREFETCHW_UI" Content="PREFETCHW" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_RDPID_UI" Content="RDPID - Read Processor ID" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_RDRAND_UI" Content="RDRAND - Read Random Number" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_RDSEED_UI" Content="RDSEED - Read Random Seed" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_XSAVEOPT_UI" Content="XSAVEOPT - Save Processor Extended States Optimized" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_UNDOC_UI" Content="UNDOC - undocumented instructions" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_AMD_UI" Content="AMD" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_TBM_UI" Content="TBM - Trailing Bit Manipulation (AMD)" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_3DNOW_UI" Content="3DNOW" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_IA64_UI" Content="IA64" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_CYRIX_UI" Content="CYRIX" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="useArch_CYRIXM_UI" Content="CYRIXM" Margin="0,2,0,2"/>
+                                    </StackPanel>
+                                </Grid>
+                            </GroupBox>
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
 </UserControl>

@@ -1068,6 +1068,358 @@ namespace AsmTools {
 
         }
 
+        /// <summary> 
+        /// Get the 64 bits register that belongs to the provided register. eg. ax return rax
+        /// </summary>
+        public static Rn Get64BitsRegister(Rn rn)
+        {
+            switch (rn)
+            {
+                case Rn.RAX:
+                case Rn.EAX:
+                case Rn.AX:
+                case Rn.AL:
+                case Rn.AH: return Rn.RAX;
+                case Rn.RBX:
+                case Rn.EBX:
+                case Rn.BX:
+                case Rn.BL:
+                case Rn.BH: return Rn.RBX;
+                case Rn.RCX:
+                case Rn.ECX:
+                case Rn.CX:
+                case Rn.CL:
+                case Rn.CH: return Rn.RCX;
+                case Rn.RDX:
+                case Rn.EDX:
+                case Rn.DX:
+                case Rn.DL:
+                case Rn.DH: return Rn.RDX;
+                case Rn.RSI:
+                case Rn.ESI:
+                case Rn.SI:
+                case Rn.SIL: return Rn.RSI;
+                case Rn.RDI:
+                case Rn.EDI:
+                case Rn.DI:
+                case Rn.DIL: return Rn.RDI;
+                case Rn.RBP:
+                case Rn.EBP:
+                case Rn.BP:
+                case Rn.BPL: return Rn.RBP;
+                case Rn.RSP:
+                case Rn.ESP:
+                case Rn.SP:
+                case Rn.SPL: return Rn.RSP;
+                case Rn.R8:
+                case Rn.R8D:
+                case Rn.R8W:
+                case Rn.R8B: return Rn.R8;
+                case Rn.R9:
+                case Rn.R9D:
+                case Rn.R9W:
+                case Rn.R9B: return Rn.R9;
+                case Rn.R10:
+                case Rn.R10D:
+                case Rn.R10W:
+                case Rn.R10B: return Rn.R10;
+                case Rn.R11:
+                case Rn.R11D:
+                case Rn.R11W:
+                case Rn.R11B: return Rn.R11;
+                case Rn.R12:
+                case Rn.R12D:
+                case Rn.R12W:
+                case Rn.R12B: return Rn.R12;
+                case Rn.R13:
+                case Rn.R13D:
+                case Rn.R13W:
+                case Rn.R13B: return Rn.R13;
+                case Rn.R14:
+                case Rn.R14D:
+                case Rn.R14W:
+                case Rn.R14B: return Rn.R14;
+                case Rn.R15:
+                case Rn.R15D:
+                case Rn.R15W:
+                case Rn.R15B: return Rn.R15;
+
+                case Rn.MM0:
+                case Rn.MM1:
+                case Rn.MM2:
+                case Rn.MM3:
+                case Rn.MM4:
+                case Rn.MM5:
+                case Rn.MM6:
+                case Rn.MM7:
+                case Rn.XMM0:
+                    break;
+                case Rn.XMM1:
+                    break;
+                case Rn.XMM2:
+                    break;
+                case Rn.XMM3:
+                    break;
+                case Rn.XMM4:
+                    break;
+                case Rn.XMM5:
+                    break;
+                case Rn.XMM6:
+                    break;
+                case Rn.XMM7:
+                    break;
+                case Rn.XMM8:
+                    break;
+                case Rn.XMM9:
+                    break;
+                case Rn.XMM10:
+                    break;
+                case Rn.XMM11:
+                    break;
+                case Rn.XMM12:
+                    break;
+                case Rn.XMM13:
+                    break;
+                case Rn.XMM14:
+                    break;
+                case Rn.XMM15:
+                    break;
+                case Rn.XMM16:
+                    break;
+                case Rn.XMM17:
+                    break;
+                case Rn.XMM18:
+                    break;
+                case Rn.XMM19:
+                    break;
+                case Rn.XMM20:
+                    break;
+                case Rn.XMM21:
+                    break;
+                case Rn.XMM22:
+                    break;
+                case Rn.XMM23:
+                    break;
+                case Rn.XMM24:
+                    break;
+                case Rn.XMM25:
+                    break;
+                case Rn.XMM26:
+                    break;
+                case Rn.XMM27:
+                    break;
+                case Rn.XMM28:
+                    break;
+                case Rn.XMM29:
+                    break;
+                case Rn.XMM30:
+                    break;
+                case Rn.XMM31:
+                    break;
+                case Rn.YMM0:
+                    break;
+                case Rn.YMM1:
+                    break;
+                case Rn.YMM2:
+                    break;
+                case Rn.YMM3:
+                    break;
+                case Rn.YMM4:
+                    break;
+                case Rn.YMM5:
+                    break;
+                case Rn.YMM6:
+                    break;
+                case Rn.YMM7:
+                    break;
+                case Rn.YMM8:
+                    break;
+                case Rn.YMM9:
+                    break;
+                case Rn.YMM10:
+                    break;
+                case Rn.YMM11:
+                    break;
+                case Rn.YMM12:
+                    break;
+                case Rn.YMM13:
+                    break;
+                case Rn.YMM14:
+                    break;
+                case Rn.YMM15:
+                    break;
+                case Rn.YMM16:
+                    break;
+                case Rn.YMM17:
+                    break;
+                case Rn.YMM18:
+                    break;
+                case Rn.YMM19:
+                    break;
+                case Rn.YMM20:
+                    break;
+                case Rn.YMM21:
+                    break;
+                case Rn.YMM22:
+                    break;
+                case Rn.YMM23:
+                    break;
+                case Rn.YMM24:
+                    break;
+                case Rn.YMM25:
+                    break;
+                case Rn.YMM26:
+                    break;
+                case Rn.YMM27:
+                    break;
+                case Rn.YMM28:
+                    break;
+                case Rn.YMM29:
+                    break;
+                case Rn.YMM30:
+                    break;
+                case Rn.YMM31:
+                    break;
+                case Rn.ZMM0:
+                    break;
+                case Rn.ZMM1:
+                    break;
+                case Rn.ZMM2:
+                    break;
+                case Rn.ZMM3:
+                    break;
+                case Rn.ZMM4:
+                    break;
+                case Rn.ZMM5:
+                    break;
+                case Rn.ZMM6:
+                    break;
+                case Rn.ZMM7:
+                    break;
+                case Rn.ZMM8:
+                    break;
+                case Rn.ZMM9:
+                    break;
+                case Rn.ZMM10:
+                    break;
+                case Rn.ZMM11:
+                    break;
+                case Rn.ZMM12:
+                    break;
+                case Rn.ZMM13:
+                    break;
+                case Rn.ZMM14:
+                    break;
+                case Rn.ZMM15:
+                    break;
+                case Rn.ZMM16:
+                    break;
+                case Rn.ZMM17:
+                    break;
+                case Rn.ZMM18:
+                    break;
+                case Rn.ZMM19:
+                    break;
+                case Rn.ZMM20:
+                    break;
+                case Rn.ZMM21:
+                    break;
+                case Rn.ZMM22:
+                    break;
+                case Rn.ZMM23:
+                    break;
+                case Rn.ZMM24:
+                    break;
+                case Rn.ZMM25:
+                    break;
+                case Rn.ZMM26:
+                    break;
+                case Rn.ZMM27:
+                    break;
+                case Rn.ZMM28:
+                    break;
+                case Rn.ZMM29:
+                    break;
+                case Rn.ZMM30:
+                    break;
+                case Rn.ZMM31:
+                    break;
+                case Rn.K0:
+                    break;
+                case Rn.K1:
+                    break;
+                case Rn.K2:
+                    break;
+                case Rn.K3:
+                    break;
+                case Rn.K4:
+                    break;
+                case Rn.K5:
+                    break;
+                case Rn.K6:
+                    break;
+                case Rn.K7:
+                    break;
+                case Rn.CS:
+                    break;
+                case Rn.DS:
+                    break;
+                case Rn.ES:
+                    break;
+                case Rn.SS:
+                    break;
+                case Rn.FS:
+                    break;
+                case Rn.GS:
+                    break;
+                case Rn.CR0:
+                    break;
+                case Rn.CR1:
+                    break;
+                case Rn.CR2:
+                    break;
+                case Rn.CR3:
+                    break;
+                case Rn.CR4:
+                    break;
+                case Rn.CR5:
+                    break;
+                case Rn.CR6:
+                    break;
+                case Rn.CR7:
+                    break;
+                case Rn.CR8:
+                    break;
+                case Rn.DR0:
+                    break;
+                case Rn.DR1:
+                    break;
+                case Rn.DR2:
+                    break;
+                case Rn.DR3:
+                    break;
+                case Rn.DR4:
+                    break;
+                case Rn.DR5:
+                    break;
+                case Rn.DR6:
+                    break;
+                case Rn.DR7:
+                    break;
+                case Rn.BND0:
+                    break;
+                case Rn.BND1:
+                    break;
+                case Rn.BND2:
+                    break;
+                case Rn.BND3:
+                    break;
+                default:
+                    break;
+            }
+
+            return Rn.NOREG;
+        }
 
         #region Register Classifications
         public static bool IsOpmaskRegister(Rn rn) {

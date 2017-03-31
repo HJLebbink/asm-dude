@@ -72,8 +72,8 @@ namespace AsmDude.OptionsPage {
         #region Syntax Highlighting
 
         public bool SyntaxHighlighting_On {
-            get { return this.syntaxHighlighting_On_UI.IsChecked ?? false; }
-            set { this.syntaxHighlighting_On_UI.IsChecked = value; }
+            get { return this.SyntaxHighlighting_On_UI.IsChecked ?? false; }
+            set { this.SyntaxHighlighting_On_UI.IsChecked = value; }
         }
 
         public AssemblerEnum UsedAssembler {
@@ -186,27 +186,32 @@ namespace AsmDude.OptionsPage {
         #endregion Syntax Highlighting
 
         #region Keyword Highlighting
-        public bool KeywordHighlight_On {
-            get { return this.useKeywordHighlighting_UI.IsChecked ?? false; }
-            set { this.useKeywordHighlighting_UI.IsChecked = value; }
+        public bool KeywordHighlighting_BackgroundColor_On {
+            get { return this.KeywordHighlighting_BackgroundColor_On_UI.IsChecked ?? false; }
+            set { this.KeywordHighlighting_BackgroundColor_On_UI.IsChecked = value; }
         }
-        public System.Drawing.Color KeywordHighlight_backgroundColor {
+        public System.Drawing.Color KeywordHighlighting_BackgroundColor {
             get {
-                return (this.backgroundColor_UI.SelectedColor.HasValue)
-                    ? AsmDudeToolsStatic.ConvertColor(this.backgroundColor_UI.SelectedColor.Value)
+                return (this.KeywordHighling_BackgroundColor_UI.SelectedColor.HasValue)
+                    ? AsmDudeToolsStatic.ConvertColor(this.KeywordHighling_BackgroundColor_UI.SelectedColor.Value)
                     : System.Drawing.Color.Cyan;
             }
-            set { this.backgroundColor_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
+            set { this.KeywordHighling_BackgroundColor_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
-        public System.Drawing.Color KeywordHighlight_fontColor
+        public bool KeywordHighlighting_BorderColor_On
+        {
+            get { return this.KeywordHighlighting_BorderColor_On_UI.IsChecked ?? false; }
+            set { this.KeywordHighlighting_BorderColor_On_UI.IsChecked = value; }
+        }
+        public System.Drawing.Color KeywordHighlighting_BorderColor
         {
             get
             {
-                return (this.fontColor_UI.SelectedColor.HasValue) 
-                    ? AsmDudeToolsStatic.ConvertColor(this.fontColor_UI.SelectedColor.Value)
+                return (this.KeywordHighling_BorderColor_UI.SelectedColor.HasValue) 
+                    ? AsmDudeToolsStatic.ConvertColor(this.KeywordHighling_BorderColor_UI.SelectedColor.Value)
                     : System.Drawing.Color.Cyan;
             }
-            set { this.fontColor_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
+            set { this.KeywordHighling_BorderColor_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
         #endregion
 

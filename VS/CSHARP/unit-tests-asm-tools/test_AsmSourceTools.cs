@@ -249,9 +249,9 @@ namespace unit_tests {
         }
         [TestMethod]
         public void Test_AsmSourceTools_OperandType() {
-            foreach (Ot x1 in Enum.GetValues(typeof(Ot))) {
-                foreach (Ot x2 in Enum.GetValues(typeof(Ot))) {
-                    (Ot, Ot) t = AsmSourceTools.SplitOt(AsmSourceTools.MergeOt(x1, x2));
+            foreach (Ot1 x1 in Enum.GetValues(typeof(Ot1))) {
+                foreach (Ot1 x2 in Enum.GetValues(typeof(Ot1))) {
+                    (Ot1, Ot1) t = AsmSourceTools.SplitOt(AsmSourceTools.MergeOt(x1, x2));
                     Assert.AreEqual(t.Item1, x1, "");
                     Assert.AreEqual(t.Item2, x2, "");
                 }

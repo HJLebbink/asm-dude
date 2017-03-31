@@ -39,23 +39,22 @@ namespace AsmDude.HighlightWord
     [Export(typeof(EditorFormatDefinition))]
     [Name("AsmDude.HighlightWordFormatDefinition")]
     [UserVisible(true)]
-    [Order(After = Priority.High)] //set the priority to be after the default classifiers
     internal class HighlightWordFormatDefinition : MarkerFormatDefinition
     {
         public HighlightWordFormatDefinition()
         {
-            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: Entering constructor for: {0}", this.ToString()));
+            //Debug.WriteLine("INFO: Entering constructor for: {0}", this.ToString());
             this.DisplayName = "AsmDude - Highlight Word";
 
-
-            this.BackgroundColor = AsmDudeToolsStatic.ConvertColor(Settings.Default.KeywordHighlight_BackgroundColor);
-
-            System.Windows.Media.Color c = AsmDudeToolsStatic.ConvertColor(Settings.Default.KeywordHighlight_FontColor);
-            //this.ForegroundBrush = new SolidColorBrush(c);
-            this.Fill = new SolidColorBrush(c);
-            //AsmDudeToolsStatic.ConvertColor(Settings.Default.KeywordHighlight_FontColor);
-
-            this.ZOrder = 5;
+            if (Settings.Default.KeywordHighlighting_BackgroundColor_On)
+            {
+                this.BackgroundColor = AsmDudeToolsStatic.ConvertColor(Settings.Default.KeywordHighlighting_BackgroundColor);
+            }
+            if (Settings.Default.KeywordHighlighting_BorderColor_On)
+            {
+                this.Border = new Pen(new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.KeywordHighlighting_BorderColor)), 1);
+            }
+            this.ZOrder = 5; // do not know where the ZOrder is useful for
         }
     }
 
@@ -121,7 +120,7 @@ namespace AsmDude.HighlightWord
         /// </summary>
         private void ViewLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
         {
-            if (Settings.Default.KeywordHighlight_On)
+            if (Settings.Default.KeywordHighlighting_BackgroundColor_On || Settings.Default.KeywordHighlighting_BorderColor_On)
             {
                 // If a new snapshot wasn't generated, then skip this layout
                 if (e.NewViewState.EditSnapshot != e.OldViewState.EditSnapshot)
@@ -136,7 +135,7 @@ namespace AsmDude.HighlightWord
         /// </summary>
         private void CaretPositionChanged(object sender, CaretPositionChangedEventArgs e)
         {
-            if (Settings.Default.KeywordHighlight_On)
+            if (Settings.Default.KeywordHighlighting_BackgroundColor_On || Settings.Default.KeywordHighlighting_BorderColor_On)
             {
                 UpdateAtCaretPosition(e.NewPosition);
             }

@@ -27,7 +27,7 @@ namespace AsmTools
     public class Operand
     {
         private readonly string _str;
-        private readonly Ot _type;
+        private readonly Ot1 _type;
         private readonly Rn _rn;
         private ulong _imm;
         private int _nBits;
@@ -58,7 +58,7 @@ namespace AsmTools
             (bool, Rn, int) t0 = RegisterTools.ToRn(token2);
             if (t0.Item1)
             {
-                this._type = Ot.reg;
+                this._type = Ot1.reg;
                 this._rn = t0.Item2;
                 this._nBits = t0.Item3;
             }
@@ -67,7 +67,7 @@ namespace AsmTools
                 (bool valid, ulong value, int nBits) t1 = AsmSourceTools.ToConstant(token2);
                 if (t1.valid)
                 {
-                    this._type = Ot.imm;
+                    this._type = Ot1.imm;
                     this._imm = t1.value;
                     this._nBits = t1.nBits;
                 }
@@ -76,32 +76,33 @@ namespace AsmTools
                     (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits) t2 = AsmSourceTools.ParseMemOperand(token2);
                     if (t2.valid)
                     {
-                        this._type = Ot.mem;
+                        this._type = Ot1.mem;
                         this._mem = (t2.baseReg, t2.indexReg, t2.scale, t2.displacement);
                         this._nBits = t2.nBits;
                     }
                     else
                     {
-                        this._type = Ot.UNKNOWN;
+                        this._type = Ot1.UNKNOWN;
                         this._nBits = -1;
                     }
                 }
             }
         }
 
-        public Ot Type { get { return this._type; } }
-        public bool IsReg { get { return this._type == Ot.reg; } }
-        public bool IsMem { get { return this._type == Ot.mem; } }
-        public bool IsImm { get { return this._type == Ot.imm; } }
+        public Ot1 Type { get { return this._type; } }
+        public bool IsReg { get { return this._type == Ot1.reg; } }
+        public bool IsMem { get { return this._type == Ot1.mem; } }
+        public bool IsImm { get { return this._type == Ot1.imm; } }
 
         public Rn Rn { get { return this._rn; } }
         public ulong Imm { get { return this._imm; } }
         
         /// <summary> Return tup with BaseReg, IndexReg, Scale and Displacement. Offset = Base + (Index * Scale) + Displacement </summary>
-        public (Rn, Rn, int, long) Mem { get { return this._mem; } }
+        public (Rn baseReg, Rn indexReg, int scale, long displacement) Mem { get { return this._mem; } }
 
         public int NBits
         {
+            //TODO return uint instead of int
             get { return this._nBits; }
             set { this._nBits = value; }
         }

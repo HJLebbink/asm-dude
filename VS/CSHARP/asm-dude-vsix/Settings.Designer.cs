@@ -206,24 +206,24 @@ namespace AsmDude {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool KeywordHighlight_On {
+        public bool KeywordHighlighting_BackgroundColor_On {
             get {
-                return ((bool)(this["KeywordHighlight_On"]));
+                return ((bool)(this["KeywordHighlighting_BackgroundColor_On"]));
             }
             set {
-                this["KeywordHighlight_On"] = value;
+                this["KeywordHighlighting_BackgroundColor_On"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Yellow")]
-        public global::System.Drawing.Color KeywordHighlight_BackgroundColor {
+        public global::System.Drawing.Color KeywordHighlighting_BackgroundColor {
             get {
-                return ((global::System.Drawing.Color)(this["KeywordHighlight_BackgroundColor"]));
+                return ((global::System.Drawing.Color)(this["KeywordHighlighting_BackgroundColor"]));
             }
             set {
-                this["KeywordHighlight_BackgroundColor"] = value;
+                this["KeywordHighlighting_BackgroundColor"] = value;
             }
         }
         
@@ -266,48 +266,48 @@ namespace AsmDude {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool IntelliSenseShowUndefinedLabels {
+        public bool IntelliSense_Show_UndefinedLabels {
             get {
-                return ((bool)(this["IntelliSenseShowUndefinedLabels"]));
+                return ((bool)(this["IntelliSense_Show_UndefinedLabels"]));
             }
             set {
-                this["IntelliSenseShowUndefinedLabels"] = value;
+                this["IntelliSense_Show_UndefinedLabels"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool IntelliSenseShowClashingLabels {
+        public bool IntelliSense_Show_ClashingLabels {
             get {
-                return ((bool)(this["IntelliSenseShowClashingLabels"]));
+                return ((bool)(this["IntelliSense_Show_ClashingLabels"]));
             }
             set {
-                this["IntelliSenseShowClashingLabels"] = value;
+                this["IntelliSense_Show_ClashingLabels"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool IntelliSenseDecorateUndefinedLabels {
+        public bool IntelliSense_Decorate_UndefinedLabels {
             get {
-                return ((bool)(this["IntelliSenseDecorateUndefinedLabels"]));
+                return ((bool)(this["IntelliSense_Decorate_UndefinedLabels"]));
             }
             set {
-                this["IntelliSenseDecorateUndefinedLabels"] = value;
+                this["IntelliSense_Decorate_UndefinedLabels"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool IntelliSenseDecorateClashingLabels {
+        public bool IntelliSense_Decorate_ClashingLabels {
             get {
-                return ((bool)(this["IntelliSenseDecorateClashingLabels"]));
+                return ((bool)(this["IntelliSense_Decorate_ClashingLabels"]));
             }
             set {
-                this["IntelliSenseDecorateClashingLabels"] = value;
+                this["IntelliSense_Decorate_ClashingLabels"] = value;
             }
         }
         
@@ -986,24 +986,24 @@ namespace AsmDude {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool IntelliSenseShowUndefinedIncludes {
+        public bool IntelliSense_Show_UndefinedIncludes {
             get {
-                return ((bool)(this["IntelliSenseShowUndefinedIncludes"]));
+                return ((bool)(this["IntelliSense_Show_UndefinedIncludes"]));
             }
             set {
-                this["IntelliSenseShowUndefinedIncludes"] = value;
+                this["IntelliSense_Show_UndefinedIncludes"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Black")]
-        public global::System.Drawing.Color KeywordHighlight_FontColor {
+        [global::System.Configuration.DefaultSettingValueAttribute("Red")]
+        public global::System.Drawing.Color KeywordHighlighting_BorderColor {
             get {
-                return ((global::System.Drawing.Color)(this["KeywordHighlight_FontColor"]));
+                return ((global::System.Drawing.Color)(this["KeywordHighlighting_BorderColor"]));
             }
             set {
-                this["KeywordHighlight_FontColor"] = value;
+                this["KeywordHighlighting_BorderColor"] = value;
             }
         }
         
@@ -1076,6 +1076,18 @@ namespace AsmDude {
             }
             set {
                 this["PerformanceInfo_KnightsLanding_On"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool KeywordHighlighting_BorderColor_On {
+            get {
+                return ((bool)(this["KeywordHighlighting_BorderColor_On"]));
+            }
+            set {
+                this["KeywordHighlighting_BorderColor_On"] = value;
             }
         }
     }

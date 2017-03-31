@@ -87,9 +87,10 @@ namespace AsmDude.OptionsPage
             #endregion
 
             #region Keyword Highlighting
-            this._asmDudeOptionsPageUI.KeywordHighlight_On = Settings.Default.KeywordHighlight_On;
-            this._asmDudeOptionsPageUI.KeywordHighlight_backgroundColor = Settings.Default.KeywordHighlight_BackgroundColor;
-            this._asmDudeOptionsPageUI.KeywordHighlight_fontColor = Settings.Default.KeywordHighlight_FontColor;
+            this._asmDudeOptionsPageUI.KeywordHighlighting_BackgroundColor_On = Settings.Default.KeywordHighlighting_BackgroundColor_On;
+            this._asmDudeOptionsPageUI.KeywordHighlighting_BackgroundColor = Settings.Default.KeywordHighlighting_BackgroundColor;
+            this._asmDudeOptionsPageUI.KeywordHighlighting_BorderColor_On = Settings.Default.KeywordHighlighting_BorderColor_On;
+            this._asmDudeOptionsPageUI.KeywordHighlighting_BorderColor = Settings.Default.KeywordHighlighting_BorderColor;
             #endregion
 
             #region Latency and Throughput Information (Performance Info)
@@ -220,10 +221,10 @@ namespace AsmDude.OptionsPage
             #endregion
 
             #region Intellisense
-            this._asmDudeOptionsPageUI.ShowUndefinedLabels = Settings.Default.IntelliSenseShowUndefinedLabels;
-            this._asmDudeOptionsPageUI.ShowClashingLabels = Settings.Default.IntelliSenseShowClashingLabels;
-            this._asmDudeOptionsPageUI.DecorateUndefinedLabels = Settings.Default.IntelliSenseDecorateUndefinedLabels;
-            this._asmDudeOptionsPageUI.DecorateClashingLabels = Settings.Default.IntelliSenseDecorateClashingLabels;
+            this._asmDudeOptionsPageUI.ShowUndefinedLabels = Settings.Default.IntelliSense_Show_UndefinedLabels;
+            this._asmDudeOptionsPageUI.ShowClashingLabels = Settings.Default.IntelliSense_Show_ClashingLabels;
+            this._asmDudeOptionsPageUI.DecorateUndefinedLabels = Settings.Default.IntelliSense_Decorate_UndefinedLabels;
+            this._asmDudeOptionsPageUI.DecorateClashingLabels = Settings.Default.IntelliSense_Decorate_ClashingLabels;
             #endregion
         }
 
@@ -344,17 +345,24 @@ namespace AsmDude.OptionsPage
             #endregion
 
             #region Keyword Highlighting
-            if (Settings.Default.KeywordHighlight_On != this._asmDudeOptionsPageUI.KeywordHighlight_On) {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: KeywordHighlight_On=" + this._asmDudeOptionsPageUI.KeywordHighlight_On);
-                changed = true;
-            }
-            if (Settings.Default.KeywordHighlight_BackgroundColor.ToArgb() != this._asmDudeOptionsPageUI.KeywordHighlight_backgroundColor.ToArgb()) {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: KeywordHighlight_BackgroundColor=" + this._asmDudeOptionsPageUI.KeywordHighlight_backgroundColor);
-                changed = true;
-            }
-            if (Settings.Default.KeywordHighlight_FontColor.ToArgb() != this._asmDudeOptionsPageUI.KeywordHighlight_fontColor.ToArgb())
+            if (Settings.Default.KeywordHighlighting_BackgroundColor_On != this._asmDudeOptionsPageUI.KeywordHighlighting_BackgroundColor_On)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: KeywordHighlight_FontColor=" + this._asmDudeOptionsPageUI.KeywordHighlight_fontColor);
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: KeywordHighlighting_BackgroundColor_On=" + this._asmDudeOptionsPageUI.KeywordHighlighting_BackgroundColor_On);
+                changed = true;
+            }
+            if (Settings.Default.KeywordHighlighting_BackgroundColor.ToArgb() != this._asmDudeOptionsPageUI.KeywordHighlighting_BackgroundColor.ToArgb())
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: KeywordHighlighting_BackgroundColor=" + this._asmDudeOptionsPageUI.KeywordHighlighting_BackgroundColor);
+                changed = true;
+            }
+            if (Settings.Default.KeywordHighlighting_BorderColor_On != this._asmDudeOptionsPageUI.KeywordHighlighting_BorderColor_On)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: KeywordHighlighting_BorderColor_On=" + this._asmDudeOptionsPageUI.KeywordHighlighting_BackgroundColor_On);
+                changed = true;
+            }
+            if (Settings.Default.KeywordHighlighting_BorderColor.ToArgb() != this._asmDudeOptionsPageUI.KeywordHighlighting_BorderColor.ToArgb())
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: KeywordHighlighting_BorderColor=" + this._asmDudeOptionsPageUI.KeywordHighlighting_BorderColor);
                 changed = true;
             }
             #endregion
@@ -622,19 +630,19 @@ namespace AsmDude.OptionsPage
              #endregion
 
             #region Intellisense
-            if (Settings.Default.IntelliSenseShowUndefinedLabels != this._asmDudeOptionsPageUI.ShowUndefinedLabels) {
+            if (Settings.Default.IntelliSense_Show_UndefinedLabels != this._asmDudeOptionsPageUI.ShowUndefinedLabels) {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: showUndefinedLabels=" + this._asmDudeOptionsPageUI.ShowUndefinedLabels);
                 changed = true;
             }
-            if (Settings.Default.IntelliSenseShowClashingLabels != this._asmDudeOptionsPageUI.ShowClashingLabels) {
+            if (Settings.Default.IntelliSense_Show_ClashingLabels != this._asmDudeOptionsPageUI.ShowClashingLabels) {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: showClashingLabels=" + this._asmDudeOptionsPageUI.ShowClashingLabels);
                 changed = true;
             }
-            if (Settings.Default.IntelliSenseDecorateUndefinedLabels != this._asmDudeOptionsPageUI.DecorateUndefinedLabels) {
+            if (Settings.Default.IntelliSense_Decorate_UndefinedLabels != this._asmDudeOptionsPageUI.DecorateUndefinedLabels) {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: decorateUndefinedLabels=" + this._asmDudeOptionsPageUI.DecorateUndefinedLabels);
                 changed = true;
             }
-            if (Settings.Default.IntelliSenseDecorateClashingLabels != this._asmDudeOptionsPageUI.DecorateClashingLabels) {
+            if (Settings.Default.IntelliSense_Decorate_ClashingLabels != this._asmDudeOptionsPageUI.DecorateClashingLabels) {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: decorateClashingLabels=" + this._asmDudeOptionsPageUI.DecorateClashingLabels);
                 changed = true;
             }
@@ -757,18 +765,27 @@ namespace AsmDude.OptionsPage
             #endregion
 
             #region Keyword Highlighting
-            if (Settings.Default.KeywordHighlight_On != this._asmDudeOptionsPageUI.KeywordHighlight_On) {
-                Settings.Default.KeywordHighlight_On = this._asmDudeOptionsPageUI.KeywordHighlight_On;
-                changed = true;
-            }
-            if (Settings.Default.KeywordHighlight_BackgroundColor.ToArgb() != this._asmDudeOptionsPageUI.KeywordHighlight_backgroundColor.ToArgb()) {
-                Settings.Default.KeywordHighlight_BackgroundColor = this._asmDudeOptionsPageUI.KeywordHighlight_backgroundColor;
+            if (Settings.Default.KeywordHighlighting_BackgroundColor_On != this._asmDudeOptionsPageUI.KeywordHighlighting_BackgroundColor_On)
+            {
+                Settings.Default.KeywordHighlighting_BackgroundColor_On = this._asmDudeOptionsPageUI.KeywordHighlighting_BackgroundColor_On;
                 changed = true;
                 restartNeeded = true;
             }
-            if (Settings.Default.KeywordHighlight_FontColor.ToArgb() != this._asmDudeOptionsPageUI.KeywordHighlight_fontColor.ToArgb())
+            if (Settings.Default.KeywordHighlighting_BackgroundColor.ToArgb() != this._asmDudeOptionsPageUI.KeywordHighlighting_BackgroundColor.ToArgb())
             {
-                Settings.Default.KeywordHighlight_FontColor = this._asmDudeOptionsPageUI.KeywordHighlight_fontColor;
+                Settings.Default.KeywordHighlighting_BackgroundColor = this._asmDudeOptionsPageUI.KeywordHighlighting_BackgroundColor;
+                changed = true;
+                restartNeeded = true;
+            }
+            if (Settings.Default.KeywordHighlighting_BorderColor_On != this._asmDudeOptionsPageUI.KeywordHighlighting_BorderColor_On)
+            {
+                Settings.Default.KeywordHighlighting_BorderColor_On = this._asmDudeOptionsPageUI.KeywordHighlighting_BorderColor_On;
+                changed = true;
+                restartNeeded = true;
+            }
+            if (Settings.Default.KeywordHighlighting_BorderColor.ToArgb() != this._asmDudeOptionsPageUI.KeywordHighlighting_BorderColor.ToArgb())
+            {
+                Settings.Default.KeywordHighlighting_BorderColor = this._asmDudeOptionsPageUI.KeywordHighlighting_BorderColor;
                 changed = true;
                 restartNeeded = true;
             }
@@ -1036,20 +1053,20 @@ namespace AsmDude.OptionsPage
             #endregion
 
             #region Intellisense
-            if (Settings.Default.IntelliSenseShowUndefinedLabels != this._asmDudeOptionsPageUI.ShowUndefinedLabels) {
-                Settings.Default.IntelliSenseShowUndefinedLabels = this._asmDudeOptionsPageUI.ShowUndefinedLabels;
+            if (Settings.Default.IntelliSense_Show_UndefinedLabels != this._asmDudeOptionsPageUI.ShowUndefinedLabels) {
+                Settings.Default.IntelliSense_Show_UndefinedLabels = this._asmDudeOptionsPageUI.ShowUndefinedLabels;
                 changed = true;
             }
-            if (Settings.Default.IntelliSenseShowClashingLabels != this._asmDudeOptionsPageUI.ShowClashingLabels) {
-                Settings.Default.IntelliSenseShowClashingLabels = this._asmDudeOptionsPageUI.ShowClashingLabels;
+            if (Settings.Default.IntelliSense_Show_ClashingLabels != this._asmDudeOptionsPageUI.ShowClashingLabels) {
+                Settings.Default.IntelliSense_Show_ClashingLabels = this._asmDudeOptionsPageUI.ShowClashingLabels;
                 changed = true;
             }
-            if (Settings.Default.IntelliSenseDecorateUndefinedLabels != this._asmDudeOptionsPageUI.DecorateUndefinedLabels) {
-                Settings.Default.IntelliSenseDecorateUndefinedLabels = this._asmDudeOptionsPageUI.DecorateUndefinedLabels;
+            if (Settings.Default.IntelliSense_Decorate_UndefinedLabels != this._asmDudeOptionsPageUI.DecorateUndefinedLabels) {
+                Settings.Default.IntelliSense_Decorate_UndefinedLabels = this._asmDudeOptionsPageUI.DecorateUndefinedLabels;
                 changed = true;
             }
-            if (Settings.Default.IntelliSenseDecorateClashingLabels != this._asmDudeOptionsPageUI.DecorateClashingLabels) {
-                Settings.Default.IntelliSenseDecorateClashingLabels = this._asmDudeOptionsPageUI.DecorateClashingLabels;
+            if (Settings.Default.IntelliSense_Decorate_ClashingLabels != this._asmDudeOptionsPageUI.DecorateClashingLabels) {
+                Settings.Default.IntelliSense_Decorate_ClashingLabels = this._asmDudeOptionsPageUI.DecorateClashingLabels;
                 changed = true;
             }
             #endregion

@@ -47,10 +47,10 @@
     <Setting Name="AsmDoc_On" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="KeywordHighlight_On" Type="System.Boolean" Scope="User">
+    <Setting Name="KeywordHighlighting_BackgroundColor_On" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="KeywordHighlight_BackgroundColor" Type="System.Drawing.Color" Scope="User">
+    <Setting Name="KeywordHighlighting_BackgroundColor" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">Yellow</Value>
     </Setting>
     <Setting Name="CodeFolding_IsDefaultCollapsed" Type="System.Boolean" Scope="User">
@@ -62,16 +62,16 @@
     <Setting Name="useAssemblerNasm" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="IntelliSenseShowUndefinedLabels" Type="System.Boolean" Scope="User">
+    <Setting Name="IntelliSense_Show_UndefinedLabels" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="IntelliSenseShowClashingLabels" Type="System.Boolean" Scope="User">
+    <Setting Name="IntelliSense_Show_ClashingLabels" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="IntelliSenseDecorateUndefinedLabels" Type="System.Boolean" Scope="User">
+    <Setting Name="IntelliSense_Decorate_UndefinedLabels" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="IntelliSenseDecorateClashingLabels" Type="System.Boolean" Scope="User">
+    <Setting Name="IntelliSense_Decorate_ClashingLabels" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ARCH_8086" Type="System.Boolean" Scope="User">
@@ -242,11 +242,11 @@
     <Setting Name="ARCH_AES" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="IntelliSenseShowUndefinedIncludes" Type="System.Boolean" Scope="User">
+    <Setting Name="IntelliSense_Show_UndefinedIncludes" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="KeywordHighlight_FontColor" Type="System.Drawing.Color" Scope="User">
-      <Value Profile="(Default)">Black</Value>
+    <Setting Name="KeywordHighlighting_BorderColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Red</Value>
     </Setting>
     <Setting Name="PerformanceInfo_SandyBridge_On" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -265,6 +265,9 @@
     </Setting>
     <Setting Name="PerformanceInfo_KnightsLanding_On" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="KeywordHighlighting_BorderColor_On" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>
