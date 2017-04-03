@@ -93,6 +93,7 @@
     <Compile Include="Mnemonic.cs" />
     <Compile Include="Operand.cs" />
     <Compile Include="OperandType.cs" />
+    <Compile Include="Parameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegisterName.cs" />
     <Compile Include="RegisterTools.cs" />

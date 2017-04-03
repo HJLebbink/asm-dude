@@ -34,7 +34,7 @@ namespace AsmTools
         private readonly (Rn baseReg, Rn indexReg, int scale, long displacement) _mem;
 
         /// <summary>constructor</summary>
-        public Operand(string token)
+        public Operand(string token, AsmParameters p = null)
         {
             //TODO: properly handle optional elements {K}{Z} {AES}{ER}
             string token2 = token.

@@ -84,6 +84,16 @@ namespace AsmTools {
         ///and YMM registers instead of only to ZMM registers.
         AVX512VL,
 
+        AVX512IFMA,
+
+        AVX512VBMI,
+
+        AVX512_VPOPCNTDQ,
+
+        AVX512_4VNNIW,
+
+        AVX512_4FMAPS,
+
 
         #region Misc Intel
         /// <summary>Multi-Precision Add-Carry Instruction Extensions</summary>
@@ -206,6 +216,12 @@ namespace AsmTools {
                 case "AVX512CD": return Arch.AVX512CD;
                 case "AVX512PF": return Arch.AVX512PF;
 
+                case "AVX512IFMA": return Arch.AVX512IFMA;
+                case "AVX512VBMI": return Arch.AVX512VBMI;
+                case "AVX512_VPOPCNTDQ": return Arch.AVX512_VPOPCNTDQ;
+                case "AVX512_4VNNIW": return Arch.AVX512_4VNNIW;
+                case "AVX512_4FMAPS": return Arch.AVX512_4FMAPS;
+
                 case "HLE": return Arch.HLE;
                 case "BMI1": return Arch.BMI1;
                 case "BMI2": return Arch.BMI2;
@@ -274,6 +290,13 @@ namespace AsmTools {
                 case Arch.AVX512BW: return "Instruction set AVX512 Byte and Word (Intel Xeon)";
                 case Arch.AVX512DQ: return "Instruction set AVX512 Doubleword and QuadWord (Intel Xeon)";
                 case Arch.AVX512VL: return "Instruction set AVX512 Vector Length Extensions (Intel Xeon)";
+
+                case Arch.AVX512IFMA: return "";
+                case Arch.AVX512VBMI: return "";
+                case Arch.AVX512_VPOPCNTDQ: return "";
+                case Arch.AVX512_4VNNIW: return "";
+                case Arch.AVX512_4FMAPS: return "";
+
                 case Arch.ADX: return "Multi-Precision Add-Carry Instruction Extension";
                 case Arch.AES: return "Advanced Encryption Standard Extension";
                 case Arch.VMX: return "Virtual Machine Extension";

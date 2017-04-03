@@ -2220,11 +2220,26 @@ namespace AsmTools {
         /// <summary>CYRIXM</summary>
         RDSHR,
         #endregion
-        PPMULHRWA
 
+
+        PPMULHRWA,
+
+
+        /// <summary>Dot Product of Signed Words with Dword Accumulation (4-iterations)</summary>
+        VP4DPWSSD,
+        /// <summary>Dot Product of Signed Words with Dword Accumulation and Saturation (4-iterations)</summary>
+        VP4DPWSSDS,
+        /// <summary>Packed Single-Precision Floating-Point Fused Multiply-Add (4-iterations)</summary>
+        V4FMADDPS,
+        /// <summary>Packed Single-Precision Floating-Point Fused Multiply-Add (4-iterations)</summary>
+        V4FNMADDPS,
+        /// <summary>Scalar Single-Precision Floating-Point Fused Multiply-Add (4-iterations)</summary>
+        V4FMADDSS,
+        /// <summary>Scalar Single-Precision Floating-Point Fused Multiply-Add (4-iterations)</summary>
+        V4FNMADDSS
     }
 
-public static partial class AsmSourceTools {
+    public static partial class AsmSourceTools {
 
         public static bool IsJump(Mnemonic mnemonic) {
             switch (mnemonic) {
@@ -4141,6 +4156,14 @@ public static partial class AsmSourceTools {
                 case "PMULHRW": return Mnemonic.PMULHRW;
                 case "RDSHR": return Mnemonic.RDSHR;
                 case "PPMULHRWA": return Mnemonic.PPMULHRWA;
+
+                case "VP4DPWSSD": return Mnemonic.VP4DPWSSD;
+                case "VP4DPWSSDS": return Mnemonic.VP4DPWSSDS;
+                case "V4FMADDPS": return Mnemonic.V4FMADDPS;
+                case "V4FNMADDPS": return Mnemonic.V4FNMADDPS;
+                case "V4FMADDSS": return Mnemonic.V4FMADDSS;
+                case "V4FNMADDSS": return Mnemonic.V4FNMADDSS;
+
                 default:
                     Console.WriteLine("WARNING;parseMnemonic. unknown str=\"" + str + "\".");
                     return Mnemonic.UNKNOWN;
