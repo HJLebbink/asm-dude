@@ -706,9 +706,8 @@ AAM		8086	AAM	ASCII adjust AX after multiply.
 AAM	IMM8	8086	AAM IMM8	Adjust AX after multiply to number base imm8.
 AAS		8086	AAS	ASCII adjust AL after subtraction.
 ;====================================================================
-ADC	AL,IMM8	8086	ADC AL,IMM8	Add with CF imm8 to AL.
-ADC	AX,IMM16	8086	ADC AX,IMM16	Add with CF imm16 to AX.
-ADC	EAX,IMM32	8086	ADC EAX,IMM32	Add with CF imm32 to EAX.
+ADC	R/M8,IMM8	8086	ADC R/M8,IMM8	Add with CF imm8 to r/m8.
+ADC	R/M8,R8	8086	ADC R/M8,R8	Add with CF byte register to r/m8.
 ADC	R/M16,IMM16	8086	ADC R/M16,IMM16	Add with CF imm16 to r/m16.
 ADC	R/M16,IMM8	8086	ADC R/M16,IMM8	Add with CF sign-extended imm8 to r/m16.
 ADC	R/M16,R16	8086	ADC R/M16,R16	Add with CF r16 to r/m16.
@@ -718,17 +717,13 @@ ADC	R/M32,R32	386	ADC R/M32,R32	Add with CF r32 to r/m32.
 ADC	R/M64,IMM32	X64	ADC R/M64,IMM32	Add with CF imm32 sign extended to 64-bits to r/m64.
 ADC	R/M64,IMM8	X64	ADC R/M64,IMM8	Add with CF sign-extended imm8 into r/m64.
 ADC	R/M64,R64	X64	ADC R/M64,R64	Add with CF r64 to r/m64.
-ADC	R/M8,IMM8	8086	ADC R/M8,IMM8	Add with CF imm8 to r/m8.
-ADC	R/M8,R8	8086	ADC R/M8,R8	Add with CF byte register to r/m8.
+ADC	R8,R/M8	8086	ADC R8,R/M8	Add with CF r/m8 to byte register.
 ADC	R16,R/M16	8086	ADC R16,R/M16	Add with CF r/m16 to r16.
 ADC	R32,R/M32	386	ADC R32,R/M32	Add with CF r/m32 to r32.
 ADC	R64,R/M64	X64	ADC R64,R/M64	Add with CF r/m64 to r64.
-ADC	R8,R/M8	8086	ADC R8,R/M8	Add with CF r/m8 to byte register.
-ADC	RAX,IMM32	X64	ADC RAX,IMM32	Add with CF imm32 sign extended to 64-bits to RAX.
 
-ADD	AL,IMM8	8086	ADD AL,IMM8	Add imm8 to AL.
-ADD	AX,IMM16	8086	ADD AX,IMM16	Add imm16 to AX.
-ADD	EAX,IMM32	386	ADD EAX,IMM32	Add imm32 to EAX.
+ADD	R/M8,IMM8	8086	ADD R/M8,IMM8	Add imm8 to r/m8.
+ADD	R/M8,R8	8086	ADD R/M8,R8	Add r8 to r/m8.
 ADD	R/M16,IMM16	8086	ADD R/M16,IMM16	Add imm16 to r/m16.
 ADD	R/M16,IMM8	8086	ADD R/M16,IMM8	Add sign-extended imm8 to r/m16.
 ADD	R/M16,R16	8086	ADD R/M16,R16	Add r16 to r/m16.
@@ -738,16 +733,13 @@ ADD	R/M32,R32	386	ADD R/M32,R32	Add r32 to r/m32.
 ADD	R/M64,IMM32	X64	ADD R/M64,IMM32	Add imm32 sign-extended to 64-bits to r/m64.
 ADD	R/M64,IMM8	X64	ADD R/M64,IMM8	Add sign-extended imm8 to r/m64.
 ADD	R/M64,R64	X64	ADD R/M64,R64	Add r64 to r/m64.
-ADD	R/M8,IMM8	8086	ADD R/M8,IMM8	Add imm8 to r/m8.
-ADD	R/M8,R8	8086	ADD R/M8,R8	Add r8 to r/m8.
+ADD	R8,R/M8	8086	ADD R8,R/M8	Add r/m8 to r8.
 ADD	R16,R/M16	8086	ADD R16,R/M16	Add r/m16 to r16.
 ADD	R32,R/M32	386	ADD R32,R/M32	Add r/m32 to r32.
 ADD	R64,R/M64	X64	ADD R64,R/M64	Add r/m64 to r64.
-ADD	R8,R/M8	8086	ADD R8,R/M8	Add r/m8 to r8.
-ADD	RAX,IMM32	8086	ADD RAX,IMM32	Add imm32 sign-extended to 64-bits to RAX.
-AND	AL,IMM8	8086	AND AL,IMM8	AL AND imm8.
-AND	AX,IMM16	8086	AND AX,IMM16	AX AND imm16.
-AND	EAX,IMM32	386	AND EAX,IMM32	EAX AND imm32.
+
+AND	R/M8,IMM8	8086	AND R/M8,IMM8	r/m8 AND imm8.
+AND	R/M8,R8	8086	AND R/M8,R8	r/m8 AND r8.
 AND	R/M16,IMM16	8086	AND R/M16,IMM16	r/m16 AND imm16.
 AND	R/M16,IMM8	8086	AND R/M16,IMM8	r/m16 AND imm8 (sign-extended).
 AND	R/M16,R16	8086	AND R/M16,R16	r/m16 AND r16.
@@ -757,13 +749,11 @@ AND	R/M32,R32	386	AND R/M32,R32	r/m32 AND r32.
 AND	R/M64,IMM32	X64	AND R/M64,IMM32	r/m64 AND imm32 sign extended to 64-bits.
 AND	R/M64,IMM8	X64	AND R/M64,IMM8	r/m64 AND imm8 (sign-extended).
 AND	R/M64,R64	X64	AND R/M64,R64	r/m64 AND r32.
-AND	R/M8,IMM8	8086	AND R/M8,IMM8	r/m8 AND imm8.
-AND	R/M8,R8	8086	AND R/M8,R8	r/m8 AND r8.
+AND	R8,R/M8	8086	AND R8,R/M8	r8 AND r/m8.
 AND	R16,R/M16	8086	AND R16,R/M16	r16 AND r/m16.
 AND	R32,R/M32	386	AND R32,R/M32	r32 AND r/m32.
 AND	R64,R/M64	X64	AND R64,R/M64	r64 AND r/m64.
-AND	R8,R/M8	8086	AND R8,R/M8	r8 AND r/m8.
-AND	RAX,IMM32	386	AND RAX,IMM32	RAX AND imm32 sign-extended to 64-bits.
+
 ARPL	R/M16,R16	286	ARPL R/M16,R16	Adjust RPL of r/m16 to not less than RPL of r16.
 BOUND	R16,M16&16	186	BOUND R16,M16&16	Check if r16 (array index) is within bounds specified by m16&amp;16.
 BOUND	R32,M32&32	386	BOUND R32,M32&32	Check if r32 (array index) is within bounds specified by M32&amp;32.
@@ -775,6 +765,7 @@ BSR	R32,R/M32	386	BSR R32,R/M32	Bit scan reverse on r/m32.
 BSR	R64,R/M64	X64	BSR R64,R/M64	Bit scan reverse on r/m64.
 BSWAP	R32	486	BSWAP R32	Reverses the byte order of a 32-bit register.
 BSWAP	R64	X64	BSWAP R64	Reverses the byte order of a 64-bit register.
+
 BT	R/M16,IMM8	386	BT R/M16,IMM8	Store selected bit in CF flag.
 BT	R/M16,R16	386	BT R/M16,R16	Store selected bit in CF flag.
 BT	R/M32,IMM8	386	BT R/M32,IMM8	Store selected bit in CF flag.
@@ -787,6 +778,7 @@ BTC	R/M32,IMM8	386	BTC R/M32,IMM8	Store selected bit in CF flag and complement.
 BTC	R/M32,R32	386	BTC R/M32,R32	Store selected bit in CF flag and complement.
 BTC	R/M64,IMM8	X64	BTC R/M64,IMM8	Store selected bit in CF flag and complement.
 BTC	R/M64,R64	X64	BTC R/M64,R64	Store selected bit in CF flag and complement.
+
 BTR	R/M16,IMM8	386	BTR R/M16,IMM8	Store selected bit in CF flag and clear.
 BTR	R/M16,R16	386	BTR R/M16,R16	Store selected bit in CF flag and clear.
 BTR	R/M32,IMM8	386	BTR R/M32,IMM8	Store selected bit in CF flag and clear.
@@ -825,9 +817,8 @@ CLI		8086	CLI	Clear interrupt flag; interrupts disabled when interrupt flag clea
 CLTS		286	CLTS	Clears TS flag in CR0.
 CMC		8086	CMC	Complement CF flag.
 
-CMP	AL,IMM8	8086	CMP AL,IMM8	Compare imm8 with AL.
-CMP	AX,IMM16	8086	CMP AX,IMM16	Compare imm16 with AX.
-CMP	EAX,IMM32	386	CMP EAX,IMM32	Compare imm32 with EAX.
+CMP	R/M8,IMM8	8086	CMP R/M8,IMM8	Compare imm8 with r/m8.
+CMP	R/M8,R8	8086	CMP R/M8,R8	Compare r8 with r/m8.
 CMP	R/M16,IMM16	8086	CMP R/M16,IMM16	Compare imm16 with r/m16.
 CMP	R/M16,IMM8	8086	CMP R/M16,IMM8	Compare imm8 with r/m16.
 CMP	R/M16,R16	8086	CMP R/M16,R16	Compare r16 with r/m16.
@@ -837,13 +828,11 @@ CMP	R/M32,R32	386	CMP R/M32,R32	Compare r32 with r/m32.
 CMP	R/M64,IMM32	X64	CMP R/M64,IMM32	Compare imm32 sign-extended to 64-bits with r/m64.
 CMP	R/M64,IMM8	X64	CMP R/M64,IMM8	Compare imm8 with r/m64.
 CMP	R/M64,R64	X64	CMP R/M64,R64	Compare r64 with r/m64.
-CMP	R/M8,IMM8	8086	CMP R/M8,IMM8	Compare imm8 with r/m8.
-CMP	R/M8,R8	8086	CMP R/M8,R8	Compare r8 with r/m8.
+CMP	R8,R/M8	8086	CMP R8,R/M8	Compare r/m8 with r8.
 CMP	R16,R/M16	8086	CMP R16,R/M16	Compare r/m16 with r16.
 CMP	R32,R/M32	386	CMP R32,R/M32	Compare r/m32 with r32.
 CMP	R64,R/M64	X64	CMP R64,R/M64	Compare r/m64 with r64.
-CMP	R8,R/M8	8086	CMP R8,R/M8	Compare r/m8 with r8.
-CMP	RAX,IMM32	386	CMP RAX,IMM32	Compare imm32 sign-extended to 64-bits with RAX.
+
 CMPS	M16,M16	8086	CMPS M16,M16	For legacy mode, compare word at address DS:(E)SI with word at address ES:(E)DI; For 64-bit mode compare word at address (R|E)SI with word at address (R|E)DI. The status flags are set accordingly.
 CMPS	M32,M32	386	CMPS M32,M32	For legacy mode, compare dword at address DS:(E)SI at dword at address ES:(E)DI; For 64-bit mode compare dword at address (R|E)SI at dword at address (R|E)DI. The status flags are set accordingly.
 CMPS	M64,M64	X64	CMPS M64,M64	Compares quadword at address (R|E)SI with quadword at address (R|E)DI and sets the status flags accordingly.
@@ -861,11 +850,11 @@ CMPXCHG8B	M64	PENT	CMPXCHG8B M64	Compare EDX:EAX with M64. If equal, set ZF and 
 CPUID		PENT	CPUID	Returns processor identification and feature information to the EAX, EBX, ECX, and EDX registers, as determined by input entered in EAX (in some cases, ECX as well).
 CQO		X64	CQO	RDX:RAX← sign-extend of RAX.
 
+CRC32	R32,R/M8	SSE42	CRC32 R32,R/M8	Accumulate CRC32 on r/m8.
 CRC32	R32,R/M16	SSE42	CRC32 R32,R/M16	Accumulate CRC32 on r/m16.
 CRC32	R32,R/M32	SSE42	CRC32 R32,R/M32	Accumulate CRC32 on r/m32.
-CRC32	R32,R/M8	SSE42	CRC32 R32,R/M8	Accumulate CRC32 on r/m8.
-CRC32	R64,R/M64	SSE42	CRC32 R64,R/M64	Accumulate CRC32 on r/m64.
 CRC32	R64,R/M8	SSE42	CRC32 R64,R/M8	Accumulate CRC32 on r/m8.
+CRC32	R64,R/M64	SSE42	CRC32 R64,R/M64	Accumulate CRC32 on r/m64.
 
 CVTPD2PI	MM,XMM/M128	SSE2	CVTPD2PI MM,XMM/M128	Convert two packed double-precision floating-point values from xmm/m128 to two packed signed doubleword integers in mm.
 CVTPI2PD	XMM,MM/M64	SSE2	CVTPI2PD XMM,MM/M64	Convert two packed signed doubleword integers from mm/meM64 to two packed double-precision floating-point values in xmm.
@@ -878,17 +867,17 @@ CWD		8086	CWD	DX:AX ← sign-extend of AX.
 CWDE		386	CWDE	EAX ← sign-extend of AX.
 DAA		8086	DAA	Decimal adjust AL after addition.
 DAS		8086	DAS	Decimal adjust AL after subtraction.
-DEC	R/M16	8086	DEC R/M16	Decrement r/m16 by 1.
-DEC	R/M32	386	DEC R/M32	Decrement r/m32 by 1.
-DEC	R/M64	X64	DEC R/M64	Decrement r/m64 by 1.
-DEC	R/M8	8086	DEC R/M8	Decrement r/m8 by 1.
-DEC	R16	8086	DEC R16	Decrement r16 by 1.
-DEC	R32	386	DEC R32	Decrement r32 by 1.
 
+DEC	R/M8	8086	DEC R/M8	Decrement r/m8 by 1 (does not update CF!).
+DEC	R/M16	8086	DEC R/M16	Decrement r/m16 by 1 (does not update CF!).
+DEC	R/M32	386	DEC R/M32	Decrement r/m32 by 1 (does not update CF!).
+DEC	R/M64	X64	DEC R/M64	Decrement r/m64 by 1 (does not update CF!).
+
+DIV	R/M8	8086	DIV R/M8	Unsigned divide AX by r/m8, with result stored in AL ← Quotient, AH ← Remainder.
 DIV	R/M16	8086	DIV R/M16	Unsigned divide DX:AX by r/m16, with result stored in AX ← Quotient, DX ← Remainder.
 DIV	R/M32	386	DIV R/M32	Unsigned divide EDX:EAX by r/m32, with result stored in EAX ← Quotient, EDX ← Remainder.
 DIV	R/M64	X64	DIV R/M64	Unsigned divide RDX:RAX by r/m64, with result stored in RAX ← Quotient, RDX ← Remainder.
-DIV	R/M8	8086	DIV R/M8	Unsigned divide AX by r/m8, with result stored in AL ← Quotient, AH ← Remainder.
+
 EMMS		PENT	EMMS	Set the x87 FPU tag word to empty.
 ENTER	IMM16,0	186	ENTER IMM16,0	Create a stack frame for a procedure.
 ENTER	IMM16,1	186	ENTER IMM16,1	Create a stack frame with a nested pointer for a procedure.
@@ -1046,14 +1035,14 @@ FXTRACT		8086	FXTRACT	Separate value in ST(0) into exponent and significand, sto
 FYL2X		8086	FYL2X	Replace ST(1) with (ST(1) ∗ log2ST(0)) and pop the register stack.
 FYL2XP1		8086	FYL2XP1	Replace ST(1) with ST(1) ∗ log2(ST(0) + 1.0) and pop the register stack.
 HLT		8086	HLT	Halt
+IDIV	R/M8	8086	IDIV R/M8	Signed divide AX by r/m8, with result stored in: AL ← Quotient, AH ← Remainder.
 IDIV	R/M16	8086	IDIV R/M16	Signed divide DX:AX by r/m16, with result stored in AX ← Quotient, DX ← Remainder.
 IDIV	R/M32	386	IDIV R/M32	Signed divide EDX:EAX by r/m32, with result stored in EAX ← Quotient, EDX ← Remainder.
 IDIV	R/M64	X64	IDIV R/M64	Signed divide RDX:RAX by r/m64, with result stored in RAX ← Quotient, RDX ← Remainder.
-IDIV	R/M8	8086	IDIV R/M8	Signed divide AX by r/m8, with result stored in: AL ← Quotient, AH ← Remainder.
+IMUL	R/M8	8086	IMUL R/M8	AX← AL ∗ r/m byte.
 IMUL	R/M16	8086	IMUL R/M16	DX:AX ← AX ∗ r/m word.
 IMUL	R/M32	386	IMUL R/M32	EDX:EAX ← EAX ∗ r/m32.
 IMUL	R/M64	X64	IMUL R/M64	RDX:RAX ← RAX ∗ r/m64.
-IMUL	R/M8	8086	IMUL R/M8	AX← AL ∗ r/m byte.
 IMUL	R16,R/M16	8086	IMUL R16,R/M16	word register ← word register ∗ r/m16.
 IMUL	R16,R/M16,IMM16	8086	IMUL R16,R/M16,IMM16	word register ← r/m16 ∗ immediate word.
 IMUL	R16,R/M16,IMM8	8086	IMUL R16,R/M16,IMM8	word register ← r/m16 ∗ sign-extended immediate byte.
@@ -1069,12 +1058,11 @@ IN	AX,DX	8086	IN AX,DX	Input word from I/O port in DX into AX.
 IN	AX,IMM8	8086	IN AX,IMM8	Input word from imm8 I/O port address into AX.
 IN	EAX,DX	386	IN EAX,DX	Input doubleword from I/O port in DX into EAX.
 IN	EAX,IMM8	386	IN EAX,IMM8	Input dword from imm8 I/O port address into EAX.
-INC	R/M16	8086	INC R/M16	Increment r/m word by 1.
-INC	R/M32	386	INC R/M32	Increment r/m doubleword by 1.
-INC	R/M64	X64	INC R/M64	Increment r/m quadword by 1.
-INC	R/M8	8086	INC R/M8	Increment r/m byte by 1.
-INC	R16	8086	INC R16	Increment word register by 1.
-INC	R32	386	INC R32	Increment doubleword register by 1.
+
+INC	R/M8	8086	INC R/M8	Increment r/m8 by 1 (does not update CF!).
+INC	R/M16	8086	INC R/M16	Increment r/m16 by 1 (does not update CF!).
+INC	R/M32	386	INC R/M32	Increment r/m32 by 1 (does not update CF!).
+INC	R/M64	X64	INC R/M64	Increment r/m64 by 1 (does not update CF!).
 
 INS	M8,DX	8086	INS M8,DX	Input byte from I/O port specified in DX into memory location specified in ES:(E)DI or RDI.
 INS	M16,DX	8086	INS M16,DX	Input word from I/O port specified in DX into memory location specified in ES:(E)DI or RDI.1
@@ -1090,7 +1078,7 @@ INVLPG	MEM	486	INVLPG MEM	Invalidate Translation Lookaside Buffer (TLB) entries 
 IRET		8086	IRET	Interrupt return (16-bit operand size).
 IRETD		386	IRETD	Interrupt return (32-bit operand size).
 
-LAHF		8086	LAHF	Load: AH ← EFLAGS(SF:ZF:0:AF:0:PF:1:CF).
+LAHF		8086	LAHF	Load the lower 8 bits of the EFLAGS into AH: AH ← EFLAGS(SF:ZF:0:AF:0:PF:1:CF) (not supported in 64-bit mode).
 LAR	R16,R16/M16	286	LAR R16,R16/M16	r16 ← access rights referenced by r16/m16
 LAR	REG,R32/M16	386	LAR REG,R32/M16	reg ← access rights referenced by r32/m16
 
@@ -1170,10 +1158,13 @@ MONITOR		SSE3	MONITOR	Sets up a linear address range to be monitored by hardware
 MOV	AL,MOFFS8	8086	MOV AL,MOFFS8	Move byte at (seg:offset) to AL.
 MOV	AX,MOFFS16	8086	MOV AX,MOFFS16	Move word at (seg:offset) to AX.
 MOV	EAX,MOFFS32	386	MOV EAX,MOFFS32	Move doubleword at (seg:offset) to EAX.
+MOV	RAX,MOFFS64	X64	MOV RAX,MOFFS64	Move quadword at (offset) to RAX.
 MOV	MOFFS16,AX	8086	MOV MOFFS16,AX	Move AX to (seg:offset).
 MOV	MOFFS32,EAX	386	MOV MOFFS32,EAX	Move EAX to (seg:offset).
 MOV	MOFFS64,RAX	X64	MOV MOFFS64,RAX	Move RAX to (offset).
 MOV	MOFFS8,AL	8086	MOV MOFFS8,AL	Move AL to (seg:offset).
+MOV	R/M8,IMM8	8086	MOV R/M8,IMM8	Move imm8 to r/m8.
+MOV	R/M8,R8	8086	MOV R/M8,R8	Move r8 to r/m8.
 MOV	R/M16,IMM16	8086	MOV R/M16,IMM16	Move imm16 to r/m16.
 MOV	R/M16,R16	8086	MOV R/M16,R16	Move r16 to r/m16.
 MOV	R/M16,SREG	8086	MOV R/M16,SREG	Move segment register to r/m16.
@@ -1182,17 +1173,14 @@ MOV	R/M32,R32	386	MOV R/M32,R32	Move r32 to r/m32.
 MOV	R/M64,IMM32	X64	MOV R/M64,IMM32	Move imm32 sign extended to 64-bits to r/m64.
 MOV	R/M64,R64	X64	MOV R/M64,R64	Move r64 to r/m64.
 MOV	R/M64,SREG	X64	MOV R/M64,SREG	Move zero extended 16-bit segment register to r/m64.
-MOV	R/M8,IMM8	8086	MOV R/M8,IMM8	Move imm8 to r/m8.
-MOV	R/M8,R8	8086	MOV R/M8,R8	Move r8 to r/m8.
+MOV	R8,IMM8	8086	MOV R8,IMM8	Move imm8 to r8.
+MOV	R8,R/M8	8086	MOV R8,R/M8	Move r/m8 to r8.
 MOV	R16,IMM16	8086	MOV R16,IMM16	Move imm16 to r16.
 MOV	R16,R/M16	8086	MOV R16,R/M16	Move r/m16 to r16.
 MOV	R32,IMM32	386	MOV R32,IMM32	Move imm32 to r32.
 MOV	R32,R/M32	386	MOV R32,R/M32	Move r/m32 to r32.
 MOV	R64,IMM64	X64	MOV R64,IMM64	Move imM64 to r64.
 MOV	R64,R/M64	X64	MOV R64,R/M64	Move r/m64 to r64.
-MOV	R8,IMM8	8086	MOV R8,IMM8	Move imm8 to r8.
-MOV	R8,R/M8	8086	MOV R8,R/M8	Move r/m8 to r8.
-MOV	RAX,MOFFS64	X64	MOV RAX,MOFFS64	Move quadword at (offset) to RAX.
 MOV	SREG,R/M16	8086	MOV SREG,R/M16	Move r/m16 to segment register.
 MOV	SREG,R/M64	X64	MOV SREG,R/M64	Move lower 16 bits of r/m64 to segment register.
 
@@ -1230,25 +1218,27 @@ MOVZX	R32,R/M8	386	MOVZX R32,R/M8	Move byte to doubleword, zero-extension.
 MOVZX	R64,R/M16	X64	MOVZX R64,R/M16	Move word to quadword, zero-extension.
 MOVZX	R64,R/M8	X64	MOVZX R64,R/M8	Move byte to quadword, zero-extension.
 
+MUL	R/M8	8086	MUL R/M8	Unsigned multiply (AX ← AL ∗ r/m8).
 MUL	R/M16	8086	MUL R/M16	Unsigned multiply (DX:AX ← AX ∗ r/m16).
 MUL	R/M32	386	MUL R/M32	Unsigned multiply (EDX:EAX ← EAX ∗ r/m32).
 MUL	R/M64	X64	MUL R/M64	Unsigned multiply (RDX:RAX ← RAX ∗ r/m64).
-MUL	R/M8	8086	MUL R/M8	Unsigned multiply (AX ← AL ∗ r/m8).
 MWAIT		SSE3	MWAIT	A hint that allow the processor to stop instruction execution and enter an implementation-dependent optimized state until occurrence of a class of events.
+NEG	R/M8	8086	NEG R/M8	Two's complement negate r/m8.
 NEG	R/M16	8086	NEG R/M16	Two's complement negate r/m16.
 NEG	R/M32	386	NEG R/M32	Two's complement negate r/m32.
 NEG	R/M64	X64	NEG R/M64	Two's complement negate r/m64.
-NEG	R/M8	8086	NEG R/M8	Two's complement negate r/m8.
+
 NOP		8086	NOP	One byte no-operation instruction.
 NOP	R/M16	8086	NOP R/M16	Multi-byte no-operation instruction.
 NOP	R/M32	386	NOP R/M32	Multi-byte no-operation instruction.
+
+NOT	R/M8	8086	NOT R/M8	Reverse each bit of r/m8.
 NOT	R/M16	8086	NOT R/M16	Reverse each bit of r/m16.
 NOT	R/M32	386	NOT R/M32	Reverse each bit of r/m32.
 NOT	R/M64	X64	NOT R/M64	Reverse each bit of r/m64.
-NOT	R/M8	8086	NOT R/M8	Reverse each bit of r/m8.
-OR	AL,IMM8	8086	OR AL,IMM8	AL OR imm8.
-OR	AX,IMM16	8086	OR AX,IMM16	AX OR imm16.
-OR	EAX,IMM32	386	OR EAX,IMM32	EAX OR imm32.
+
+OR	R/M8,IMM8	8086	OR R/M8,IMM8	r/m8 OR imm8.
+OR	R/M8,R8	8086	OR R/M8,R8	r/m8 OR r8.
 OR	R/M16,IMM16	8086	OR R/M16,IMM16	r/m16 OR imm16.
 OR	R/M16,IMM8	8086	OR R/M16,IMM8	r/m16 OR imm8 (sign-extended).
 OR	R/M16,R16	8086	OR R/M16,R16	r/m16 OR r16.
@@ -1258,13 +1248,11 @@ OR	R/M32,R32	386	OR R/M32,R32	r/m32 OR r32.
 OR	R/M64,IMM32	X64	OR R/M64,IMM32	r/m64 OR imm32 (sign-extended).
 OR	R/M64,IMM8	X64	OR R/M64,IMM8	r/m64 OR imm8 (sign-extended).
 OR	R/M64,R64	X64	OR R/M64,R64	r/m64 OR r64.
-OR	R/M8,IMM8	8086	OR R/M8,IMM8	r/m8 OR imm8.
-OR	R/M8,R8	8086	OR R/M8,R8	r/m8 OR r8.
+OR	R8,R/M8	8086	OR R8,R/M8	r8 OR r/m8.
 OR	R16,R/M16	8086	OR R16,R/M16	r16 OR r/m16.
 OR	R32,R/M32	386	OR R32,R/M32	r32 OR r/m32.
 OR	R64,R/M64	X64	OR R64,R/M64	r64 OR r/m64.
-OR	R8,R/M8	8086	OR R8,R/M8	r8 OR r/m8.
-OR	RAX,IMM32	X64	OR RAX,IMM32	RAX OR imm32 (sign-extended).
+
 OUT	DX,AL	8086	OUT DX,AL	Output byte in AL to I/O port address in DX.
 OUT	DX,AX	8086	OUT DX,AX	Output word in AX to I/O port address in DX.
 OUT	DX,EAX	386	OUT DX,EAX	Output doubleword in EAX to I/O port address in DX.
@@ -1278,17 +1266,15 @@ OUTSB		186	OUTSB	Output byte from memory location specified in DS:(E)SI or RSI t
 OUTSD		386	OUTSD	Output doubleword from memory location specified in DS:(E)SI or RSI to I/O port specified in DX.
 OUTSW		186	OUTSW	Output word from memory location specified in DS:(E)SI or RSI to I/O port specified in DX.
 PAUSE		8086	PAUSE	Gives hint to processor that improves performance of spin-wait loops.
-POP	DS	8086	POP DS	Pop top of stack into DS; increment stack pointer.
-POP	ES	8086	POP ES	Pop top of stack into ES; increment stack pointer.
+
+POP	DS	8086	POP DS	Pop top of stack into DS; increment stack pointer (not supported in 64-bit mode).
+POP	SS	8086	POP SS	Pop top of stack into SS; increment stack pointer (not supported in 64-bit mode).
+POP	ES	8086	POP ES	Pop top of stack into ES; increment stack pointer (not supported in 64-bit mode).
 POP	FS	386	POP FS	Pop top of stack into FS; increment stack pointer by 16 bits.
 POP	GS	386	POP GS	Pop top of stack into GS; increment stack pointer by 16 bits.
-POP	R/M16	8086	POP R/M16	Pop top of stack into m16; increment stack pointer.
-POP	R/M32	386	POP R/M32	Pop top of stack into M32; increment stack pointer.
-POP	R/M64	X64	POP R/M64	Pop top of stack into M64; increment stack pointer. Cannot encode 32-bit operand size.
-POP	R16	8086	POP R16	Pop top of stack into r16; increment stack pointer.
-POP	R32	386	POP R32	Pop top of stack into r32; increment stack pointer.
-POP	R64	X64	POP R64	Pop top of stack into r64; increment stack pointer. Cannot encode 32-bit operand size.
-POP	SS	8086	POP SS	Pop top of stack into SS; increment stack pointer.
+POP	R/M16	8086	POP R/M16	Pop top of stack into r/m16; increment stack pointer.
+POP	R/M32	386	POP R/M32	Pop top of stack into r/m32; increment stack pointer.
+POP	R/M64	X64	POP R/M64	Pop top of stack into r/m64; increment stack pointer. Cannot encode 32-bit operand size.
 
 POPA		186	POPA	Pop DI, SI, BP, BX, DX, CX, and AX.
 POPAD		386	POPAD	Pop EDI, ESI, EBP, EBX, EDX, ECX, and EAX.
@@ -1296,7 +1282,7 @@ POPCNT	R16,R/M16	SSE42	POPCNT R16,R/M16	POPCNT on r/m16
 POPCNT	R32,R/M32	SSE42	POPCNT R32,R/M32	POPCNT on r/m32
 POPCNT	R64,R/M64	SSE42	POPCNT R64,R/M64	POPCNT on r/m64
 POPF		8086	POPF	Pop top of stack into lower 16 bits of EFLAGS.
-POPFD		386	POPFD	Pop top of stack into EFLAGS.
+POPFD		386	POPFD	Pop top of stack into EFLAGS (Not supported in 64-bit mode).
 POPFQ		X64	POPFQ	Pop top of stack and zero-extend into RFLAGS.
 
 PREFETCHNTA	M8	SSE	PREFETCHNTA M8	Move data from m8 closer to the processor using NTA hint.
@@ -1305,26 +1291,28 @@ PREFETCHT1	M8	SSE	PREFETCHT1 M8	Move data from m8 closer to the processor using 
 PREFETCHT2	M8	SSE	PREFETCHT2 M8	Move data from m8 closer to the processor using T2 hint.
 PSHUFW	MM,MM/M64,IMM8	MMX	PSHUFW MM1,MM2/M64,IMM8	Shuffle the words in mm2/M64 based on the encoding in imm8 and store the result in mm1.
 
-PUSH	CS	8086	PUSH CS	Push CS.
-PUSH	DS	8086	PUSH DS	Push DS.
-PUSH	ES	8086	PUSH ES	Push ES.
-PUSH	FS	386	PUSH FS	Push FS.
-PUSH	GS	386	PUSH GS	Push GS.
-PUSH	IMM16	8086	PUSH IMM16	Push imm16.
-PUSH	IMM32	386	PUSH IMM32	Push imm32.
-PUSH	IMM8	8086	PUSH IMM8	Push imm8.
-PUSH	R/M16	8086	PUSH R/M16	Push r/m16.
-PUSH	R/M32	386	PUSH R/M32	Push r/m32.
-PUSH	R/M64	X64	PUSH R/M64	Push r/m64.
-PUSH	R16	8086	PUSH R16	Push r16.
-PUSH	R32	386	PUSH R32	Push r32.
-PUSH	R64	X64	PUSH R64	Push r64.
-PUSH	SS	8086	PUSH SS	Push SS.
+PUSH	CS	8086	PUSH CS	Push CS onto stack (not supported in 64-bit mode).
+PUSH	DS	8086	PUSH DS	Push DS onto stack (not supported in 64-bit mode).
+PUSH	SS	8086	PUSH SS	Push SS onto stack (not supported in 64-bit mode).
+PUSH	ES	8086	PUSH ES	Push ES onto stack (not supported in 64-bit mode).
+PUSH	FS	386	PUSH FS	Push FS onto stack.
+PUSH	GS	386	PUSH GS	Push GS onto stack.
+PUSH	IMM8	8086	PUSH IMM8	Push imm8 onto stack.
+PUSH	IMM16	8086	PUSH IMM16	Push imm16 onto stack.
+PUSH	IMM32	386	PUSH IMM32	Push imm32 onto stack.
+PUSH	R/M16	8086	PUSH R/M16	Push r/m16 onto stack.
+PUSH	R/M32	386	PUSH R/M32	Push r/m32 onto stack.
+PUSH	R/M64	X64	PUSH R/M64	Push r/m64 onto stack.
+
 PUSHA		186	PUSHA	Push AX, CX, DX, BX, original SP, BP, SI, and DI.
 PUSHAD		386	PUSHAD	Push EAX, ECX, EDX, EBX, original ESP, EBP, ESI, and EDI.
-PUSHF		8086	PUSHF	Push lower 16 bits of EFLAGS.
-PUSHFD		386	PUSHFD	Push EFLAGS.
+PUSHF		8086	PUSHF	Push lower 16 bits of EFLAGS onto stack.
+PUSHFD		386	PUSHFD	Push EFLAGS onto stack (not supported in 64-bit mode).
+PUSHFQ		X64	PUSHFQ	Push RFLAGS onto stack (64-bits mode only).
 
+RCL	R/M8,1	8086	RCL R/M8,1	Rotate 9 bits (CF, r/m8) left once.
+RCL	R/M8,CL	8086	RCL R/M8,CL	Rotate 9 bits (CF, r/m8) left CL times.
+RCL	R/M8,IMM8	186	RCL R/M8,IMM8	Rotate 9 bits (CF, r/m8) left imm8 times.
 RCL	R/M16,1	8086	RCL R/M16,1	Rotate 17 bits (CF, r/m16) left once.
 RCL	R/M16,CL	8086	RCL R/M16,CL	Rotate 17 bits (CF, r/m16) left CL times.
 RCL	R/M16,IMM8	186	RCL R/M16,IMM8	Rotate 17 bits (CF, r/m16) left imm8 times.
@@ -1334,10 +1322,10 @@ RCL	R/M32,IMM8	386	RCL R/M32,IMM8	Rotate 33 bits (CF, r/m32) left imm8 times.
 RCL	R/M64,1	X64	RCL R/M64,1	Rotate 65 bits (CF, r/m64) left once. Uses a 6 bit count.
 RCL	R/M64,CL	X64	RCL R/M64,CL	Rotate 65 bits (CF, r/m64) left CL times. Uses a 6 bit count.
 RCL	R/M64,IMM8	X64	RCL R/M64,IMM8	Rotate 65 bits (CF, r/m64) left imm8 times. Uses a 6 bit count.
-RCL	R/M8,1	8086	RCL R/M8,1	Rotate 9 bits (CF, r/m8) left once.
-RCL	R/M8,CL	8086	RCL R/M8,CL	Rotate 9 bits (CF, r/m8) left CL times.
-RCL	R/M8,IMM8	186	RCL R/M8,IMM8	Rotate 9 bits (CF, r/m8) left imm8 times.
 
+RCR	R/M8,1	8086	RCR R/M8,1	Rotate 9 bits (CF, r/m8) right once.
+RCR	R/M8,CL	186	RCR R/M8,CL	Rotate 9 bits (CF, r/m8) right CL times.
+RCR	R/M8,IMM8	8086	RCR R/M8,IMM8	Rotate 9 bits (CF, r/m8) right imm8 times.
 RCR	R/M16,1	8086	RCR R/M16,1	Rotate 17 bits (CF, r/m16) right once.
 RCR	R/M16,CL	8086	RCR R/M16,CL	Rotate 17 bits (CF, r/m16) right CL times.
 RCR	R/M16,IMM8	186	RCR R/M16,IMM8	Rotate 17 bits (CF, r/m16) right imm8 times.
@@ -1347,9 +1335,6 @@ RCR	R/M32,IMM8	386	RCR R/M32,IMM8	Rotate 33 bits (CF, r/m32) right imm8 times.
 RCR	R/M64,1	X64	RCR R/M64,1	Rotate 65 bits (CF, r/m64) right once. Uses a 6 bit count.
 RCR	R/M64,CL	X64	RCR R/M64,CL	Rotate 65 bits (CF, r/m64) right CL times. Uses a 6 bit count.
 RCR	R/M64,IMM8	X64	RCR R/M64,IMM8	Rotate 65 bits (CF, r/m64) right imm8 times. Uses a 6 bit count.
-RCR	R/M8,1	8086	RCR R/M8,1	Rotate 9 bits (CF, r/m8) right once.
-RCR	R/M8,CL	186	RCR R/M8,CL	Rotate 9 bits (CF, r/m8) right CL times.
-RCR	R/M8,IMM8	8086	RCR R/M8,IMM8	Rotate 9 bits (CF, r/m8) right imm8 times.
 
 RDMSR		PENT	RDMSR	Read MSR specified by ECX into EDX:EAX.
 RDPKRU		X64	RDPKRU	Reads PKRU (Protection Key Rights for User Pages) into EAX.
@@ -1387,7 +1372,7 @@ ROR	R/M64,CL	X64	ROR R/M64,CL	Rotate 64 bits r/m64 right CL times. Uses a 6 bit 
 ROR	R/M64,IMM8	X64	ROR R/M64,IMM8	Rotate 64 bits r/m64 right imm8 times. Uses a 6 bit count.
 
 RSM		PENT	RSM	Resume operation of interrupted program.
-SAHF		8086	SAHF	Loads SF, ZF, AF, PF, and CF from AH into EFLAGS register.
+SAHF		8086	SAHF	Loads SF, ZF, AF, PF, and CF from AH into EFLAGS register (not supported in 64-bit mode).
 
 SAL	R/M8,1	8086	SAL R/M8,1	Multiply r/m8 by 2, once.
 SAL	R/M8,CL	186	SAL R/M8,CL	Multiply r/m8 by 2, CL times.
@@ -1428,25 +1413,21 @@ SHR	R/M64,1	X64	SHR R/M64,1	Unsigned divide R/M64 by 2, once.
 SHR	R/M64,CL	X64	SHR R/M64,CL	Unsigned divide r/m64 by 2, CL times.
 SHR	R/M64,IMM8	X64	SHR R/M64,IMM8	Unsigned divide r/m64 by 2, imm8 times.
 
-SBB	AL,IMM8	8086	SBB AL,IMM8	Subtract with borrow imm8 from AL.
-SBB	AX,IMM16	8086	SBB AX,IMM16	Subtract with borrow imm16 from AX.
-SBB	EAX,IMM32	386	SBB EAX,IMM32	Subtract with borrow imm32 from EAX.
-SBB	R/M16,IMM16	8086	SBB R/M16,IMM16	Subtract with borrow imm16 from r/m16.
-SBB	R/M16,IMM8	8086	SBB R/M16,IMM8	Subtract with borrow sign-extended imm8 from r/m16.
-SBB	R/M16,R16	8086	SBB R/M16,R16	Subtract with borrow r16 from r/m16.
-SBB	R/M32,IMM32	8086	SBB R/M32,IMM32	Subtract with borrow imm32 from r/m32.
-SBB	R/M32,IMM8	386	SBB R/M32,IMM8	Subtract with borrow sign-extended imm8 from r/m32.
-SBB	R/M32,R32	386	SBB R/M32,R32	Subtract with borrow r32 from r/m32.
-SBB	R/M64,IMM32	X64	SBB R/M64,IMM32	Subtract with borrow sign-extended imm32 to 64-bits from r/m64.
-SBB	R/M64,IMM8	X64	SBB R/M64,IMM8	Subtract with borrow sign-extended imm8 from r/m64.
-SBB	R/M64,R64	X64	SBB R/M64,R64	Subtract with borrow r64 from r/m64.
 SBB	R/M8,IMM8	8086	SBB R/M8,IMM8	Subtract with borrow imm8 from r/m8.
 SBB	R/M8,R8	8086	SBB R/M8,R8	Subtract with borrow r8 from r/m8.
+SBB	R/M16,IMM8	8086	SBB R/M16,IMM8	Subtract with borrow sign-extended imm8 from r/m16.
+SBB	R/M16,IMM16	8086	SBB R/M16,IMM16	Subtract with borrow imm16 from r/m16.
+SBB	R/M16,R16	8086	SBB R/M16,R16	Subtract with borrow r16 from r/m16.
+SBB	R/M32,IMM8	386	SBB R/M32,IMM8	Subtract with borrow sign-extended imm8 from r/m32.
+SBB	R/M32,IMM32	8086	SBB R/M32,IMM32	Subtract with borrow imm32 from r/m32.
+SBB	R/M32,R32	386	SBB R/M32,R32	Subtract with borrow r32 from r/m32.
+SBB	R/M64,IMM8	X64	SBB R/M64,IMM8	Subtract with borrow sign-extended imm8 from r/m64.
+SBB	R/M64,IMM32	X64	SBB R/M64,IMM32	Subtract with borrow sign-extended imm32 to 64-bits from r/m64.
+SBB	R/M64,R64	X64	SBB R/M64,R64	Subtract with borrow r64 from r/m64.
+SBB	R8,R/M8	8086	SBB R8,R/M8	Subtract with borrow r/m8 from r8.
 SBB	R16,R/M16	8086	SBB R16,R/M16	Subtract with borrow r/m16 from r16.
 SBB	R32,R/M32	386	SBB R32,R/M32	Subtract with borrow r/m32 from r32.
 SBB	R64,R/M64	X64	SBB R64,R/M64	Subtract with borrow r/m64 from r64.
-SBB	R8,R/M8	8086	SBB R8,R/M8	Subtract with borrow r/m8 from r8.
-SBB	RAX,IMM32	386	SBB RAX,IMM32	Subtract with borrow sign-extended imm.32 to 64-bits from RAX.
 
 SCAS	M8	8086	SCAS M8	Compare AL with byte at ES:(E)DI or RDI, then set status flags.
 SCAS	M16	8086	SCAS M16	Compare AX with word at ES:(E)DI or RDI, then set status flags.
@@ -1513,25 +1494,21 @@ STR	R/M16	286	STR R/M16	Stores segment selector from Task Register (TR) in r/m16
 STR	R32	386	STR R32	Stores segment selector from Task Register (TR) in r32.
 STR	R64	X64	STR R64	Stores segment selector from Task Register (TR) in r64.
 
-SUB	AL,IMM8	8086	SUB AL,IMM8	Subtract imm8 from AL.
-SUB	AX,IMM16	8086	SUB AX,IMM16	Subtract imm16 from AX.
-SUB	EAX,IMM32	386	SUB EAX,IMM32	Subtract imm32 from EAX.
-SUB	R/M16,IMM16	8086	SUB R/M16,IMM16	Subtract imm16 from r/m16.
-SUB	R/M16,IMM8	8086	SUB R/M16,IMM8	Subtract sign-extended imm8 from r/m16.
-SUB	R/M16,R16	8086	SUB R/M16,R16	Subtract r16 from r/m16.
-SUB	R/M32,IMM32	386	SUB R/M32,IMM32	Subtract imm32 from r/m32.
-SUB	R/M32,IMM8	386	SUB R/M32,IMM8	Subtract sign-extended imm8 from r/m32.
-SUB	R/M32,R32	386	SUB R/M32,R32	Subtract r32 from r/m32.
-SUB	R/M64,IMM32	X64	SUB R/M64,IMM32	Subtract imm32 sign-extended to 64-bits from r/m64.
-SUB	R/M64,IMM8	X64	SUB R/M64,IMM8	Subtract sign-extended imm8 from r/m64.
-SUB	R/M64,R64	X64	SUB R/M64,R64	Subtract r64 from r/m64.
 SUB	R/M8,IMM8	8086	SUB R/M8,IMM8	Subtract imm8 from r/m8.
 SUB	R/M8,R8	8086	SUB R/M8,R8	Subtract r8 from r/m8.
+SUB	R/M16,IMM8	8086	SUB R/M16,IMM8	Subtract sign-extended imm8 from r/m16.
+SUB	R/M16,IMM16	8086	SUB R/M16,IMM16	Subtract imm16 from r/m16.
+SUB	R/M16,R16	8086	SUB R/M16,R16	Subtract r16 from r/m16.
+SUB	R/M32,IMM8	386	SUB R/M32,IMM8	Subtract sign-extended imm8 from r/m32.
+SUB	R/M32,IMM32	386	SUB R/M32,IMM32	Subtract imm32 from r/m32.
+SUB	R/M32,R32	386	SUB R/M32,R32	Subtract r32 from r/m32.
+SUB	R/M64,IMM8	X64	SUB R/M64,IMM8	Subtract sign-extended imm8 from r/m64.
+SUB	R/M64,IMM32	X64	SUB R/M64,IMM32	Subtract imm32 sign-extended to 64-bits from r/m64.
+SUB	R/M64,R64	X64	SUB R/M64,R64	Subtract r64 from r/m64.
+SUB	R8,R/M8	8086	SUB R8,R/M8	Subtract r/m8 from r8.
 SUB	R16,R/M16	8086	SUB R16,R/M16	Subtract r/m16 from r16.
 SUB	R32,R/M32	386	SUB R32,R/M32	Subtract r/m32 from r32.
 SUB	R64,R/M64	X64	SUB R64,R/M64	Subtract r/m64 from r64.
-SUB	R8,R/M8	8086	SUB R8,R/M8	Subtract r/m8 from r8.
-SUB	RAX,IMM32	386	SUB RAX,IMM32	Subtract imm32 sign-extended to 64-bits from RAX.
 
 SWAPGS		X64	SWAPGS	Exchanges the current GS base register value with the value contained in MSR address C0000102H.
 SYSCALL		P6	SYSCALL	Fast call to privilege level 0 system procedures.
@@ -1539,18 +1516,14 @@ SYSENTER		P6	SYSENTER	Fast call to privilege level 0 system procedures.
 SYSEXIT		P6	SYSEXIT	Fast return to privilege level 3 user code.
 SYSRET		P6	SYSRET	Return to compatibility mode from fast system call
 
-TEST	AL,IMM8	8086	TEST AL,IMM8	AND imm8 with AL; set SF, ZF, PF according to result.
-TEST	AX,IMM16	8086	TEST AX,IMM16	AND imm16 with AX; set SF, ZF, PF according to result.
-TEST	EAX,IMM32	386	TEST EAX,IMM32	AND imm32 with EAX; set SF, ZF, PF according to result.
+TEST	R/M8,IMM8	8086	TEST R/M8,IMM8	AND imm8 with r/m8; set SF, ZF, PF according to result.
+TEST	R/M8,R8	8086	TEST R/M8,R8	AND r8 with r/m8; set SF, ZF, PF according to result.
 TEST	R/M16,IMM16	8086	TEST R/M16,IMM16	AND imm16 with r/m16; set SF, ZF, PF according to result.
 TEST	R/M16,R16	8086	TEST R/M16,R16	AND r16 with r/m16; set SF, ZF, PF according to result.
 TEST	R/M32,IMM32	386	TEST R/M32,IMM32	AND imm32 with r/m32; set SF, ZF, PF according to result.
 TEST	R/M32,R32	386	TEST R/M32,R32	AND r32 with r/m32; set SF, ZF, PF according to result.
 TEST	R/M64,IMM32	X64	TEST R/M64,IMM32	AND imm32 sign-extended to 64-bits with r/m64; set SF, ZF, PF according to result.
 TEST	R/M64,R64	X64	TEST R/M64,R64	AND r64 with r/m64; set SF, ZF, PF according to result.
-TEST	R/M8,IMM8	8086	TEST R/M8,IMM8	AND imm8 with r/m8; set SF, ZF, PF according to result.
-TEST	R/M8,R8	8086	TEST R/M8,R8	AND r8 with r/m8; set SF, ZF, PF according to result.
-TEST	RAX,IMM32	386	TEST RAX,IMM32	AND imm32 sign-extended to 64-bits with RAX; set SF, ZF, PF according to result.
 
 VERR	R/M16	286	VERR R/M16	Set ZF=1 if segment specified with r/m16 can be read.
 VERW	R/M16	286	VERW R/M16	Set ZF=1 if segment specified with r/m16 can be written.
@@ -1562,32 +1535,25 @@ WBINVD		486	WBINVD	Write back and flush Internal caches; initiate writing-back a
 WRMSR		PENT	WRMSR	Write the value in EDX:EAX to Model Specific Register (MSR) specified by ECX.
 WRPKRU		X64	WRPKRU	Writes EAX into PKRU (Protection Key Rights for User Pages).
 
+XADD	R/M8,R8	486	XADD R/M8,R8	Exchange r8 and r/m8; load sum into r/m8.
 XADD	R/M16,R16	486	XADD R/M16,R16	Exchange r16 and r/m16; load sum into r/m16.
 XADD	R/M32,R32	486	XADD R/M32,R32	Exchange r32 and r/m32; load sum into r/m32.
 XADD	R/M64,R64	X64	XADD R/M64,R64	Exchange r64 and r/m64; load sum into r/m64.
-XADD	R/M8,R8	486	XADD R/M8,R8	Exchange r8 and r/m8; load sum into r/m8.
 
-XCHG	AX,R16	8086	XCHG AX,R16	Exchange r16 with AX.
-XCHG	EAX,R32	386	XCHG EAX,R32	Exchange r32 with EAX.
+XCHG	R/M8,R8	8086	XCHG R/M8,R8	Exchange r8 (byte register) with byte from r/m8.
 XCHG	R/M16,R16	8086	XCHG R/M16,R16	Exchange r16 with word from r/m16.
 XCHG	R/M32,R32	386	XCHG R/M32,R32	Exchange r32 with doubleword from r/m32.
 XCHG	R/M64,R64	X64	XCHG R/M64,R64	Exchange r64 with quadword from r/m64.
-XCHG	R/M8,R8	8086	XCHG R/M8,R8	Exchange r8 (byte register) with byte from r/m8.
-XCHG	R16,AX	8086	XCHG R16,AX	Exchange AX with r16.
+XCHG	R8,R/M8	8086	XCHG R8,R/M8	Exchange byte from r/m8 with r8 (byte register).
 XCHG	R16,R/M16	8086	XCHG R16,R/M16	Exchange word from r/m16 with r16.
-XCHG	R32,EAX	386	XCHG R32,EAX	Exchange EAX with r32.
 XCHG	R32,R/M32	386	XCHG R32,R/M32	Exchange doubleword from r/m32 with r32.
 XCHG	R64,R/M64	X64	XCHG R64,R/M64	Exchange quadword from r/m64 with r64.
-XCHG	R64,RAX	X64	XCHG R64,RAX	Exchange RAX with r64.
-XCHG	R8,R/M8	8086	XCHG R8,R/M8	Exchange byte from r/m8 with r8 (byte register).
-XCHG	RAX,R64	X64	XCHG RAX,R64	Exchange r64 with RAX.
 
 XLAT	M8	8086	XLAT M8	Set AL to memory byte DS:[(E)BX + unsigned AL].
 XLATB		8086	XLATB	Set AL to memory byte DS:[(E)BX + unsigned AL].
 
-XOR	AL,IMM8	8086	XOR AL,IMM8	AL XOR imm8.
-XOR	AX,IMM16	8086	XOR AX,IMM16	AX XOR imm16.
-XOR	EAX,IMM32	386	XOR EAX,IMM32	EAX XOR imm32.
+XOR	R/M8,IMM8	8086	XOR R/M8,IMM8	r/m8 XOR imm8.
+XOR	R/M8,R8	8086	XOR R/M8,R8	r/m8 XOR r8.
 XOR	R/M16,IMM16	8086	XOR R/M16,IMM16	r/m16 XOR imm16.
 XOR	R/M16,IMM8	8086	XOR R/M16,IMM8	r/m16 XOR imm8 (sign-extended).
 XOR	R/M16,R16	8086	XOR R/M16,R16	r/m16 XOR r16.
@@ -1597,13 +1563,10 @@ XOR	R/M32,R32	386	XOR R/M32,R32	r/m32 XOR r32.
 XOR	R/M64,IMM32	X64	XOR R/M64,IMM32	r/m64 XOR imm32 (sign-extended).
 XOR	R/M64,IMM8	X64	XOR R/M64,IMM8	r/m64 XOR imm8 (sign-extended).
 XOR	R/M64,R64	X64	XOR R/M64,R64	r/m64 XOR r64.
-XOR	R/M8,IMM8	8086	XOR R/M8,IMM8	r/m8 XOR imm8.
-XOR	R/M8,R8	8086	XOR R/M8,R8	r/m8 XOR r8.
+XOR	R8,R/M8	8086	XOR R8,R/M8	r8 XOR r/m8.
 XOR	R16,R/M16	8086	XOR R16,R/M16	r16 XOR r/m16.
 XOR	R32,R/M32	386	XOR R32,R/M32	r32 XOR r/m32.
 XOR	R64,R/M64	X64	XOR R64,R/M64	r64 XOR r/m64.
-XOR	R8,R/M8	8086	XOR R8,R/M8	r8 XOR r/m8.
-XOR	RAX,IMM32	386	XOR RAX,IMM32	RAX XOR imm32 (sign-extended).
 
 XGETBV		SSE42	XGETBV	Reads an XCR specified by ECX into EDX:EAX.
 XRSTOR	MEM	SSE42	XRSTOR MEM	Restore state components specified by EDX:EAX from mem.
