@@ -591,7 +591,7 @@ namespace AsmTools
                 string y = x[i].Trim();
 
                 var t2 = AsmSourceTools.ToConstant(y);
-                if (t2.Item1)
+                if (t2.valid)
                 {
                     if (foundDisplacement)
                     {
@@ -601,7 +601,7 @@ namespace AsmTools
                     else
                     {
                         foundDisplacement = true;
-                        displacement = (negativeDisplacement) ? -(long)t2.Item2 : (long)t2.Item2;
+                        displacement = (negativeDisplacement) ? -(long)t2.value : (long)t2.value;
                     }
                 }
                 else
@@ -894,7 +894,7 @@ namespace AsmTools
 
             string line3 = line2.Substring(displacement);
             var tup = GetLabelDefPos_Regular(line3);
-            if (tup.Item1)
+            if (tup.valid)
             {
                 return (valid: true, beginPos: tup.Item2 + displacement, endPos: tup.Item3 + displacement);
             }
