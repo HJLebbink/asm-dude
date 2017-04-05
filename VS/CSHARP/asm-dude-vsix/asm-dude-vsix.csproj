@@ -25,9 +25,6 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
-    <OldToolsVersion>14.0</OldToolsVersion>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>AsmDudePackage.ico</ApplicationIcon>
@@ -92,6 +89,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="AsmDudePackage.ico" />
+    <Content Include="libz3.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Microsoft.Z3.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\AsmDudeData.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -173,6 +178,7 @@
     <Compile Include="AsmDoc\AsmDocUnderlineTagger.cs" />
     <Compile Include="AsmDoc\AsmDocUnderlineTaggerProvider.cs" />
     <Compile Include="AsmDudePackage.cs" />
+    <Compile Include="Tools\AsmSimulator.cs" />
     <Compile Include="BraceMatching\BraceMatchingTagger.cs" />
     <Compile Include="BraceMatching\BraceMatchingTaggerProvider.cs" />
     <Compile Include="CodeCompletion\CodeCompletionCommandFilter.cs" />
@@ -186,6 +192,8 @@
     <Compile Include="ErrorSquiggles\LabelErrorTaggerProvider.cs" />
     <Compile Include="HighlightWord\HighlightWordTagger.cs" />
     <Compile Include="HighlightWord\HighlightWordTaggerProvider.cs" />
+    <Compile Include="InfoSquiggles\InfoSquigglesTagger.cs" />
+    <Compile Include="InfoSquiggles\InfoSquigglesTaggerProvider.cs" />
     <Compile Include="OptionsPage\AsmDudeOptionPageUI.xaml.cs">
       <DependentUpon>AsmDudeOptionPageUI.xaml</DependentUpon>
     </Compile>
@@ -366,6 +374,10 @@
       <HintPath>..\..\packages\Microsoft.VisualStudio.Validation.14.1.111\lib\net45\Microsoft.VisualStudio.Validation.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Z3, Version=4.5.0.0, Culture=neutral, PublicKeyToken=9c8d792caae602a2, processorArchitecture=x86">
+      <HintPath>..\..\packages\z3x86win.4.5.0.1\lib\Microsoft.Z3.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="SmartThreadPool, Version=2.2.4.0, Culture=neutral, PublicKeyToken=1126fe8b671e8a79, processorArchitecture=MSIL">
@@ -425,6 +437,10 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\ScHJ\Csharp\asm-sim\VS\CSHARP\asm-z3-lib\asm-z3-lib.csproj">
+      <Project>{e0d833c8-652e-4026-bdc1-13568940b1a8}</Project>
+      <Name>asm-z3-lib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\asm-tools-lib\asm-tools-lib.csproj">
       <Project>{9f5c800f-83f8-4866-ae3c-97602b39c536}</Project>
       <Name>asm-tools-lib</Name>

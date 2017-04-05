@@ -36,6 +36,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using AsmTools;
 using System.IO;
+using AsmSimZ3;
 
 namespace AsmDude.QuickInfo
 {
@@ -47,6 +48,7 @@ namespace AsmDude.QuickInfo
         private readonly ITextBuffer _sourceBuffer;
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
         private readonly ILabelGraph _labelGraph;
+        private readonly AsmSimulator _asmSimulator;
         private readonly AsmDudeTools _asmDudeTools;
         private readonly Brush _foreground;
 
@@ -55,11 +57,13 @@ namespace AsmDude.QuickInfo
         public AsmQuickInfoSource(
                 ITextBuffer buffer,
                 ITagAggregator<AsmTokenTag> aggregator,
-                ILabelGraph labelGraph)
+                ILabelGraph labelGraph,
+                AsmSimulator asmSimulator)
         {
             this._sourceBuffer = buffer;
             this._aggregator = aggregator;
             this._labelGraph = labelGraph;
+            this._asmSimulator = asmSimulator;
             this._asmDudeTools = AsmDudeTools.Instance;
             this._foreground = AsmDudeToolsStatic.GetFontColor();
         }
@@ -104,6 +108,7 @@ namespace AsmDude.QuickInfo
                     IMappingTagSpan<AsmTokenTag> asmTokenTag = enumerator.First();
                     SnapshotSpan tagSpan = asmTokenTag.Span.GetSpans(this._sourceBuffer).First();
                     keyword = tagSpan.GetText();
+                    int lineNumber = tagSpan.Snapshot.GetLineNumberFromPosition(tagSpan.Start);
 
                     //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoSource:AugmentQuickInfoSession: keyword=\""+ keyword + "\"; type=" + asmTokenTag.Tag.type +"; file="+AsmDudeToolsStatic.GetFileName(session.TextView.TextBuffer));
                     string keywordUpper = keyword.ToUpper();
@@ -151,10 +156,22 @@ namespace AsmDude.QuickInfo
                                 description.Inlines.Add(Make_Run1("Register ", this._foreground));
                                 description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Register))));
 
-                                string descr = this._asmDudeTools.Get_Description(keywordUpper);
-                                if (descr.Length > 0)
+                                string register_Descr = this._asmDudeTools.Get_Description(keywordUpper);
+                                if (register_Descr.Length > 0)
                                 {
-                                    description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                    description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + register_Descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                    {
+                                        Foreground = this._foreground
+                                    });
+                                }
+
+                                if (this._asmSimulator.Is_Enabled)
+                                {
+                                    IState_R state = this._asmSimulator.GetState(lineNumber, true);
+                                    string msg = this._asmSimulator.GetRegisterValue(RegisterTools.ParseRn(keyword), state);
+                                    if (msg.Length == 0) msg = "Calculating register content";
+
+                                    description.Inlines.Add(new Run(AsmSourceTools.Linewrap("\n" + msg, AsmDudePackage.maxNumberOfCharsInToolTips))
                                     {
                                         Foreground = this._foreground
                                     });

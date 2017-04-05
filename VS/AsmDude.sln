@@ -1,9 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26206.0
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-dude-vsix", "CSHARP\asm-dude-vsix\asm-dude-vsix.csproj", "{B5A25E78-81D0-454A-8C02-F8C17CB0BBF5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E0D833C8-652E-4026-BDC1-13568940B1A8} = {E0D833C8-652E-4026-BDC1-13568940B1A8}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-irony", "CSHARP\asm-irony\asm-irony.csproj", "{86771818-366E-4E0D-8EBF-C37699F444E9}"
 EndProject
@@ -12,6 +15,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-tools-lib-tests", "CSHARP\unit-tests-asm-tools\asm-tools-lib-tests.csproj", "{63FB53C2-03BF-4FFA-ABB3-4909DD1DD058}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-tools-lib", "CSHARP\asm-tools-lib\asm-tools-lib.csproj", "{9F5C800F-83F8-4866-AE3C-97602B39C536}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-z3-lib", "..\..\..\ScHJ\Csharp\asm-sim\VS\CSHARP\asm-z3-lib\asm-z3-lib.csproj", "{E0D833C8-652E-4026-BDC1-13568940B1A8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,6 +88,18 @@ Global
 		{9F5C800F-83F8-4866-AE3C-97602B39C536}.Release|x64.Build.0 = Release|x64
 		{9F5C800F-83F8-4866-AE3C-97602B39C536}.Release|x86.ActiveCfg = Release|x86
 		{9F5C800F-83F8-4866-AE3C-97602B39C536}.Release|x86.Build.0 = Release|x86
+		{E0D833C8-652E-4026-BDC1-13568940B1A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0D833C8-652E-4026-BDC1-13568940B1A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0D833C8-652E-4026-BDC1-13568940B1A8}.Debug|x64.ActiveCfg = Debug|x64
+		{E0D833C8-652E-4026-BDC1-13568940B1A8}.Debug|x64.Build.0 = Debug|x64
+		{E0D833C8-652E-4026-BDC1-13568940B1A8}.Debug|x86.ActiveCfg = Debug|x86
+		{E0D833C8-652E-4026-BDC1-13568940B1A8}.Debug|x86.Build.0 = Debug|x86
+		{E0D833C8-652E-4026-BDC1-13568940B1A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0D833C8-652E-4026-BDC1-13568940B1A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0D833C8-652E-4026-BDC1-13568940B1A8}.Release|x64.ActiveCfg = Release|x64
+		{E0D833C8-652E-4026-BDC1-13568940B1A8}.Release|x64.Build.0 = Release|x64
+		{E0D833C8-652E-4026-BDC1-13568940B1A8}.Release|x86.ActiveCfg = Release|x86
+		{E0D833C8-652E-4026-BDC1-13568940B1A8}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
