@@ -390,14 +390,7 @@ namespace AsmDude.CodeFolding
             else
             {
                 AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger:Parse_Delayed: going to execute this call.");
-                if (true)
-                {
-                    AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Parse2);
-                }
-                else
-                {
-                    ThreadPool.QueueUserWorkItem(this.Parse);
-                }
+                AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Parse2);
             }
         }
         private void Parse2()

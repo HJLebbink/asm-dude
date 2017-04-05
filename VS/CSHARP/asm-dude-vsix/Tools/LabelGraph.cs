@@ -100,7 +100,7 @@ namespace AsmDude.Tools
             this._scheduled = false;
 
             this._buffer.ChangedLowPriority += this.Buffer_Changed;
-            Reset_Delayed();
+            this.Reset_Delayed();
         }
 
         public int Get_Linenumber(uint id)

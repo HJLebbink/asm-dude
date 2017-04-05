@@ -54,11 +54,10 @@ namespace AsmDude.ErrorSquiggles
         #endregion Private Fields
 
         internal LabelErrorTagger(
-                ITextBuffer buffer,
-                ITagAggregator<AsmTokenTag> aggregator,
-                ILabelGraph labelGraph)
+            ITextBuffer buffer,
+            ITagAggregator<AsmTokenTag> aggregator,
+            ILabelGraph labelGraph)
         {
-
             //AsmDudeToolsStatic.Output(string.Format("INFO: LabelErrorTagger: constructor"));
             this._sourceBuffer = buffer;
             this._aggregator = aggregator;
