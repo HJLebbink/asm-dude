@@ -40,7 +40,11 @@ namespace AsmTools
             string[] args = new string[0] { };
             string remark = "";
 
-            if (line.Length > 0)
+            if (line.Length == 0)
+            {
+                mnemonic = Mnemonic.NONE;
+            }
+            else
             {
                 (bool, int, int) labelPos = AsmTools.AsmSourceTools.GetLabelDefPos(line);
                 int codeBeginPos = 0;

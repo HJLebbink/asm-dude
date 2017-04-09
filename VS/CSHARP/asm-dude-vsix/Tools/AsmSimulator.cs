@@ -106,16 +106,6 @@ namespace AsmDude.Tools
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
 
-        public IState_R GetState(int lineNumber, bool createState = false)
-        {
-            if (this._cachedStates.TryGetValue(lineNumber, out IState_R result))
-            {
-                return result;
-            }
-            if (createState) Simulate_Delayed(lineNumber);
-            return null;
-        }
-
         public void UpdateState(int lineNumber)
         {
             if (!(this._cachedStates.ContainsKey(lineNumber)))
@@ -133,42 +123,51 @@ namespace AsmDude.Tools
             return string.Format("{0} = {1}", ToolsZ3.ToStringBin(reg), ToolsZ3.ToStringHex(reg));
         }
 
-        public void Simulate_Delayed(int lineNumber)
+        /// <summary>Return the state of the provided lineNumber, if the state is not computed yet, 
+        /// return null and create one in a different thread according to the provided createState boolean.</summary>
+        public IState_R GetState(int lineNumber, bool createState = false)
         {
-            if (this._busy)
+            if (this._cachedStates.TryGetValue(lineNumber, out IState_R result))
             {
-                AsmDudeToolsStatic.Output_INFO("AsmSimulator:Simulate_Delayed: busy; scheduling this line " + lineNumber);
-                this._scheduled.Add(lineNumber);
+                return result;
             }
-            else
+            if (createState)
             {
-                AsmDudeToolsStatic.Output_INFO("AsmSimulator:Simulate_Delayed: going to execute this call.");
-                AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Simulate, lineNumber);
+                if (this._busy)
+                {
+                    AsmDudeToolsStatic.Output_INFO("AsmSimulator:Simulate_Delayed: busy; scheduling this line " + lineNumber);
+                    this._scheduled.Add(lineNumber);
+                }
+                else
+                {
+                    AsmDudeToolsStatic.Output_INFO("AsmSimulator:GetState: going to execute this in a different thread.");
+                    AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Simulate, lineNumber);
+                }
             }
+            return null;
         }
 
         private void Simulate(int lineNumber)
         {
             if (!this.Is_Enabled) return;
 
-            this._busy = true;
-
             #region Payload
             lock (this._updateLock)
             {
                 DateTime time1 = DateTime.Now;
+
+                this._busy = true;
                 this._scheduled.Remove(lineNumber);
                 IState_R result = this._runner.ExecuteTree_Backward(this._cflow, lineNumber, 6);
                 this._cachedStates.Remove(lineNumber);
                 this._cachedStates.Add(lineNumber, result);
+                this._busy = false;
                 On_Simulate_Done_Event(new CustomEventArgs("Simulate has finished"));
+
                 AsmDudeToolsStatic.Print_Speed_Warning(time1, "AsmSimulator");
             }
             #endregion Payload
 
-            On_Simulate_Done_Event(new CustomEventArgs("Simulate has finished"));
-
-            this._busy = false;
             if (this._scheduled.Count > 0)
             {
                 int lineNumber2;
@@ -177,7 +176,7 @@ namespace AsmDude.Tools
                     lineNumber2 = this._scheduled.GetEnumerator().Current;
                     this._scheduled.Remove(lineNumber2);
                 }
-                this.Simulate_Delayed(lineNumber2);
+                this.Simulate(lineNumber2);
             }
         }
         private void On_Simulate_Done_Event(CustomEventArgs e)

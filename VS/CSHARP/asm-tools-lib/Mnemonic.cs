@@ -26,6 +26,7 @@ namespace AsmTools {
 
     public enum Mnemonic
     {
+        NONE,
         UNKNOWN,
         #region Data Transfer Instructions
         //The data transfer instructions move data between memory and the general-purpose and segment registers. They
@@ -733,7 +734,7 @@ namespace AsmTools {
         LTR,
         #endregion
 
-        #region SSE
+        #region SSE/AVX
         MFENCE,
         MONITOR,
         MONITORX,
@@ -2289,6 +2290,7 @@ namespace AsmTools {
 
         public static Mnemonic ParseMnemonic(string str) {
             switch (str.ToUpper()) {
+                case "NONE": return Mnemonic.NONE;
                 case "UNKNOWN": return Mnemonic.UNKNOWN;
                 case "MOV": return Mnemonic.MOV;
                 case "CMOVE": return Mnemonic.CMOVE;
