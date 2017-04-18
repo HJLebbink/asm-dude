@@ -1,7 +1,7 @@
 # Asm-Dude
 Assembly syntax highlighting, code completion and folding for Visual Studio 2015 and 2017. This extension can be found in the [visual studio extensions gallery](https://visualstudiogallery.msdn.microsoft.com/ff839577-2b68-416a-b761-72f9b1ca7c8e) or download latest installer [AsmDude.vsix (v1.7.5.1)](https://github.com/HJLebbink/asm-dude/releases/download/1.7.5.1/AsmDude.vsix). If assembly is too much of a hassle but you still want access to specific machine instructions, consider [Intrinsics-Dude](https://github.com/HJLebbink/intrinsics-dude).
 
-###Features
+### Features
 
 #### Syntax highlighting and Descriptions
 The following architectures are supported: the instruction sets of the x86 and the x64, but also 
@@ -59,15 +59,15 @@ or you are just cautious, you can run the extension from source code. To do that
 needs to be installed. To run the extension, hit F5 or choose the Debug > Start Debugging menu command. A new instance of 
 Visual Studio will launch under the experimental hive.
 
-###Currently in development:
+### Currently in development:
 * Considering [Irony](https://irony.codeplex.com/) for proper parsing and error handling.
 * Considering [Z3](https://github.com/Z3Prover/z3) for proof tree induction to track propagation of register and flag state-change trough time.
 
-###Known Issues:
+### Known Issues:
 * Incomplete descriptions. E.g. PMOVSX, the source [html](https://hjlebbink.github.io/x86doc/html/PMOVSX.html) has a split table and only the first table is used as source.
 * ~~MASM versions 6.0 and later treat all statement labels inside a procedure as local. AsmDude however does not yet honor this freedom, and will diligently complain about label clashes.~~
 
-###Feature Requests: (desire something - let me know)
+### Feature Requests: (desire something - let me know)
 * ~~Documentation for opcodes. Hit F12 to get full official documentation of the selected opcode~~.
 * ~~Proper Register Highlighting. E.g. When you select GPR rax, GPR al is also highlighted.~~
 * ~~No code completion in remarks.~~
@@ -93,7 +93,7 @@ Visual Studio will launch under the experimental hive.
 * Add support for MASM keyword "comment".
 * Add syntax highlighting, statement completion and syntax checks for struct member fields.
 
-###Updates:
+### Updates:
 * 19 February 2016: Initial alpha release. Basic highlighting and descriptions for i386 instructions are available.
 * 20 February 2016: Added highlighting and descriptions for SSE, AVX, AVX2 instructions.
 * 21 February 2016: Added .vsix installer
