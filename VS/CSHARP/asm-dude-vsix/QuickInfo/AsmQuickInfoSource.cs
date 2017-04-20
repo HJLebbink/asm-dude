@@ -21,21 +21,22 @@
 // SOFTWARE.
 
 using System;
+using System.Text;
 using System.Linq;
 using System.Collections.Generic;
-
-using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Tagging;
-using AsmDude.SyntaxHighlighting;
-using System.Text;
-using AsmDude.Tools;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
+
+using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Tagging;
+
 using AsmTools;
-using System.IO;
+using AsmDude.SyntaxHighlighting;
+using AsmDude.Tools;
 using AsmSimZ3;
 
 namespace AsmDude.QuickInfo
@@ -169,7 +170,7 @@ namespace AsmDude.QuickInfo
                                 {
                                     IState_R state = this._asmSimulator.GetState(lineNumber, true);
                                     string msg = this._asmSimulator.GetRegisterValue(RegisterTools.ParseRn(keyword), state);
-                                    if (msg.Length == 0) msg = "Calculating register content";
+                                    if (msg.Length == 0) msg = "[Bussy calculating register content]";
 
                                     description.Inlines.Add(new Run(AsmSourceTools.Linewrap("\n" + msg, AsmDudePackage.maxNumberOfCharsInToolTips))
                                     {
@@ -279,7 +280,13 @@ namespace AsmDude.QuickInfo
                             {
                                 description = new TextBlock();
                                 description.Inlines.Add(Make_Run1("Constant ", this._foreground));
-                                description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Constant))));
+
+                                var constant = AsmSourceTools.ToConstant(keyword);
+                                string constantStr = (constant.valid)
+                                    ? constant.value + "d = " + constant.value.ToString("X") + "h = " + AsmSourceTools.ToStringBin(constant.value, constant.nBits) + "b"
+                                    : keyword;
+
+                                description.Inlines.Add(Make_Run2(constantStr, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Constant))));
                                 break;
                             }
                         default:

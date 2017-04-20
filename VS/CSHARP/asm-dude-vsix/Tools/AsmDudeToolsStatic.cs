@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude.ErrorSquiggles;
+using AsmDude.Squiggles;
 using AsmDude.SyntaxHighlighting;
 using AsmTools;
 using EnvDTE;

@@ -5,7 +5,6 @@ using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.Z3;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace AsmDude.Tools
 {
@@ -13,7 +12,7 @@ namespace AsmDude.Tools
     {
         private readonly ITextBuffer _buffer;
         private readonly IBufferTagAggregatorFactoryService _aggregatorFactory;
-        private readonly RunnerZ3 _runner;
+        private readonly AsmRunnerZ3 _runner;
         private readonly CFlow _cflow;
         private readonly IDictionary<int, IState_R> _cachedStates;
 
@@ -61,8 +60,7 @@ namespace AsmDude.Tools
             Context ctx = new Context(settings);
             if (p==null) p = new AsmParameters();
             bool useForward = true;
-            bool useUndef = true;
-            this._runner = new RunnerZ3(p, ctx, useForward, useUndef, true)
+            this._runner = new AsmRunnerZ3(p, ctx, useForward, true)
             {
                 OutputPane = AsmDudeToolsStatic.GetOutputPane()
             };
@@ -110,7 +108,7 @@ namespace AsmDude.Tools
         {
             if (!(this._cachedStates.ContainsKey(lineNumber)))
             {
-                IState_R result = this._runner.ExecuteTree_Backward(this._cflow, lineNumber, 6);
+                IState_R result = this._runner.Construct_ExecutionTree_Backward_OLD(this._cflow, lineNumber, 6);
                 this._cachedStates.Add(lineNumber, result);
                 On_Simulate_Done_Event(new CustomEventArgs("Simulate has finished"));
             }
@@ -122,6 +120,12 @@ namespace AsmDude.Tools
             Tv5[] reg = state.GetTv5Array(name);
             return string.Format("{0} = {1}", ToolsZ3.ToStringBin(reg), ToolsZ3.ToStringHex(reg));
         }
+
+        public bool HasRegisterValue(Rn name, IState_R state)
+        {
+            return true;
+        }
+
 
         /// <summary>Return the state of the provided lineNumber, if the state is not computed yet, 
         /// return null and create one in a different thread according to the provided createState boolean.</summary>
@@ -158,7 +162,7 @@ namespace AsmDude.Tools
 
                 this._busy = true;
                 this._scheduled.Remove(lineNumber);
-                IState_R result = this._runner.ExecuteTree_Backward(this._cflow, lineNumber, 6);
+                IState_R result = this._runner.Construct_ExecutionTree_Backward_OLD(this._cflow, lineNumber, 6);
                 this._cachedStates.Remove(lineNumber);
                 this._cachedStates.Add(lineNumber, result);
                 this._busy = false;

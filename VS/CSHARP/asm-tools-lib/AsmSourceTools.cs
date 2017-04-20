@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 
 namespace AsmTools
 {
@@ -104,7 +105,7 @@ namespace AsmTools
             return (label: label, mnemonic: mnemonic, args: args, remark: remark);
         }
 
-        public static IList<Operand> MakeOperands(string[] operandStrArray)
+        public static IList<Operand> MakeOperands(string[] operandStrArray) //TODO consider Enumerable
         {
             int nOperands = operandStrArray.Length;
             if (nOperands <= 1)
@@ -130,7 +131,6 @@ namespace AsmTools
                 return operands;
             }
         }
-
 
         /// <summary>
         /// return label definition position
@@ -178,7 +178,7 @@ namespace AsmTools
         /// <summary>
         /// Split the provided line into keyword positions: first: begin pos; second: end pos; third whether the keyword is a label
         /// </summary>
-        public static IList<(int beginPos, int length, bool isLabel)> SplitIntoKeywordPos(string line)
+        public static IList<(int beginPos, int length, bool isLabel)> SplitIntoKeywordPos(string line) // TODO consider Enumerable
         {
             IList<(int, int, bool)> list = new List<(int, int, bool)>();
 
@@ -984,6 +984,18 @@ namespace AsmTools
         private static bool IsTextSeparatorChar(char c)
         {
             return char.IsWhiteSpace(c) || c.Equals('.') || c.Equals(',') || c.Equals(';') || c.Equals('?') || c.Equals('!') || c.Equals(')') || c.Equals(']') || c.Equals('-');
+        }
+
+        public static string ToStringBin(ulong value, int nBits)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = (nBits - 1); i >= 0; --i)
+            {
+                int bit = (int)((value >> i) & 1);
+                sb.Append(bit);
+                if ((i > 0) && (i != nBits - 1) && (i % 8 == 0)) sb.Append('_');
+            }
+            return sb.ToString();
         }
 
         #endregion Text Wrap
