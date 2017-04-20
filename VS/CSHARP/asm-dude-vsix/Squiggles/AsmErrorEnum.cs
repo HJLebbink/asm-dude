@@ -22,7 +22,7 @@
 
 using System;
 
-namespace AsmDude.ErrorSquiggles {
+namespace AsmDude.Squiggles {
 
     [Flags]
     public enum AsmErrorEnum {

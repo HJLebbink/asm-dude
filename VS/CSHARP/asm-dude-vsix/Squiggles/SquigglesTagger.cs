@@ -34,10 +34,12 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using AsmTools;
 using System.Windows.Media;
+using Microsoft.VisualStudio.Text.Adornments;
+using AsmSimZ3;
 
-namespace AsmDude.ErrorSquiggles
+namespace AsmDude.Squiggles
 {
-    internal sealed class LabelErrorTagger : ITagger<ErrorTag>
+    internal sealed class SquigglesTagger : ITagger<IErrorTag>
     {
         #region Private Fields
 
@@ -45,6 +47,7 @@ namespace AsmDude.ErrorSquiggles
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
         private readonly ErrorListProvider _errorListProvider;
         private readonly ILabelGraph _labelGraph;
+        private readonly AsmSimulator _asmSimulator;
         private readonly Brush _foreground;
 
         private object _updateLock = new object();
@@ -53,101 +56,163 @@ namespace AsmDude.ErrorSquiggles
 
         #endregion Private Fields
 
-        internal LabelErrorTagger(
+        internal SquigglesTagger(
             ITextBuffer buffer,
             ITagAggregator<AsmTokenTag> aggregator,
-            ILabelGraph labelGraph)
+            ILabelGraph labelGraph,
+            AsmSimulator asmSimulator)
         {
             //AsmDudeToolsStatic.Output(string.Format("INFO: LabelErrorTagger: constructor"));
             this._sourceBuffer = buffer;
             this._aggregator = aggregator;
             this._errorListProvider = AsmDudeTools.Instance.Error_List_Provider;
             this._labelGraph = labelGraph;
+            this._asmSimulator = asmSimulator;
             this._foreground = AsmDudeToolsStatic.GetFontColor();
 
             this._labelGraph.Reset_Done_Event += this.Handle_Label_Graph_Reset_Done_Event;
             this._labelGraph.Reset_Delayed();
+            this._asmSimulator.Simulate_Done_Event += this.Handle_Simulate_Done_Event;
         }
 
-        public IEnumerable<ITagSpan<ErrorTag>> GetTags(NormalizedSnapshotSpanCollection spans)
+        public IEnumerable<ITagSpan<IErrorTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
             if (spans.Count == 0)
             {  // there is no content in the buffer
                 yield break;
             }
-            if (!this._labelGraph.Is_Enabled)
-            {   // the label graph is disabled
-                yield break;
-            }
 
             DateTime time1 = DateTime.Now;
 
-            bool Decorate_Undefined_Labels = Settings.Default.IntelliSense_Decorate_UndefinedLabels;
-            bool Decorate_Clashing_Labels = Settings.Default.IntelliSense_Decorate_ClashingLabels;
+            bool labelGraph_Enabled = this._labelGraph.Is_Enabled;
+            bool asmSimulator_Enabled = this._asmSimulator.Is_Enabled;
 
-            if (Decorate_Undefined_Labels || Decorate_Clashing_Labels)
+            if (!labelGraph_Enabled && !asmSimulator_Enabled)
+            {   // nothing to decorate
+                yield break;
+            }
+
+            bool Decorate_Undefined_Labels = labelGraph_Enabled && Settings.Default.IntelliSense_Decorate_UndefinedLabels;
+            bool Decorate_Clashing_Labels = labelGraph_Enabled && Settings.Default.IntelliSense_Decorate_ClashingLabels;
+            bool Decorate_Registers_Known_Register_Values = asmSimulator_Enabled && true;
+            bool Decorate_Mnemonics_Known_Register_Values = asmSimulator_Enabled && false;
+
+            AssemblerEnum usedAssember = AsmDudeToolsStatic.Used_Assembler;
+
+            foreach (IMappingTagSpan<AsmTokenTag> asmTokenTag in this._aggregator.GetTags(spans))
             {
-                AssemblerEnum usedAssember = AsmDudeToolsStatic.Used_Assembler;
+                SnapshotSpan tagSpan = asmTokenTag.Span.GetSpans(this._sourceBuffer)[0];
+                //AsmDudeToolsStatic.Output_INFO(string.Format("LabelErrorTagger:GetTags: found keyword \"{0}\"", tagSpan.GetText()));
 
-                foreach (IMappingTagSpan<AsmTokenTag> asmTokenTag in this._aggregator.GetTags(spans))
+                switch (asmTokenTag.Tag.Type)
                 {
-                    SnapshotSpan tagSpan = asmTokenTag.Span.GetSpans(this._sourceBuffer)[0];
-                    //AsmDudeToolsStatic.Output_INFO(string.Format("LabelErrorTagger:GetTags: found keyword \"{0}\"", tagSpan.GetText()));
-
-                    switch (asmTokenTag.Tag.Type)
-                    {
-                        case AsmTokenType.Label:
+                    case AsmTokenType.Label:
+                        {
+                            if (Decorate_Undefined_Labels)
                             {
-                                if (Decorate_Undefined_Labels)
+                                string label = tagSpan.GetText();
+                                string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(asmTokenTag.Tag.Misc, label, usedAssember);
+
+                                if (this._labelGraph.Has_Label(full_Qualified_Label))
                                 {
-                                    string label = tagSpan.GetText();
-                                    string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(asmTokenTag.Tag.Misc, label, usedAssember);
+                                    // Nothing to report
+                                }
+                                else
+                                {
+                                    AsmDudeToolsStatic.Output_INFO(string.Format("LabelErrorTagger:GetTags: found label \"{0}\"; full-label \"{1}\"", label, full_Qualified_Label));
 
-                                    if (this._labelGraph.Has_Label(full_Qualified_Label))
+                                    if (usedAssember == AssemblerEnum.MASM)
                                     {
-                                        // Nothing to report
-                                    } else
-                                    {
-                                        AsmDudeToolsStatic.Output_INFO(string.Format("LabelErrorTagger:GetTags: found label \"{0}\"; full-label \"{1}\"", label, full_Qualified_Label));
-
-                                        if (usedAssember == AssemblerEnum.MASM)
+                                        if (this._labelGraph.Has_Label(label))
                                         {
-                                            if (this._labelGraph.Has_Label(label))
-                                            {
-                                                // TODO: is this always a valid label? Nothing to report
-                                            } else {
-                                                var toolTipContent = Undefined_Label_Tool_Tip_Content();
-                                                yield return new TagSpan<ErrorTag>(tagSpan, new ErrorTag("warning", toolTipContent));
-                                            }
-                                        } else
+                                            // TODO: is this always a valid label? Nothing to report
+                                        }
+                                        else
                                         {
                                             var toolTipContent = Undefined_Label_Tool_Tip_Content();
-                                            yield return new TagSpan<ErrorTag>(tagSpan, new ErrorTag("warning", toolTipContent));
+
+                                            //PredefinedErrorTypeNames.Warning is green
+                                            //PredefinedErrorTypeNames.SyntaxError is red
+                                            //PredefinedErrorTypeNames.CompilerError is blue
+                                            //PredefinedErrorTypeNames.Suggestion is NOTHING
+                                            //PredefinedErrorTypeNames.OtherError is purple
+
+                                            yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.SyntaxError, toolTipContent));
                                         }
                                     }
-                                }
-                                break;
-                            }
-                        case AsmTokenType.LabelDef:
-                            {
-                                if (Decorate_Clashing_Labels)
-                                {
-                                    string label = tagSpan.GetText();
-                                    string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(asmTokenTag.Tag.Misc, label, usedAssember);
-
-                                    if (this._labelGraph.Has_Label_Clash(full_Qualified_Label))
+                                    else
                                     {
-                                        var toolTipContent = Label_Clash_Tool_Tip_Content(full_Qualified_Label);
-                                        yield return new TagSpan<ErrorTag>(tagSpan, new ErrorTag("warning", toolTipContent));
+                                        var toolTipContent = Undefined_Label_Tool_Tip_Content();
+                                        yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.SyntaxError, toolTipContent));
                                     }
                                 }
-                                break;
                             }
-                        default: break;
-                    }
+                            break;
+                        }
+                    case AsmTokenType.LabelDef:
+                        {
+                            if (Decorate_Clashing_Labels)
+                            {
+                                string label = tagSpan.GetText();
+                                string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(asmTokenTag.Tag.Misc, label, usedAssember);
+
+                                if (this._labelGraph.Has_Label_Clash(full_Qualified_Label))
+                                {
+                                    var toolTipContent = Label_Clash_Tool_Tip_Content(full_Qualified_Label);
+
+                                    //PredefinedErrorTypeNames.Warning is green
+                                    //PredefinedErrorTypeNames.SyntaxError is red
+                                    //PredefinedErrorTypeNames.CompilerError is blue
+                                    //PredefinedErrorTypeNames.Suggestion is NOTHING
+                                    //PredefinedErrorTypeNames.OtherError is purple
+
+                                    yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.SyntaxError, toolTipContent));
+                                }
+                            }
+                            break;
+                        }
+                    case AsmTokenType.Register:
+                        {
+                            if (Decorate_Registers_Known_Register_Values)
+                            {
+                                int lineNumber = Get_Linenumber(tagSpan);
+                                Rn regName = RegisterTools.ParseRn(tagSpan.GetText());
+
+                                //AsmSimToolsStatic.Output_INFO(string.Format("AsmSimSquigglesTagger:GetTags: found register " + regName + " at line " + lineNumber));
+
+                                IState_R state = this._asmSimulator.GetState(lineNumber, false);
+                                if (state != null)
+                                {
+                                    //string registerContent = state.GetString(regName);
+                                    bool hasRegisterContent = this._asmSimulator.HasRegisterValue(regName, state);
+
+                                    if (hasRegisterContent)
+                                    {   // only show squiggles to indicate that information is available
+
+                                        //PredefinedErrorTypeNames.Warning is green
+                                        //PredefinedErrorTypeNames.SyntaxError is red
+                                        //PredefinedErrorTypeNames.CompilerError is blue
+                                        //PredefinedErrorTypeNames.Suggestion is NOTHING
+                                        //PredefinedErrorTypeNames.OtherError is purple
+
+                                        yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.Warning));
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                    case AsmTokenType.Mnemonic:
+                        {
+                            if (Decorate_Mnemonics_Known_Register_Values)
+                            {
+                                yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.Warning));
+                            }
+                            break;
+                        }
+                    default: break;
                 }
             }
-            AsmDudeToolsStatic.Print_Speed_Warning(time1, "LabelErrorTagger");
+            AsmDudeToolsStatic.Print_Speed_Warning(time1, "SquiggleTagger");
         }
 
         #region Private Methods
@@ -241,7 +306,7 @@ namespace AsmDude.ErrorSquiggles
             Update_Error_Tasks_Async();
         }
 
-        async private void Update_Error_Tasks_Async()
+        private async void Update_Error_Tasks_Async()
         {
             if (!this._labelGraph.Is_Enabled) return;
 
@@ -354,13 +419,44 @@ namespace AsmDude.ErrorSquiggles
                         }
                         #endregion Update Error Tasks
 
-                    } catch (Exception e)
+                    }
+                    catch (Exception e)
                     {
                         AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Update_Error_Tasks_Async; e={1}", ToString(), e.ToString()));
                     }
                 }
             });
         }
+
+        private void Handle_Simulate_Done_Event(object sender, CustomEventArgs e)
+        {
+            //AsmDudeToolsStatic.Output_INFO("AsmSimSquiggleTagger: received an event "+ e.Message);
+            Update_Squiggles_Tasks_Async();
+        }
+
+        private async void Update_Squiggles_Tasks_Async()
+        {
+            await System.Threading.Tasks.Task.Run(() =>
+            {
+                lock (this._updateLock)
+                {
+                    try
+                    {
+                        #region Update Tags
+                        foreach (ITextSnapshotLine line in this._sourceBuffer.CurrentSnapshot.Lines)
+                        {
+                            this.TagsChanged(this, new SnapshotSpanEventArgs(line.Extent));
+                        }
+                        #endregion Update Tags
+                    }
+                    catch (Exception e)
+                    {
+                        AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Update_Squiggles_Tasks_Async; e={1}", ToString(), e.ToString()));
+                    }
+                }
+            });
+        }
+
         #endregion Private Methods
     }
 }

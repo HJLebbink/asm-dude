@@ -187,13 +187,11 @@
     <Compile Include="CodeCompletion\VsTextViewCreationListener.cs" />
     <Compile Include="CodeFolding\CodeFoldingTagger.cs" />
     <Compile Include="CodeFolding\CodeFoldingTaggerProvider.cs" />
-    <Compile Include="ErrorSquiggles\AsmErrorEnum.cs" />
-    <Compile Include="ErrorSquiggles\LabelErrorTagger.cs" />
-    <Compile Include="ErrorSquiggles\LabelErrorTaggerProvider.cs" />
+    <Compile Include="Squiggles\AsmErrorEnum.cs" />
+    <Compile Include="Squiggles\SquigglesTagger.cs" />
+    <Compile Include="Squiggles\SquigglesTaggerProvider.cs" />
     <Compile Include="HighlightWord\HighlightWordTagger.cs" />
     <Compile Include="HighlightWord\HighlightWordTaggerProvider.cs" />
-    <Compile Include="InfoSquiggles\InfoSquigglesTagger.cs" />
-    <Compile Include="InfoSquiggles\InfoSquigglesTaggerProvider.cs" />
     <Compile Include="OptionsPage\AsmDudeOptionPageUI.xaml.cs">
       <DependentUpon>AsmDudeOptionPageUI.xaml</DependentUpon>
     </Compile>
@@ -452,6 +450,7 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
   </PropertyGroup>

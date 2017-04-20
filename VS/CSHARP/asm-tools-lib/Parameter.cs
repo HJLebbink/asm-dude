@@ -29,13 +29,10 @@ namespace AsmTools
         public bool mode_32bit;
         public bool mode_16bit;
 
-        public string conditionalLineName;
-
         public AsmParameters()
         {
             // default values
             this.assume_initial_known_mem = true;
-            this.conditionalLineName = null;
             this.mode_64bit = true;
             this.mode_32bit = false;
             this.mode_16bit = false;

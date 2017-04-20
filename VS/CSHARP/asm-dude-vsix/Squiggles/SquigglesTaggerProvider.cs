@@ -29,7 +29,7 @@ using System.ComponentModel.Composition;
 
 using AsmDude.Tools;
 
-namespace AsmDude.InfoSquiggles
+namespace AsmDude.Squiggles
 {
     /// <summary>
     /// Export a <see cref="IViewTaggerProvider"/>
@@ -38,18 +38,25 @@ namespace AsmDude.InfoSquiggles
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [TagType(typeof(ErrorTag))]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    internal sealed class InfoSquigglesTaggerProvider : IViewTaggerProvider
+    internal sealed class SquigglesTaggerProvider : IViewTaggerProvider
     {
         [Import]
         private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
+
+        [Import]
+        private ITextDocumentFactoryService _docFactory = null;
+
+        [Import]
+        private IContentTypeRegistryService _contentService = null;
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
             Func<ITagger<T>> sc = delegate ()
             {
                 var aggregator = AsmDudeToolsStatic.Get_Aggregator(buffer, this._aggregatorFactory);
+                ILabelGraph labelGraph = AsmDudeToolsStatic.Get_Label_Graph(buffer, this._aggregatorFactory, this._docFactory, this._contentService);
                 AsmSimulator asmSimulator = AsmSimulator.GetOrCreate_AsmSimulator(buffer, this._aggregatorFactory);
-                return new InfoSquigglesTagger(buffer, aggregator, asmSimulator) as ITagger<T>;
+                return new SquigglesTagger(buffer, aggregator, labelGraph, asmSimulator) as ITagger<T>;
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
