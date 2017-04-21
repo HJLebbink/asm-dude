@@ -54,8 +54,8 @@ namespace AsmDude.Squiggles
             Func<ITagger<T>> sc = delegate ()
             {
                 var aggregator = AsmDudeToolsStatic.Get_Aggregator(buffer, this._aggregatorFactory);
-                ILabelGraph labelGraph = AsmDudeToolsStatic.Get_Label_Graph(buffer, this._aggregatorFactory, this._docFactory, this._contentService);
-                AsmSimulator asmSimulator = AsmSimulator.GetOrCreate_AsmSimulator(buffer, this._aggregatorFactory);
+                var labelGraph = AsmDudeToolsStatic.Get_Label_Graph(buffer, aggregator, this._docFactory, this._contentService);
+                var asmSimulator = AsmSimulator.GetOrCreate_AsmSimulator(buffer, aggregator);
                 return new SquigglesTagger(buffer, aggregator, labelGraph, asmSimulator) as ITagger<T>;
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);

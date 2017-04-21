@@ -232,7 +232,7 @@ namespace AsmDude.CodeFolding
         /// <summary>
         /// Return start positions of the provided line content. tup has: 1) start of the folding position; 2) start of the description position.
         /// </summary>
-        private (int, int) Is_Start_Masm_Keyword(string lineContent, int lineNumber)
+        private (int startPosFolding, int startPosDescription) Is_Start_Masm_Keyword(string lineContent, int lineNumber)
         {
             ITextSnapshotLine line = this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
             IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(line.Extent);

@@ -198,27 +198,28 @@ namespace AsmDude.QuickInfo
                                 }
                                 {   // show performance information
                                     MicroArch selectedMicroarchitures = AsmDudeToolsStatic.Get_MicroArch_Switched_On();
-                                    IReadOnlyList<PerformanceItem> performanceData = this._asmDudeTools.Performance_Store.GetPerformance(mmemonic, selectedMicroarchitures);
-                                    if (performanceData.Count > 0)
-                                    {
-                                        FontFamily family = new FontFamily("Consolas");
-                                        IList<Run> list = new List<Run>();
 
-                                        description.Inlines.Add(new Run(string.Format("\n\n{0,-15}{1,-24}{2,-10}{3,-10}\n", "Architecture", "Instruction", "Latency", "Throughput"))
+                                    bool first = true;
+                                    FontFamily family = new FontFamily("Consolas");
+
+                                    foreach (PerformanceItem item in this._asmDudeTools.Performance_Store.GetPerformance(mmemonic, selectedMicroarchitures))
+                                    {
+                                        if (first)
                                         {
-                                            FontFamily = family,
-                                            FontStyle = FontStyles.Italic,
-                                            FontWeight = FontWeights.Bold,
-                                            Foreground = this._foreground
-                                        });
-                                        foreach (PerformanceItem item in performanceData)
-                                        {
-                                            description.Inlines.Add(new Run(string.Format("{0,-15}{1,-24}{2,-10}{3,-10}{4,-10}\n", item._microArch, item._instr + " " +item._args, item._latency, item._throughput, item._remark))
+                                            first = false;
+                                            description.Inlines.Add(new Run(string.Format("\n\n{0,-15}{1,-24}{2,-10}{3,-10}\n", "Architecture", "Instruction", "Latency", "Throughput"))
                                             {
                                                 FontFamily = family,
+                                                FontStyle = FontStyles.Italic,
+                                                FontWeight = FontWeights.Bold,
                                                 Foreground = this._foreground
                                             });
                                         }
+                                        description.Inlines.Add(new Run(string.Format("{0,-15}{1,-24}{2,-10}{3,-10}{4,-10}\n", item._microArch, item._instr + " " + item._args, item._latency, item._throughput, item._remark))
+                                        {
+                                            FontFamily = family,
+                                            Foreground = this._foreground
+                                        });
                                     }
                                 }
                                 break;

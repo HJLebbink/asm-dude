@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude.Squiggles;
 using AsmDude.SyntaxHighlighting;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
@@ -43,7 +42,7 @@ namespace AsmDude.Tools
         private static readonly SortedSet<uint> emptySet = new SortedSet<uint>();
 
         private readonly ITextBuffer _buffer;
-        private readonly IBufferTagAggregatorFactoryService _aggregatorFactory;
+        private readonly ITagAggregator<AsmTokenTag> _aggregator;
 
         private readonly ITextDocumentFactoryService _docFactory;
         private readonly IContentType _contentType;
@@ -73,14 +72,14 @@ namespace AsmDude.Tools
 
         public LabelGraph(
                 ITextBuffer buffer,
-                IBufferTagAggregatorFactoryService aggregatorFactory,
+                ITagAggregator<AsmTokenTag> aggregator,
                 ErrorListProvider errorListProvider,
                 ITextDocumentFactoryService docFactory,
                 IContentType contentType)
         {
             //AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:constructor: creating a label graph for {0}", AsmDudeToolsStatic.GetFileName(buffer)));
             this._buffer = buffer;
-            this._aggregatorFactory = aggregatorFactory;
+            this._aggregator = aggregator;
             this.Error_List_Provider = errorListProvider;
             this._docFactory = docFactory;
             this._contentType = contentType;
@@ -360,34 +359,27 @@ namespace AsmDude.Tools
 
         public IList<Undefined_Label_Struct> Get_Undefined_Includes { get { return this._undefined_includes; } }
 
-        public IList<int> Get_All_Related_Linenumber()
+        public IEnumerable<int> Get_All_Related_Linenumber()
         {
             // it does not work to find all the currently related line numbers. This because, 
             // due to a change in label name any other label can have become related. What works 
             // is to return all line numbers of current labels definitions and usages.
             lock (this._updateLock)
             {
-
-                IList<int> lineNumbers = new List<int>();
                 foreach (uint id in this._hasDef)
                 {
                     if (Is_From_Main_File(id))
                     {
-                        lineNumbers.Add((int)id);
+                        yield return (int)id;
                     }
                 }
                 foreach (uint id in this._hasLabel)
                 {
                     if (Is_From_Main_File(id))
                     {
-                        lineNumbers.Add((int)id);
+                        yield return (int)id;
                     }
                 }
-                if (false)
-                {
-                    AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:getAllRelatedLineNumber results {0}", string.Join(",", lineNumbers)));
-                }
-                return lineNumbers;
             }
         }
 
@@ -506,20 +498,19 @@ namespace AsmDude.Tools
 
         private void Add_All(ITextBuffer buffer, uint fileId)
         {
-            ITagAggregator<AsmTokenTag> aggregator = AsmDudeToolsStatic.Get_Aggregator(buffer, this._aggregatorFactory);
             lock (this._updateLock)
             {
                 if (fileId == 0)
                 {
                     for (int lineNumber = 0; lineNumber < buffer.CurrentSnapshot.LineCount; ++lineNumber)
                     {
-                        Add_Linenumber(buffer, aggregator, lineNumber, (uint)lineNumber);
+                        Add_Linenumber(buffer, this._aggregator, lineNumber, (uint)lineNumber);
                     }
                 } else
                 {
                     for (int lineNumber = 0; lineNumber < buffer.CurrentSnapshot.LineCount; ++lineNumber)
                     {
-                        Add_Linenumber(buffer, aggregator, lineNumber, Make_Id(lineNumber, fileId));
+                        Add_Linenumber(buffer, this._aggregator, lineNumber, Make_Id(lineNumber, fileId));
                     }
                 }
             }

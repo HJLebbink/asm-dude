@@ -1,4 +1,5 @@
-﻿using AsmSimZ3;
+﻿using AsmDude.SyntaxHighlighting;
+using AsmSimZ3;
 using AsmTools;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
@@ -11,7 +12,7 @@ namespace AsmDude.Tools
     public class AsmSimulator
     {
         private readonly ITextBuffer _buffer;
-        private readonly IBufferTagAggregatorFactoryService _aggregatorFactory;
+        private readonly ITagAggregator<AsmTokenTag> _aggregator;
         private readonly AsmRunnerZ3 _runner;
         private readonly CFlow _cflow;
         private readonly IDictionary<int, IState_R> _cachedStates;
@@ -25,10 +26,10 @@ namespace AsmDude.Tools
         public event EventHandler<CustomEventArgs> Simulate_Done_Event;
         public bool Is_Enabled { get; set; }
 
-        private AsmSimulator(ITextBuffer buffer, IBufferTagAggregatorFactoryService aggregatorFactory, AsmParameters p = null)
+        private AsmSimulator(ITextBuffer buffer, ITagAggregator<AsmTokenTag> aggregator, AsmParameters p = null)
         {
             this._buffer = buffer;
-            this._aggregatorFactory = aggregatorFactory;
+            this._aggregator = aggregator;
             this._cflow = new CFlow(this._buffer.CurrentSnapshot.GetText());
             this._cachedStates = new Dictionary<int, IState_R>();
             this.Is_Enabled = true;
@@ -95,11 +96,11 @@ namespace AsmDude.Tools
         /// <summary>Factory return singleton</summary>
         public static AsmSimulator GetOrCreate_AsmSimulator(
             ITextBuffer buffer,
-            IBufferTagAggregatorFactoryService aggregatorFactory)
+            ITagAggregator<AsmTokenTag> aggregator)
         {
             Func<AsmSimulator> sc = delegate ()
             {
-                return new AsmSimulator(buffer, aggregatorFactory);
+                return new AsmSimulator(buffer, aggregator);
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }

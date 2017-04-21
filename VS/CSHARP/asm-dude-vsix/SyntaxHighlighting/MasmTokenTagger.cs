@@ -86,7 +86,7 @@ namespace AsmDude
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
 
                 string line = containingLine.GetText().ToUpper();
-                IList<(int beginPos, int length, bool isLabel)> pos = AsmSourceTools.SplitIntoKeywordPos(line);
+                IList<(int beginPos, int length, bool isLabel)> pos = new List<(int beginPos, int length, bool isLabel)>(AsmSourceTools.SplitIntoKeywordPos(line));
 
                 int offset = containingLine.Start.Position;
                 int nKeywords = pos.Count;
@@ -109,7 +109,8 @@ namespace AsmDude
                         if (asmToken.Equals("@@"))
                         {
                             // TODO: special MASM label, for the moment, ignore it, later: check whether it is used etc.
-                        } else
+                        }
+                        else
                         {
                             yield return new TagSpan<AsmTokenTag>(labelDefSpan, Make_AsmTokenTag_LabelDef(containingLine.LineNumber));
                         }
@@ -121,164 +122,402 @@ namespace AsmDude
                     switch (keywordType)
                     {
                         case AsmTokenType.Jump:
-                        {
-                            yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._jump);
-
-                            k++; // goto the next word
-                            if (k == nKeywords) break;
-
-                            string asmToken2 = NasmTokenTagger.Keyword(pos[k], line);
-                            switch (asmToken2)
                             {
-                                case "$":
-                                case "@B":
-                                case "@F":
-                                {
-                                    // TODO: special MASM label, for the moment, ignore it, later: check whether it is used etc.
-                                    break;
-                                }
-                                case "WORD":
-                                case "DWORD":
-                                case "QWORD":
-                                case "SHORT":
-                                case "NEAR":
-                                {
-                                    yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._misc);
+                                yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._jump);
 
-                                    k++;
-                                    if (k == nKeywords) break;
-                                    string asmToken3 = NasmTokenTagger.Keyword(pos[k], line);
-                                    switch (asmToken3)
-                                    {
-                                        case "$":
-                                        case "@B":
-                                        case "@F":
+                                k++; // goto the next word
+                                if (k == nKeywords) break;
+
+                                string asmToken2 = NasmTokenTagger.Keyword(pos[k], line);
+                                switch (asmToken2)
+                                {
+                                    case "$":
+                                    case "@B":
+                                    case "@F":
                                         {
                                             // TODO: special MASM label, for the moment, ignore it, later: check whether it is used etc.
                                             break;
                                         }
-                                        case "PTR":
+                                    case "WORD":
+                                    case "DWORD":
+                                    case "QWORD":
+                                    case "SHORT":
+                                    case "NEAR":
                                         {
                                             yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._misc);
+
+                                            k++;
+                                            if (k == nKeywords) break;
+                                            string asmToken3 = NasmTokenTagger.Keyword(pos[k], line);
+                                            switch (asmToken3)
+                                            {
+                                                case "$":
+                                                case "@B":
+                                                case "@F":
+                                                    {
+                                                        // TODO: special MASM label, for the moment, ignore it, later: check whether it is used etc.
+                                                        break;
+                                                    }
+                                                case "PTR":
+                                                    {
+                                                        yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._misc);
+                                                        break;
+                                                    }
+                                                default:
+                                                    {
+                                                        yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), Make_AsmTokenTag_Label(containingLine.LineNumber));
+                                                        break;
+                                                    }
+                                            }
                                             break;
                                         }
-                                        default:
+                                    default:
                                         {
-                                            yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), Make_AsmTokenTag_Label(containingLine.LineNumber));
+                                            if (RegisterTools.IsRegister(asmToken2))
+                                            {
+                                                yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._register);
+                                            }
+                                            else
+                                            {
+                                                yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), Make_AsmTokenTag_Label(containingLine.LineNumber));
+                                            }
                                             break;
                                         }
-                                    }
-                                    break;
                                 }
-                                default:
-                                {
-                                    if (RegisterTools.IsRegister(asmToken2))
-                                    {
-                                        yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._register);
-                                    } else
-                                    {
-                                        yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), Make_AsmTokenTag_Label(containingLine.LineNumber));
-                                    }
-                                    break;
-                                }
+                                break;
                             }
-                            break;
-                        }
                         case AsmTokenType.UNKNOWN: // asmToken is not a known keyword, check if it is numerical
-                        {
-                            if (AsmTools.AsmSourceTools.IsConstant(asmToken))
                             {
-                                yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
-
-                            } else if (asmToken.StartsWith("\"") && asmToken.EndsWith("\""))
-                            {
-                                yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
-
-                            } else
-                            {
-                                bool isUnknown = true;
-
-                                // do one word lookahead; see whether we can understand the current unknown word
-                                if ((k + 1) < nKeywords)
+                                if (AsmTools.AsmSourceTools.IsConstant(asmToken))
                                 {
-                                    k++;
-                                    string nextKeyword = NasmTokenTagger.Keyword(pos[k], line);
-                                    switch (nextKeyword)
+                                    yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
+
+                                }
+                                else if (asmToken.StartsWith("\"") && asmToken.EndsWith("\""))
+                                {
+                                    yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
+
+                                }
+                                else
+                                {
+                                    bool isUnknown = true;
+
+                                    // do one word lookahead; see whether we can understand the current unknown word
+                                    if ((k + 1) < nKeywords)
                                     {
-                                        case "PROC":
-                                        case "EQU":
-                                        case "LABEL":
+                                        k++;
+                                        string nextKeyword = NasmTokenTagger.Keyword(pos[k], line);
+                                        switch (nextKeyword)
                                         {
-                                            yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k - 1], offset, curSpan), this._labelDef);
-                                            yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._directive);
-                                            isUnknown = false;
-                                            break;
-                                        }
-                                        case "PROTO":
-                                        { // a proto is considered a label definition but it should not clash with other label definitions
-                                            yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k - 1], offset, curSpan), this._labelDef_PROTO);
-                                            yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._directive);
-                                            isUnknown = false;
-                                            break;
-                                        }
-                                        default:
-                                        {
-                                            k--;
-                                            break;
+                                            case "PROC":
+                                            case "EQU":
+                                            case "LABEL":
+                                                {
+                                                    yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k - 1], offset, curSpan), this._labelDef);
+                                                    yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._directive);
+                                                    isUnknown = false;
+                                                    break;
+                                                }
+                                            case "PROTO":
+                                                { // a proto is considered a label definition but it should not clash with other label definitions
+                                                    yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k - 1], offset, curSpan), this._labelDef_PROTO);
+                                                    yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._directive);
+                                                    isUnknown = false;
+                                                    break;
+                                                }
+                                            default:
+                                                {
+                                                    k--;
+                                                    break;
+                                                }
                                         }
                                     }
-                                }
 
-                                // do one word look back; see whether we can understand the current unknown word
-                                if (k > 0)
+                                    // do one word look back; see whether we can understand the current unknown word
+                                    if (k > 0)
+                                    {
+                                        string previousKeyword = NasmTokenTagger.Keyword(pos[k - 1], line);
+                                        switch (previousKeyword)
+                                        {
+                                            case "ALIAS":
+                                                {
+                                                    yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._labelDef);
+                                                    isUnknown = false;
+                                                    break;
+                                                }
+                                            default:
+                                                {
+                                                    break;
+                                                }
+                                        }
+                                    }
+
+                                    if (isUnknown)
+                                    {
+                                        yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._UNKNOWN);
+                                    }
+                                }
+                                break;
+                            }
+                        case AsmTokenType.Directive:
+                            {
+                                AssemblerEnum assember = this._asmDudeTools.Get_Assembler(asmToken);
+                                if (assember.HasFlag(AssemblerEnum.MASM)) // this MASM token-tagger only tags MASM directives
                                 {
-                                    string previousKeyword = NasmTokenTagger.Keyword(pos[k - 1], line);
+                                    yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._directive);
+
+                                    if (asmToken.Equals("INVOKE"))
+                                    {
+                                        k++; // goto the next word
+                                        if (k == nKeywords) break;
+
+                                        string asmToken2 = NasmTokenTagger.Keyword(pos[k], line);
+                                        yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), Make_AsmTokenTag_Label(containingLine.LineNumber));
+                                        //yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._label); // do not use full qualified label!
+                                    }
+                                }
+                                break;
+                            }
+                        default:
+                            {
+                                yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), new AsmTokenTag(keywordType));
+                                break;
+                            }
+                    }
+                }
+            }
+            AsmDudeToolsStatic.Print_Speed_Warning(time1, "MasmTokenTagger");
+        }
+
+        public IEnumerable<ITagSpan<AsmTokenTag>> GetTags_NEW(NormalizedSnapshotSpanCollection spans)
+        {
+            DateTime time1 = DateTime.Now;
+
+            if (spans.Count == 0)
+            {  //there is no content in the buffer
+                yield break;
+            }
+
+            foreach (SnapshotSpan curSpan in spans)
+            {
+                ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
+
+                string line = containingLine.GetText().ToUpper();
+                int offset = containingLine.Start.Position;
+                var enumerator = AsmSourceTools.SplitIntoKeywordPos(line).GetEnumerator();
+
+                bool needToAdvance = false;
+                bool hasNext = enumerator.MoveNext();
+                if (!hasNext) break;
+                (int BeginPos, int Length, bool IsLabel) prev = (0, 0, false);
+                (int BeginPos, int Length, bool IsLabel) current = enumerator.Current;
+
+                while (hasNext)
+                {
+                    string asmToken = NasmTokenTagger.Keyword(current, line);
+                    // keyword starts with a remark char
+                    if (AsmSourceTools.IsRemarkChar(asmToken[0]))
+                    {
+                        yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(current, offset, curSpan), this._remark);
+                        continue;
+                    }
+
+                    // keyword k is a label definition
+                    if (current.IsLabel)
+                    {
+                        SnapshotSpan labelDefSpan = NasmTokenTagger.New_Span(current, offset, curSpan);
+                        //AsmDudeToolsStatic.Output_INFO("MasmTokenTagger:GetTags: found label " + asmToken +" at line "+containingLine.LineNumber);
+                        if (asmToken.Equals("@@"))
+                        {
+                            // TODO: special MASM label, for the moment, ignore it, later: check whether it is used etc.
+                        }
+                        else
+                        {
+                            yield return new TagSpan<AsmTokenTag>(labelDefSpan, Make_AsmTokenTag_LabelDef(containingLine.LineNumber));
+                        }
+                        continue;
+                    }
+
+                    AsmTokenType keywordType = this._asmDudeTools.Get_Token_Type(asmToken);
+                    switch (keywordType)
+                    {
+                        case AsmTokenType.Jump:
+                            {
+                                yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(current, offset, curSpan), this._jump);
+                                {   // go to the next word
+                                    if (needToAdvance)
+                                    {
+                                        hasNext = enumerator.MoveNext();
+                                        prev = current;
+                                        current = enumerator.Current;
+                                    }
+                                    needToAdvance = true;
+                                }
+                                string asmToken2 = NasmTokenTagger.Keyword(current, line);
+                                switch (asmToken2)
+                                {
+                                    case "$":
+                                    case "@B":
+                                    case "@F":
+                                        {
+                                            // TODO: special MASM label, for the moment, ignore it, later: check whether it is used etc.
+                                            break;
+                                        }
+                                    case "WORD":
+                                    case "DWORD":
+                                    case "QWORD":
+                                    case "SHORT":
+                                    case "NEAR":
+                                        {
+                                            yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(current, offset, curSpan), this._misc);
+                                            {   // go to the next word
+                                                if (needToAdvance)
+                                                {
+                                                    hasNext = enumerator.MoveNext();
+                                                    prev = current;
+                                                    current = enumerator.Current;
+                                                }
+                                                needToAdvance = true;
+                                            }
+                                            switch (NasmTokenTagger.Keyword(current, line))
+                                            {
+                                                case "$":
+                                                case "@B":
+                                                case "@F":
+                                                    {
+                                                        // TODO: special MASM label, for the moment, ignore it, later: check whether it is used etc.
+                                                        break;
+                                                    }
+                                                case "PTR":
+                                                    {
+                                                        yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(current, offset, curSpan), this._misc);
+                                                        break;
+                                                    }
+                                                default:
+                                                    {
+                                                        yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(current, offset, curSpan), Make_AsmTokenTag_Label(containingLine.LineNumber));
+                                                        break;
+                                                    }
+                                            }
+                                            break;
+                                        }
+                                    default:
+                                        {
+                                            if (RegisterTools.IsRegister(asmToken2))
+                                            {
+                                                yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(current, offset, curSpan), this._register);
+                                            }
+                                            else
+                                            {
+                                                yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(current, offset, curSpan), Make_AsmTokenTag_Label(containingLine.LineNumber));
+                                            }
+                                            break;
+                                        }
+                                }
+                                break;
+                            }
+                        case AsmTokenType.UNKNOWN: // asmToken is not a known keyword, check if it is numerical
+                            {
+                                if (AsmTools.AsmSourceTools.IsConstant(asmToken))
+                                {
+                                    yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(current, offset, curSpan), this._constant);
+                                }
+                                else if (asmToken.StartsWith("\"") && asmToken.EndsWith("\""))
+                                {
+                                    yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(current, offset, curSpan), this._constant);
+                                }
+                                else
+                                {
+                                    // do one word look back; see whether we can understand the current unknown word
+                                    string previousKeyword = NasmTokenTagger.Keyword(prev, line);
                                     switch (previousKeyword)
                                     {
-                                        case "ALIAS": 
-										{
-											yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._labelDef);
-											isUnknown = false;
-											break;
-										}
-                                        default: 
-										{
-											break;
-										}
+                                        case "ALIAS":
+                                            {
+                                                yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(current, offset, curSpan), this._labelDef);
+                                                break;
+                                            }
+                                        default:
+                                            {
+                                                break;
+                                            }
+                                    }
+
+                                    // do one word lookahead; see whether we can understand the current unknown word
+                                    // go to the next word
+                                    needToAdvance = false;
+
+                                    if (enumerator.MoveNext())
+                                    {
+                                        prev = current;
+                                        current = enumerator.Current;
+
+                                        string nextKeyword = NasmTokenTagger.Keyword(current, line);
+                                        switch (nextKeyword)
+                                        {
+                                            case "PROC":
+                                            case "EQU":
+                                            case "LABEL":
+                                                {
+                                                    yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(prev, offset, curSpan), this._labelDef);
+                                                    yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(current, offset, curSpan), this._directive);
+                                                    break;
+                                                }
+                                            case "PROTO":
+                                                { // a proto is considered a label definition but it should not clash with other label definitions
+                                                    yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(prev, offset, curSpan), this._labelDef_PROTO);
+                                                    yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(current, offset, curSpan), this._directive);
+                                                    break;
+                                                }
+                                            default:
+                                                break;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(current, offset, curSpan), this._UNKNOWN);
                                     }
                                 }
-
-                                if (isUnknown)
-                                {
-                                    yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._UNKNOWN);
-                                }
+                                break;
                             }
-                            break;
-                        }
                         case AsmTokenType.Directive:
-                        {
-                            AssemblerEnum assember = this._asmDudeTools.Get_Assembler(asmToken);
-                            if (assember.HasFlag(AssemblerEnum.MASM)) // this MASM token-tagger only tags MASM directives
                             {
-                                yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._directive);
-
-                                if (asmToken.Equals("INVOKE"))
+                                AssemblerEnum assember = this._asmDudeTools.Get_Assembler(asmToken);
+                                if (assember.HasFlag(AssemblerEnum.MASM)) // this MASM token-tagger only tags MASM directives
                                 {
-                                    k++; // goto the next word
-                                    if (k == nKeywords) break;
+                                    yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(current, offset, curSpan), this._directive);
 
-                                    string asmToken2 = NasmTokenTagger.Keyword(pos[k], line);
-                                    yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), Make_AsmTokenTag_Label(containingLine.LineNumber));
-                                    //yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._label); // do not use full qualified label!
+                                    if (asmToken.Equals("INVOKE"))
+                                    {
+                                        {   // go to the next word
+                                            if (needToAdvance)
+                                            {
+                                                hasNext = enumerator.MoveNext();
+                                                prev = current;
+                                                current = enumerator.Current;
+                                            }
+                                            needToAdvance = true;
+                                        }
+                                        //string asmToken2 = NasmTokenTagger.Keyword(current, line);
+                                        yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(current, offset, curSpan), Make_AsmTokenTag_Label(containingLine.LineNumber));
+                                    }
                                 }
+                                break;
                             }
-                            break;
-                        }
                         default:
+                            {
+                                yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(current, offset, curSpan), new AsmTokenTag(keywordType));
+                                break;
+                            }
+                    }
+                    {   // go to the next word
+                        if (needToAdvance)
                         {
-                            yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), new AsmTokenTag(keywordType));
-                            break;
+                            hasNext = enumerator.MoveNext();
+                            prev = current;
+                            current = enumerator.Current;
                         }
+                        needToAdvance = true;
                     }
                 }
             }
@@ -307,13 +546,16 @@ namespace AsmDude
             for (int i = lineNumber; i >= 0; --i)
             {
                 string line = this._buffer.CurrentSnapshot.GetLineFromLineNumber(i).GetText();
-                IList<(int, int, bool)> positions = AsmSourceTools.SplitIntoKeywordPos(line);
-                if (positions.Count > 1)
+                var positions = AsmSourceTools.SplitIntoKeywordPos(line).GetEnumerator();
+
+                var pos0 = positions.Current;
+                if (positions.MoveNext())
                 {
-                    string keywordStr = NasmTokenTagger.Keyword(positions[1], line).ToUpper();
+                    var pos1 = positions.Current;
+                    string keywordStr = NasmTokenTagger.Keyword(pos1, line).ToUpper();
                     switch (keywordStr)
                     {
-                        case "PROC": return NasmTokenTagger.Keyword(positions[0], line);
+                        case "PROC": return NasmTokenTagger.Keyword(pos0, line);
                         case "ENDP": return null;
                         default: break;
                     }

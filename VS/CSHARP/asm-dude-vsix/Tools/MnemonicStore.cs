@@ -25,6 +25,7 @@ using AsmTools;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows;
 
@@ -55,22 +56,22 @@ namespace AsmDude.Tools
             return this._data.ContainsKey(mnemonic);
         }
 
-        public IList<AsmSignatureElement> GetSignatures(Mnemonic mnemonic)
+        public IEnumerable<AsmSignatureElement> GetSignatures(Mnemonic mnemonic)
         {
             if (this._data.TryGetValue(mnemonic, out var list))
             {
                 return list;
             }
-            return new List<AsmSignatureElement>(0);
+            return Enumerable.Empty<AsmSignatureElement>();
         }
 
-        public IList<Arch> GetArch(Mnemonic mnemonic)
+        public IEnumerable<Arch> GetArch(Mnemonic mnemonic)
         {
             if (this._arch.TryGetValue(mnemonic, out var value))
             {
                 return value;
             }
-            return new List<Arch>(0);
+            return Enumerable.Empty<Arch>();
         }
 
         public string GetHtmlRef(Mnemonic mnemonic)

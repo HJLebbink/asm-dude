@@ -68,19 +68,16 @@ namespace AsmDude
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
 
                 string line = containingLine.GetText().ToUpper();
-                IList<(int, int, bool)> pos = AsmSourceTools.SplitIntoKeywordPos(line);
-
                 int offset = containingLine.Start.Position;
-                int nKeywords = pos.Count;
 
-                for (int k = 0; k < nKeywords; k++)
+                foreach (var keywordInfo in AsmSourceTools.SplitIntoKeywordPos(line))
                 {
-                    string asmToken = Keyword(pos[k], line);
+                    string asmToken = Keyword(keywordInfo, line);
                     AsmTokenType keywordType = this._asmDudeTools.Get_Token_Type(asmToken);
                     if ((keywordType == AsmTokenType.Mnemonic) ||
                         (keywordType == AsmTokenType.Jump))
                     {
-                        yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), new AsmTokenTag(keywordType));
+                        yield return new TagSpan<AsmTokenTag>(New_Span(keywordInfo, offset, curSpan), new AsmTokenTag(keywordType));
                     }
                 }
             }

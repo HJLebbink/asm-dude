@@ -119,7 +119,7 @@ namespace AsmDude
 
                 string lineStr = line.GetText();
                 var t = AsmSourceTools.ParseLine(lineStr);
-                Mnemonic mnemonic = t.Item2;
+                Mnemonic mnemonic = t.mnemonic;
 
                 //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:AugmentCompletionSession; lineStr="+ lineStr+ "; t.Item1="+t.Item1);
 
@@ -155,10 +155,10 @@ namespace AsmDude
                         completions = Label_Completions();
                     } else
                     {
-                        IList<Operand> operands = AsmSourceTools.MakeOperands(t.Item3);
+                        IList<Operand> operands = AsmSourceTools.MakeOperands(t.args);
                         ISet<AsmSignatureEnum> allowed = new HashSet<AsmSignatureEnum>();
                         int commaCount = AsmSignature.Count_Commas(lineStr);
-                        IList<AsmSignatureElement> allSignatures = this._asmDudeTools.Mnemonic_Store.GetSignatures(mnemonic);
+                        IEnumerable<AsmSignatureElement> allSignatures = this._asmDudeTools.Mnemonic_Store.GetSignatures(mnemonic);
 
                         ISet<Arch> selectedArchitectures = AsmDudeToolsStatic.Get_Arch_Swithed_On();
                         foreach (AsmSignatureElement se in AsmSignatureHelpSource.Constrain_Signatures(allSignatures, operands, selectedArchitectures))
@@ -277,22 +277,20 @@ namespace AsmDude
             return completions;
         }
 
-        private IList<Mnemonic> Get_Allowed_Mnemonics(ISet<Arch> selectedArchitectures)
+        private IEnumerable<Mnemonic> Get_Allowed_Mnemonics(ISet<Arch> selectedArchitectures)
         {
             MnemonicStore store = this._asmDudeTools.Mnemonic_Store;
-            IList<Mnemonic> list = new List<Mnemonic>();
             foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
             {
                 foreach (Arch a in store.GetArch(mnemonic))
                 {
                     if (selectedArchitectures.Contains(a))
                     {
-                        list.Add(mnemonic);
+                        yield return mnemonic;
                         break;
                     }
                 }
             }
-            return list;
         }
 
         private SortedSet<Completion> Selected_Completions(bool useCapitals, ISet<AsmTokenType> selectedTypes)
@@ -322,11 +320,8 @@ namespace AsmDude
             if (selectedTypes.Contains(AsmTokenType.Mnemonic))
             {
                 ISet<Arch> selectedArchs = AsmDudeToolsStatic.Get_Arch_Swithed_On();
-                IList<Mnemonic> allowedMnemonics = Get_Allowed_Mnemonics(selectedArchs);
-                //AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:selectedCompletions; allowedMnemonics.Count=" + allowedMnemonics.Count + "; selectedArchs="+ArchTools.ToString(selectedArchs));
-                foreach (Mnemonic mnemonic in allowedMnemonics)
+                foreach (Mnemonic mnemonic in Get_Allowed_Mnemonics(selectedArchs))
                 {
-
                     string keyword = mnemonic.ToString();
 
                     string insertionText = (useCapitals) ? keyword : keyword.ToLower();

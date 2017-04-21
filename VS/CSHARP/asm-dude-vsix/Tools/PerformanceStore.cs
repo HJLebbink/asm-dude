@@ -31,21 +31,15 @@ namespace AsmDude.Tools
             this._data.Clear();
         }
 
-        public IReadOnlyList<PerformanceItem> GetPerformance(Mnemonic mnemonic, MicroArch selectedArchitectures)
+        public IEnumerable<PerformanceItem> GetPerformance(Mnemonic mnemonic, MicroArch selectedArchitectures)
         {
-            List<PerformanceItem> result = new List<PerformanceItem>();
             foreach (PerformanceItem item in this._data)
             {
                 if ((item._instr == mnemonic) && selectedArchitectures.HasFlag(item._microArch))
                 {
-                    result.Add(item);
+                    yield return item;
                 }
             }
-            if (result.Count == 0)
-            {
-                AsmDudeToolsStatic.Output_INFO("PerformanceStore:GetPerformance: mnemonic " + mnemonic + " has no performance info");
-            }
-            return result.AsReadOnly();
         }
 
         public void AddData(MicroArch microArch, string filename)

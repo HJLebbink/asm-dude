@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude.SyntaxHighlighting;
 using AsmDude.Tools;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -53,7 +52,7 @@ namespace AsmDude.CodeFolding
         {
             Func<ITagger<T>> sc = delegate ()
             {
-                ITagAggregator<AsmTokenTag> aggregator = AsmDudeToolsStatic.Get_Aggregator(buffer, this._aggregatorFactory);
+                var aggregator = AsmDudeToolsStatic.Get_Aggregator(buffer, this._aggregatorFactory);
                 return new CodeFoldingTagger(buffer, aggregator, AsmDudeTools.Instance.Error_List_Provider) as ITagger<T>;
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);

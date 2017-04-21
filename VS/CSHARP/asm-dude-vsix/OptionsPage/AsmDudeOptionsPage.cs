@@ -28,6 +28,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -228,20 +229,26 @@ namespace AsmDude.OptionsPage
             #endregion
         }
 
-        private string MakeToolTip(Arch arch) {
+        private string MakeToolTip(Arch arch)
+        {
             MnemonicStore store = AsmDudeTools.Instance.Mnemonic_Store;
             ISet<Mnemonic> usedMnemonics = new HashSet<Mnemonic>();
-            foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic))) {
-                if (store.GetArch(mnemonic).Contains(arch)) {
+
+            foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)).Cast<Mnemonic>())
+            {
+                if (store.GetArch(mnemonic).Contains(arch))
+                {
                     usedMnemonics.Add(mnemonic);
                 }
             }
             StringBuilder sb = new StringBuilder();
             string docArch = ArchTools.ArchDocumentation(arch);
-            if (docArch.Length > 0) {
+            if (docArch.Length > 0)
+            {
                 sb.Append(docArch + ": ");
             }
-            foreach (Mnemonic mnemonic in usedMnemonics) {
+            foreach (Mnemonic mnemonic in usedMnemonics)
+            {
                 sb.Append(mnemonic.ToString());
                 sb.Append(", ");
             }

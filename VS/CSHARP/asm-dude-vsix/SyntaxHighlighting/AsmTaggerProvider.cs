@@ -123,6 +123,11 @@ namespace AsmDude.SyntaxHighlighting
         [ContentType(AsmDudePackage.AsmDudeContentType)]
         internal static FileExtensionToContentTypeDefinition AsmFileType_inc = null;
 
+        [Export]
+        [FileExtension(".s")]
+        [ContentType(AsmDudePackage.AsmDudeContentType)]
+        internal static FileExtensionToContentTypeDefinition AsmFileType_s = null;
+
         [Import]
         private IClassificationTypeRegistryService _classificationTypeRegistry = null;
 
@@ -134,24 +139,12 @@ namespace AsmDude.SyntaxHighlighting
 
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
-            //foreach (IContentType ct in _contentTypeRegistryService.ContentTypes)
-            //    AsmDudeToolsStatic.Output("INFO: AsmTaggerProvider:CreateTagger: contentType=" + ct.DisplayName);
-
-            if (AsmDudeToolsStatic.Proper_File(buffer))
+            Func<ITagger<T>> sc = delegate ()
             {
-                Func<ITagger<T>> sc = delegate () {
-                    Func<ITagAggregator<AsmTokenTag>> sc2 = delegate () {
-                        return this._aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
-                    };
-                    ITagAggregator<AsmTokenTag> aggregator = buffer.Properties.GetOrCreateSingletonProperty(sc2);
-
-                    return new AsmClassifier(buffer, aggregator, this._classificationTypeRegistry) as ITagger<T>;
-                };
-                return buffer.Properties.GetOrCreateSingletonProperty(sc);
-            } else
-            {
-                return null;
-            }
+                var aggregator = AsmDudeToolsStatic.Get_Aggregator(buffer, this._aggregatorFactory);
+                return new AsmClassifier(buffer, aggregator, this._classificationTypeRegistry) as ITagger<T>;
+            };
+            return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
     }
 }

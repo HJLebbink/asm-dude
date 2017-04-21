@@ -41,7 +41,7 @@ namespace AsmDude.Tools
     public interface ILabelGraph
     {
         SortedSet<uint> Get_Label_Def_Linenumbers(string label);
-        IList<int> Get_All_Related_Linenumber();
+        IEnumerable<int> Get_All_Related_Linenumber();
 
         /// <summary>
         /// Return whether this label graph is enabled

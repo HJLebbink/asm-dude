@@ -84,7 +84,7 @@ namespace AsmDude
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
 
                 string line = containingLine.GetText().ToUpper();
-                IList<(int, int, bool)> pos = AsmSourceTools.SplitIntoKeywordPos(line);
+                IList<(int, int, bool)> pos = new List<(int, int, bool)>(AsmSourceTools.SplitIntoKeywordPos(line));
 
                 int offset = containingLine.Start.Position;
                 int nKeywords = pos.Count;
@@ -359,7 +359,7 @@ namespace AsmDude
             for (int i = lineNumber - 1; i >= 0; --i)
             {
                 string line = this._buffer.CurrentSnapshot.GetLineFromLineNumber(i).GetText();
-                IList<(int, int, bool)> pos = AsmSourceTools.SplitIntoKeywordPos(line);
+                IList<(int, int, bool)> pos = new List<(int, int, bool)>(AsmSourceTools.SplitIntoKeywordPos(line));
                 if ((pos.Count > 0) && !pos[0].Item3)
                 {
                     string keywordString = NasmTokenTagger.Keyword(pos[0], line).ToUpper();

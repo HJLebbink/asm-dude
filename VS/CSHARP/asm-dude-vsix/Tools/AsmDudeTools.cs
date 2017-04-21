@@ -33,6 +33,7 @@ using AsmDude.Tools;
 using Microsoft.VisualStudio.Shell;
 using AsmDude.SignatureHelp;
 using Amib.Threading;
+using System.Linq;
 
 namespace AsmDude {
 
@@ -101,13 +102,14 @@ namespace AsmDude {
                 IDictionary<string, string> signaturesNasm = new Dictionary<string, string>();
 
                 foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic))) {
-                    IList<AsmSignatureElement> intel = this._mnemonicStore.GetSignatures(mnemonic);
-                    IList<AsmSignatureElement> nasm = store2.GetSignatures(mnemonic);
+                    IEnumerable<AsmSignatureElement> intel = this._mnemonicStore.GetSignatures(mnemonic);
+                    IEnumerable<AsmSignatureElement> nasm = store2.GetSignatures(mnemonic);
 
                     signaturesIntel.Clear();
                     signaturesNasm.Clear();
-
+                    int intelCount = 0;
                     foreach (AsmSignatureElement e in intel) {
+                        intelCount++;
                         string instruction = e.Mnemonic.ToString() + " " + e.Operands_Str;
                         if (signaturesIntel.ContainsKey(instruction)) {
                             AsmDudeToolsStatic.Output("WARNING: Intel " + instruction + ": is already present with arch "+ signaturesIntel[instruction] +"; new arch "+ e.Arch_Str);
@@ -115,7 +117,9 @@ namespace AsmDude {
                             signaturesIntel.Add(instruction, e.Arch_Str);
                         }
                     }
+                    int nasmCount = 0;
                     foreach (AsmSignatureElement e in nasm) {
+                        nasmCount++;
                         string instruction = e.Mnemonic.ToString() + " " + e.Operands_Str;
                         if (signaturesNasm.ContainsKey(instruction)) {
                            // AsmDudeToolsStatic.Output("WARNING: Nasm " + instruction + ": is already present with arch " + signaturesNasm[instruction] + "; new arch " + e.archStr);
@@ -147,7 +151,7 @@ namespace AsmDude {
                     }
 
                     if (false) {
-                        if (intel.Count != nasm.Count) {
+                        if (intelCount != nasmCount) {
                             foreach (AsmSignatureElement e in intel) {
                                 AsmDudeToolsStatic.Output("INTEL " + mnemonic + ": " + e);
                             }

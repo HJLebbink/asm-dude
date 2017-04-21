@@ -49,9 +49,9 @@ namespace AsmDude.Tools
             ITextBuffer buffer,
             IBufferTagAggregatorFactoryService aggregatorFactory)
         {
-
             Func<ITagAggregator<AsmTokenTag>> sc = delegate ()
-            {
+            {   // this is the only place where ITagAggregator are created
+                AsmDudeToolsStatic.Output_INFO("Creating a ITagAggregator");
                 return aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
@@ -59,7 +59,7 @@ namespace AsmDude.Tools
 
         public static ILabelGraph Get_Label_Graph(
             ITextBuffer buffer,
-            IBufferTagAggregatorFactoryService aggregatorFactory,
+            ITagAggregator<AsmTokenTag> aggregator,
             ITextDocumentFactoryService docFactory,
             IContentTypeRegistryService contentService)
         {
@@ -67,7 +67,7 @@ namespace AsmDude.Tools
             Func<LabelGraph> sc1 = delegate ()
             {
                 IContentType contentType = contentService.GetContentType(AsmDudePackage.AsmDudeContentType);
-                return new LabelGraph(buffer, aggregatorFactory, AsmDudeTools.Instance.Error_List_Provider, docFactory, contentType);
+                return new LabelGraph(buffer, aggregator, AsmDudeTools.Instance.Error_List_Provider, docFactory, contentType);
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc1);
         }
@@ -148,7 +148,8 @@ namespace AsmDude.Tools
                 (filename.Length == 0) ||
                 (filename.EndsWith(".asm", StringComparison.OrdinalIgnoreCase)) ||
                 (filename.EndsWith(".cod", StringComparison.OrdinalIgnoreCase)) ||
-                (filename.EndsWith(".inc", StringComparison.OrdinalIgnoreCase)))
+                (filename.EndsWith(".inc", StringComparison.OrdinalIgnoreCase)) ||
+                (filename.EndsWith(".s", StringComparison.OrdinalIgnoreCase)))
             {
                 return true;
             }

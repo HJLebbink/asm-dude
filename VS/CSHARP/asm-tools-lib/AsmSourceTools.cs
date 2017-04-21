@@ -178,10 +178,8 @@ namespace AsmTools
         /// <summary>
         /// Split the provided line into keyword positions: first: begin pos; second: end pos; third whether the keyword is a label
         /// </summary>
-        public static IList<(int beginPos, int length, bool isLabel)> SplitIntoKeywordPos(string line) // TODO consider Enumerable
+        public static IEnumerable<(int BeginPos, int Length, bool IsLabel)> SplitIntoKeywordPos(string line)
         {
-            IList<(int, int, bool)> list = new List<(int, int, bool)>();
-
             int keywordBegin = 0;
             bool inStringDef = false;
             bool isFirstKeyword = true;
@@ -197,7 +195,7 @@ namespace AsmTools
                         inStringDef = false;
                         if (keywordBegin < i)
                         {
-                            list.Add((keywordBegin, i + 1, false));
+                            yield return (keywordBegin, i + 1, false);
                             isFirstKeyword = false;
                         }
                         keywordBegin = i + 1; // next keyword starts at the next char
@@ -209,17 +207,17 @@ namespace AsmTools
                     {
                         if (keywordBegin < i)
                         {
-                            list.Add((keywordBegin, i, false));
+                            yield return (keywordBegin, i, false);
                             isFirstKeyword = false;
                         }
-                        list.Add((i, line.Length, false));
+                        yield return (i, line.Length, false);
                         i = line.Length;
                     }
                     else if (c.Equals('"'))
                     { // start string definition
                         if (keywordBegin < i)
                         {
-                            list.Add((keywordBegin, i, false));
+                            yield return (keywordBegin, i, false);
                             isFirstKeyword = false;
                         }
                         inStringDef = true;
@@ -233,16 +231,16 @@ namespace AsmTools
                             {
                                 if (isFirstKeyword)
                                 {
-                                    list.Add((keywordBegin, i, true));
+                                    yield return (keywordBegin, i, true);
                                 }
                                 else
                                 {
-                                    list.Add((keywordBegin, i, false));
+                                    yield return (keywordBegin, i, false);
                                 }
                             }
                             else
                             {
-                                list.Add((keywordBegin, i, false));
+                                yield return (keywordBegin, i, false);
                             }
                             isFirstKeyword = false;
                         }
@@ -253,9 +251,8 @@ namespace AsmTools
 
             if (keywordBegin < line.Length)
             {
-                list.Add((keywordBegin, line.Length, false));
+                yield return (keywordBegin, line.Length, false);
             }
-            return list;
         }
 
         public static bool IsSeparatorChar(char c)

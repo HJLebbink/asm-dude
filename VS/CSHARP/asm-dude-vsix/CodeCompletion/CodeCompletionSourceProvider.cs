@@ -48,7 +48,8 @@ namespace AsmDude {
 
         public ICompletionSource TryCreateCompletionSource(ITextBuffer buffer) {
             Func<CodeCompletionSource> sc = delegate () {
-                ILabelGraph labelGraph = AsmDudeToolsStatic.Get_Label_Graph(buffer, this._aggregatorFactory, this._docFactory, this._contentService);
+                var aggregator = AsmDudeToolsStatic.Get_Aggregator(buffer, this._aggregatorFactory);
+                var labelGraph = AsmDudeToolsStatic.Get_Label_Graph(buffer, aggregator, this._docFactory, this._contentService);
                 return new CodeCompletionSource(buffer, labelGraph);
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
