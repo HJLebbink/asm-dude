@@ -2,6 +2,11 @@
 extrn printf : proc
 ;#endregion
 
+include "inc\example.inc"
+jmp			FOO		# FOO is defined in an included file
+call procedure3
+
+
 procedure1 PROTO a, b 
 
 global_label1:

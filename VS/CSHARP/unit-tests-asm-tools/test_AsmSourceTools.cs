@@ -46,7 +46,7 @@ namespace unit_tests {
             {
                 const string line = "    db \"This string contains the word jmp inside of it\",0";
 
-                IList<(int, int, bool)> result = AsmSourceTools.SplitIntoKeywordPos(line);
+                IList<(int, int, bool)> result = new List<(int, int, bool)>(AsmSourceTools.SplitIntoKeywordPos(line));
                 for (int i = 0; i < result.Count; ++i) {
                     Console.WriteLine(line.Substring(result[i].Item1, result[i].Item2 - result[i].Item1));
                 }
@@ -58,7 +58,7 @@ namespace unit_tests {
             {
                 const string line = "	call		??$?6U?$char_traits@D@std@@@std@@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@0@AEAV10@PEBD@Z";
 
-                IList<(int, int, bool)> result = AsmSourceTools.SplitIntoKeywordPos(line);
+                IList<(int, int, bool)> result = new List<(int, int, bool)>(AsmSourceTools.SplitIntoKeywordPos(line));
                 for (int i = 0; i < result.Count; ++i) {
                     Console.WriteLine(line.Substring(result[i].Item1, result[i].Item2 - result[i].Item1));
                 }

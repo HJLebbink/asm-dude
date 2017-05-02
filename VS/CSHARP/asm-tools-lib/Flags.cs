@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace AsmTools
@@ -66,14 +67,24 @@ namespace AsmTools
 
         public static IEnumerable<Flags> GetFlags(Flags flags)
         {
-            foreach (Flags value in Flags.GetValues(flags.GetType()))
-            {
-                if (flags.HasFlag(value) && FlagTools.SingleFlag(value))
-                {
-                    yield return value;
-                }
-            }
+            if (flags.HasFlag(Flags.CF)) yield return Flags.CF;
+            if (flags.HasFlag(Flags.PF)) yield return Flags.PF;
+            if (flags.HasFlag(Flags.AF)) yield return Flags.AF;
+            if (flags.HasFlag(Flags.ZF)) yield return Flags.ZF;
+            if (flags.HasFlag(Flags.SF)) yield return Flags.SF;
+            if (flags.HasFlag(Flags.OF)) yield return Flags.OF;
         }
+        public static IEnumerable<Flags> GetFlags()
+        {
+            yield return Flags.CF;
+            yield return Flags.PF;
+            yield return Flags.AF;
+            yield return Flags.ZF;
+            yield return Flags.SF;
+            yield return Flags.OF;
+        }
+
+
     }
 
     public abstract class FlagValue

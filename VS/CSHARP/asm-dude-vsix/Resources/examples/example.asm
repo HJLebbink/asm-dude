@@ -4,9 +4,7 @@ include "inc\example.inc"
 include "bla"
 
 	jmp			FOO		# FOO is defined in an included file
-
-
-
+	call procedure3
 
 
 #region 1 bit full adder

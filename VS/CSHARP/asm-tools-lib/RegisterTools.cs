@@ -33,7 +33,6 @@ namespace AsmTools
 
     public static class RegisterTools
     {
-
         public static (bool valid, Rn reg, int nBits) ToRn(string str)
         {
             Rn rn = RegisterTools.ParseRn(str);
@@ -496,26 +495,17 @@ namespace AsmTools
             return 0;
         }
 
-        public static IEnumerable<Rn> GetRn64Bit()
+        public static bool Is8BitHigh(Rn reg)
         {
-            yield return Rn.RAX;
-            yield return Rn.RBX;
-            yield return Rn.RCX;
-            yield return Rn.RDX;
-            yield return Rn.RSI;
-            yield return Rn.RDI;
-            yield return Rn.RBP;
-            yield return Rn.RSP;
-            yield return Rn.R8;
-            yield return Rn.R9;
-            yield return Rn.R10;
-            yield return Rn.R11;
-            yield return Rn.R12;
-            yield return Rn.R13;
-            yield return Rn.R14;
-            yield return Rn.R15;
+            switch (reg)
+            {
+                case Rn.AH:
+                case Rn.BH:
+                case Rn.CH:
+                case Rn.DH: return true;
+                default: return false;
+            }
         }
-
 
         /// <summary>
         /// return regular pattern to select the provided register and aliased register names
@@ -1104,7 +1094,6 @@ namespace AsmTools
                 default:
                     return Rn.NOREG;
             }
-
         }
 
         /// <summary> 
