@@ -141,7 +141,7 @@ namespace AsmDude.SyntaxHighlighting
         {
             Func<ITagger<T>> sc = delegate ()
             {
-                var aggregator = AsmDudeToolsStatic.Get_Aggregator(buffer, this._aggregatorFactory);
+                var aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, this._aggregatorFactory);
                 return new AsmClassifier(buffer, aggregator, this._classificationTypeRegistry) as ITagger<T>;
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);

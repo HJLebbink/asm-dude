@@ -33,6 +33,8 @@ using AsmTools;
 using AsmDude.Tools;
 using AsmDude.SignatureHelp;
 using System.Text;
+using AsmSimZ3.Mnemonics_ng;
+using AsmSimZ3;
 
 namespace AsmDude
 {
@@ -50,14 +52,16 @@ namespace AsmDude
         private readonly ILabelGraph _labelGraph;
         private readonly IDictionary<AsmTokenType, ImageSource> _icons;
         private readonly AsmDudeTools _asmDudeTools;
+        private readonly AsmSimulator _asmSimulator;
         private bool _disposed = false;
 
-        public CodeCompletionSource(ITextBuffer buffer, ILabelGraph labelGraph)
+        public CodeCompletionSource(ITextBuffer buffer, ILabelGraph labelGraph, AsmSimulator asmSimulator)
         {
             this._buffer = buffer;
             this._labelGraph = labelGraph;
             this._icons = new Dictionary<AsmTokenType, ImageSource>();
             this._asmDudeTools = AsmDudeTools.Instance;
+            this._asmSimulator = asmSimulator;
             Load_Icons();
         }
 
@@ -92,7 +96,8 @@ namespace AsmDude
                         {
                             //AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:AugmentCompletionSession: currently in a remark section");
                             return;
-                        } else
+                        }
+                        else
                         {
                             // AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:AugmentCompletionSession: not in a remark section");
                         }
@@ -133,12 +138,14 @@ namespace AsmDude
                     {
                         // Suggest a label
                         completions = Label_Completions();
-                    } else
+                    }
+                    else
                     {
                         ISet<AsmTokenType> selected = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic };
                         completions = Selected_Completions(useCapitals, selected);
                     }
-                } else
+                }
+                else
                 { // the current line contains a mnemonic
                     //AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:AugmentCompletionSession; mnemonic=" + mnemonic+ "; previousKeyword="+ previousKeyword);
 
@@ -149,11 +156,13 @@ namespace AsmDude
                         completions = Label_Completions();
                         completions.Add(new Completion("SHORT", (useCapitals) ? "SHORT" : "short", null, this._icons[AsmTokenType.Misc], ""));
                         completions.Add(new Completion("NEAR", (useCapitals) ? "NEAR" : "near", null, this._icons[AsmTokenType.Misc], ""));
-                    } else if (previousKeyword.Equals("SHORT") || previousKeyword.Equals("NEAR"))
+                    }
+                    else if (previousKeyword.Equals("SHORT") || previousKeyword.Equals("NEAR"))
                     {
                         // Suggest a label
                         completions = Label_Completions();
-                    } else
+                    }
+                    else
                     {
                         IList<Operand> operands = AsmSourceTools.MakeOperands(t.args);
                         ISet<AsmSignatureEnum> allowed = new HashSet<AsmSignatureEnum>();
@@ -171,7 +180,7 @@ namespace AsmDude
                                 }
                             }
                         }
-                        completions = Mnemonic_Operand_Completions(useCapitals, allowed);
+                        completions = this.Mnemonic_Operand_Completions(useCapitals, allowed, line.LineNumber);
                     }
                 }
                 //AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:AugmentCompletionSession; nCompletions=" + completions.Count);
@@ -180,7 +189,8 @@ namespace AsmDude
                 completionSets.Add(new CompletionSet("Tokens", "Tokens", applicableTo, completions, Enumerable.Empty<Completion>()));
 
                 AsmDudeToolsStatic.Print_Speed_Warning(time1, "Code Completion");
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:AugmentCompletionSession; e={1}", ToString(), e.ToString()));
             }
@@ -196,7 +206,7 @@ namespace AsmDude
         }
 
         #region Private Methods
-        private SortedSet<Completion> Mnemonic_Operand_Completions(bool useCapitals, ISet<AsmSignatureEnum> allowedOperands)
+        private SortedSet<Completion> Mnemonic_Operand_Completions(bool useCapitals, ISet<AsmSignatureEnum> allowedOperands, int lineNumber)
         {
             SortedSet<Completion> completions = new SortedSet<Completion>(new CompletionComparer());
             foreach (string keyword in this._asmDudeTools.Get_Keywords())
@@ -205,41 +215,53 @@ namespace AsmDude
                 AsmTokenType type = this._asmDudeTools.Get_Token_Type(keyword);
 
                 bool selected = AsmDudeToolsStatic.Is_Arch_Switched_On(arch);
-                //AsmDudeToolsStatic.Output("INFO: AsmCompletionSource:mnemonicOperandCompletions; keyword=" + keyword +"; selected="+selected +"; arch="+arch);
+                //AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:Mnemonic_Operand_Completions; keyword=" + keyword +"; selected="+selected +"; arch="+arch);
+
+                string additionalInfo = null;
 
                 if (selected)
                 {
                     switch (type)
                     {
                         case AsmTokenType.Register:
-                        {
-                            //AsmDudeToolsStatic.Output("INFO: AsmCompletionSource:mnemonicOperandCompletions; rn=" + keyword);
-                            Rn regName = RegisterTools.ParseRn(keyword);
-                            if (AsmSignatureTools.Is_Allowed_Reg(regName, allowedOperands))
                             {
-                                //AsmDudeToolsStatic.Output(string.Format("INFO: AsmCompletionSource:mnemonicOperandCompletions; rn="+ keyword + " is selected"));
-                            } else
-                            {
-                                selected = false;
+                                //AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:Mnemonic_Operand_Completions; rn=" + keyword);
+                                Rn regName = RegisterTools.ParseRn(keyword);
+                                if (AsmSignatureTools.Is_Allowed_Reg(regName, allowedOperands))
+                                {
+                                    if (this._asmSimulator.Tools.StateConfig.IsRegOn(RegisterTools.Get64BitsRegister(regName))) {
+                                        State2 state = this._asmSimulator.GetState(lineNumber, false);
+                                        Tv5[] content = state.GetTv5Array(regName);
+                                        if (state != null)
+                                        {
+                                            additionalInfo = ToolsZ3.ToStringHex(content) + " = " + ToolsZ3.ToStringBin(content);
+                                        }
+                                        AsmDudeToolsStatic.Output_INFO("AsmCompletionSource:Mnemonic_Operand_Completions; register " + keyword + " is selected and has value " + additionalInfo);
+                                    }
+                                }
+                                else
+                                {
+                                    selected = false;
+                                }
+                                break;
                             }
-                            break;
-                        }
                         case AsmTokenType.Misc:
-                        {
-                            if (AsmSignatureTools.Is_Allowed_Misc(keyword, allowedOperands))
                             {
-                                //AsmDudeToolsStatic.Output(string.Format("INFO: AsmCompletionSource:mnemonicOperandCompletions; rn="+ keyword + " is selected"));
-                            } else
+                                if (AsmSignatureTools.Is_Allowed_Misc(keyword, allowedOperands))
+                                {
+                                    //AsmDudeToolsStatic.Output(string.Format("INFO: AsmCompletionSource:mnemonicOperandCompletions; rn="+ keyword + " is selected"));
+                                }
+                                else
+                                {
+                                    selected = false;
+                                }
+                                break;
+                            }
+                        default:
                             {
                                 selected = false;
+                                break;
                             }
-                            break;
-                        }
-                        default:
-                        {
-                            selected = false;
-                            break;
-                        }
                     }
                 }
                 if (selected)
@@ -254,7 +276,7 @@ namespace AsmDude
                     String displayText = keyword + archStr + descriptionStr;
                     //String description = keyword.PadRight(15) + archStr.PadLeft(8) + descriptionStr;
                     this._icons.TryGetValue(type, out var imageSource);
-                    completions.Add(new Completion(displayText, insertionText, null, imageSource, ""));
+                    completions.Add(new Completion(displayText, insertionText, additionalInfo, imageSource, ""));
                 }
             }
             return completions;
@@ -350,11 +372,13 @@ namespace AsmDude
                         if (assembler.HasFlag(AssemblerEnum.MASM))
                         {
                             if (!usedAssember.HasFlag(AssemblerEnum.MASM)) selected = false;
-                        } else if (assembler.HasFlag(AssemblerEnum.NASM))
+                        }
+                        else if (assembler.HasFlag(AssemblerEnum.NASM))
                         {
                             if (!usedAssember.HasFlag(AssemblerEnum.NASM)) selected = false;
                         }
-                    } else
+                    }
+                    else
                     {
                         arch = this._asmDudeTools.Get_Architecture(keyword);
                         selected = AsmDudeToolsStatic.Is_Arch_Switched_On(arch);
@@ -391,7 +415,8 @@ namespace AsmDude
             {
                 uri = new Uri(installPath + "Resources/images/icon-R-blue.png");
                 this._icons[AsmTokenType.Register] = AsmDudeToolsStatic.Bitmap_From_Uri(uri);
-            } catch (FileNotFoundException)
+            }
+            catch (FileNotFoundException)
             {
                 //MessageBox.Show("ERROR: AsmCompletionSource: could not find file \"" + uri.AbsolutePath + "\".");
             }
@@ -400,7 +425,8 @@ namespace AsmDude
                 uri = new Uri(installPath + "Resources/images/icon-M.png");
                 this._icons[AsmTokenType.Mnemonic] = AsmDudeToolsStatic.Bitmap_From_Uri(uri);
                 this._icons[AsmTokenType.Jump] = this._icons[AsmTokenType.Mnemonic];
-            } catch (FileNotFoundException)
+            }
+            catch (FileNotFoundException)
             {
                 //MessageBox.Show("ERROR: AsmCompletionSource: could not find file \"" + uri.AbsolutePath + "\".");
             }
@@ -409,7 +435,8 @@ namespace AsmDude
                 uri = new Uri(installPath + "Resources/images/icon-question.png");
                 this._icons[AsmTokenType.Misc] = AsmDudeToolsStatic.Bitmap_From_Uri(uri);
                 this._icons[AsmTokenType.Directive] = this._icons[AsmTokenType.Misc];
-            } catch (FileNotFoundException)
+            }
+            catch (FileNotFoundException)
             {
                 //MessageBox.Show("ERROR: AsmCompletionSource: could not find file \"" + uri.AbsolutePath + "\".");
             }
@@ -417,7 +444,8 @@ namespace AsmDude
             {
                 uri = new Uri(installPath + "Resources/images/icon-L.png");
                 this._icons[AsmTokenType.Label] = AsmDudeToolsStatic.Bitmap_From_Uri(uri);
-            } catch (FileNotFoundException)
+            }
+            catch (FileNotFoundException)
             {
                 //MessageBox.Show("ERROR: AsmCompletionSource: could not find file \"" + uri.AbsolutePath + "\".");
             }

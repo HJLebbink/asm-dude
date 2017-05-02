@@ -1,5 +1,6 @@
 ﻿using AsmDude.SyntaxHighlighting;
 using AsmSimZ3;
+using AsmSimZ3.Mnemonics_ng;
 using AsmTools;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
@@ -13,10 +14,9 @@ namespace AsmDude.Tools
     {
         private readonly ITextBuffer _buffer;
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
-        private readonly AsmRunnerZ3 _runner;
         private readonly CFlow _cflow;
-        private readonly IDictionary<int, IState_R> _cachedStates;
-
+        private readonly IDictionary<int, State2> _cachedStates;
+        public readonly AsmSimZ3.Mnemonics_ng.Tools Tools;
         private object _updateLock = new object();
 
         private bool _busy;
@@ -26,45 +26,40 @@ namespace AsmDude.Tools
         public event EventHandler<CustomEventArgs> Simulate_Done_Event;
         public bool Is_Enabled { get; set; }
 
-        private AsmSimulator(ITextBuffer buffer, ITagAggregator<AsmTokenTag> aggregator, AsmParameters p = null)
+        private AsmSimulator(ITextBuffer buffer, ITagAggregator<AsmTokenTag> aggregator)
         {
             this._buffer = buffer;
             this._aggregator = aggregator;
             this._cflow = new CFlow(this._buffer.CurrentSnapshot.GetText());
-            this._cachedStates = new Dictionary<int, IState_R>();
+            this._cachedStates = new Dictionary<int, AsmSimZ3.Mnemonics_ng.State2>();
             this.Is_Enabled = true;
             this._scheduled = new HashSet<int>();
 
             Dictionary<string, string> settings = new Dictionary<string, string>
             {
                 /*
-                        Legal parameters are:
-                            auto_config(bool)(default: true)
-                            debug_ref_count(bool)(default: false)
-                            dump_models(bool)(default: false)
-                            model(bool)(default: true)
-                            model_validate(bool)(default: false)
-                            proof(bool)(default: false)
-                            rlimit(unsigned int)(default: 4294967295)
-                            smtlib2_compliant(bool)(default: false)
-                            timeout(unsigned int)(default: 4294967295)
-                            trace(bool)(default: false)
-                            trace_file_name(string)(default: z3.log)
-                            type_check(bool)(default: true)
-                            unsat_core(bool)(default: false)
-                            well_sorted_check(bool)(default: false)
+                Legal parameters are:
+                    auto_config(bool)(default: true)
+                    debug_ref_count(bool)(default: false)
+                    dump_models(bool)(default: false)
+                    model(bool)(default: true)
+                    model_validate(bool)(default: false)
+                    proof(bool)(default: false)
+                    rlimit(unsigned int)(default: 4294967295)
+                    smtlib2_compliant(bool)(default: false)
+                    timeout(unsigned int)(default: 4294967295)
+                    trace(bool)(default: false)
+                    trace_file_name(string)(default: z3.log)
+                    type_check(bool)(default: true)
+                    unsat_core(bool)(default: false)
+                    well_sorted_check(bool)(default: false)
                 */
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" }         // enable proof generation
             };
-            Context ctx = new Context(settings);
-            if (p==null) p = new AsmParameters();
-            bool useForward = true;
-            this._runner = new AsmRunnerZ3(p, ctx, useForward, true)
-            {
-                OutputPane = AsmDudeToolsStatic.GetOutputPane()
-            };
+
+            this.Tools = new AsmSimZ3.Mnemonics_ng.Tools(new Context(settings));
             this._buffer.Changed += this.Buffer_Changed;
         }
 
@@ -90,7 +85,6 @@ namespace AsmDude.Tools
                 //int maxStepBack = 6;
                 //this._runner.ExecuteTree_Backward(this._cflow, this._cflow.NLines - 1, maxStepBack);
             }
-
         }
 
         /// <summary>Factory return singleton</summary>
@@ -109,20 +103,21 @@ namespace AsmDude.Tools
         {
             if (!(this._cachedStates.ContainsKey(lineNumber)))
             {
-                IState_R result = this._runner.Construct_ExecutionTree_Backward_OLD(this._cflow, lineNumber, 6);
-                this._cachedStates.Add(lineNumber, result);
+                AsmSimZ3.Mnemonics_ng.ExecutionTree tree = Runner.Construct_ExecutionTree_Backward(this._cflow, lineNumber, 10, this.Tools);
+                State2 state = tree.EndState;
+                this._cachedStates.Add(lineNumber, state);
                 On_Simulate_Done_Event(new CustomEventArgs("Simulate has finished"));
             }
         }
 
-        public string GetRegisterValue(Rn name, IState_R state)
+        public string GetRegisterValue(Rn name, State2 state)
         {
             if (state == null) return "";
             Tv5[] reg = state.GetTv5Array(name);
             return string.Format("{0} = {1}", ToolsZ3.ToStringBin(reg), ToolsZ3.ToStringHex(reg));
         }
 
-        public bool HasRegisterValue(Rn name, IState_R state)
+        public bool HasRegisterValue(Rn name, State2 state)
         {
             return true;
         }
@@ -130,9 +125,9 @@ namespace AsmDude.Tools
 
         /// <summary>Return the state of the provided lineNumber, if the state is not computed yet, 
         /// return null and create one in a different thread according to the provided createState boolean.</summary>
-        public IState_R GetState(int lineNumber, bool createState = false)
+        public State2 GetState(int lineNumber, bool createState = false)
         {
-            if (this._cachedStates.TryGetValue(lineNumber, out IState_R result))
+            if (this._cachedStates.TryGetValue(lineNumber, out State2 result))
             {
                 return result;
             }
@@ -140,8 +135,15 @@ namespace AsmDude.Tools
             {
                 if (this._busy)
                 {
-                    AsmDudeToolsStatic.Output_INFO("AsmSimulator:Simulate_Delayed: busy; scheduling this line " + lineNumber);
-                    this._scheduled.Add(lineNumber);
+                    if (this._scheduled.Contains(lineNumber))
+                    {
+                        AsmDudeToolsStatic.Output_INFO("AsmSimulator:Simulate_Delayed: busy; already scheduled line " + lineNumber);
+                    }
+                    else
+                    {
+                        AsmDudeToolsStatic.Output_INFO("AsmSimulator:Simulate_Delayed: busy; scheduling this line " + lineNumber);
+                        this._scheduled.Add(lineNumber);
+                    }
                 }
                 else
                 {
@@ -163,9 +165,10 @@ namespace AsmDude.Tools
 
                 this._busy = true;
                 this._scheduled.Remove(lineNumber);
-                IState_R result = this._runner.Construct_ExecutionTree_Backward_OLD(this._cflow, lineNumber, 6);
+                this.Tools.StateConfig = Runner.GetUsage_StateConfig(this._cflow, 0, this._cflow.LastLineNumber, this.Tools);
+                AsmSimZ3.Mnemonics_ng.ExecutionTree tree = Runner.Construct_ExecutionTree_Backward(this._cflow, lineNumber, 4, this.Tools);
                 this._cachedStates.Remove(lineNumber);
-                this._cachedStates.Add(lineNumber, result);
+                this._cachedStates.Add(lineNumber, tree.EndState);
                 this._busy = false;
                 On_Simulate_Done_Event(new CustomEventArgs("Simulate has finished"));
 

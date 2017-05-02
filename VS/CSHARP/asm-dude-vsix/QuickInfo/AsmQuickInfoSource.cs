@@ -38,6 +38,7 @@ using AsmTools;
 using AsmDude.SyntaxHighlighting;
 using AsmDude.Tools;
 using AsmSimZ3;
+using AsmSimZ3.Mnemonics_ng;
 
 namespace AsmDude.QuickInfo
 {
@@ -168,7 +169,7 @@ namespace AsmDude.QuickInfo
 
                                 if (this._asmSimulator.Is_Enabled)
                                 {
-                                    IState_R state = this._asmSimulator.GetState(lineNumber, true);
+                                    State2 state = this._asmSimulator.GetState(lineNumber, true);
                                     string msg = this._asmSimulator.GetRegisterValue(RegisterTools.ParseRn(keyword), state);
                                     if (msg.Length == 0) msg = "[Bussy calculating register content]";
 

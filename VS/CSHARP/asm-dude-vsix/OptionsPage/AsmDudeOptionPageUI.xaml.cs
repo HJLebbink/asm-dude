@@ -32,40 +32,40 @@ namespace AsmDude.OptionsPage {
 
         public AsmDudeOptionsPageUI() {
             InitializeComponent();
-            this.version_UI.Content = "Asm Dude v" + typeof(AsmDudePackage).Assembly.GetName().Version.ToString() + " (" + ApplicationInformation.CompileDate.ToString()+")";
+            this.version_UI.Content = "Asm Dude v" + typeof(AsmDudePackage).Assembly.GetName().Version.ToString() + " (" + ApplicationInformation.CompileDate.ToUniversalTime().ToString()+")";
         }
 
         #region Asm Documentation
         public bool AsmDoc_On {
-            get { return this.asmDoc_On_UI.IsChecked ?? false; }
-            set { this.asmDoc_On_UI.IsChecked = value; }
+            get { return this.AsmDoc_On_UI.IsChecked ?? false; }
+            set { this.AsmDoc_On_UI.IsChecked = value; }
         }
 
         public string AsmDoc_Url {
-            get { return this.asmDoc_Url_UI.Text; }
-            set { this.asmDoc_Url_UI.Text = value; }
+            get { return this.AsmDoc_Url_UI.Text; }
+            set { this.AsmDoc_Url_UI.Text = value; }
         }
         #endregion Asm Documentation
 
         #region Code Folding
         public bool CodeFolding_On {
-            get { return this.codeFolding_On_UI.IsChecked ?? false; }
-            set { this.codeFolding_On_UI.IsChecked = value; }
+            get { return this.CodeFolding_On_UI.IsChecked ?? false; }
+            set { this.CodeFolding_On_UI.IsChecked = value; }
         }
 
         public bool CodeFolding_IsDefaultCollaped {
-            get { return this.codeFolding_IsDefaultCollaped_UI.IsChecked ?? false; }
-            set { this.codeFolding_IsDefaultCollaped_UI.IsChecked = value; }
+            get { return this.CodeFolding_IsDefaultCollaped_UI.IsChecked ?? false; }
+            set { this.CodeFolding_IsDefaultCollaped_UI.IsChecked = value; }
         }
 
         public string CodeFolding_BeginTag {
-            get { return this.codeFolding_BeginTag_UI.Text; }
-            set { this.codeFolding_BeginTag_UI.Text = value; }
+            get { return this.CodeFolding_BeginTag_UI.Text; }
+            set { this.CodeFolding_BeginTag_UI.Text = value; }
         }
 
         public string CodeFolding_EndTag {
-            get { return this.codeFolding_EndTag_UI.Text; }
-            set { this.codeFolding_EndTag_UI.Text = value; }
+            get { return this.CodeFolding_EndTag_UI.Text; }
+            set { this.CodeFolding_EndTag_UI.Text = value; }
         }
         #endregion Code Folding
 
@@ -489,21 +489,64 @@ namespace AsmDude.OptionsPage {
         #endregion
 
         #region Intellisense
-        public bool ShowUndefinedLabels {
-            get { return this.showUndefinedLabels_UI.IsChecked ?? false; }
-            set { this.showUndefinedLabels_UI.IsChecked = value; }
+        public bool Intellisense_Show_Undefined_Labels {
+            get { return this.Intellisense_Show_Undefined_Labels_UI.IsChecked ?? false; }
+            set { this.Intellisense_Show_Undefined_Labels_UI.IsChecked = value; }
         }
-        public bool ShowClashingLabels {
-            get { return this.showClashingLabels_UI.IsChecked ?? false; }
-            set { this.showClashingLabels_UI.IsChecked = value; }
+        public bool Intellisense_Show_Clashing_Labels {
+            get { return this.Intellisense_Show_Clashing_Labels_UI.IsChecked ?? false; }
+            set { this.Intellisense_Show_Clashing_Labels_UI.IsChecked = value; }
         }
-        public bool DecorateUndefinedLabels {
-            get { return this.decorateUndefinedLabels_UI.IsChecked ?? false; }
-            set { this.decorateUndefinedLabels_UI.IsChecked = value; }
+        public bool Intellisense_Decorate_Undefined_Labels {
+            get { return this.Intellisense_Decorate_Undefined_Labels_UI.IsChecked ?? false; }
+            set { this.Intellisense_Decorate_Undefined_Labels_UI.IsChecked = value; }
         }
-        public bool DecorateClashingLabels {
-            get { return this.decorateClashingLabels_UI.IsChecked ?? false; }
-            set { this.decorateClashingLabels_UI.IsChecked = value; }
+        public bool Intellisense_Decorate_Clashing_Labels {
+            get { return this.Intellisense_Decorate_Clashing_Labels_UI.IsChecked ?? false; }
+            set { this.Intellisense_Decorate_Clashing_Labels_UI.IsChecked = value; }
+        }
+        #endregion
+
+        #region Assembly Simulator
+        public bool AsmSim_On
+        {
+            get { return this.AsmSim_On_UI.IsChecked ?? false; }
+            set { this.AsmSim_On_UI.IsChecked = value; }
+        }
+        public bool AsmSim_Show_Syntax_Errors
+        {
+            get { return this.AsmSim_Shown_Syntax_Errors_UI.IsChecked ?? false; }
+            set { this.AsmSim_Shown_Syntax_Errors_UI.IsChecked = value; }
+        }
+        public bool AsmSim_Decorate_Syntax_Errors
+        {
+            get { return this.AsmSim_Decorate_Syntax_Errors_UI.IsChecked ?? false; }
+            set { this.AsmSim_Decorate_Syntax_Errors_UI.IsChecked = value; }
+        }
+        public bool AsmSim_Show_Usage_Of_Undefined
+        {
+            get { return this.AsmSim_Show_Usage_Of_Undefined_UI.IsChecked ?? false; }
+            set { this.AsmSim_Show_Usage_Of_Undefined_UI.IsChecked = value; }
+        }
+        public bool AsmSim_Decorate_Usage_Of_Undefined
+        {
+            get { return this.AsmSim_Decorate_Usage_Of_Undefined_UI.IsChecked ?? false; }
+            set { this.AsmSim_Decorate_Usage_Of_Undefined_UI.IsChecked = value; }
+        }
+        public bool AsmSim_Decorate_Registers
+        {
+            get { return this.AsmSim_Decorate_Registers_UI.IsChecked ?? false; }
+            set { this.AsmSim_Decorate_Registers_UI.IsChecked = value; }
+        }
+        public bool AsmSim_Use_In_Code_Completion
+        {
+            get { return this.AsmSim_Use_In_Code_Completion_UI.IsChecked ?? false; }
+            set { this.AsmSim_Use_In_Code_Completion_UI.IsChecked = value; }
+        }
+        public bool AsmSim_Decorate_Unimplemented
+        {
+            get { return this.AsmSim_Decorate_Unimplemented_UI.IsChecked ?? false; }
+            set { this.AsmSim_Decorate_Unimplemented_UI.IsChecked = value; }
         }
         #endregion
     }

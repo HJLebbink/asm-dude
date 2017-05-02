@@ -36,6 +36,7 @@ using AsmTools;
 using System.Windows.Media;
 using Microsoft.VisualStudio.Text.Adornments;
 using AsmSimZ3;
+using AsmSimZ3.Mnemonics_ng;
 
 namespace AsmDude.Squiggles
 {
@@ -180,7 +181,7 @@ namespace AsmDude.Squiggles
 
                                 //AsmSimToolsStatic.Output_INFO(string.Format("AsmSimSquigglesTagger:GetTags: found register " + regName + " at line " + lineNumber));
 
-                                IState_R state = this._asmSimulator.GetState(lineNumber, false);
+                                State2 state = this._asmSimulator.GetState(lineNumber, false);
                                 if (state != null)
                                 {
                                     //string registerContent = state.GetString(regName);

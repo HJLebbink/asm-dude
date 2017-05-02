@@ -45,25 +45,24 @@ namespace AsmDude.Tools
     {
         #region Singleton Factories
 
-        public static ITagAggregator<AsmTokenTag> Get_Aggregator(
+        public static ITagAggregator<AsmTokenTag> GetOrCreate_Aggregator(
             ITextBuffer buffer,
             IBufferTagAggregatorFactoryService aggregatorFactory)
         {
             Func<ITagAggregator<AsmTokenTag>> sc = delegate ()
             {   // this is the only place where ITagAggregator are created
-                AsmDudeToolsStatic.Output_INFO("Creating a ITagAggregator");
+                //AsmDudeToolsStatic.Output_INFO("Creating a ITagAggregator");
                 return aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
 
-        public static ILabelGraph Get_Label_Graph(
+        public static ILabelGraph GetOrCreate_Label_Graph(
             ITextBuffer buffer,
             ITagAggregator<AsmTokenTag> aggregator,
             ITextDocumentFactoryService docFactory,
             IContentTypeRegistryService contentService)
         {
-
             Func<LabelGraph> sc1 = delegate ()
             {
                 IContentType contentType = contentService.GetContentType(AsmDudePackage.AsmDudeContentType);

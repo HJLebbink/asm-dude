@@ -12,7 +12,7 @@ namespace AsmDude {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.0.1.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.1.0.0")]
     public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -1088,6 +1088,102 @@ namespace AsmDude {
             }
             set {
                 this["KeywordHighlighting_BorderColor_On"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AsmSim_On {
+            get {
+                return ((bool)(this["AsmSim_On"]));
+            }
+            set {
+                this["AsmSim_On"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AsmSim_Show_Syntax_Errors {
+            get {
+                return ((bool)(this["AsmSim_Show_Syntax_Errors"]));
+            }
+            set {
+                this["AsmSim_Show_Syntax_Errors"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AsmSim_Decorate_Syntax_Errors {
+            get {
+                return ((bool)(this["AsmSim_Decorate_Syntax_Errors"]));
+            }
+            set {
+                this["AsmSim_Decorate_Syntax_Errors"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AsmSim_Show_Usage_Of_Undefined {
+            get {
+                return ((bool)(this["AsmSim_Show_Usage_Of_Undefined"]));
+            }
+            set {
+                this["AsmSim_Show_Usage_Of_Undefined"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AsmSim_Decorate_Usage_Of_Undefined {
+            get {
+                return ((bool)(this["AsmSim_Decorate_Usage_Of_Undefined"]));
+            }
+            set {
+                this["AsmSim_Decorate_Usage_Of_Undefined"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AsmSim_Decorate_Registers {
+            get {
+                return ((bool)(this["AsmSim_Decorate_Registers"]));
+            }
+            set {
+                this["AsmSim_Decorate_Registers"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AsmSim_Use_In_Code_Completion {
+            get {
+                return ((bool)(this["AsmSim_Use_In_Code_Completion"]));
+            }
+            set {
+                this["AsmSim_Use_In_Code_Completion"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AsmSim_Decorate_Unimplemented {
+            get {
+                return ((bool)(this["AsmSim_Decorate_Unimplemented"]));
+            }
+            set {
+                this["AsmSim_Decorate_Unimplemented"] = value;
             }
         }
     }

@@ -52,7 +52,7 @@ namespace AsmDude.CodeFolding
         {
             Func<ITagger<T>> sc = delegate ()
             {
-                var aggregator = AsmDudeToolsStatic.Get_Aggregator(buffer, this._aggregatorFactory);
+                var aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, this._aggregatorFactory);
                 return new CodeFoldingTagger(buffer, aggregator, AsmDudeTools.Instance.Error_List_Provider) as ITagger<T>;
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);

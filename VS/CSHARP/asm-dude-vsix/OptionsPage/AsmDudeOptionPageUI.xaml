@@ -57,10 +57,10 @@
                 <GroupBox Header="Documentation" BorderBrush="DarkGray">
                     <Grid>
                         <StackPanel>
-                            <CheckBox x:Name="asmDoc_On_UI" ToolTip="Assembly documentation enabled" Content="Enable documentation" Margin="0,4,0,4" />
+                            <CheckBox x:Name="AsmDoc_On_UI" ToolTip="Assembly documentation enabled" Content="Enable documentation" Margin="0,4,0,4" />
                             <Grid>
                                 <Label Content="Documentation URL:" HorizontalAlignment="Left"/>
-                                <TextBox x:Name="asmDoc_Url_UI" ToolTip="URL to the documentation. E.g. https://hjlebbink.github.io/x86doc/html/" TextWrapping="Wrap" Text="https://hjlebbink.github.io/x86doc/html/" Margin="140,3,0,2"/>
+                                <TextBox x:Name="AsmDoc_Url_UI" ToolTip="URL to the documentation. E.g. https://hjlebbink.github.io/x86doc/html/" TextWrapping="Wrap" Text="https://hjlebbink.github.io/x86doc/html/" Margin="140,3,0,2"/>
                             </Grid>
                         </StackPanel>
                     </Grid>
@@ -69,16 +69,16 @@
                     <Grid>
                         <StackPanel>
                             <Grid>
-                                <CheckBox x:Name="codeFolding_On_UI" ToolTip="Code folding enabled" Content="Enable code folding" Margin="0,4,0,4" />
-                                <CheckBox x:Name="codeFolding_IsDefaultCollaped_UI" ToolTip="Whether folding regions are collapsed by default" Content="Default collapsed" Margin="140,4,0,4"/>
+                                <CheckBox x:Name="CodeFolding_On_UI" ToolTip="Code folding enabled" Content="Enable code folding" Margin="0,4,0,4" />
+                                <CheckBox x:Name="CodeFolding_IsDefaultCollaped_UI" ToolTip="Whether folding regions are collapsed by default" Content="Default collapsed" Margin="140,4,0,4"/>
                             </Grid>
                             <Grid>
                                 <Label Content="Start tag:" HorizontalAlignment="Left"/>
-                                <TextBox x:Name="codeFolding_BeginTag_UI" ToolTip="The characters that start the outlining region. E.g. #region" Margin="140,3,0,2"/>
+                                <TextBox x:Name="CodeFolding_BeginTag_UI" ToolTip="The characters that start the outlining region. E.g. #region" Margin="140,3,0,2"/>
                             </Grid>
                             <Grid>
                                 <Label Content="End tag:" HorizontalAlignment="Left"/>
-                                <TextBox x:Name="codeFolding_EndTag_UI" ToolTip="The characters that start the outlining region. E.g. #endregion" Margin="140,3,0,2"/>
+                                <TextBox x:Name="CodeFolding_EndTag_UI" ToolTip="The characters that start the outlining region. E.g. #endregion" Margin="140,3,0,2"/>
                             </Grid>
                         </StackPanel>
                     </Grid>
@@ -116,10 +116,24 @@
                         <StackPanel>
                             <CheckBox x:Name="useCodeCompletion_UI" Content="Enable code completion" ToolTip="Code completion eabled" Margin="0,4,0,2" />
                             <CheckBox x:Name="useSignatureHelp_UI" Content="Enable signature help" ToolTip="Signature help enabled" Margin="0,2,0,2" />
-                            <CheckBox x:Name="showUndefinedLabels_UI" Content="Show undefined labels in error task" ToolTip="Show undefined labels in error task" Margin="0,2,0,2" />
-                            <CheckBox x:Name="decorateUndefinedLabels_UI" Content="Decorate undefined labels" ToolTip="Decorate undefined labels with error squiggles" Margin="0,2,0,2" />
-                            <CheckBox x:Name="showClashingLabels_UI" Content="Show clashing labels in error task" ToolTip="Show clashing labels in error task" Margin="0,2,0,2" />
-                            <CheckBox x:Name="decorateClashingLabels_UI" Content="Decorate clashing labels" ToolTip="Decorate clashing labels with error squiggle" Margin="0,2,0,4" />
+                            <CheckBox x:Name="Intellisense_Show_Undefined_Labels_UI" Content="Show undefined labels in error task" ToolTip="Show undefined labels in error task" Margin="0,2,0,2" />
+                            <CheckBox x:Name="Intellisense_Decorate_Undefined_Labels_UI" Content="Decorate undefined labels" ToolTip="Decorate undefined labels with error squiggles" Margin="0,2,0,2" />
+                            <CheckBox x:Name="Intellisense_Show_Clashing_Labels_UI" Content="Show clashing labels in error task" ToolTip="Show clashing labels in error task" Margin="0,2,0,2" />
+                            <CheckBox x:Name="Intellisense_Decorate_Clashing_Labels_UI" Content="Decorate clashing labels" ToolTip="Decorate clashing labels with error squiggle" Margin="0,2,0,4" />
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Header="Assembly Simulator (Experimental, warning: eats your lunch)" BorderBrush="DarkGray">
+                    <Grid>
+                        <StackPanel>
+                            <CheckBox x:Name="AsmSim_On_UI" Content="Enable assembly simulator" ToolTip="TODO" Margin="0,4,0,2" />
+                            <CheckBox x:Name="AsmSim_Shown_Syntax_Errors_UI" Content="Show syntax errors in error task" ToolTip="Show syntax errors found when parsing in error task" Margin="0,2,0,2" />
+                            <CheckBox x:Name="AsmSim_Decorate_Syntax_Errors_UI" Content="Decorate syntax errors" ToolTip="Decorate syntax errors found when parsing" Margin="0,2,0,2" />
+                            <CheckBox x:Name="AsmSim_Show_Usage_Of_Undefined_UI" Content="Show usage of undefined values in error task" ToolTip="Decorate clashing labels with error squiggle" Margin="0,2,0,2" />
+                            <CheckBox x:Name="AsmSim_Decorate_Usage_Of_Undefined_UI" Content="Decorate usage of undefined values" ToolTip="Decorate clashing labels with error squiggle" Margin="0,2,0,2" />
+                            <CheckBox x:Name="AsmSim_Decorate_Registers_UI" Content="Decorate registers with known values" ToolTip="TODO" Margin="0,2,0,2" />
+                            <CheckBox x:Name="AsmSim_Use_In_Code_Completion_UI" Content="Use known register values in code completions" ToolTip="TODO" Margin="0,2,0,2" />
+                            <CheckBox x:Name="AsmSim_Decorate_Unimplemented_UI" Content="Decorate instructions that are not (yet) implemented" ToolTip="TODO" Margin="0,2,0,4" />
                         </StackPanel>
                     </Grid>
                 </GroupBox>
