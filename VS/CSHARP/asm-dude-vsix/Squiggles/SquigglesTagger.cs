@@ -98,7 +98,8 @@ namespace AsmDude.Squiggles
             bool Decorate_Undefined_Includes = labelGraph_Enabled && Settings.Default.IntelliSense_Show_Undefined_Includes;
 
             bool Decorate_Registers_Known_Register_Values = asmSimulator_Enabled && Settings.Default.AsmSim_Decorate_Registers;
-            bool Decorate_Mnemonics_Known_Register_Values = asmSimulator_Enabled && false;
+            bool Decorate_Syntax_Errors = asmSimulator_Enabled && Settings.Default.AsmSim_Decorate_Syntax_Errors;
+            bool Decorate_Unimplemented = asmSimulator_Enabled && Settings.Default.AsmSim_Decorate_Unimplemented;
 
             AssemblerEnum usedAssember = AsmDudeToolsStatic.Used_Assembler;
 
@@ -206,9 +207,25 @@ namespace AsmDude.Squiggles
                         }
                     case AsmTokenType.Mnemonic:
                         {
-                            if (Decorate_Mnemonics_Known_Register_Values)
+                            if (Decorate_Syntax_Errors || Decorate_Unimplemented)
                             {
-                                yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.Warning));
+                                int lineNumber = Get_Linenumber(tagSpan);
+                                string line = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().Trim();
+                                var info = AsmSimulator.GetInfo(line, this._asmSimulator.Tools);
+
+                                if (info.IsImplemented)
+                                {
+                                    if (Decorate_Syntax_Errors && (info.message != null))
+                                    {
+                                        yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.SyntaxError, info.message));
+                                    }
+                                } else
+                                {
+                                    if (Decorate_Unimplemented)
+                                    {
+                                        yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.CompilerError, "Instruction " + tagSpan.GetText() + " is not (yet) supported by the simulator."));
+                                    }
+                                }
                             }
                             break;
                         }

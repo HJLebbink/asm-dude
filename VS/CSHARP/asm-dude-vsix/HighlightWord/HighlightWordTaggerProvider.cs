@@ -35,7 +35,6 @@ namespace AsmDude.HighlightWord
     [TagType(typeof(HighlightWordTag))]
     public class HighlightWordTaggerProvider : IViewTaggerProvider
     {
-
         [Import]
         private ITextSearchService _textSearchService = null;
 

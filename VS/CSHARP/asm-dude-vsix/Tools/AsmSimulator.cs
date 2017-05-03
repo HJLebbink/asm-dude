@@ -26,6 +26,31 @@ namespace AsmDude.Tools
         public event EventHandler<CustomEventArgs> Simulate_Done_Event;
         public bool Is_Enabled { get; set; }
 
+        public static (bool IsImplemented, string message) GetInfo(string line, AsmSimZ3.Mnemonics_ng.Tools tools)
+        {
+            var dummyKeys = ("", "", "", "");
+            var content = AsmSourceTools.ParseLine(line);
+            var opcodeBase = Runner.InstantiateOpcode(content.mnemonic, content.args, dummyKeys, tools);
+            if (opcodeBase == null) return (IsImplemented: false, message: null);
+
+            if (opcodeBase.GetType() == typeof(NotImplemented))
+            {
+                return (IsImplemented: false, message: null);
+            }
+            else
+            {
+                if (opcodeBase.IsHalted)
+                {
+                    return (IsImplemented: true, message: opcodeBase.Halt);
+                }
+                else
+                {
+                    return (IsImplemented: true, message: null);
+                }
+            }
+        }
+    
+
         private AsmSimulator(ITextBuffer buffer, IBufferTagAggregatorFactoryService aggregatorFactory)
         {
             this._buffer = buffer;
