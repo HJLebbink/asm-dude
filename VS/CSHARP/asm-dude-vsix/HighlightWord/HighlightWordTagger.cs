@@ -201,7 +201,7 @@ namespace AsmDude.HighlightWord
                         string t = this.NewWord.Replace(".", "\\.").Replace("$", "\\$").Replace("?", "\\?").Replace("/", "\\/"); //TODO escape backslashes
                         findData = new FindData(t, s)
                         {
-                            FindOptions = FindOptions.SingleLine | FindOptions.UseRegularExpressions
+                            FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions
                         };
                     }
 
