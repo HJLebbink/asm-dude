@@ -438,8 +438,8 @@ JMPE	R/M16	IA64	JMPE R/M16	TODO
 JMPE	R/M32	IA64	JMPE R/M32	TODO
 ; INTEL ====================================================================
 JMP	M16	8086	JMP M16:16	Jump far, absolute indirect, address given in m16
-JMP	M32	386	JMP M16:32	Jump far, absolute indirect, address given in M32.
-JMP	M64	X64	JMP M16:64	Jump far, absolute indirect, address given in M64.
+JMP	M32	386	JMP M16:32	Jump far, absolute indirect, address given in m32.
+JMP	M64	X64	JMP M16:64	Jump far, absolute indirect, address given in m64.
 JMP	R/M16	8086	JMP R/M16	Jump near, absolute indirect, address = zero-extended r/m16. Not supported in 64-bit mode.
 JMP	R/M32	386	JMP R/M32	Jump near, absolute indirect, address given in r/m32. Not supported in 64-bit mode.
 JMP	R/M64	X64	JMP R/M64	Jump near, absolute indirect, RIP = 64-Bit offset from register or memory.
@@ -756,7 +756,7 @@ AND	R64,R/M64	X64	AND R64,R/M64	r64 AND r/m64.
 
 ARPL	R/M16,R16	286	ARPL R/M16,R16	Adjust RPL of r/m16 to not less than RPL of r16.
 BOUND	R16,M16&16	186	BOUND R16,M16&16	Check if r16 (array index) is within bounds specified by m16&amp;16.
-BOUND	R32,M32&32	386	BOUND R32,M32&32	Check if r32 (array index) is within bounds specified by M32&amp;32.
+BOUND	R32,M32&32	386	BOUND R32,M32&32	Check if r32 (array index) is within bounds specified by m32&amp;32.
 BSF	R16,R/M16	386	BSF R16,R/M16	Bit scan forward on r/m16.
 BSF	R32,R/M32	386	BSF R32,R/M32	Bit scan forward on r/m32.
 BSF	R64,R/M64	X64	BSF R64,R/M64	Bit scan forward on r/m64.
@@ -846,7 +846,7 @@ CMPXCHG	R/M32,R32	PENT	CMPXCHG R/M32,R32	Compare EAX with r/m32. If equal, ZF is
 CMPXCHG	R/M64,R64	X64	CMPXCHG R/M64,R64	Compare RAX with r/m64. If equal, ZF is set and r64 is loaded into r/m64. Else, clear ZF and load r/m64 into RAX.
 CMPXCHG	R/M8,R8	PENT	CMPXCHG R/M8,R8	Compare AL with r/m8. If equal, ZF is set and r8 is loaded into r/m8. Else, clear ZF and load r/m8 into AL.
 CMPXCHG16B	M128	X64	CMPXCHG16B M128	Compare RDX:RAX with m128. If equal, set ZF and load RCX:RBX into m128. Else, clear ZF and load m128 into RDX:RAX.
-CMPXCHG8B	M64	PENT	CMPXCHG8B M64	Compare EDX:EAX with M64. If equal, set ZF and load ECX:EBX into M64. Else, clear ZF and load M64 into EDX:EAX.
+CMPXCHG8B	M64	PENT	CMPXCHG8B M64	Compare EDX:EAX with m64. If equal, set ZF and load ECX:EBX into m64. Else, clear ZF and load m64 into EDX:EAX.
 CPUID		PENT	CPUID	Returns processor identification and feature information to the EAX, EBX, ECX, and EDX registers, as determined by input entered in EAX (in some cases, ECX as well).
 CQO		X64	CQO	RDX:RAX← sign-extend of RAX.
 
@@ -858,10 +858,10 @@ CRC32	R64,R/M64	SSE42	CRC32 R64,R/M64	Accumulate CRC32 on r/m64.
 
 CVTPD2PI	MM,XMM/M128	SSE2	CVTPD2PI MM,XMM/M128	Convert two packed double-precision floating-point values from xmm/m128 to two packed signed doubleword integers in mm.
 CVTPI2PD	XMM,MM/M64	SSE2	CVTPI2PD XMM,MM/M64	Convert two packed signed doubleword integers from mm/meM64 to two packed double-precision floating-point values in xmm.
-CVTPI2PS	XMM,MM/M64	SSE2	CVTPI2PS XMM,MM/M64	Convert two signed doubleword integers from mm/M64 to two single-precision floating-point values in xmm.
-CVTPS2PI	MM,XMM/M64	SSE2	CVTPS2PI MM,XMM/M64	Convert two packed single-precision floating-point values from xmm/M64 to two packed signed doubleword integers in mm.
+CVTPI2PS	XMM,MM/M64	SSE2	CVTPI2PS XMM,MM/M64	Convert two signed doubleword integers from mm/m64 to two single-precision floating-point values in xmm.
+CVTPS2PI	MM,XMM/M64	SSE2	CVTPS2PI MM,XMM/M64	Convert two packed single-precision floating-point values from xmm/m64 to two packed signed doubleword integers in mm.
 CVTTPD2PI	MM,XMM/M128	SSE2	CVTTPD2PI MM,XMM/M128	Convert two packer double-precision floating-point values from xmm/m128 to two packed signed doubleword integers in mm using truncation.
-CVTTPS2PI	MM,XMM/M64	SSE2	CVTTPS2PI MM,XMM/M64	Convert two single-precision floating-point values from xmm/M64 to two signed doubleword signed integers in mm using truncation.
+CVTTPS2PI	MM,XMM/M64	SSE2	CVTTPS2PI MM,XMM/M64	Convert two single-precision floating-point values from xmm/m64 to two signed doubleword signed integers in mm using truncation.
 
 CWD		8086	CWD	DX:AX ← sign-extend of AX.
 CWDE		386	CWDE	EAX ← sign-extend of AX.
@@ -1179,23 +1179,23 @@ MOV	R16,IMM16	8086	MOV R16,IMM16	Move imm16 to r16.
 MOV	R16,R/M16	8086	MOV R16,R/M16	Move r/m16 to r16.
 MOV	R32,IMM32	386	MOV R32,IMM32	Move imm32 to r32.
 MOV	R32,R/M32	386	MOV R32,R/M32	Move r/m32 to r32.
-MOV	R64,IMM64	X64	MOV R64,IMM64	Move imM64 to r64.
+MOV	R64,IMM64	X64	MOV R64,IMM64	Move imm64 to r64.
 MOV	R64,R/M64	X64	MOV R64,R/M64	Move r/m64 to r64.
 MOV	SREG,R/M16	8086	MOV SREG,R/M16	Move r/m16 to segment register.
 MOV	SREG,R/M64	X64	MOV SREG,R/M64	Move lower 16 bits of r/m64 to segment register.
 
 MOVBE	M16,R16	SSE42	MOVBE M16,R16	Reverse byte order in r16 and move to m16.
-MOVBE	M32,R32	SSE42	MOVBE M32,R32	Reverse byte order in r32 and move to M32.
-MOVBE	M64,R64	SSE42	MOVBE M64,R64	Reverse byte order in r64 and move to M64.
+MOVBE	M32,R32	SSE42	MOVBE M32,R32	Reverse byte order in r32 and move to m32.
+MOVBE	M64,R64	SSE42	MOVBE M64,R64	Reverse byte order in r64 and move to m64.
 MOVBE	R16,M16	SSE42	MOVBE R16,M16	Reverse byte order in m16 and move to r16.
-MOVBE	R32,M32	SSE42	MOVBE R32,M32	Reverse byte order in M32 and move to r32.
-MOVBE	R64,M64	SSE42	MOVBE R64,M64	Reverse byte order in M64 and move to r64.
+MOVBE	R32,M32	SSE42	MOVBE R32,M32	Reverse byte order in m32 and move to r32.
+MOVBE	R64,M64	SSE42	MOVBE R64,M64	Reverse byte order in m64 and move to r64.
 
 MOVDQ2Q	MM,XMM	SSE2	MOVDQ2Q MM,XMM	Move low quadword from xmm to mmx register.
 MOVQ2DQ	XMM,MM	SSE2	MOVQ2DQ XMM,MM	Move quadword from mmx to low quadword of xmm.
-MOVNTI	M32,R32	MMX	MOVNTI M32,R32	Move doubleword from r32 to M32 using non-temporal hint.
-MOVNTI	M64,R64	X64	MOVNTI M64,R64	Move quadword from r64 to M64 using non-temporal hint.
-MOVNTQ	M64,MM	MMX	MOVNTQ M64,MM	Move quadword from mm to M64 using non-temporal hint.
+MOVNTI	M32,R32	MMX	MOVNTI M32,R32	Move doubleword from r32 to m32 using non-temporal hint.
+MOVNTI	M64,R64	X64	MOVNTI M64,R64	Move quadword from r64 to m64 using non-temporal hint.
+MOVNTQ	M64,MM	MMX	MOVNTQ M64,MM	Move quadword from mm to m64 using non-temporal hint.
 
 MOVS	M8,M8	8086	MOVS M8,M8	For legacy mode, Move byte from address DS:(E)SI to ES:(E)DI. For 64-bit mode move byte from address (R|E)SI to (R|E)DI.
 MOVS	M16,M16	8086	MOVS M16,M16	For legacy mode, move word from address DS:(E)SI to ES:(E)DI. For 64-bit mode move word at address (R|E)SI to (R|E)DI.
@@ -1289,7 +1289,7 @@ PREFETCHNTA	M8	SSE	PREFETCHNTA M8	Move data from m8 closer to the processor usin
 PREFETCHT0	M8	SSE	PREFETCHT0 M8	Move data from m8 closer to the processor using T0 hint.
 PREFETCHT1	M8	SSE	PREFETCHT1 M8	Move data from m8 closer to the processor using T1 hint.
 PREFETCHT2	M8	SSE	PREFETCHT2 M8	Move data from m8 closer to the processor using T2 hint.
-PSHUFW	MM,MM/M64,IMM8	MMX	PSHUFW MM1,MM2/M64,IMM8	Shuffle the words in mm2/M64 based on the encoding in imm8 and store the result in mm1.
+PSHUFW	MM,MM/M64,IMM8	MMX	PSHUFW MM1,MM2/M64,IMM8	Shuffle the words in mm2/m64 based on the encoding in imm8 and store the result in mm1.
 
 PUSH	CS	8086	PUSH CS	Push CS onto stack (not supported in 64-bit mode).
 PUSH	DS	8086	PUSH DS	Push DS onto stack (not supported in 64-bit mode).
@@ -1409,7 +1409,7 @@ SHR	R/M16,IMM8	8086	SHR R/M16,IMM8	Unsigned divide r/m16 by 2, imm8 times.
 SHR	R/M32,1	386	SHR R/M32,1	Unsigned divide r/m32 by 2, once.
 SHR	R/M32,CL	386	SHR R/M32,CL	Unsigned divide r/m32 by 2, CL times.
 SHR	R/M32,IMM8	386	SHR R/M32,IMM8	Unsigned divide r/m32 by 2, imm8 times.
-SHR	R/M64,1	X64	SHR R/M64,1	Unsigned divide R/M64 by 2, once.
+SHR	R/M64,1	X64	SHR R/M64,1	Unsigned divide r/m64 by 2, once.
 SHR	R/M64,CL	X64	SHR R/M64,CL	Unsigned divide r/m64 by 2, CL times.
 SHR	R/M64,IMM8	X64	SHR R/M64,IMM8	Unsigned divide r/m64 by 2, imm8 times.
 
