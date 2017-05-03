@@ -169,13 +169,18 @@
                                         <CheckBox x:Name="useArch_SSE5_UI" Content="SSE5 - AMD" Margin="0,2,0,2"/>
                                         <CheckBox x:Name="useArch_AVX_UI" Content="AVX" Margin="0,2,0,2"/>
                                         <CheckBox x:Name="useArch_AVX2_UI" Content="AVX2" Margin="0,2,0,2"/>
-                                        <CheckBox x:Name="useArch_AVX512F_UI" Content="AVX512F - AVX512 Foundation  (Knights Landing, Intel Xeon)" Margin="0,2,0,2"/>
-                                        <CheckBox x:Name="useArch_AVX512CD_UI" Content="AVX512CD - AVX512 Conflict Detection (Knights Landing, Intel Xeon)" Margin="0,2,0,2"/>
-                                        <CheckBox x:Name="useArch_AVX512ER_UI" Content="AVX512ER - AVX512 Exponential and Reciprocal (Knights Landing)" Margin="0,2,0,2"/>
-                                        <CheckBox x:Name="useArch_AVX512PF_UI" Content="AVX512PF - AVX512 Prefetch (Knights Landing)" Margin="0,2,0,2"/>
-                                        <CheckBox x:Name="useArch_AVX512BW_UI" Content="AVX512BW - AVX512 Byte and Word (Intel Xeon)" Margin="0,2,0,2"/>
-                                        <CheckBox x:Name="useArch_AVX512DQ_UI" Content="AVX512DQ - AVX512 Doubleword and QuadWord (Intel Xeon)" Margin="0,2,0,2"/>
-                                        <CheckBox x:Name="useArch_AVX512VL_UI" Content="AVX512VL - AVX512 Vector Length Extensions (Intel Xeon)" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="UseArch_AVX512_F_UI" Content="AVX512-F - Foundation  (Knights Landing, Intel Xeon)" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="UseArch_AVX512_CD_UI" Content="AVX512-CD - Conflict Detection (Knights Landing, Intel Xeon)" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="UseArch_AVX512_ER_UI" Content="AVX512-ER - Exponential and Reciprocal (Knights Landing)" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="UseArch_AVX512_PF_UI" Content="AVX512-PF - Prefetch (Knights Landing)" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="UseArch_AVX512_BW_UI" Content="AVX512-BW - Byte and Word (Intel Xeon)" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="UseArch_AVX512_DQ_UI" Content="AVX512-DQ - Doubleword and QuadWord (Intel Xeon)" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="UseArch_AVX512_VL_UI" Content="AVX512-VL - Vector Length Extensions (Intel Xeon)" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="UseArch_AVX512_IFMA_UI" Content="AVX512-IFMA -" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="UseArch_AVX512_VBMI_UI" Content="AVX512-VBMI -" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="UseArch_AVX512_VPOPCNTDQ_UI" Content="AVX512-VPOPCNTDQ -" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="UseArch_AVX512_4VNNIW_UI" Content="AVX512-4VNNIW -" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="UseArch_AVX512_4FMAPS_UI" Content="AVX512-4FMAPS -" Margin="0,2,0,2"/>
                                     </StackPanel>
                                 </Grid>
                             </GroupBox>

@@ -39,7 +39,7 @@ namespace AsmDude.OptionsPage
     public class AsmDudeOptionsPage : UIElementDialogPage
     {
 
-        private const bool logInfo = false;
+        private const bool logInfo = true;
 
         private AsmDudeOptionsPageUI _asmDudeOptionsPageUI;
 
@@ -144,20 +144,30 @@ namespace AsmDude.OptionsPage
             this._asmDudeOptionsPageUI.UseArch_AVX2 = Settings.Default.ARCH_AVX2;
             this._asmDudeOptionsPageUI.useArch_AVX2_UI.ToolTip = MakeToolTip(Arch.AVX2);
 
-            this._asmDudeOptionsPageUI.UseArch_AVX512F = Settings.Default.ARCH_AVX512F;
-            this._asmDudeOptionsPageUI.useArch_AVX512F_UI.ToolTip = MakeToolTip(Arch.AVX512F);
-            this._asmDudeOptionsPageUI.UseArch_AVX512VL = Settings.Default.ARCH_AVX512VL;
-            this._asmDudeOptionsPageUI.useArch_AVX512VL_UI.ToolTip = MakeToolTip(Arch.AVX512VL);
-            this._asmDudeOptionsPageUI.UseArch_AVX512DQ = Settings.Default.ARCH_AVX512DQ;
-            this._asmDudeOptionsPageUI.useArch_AVX512DQ_UI.ToolTip = MakeToolTip(Arch.AVX512DQ);
-            this._asmDudeOptionsPageUI.UseArch_AVX512BW = Settings.Default.ARCH_AVX512BW;
-            this._asmDudeOptionsPageUI.useArch_AVX512BW_UI.ToolTip = MakeToolTip(Arch.AVX512BW);
-            this._asmDudeOptionsPageUI.UseArch_AVX512ER = Settings.Default.ARCH_AVX512ER;
-            this._asmDudeOptionsPageUI.useArch_AVX512ER_UI.ToolTip = MakeToolTip(Arch.AVX512ER);
-            this._asmDudeOptionsPageUI.UseArch_AVX512CD = Settings.Default.ARCH_AVX512CD;
-            this._asmDudeOptionsPageUI.useArch_AVX512CD_UI.ToolTip = MakeToolTip(Arch.AVX512CD);
-            this._asmDudeOptionsPageUI.UseArch_AVX512PF = Settings.Default.ARCH_AVX512PF;
-            this._asmDudeOptionsPageUI.useArch_AVX512PF_UI.ToolTip = MakeToolTip(Arch.AVX512PF);
+            this._asmDudeOptionsPageUI.UseArch_AVX512_F = Settings.Default.ARCH_AVX512F;
+            this._asmDudeOptionsPageUI.UseArch_AVX512_F_UI.ToolTip = MakeToolTip(Arch.AVX512_F);
+            this._asmDudeOptionsPageUI.UseArch_AVX512_VL = Settings.Default.ARCH_AVX512VL;
+            this._asmDudeOptionsPageUI.UseArch_AVX512_VL_UI.ToolTip = MakeToolTip(Arch.AVX512_VL);
+            this._asmDudeOptionsPageUI.UseArch_AVX512_DQ = Settings.Default.ARCH_AVX512DQ;
+            this._asmDudeOptionsPageUI.UseArch_AVX512_DQ_UI.ToolTip = MakeToolTip(Arch.AVX512_DQ);
+            this._asmDudeOptionsPageUI.UseArch_AVX512_BW = Settings.Default.ARCH_AVX512BW;
+            this._asmDudeOptionsPageUI.UseArch_AVX512_BW_UI.ToolTip = MakeToolTip(Arch.AVX512_BW);
+            this._asmDudeOptionsPageUI.UseArch_AVX512_ER = Settings.Default.ARCH_AVX512ER;
+            this._asmDudeOptionsPageUI.UseArch_AVX512_ER_UI.ToolTip = MakeToolTip(Arch.AVX512_ER);
+            this._asmDudeOptionsPageUI.UseArch_AVX512_CD = Settings.Default.ARCH_AVX512CD;
+            this._asmDudeOptionsPageUI.UseArch_AVX512_CD_UI.ToolTip = MakeToolTip(Arch.AVX512_CD);
+            this._asmDudeOptionsPageUI.UseArch_AVX512_PF = Settings.Default.ARCH_AVX512PF;
+            this._asmDudeOptionsPageUI.UseArch_AVX512_PF_UI.ToolTip = MakeToolTip(Arch.AVX512_PF);
+            this._asmDudeOptionsPageUI.UseArch_AVX512_IFMA = Settings.Default.ARCH_AVX512_IFMA;
+            this._asmDudeOptionsPageUI.UseArch_AVX512_IFMA_UI.ToolTip = MakeToolTip(Arch.AVX512_IFMA);
+            this._asmDudeOptionsPageUI.UseArch_AVX512_VBMI = Settings.Default.ARCH_AVX512_VBMI;
+            this._asmDudeOptionsPageUI.UseArch_AVX512_VBMI_UI.ToolTip = MakeToolTip(Arch.AVX512_VBMI);
+            this._asmDudeOptionsPageUI.UseArch_AVX512_VPOPCNTDQ = Settings.Default.ARCH_AVX512_VPOPCNTDQ;
+            this._asmDudeOptionsPageUI.UseArch_AVX512_VPOPCNTDQ_UI.ToolTip = MakeToolTip(Arch.AVX512_VPOPCNTDQ);
+            this._asmDudeOptionsPageUI.UseArch_AVX512_4VNNIW = Settings.Default.ARCH_AVX512_4VNNIW;
+            this._asmDudeOptionsPageUI.UseArch_AVX512_4VNNIW_UI.ToolTip = MakeToolTip(Arch.AVX512_4VNNIW);
+            this._asmDudeOptionsPageUI.UseArch_AVX512_4FMAPS = Settings.Default.ARCH_AVX512_4FMAPS;
+            this._asmDudeOptionsPageUI.UseArch_AVX512_4FMAPS_UI.ToolTip = MakeToolTip(Arch.AVX512_4FMAPS);
 
             this._asmDudeOptionsPageUI.UseArch_X64 = Settings.Default.ARCH_X64;
             this._asmDudeOptionsPageUI.useArch_X64_UI.ToolTip = MakeToolTip(Arch.X64);
@@ -248,7 +258,7 @@ namespace AsmDude.OptionsPage
         private string MakeToolTip(Arch arch)
         {
             MnemonicStore store = AsmDudeTools.Instance.Mnemonic_Store;
-            ISet<Mnemonic> usedMnemonics = new HashSet<Mnemonic>();
+            SortedSet<Mnemonic> usedMnemonics = new SortedSet<Mnemonic>();
 
             foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)).Cast<Mnemonic>())
             {
@@ -263,12 +273,18 @@ namespace AsmDude.OptionsPage
             {
                 sb.Append(docArch + ": ");
             }
-            foreach (Mnemonic mnemonic in usedMnemonics)
+            if (usedMnemonics.Count > 0)
             {
-                sb.Append(mnemonic.ToString());
-                sb.Append(", ");
+                foreach (Mnemonic mnemonic in usedMnemonics)
+                {
+                    sb.Append(mnemonic.ToString());
+                    sb.Append(", ");
+                }
+                sb.Length -= 2; // get rid of last comma.
+            } else
+            {
+                sb.Append("empty");
             }
-            sb.Length -= 2; // get rid of last comma.
             return AsmSourceTools.Linewrap(sb.ToString(), AsmDudePackage.maxNumberOfCharsInToolTips);
         }
 
@@ -524,49 +540,76 @@ namespace AsmDude.OptionsPage
             }
             if (Settings.Default.ARCH_AVX != this._asmDudeOptionsPageUI.UseArch_AVX)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_AVX=" + this._asmDudeOptionsPageUI.UseArch_AVX);
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX=" + this._asmDudeOptionsPageUI.UseArch_AVX);
                 changed = true;
             }
             if (Settings.Default.ARCH_AVX2 != this._asmDudeOptionsPageUI.UseArch_AVX2)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_AVX2=" + this._asmDudeOptionsPageUI.UseArch_AVX2);
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX2=" + this._asmDudeOptionsPageUI.UseArch_AVX2);
                 changed = true;
             }
-            if (Settings.Default.ARCH_AVX512PF != this._asmDudeOptionsPageUI.UseArch_AVX512PF)
+            if (Settings.Default.ARCH_AVX512PF != this._asmDudeOptionsPageUI.UseArch_AVX512_PF)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_AVX512=" + this._asmDudeOptionsPageUI.UseArch_AVX512PF);
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX512_PF=" + this._asmDudeOptionsPageUI.UseArch_AVX512_PF);
                 changed = true;
             }
-            if (Settings.Default.ARCH_AVX512VL != this._asmDudeOptionsPageUI.UseArch_AVX512VL)
+            if (Settings.Default.ARCH_AVX512VL != this._asmDudeOptionsPageUI.UseArch_AVX512_VL)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_AVX512VL=" + this._asmDudeOptionsPageUI.UseArch_AVX512VL);
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX512_VL=" + this._asmDudeOptionsPageUI.UseArch_AVX512_VL);
                 changed = true;
             }
-            if (Settings.Default.ARCH_AVX512DQ != this._asmDudeOptionsPageUI.UseArch_AVX512DQ)
+            if (Settings.Default.ARCH_AVX512DQ != this._asmDudeOptionsPageUI.UseArch_AVX512_DQ)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_AVX512DQ=" + this._asmDudeOptionsPageUI.UseArch_AVX512DQ);
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX512_DQ=" + this._asmDudeOptionsPageUI.UseArch_AVX512_DQ);
                 changed = true;
             }
-            if (Settings.Default.ARCH_AVX512BW != this._asmDudeOptionsPageUI.UseArch_AVX512BW)
+            if (Settings.Default.ARCH_AVX512BW != this._asmDudeOptionsPageUI.UseArch_AVX512_BW)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_AVX512BW=" + this._asmDudeOptionsPageUI.UseArch_AVX512BW);
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX512_BW=" + this._asmDudeOptionsPageUI.UseArch_AVX512_BW);
                 changed = true;
             }
-            if (Settings.Default.ARCH_AVX512ER != this._asmDudeOptionsPageUI.UseArch_AVX512ER)
+            if (Settings.Default.ARCH_AVX512ER != this._asmDudeOptionsPageUI.UseArch_AVX512_ER)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_AVX512ER=" + this._asmDudeOptionsPageUI.UseArch_AVX512ER);
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX512_ER=" + this._asmDudeOptionsPageUI.UseArch_AVX512_ER);
                 changed = true;
             }
-            if (Settings.Default.ARCH_AVX512F != this._asmDudeOptionsPageUI.UseArch_AVX512F)
+            if (Settings.Default.ARCH_AVX512F != this._asmDudeOptionsPageUI.UseArch_AVX512_F)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_AVX512PF=" + this._asmDudeOptionsPageUI.UseArch_AVX512F);
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX512_F=" + this._asmDudeOptionsPageUI.UseArch_AVX512_F);
                 changed = true;
             }
-            if (Settings.Default.ARCH_AVX512CD != this._asmDudeOptionsPageUI.UseArch_AVX512CD)
+            if (Settings.Default.ARCH_AVX512CD != this._asmDudeOptionsPageUI.UseArch_AVX512_CD)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_AVX512CD=" + this._asmDudeOptionsPageUI.UseArch_AVX512CD);
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX512_CD=" + this._asmDudeOptionsPageUI.UseArch_AVX512_CD);
                 changed = true;
             }
+
+            if (Settings.Default.ARCH_AVX512_IFMA != this._asmDudeOptionsPageUI.UseArch_AVX512_IFMA)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX512_IFMA=" + this._asmDudeOptionsPageUI.UseArch_AVX512_IFMA);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_AVX512_VBMI != this._asmDudeOptionsPageUI.UseArch_AVX512_VBMI)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX512_VBMI=" + this._asmDudeOptionsPageUI.UseArch_AVX512_VBMI);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_AVX512_VPOPCNTDQ != this._asmDudeOptionsPageUI.UseArch_AVX512_VPOPCNTDQ)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX512_VPOPCNTDQ=" + this._asmDudeOptionsPageUI.UseArch_AVX512_VPOPCNTDQ);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_AVX512_4VNNIW != this._asmDudeOptionsPageUI.UseArch_AVX512_4VNNIW)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX512_4VNNIW=" + this._asmDudeOptionsPageUI.UseArch_AVX512_4VNNIW);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_AVX512_4FMAPS != this._asmDudeOptionsPageUI.UseArch_AVX512_4FMAPS)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX512_4FMAPS=" + this._asmDudeOptionsPageUI.UseArch_AVX512_4FMAPS);
+                changed = true;
+            }
+
             if (Settings.Default.ARCH_X64 != this._asmDudeOptionsPageUI.UseArch_X64)
             {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_X64=" + this._asmDudeOptionsPageUI.UseArch_X64);
@@ -1090,41 +1133,68 @@ namespace AsmDude.OptionsPage
                 Settings.Default.ARCH_AVX2 = this._asmDudeOptionsPageUI.UseArch_AVX2;
                 changed = true;
             }
-            if (Settings.Default.ARCH_AVX512PF != this._asmDudeOptionsPageUI.UseArch_AVX512PF)
+            if (Settings.Default.ARCH_AVX512PF != this._asmDudeOptionsPageUI.UseArch_AVX512_PF)
             {
-                Settings.Default.ARCH_AVX512PF = this._asmDudeOptionsPageUI.UseArch_AVX512PF;
+                Settings.Default.ARCH_AVX512PF = this._asmDudeOptionsPageUI.UseArch_AVX512_PF;
                 changed = true;
             }
-            if (Settings.Default.ARCH_AVX512VL != this._asmDudeOptionsPageUI.UseArch_AVX512VL)
+            if (Settings.Default.ARCH_AVX512VL != this._asmDudeOptionsPageUI.UseArch_AVX512_VL)
             {
-                Settings.Default.ARCH_AVX512VL = this._asmDudeOptionsPageUI.UseArch_AVX512VL;
+                Settings.Default.ARCH_AVX512VL = this._asmDudeOptionsPageUI.UseArch_AVX512_VL;
                 changed = true;
             }
-            if (Settings.Default.ARCH_AVX512DQ != this._asmDudeOptionsPageUI.UseArch_AVX512DQ)
+            if (Settings.Default.ARCH_AVX512DQ != this._asmDudeOptionsPageUI.UseArch_AVX512_DQ)
             {
-                Settings.Default.ARCH_AVX512DQ = this._asmDudeOptionsPageUI.UseArch_AVX512DQ;
+                Settings.Default.ARCH_AVX512DQ = this._asmDudeOptionsPageUI.UseArch_AVX512_DQ;
                 changed = true;
             }
-            if (Settings.Default.ARCH_AVX512BW != this._asmDudeOptionsPageUI.UseArch_AVX512BW)
+            if (Settings.Default.ARCH_AVX512BW != this._asmDudeOptionsPageUI.UseArch_AVX512_BW)
             {
-                Settings.Default.ARCH_AVX512BW = this._asmDudeOptionsPageUI.UseArch_AVX512BW;
+                Settings.Default.ARCH_AVX512BW = this._asmDudeOptionsPageUI.UseArch_AVX512_BW;
                 changed = true;
             }
-            if (Settings.Default.ARCH_AVX512ER != this._asmDudeOptionsPageUI.UseArch_AVX512ER)
+            if (Settings.Default.ARCH_AVX512ER != this._asmDudeOptionsPageUI.UseArch_AVX512_ER)
             {
-                Settings.Default.ARCH_AVX512ER = this._asmDudeOptionsPageUI.UseArch_AVX512ER;
+                Settings.Default.ARCH_AVX512ER = this._asmDudeOptionsPageUI.UseArch_AVX512_ER;
                 changed = true;
             }
-            if (Settings.Default.ARCH_AVX512F != this._asmDudeOptionsPageUI.UseArch_AVX512F)
+            if (Settings.Default.ARCH_AVX512F != this._asmDudeOptionsPageUI.UseArch_AVX512_F)
             {
-                Settings.Default.ARCH_AVX512F = this._asmDudeOptionsPageUI.UseArch_AVX512F;
+                Settings.Default.ARCH_AVX512F = this._asmDudeOptionsPageUI.UseArch_AVX512_F;
                 changed = true;
             }
-            if (Settings.Default.ARCH_AVX512CD != this._asmDudeOptionsPageUI.UseArch_AVX512CD)
+            if (Settings.Default.ARCH_AVX512CD != this._asmDudeOptionsPageUI.UseArch_AVX512_CD)
             {
-                Settings.Default.ARCH_AVX512CD = this._asmDudeOptionsPageUI.UseArch_AVX512CD;
+                Settings.Default.ARCH_AVX512CD = this._asmDudeOptionsPageUI.UseArch_AVX512_CD;
                 changed = true;
             }
+
+            if (Settings.Default.ARCH_AVX512_IFMA != this._asmDudeOptionsPageUI.UseArch_AVX512_IFMA)
+            {
+                Settings.Default.ARCH_AVX512_IFMA = this._asmDudeOptionsPageUI.UseArch_AVX512_IFMA;
+                changed = true;
+            }
+            if (Settings.Default.ARCH_AVX512_VBMI != this._asmDudeOptionsPageUI.UseArch_AVX512_VBMI)
+            {
+                Settings.Default.ARCH_AVX512_VBMI = this._asmDudeOptionsPageUI.UseArch_AVX512_VBMI;
+                changed = true;
+            }
+            if (Settings.Default.ARCH_AVX512_VPOPCNTDQ != this._asmDudeOptionsPageUI.UseArch_AVX512_VPOPCNTDQ)
+            {
+                Settings.Default.ARCH_AVX512_VPOPCNTDQ = this._asmDudeOptionsPageUI.UseArch_AVX512_VPOPCNTDQ;
+                changed = true;
+            }
+            if (Settings.Default.ARCH_AVX512_4VNNIW != this._asmDudeOptionsPageUI.UseArch_AVX512_4VNNIW)
+            {
+                Settings.Default.ARCH_AVX512_4VNNIW = this._asmDudeOptionsPageUI.UseArch_AVX512_4VNNIW;
+                changed = true;
+            }
+            if (Settings.Default.ARCH_AVX512_4FMAPS != this._asmDudeOptionsPageUI.UseArch_AVX512_4FMAPS)
+            {
+                Settings.Default.ARCH_AVX512_4FMAPS = this._asmDudeOptionsPageUI.UseArch_AVX512_4FMAPS;
+                changed = true;
+            }
+
             if (Settings.Default.ARCH_X64 != this._asmDudeOptionsPageUI.UseArch_X64)
             {
                 Settings.Default.ARCH_X64 = this._asmDudeOptionsPageUI.UseArch_X64;

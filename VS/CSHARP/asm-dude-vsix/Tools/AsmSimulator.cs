@@ -30,37 +30,44 @@ namespace AsmDude.Tools
         {
             this._buffer = buffer;
             this._aggregator = aggregator;
-            this._cflow = new CFlow(this._buffer.CurrentSnapshot.GetText());
-            this._cachedStates = new Dictionary<int, AsmSimZ3.Mnemonics_ng.State2>();
-            this.Is_Enabled = true;
-            this._scheduled = new HashSet<int>();
 
-            Dictionary<string, string> settings = new Dictionary<string, string>
+            if (Settings.Default.AsmSim_On)
             {
-                /*
-                Legal parameters are:
-                    auto_config(bool)(default: true)
-                    debug_ref_count(bool)(default: false)
-                    dump_models(bool)(default: false)
-                    model(bool)(default: true)
-                    model_validate(bool)(default: false)
-                    proof(bool)(default: false)
-                    rlimit(unsigned int)(default: 4294967295)
-                    smtlib2_compliant(bool)(default: false)
-                    timeout(unsigned int)(default: 4294967295)
-                    trace(bool)(default: false)
-                    trace_file_name(string)(default: z3.log)
-                    type_check(bool)(default: true)
-                    unsat_core(bool)(default: false)
-                    well_sorted_check(bool)(default: false)
-                */
-                { "unsat-core", "false" },    // enable generation of unsat cores
-                { "model", "false" },         // enable model generation
-                { "proof", "false" }         // enable proof generation
-            };
+                AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: swithed on");
+                this._cflow = new CFlow(this._buffer.CurrentSnapshot.GetText());
+                this._cachedStates = new Dictionary<int, AsmSimZ3.Mnemonics_ng.State2>();
+                this.Is_Enabled = true;
+                this._scheduled = new HashSet<int>();
 
-            this.Tools = new AsmSimZ3.Mnemonics_ng.Tools(new Context(settings));
-            this._buffer.Changed += this.Buffer_Changed;
+                Dictionary<string, string> settings = new Dictionary<string, string> {
+                    /*
+                    Legal parameters are:
+                        auto_config(bool)(default: true)
+                        debug_ref_count(bool)(default: false)
+                        dump_models(bool)(default: false)
+                        model(bool)(default: true)
+                        model_validate(bool)(default: false)
+                        proof(bool)(default: false)
+                        rlimit(unsigned int)(default: 4294967295)
+                        smtlib2_compliant(bool)(default: false)
+                        timeout(unsigned int)(default: 4294967295)
+                        trace(bool)(default: false)
+                        trace_file_name(string)(default: z3.log)
+                        type_check(bool)(default: true)
+                        unsat_core(bool)(default: false)
+                        well_sorted_check(bool)(default: false)
+                    */
+                    { "unsat-core", "false" },    // enable generation of unsat cores
+                    { "model", "false" },         // enable model generation
+                    { "proof", "false" }         // enable proof generation
+                };
+                this.Tools = new AsmSimZ3.Mnemonics_ng.Tools(new Context(settings));
+                this._buffer.Changed += this.Buffer_Changed;
+            }
+            else
+            {
+                AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: swithed off");
+            }
         }
 
         private void Buffer_Changed(object sender, TextContentChangedEventArgs e)

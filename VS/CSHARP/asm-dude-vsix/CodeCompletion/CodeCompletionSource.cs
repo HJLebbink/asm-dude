@@ -208,6 +208,8 @@ namespace AsmDude
         #region Private Methods
         private SortedSet<Completion> Mnemonic_Operand_Completions(bool useCapitals, ISet<AsmSignatureEnum> allowedOperands, int lineNumber)
         {
+            bool asmSimulator_Enabled = this._asmSimulator.Is_Enabled;
+
             SortedSet<Completion> completions = new SortedSet<Completion>(new CompletionComparer());
             foreach (string keyword in this._asmDudeTools.Get_Keywords())
             {
@@ -229,7 +231,7 @@ namespace AsmDude
                                 Rn regName = RegisterTools.ParseRn(keyword);
                                 if (AsmSignatureTools.Is_Allowed_Reg(regName, allowedOperands))
                                 {
-                                    if (this._asmSimulator.Tools.StateConfig.IsRegOn(RegisterTools.Get64BitsRegister(regName))) {
+                                    if (asmSimulator_Enabled && this._asmSimulator.Tools.StateConfig.IsRegOn(RegisterTools.Get64BitsRegister(regName))) {
                                         State2 state = this._asmSimulator.GetState(lineNumber, false);
                                         Tv5[] content = state.GetTv5Array(regName);
                                         if (state != null)

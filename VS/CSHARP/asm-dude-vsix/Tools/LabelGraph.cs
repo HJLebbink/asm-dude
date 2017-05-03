@@ -653,7 +653,8 @@ namespace AsmDude.Tools
                 if (this._filenames.Values.Contains(filePath))
                 {
                     AsmDudeToolsStatic.Output_INFO("LabelGraph:Handle_Include: including file " + filePath + " has already been included");
-                } else
+                }
+                else
                 {
                     ITextDocument doc = this._docFactory.CreateAndLoadTextDocument(filePath, this._contentType, true, out var characterSubstitutionsOccurred);
                     doc.FileActionOccurred += this.Doc_File_Action_Occurred;

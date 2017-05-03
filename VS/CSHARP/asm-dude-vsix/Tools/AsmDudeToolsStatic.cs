@@ -560,13 +560,19 @@ namespace AsmDude.Tools
 
                 case Arch.AVX: return Settings.Default.ARCH_AVX;
                 case Arch.AVX2: return Settings.Default.ARCH_AVX2;
-                case Arch.AVX512F: return Settings.Default.ARCH_AVX512F;
-                case Arch.AVX512CD: return Settings.Default.ARCH_AVX512CD;
-                case Arch.AVX512ER: return Settings.Default.ARCH_AVX512ER;
-                case Arch.AVX512PF: return Settings.Default.ARCH_AVX512PF;
-                case Arch.AVX512VL: return Settings.Default.ARCH_AVX512VL;
-                case Arch.AVX512DQ: return Settings.Default.ARCH_AVX512DQ;
-                case Arch.AVX512BW: return Settings.Default.ARCH_AVX512BW;
+                case Arch.AVX512_F: return Settings.Default.ARCH_AVX512F;
+                case Arch.AVX512_CD: return Settings.Default.ARCH_AVX512CD;
+                case Arch.AVX512_ER: return Settings.Default.ARCH_AVX512ER;
+                case Arch.AVX512_PF: return Settings.Default.ARCH_AVX512PF;
+                case Arch.AVX512_VL: return Settings.Default.ARCH_AVX512VL;
+                case Arch.AVX512_DQ: return Settings.Default.ARCH_AVX512DQ;
+                case Arch.AVX512_BW: return Settings.Default.ARCH_AVX512BW;
+
+                case Arch.AVX512_IFMA: return Settings.Default.ARCH_AVX512_IFMA;
+                case Arch.AVX512_VBMI: return Settings.Default.ARCH_AVX512_VBMI;
+                case Arch.AVX512_VPOPCNTDQ: return Settings.Default.ARCH_AVX512_VPOPCNTDQ;
+                case Arch.AVX512_4VNNIW: return Settings.Default.ARCH_AVX512_4VNNIW;
+                case Arch.AVX512_4FMAPS: return Settings.Default.ARCH_AVX512_4FMAPS;
 
                 case Arch.X64: return Settings.Default.ARCH_X64;
                 case Arch.BMI1: return Settings.Default.ARCH_BMI1;

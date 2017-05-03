@@ -56,22 +56,22 @@ namespace AsmTools {
         AVX2,
 
         ///<summary>AVX512 foundation (Knights Landing, Intel Xeon)</summary>
-        AVX512F,
+        AVX512_F,
 
         ///<summary>AVX512 conflict detection (Knights Landing, Intel Xeon)</summary>
-        AVX512CD,
+        AVX512_CD,
 
         ///<summary>AVX512 exponential and reciprocal (Knights Landing)</summary>
-        AVX512ER,
+        AVX512_ER,
 
         ///<summary>AVX512 prefetch (Knights Landing)</summary>
-        AVX512PF,
+        AVX512_PF,
 
         ///<summary>AVX512 byte and word (Intel Xeon)</summary>
-        AVX512BW,
+        AVX512_BW,
 
         ///<summary>AVX512 doubleword and quadword (Intel Xeon)</summary>
-        AVX512DQ,
+        AVX512_DQ,
 
         ///<summary>AVX512 Vector Length Extensions (Intel Xeon)</summary>
         ///An additional orthogonal capability known as Vector Length Extensions provide for most AVX-512 instructions 
@@ -82,11 +82,11 @@ namespace AsmTools {
         ///registers and YMM (256-bit, AVX) registers. The use of Vector Length Extensions allows the capabilities of 
         ///EVEX encodings, including the use of mask registers and access to registers 16..31, to be applied to XMM 
         ///and YMM registers instead of only to ZMM registers.
-        AVX512VL,
+        AVX512_VL,
 
-        AVX512IFMA,
+        AVX512_IFMA,
 
-        AVX512VBMI,
+        AVX512_VBMI,
 
         AVX512_VPOPCNTDQ,
 
@@ -208,16 +208,16 @@ namespace AsmTools {
 
                 case "AVX": return Arch.AVX;
                 case "AVX2": return Arch.AVX2;
-                case "AVX512VL": return Arch.AVX512VL;
-                case "AVX512DQ": return Arch.AVX512DQ;
-                case "AVX512BW": return Arch.AVX512BW;
-                case "AVX512ER": return Arch.AVX512ER;
-                case "AVX512F": return Arch.AVX512F;
-                case "AVX512CD": return Arch.AVX512CD;
-                case "AVX512PF": return Arch.AVX512PF;
+                case "AVX512VL": return Arch.AVX512_VL;
+                case "AVX512DQ": return Arch.AVX512_DQ;
+                case "AVX512BW": return Arch.AVX512_BW;
+                case "AVX512ER": return Arch.AVX512_ER;
+                case "AVX512F": return Arch.AVX512_F;
+                case "AVX512CD": return Arch.AVX512_CD;
+                case "AVX512PF": return Arch.AVX512_PF;
 
-                case "AVX512IFMA": return Arch.AVX512IFMA;
-                case "AVX512VBMI": return Arch.AVX512VBMI;
+                case "AVX512IFMA": return Arch.AVX512_IFMA;
+                case "AVX512VBMI": return Arch.AVX512_VBMI;
                 case "AVX512_VPOPCNTDQ": return Arch.AVX512_VPOPCNTDQ;
                 case "AVX512_4VNNIW": return Arch.AVX512_4VNNIW;
                 case "AVX512_4FMAPS": return Arch.AVX512_4FMAPS;
@@ -283,16 +283,16 @@ namespace AsmTools {
                 case Arch.SSE5: return "Instruction set SSE5, AMD";
                 case Arch.AVX: return "";
                 case Arch.AVX2: return "";
-                case Arch.AVX512F: return "Instruction set AVX512 Foundation (Knights Landing, Intel Xeon)";
-                case Arch.AVX512CD: return "Instruction set AVX512 Conflict Detection (Knights Landing, Intel Xeon)";
-                case Arch.AVX512ER: return "Instruction set AVX512 Exponential and Reciprocal (Knights Landing)";
-                case Arch.AVX512PF: return "Instruction set AVX512 Prefetch (Knights Landing)";
-                case Arch.AVX512BW: return "Instruction set AVX512 Byte and Word (Intel Xeon)";
-                case Arch.AVX512DQ: return "Instruction set AVX512 Doubleword and QuadWord (Intel Xeon)";
-                case Arch.AVX512VL: return "Instruction set AVX512 Vector Length Extensions (Intel Xeon)";
+                case Arch.AVX512_F: return "Instruction set AVX512 Foundation (Knights Landing, Intel Xeon)";
+                case Arch.AVX512_CD: return "Instruction set AVX512 Conflict Detection (Knights Landing, Intel Xeon)";
+                case Arch.AVX512_ER: return "Instruction set AVX512 Exponential and Reciprocal (Knights Landing)";
+                case Arch.AVX512_PF: return "Instruction set AVX512 Prefetch (Knights Landing)";
+                case Arch.AVX512_BW: return "Instruction set AVX512 Byte and Word (Intel Xeon)";
+                case Arch.AVX512_DQ: return "Instruction set AVX512 Doubleword and QuadWord (Intel Xeon)";
+                case Arch.AVX512_VL: return "Instruction set AVX512 Vector Length Extensions (Intel Xeon)";
 
-                case Arch.AVX512IFMA: return "";
-                case Arch.AVX512VBMI: return "";
+                case Arch.AVX512_IFMA: return "";
+                case Arch.AVX512_VBMI: return "";
                 case Arch.AVX512_VPOPCNTDQ: return "";
                 case Arch.AVX512_4VNNIW: return "";
                 case Arch.AVX512_4FMAPS: return "";
