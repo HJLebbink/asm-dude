@@ -43,7 +43,7 @@ namespace AsmDude
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
             //AsmDudeToolsStatic.Output("INFO: AsmTokenTagProvider:CreateTagger");
-            Func<ITagger<T>> sc = delegate () 
+            Func<ITagger<T>> sc = delegate ()
             {
                 //string filename = AsmDudeToolsStatic.GetFileName(buffer);
                 //if ((filename == null) || (filename.Length == 0))
@@ -51,15 +51,18 @@ namespace AsmDude
                 //    AsmDudeToolsStatic.Output("INFO: AsmTokenTagProvider:CreateTagger: found a buffer without a filename");
                 //    return new DebugTokenTagger(buffer) as ITagger<T>;
                 //} else {
-                    if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.MASM)) {
-                        return new MasmTokenTagger(buffer) as ITagger<T>;
-                    } else if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.NASM))
-                    {
-                        return new NasmTokenTagger(buffer) as ITagger<T>;
-                    } else
-                    {
-                        return new MasmTokenTagger(buffer) as ITagger<T>;
-                    }
+                if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.MASM))
+                {
+                    return new MasmTokenTagger(buffer) as ITagger<T>;
+                }
+                else if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.NASM))
+                {
+                    return new NasmTokenTagger(buffer) as ITagger<T>;
+                }
+                else
+                {
+                    return new MasmTokenTagger(buffer) as ITagger<T>;
+                }
                 //}
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);

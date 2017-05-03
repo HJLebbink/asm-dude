@@ -62,12 +62,13 @@ namespace AsmDude
             this._jump = new AsmTokenTag(AsmTokenType.Jump);
             this._label = new AsmTokenTag(AsmTokenType.Label);
             this._labelDef = new AsmTokenTag(AsmTokenType.LabelDef);
-            this._labelDef_PROTO = new AsmTokenTag(AsmTokenType.LabelDef, AsmTokenTag.MISC_KEYWORD_PROTO); 
+            this._labelDef_PROTO = new AsmTokenTag(AsmTokenType.LabelDef, AsmTokenTag.MISC_KEYWORD_PROTO);
             this._misc = new AsmTokenTag(AsmTokenType.Misc);
             this._UNKNOWN = new AsmTokenTag(AsmTokenType.UNKNOWN);
         }
 
-        event EventHandler<SnapshotSpanEventArgs> ITagger<AsmTokenTag>.TagsChanged {
+        event EventHandler<SnapshotSpanEventArgs> ITagger<AsmTokenTag>.TagsChanged
+        {
             add { }
             remove { }
         }
@@ -242,6 +243,12 @@ namespace AsmDude
                                             case "ALIAS":
                                                 {
                                                     yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._labelDef);
+                                                    isUnknown = false;
+                                                    break;
+                                                }
+                                            case "INCLUDE":
+                                                {
+                                                    yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
                                                     isUnknown = false;
                                                     break;
                                                 }
@@ -524,11 +531,12 @@ namespace AsmDude
             AsmDudeToolsStatic.Print_Speed_Warning(time1, "MasmTokenTagger");
         }
 
-        private AsmTokenTag Make_AsmTokenTag_LabelDef(int lineNumber) {
+        private AsmTokenTag Make_AsmTokenTag_LabelDef(int lineNumber)
+        {
             string procedure_Name = Get_Procedure_Name(lineNumber);
-             return (procedure_Name != null)
-                ? new AsmTokenTag(AsmTokenType.LabelDef, procedure_Name)
-                : this._labelDef;
+            return (procedure_Name != null)
+               ? new AsmTokenTag(AsmTokenType.LabelDef, procedure_Name)
+               : this._labelDef;
         }
 
         private AsmTokenTag Make_AsmTokenTag_Label(int lineNumber)

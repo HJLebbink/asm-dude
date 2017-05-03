@@ -116,10 +116,12 @@
                         <StackPanel>
                             <CheckBox x:Name="useCodeCompletion_UI" Content="Enable code completion" ToolTip="Code completion eabled" Margin="0,4,0,2" />
                             <CheckBox x:Name="useSignatureHelp_UI" Content="Enable signature help" ToolTip="Signature help enabled" Margin="0,2,0,2" />
-                            <CheckBox x:Name="Intellisense_Show_Undefined_Labels_UI" Content="Show undefined labels in error task" ToolTip="Show undefined labels in error task" Margin="0,2,0,2" />
+                            <CheckBox x:Name="Intellisense_Show_Undefined_Labels_UI" Content="Show undefined labels in error list" ToolTip="Show undefined labels in error list" Margin="0,2,0,2" />
                             <CheckBox x:Name="Intellisense_Decorate_Undefined_Labels_UI" Content="Decorate undefined labels" ToolTip="Decorate undefined labels with error squiggles" Margin="0,2,0,2" />
-                            <CheckBox x:Name="Intellisense_Show_Clashing_Labels_UI" Content="Show clashing labels in error task" ToolTip="Show clashing labels in error task" Margin="0,2,0,2" />
-                            <CheckBox x:Name="Intellisense_Decorate_Clashing_Labels_UI" Content="Decorate clashing labels" ToolTip="Decorate clashing labels with error squiggle" Margin="0,2,0,4" />
+                            <CheckBox x:Name="Intellisense_Show_Clashing_Labels_UI" Content="Show clashing labels in error list" ToolTip="Show clashing labels in error list" Margin="0,2,0,2" />
+                            <CheckBox x:Name="Intellisense_Decorate_Clashing_Labels_UI" Content="Decorate clashing labels" ToolTip="Decorate clashing labels with error squiggle" Margin="0,2,0,2" />
+                            <CheckBox x:Name="Intellisense_Show_Undefined_Includes_UI" Content="Show undefined includes in error list" ToolTip="Show undefined includes in error list" Margin="0,2,0,2" />
+                            <CheckBox x:Name="Intellisense_Decorate_Undefined_Includes_UI" Content="Decorate undefined includes" ToolTip="Decorate undefined includes with error squiggle" Margin="0,2,0,4" />
                         </StackPanel>
                     </Grid>
                 </GroupBox>
@@ -127,13 +129,13 @@
                     <Grid>
                         <StackPanel>
                             <CheckBox x:Name="AsmSim_On_UI" Content="Enable assembly simulator" ToolTip="TODO" Margin="0,4,0,2" />
-                            <CheckBox x:Name="AsmSim_Shown_Syntax_Errors_UI" Content="Show syntax errors in error task" ToolTip="Show syntax errors found when parsing in error task" Margin="0,2,0,2" />
-                            <CheckBox x:Name="AsmSim_Decorate_Syntax_Errors_UI" Content="Decorate syntax errors" ToolTip="Decorate syntax errors found when parsing" Margin="0,2,0,2" />
-                            <CheckBox x:Name="AsmSim_Show_Usage_Of_Undefined_UI" Content="Show usage of undefined values in error task" ToolTip="Decorate clashing labels with error squiggle" Margin="0,2,0,2" />
-                            <CheckBox x:Name="AsmSim_Decorate_Usage_Of_Undefined_UI" Content="Decorate usage of undefined values" ToolTip="Decorate clashing labels with error squiggle" Margin="0,2,0,2" />
-                            <CheckBox x:Name="AsmSim_Decorate_Registers_UI" Content="Decorate registers with known values" ToolTip="TODO" Margin="0,2,0,2" />
-                            <CheckBox x:Name="AsmSim_Use_In_Code_Completion_UI" Content="Use known register values in code completions" ToolTip="TODO" Margin="0,2,0,2" />
-                            <CheckBox x:Name="AsmSim_Decorate_Unimplemented_UI" Content="Decorate instructions that are not (yet) implemented" ToolTip="TODO" Margin="0,2,0,4" />
+                            <CheckBox x:Name="AsmSim_Shown_Syntax_Errors_UI" Content="Show syntax errors in error list" ToolTip="Show syntax errors found while parsing in error list" Margin="0,2,0,2" />
+                            <CheckBox x:Name="AsmSim_Decorate_Syntax_Errors_UI" Content="Decorate syntax errors" ToolTip="Decorate syntax errors found while parsing" Margin="0,2,0,2" />
+                            <CheckBox x:Name="AsmSim_Show_Usage_Of_Undefined_UI" Content="Show usage of undefined values in error list" ToolTip="Show usage of undefined values in error list" Margin="0,2,0,2" />
+                            <CheckBox x:Name="AsmSim_Decorate_Usage_Of_Undefined_UI" Content="Decorate usage of undefined values" ToolTip="Decorate usage of undefined values" Margin="0,2,0,2" />
+                            <CheckBox x:Name="AsmSim_Decorate_Registers_UI" Content="Decorate registers with known values" ToolTip="Decorate registers with known values" Margin="0,2,0,2" />
+                            <CheckBox x:Name="AsmSim_Use_In_Code_Completion_UI" Content="Use known register values in code completions" ToolTip="Use known register values in code completions" Margin="0,2,0,2" />
+                            <CheckBox x:Name="AsmSim_Decorate_Unimplemented_UI" Content="Decorate instructions that are not (yet) implemented" ToolTip="Decorate instructions that are not (yet) implemented" Margin="0,2,0,4" />
                         </StackPanel>
                     </Grid>
                 </GroupBox>

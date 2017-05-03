@@ -95,7 +95,9 @@ namespace AsmDude.Squiggles
 
             bool Decorate_Undefined_Labels = labelGraph_Enabled && Settings.Default.IntelliSense_Decorate_UndefinedLabels;
             bool Decorate_Clashing_Labels = labelGraph_Enabled && Settings.Default.IntelliSense_Decorate_ClashingLabels;
-            bool Decorate_Registers_Known_Register_Values = asmSimulator_Enabled && true;
+            bool Decorate_Undefined_Includes = labelGraph_Enabled && Settings.Default.IntelliSense_Show_Undefined_Includes;
+
+            bool Decorate_Registers_Known_Register_Values = asmSimulator_Enabled && Settings.Default.AsmSim_Decorate_Registers;
             bool Decorate_Mnemonics_Known_Register_Values = asmSimulator_Enabled && false;
 
             AssemblerEnum usedAssember = AsmDudeToolsStatic.Used_Assembler;
@@ -207,6 +209,23 @@ namespace AsmDude.Squiggles
                             if (Decorate_Mnemonics_Known_Register_Values)
                             {
                                 yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.Warning));
+                            }
+                            break;
+                        }
+                    case AsmTokenType.Constant:
+                        {
+                            if (Decorate_Undefined_Includes)
+                            {
+                                int lineNumber = Get_Linenumber(tagSpan);
+                                foreach (var tup in this._labelGraph.Get_Undefined_Includes)
+                                {
+                                    if (tup.LineNumber == lineNumber)
+                                    {
+                                        var toolTipContent = "Could not resolve include \"" + tagSpan.GetText() + "\"";
+                                        yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.SyntaxError, toolTipContent));
+                                        break; // leave the foreach loop
+                                    }
+                                }
                             }
                             break;
                         }
@@ -336,7 +355,7 @@ namespace AsmDude.Squiggles
                         #region Update Error Tasks
                         if (Settings.Default.IntelliSense_Show_ClashingLabels ||
                             Settings.Default.IntelliSense_Show_UndefinedLabels ||
-                            Settings.Default.IntelliSense_Show_UndefinedIncludes)
+                            Settings.Default.IntelliSense_Show_Undefined_Includes)
                         {
                             var errorTasks = this._errorListProvider.Tasks;
 
@@ -394,18 +413,18 @@ namespace AsmDude.Squiggles
                                     errorExists = true;
                                 }
                             }
-                            if (Settings.Default.IntelliSense_Show_UndefinedIncludes)
+                            if (Settings.Default.IntelliSense_Show_Undefined_Includes)
                             {
-                                foreach (Undefined_Label_Struct undefinedLabelStruct in this._labelGraph.Get_Undefined_Includes)
+                                foreach (var tup in this._labelGraph.Get_Undefined_Includes)
                                 {
                                     ErrorTask errorTask = new ErrorTask()
                                     {
                                         SubcategoryIndex = (int)AsmErrorEnum.INCLUDE_UNDEFINED,
-                                        Line = undefinedLabelStruct.lineNumber,
-                                        Column = Get_Keyword_Begin_End(undefinedLabelStruct.lineNumber, undefinedLabelStruct.include_filename),
-                                        Text = "Could not resolve include \"" + undefinedLabelStruct.include_filename + "\" at line " + (undefinedLabelStruct.lineNumber + 1) + " in file \"" + undefinedLabelStruct.source_filename + "\"",
+                                        Line = tup.LineNumber,
+                                        Column = Get_Keyword_Begin_End(tup.LineNumber, tup.Include_Filename),
+                                        Text = "Could not resolve include \"" + tup.Include_Filename + "\" at line " + (tup.LineNumber + 1) + " in file \"" + tup.Source_Filename + "\"",
                                         ErrorCategory = TaskErrorCategory.Warning,
-                                        Document = undefinedLabelStruct.source_filename
+                                        Document = tup.Source_Filename
                                     };
                                     errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
                                     errorTasks.Add(errorTask);

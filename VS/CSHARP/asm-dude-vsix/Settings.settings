@@ -242,7 +242,7 @@
     <Setting Name="ARCH_AES" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="IntelliSense_Show_UndefinedIncludes" Type="System.Boolean" Scope="User">
+    <Setting Name="IntelliSense_Show_Undefined_Includes" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="KeywordHighlighting_BorderColor" Type="System.Drawing.Color" Scope="User">
@@ -292,6 +292,9 @@
     </Setting>
     <Setting Name="AsmSim_Decorate_Unimplemented" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="IntelliSense_Decorate_Undefined_Includes" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

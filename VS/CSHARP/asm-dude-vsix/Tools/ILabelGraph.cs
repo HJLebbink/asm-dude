@@ -26,18 +26,6 @@ using System.Collections.Generic;
 
 namespace AsmDude.Tools
 {
-    public struct Undefined_Label_Struct
-    {
-        // the file that is supposed to be included
-        public string include_filename;
-        // path at which the include_filename is supposed to be found
-        public string path;
-        // full path and name of the source file in which the include is defined
-        public string source_filename;
-        // the lineNumber at which the include is defined.
-        public int lineNumber;
-    }
-
     public interface ILabelGraph
     {
         SortedSet<uint> Get_Label_Def_Linenumbers(string label);
@@ -74,7 +62,7 @@ namespace AsmDude.Tools
         /// </summary>
         SortedDictionary<uint, string> Get_Undefined_Labels { get; }
 
-        IList<Undefined_Label_Struct> Get_Undefined_Includes { get; }
+        IList<(string Include_Filename, string Path, string Source_Filename, int LineNumber)> Get_Undefined_Includes { get; }
 
         SortedDictionary<string, string> Get_Label_Descriptions { get; }
 

@@ -40,14 +40,12 @@ namespace AsmDude.OptionsPage
     {
 
         private const bool logInfo = false;
-        private readonly IDictionary<string, bool> _boolOptions;
 
         private AsmDudeOptionsPageUI _asmDudeOptionsPageUI;
 
         public AsmDudeOptionsPage()
         {
             this._asmDudeOptionsPageUI = new AsmDudeOptionsPageUI();
-            this._boolOptions = new Dictionary<string, bool>();
         }
 
         protected override System.Windows.UIElement Child
@@ -227,10 +225,12 @@ namespace AsmDude.OptionsPage
             #endregion
 
             #region Intellisense
-            this._asmDudeOptionsPageUI.Intellisense_Show_Undefined_Labels = Settings.Default.IntelliSense_Show_UndefinedLabels;
-            this._asmDudeOptionsPageUI.Intellisense_Show_Clashing_Labels = Settings.Default.IntelliSense_Show_ClashingLabels;
-            this._asmDudeOptionsPageUI.Intellisense_Decorate_Undefined_Labels = Settings.Default.IntelliSense_Decorate_UndefinedLabels;
-            this._asmDudeOptionsPageUI.Intellisense_Decorate_Clashing_Labels = Settings.Default.IntelliSense_Decorate_ClashingLabels;
+            this._asmDudeOptionsPageUI.IntelliSense_Show_Undefined_Labels = Settings.Default.IntelliSense_Show_UndefinedLabels;
+            this._asmDudeOptionsPageUI.IntelliSense_Show_Clashing_Labels = Settings.Default.IntelliSense_Show_ClashingLabels;
+            this._asmDudeOptionsPageUI.IntelliSense_Decorate_Undefined_Labels = Settings.Default.IntelliSense_Decorate_UndefinedLabels;
+            this._asmDudeOptionsPageUI.IntelliSense_Decorate_Clashing_Labels = Settings.Default.IntelliSense_Decorate_ClashingLabels;
+            this._asmDudeOptionsPageUI.IntelliSense_Show_Undefined_Includes = Settings.Default.IntelliSense_Show_Undefined_Includes;
+            this._asmDudeOptionsPageUI.IntelliSense_Decorate_Clashing_Labels = Settings.Default.IntelliSense_Decorate_Undefined_Includes;
             #endregion
 
             #region AsmSim
@@ -726,24 +726,34 @@ namespace AsmDude.OptionsPage
             #endregion
 
             #region Intellisense
-            if (Settings.Default.IntelliSense_Show_UndefinedLabels != this._asmDudeOptionsPageUI.Intellisense_Show_Undefined_Labels)
+            if (Settings.Default.IntelliSense_Show_UndefinedLabels != this._asmDudeOptionsPageUI.IntelliSense_Show_Undefined_Labels)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: showUndefinedLabels=" + this._asmDudeOptionsPageUI.Intellisense_Show_Undefined_Labels);
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: IntelliSense_Show_UndefinedLabels=" + this._asmDudeOptionsPageUI.IntelliSense_Show_Undefined_Labels);
                 changed = true;
             }
-            if (Settings.Default.IntelliSense_Show_ClashingLabels != this._asmDudeOptionsPageUI.Intellisense_Show_Clashing_Labels)
+            if (Settings.Default.IntelliSense_Show_ClashingLabels != this._asmDudeOptionsPageUI.IntelliSense_Show_Clashing_Labels)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: showClashingLabels=" + this._asmDudeOptionsPageUI.Intellisense_Show_Clashing_Labels);
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: IntelliSense_Show_ClashingLabels=" + this._asmDudeOptionsPageUI.IntelliSense_Show_Clashing_Labels);
                 changed = true;
             }
-            if (Settings.Default.IntelliSense_Decorate_UndefinedLabels != this._asmDudeOptionsPageUI.Intellisense_Decorate_Undefined_Labels)
+            if (Settings.Default.IntelliSense_Decorate_UndefinedLabels != this._asmDudeOptionsPageUI.IntelliSense_Decorate_Undefined_Labels)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: decorateUndefinedLabels=" + this._asmDudeOptionsPageUI.Intellisense_Decorate_Undefined_Labels);
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: IntelliSense_Decorate_UndefinedLabels=" + this._asmDudeOptionsPageUI.IntelliSense_Decorate_Undefined_Labels);
                 changed = true;
             }
-            if (Settings.Default.IntelliSense_Decorate_ClashingLabels != this._asmDudeOptionsPageUI.Intellisense_Decorate_Clashing_Labels)
+            if (Settings.Default.IntelliSense_Decorate_ClashingLabels != this._asmDudeOptionsPageUI.IntelliSense_Decorate_Clashing_Labels)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: decorateClashingLabels=" + this._asmDudeOptionsPageUI.Intellisense_Decorate_Clashing_Labels);
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: IntelliSense_Decorate_ClashingLabels=" + this._asmDudeOptionsPageUI.IntelliSense_Decorate_Clashing_Labels);
+                changed = true;
+            }
+            if (Settings.Default.IntelliSense_Show_Undefined_Includes != this._asmDudeOptionsPageUI.IntelliSense_Show_Undefined_Includes)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: IntelliSense_Show_Undefined_Includes=" + this._asmDudeOptionsPageUI.IntelliSense_Show_Undefined_Includes);
+                changed = true;
+            }
+            if (Settings.Default.IntelliSense_Decorate_Undefined_Includes != this._asmDudeOptionsPageUI.IntelliSense_Decorate_Undefined_Includes)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: IntelliSense_Decorate_Undefined_Includes=" + this._asmDudeOptionsPageUI.IntelliSense_Decorate_Undefined_Includes);
                 changed = true;
             }
             #endregion
@@ -1274,24 +1284,34 @@ namespace AsmDude.OptionsPage
             #endregion
 
             #region Intellisense
-            if (Settings.Default.IntelliSense_Show_UndefinedLabels != this._asmDudeOptionsPageUI.Intellisense_Show_Undefined_Labels)
+            if (Settings.Default.IntelliSense_Show_UndefinedLabels != this._asmDudeOptionsPageUI.IntelliSense_Show_Undefined_Labels)
             {
-                Settings.Default.IntelliSense_Show_UndefinedLabels = this._asmDudeOptionsPageUI.Intellisense_Show_Undefined_Labels;
+                Settings.Default.IntelliSense_Show_UndefinedLabels = this._asmDudeOptionsPageUI.IntelliSense_Show_Undefined_Labels;
                 changed = true;
             }
-            if (Settings.Default.IntelliSense_Show_ClashingLabels != this._asmDudeOptionsPageUI.Intellisense_Show_Clashing_Labels)
+            if (Settings.Default.IntelliSense_Show_ClashingLabels != this._asmDudeOptionsPageUI.IntelliSense_Show_Clashing_Labels)
             {
-                Settings.Default.IntelliSense_Show_ClashingLabels = this._asmDudeOptionsPageUI.Intellisense_Show_Clashing_Labels;
+                Settings.Default.IntelliSense_Show_ClashingLabels = this._asmDudeOptionsPageUI.IntelliSense_Show_Clashing_Labels;
                 changed = true;
             }
-            if (Settings.Default.IntelliSense_Decorate_UndefinedLabels != this._asmDudeOptionsPageUI.Intellisense_Decorate_Undefined_Labels)
+            if (Settings.Default.IntelliSense_Decorate_UndefinedLabels != this._asmDudeOptionsPageUI.IntelliSense_Decorate_Undefined_Labels)
             {
-                Settings.Default.IntelliSense_Decorate_UndefinedLabels = this._asmDudeOptionsPageUI.Intellisense_Decorate_Undefined_Labels;
+                Settings.Default.IntelliSense_Decorate_UndefinedLabels = this._asmDudeOptionsPageUI.IntelliSense_Decorate_Undefined_Labels;
                 changed = true;
             }
-            if (Settings.Default.IntelliSense_Decorate_ClashingLabels != this._asmDudeOptionsPageUI.Intellisense_Decorate_Clashing_Labels)
+            if (Settings.Default.IntelliSense_Decorate_ClashingLabels != this._asmDudeOptionsPageUI.IntelliSense_Decorate_Clashing_Labels)
             {
-                Settings.Default.IntelliSense_Decorate_ClashingLabels = this._asmDudeOptionsPageUI.Intellisense_Decorate_Clashing_Labels;
+                Settings.Default.IntelliSense_Decorate_ClashingLabels = this._asmDudeOptionsPageUI.IntelliSense_Decorate_Clashing_Labels;
+                changed = true;
+            }
+            if (Settings.Default.IntelliSense_Show_Undefined_Includes != this._asmDudeOptionsPageUI.IntelliSense_Show_Undefined_Includes)
+            {
+                Settings.Default.IntelliSense_Show_Undefined_Includes = this._asmDudeOptionsPageUI.IntelliSense_Show_Undefined_Includes;
+                changed = true;
+            }
+            if (Settings.Default.IntelliSense_Decorate_Undefined_Includes != this._asmDudeOptionsPageUI.IntelliSense_Decorate_Undefined_Includes)
+            {
+                Settings.Default.IntelliSense_Decorate_Undefined_Includes = this._asmDudeOptionsPageUI.IntelliSense_Decorate_Undefined_Includes;
                 changed = true;
             }
             #endregion
@@ -1338,7 +1358,6 @@ namespace AsmDude.OptionsPage
                 changed = true;
             }
             #endregion
-
 
             if (changed)
             {

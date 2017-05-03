@@ -986,12 +986,12 @@ namespace AsmDude {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool IntelliSense_Show_UndefinedIncludes {
+        public bool IntelliSense_Show_Undefined_Includes {
             get {
-                return ((bool)(this["IntelliSense_Show_UndefinedIncludes"]));
+                return ((bool)(this["IntelliSense_Show_Undefined_Includes"]));
             }
             set {
-                this["IntelliSense_Show_UndefinedIncludes"] = value;
+                this["IntelliSense_Show_Undefined_Includes"] = value;
             }
         }
         
@@ -1184,6 +1184,18 @@ namespace AsmDude {
             }
             set {
                 this["AsmSim_Decorate_Unimplemented"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IntelliSense_Decorate_Undefined_Includes {
+            get {
+                return ((bool)(this["IntelliSense_Decorate_Undefined_Includes"]));
+            }
+            set {
+                this["IntelliSense_Decorate_Undefined_Includes"] = value;
             }
         }
     }

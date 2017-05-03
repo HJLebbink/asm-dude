@@ -49,8 +49,13 @@ namespace AsmDude.Tools
 
         private readonly string _thisFilename;
         private readonly IDictionary<uint, string> _filenames;
-        private readonly IList<Undefined_Label_Struct> _undefined_includes;
-
+        /// <summary>
+        /// Include_Filename = the file that is supposed to be included
+        /// Path = path at which the include_filename is supposed to be found
+        /// Source_Filename = full path and name of the source file in which the include is defined
+        /// LineNumber = the lineNumber at which the include is defined
+        /// </summary>
+        private readonly IList<(string Include_Filename, string Path, string Source_Filename, int LineNumber)> _undefined_includes;
         private readonly IDictionary<string, IList<uint>> _usedAt;
         private readonly IDictionary<string, IList<uint>> _defAt;
         private readonly IDictionary<string, IList<uint>> _defAt_PROTO;
@@ -90,7 +95,7 @@ namespace AsmDude.Tools
             this._defAt_PROTO = new Dictionary<string, IList<uint>>();
             this._hasLabel = new HashSet<uint>();
             this._hasDef = new HashSet<uint>();
-            this._undefined_includes = new List<Undefined_Label_Struct>();
+            this._undefined_includes = new List<(string Include_Filename, string Path, string Source_Filename, int LineNumber)>();
 
             this._thisFilename = AsmDudeToolsStatic.GetFileName(this._buffer);
             this.Is_Enabled = true;
@@ -357,7 +362,7 @@ namespace AsmDude.Tools
         // Declare the event using EventHandler<T>
         public event EventHandler<CustomEventArgs> Reset_Done_Event;
 
-        public IList<Undefined_Label_Struct> Get_Undefined_Includes { get { return this._undefined_includes; } }
+        public IList<(string Include_Filename, string Path, string Source_Filename, int LineNumber)> Get_Undefined_Includes { get { return this._undefined_includes; } }
 
         public IEnumerable<int> Get_All_Related_Linenumber()
         {
@@ -454,7 +459,6 @@ namespace AsmDude.Tools
                         case 1:
                         ITextChange textChange = e.Changes[0];
                         ITextBuffer buffer = this._buffer;
-                        ITagAggregator<AsmTokenTag> aggregator = null;
 
 
                         switch (textChange.LineCountDelta)
@@ -462,7 +466,7 @@ namespace AsmDude.Tools
                             case 0:
                             {
                                 int lineNumber = e.Before.GetLineNumberFromPosition(textChange.OldPosition);
-                                Update_Linenumber(buffer, aggregator, lineNumber, (uint)lineNumber);
+                                Update_Linenumber(buffer, lineNumber, (uint)lineNumber);
                             }
                             break;
                             case 1:
@@ -470,7 +474,7 @@ namespace AsmDude.Tools
                                 int lineNumber = e.Before.GetLineNumberFromPosition(textChange.OldPosition);
                                 //AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:OnTextBufferChanged: old={0}; new={1}; LineNumber={2}", textChange.OldText, textChange.NewText, lineNumber));
                                 Shift_Linenumber(lineNumber + 1, 1);
-                                Update_Linenumber(buffer, aggregator, lineNumber, (uint)lineNumber);
+                                Update_Linenumber(buffer, lineNumber, (uint)lineNumber);
                             }
                             break;
                             case -1:
@@ -478,8 +482,8 @@ namespace AsmDude.Tools
                                 int lineNumber = e.Before.GetLineNumberFromPosition(textChange.OldPosition);
                                 AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:OnTextBufferChanged: old={0}; new={1}; LineNumber={2}", textChange.OldText, textChange.NewText, lineNumber));
                                 Shift_Linenumber(lineNumber + 1, -1);
-                                Update_Linenumber(buffer, aggregator, lineNumber, (uint)lineNumber);
-                                Update_Linenumber(buffer, aggregator, lineNumber - 1, (uint)lineNumber);
+                                Update_Linenumber(buffer, lineNumber, (uint)lineNumber);
+                                Update_Linenumber(buffer, lineNumber - 1, (uint)lineNumber);
                             }
                             break;
                             default:
@@ -504,30 +508,30 @@ namespace AsmDude.Tools
                 {
                     for (int lineNumber = 0; lineNumber < buffer.CurrentSnapshot.LineCount; ++lineNumber)
                     {
-                        Add_Linenumber(buffer, this._aggregator, lineNumber, (uint)lineNumber);
+                        Add_Linenumber(buffer, lineNumber, (uint)lineNumber);
                     }
                 } else
                 {
                     for (int lineNumber = 0; lineNumber < buffer.CurrentSnapshot.LineCount; ++lineNumber)
                     {
-                        Add_Linenumber(buffer, this._aggregator, lineNumber, Make_Id(lineNumber, fileId));
+                        Add_Linenumber(buffer, lineNumber, Make_Id(lineNumber, fileId));
                     }
                 }
             }
         }
 
-        private void Update_Linenumber(ITextBuffer buffer, ITagAggregator<AsmTokenTag> aggregator, int lineNumber, uint id)
+        private void Update_Linenumber(ITextBuffer buffer, int lineNumber, uint id)
         {
             //AsmDudeToolsStatic.Output_INFO("LabelGraph:Update_Linenumber: line "+ lineNumber);
-            Add_Linenumber(buffer, aggregator, lineNumber, id);
+            Add_Linenumber(buffer, lineNumber, id);
             Remove_Linenumber(lineNumber, id);
         }
 
-        private void Add_Linenumber(ITextBuffer buffer, ITagAggregator<AsmTokenTag> aggregator, int lineNumber, uint id)
+        private void Add_Linenumber(ITextBuffer buffer, int lineNumber, uint id)
         {
             AssemblerEnum usedAssember = AsmDudeToolsStatic.Used_Assembler;
 
-            IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = aggregator.GetTags(buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent);
+            IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent);
             var enumerator = tags.GetEnumerator();
 
             while (enumerator.MoveNext())
@@ -615,18 +619,7 @@ namespace AsmDude.Tools
                 dict.Add(key, new List<uint> { id });
             }
         }
-
-        private void Add_Error_Task_Missing_Include(string filename, string filePath, int lineNumber, string currentFilename)
-        {
-            this._undefined_includes.Add(new Undefined_Label_Struct()
-            {
-                include_filename = filename,
-                path = filePath,
-                source_filename = currentFilename,
-                lineNumber = lineNumber
-            });
-        }
-
+        
         private void Handle_Include(string includeFilename, int lineNumber, string currentFilename)
         {
             try
@@ -650,8 +643,8 @@ namespace AsmDude.Tools
 
                 if (!File.Exists(filePath))
                 {
-                    AsmDudeToolsStatic.Output_WARNING("LabelGraph:Handle_Include: file " + filePath + " does not exist");
-                    this.Add_Error_Task_Missing_Include(includeFilename, filePath, lineNumber, currentFilename);
+                    AsmDudeToolsStatic.Output_INFO("LabelGraph:Handle_Include: file " + filePath + " does not exist");
+                    this._undefined_includes.Add((Include_Filename: includeFilename, Path: filePath, Source_Filename: currentFilename, LineNumber: lineNumber));
                     return;
                 }
 

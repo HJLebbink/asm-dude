@@ -489,21 +489,31 @@ namespace AsmDude.OptionsPage {
         #endregion
 
         #region Intellisense
-        public bool Intellisense_Show_Undefined_Labels {
+        public bool IntelliSense_Show_Undefined_Labels {
             get { return this.Intellisense_Show_Undefined_Labels_UI.IsChecked ?? false; }
             set { this.Intellisense_Show_Undefined_Labels_UI.IsChecked = value; }
         }
-        public bool Intellisense_Show_Clashing_Labels {
+        public bool IntelliSense_Show_Clashing_Labels {
             get { return this.Intellisense_Show_Clashing_Labels_UI.IsChecked ?? false; }
             set { this.Intellisense_Show_Clashing_Labels_UI.IsChecked = value; }
         }
-        public bool Intellisense_Decorate_Undefined_Labels {
+        public bool IntelliSense_Decorate_Undefined_Labels {
             get { return this.Intellisense_Decorate_Undefined_Labels_UI.IsChecked ?? false; }
             set { this.Intellisense_Decorate_Undefined_Labels_UI.IsChecked = value; }
         }
-        public bool Intellisense_Decorate_Clashing_Labels {
+        public bool IntelliSense_Decorate_Clashing_Labels {
             get { return this.Intellisense_Decorate_Clashing_Labels_UI.IsChecked ?? false; }
             set { this.Intellisense_Decorate_Clashing_Labels_UI.IsChecked = value; }
+        }
+        public bool IntelliSense_Show_Undefined_Includes
+        {
+            get { return this.Intellisense_Show_Undefined_Includes_UI.IsChecked ?? false; }
+            set { this.Intellisense_Show_Undefined_Includes_UI.IsChecked = value; }
+        }
+        public bool IntelliSense_Decorate_Undefined_Includes
+        {
+            get { return this.Intellisense_Decorate_Undefined_Includes_UI.IsChecked ?? false; }
+            set { this.Intellisense_Decorate_Undefined_Includes_UI.IsChecked = value; }
         }
         #endregion
 
