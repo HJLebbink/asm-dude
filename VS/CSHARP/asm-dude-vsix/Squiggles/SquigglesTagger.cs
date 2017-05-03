@@ -59,13 +59,13 @@ namespace AsmDude.Squiggles
 
         internal SquigglesTagger(
             ITextBuffer buffer,
-            ITagAggregator<AsmTokenTag> aggregator,
+            IBufferTagAggregatorFactoryService aggregatorFactory,
             ILabelGraph labelGraph,
             AsmSimulator asmSimulator)
         {
             //AsmDudeToolsStatic.Output(string.Format("INFO: LabelErrorTagger: constructor"));
             this._sourceBuffer = buffer;
-            this._aggregator = aggregator;
+            this._aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, aggregatorFactory);
             this._errorListProvider = AsmDudeTools.Instance.Error_List_Provider;
             this._labelGraph = labelGraph;
             this._asmSimulator = asmSimulator;

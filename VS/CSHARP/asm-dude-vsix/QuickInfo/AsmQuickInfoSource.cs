@@ -58,12 +58,12 @@ namespace AsmDude.QuickInfo
 
         public AsmQuickInfoSource(
                 ITextBuffer buffer,
-                ITagAggregator<AsmTokenTag> aggregator,
+                 IBufferTagAggregatorFactoryService aggregatorFactory,
                 ILabelGraph labelGraph,
                 AsmSimulator asmSimulator)
         {
             this._sourceBuffer = buffer;
-            this._aggregator = aggregator;
+            this._aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, aggregatorFactory);
             this._labelGraph = labelGraph;
             this._asmSimulator = asmSimulator;
             this._asmDudeTools = AsmDudeTools.Instance;

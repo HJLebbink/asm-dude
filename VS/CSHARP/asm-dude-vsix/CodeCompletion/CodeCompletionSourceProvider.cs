@@ -48,9 +48,8 @@ namespace AsmDude {
 
         public ICompletionSource TryCreateCompletionSource(ITextBuffer buffer) {
             Func<CodeCompletionSource> sc = delegate () {
-                var aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, this._aggregatorFactory);
-                var labelGraph = AsmDudeToolsStatic.GetOrCreate_Label_Graph(buffer, aggregator, this._docFactory, this._contentService);
-                var asmSimulator = AsmSimulator.GetOrCreate_AsmSimulator(buffer, aggregator);
+                var labelGraph = AsmDudeToolsStatic.GetOrCreate_Label_Graph(buffer, this._aggregatorFactory, this._docFactory, this._contentService);
+                var asmSimulator = AsmSimulator.GetOrCreate_AsmSimulator(buffer, this._aggregatorFactory);
                 return new CodeCompletionSource(buffer, labelGraph, asmSimulator);
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);

@@ -311,7 +311,7 @@ namespace AsmDude
                     if (selectedArchitectures.Contains(a))
                     {
                         yield return mnemonic;
-                        break;
+                        break; // leave the foreach Arch loop
                     }
                 }
             }
@@ -325,15 +325,16 @@ namespace AsmDude
             #region 
             if (Settings.Default.CodeFolding_On)
             {
+                this._icons.TryGetValue(AsmTokenType.Directive, out var imageSource);
                 {
                     string insertionText = Settings.Default.CodeFolding_BeginTag;     //the characters that start the outlining region
                     string description = insertionText + " - keyword to start code folding";
-                    completions.Add(new Completion(description, insertionText, null, this._icons[AsmTokenType.Directive], ""));
+                    completions.Add(new Completion(description, insertionText, null, imageSource, ""));
                 }
                 {
                     string insertionText = Settings.Default.CodeFolding_EndTag;       //the characters that end the outlining region
                     string description = insertionText + " - keyword to end code folding";
-                    completions.Add(new Completion(description, insertionText, null, this._icons[AsmTokenType.Directive], ""));
+                    completions.Add(new Completion(description, insertionText, null, imageSource, ""));
                 }
             }
             #endregion
@@ -386,7 +387,7 @@ namespace AsmDude
                         selected = AsmDudeToolsStatic.Is_Arch_Switched_On(arch);
                     }
 
-                    AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:Selected_Completions; keyword=" + keyword + "; arch=" + arch + "; selected=" + selected);
+                    //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:Selected_Completions; keyword=" + keyword + "; arch=" + arch + "; selected=" + selected);
 
                     if (selected)
                     {

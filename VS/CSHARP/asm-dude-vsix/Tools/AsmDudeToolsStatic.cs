@@ -59,14 +59,14 @@ namespace AsmDude.Tools
 
         public static ILabelGraph GetOrCreate_Label_Graph(
             ITextBuffer buffer,
-            ITagAggregator<AsmTokenTag> aggregator,
+            IBufferTagAggregatorFactoryService aggregatorFactory,
             ITextDocumentFactoryService docFactory,
             IContentTypeRegistryService contentService)
         {
             Func<LabelGraph> sc1 = delegate ()
             {
                 IContentType contentType = contentService.GetContentType(AsmDudePackage.AsmDudeContentType);
-                return new LabelGraph(buffer, aggregator, AsmDudeTools.Instance.Error_List_Provider, docFactory, contentType);
+                return new LabelGraph(buffer, aggregatorFactory, AsmDudeTools.Instance.Error_List_Provider, docFactory, contentType);
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc1);
         }
@@ -510,12 +510,19 @@ namespace AsmDude.Tools
         {
             switch (microArch)
             {
+                case MicroArch.NONE: return false;
                 case MicroArch.SandyBridge: return Settings.Default.PerformanceInfo_SandyBridge_On;
                 case MicroArch.IvyBridge: return Settings.Default.PerformanceInfo_IvyBridge_On;
                 case MicroArch.Haswell: return Settings.Default.PerformanceInfo_Haswell_On;
                 case MicroArch.Broadwell: return Settings.Default.PerformanceInfo_Broadwell_On;
                 case MicroArch.Skylake: return Settings.Default.PerformanceInfo_Skylake_On;
+                case MicroArch.Kabylake: return false;
+                case MicroArch.Cannonlake: return false;
+                case MicroArch.Icelake: return false;
+                case MicroArch.Tigerlake: return false;
+                case MicroArch.KnightsCorner: return false;
                 case MicroArch.KnightsLanding: return Settings.Default.PerformanceInfo_KnightsLanding_On;
+
                 default:
                     Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:AsmDudeToolsStatic::Is_MicroArch_Switched_On: unsupported arch {0}", microArch));
                     return false;

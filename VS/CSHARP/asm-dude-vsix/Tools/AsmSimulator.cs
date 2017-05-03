@@ -26,10 +26,10 @@ namespace AsmDude.Tools
         public event EventHandler<CustomEventArgs> Simulate_Done_Event;
         public bool Is_Enabled { get; set; }
 
-        private AsmSimulator(ITextBuffer buffer, ITagAggregator<AsmTokenTag> aggregator)
+        private AsmSimulator(ITextBuffer buffer, IBufferTagAggregatorFactoryService aggregatorFactory)
         {
             this._buffer = buffer;
-            this._aggregator = aggregator;
+            this._aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, aggregatorFactory);
 
             if (Settings.Default.AsmSim_On)
             {
@@ -97,11 +97,11 @@ namespace AsmDude.Tools
         /// <summary>Factory return singleton</summary>
         public static AsmSimulator GetOrCreate_AsmSimulator(
             ITextBuffer buffer,
-            ITagAggregator<AsmTokenTag> aggregator)
+            IBufferTagAggregatorFactoryService aggregatorFactory)
         {
             Func<AsmSimulator> sc = delegate ()
             {
-                return new AsmSimulator(buffer, aggregator);
+                return new AsmSimulator(buffer, aggregatorFactory);
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
