@@ -1258,5 +1258,29 @@ namespace AsmDude {
                 this["ARCH_AVX512_4FMAPS"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AsmSim_64_Bits {
+            get {
+                return ((bool)(this["AsmSim_64_Bits"]));
+            }
+            set {
+                this["AsmSim_64_Bits"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("6")]
+        public int AsmSim_Number_Of_Steps {
+            get {
+                return ((int)(this["AsmSim_Number_Of_Steps"]));
+            }
+            set {
+                this["AsmSim_Number_Of_Steps"] = value;
+            }
+        }
     }
 }

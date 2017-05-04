@@ -125,10 +125,15 @@
                         </StackPanel>
                     </Grid>
                 </GroupBox>
-                <GroupBox Header="Assembly Simulator (Experimental, warning: eats your lunch)" BorderBrush="DarkGray">
+                <GroupBox Header="Assembly Simulator (Warning: Experimental and may soft brick visual studio)" BorderBrush="DarkGray">
                     <Grid>
                         <StackPanel>
                             <CheckBox x:Name="AsmSim_On_UI" Content="Enable assembly simulator" ToolTip="TODO" Margin="0,4,0,2" />
+                            <Grid>
+                                <xctk:IntegerUpDown x:Name="AsmSim_Number_Of_Steps_UI" DefaultValue="6" HorizontalAlignment="Left" Width="42"/>
+                                <Label Content="Number of steps the simulator considers" ToolTip="The number of steps (lines) that the simulator looks in the past to determine register, flags and memory state." Margin="42,0,0,0"/>
+                            </Grid>
+                            <CheckBox x:Name="AsmSim_64_Bits_UI" Content="Use 64-bits mode (32-bits mode otherwise)" ToolTip="Use 64-bits mode (32-bits mode otherwise)" Margin="0,2,0,2" />
                             <CheckBox x:Name="AsmSim_Shown_Syntax_Errors_UI" Content="Show syntax errors in error list" ToolTip="Show syntax errors found while parsing in error list" Margin="0,2,0,2" />
                             <CheckBox x:Name="AsmSim_Decorate_Syntax_Errors_UI" Content="Decorate syntax errors" ToolTip="Decorate syntax errors found while parsing" Margin="0,2,0,2" />
                             <CheckBox x:Name="AsmSim_Show_Usage_Of_Undefined_UI" Content="Show usage of undefined values in error list" ToolTip="Show usage of undefined values in error list" Margin="0,2,0,2" />
@@ -176,11 +181,11 @@
                                         <CheckBox x:Name="UseArch_AVX512_BW_UI" Content="AVX512-BW - Byte and Word (Intel Xeon)" Margin="0,2,0,2"/>
                                         <CheckBox x:Name="UseArch_AVX512_DQ_UI" Content="AVX512-DQ - Doubleword and QuadWord (Intel Xeon)" Margin="0,2,0,2"/>
                                         <CheckBox x:Name="UseArch_AVX512_VL_UI" Content="AVX512-VL - Vector Length Extensions (Intel Xeon)" Margin="0,2,0,2"/>
-                                        <CheckBox x:Name="UseArch_AVX512_IFMA_UI" Content="AVX512-IFMA -" Margin="0,2,0,2"/>
-                                        <CheckBox x:Name="UseArch_AVX512_VBMI_UI" Content="AVX512-VBMI -" Margin="0,2,0,2"/>
-                                        <CheckBox x:Name="UseArch_AVX512_VPOPCNTDQ_UI" Content="AVX512-VPOPCNTDQ -" Margin="0,2,0,2"/>
-                                        <CheckBox x:Name="UseArch_AVX512_4VNNIW_UI" Content="AVX512-4VNNIW -" Margin="0,2,0,2"/>
-                                        <CheckBox x:Name="UseArch_AVX512_4FMAPS_UI" Content="AVX512-4FMAPS -" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="UseArch_AVX512_IFMA_UI" Content="AVX512-IFMA - Integer Fused Multiply Add (Cannonlake)" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="UseArch_AVX512_VBMI_UI" Content="AVX512-VBMI - Vector Byte Manipulation Instructions (Cannonlake)" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="UseArch_AVX512_VPOPCNTDQ_UI" Content="AVX512-VPOPCNTDQ - Vector Population Count instructions for Dwords and Qwords" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="UseArch_AVX512_4VNNIW_UI" Content="AVX512-4VNNIW - Vector Neural Network Instructions Word variable precision (Knights Mill)" Margin="0,2,0,2"/>
+                                        <CheckBox x:Name="UseArch_AVX512_4FMAPS_UI" Content="AVX512-4FMAPS - Fused Multiply Accumulation Packed Single precision (Knights Mill)" Margin="0,2,0,2"/>
                                     </StackPanel>
                                 </Grid>
                             </GroupBox>

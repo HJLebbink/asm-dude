@@ -33,16 +33,16 @@ namespace AsmTools
 
     public static class RegisterTools
     {
-        public static (bool valid, Rn reg, int nBits) ToRn(string str)
+        public static (bool Valid, Rn Reg, int NBits) ToRn(string str)
         {
             Rn rn = RegisterTools.ParseRn(str);
             if (rn == Rn.NOREG)
             {
-                return (valid: false, reg: Rn.NOREG, nBits: 0);
+                return (Valid: false, Reg: Rn.NOREG, NBits: 0);
             }
             else
             {
-                return (valid: true, reg: rn, nBits: RegisterTools.NBits(rn));
+                return (Valid: true, Reg: rn, NBits: RegisterTools.NBits(rn));
             }
         }
 

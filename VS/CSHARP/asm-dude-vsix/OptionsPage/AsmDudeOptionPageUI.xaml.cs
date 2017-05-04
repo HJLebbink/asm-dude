@@ -550,6 +550,16 @@ namespace AsmDude.OptionsPage {
             get { return this.AsmSim_On_UI.IsChecked ?? false; }
             set { this.AsmSim_On_UI.IsChecked = value; }
         }
+        public int AsmSim_Number_Of_Steps
+        {
+            get { return this.AsmSim_Number_Of_Steps_UI.Value ?? 1; }
+            set { this.AsmSim_Number_Of_Steps_UI.Value = value; }
+        }
+        public bool AsmSim_64_Bits
+        {
+            get { return this.AsmSim_64_Bits_UI.IsChecked ?? false; }
+            set { this.AsmSim_64_Bits_UI.IsChecked = value; }
+        }
         public bool AsmSim_Show_Syntax_Errors
         {
             get { return this.AsmSim_Shown_Syntax_Errors_UI.IsChecked ?? false; }

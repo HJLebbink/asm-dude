@@ -201,7 +201,9 @@ namespace AsmTools {
                 case "SSE2": return Arch.SSE2;
                 case "SSE3": return Arch.SSE3;
                 case "SSSE3": return Arch.SSSE3;
+                case "SSE41":
                 case "SSE4_1": return Arch.SSE4_1;
+                case "SSE42":
                 case "SSE4_2": return Arch.SSE4_2;
                 case "SSE4A": return Arch.SSE4A;
                 case "SSE5": return Arch.SSE5;

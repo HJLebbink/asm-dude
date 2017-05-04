@@ -1278,9 +1278,9 @@ POP	R/M64	X64	POP R/M64	Pop top of stack into r/m64; increment stack pointer. Ca
 
 POPA		186	POPA	Pop DI, SI, BP, BX, DX, CX, and AX.
 POPAD		386	POPAD	Pop EDI, ESI, EBP, EBX, EDX, ECX, and EAX.
-POPCNT	R16,R/M16	SSE42	POPCNT R16,R/M16	POPCNT on r/m16
-POPCNT	R32,R/M32	SSE42	POPCNT R32,R/M32	POPCNT on r/m32
-POPCNT	R64,R/M64	SSE42	POPCNT R64,R/M64	POPCNT on r/m64
+POPCNT	R16,R/M16	SSE42	POPCNT R16,R/M16	Count the number of bits set to 1 in r/m16, store result in r16.
+POPCNT	R32,R/M32	SSE42	POPCNT R32,R/M32	Count the number of bits set to 1 in r/m32, store result in r32.
+POPCNT	R64,R/M64	SSE42	POPCNT R64,R/M64	Count the number of bits set to 1 in r/m64, store result in r64.
 POPF		8086	POPF	Pop top of stack into lower 16 bits of EFLAGS.
 POPFD		386	POPFD	Pop top of stack into EFLAGS (Not supported in 64-bit mode).
 POPFQ		X64	POPFQ	Pop top of stack and zero-extend into RFLAGS.

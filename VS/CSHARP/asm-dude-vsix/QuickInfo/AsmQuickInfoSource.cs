@@ -284,8 +284,8 @@ namespace AsmDude.QuickInfo
                                 description.Inlines.Add(Make_Run1("Constant ", this._foreground));
 
                                 var constant = AsmSourceTools.ToConstant(keyword);
-                                string constantStr = (constant.valid)
-                                    ? constant.value + "d = " + constant.value.ToString("X") + "h = " + AsmSourceTools.ToStringBin(constant.value, constant.nBits) + "b"
+                                string constantStr = (constant.Valid)
+                                    ? constant.Value + "d = " + constant.Value.ToString("X") + "h = " + AsmSourceTools.ToStringBin(constant.Value, constant.NBits) + "b"
                                     : keyword;
 
                                 description.Inlines.Add(Make_Run2(constantStr, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Constant))));

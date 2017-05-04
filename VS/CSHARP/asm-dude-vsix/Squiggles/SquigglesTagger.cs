@@ -217,13 +217,15 @@ namespace AsmDude.Squiggles
                                 {
                                     if (Decorate_Syntax_Errors && (info.message != null))
                                     {
-                                        yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.SyntaxError, info.message));
+                                        string message = AsmSourceTools.Linewrap("Syntax Error: " + info.message, AsmDudePackage.maxNumberOfCharsInToolTips);
+                                        yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.SyntaxError, message));
                                     }
                                 } else
                                 {
                                     if (Decorate_Unimplemented)
                                     {
-                                        yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.CompilerError, "Instruction " + tagSpan.GetText() + " is not (yet) supported by the simulator."));
+                                        string message = AsmSourceTools.Linewrap("Instruction " + tagSpan.GetText() + " is not (yet) supported by the simulator.", AsmDudePackage.maxNumberOfCharsInToolTips);
+                                        yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.CompilerError, message));
                                     }
                                 }
                             }

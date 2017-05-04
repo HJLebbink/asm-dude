@@ -56,31 +56,31 @@ namespace AsmTools
             this._str = token;
 
             var t0 = RegisterTools.ToRn(token2);
-            if (t0.valid)
+            if (t0.Valid)
             {
                 this._type = Ot1.reg;
-                this._rn = t0.reg;
-                this.NBits = t0.nBits;
+                this._rn = t0.Reg;
+                this.NBits = t0.NBits;
             }
             else
             {
                 this._rn = Rn.NOREG;
 
                 var t1 = AsmSourceTools.ToConstant(token2);
-                if (t1.valid)
+                if (t1.Valid)
                 {
                     this._type = Ot1.imm;
-                    this._imm = t1.value;
-                    this.NBits = t1.nBits;
+                    this._imm = t1.Value;
+                    this.NBits = t1.NBits;
                 }
                 else
                 {
                     var t2 = AsmSourceTools.ParseMemOperand(token2);
-                    if (t2.valid)
+                    if (t2.Valid)
                     {
                         this._type = Ot1.mem;
-                        this._mem = (t2.baseReg, t2.indexReg, t2.scale, t2.displacement);
-                        this.NBits = t2.nBits;
+                        this._mem = (t2.BaseReg, t2.IndexReg, t2.Scale, t2.Displacement);
+                        this.NBits = t2.NBits;
                     }
                     else
                     {

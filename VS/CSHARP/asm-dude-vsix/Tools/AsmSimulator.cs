@@ -41,7 +41,7 @@ namespace AsmDude.Tools
             {
                 if (opcodeBase.IsHalted)
                 {
-                    return (IsImplemented: true, message: opcodeBase.Halt);
+                    return (IsImplemented: true, message: opcodeBase.SyntaxError);
                 }
                 else
                 {
@@ -87,6 +87,18 @@ namespace AsmDude.Tools
                     { "proof", "false" }         // enable proof generation
                 };
                 this.Tools = new AsmSimZ3.Mnemonics_ng.Tools(new Context(settings));
+                if (Settings.Default.AsmSim_64_Bits)
+                {
+                    this.Tools.Parameters.mode_64bit = true;
+                    this.Tools.Parameters.mode_32bit = false;
+                    this.Tools.Parameters.mode_16bit = false;
+                }
+                else
+                {
+                    this.Tools.Parameters.mode_64bit = false;
+                    this.Tools.Parameters.mode_32bit = true;
+                    this.Tools.Parameters.mode_16bit = false;
+                }
                 this._buffer.Changed += this.Buffer_Changed;
             }
             else
@@ -135,7 +147,9 @@ namespace AsmDude.Tools
         {
             if (!(this._cachedStates.ContainsKey(lineNumber)))
             {
-                AsmSimZ3.Mnemonics_ng.ExecutionTree tree = Runner.Construct_ExecutionTree_Backward(this._cflow, lineNumber, 10, this.Tools);
+                int nSteps = Settings.Default.AsmSim_Number_Of_Steps;
+                AsmSimZ3.Mnemonics_ng.ExecutionTree tree = Runner.Construct_ExecutionTree_Backward(this._cflow, lineNumber, nSteps, this.Tools);
+
                 State2 state = tree.EndState;
                 this._cachedStates.Add(lineNumber, state);
                 On_Simulate_Done_Event(new CustomEventArgs("Simulate has finished"));

@@ -357,7 +357,7 @@ namespace AsmTools
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static (bool valid, ulong value, int nBits) ToConstant(string token)
+        public static (bool Valid, ulong Value, int NBits) ToConstant(string token)
         {
             string token2;
             bool isHex = false;
@@ -475,7 +475,7 @@ namespace AsmTools
             }
 
             int nBits = (parsedSuccessfully) ? NBitsStorageNeeded(value, isNegative) : -1;
-            return (valid: parsedSuccessfully, value: value, nBits: nBits);
+            return (Valid: parsedSuccessfully, Value: value, NBits: nBits);
         }
 
         public static int NBitsStorageNeeded(ulong v, bool isNegative)
@@ -504,7 +504,7 @@ namespace AsmTools
         public static int GetNbitsMemOperand(string token)
         {
             string s = token.TrimStart().ToUpper();
-            if (s.StartsWith("PTR")) token = token.Substring(3, token.Length - 3).TrimStart();
+            if (s.StartsWith("PTR")) s = s.Substring(3, token.Length - 3).TrimStart();
 
             if (s.StartsWith("BYTE")) return 8; //nasm
             if (s.StartsWith("SBYTE")) return 8;
@@ -525,19 +525,20 @@ namespace AsmTools
             if (s.StartsWith("ZMMWORD")) return 512;
             if (s.StartsWith("ZWORD")) return 512; //nasm
 
+            Console.WriteLine("AsmSourceTools:GetNbitsMemOperand: could not determine nBits in token " + token + " assuming 32 bits");
+
             return 32;
         }
 
         /// <summary>
         /// return Offset = Base + (Index * Scale) + Displacement
         /// </summary>
-        public static (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits) ParseMemOperand(string token)
+        public static (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits) ParseMemOperand(string token)
         {
-
             int length = token.Length;
             if (length < 3)
             {
-                return (valid: false, baseReg: Rn.NOREG, indexReg: Rn.NOREG, scale: 0, displacement: 0, nBits: 0);
+                return (Valid: false, BaseReg: Rn.NOREG, IndexReg: Rn.NOREG, Scale: 0, Displacement: 0, NBits: 0);
             }
 
             // 1] select everything between []
@@ -560,7 +561,7 @@ namespace AsmTools
             length = token.Length;
             if (length == 0)
             {
-                return (valid: false, baseReg: Rn.NOREG, indexReg: Rn.NOREG, scale: 0, displacement: 0, nBits: 0);
+                return (Valid: false, BaseReg: Rn.NOREG, IndexReg: Rn.NOREG, Scale: 0, Displacement: 0, NBits: 0);
             }
 
             // 2] check if the displacement is negative
@@ -592,17 +593,17 @@ namespace AsmTools
                 string y = x[i].Trim();
 
                 var t2 = AsmSourceTools.ToConstant(y);
-                if (t2.valid)
+                if (t2.Valid)
                 {
                     if (foundDisplacement)
                     {
                         // found an second displacement, error
-                        return (valid: false, baseReg: Rn.NOREG, indexReg: Rn.NOREG, scale: 0, displacement: 0, nBits: 0);
+                        return (Valid: false, BaseReg: Rn.NOREG, IndexReg: Rn.NOREG, Scale: 0, Displacement: 0, NBits: 0);
                     }
                     else
                     {
                         foundDisplacement = true;
-                        displacement = (negativeDisplacement) ? -(long)t2.value : (long)t2.value;
+                        displacement = (negativeDisplacement) ? -(long)t2.Value : (long)t2.Value;
                     }
                 }
                 else
@@ -647,16 +648,16 @@ namespace AsmTools
 
             if (scale == -1)
             {
-                return (valid: false, baseReg: Rn.NOREG, indexReg: Rn.NOREG, scale: 0, displacement: 0, nBits: 0);
+                return (Valid: false, BaseReg: Rn.NOREG, IndexReg: Rn.NOREG, Scale: 0, Displacement: 0, NBits: 0);
             }
             if ((baseRn != Rn.NOREG) && (indexRn != Rn.NOREG))
             {
                 if (RegisterTools.NBits(baseRn) != RegisterTools.NBits(indexRn))
                 {
-                    return (valid: false, baseReg: Rn.NOREG, indexReg: Rn.NOREG, scale: 0, displacement: 0, nBits: 0);
+                    return (Valid: false, BaseReg: Rn.NOREG, IndexReg: Rn.NOREG, Scale: 0, Displacement: 0, NBits: 0);
                 }
             }
-            return (valid: true, baseReg: baseRn, indexReg: indexRn, scale: scale, displacement: displacement, nBits: nBits);
+            return (Valid: true, BaseReg: baseRn, IndexReg: indexRn, Scale: scale, Displacement: displacement, NBits: nBits);
         }
 
         private static int ParseScale(string str)
