@@ -20,11 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude.SyntaxHighlighting;
-using AsmDude.Tools;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -32,9 +27,16 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using AsmTools;
 using System.Windows.Media;
+
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Text.Adornments;
+
+using AsmTools;
+using AsmDude.SyntaxHighlighting;
+using AsmDude.Tools;
 using AsmSimZ3;
 using AsmSimZ3.Mnemonics_ng;
 
@@ -185,7 +187,7 @@ namespace AsmDude.Squiggles
 
                                 //AsmSimToolsStatic.Output_INFO(string.Format("AsmSimSquigglesTagger:GetTags: found register " + regName + " at line " + lineNumber));
 
-                                State2 state = this._asmSimulator.GetState(lineNumber, false);
+                                State2 state = this._asmSimulator.Get_State_After(lineNumber, false);
                                 if (state != null)
                                 {
                                     //string registerContent = state.GetString(regName);
@@ -231,10 +233,9 @@ namespace AsmDude.Squiggles
                                 }
                                 if (Decorate_Usage_Of_Undefined)
                                 {
-                                    State2 state = this._asmSimulator.GetState(lineNumber, false);
+                                    State2 state = this._asmSimulator.Get_State_Before(lineNumber, false);
                                     if (state != null)
                                     {
-                                        //TODO this is the state after the current line!
                                         string message = AsmSimulator.Get_Undefined_Warnings(line, this._asmSimulator.Tools, state);
                                         if (message.Length > 0)
                                         {

@@ -169,7 +169,7 @@ namespace AsmDude.QuickInfo
 
                                 if (this._asmSimulator.Is_Enabled)
                                 {
-                                    State2 state = this._asmSimulator.GetState(lineNumber, true);
+                                    State2 state = this._asmSimulator.Get_State_After(lineNumber, true);
                                     string msg = this._asmSimulator.GetRegisterValue(RegisterTools.ParseRn(keyword), state);
                                     if (msg.Length == 0) msg = "[Bussy calculating register content]";
 

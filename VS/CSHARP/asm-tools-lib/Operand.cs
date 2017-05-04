@@ -31,7 +31,7 @@ namespace AsmTools
         private readonly Rn _rn;
         private ulong _imm;
         public int NBits { get; set; }
-        private readonly (Rn baseReg, Rn indexReg, int scale, long displacement) _mem;
+        private readonly (Rn BaseReg, Rn IndexReg, int Scale, long Displacement) _mem;
 
         /// <summary>constructor</summary>
         public Operand(string token, AsmParameters p = null)
@@ -100,7 +100,7 @@ namespace AsmTools
         public ulong Imm { get { return this._imm; } }
         
         /// <summary> Return tup with BaseReg, IndexReg, Scale and Displacement. Offset = Base + (Index * Scale) + Displacement </summary>
-        public (Rn baseReg, Rn indexReg, int scale, long displacement) Mem { get { return this._mem; } }
+        public (Rn BaseReg, Rn IndexReg, int Scale, long Displacement) Mem { get { return this._mem; } }
 
         /// <summary> Sign Extend the imm to the provided number of bits;</summary>
         public void SignExtend(int nBits)

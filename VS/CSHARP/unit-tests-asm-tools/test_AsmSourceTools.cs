@@ -291,11 +291,11 @@ namespace unit_tests {
                 {
                     string str = "[" + b + "]";
                     var t = AsmSourceTools.ParseMemOperand(str);
-                    Assert.AreEqual(true, t.valid, str);
-                    Assert.AreEqual(b, t.baseReg, "base: " + str);
-                    Assert.AreEqual(Rn.NOREG, t.indexReg, "index: " + str);
-                    Assert.AreEqual(0, t.scale, "scale: " + str);
-                    Assert.AreEqual(0, t.displacement, "displacement: " + str);
+                    Assert.AreEqual(true, t.Valid, str);
+                    Assert.AreEqual(b, t.BaseReg, "base: " + str);
+                    Assert.AreEqual(Rn.NOREG, t.IndexReg, "index: " + str);
+                    Assert.AreEqual(0, t.Scale, "scale: " + str);
+                    Assert.AreEqual(0, t.Displacement, "displacement: " + str);
                 }
 
                 for (int j = 0; j<index32.Length; ++j) {
@@ -304,21 +304,21 @@ namespace unit_tests {
                     {
                         string str = "[" + b + "+" + idx + "]";
                         var t = AsmSourceTools.ParseMemOperand(str);
-                        Assert.AreEqual(true, t.valid, str);
-                        Assert.AreEqual(b, t.baseReg, "base: " + str);
-                        Assert.AreEqual(idx, t.indexReg, "index: " + str);
-                        Assert.AreEqual(1, t.scale, "scale: " + str);
-                        Assert.AreEqual(0, t.displacement, "displacement: " + str);
+                        Assert.AreEqual(true, t.Valid, str);
+                        Assert.AreEqual(b, t.BaseReg, "base: " + str);
+                        Assert.AreEqual(idx, t.IndexReg, "index: " + str);
+                        Assert.AreEqual(1, t.Scale, "scale: " + str);
+                        Assert.AreEqual(0, t.Displacement, "displacement: " + str);
                     }
                     {
                         string str = "[" + idx + "+" + b + "]";
                         var t = AsmSourceTools.ParseMemOperand(str);
-                        Assert.AreEqual(true, t.valid, str);
+                        Assert.AreEqual(true, t.Valid, str);
                         //idx and base can be interchanged
                         //Assert.AreEqual(b, t.Item2, "base: " + str); 
                         //Assert.AreEqual(idx, t.Item3, "index: " + str);
-                        Assert.AreEqual(1, t.scale, "scale: " + str);
-                        Assert.AreEqual(0, t.displacement, "displacement: " + str);
+                        Assert.AreEqual(1, t.Scale, "scale: " + str);
+                        Assert.AreEqual(0, t.Displacement, "displacement: " + str);
                     }
 
                     for (int k = 0; k < scales.Length; ++k) {
@@ -328,38 +328,38 @@ namespace unit_tests {
                         {
                             string str = "[" + b + "+" + idx + " * " + s + "]";
                             var t = AsmSourceTools.ParseMemOperand(str);
-                            Assert.AreEqual(true, t.valid, str);
-                            Assert.AreEqual(b, t.baseReg, "base: " + str);
-                            Assert.AreEqual(idx, t.indexReg, "index: " + str);
-                            Assert.AreEqual(s, t.scale, "scale: " + str);
-                            Assert.AreEqual(0, t.displacement, "displacement: " + str);
+                            Assert.AreEqual(true, t.Valid, str);
+                            Assert.AreEqual(b, t.BaseReg, "base: " + str);
+                            Assert.AreEqual(idx, t.IndexReg, "index: " + str);
+                            Assert.AreEqual(s, t.Scale, "scale: " + str);
+                            Assert.AreEqual(0, t.Displacement, "displacement: " + str);
                         }
                         {
                             string str = "[" + b + "+" + s + " * " + idx + "]";
                             var t = AsmSourceTools.ParseMemOperand(str);
-                            Assert.AreEqual(true, t.valid, str);
-                            Assert.AreEqual(b, t.baseReg, "base: " + str);
-                            Assert.AreEqual(idx, t.indexReg, "index: " + str);
-                            Assert.AreEqual(s, t.scale, "scale: " + str);
-                            Assert.AreEqual(0, t.displacement, "displacement: " + str);
+                            Assert.AreEqual(true, t.Valid, str);
+                            Assert.AreEqual(b, t.BaseReg, "base: " + str);
+                            Assert.AreEqual(idx, t.IndexReg, "index: " + str);
+                            Assert.AreEqual(s, t.Scale, "scale: " + str);
+                            Assert.AreEqual(0, t.Displacement, "displacement: " + str);
                         }
                         {
                             string str = "[" + s + " * " + idx + "+" + b + "]";
                             var t = AsmSourceTools.ParseMemOperand(str);
-                            Assert.AreEqual(true, t.valid, str);
-                            Assert.AreEqual(b, t.baseReg, "base: " + str);
-                            Assert.AreEqual(idx, t.indexReg, "index: " + str);
-                            Assert.AreEqual(s, t.scale, "scale: " + str);
-                            Assert.AreEqual(0, t.displacement, "displacement: " + str);
+                            Assert.AreEqual(true, t.Valid, str);
+                            Assert.AreEqual(b, t.BaseReg, "base: " + str);
+                            Assert.AreEqual(idx, t.IndexReg, "index: " + str);
+                            Assert.AreEqual(s, t.Scale, "scale: " + str);
+                            Assert.AreEqual(0, t.Displacement, "displacement: " + str);
                         }
                         {
                             string str = "[" + idx + " * " + s + "+" + b + "]";
                             var t = AsmSourceTools.ParseMemOperand(str);
-                            Assert.AreEqual(true, t.valid, str);
-                            Assert.AreEqual(b, t.baseReg, "base: " + str);
-                            Assert.AreEqual(idx, t.indexReg, "index: " + str);
-                            Assert.AreEqual(s, t.scale, "scale: " + str);
-                            Assert.AreEqual(0, t.displacement, "displacement: " + str);
+                            Assert.AreEqual(true, t.Valid, str);
+                            Assert.AreEqual(b, t.BaseReg, "base: " + str);
+                            Assert.AreEqual(idx, t.IndexReg, "index: " + str);
+                            Assert.AreEqual(s, t.Scale, "scale: " + str);
+                            Assert.AreEqual(0, t.Displacement, "displacement: " + str);
                         }
 
                         for (int m = 0; m<10; ++m) {
@@ -368,85 +368,85 @@ namespace unit_tests {
                                 {
                                     string str = "[" + b + "+" + idx + " * " + s + "+" + disp + "]";
                                     var t = AsmSourceTools.ParseMemOperand(str);
-                                    Assert.AreEqual(true, t.valid, str);
-                                    Assert.AreEqual(b, t.baseReg, "base: " + str);
-                                    Assert.AreEqual(idx, t.indexReg, "index: " + str);
-                                    Assert.AreEqual(s, t.scale, "scale: " + str);
-                                    Assert.AreEqual(disp, t.displacement, "displacement: " + str);
+                                    Assert.AreEqual(true, t.Valid, str);
+                                    Assert.AreEqual(b, t.BaseReg, "base: " + str);
+                                    Assert.AreEqual(idx, t.IndexReg, "index: " + str);
+                                    Assert.AreEqual(s, t.Scale, "scale: " + str);
+                                    Assert.AreEqual(disp, t.Displacement, "displacement: " + str);
                                 }
                                 {
                                     string str = "[" + b + "+" + s + " * " + idx + "+" + disp + "]";
                                     var t = AsmSourceTools.ParseMemOperand(str);
-                                    Assert.AreEqual(true, t.valid, str);
-                                    Assert.AreEqual(b, t.baseReg, "base: " + str);
-                                    Assert.AreEqual(idx, t.indexReg, "index: " + str);
-                                    Assert.AreEqual(s, t.scale, "scale: " + str);
-                                    Assert.AreEqual(disp, t.displacement, "displacement: " + str);
+                                    Assert.AreEqual(true, t.Valid, str);
+                                    Assert.AreEqual(b, t.BaseReg, "base: " + str);
+                                    Assert.AreEqual(idx, t.IndexReg, "index: " + str);
+                                    Assert.AreEqual(s, t.Scale, "scale: " + str);
+                                    Assert.AreEqual(disp, t.Displacement, "displacement: " + str);
                                 }
                                 {
                                     string str = "[" + s + " * " + idx + "+" + b + "+" + disp + "]";
                                     var t = AsmSourceTools.ParseMemOperand(str);
-                                    Assert.AreEqual(true, t.valid, str);
-                                    Assert.AreEqual(b, t.baseReg, "base: " + str);
-                                    Assert.AreEqual(idx, t.indexReg, "index: " + str);
-                                    Assert.AreEqual(s, t.scale, "scale: " + str);
-                                    Assert.AreEqual(disp, t.displacement, "displacement: " + str);
+                                    Assert.AreEqual(true, t.Valid, str);
+                                    Assert.AreEqual(b, t.BaseReg, "base: " + str);
+                                    Assert.AreEqual(idx, t.IndexReg, "index: " + str);
+                                    Assert.AreEqual(s, t.Scale, "scale: " + str);
+                                    Assert.AreEqual(disp, t.Displacement, "displacement: " + str);
                                 }
                                 {
                                     string str = "[" + idx + " * " + s + "+" + b + "+" + disp + "]";
                                     var t = AsmSourceTools.ParseMemOperand(str);
-                                    Assert.AreEqual(true, t.valid, str);
-                                    Assert.AreEqual(b, t.baseReg, "base: " + str);
-                                    Assert.AreEqual(idx, t.indexReg, "index: " + str);
-                                    Assert.AreEqual(s, t.scale, "scale: " + str);
-                                    Assert.AreEqual(disp, t.displacement, "displacement: " + str);
+                                    Assert.AreEqual(true, t.Valid, str);
+                                    Assert.AreEqual(b, t.BaseReg, "base: " + str);
+                                    Assert.AreEqual(idx, t.IndexReg, "index: " + str);
+                                    Assert.AreEqual(s, t.Scale, "scale: " + str);
+                                    Assert.AreEqual(disp, t.Displacement, "displacement: " + str);
                                 }
                             }
                             {
                                 {
                                     string str = "[" + disp + "+" + b + "+" + idx + " * " + s + "]";
                                     var t = AsmSourceTools.ParseMemOperand(str);
-                                    Assert.AreEqual(true, t.valid, str);
-                                    Assert.AreEqual(b, t.baseReg, "base: " + str);
-                                    Assert.AreEqual(idx, t.indexReg, "index: " + str);
-                                    Assert.AreEqual(s, t.scale, "scale: " + str);
-                                    Assert.AreEqual(disp, t.displacement, "displacement: " + str);
+                                    Assert.AreEqual(true, t.Valid, str);
+                                    Assert.AreEqual(b, t.BaseReg, "base: " + str);
+                                    Assert.AreEqual(idx, t.IndexReg, "index: " + str);
+                                    Assert.AreEqual(s, t.Scale, "scale: " + str);
+                                    Assert.AreEqual(disp, t.Displacement, "displacement: " + str);
                                 }
                                 {
                                     string str = "[" + b + "+" + disp + "+" + idx + " * " + s + "]";
                                     var t = AsmSourceTools.ParseMemOperand(str);
-                                    Assert.AreEqual(true, t.valid, str);
-                                    Assert.AreEqual(b, t.baseReg, "base: " + str);
-                                    Assert.AreEqual(idx, t.indexReg, "index: " + str);
-                                    Assert.AreEqual(s, t.scale, "scale: " + str);
-                                    Assert.AreEqual(disp, t.displacement, "displacement: " + str);
+                                    Assert.AreEqual(true, t.Valid, str);
+                                    Assert.AreEqual(b, t.BaseReg, "base: " + str);
+                                    Assert.AreEqual(idx, t.IndexReg, "index: " + str);
+                                    Assert.AreEqual(s, t.Scale, "scale: " + str);
+                                    Assert.AreEqual(disp, t.Displacement, "displacement: " + str);
                                 }
                                 {
                                     string str = "[" + b + "+" + disp + "+" + s + " * " + idx + "]";
                                     var t = AsmSourceTools.ParseMemOperand(str);
-                                    Assert.AreEqual(true, t.valid, str);
-                                    Assert.AreEqual(b, t.baseReg, "base: " + str);
-                                    Assert.AreEqual(idx, t.indexReg, "index: " + str);
-                                    Assert.AreEqual(s, t.scale, "scale: " + str);
-                                    Assert.AreEqual(disp, t.displacement, "displacement: " + str);
+                                    Assert.AreEqual(true, t.Valid, str);
+                                    Assert.AreEqual(b, t.BaseReg, "base: " + str);
+                                    Assert.AreEqual(idx, t.IndexReg, "index: " + str);
+                                    Assert.AreEqual(s, t.Scale, "scale: " + str);
+                                    Assert.AreEqual(disp, t.Displacement, "displacement: " + str);
                                 }
                                 {
                                     string str = "[" + s + " * " + idx + "+" + disp + "+" + b + "]";
                                     var t = AsmSourceTools.ParseMemOperand(str);
-                                    Assert.AreEqual(true, t.valid, str);
-                                    Assert.AreEqual(b, t.baseReg, "base: " + str);
-                                    Assert.AreEqual(idx, t.indexReg, "index: " + str);
-                                    Assert.AreEqual(s, t.scale, "scale: " + str);
-                                    Assert.AreEqual(disp, t.displacement, "displacement: " + str);
+                                    Assert.AreEqual(true, t.Valid, str);
+                                    Assert.AreEqual(b, t.BaseReg, "base: " + str);
+                                    Assert.AreEqual(idx, t.IndexReg, "index: " + str);
+                                    Assert.AreEqual(s, t.Scale, "scale: " + str);
+                                    Assert.AreEqual(disp, t.Displacement, "displacement: " + str);
                                 }
                                 {
                                     string str = "[" + idx + " * " + s + "+" + disp +"+" + b + "]";
                                     var t = AsmSourceTools.ParseMemOperand(str);
-                                    Assert.AreEqual(true, t.valid, str);
-                                    Assert.AreEqual(b, t.baseReg, "base: " + str);
-                                    Assert.AreEqual(idx, t.indexReg, "index: " + str);
-                                    Assert.AreEqual(s, t.scale, "scale: " + str);
-                                    Assert.AreEqual(disp, t.displacement, "displacement: " + str);
+                                    Assert.AreEqual(true, t.Valid, str);
+                                    Assert.AreEqual(b, t.BaseReg, "base: " + str);
+                                    Assert.AreEqual(idx, t.IndexReg, "index: " + str);
+                                    Assert.AreEqual(s, t.Scale, "scale: " + str);
+                                    Assert.AreEqual(disp, t.Displacement, "displacement: " + str);
                                 }
                             }
                         }
