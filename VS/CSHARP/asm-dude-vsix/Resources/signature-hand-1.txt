@@ -71,8 +71,8 @@ GENERAL	JZ	Jump if zero (ZF=1) (JE=JZ)	Jcc.html
 GENERAL	JMP	Unconditional Jump	JMP.html
 ;====================================================================
 
-GENERAL	RCR	Rotate Carry Left	RCL_RCR_ROL_ROR.html
-GENERAL	RCL	Rotate Carry Right	RCL_RCR_ROL_ROR.html
+GENERAL	RCR	Rotate Carry Right	RCL_RCR_ROL_ROR.html
+GENERAL	RCL	Rotate Carry Left	RCL_RCR_ROL_ROR.html
 GENERAL	ROR	Rotate Right	RCL_RCR_ROL_ROR.html
 GENERAL	ROL	Rotate Left	RCL_RCR_ROL_ROR.html
 GENERAL	SAR	Shift Arithmetic Right	SAL_SAR_SHL_SHR.html

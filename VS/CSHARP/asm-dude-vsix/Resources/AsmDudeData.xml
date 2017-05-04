@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <asmdudedata>
 	<info>General info here</info>
-	<miscs>
+
+  <userdefined>
+    <userdefined1 name="MY_MACRO_A1">
+      <description>BLAH 1</description>
+    </userdefined1>
+    <userdefined1 name="MY_MACRO_A2">
+      <description>BLAH 2</description>
+    </userdefined1>
+    <userdefined2 name="MY_MACRO_B1">
+      <description>BLAH 3</description>
+    </userdefined2>
+    <userdefined3 name="MY_MACRO_C1" />
+  </userdefined>
+
+  <miscs>
 		<misc name="Z" arch="AVX512VL">
 			<description>Zero Mask {Z}</description>
 		</misc>
@@ -30,19 +44,6 @@
 			<description>Broadcast 1 to 4 {1TO4}</description>
 		</misc>
 	</miscs>
-
-  <userdefined>
-    <userdefined1 name="MY_MACRO_A1">
-      <description>BLAH 1</description>
-    </userdefined1>
-    <userdefined1 name="MY_MACRO_A2">
-      <description>BLAH 2</description>
-    </userdefined1>
-    <userdefined2 name="MY_MACRO_B1">
-      <description>BLAH 3</description>
-    </userdefined2>
-    <userdefined3 name="MY_MACRO_C1" />
-  </userdefined>
 
   <directives>
     <directive name="PTR" tool="MASM">
@@ -814,7 +815,7 @@
       <description>switch to AT&amp;T syntax</description>
     </directive>
     <directive name=".TEXT" tool="NASM">
-      <description>TODOx</description>
+      <description>TODO</description>
     </directive>
     <directive name=".GLOBAL" tool="NASM">
       <description>TODO</description>

@@ -100,6 +100,7 @@ namespace AsmDude.Squiggles
             bool Decorate_Registers_Known_Register_Values = asmSimulator_Enabled && Settings.Default.AsmSim_Decorate_Registers;
             bool Decorate_Syntax_Errors = asmSimulator_Enabled && Settings.Default.AsmSim_Decorate_Syntax_Errors;
             bool Decorate_Unimplemented = asmSimulator_Enabled && Settings.Default.AsmSim_Decorate_Unimplemented;
+            bool Decorate_Usage_Of_Undefined = asmSimulator_Enabled && Settings.Default.AsmSim_Decorate_Usage_Of_Undefined;
 
             AssemblerEnum usedAssember = AsmDudeToolsStatic.Used_Assembler;
 
@@ -207,7 +208,7 @@ namespace AsmDude.Squiggles
                         }
                     case AsmTokenType.Mnemonic:
                         {
-                            if (Decorate_Syntax_Errors || Decorate_Unimplemented)
+                            if (Decorate_Syntax_Errors || Decorate_Unimplemented || Decorate_Usage_Of_Undefined)
                             {
                                 int lineNumber = Get_Linenumber(tagSpan);
                                 string line = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().Trim();
@@ -226,6 +227,20 @@ namespace AsmDude.Squiggles
                                     {
                                         string message = AsmSourceTools.Linewrap("Instruction " + tagSpan.GetText() + " is not (yet) supported by the simulator.", AsmDudePackage.maxNumberOfCharsInToolTips);
                                         yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.CompilerError, message));
+                                    }
+                                }
+                                if (Decorate_Usage_Of_Undefined)
+                                {
+                                    State2 state = this._asmSimulator.GetState(lineNumber, false);
+                                    if (state != null)
+                                    {
+                                        //TODO this is the state after the current line!
+                                        string message = AsmSimulator.Get_Undefined_Warnings(line, this._asmSimulator.Tools, state);
+                                        if (message.Length > 0)
+                                        {
+                                            message = AsmSourceTools.Linewrap(message, AsmDudePackage.maxNumberOfCharsInToolTips);
+                                            yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.OtherError, message));
+                                        }
                                     }
                                 }
                             }

@@ -39,17 +39,42 @@ namespace AsmDude.Tools
             }
             else
             {
-                if (opcodeBase.IsHalted)
-                {
-                    return (IsImplemented: true, message: opcodeBase.SyntaxError);
-                }
-                else
-                {
-                    return (IsImplemented: true, message: null);
-                }
+                return (opcodeBase.IsHalted) ? (IsImplemented: true, message: opcodeBase.SyntaxError) : (IsImplemented: true, message: null);
             }
         }
-    
+
+        public static string Get_Undefined_Warnings(string line, AsmSimZ3.Mnemonics_ng.Tools tools, State2 state)
+        {
+            var dummyKeys = ("", "", "", "");
+            var content = AsmSourceTools.ParseLine(line);
+            var opcodeBase = Runner.InstantiateOpcode(content.mnemonic, content.args, dummyKeys, tools);
+
+            string message = "";
+            if (opcodeBase != null)
+            {
+                foreach (Flags flag in FlagTools.GetFlags(opcodeBase.FlagsReadStatic))
+                {
+                    if (tools.StateConfig.IsFlagOn(flag))
+                    {
+                        if (state.IsUndefined(flag))
+                        {
+                            message = message + "Flag " + flag + " is undefined; ";
+                        }
+                    }
+                }
+                foreach (Rn reg in opcodeBase.RegsReadStatic)
+                {
+                    if (tools.StateConfig.IsRegOn(RegisterTools.Get64BitsRegister(reg)))
+                    {
+                        if (state.IsUndefined(reg))
+                        {
+                            message = message + "Register " + reg + " has undefined content";
+                        }
+                    }
+                }
+            }
+            return message;
+        }
 
         private AsmSimulator(ITextBuffer buffer, IBufferTagAggregatorFactoryService aggregatorFactory)
         {
