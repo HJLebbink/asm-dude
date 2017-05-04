@@ -89,6 +89,9 @@ namespace AsmDude.OptionsPage
             this._asmDudeOptionsPageUI.ColorJump = Settings.Default.SyntaxHighlighting_Jump;
             this._asmDudeOptionsPageUI.ColorLabel = Settings.Default.SyntaxHighlighting_Label;
             this._asmDudeOptionsPageUI.ColorMisc = Settings.Default.SyntaxHighlighting_Misc;
+            this._asmDudeOptionsPageUI.ColorUserDefined1 = Settings.Default.SyntaxHighlighting_Userdefined1;
+            this._asmDudeOptionsPageUI.ColorUserDefined2 = Settings.Default.SyntaxHighlighting_Userdefined2;
+            this._asmDudeOptionsPageUI.ColorUserDefined3 = Settings.Default.SyntaxHighlighting_Userdefined3;
             #endregion
 
             #region Keyword Highlighting
@@ -398,6 +401,21 @@ namespace AsmDude.OptionsPage
             if (Settings.Default.SyntaxHighlighting_Misc.ToArgb() != this._asmDudeOptionsPageUI.ColorMisc.ToArgb())
             {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: colorMisc=" + this._asmDudeOptionsPageUI.ColorMisc);
+                changed = true;
+            }
+            if (Settings.Default.SyntaxHighlighting_Userdefined1.ToArgb() != this._asmDudeOptionsPageUI.ColorUserDefined1.ToArgb())
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: ColorUserDefined1=" + this._asmDudeOptionsPageUI.ColorUserDefined1);
+                changed = true;
+            }
+            if (Settings.Default.SyntaxHighlighting_Userdefined2.ToArgb() != this._asmDudeOptionsPageUI.ColorUserDefined2.ToArgb())
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: ColorUserDefined2=" + this._asmDudeOptionsPageUI.ColorUserDefined2);
+                changed = true;
+            }
+            if (Settings.Default.SyntaxHighlighting_Userdefined3.ToArgb() != this._asmDudeOptionsPageUI.ColorUserDefined3.ToArgb())
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: ColorUserDefined3=" + this._asmDudeOptionsPageUI.ColorUserDefined3);
                 changed = true;
             }
             #endregion
@@ -989,6 +1007,24 @@ namespace AsmDude.OptionsPage
             if (Settings.Default.SyntaxHighlighting_Misc.ToArgb() != this._asmDudeOptionsPageUI.ColorMisc.ToArgb())
             {
                 Settings.Default.SyntaxHighlighting_Misc = this._asmDudeOptionsPageUI.ColorMisc;
+                changed = true;
+                restartNeeded = true;
+            }
+            if (Settings.Default.SyntaxHighlighting_Userdefined1.ToArgb() != this._asmDudeOptionsPageUI.ColorUserDefined1.ToArgb())
+            {
+                Settings.Default.SyntaxHighlighting_Userdefined1 = this._asmDudeOptionsPageUI.ColorUserDefined1;
+                changed = true;
+                restartNeeded = true;
+            }
+            if (Settings.Default.SyntaxHighlighting_Userdefined2.ToArgb() != this._asmDudeOptionsPageUI.ColorUserDefined2.ToArgb())
+            {
+                Settings.Default.SyntaxHighlighting_Userdefined2 = this._asmDudeOptionsPageUI.ColorUserDefined2;
+                changed = true;
+                restartNeeded = true;
+            }
+            if (Settings.Default.SyntaxHighlighting_Userdefined3.ToArgb() != this._asmDudeOptionsPageUI.ColorUserDefined3.ToArgb())
+            {
+                Settings.Default.SyntaxHighlighting_Userdefined3 = this._asmDudeOptionsPageUI.ColorUserDefined3;
                 changed = true;
                 restartNeeded = true;
             }

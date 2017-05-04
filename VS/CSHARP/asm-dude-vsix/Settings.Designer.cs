@@ -1282,5 +1282,41 @@ namespace AsmDude {
                 this["AsmSim_Number_Of_Steps"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Silver")]
+        public global::System.Drawing.Color SyntaxHighlighting_Userdefined1 {
+            get {
+                return ((global::System.Drawing.Color)(this["SyntaxHighlighting_Userdefined1"]));
+            }
+            set {
+                this["SyntaxHighlighting_Userdefined1"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Silver")]
+        public global::System.Drawing.Color SyntaxHighlighting_Userdefined2 {
+            get {
+                return ((global::System.Drawing.Color)(this["SyntaxHighlighting_Userdefined2"]));
+            }
+            set {
+                this["SyntaxHighlighting_Userdefined2"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Silver")]
+        public global::System.Drawing.Color SyntaxHighlighting_Userdefined3 {
+            get {
+                return ((global::System.Drawing.Color)(this["SyntaxHighlighting_Userdefined3"]));
+            }
+            set {
+                this["SyntaxHighlighting_Userdefined3"] = value;
+            }
+        }
     }
 }

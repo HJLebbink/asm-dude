@@ -45,6 +45,9 @@ namespace AsmDude
         private readonly ClassificationTag _label;
         private readonly ClassificationTag _labelDef;
         private readonly ClassificationTag _misc;
+        private readonly ClassificationTag _userDefined1;
+        private readonly ClassificationTag _userDefined2;
+        private readonly ClassificationTag _userDefined3;
 
         /// <summary>
         /// Construct the classifier and define search tokens
@@ -66,6 +69,9 @@ namespace AsmDude
             this._label = new ClassificationTag(typeService.GetClassificationType(AsmClassificationDefinition.ClassificationTypeNames.Label));
             this._labelDef = new ClassificationTag(typeService.GetClassificationType(AsmClassificationDefinition.ClassificationTypeNames.LabelDef));
             this._misc = new ClassificationTag(typeService.GetClassificationType(AsmClassificationDefinition.ClassificationTypeNames.Misc));
+            this._userDefined1 = new ClassificationTag(typeService.GetClassificationType(AsmClassificationDefinition.ClassificationTypeNames.UserDefined1));
+            this._userDefined2 = new ClassificationTag(typeService.GetClassificationType(AsmClassificationDefinition.ClassificationTypeNames.UserDefined2));
+            this._userDefined3 = new ClassificationTag(typeService.GetClassificationType(AsmClassificationDefinition.ClassificationTypeNames.UserDefined3));
         }
 
         event EventHandler<SnapshotSpanEventArgs> ITagger<ClassificationTag>.TagsChanged {
@@ -99,6 +105,9 @@ namespace AsmDude
                         case AsmTokenType.Label: yield return new TagSpan<ClassificationTag>(tagSpans[0], this._label); break;
                         case AsmTokenType.LabelDef: yield return new TagSpan<ClassificationTag>(tagSpans[0], this._labelDef); break;
                         case AsmTokenType.Misc: yield return new TagSpan<ClassificationTag>(tagSpans[0], this._misc); break;
+                        case AsmTokenType.UserDefined1: yield return new TagSpan<ClassificationTag>(tagSpans[0], this._userDefined1); break;
+                        case AsmTokenType.UserDefined2: yield return new TagSpan<ClassificationTag>(tagSpans[0], this._userDefined2); break;
+                        case AsmTokenType.UserDefined3: yield return new TagSpan<ClassificationTag>(tagSpans[0], this._userDefined3); break;
                         default:
                             break;
                     }

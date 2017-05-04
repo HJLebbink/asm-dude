@@ -291,6 +291,54 @@ namespace AsmDude.QuickInfo
                                 description.Inlines.Add(Make_Run2(constantStr, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Constant))));
                                 break;
                             }
+                        case AsmTokenType.UserDefined1:
+                            {
+                                description = new TextBlock();
+                                description.Inlines.Add(Make_Run1("User defined 1: ", this._foreground));
+                                description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Userdefined1))));
+
+                                string descr = this._asmDudeTools.Get_Description(keywordUpper);
+                                if (descr.Length > 0)
+                                {
+                                    description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                    {
+                                        Foreground = this._foreground
+                                    });
+                                }
+                                break;
+                            }
+                        case AsmTokenType.UserDefined2:
+                            {
+                                description = new TextBlock();
+                                description.Inlines.Add(Make_Run1("User defined 2: ", this._foreground));
+                                description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Userdefined2))));
+
+                                string descr = this._asmDudeTools.Get_Description(keywordUpper);
+                                if (descr.Length > 0)
+                                {
+                                    description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                    {
+                                        Foreground = this._foreground
+                                    });
+                                }
+                                break;
+                            }
+                        case AsmTokenType.UserDefined3:
+                            {
+                                description = new TextBlock();
+                                description.Inlines.Add(Make_Run1("User defined 3: ", this._foreground));
+                                description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Userdefined3))));
+
+                                string descr = this._asmDudeTools.Get_Description(keywordUpper);
+                                if (descr.Length > 0)
+                                {
+                                    description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                    {
+                                        Foreground = this._foreground
+                                    });
+                                }
+                                break;
+                            }
                         default:
                             //description = new TextBlock();
                             //description.Inlines.Add(makeRun1("Unused tagType " + asmTokenTag.Tag.type));

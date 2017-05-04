@@ -39,6 +39,9 @@ namespace AsmDude.SyntaxHighlighting
             public const string Label = "label-D74860FA-F0BC-4441-9D76-DF4ECB19CF71";
             public const string LabelDef = "labelDef-D74860FA-F0BC-4441-9D76-DF4ECB19CF71";
             public const string Misc = "misc-D74860FA-F0BC-4441-9D76-DF4ECB19CF71";
+            public const string UserDefined1 = "userDefined1-E1A959F6-C591-4B22-ADB3-C5C85BAA0B81";
+            public const string UserDefined2 = "userDefined2-15067A69-A22F-4092-8BEA-FDF985728446";
+            public const string UserDefined3 = "userDefined3-80CA80F7-545B-4DA1-B031-8FBA5B9B2126";
         }
 
         [Export(typeof(ClassificationTypeDefinition))]
@@ -76,5 +79,17 @@ namespace AsmDude.SyntaxHighlighting
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(ClassificationTypeNames.Misc)]
         internal static ClassificationTypeDefinition misc = null;
+
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name(ClassificationTypeNames.UserDefined1)]
+        internal static ClassificationTypeDefinition UserDefined1 = null;
+
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name(ClassificationTypeNames.UserDefined2)]
+        internal static ClassificationTypeDefinition UserDefined2 = null;
+
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name(ClassificationTypeNames.UserDefined3)]
+        internal static ClassificationTypeDefinition UserDefined3 = null;
     }
 }

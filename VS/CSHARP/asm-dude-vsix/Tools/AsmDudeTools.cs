@@ -271,7 +271,7 @@ namespace AsmDude
 
         public ICollection<string> Get_Keywords()
         {
-            if (this._type == null) Init_Data();
+            if (this._type == null) this.Init_Data();
             return this._type.Keys;
         }
 
@@ -280,27 +280,15 @@ namespace AsmDude
             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword);
             if (mnemonic != Mnemonic.UNKNOWN)
             {
-                if (AsmSourceTools.IsJump(mnemonic))
-                {
-                    return AsmTokenType.Jump;
-                }
-                return AsmTokenType.Mnemonic;
+                return (AsmSourceTools.IsJump(mnemonic)) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
             }
 
-            if (this._type.TryGetValue(keyword.ToUpper(), out var tokenType))
-            {
-                return tokenType;
-            }
-            return AsmTokenType.UNKNOWN;
+            return (this._type.TryGetValue(keyword.ToUpper(), out var tokenType)) ? tokenType : AsmTokenType.UNKNOWN;
         }
 
         public AssemblerEnum Get_Assembler(string keyword)
         {
-            if (this._assembler.TryGetValue(keyword, out var value))
-            {
-                return value;
-            }
-            return AssemblerEnum.UNKNOWN;
+            return (this._assembler.TryGetValue(keyword, out var value)) ? value : AssemblerEnum.UNKNOWN;
         }
 
         /// <summary>
@@ -333,11 +321,7 @@ namespace AsmDude
         /// </summary>
         public string Get_Description(string keyword)
         {
-            if (!this._description.TryGetValue(keyword, out string description))
-            {
-                description = "";
-            }
-            return description;
+            return (this._description.TryGetValue(keyword, out string description)) ? description : "";
         }
 
         /// <summary>
@@ -372,12 +356,11 @@ namespace AsmDude
                 var nameAttribute = node.Attributes["name"];
                 if (nameAttribute == null)
                 {
-                    Debug.WriteLine("WARNING: AsmTokenTagger: found misc with no name");
+                    AsmDudeToolsStatic.Output_WARNING("AsmDudeTools:Init_Data: found misc with no name");
                 }
                 else
                 {
                     string name = nameAttribute.Value.ToUpper();
-                    //Debug.WriteLine("INFO: AsmTokenTagger: found misc " + name);
                     this._type[name] = AsmTokenType.Misc;
                     this._arch[name] = Retrieve_Arch(node);
                     this._description[name] = Retrieve_Description(node);
@@ -389,12 +372,11 @@ namespace AsmDude
                 var nameAttribute = node.Attributes["name"];
                 if (nameAttribute == null)
                 {
-                    Debug.WriteLine("WARNING: AsmTokenTagger: found directive with no name");
+                    AsmDudeToolsStatic.Output_WARNING("AsmDudeTools:Init_Data: found directive with no name");
                 }
                 else
                 {
                     string name = nameAttribute.Value.ToUpper();
-                    //Debug.WriteLine("INFO: AsmTokenTagger: found directive " + name);
                     this._type[name] = AsmTokenType.Directive;
                     this._arch[name] = Retrieve_Arch(node);
                     this._assembler[name] = Retrieve_Assembler(node);
@@ -406,14 +388,55 @@ namespace AsmDude
                 var nameAttribute = node.Attributes["name"];
                 if (nameAttribute == null)
                 {
-                    Debug.WriteLine("WARNING: AsmTokenTagger: found register with no name");
+                    AsmDudeToolsStatic.Output_WARNING("AsmDudeTools:Init_Data: found register with no name");
                 }
                 else
                 {
                     string name = nameAttribute.Value.ToUpper();
-                    //Debug.WriteLine("INFO: AsmTokenTagger: found register " + name);
                     this._type[name] = AsmTokenType.Register;
                     this._arch[name] = Retrieve_Arch(node);
+                    this._description[name] = Retrieve_Description(node);
+                }
+            }
+            foreach (XmlNode node in xmlDoc.SelectNodes("//userdefined1"))
+            {
+                var nameAttribute = node.Attributes["name"];
+                if (nameAttribute == null)
+                {
+                    AsmDudeToolsStatic.Output_WARNING("AsmDudeTools:Init_Data: found userdefined1 with no name");
+                }
+                else
+                {
+                    string name = nameAttribute.Value.ToUpper();
+                    this._type[name] = AsmTokenType.UserDefined1;
+                    this._description[name] = Retrieve_Description(node);
+                }
+            }
+            foreach (XmlNode node in xmlDoc.SelectNodes("//userdefined2"))
+            {
+                var nameAttribute = node.Attributes["name"];
+                if (nameAttribute == null)
+                {
+                    AsmDudeToolsStatic.Output_WARNING("AsmDudeTools:Init_Data: found userdefined2 with no name");
+                }
+                else
+                {
+                    string name = nameAttribute.Value.ToUpper();
+                    this._type[name] = AsmTokenType.UserDefined2;
+                    this._description[name] = Retrieve_Description(node);
+                }
+            }
+            foreach (XmlNode node in xmlDoc.SelectNodes("//userdefined3"))
+            {
+                var nameAttribute = node.Attributes["name"];
+                if (nameAttribute == null)
+                {
+                    AsmDudeToolsStatic.Output_WARNING("AsmDudeTools:Init_Data: found userdefined3 with no name");
+                }
+                else
+                {
+                    string name = nameAttribute.Value.ToUpper();
+                    this._type[name] = AsmTokenType.UserDefined3;
                     this._description[name] = Retrieve_Description(node);
                 }
             }
@@ -424,14 +447,7 @@ namespace AsmDude
             try
             {
                 var archAttribute = node.Attributes["arch"];
-                if (archAttribute == null)
-                {
-                    return Arch.NONE;
-                }
-                else
-                {
-                    return AsmTools.ArchTools.ParseArch(archAttribute.Value.ToUpper());
-                }
+                return (archAttribute == null) ? Arch.NONE : AsmTools.ArchTools.ParseArch(archAttribute.Value.ToUpper());
             }
             catch (Exception)
             {
@@ -444,14 +460,7 @@ namespace AsmDude
             try
             {
                 var archAttribute = node.Attributes["tool"];
-                if (archAttribute == null)
-                {
-                    return AssemblerEnum.UNKNOWN;
-                }
-                else
-                {
-                    return AsmTools.AsmSourceTools.ParseAssembler(archAttribute.Value);
-                }
+                return (archAttribute == null) ? AssemblerEnum.UNKNOWN : AsmTools.AsmSourceTools.ParseAssembler(archAttribute.Value);
             }
             catch (Exception)
             {
@@ -464,10 +473,7 @@ namespace AsmDude
             try
             {
                 XmlNode node2 = node.SelectSingleNode("./description");
-                if (node2 == null) return "";
-                string text = node2.InnerText.Trim();
-                //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:getDescription: keyword {1} yields {2}", this.ToString(), keyword, text));
-                return text;
+                return (node2 == null) ? "" : node2.InnerText.Trim();
             }
             catch (Exception)
             {
@@ -489,15 +495,15 @@ namespace AsmDude
                 }
                 catch (FileNotFoundException)
                 {
-                    MessageBox.Show("ERROR: AsmTokenTagger: could not find file \"" + filename + "\".");
+                    AsmDudeToolsStatic.Output_ERROR("AsmTokenTagger: could not find file \"" + filename + "\".");
                 }
                 catch (XmlException)
                 {
-                    MessageBox.Show("ERROR: AsmTokenTagger: xml error while reading file \"" + filename + "\".");
+                    AsmDudeToolsStatic.Output_ERROR("AsmTokenTagger: xml error while reading file \"" + filename + "\".");
                 }
                 catch (Exception e)
                 {
-                    MessageBox.Show("ERROR: AsmTokenTagger: error while reading file \"" + filename + "\"." + e);
+                    AsmDudeToolsStatic.Output_ERROR("AsmTokenTagger: error while reading file \"" + filename + "\"." + e);
                 }
             }
             return this._xmlData;

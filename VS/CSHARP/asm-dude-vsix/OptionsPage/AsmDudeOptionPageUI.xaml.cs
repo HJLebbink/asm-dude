@@ -96,92 +96,51 @@ namespace AsmDude.OptionsPage {
         }
 
         public System.Drawing.Color ColorMnemonic {
-            get {
-                if (this.colorMnemonic_UI.SelectedColor.HasValue) {
-                    return AsmDudeToolsStatic.ConvertColor(this.colorMnemonic_UI.SelectedColor.Value);
-                } else {
-                    //AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPageUI.xaml: colorMnemonic_UI has no value, assuming BLUE");
-                    return System.Drawing.Color.Blue;
-                }
-            }
+            get { return (this.colorMnemonic_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.colorMnemonic_UI.SelectedColor.Value) : System.Drawing.Color.Blue; }
             set { this.colorMnemonic_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
-
         public System.Drawing.Color ColorRegister {
-            get {
-                if (this.colorRegister_UI.SelectedColor.HasValue) {
-                    return AsmDudeToolsStatic.ConvertColor(this.colorRegister_UI.SelectedColor.Value);
-                } else {
-                    return System.Drawing.Color.DarkRed;
-                }
-            }
+            get { return (this.colorRegister_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.colorRegister_UI.SelectedColor.Value) : System.Drawing.Color.DarkRed; }
             set { this.colorRegister_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
-
         public System.Drawing.Color ColorRemark {
-            get {
-                if (this.colorRemark_UI.SelectedColor.HasValue) {
-                    return AsmDudeToolsStatic.ConvertColor(this.colorRemark_UI.SelectedColor.Value);
-                } else {
-                    return System.Drawing.Color.Green;
-                }
-            }
+            get { return (this.colorRemark_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.colorRemark_UI.SelectedColor.Value) : System.Drawing.Color.Green; }
             set { this.colorRemark_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
-
         public System.Drawing.Color ColorDirective {
-            get {
-                if (this.colorDirective_UI.SelectedColor.HasValue) {
-                    return AsmDudeToolsStatic.ConvertColor(this.colorDirective_UI.SelectedColor.Value);
-                } else {
-                    return System.Drawing.Color.Magenta;
-                }
-            }
+            get { return (this.colorDirective_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.colorDirective_UI.SelectedColor.Value) : System.Drawing.Color.Magenta; }
             set { this.colorDirective_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
-
         public System.Drawing.Color ColorConstant {
-            get {
-                if (this.colorConstant_UI.SelectedColor.HasValue) {
-                    return AsmDudeToolsStatic.ConvertColor(this.colorConstant_UI.SelectedColor.Value);
-                } else {
-                    return System.Drawing.Color.Chocolate;
-                }
-            }
+            get { return (this.colorConstant_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.colorConstant_UI.SelectedColor.Value) : System.Drawing.Color.Chocolate; }
             set { this.colorConstant_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
-
         public System.Drawing.Color ColorJump {
-            get {
-                if (this.colorJump_UI.SelectedColor.HasValue) {
-                    return AsmDudeToolsStatic.ConvertColor(this.colorJump_UI.SelectedColor.Value);
-                } else {
-                    return System.Drawing.Color.Blue;
-                }
-            }
+            get { return (this.colorJump_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.colorJump_UI.SelectedColor.Value) : System.Drawing.Color.Blue; }
             set { this.colorJump_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
-
         public System.Drawing.Color ColorLabel {
-            get {
-                if (this.colorLabel_UI.SelectedColor.HasValue) {
-                    return AsmDudeToolsStatic.ConvertColor(this.colorLabel_UI.SelectedColor.Value);
-                } else {
-                    return System.Drawing.Color.OrangeRed;
-                }
-            }
+            get { return (this.colorLabel_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.colorLabel_UI.SelectedColor.Value) : System.Drawing.Color.OrangeRed; }
             set { this.colorLabel_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
-
         public System.Drawing.Color ColorMisc {
-            get {
-                if (this.colorMisc_UI.SelectedColor.HasValue) {
-                    return AsmDudeToolsStatic.ConvertColor(this.colorMisc_UI.SelectedColor.Value);
-                } else {
-                    return System.Drawing.Color.DarkOrange;
-                }
-            }
+            get { return (this.colorMisc_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.colorMisc_UI.SelectedColor.Value) : System.Drawing.Color.DarkOrange; }
             set { this.colorMisc_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
+        }
+        public System.Drawing.Color ColorUserDefined1
+        {
+            get { return (this.ColorUserDefined1_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorUserDefined1_UI.SelectedColor.Value) : System.Drawing.Color.Silver; }
+            set { this.ColorUserDefined1_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
+        }
+        public System.Drawing.Color ColorUserDefined2
+        {
+            get { return (this.ColorUserDefined2_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorUserDefined2_UI.SelectedColor.Value) : System.Drawing.Color.Silver; }
+            set { this.ColorUserDefined2_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
+        }
+        public System.Drawing.Color ColorUserDefined3
+        {
+            get { return (this.ColorUserDefined3_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorUserDefined3_UI.SelectedColor.Value) : System.Drawing.Color.Silver; }
+            set { this.ColorUserDefined3_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
         #endregion Syntax Highlighting
 

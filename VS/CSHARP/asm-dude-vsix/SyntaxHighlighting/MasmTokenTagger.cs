@@ -47,6 +47,9 @@ namespace AsmDude
         private readonly AsmTokenTag _labelDef;
         private readonly AsmTokenTag _labelDef_PROTO;
         private readonly AsmTokenTag _misc;
+        private readonly AsmTokenTag _userDefined1;
+        private readonly AsmTokenTag _userDefined2;
+        private readonly AsmTokenTag _userDefined3;
         private readonly AsmTokenTag _UNKNOWN;
 
         internal MasmTokenTagger(ITextBuffer buffer)
@@ -64,6 +67,9 @@ namespace AsmDude
             this._labelDef = new AsmTokenTag(AsmTokenType.LabelDef);
             this._labelDef_PROTO = new AsmTokenTag(AsmTokenType.LabelDef, AsmTokenTag.MISC_KEYWORD_PROTO);
             this._misc = new AsmTokenTag(AsmTokenType.Misc);
+            this._userDefined1 = new AsmTokenTag(AsmTokenType.UserDefined1);
+            this._userDefined2 = new AsmTokenTag(AsmTokenType.UserDefined2);
+            this._userDefined3 = new AsmTokenTag(AsmTokenType.UserDefined3);
             this._UNKNOWN = new AsmTokenTag(AsmTokenType.UNKNOWN);
         }
 
@@ -117,7 +123,6 @@ namespace AsmDude
                         }
                         continue;
                     }
-
 
                     AsmTokenType keywordType = this._asmDudeTools.Get_Token_Type(asmToken);
                     switch (keywordType)

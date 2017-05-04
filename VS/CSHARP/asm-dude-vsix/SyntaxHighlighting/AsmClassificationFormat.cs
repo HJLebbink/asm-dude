@@ -158,4 +158,46 @@ namespace AsmDude
             this.ForegroundColor = AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Misc);
         }
     }
+
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = AsmClassificationDefinition.ClassificationTypeNames.UserDefined1)]
+    [Name("UserDefined1-961E99C2-2082-4140-ACBD-966AEDEB60A2")]
+    [UserVisible(true)] // sets this editor format definition visible for the user (in Tools>Options>Environment>Fonts and Colors>Text Editor
+    [Order(After = Priority.High)] //set the priority to be after the default classifiers
+    internal sealed class UserDefined1P : ClassificationFormatDefinition
+    {
+        public UserDefined1P()
+        {
+            this.DisplayName = "AsmDude - Syntax Highlighting - Userdefined 1"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
+            this.ForegroundColor = AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Userdefined1);
+        }
+    }
+
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = AsmClassificationDefinition.ClassificationTypeNames.UserDefined2)]
+    [Name("UserDefined2-961E99C2-2082-4140-ACBD-966AEDEB60A2")]
+    [UserVisible(true)] // sets this editor format definition visible for the user (in Tools>Options>Environment>Fonts and Colors>Text Editor
+    [Order(After = Priority.High)] //set the priority to be after the default classifiers
+    internal sealed class UserDefined2P : ClassificationFormatDefinition
+    {
+        public UserDefined2P()
+        {
+            this.DisplayName = "AsmDude - Syntax Highlighting - Userdefined 2"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
+            this.ForegroundColor = AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Userdefined2);
+        }
+    }
+
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = AsmClassificationDefinition.ClassificationTypeNames.UserDefined3)]
+    [Name("UserDefined3-961E99C2-2082-4140-ACBD-966AEDEB60A2")]
+    [UserVisible(true)] // sets this editor format definition visible for the user (in Tools>Options>Environment>Fonts and Colors>Text Editor
+    [Order(After = Priority.High)] //set the priority to be after the default classifiers
+    internal sealed class UserDefined3P : ClassificationFormatDefinition
+    {
+        public UserDefined3P()
+        {
+            this.DisplayName = "AsmDude - Syntax Highlighting - Userdefined 3"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
+            this.ForegroundColor = AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Userdefined3);
+        }
+    }
 }

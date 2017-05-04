@@ -31,12 +31,23 @@
 		</misc>
 	</miscs>
 
-	<directives>
+  <userdefined>
+    <userdefined1 name="MY_MACRO_A1">
+      <description>BLAH 1</description>
+    </userdefined1>
+    <userdefined1 name="MY_MACRO_A2">
+      <description>BLAH 2</description>
+    </userdefined1>
+    <userdefined2 name="MY_MACRO_B1">
+      <description>BLAH 3</description>
+    </userdefined2>
+    <userdefined3 name="MY_MACRO_C1" />
+  </userdefined>
+
+  <directives>
     <directive name="PTR" tool="MASM">
       <description>TODO</description>
     </directive>
-
-
     <directive name="DB" tool="MASM, NASM">
       <description>Pseudo-Instruction declaring initialized data. Byte (1 byte, 8 bit). DB is a synonym of BYTE</description>
     </directive>

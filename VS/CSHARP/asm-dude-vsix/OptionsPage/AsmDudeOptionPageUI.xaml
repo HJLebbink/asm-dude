@@ -50,6 +50,18 @@
                                 <Label Content="Misc:" HorizontalAlignment="Left"/>
                                 <xctk:ColorPicker x:Name="colorMisc_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for misc" Margin="140,0,0,0"/>
                             </Grid>
+                            <Grid>
+                                <Label Content="User defined 1:" HorizontalAlignment="Left"/>
+                                <xctk:ColorPicker x:Name="ColorUserDefined1_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for user defined 1" Margin="140,0,0,0"/>
+                            </Grid>
+                            <Grid>
+                                <Label Content="User defined 2:" HorizontalAlignment="Left"/>
+                                <xctk:ColorPicker x:Name="ColorUserDefined2_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for user defined 2" Margin="140,0,0,0"/>
+                            </Grid>
+                            <Grid>
+                                <Label Content="User defined 3:" HorizontalAlignment="Left"/>
+                                <xctk:ColorPicker x:Name="ColorUserDefined3_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for user defined 3" Margin="140,0,0,0"/>
+                            </Grid>
                             <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" Width="auto" Margin="5,4,0,4" ><Run Text="To edit other properties of these keywords such as font families, go to Tools&gt;Options&gt;Environment&gt;Fonts and Colors&gt;Text Editor."/></TextBlock>
                         </StackPanel>
                     </Grid>
