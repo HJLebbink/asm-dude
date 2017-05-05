@@ -29,20 +29,22 @@ namespace AsmDude.Tools
         public event EventHandler<CustomEventArgs> Simulate_Done_Event;
         public bool Is_Enabled { get; set; }
 
-        public static (bool IsImplemented, string message) GetInfo(string line, AsmSimZ3.Mnemonics_ng.Tools tools)
+        public static (bool IsImplemented, Mnemonic Mnemonic, string Message) GetInfo(string line, AsmSimZ3.Mnemonics_ng.Tools tools)
         {
             var dummyKeys = ("", "", "", "");
             var content = AsmSourceTools.ParseLine(line);
-            var opcodeBase = Runner.InstantiateOpcode(content.mnemonic, content.args, dummyKeys, tools);
-            if (opcodeBase == null) return (IsImplemented: false, message: null);
+            var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, tools);
+            if (opcodeBase == null) return (IsImplemented: false, Mnemonic: Mnemonic.NONE, Message: null);
 
             if (opcodeBase.GetType() == typeof(NotImplemented))
             {
-                return (IsImplemented: false, message: null);
+                return (IsImplemented: false, Mnemonic: content.Mnemonic, Message: null);
             }
             else
             {
-                return (opcodeBase.IsHalted) ? (IsImplemented: true, message: opcodeBase.SyntaxError) : (IsImplemented: true, message: null);
+                return (opcodeBase.IsHalted) 
+                    ? (IsImplemented: true, Mnemonic: content.Mnemonic, Message: opcodeBase.SyntaxError) 
+                    : (IsImplemented: true, Mnemonic: content.Mnemonic, Message: null);
             }
         }
 
@@ -50,7 +52,7 @@ namespace AsmDude.Tools
         {
             var dummyKeys = ("", "", "", "");
             var content = AsmSourceTools.ParseLine(line);
-            var opcodeBase = Runner.InstantiateOpcode(content.mnemonic, content.args, dummyKeys, tools);
+            var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, tools);
 
             string message = "";
             if (opcodeBase != null)

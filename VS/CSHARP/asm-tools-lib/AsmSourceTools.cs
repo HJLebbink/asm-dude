@@ -34,7 +34,7 @@ namespace AsmTools
         /// <summary>
         /// Parse the provided line. Returns label, mnemonic, args, remarks
         /// </summary>
-        public static (string label, Mnemonic mnemonic, string[] args, string remark) ParseLine(string line)
+        public static (string Label, Mnemonic Mnemonic, string[] Args, string Remark) ParseLine(string line)
         {
             string label = "";
             Mnemonic mnemonic = Mnemonic.UNKNOWN;
@@ -102,7 +102,7 @@ namespace AsmTools
                     }
                 }
             }
-            return (label: label, mnemonic: mnemonic, args: args, remark: remark);
+            return (Label: label, Mnemonic: mnemonic, Args: args, Remark: remark);
         }
 
         public static IList<Operand> MakeOperands(string[] operandStrArray) //TODO consider Enumerable
@@ -533,12 +533,12 @@ namespace AsmTools
         /// <summary>
         /// return Offset = Base + (Index * Scale) + Displacement
         /// </summary>
-        public static (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits) ParseMemOperand(string token)
+        public static (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits, string ErrorMessage) ParseMemOperand(string token)
         {
             int length = token.Length;
             if (length < 3)
             {
-                return (Valid: false, BaseReg: Rn.NOREG, IndexReg: Rn.NOREG, Scale: 0, Displacement: 0, NBits: 0);
+                return (Valid: false, BaseReg: Rn.NOREG, IndexReg: Rn.NOREG, Scale: 0, Displacement: 0, NBits: 0, ErrorMessage: null); // do not return a error message because the provided token can be a label
             }
 
             // 1] select everything between []
@@ -561,7 +561,7 @@ namespace AsmTools
             length = token.Length;
             if (length == 0)
             {
-                return (Valid: false, BaseReg: Rn.NOREG, IndexReg: Rn.NOREG, Scale: 0, Displacement: 0, NBits: 0);
+                return (Valid: false, BaseReg: Rn.NOREG, IndexReg: Rn.NOREG, Scale: 0, Displacement: 0, NBits: 0, ErrorMessage: null);// do not return a error message because the provided token can be a label
             }
 
             // 2] check if the displacement is negative
@@ -587,7 +587,6 @@ namespace AsmTools
 
             bool foundDisplacement = false;
 
-
             for (int i = 0; i < x.Length; ++i)
             {
                 string y = x[i].Trim();
@@ -598,7 +597,7 @@ namespace AsmTools
                     if (foundDisplacement)
                     {
                         // found an second displacement, error
-                        return (Valid: false, BaseReg: Rn.NOREG, IndexReg: Rn.NOREG, Scale: 0, Displacement: 0, NBits: 0);
+                        return (Valid: false, BaseReg: Rn.NOREG, IndexReg: Rn.NOREG, Scale: 0, Displacement: 0, NBits: 0, ErrorMessage: "Multiple displacements");
                     }
                     else
                     {
@@ -627,10 +626,12 @@ namespace AsmTools
                         string[] z = y.Split('*');
                         string z0 = z[0].Trim();
                         string z1 = z[1].Trim();
+                        string scaleRaw = null;
                         Rn z0r = RegisterTools.ParseRn(z0);
                         if (z0r != Rn.NOREG)
                         {
                             indexRn = z0r;
+                            scaleRaw = z1;
                             scale = ParseScale(z1);
                         }
                         else
@@ -639,32 +640,32 @@ namespace AsmTools
                             if (z1r != Rn.NOREG)
                             {
                                 indexRn = z1r;
+                                scaleRaw = z0;
                                 scale = ParseScale(z0);
                             }
+                        }
+                        if (scale == -1)
+                        {
+                            return (Valid: false, BaseReg: Rn.NOREG, IndexReg: Rn.NOREG, Scale: 0, Displacement: 0, NBits: 0, ErrorMessage: "Invalid scale "+scaleRaw);
                         }
                     }
                 }
             }
 
-            if (scale == -1)
-            {
-                return (Valid: false, BaseReg: Rn.NOREG, IndexReg: Rn.NOREG, Scale: 0, Displacement: 0, NBits: 0);
-            }
             if ((baseRn != Rn.NOREG) && (indexRn != Rn.NOREG))
             {
                 if (RegisterTools.NBits(baseRn) != RegisterTools.NBits(indexRn))
                 {
-                    return (Valid: false, BaseReg: Rn.NOREG, IndexReg: Rn.NOREG, Scale: 0, Displacement: 0, NBits: 0);
+                    return (Valid: false, BaseReg: Rn.NOREG, IndexReg: Rn.NOREG, Scale: 0, Displacement: 0, NBits: 0, ErrorMessage: "Number of bits of base register "+baseRn + " is not equal to number of bits of index register "+ indexRn);
                 }
             }
-            return (Valid: true, BaseReg: baseRn, IndexReg: indexRn, Scale: scale, Displacement: displacement, NBits: nBits);
+            return (Valid: true, BaseReg: baseRn, IndexReg: indexRn, Scale: scale, Displacement: displacement, NBits: nBits, ErrorMessage: null);
         }
 
         private static int ParseScale(string str)
         {
             switch (str)
             {
-                case "0": return 0;
                 case "1": return 1;
                 case "2": return 2;
                 case "4": return 4;
@@ -777,7 +778,7 @@ namespace AsmTools
         }
 
         /// <summary>Return the begin and end of the keyword</summary>
-        public static (int beginPos, int endPos) GetKeywordPos(int pos, string line)
+        public static (int BeginPos, int EndPos) GetKeywordPos(int pos, string line)
         {
             //Debug.WriteLine(string.Format("INFO: getKeyword; pos={0}; line=\"{1}\"", pos, new string(line)));
             if ((pos < 0) || (pos >= line.Length))
@@ -806,20 +807,20 @@ namespace AsmTools
                     break;
                 }
             }
-            return (beginPos: beginPos, endPos: endPos);
+            return (BeginPos: beginPos, EndPos: endPos);
         }
 
-        public static (bool valid, int beginPos, int endPos) GetLabelDefPos(string line)
+        public static (bool Valid, int BeginPos, int EndPos) GetLabelDefPos(string line)
         {
             var tup = GetLabelDefPos_Regular(line);
-            if (tup.valid)
+            if (tup.Valid)
             {
                 return tup;
             }
             return GetLabelDefPos_Masm(line);
         }
 
-        private static (bool valid, int beginPos, int endPos) GetLabelDefPos_Regular(string line)
+        private static (bool Valid, int BeginPos, int EndPos) GetLabelDefPos_Regular(string line)
         {
             int nChars = line.Length;
             int i = 0;
@@ -830,7 +831,7 @@ namespace AsmTools
                 char c = line[i];
                 if (AsmSourceTools.IsRemarkChar(c))
                 {
-                    return (valid: false, beginPos: 0, endPos: 0);
+                    return (Valid: false, BeginPos: 0, EndPos: 0);
                 }
                 else if (char.IsWhiteSpace(c))
                 {
@@ -843,7 +844,7 @@ namespace AsmTools
             }
             if (i >= nChars)
             {
-                return (valid: false, beginPos: 0, endPos: 0);
+                return (Valid: false, BeginPos: 0, EndPos: 0);
             }
             int beginPos = i;
             // position i points to the start of the current keyword
@@ -856,16 +857,16 @@ namespace AsmTools
                 {
                     if (i == 0)
                     { // we found an empty label
-                        return (valid: false, beginPos: 0, endPos: 0);
+                        return (Valid: false, BeginPos: 0, EndPos: 0);
                     }
                     else
                     {
-                        return (valid: true, beginPos: beginPos, endPos: i);
+                        return (Valid: true, BeginPos: beginPos, EndPos: i);
                     }
                 }
                 else if (AsmSourceTools.IsRemarkChar(c))
                 {
-                    return (valid: false, beginPos: 0, endPos: 0);
+                    return (Valid: false, BeginPos: 0, EndPos: 0);
                 }
                 else if (AsmSourceTools.IsSeparatorChar(c))
                 {
@@ -873,10 +874,10 @@ namespace AsmTools
                     break;
                 }
             }
-            return (valid: false, beginPos: 0, endPos: 0);
+            return (Valid: false, BeginPos: 0, EndPos: 0);
         }
 
-        private static (bool valid, int beginPos, int endPos) GetLabelDefPos_Masm(string line)
+        private static (bool Valid, int BeginPos, int EndPos) GetLabelDefPos_Masm(string line)
         {
             string line2 = line.TrimStart();
             int displacement = 0;
@@ -891,14 +892,14 @@ namespace AsmTools
             }
             else
             {
-                return (valid: false, beginPos: 0, endPos: 0);
+                return (Valid: false, BeginPos: 0, EndPos: 0);
             }
 
             string line3 = line2.Substring(displacement);
             var tup = GetLabelDefPos_Regular(line3);
-            if (tup.valid)
+            if (tup.Valid)
             {
-                return (valid: true, beginPos: tup.Item2 + displacement, endPos: tup.Item3 + displacement);
+                return (Valid: true, BeginPos: tup.Item2 + displacement, EndPos: tup.Item3 + displacement);
             }
             else
             {
@@ -906,17 +907,17 @@ namespace AsmTools
             }
         }
 
-        public static (bool valid, int beginPos, int endPos) GetRemarkPos(string line)
+        public static (bool Valid, int BeginPos, int EndPos) GetRemarkPos(string line)
         {
             int nChars = line.Length;
             for (int i = 0; i < nChars; ++i)
             {
                 if (AsmSourceTools.IsRemarkChar(line[i]))
                 {
-                    return (valid: true, beginPos: i, endPos: nChars);
+                    return (Valid: true, BeginPos: i, EndPos: nChars);
                 }
             }
-            return (valid: false, beginPos: nChars, endPos: nChars);
+            return (Valid: false, BeginPos: nChars, EndPos: nChars);
         }
 
         #region Text Wrap

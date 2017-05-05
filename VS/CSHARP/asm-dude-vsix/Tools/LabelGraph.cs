@@ -137,7 +137,7 @@ namespace AsmDude.Tools
             return id <= 0xFFFFFF;
         }
 
-        public SortedDictionary<uint, string> Get_Label_Clashes //TODO consider returning an IEnumerable
+        public SortedDictionary<uint, string> Label_Clashes //TODO consider returning an IEnumerable
         {
             get
             {
@@ -160,7 +160,7 @@ namespace AsmDude.Tools
             }
         }
 
-        public SortedDictionary<uint, string> Get_Undefined_Labels //TODO consider returning an IEnumerable
+        public SortedDictionary<uint, string> Undefined_Labels //TODO consider returning an IEnumerable
         {
             get
             {
@@ -177,7 +177,7 @@ namespace AsmDude.Tools
                         if (this._defAt.ContainsKey(regular_Label)) continue;
                         if (this._defAt_PROTO.ContainsKey(regular_Label)) continue;
 
-                        AsmDudeToolsStatic.Output_INFO("LabelGraph:Get_Undefined_Labels: label=\"" + full_Qualified_Label + "\" is not defined.");
+                        //AsmDudeToolsStatic.Output_INFO("LabelGraph:Get_Undefined_Labels: label=\"" + full_Qualified_Label + "\" is not defined.");
 
                         foreach (uint used_at_id in entry.Value)
                         {
@@ -196,7 +196,7 @@ namespace AsmDude.Tools
             }
         }
 
-        public SortedDictionary<string, string> Get_Label_Descriptions
+        public SortedDictionary<string, string> Label_Descriptions
         {
             get
             {
@@ -259,7 +259,7 @@ namespace AsmDude.Tools
 
         public SortedSet<uint> Label_Used_At_Info(string full_Qualified_Label, string label)
         {
-            AsmDudeToolsStatic.Output_INFO("LabelGraph:Label_Used_At_Info: full_Qualified_Label=" + full_Qualified_Label + "; label=" + label);
+            //AsmDudeToolsStatic.Output_INFO("LabelGraph:Label_Used_At_Info: full_Qualified_Label=" + full_Qualified_Label + "; label=" + label);
             SortedSet<uint> results = new SortedSet<uint>();
             {
                 if (this._usedAt.TryGetValue(full_Qualified_Label, out var lines))
@@ -302,15 +302,11 @@ namespace AsmDude.Tools
             } else
             {
                 AsmDudeToolsStatic.Output_INFO("LabelGraph:Reset_Delayed: going to execute this call.");
-                AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Reset2);
+                AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Reset);
             }
         }
 
-        private void Reset2()
-        {
-            Reset(null);
-        }
-        private void Reset(object threadContext)
+        private void Reset()
         {
             if (!this.Is_Enabled) return;
 
@@ -359,34 +355,9 @@ namespace AsmDude.Tools
             }
         }
 
-        // Declare the event using EventHandler<T>
         public event EventHandler<CustomEventArgs> Reset_Done_Event;
 
-        public IList<(string Include_Filename, string Path, string Source_Filename, int LineNumber)> Get_Undefined_Includes { get { return this._undefined_includes; } }
-
-        public IEnumerable<int> Get_All_Related_Linenumber()
-        {
-            // it does not work to find all the currently related line numbers. This because, 
-            // due to a change in label name any other label can have become related. What works 
-            // is to return all line numbers of current labels definitions and usages.
-            lock (this._updateLock)
-            {
-                foreach (uint id in this._hasDef)
-                {
-                    if (Is_From_Main_File(id))
-                    {
-                        yield return (int)id;
-                    }
-                }
-                foreach (uint id in this._hasLabel)
-                {
-                    if (Is_From_Main_File(id))
-                    {
-                        yield return (int)id;
-                    }
-                }
-            }
-        }
+        public IList<(string Include_Filename, string Path, string Source_Filename, int LineNumber)> Undefined_Includes { get { return this._undefined_includes; } }
 
         #endregion Public Methods
 
@@ -426,7 +397,7 @@ namespace AsmDude.Tools
             // Make a temporary copy of the event to avoid possibility of
             // a race condition if the last subscriber un-subscribes
             // immediately after the null check and before the event is raised.
-            EventHandler<CustomEventArgs> handler = Reset_Done_Event;
+            EventHandler<CustomEventArgs> handler = this.Reset_Done_Event;
 
             // Event will be null if there are no subscribers
             if (handler != null)
@@ -482,14 +453,14 @@ namespace AsmDude.Tools
                                 case -1:
                                     {
                                         int lineNumber = e.Before.GetLineNumberFromPosition(textChange.OldPosition);
-                                        AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:OnTextBufferChanged: old={0}; new={1}; LineNumber={2}", textChange.OldText, textChange.NewText, lineNumber));
+                                        //AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:OnTextBufferChanged: old={0}; new={1}; LineNumber={2}", textChange.OldText, textChange.NewText, lineNumber));
                                         Shift_Linenumber(lineNumber + 1, -1);
                                         Update_Linenumber(buffer, aggregator, lineNumber, (uint)lineNumber);
                                         Update_Linenumber(buffer, aggregator, lineNumber - 1, (uint)lineNumber);
                                     }
                                     break;
                                 default:
-                                    AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:OnTextBufferChanged: lineDelta={0}", textChange.LineCountDelta));
+                                    //AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:OnTextBufferChanged: lineDelta={0}", textChange.LineCountDelta));
                                     Reset_Delayed();
                                     break;
                             }
@@ -549,14 +520,14 @@ namespace AsmDude.Tools
 
                         if ((extra_Tag_Info != null) && extra_Tag_Info.Equals(AsmTokenTag.MISC_KEYWORD_PROTO))
                             {
-                                AsmDudeToolsStatic.Output_INFO("LabelGraph:Add_Linenumber: found PROTO labelDef \"" + label + "\" at line " + lineNumber);
+                                //AsmDudeToolsStatic.Output_INFO("LabelGraph:Add_Linenumber: found PROTO labelDef \"" + label + "\" at line " + lineNumber);
                                 this.Add_To_Dictionary(label, id, this._defAt_PROTO);
                                 this._hasDef.Add(id);
                             }
                             else
                             {
                                 string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(extra_Tag_Info, label, usedAssember);
-                                AsmDudeToolsStatic.Output_INFO("LabelGraph:Add_Linenumber: found labelDef \"" + label + "\" at line " + lineNumber + "; full_Qualified_Label = \"" + full_Qualified_Label + "\".");
+                                //AsmDudeToolsStatic.Output_INFO("LabelGraph:Add_Linenumber: found labelDef \"" + label + "\" at line " + lineNumber + "; full_Qualified_Label = \"" + full_Qualified_Label + "\".");
                                 this.Add_To_Dictionary(full_Qualified_Label, id, this._defAt);
                                 this._hasDef.Add(id);
                             }
@@ -627,7 +598,7 @@ namespace AsmDude.Tools
             {
                 if (includeFilename.Length < 1)
                 {
-                    AsmDudeToolsStatic.Output_INFO("LabelGraph:Handle_Include: file with name \"" + includeFilename + "\" is too short.");
+                    //AsmDudeToolsStatic.Output_INFO("LabelGraph:Handle_Include: file with name \"" + includeFilename + "\" is too short.");
                     return;
                 }
                 if (includeFilename.Length > 2)
@@ -644,18 +615,18 @@ namespace AsmDude.Tools
 
                 if (!File.Exists(filePath))
                 {
-                    AsmDudeToolsStatic.Output_INFO("LabelGraph:Handle_Include: file " + filePath + " does not exist");
+                    //AsmDudeToolsStatic.Output_INFO("LabelGraph:Handle_Include: file " + filePath + " does not exist");
                     this._undefined_includes.Add((Include_Filename: includeFilename, Path: filePath, Source_Filename: currentFilename, LineNumber: lineNumber));
                 }
                 else
                 {
                     if (this._filenames.Values.Contains(filePath))
                     {
-                        AsmDudeToolsStatic.Output_INFO("LabelGraph:Handle_Include: including file " + filePath + " has already been included");
+                        //AsmDudeToolsStatic.Output_INFO("LabelGraph:Handle_Include: including file " + filePath + " has already been included");
                     }
                     else
                     {
-                        AsmDudeToolsStatic.Output_INFO("LabelGraph:Handle_Include: including file " + filePath);
+                        //AsmDudeToolsStatic.Output_INFO("LabelGraph:Handle_Include: including file " + filePath);
 
                         ITextDocument doc = this._docFactory.CreateAndLoadTextDocument(filePath, this._contentType, true, out var characterSubstitutionsOccurred);
                         doc.FileActionOccurred += this.Doc_File_Action_Occurred;
@@ -673,7 +644,7 @@ namespace AsmDude.Tools
         private void Doc_File_Action_Occurred(Object sender, TextDocumentFileActionEventArgs e)
         {
             ITextDocument doc = sender as ITextDocument;
-            AsmDudeToolsStatic.Output_INFO("LabelGraph:Doc_File_Action_Occurred: " + doc.FilePath + ":" + e.FileActionType);
+            //AsmDudeToolsStatic.Output_INFO("LabelGraph:Doc_File_Action_Occurred: " + doc.FilePath + ":" + e.FileActionType);
         }
 
         private void Remove_Linenumber(int lineNumber, uint id)

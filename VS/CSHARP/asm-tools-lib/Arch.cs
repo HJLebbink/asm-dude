@@ -185,7 +185,8 @@ namespace AsmTools {
     public static class ArchTools {
 
         public static Arch ParseArch(string str) {
-            switch (str.ToUpper()) {
+            
+            switch (str.Replace("_", "").ToUpper()) {
                 case "NONE": return Arch.NONE;
 
                 case "8086": return Arch.ARCH_8086;
@@ -201,10 +202,8 @@ namespace AsmTools {
                 case "SSE2": return Arch.SSE2;
                 case "SSE3": return Arch.SSE3;
                 case "SSSE3": return Arch.SSSE3;
-                case "SSE41":
-                case "SSE4_1": return Arch.SSE4_1;
-                case "SSE42":
-                case "SSE4_2": return Arch.SSE4_2;
+                case "SSE41": return Arch.SSE4_1;
+                case "SSE42": return Arch.SSE4_2;
                 case "SSE4A": return Arch.SSE4A;
                 case "SSE5": return Arch.SSE5;
 
@@ -220,9 +219,9 @@ namespace AsmTools {
 
                 case "AVX512IFMA": return Arch.AVX512_IFMA;
                 case "AVX512VBMI": return Arch.AVX512_VBMI;
-                case "AVX512_VPOPCNTDQ": return Arch.AVX512_VPOPCNTDQ;
-                case "AVX512_4VNNIW": return Arch.AVX512_4VNNIW;
-                case "AVX512_4FMAPS": return Arch.AVX512_4FMAPS;
+                case "AVX512VPOPCNTDQ": return Arch.AVX512_VPOPCNTDQ;
+                case "AVX5124VNNIW": return Arch.AVX512_4VNNIW;
+                case "AVX5124FMAPS": return Arch.AVX512_4FMAPS;
 
                 case "HLE": return Arch.HLE;
                 case "BMI1": return Arch.BMI1;

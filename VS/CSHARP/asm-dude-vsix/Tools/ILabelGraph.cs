@@ -29,7 +29,6 @@ namespace AsmDude.Tools
     public interface ILabelGraph
     {
         SortedSet<uint> Get_Label_Def_Linenumbers(string label);
-        IEnumerable<int> Get_All_Related_Linenumber();
 
         /// <summary>
         /// Return whether this label graph is enabled
@@ -55,16 +54,16 @@ namespace AsmDude.Tools
         /// <summary>
         /// Return dictionary of line numbers with label clash descriptions
         /// </summary>
-        SortedDictionary<uint, string> Get_Label_Clashes { get; }
+        SortedDictionary<uint, string> Label_Clashes { get; }
 
         /// <summary>
         /// Return dictionary of line numbers with undefined label descriptions
         /// </summary>
-        SortedDictionary<uint, string> Get_Undefined_Labels { get; }
+        SortedDictionary<uint, string> Undefined_Labels { get; }
 
-        IList<(string Include_Filename, string Path, string Source_Filename, int LineNumber)> Get_Undefined_Includes { get; }
+        IList<(string Include_Filename, string Path, string Source_Filename, int LineNumber)> Undefined_Includes { get; }
 
-        SortedDictionary<string, string> Get_Label_Descriptions { get; }
+        SortedDictionary<string, string> Label_Descriptions { get; }
 
         void Reset_Delayed();
         event EventHandler<CustomEventArgs> Reset_Done_Event;

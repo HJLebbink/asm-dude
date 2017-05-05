@@ -32,28 +32,31 @@ namespace AsmTools
         private ulong _imm;
         public int NBits { get; set; }
         private readonly (Rn BaseReg, Rn IndexReg, int Scale, long Displacement) _mem;
+        public readonly string ErrorMessage;
 
         /// <summary>constructor</summary>
         public Operand(string token, AsmParameters p = null)
         {
-            //TODO: properly handle optional elements {K}{Z} {AES}{ER}
-            string token2 = token.
-                Replace("{K0}", "").
-                Replace("{K1}", "").
-                Replace("{K2}", "").
-                Replace("{K3}", "").
-                Replace("{K4}", "").
-                Replace("{K5}", "").
-                Replace("{K6}", "").
-                Replace("{K7}", "").
-                Replace("{Z}", "").
-                Replace("{ER}", "").
-                Replace("{SAE}", "").
-                Replace("{1TO4}", "").
-                Replace("{1TO8}", "").
-                Replace("{1TO16}", "");
-
             this._str = token;
+
+            //TODO: properly handle optional elements {K}{Z} {AES}{ER}
+            string token2 = (token.Contains("{")) 
+                ? token.
+                    Replace("{K0}", "").
+                    Replace("{K1}", "").
+                    Replace("{K2}", "").
+                    Replace("{K3}", "").
+                    Replace("{K4}", "").
+                    Replace("{K5}", "").
+                    Replace("{K6}", "").
+                    Replace("{K7}", "").
+                    Replace("{Z}", "").
+                    Replace("{ER}", "").
+                    Replace("{SAE}", "").
+                    Replace("{1TO4}", "").
+                    Replace("{1TO8}", "").
+                    Replace("{1TO16}", "")
+                : token2 = token;
 
             var t0 = RegisterTools.ToRn(token2);
             if (t0.Valid)
@@ -84,6 +87,7 @@ namespace AsmTools
                     }
                     else
                     {
+                        this.ErrorMessage = t2.ErrorMessage;
                         this._type = Ot1.UNKNOWN;
                         this.NBits = -1;
                     }

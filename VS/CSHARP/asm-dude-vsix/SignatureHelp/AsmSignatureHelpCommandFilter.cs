@@ -69,7 +69,7 @@ namespace AsmDude.SignatureHelp {
                                 if (char.IsWhiteSpace(typedChar) || typedChar.Equals(',')) {
                                     var t = AsmSourceTools.ParseLine(lineStr);
                                     if (this._session != null) this._session.Dismiss(); // cleanup previous session
-                                    if (t.mnemonic != Mnemonic.UNKNOWN) {
+                                    if (t.Mnemonic != Mnemonic.UNKNOWN) {
                                         this._session = this._broker.TriggerSignatureHelp(this._textView);
                                     }
                                 } else if (AsmSourceTools.IsRemarkChar(typedChar) && (this._session != null)) {

@@ -99,8 +99,8 @@ namespace AsmDude.SignatureHelp {
                 //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: AugmentSignatureHelpSession: lineStr=" + lineStr+ "; positionInLine=" + positionInLine);
 
                 var t = AsmSourceTools.ParseLine(lineStr);
-                IList<Operand> operands = AsmSourceTools.MakeOperands(t.args);
-                Mnemonic mnemonic = t.mnemonic;
+                IList<Operand> operands = AsmSourceTools.MakeOperands(t.Args);
+                Mnemonic mnemonic = t.Mnemonic;
 
                 ISet<Arch> selectedArchitectures = AsmDudeToolsStatic.Get_Arch_Swithed_On();
                 //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: AugmentSignatureHelpSession: selected architectures=" + ArchTools.ToString(selectedArchitectures));
