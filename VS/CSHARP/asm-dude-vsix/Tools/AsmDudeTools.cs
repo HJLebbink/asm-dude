@@ -277,6 +277,8 @@ namespace AsmDude
 
         public AsmTokenType Get_Token_Type(string keyword)
         {
+            Debug.Assert(keyword == keyword.ToUpper());
+
             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword);
             if (mnemonic != Mnemonic.UNKNOWN)
             {
@@ -288,6 +290,7 @@ namespace AsmDude
 
         public AssemblerEnum Get_Assembler(string keyword)
         {
+            Debug.Assert(keyword == keyword.ToUpper());
             return (this._assembler.TryGetValue(keyword, out var value)) ? value : AssemblerEnum.UNKNOWN;
         }
 
@@ -296,40 +299,25 @@ namespace AsmDude
         /// </summary>
         public string Get_Url(string keyword)
         {
-            // no need to pre-process this information.
-            try
-            {
-                string keywordUpper = keyword.ToUpper();
-                Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword);
-                if (mnemonic != Mnemonic.UNKNOWN)
-                {
-                    string url = this.Mnemonic_Store.GetHtmlRef(mnemonic);
-                    //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:getUrl: keyword {1}; url {2}.", this.ToString(), keyword, url));
-                    return url;
-                }
-                return "";
-            }
-            catch (Exception e)
-            {
-                AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:getUrl: exception {1}.", ToString(), e.ToString()));
-                return "";
-            }
+            return this.Mnemonic_Store.GetHtmlRef(AsmSourceTools.ParseMnemonic(keyword));
         }
 
         /// <summary>
-        /// get url for the provided keyword. Returns empty string if the keyword does not exist or the keyword does not have an url.
+        /// get url for the provided keyword. Returns empty string if the keyword does not exist or the keyword does not have an url. Keyword has to be in CAPITALS
         /// </summary>
         public string Get_Description(string keyword)
         {
+            Debug.Assert(keyword == keyword.ToUpper());
             return (this._description.TryGetValue(keyword, out string description)) ? description : "";
         }
 
         /// <summary>
-        /// Get architecture of the provided keyword
+        /// Get architecture of the provided keyword. Keyword has to be in CAPITALS
         /// </summary>
         public Arch Get_Architecture(string keyword)
         {
-            return this._arch[keyword.ToUpper()];
+            Debug.Assert(keyword == keyword.ToUpper());
+            return (this._arch.TryGetValue(keyword, out Arch value)) ? value : Arch.NONE;
         }
 
         public void Invalidate_Data()

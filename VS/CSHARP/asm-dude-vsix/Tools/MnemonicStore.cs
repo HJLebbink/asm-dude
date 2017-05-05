@@ -58,29 +58,17 @@ namespace AsmDude.Tools
 
         public IEnumerable<AsmSignatureElement> GetSignatures(Mnemonic mnemonic)
         {
-            if (this._data.TryGetValue(mnemonic, out var list))
-            {
-                return list;
-            }
-            return Enumerable.Empty<AsmSignatureElement>();
+            return (this._data.TryGetValue(mnemonic, out var list)) ? list : Enumerable.Empty<AsmSignatureElement>();
         }
 
         public IEnumerable<Arch> GetArch(Mnemonic mnemonic)
         {
-            if (this._arch.TryGetValue(mnemonic, out var value))
-            {
-                return value;
-            }
-            return Enumerable.Empty<Arch>();
+            return (this._arch.TryGetValue(mnemonic, out var value)) ? value : Enumerable.Empty<Arch>();
         }
 
         public string GetHtmlRef(Mnemonic mnemonic)
         {
-            if (this._htmlRef.TryGetValue(mnemonic, out string value))
-            {
-                return value;
-            }
-            return "";
+            return (this._htmlRef.TryGetValue(mnemonic, out string value)) ? value : "";
         }
 
         public void SetHtmlRef(Mnemonic mnemonic, string value)
@@ -102,11 +90,7 @@ namespace AsmDude.Tools
 
         public string GetDescription(Mnemonic mnemonic)
         {
-            if (this._description.TryGetValue(mnemonic, out string value))
-            {
-                return value;
-            }
-            return "";
+            return (this._description.TryGetValue(mnemonic, out string value)) ? value : "";
         }
 
         public override string ToString()
@@ -248,11 +232,11 @@ namespace AsmDude.Tools
             }
             catch (FileNotFoundException)
             {
-                MessageBox.Show("ERROR: MnemonicStore:loadRegularData: could not find file \"" + filename + "\".");
+                AsmDudeToolsStatic.Output_ERROR("MnemonicStore:loadRegularData: could not find file \"" + filename + "\".");
             }
             catch (Exception e)
             {
-                MessageBox.Show("ERROR: MnemonicStore:loadRegularData: error while reading file \"" + filename + "\"." + e);
+                AsmDudeToolsStatic.Output_ERROR("MnemonicStore:loadRegularData: error while reading file \"" + filename + "\"." + e);
             }
         }
 
@@ -309,7 +293,7 @@ namespace AsmDude.Tools
                         }
                         else
                         {
-                            AsmDudeToolsStatic.Output("WARNING: MnemonicStore:loadHandcraftedData: s.Length=" + columns.Length + "; funky line" + line);
+                            AsmDudeToolsStatic.Output_WARNING("MnemonicStore:loadHandcraftedData: s.Length=" + columns.Length + "; funky line" + line);
                         }
                     }
                 }
@@ -337,11 +321,11 @@ namespace AsmDude.Tools
             }
             catch (FileNotFoundException)
             {
-                MessageBox.Show("ERROR: AsmTokenTagger: could not find file \"" + filename + "\".");
+                AsmDudeToolsStatic.Output_ERROR("MnemonicStore:LoadHandcraftedData: could not find file \"" + filename + "\".");
             }
             catch (Exception e)
             {
-                MessageBox.Show("ERROR: AsmTokenTagger: error while reading file \"" + filename + "\"." + e);
+                AsmDudeToolsStatic.Output_ERROR("MnemonicStore:LoadHandcraftedData: error while reading file \"" + filename + "\"." + e);
             }
         }
     }

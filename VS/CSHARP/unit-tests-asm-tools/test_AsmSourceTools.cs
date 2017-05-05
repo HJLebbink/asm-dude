@@ -282,7 +282,7 @@ namespace unit_tests {
             Rn[] bases64 = new Rn[] { Rn.RAX, Rn.RBX, Rn.RCX, Rn.RDX, Rn.RSP, Rn.RBP, Rn.RSI, Rn.RDI };
             Rn[] index74 = new Rn[] { Rn.RAX, Rn.RBX, Rn.RCX, Rn.RDX, Rn.RSP, Rn.RBP, Rn.RSI, Rn.RDI };
 
-            int[] scales = new int[] { 0, 1, 2, 4, 8 };
+            int[] scales = new int[] { 1, 2, 4, 8 };
 
 
             for (int i = 0; i < bases32.Length; ++i) {

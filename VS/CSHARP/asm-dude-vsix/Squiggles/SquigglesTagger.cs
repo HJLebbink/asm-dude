@@ -392,7 +392,7 @@ namespace AsmDude.Squiggles
                     {
                         #region Update Error Tasks
                         if (Settings.Default.AsmSim_Show_Syntax_Errors ||
-                            Settings.Default.AsmSim_Decorate_Syntax_Errors)
+                            Settings.Default.AsmSim_Show_Usage_Of_Undefined)
                         {
                             var errorTasks = this._errorListProvider.Tasks;
 
@@ -409,7 +409,7 @@ namespace AsmDude.Squiggles
                             bool newErrorsAdded = false;
                             #endregion
 
-                            if (Settings.Default.AsmSim_Decorate_Syntax_Errors)
+                            if (Settings.Default.AsmSim_Show_Syntax_Errors)
                             {
                                 foreach (var tup in this._syntaxErrorList.SyntaxErrors)
                                 {
@@ -430,6 +430,10 @@ namespace AsmDude.Squiggles
                                     errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
                                     errorTasks.Add(errorTask);
                                 }
+                            }
+                            if (Settings.Default.AsmSim_Show_Usage_Of_Undefined)
+                            {
+                                //TODO
                             }
                             if (newErrorsAdded)
                             {
