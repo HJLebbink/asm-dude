@@ -33,7 +33,55 @@ namespace AsmDude.OptionsPage {
         public AsmDudeOptionsPageUI() {
             InitializeComponent();
             this.version_UI.Content = "Asm Dude v" + typeof(AsmDudePackage).Assembly.GetName().Version.ToString() + " (" + ApplicationInformation.CompileDate.ToUniversalTime().ToString()+")";
+
+            this.SyntaxHighlighting_On_UI.Click += this.SyntaxHighlighting_On_UI_Click;
+            this.AsmDoc_On_UI.Click += this.AsmDoc_On_UI_Click;
+            this.CodeFolding_On_UI.Click += this.CodeFolding_On_UI_Click;
+            this.AsmSim_On_UI.Click += this.AsmSim_On_UI_Click;
         }
+
+        #region Event Handlers to disable options
+        private void SyntaxHighlighting_On_UI_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            bool value = this.SyntaxHighlighting_On;
+            this.colorMnemonic_UI.IsEnabled = value;
+            this.colorRegister_UI.IsEnabled = value;
+            this.colorRemark_UI.IsEnabled = value;
+            this.colorDirective_UI.IsEnabled = value;
+            this.colorConstant_UI.IsEnabled = value;
+            this.colorJump_UI.IsEnabled = value;
+            this.colorLabel_UI.IsEnabled = value;
+            this.colorMisc_UI.IsEnabled = value;
+            this.ColorUserDefined1_UI.IsEnabled = value;
+            this.ColorUserDefined2_UI.IsEnabled = value;
+            this.ColorUserDefined3_UI.IsEnabled = value;
+        }
+        private void AsmDoc_On_UI_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            bool value = this.AsmDoc_On;
+            this.AsmDoc_Url_UI.IsEnabled = value;
+        }
+        private void CodeFolding_On_UI_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            bool value = this.CodeFolding_On;
+            this.CodeFolding_IsDefaultCollaped_UI.IsEnabled = value;
+            this.CodeFolding_BeginTag_UI.IsEnabled = value;
+            this.CodeFolding_EndTag_UI.IsEnabled = value;
+        }
+        private void AsmSim_On_UI_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            bool value = this.AsmSim_On;
+            this.AsmSim_Shown_Syntax_Errors_UI.IsEnabled = value;
+            this.AsmSim_Decorate_Syntax_Errors_UI.IsEnabled = value;
+            this.AsmSim_Show_Usage_Of_Undefined_UI.IsEnabled = value;
+            this.AsmSim_Decorate_Usage_Of_Undefined_UI.IsEnabled = value;
+            this.AsmSim_Decorate_Registers_UI.IsEnabled = value;
+            this.AsmSim_Use_In_Code_Completion_UI.IsEnabled = value;
+            this.AsmSim_Decorate_Unimplemented_UI.IsEnabled = value;
+            this.AsmSim_64_Bits_UI.IsEnabled = value;
+            this.AsmSim_Number_Of_Steps_UI.IsEnabled = value;
+        }
+        #endregion
 
         #region Asm Documentation
         public bool AsmDoc_On {

@@ -124,7 +124,7 @@ namespace AsmDude
 
                 string lineStr = line.GetText();
                 var t = AsmSourceTools.ParseLine(lineStr);
-                Mnemonic mnemonic = t.mnemonic;
+                Mnemonic mnemonic = t.Mnemonic;
 
                 //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:AugmentCompletionSession; lineStr="+ lineStr+ "; t.Item1="+t.Item1);
 
@@ -164,7 +164,7 @@ namespace AsmDude
                     }
                     else
                     {
-                        IList<Operand> operands = AsmSourceTools.MakeOperands(t.args);
+                        IList<Operand> operands = AsmSourceTools.MakeOperands(t.Args);
                         ISet<AsmSignatureEnum> allowed = new HashSet<AsmSignatureEnum>();
                         int commaCount = AsmSignature.Count_Commas(lineStr);
                         IEnumerable<AsmSignatureElement> allSignatures = this._asmDudeTools.Mnemonic_Store.GetSignatures(mnemonic);
@@ -290,7 +290,7 @@ namespace AsmDude
             ImageSource imageSource = this._icons[AsmTokenType.Label];
             AssemblerEnum usedAssember = AsmDudeToolsStatic.Used_Assembler;
 
-            SortedDictionary<string, string> labels = this._labelGraph.Get_Label_Descriptions;
+            SortedDictionary<string, string> labels = this._labelGraph.Label_Descriptions;
             foreach (KeyValuePair<string, string> entry in labels)
             {
                 //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:AugmentCompletionSession; label={1}; description={2}", this.ToString(), entry.Key, entry.Value));
