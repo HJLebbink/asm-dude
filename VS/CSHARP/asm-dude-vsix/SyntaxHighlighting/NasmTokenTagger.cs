@@ -150,7 +150,7 @@ namespace AsmDude
                                         }
                                     default:
                                         {
-                                            if (RegisterTools.IsRegister(asmToken2))
+                                            if (RegisterTools.IsRegister(asmToken2, true))
                                             {
                                                 yield return new TagSpan<AsmTokenTag>(NasmTokenTagger.New_Span(pos[k], offset, curSpan), this._register);
                                             }

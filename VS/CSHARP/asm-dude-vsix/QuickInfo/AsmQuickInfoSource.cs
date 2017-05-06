@@ -170,7 +170,7 @@ namespace AsmDude.QuickInfo
                                 if (this._asmSimulator.Is_Enabled)
                                 {
                                     State2 state = this._asmSimulator.Get_State_After(lineNumber, true);
-                                    string msg = this._asmSimulator.GetRegisterValue(RegisterTools.ParseRn(keyword), state);
+                                    string msg = this._asmSimulator.GetRegisterValue(RegisterTools.ParseRn(keywordUpper, true), state);
                                     if (msg.Length == 0) msg = "[Bussy calculating register content]";
 
                                     description.Inlines.Add(new Run(AsmSourceTools.Linewrap("\n" + msg, AsmDudePackage.maxNumberOfCharsInToolTips))
@@ -187,7 +187,7 @@ namespace AsmDude.QuickInfo
                                 description.Inlines.Add(Make_Run1("Mnemonic ", this._foreground));
                                 description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Opcode))));
 
-                                Mnemonic mmemonic = AsmSourceTools.ParseMnemonic(keywordUpper);
+                                Mnemonic mmemonic = AsmSourceTools.ParseMnemonic(keywordUpper, true);
                                 {
                                     string archStr = ":" + ArchTools.ToString(this._asmDudeTools.Mnemonic_Store.GetArch(mmemonic)) + " ";
                                     string descr = this._asmDudeTools.Mnemonic_Store.GetDescription(mmemonic);

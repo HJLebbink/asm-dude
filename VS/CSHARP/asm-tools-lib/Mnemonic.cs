@@ -2288,8 +2288,11 @@ namespace AsmTools {
             }
         }
 
-        public static Mnemonic ParseMnemonic(string str) {
-            switch (str.ToUpper()) {
+        public static Mnemonic ParseMnemonic(string str, bool strIsCapitals = false) {
+            #if DEBUG
+                if (strIsCapitals && (str != str.ToUpper())) throw new Exception();
+            #endif
+            switch ((strIsCapitals) ? str : str.ToUpper()) {
                 case "NONE": return Mnemonic.NONE;
                 case "UNKNOWN": return Mnemonic.UNKNOWN;
                 case "MOV": return Mnemonic.MOV;

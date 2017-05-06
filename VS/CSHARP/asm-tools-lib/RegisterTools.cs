@@ -21,7 +21,9 @@
 // SOFTWARE.
 
 
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace AsmTools
 {
@@ -33,22 +35,21 @@ namespace AsmTools
 
     public static class RegisterTools
     {
-        public static (bool Valid, Rn Reg, int NBits) ToRn(string str)
+        public static (bool Valid, Rn Reg, int NBits) ToRn(string str, bool strIsCapitals = false)
         {
-            Rn rn = RegisterTools.ParseRn(str);
-            if (rn == Rn.NOREG)
-            {
-                return (Valid: false, Reg: Rn.NOREG, NBits: 0);
-            }
-            else
-            {
-                return (Valid: true, Reg: rn, NBits: RegisterTools.NBits(rn));
-            }
+            Rn rn = RegisterTools.ParseRn(str, strIsCapitals);
+            return (rn == Rn.NOREG)
+                ? (Valid: false, Reg: Rn.NOREG, NBits: 0)
+                : (Valid: true, Reg: rn, NBits: RegisterTools.NBits(rn));
         }
 
-        public static Rn ParseRn(string str)
+        public static Rn ParseRn(string str, bool strIsCapitals = false)
         {
-            switch (str.ToUpper())
+            #if DEBUG
+            if (strIsCapitals && (str != str.ToUpper())) throw new Exception();
+            #endif
+
+            switch ((strIsCapitals) ? str : str.ToUpper())
             {
                 case "RAX": return Rn.RAX;
                 case "EAX": return Rn.EAX;
@@ -512,227 +513,224 @@ namespace AsmTools
         /// </summary>
         /// <param name="reg"></param>
         /// <returns></returns>
-        public static string GetRelatedRegister(string reg)
+        public static string GetRelatedRegister(Rn reg)
         {
-            //TODO use register enum
-            switch (reg.ToUpper())
+            switch (reg)
             {
-                case "RAX":
-                case "EAX":
-                case "AX":
-                case "AL":
-                case "AH":
+                case Rn.RAX:
+                case Rn.EAX:
+                case Rn.AX:
+                case Rn.AL:
+                case Rn.AH:
                     return "\\b(RAX|EAX|AX|AH|AL)\\b";
-                case "RBX":
-                case "EBX":
-                case "BX":
-                case "BL":
-                case "BH":
+                case Rn.RBX:
+                case Rn.EBX:
+                case Rn.BX:
+                case Rn.BL:
+                case Rn.BH:
                     return "\\b(RBX|EBX|BX|BH|BL)\\b";
-                case "RCX":
-                case "ECX":
-                case "CX":
-                case "CL":
-                case "CH":
+                case Rn.RCX:
+                case Rn.ECX:
+                case Rn.CX:
+                case Rn.CL:
+                case Rn.CH:
                     return "\\b(RCX|ECX|CX|CH|CL)\\b";
-                case "RDX":
-                case "EDX":
-                case "DX":
-                case "DL":
-                case "DH":
+                case Rn.RDX:
+                case Rn.EDX:
+                case Rn.DX:
+                case Rn.DL:
+                case Rn.DH:
                     return "\\b(RDX|EDX|DX|DH|DL)\\b";
-                case "RSI":
-                case "ESI":
-                case "SI":
-                case "SIL":
+                case Rn.RSI:
+                case Rn.ESI:
+                case Rn.SI:
+                case Rn.SIL:
                     return "\\b(RSI|ESI|SI|SIL)\\b";
-                case "RDI":
-                case "EDI":
-                case "DI":
-                case "DIL":
+                case Rn.RDI:
+                case Rn.EDI:
+                case Rn.DI:
+                case Rn.DIL:
                     return "\\b(RDI|EDI|DI|DIL)\\b";
-                case "RBP":
-                case "EBP":
-                case "BP":
-                case "BPL":
+                case Rn.RBP:
+                case Rn.EBP:
+                case Rn.BP:
+                case Rn.BPL:
                     return "\\b(RBP|EBP|BP|BPL)\\b";
-                case "RSP":
-                case "ESP":
-                case "SP":
-                case "SPL":
+                case Rn.RSP:
+                case Rn.ESP:
+                case Rn.SP:
+                case Rn.SPL:
                     return "\\b(RSP|ESP|SP|SPL)\\b";
-                case "R8":
-                case "R8D":
-                case "R8W":
-                case "R8B":
+                case Rn.R8:
+                case Rn.R8D:
+                case Rn.R8W:
+                case Rn.R8B:
                     return "\\b(R8|R8D|R8W|R8B)\\b";
-                case "R9":
-                case "R9D":
-                case "R9W":
-                case "R9B":
+                case Rn.R9:
+                case Rn.R9D:
+                case Rn.R9W:
+                case Rn.R9B:
                     return "\\b(R9|R9D|R9W|R9B)\\b";
-                case "R10":
-                case "R10D":
-                case "R10W":
-                case "R10B":
+                case Rn.R10:
+                case Rn.R10D:
+                case Rn.R10W:
+                case Rn.R10B:
                     return "\\b(R10|R10D|R10W|R10B)\\b";
-                case "R11":
-                case "R11D":
-                case "R11W":
-                case "R11B":
+                case Rn.R11:
+                case Rn.R11D:
+                case Rn.R11W:
+                case Rn.R11B:
                     return "\\b(R11|R11D|R11W|R11B)\\b";
-                case "R12":
-                case "R12D":
-                case "R12W":
-                case "R12B":
+                case Rn.R12:
+                case Rn.R12D:
+                case Rn.R12W:
+                case Rn.R12B:
                     return "\\b(R12|R12D|R12W|R12B)\\b";
-                case "R13":
-                case "R13D":
-                case "R13W":
-                case "R13B":
+                case Rn.R13:
+                case Rn.R13D:
+                case Rn.R13W:
+                case Rn.R13B:
                     return "\\b(R13|R13D|R13W|R13B)\\b";
-                case "R14":
-                case "R14D":
-                case "R14W":
-                case "R14B":
+                case Rn.R14:
+                case Rn.R14D:
+                case Rn.R14W:
+                case Rn.R14B:
                     return "\\b(R14|R14D|R14W|R14B)\\b";
-                case "R15":
-                case "R15D":
-                case "R15W":
-                case "R15B":
+                case Rn.R15:
+                case Rn.R15D:
+                case Rn.R15W:
+                case Rn.R15B:
                     return "\\b(R15|R15D|R15W|R15B)\\b";
-
-                case "XMM0":
-                case "YMM0":
-                case "ZMM0":
+                case Rn.XMM0:
+                case Rn.YMM0:
+                case Rn.ZMM0:
                     return "\\b(XMM0|YMM0|ZMM0)\\b";
-
-                case "XMM1":
-                case "YMM1":
-                case "ZMM1":
+                case Rn.XMM1:
+                case Rn.YMM1:
+                case Rn.ZMM1:
                     return "\\b(XMM1|YMM1|ZMM1)\\b";
-                case "XMM2":
-                case "YMM2":
-                case "ZMM2":
+                case Rn.XMM2:
+                case Rn.YMM2:
+                case Rn.ZMM2:
                     return "\\b(XMM2|YMM2|ZMM2)\\b";
-                case "XMM3":
-                case "YMM3":
-                case "ZMM3":
+                case Rn.XMM3:
+                case Rn.YMM3:
+                case Rn.ZMM3:
                     return "\\b(XMM3|YMM3|ZMM3)\\b";
-                case "XMM4":
-                case "YMM4":
-                case "ZMM4":
+                case Rn.XMM4:
+                case Rn.YMM4:
+                case Rn.ZMM4:
                     return "\\b(XMM4|YMM4|ZMM4)\\b";
-                case "XMM5":
-                case "YMM5":
-                case "ZMM5":
+                case Rn.XMM5:
+                case Rn.YMM5:
+                case Rn.ZMM5:
                     return "\\b(XMM5|YMM5|ZMM5)\\b";
-                case "XMM6":
-                case "YMM6":
-                case "ZMM6":
+                case Rn.XMM6:
+                case Rn.YMM6:
+                case Rn.ZMM6:
                     return "\\b(XMM6|YMM6|ZMM6)\\b";
-                case "XMM7":
-                case "YMM7":
-                case "ZMM7":
+                case Rn.XMM7:
+                case Rn.YMM7:
+                case Rn.ZMM7:
                     return "\\b(XMM7|YMM7|ZMM7)\\b";
-                case "XMM8":
-                case "YMM8":
-                case "ZMM8":
+                case Rn.XMM8:
+                case Rn.YMM8:
+                case Rn.ZMM8:
                     return "\\b(XMM8|YMM8|ZMM8)\\b";
-                case "XMM9":
-                case "YMM9":
-                case "ZMM9":
+                case Rn.XMM9:
+                case Rn.YMM9:
+                case Rn.ZMM9:
                     return "\\b(XMM9|YMM9|ZMM9)\\b";
-                case "XMM10":
-                case "YMM10":
-                case "ZMM10":
+                case Rn.XMM10:
+                case Rn.YMM10:
+                case Rn.ZMM10:
                     return "\\b(XMM10|YMM10|ZMM10)\\b";
-                case "XMM11":
-                case "YMM11":
-                case "ZMM11":
+                case Rn.XMM11:
+                case Rn.YMM11:
+                case Rn.ZMM11:
                     return "\\b(XMM11|YMM11|ZMM11)\\b";
-                case "XMM12":
-                case "YMM12":
-                case "ZMM12":
+                case Rn.XMM12:
+                case Rn.YMM12:
+                case Rn.ZMM12:
                     return "\\b(XMM12|YMM12|ZMM12)\\b";
-                case "XMM13":
-                case "YMM13":
-                case "ZMM13":
+                case Rn.XMM13:
+                case Rn.YMM13:
+                case Rn.ZMM13:
                     return "\\b(XMM13|YMM13|ZMM13)\\b";
-                case "XMM14":
-                case "YMM14":
-                case "ZMM14":
+                case Rn.XMM14:
+                case Rn.YMM14:
+                case Rn.ZMM14:
                     return "\\b(XMM14|YMM14|ZMM14)\\b";
-                case "XMM15":
-                case "YMM15":
-                case "ZMM15":
+                case Rn.XMM15:
+                case Rn.YMM15:
+                case Rn.ZMM15:
                     return "\\b(XMM15|YMM15|ZMM15)\\b";
-                case "XMM16":
-                case "YMM16":
-                case "ZMM16":
+                case Rn.XMM16:
+                case Rn.YMM16:
+                case Rn.ZMM16:
                     return "\\b(XMM16|YMM16|ZMM16)\\b";
-                case "XMM17":
-                case "YMM17":
-                case "ZMM17":
+                case Rn.XMM17:
+                case Rn.YMM17:
+                case Rn.ZMM17:
                     return "\\b(XMM17|YMM17|ZMM17)\\b";
-                case "XMM18":
-                case "YMM18":
-                case "ZMM18":
+                case Rn.XMM18:
+                case Rn.YMM18:
+                case Rn.ZMM18:
                     return "\\b(XMM18|YMM18|ZMM18)\\b";
-                case "XMM19":
-                case "YMM19":
-                case "ZMM19":
+                case Rn.XMM19:
+                case Rn.YMM19:
+                case Rn.ZMM19:
                     return "\\b(XMM19|YMM19|ZMM19)\\b";
-                case "XMM20":
-                case "YMM20":
-                case "ZMM20":
+                case Rn.XMM20:
+                case Rn.YMM20:
+                case Rn.ZMM20:
                     return "\\b(XMM20|YMM20|ZMM20)\\b";
-                case "XMM21":
-                case "YMM21":
-                case "ZMM21":
+                case Rn.XMM21:
+                case Rn.YMM21:
+                case Rn.ZMM21:
                     return "\\b(XMM21|YMM21|ZMM21)\\b";
-                case "XMM22":
-                case "YMM22":
-                case "ZMM22":
+                case Rn.XMM22:
+                case Rn.YMM22:
+                case Rn.ZMM22:
                     return "\\b(XMM22|YMM22|ZMM22)\\b";
-                case "XMM23":
-                case "YMM23":
-                case "ZMM23":
+                case Rn.XMM23:
+                case Rn.YMM23:
+                case Rn.ZMM23:
                     return "\\b(XMM23|YMM23|ZMM23)\\b";
-                case "XMM24":
-                case "YMM24":
-                case "ZMM24":
+                case Rn.XMM24:
+                case Rn.YMM24:
+                case Rn.ZMM24:
                     return "\\b(XMM24|YMM24|ZMM24)\\b";
-                case "XMM25":
-                case "YMM25":
-                case "ZMM25":
+                case Rn.XMM25:
+                case Rn.YMM25:
+                case Rn.ZMM25:
                     return "\\b(XMM25|YMM25|ZMM25)\\b";
-                case "XMM26":
-                case "YMM26":
-                case "ZMM26":
+                case Rn.XMM26:
+                case Rn.YMM26:
+                case Rn.ZMM26:
                     return "\\b(XMM26|YMM26|ZMM26)\\b";
-                case "XMM27":
-                case "YMM27":
-                case "ZMM27":
+                case Rn.XMM27:
+                case Rn.YMM27:
+                case Rn.ZMM27:
                     return "\\b(XMM27|YMM27|ZMM27)\\b";
-                case "XMM28":
-                case "YMM28":
-                case "ZMM28":
+                case Rn.XMM28:
+                case Rn.YMM28:
+                case Rn.ZMM28:
                     return "\\b(XMM28|YMM28|ZMM28)\\b";
-                case "XMM29":
-                case "YMM29":
-                case "ZMM29":
+                case Rn.XMM29:
+                case Rn.YMM29:
+                case Rn.ZMM29:
                     return "\\b(XMM29|YMM29|ZMM29)\\b";
-                case "XMM30":
-                case "YMM30":
-                case "ZMM30":
+                case Rn.XMM30:
+                case Rn.YMM30:
+                case Rn.ZMM30:
                     return "\\b(XMM30|YMM30|ZMM30)\\b";
-                case "XMM31":
-                case "YMM31":
-                case "ZMM31":
+                case Rn.XMM31:
+                case Rn.YMM31:
+                case Rn.ZMM31:
                     return "\\b(XMM31|YMM31|ZMM31)\\b";
 
-                default: return reg;
+                default: return reg.ToString();
             }
         }
 
@@ -754,9 +752,9 @@ namespace AsmTools
             }
         }
 
-        public static bool IsRegister(string keyword)
+        public static bool IsRegister(string keyword, bool strIsCapitals = false)
         {
-            return RegisterTools.ParseRn(keyword) != Rn.NOREG;
+            return RegisterTools.ParseRn(keyword, strIsCapitals) != Rn.NOREG;
         }
 
         public static RegisterType GetRegisterType(Rn rn)
@@ -1449,7 +1447,7 @@ namespace AsmTools
             return Rn.NOREG;
         }
 
-        #region Register Classifications
+#region Register Classifications
         public static bool IsOpmaskRegister(Rn rn)
         {
             switch (rn)
@@ -1736,6 +1734,6 @@ namespace AsmTools
                 default: return false;
             }
         }
-        #endregion
+#endregion
     }
 }

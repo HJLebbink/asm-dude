@@ -33,6 +33,7 @@ using Microsoft.VisualStudio.Text.Classification;
 using System.Runtime.InteropServices;
 using AsmDude.Tools;
 using System.Windows.Media;
+using AsmTools;
 
 namespace AsmDude.HighlightWord
 {
@@ -186,10 +187,11 @@ namespace AsmDude.HighlightWord
 
                     // Find the new spans
                     FindData findData;
-                    if (AsmTools.RegisterTools.IsRegister(this.NewWord))
+                    Rn reg = AsmTools.RegisterTools.ParseRn(this.NewWord);
+                    if (reg != Rn.NOREG) 
                     {
                         //Debug.WriteLine(string.Format("INFO: {0}:SynchronousUpdate. Register={1}", this.ToString(), currentWordStr));
-                        findData = new FindData(AsmTools.RegisterTools.GetRelatedRegister(this.NewWord), s)
+                        findData = new FindData(AsmTools.RegisterTools.GetRelatedRegister(reg), s)
                         {
                             FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions
                         };
