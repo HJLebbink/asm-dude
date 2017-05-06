@@ -256,11 +256,10 @@ namespace AsmTools {
                 case "PREFETCHWT1": return Arch.PREFETCHWT1;
 
                 case "UNDOC": return Arch.UNDOC;
+                default:
+                    Console.WriteLine("WARNING: parseArch: no arch for str " + str);
+                    return Arch.NONE;
             }
-            Console.WriteLine("WARNING: parseArch: no arch for str " + str);
-
-
-            return Arch.NONE;
         }
 
         public static string ArchDocumentation(Arch arch) {

@@ -34,11 +34,9 @@ using System.Text;
 
 namespace AsmDude.OptionsPage
 {
-
     [Guid(Guids.GuidOptionsPageAsmDude)]
     public class AsmDudeOptionsPage : UIElementDialogPage
     {
-
         private const bool logInfo = true;
 
         private AsmDudeOptionsPageUI _asmDudeOptionsPageUI;
@@ -250,6 +248,7 @@ namespace AsmDude.OptionsPage
             this._asmDudeOptionsPageUI.AsmSim_On = Settings.Default.AsmSim_On;
             this._asmDudeOptionsPageUI.AsmSim_64_Bits = Settings.Default.AsmSim_64_Bits;
             this._asmDudeOptionsPageUI.AsmSim_Number_Of_Steps = Settings.Default.AsmSim_Number_Of_Steps;
+            this._asmDudeOptionsPageUI.AsmSim_Z3_Timeout_MS = Settings.Default.AsmSim_Z3_Timeout_MS;
             this._asmDudeOptionsPageUI.AsmSim_Show_Syntax_Errors = Settings.Default.AsmSim_Show_Syntax_Errors;
             this._asmDudeOptionsPageUI.AsmSim_Decorate_Syntax_Errors = Settings.Default.AsmSim_Decorate_Syntax_Errors;
             this._asmDudeOptionsPageUI.AsmSim_Show_Usage_Of_Undefined = Settings.Default.AsmSim_Show_Usage_Of_Undefined;
@@ -830,6 +829,11 @@ namespace AsmDude.OptionsPage
             if (Settings.Default.AsmSim_Number_Of_Steps != this._asmDudeOptionsPageUI.AsmSim_Number_Of_Steps)
             {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_Number_Of_Steps=" + this._asmDudeOptionsPageUI.AsmSim_Number_Of_Steps);
+                changed = true;
+            }
+            if (Settings.Default.AsmSim_Z3_Timeout_MS != this._asmDudeOptionsPageUI.AsmSim_Z3_Timeout_MS)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_Z3_Timeout_MS=" + this._asmDudeOptionsPageUI.AsmSim_Z3_Timeout_MS);
                 changed = true;
             }
             if (Settings.Default.AsmSim_64_Bits != this._asmDudeOptionsPageUI.AsmSim_64_Bits)
@@ -1439,11 +1443,18 @@ namespace AsmDude.OptionsPage
             {
                 Settings.Default.AsmSim_On = this._asmDudeOptionsPageUI.AsmSim_On;
                 changed = true;
+                restartNeeded = true;
             }
             if (Settings.Default.AsmSim_Number_Of_Steps != this._asmDudeOptionsPageUI.AsmSim_Number_Of_Steps)
             {
                 Settings.Default.AsmSim_Number_Of_Steps = this._asmDudeOptionsPageUI.AsmSim_Number_Of_Steps;
                 changed = true;
+            }
+            if (Settings.Default.AsmSim_Z3_Timeout_MS != this._asmDudeOptionsPageUI.AsmSim_Z3_Timeout_MS)
+            {
+                Settings.Default.AsmSim_Z3_Timeout_MS = this._asmDudeOptionsPageUI.AsmSim_Z3_Timeout_MS;
+                changed = true;
+                restartNeeded = true;
             }
             if (Settings.Default.AsmSim_64_Bits != this._asmDudeOptionsPageUI.AsmSim_64_Bits)
             {

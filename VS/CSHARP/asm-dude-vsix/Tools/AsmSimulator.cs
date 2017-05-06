@@ -116,7 +116,8 @@ namespace AsmDude.Tools
                     */
                     { "unsat-core", "false" },    // enable generation of unsat cores
                     { "model", "false" },         // enable model generation
-                    { "proof", "false" }         // enable proof generation
+                    { "proof", "false" },         // enable proof generation
+                    { "timeout", Settings.Default.AsmSim_Z3_Timeout_MS.ToString()}
                 };
                 this.Tools = new AsmSimZ3.Mnemonics_ng.Tools(new Context(settings));
                 if (Settings.Default.AsmSim_64_Bits)

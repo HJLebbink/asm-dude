@@ -143,8 +143,12 @@
                         <StackPanel>
                             <CheckBox x:Name="AsmSim_On_UI" Content="Enable assembly simulator" ToolTip="TODO" Margin="0,4,0,2" />
                             <Grid>
-                                <xctk:IntegerUpDown x:Name="AsmSim_Number_Of_Steps_UI" DefaultValue="6" HorizontalAlignment="Left" Width="42"/>
-                                <Label Content="Number of steps the simulator considers" ToolTip="The number of steps (lines) that the simulator looks in the past to determine register, flags and memory state." Margin="42,0,0,0"/>
+                                <xctk:IntegerUpDown x:Name="AsmSim_Number_Of_Steps_UI" DefaultValue="6" HorizontalAlignment="Left" Width="50"/>
+                                <Label Content="Number of steps the simulator considers" ToolTip="The number of steps (lines) that the simulator looks in the past to determine register, flags and memory state." Margin="50,0,0,0"/>
+                            </Grid>
+                            <Grid>
+                                <xctk:IntegerUpDown x:Name="AsmSim_Z3_Timeout_MS_UI" DefaultValue="100" HorizontalAlignment="Left" Width="50"/>
+                                <Label Content="Timeout for Z3 in milliseconds" ToolTip="The number of milliseconds the Z3 theorem prover may spend on determining one single bit of a register. 200 is sensible: it would need (worst case) 12.8 sec to determine a 64-bit register." Margin="50,0,0,0" Grid.ColumnSpan="2"/>
                             </Grid>
                             <CheckBox x:Name="AsmSim_64_Bits_UI" Content="Use 64-bits mode (32-bits mode otherwise)" ToolTip="Use 64-bits mode (32-bits mode otherwise)" Margin="0,2,0,2" />
                             <CheckBox x:Name="AsmSim_Shown_Syntax_Errors_UI" Content="Show syntax errors in error list" ToolTip="Show syntax errors found while parsing in error list" Margin="0,2,0,2" />
