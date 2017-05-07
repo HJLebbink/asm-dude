@@ -164,7 +164,7 @@ namespace AsmDude.Tools
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "ERROR: AsmDudeToolsStatic:openDisassembler {0}", e.Message));
+                AsmDudeToolsStatic.Output_ERROR(string.Format("AsmDudeToolsStatic:openDisassembler {0}", e.Message));
             }
         }
 
@@ -316,7 +316,7 @@ namespace AsmDude.Tools
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output("WARNING: bitmapFromUri: could not read icon from uri " + bitmapUri.ToString() + "; " + e.Message);
+                AsmDudeToolsStatic.Output_WARNING("bitmapFromUri: could not read icon from uri " + bitmapUri.ToString() + "; " + e.Message);
             }
             return bitmap;
         }

@@ -110,7 +110,7 @@ namespace AsmDude.SignatureHelp {
                 }
                 AsmDudeToolsStatic.Print_Speed_Warning(time1, "Signature Help");
             } catch (Exception e) {
-                AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:AugmentSignatureHelpSession; e={1}", ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:AugmentSignatureHelpSession; e={1}", ToString(), e.ToString()));
             }
         }
 

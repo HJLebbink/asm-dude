@@ -29,6 +29,77 @@ namespace AsmDude.Tools
         public event EventHandler<CustomEventArgs> Simulate_Done_Event;
         public bool Is_Enabled { get; set; }
 
+        /// <summary>Factory return singleton</summary>
+        public static AsmSimulator GetOrCreate_AsmSimulator(
+            ITextBuffer buffer,
+            IBufferTagAggregatorFactoryService aggregatorFactory)
+        {
+            Func<AsmSimulator> sc = delegate ()
+            {
+                return new AsmSimulator(buffer, aggregatorFactory);
+            };
+            return buffer.Properties.GetOrCreateSingletonProperty(sc);
+        }
+
+        private AsmSimulator(ITextBuffer buffer, IBufferTagAggregatorFactoryService aggregatorFactory)
+        {
+            this._buffer = buffer;
+            this._aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, aggregatorFactory);
+
+            if (Settings.Default.AsmSim_On)
+            {
+                AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: swithed on");
+                this._cflow = new CFlow(this._buffer.CurrentSnapshot.GetText());
+                this._cached_States_After = new Dictionary<int, AsmSimZ3.Mnemonics_ng.State2>();
+                this._cached_States_Before = new Dictionary<int, AsmSimZ3.Mnemonics_ng.State2>();
+                this.Is_Enabled = true;
+                this._scheduled_After = new HashSet<int>();
+                this._scheduled_Before = new HashSet<int>();
+
+                Dictionary<string, string> settings = new Dictionary<string, string> {
+                    /*
+                    Legal parameters are:
+                        auto_config(bool)(default: true)
+                        debug_ref_count(bool)(default: false)
+                        dump_models(bool)(default: false)
+                        model(bool)(default: true)
+                        model_validate(bool)(default: false)
+                        proof(bool)(default: false)
+                        rlimit(unsigned int)(default: 4294967295)
+                        smtlib2_compliant(bool)(default: false)
+                        timeout(unsigned int)(default: 4294967295)
+                        trace(bool)(default: false)
+                        trace_file_name(string)(default: z3.log)
+                        type_check(bool)(default: true)
+                        unsat_core(bool)(default: false)
+                        well_sorted_check(bool)(default: false)
+                    */
+                    { "unsat-core", "false" },    // enable generation of unsat cores
+                    { "model", "false" },         // enable model generation
+                    { "proof", "false" },         // enable proof generation
+                    { "timeout", Settings.Default.AsmSim_Z3_Timeout_MS.ToString()}
+                };
+                this.Tools = new AsmSimZ3.Mnemonics_ng.Tools(new Context(settings));
+                if (Settings.Default.AsmSim_64_Bits)
+                {
+                    this.Tools.Parameters.mode_64bit = true;
+                    this.Tools.Parameters.mode_32bit = false;
+                    this.Tools.Parameters.mode_16bit = false;
+                }
+                else
+                {
+                    this.Tools.Parameters.mode_64bit = false;
+                    this.Tools.Parameters.mode_32bit = true;
+                    this.Tools.Parameters.mode_16bit = false;
+                }
+                this._buffer.Changed += this.Buffer_Changed;
+            }
+            else
+            {
+                AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: swithed off");
+            }
+        }
+
         public static (bool IsImplemented, Mnemonic Mnemonic, string Message) GetSyntaxInfo(string line, AsmSimZ3.Mnemonics_ng.Tools tools)
         {
             var dummyKeys = ("", "", "", "");
@@ -100,65 +171,6 @@ namespace AsmDude.Tools
             return message;
         }
 
-        private AsmSimulator(ITextBuffer buffer, IBufferTagAggregatorFactoryService aggregatorFactory)
-        {
-            this._buffer = buffer;
-            this._aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, aggregatorFactory);
-
-            if (Settings.Default.AsmSim_On)
-            {
-                AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: swithed on");
-                this._cflow = new CFlow(this._buffer.CurrentSnapshot.GetText());
-                this._cached_States_After = new Dictionary<int, AsmSimZ3.Mnemonics_ng.State2>();
-                this._cached_States_Before = new Dictionary<int, AsmSimZ3.Mnemonics_ng.State2>();
-                this.Is_Enabled = true;
-                this._scheduled_After = new HashSet<int>();
-                this._scheduled_Before = new HashSet<int>();
-
-                Dictionary<string, string> settings = new Dictionary<string, string> {
-                    /*
-                    Legal parameters are:
-                        auto_config(bool)(default: true)
-                        debug_ref_count(bool)(default: false)
-                        dump_models(bool)(default: false)
-                        model(bool)(default: true)
-                        model_validate(bool)(default: false)
-                        proof(bool)(default: false)
-                        rlimit(unsigned int)(default: 4294967295)
-                        smtlib2_compliant(bool)(default: false)
-                        timeout(unsigned int)(default: 4294967295)
-                        trace(bool)(default: false)
-                        trace_file_name(string)(default: z3.log)
-                        type_check(bool)(default: true)
-                        unsat_core(bool)(default: false)
-                        well_sorted_check(bool)(default: false)
-                    */
-                    { "unsat-core", "false" },    // enable generation of unsat cores
-                    { "model", "false" },         // enable model generation
-                    { "proof", "false" },         // enable proof generation
-                    { "timeout", Settings.Default.AsmSim_Z3_Timeout_MS.ToString()}
-                };
-                this.Tools = new AsmSimZ3.Mnemonics_ng.Tools(new Context(settings));
-                if (Settings.Default.AsmSim_64_Bits)
-                {
-                    this.Tools.Parameters.mode_64bit = true;
-                    this.Tools.Parameters.mode_32bit = false;
-                    this.Tools.Parameters.mode_16bit = false;
-                }
-                else
-                {
-                    this.Tools.Parameters.mode_64bit = false;
-                    this.Tools.Parameters.mode_32bit = true;
-                    this.Tools.Parameters.mode_16bit = false;
-                }
-                this._buffer.Changed += this.Buffer_Changed;
-            }
-            else
-            {
-                AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: swithed off");
-            }
-        }
-
         private void Buffer_Changed(object sender, TextContentChangedEventArgs e)
         {
             AsmDudeToolsStatic.Output_INFO("AsmSimulation:Buffer_Changed");
@@ -166,33 +178,16 @@ namespace AsmDude.Tools
             bool nonSpaceAdded = false;
             foreach (var c in e.Changes)
             {
-                if (c.NewText != " ")
-                {
-                    nonSpaceAdded = true;
-                }
+                if (c.NewText != " ") nonSpaceAdded = true;
             }
             if (!nonSpaceAdded) return;
 
             string sourceCode = this._buffer.CurrentSnapshot.GetText();
-            //IState_R state = this._runner.ExecuteTree_PseudoBackward(sourceCode, lineNumber, 3);
             if (this._cflow.Update(sourceCode))
             {
                 this._cached_States_After.Clear();
-                //int maxStepBack = 6;
-                //this._runner.ExecuteTree_Backward(this._cflow, this._cflow.NLines - 1, maxStepBack);
+                this._cached_States_Before.Clear();
             }
-        }
-
-        /// <summary>Factory return singleton</summary>
-        public static AsmSimulator GetOrCreate_AsmSimulator(
-            ITextBuffer buffer,
-            IBufferTagAggregatorFactoryService aggregatorFactory)
-        {
-            Func<AsmSimulator> sc = delegate ()
-            {
-                return new AsmSimulator(buffer, aggregatorFactory);
-            };
-            return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
 
         public void UpdateState(int lineNumber)
@@ -212,7 +207,15 @@ namespace AsmDude.Tools
         {
             if (state == null) return "";
             Tv5[] reg = state.GetTv5Array(name);
-            return string.Format("{0} = {1}", ToolsZ3.ToStringBin(reg), ToolsZ3.ToStringHex(reg));
+
+            if (false)
+            {
+                return string.Format("{0} = {1}\n{2}", ToolsZ3.ToStringBin(reg), ToolsZ3.ToStringHex(reg), state.ToStringConstraints("") + state.ToStringRegs("") + state.ToStringFlags(""));
+            }
+            else
+            {
+                return string.Format("{0} = {1}", ToolsZ3.ToStringBin(reg), ToolsZ3.ToStringHex(reg));
+            }
         }
 
         public bool HasRegisterValue(Rn name, State2 state)

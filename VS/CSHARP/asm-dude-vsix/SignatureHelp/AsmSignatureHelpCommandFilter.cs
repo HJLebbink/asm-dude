@@ -87,7 +87,7 @@ namespace AsmDude.SignatureHelp {
                     }
                 }
             } catch (Exception e) {
-                AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:Exec; e={1}", ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Exec; e={1}", ToString(), e.ToString()));
             }
             return this._nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
         }

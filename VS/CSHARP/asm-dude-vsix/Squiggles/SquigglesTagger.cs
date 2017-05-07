@@ -430,7 +430,24 @@ namespace AsmDude.Squiggles
                             }
                             if (Settings.Default.AsmSim_Show_Usage_Of_Undefined)
                             {
-                                //TODO
+                                foreach (var tup in this._semanticErrors.SemanticErrors)
+                                {
+                                    string message = tup.Message;
+                                    int lineNumber = tup.LineNumber;
+                                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
+
+                                    ErrorTask errorTask = new ErrorTask()
+                                    {
+                                        SubcategoryIndex = (int)AsmErrorEnum.SYNTAX_ERROR,
+                                        Line = lineNumber,
+                                        Column = 0,// Get_Keyword_Begin_End(lineContent, mnemonic.ToString()),
+                                        Text = message,
+                                        ErrorCategory = TaskErrorCategory.Error,
+                                        Document = AsmDudeToolsStatic.GetFileName(this._sourceBuffer)
+                                    };
+                                    errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
+                                    errorTasks.Add(errorTask);
+                                }
                             }
                             if (newErrorsAdded)
                             {

@@ -214,7 +214,7 @@ namespace AsmDude.HighlightWord
                     }
                     catch (Exception e2)
                     {
-                        AsmDudeToolsStatic.Output(string.Format("WARNING: could not highlight string \"{0}\"; e={1}", findData.SearchString, e2.InnerException.Message));
+                        AsmDudeToolsStatic.Output_WARNING(string.Format("could not highlight string \"{0}\"; e={1}", findData.SearchString, e2.InnerException.Message));
                     }
                     SynchronousUpdate(this.RequestedPoint, new NormalizedSnapshotSpanCollection(wordSpans), this.NewWord, sp);
                 }
@@ -227,7 +227,7 @@ namespace AsmDude.HighlightWord
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:UpdateWordAdornments; e={1}", ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:UpdateWordAdornments; e={1}", ToString(), e.ToString()));
             }
         }
 

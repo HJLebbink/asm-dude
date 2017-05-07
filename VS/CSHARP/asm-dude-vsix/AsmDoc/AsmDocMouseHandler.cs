@@ -285,7 +285,7 @@ namespace AsmDude.AsmDoc
                 this._mouseDownAnchorPoint = null;
             } catch (Exception ex)
             {
-                AsmDudeToolsStatic.Output(string.Format("ERROR:{0} PreprocessMouseUp; e={1}", ToString(), ex.ToString()));
+                AsmDudeToolsStatic.Output_ERROR(string.Format("{0} PreprocessMouseUp; e={1}", ToString(), ex.ToString()));
             }
         }
 
@@ -420,7 +420,7 @@ namespace AsmDude.AsmDoc
                     dte2.ItemOperations.Navigate(url, EnvDTE.vsNavigateOptions.vsNavigateOptionsNewWindow);
                 } catch (Exception e)
                 {
-                    AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:openFile; exception={1}", ToString(), e));
+                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:openFile; exception={1}", ToString(), e));
                     return 2;
                 }
                 return 0;
