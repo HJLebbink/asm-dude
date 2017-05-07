@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using AsmSimZ3.Mnemonics_ng;
 using AsmTools;
 using Microsoft.VisualStudio.Text;
 using System;
@@ -28,13 +29,13 @@ using System.Threading;
 
 namespace AsmDude.Tools
 {
-    internal sealed class SyntaxErrorList
+    internal sealed class SemanticErrorAnalysis
     {
         #region Private Fields
-        private readonly ITextBuffer _buffer;
+        private readonly ITextBuffer _sourceBuffer;
+        private readonly AsmSimulator _asmSimulator;
         private readonly AsmSimZ3.Mnemonics_ng.Tools _tools;
-        private readonly IDictionary<int, (Mnemonic Mnemonic, string Message)> _syntaxErrors;
-        private readonly ISet<int> _isNotImplemented;
+        private readonly IDictionary<int, string> _semanticErrors;
 
         private object _updateLock = new object();
 
@@ -44,58 +45,60 @@ namespace AsmDude.Tools
 
         #endregion Private Fields
 
-        public SyntaxErrorList(ITextBuffer buffer, AsmSimZ3.Mnemonics_ng.Tools tools)
+        public SemanticErrorAnalysis(ITextBuffer buffer, AsmSimulator asmSimulator, AsmSimZ3.Mnemonics_ng.Tools tools)
         {
-            this._buffer = buffer;
+            this._sourceBuffer = buffer;
+            this._asmSimulator = asmSimulator;
             this._tools = tools;
-            this._syntaxErrors = new Dictionary<int, (Mnemonic Mnemonic, string Message)>();
-            this._isNotImplemented = new HashSet<int>();
+            this._semanticErrors = new Dictionary<int, string>();
 
             this._busy = false;
             this._waiting = false;
             this._scheduled = false;
 
-            this._buffer.ChangedLowPriority += this.Buffer_Changed;
+            this._sourceBuffer.ChangedLowPriority += this.Buffer_Changed;
             this.Reset_Delayed();
         }
 
-        public IEnumerable<(int LineNumber, Mnemonic Mnemonic, string Message)> SyntaxErrors
+        public IEnumerable<(int LineNumber, string Message)> SemanticErrors
         {
             get
             {
-                foreach (var x in this._syntaxErrors)
+                foreach (var x in this._semanticErrors)
                 {
-                    yield return (x.Key, x.Value.Mnemonic, x.Value.Message);
+                    yield return (x.Key, x.Value);
                 }
             }
         }
-        public bool IsImplemented(int lineNumber)
+
+        public State2 GetStateCache(int lineNumber)
         {
-            return !this._isNotImplemented.Contains(lineNumber);
+            return this._asmSimulator.Get_State_After(lineNumber, false);
         }
-        public bool HasSyntaxError(int lineNumber)
+
+        public bool HasSemanticError(int lineNumber)
         {
-            return this._syntaxErrors.ContainsKey(lineNumber);
+            return this._semanticErrors.ContainsKey(lineNumber);
         }
-        public string GetSyntaxError(int lineNumber)
+        public string GetSemanticError(int lineNumber)
         {
-            return this._syntaxErrors[lineNumber].Message;
+            return this._semanticErrors.TryGetValue(lineNumber, out string message) ? message : "";
         }
         public void Reset_Delayed()
         {
             if (this._waiting)
             {
-                AsmDudeToolsStatic.Output_INFO("SyntaxErrorList:Reset_Delayed: already waiting for execution. Skipping this call.");
+                AsmDudeToolsStatic.Output_INFO("SemanticErrorAnalysis:Reset_Delayed: already waiting for execution. Skipping this call.");
                 return;
             }
             if (this._busy)
             {
-                AsmDudeToolsStatic.Output_INFO("SyntaxErrorList:Reset_Delayed: busy; scheduling this call.");
+                AsmDudeToolsStatic.Output_INFO("SemanticErrorAnalysis:Reset_Delayed: busy; scheduling this call.");
                 this._scheduled = true;
             }
             else
             {
-                AsmDudeToolsStatic.Output_INFO("SyntaxErrorList:Reset_Delayed: going to execute this call.");
+                AsmDudeToolsStatic.Output_INFO("SemanticErrorAnalysis:Reset_Delayed: going to execute this call.");
                 AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Reset);
             }
         }
@@ -120,24 +123,26 @@ namespace AsmDude.Tools
             {
                 DateTime time1 = DateTime.Now;
 
-                this._syntaxErrors.Clear();
-                this._isNotImplemented.Clear();
+                this._semanticErrors.Clear();
                 this.Add_All();
 
-                AsmDudeToolsStatic.Print_Speed_Warning(time1, "SyntaxErrorList");
-                double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
-                if (elapsedSec > AsmDudePackage.slowShutdownThresholdSec)
+                AsmDudeToolsStatic.Print_Speed_Warning(time1, "SemanticErrorAnalysis");
+                if (false)
                 {
-#                   if DEBUG
-                    AsmDudeToolsStatic.Output_WARNING("SyntaxErrorList: Reset: disabled label analysis had I been in Release mode");
-#                   else
-                    Disable();
-#                   endif
+                    double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
+                    if (elapsedSec > AsmDudePackage.slowShutdownThresholdSec)
+                    {
+                        #if DEBUG
+                        AsmDudeToolsStatic.Output_WARNING("SemanticErrorAnalysis: Reset: disabled label analysis had I been in Release mode");
+                        #else
+                        Disable();
+                        #endif
+                    }
                 }
             }
             #endregion Payload
 
-            this.On_Reset_Done_Event(new CustomEventArgs("Resetting SyntaxErrorList is finished"));
+            this.On_Reset_Done_Event(new CustomEventArgs("Resetting SemanticErrorAnalysis is finished"));
 
             this._busy = false;
             if (this._scheduled)
@@ -167,26 +172,19 @@ namespace AsmDude.Tools
 
         private void Add_All()
         {
-            ITextSnapshot snapShot = this._buffer.CurrentSnapshot;
+            ITextSnapshot snapShot = this._sourceBuffer.CurrentSnapshot;
             for (int lineNumber = 0; lineNumber < snapShot.LineCount; ++lineNumber)
             {
-                string line = snapShot.GetLineFromLineNumber(lineNumber).GetText().Trim();
-                var info = AsmSimulator.GetInfo(line, this._tools);
+                State2 state = this._asmSimulator.Create_State_After(lineNumber);
 
-                if (info.IsImplemented)
+                string line = snapShot.GetLineFromLineNumber(lineNumber).GetText().Trim();
+                string message = AsmSimulator.Get_Undefined_Warnings(line, this._asmSimulator.Tools, state);
+                if (message.Length > 0)
                 {
-                    if (info.Message != null)
-                    {
-                        this._syntaxErrors.Add(lineNumber, (info.Mnemonic, info.Message));
-                    }
-                }
-                else
-                {
-                    this._isNotImplemented.Add(lineNumber);
+                    this._semanticErrors.Add(lineNumber, message);
                 }
             }
         }
-
         #endregion
     }
 }

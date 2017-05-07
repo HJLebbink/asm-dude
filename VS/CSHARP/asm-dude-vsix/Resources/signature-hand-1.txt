@@ -71,14 +71,14 @@ GENERAL	JZ	Jump if zero (ZF=1) (JE=JZ)	Jcc.html
 GENERAL	JMP	Unconditional Jump	JMP.html
 ;====================================================================
 
-GENERAL	RCR	Rotate Carry Right	RCL_RCR_ROL_ROR.html
-GENERAL	RCL	Rotate Carry Left	RCL_RCR_ROL_ROR.html
-GENERAL	ROR	Rotate Right	RCL_RCR_ROL_ROR.html
-GENERAL	ROL	Rotate Left	RCL_RCR_ROL_ROR.html
-GENERAL	SAR	Shift Arithmetic Right	SAL_SAR_SHL_SHR.html
-GENERAL	SHL	Shift Logical Left	SAL_SAR_SHL_SHR.html
-GENERAL	SHR	Shift Logical Right	SAL_SAR_SHL_SHR.html
-GENERAL	SAL	Shift Arithmetic Left	SAL_SAR_SHL_SHR.html
+GENERAL	RCR	Rotate Carry Right. Rotate first operand carry right number of times as given by the second operand.	RCL_RCR_ROL_ROR.html
+GENERAL	RCL	Rotate Carry Left. Rotate first operand carry left number of times as given by the second operand.	RCL_RCR_ROL_ROR.html
+GENERAL	ROR	Rotate Right. Rotate first operand right number of times as given by the second operand.	RCL_RCR_ROL_ROR.html
+GENERAL	ROL	Rotate Left. Rotate first operand left number of times as given by the second operand.	RCL_RCR_ROL_ROR.html
+GENERAL	SAR	Shift Arithmetic Right. Shift first operand arithmethic right number of times as given by the second operand.	SAL_SAR_SHL_SHR.html
+GENERAL	SHL	Shift Logical Left. Shift first operand logical left number of times as given by the second operand.	SAL_SAR_SHL_SHR.html
+GENERAL	SHR	Shift Logical Right. Shift first operand logical right number of times as given by the second operand.	SAL_SAR_SHL_SHR.html
+GENERAL	SAL	Shift Arithmetic Left. Shift first operand arithmethic left number of times as given by the second operand.	SAL_SAR_SHL_SHR.html
 GENERAL	SARX	Shift Arithmetic Right Without Affecting Flags	SARX_SHLX_SHRX.html
 GENERAL	SHLX	Shift Logical Left Without Affecting Flags	SARX_SHLX_SHRX.html
 GENERAL	SHRX	Shift Logical Right Without Affecting Flags	SARX_SHLX_SHRX.html

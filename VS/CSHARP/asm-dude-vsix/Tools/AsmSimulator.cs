@@ -29,7 +29,7 @@ namespace AsmDude.Tools
         public event EventHandler<CustomEventArgs> Simulate_Done_Event;
         public bool Is_Enabled { get; set; }
 
-        public static (bool IsImplemented, Mnemonic Mnemonic, string Message) GetInfo(string line, AsmSimZ3.Mnemonics_ng.Tools tools)
+        public static (bool IsImplemented, Mnemonic Mnemonic, string Message) GetSyntaxInfo(string line, AsmSimZ3.Mnemonics_ng.Tools tools)
         {
             var dummyKeys = ("", "", "", "");
             var content = AsmSourceTools.ParseLine(line);
@@ -44,6 +44,25 @@ namespace AsmDude.Tools
             {
                 return (opcodeBase.IsHalted) 
                     ? (IsImplemented: true, Mnemonic: content.Mnemonic, Message: opcodeBase.SyntaxError) 
+                    : (IsImplemented: true, Mnemonic: content.Mnemonic, Message: null);
+            }
+        }
+
+        public static (bool IsImplemented, Mnemonic Mnemonic, string Message) GetSemanticInfo(string line, AsmSimZ3.Mnemonics_ng.Tools tools)
+        {
+            var dummyKeys = ("", "", "", "");
+            var content = AsmSourceTools.ParseLine(line);
+            var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, tools);
+            if (opcodeBase == null) return (IsImplemented: false, Mnemonic: Mnemonic.NONE, Message: null);
+
+            if (opcodeBase.GetType() == typeof(NotImplemented))
+            {
+                return (IsImplemented: false, Mnemonic: content.Mnemonic, Message: null);
+            }
+            else
+            {
+                return (opcodeBase.IsHalted)
+                    ? (IsImplemented: true, Mnemonic: content.Mnemonic, Message: opcodeBase.SyntaxError)
                     : (IsImplemented: true, Mnemonic: content.Mnemonic, Message: null);
             }
         }
@@ -198,7 +217,12 @@ namespace AsmDude.Tools
 
         public bool HasRegisterValue(Rn name, State2 state)
         {
-            return true;
+            Tv5[] content = state.GetTv5Array(name, true);
+            foreach (Tv5 tv in content)
+            {
+                if ((tv == Tv5.ONE) || (tv == Tv5.ZERO) || (tv == Tv5.UNDEFINED)) return true;
+            }
+            return false;
         }
 
         /// <summary>Return the state of the provided lineNumber, if the state is not computed yet, 
@@ -259,6 +283,21 @@ namespace AsmDude.Tools
                 }
             }
             return null;
+        }
+
+        public State2 Create_State_After(int lineNumber)
+        {
+            if (this._cached_States_After.TryGetValue(lineNumber, out State2 state))
+            {
+                return state;
+            }
+            this._scheduled_Before.Remove(lineNumber);
+            this.Tools.StateConfig = Runner.GetUsage_StateConfig(this._cflow, 0, this._cflow.LastLineNumber, this.Tools);
+            AsmSimZ3.Mnemonics_ng.ExecutionTree tree = Runner.Construct_ExecutionTree_Backward(this._cflow, lineNumber, 4, this.Tools);
+            this._cached_States_After.Remove(lineNumber);
+            State2 result = tree.EndState;
+            this._cached_States_After.Add(lineNumber, result);
+            return result;
         }
 
         private void Simulate_Before(int lineNumber)

@@ -50,7 +50,8 @@ namespace AsmDude.Squiggles
         private readonly ILabelGraph _labelGraph;
         private readonly AsmSimulator _asmSimulator;
         private readonly Brush _foreground;
-        private readonly SyntaxErrorList _syntaxErrorList;
+        private readonly SyntaxErrorAnalysis _syntaxErrors;
+        private readonly SemanticErrorAnalysis _semanticErrors;
         private object _updateLock = new object();
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
         #endregion Private Fields
@@ -68,13 +69,17 @@ namespace AsmDude.Squiggles
             this._labelGraph = labelGraph;
             this._asmSimulator = asmSimulator;
             this._foreground = AsmDudeToolsStatic.GetFontColor();
-            this._syntaxErrorList = new SyntaxErrorList(buffer, asmSimulator.Tools);
+            this._syntaxErrors = new SyntaxErrorAnalysis(buffer, asmSimulator.Tools);
+            this._semanticErrors = new SemanticErrorAnalysis(buffer, asmSimulator, asmSimulator.Tools);
 
             this._labelGraph.Reset_Done_Event += this.Handle_Done_Event_LabelGraph_Reset;
             this._labelGraph.Reset_Delayed();
 
-            this._syntaxErrorList.Reset_Done_Event += this.Handle_Done_Event_SyntaxErrorList_Reset;
-            this._syntaxErrorList.Reset_Delayed();
+            this._syntaxErrors.Reset_Done_Event += this.Handle_Done_Event_SyntaxErrors_Reset;
+            this._syntaxErrors.Reset_Delayed();
+
+            this._semanticErrors.Reset_Done_Event += this.Handle_Done_Event_SemanticErrors_Reset;
+            this._semanticErrors.Reset_Delayed();
 
             this._asmSimulator.Simulate_Done_Event += this.Handle_Simulate_Done_Event;
         }
@@ -143,13 +148,6 @@ namespace AsmDude.Squiggles
                                         else
                                         {
                                             var toolTipContent = Undefined_Label_Tool_Tip_Content();
-
-                                            //PredefinedErrorTypeNames.Warning is green
-                                            //PredefinedErrorTypeNames.SyntaxError is red
-                                            //PredefinedErrorTypeNames.CompilerError is blue
-                                            //PredefinedErrorTypeNames.Suggestion is NOTHING
-                                            //PredefinedErrorTypeNames.OtherError is purple
-
                                             yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.SyntaxError, toolTipContent));
                                         }
                                     }
@@ -216,36 +214,28 @@ namespace AsmDude.Squiggles
                         }
                     case AsmTokenType.Mnemonic:
                         {
-                            if (Decorate_Syntax_Errors || Decorate_Unimplemented || Decorate_Usage_Of_Undefined)
+                            if (Decorate_Syntax_Errors || Decorate_Unimplemented)
                             {
-                                if (this._syntaxErrorList.IsImplemented(lineNumber))
+                                if (this._syntaxErrors.IsImplemented(lineNumber))
                                 {
-                                    if (Decorate_Syntax_Errors && this._syntaxErrorList.HasSyntaxError(lineNumber))
+                                    if (Decorate_Syntax_Errors && this._syntaxErrors.HasSyntaxError(lineNumber))
                                     {
-                                        string message = AsmSourceTools.Linewrap("Syntax Error: " + this._syntaxErrorList.GetSyntaxError(lineNumber), AsmDudePackage.maxNumberOfCharsInToolTips);
+                                        string message = AsmSourceTools.Linewrap("Syntax Error: " + this._syntaxErrors.GetSyntaxError(lineNumber), AsmDudePackage.maxNumberOfCharsInToolTips);
                                         yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.SyntaxError, message));
                                     }
-                                } else
-                                {
-                                    if (Decorate_Unimplemented)
-                                    {
-                                        string message = AsmSourceTools.Linewrap("Instruction " + tagSpan.GetText() + " is not (yet) supported by the simulator.", AsmDudePackage.maxNumberOfCharsInToolTips);
-                                        yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.CompilerError, message));
-                                    }
                                 }
-                                if (Decorate_Usage_Of_Undefined)
+                                else if (Decorate_Unimplemented)
                                 {
-                                    State2 state = this._asmSimulator.Get_State_Before(lineNumber, false);
-                                    if (state != null)
-                                    {
-                                        string line = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().Trim();
-                                        string message = AsmSimulator.Get_Undefined_Warnings(line, this._asmSimulator.Tools, state);
-                                        if (message.Length > 0)
-                                        {
-                                            message = AsmSourceTools.Linewrap(message, AsmDudePackage.maxNumberOfCharsInToolTips);
-                                            yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.OtherError, message));
-                                        }
-                                    }
+                                    string message = AsmSourceTools.Linewrap("Instruction " + tagSpan.GetText() + " is not (yet) supported by the simulator.", AsmDudePackage.maxNumberOfCharsInToolTips);
+                                    yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.CompilerError, message));
+                                }
+                            }
+                            if (Decorate_Usage_Of_Undefined)
+                            {
+                                if (this._semanticErrors.HasSemanticError(lineNumber))
+                                {
+                                    string message = AsmSourceTools.Linewrap("Semantic Error: " + this._semanticErrors.GetSemanticError(lineNumber), AsmDudePackage.maxNumberOfCharsInToolTips);
+                                    yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.OtherError, message));
                                 }
                             }
                             break;
@@ -365,17 +355,24 @@ namespace AsmDude.Squiggles
             this.Update_Error_Tasks_Labels_Async();
         }
 
-        private void Handle_Done_Event_SyntaxErrorList_Reset(object sender, CustomEventArgs e)
+        private void Handle_Done_Event_SyntaxErrors_Reset(object sender, CustomEventArgs e)
         {
-            //AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handle_Done_Event_SyntaxErrorList_Reset received an event from sender ");
+            //AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handle_Done_Event_SyntaxErrors_Reset received an event from sender ");
             this.Update_Squiggles_Tasks_Async();
             this.Update_Error_Tasks_AsmSim_Async();
+        }
+
+        private void Handle_Done_Event_SemanticErrors_Reset(object sender, CustomEventArgs e)
+        {
+            AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handle_Done_Event_SemanticErrors_Reset received an event from sender ");
+            this.Update_Squiggles_Tasks_Async();
+            //this.Update_Error_Tasks_AsmSim_Async();
         }
 
         private void Handle_Simulate_Done_Event(object sender, CustomEventArgs e)
         {
             //AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handle_Simulate_Done_Event received an event "+ e.Message);
-            Update_Squiggles_Tasks_Async();
+            this.Update_Squiggles_Tasks_Async();
         }
 
         #endregion
@@ -411,7 +408,7 @@ namespace AsmDude.Squiggles
 
                             if (Settings.Default.AsmSim_Show_Syntax_Errors)
                             {
-                                foreach (var tup in this._syntaxErrorList.SyntaxErrors)
+                                foreach (var tup in this._syntaxErrors.SyntaxErrors)
                                 {
                                     string message = tup.Message;
                                     Mnemonic mnemonic = tup.Mnemonic;
