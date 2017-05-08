@@ -155,6 +155,8 @@
                             <CheckBox x:Name="AsmSim_Decorate_Syntax_Errors_UI" Content="Decorate syntax errors" ToolTip="Decorate syntax errors found while parsing" Margin="0,2,0,2" />
                             <CheckBox x:Name="AsmSim_Show_Usage_Of_Undefined_UI" Content="Show usage of undefined values in error list" ToolTip="Show usage of undefined values in error list" Margin="0,2,0,2" />
                             <CheckBox x:Name="AsmSim_Decorate_Usage_Of_Undefined_UI" Content="Decorate usage of undefined values" ToolTip="Decorate usage of undefined values" Margin="0,2,0,2" />
+                            <CheckBox x:Name="AsmSim_Show_Redundant_Instructions_UI" Content="Show redundant instructions in error list" ToolTip="Show redundant instructions in error list" Margin="0,2,0,2" />
+                            <CheckBox x:Name="AsmSim_Decorate_Redundant_Instructions_UI" Content="Decorate redundant instructions" ToolTip="Decorate redundant instructions" Margin="0,2,0,2" />
                             <CheckBox x:Name="AsmSim_Decorate_Registers_UI" Content="Decorate registers with known values" ToolTip="Decorate registers with known values" Margin="0,2,0,2" />
                             <CheckBox x:Name="AsmSim_Use_In_Code_Completion_UI" Content="Use known register values in code completions" ToolTip="Use known register values in code completions" Margin="0,2,0,2" />
                             <CheckBox x:Name="AsmSim_Decorate_Unimplemented_UI" Content="Decorate instructions that are not (yet) implemented" ToolTip="Decorate instructions that are not (yet) implemented" Margin="0,2,0,4" />

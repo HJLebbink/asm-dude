@@ -50,8 +50,8 @@ namespace AsmDude.Squiggles
         private readonly ILabelGraph _labelGraph;
         private readonly AsmSimulator _asmSimulator;
         private readonly Brush _foreground;
-        private readonly SyntaxErrorAnalysis _syntaxErrors;
-        private readonly SemanticErrorAnalysis _semanticErrors;
+        private readonly SyntaxAnalysis _syntaxAnalysis;
+        private readonly SemanticAnalysis _semanticAnalysis;
         private object _updateLock = new object();
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
         #endregion Private Fields
@@ -78,15 +78,13 @@ namespace AsmDude.Squiggles
             this._asmSimulator = asmSimulator;
             if (this._asmSimulator.Is_Enabled)
             {
-                this._syntaxErrors = new SyntaxErrorAnalysis(buffer, asmSimulator.Tools);
-                this._syntaxErrors.Reset_Done_Event += this.Handle_Done_Event_SyntaxErrors_Reset;
-                this._syntaxErrors.Reset_Delayed();
+                this._syntaxAnalysis = new SyntaxAnalysis(buffer, asmSimulator);
+                this._syntaxAnalysis.Reset_Done_Event += this.Handle_Done_Event_SyntaxErrors_Reset;
+                this._syntaxAnalysis.Reset_Delayed();
 
-                this._semanticErrors = new SemanticErrorAnalysis(buffer, asmSimulator, asmSimulator.Tools);
-                this._semanticErrors.Reset_Done_Event += this.Handle_Done_Event_SemanticErrors_Reset;
-                this._semanticErrors.Reset_Delayed();
-
-                this._asmSimulator.Simulate_Done_Event += this.Handle_Simulate_Done_Event;
+                this._semanticAnalysis = new SemanticAnalysis(buffer, asmSimulator);
+                this._semanticAnalysis.Reset_Done_Event += this.Handle_Done_Event_SemanticErrors_Reset;
+                this._semanticAnalysis.Reset_Delayed();
             }
         }
 
@@ -107,6 +105,7 @@ namespace AsmDude.Squiggles
 
             DateTime time1 = DateTime.Now;
 
+            //TODO move the followign boolean to constructor
             bool Decorate_Undefined_Labels = labelGraph_Enabled && Settings.Default.IntelliSense_Decorate_UndefinedLabels;
             bool Decorate_Clashing_Labels = labelGraph_Enabled && Settings.Default.IntelliSense_Decorate_ClashingLabels;
             bool Decorate_Undefined_Includes = labelGraph_Enabled && Settings.Default.IntelliSense_Show_Undefined_Includes;
@@ -115,6 +114,7 @@ namespace AsmDude.Squiggles
             bool Decorate_Syntax_Errors = asmSimulator_Enabled && Settings.Default.AsmSim_Decorate_Syntax_Errors;
             bool Decorate_Unimplemented = asmSimulator_Enabled && Settings.Default.AsmSim_Decorate_Unimplemented;
             bool Decorate_Usage_Of_Undefined = asmSimulator_Enabled && Settings.Default.AsmSim_Decorate_Usage_Of_Undefined;
+            bool Decorate_Redundant_Instructions = asmSimulator_Enabled && Settings.Default.AsmSim_Decorate_Redundant_Instructions;
 
             bool Show_Syntax_Error_Error_List = asmSimulator_Enabled && Settings.Default.AsmSim_Show_Syntax_Errors;
             bool Show_Usage_Of_Undefined = asmSimulator_Enabled && Settings.Default.AsmSim_Show_Usage_Of_Undefined;
@@ -222,25 +222,33 @@ namespace AsmDude.Squiggles
                         {
                             if (Decorate_Syntax_Errors || Decorate_Unimplemented)
                             {
-                                if (this._syntaxErrors.IsImplemented(lineNumber))
+                                if (this._syntaxAnalysis.IsImplemented(lineNumber))
                                 {
-                                    if (Decorate_Syntax_Errors && this._syntaxErrors.HasSyntaxError(lineNumber))
+                                    if (Decorate_Syntax_Errors && this._syntaxAnalysis.HasSyntaxError(lineNumber))
                                     {
-                                        string message = AsmSourceTools.Linewrap("Syntax Error: " + this._syntaxErrors.GetSyntaxError(lineNumber), AsmDudePackage.maxNumberOfCharsInToolTips);
+                                        string message = AsmSourceTools.Linewrap("Syntax Error: " + this._syntaxAnalysis.GetSyntaxError(lineNumber), AsmDudePackage.maxNumberOfCharsInToolTips);
                                         yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.SyntaxError, message));
                                     }
                                 }
                                 else if (Decorate_Unimplemented)
                                 {
-                                    string message = AsmSourceTools.Linewrap("Instruction " + tagSpan.GetText() + " is not (yet) supported by the simulator.", AsmDudePackage.maxNumberOfCharsInToolTips);
+                                    string message = AsmSourceTools.Linewrap("Info: Instruction " + tagSpan.GetText() + " is not (yet) supported by the simulator.", AsmDudePackage.maxNumberOfCharsInToolTips);
                                     yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.CompilerError, message));
                                 }
                             }
                             if (Decorate_Usage_Of_Undefined)
                             {
-                                if (this._semanticErrors.HasSemanticError(lineNumber))
+                                if (this._semanticAnalysis.Has_Usage_Undefined_Warning(lineNumber))
                                 {
-                                    string message = AsmSourceTools.Linewrap("Semantic Error: " + this._semanticErrors.GetSemanticError(lineNumber), AsmDudePackage.maxNumberOfCharsInToolTips);
+                                    string message = AsmSourceTools.Linewrap("Semantic Warning: " + this._semanticAnalysis.Get_Usage_Undefined_Warning(lineNumber), AsmDudePackage.maxNumberOfCharsInToolTips);
+                                    yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.OtherError, message));
+                                }
+                            }
+                            if (Decorate_Redundant_Instructions)
+                            {
+                                if (this._semanticAnalysis.Has_Redundant_Instruction_Warning(lineNumber))
+                                {
+                                    string message = AsmSourceTools.Linewrap("Semantic Warning: " + this._semanticAnalysis.Get_Redundant_Instruction_Warning(lineNumber), AsmDudePackage.maxNumberOfCharsInToolTips);
                                     yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.OtherError, message));
                                 }
                             }
@@ -251,8 +259,8 @@ namespace AsmDude.Squiggles
                             if (Decorate_Undefined_Includes)
                             {
                                 foreach (var tup in this._labelGraph.Undefined_Includes)
-                                {
-                                    if (tup.LineNumber == lineNumber)
+                                { 
+                                    if (tup.LineNumber == lineNumber) //TODO this is inefficient!
                                     {
                                         var toolTipContent = "Could not resolve include \"" + tagSpan.GetText() + "\"";
                                         yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.SyntaxError, toolTipContent));
@@ -375,12 +383,6 @@ namespace AsmDude.Squiggles
             //this.Update_Error_Tasks_AsmSim_Async();
         }
 
-        private void Handle_Simulate_Done_Event(object sender, CustomEventArgs e)
-        {
-            //AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handle_Simulate_Done_Event received an event "+ e.Message);
-            this.Update_Squiggles_Tasks_Async();
-        }
-
         #endregion
 
         #region Async
@@ -417,7 +419,7 @@ namespace AsmDude.Squiggles
 
                             if (Settings.Default.AsmSim_Show_Syntax_Errors)
                             {
-                                foreach (var tup in this._syntaxErrors.SyntaxErrors)
+                                foreach (var tup in this._syntaxAnalysis.SyntaxErrors)
                                 {
                                     string message = tup.Message;
                                     Mnemonic mnemonic = tup.Mnemonic;
@@ -440,18 +442,18 @@ namespace AsmDude.Squiggles
                             }
                             if (Settings.Default.AsmSim_Show_Usage_Of_Undefined)
                             {
-                                foreach (var tup in this._semanticErrors.SemanticErrors)
+                                foreach (var tup in this._semanticAnalysis.Usage_Undefined)
                                 {
                                     string message = tup.Message;
                                     int lineNumber = tup.LineNumber;
-                                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
+                                    //string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
 
                                     ErrorTask errorTask = new ErrorTask()
                                     {
                                         SubcategoryIndex = (int)AsmErrorEnum.USAGE_OF_UNDEFINED,
                                         Line = lineNumber,
                                         Column = 0,// Get_Keyword_Begin_End(lineContent, mnemonic.ToString()),
-                                        Text = "Semantic Error: " +message,
+                                        Text = "Semantic Warning: " +message,
                                         ErrorCategory = TaskErrorCategory.Error,
                                         Document = AsmDudeToolsStatic.GetFileName(this._sourceBuffer)
                                     };
@@ -460,6 +462,29 @@ namespace AsmDude.Squiggles
                                     errorListNeedsRefresh = true;
                                 }
                             }
+                            if (Settings.Default.AsmSim_Show_Redundant_Instructions)
+                            {
+                                foreach (var tup in this._semanticAnalysis.Redundant_Instruction)
+                                {
+                                    string message = tup.Message;
+                                    int lineNumber = tup.LineNumber;
+                                    //string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
+
+                                    ErrorTask errorTask = new ErrorTask()
+                                    {
+                                        SubcategoryIndex = (int)AsmErrorEnum.USAGE_OF_UNDEFINED,
+                                        Line = lineNumber,
+                                        Column = 0,// Get_Keyword_Begin_End(lineContent, mnemonic.ToString()),
+                                        Text = "Semantic Warning: " + message,
+                                        ErrorCategory = TaskErrorCategory.Error,
+                                        Document = AsmDudeToolsStatic.GetFileName(this._sourceBuffer)
+                                    };
+                                    errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
+                                    errorTasks.Add(errorTask);
+                                    errorListNeedsRefresh = true;
+                                }
+                            }
+
                             if (errorListNeedsRefresh)
                             {
                                 this._errorListProvider.Refresh();

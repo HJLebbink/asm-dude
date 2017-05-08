@@ -329,5 +329,11 @@
     <Setting Name="AsmSim_Z3_Timeout_MS" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">100</Value>
     </Setting>
+    <Setting Name="AsmSim_Show_Redundant_Instructions" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AsmSim_Decorate_Redundant_Instructions" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -96,7 +96,9 @@ namespace AsmDude.QuickInfo
                     if (enumerator.MoveNext())
                     {
                         // TODO: multiple tags at the provided triggerPoint is most likely the result of a bug in AsmTokenTagger, but it seems harmless...
-                        AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:AugmentQuickInfoSession. more than one tag! \"{1}\"", ToString(), enumerator.Current.Span.GetSpans(this._sourceBuffer).GetEnumerator().Current.GetText()));
+                        var enumerator3 = asmTokenTag.Span.GetSpans(this._sourceBuffer).GetEnumerator();
+                        enumerator3.MoveNext();
+                        AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:AugmentQuickInfoSession. More than one tag! next tag=\"{1}\"", ToString(), enumerator3.Current.GetText()));
                     }
 
                     var enumerator2 = asmTokenTag.Span.GetSpans(this._sourceBuffer).GetEnumerator();

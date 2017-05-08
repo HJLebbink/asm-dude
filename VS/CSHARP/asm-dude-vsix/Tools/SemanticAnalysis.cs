@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using AsmSimZ3.Mnemonics_ng;
 using AsmTools;
 using Microsoft.VisualStudio.Text;
 using System;
@@ -28,28 +29,31 @@ using System.Threading;
 
 namespace AsmDude.Tools
 {
-    internal sealed class SyntaxErrorAnalysis
+    internal sealed class SemanticAnalysis
     {
-        #region Fields
+        #region Private Fields
         private readonly ITextBuffer _sourceBuffer;
+        private readonly AsmSimulator _asmSimulator;
         private readonly AsmSimZ3.Mnemonics_ng.Tools _tools;
-        private readonly IDictionary<int, (Mnemonic Mnemonic, string Message)> _syntaxErrors;
-        private readonly ISet<int> _isNotImplemented;
+        private readonly IDictionary<int, string> _usage_Undefined;
+        private readonly IDictionary<int, string> _redundant_Instruction;
 
         private object _updateLock = new object();
 
         private bool _busy;
         private bool _waiting;
         private bool _scheduled;
-        #endregion Fields
 
-        public SyntaxErrorAnalysis(ITextBuffer buffer, AsmSimZ3.Mnemonics_ng.Tools tools)
+        #endregion Private Fields
+
+        public SemanticAnalysis(ITextBuffer buffer, AsmSimulator asmSimulator)
         {
             this._sourceBuffer = buffer;
-            this._tools = tools;
-            this._syntaxErrors = new Dictionary<int, (Mnemonic Mnemonic, string Message)>();
+            this._asmSimulator = asmSimulator;
+            this._tools = asmSimulator.Tools;
+            this._usage_Undefined = new Dictionary<int, string>();
+            this._redundant_Instruction = new Dictionary<int, string>();
 
-            this._isNotImplemented = new HashSet<int>();
             this._busy = false;
             this._waiting = false;
             this._scheduled = false;
@@ -58,44 +62,52 @@ namespace AsmDude.Tools
             this.Reset_Delayed();
         }
 
-        public IEnumerable<(int LineNumber, Mnemonic Mnemonic, string Message)> SyntaxErrors
+        #region Usage Undefined
+        public IEnumerable<(int LineNumber, string Message)> Usage_Undefined
         {
-            get
-            {
-                foreach (var x in this._syntaxErrors)
-                {
-                    yield return (x.Key, x.Value.Mnemonic, x.Value.Message);
-                }
-            }
-        }
-        public bool IsImplemented(int lineNumber)
-        {
-            return !this._isNotImplemented.Contains(lineNumber);
+            get { foreach (var x in this._usage_Undefined) yield return (x.Key, x.Value); }
         }
 
-        public bool HasSyntaxError(int lineNumber)
+        public bool Has_Usage_Undefined_Warning(int lineNumber)
         {
-            return this._syntaxErrors.ContainsKey(lineNumber);
+            return this._usage_Undefined.ContainsKey(lineNumber);
         }
-        public string GetSyntaxError(int lineNumber)
+        public string Get_Usage_Undefined_Warning(int lineNumber)
         {
-            return this._syntaxErrors.TryGetValue(lineNumber, out (Mnemonic mnemonic, string Message) error) ? error.Message : ""; 
+            return this._usage_Undefined.TryGetValue(lineNumber, out string message) ? message : "";
         }
+        #endregion
+        
+        #region Redundant Instruction
+        public IEnumerable<(int LineNumber, string Message)> Redundant_Instruction
+        {
+            get { foreach (var x in this._redundant_Instruction) yield return (x.Key, x.Value); }
+        }
+        public bool Has_Redundant_Instruction_Warning(int lineNumber)
+        {
+            return this._redundant_Instruction.ContainsKey(lineNumber);
+        }
+        public string Get_Redundant_Instruction_Warning(int lineNumber)
+        {
+            return this._redundant_Instruction.TryGetValue(lineNumber, out string message) ? message : "";
+        }
+        #endregion
+
         public void Reset_Delayed()
         {
             if (this._waiting)
             {
-                AsmDudeToolsStatic.Output_INFO("SyntaxErrorList:Reset_Delayed: already waiting for execution. Skipping this call.");
+                AsmDudeToolsStatic.Output_INFO("SemanticErrorAnalysis:Reset_Delayed: already waiting for execution. Skipping this call.");
                 return;
             }
             if (this._busy)
             {
-                AsmDudeToolsStatic.Output_INFO("SyntaxErrorList:Reset_Delayed: busy; scheduling this call.");
+                AsmDudeToolsStatic.Output_INFO("SemanticErrorAnalysis:Reset_Delayed: busy; scheduling this call.");
                 this._scheduled = true;
             }
             else
             {
-                AsmDudeToolsStatic.Output_INFO("SyntaxErrorList:Reset_Delayed: going to execute this call.");
+                AsmDudeToolsStatic.Output_INFO("SemanticErrorAnalysis:Reset_Delayed: going to execute this call.");
                 AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Reset);
             }
         }
@@ -105,6 +117,10 @@ namespace AsmDude.Tools
         #region Private Methods
         private void Buffer_Changed(object sender, TextContentChangedEventArgs e)
         {
+            bool nonSpaceAdded = false;
+            foreach (var c in e.Changes) if (c.NewText != " ") nonSpaceAdded = true;
+            if (!nonSpaceAdded) return;
+
             this.Reset_Delayed();
         }
 
@@ -119,16 +135,28 @@ namespace AsmDude.Tools
             lock (this._updateLock)
             {
                 DateTime time1 = DateTime.Now;
+                AsmSimZ3.Mnemonics_ng.Tools tools = this._asmSimulator.Tools;
+                this._usage_Undefined.Clear();
+                this._redundant_Instruction.Clear();
 
-                this._syntaxErrors.Clear();
-                this._isNotImplemented.Clear();
-                this.Add_All();
-
-                AsmDudeToolsStatic.Print_Speed_Warning(time1, "SyntaxErrorList");
+                ITextSnapshot snapShot = this._sourceBuffer.CurrentSnapshot;
+                for (int lineNumber = 0; lineNumber < snapShot.LineCount; ++lineNumber)
+                {
+                    string line = snapShot.GetLineFromLineNumber(lineNumber).GetText().Trim();
+                    {
+                        string message = this._asmSimulator.Get_Usage_Undefined_Warnings(line, lineNumber);
+                        if (message.Length > 0) this._usage_Undefined.Add(lineNumber, message);
+                    }
+                    {
+                        string message = this._asmSimulator.Get_Redundant_Instruction_Warnings(line, lineNumber);
+                        if (message.Length > 0) this._redundant_Instruction.Add(lineNumber, message);
+                    }
+                }
+                AsmDudeToolsStatic.Print_Speed_Warning(time1, "SemanticErrorAnalysis");
             }
             #endregion Payload
 
-            this.On_Reset_Done_Event(new CustomEventArgs("Resetting SyntaxErrorList is finished"));
+            this.On_Reset_Done_Event(new CustomEventArgs("Resetting SemanticErrorAnalysis is finished"));
 
             this._busy = false;
             if (this._scheduled)
@@ -155,29 +183,6 @@ namespace AsmDude.Tools
                 handler(this, e);
             }
         }
-
-        private void Add_All()
-        {
-            ITextSnapshot snapShot = this._sourceBuffer.CurrentSnapshot;
-            for (int lineNumber = 0; lineNumber < snapShot.LineCount; ++lineNumber)
-            {
-                string line = snapShot.GetLineFromLineNumber(lineNumber).GetText().Trim();
-                var syntaxInfo = AsmSimulator.GetSyntaxInfo(line, this._tools);
-
-                if (syntaxInfo.IsImplemented)
-                {
-                    if (syntaxInfo.Message != null)
-                    {
-                        this._syntaxErrors.Add(lineNumber, (syntaxInfo.Mnemonic, syntaxInfo.Message));
-                    }
-                }
-                else
-                {
-                    this._isNotImplemented.Add(lineNumber);
-                }
-            }
-        }
-
         #endregion
     }
 }

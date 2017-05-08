@@ -25,8 +25,6 @@ namespace AsmDude.Tools
         private ISet<int> _scheduled_After;
         private ISet<int> _scheduled_Before;
 
-        // Declare the event using EventHandler<T>
-        public event EventHandler<CustomEventArgs> Simulate_Done_Event;
         public bool Is_Enabled { get; set; }
 
         /// <summary>Factory return singleton</summary>
@@ -102,11 +100,11 @@ namespace AsmDude.Tools
             }
         }
 
-        public static (bool IsImplemented, Mnemonic Mnemonic, string Message) GetSyntaxInfo(string line, AsmSimZ3.Mnemonics_ng.Tools tools)
+        public (bool IsImplemented, Mnemonic Mnemonic, string Message) Get_Syntax_Errors(string line)
         {
             var dummyKeys = ("", "", "", "");
             var content = AsmSourceTools.ParseLine(line);
-            var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, tools);
+            var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, this.Tools);
             if (opcodeBase == null) return (IsImplemented: false, Mnemonic: Mnemonic.NONE, Message: null);
 
             if (opcodeBase.GetType() == typeof(NotImplemented))
@@ -121,24 +119,21 @@ namespace AsmDude.Tools
             }
         }
 
-        public static (bool IsImplemented, Mnemonic Mnemonic, string Message) GetSemanticInfo(string line, AsmSimZ3.Mnemonics_ng.Tools tools)
+        public string Get_Usage_Undefined_Warnings(string line, int lineNumber)
         {
-            //TODO
-            throw new NotImplementedException();
-        }
+            State2 state = this.Create_State_After(lineNumber);
 
-        public static string Get_Undefined_Warnings(string line, AsmSimZ3.Mnemonics_ng.Tools tools, State2 state)
-        {
             var dummyKeys = ("", "", "", "");
             var content = AsmSourceTools.ParseLine(line);
-            var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, tools);
+            var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, this.Tools);
 
             string message = "";
             if (opcodeBase != null)
             {
+                StateConfig stateConfig = this.Tools.StateConfig;
                 foreach (Flags flag in FlagTools.GetFlags(opcodeBase.FlagsReadStatic))
                 {
-                    if (tools.StateConfig.IsFlagOn(flag))
+                    if (stateConfig.IsFlagOn(flag))
                     {
                         if (state.IsUndefined(flag))
                         {
@@ -148,7 +143,7 @@ namespace AsmDude.Tools
                 }
                 foreach (Rn reg in opcodeBase.RegsReadStatic)
                 {
-                    if (tools.StateConfig.IsRegOn(RegisterTools.Get64BitsRegister(reg)))
+                    if (stateConfig.IsRegOn(RegisterTools.Get64BitsRegister(reg)))
                     {
                         if (state.IsUndefined(reg))
                         {
@@ -160,9 +155,15 @@ namespace AsmDude.Tools
             return message;
         }
 
+        public string Get_Redundant_Instruction_Warnings(string line, int lineNumber)
+        {
+            //TODO
+            return "";
+        }
+
         private void Buffer_Changed(object sender, TextContentChangedEventArgs e)
         {
-            AsmDudeToolsStatic.Output_INFO("AsmSimulation:Buffer_Changed");
+            //AsmDudeToolsStatic.Output_INFO("AsmSimulation:Buffer_Changed");
 
             bool nonSpaceAdded = false;
             foreach (var c in e.Changes)
@@ -184,12 +185,17 @@ namespace AsmDude.Tools
             if (!this.Is_Enabled) return;
             if (!(this._cached_States_After.ContainsKey(lineNumber)))
             {
-                int nSteps = Settings.Default.AsmSim_Number_Of_Steps;
-                AsmSimZ3.Mnemonics_ng.ExecutionTree tree = Runner.Construct_ExecutionTree_Backward(this._cflow, lineNumber, nSteps, this.Tools);
+                lock (this._updateLock)
+                {
+                    int nSteps = Settings.Default.AsmSim_Number_Of_Steps;
+                    AsmSimZ3.Mnemonics_ng.ExecutionTree tree = Runner.Construct_ExecutionTree_Backward(this._cflow, lineNumber, nSteps, this.Tools);
 
-                State2 state = tree.EndState;
-                this._cached_States_After.Add(lineNumber, state);
-                On_Simulate_Done_Event(new CustomEventArgs("Simulate has finished"));
+                    if (tree != null)
+                    {
+                        State2 state = tree.EndState;
+                        this._cached_States_After.Add(lineNumber, state);
+                    }
+                }
             }
         }
 
@@ -290,6 +296,9 @@ namespace AsmDude.Tools
             return null;
         }
 
+        /// <summary>
+        /// Create state for lineNumber, does not run in a different thread
+        /// </summary>
         public State2 Create_State_After(int lineNumber)
         {
             if (!this.Is_Enabled) return null;
@@ -297,13 +306,21 @@ namespace AsmDude.Tools
             {
                 return state;
             }
-            this._scheduled_Before.Remove(lineNumber);
-            this.Tools.StateConfig = Runner.GetUsage_StateConfig(this._cflow, 0, this._cflow.LastLineNumber, this.Tools);
-            AsmSimZ3.Mnemonics_ng.ExecutionTree tree = Runner.Construct_ExecutionTree_Backward(this._cflow, lineNumber, 4, this.Tools);
-            this._cached_States_After.Remove(lineNumber);
-            State2 result = tree.EndState;
-            this._cached_States_After.Add(lineNumber, result);
-            return result;
+            lock (this._updateLock)
+            {
+                this._scheduled_Before.Remove(lineNumber);
+                this.Tools.StateConfig = Runner.GetUsage_StateConfig(this._cflow, 0, this._cflow.LastLineNumber, this.Tools);
+                AsmSimZ3.Mnemonics_ng.ExecutionTree tree = Runner.Construct_ExecutionTree_Backward(this._cflow, lineNumber, 4, this.Tools);
+                this._cached_States_After.Remove(lineNumber);
+
+                State2 result = null;
+                if (tree != null)
+                {
+                    result = tree.EndState;
+                    this._cached_States_After.Add(lineNumber, result);
+                }
+                return result;
+            }
         }
 
         private void Simulate_Before(int lineNumber)
@@ -326,7 +343,6 @@ namespace AsmDude.Tools
 
 
                 this._busy = false;
-                On_Simulate_Done_Event(new CustomEventArgs("Simulate has finished"));
 
                 AsmDudeToolsStatic.Print_Speed_Warning(time1, "AsmSimulator");
             }
@@ -362,8 +378,6 @@ namespace AsmDude.Tools
 
 
                 this._busy = false;
-                On_Simulate_Done_Event(new CustomEventArgs("Simulate has finished"));
-
                 AsmDudeToolsStatic.Print_Speed_Warning(time1, "AsmSimulator");
             }
             #endregion Payload
@@ -377,24 +391,6 @@ namespace AsmDude.Tools
                     this._scheduled_Before.Remove(lineNumber2);
                 }
                 this.Simulate_After(lineNumber2);
-            }
-        }
-
-        private void On_Simulate_Done_Event(CustomEventArgs e)
-        {
-            // Make a temporary copy of the event to avoid possibility of
-            // a race condition if the last subscriber un-subscribes
-            // immediately after the null check and before the event is raised.
-            EventHandler<CustomEventArgs> handler = Simulate_Done_Event;
-
-            // Event will be null if there are no subscribers
-            if (handler != null)
-            {
-                // Format the string to send inside the CustomEventArgs parameter
-                e.Message += String.Format(" at {0}", DateTime.Now.ToString());
-
-                // Use the () operator to raise the event.
-                handler(this, e);
             }
         }
     }

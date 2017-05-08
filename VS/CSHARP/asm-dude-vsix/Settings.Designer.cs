@@ -1330,5 +1330,29 @@ namespace AsmDude {
                 this["AsmSim_Z3_Timeout_MS"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AsmSim_Show_Redundant_Instructions {
+            get {
+                return ((bool)(this["AsmSim_Show_Redundant_Instructions"]));
+            }
+            set {
+                this["AsmSim_Show_Redundant_Instructions"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AsmSim_Decorate_Redundant_Instructions {
+            get {
+                return ((bool)(this["AsmSim_Decorate_Redundant_Instructions"]));
+            }
+            set {
+                this["AsmSim_Decorate_Redundant_Instructions"] = value;
+            }
+        }
     }
 }

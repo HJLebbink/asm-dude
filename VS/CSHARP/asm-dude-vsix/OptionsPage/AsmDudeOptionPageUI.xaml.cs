@@ -36,16 +36,23 @@ namespace AsmDude.OptionsPage
             InitializeComponent();
             this.version_UI.Content = "Asm Dude v" + typeof(AsmDudePackage).Assembly.GetName().Version.ToString() + " (" + ApplicationInformation.CompileDate.ToUniversalTime().ToString() + ")";
 
-            this.SyntaxHighlighting_On_UI.Click += this.SyntaxHighlighting_On_UI_Click;
-            this.AsmDoc_On_UI.Click += this.AsmDoc_On_UI_Click;
-            this.CodeFolding_On_UI.Click += this.CodeFolding_On_UI_Click;
-            this.AsmSim_On_UI.Click += this.AsmSim_On_UI_Click;
+            this.SyntaxHighlighting_On_UI.Click += (o, i) => { this.SyntaxHighlighting_Update(this.SyntaxHighlighting_On); };
+            this.SyntaxHighlighting_Update(Settings.Default.SyntaxHighlighting_On);
+
+            this.AsmDoc_On_UI.Click += (o, i) => { this.AsmDoc_Update(this.AsmDoc_On); };
+            this.AsmDoc_Update(Settings.Default.AsmDoc_On);
+
+            this.CodeFolding_On_UI.Click += (o, i) => { this.CodeFolding_Update(this.CodeFolding_On); };
+            this.CodeFolding_Update(Settings.Default.CodeFolding_On);
+
+            this.AsmSim_On_UI.Click += (o, i) => { this.AsmSim_Update(this.AsmSim_On); };
+            this.AsmSim_Update(Settings.Default.AsmSim_On);
         }
 
         #region Event Handlers to disable options
-        private void SyntaxHighlighting_On_UI_Click(object sender, System.Windows.RoutedEventArgs e)
+
+        private void SyntaxHighlighting_Update(bool value)
         {
-            bool value = this.SyntaxHighlighting_On;
             this.colorMnemonic_UI.IsEnabled = value;
             this.colorRegister_UI.IsEnabled = value;
             this.colorRemark_UI.IsEnabled = value;
@@ -58,25 +65,25 @@ namespace AsmDude.OptionsPage
             this.ColorUserDefined2_UI.IsEnabled = value;
             this.ColorUserDefined3_UI.IsEnabled = value;
         }
-        private void AsmDoc_On_UI_Click(object sender, System.Windows.RoutedEventArgs e)
+
+        private void AsmDoc_Update(bool value)
         {
-            bool value = this.AsmDoc_On;
             this.AsmDoc_Url_UI.IsEnabled = value;
         }
-        private void CodeFolding_On_UI_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void CodeFolding_Update(bool value)
         {
-            bool value = this.CodeFolding_On;
             this.CodeFolding_IsDefaultCollaped_UI.IsEnabled = value;
             this.CodeFolding_BeginTag_UI.IsEnabled = value;
             this.CodeFolding_EndTag_UI.IsEnabled = value;
         }
-        private void AsmSim_On_UI_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void AsmSim_Update(bool value)
         {
-            bool value = this.AsmSim_On;
             this.AsmSim_Shown_Syntax_Errors_UI.IsEnabled = value;
             this.AsmSim_Decorate_Syntax_Errors_UI.IsEnabled = value;
             this.AsmSim_Show_Usage_Of_Undefined_UI.IsEnabled = value;
             this.AsmSim_Decorate_Usage_Of_Undefined_UI.IsEnabled = value;
+            this.AsmSim_Show_Redundant_Instructions_UI.IsEnabled = value;
+            this.AsmSim_Decorate_Redundant_Instructions_UI.IsEnabled = value;
             this.AsmSim_Decorate_Registers_UI.IsEnabled = value;
             this.AsmSim_Use_In_Code_Completion_UI.IsEnabled = value;
             this.AsmSim_Decorate_Unimplemented_UI.IsEnabled = value;
@@ -676,6 +683,16 @@ namespace AsmDude.OptionsPage
         {
             get { return this.AsmSim_Decorate_Usage_Of_Undefined_UI.IsChecked ?? false; }
             set { this.AsmSim_Decorate_Usage_Of_Undefined_UI.IsChecked = value; }
+        }
+        public bool AsmSim_Show_Redundant_Instructions
+        {
+            get { return this.AsmSim_Show_Redundant_Instructions_UI.IsChecked ?? false; }
+            set { this.AsmSim_Show_Redundant_Instructions_UI.IsChecked = value; }
+        }
+        public bool AsmSim_Decorate_Redundant_Instructions
+        {
+            get { return this.AsmSim_Decorate_Redundant_Instructions_UI.IsChecked ?? false; }
+            set { this.AsmSim_Decorate_Redundant_Instructions_UI.IsChecked = value; }
         }
         public bool AsmSim_Decorate_Registers
         {

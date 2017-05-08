@@ -239,8 +239,8 @@
     <Compile Include="Tools\LabelGraph.cs" />
     <Compile Include="Tools\MnemonicStore.cs" />
     <Compile Include="Tools\PerformanceStore.cs" />
-    <Compile Include="Tools\SemanticErrorAnalysis.cs" />
-    <Compile Include="Tools\SyntaxErrorAnalysis.cs" />
+    <Compile Include="Tools\SemanticAnalysis.cs" />
+    <Compile Include="Tools\SyntaxAnalysis.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
