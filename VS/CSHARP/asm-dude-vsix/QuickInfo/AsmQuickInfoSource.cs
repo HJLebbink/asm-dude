@@ -22,7 +22,6 @@
 
 using System;
 using System.Text;
-using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
@@ -88,268 +87,266 @@ namespace AsmDude.QuickInfo
                     AsmDudeToolsStatic.Output_INFO("AsmQuickInfoSource:AugmentQuickInfoSession: trigger point is null");
                     return;
                 }
-                string keyword = "";
 
-                IEnumerable<IMappingTagSpan<AsmTokenTag>> enumerator = this._aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint));
-                //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoSource:AugmentQuickInfoSession: enumerator.Count="+ enumerator.Count());
-
-                if (enumerator.Count() > 0)
+                var enumerator = this._aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint)).GetEnumerator();
+                if (enumerator.MoveNext())
                 {
-                    if (false)
+                    var asmTokenTag = enumerator.Current;
+
+                    if (enumerator.MoveNext())
                     {
                         // TODO: multiple tags at the provided triggerPoint is most likely the result of a bug in AsmTokenTagger, but it seems harmless...
-                        if (enumerator.Count() > 1)
-                        {
-                            foreach (IMappingTagSpan<AsmTokenTag> v in enumerator)
-                            {
-                                AsmDudeToolsStatic.Output(string.Format("WARNING: {0}:AugmentQuickInfoSession. more than one tag! \"{1}\"", ToString(), v.Span.GetSpans(this._sourceBuffer).First().GetText()));
-                            }
-                        }
+                        AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:AugmentQuickInfoSession. more than one tag! \"{1}\"", ToString(), enumerator.Current.Span.GetSpans(this._sourceBuffer).GetEnumerator().Current.GetText()));
                     }
 
-                    IMappingTagSpan<AsmTokenTag> asmTokenTag = enumerator.First();
-                    SnapshotSpan tagSpan = asmTokenTag.Span.GetSpans(this._sourceBuffer).First();
-                    keyword = tagSpan.GetText();
-                    int lineNumber = tagSpan.Snapshot.GetLineNumberFromPosition(tagSpan.Start);
-
-                    //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoSource:AugmentQuickInfoSession: keyword=\""+ keyword + "\"; type=" + asmTokenTag.Tag.type +"; file="+AsmDudeToolsStatic.GetFileName(session.TextView.TextBuffer));
-                    string keywordUpper = keyword.ToUpper();
-                    applicableToSpan = snapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
-
-                    TextBlock description = null;
-
-                    switch (asmTokenTag.Tag.Type)
+                    var enumerator2 = asmTokenTag.Span.GetSpans(this._sourceBuffer).GetEnumerator();
+                    if (enumerator2.MoveNext())
                     {
-                        case AsmTokenType.Misc:
-                            {
-                                description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("Keyword ", this._foreground));
-                                description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Misc))));
+                        SnapshotSpan tagSpan = enumerator2.Current;
+                        string keyword = tagSpan.GetText();
+                        string keywordUpper = keyword.ToUpper();
 
-                                string descr = this._asmDudeTools.Get_Description(keywordUpper);
-                                if (descr.Length > 0)
+                        int lineNumber = tagSpan.Snapshot.GetLineNumberFromPosition(tagSpan.Start);
+
+                        //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoSource:AugmentQuickInfoSession: keyword=\""+ keyword + "\"; type=" + asmTokenTag.Tag.type +"; file="+AsmDudeToolsStatic.GetFileName(session.TextView.TextBuffer));
+                        applicableToSpan = snapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
+
+                        TextBlock description = null;
+
+                        switch (asmTokenTag.Tag.Type)
+                        {
+                            case AsmTokenType.Misc:
                                 {
-                                    description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                    description = new TextBlock();
+                                    description.Inlines.Add(Make_Run1("Keyword ", this._foreground));
+                                    description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Misc))));
+
+                                    string descr = this._asmDudeTools.Get_Description(keywordUpper);
+                                    if (descr.Length > 0)
                                     {
-                                        Foreground = this._foreground
-                                    });
-                                }
-                                break;
-                            }
-                        case AsmTokenType.Directive:
-                            {
-                                description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("Directive ", this._foreground));
-                                description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Directive))));
-
-                                string descr = this._asmDudeTools.Get_Description(keywordUpper);
-                                if (descr.Length > 0)
-                                {
-                                    description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
-                                    {
-                                        Foreground = this._foreground
-                                    });
-                                }
-                                break;
-                            }
-                        case AsmTokenType.Register:
-                            {
-                                description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("Register ", this._foreground));
-                                description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Register))));
-
-                                string register_Descr = this._asmDudeTools.Get_Description(keywordUpper);
-                                if (register_Descr.Length > 0)
-                                {
-                                    description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + register_Descr, AsmDudePackage.maxNumberOfCharsInToolTips))
-                                    {
-                                        Foreground = this._foreground
-                                    });
-                                }
-
-                                if (this._asmSimulator.Is_Enabled)
-                                {
-                                    State2 state = this._asmSimulator.Get_State_After(lineNumber, true);
-                                    string msg = this._asmSimulator.GetRegisterValue(RegisterTools.ParseRn(keywordUpper, true), state);
-                                    if (msg.Length == 0) msg = "[Bussy calculating register content]";
-
-                                    description.Inlines.Add(new Run(AsmSourceTools.Linewrap("\n" + msg, AsmDudePackage.maxNumberOfCharsInToolTips))
-                                    {
-                                        Foreground = this._foreground
-                                    });
-                                }
-                                break;
-                            }
-                        case AsmTokenType.Mnemonic:
-                        case AsmTokenType.Jump:
-                            {
-                                description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("Mnemonic ", this._foreground));
-                                description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Opcode))));
-
-                                Mnemonic mmemonic = AsmSourceTools.ParseMnemonic(keywordUpper, true);
-                                {
-                                    string archStr = ":" + ArchTools.ToString(this._asmDudeTools.Mnemonic_Store.GetArch(mmemonic)) + " ";
-                                    string descr = this._asmDudeTools.Mnemonic_Store.GetDescription(mmemonic);
-
-                                    description.Inlines.Add(new Run(AsmSourceTools.Linewrap(archStr + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
-                                    {
-                                        Foreground = this._foreground
-                                    });
-                                }
-                                {   // show performance information
-                                    MicroArch selectedMicroarchitures = AsmDudeToolsStatic.Get_MicroArch_Switched_On();
-
-                                    bool first = true;
-                                    FontFamily family = new FontFamily("Consolas");
-
-                                    foreach (PerformanceItem item in this._asmDudeTools.Performance_Store.GetPerformance(mmemonic, selectedMicroarchitures))
-                                    {
-                                        if (first)
+                                        description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
                                         {
-                                            first = false;
-                                            description.Inlines.Add(new Run(string.Format("\n\n{0,-15}{1,-24}{2,-10}{3,-10}\n", "Architecture", "Instruction", "Latency", "Throughput"))
-                                            {
-                                                FontFamily = family,
-                                                FontStyle = FontStyles.Italic,
-                                                FontWeight = FontWeights.Bold,
-                                                Foreground = this._foreground
-                                            });
-                                        }
-                                        description.Inlines.Add(new Run(string.Format("{0,-15}{1,-24}{2,-10}{3,-10}{4,-10}\n", item._microArch, item._instr + " " + item._args, item._latency, item._throughput, item._remark))
-                                        {
-                                            FontFamily = family,
                                             Foreground = this._foreground
                                         });
                                     }
+                                    break;
                                 }
-                                break;
-                            }
-                        case AsmTokenType.Label:
-                            {
-                                string label = keyword;
-                                string labelPrefix = asmTokenTag.Tag.Misc;
-                                string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(labelPrefix, label, AsmDudeToolsStatic.Used_Assembler);
-
-                                description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("Label ", this._foreground));
-                                description.Inlines.Add(Make_Run2(full_Qualified_Label, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Label))));
-
-                                string descr = Get_Label_Description(full_Qualified_Label);
-                                if (descr.Length == 0)
+                            case AsmTokenType.Directive:
                                 {
-                                    descr = Get_Label_Description(label);
-                                }
-                                if (descr.Length > 0)
-                                {
-                                    description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                    description = new TextBlock();
+                                    description.Inlines.Add(Make_Run1("Directive ", this._foreground));
+                                    description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Directive))));
+
+                                    string descr = this._asmDudeTools.Get_Description(keywordUpper);
+                                    if (descr.Length > 0)
                                     {
-                                        Foreground = this._foreground
-                                    });
+                                        description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                        {
+                                            Foreground = this._foreground
+                                        });
+                                    }
+                                    break;
                                 }
-                                break;
-                            }
-                        case AsmTokenType.LabelDef:
-                            {
-                                string label = keyword;
-                                string extra_Tag_Info = asmTokenTag.Tag.Misc;
-                                string full_Qualified_Label;
-                                if ((extra_Tag_Info != null) && extra_Tag_Info.Equals(AsmTokenTag.MISC_KEYWORD_PROTO))
+                            case AsmTokenType.Register:
                                 {
-                                    full_Qualified_Label = label;
-                                } else
-                                {
-                                    full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(extra_Tag_Info, label, AsmDudeToolsStatic.Used_Assembler);
-                                }
+                                    description = new TextBlock();
+                                    description.Inlines.Add(Make_Run1("Register ", this._foreground));
+                                    description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Register))));
 
-                                AsmDudeToolsStatic.Output_INFO("AsmQuickInfoSource:AugmentQuickInfoSession: found label def " + full_Qualified_Label);
-
-                                description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("Label ", this._foreground));
-                                description.Inlines.Add(Make_Run2(full_Qualified_Label, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Label))));
-
-                                string descr = Get_Label_Def_Description(full_Qualified_Label, label);
-                                if (descr.Length > 0)
-                                {
-                                    description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                    string register_Descr = this._asmDudeTools.Get_Description(keywordUpper);
+                                    if (register_Descr.Length > 0)
                                     {
-                                        Foreground = this._foreground
-                                    });
-                                }
-                                break;
-                            }
-                        case AsmTokenType.Constant:
-                            {
-                                description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("Constant ", this._foreground));
+                                        description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + register_Descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                        {
+                                            Foreground = this._foreground
+                                        });
+                                    }
 
-                                var constant = AsmSourceTools.ToConstant(keyword);
-                                string constantStr = (constant.Valid)
-                                    ? constant.Value + "d = " + constant.Value.ToString("X") + "h = " + AsmSourceTools.ToStringBin(constant.Value, constant.NBits) + "b"
-                                    : keyword;
-
-                                description.Inlines.Add(Make_Run2(constantStr, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Constant))));
-                                break;
-                            }
-                        case AsmTokenType.UserDefined1:
-                            {
-                                description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("User defined 1: ", this._foreground));
-                                description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Userdefined1))));
-
-                                string descr = this._asmDudeTools.Get_Description(keywordUpper);
-                                if (descr.Length > 0)
-                                {
-                                    description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                    if (this._asmSimulator.Is_Enabled)
                                     {
-                                        Foreground = this._foreground
-                                    });
-                                }
-                                break;
-                            }
-                        case AsmTokenType.UserDefined2:
-                            {
-                                description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("User defined 2: ", this._foreground));
-                                description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Userdefined2))));
+                                        State2 state = this._asmSimulator.Get_State_After(lineNumber, true);
+                                        string msg = this._asmSimulator.GetRegisterValue(RegisterTools.ParseRn(keywordUpper, true), state);
+                                        if (msg.Length == 0) msg = "[Bussy calculating register content]";
 
-                                string descr = this._asmDudeTools.Get_Description(keywordUpper);
-                                if (descr.Length > 0)
-                                {
-                                    description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
-                                    {
-                                        Foreground = this._foreground
-                                    });
+                                        description.Inlines.Add(new Run(AsmSourceTools.Linewrap("\n" + msg, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                        {
+                                            Foreground = this._foreground
+                                        });
+                                    }
+                                    break;
                                 }
-                                break;
-                            }
-                        case AsmTokenType.UserDefined3:
-                            {
-                                description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("User defined 3: ", this._foreground));
-                                description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Userdefined3))));
+                            case AsmTokenType.Mnemonic:
+                            case AsmTokenType.Jump:
+                                {
+                                    description = new TextBlock();
+                                    description.Inlines.Add(Make_Run1("Mnemonic ", this._foreground));
+                                    description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Opcode))));
 
-                                string descr = this._asmDudeTools.Get_Description(keywordUpper);
-                                if (descr.Length > 0)
-                                {
-                                    description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                    Mnemonic mmemonic = AsmSourceTools.ParseMnemonic(keywordUpper, true);
                                     {
-                                        Foreground = this._foreground
-                                    });
+                                        string archStr = ":" + ArchTools.ToString(this._asmDudeTools.Mnemonic_Store.GetArch(mmemonic)) + " ";
+                                        string descr = this._asmDudeTools.Mnemonic_Store.GetDescription(mmemonic);
+
+                                        description.Inlines.Add(new Run(AsmSourceTools.Linewrap(archStr + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                        {
+                                            Foreground = this._foreground
+                                        });
+                                    }
+                                    {   // show performance information
+                                        MicroArch selectedMicroarchitures = AsmDudeToolsStatic.Get_MicroArch_Switched_On();
+
+                                        bool first = true;
+                                        FontFamily family = new FontFamily("Consolas");
+
+                                        foreach (PerformanceItem item in this._asmDudeTools.Performance_Store.GetPerformance(mmemonic, selectedMicroarchitures))
+                                        {
+                                            if (first)
+                                            {
+                                                first = false;
+                                                description.Inlines.Add(new Run(string.Format("\n\n{0,-15}{1,-24}{2,-10}{3,-10}\n", "Architecture", "Instruction", "Latency", "Throughput"))
+                                                {
+                                                    FontFamily = family,
+                                                    FontStyle = FontStyles.Italic,
+                                                    FontWeight = FontWeights.Bold,
+                                                    Foreground = this._foreground
+                                                });
+                                            }
+                                            description.Inlines.Add(new Run(string.Format("{0,-15}{1,-24}{2,-10}{3,-10}{4,-10}\n", item._microArch, item._instr + " " + item._args, item._latency, item._throughput, item._remark))
+                                            {
+                                                FontFamily = family,
+                                                Foreground = this._foreground
+                                            });
+                                        }
+                                    }
+                                    break;
                                 }
+                            case AsmTokenType.Label:
+                                {
+                                    string label = keyword;
+                                    string labelPrefix = asmTokenTag.Tag.Misc;
+                                    string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(labelPrefix, label, AsmDudeToolsStatic.Used_Assembler);
+
+                                    description = new TextBlock();
+                                    description.Inlines.Add(Make_Run1("Label ", this._foreground));
+                                    description.Inlines.Add(Make_Run2(full_Qualified_Label, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Label))));
+
+                                    string descr = Get_Label_Description(full_Qualified_Label);
+                                    if (descr.Length == 0)
+                                    {
+                                        descr = Get_Label_Description(label);
+                                    }
+                                    if (descr.Length > 0)
+                                    {
+                                        description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                        {
+                                            Foreground = this._foreground
+                                        });
+                                    }
+                                    break;
+                                }
+                            case AsmTokenType.LabelDef:
+                                {
+                                    string label = keyword;
+                                    string extra_Tag_Info = asmTokenTag.Tag.Misc;
+                                    string full_Qualified_Label;
+                                    if ((extra_Tag_Info != null) && extra_Tag_Info.Equals(AsmTokenTag.MISC_KEYWORD_PROTO))
+                                    {
+                                        full_Qualified_Label = label;
+                                    }
+                                    else
+                                    {
+                                        full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(extra_Tag_Info, label, AsmDudeToolsStatic.Used_Assembler);
+                                    }
+
+                                    AsmDudeToolsStatic.Output_INFO("AsmQuickInfoSource:AugmentQuickInfoSession: found label def " + full_Qualified_Label);
+
+                                    description = new TextBlock();
+                                    description.Inlines.Add(Make_Run1("Label ", this._foreground));
+                                    description.Inlines.Add(Make_Run2(full_Qualified_Label, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Label))));
+
+                                    string descr = Get_Label_Def_Description(full_Qualified_Label, label);
+                                    if (descr.Length > 0)
+                                    {
+                                        description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                        {
+                                            Foreground = this._foreground
+                                        });
+                                    }
+                                    break;
+                                }
+                            case AsmTokenType.Constant:
+                                {
+                                    description = new TextBlock();
+                                    description.Inlines.Add(Make_Run1("Constant ", this._foreground));
+
+                                    var constant = AsmSourceTools.ToConstant(keyword);
+                                    string constantStr = (constant.Valid)
+                                        ? constant.Value + "d = " + constant.Value.ToString("X") + "h = " + AsmSourceTools.ToStringBin(constant.Value, constant.NBits) + "b"
+                                        : keyword;
+
+                                    description.Inlines.Add(Make_Run2(constantStr, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Constant))));
+                                    break;
+                                }
+                            case AsmTokenType.UserDefined1:
+                                {
+                                    description = new TextBlock();
+                                    description.Inlines.Add(Make_Run1("User defined 1: ", this._foreground));
+                                    description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Userdefined1))));
+
+                                    string descr = this._asmDudeTools.Get_Description(keywordUpper);
+                                    if (descr.Length > 0)
+                                    {
+                                        description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                        {
+                                            Foreground = this._foreground
+                                        });
+                                    }
+                                    break;
+                                }
+                            case AsmTokenType.UserDefined2:
+                                {
+                                    description = new TextBlock();
+                                    description.Inlines.Add(Make_Run1("User defined 2: ", this._foreground));
+                                    description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Userdefined2))));
+
+                                    string descr = this._asmDudeTools.Get_Description(keywordUpper);
+                                    if (descr.Length > 0)
+                                    {
+                                        description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                        {
+                                            Foreground = this._foreground
+                                        });
+                                    }
+                                    break;
+                                }
+                            case AsmTokenType.UserDefined3:
+                                {
+                                    description = new TextBlock();
+                                    description.Inlines.Add(Make_Run1("User defined 3: ", this._foreground));
+                                    description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Userdefined3))));
+
+                                    string descr = this._asmDudeTools.Get_Description(keywordUpper);
+                                    if (descr.Length > 0)
+                                    {
+                                        description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                        {
+                                            Foreground = this._foreground
+                                        });
+                                    }
+                                    break;
+                                }
+                            default:
+                                //description = new TextBlock();
+                                //description.Inlines.Add(makeRun1("Unused tagType " + asmTokenTag.Tag.type));
                                 break;
-                            }
-                        default:
-                            //description = new TextBlock();
-                            //description.Inlines.Add(makeRun1("Unused tagType " + asmTokenTag.Tag.type));
-                            break;
-                    }
-                    if (description != null)
-                    {
-                        description.FontSize = AsmDudeToolsStatic.Get_Font_Size() + 2;
-                        description.FontFamily = AsmDudeToolsStatic.Get_Font_Type();
-                        //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:AugmentQuickInfoSession; setting description fontSize={1}; fontFamily={2}", this.ToString(), description.FontSize, description.FontFamily));
-                        quickInfoContent.Add(description);
+                        }
+                        if (description != null)
+                        {
+                            description.FontSize = AsmDudeToolsStatic.Get_Font_Size() + 2;
+                            description.FontFamily = AsmDudeToolsStatic.Get_Font_Type();
+                            //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:AugmentQuickInfoSession; setting description fontSize={1}; fontFamily={2}", this.ToString(), description.FontSize, description.FontFamily));
+                            quickInfoContent.Add(description);
+                        }
                     }
                 }
                 //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoSource:AugmentQuickInfoSession: applicableToSpan=\"" + applicableToSpan + "\"; quickInfoContent,Count=" + quickInfoContent.Count);

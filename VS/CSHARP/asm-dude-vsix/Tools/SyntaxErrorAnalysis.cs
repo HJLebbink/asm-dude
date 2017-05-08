@@ -125,15 +125,6 @@ namespace AsmDude.Tools
                 this.Add_All();
 
                 AsmDudeToolsStatic.Print_Speed_Warning(time1, "SyntaxErrorList");
-                double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
-                if (elapsedSec > AsmDudePackage.slowShutdownThresholdSec)
-                {
-#                   if DEBUG
-                    AsmDudeToolsStatic.Output_WARNING("SyntaxErrorList: Reset: disabled label analysis had I been in Release mode");
-#                   else
-                    Disable();
-#                   endif
-                }
             }
             #endregion Payload
 
