@@ -121,30 +121,23 @@ namespace AsmDude.Tools
             #region Payload
             lock (this._updateLock)
             {
-                try
+                DateTime time1 = DateTime.Now;
+
+                this._semanticErrors.Clear();
+                this.Add_All();
+
+                AsmDudeToolsStatic.Print_Speed_Warning(time1, "SemanticErrorAnalysis");
+                if (false)
                 {
-                    DateTime time1 = DateTime.Now;
-
-                    this._semanticErrors.Clear();
-                    this.Add_All();
-
-                    AsmDudeToolsStatic.Print_Speed_Warning(time1, "SemanticErrorAnalysis");
-                    if (false)
+                    double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
+                    if (elapsedSec > AsmDudePackage.slowShutdownThresholdSec)
                     {
-                        double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
-                        if (elapsedSec > AsmDudePackage.slowShutdownThresholdSec)
-                        {
-                        #if DEBUG
-                            AsmDudeToolsStatic.Output_WARNING("SemanticErrorAnalysis: Reset: disabled label analysis had I been in Release mode");
-                        #else
-                            Disable();
-                        #endif
-                        }
+                    #if DEBUG
+                        AsmDudeToolsStatic.Output_WARNING("SemanticErrorAnalysis: Reset: disabled label analysis had I been in Release mode");
+                    #else
+                        Disable();
+                    #endif
                     }
-                }
-                catch (Exception e)
-                {
-                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Reset; e={1}", ToString(), e.ToString()));
                 }
             }
             #endregion Payload

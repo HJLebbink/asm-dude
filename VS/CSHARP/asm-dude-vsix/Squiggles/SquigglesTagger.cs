@@ -66,22 +66,28 @@ namespace AsmDude.Squiggles
             this._sourceBuffer = buffer;
             this._aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, aggregatorFactory);
             this._errorListProvider = AsmDudeTools.Instance.Error_List_Provider;
-            this._labelGraph = labelGraph;
-            this._asmSimulator = asmSimulator;
             this._foreground = AsmDudeToolsStatic.GetFontColor();
-            this._syntaxErrors = new SyntaxErrorAnalysis(buffer, asmSimulator.Tools);
-            this._semanticErrors = new SemanticErrorAnalysis(buffer, asmSimulator, asmSimulator.Tools);
 
-            this._labelGraph.Reset_Done_Event += this.Handle_Done_Event_LabelGraph_Reset;
-            this._labelGraph.Reset_Delayed();
+            this._labelGraph = labelGraph;
+            if (this._labelGraph.Is_Enabled)
+            {
+                this._labelGraph.Reset_Done_Event += this.Handle_Done_Event_LabelGraph_Reset;
+                this._labelGraph.Reset_Delayed();
+            }
 
-            this._syntaxErrors.Reset_Done_Event += this.Handle_Done_Event_SyntaxErrors_Reset;
-            this._syntaxErrors.Reset_Delayed();
+            this._asmSimulator = asmSimulator;
+            if (this._asmSimulator.Is_Enabled)
+            {
+                this._syntaxErrors = new SyntaxErrorAnalysis(buffer, asmSimulator.Tools);
+                this._syntaxErrors.Reset_Done_Event += this.Handle_Done_Event_SyntaxErrors_Reset;
+                this._syntaxErrors.Reset_Delayed();
 
-            this._semanticErrors.Reset_Done_Event += this.Handle_Done_Event_SemanticErrors_Reset;
-            this._semanticErrors.Reset_Delayed();
+                this._semanticErrors = new SemanticErrorAnalysis(buffer, asmSimulator, asmSimulator.Tools);
+                this._semanticErrors.Reset_Done_Event += this.Handle_Done_Event_SemanticErrors_Reset;
+                this._semanticErrors.Reset_Delayed();
 
-            this._asmSimulator.Simulate_Done_Event += this.Handle_Simulate_Done_Event;
+                this._asmSimulator.Simulate_Done_Event += this.Handle_Simulate_Done_Event;
+            }
         }
 
         public IEnumerable<ITagSpan<IErrorTag>> GetTags(NormalizedSnapshotSpanCollection spans)
@@ -391,7 +397,10 @@ namespace AsmDude.Squiggles
                         if (Settings.Default.AsmSim_Show_Syntax_Errors ||
                             Settings.Default.AsmSim_Show_Usage_Of_Undefined)
                         {
+                            AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Update_Error_Tasks_AsmSim_Async: going to update the error list");
+
                             var errorTasks = this._errorListProvider.Tasks;
+                            bool errorListNeedsRefresh = false;
 
                             #region Remove stale error tasks from the error list
                             for (int i = errorTasks.Count - 1; i >= 0; --i)
@@ -401,9 +410,9 @@ namespace AsmDude.Squiggles
                                     (subCategory == AsmErrorEnum.SYNTAX_ERROR))
                                 {
                                     errorTasks.RemoveAt(i);
+                                    errorListNeedsRefresh = true;
                                 }
                             }
-                            bool newErrorsAdded = false;
                             #endregion
 
                             if (Settings.Default.AsmSim_Show_Syntax_Errors)
@@ -420,12 +429,13 @@ namespace AsmDude.Squiggles
                                         SubcategoryIndex = (int)AsmErrorEnum.SYNTAX_ERROR,
                                         Line = lineNumber,
                                         Column = Get_Keyword_Begin_End(lineContent, mnemonic.ToString()),
-                                        Text = message,
+                                        Text = "Syntax Error: " +message,
                                         ErrorCategory = TaskErrorCategory.Error,
                                         Document = AsmDudeToolsStatic.GetFileName(this._sourceBuffer)
                                     };
                                     errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
                                     errorTasks.Add(errorTask);
+                                    errorListNeedsRefresh = true;
                                 }
                             }
                             if (Settings.Default.AsmSim_Show_Usage_Of_Undefined)
@@ -438,18 +448,19 @@ namespace AsmDude.Squiggles
 
                                     ErrorTask errorTask = new ErrorTask()
                                     {
-                                        SubcategoryIndex = (int)AsmErrorEnum.SYNTAX_ERROR,
+                                        SubcategoryIndex = (int)AsmErrorEnum.USAGE_OF_UNDEFINED,
                                         Line = lineNumber,
                                         Column = 0,// Get_Keyword_Begin_End(lineContent, mnemonic.ToString()),
-                                        Text = message,
+                                        Text = "Semantic Error: " +message,
                                         ErrorCategory = TaskErrorCategory.Error,
                                         Document = AsmDudeToolsStatic.GetFileName(this._sourceBuffer)
                                     };
                                     errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
                                     errorTasks.Add(errorTask);
+                                    errorListNeedsRefresh = true;
                                 }
                             }
-                            if (newErrorsAdded)
+                            if (errorListNeedsRefresh)
                             {
                                 this._errorListProvider.Refresh();
                                 this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
@@ -481,6 +492,7 @@ namespace AsmDude.Squiggles
                             Settings.Default.IntelliSense_Show_Undefined_Includes)
                         {
                             var errorTasks = this._errorListProvider.Tasks;
+                            bool errorListNeedsRefresh = false;
 
                             #region Remove stale error tasks from the error list
                             for (int i = errorTasks.Count - 1; i >= 0; --i)
@@ -491,9 +503,9 @@ namespace AsmDude.Squiggles
                                     (subCategory == AsmErrorEnum.INCLUDE_UNDEFINED))
                                 {
                                     errorTasks.RemoveAt(i);
+                                    errorListNeedsRefresh = true;
                                 }
                             }
-                            bool newErrorsAdded = false;
                             #endregion
 
                             if (Settings.Default.IntelliSense_Show_ClashingLabels)
@@ -516,7 +528,7 @@ namespace AsmDude.Squiggles
                                     };
                                     errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
                                     errorTasks.Add(errorTask);
-                                    newErrorsAdded = true;
+                                    errorListNeedsRefresh = true;
                                 }
                             }
                             if (Settings.Default.IntelliSense_Show_UndefinedLabels)
@@ -539,7 +551,7 @@ namespace AsmDude.Squiggles
                                     };
                                     errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
                                     errorTasks.Add(errorTask);
-                                    newErrorsAdded = true;
+                                    errorListNeedsRefresh = true;
                                 }
                             }
                             if (Settings.Default.IntelliSense_Show_Undefined_Includes)
@@ -562,10 +574,10 @@ namespace AsmDude.Squiggles
                                     };
                                     errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
                                     errorTasks.Add(errorTask);
-                                    newErrorsAdded = true;
+                                    errorListNeedsRefresh = true;
                                 }
                             }
-                            if (newErrorsAdded)
+                            if (errorListNeedsRefresh)
                             {
                                 this._errorListProvider.Refresh();
                                 this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.

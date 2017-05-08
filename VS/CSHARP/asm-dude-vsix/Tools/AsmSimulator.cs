@@ -49,10 +49,11 @@ namespace AsmDude.Tools
             if (Settings.Default.AsmSim_On)
             {
                 AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: swithed on");
+                this.Is_Enabled = true;
+
                 this._cflow = new CFlow(this._buffer.CurrentSnapshot.GetText());
                 this._cached_States_After = new Dictionary<int, AsmSimZ3.Mnemonics_ng.State2>();
                 this._cached_States_Before = new Dictionary<int, AsmSimZ3.Mnemonics_ng.State2>();
-                this.Is_Enabled = true;
                 this._scheduled_After = new HashSet<int>();
                 this._scheduled_Before = new HashSet<int>();
 
@@ -97,6 +98,7 @@ namespace AsmDude.Tools
             else
             {
                 AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: swithed off");
+                this.Is_Enabled = false;
             }
         }
 
@@ -121,21 +123,8 @@ namespace AsmDude.Tools
 
         public static (bool IsImplemented, Mnemonic Mnemonic, string Message) GetSemanticInfo(string line, AsmSimZ3.Mnemonics_ng.Tools tools)
         {
-            var dummyKeys = ("", "", "", "");
-            var content = AsmSourceTools.ParseLine(line);
-            var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, tools);
-            if (opcodeBase == null) return (IsImplemented: false, Mnemonic: Mnemonic.NONE, Message: null);
-
-            if (opcodeBase.GetType() == typeof(NotImplemented))
-            {
-                return (IsImplemented: false, Mnemonic: content.Mnemonic, Message: null);
-            }
-            else
-            {
-                return (opcodeBase.IsHalted)
-                    ? (IsImplemented: true, Mnemonic: content.Mnemonic, Message: opcodeBase.SyntaxError)
-                    : (IsImplemented: true, Mnemonic: content.Mnemonic, Message: null);
-            }
+            //TODO
+            throw new NotImplementedException();
         }
 
         public static string Get_Undefined_Warnings(string line, AsmSimZ3.Mnemonics_ng.Tools tools, State2 state)
@@ -192,6 +181,7 @@ namespace AsmDude.Tools
 
         public void UpdateState(int lineNumber)
         {
+            if (!this.Is_Enabled) return;
             if (!(this._cached_States_After.ContainsKey(lineNumber)))
             {
                 int nSteps = Settings.Default.AsmSim_Number_Of_Steps;
@@ -205,33 +195,44 @@ namespace AsmDude.Tools
 
         public string GetRegisterValue(Rn name, State2 state)
         {
+            if (!this.Is_Enabled) return "";
             if (state == null) return "";
             Tv5[] reg = state.GetTv5Array(name);
 
             if (false)
             {
-                return string.Format("{0} = {1}\n{2}", ToolsZ3.ToStringBin(reg), ToolsZ3.ToStringHex(reg), state.ToStringConstraints("") + state.ToStringRegs("") + state.ToStringFlags(""));
+                return string.Format("{0} = {1}\n{2}", ToolsZ3.ToStringHex(reg), ToolsZ3.ToStringBin(reg), state.ToStringConstraints("") + state.ToStringRegs("") + state.ToStringFlags(""));
             }
             else
             {
-                return string.Format("{0} = {1}", ToolsZ3.ToStringBin(reg), ToolsZ3.ToStringHex(reg));
+                return string.Format("{0} = {1}", ToolsZ3.ToStringHex(reg), ToolsZ3.ToStringBin(reg));
             }
         }
 
         public bool HasRegisterValue(Rn name, State2 state)
         {
-            Tv5[] content = state.GetTv5Array(name, true);
-            foreach (Tv5 tv in content)
+            //TODO 
+            if (true)
             {
-                if ((tv == Tv5.ONE) || (tv == Tv5.ZERO) || (tv == Tv5.UNDEFINED)) return true;
+                return true;
             }
-            return false;
+            else
+            {
+                // this code throw a AccessViolationException, probably due because Z3 does not multithread
+                Tv5[] content = state.GetTv5Array(name, true);
+                foreach (Tv5 tv in content)
+                {
+                    if ((tv == Tv5.ONE) || (tv == Tv5.ZERO) || (tv == Tv5.UNDEFINED)) return true;
+                }
+                return false;
+            }
         }
 
         /// <summary>Return the state of the provided lineNumber, if the state is not computed yet, 
         /// return null and create one in a different thread according to the provided createState boolean.</summary>
         public State2 Get_State_After(int lineNumber, bool createState = false)
         {
+            if (!this.Is_Enabled) return null;
             if (this._cached_States_After.TryGetValue(lineNumber, out State2 result))
             {
                 return result;
@@ -261,6 +262,7 @@ namespace AsmDude.Tools
 
         public State2 Get_State_Before(int lineNumber, bool createState = false)
         {
+            if (!this.Is_Enabled) return null;
             if (this._cached_States_Before.TryGetValue(lineNumber, out State2 result))
             {
                 return result;
@@ -290,6 +292,7 @@ namespace AsmDude.Tools
 
         public State2 Create_State_After(int lineNumber)
         {
+            if (!this.Is_Enabled) return null;
             if (this._cached_States_After.TryGetValue(lineNumber, out State2 state))
             {
                 return state;

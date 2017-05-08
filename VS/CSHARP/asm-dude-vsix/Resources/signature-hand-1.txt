@@ -757,12 +757,12 @@ AND	R64,R/M64	X64	AND R64,R/M64	r64 AND r/m64.
 ARPL	R/M16,R16	286	ARPL R/M16,R16	Adjust RPL of r/m16 to not less than RPL of r16.
 BOUND	R16,M16&16	186	BOUND R16,M16&16	Check if r16 (array index) is within bounds specified by m16&amp;16.
 BOUND	R32,M32&32	386	BOUND R32,M32&32	Check if r32 (array index) is within bounds specified by m32&amp;32.
-BSF	R16,R/M16	386	BSF R16,R/M16	Bit scan forward on r/m16.
-BSF	R32,R/M32	386	BSF R32,R/M32	Bit scan forward on r/m32.
-BSF	R64,R/M64	X64	BSF R64,R/M64	Bit scan forward on r/m64.
-BSR	R16,R/M16	386	BSR R16,R/M16	Bit scan reverse on r/m16.
-BSR	R32,R/M32	386	BSR R32,R/M32	Bit scan reverse on r/m32.
-BSR	R64,R/M64	X64	BSR R64,R/M64	Bit scan reverse on r/m64.
+BSF	R16,R/M16	386	BSF R16,R/M16	Bit scan forward on r/m16. Scan second operand for set bit, store result in first operand.
+BSF	R32,R/M32	386	BSF R32,R/M32	Bit scan forward on r/m32. Scan second operand for set bit, store result in first operand.
+BSF	R64,R/M64	X64	BSF R64,R/M64	Bit scan forward on r/m64. Scan second operand for set bit, store result in first operand.
+BSR	R16,R/M16	386	BSR R16,R/M16	Bit scan reverse on r/m16. Scan second operand for set bit, store result in first operand.
+BSR	R32,R/M32	386	BSR R32,R/M32	Bit scan reverse on r/m32. Scan second operand for set bit, store result in first operand.
+BSR	R64,R/M64	X64	BSR R64,R/M64	Bit scan reverse on r/m64. Scan second operand for set bit, store result in first operand.
 BSWAP	R32	486	BSWAP R32	Reverses the byte order of a 32-bit register.
 BSWAP	R64	X64	BSWAP R64	Reverses the byte order of a 64-bit register.
 

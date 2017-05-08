@@ -30,7 +30,7 @@ namespace AsmDude.Tools
 {
     internal sealed class SyntaxErrorAnalysis
     {
-        #region Private Fields
+        #region Fields
         private readonly ITextBuffer _sourceBuffer;
         private readonly AsmSimZ3.Mnemonics_ng.Tools _tools;
         private readonly IDictionary<int, (Mnemonic Mnemonic, string Message)> _syntaxErrors;
@@ -41,8 +41,7 @@ namespace AsmDude.Tools
         private bool _busy;
         private bool _waiting;
         private bool _scheduled;
-
-        #endregion Private Fields
+        #endregion Fields
 
         public SyntaxErrorAnalysis(ITextBuffer buffer, AsmSimZ3.Mnemonics_ng.Tools tools)
         {
