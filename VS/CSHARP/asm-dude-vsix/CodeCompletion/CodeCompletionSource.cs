@@ -232,7 +232,7 @@ namespace AsmDude
                                 if (AsmSignatureTools.Is_Allowed_Reg(regName, allowedOperands))
                                 {
                                     if (asmSimulator_Enabled && this._asmSimulator.Tools.StateConfig.IsRegOn(RegisterTools.Get64BitsRegister(regName))) {
-                                        State2 state = this._asmSimulator.Get_State_After(lineNumber, false);
+                                        State2 state = this._asmSimulator.Get_State_Before(lineNumber, false, false);
                                         if (state != null)
                                         {
                                             Tv5[] content = state.GetTv5Array(regName);

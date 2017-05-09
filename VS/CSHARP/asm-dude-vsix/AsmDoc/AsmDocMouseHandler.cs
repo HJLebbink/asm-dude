@@ -335,6 +335,7 @@ namespace AsmDude.AsmDoc
                 //  check for valid classification type.
                 foreach (var classification in this._aggregator.GetClassificationSpans(extent.Span))
                 {
+                    //TODO check if classification is a mnemonic only then check for an url
                     string keyword = classification.Span.GetText();
                     //string type = classification.ClassificationType.Classification.ToLower();
                     string url = Get_Url(keyword);

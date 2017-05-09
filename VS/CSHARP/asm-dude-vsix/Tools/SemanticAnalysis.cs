@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmSimZ3.Mnemonics_ng;
-using AsmTools;
 using Microsoft.VisualStudio.Text;
 using System;
 using System.Collections.Generic;
@@ -112,7 +110,8 @@ namespace AsmDude.Tools
             }
         }
 
-        public event EventHandler<CustomEventArgs> Reset_Done_Event;
+        public event EventHandler<LineUpdatedEventArgs> Line_Updated_Event;
+        public event EventHandler<EventArgs> Reset_Done_Event;
 
         #region Private Methods
         private void Buffer_Changed(object sender, TextContentChangedEventArgs e)
@@ -142,21 +141,28 @@ namespace AsmDude.Tools
                 ITextSnapshot snapShot = this._sourceBuffer.CurrentSnapshot;
                 for (int lineNumber = 0; lineNumber < snapShot.LineCount; ++lineNumber)
                 {
-                    string line = snapShot.GetLineFromLineNumber(lineNumber).GetText().Trim();
                     {
-                        string message = this._asmSimulator.Get_Usage_Undefined_Warnings(line, lineNumber);
-                        if (message.Length > 0) this._usage_Undefined.Add(lineNumber, message);
+                        string message = this._asmSimulator.Get_Usage_Undefined_Warnings(lineNumber);
+                        if (message.Length > 0)
+                        {
+                            this._usage_Undefined.Add(lineNumber, message);
+                            this.Line_Updated_Event(this, new LineUpdatedEventArgs(lineNumber, AsmErrorEnum.USAGE_OF_UNDEFINED));
+                        }
                     }
                     {
-                        string message = this._asmSimulator.Get_Redundant_Instruction_Warnings(line, lineNumber);
-                        if (message.Length > 0) this._redundant_Instruction.Add(lineNumber, message);
+                        string message = this._asmSimulator.Get_Redundant_Instruction_Warnings(lineNumber);
+                        if (message.Length > 0)
+                        {
+                            this._redundant_Instruction.Add(lineNumber, message);
+                            this.Line_Updated_Event(this, new LineUpdatedEventArgs(lineNumber, AsmErrorEnum.REDUNDANT));
+                        }
                     }
                 }
-                AsmDudeToolsStatic.Print_Speed_Warning(time1, "SemanticErrorAnalysis");
+                AsmDudeToolsStatic.Print_Speed_Warning(time1, "SemanticAnalysis");
             }
-            #endregion Payload
 
-            this.On_Reset_Done_Event(new CustomEventArgs("Resetting SemanticErrorAnalysis is finished"));
+            this.Reset_Done_Event(this, new EventArgs());
+            #endregion Payload
 
             this._busy = false;
             if (this._scheduled)
@@ -166,23 +172,6 @@ namespace AsmDude.Tools
             }
         }
 
-        private void On_Reset_Done_Event(CustomEventArgs e)
-        {
-            // Make a temporary copy of the event to avoid possibility of
-            // a race condition if the last subscriber un-subscribes
-            // immediately after the null check and before the event is raised.
-            EventHandler<CustomEventArgs> handler = Reset_Done_Event;
-
-            // Event will be null if there are no subscribers
-            if (handler != null)
-            {
-                // Format the string to send inside the CustomEventArgs parameter
-                e.Message += String.Format(" at {0}", DateTime.Now.ToString());
-
-                // Use the () operator to raise the event.
-                handler(this, e);
-            }
-        }
         #endregion
     }
 }

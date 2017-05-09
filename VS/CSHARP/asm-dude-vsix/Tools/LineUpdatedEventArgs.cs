@@ -22,19 +22,25 @@
 
 using System;
 
-namespace AsmDude.Squiggles
-{
-    [Flags]
-    public enum AsmErrorEnum
-    {
-        NONE               = 0,
-        LABEL_UNDEFINED    = 1 << 1,
-        LABEL_CLASH        = 1 << 2,
-        INCLUDE_UNDEFINED  = 1 << 3,
-        SYNTAX_ERROR       = 1 << 4,
-        USAGE_OF_UNDEFINED = 1 << 5,
-        OTHER              = 1 << 6,
+namespace AsmDude.Tools {
 
-        LABEL = LABEL_UNDEFINED | LABEL_CLASH
+    public class CustomEventArgs : EventArgs
+    {
+        public string Message { get; set; }
+        public CustomEventArgs(string message)
+        {
+            this.Message = message;
+        }
+    }
+
+    public class LineUpdatedEventArgs : EventArgs
+    {
+        public int LineNumber { get; set; }
+        public AsmErrorEnum Error { get; set; }
+        public LineUpdatedEventArgs(int lineNumber, AsmErrorEnum error)
+        {
+            this.LineNumber = lineNumber;
+            this.Error = error;
+        }
     }
 }

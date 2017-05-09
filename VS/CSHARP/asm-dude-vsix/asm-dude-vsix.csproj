@@ -66,7 +66,7 @@
     </CopyVsixExtensionLocation>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <RegisterForComInterop>false</RegisterForComInterop>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <NoWarn>CS0162</NoWarn>
     <LangVersion>7</LangVersion>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
@@ -188,7 +188,7 @@
     <Compile Include="CodeCompletion\VsTextViewCreationListener.cs" />
     <Compile Include="CodeFolding\CodeFoldingTagger.cs" />
     <Compile Include="CodeFolding\CodeFoldingTaggerProvider.cs" />
-    <Compile Include="Squiggles\AsmErrorEnum.cs" />
+    <Compile Include="Tools\AsmErrorEnum.cs" />
     <Compile Include="Squiggles\SquigglesTagger.cs" />
     <Compile Include="Squiggles\SquigglesTaggerProvider.cs" />
     <Compile Include="HighlightWord\HighlightWordTagger.cs" />
@@ -234,7 +234,7 @@
     <Compile Include="Tools\ApplicationInformation.cs" />
     <Compile Include="Tools\AsmDudeTools.cs" />
     <Compile Include="Tools\AsmDudeToolsStatic.cs" />
-    <Compile Include="Tools\CustomEventArgs.cs" />
+    <Compile Include="Tools\LineUpdatedEventArgs.cs" />
     <Compile Include="Tools\ILabelGraph.cs" />
     <Compile Include="Tools\LabelGraph.cs" />
     <Compile Include="Tools\MnemonicStore.cs" />

@@ -22,17 +22,21 @@
 
 using System;
 
-namespace AsmDude.Tools {
+namespace AsmDude.Tools
+{
+    [Flags]
+    public enum AsmErrorEnum
+    {
+        NONE               = 0,
 
-    public class CustomEventArgs : EventArgs {
-        public CustomEventArgs(string s) {
-            this.message = s;
-        }
-        private string message;
+        LABEL_UNDEFINED    = 1 << 1,
+        LABEL_CLASH        = 1 << 2,
+        INCLUDE_UNDEFINED  = 1 << 3,
+        SYNTAX_ERROR       = 1 << 4,
+        USAGE_OF_UNDEFINED = 1 << 5,
+        NOT_IMPLEMENTED    = 1 << 6,
+        REDUNDANT          = 1 << 7,
 
-        public string Message {
-            get { return this.message; }
-            set { this.message = value; }
-        }
+        OTHER              = 1 << 8
     }
 }

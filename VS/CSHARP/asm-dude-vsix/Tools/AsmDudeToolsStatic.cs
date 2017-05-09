@@ -294,6 +294,12 @@ namespace AsmDude.Tools
             }
         }
 
+        /// <summary>Get the linenumber of the start of the provided span</summary>
+        public static int Get_LineNumber(SnapshotSpan span)
+        {
+            return span.Snapshot.GetLineNumberFromPosition(span.Start);
+        }
+
         public static System.Windows.Media.Color ConvertColor(System.Drawing.Color drawingColor)
         {
             return System.Windows.Media.Color.FromArgb(drawingColor.A, drawingColor.R, drawingColor.G, drawingColor.B);

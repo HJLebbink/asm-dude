@@ -92,15 +92,7 @@ namespace AsmDude.QuickInfo
                 if (enumerator.MoveNext())
                 {
                     var asmTokenTag = enumerator.Current;
-
-                    if (enumerator.MoveNext())
-                    {
-                        // TODO: multiple tags at the provided triggerPoint is most likely the result of a bug in AsmTokenTagger, but it seems harmless...
-                        var enumerator3 = asmTokenTag.Span.GetSpans(this._sourceBuffer).GetEnumerator();
-                        enumerator3.MoveNext();
-                        AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:AugmentQuickInfoSession. More than one tag! next tag=\"{1}\"", ToString(), enumerator3.Current.GetText()));
-                    }
-
+ 
                     var enumerator2 = asmTokenTag.Span.GetSpans(this._sourceBuffer).GetEnumerator();
                     if (enumerator2.MoveNext())
                     {
@@ -108,7 +100,21 @@ namespace AsmDude.QuickInfo
                         string keyword = tagSpan.GetText();
                         string keywordUpper = keyword.ToUpper();
 
-                        int lineNumber = tagSpan.Snapshot.GetLineNumberFromPosition(tagSpan.Start);
+                        #region Tests
+                        // TODO: multiple tags at the provided triggerPoint is most likely the result of a bug in AsmTokenTagger, but it seems harmless...
+                        if (false)
+                        {
+                            if (enumerator.MoveNext())
+                            {
+                                var asmTokenTagX = enumerator.Current;
+                                var enumeratorX = asmTokenTagX.Span.GetSpans(this._sourceBuffer).GetEnumerator();
+                                enumeratorX.MoveNext();
+                                AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:AugmentQuickInfoSession. current keyword " + keyword+ ": but span has more than one tag! next tag=\"{1}\"", ToString(), enumeratorX.Current.GetText()));
+                            }
+                        }
+                        #endregion
+
+                        int lineNumber = AsmDudeToolsStatic.Get_LineNumber(tagSpan);
 
                         //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoSource:AugmentQuickInfoSession: keyword=\""+ keyword + "\"; type=" + asmTokenTag.Tag.type +"; file="+AsmDudeToolsStatic.GetFileName(session.TextView.TextBuffer));
                         applicableToSpan = snapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
@@ -166,11 +172,19 @@ namespace AsmDude.QuickInfo
 
                                     if (this._asmSimulator.Is_Enabled)
                                     {
-                                        State2 state = this._asmSimulator.Get_State_After(lineNumber, true);
-                                        string msg = this._asmSimulator.GetRegisterValue(RegisterTools.ParseRn(keywordUpper, true), state);
-                                        if (msg.Length == 0) msg = "[Bussy calculating register content]";
+                                        Rn reg = RegisterTools.ParseRn(keywordUpper, true);
 
-                                        description.Inlines.Add(new Run(AsmSourceTools.Linewrap("\n" + msg, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                        State2 state_Before = this._asmSimulator.Get_State_Before(lineNumber, true, true);
+                                        string reg_Content_Before = this._asmSimulator.Get_Register_Value(reg, state_Before);
+
+                                        State2 state_After = this._asmSimulator.Get_State_After(lineNumber, true, true);
+                                        string reg_Content_After = this._asmSimulator.Get_Register_Value(reg, state_After);
+
+                                        if (reg_Content_Before.Length == 0) reg_Content_Before = "[Bussy calculating register content]";
+                                        if (reg_Content_After.Length == 0) reg_Content_After = "[Bussy calculating register content]";
+
+                                        string msg = "\n" + reg + " before: " + reg_Content_Before + "\n" + reg + " after:  " + reg_Content_After;
+                                        description.Inlines.Add(new Run(AsmSourceTools.Linewrap(msg, AsmDudePackage.maxNumberOfCharsInToolTips))
                                         {
                                             Foreground = this._foreground
                                         });

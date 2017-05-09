@@ -384,12 +384,7 @@ namespace AsmDude.Tools
 
         private static int Get_Line_Number(IMappingTagSpan<AsmTokenTag> tag)
         {
-            return LabelGraph.Get_Line_Number(tag.Span.GetSpans(tag.Span.AnchorBuffer)[0]);
-        }
-
-        private static int Get_Line_Number(SnapshotSpan span)
-        {
-            return span.Snapshot.GetLineNumberFromPosition(span.Start);
+            return AsmDudeToolsStatic.Get_LineNumber(tag.Span.GetSpans(tag.Span.AnchorBuffer)[0]);
         }
 
         private void On_Reset_Done_Event(CustomEventArgs e)

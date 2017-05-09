@@ -79,9 +79,9 @@ namespace AsmDude.Tools
         {
             return this._syntax_Errors.ContainsKey(lineNumber);
         }
-        public string GetSyntaxError(int lineNumber)
+        public (Mnemonic Mnemonic, string Message) GetSyntaxError(int lineNumber)
         {
-            return this._syntax_Errors.TryGetValue(lineNumber, out (Mnemonic mnemonic, string Message) error) ? error.Message : ""; 
+            return this._syntax_Errors.TryGetValue(lineNumber, out (Mnemonic Mnemonic, string Message) error) ? error : (Mnemonic.NONE, ""); 
         }
         public void Reset_Delayed()
         {
@@ -102,7 +102,8 @@ namespace AsmDude.Tools
             }
         }
 
-        public event EventHandler<CustomEventArgs> Reset_Done_Event;
+        public event EventHandler<LineUpdatedEventArgs> Line_Updated_Event;
+        public event EventHandler<EventArgs> Reset_Done_Event;
 
         #region Private Methods
         private void Buffer_Changed(object sender, TextContentChangedEventArgs e)
@@ -129,36 +130,16 @@ namespace AsmDude.Tools
                 this._syntax_Errors.Clear();
                 this._isNotImplemented.Clear();
                 this.Add_All();
-
-                AsmDudeToolsStatic.Print_Speed_Warning(time1, "SyntaxErrorList");
+                this.Reset_Done_Event(this, new EventArgs());
+                AsmDudeToolsStatic.Print_Speed_Warning(time1, "SyntaxAnalysis");
             }
             #endregion Payload
-
-            this.On_Reset_Done_Event(new CustomEventArgs("Resetting SyntaxErrorList is finished"));
 
             this._busy = false;
             if (this._scheduled)
             {
                 this._scheduled = false;
                 Reset_Delayed();
-            }
-        }
-
-        private void On_Reset_Done_Event(CustomEventArgs e)
-        {
-            // Make a temporary copy of the event to avoid possibility of
-            // a race condition if the last subscriber un-subscribes
-            // immediately after the null check and before the event is raised.
-            EventHandler<CustomEventArgs> handler = Reset_Done_Event;
-
-            // Event will be null if there are no subscribers
-            if (handler != null)
-            {
-                // Format the string to send inside the CustomEventArgs parameter
-                e.Message += String.Format(" at {0}", DateTime.Now.ToString());
-
-                // Use the () operator to raise the event.
-                handler(this, e);
             }
         }
 
@@ -175,11 +156,13 @@ namespace AsmDude.Tools
                     if (syntaxInfo.Message != null)
                     {
                         this._syntax_Errors.Add(lineNumber, (syntaxInfo.Mnemonic, syntaxInfo.Message));
+                        this.Line_Updated_Event(this, new LineUpdatedEventArgs(lineNumber, AsmErrorEnum.SYNTAX_ERROR));
                     }
                 }
                 else
                 {
                     this._isNotImplemented.Add(lineNumber);
+                    this.Line_Updated_Event(this, new LineUpdatedEventArgs(lineNumber, AsmErrorEnum.NOT_IMPLEMENTED));
                 }
             }
         }

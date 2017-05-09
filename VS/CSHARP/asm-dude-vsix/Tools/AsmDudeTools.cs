@@ -73,7 +73,7 @@ namespace AsmDude
             #endregion
 
             this._smartThreadPool = new SmartThreadPool();
-            //this._smartThreadPool.Start(); // There seems no need to start this threadpool
+            //this._smartThreadPool.Start(); // There seems no need to start this threadpool, it is started by default
 
             #region load Signature Store and Performance Store
             string path = AsmDudeToolsStatic.Get_Install_Path() + "Resources" + Path.DirectorySeparatorChar;
@@ -303,7 +303,7 @@ namespace AsmDude
         }
 
         /// <summary>
-        /// get url for the provided keyword. Returns empty string if the keyword does not exist or the keyword does not have an url. Keyword has to be in CAPITALS
+        /// get descripton for the provided keyword. Returns empty string if the keyword does not exist or the keyword does not have an description. Keyword has to be in CAPITALS
         /// </summary>
         public string Get_Description(string keyword)
         {
