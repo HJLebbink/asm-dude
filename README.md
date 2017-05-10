@@ -53,6 +53,58 @@ clashing label definitions. Red error squiggles appear and entries in the error 
 
 ![label-analysis](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude-label-clash.png?raw=true "Label Clashes")
 
+## Assembly Simulator (Available in version 2.0)
+
+The assembly simulator interprets assembly code and allows to reason about assembly programs.
+
+### Multi-Valued Logics
+The value of flag or the value of a single bit in a register can either take the Boolean value of 1, we say the value is set, 
+or it can take the Boolean value of 0, we say that the value is cleared. We assume that these two values are the only two values 
+a bit may assume. When reasoning about these values, other useful truth-values can be distinguished. These values represent the 
+epistemic state a reasoner has about the value 0 and 1. Three types of ignorance, and an inconsistent state:
+ 
+1. When you reason about the truth-value of a bit you try to determine in which world you live: a world in 
+which the bit is set, or one in which the bit is cleared. You may conclude that you lack necessary information to determine the 
+truth-value, we would say that the bit is UNKNOWN, denoted by a question mark '?'. The instruction "IN" retrieves a byte from I/O,
+the bits in that byte UNKNOWN.
+ 
+2. Another type of ignorance is introduced by instructions themselves. The specification may state for example that the state of 
+a flag is undefined after the execution of a specific instruction. The instruction AND sets the value of the auxiliary flag AF 
+(obviously) to either a 0 or a 1, yet the specification does not define when the flag is a 0 or a 1. We say that a bit can have 
+the truth-value UNDEFINED, denoted by the letter 'U'.
+
+3. Yet another type of ignorance is introduced by the bounded capacities of the reasoner. The theorem prover Z3 is used to establish 
+the truth-value of a bit. After a certain timeout the theorem prover gives up, we say that a bit can have the truth-value UNDETERMINED, 
+denoted by a hyphen '-'.
+
+4. The last truth-value indicates an inconsistent state (of the reasoner) when the reasoner can establish that a bit is set and 
+at the same time it has information to conclude that the bit is cleared. This signals an implementation bug, and is most likely 
+introduced by the translation of instructions to logical constraints that the theorem prover can understand. You will not observe
+this truth-value under normal operation. We say that a bit can have a truth-value INCONSISTENT, denoted by the letter 'X'.
+
+### Show Register Content
+The register content before and after the current line is shown in QuickInfo tooltips when hovering over registers. 
+"RCL RAX, 1" shifts the carry flag into position 0, but the carry flag is undefined due to BSF.
+
+![show-register-content](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude-register-content.png?raw=true "Register Content")
+
+###	Semantic warning when using Undefined Values
+Using undefined flags or registers in instruction most often signals a bug. Although it is conceivable that using undefined values is 
+intended (For example in "XOR RAX, RAX"), you may still be warned about it. For example, the carry flag is used by RCL but CF has an
+undefined value.
+	
+![show-register-content](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude-using-undefined.png?raw=true "Using Undefined Values")
+	
+### Semantic warning for Redundant Instructions
+When an instruction does not change the state of the registers and flags it writes to, give a warning. 
+
+![redundant-instruction](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude-redundant-instruction.png?raw=true "Redundant Instructions")
+
+### Syntax Errors (found by the assembly simulator)
+The Simulator was not build to find syntax errors, yet it does find some when interpreting the code. Would be a waste not to feedback these errors.
+
+![syntax-errors](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude-syntax-errors.png?raw=true "Syntax Errors")
+
 ## Where is the Source (Are you sure this is not a honeypot?!)
 If you are reading this you are most likely an assembly programmer, if you are still interested in some dirty c#, 
 or you are just cautious, you can run the extension from source code. To do that, Visual Studio 2015 SDK (or VS 2017 SDK) 
