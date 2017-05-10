@@ -95,6 +95,7 @@ namespace AsmDude.CodeFolding
             this._buffer.ChangedLowPriority += this.Buffer_Changed;
         }
 
+
         public IEnumerable<ITagSpan<IOutliningRegionTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
             if (spans.Count == 0)
@@ -120,7 +121,28 @@ namespace AsmDude.CodeFolding
                             ITextSnapshotLine endLine = this._snapshot.GetLineFromLineNumber(region.EndLine);
 
                             var replacement = Get_Region_Description(startLine.GetText(), region.StartOffsetHoverText);
-                            var hover = Get_Hover_Text(region.StartLine, region.EndLine, this._snapshot);
+
+                            object hover = null;
+                            try
+                            {
+                                hover = Get_Hover_Text_TextBlock(region.StartLine, region.EndLine, this._snapshot);
+                            } catch (Exception e)
+                            {
+                                /*
+                                    System.InvalidOperationException: The calling thread must be STA, because many UI components require this.&#x000D;&#x000A;   
+                                    at System.Windows.Input.InputManager..ctor()&#x000D;&#x000A;
+                                    at System.Windows.Input.InputManager.GetCurrentInputManagerImpl()&#x000D;&#x000A;
+                                    at System.Windows.Input.KeyboardNavigation..ctor()&#x000D;&#x000A;
+                                    at System.Windows.FrameworkElement.FrameworkServices..ctor()&#x000D;&#x000A;
+                                    at System.Windows.FrameworkElement.EnsureFrameworkServices()&#x000D;&#x000A;
+                                    at System.Windows.FrameworkElement..ctor()&#x000D;&#x000A;
+                                    at AsmDude.CodeFolding.CodeFoldingTagger.Get_Hover_Text(Int32 beginLineNumber, Int32 endLineNumber, ITextSnapshot snapshot) in C:\Cloud\Dropbox\sc\GitHub\asm-dude\VS\CSHARP\asm-dude-vsix\CodeFolding\CodeFoldingTagger.cs:line 162&#x000D;&#x000A;
+                                    at AsmDude.CodeFolding.CodeFoldingTagger.&lt;GetTags&gt;d__13.MoveNext() in C:\Cloud\Dropbox\sc\GitHub\asm-dude\VS\CSHARP\asm-dude-vsix\CodeFolding\CodeFoldingTagger.cs:line 122&#x000D;&#x000A;
+                                    at Microsoft.VisualStudio.Text.Tagging.Implementation.TagAggregator`1.&lt;GetTagsForBuffer&gt;d__38.MoveNext()
+                                 */
+                                AsmDudeToolsStatic.Output_WARNING("CodeFoldingTagger: GetTags: exception=" + e.ToString());
+                                hover = Get_Hover_Text_String(region.StartLine, region.EndLine, this._snapshot);
+                            }
 
                             yield return new TagSpan<IOutliningRegionTag>(
                                 new SnapshotSpan(startLine.Start + region.StartOffset, endLine.End),
@@ -154,22 +176,27 @@ namespace AsmDude.CodeFolding
             return (description.Length > 0) ? description : "...";
         }
 
-        /// <summary>
-        /// Get the text to be displayed when hovering over a closed region
-        /// </summary>
-        private TextBlock Get_Hover_Text(int beginLineNumber, int endLineNumber, ITextSnapshot snapshot)
+        private string Get_Hover_Text_String(int beginLineNumber, int endLineNumber, ITextSnapshot snapshot)
         {
-            TextBlock description = new TextBlock();
-            StringBuilder str = new StringBuilder();
-
+            StringBuilder sb = new StringBuilder();
             int numberOfLines = Math.Min((endLineNumber + 1) - beginLineNumber, 40); // do not show more than 40 lines 
             for (int i = 0; i < numberOfLines; ++i)
             {
-                str.AppendLine(snapshot.GetLineFromLineNumber(beginLineNumber + i).GetText());
+                sb.AppendLine(snapshot.GetLineFromLineNumber(beginLineNumber + i).GetText());
             }
+            return sb.ToString().TrimEnd();
+        }
+
+        /// <summary>
+        /// Get the text to be displayed when hovering over a closed region
+        /// </summary>
+        private TextBlock Get_Hover_Text_TextBlock(int beginLineNumber, int endLineNumber, ITextSnapshot snapshot)
+        {
+            string hover_string = Get_Hover_Text_String(beginLineNumber, endLineNumber, snapshot);
 
             //TODO provide syntax highlighting for the next run
-            System.Windows.Documents.Run run = new System.Windows.Documents.Run(str.ToString().TrimEnd()); // TrimEnd to get rid of the last new line
+            TextBlock description = new TextBlock();
+            System.Windows.Documents.Run run = new System.Windows.Documents.Run(hover_string); // TrimEnd to get rid of the last new line
             run.FontSize -= 1;
             description.Inlines.Add(run);
             return description;
@@ -188,10 +215,10 @@ namespace AsmDude.CodeFolding
         /// <summary>
         /// Return start positions of the provided line content. tup has: 1) start of the folding position; 2) start of the description position.
         /// </summary>
-        private (int, int) Is_Start_Keyword(string lineContent, int lineNumber)
+        private (int StartPosFolding, int StartPosDescription) Is_Start_Keyword(string lineContent, int lineNumber)
         {
             var tup = Is_Start_Directive_Keyword(lineContent);
-            if (tup.Item1 != -1)
+            if (tup.StartPos != -1)
             {
                 return tup;
             }
@@ -216,7 +243,7 @@ namespace AsmDude.CodeFolding
         /// <summary>
         /// Return start positions of the provided line content. tup has: 1) start of the folding position; 2) start of the description position.
         /// </summary>
-        private (int, int) Is_Start_Directive_Keyword(string lineContent)
+        private (int StartPos, int StartPosDescription) Is_Start_Directive_Keyword(string lineContent)
         {
             int i1 = lineContent.IndexOf(this.startRegionTag, StringComparison.OrdinalIgnoreCase);
             if (i1 == -1)
@@ -232,7 +259,7 @@ namespace AsmDude.CodeFolding
         /// <summary>
         /// Return start positions of the provided line content. tup has: 1) start of the folding position; 2) start of the description position.
         /// </summary>
-        private (int startPosFolding, int startPosDescription) Is_Start_Masm_Keyword(string lineContent, int lineNumber)
+        private (int StartPosFolding, int StartPosDescription) Is_Start_Masm_Keyword(string lineContent, int lineNumber)
         {
             ITextSnapshotLine line = this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
             IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(line.Extent);
@@ -268,7 +295,7 @@ namespace AsmDude.CodeFolding
         /// <summary>
         /// Return start positions of the provided line content. tup has: 1) start of the folding position; 2) start of the description position.
         /// </summary>
-        private (int, int) Is_Start_Nasm_Keyword(string lineContent, int lineNumber)
+        private (int StartPos, int StartPosDescription) Is_Start_Nasm_Keyword(string lineContent, int lineNumber)
         {
             ITextSnapshotLine line = this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
             IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(line.Extent);
@@ -390,14 +417,10 @@ namespace AsmDude.CodeFolding
             else
             {
                 AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger:Parse_Delayed: going to execute this call.");
-                AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Parse2);
+                AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Parse);
             }
         }
-        private void Parse2()
-        {
-            Parse(null);
-        }
-        private void Parse(object threadContext)
+        private void Parse()
         {
             if (!this._enabled) return;
 
@@ -435,9 +458,9 @@ namespace AsmDude.CodeFolding
                         string lineContent = line.GetText();
                         int lineNumber = line.LineNumber;
 
-                        (int, int) tup = Is_Start_Keyword(lineContent, lineNumber);
-                        int regionStart = tup.Item1;
-                        int regionStartHoverText = tup.Item2;
+                        var tup = Is_Start_Keyword(lineContent, lineNumber);
+                        int regionStart = tup.StartPosFolding;
+                        int regionStartHoverText = tup.StartPosDescription;
 
                         if (regionStart != -1)
                         {
@@ -463,7 +486,7 @@ namespace AsmDude.CodeFolding
                                         line = enumerator.Current;
                                         string lineContent3 = line.GetText();
                                         if (AsmSourceTools.IsRemarkOnly(lineContent3) &&
-                                                (Is_Start_Directive_Keyword(lineContent3).Item1 == -1) &&
+                                                (Is_Start_Directive_Keyword(lineContent3).StartPos == -1) &&
                                                 (Is_End_Directive_Keyword(lineContent3) == -1))
                                         {
                                             lineNumber2 = line.LineNumber;
