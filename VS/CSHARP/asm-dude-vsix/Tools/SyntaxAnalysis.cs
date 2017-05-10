@@ -148,8 +148,7 @@ namespace AsmDude.Tools
             ITextSnapshot snapShot = this._sourceBuffer.CurrentSnapshot;
             for (int lineNumber = 0; lineNumber < snapShot.LineCount; ++lineNumber)
             {
-                string line = snapShot.GetLineFromLineNumber(lineNumber).GetText().Trim();
-                var syntaxInfo = this._asmSimulator.Get_Syntax_Errors(line);
+                var syntaxInfo = this._asmSimulator.Get_Syntax_Errors(lineNumber);
 
                 if (syntaxInfo.IsImplemented)
                 {

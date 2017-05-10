@@ -129,10 +129,10 @@ namespace AsmDude.Tools
 
         #endregion
 
-        public (bool IsImplemented, Mnemonic Mnemonic, string Message) Get_Syntax_Errors(string line)
+        public (bool IsImplemented, Mnemonic Mnemonic, string Message) Get_Syntax_Errors(int lineNumber)
         {
             var dummyKeys = ("", "", "", "");
-            var content = AsmSourceTools.ParseLine(line);
+            var content = this._cflow.GetLine(lineNumber);
             var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, this.Tools);
             if (opcodeBase == null) return (IsImplemented: false, Mnemonic: Mnemonic.NONE, Message: null);
 

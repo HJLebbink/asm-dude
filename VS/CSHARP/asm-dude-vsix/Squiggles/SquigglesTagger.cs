@@ -250,7 +250,7 @@ namespace AsmDude.Squiggles
                                 {
                                     if (Decorate_Syntax_Errors && this._syntaxAnalysis.HasSyntaxError(lineNumber))
                                     {
-                                        string message = AsmSourceTools.Linewrap("Syntax Error: " + this._syntaxAnalysis.GetSyntaxError(lineNumber), AsmDudePackage.maxNumberOfCharsInToolTips);
+                                        string message = AsmSourceTools.Linewrap("Syntax Error: " + this._syntaxAnalysis.GetSyntaxError(lineNumber).Message, AsmDudePackage.maxNumberOfCharsInToolTips);
                                         yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.SyntaxError, message));
                                     }
                                 }
