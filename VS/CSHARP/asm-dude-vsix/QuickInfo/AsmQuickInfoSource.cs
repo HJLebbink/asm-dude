@@ -170,7 +170,7 @@ namespace AsmDude.QuickInfo
                                         });
                                     }
 
-                                    if (this._asmSimulator.Is_Enabled)
+                                    if (this._asmSimulator.Is_Enabled & Settings.Default.AsmSim_Decorate_Registers)
                                     {
                                         Rn reg = RegisterTools.ParseRn(keywordUpper, true);
 

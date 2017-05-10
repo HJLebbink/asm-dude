@@ -150,7 +150,7 @@ namespace AsmDude.Tools
 
         public string Get_Usage_Undefined_Warnings(int lineNumber)
         {
-            State2 state = this.Get_State_Before(lineNumber, false, true);
+          State2 state = this.Get_State_Before(lineNumber, false, true);
 
             lock (this._updateLock)
             {

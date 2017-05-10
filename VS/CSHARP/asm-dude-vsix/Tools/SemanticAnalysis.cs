@@ -134,34 +134,13 @@ namespace AsmDude.Tools
             lock (this._updateLock)
             {
                 DateTime time1 = DateTime.Now;
-                AsmSimZ3.Mnemonics_ng.Tools tools = this._asmSimulator.Tools;
+
                 this._usage_Undefined.Clear();
                 this._redundant_Instruction.Clear();
-
-                ITextSnapshot snapShot = this._sourceBuffer.CurrentSnapshot;
-                for (int lineNumber = 0; lineNumber < snapShot.LineCount; ++lineNumber)
-                {
-                    {
-                        string message = this._asmSimulator.Get_Usage_Undefined_Warnings(lineNumber);
-                        if (message.Length > 0)
-                        {
-                            this._usage_Undefined.Add(lineNumber, message);
-                            this.Line_Updated_Event(this, new LineUpdatedEventArgs(lineNumber, AsmErrorEnum.USAGE_OF_UNDEFINED));
-                        }
-                    }
-                    {
-                        string message = this._asmSimulator.Get_Redundant_Instruction_Warnings(lineNumber);
-                        if (message.Length > 0)
-                        {
-                            this._redundant_Instruction.Add(lineNumber, message);
-                            this.Line_Updated_Event(this, new LineUpdatedEventArgs(lineNumber, AsmErrorEnum.REDUNDANT));
-                        }
-                    }
-                }
+                this.Add_All();
+                this.Reset_Done_Event(this, new EventArgs());
                 AsmDudeToolsStatic.Print_Speed_Warning(time1, "SemanticAnalysis");
             }
-
-            this.Reset_Done_Event(this, new EventArgs());
             #endregion Payload
 
             this._busy = false;
@@ -172,6 +151,46 @@ namespace AsmDude.Tools
             }
         }
 
+        private void Add_All()
+        {
+            bool update_Usage_Undefined = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Show_Usage_Of_Undefined || Settings.Default.AsmSim_Decorate_Usage_Of_Undefined);
+            bool update_Redundant_Instruction = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Show_Redundant_Instructions || Settings.Default.AsmSim_Decorate_Redundant_Instructions);
+            bool update_Known_Register = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Decorate_Registers);
+
+            ITextSnapshot snapShot = this._sourceBuffer.CurrentSnapshot;
+            for (int lineNumber = 0; lineNumber < snapShot.LineCount; ++lineNumber)
+            {
+                {
+                    if (update_Known_Register)
+                    {
+                        this._asmSimulator.Get_State_After(lineNumber, false, true);
+                        this._asmSimulator.Get_State_Before(lineNumber, false, true);
+                    }
+                }
+                {
+                    if (update_Usage_Undefined)
+                    {
+                        string message = this._asmSimulator.Get_Usage_Undefined_Warnings(lineNumber);
+                        if (message.Length > 0)
+                        {
+                            this._usage_Undefined.Add(lineNumber, message);
+                            this.Line_Updated_Event(this, new LineUpdatedEventArgs(lineNumber, AsmErrorEnum.USAGE_OF_UNDEFINED));
+                        }
+                    }
+                }
+                {
+                    if (update_Redundant_Instruction)
+                    {
+                        string message = this._asmSimulator.Get_Redundant_Instruction_Warnings(lineNumber);
+                        if (message.Length > 0)
+                        {
+                            this._redundant_Instruction.Add(lineNumber, message);
+                            this.Line_Updated_Event(this, new LineUpdatedEventArgs(lineNumber, AsmErrorEnum.REDUNDANT));
+                        }
+                    }
+                }
+            }
+        }
         #endregion
     }
 }

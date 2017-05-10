@@ -79,7 +79,7 @@ namespace AsmDude.Tools
         {
             return this._syntax_Errors.ContainsKey(lineNumber);
         }
-        public (Mnemonic Mnemonic, string Message) GetSyntaxError(int lineNumber)
+        public (Mnemonic Mnemonic, string Message) Get_Syntax_Error(int lineNumber)
         {
             return this._syntax_Errors.TryGetValue(lineNumber, out (Mnemonic Mnemonic, string Message) error) ? error : (Mnemonic.NONE, ""); 
         }
@@ -145,6 +145,9 @@ namespace AsmDude.Tools
 
         private void Add_All()
         {
+            bool update_Syntax_Error = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Show_Syntax_Errors || Settings.Default.AsmSim_Decorate_Syntax_Errors);
+            bool update_Not_Implemented = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Decorate_Unimplemented);
+
             ITextSnapshot snapShot = this._sourceBuffer.CurrentSnapshot;
             for (int lineNumber = 0; lineNumber < snapShot.LineCount; ++lineNumber)
             {
@@ -154,14 +157,20 @@ namespace AsmDude.Tools
                 {
                     if (syntaxInfo.Message != null)
                     {
-                        this._syntax_Errors.Add(lineNumber, (syntaxInfo.Mnemonic, syntaxInfo.Message));
-                        this.Line_Updated_Event(this, new LineUpdatedEventArgs(lineNumber, AsmErrorEnum.SYNTAX_ERROR));
+                        if (update_Syntax_Error)
+                        {
+                            this._syntax_Errors.Add(lineNumber, (syntaxInfo.Mnemonic, syntaxInfo.Message));
+                            this.Line_Updated_Event(this, new LineUpdatedEventArgs(lineNumber, AsmErrorEnum.SYNTAX_ERROR));
+                        }
                     }
                 }
                 else
                 {
-                    this._isNotImplemented.Add(lineNumber);
-                    this.Line_Updated_Event(this, new LineUpdatedEventArgs(lineNumber, AsmErrorEnum.NOT_IMPLEMENTED));
+                    if (update_Not_Implemented)
+                    {
+                        this._isNotImplemented.Add(lineNumber);
+                        this.Line_Updated_Event(this, new LineUpdatedEventArgs(lineNumber, AsmErrorEnum.NOT_IMPLEMENTED));
+                    }
                 }
             }
         }

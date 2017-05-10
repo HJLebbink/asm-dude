@@ -138,9 +138,10 @@
                         </StackPanel>
                     </Grid>
                 </GroupBox>
-                <GroupBox Header="Assembly Simulator (Warning: Experimental and may soft brick visual studio)" BorderBrush="DarkGray">
+                <GroupBox Header="Assembly Simulator (Warning: Experimental, only supported in AsmDude 2.0)" BorderBrush="DarkGray">
                     <Grid>
                         <StackPanel>
+                            <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" Width="auto" Margin="5,4,0,0" ><Run Text="Note: the simulator does not understand MASM or NASM command, or arithmetic in operands, thus no 'MOV VAR, 10' or 'XOR RAX, 2*3'. Jumping based on register content is also not supported, thus no 'JMP RAX'."/></TextBlock>
                             <CheckBox x:Name="AsmSim_On_UI" Content="Enable assembly simulator" ToolTip="TODO" Margin="0,4,0,2" />
                             <Grid>
                                 <xctk:IntegerUpDown x:Name="AsmSim_Number_Of_Steps_UI" DefaultValue="6" HorizontalAlignment="Left" Width="50"/>
@@ -148,18 +149,35 @@
                             </Grid>
                             <Grid>
                                 <xctk:IntegerUpDown x:Name="AsmSim_Z3_Timeout_MS_UI" DefaultValue="100" HorizontalAlignment="Left" Width="50"/>
-                                <Label Content="Timeout for Z3 in milliseconds" ToolTip="The number of milliseconds the Z3 theorem prover may spend on determining one single bit of a register. 200 is sensible: it would need (worst case) 12.8 sec to determine a 64-bit register. 0 means no timeout (not recommended!)" Margin="50,0,0,0" Grid.ColumnSpan="2"/>
+                                <Label Content="Timeout for Z3 in milliseconds" ToolTip="The number of milliseconds the Z3 theorem prover may spend on determining one single bit of a register. 200 is sensible: it would need (worst case) 12.8 sec to determine a 64-bit register. 0 means no timeout (not recommended!)" Margin="50,0,0,0"/>
                             </Grid>
+
                             <CheckBox x:Name="AsmSim_64_Bits_UI" Content="Use 64-bits mode (32-bits mode otherwise)" ToolTip="Use 64-bits mode (32-bits mode otherwise)" Margin="0,2,0,2" />
-                            <CheckBox x:Name="AsmSim_Shown_Syntax_Errors_UI" Content="Show syntax errors in error list" ToolTip="Show syntax errors found while parsing in error list" Margin="0,2,0,2" />
-                            <CheckBox x:Name="AsmSim_Decorate_Syntax_Errors_UI" Content="Decorate syntax errors" ToolTip="Decorate syntax errors found while parsing" Margin="0,2,0,2" />
-                            <CheckBox x:Name="AsmSim_Show_Usage_Of_Undefined_UI" Content="Show usage of undefined values in error list" ToolTip="Show usage of undefined values in error list" Margin="0,2,0,2" />
-                            <CheckBox x:Name="AsmSim_Decorate_Usage_Of_Undefined_UI" Content="Decorate usage of undefined values" ToolTip="Decorate usage of undefined values" Margin="0,2,0,2" />
-                            <CheckBox x:Name="AsmSim_Show_Redundant_Instructions_UI" Content="Show redundant instructions in error list" ToolTip="Show redundant instructions in error list" Margin="0,2,0,2" />
-                            <CheckBox x:Name="AsmSim_Decorate_Redundant_Instructions_UI" Content="Decorate redundant instructions" ToolTip="Decorate redundant instructions" Margin="0,2,0,2" />
-                            <CheckBox x:Name="AsmSim_Decorate_Registers_UI" Content="Decorate registers with known values" ToolTip="Decorate registers with known values" Margin="0,2,0,2" />
-                            <CheckBox x:Name="AsmSim_Use_In_Code_Completion_UI" Content="Use known register values in code completions" ToolTip="Use known register values in code completions" Margin="0,2,0,2" />
-                            <CheckBox x:Name="AsmSim_Decorate_Unimplemented_UI" Content="Decorate instructions that are not (yet) implemented" ToolTip="Decorate instructions that are not (yet) implemented" Margin="0,2,0,4" />
+                            <CheckBox x:Name="AsmSim_Use_In_Code_Completion_UI" Content="Use known register values in code completions" ToolTip="Use known register values in code completions" Margin="0,0,0,0" VerticalAlignment="Center" />
+
+                            <Grid Margin="0,0,0,0">
+                                <Label Content="Syntax Errors:"/>
+                                <CheckBox x:Name="AsmSim_Shown_Syntax_Errors_UI" Content="Show in error list" ToolTip="Show syntax errors found while parsing in error list" Margin="180,0,0,0" VerticalAlignment="Center" />
+                                <CheckBox x:Name="AsmSim_Decorate_Syntax_Errors_UI" Content="Decorate with Squiggle" ToolTip="Decorate syntax errors found while parsing" Margin="300,0,0,0" VerticalAlignment="Center" />
+                            </Grid>
+                            <Grid Margin="0,0,0,0">
+                                <Label Content="Usage of Undefined:"/>
+                                <CheckBox x:Name="AsmSim_Show_Usage_Of_Undefined_UI" Content="Show in error list" ToolTip="Show usage of undefined values in error list" Margin="180,0,0,0" VerticalAlignment="Center" />
+                                <CheckBox x:Name="AsmSim_Decorate_Usage_Of_Undefined_UI" Content="Decorate with Squiggle" ToolTip="Decorate usage of undefined values" Margin="300,0,0,0" VerticalAlignment="Center" />
+                            </Grid>
+                            <Grid Margin="0,0,0,0">
+                                <Label Content="Redundant Instruction:"/>
+                                <CheckBox x:Name="AsmSim_Show_Redundant_Instructions_UI" Content="Show in error list" ToolTip="Show redundant instructions in error list"  Margin="180,0,0,0" VerticalAlignment="Center" />
+                                <CheckBox x:Name="AsmSim_Decorate_Redundant_Instructions_UI" Content="Decorate with Squiggle" ToolTip="Decorate redundant instructions" Margin="300,0,0,0" VerticalAlignment="Center" />
+                            </Grid>
+                            <Grid Margin="0,0,0,0">
+                                <Label Content="Known Registers:"/>
+                                <CheckBox x:Name="AsmSim_Decorate_Registers_UI" Content="Decorate with Squiggle" ToolTip="Decorate registers with known values"  Margin="300,0,0,0" VerticalAlignment="Center" />
+                            </Grid>
+                            <Grid Margin="0,0,0,0">
+                                <Label Content="Unimplemented Instruction:"/>
+                                <CheckBox x:Name="AsmSim_Decorate_Unimplemented_UI" Content="Decorate with Squiggle" ToolTip="Decorate instructions that are not (yet) implemented" Margin="300,0,0,0" VerticalAlignment="Center" />
+                            </Grid>
                         </StackPanel>
                     </Grid>
                 </GroupBox>

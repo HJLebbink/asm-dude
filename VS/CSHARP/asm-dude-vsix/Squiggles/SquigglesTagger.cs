@@ -250,7 +250,7 @@ namespace AsmDude.Squiggles
                                 {
                                     if (Decorate_Syntax_Errors && this._syntaxAnalysis.HasSyntaxError(lineNumber))
                                     {
-                                        string message = AsmSourceTools.Linewrap("Syntax Error: " + this._syntaxAnalysis.GetSyntaxError(lineNumber).Message, AsmDudePackage.maxNumberOfCharsInToolTips);
+                                        string message = AsmSourceTools.Linewrap("Syntax Error: " + this._syntaxAnalysis.Get_Syntax_Error(lineNumber).Message, AsmDudePackage.maxNumberOfCharsInToolTips);
                                         yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.SyntaxError, message));
                                     }
                                 }
@@ -397,23 +397,32 @@ namespace AsmDude.Squiggles
             {
                 case AsmErrorEnum.SYNTAX_ERROR:
                     {
-                        var tup = this._syntaxAnalysis.GetSyntaxError(lineNumber);
-                        this.AddErrorTask_SyntaxError(lineNumber, tup.Message, tup.Mnemonic);
-                        errorListNeedsRefresh = true;
+                        if (Settings.Default.AsmSim_Show_Syntax_Errors)
+                        {
+                            var tup = this._syntaxAnalysis.Get_Syntax_Error(lineNumber);
+                            this.AddErrorTask_SyntaxError(lineNumber, tup.Message, tup.Mnemonic);
+                            errorListNeedsRefresh = true;
+                        }
                         break;
                     }
                 case AsmErrorEnum.USAGE_OF_UNDEFINED:
                     {
-                        var tup = this._semanticAnalysis.Get_Usage_Undefined_Warning(lineNumber);
-                        this.AddErrorTask_UsageUndefined(lineNumber, tup);
-                        errorListNeedsRefresh = true;
+                        if (Settings.Default.AsmSim_Show_Usage_Of_Undefined)
+                        {
+                            var tup = this._semanticAnalysis.Get_Usage_Undefined_Warning(lineNumber);
+                            this.AddErrorTask_UsageUndefined(lineNumber, tup);
+                            errorListNeedsRefresh = true;
+                        }
                         break;
                     }
                 case AsmErrorEnum.REDUNDANT:
                     {
-                        var tup = this._semanticAnalysis.Get_Redundant_Instruction_Warning(lineNumber);
-                        this.AddErrorTask_RedundantInstruction(lineNumber, tup);
-                        errorListNeedsRefresh = true;
+                        if (Settings.Default.AsmSim_Show_Redundant_Instructions)
+                        {
+                            var tup = this._semanticAnalysis.Get_Redundant_Instruction_Warning(lineNumber);
+                            this.AddErrorTask_RedundantInstruction(lineNumber, tup);
+                            errorListNeedsRefresh = true;
+                        }
                         break;
                     }
                 default: break;
