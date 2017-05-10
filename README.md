@@ -105,6 +105,12 @@ The Simulator was not build to find syntax errors, yet it does find some when in
 
 ![syntax-errors](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude-syntax-errors.png?raw=true "Syntax Errors")
 
+#### Register Content in Code Completions
+When something is known about the register content, this information is shown in code completions.
+
+![register-content-completions](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude-register-content-completions.png?raw=true "Register Content in Code Completions")
+
+
 ## Where is the Source (Are you sure this is not a honeypot?!)
 If you are reading this you are most likely an assembly programmer, if you are still interested in some dirty c#, 
 or you are just cautious, you can run the extension from source code. To do that, Visual Studio 2015 SDK (or VS 2017 SDK) 
