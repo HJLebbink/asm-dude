@@ -438,9 +438,9 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\ScHJ\Csharp\asm-sim\VS\CSHARP\asm-z3-lib\asm-z3-lib.csproj">
+    <ProjectReference Include="..\asm-sim-lib\asm-sim-lib.csproj">
       <Project>{e0d833c8-652e-4026-bdc1-13568940b1a8}</Project>
-      <Name>asm-z3-lib</Name>
+      <Name>asm-sim-lib</Name>
     </ProjectReference>
     <ProjectReference Include="..\asm-tools-lib\asm-tools-lib.csproj">
       <Project>{9f5c800f-83f8-4866-ae3c-97602b39c536}</Project>

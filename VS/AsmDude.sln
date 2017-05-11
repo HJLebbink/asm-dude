@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26430.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-dude-vsix", "CSHARP\asm-dude-vsix\asm-dude-vsix.csproj", "{B5A25E78-81D0-454A-8C02-F8C17CB0BBF5}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -10,13 +10,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-dude-vsix", "CSHARP\asm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-irony", "CSHARP\asm-irony\asm-irony.csproj", "{86771818-366E-4E0D-8EBF-C37699F444E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-dude-tests", "CSHARP\unit-tests-asm-dude\asm-dude-tests.csproj", "{F3B04FA2-B6A5-4AAA-BE28-5342B7CD3D87}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unit-tests-asm-dude", "CSHARP\unit-tests-asm-dude\unit-tests-asm-dude.csproj", "{F3B04FA2-B6A5-4AAA-BE28-5342B7CD3D87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-tools-lib-tests", "CSHARP\unit-tests-asm-tools\asm-tools-lib-tests.csproj", "{63FB53C2-03BF-4FFA-ABB3-4909DD1DD058}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unit-tests-asm-tools", "CSHARP\unit-tests-asm-tools\unit-tests-asm-tools.csproj", "{63FB53C2-03BF-4FFA-ABB3-4909DD1DD058}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-tools-lib", "CSHARP\asm-tools-lib\asm-tools-lib.csproj", "{9F5C800F-83F8-4866-AE3C-97602B39C536}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-z3-lib", "..\..\..\ScHJ\Csharp\asm-sim\VS\CSHARP\asm-z3-lib\asm-z3-lib.csproj", "{E0D833C8-652E-4026-BDC1-13568940B1A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-sim-lib", "CSHARP\asm-sim-lib\asm-sim-lib.csproj", "{E0D833C8-652E-4026-BDC1-13568940B1A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-sim-main", "CSHARP\asm-sim-main\asm-sim-main.csproj", "{14AADBAA-0EA5-43FB-B961-0912B68D4BAB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unit-tests-asm-sim", "CSHARP\unit-tests-asm-sim\unit-tests-asm-sim.csproj", "{E284515C-2F97-4D92-9815-16E96680DB07}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -100,6 +104,30 @@ Global
 		{E0D833C8-652E-4026-BDC1-13568940B1A8}.Release|x64.Build.0 = Release|x64
 		{E0D833C8-652E-4026-BDC1-13568940B1A8}.Release|x86.ActiveCfg = Release|x86
 		{E0D833C8-652E-4026-BDC1-13568940B1A8}.Release|x86.Build.0 = Release|x86
+		{14AADBAA-0EA5-43FB-B961-0912B68D4BAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14AADBAA-0EA5-43FB-B961-0912B68D4BAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14AADBAA-0EA5-43FB-B961-0912B68D4BAB}.Debug|x64.ActiveCfg = Debug|x64
+		{14AADBAA-0EA5-43FB-B961-0912B68D4BAB}.Debug|x64.Build.0 = Debug|x64
+		{14AADBAA-0EA5-43FB-B961-0912B68D4BAB}.Debug|x86.ActiveCfg = Debug|x86
+		{14AADBAA-0EA5-43FB-B961-0912B68D4BAB}.Debug|x86.Build.0 = Debug|x86
+		{14AADBAA-0EA5-43FB-B961-0912B68D4BAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14AADBAA-0EA5-43FB-B961-0912B68D4BAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14AADBAA-0EA5-43FB-B961-0912B68D4BAB}.Release|x64.ActiveCfg = Release|x64
+		{14AADBAA-0EA5-43FB-B961-0912B68D4BAB}.Release|x64.Build.0 = Release|x64
+		{14AADBAA-0EA5-43FB-B961-0912B68D4BAB}.Release|x86.ActiveCfg = Release|x86
+		{14AADBAA-0EA5-43FB-B961-0912B68D4BAB}.Release|x86.Build.0 = Release|x86
+		{E284515C-2F97-4D92-9815-16E96680DB07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E284515C-2F97-4D92-9815-16E96680DB07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E284515C-2F97-4D92-9815-16E96680DB07}.Debug|x64.ActiveCfg = Debug|x64
+		{E284515C-2F97-4D92-9815-16E96680DB07}.Debug|x64.Build.0 = Debug|x64
+		{E284515C-2F97-4D92-9815-16E96680DB07}.Debug|x86.ActiveCfg = Debug|x86
+		{E284515C-2F97-4D92-9815-16E96680DB07}.Debug|x86.Build.0 = Debug|x86
+		{E284515C-2F97-4D92-9815-16E96680DB07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E284515C-2F97-4D92-9815-16E96680DB07}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E284515C-2F97-4D92-9815-16E96680DB07}.Release|x64.ActiveCfg = Release|x64
+		{E284515C-2F97-4D92-9815-16E96680DB07}.Release|x64.Build.0 = Release|x64
+		{E284515C-2F97-4D92-9815-16E96680DB07}.Release|x86.ActiveCfg = Release|x86
+		{E284515C-2F97-4D92-9815-16E96680DB07}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -24,6 +24,7 @@ using Microsoft.VisualStudio.Text;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using AsmSim;
 
 namespace AsmDude.Tools
 {
@@ -32,7 +33,7 @@ namespace AsmDude.Tools
         #region Private Fields
         private readonly ITextBuffer _sourceBuffer;
         private readonly AsmSimulator _asmSimulator;
-        private readonly AsmSimZ3.Mnemonics_ng.Tools _tools;
+        private readonly AsmSim.Tools _tools;
         private readonly IDictionary<int, string> _usage_Undefined;
         private readonly IDictionary<int, string> _redundant_Instruction;
 

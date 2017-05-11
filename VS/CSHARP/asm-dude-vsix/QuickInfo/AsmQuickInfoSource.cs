@@ -36,8 +36,7 @@ using Microsoft.VisualStudio.Text.Tagging;
 using AsmTools;
 using AsmDude.SyntaxHighlighting;
 using AsmDude.Tools;
-using AsmSimZ3;
-using AsmSimZ3.Mnemonics_ng;
+using AsmSim;
 
 namespace AsmDude.QuickInfo
 {
@@ -174,10 +173,10 @@ namespace AsmDude.QuickInfo
                                     {
                                         Rn reg = RegisterTools.ParseRn(keywordUpper, true);
 
-                                        State2 state_Before = this._asmSimulator.Get_State_Before(lineNumber, true, true);
+                                        State state_Before = this._asmSimulator.Get_State_Before(lineNumber, true, true);
                                         string reg_Content_Before = this._asmSimulator.Get_Register_Value(reg, state_Before);
 
-                                        State2 state_After = this._asmSimulator.Get_State_After(lineNumber, true, true);
+                                        State state_After = this._asmSimulator.Get_State_After(lineNumber, true, true);
                                         string reg_Content_After = this._asmSimulator.Get_Register_Value(reg, state_After);
 
                                         if (reg_Content_Before.Length == 0) reg_Content_Before = "[Bussy calculating register content]";

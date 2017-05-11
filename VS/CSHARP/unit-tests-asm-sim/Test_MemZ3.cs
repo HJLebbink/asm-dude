@@ -1,0 +1,403 @@
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using AsmSim;
+using Microsoft.Z3;
+using AsmTools;
+using System.Diagnostics;
+using AsmSim.Mnemonics;
+using System.Collections.Generic;
+
+namespace unit_tests_asm_z3
+{
+    [TestClass]
+    public class Test_MemZ3
+    {
+        const bool logToDisplay = TestTools.LOG_TO_DISPLAY;
+
+        private Tools CreateTools(int timeOut = TestTools.DEFAULT_TIMEOUT)
+        {
+            /* The following parameters can be set: 
+                    - proof (Boolean) Enable proof generation
+                    - debug_ref_count (Boolean) Enable debug support for Z3_ast reference counting
+                    - trace (Boolean) Tracing support for VCC 
+                    - trace_file_name (String) Trace out file for VCC traces 
+                    - timeout (unsigned) default timeout (in milliseconds) used for solvers 
+                    - well_sorted_check type checker 
+                    - auto_config use heuristics to automatically select solver and configure it 
+                    - model model generation for solvers, this parameter can be overwritten when creating a solver 
+                    - model_validate validate models produced by solvers 
+                    - unsat_core unsat-core generation for solvers, this parameter can be overwritten when creating 
+                            a solver Note that in previous versions of Z3, this constructor was also used to set 
+                            global and module parameters. For this purpose we should now use 
+                            Microsoft.Z3.Global.SetParameter(System.String,System.String)
+            */
+
+            Dictionary<string, string> settings = new Dictionary<string, string>
+            {
+                { "unsat_core", "false" },    // enable generation of unsat cores
+                { "model", "false" },         // enable model generation
+                { "proof", "false" },         // enable proof generation
+                { "timeout", timeOut.ToString() }
+            };
+            return new Tools(settings);
+        }
+
+        private State CreateState(Tools tools)
+        {
+            string tailKey = "!0";// Tools.CreateKey(tools.Rand);
+            string headKey = tailKey;
+            return new State(tools, tailKey, headKey, 0);
+        }
+
+        [TestMethod]
+        public void Test_MemZ3_Forward_SetGet0()
+        {
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RBX = true;
+            tools.StateConfig.mem = true;
+
+            State state = CreateState(tools);
+
+            BitVecExpr address1 = Tools.Calc_Effective_Address("qword ptr[rax]", state.HeadKey, tools);
+            BitVecExpr value1 = state.Get(Rn.RBX);
+
+            StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
+            updateState.SetMem(address1, value1);
+            state.Update_Forward(updateState);
+
+            BitVecExpr value2 = state.GetMem(address1, 8);
+
+            if (logToDisplay)
+            {
+                Console.WriteLine("value1 = " + value1);
+                Console.WriteLine("value2 = " + value2);
+                Console.WriteLine(state);
+            }
+            Assert.AreEqual(Tv.ONE, state.EqualValues(value1, value2));
+        }
+
+        [TestMethod]
+        public void Test_MemZ3_Forward_SetGet1()
+        {
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.R8 = true;
+            tools.StateConfig.R9 = true;
+            tools.StateConfig.mem = true;
+
+            State state = CreateState(tools);
+
+            BitVecExpr address1 = Tools.Calc_Effective_Address("qword ptr[rax]", state.HeadKey, tools);
+            BitVecExpr value1a = state.Get(Rn.R8);
+            BitVecExpr value2a = state.Get(Rn.R9);
+            {
+                StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
+                updateState.SetMem(address1, value1a);
+                state.Update_Forward(updateState);
+            }
+            BitVecExpr value1b = state.GetMem(address1, 8);
+            {
+                StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
+                updateState.SetMem(address1, value2a);
+                state.Update_Forward(updateState);
+            }
+            BitVecExpr value2b = state.GetMem(address1, 8);
+
+            if (logToDisplay)
+            {
+                Console.WriteLine("value1a = " + value1a);
+                Console.WriteLine("value1b = " + value1b);
+                Console.WriteLine("value2a = " + value2a);
+                Console.WriteLine("value2b = " + value2b);
+                Console.WriteLine(state);
+            }
+            Assert.AreEqual(Tv.ONE, state.EqualValues(value1a, value1b));
+            Assert.AreEqual(Tv.ONE, state.EqualValues(value2a, value2b));
+        }
+
+        [TestMethod]
+        public void Test_MemZ3_Forward_Eq1()
+        { 
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RBX = true;
+            tools.StateConfig.RCX = true;
+            tools.StateConfig.mem = true;
+
+            State state = CreateState(tools);
+
+            {
+                StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
+                //updateState.Set(Rn.RAX, 20);
+                updateState.Set(Rn.RBX, 10);
+                updateState.Set(Rn.RCX, 5);
+                state.Update_Forward(updateState);
+            }
+
+            BitVecExpr address1 = Tools.Calc_Effective_Address("qword ptr[rax + 2 * rbx + 10]", state.HeadKey, tools);
+            BitVecExpr address2 = Tools.Calc_Effective_Address("qword ptr[rax + 4 * rcx + 10]", state.HeadKey, tools);
+
+            Tv equalAddresses = state.EqualValues(address1, address2);
+            if (logToDisplay)
+            {
+                Console.WriteLine("equalAddresses=" + equalAddresses);
+                Console.WriteLine("address1 = " + address1);
+                Console.WriteLine("address2 = " + address2);
+                Console.WriteLine(state);
+            }
+            TestTools.AreEqual(Tv.ONE, equalAddresses);
+
+            BitVecExpr value1 = state.Get(Rn.R8);
+
+            {
+                StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
+                updateState.SetMem(address1, value1);
+                state.Update_Forward(updateState);
+            }
+            BitVecExpr value2 = state.GetMem(address2, 8);
+
+            if (logToDisplay)
+            {
+                Console.WriteLine("value1 = " + value1);
+                Console.WriteLine("value2 = " + value2);
+                Console.WriteLine(state);
+            }
+            TestTools.AreEqual(Tv.ONE, state.EqualValues(value1, value2));
+        }
+
+        [TestMethod]
+        public void Test_MemZ3_Forward_Eq2()
+        {
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RBX = true;
+            tools.StateConfig.RCX = true;
+            tools.StateConfig.mem = true;
+
+            State state = CreateState(tools);
+
+            {
+                StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
+                updateState.Set(Rn.RBX, 10);
+                updateState.Set(Rn.RCX, 5 + 1);
+                state.Update_Forward(updateState);
+            }
+
+            BitVecExpr address1 = Tools.Calc_Effective_Address("qword ptr[rax + 2 * rbx + 10]", state.HeadKey, tools);
+            BitVecExpr address2 = Tools.Calc_Effective_Address("qword ptr[rax + 4 * rcx + 10]", state.HeadKey, tools);
+            Tv equalAddresses = state.EqualValues(address1, address2);
+
+            if (logToDisplay)
+            {
+                Console.WriteLine("equalAddresses=" + equalAddresses + "; expected = ZERO");
+                Console.WriteLine("address1 = " + address1);
+                Console.WriteLine("address2 = " + address2);
+                Console.WriteLine(state);
+            }
+            TestTools.AreEqual(Tv.ZERO, equalAddresses);
+
+            BitVecExpr value1 = state.Get(Rn.R8);
+            {
+                StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
+                updateState.SetMem(address1, value1);
+                state.Update_Forward(updateState);
+            }
+
+            BitVecExpr value2 = state.GetMem(address2, 8);
+
+            Tv equalValues = state.EqualValues(value1, value2);
+            if (logToDisplay)
+            {
+                Console.WriteLine("equalValues=" + equalValues);
+                Console.WriteLine("value1 = " + value1);
+                Console.WriteLine("value2 = " + value2);
+                Console.WriteLine(state);
+            }
+            TestTools.AreEqual(Tv.UNKNOWN, equalValues);
+        }
+
+        [TestMethod]
+        public void Test_MemZ3_Forward_Eq3()
+        {
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RBX = true;
+            tools.StateConfig.RCX = true;
+            tools.StateConfig.R8 = true;
+            tools.StateConfig.mem = true;
+
+            State state = CreateState(tools);
+            {
+                StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
+                updateState.Set(Rn.RBX, 10);
+                updateState.Set(Rn.RCX, 5);
+                state.Update_Forward(updateState);
+            }
+            BitVecExpr address1 = Tools.Calc_Effective_Address("qword ptr[rax + 2 * rbx + 10]", state.HeadKey, tools);
+            {
+                StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
+                updateState.Set(Rn.RAX, state.Ctx.MkBVAdd(state.Get(Rn.RAX), state.Ctx.MkBV(0, 64)));
+                state.Update_Forward(updateState);
+            }            
+            BitVecExpr address2 = Tools.Calc_Effective_Address("qword ptr[rax + 4 * rcx + 10]", state.HeadKey, tools);
+
+            BitVecExpr value1 = state.Get(Rn.R8B);
+            int nBytes = (int)value1.SortSize >> 3;
+            {
+                StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
+                updateState.SetMem(address1, value1);
+                state.Update_Forward(updateState);
+            }
+            BitVecExpr value2 = state.GetMem(address2, nBytes);
+
+            if (logToDisplay)
+            {
+                Console.WriteLine("value1 = " + value1);
+                Console.WriteLine("value2 = " + value2);
+                Console.WriteLine(state);
+            }
+            TestTools.AreEqual(Tv.ONE, state.EqualValues(value1, value2));
+        }
+
+        [TestMethod]
+        public void Test_MemZ3_Forward_Eq4()
+        {
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RBX = true;
+            tools.StateConfig.RCX = true;
+            tools.StateConfig.RDX = true;
+            tools.StateConfig.mem = true;
+
+            State state = CreateState(tools);
+            {
+                StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
+                updateState.Set(Rn.RAX, state.Get(Rn.RBX));
+                state.Update_Forward(updateState);
+            }
+            BitVecExpr address1 = Tools.Calc_Effective_Address("qword ptr[rax]", state.HeadKey, tools);
+            BitVecExpr address2 = Tools.Calc_Effective_Address("qword ptr[rbx]", state.HeadKey, tools);
+            {
+                StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
+                updateState.SetMem(address1, state.Get(Rn.RCX));
+                state.Update_Forward(updateState);
+            }
+            {
+                StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
+                updateState.SetMem(address2, state.Get(Rn.RDX));
+                state.Update_Forward(updateState);
+            }
+            BitVecExpr value1 = state.GetMem(address1, 1);
+            BitVecExpr value2 = state.GetMem(address2, 1);
+
+            if (logToDisplay)
+            {
+                Console.WriteLine("value1 = " + value1);
+                Console.WriteLine("value2 = " + value2);
+                Console.WriteLine(state);
+            }
+            TestTools.AreEqual(Tv.ONE, state.EqualValues(value1, value2));
+        }
+
+        [TestMethod]
+        public void Test_MemZ3_Forward_Eq5()
+        {
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RBX = true;
+            tools.StateConfig.RCX = true;
+            tools.StateConfig.RDX = true;
+            tools.StateConfig.mem = true;
+
+            State state = CreateState(tools);
+            {
+                StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
+                updateState.Set(Rn.RAX, state.Get(Rn.RBX));
+                state.Update_Forward(updateState);
+            }
+            BitVecExpr address1 = Tools.Calc_Effective_Address("byte ptr[rax]", state.HeadKey, tools);
+            BitVecExpr address2 = Tools.Calc_Effective_Address("byte ptr[rbx]", state.HeadKey, tools);
+            BitVecExpr value1a = state.Get(Rn.CL);
+            BitVecExpr value2a = state.Get(Rn.DL);
+
+            Debug.Assert(value1a.SortSize == value2a.SortSize);
+            int nBytes = (int)value1a.SortSize >> 3;
+            {
+                StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
+                updateState.SetMem(address1, value1a);
+                state.Update_Forward(updateState);
+            }
+            BitVecExpr value1b = state.GetMem(address1, nBytes);
+            {
+                StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
+                updateState.SetMem(address2, value2a);
+                state.Update_Forward(updateState);
+            }
+            BitVecExpr value2b = state.GetMem(address2, nBytes);
+
+            if (logToDisplay)
+            {
+                Console.WriteLine("value1a = " + value1a);
+                Console.WriteLine("value2a = " + value2a);
+                Console.WriteLine("value1b = " + value1b);
+                Console.WriteLine("value2b = " + value2b);
+                Console.WriteLine(state);
+            }
+            TestTools.AreEqual(Tv.ONE, state.EqualValues(value1a, value1b));
+            TestTools.AreEqual(Tv.ONE, state.EqualValues(value2a, value2b));
+        }
+
+        [TestMethod]
+        public void Test_MemZ3_Forward_Eq6()
+        {
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RBX = true;
+            tools.StateConfig.RCX = true;
+            tools.StateConfig.RDX = true;
+            tools.StateConfig.mem = true;
+
+            State state = CreateState(tools);
+
+            Rn reg1 = Rn.CL;
+            Rn reg2 = Rn.DL;
+            int nBytes = RegisterTools.NBits(reg1) >> 3;
+            Debug.Assert(RegisterTools.NBits(reg1) == RegisterTools.NBits(reg2));
+
+            BitVecExpr address1 = Tools.Calc_Effective_Address("qword ptr[rax]", state.HeadKey, tools);
+            BitVecExpr address2 = Tools.Calc_Effective_Address("qword ptr[rbx]", state.HeadKey, tools);
+
+            BitVecExpr value1 = state.GetMem(address1, nBytes);
+            BitVecExpr value2 = state.GetMem(address2, nBytes);
+            Assert.AreNotEqual(value1, value2); //value1 is not equal to value2 simply because rax and rbx are not related yet
+
+            state.Add(new BranchInfo(state.Ctx.MkEq(state.Get(Rn.RAX), state.Get(Rn.RBX)), true, state.LineNumber));
+            // value1 and value2 are now (intuitively) equal; however, the retrieved memory values have not been updated yet to reflect this.
+
+            {
+                StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
+                updateState.Set(reg1, value1);
+                updateState.Set(reg2, value2);
+                state.Update_Forward(updateState);
+            }
+            if (logToDisplay)
+            {
+                Console.WriteLine("value1 = " + value1);
+                Console.WriteLine("value2 = " + value2);
+                Console.WriteLine(reg1 + " = " + state.Get(reg1));
+                Console.WriteLine(reg2 + " = " + state.Get(reg2));
+                Console.WriteLine(state);
+            }
+            TestTools.AreEqual(Tv.ONE, state.EqualValues(reg1, reg2));
+        }
+    }
+}

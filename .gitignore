@@ -30,3 +30,4 @@ _ReSharper*/
 VS/packages/*
 VS/CSHARP/asm-dude-vsix-2/packages/*
 *.dropbox.attr
+VS/CSHARP/asm-sim-lib/libs/*

@@ -28,8 +28,7 @@ using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.Z3;
 
 using AsmDude.SyntaxHighlighting;
-using AsmSimZ3;
-using AsmSimZ3.Mnemonics_ng;
+using AsmSim;
 using AsmTools;
 
 namespace AsmDude.Tools
@@ -39,11 +38,11 @@ namespace AsmDude.Tools
         private readonly ITextBuffer _buffer;
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
         private readonly CFlow _cflow;
-        private readonly IDictionary<int, State2> _cached_States_After;
-        private readonly IDictionary<int, State2> _cached_States_Before;
-        private readonly IDictionary<int, AsmSimZ3.Mnemonics_ng.ExecutionTree> _cached_Tree_After;
+        private readonly IDictionary<int, State> _cached_States_After;
+        private readonly IDictionary<int, State> _cached_States_Before;
+        private readonly IDictionary<int, ExecutionTree> _cached_Tree_After;
 
-        public readonly AsmSimZ3.Mnemonics_ng.Tools Tools;
+        public readonly AsmSim.Tools Tools;
         private object _updateLock = new object();
 
         private bool _busy;
@@ -76,9 +75,9 @@ namespace AsmDude.Tools
                 this.Is_Enabled = true;
 
                 this._cflow = new CFlow(this._buffer.CurrentSnapshot.GetText());
-                this._cached_States_After = new Dictionary<int, State2>();
-                this._cached_States_Before = new Dictionary<int, State2>();
-                this._cached_Tree_After = new Dictionary<int, AsmSimZ3.Mnemonics_ng.ExecutionTree>();
+                this._cached_States_After = new Dictionary<int, State>();
+                this._cached_States_Before = new Dictionary<int, State>();
+                this._cached_Tree_After = new Dictionary<int, ExecutionTree>();
                 this._scheduled_After = new HashSet<int>();
                 this._scheduled_Before = new HashSet<int>();
 
@@ -105,7 +104,7 @@ namespace AsmDude.Tools
                     { "proof", "false" },         // enable proof generation
                     { "timeout", Settings.Default.AsmSim_Z3_Timeout_MS.ToString()}
                 };
-                this.Tools = new AsmSimZ3.Mnemonics_ng.Tools(settings);
+                this.Tools = new AsmSim.Tools(settings);
                 if (Settings.Default.AsmSim_64_Bits)
                 {
                     this.Tools.Parameters.mode_64bit = true;
@@ -136,7 +135,7 @@ namespace AsmDude.Tools
             var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, this.Tools);
             if (opcodeBase == null) return (IsImplemented: false, Mnemonic: Mnemonic.NONE, Message: null);
 
-            if (opcodeBase.GetType() == typeof(NotImplemented))
+            if (opcodeBase.GetType() == typeof(AsmSim.Mnemonics.NotImplemented))
             {
                 return (IsImplemented: false, Mnemonic: content.Mnemonic, Message: null);
             }
@@ -150,7 +149,7 @@ namespace AsmDude.Tools
 
         public string Get_Usage_Undefined_Warnings(int lineNumber)
         {
-          State2 state = this.Get_State_Before(lineNumber, false, true);
+          State state = this.Get_State_Before(lineNumber, false, true);
 
             lock (this._updateLock)
             {
@@ -176,11 +175,11 @@ namespace AsmDude.Tools
                     {
                         if (stateConfig.IsRegOn(RegisterTools.Get64BitsRegister(reg)))
                         {
-                            Tv5[] regContent = state.GetTv5Array(reg, true);
+                            Tv[] regContent = state.GetTv5Array(reg, true);
                             bool isUndefined = false;
                             foreach (var tv in regContent)
                             {
-                                if (tv == Tv5.UNDEFINED)
+                                if (tv == Tv.UNDEFINED)
                                 {
                                     isUndefined = true;
                                     break;
@@ -204,9 +203,9 @@ namespace AsmDude.Tools
             if (content.Mnemonic == Mnemonic.NOP) return "";
             if (content.Mnemonic == Mnemonic.UNKNOWN) return "";
 
-            State2 state_Before = this.Get_State_Before(lineNumber, false, true);
+            State state_Before = this.Get_State_Before(lineNumber, false, true);
             if (state_Before == null) return "";
-            State2 state_After = this.Get_State_After(lineNumber, false, true);
+            State state_After = this.Get_State_After(lineNumber, false, true);
             if (state_After == null) return "";
 
             lock (this._updateLock)
@@ -215,13 +214,13 @@ namespace AsmDude.Tools
                 //AsmSimZ3.Mnemonics_ng.Tools tools2 = new AsmSimZ3.Mnemonics_ng.Tools(this.Tools.Settings);
                 Context ctx = this.Tools.Ctx;
 
-                State2 stateB = new State2(state_Before, 0);
+                State stateB = new State(state_Before, 0);
                 stateB.UpdateConstName("!B");
 
-                State2 stateA = new State2(state_After, 0);
+                State stateA = new State(state_After, 0);
                 stateA.UpdateConstName("!A");
 
-                State2 diffState = new State2(this.Tools, "!0", "!0", 0);
+                State diffState = new State(this.Tools, "!0", "!0", 0);
                 foreach (var v in stateB.Solver.Assertions)
                 {
                     diffState.Solver.Assert(v as BoolExpr);
@@ -239,7 +238,7 @@ namespace AsmDude.Tools
                 {
                     diffState.Solver.Assert(ctx.MkEq(stateB.GetTail(reg), stateA.GetTail(reg)));
                 }
-                diffState.Solver.Assert(ctx.MkEq(AsmSimZ3.Mnemonics_ng.Tools.Mem_Key(stateB.TailKey, ctx), AsmSimZ3.Mnemonics_ng.Tools.Mem_Key(stateA.TailKey, ctx)));
+                diffState.Solver.Assert(ctx.MkEq(AsmSim.Tools.Mem_Key(stateB.TailKey, ctx), AsmSim.Tools.Mem_Key(stateA.TailKey, ctx)));
                 //AsmDudeToolsStatic.Output_INFO(diffState.ToString());
 
                 StateConfig written = Runner.GetUsage_StateConfig(this._cflow, lineNumber, lineNumber, this.Tools);
@@ -247,22 +246,22 @@ namespace AsmDude.Tools
                 foreach (Flags flag in written.GetFlagOn())
                 {
                     BoolExpr value = ctx.MkEq(stateB.Get(flag), stateA.Get(flag));
-                    Tv5 tv = ToolsZ3.GetTv5(value, diffState.Solver, ctx);
+                    Tv tv = ToolsZ3.GetTv(value, diffState.Solver, ctx);
                     //AsmDudeToolsStatic.Output_INFO("AsmSimulator: Get_Redundant_Instruction_Warnings: line " + lineNumber + ": tv=" + tv + "; value=" + value);
-                    if (tv != Tv5.ONE) return "";
+                    if (tv != Tv.ONE) return "";
                 }
                 foreach (Rn reg in written.GetRegOn())
                 {
                     BoolExpr value = ctx.MkEq(stateB.Get(reg), stateA.Get(reg));
-                    Tv5 tv = ToolsZ3.GetTv5(value, diffState.Solver, ctx);
+                    Tv tv = ToolsZ3.GetTv(value, diffState.Solver, ctx);
                     //AsmDudeToolsStatic.Output_INFO("AsmSimulator: Get_Redundant_Instruction_Warnings: line " + lineNumber + ":tv=" + tv + "; value=" + value);
-                    if (tv != Tv5.ONE) return "";
+                    if (tv != Tv.ONE) return "";
                 }
                 if (written.mem) {
-                    BoolExpr value = ctx.MkEq(AsmSimZ3.Mnemonics_ng.Tools.Mem_Key(stateB.HeadKey, ctx), AsmSimZ3.Mnemonics_ng.Tools.Mem_Key(stateA.HeadKey, ctx));
-                    Tv5 tv = ToolsZ3.GetTv5(value, diffState.Solver, ctx);
+                    BoolExpr value = ctx.MkEq(AsmSim.Tools.Mem_Key(stateB.HeadKey, ctx), AsmSim.Tools.Mem_Key(stateA.HeadKey, ctx));
+                    Tv tv = ToolsZ3.GetTv(value, diffState.Solver, ctx);
                     //AsmDudeToolsStatic.Output_INFO("AsmSimulator: Get_Redundant_Instruction_Warnings: line " + lineNumber + ":tv=" + tv + "; value=" + value);
-                    if (tv != Tv5.ONE) return "";
+                    if (tv != Tv.ONE) return "";
                 }
             }
             string message = "\"" + this._cflow.GetLineStr(lineNumber) + "\" is redundant.";
@@ -270,12 +269,12 @@ namespace AsmDude.Tools
             return message;
         }
 
-        public string Get_Register_Value(Rn name, State2 state)
+        public string Get_Register_Value(Rn name, State state)
         {
             if (!this.Is_Enabled) return "";
             if (state == null) return "";
 
-            Tv5[] reg = null;
+            Tv[] reg = null;
             lock (this._updateLock)
             {
                 reg = state.GetTv5Array(name);
@@ -291,7 +290,7 @@ namespace AsmDude.Tools
             }
         }
 
-        public bool Has_Register_Value(Rn name, State2 state)
+        public bool Has_Register_Value(Rn name, State state)
         {
             //TODO 
             if (true)
@@ -301,10 +300,10 @@ namespace AsmDude.Tools
             else
             {
                 // this code throw a AccessViolationException, probably due because Z3 does not multithread
-                Tv5[] content = state.GetTv5Array(name, true);
-                foreach (Tv5 tv in content)
+                Tv[] content = state.GetTv5Array(name, true);
+                foreach (Tv tv in content)
                 {
-                    if ((tv == Tv5.ONE) || (tv == Tv5.ZERO) || (tv == Tv5.UNDEFINED)) return true;
+                    if ((tv == Tv.ONE) || (tv == Tv.ZERO) || (tv == Tv.UNDEFINED)) return true;
                 }
                 return false;
             }
@@ -315,11 +314,11 @@ namespace AsmDude.Tools
         /// returns null otherwise and schedules its computation. 
         /// if the state is not computed yet, 
         /// return null and create one in a different thread according to the provided createState boolean.</summary>
-        public State2 Get_State_After(int lineNumber, bool async, bool create)
+        public State Get_State_After(int lineNumber, bool async, bool create)
         {
             if (!this.Is_Enabled) return null;
 
-            if (this._cached_States_After.TryGetValue(lineNumber, out State2 result))
+            if (this._cached_States_After.TryGetValue(lineNumber, out State result))
             {
                 return result;
             }
@@ -348,16 +347,16 @@ namespace AsmDude.Tools
                 else
                 {
                     this.Calculate_State_After(lineNumber, false);
-                    return (this._cached_States_After.TryGetValue(lineNumber, out State2 result2)) ? result2 : null;
+                    return (this._cached_States_After.TryGetValue(lineNumber, out State result2)) ? result2 : null;
                 }
             }
             return null;
         }
 
-        public State2 Get_State_Before(int lineNumber, bool async, bool create)
+        public State Get_State_Before(int lineNumber, bool async, bool create)
         {
             if (!this.Is_Enabled) return null;
-            if (this._cached_States_Before.TryGetValue(lineNumber, out State2 result))
+            if (this._cached_States_Before.TryGetValue(lineNumber, out State result))
             {
                 return result;
             }
@@ -386,7 +385,7 @@ namespace AsmDude.Tools
                 else
                 {
                     this.Calculate_State_Before(lineNumber, false);
-                    return (this._cached_States_Before.TryGetValue(lineNumber, out State2 result2)) ? result2 : null;
+                    return (this._cached_States_Before.TryGetValue(lineNumber, out State result2)) ? result2 : null;
                 }
             }
             return null;
@@ -424,7 +423,7 @@ namespace AsmDude.Tools
                 this._busy = true;
                 this.Tools.StateConfig = Runner.GetUsage_StateConfig(this._cflow, 0, this._cflow.LastLineNumber, this.Tools);
 
-                AsmSimZ3.Mnemonics_ng.ExecutionTree tree = null;
+                ExecutionTree tree = null;
 
                 var prev = new List<(int LineNumber, bool IsBranch)>(this._cflow.GetPrevLineNumber(lineNumber));
                 if (prev.Count == 1)
@@ -473,7 +472,7 @@ namespace AsmDude.Tools
                 this._scheduled_After.Remove(lineNumber);
                 this.Tools.StateConfig = Runner.GetUsage_StateConfig(this._cflow, 0, this._cflow.LastLineNumber, this.Tools);
 
-                AsmSimZ3.Mnemonics_ng.ExecutionTree tree = Runner.Construct_ExecutionTree_Backward(this._cflow, lineNumber, Settings.Default.AsmSim_Number_Of_Steps, this.Tools);
+                ExecutionTree tree = Runner.Construct_ExecutionTree_Backward(this._cflow, lineNumber, Settings.Default.AsmSim_Number_Of_Steps, this.Tools);
 
                 if (tree != null)
                 {

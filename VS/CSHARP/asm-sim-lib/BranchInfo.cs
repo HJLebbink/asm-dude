@@ -20,15 +20,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmTools {
+using Microsoft.Z3;
 
-    /// <summary>
-    /// BitType: ZERO, ONE, KNOWN, UNDEFINED
-    /// </summary>
-    public enum Bt : byte {
-        ZERO,
-        ONE,
-        UNDEFINED,
-        KNOWN
+namespace AsmSim
+{
+    public class BranchInfo
+    {
+        public readonly BoolExpr BranchCondition;
+        public readonly string Key;
+        public readonly bool BranchTaken;
+        public readonly int LineNumber;
+
+        public BranchInfo(BoolExpr condition, bool taken) : this(condition, taken, 0)
+        { }
+
+        public BranchInfo(BoolExpr condition, bool taken, int lineNumber)
+        {
+            this.BranchCondition = condition;
+            this.Key = condition.ToString();
+            this.BranchTaken = taken;
+            this.LineNumber = lineNumber;
+        }
+        public BoolExpr GetData(Context ctx)
+        {
+            return (this.BranchTaken) ? this.BranchCondition : ctx.MkNot(this.BranchCondition);
+        }
+        public override string ToString()
+        {
+            return "BranchInfo: "+this.BranchCondition + " (taken " + this.BranchTaken + "; lineNumber " + this.LineNumber + ")";
+        }
     }
 }

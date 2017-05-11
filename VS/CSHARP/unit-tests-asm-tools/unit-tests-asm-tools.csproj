@@ -71,7 +71,6 @@
   <ItemGroup>
     <Compile Include="test_AsmSourceTools.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="test_BitTools.cs" />
     <Compile Include="Test_Operand.cs" />
   </ItemGroup>
   <ItemGroup>

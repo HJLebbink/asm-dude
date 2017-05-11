@@ -37,7 +37,7 @@ using Microsoft.VisualStudio.Text.Adornments;
 using AsmTools;
 using AsmDude.SyntaxHighlighting;
 using AsmDude.Tools;
-using AsmSimZ3.Mnemonics_ng;
+using AsmSim;
 
 namespace AsmDude.Squiggles
 {
@@ -220,8 +220,8 @@ namespace AsmDude.Squiggles
 
                                 //AsmDudeToolsStatic.Output_INFO("SquigglesTagger:GetTags: found register " + regName + " at line " + lineNumber);
 
-                                State2 state_Before = this._asmSimulator.Get_State_Before(lineNumber, false, false);
-                                State2 state_After = this._asmSimulator.Get_State_After(lineNumber, false, false);
+                                State state_Before = this._asmSimulator.Get_State_Before(lineNumber, false, false);
+                                State state_After = this._asmSimulator.Get_State_After(lineNumber, false, false);
 
                                 //string registerContent = state.GetString(regName);
                                 bool hasContent_Before = (state_Before == null) ? false : this._asmSimulator.Has_Register_Value(regName, state_Before);

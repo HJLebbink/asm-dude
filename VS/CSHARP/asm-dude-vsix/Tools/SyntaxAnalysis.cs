@@ -33,7 +33,7 @@ namespace AsmDude.Tools
         #region Fields
         private readonly ITextBuffer _sourceBuffer;
         private readonly AsmSimulator _asmSimulator;
-        private readonly AsmSimZ3.Mnemonics_ng.Tools _tools;
+        private readonly AsmSim.Tools _tools;
         private readonly IDictionary<int, (Mnemonic Mnemonic, string Message)> _syntax_Errors;
         private readonly ISet<int> _isNotImplemented;
 

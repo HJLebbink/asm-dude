@@ -32,9 +32,7 @@ using System.Windows.Media;
 using AsmTools;
 using AsmDude.Tools;
 using AsmDude.SignatureHelp;
-using System.Text;
-using AsmSimZ3.Mnemonics_ng;
-using AsmSimZ3;
+using AsmSim;
 
 namespace AsmDude
 {
@@ -232,10 +230,10 @@ namespace AsmDude
                                 if (AsmSignatureTools.Is_Allowed_Reg(regName, allowedOperands))
                                 {
                                     if (asmSimulator_Enabled && this._asmSimulator.Tools.StateConfig.IsRegOn(RegisterTools.Get64BitsRegister(regName))) {
-                                        State2 state = this._asmSimulator.Get_State_Before(lineNumber, false, false);
+                                        State state = this._asmSimulator.Get_State_Before(lineNumber, false, false);
                                         if (state != null)
                                         {
-                                            Tv5[] content = state.GetTv5Array(regName);
+                                            Tv[] content = state.GetTv5Array(regName);
                                             additionalInfo = ToolsZ3.ToStringHex(content) + " = " + ToolsZ3.ToStringBin(content);
                                         }
                                         AsmDudeToolsStatic.Output_INFO("AsmCompletionSource:Mnemonic_Operand_Completions; register " + keyword + " is selected and has value " + additionalInfo);
