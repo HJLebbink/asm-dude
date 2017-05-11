@@ -1174,6 +1174,45 @@ namespace unit_tests_asm_z3
                 TestTools.AreEqual(Rn.RCX, arrayUnknown64, state);
             }
         }
+        [TestMethod]
+        public void Test_MnemonicZ3_Cmp_2()
+        {
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.Set_All_Flags_On();
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RBX = true;
+            tools.StateConfig.mem = true;
+
+            State state = CreateState(tools);
+
+            ulong value1 = 0xFF;
+            ulong value2 = 0x3F;
+            ulong value_result = value1 - value2;
+            {
+                string line = "mov byte [rax], " + value1;
+                state = Runner.SimpleStep_Forward(line, state);
+            }
+            {
+                string line = "mov bl, " + value2;
+                state = Runner.SimpleStep_Forward(line, state);
+            }
+            {
+                string line = "cmp byte [rax], bl";
+                state = Runner.SimpleStep_Forward(line, state);
+                if (logToDisplay) Console.WriteLine("After \"" + line + "\", we know:\n" + state);
+
+                TestTools.AreEqual(Rn.RAX, arrayUnknown64, state);
+                TestTools.AreEqual(Rn.BL, value2, state);
+
+                TestTools.AreEqual(Flags.SF, TestTools.Calc_SF(8, value_result), state);
+                TestTools.AreEqual(Flags.ZF, TestTools.Calc_ZF(value_result), state);
+                TestTools.AreEqual(Flags.PF, TestTools.Calc_PF(value_result), state);
+                TestTools.AreEqual(Flags.OF, Tv.ZERO, state);
+                TestTools.AreEqual(Flags.CF, Tv.ZERO, state);
+                TestTools.AreEqual(Flags.AF, Tv.ZERO, state);
+            }
+        }
         #region BTS
         [TestMethod]
         public void Test_MnemonicZ3_Bts_1()
