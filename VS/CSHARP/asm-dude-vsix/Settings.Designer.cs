@@ -1273,7 +1273,7 @@ namespace AsmDude {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
         public int AsmSim_Number_Of_Steps {
             get {
                 return ((int)(this["AsmSim_Number_Of_Steps"]));
@@ -1321,7 +1321,7 @@ namespace AsmDude {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        [global::System.Configuration.DefaultSettingValueAttribute("50")]
         public int AsmSim_Z3_Timeout_MS {
             get {
                 return ((int)(this["AsmSim_Z3_Timeout_MS"]));
