@@ -237,11 +237,11 @@ namespace AsmDude.OptionsPage
 
             #region Intellisense
             this._asmDudeOptionsPageUI.IntelliSense_Show_Undefined_Labels = Settings.Default.IntelliSense_Show_UndefinedLabels;
-            this._asmDudeOptionsPageUI.IntelliSense_Show_Clashing_Labels = Settings.Default.IntelliSense_Show_ClashingLabels;
             this._asmDudeOptionsPageUI.IntelliSense_Decorate_Undefined_Labels = Settings.Default.IntelliSense_Decorate_UndefinedLabels;
+            this._asmDudeOptionsPageUI.IntelliSense_Show_Clashing_Labels = Settings.Default.IntelliSense_Show_ClashingLabels;
             this._asmDudeOptionsPageUI.IntelliSense_Decorate_Clashing_Labels = Settings.Default.IntelliSense_Decorate_ClashingLabels;
             this._asmDudeOptionsPageUI.IntelliSense_Show_Undefined_Includes = Settings.Default.IntelliSense_Show_Undefined_Includes;
-            this._asmDudeOptionsPageUI.IntelliSense_Decorate_Clashing_Labels = Settings.Default.IntelliSense_Decorate_Undefined_Includes;
+            this._asmDudeOptionsPageUI.IntelliSense_Decorate_Undefined_Includes = Settings.Default.IntelliSense_Decorate_Undefined_Includes;
             #endregion
 
             #region AsmSim
