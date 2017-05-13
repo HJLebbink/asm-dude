@@ -207,32 +207,8 @@ namespace AsmDude.QuickInfo
                                             Foreground = this._foreground
                                         });
                                     }
-                                    {   // show performance information
-                                        MicroArch selectedMicroarchitures = AsmDudeToolsStatic.Get_MicroArch_Switched_On();
-
-                                        bool first = true;
-                                        FontFamily family = new FontFamily("Consolas");
-
-                                        foreach (PerformanceItem item in this._asmDudeTools.Performance_Store.GetPerformance(mmemonic, selectedMicroarchitures))
-                                        {
-                                            if (first)
-                                            {
-                                                first = false;
-                                                description.Inlines.Add(new Run(string.Format("\n\n{0,-15}{1,-24}{2,-10}{3,-10}\n", "Architecture", "Instruction", "Latency", "Throughput"))
-                                                {
-                                                    FontFamily = family,
-                                                    FontStyle = FontStyles.Italic,
-                                                    FontWeight = FontWeights.Bold,
-                                                    Foreground = this._foreground
-                                                });
-                                            }
-                                            description.Inlines.Add(new Run(string.Format("{0,-15}{1,-24}{2,-10}{3,-10}{4,-10}\n", item._microArch, item._instr + " " + item._args, item._latency, item._throughput, item._remark))
-                                            {
-                                                FontFamily = family,
-                                                Foreground = this._foreground
-                                            });
-                                        }
-                                    }
+                                    // add performance information
+                                    this.Add_Performance_Description(description, mmemonic);
                                     break;
                                 }
                             case AsmTokenType.Label:
@@ -465,6 +441,54 @@ namespace AsmDude.QuickInfo
             } else
             {
                 return "Not used";
+            }
+        }
+
+        /// <summary> Add performance description of mnemonic to the provided description</summary>
+        private void Add_Performance_Description(TextBlock description, Mnemonic mmemonic)
+        {
+            MicroArch selectedMicroarchitures = AsmDudeToolsStatic.Get_MicroArch_Switched_On();
+
+            bool first = true;
+            FontFamily family = new FontFamily("Consolas");
+
+            string format = "{0,-14}{1,-24}{2,-7}{3,-9}{4,-20}{5,-9}{6,-11}{7,-10}";
+
+            foreach (PerformanceItem item in this._asmDudeTools.Performance_Store.GetPerformance(mmemonic, selectedMicroarchitures))
+            {
+                if (first)
+                {
+                    first = false;
+                    description.Inlines.Add(new Run(string.Format("\n\n"+ format + "\n",
+                        "", "", "µOps", "µOps", "µOps", "", "", ""))
+                    {
+                        FontFamily = family,
+                        FontStyle = FontStyles.Italic,
+                        FontWeight = FontWeights.Bold,
+                        Foreground = this._foreground
+                    });
+                    description.Inlines.Add(new Run(string.Format(format + "\n", 
+                        "Architecture", "Instruction", "Fused", "Unfused", "Port", "Latency", "Throughput", ""))
+                    {
+                        FontFamily = family,
+                        FontStyle = FontStyles.Italic,
+                        FontWeight = FontWeights.Bold,
+                        Foreground = this._foreground
+                    });
+                }
+                description.Inlines.Add(new Run(string.Format(format + "\n",
+                    item._microArch, 
+                    item._instr + " " + item._args, 
+                    item._mu_Ops_Fused,
+                    item._mu_Ops_Merged,
+                    item._mu_Ops_Port,
+                    item._latency, 
+                    item._throughput, 
+                    item._remark))
+                {
+                    FontFamily = family,
+                    Foreground = this._foreground
+                });
             }
         }
 

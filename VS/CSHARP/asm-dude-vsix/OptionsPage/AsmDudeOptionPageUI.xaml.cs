@@ -271,10 +271,8 @@ namespace AsmDude.OptionsPage
         }
         public bool PerformanceInfo_Haswell_On
         {
-            get { return false; }
-            set { }
-            //get { return this.PerformanceInfo_Haswell_UI.IsChecked ?? false; }
-            //set { this.PerformanceInfo_Haswell_UI.IsChecked = value; }
+            get { return this.PerformanceInfo_Haswell_UI.IsChecked ?? false; }
+            set { this.PerformanceInfo_Haswell_UI.IsChecked = value; }
         }
         public bool PerformanceInfo_Broadwell_On
         {

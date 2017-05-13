@@ -1,4 +1,25 @@
-﻿using AsmDude.SignatureHelp;
+﻿// The MIT License (MIT)
+//
+// Copyright (c) 2017 Henk-Jan Lebbink
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 using AsmTools;
 using System;
 using System.Collections.Generic;
@@ -6,12 +27,16 @@ using System.IO;
 
 namespace AsmDude.Tools
 {
-
     public struct PerformanceItem
     {
         public MicroArch _microArch;
         public Mnemonic _instr;
         public string _args;
+
+        public string _mu_Ops_Merged;
+        public string _mu_Ops_Fused;
+        public string _mu_Ops_Port;
+
         public string _latency;
         public string _throughput;
         public string _remark;
@@ -46,7 +71,7 @@ namespace AsmDude.Tools
             }
         }
 
-        public void AddData_New(MicroArch microArch, string filename)
+        public void AddData(MicroArch microArch, string filename)
         {
             AsmDudeToolsStatic.Output_INFO("PerformanceStore:AddData_New: microArch=" + microArch + "; filename=" + filename);
             try
@@ -85,69 +110,13 @@ namespace AsmDude.Tools
                                         _microArch = microArch,
                                         _instr = m,
                                         _args = columns[1],
+                                        _mu_Ops_Fused = columns[2],
+                                        _mu_Ops_Merged = columns[3],
+                                        _mu_Ops_Port = columns[4],
                                         _latency = columns[5],
                                         _throughput = columns[6],
                                         _remark = columns[7]
                                     });
-                                }
-                            }
-                        }
-                        else
-                        {
-                            AsmDudeToolsStatic.Output_WARNING("PerformanceStore:AddData: found " + columns.Length + " columns; funky line" + line);
-                        }
-                    }
-                }
-                file.Close();
-            }
-            catch (FileNotFoundException)
-            {
-                AsmDudeToolsStatic.Output_ERROR("PerformanceStore:LoadData: could not find file \"" + filename + "\".");
-            }
-            catch (Exception e)
-            {
-                AsmDudeToolsStatic.Output_ERROR("PerformanceStore:LoadData: error while reading file \"" + filename + "\"." + e);
-            }
-        }
-
-        public void AddData(MicroArch microArch, string filename)
-        {
-            AsmDudeToolsStatic.Output_INFO("PerformanceStore:AddData: microArch=" + microArch + "; filename=" + filename);
-            try
-            {
-                System.IO.StreamReader file = new System.IO.StreamReader(filename);
-                string line;
-                while ((line = file.ReadLine()) != null)
-                {
-                    if ((line.Trim().Length > 0) && (!line.StartsWith(";")))
-                    {
-                        string[] columns = line.Split('\t');
-                        if (columns.Length == 5)
-                        {
-                            { // handle instruction
-                                string mnemonicKey = columns[0].Trim();
-                                foreach (string mnemonicStr in mnemonicKey.Split(' '))
-                                {
-                                    if (mnemonicStr.Length > 0)
-                                    {
-                                        Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(mnemonicStr);
-                                        if (mnemonic == Mnemonic.UNKNOWN)
-                                        {
-                                            AsmDudeToolsStatic.Output_WARNING("PerformanceStore:LoadData: microArch=" + microArch + ": unknown mnemonic " + mnemonicStr + " in line: " + line);
-                                        }
-                                        else
-                                        {
-                                            this._data.Add(new PerformanceItem()
-                                            {
-                                                _microArch = microArch,
-                                                _instr = mnemonic,
-                                                _args = columns[1],
-                                                _latency = columns[2],
-                                                _throughput = columns[3],
-                                                _remark = columns[4]
-                                            });
-                                        }
-                                    }
                                 }
                             }
                         }
@@ -198,7 +167,7 @@ namespace AsmDude.Tools
                                     values.Add(mnemonic);
                                 }
                             }
-                            AsmDudeToolsStatic.Output_INFO("PerformanceStore:Load_Instruction_Translation: key=" + key + " = " + String.Join(",", values));
+                            //AsmDudeToolsStatic.Output_INFO("PerformanceStore:Load_Instruction_Translation: key=" + key + " = " + String.Join(",", values));
                             this._instruction_Translation.Add(key, values);
                         }
                     }

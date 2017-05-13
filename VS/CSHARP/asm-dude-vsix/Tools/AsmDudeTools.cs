@@ -78,7 +78,6 @@ namespace AsmDude
             #region load Signature Store and Performance Store
             string path = AsmDudeToolsStatic.Get_Install_Path() + "Resources" + Path.DirectorySeparatorChar;
             {
-                //string filename = path + "mnemonics-nasm.txt";
                 string filename_Regular = path + "signature-june2016.txt";
                 string filename_Hand = path + "signature-hand-1.txt";
                 this._mnemonicStore = new MnemonicStore(filename_Regular, filename_Hand);
@@ -86,8 +85,9 @@ namespace AsmDude
             {
                 this._performanceStore = new PerformanceStore();
                 this._performanceStore.Load_Instruction_Translation(path + "Performance" + Path.DirectorySeparatorChar + "Instructions-Translations.tsv");
+                this._performanceStore.AddData(MicroArch.Haswell, path + "Performance" + Path.DirectorySeparatorChar + "Haswell.tsv");
                 this._performanceStore.AddData(MicroArch.Broadwell, path + "Performance" + Path.DirectorySeparatorChar + "Broadwell.tsv");
-                this._performanceStore.AddData_New(MicroArch.Skylake, path + "Performance" + Path.DirectorySeparatorChar + "Skylake.tsv");
+                this._performanceStore.AddData(MicroArch.Skylake, path + "Performance" + Path.DirectorySeparatorChar + "Skylake.tsv");
             }
             #endregion
 

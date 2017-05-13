@@ -276,8 +276,8 @@ FNSAVE	m	133	133		176	176
 FRSTOR	m	89	89		175	175	
 							
 ;Arithmetic instructions							
-FADD(P)FSUB(R)(P)	r	1	1	p5	3	1	
-FADD(P)FSUB(R)(P)	m	2	3	p5 p23		1	
+FADD(P) FSUB(R)(P)	r	1	1	p5	3	1	
+FADD(P) FSUB(R)(P)	m	2	3	p5 p23		1	
 FMUL(P)	r	1	1	p0	5	1	
 FMUL(P)	m	2	3	p0 p23		1	
 FDIV(R)(P)	r	1	1	p0	14-16	4-5	
@@ -494,8 +494,8 @@ PCMPISTRM	x,m128,i	4	4	3p0 p23		3	SSE4.2
 ;Encryption instructions							
 PCLMULQDQ	x,x,i	1	1	p5	7	1	CLMUL
 PCLMULQDQ	x,m,i	2	2	p5 p23		1	CLMUL
-AESDEC AESDECLAST AESENC AESENCLAST	x,x	1	1	p0	4	1	AES
-AESDEC AESDECLAST AESENC AESENCLAST	x,m	2	2	p0 p23		1.5	AES
+AESDEC, AESDECLAST, AESENC, AESENCLAST	x,x	1	1	p0	4	1	AES
+AESDEC, AESDECLAST, AESENC, AESENCLAST	x,m	2	2	p0 p23		1.5	AES
 AESIMC	x,x	2	2	2p0	8	2	AES
 AESIMC	x,m	3	3	2p0 p23		2	AES
 AESKEYGENASSIST	x,x,i	13	13	p0 p5	12	12	AES
@@ -662,8 +662,8 @@ DPPS	x,x,i / v,v,v,i	4	4	3p01 p5	13	1.5	SSE4.1
 DPPS	x,m,i / v,v,m,i	6	6	3p01 p23 p5 p6		1.5	SSE4.1
 DPPD	x,x,i	3	3	2p01 p5	9	1	SSE4.1
 DPPD	x,m128,i	4	4	2p01 p23 p5		1	SSE4.1
-VFMADD...(all FMA instr.)	v,v,v	1	1	p01	4	0.5	FMA
-VFMADD...(all FMA instr.)	v,v,m	1	2	p01 p23		0.5	FMA
+VFMADD... (all FMA instr.)	v,v,v	1	1	p01	4	0.5	FMA
+VFMADD... (all FMA instr.)	v,v,m	1	2	p01 p23		0.5	FMA
 							
 ;Math							
 SQRTSS/PS	x,x	1	1	p0	12	3	

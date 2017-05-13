@@ -119,11 +119,11 @@
                 <GroupBox Header="Latency and Throughput Information" BorderBrush="DarkGray">
                     <Grid>
                         <StackPanel>
-                            <!--<CheckBox x:Name="PerformanceInfo_SandyBridge_UI" ToolTip="Show performance information for Sandy Bridge in instruction QuickInfo tooltips" Content="Sandy Bridge (Intel 2nd gen Core)" Margin="0,4,0,2" />
-                            <CheckBox x:Name="PerformanceInfo_IvyBridge_UI" ToolTip="Show performance information for Ivy Bridge in instruction QuickInfo tooltips" Content="Ivy Bridge (Intel 3nd gen Core)" Margin="0,2,0,2" />
-                            <CheckBox x:Name="PerformanceInfo_Haswell_UI" ToolTip="Show performance information for Haswell in instruction QuickInfo tooltips" Content="Haswell (Intel 4nd gen Core)" Margin="0,2,0,2" />
+                            <!--<CheckBox x:Name="PerformanceInfo_SandyBridge_UI" ToolTip="Show performance information for Sandy Bridge in instruction QuickInfo tooltips" Content="Sandy Bridge (Intel 2nd gen Core)" Margin="0,4,0,2" HorizontalAlignment="Left" Width="Auto" />
+                            <CheckBox x:Name="PerformanceInfo_IvyBridge_UI" ToolTip="Show performance information for Ivy Bridge in instruction QuickInfo tooltips" Content="Ivy Bridge (Intel 3nd gen Core)" Margin="0,2,0,2" HorizontalAlignment="Left" Width="Auto" />
                             -->
-                            <CheckBox x:Name="PerformanceInfo_Broadwell_UI" ToolTip="Show performance information for Broadwell in instruction QuickInfo tooltips" Content="Broadwell (Intel 5nd gen Core)" Margin="0,4,0,2" HorizontalAlignment="Left" Width="Auto" />
+                            <CheckBox x:Name="PerformanceInfo_Haswell_UI" ToolTip="Show performance information for Haswell in instruction QuickInfo tooltips" Content="Haswell (Intel 4nd gen Core)" Margin="0,2,0,2" HorizontalAlignment="Left" Width="Auto" />
+                            <CheckBox x:Name="PerformanceInfo_Broadwell_UI" ToolTip="Show performance information for Broadwell in instruction QuickInfo tooltips" Content="Broadwell (Intel 5nd gen Core)" Margin="0,2,0,2" HorizontalAlignment="Left" Width="Auto" />
                             <CheckBox x:Name="PerformanceInfo_Skylake_UI" ToolTip="Show performance information for Skylake in instruction QuickInfo tooltips" Content="Skylake (Intel 6nd gen Core)" Margin="0,2,0,4" HorizontalAlignment="Left" Width="Auto" />
                             <!--<CheckBox x:Name="PerformanceInfo_KnightsLanding_UI" ToolTip="Show performance information for Knights Landing in instruction QuickInfo tooltips" Content="Knights Landing (Intel Xeon Phi)" Margin="0,2,0,4" />
                             -->
