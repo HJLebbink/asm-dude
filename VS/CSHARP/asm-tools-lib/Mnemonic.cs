@@ -2237,7 +2237,13 @@ namespace AsmTools {
         /// <summary>Scalar Single-Precision Floating-Point Fused Multiply-Add (4-iterations)</summary>
         V4FMADDSS,
         /// <summary>Scalar Single-Precision Floating-Point Fused Multiply-Add (4-iterations)</summary>
-        V4FNMADDSS
+        V4FNMADDSS,
+
+        VPOPCNTD,
+        VPOPCNTQ
+
+
+
     }
 
     public static partial class AsmSourceTools {
@@ -4169,6 +4175,8 @@ namespace AsmTools {
                 case "V4FMADDSS": return Mnemonic.V4FMADDSS;
                 case "V4FNMADDSS": return Mnemonic.V4FNMADDSS;
 
+                case "VPOPCNTD": return Mnemonic.VPOPCNTD;
+                case "VPOPCNTQ": return Mnemonic.VPOPCNTQ;
                 default:
                     Console.WriteLine("WARNING;parseMnemonic. unknown str=\"" + str + "\".");
                     return Mnemonic.UNKNOWN;
