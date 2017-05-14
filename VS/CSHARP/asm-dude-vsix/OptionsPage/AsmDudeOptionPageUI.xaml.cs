@@ -264,10 +264,8 @@ namespace AsmDude.OptionsPage
         }
         public bool PerformanceInfo_IvyBridge_On
         {
-            get { return false; }
-            set { }
-            //get { return this.PerformanceInfo_IvyBridge_UI.IsChecked ?? false; }
-            //set { this.PerformanceInfo_IvyBridge_UI.IsChecked = value; }
+            get { return this.PerformanceInfo_IvyBridge_UI.IsChecked ?? false; }
+            set { this.PerformanceInfo_IvyBridge_UI.IsChecked = value; }
         }
         public bool PerformanceInfo_Haswell_On
         {

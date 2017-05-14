@@ -1077,31 +1077,37 @@ namespace AsmDude.OptionsPage
             if (Settings.Default.PerformanceInfo_SandyBridge_On != this._asmDudeOptionsPageUI.PerformanceInfo_SandyBridge_On)
             {
                 Settings.Default.PerformanceInfo_SandyBridge_On = this._asmDudeOptionsPageUI.PerformanceInfo_SandyBridge_On;
+                restartNeeded = Settings.Default.PerformanceInfo_SandyBridge_On = this._asmDudeOptionsPageUI.PerformanceInfo_SandyBridge_On;
                 changed = true;
             }
             if (Settings.Default.PerformanceInfo_IvyBridge_On != this._asmDudeOptionsPageUI.PerformanceInfo_IvyBridge_On)
             {
                 Settings.Default.PerformanceInfo_IvyBridge_On = this._asmDudeOptionsPageUI.PerformanceInfo_IvyBridge_On;
+                restartNeeded = this._asmDudeOptionsPageUI.PerformanceInfo_IvyBridge_On;
                 changed = true;
             }
             if (Settings.Default.PerformanceInfo_Haswell_On != this._asmDudeOptionsPageUI.PerformanceInfo_Haswell_On)
             {
                 Settings.Default.PerformanceInfo_Haswell_On = this._asmDudeOptionsPageUI.PerformanceInfo_Haswell_On;
+                restartNeeded = this._asmDudeOptionsPageUI.PerformanceInfo_Haswell_On;
                 changed = true;
             }
             if (Settings.Default.PerformanceInfo_Broadwell_On != this._asmDudeOptionsPageUI.PerformanceInfo_Broadwell_On)
             {
                 Settings.Default.PerformanceInfo_Broadwell_On = this._asmDudeOptionsPageUI.PerformanceInfo_Broadwell_On;
+                restartNeeded = Settings.Default.PerformanceInfo_Broadwell_On = this._asmDudeOptionsPageUI.PerformanceInfo_Broadwell_On;
                 changed = true;
             }
             if (Settings.Default.PerformanceInfo_Skylake_On != this._asmDudeOptionsPageUI.PerformanceInfo_Skylake_On)
             {
                 Settings.Default.PerformanceInfo_Skylake_On = this._asmDudeOptionsPageUI.PerformanceInfo_Skylake_On;
+                restartNeeded = this._asmDudeOptionsPageUI.PerformanceInfo_Skylake_On;
                 changed = true;
             }
             if (Settings.Default.PerformanceInfo_KnightsLanding_On != this._asmDudeOptionsPageUI.PerformanceInfo_KnightsLanding_On)
             {
                 Settings.Default.PerformanceInfo_KnightsLanding_On = this._asmDudeOptionsPageUI.PerformanceInfo_KnightsLanding_On;
+                restartNeeded = this._asmDudeOptionsPageUI.PerformanceInfo_KnightsLanding_On;
                 changed = true;
             }
             #endregion

@@ -83,11 +83,7 @@ namespace AsmDude
                 this._mnemonicStore = new MnemonicStore(filename_Regular, filename_Hand);
             }
             {
-                this._performanceStore = new PerformanceStore();
-                this._performanceStore.Load_Instruction_Translation(path + "Performance" + Path.DirectorySeparatorChar + "Instructions-Translations.tsv");
-                this._performanceStore.AddData(MicroArch.Haswell, path + "Performance" + Path.DirectorySeparatorChar + "Haswell.tsv");
-                this._performanceStore.AddData(MicroArch.Broadwell, path + "Performance" + Path.DirectorySeparatorChar + "Broadwell.tsv");
-                this._performanceStore.AddData(MicroArch.Skylake, path + "Performance" + Path.DirectorySeparatorChar + "Skylake.tsv");
+                this._performanceStore = new PerformanceStore(path + "Performance" + Path.DirectorySeparatorChar);
             }
             #endregion
 

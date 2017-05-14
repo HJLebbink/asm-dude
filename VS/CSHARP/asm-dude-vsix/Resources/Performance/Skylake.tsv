@@ -350,10 +350,10 @@ PACKSSWB/DW PACKUSWB	x,x / y,y,y	1	1	p5	1	1
 PACKSSWB/DW PACKUSWB	x,m / y,y,m	1	2	p23 p5		1	
 PACKUSDW	x,x / y,y,y	1	1	p5	1	1	SSE4.1
 PACKUSDW	x,m / y,y,m	1	2	p23 p5		1	SSE4.1
-PUNPCKH/L BW/WD/DQ	v,v / v,v,v	1	1	p5	1	1	
-PUNPCKH/L BW/WD/DQ	v,m / v,v,m	1	2	p23 p5		1	
-PUNPCKH/L QDQ	x,x / y,y,y	1	1	p5	1	1	
-PUNPCKH/L QDQ	x,m / y,y,m	1	2	p23 p5		1	
+PUNPCKH/LBW/WD/DQ	v,v / v,v,v	1	1	p5	1	1	
+PUNPCKH/LBW/WD/DQ	v,m / v,v,m	1	2	p23 p5		1	
+PUNPCKH/LQDQ	x,x / y,y,y	1	1	p5	1	1	
+PUNPCKH/LQDQ	x,m / y,y,m	1	2	p23 p5		1	
 PMOVSX/ZX BW BD BQ DW DQ	x,x	1	1	p5	1	1	SSE4.1
 PMOVSX/ZX BW BD BQ DW DQ	x,m	1	2	p23 p5		1	SSE4.1
 VPMOVSX/ZX BW BD BQ DW DQ	y,x	1	1	p5	3	1	AVX2
@@ -416,8 +416,8 @@ VPGATHERQQ	x,[r+s*x],x	5	5	p0 p1 p23 p5		2	AVX2
 VPGATHERQQ	y,[r+s*y],y	4	4	p0 p1 p23 p5		4	AVX2
 							
 ;Arithmetic instructions							
-PADD/SUB(S,US) B/W/D/Q	v,v / v,v,v	1	1	p015	1	0.33	
-PADD/SUB(S,US) B/W/D/Q	v,m / v,v,m	1	2	p015 p23		0.5	
+PADD/SUB(S,US)B/W/D/Q	v,v / v,v,v	1	1	p015	1	0.33	
+PADD/SUB(S,US)B/W/D/Q	v,m / v,v,m	1	2	p015 p23		0.5	
 PHADD(S)W/D PHSUB(S)W/D	v,v / v,v,v	3	3	p01 2p5	3	2	SSSE3
 PHADD(S)W/D PHSUB(S)W/D	v,m / v,v,m	4	4	p01 2p5 p23		2	SSSE3
 PCMPEQB/W/D PCMPGTB/W/D	mm,mm	1	1	p0	1	1	

@@ -45,19 +45,20 @@ namespace AsmDude.Tools
     public class PerformanceStore
     {
         private readonly IList<PerformanceItem> _data;
-        private readonly IDictionary<string, IList<Mnemonic>> _instruction_Translation;
 
-
-        public PerformanceStore()
+        public PerformanceStore(string path)
         {
             this._data = new List<PerformanceItem>();
-            this._instruction_Translation = new Dictionary<string, IList<Mnemonic>>();
-        }
 
-        public void Clear()
-        {
-            this._data.Clear();
-            this._instruction_Translation.Clear();
+            MicroArch selectedMicroarchitures = AsmDudeToolsStatic.Get_MicroArch_Switched_On();
+            if (selectedMicroarchitures != MicroArch.NONE)
+            {
+                var translations = this.Load_Instruction_Translation(path + "Instructions-Translations.tsv");
+                if (selectedMicroarchitures.HasFlag(MicroArch.IvyBridge)) this.AddData(MicroArch.IvyBridge, path + "IvyBridge.tsv", translations);
+                if (selectedMicroarchitures.HasFlag(MicroArch.Haswell)) this.AddData(MicroArch.Haswell, path + "Haswell.tsv", translations);
+                if (selectedMicroarchitures.HasFlag(MicroArch.Broadwell)) this.AddData(MicroArch.Broadwell, path + "Broadwell.tsv", translations);
+                if (selectedMicroarchitures.HasFlag(MicroArch.Skylake)) this.AddData(MicroArch.Skylake, path + "Skylake.tsv", translations);
+            }
         }
 
         public IEnumerable<PerformanceItem> GetPerformance(Mnemonic mnemonic, MicroArch selectedArchitectures)
@@ -71,7 +72,8 @@ namespace AsmDude.Tools
             }
         }
 
-        public void AddData(MicroArch microArch, string filename)
+        #region Private Methods
+        private void AddData(MicroArch microArch, string filename, IDictionary<string, IList<Mnemonic>> translations)
         {
             AsmDudeToolsStatic.Output_INFO("PerformanceStore:AddData_New: microArch=" + microArch + "; filename=" + filename);
             try
@@ -87,7 +89,7 @@ namespace AsmDude.Tools
                         {
                             { // handle instruction
                                 string mnemonicKey = columns[0].Trim();
-                                if (!this._instruction_Translation.TryGetValue(mnemonicKey, out IList<Mnemonic> mnemonics))
+                                if (!translations.TryGetValue(mnemonicKey, out IList<Mnemonic> mnemonics))
                                 {
                                     mnemonics = new List<Mnemonic>();
                                     foreach (string mnemonicStr in mnemonicKey.Split(' '))
@@ -138,9 +140,9 @@ namespace AsmDude.Tools
             }
         }
 
-        public void Load_Instruction_Translation(string filename)
+        private IDictionary<string, IList<Mnemonic>> Load_Instruction_Translation(string filename)
         {
-            this._instruction_Translation.Clear();
+            IDictionary<string, IList<Mnemonic>> translations = new Dictionary<string, IList<Mnemonic>>();
             try
             {
                 System.IO.StreamReader file = new System.IO.StreamReader(filename);
@@ -168,7 +170,7 @@ namespace AsmDude.Tools
                                 }
                             }
                             //AsmDudeToolsStatic.Output_INFO("PerformanceStore:Load_Instruction_Translation: key=" + key + " = " + String.Join(",", values));
-                            this._instruction_Translation.Add(key, values);
+                            translations.Add(key, values);
                         }
                     }
                 }
@@ -182,6 +184,8 @@ namespace AsmDude.Tools
             {
                 AsmDudeToolsStatic.Output_ERROR("PerformanceStore:Load_Instruction_Translation: error while reading file \"" + filename + "\"." + e);
             }
+            return translations;
         }
+        #endregion
     }
 }
