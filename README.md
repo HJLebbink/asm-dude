@@ -97,13 +97,13 @@ When something is known about the register content, this information is shown in
 
 ## Where is the Source (Are you sure this is not a honeypot?!)
 If you are reading this you are most likely an assembly programmer, if you are still interested in some dirty c#, 
-or you are just cautious, you can run the extension from source code. To do that, Visual Studio 2015 SDK (or VS 2017 SDK) 
-needs to be installed. To run the extension, hit F5 or choose the Debug > Start Debugging menu command. A new instance of 
+or you are just cautious, you can run the extension from source code. To do that, Visual Studio 2017 SDK needs to 
+be installed. To run the extension, hit F5 or choose the Debug > Start Debugging menu command. A new instance of 
 Visual Studio will launch under the experimental hive.
 
 ### Currently in development:
 * Considering [Irony](https://irony.codeplex.com/) for proper parsing and error handling.
-* ~~Considering [Z3](https://github.com/Z3Prover/z3) for proof tree induction to track propagation of register and flag state-change trough time.
+* ~~Considering [Z3](https://github.com/Z3Prover/z3) for proof tree induction to track propagation of register and flag state-change trough time.~~
 
 ### Known Issues:
 * Incomplete descriptions. E.g. PMOVSX, the source [html](https://hjlebbink.github.io/x86doc/html/PMOVSX.html) has a split table and only the first table is used as source.
