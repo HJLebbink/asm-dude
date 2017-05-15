@@ -251,21 +251,7 @@ namespace AsmSim
         #endregion
 
         #region Update
-        public void Update_Forward(StateUpdate stateUpdate)
-        {
-            if (stateUpdate == null) return;
-            if (stateUpdate.Empty) return;
-
-            this.UndefGrounding = false;
-            foreach (BoolExpr expr in stateUpdate.Value) this.Solver.Assert(expr);
-            foreach (BoolExpr expr in stateUpdate.Undef) this.Solver_U.Assert(expr);
-            foreach (BranchInfo branchInfo in stateUpdate.BranchInfo) this.BranchInfoStore.Add(branchInfo);
-
-            this.HeadKey = stateUpdate.NextKey;
-            this.Solver_Dirty = true;
-            this.Solver_U_Dirty = true;
-        }
-        public void Update_Backward(StateUpdate stateUpdate)
+        public void Update(StateUpdate stateUpdate)
         {
             if (stateUpdate == null) return;
             //if (stateUpdate.Empty) return;
@@ -275,9 +261,24 @@ namespace AsmSim
             foreach (BoolExpr expr in stateUpdate.Undef) this.Solver_U.Assert(expr);
             foreach (BranchInfo branchInfo in stateUpdate.BranchInfo) this.BranchInfoStore.Add(branchInfo);
 
-            this.TailKey = stateUpdate.PrevKey;
             this.Solver_Dirty = true;
             this.Solver_U_Dirty = true;
+        }
+        public void Update_Forward(StateUpdate stateUpdate)
+        {
+            if (stateUpdate == null) return;
+            //if (stateUpdate.Empty) return;
+
+            this.Update(stateUpdate);
+            this.HeadKey = stateUpdate.NextKey;
+        }
+        public void Update_Backward(StateUpdate stateUpdate)
+        {
+            if (stateUpdate == null) return;
+            if (stateUpdate.Empty) return;
+
+            this.Update(stateUpdate);
+            this.TailKey = stateUpdate.PrevKey;
         }
 
         public void Add(BranchInfo branchInfo)
@@ -544,7 +545,7 @@ namespace AsmSim
             }
             sb.AppendLine(this.BranchInfoStore.ToString());
 
-            sb.Append("HeadKey=" + this.HeadKey + "; TailKey=" + this.TailKey);
+            sb.Append("TailKey=" + this.TailKey+ "; HeadKey = " + this.HeadKey );
             return sb.ToString();
         }
         #endregion

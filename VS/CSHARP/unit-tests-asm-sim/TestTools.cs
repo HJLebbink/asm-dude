@@ -12,11 +12,11 @@ namespace unit_tests_asm_z3
     public class TestTools
     {
 #if DEBUG
-        public const bool LOG_TO_DISPLAY = true;
-#else
         public const bool LOG_TO_DISPLAY = false;
+#else
+        public const bool LOG_TO_DISPLAY = true;
 #endif
-        public const int DEFAULT_TIMEOUT = 1000;
+        public const int DEFAULT_TIMEOUT = 60000;
 
 
         public static ulong RandUlong(int nBits, Random rand)

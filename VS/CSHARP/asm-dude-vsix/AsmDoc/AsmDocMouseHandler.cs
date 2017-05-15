@@ -393,16 +393,25 @@ namespace AsmDude.AsmDoc
         private string Get_Url(string keyword)
         {
             string reference = this._asmDudeTools.Get_Url(keyword);
-            if (reference.Length == 0) return null;
-            return Settings.Default.AsmDoc_url + reference;
-            //return AsmDudeToolsStatic.getInstallPath() + "html" + Path.DirectorySeparatorChar + reference;
+            if (reference.Length == 0)
+            {
+                return null;
+            }
+            if (reference.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+            {
+                return reference;
+            }
+            else
+            {
+                return Settings.Default.AsmDoc_url + reference;
+            }
         }
 
         private int Open_File(string keyword)
         {
             string url = Get_Url(keyword);
             if (url == null)
-            { // this situation happens for all keywords (such as registers) that do not have an url specified.
+            { // this situation happens for all keywords that do not have an url specified (such as registers).
                 //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:openFile; url for keyword \"{1}\" is null.", this.ToString(), keyword));
                 return 1;
             }

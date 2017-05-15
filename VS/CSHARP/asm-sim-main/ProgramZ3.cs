@@ -39,7 +39,8 @@ namespace AsmSim
             System.Version ver = thisAssemName.Version;
             Console.WriteLine(string.Format("Loaded AsmSim version {0}.", ver));
 
-            TestMnemonic();
+            //TestMnemonic();
+            TestExecutionTree();
             //EmptyMemoryTest();
             //ProgramSynthesis1();
             
@@ -307,6 +308,52 @@ namespace AsmSim
             }
         }
 
+        static void TestExecutionTree()
+        {
+            Dictionary<string, string> settings = new Dictionary<string, string>
+            {
+                { "unsat-core", "false" },    // enable generation of unsat cores
+                { "model", "false" },         // enable model generation
+                { "proof", "false" },         // enable proof generation
+                { "timeout", "1000" }
+            };
+            Tools tools = new Tools(settings);
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RBX = true;
+            tools.Quiet = true;
+
+            string programStr =
+                "           mov     rax,        0               " + Environment.NewLine +
+               // "" + Environment.NewLine +
+                "           mov     rbx,        10              " + Environment.NewLine +
+                "           mov     rbx,        rax             ";
+            CFlow flow = new CFlow(programStr);
+
+            if (false) {
+                ExecutionTree2 tree0 = Runner.Construct_ExecutionTree2_Forward(flow, 0, 100, tools);
+                //Console.WriteLine(tree0.ToString(flow));
+
+                //State state = tree0.EndState;
+                foreach (var v in tree0.States(4))
+                {
+                    Console.WriteLine(v);
+                }
+            }
+            if (true) {
+                ExecutionTree2 tree1 = Runner.Construct_ExecutionTree2_Backward(flow, flow.LastLineNumber, 100, tools);
+                Console.WriteLine(tree1.ToString(flow));
+
+                Console.WriteLine("EndState:"+tree1.EndState);
+
+                /*
+                 *foreach (var v in tree1.States(3))
+                                {
+                                    Console.WriteLine(v);
+                                }
+                */
+            }
+        }
         static void EmptyMemoryTest()
         {
             Dictionary<string, string> settings = new Dictionary<string, string>

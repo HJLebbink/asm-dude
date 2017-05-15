@@ -40,7 +40,7 @@ namespace AsmDude.Tools
         private readonly CFlow _cflow;
         private readonly IDictionary<int, State> _cached_States_After;
         private readonly IDictionary<int, State> _cached_States_Before;
-        private readonly IDictionary<int, ExecutionTree> _cached_Tree_After;
+        private readonly IDictionary<int, ExecutionTree<IExecutionNode>> _cached_Tree_After;
 
         public readonly AsmSim.Tools Tools;
         private object _updateLock = new object();
@@ -77,7 +77,7 @@ namespace AsmDude.Tools
                 this._cflow = new CFlow(this._buffer.CurrentSnapshot.GetText());
                 this._cached_States_After = new Dictionary<int, State>();
                 this._cached_States_Before = new Dictionary<int, State>();
-                this._cached_Tree_After = new Dictionary<int, ExecutionTree>();
+                this._cached_Tree_After = new Dictionary<int, ExecutionTree<IExecutionNode>>();
                 this._scheduled_After = new HashSet<int>();
                 this._scheduled_Before = new HashSet<int>();
 
@@ -423,7 +423,7 @@ namespace AsmDude.Tools
                 this._busy = true;
                 this.Tools.StateConfig = Runner.GetUsage_StateConfig(this._cflow, 0, this._cflow.LastLineNumber, this.Tools);
 
-                ExecutionTree tree = null;
+                ExecutionTree<IExecutionNode> tree = null;
 
                 var prev = new List<(int LineNumber, bool IsBranch)>(this._cflow.GetPrevLineNumber(lineNumber));
                 if (prev.Count == 1)
@@ -472,7 +472,7 @@ namespace AsmDude.Tools
                 this._scheduled_After.Remove(lineNumber);
                 this.Tools.StateConfig = Runner.GetUsage_StateConfig(this._cflow, 0, this._cflow.LastLineNumber, this.Tools);
 
-                ExecutionTree tree = Runner.Construct_ExecutionTree_Backward(this._cflow, lineNumber, Settings.Default.AsmSim_Number_Of_Steps, this.Tools);
+                ExecutionTree<IExecutionNode> tree = Runner.Construct_ExecutionTree_Backward(this._cflow, lineNumber, Settings.Default.AsmSim_Number_Of_Steps, this.Tools);
 
                 if (tree != null)
                 {

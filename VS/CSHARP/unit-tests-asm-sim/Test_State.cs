@@ -9,7 +9,7 @@ using System.Collections.Generic;
 namespace unit_tests_asm_z3
 {
     [TestClass]
-    public class Test_State2
+    public class Test_State
     {
         const bool logToDisplay = TestTools.LOG_TO_DISPLAY;
 
@@ -33,7 +33,7 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
-        public void Test_State2_MergeConstructor_1()
+        public void Test_State_MergeConstructor_1()
         {
             Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
@@ -64,7 +64,7 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
-        public void Test_State2_MergeConstructor_2()
+        public void Test_State_MergeConstructor_2()
         {
             Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
@@ -97,7 +97,7 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
-        public void Test_State2_MergeConstructor_3()
+        public void Test_State_MergeConstructor_3()
         {
             Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();

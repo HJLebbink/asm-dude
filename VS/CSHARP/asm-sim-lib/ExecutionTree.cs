@@ -25,19 +25,19 @@ using System.Collections.Generic;
 
 namespace AsmSim
 {
-    public class ExecutionTree
+    public class ExecutionTree<N> where N : IExecutionNode
     {
-        private ExecutionNode _root;
+        private N _root;
         private readonly Tools _tools;
         public bool Forward { get; private set; }
 
-        public ExecutionTree(ExecutionNode rootNode, bool forward)
+        public ExecutionTree(N rootNode, bool forward)
         {
             this._root = rootNode;
             this._tools = rootNode.State.Tools;
             this.Forward = forward;
         }
-        public ExecutionNode Root { get { return this._root; } }
+        public N Root { get { return this._root; } }
         public IEnumerable<State> GetFromLine(int lineNumber)
         {
             return this._root.GetFromLine(lineNumber);

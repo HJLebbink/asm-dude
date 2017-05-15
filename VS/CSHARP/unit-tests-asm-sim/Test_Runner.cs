@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 using AsmSim;
 using AsmTools;
-using AsmSim.Mnemonics;
 
 namespace unit_tests_asm_z3
 {
@@ -42,8 +41,9 @@ namespace unit_tests_asm_z3
 
             if (logToDispay2) Console.WriteLine(flow.ToString());
 
-            ExecutionTree tree0 = Runner.Construct_ExecutionTree_Forward(flow, 0, 100, tools);
-            ExecutionTree tree1 = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 100, tools);
+            ExecutionTree2 tree0 = Runner.Construct_ExecutionTree2_Forward(flow, 0, 100, tools);
+            //ExecutionTree<IExecutionNode> tree0 = Runner.Construct_ExecutionTree_Forward(flow, 0, 100, tools);
+            ExecutionTree<IExecutionNode> tree1 = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 100, tools);
 
             //Console.WriteLine("Forward:" + tree0.ToString(flow));
             //Console.WriteLine("Backward:" + tree1.ToString(flow));
@@ -479,7 +479,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_Mem1()
         {
-            Tools tools = CreateTools(10000);
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RCX = true;
@@ -498,7 +498,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_Mem2()
         {
-            Tools tools = CreateTools(10000);
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -523,7 +523,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_Mem3()
         {
-            Tools tools = CreateTools(20000); // test is slow (9min)
+            Tools tools = CreateTools(); // test is slow (9min - 17min)
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -560,7 +560,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_Merge_Mem_Backward_1()
         {
-            Tools tools = CreateTools(10000);
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;

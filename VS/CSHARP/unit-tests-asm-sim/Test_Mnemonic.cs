@@ -289,7 +289,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Mov_mem1_4byte()
         {
-            Tools tools = CreateTools(8000);
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -319,7 +319,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Mov_mem1_8byte()
         {
-            Tools tools = CreateTools(20000);
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -482,7 +482,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Mov_mem5()
         {
-            Tools tools = CreateTools(10000);
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -543,7 +543,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Mov_mem6()
         {
-            Tools tools = CreateTools(10000);
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -2912,7 +2912,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_PushPop_64bit_3()
         {
-            Tools tools = CreateTools(20000);
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -2934,7 +2934,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_PushPop_64bit_4()
         {
-            Tools tools = CreateTools(20000);
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;

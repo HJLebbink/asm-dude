@@ -100,6 +100,7 @@
     <Compile Include="Test_BitTricks.cs" />
     <Compile Include="Test_BranchInfoStore.cs" />
     <Compile Include="Test_CFlow.cs" />
+    <Compile Include="Test_ExecutionTree.cs" />
     <Compile Include="Test_FlagTools.cs" />
     <Compile Include="Test_FPTools.cs" />
     <Compile Include="Test_MemZ3.cs" />
@@ -107,7 +108,7 @@
     <Compile Include="Test_Runner.cs" />
     <Compile Include="Test_Z3.cs" />
     <Compile Include="TestTools.cs" />
-    <Compile Include="Test_State2.cs" />
+    <Compile Include="Test_State.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\asm-tools-lib\asm-tools-lib.csproj">
