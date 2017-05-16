@@ -20,51 +20,213 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmTools;
+using System;
 using System.Collections.Generic;
 
 namespace AsmSim
 {
-    public class ExecutionTree<N> where N : IExecutionNode
+    public class ExecutionTree
     {
-        private N _root;
+        private ExecutionNode _root;
         private readonly Tools _tools;
         public bool Forward { get; private set; }
 
-        public ExecutionTree(N rootNode, bool forward)
+        public ExecutionTree(ExecutionNode rootNode, bool forward, Tools tools)
         {
             this._root = rootNode;
-            this._tools = rootNode.State.Tools;
+            this._tools = tools;
             this.Forward = forward;
         }
-        public N Root { get { return this._root; } }
-        public IEnumerable<State> GetFromLine(int lineNumber)
+        public ExecutionNode Root { get { return this._root; } }
+
+        public IEnumerable<State> States_Before(int lineNumber)
         {
-            return this._root.GetFromLine(lineNumber);
+            foreach (ExecutionNode node in GetNode_LOCAL(this._root))
+            {
+                yield return Tools.Collapse(this.GetPreviousStates(node));
+            }
+            IEnumerable<ExecutionNode> GetNode_LOCAL(ExecutionNode startNode)
+            {
+                if (startNode.LineNumber == lineNumber)
+                {
+                    yield return startNode;
+                }
+                else
+                {
+                    if (this.Forward)
+                    {
+                        if (startNode.Has_Forward_Continue)
+                        {
+                            foreach (var x in GetNode_LOCAL(startNode.Forward_Continue)) yield return x;
+                        }
+                        if (startNode.Has_Forward_Branch)
+                        {
+                            foreach (var x in GetNode_LOCAL(startNode.Forward_Branch)) yield return x;
+                        }
+                    }
+                    else
+                    {
+                        if (startNode.Has_Parents)
+                        {
+                            foreach (var y in startNode.Parents) foreach (var x in GetNode_LOCAL(y)) yield return x;
+                        }
+                    }
+                }
+            }
         }
-        public IEnumerable<State> Leafs { get { return (this.Forward) ? this._root.Leafs_Forward : this._root.Leafs_Backward; } }
+
+        public IEnumerable<State> States_After(int lineNumber)
+        {
+            foreach (ExecutionNode node in GetNode_LOCAL(this._root))
+            {
+                yield return this.GetState(node);
+            }
+            IEnumerable<ExecutionNode> GetNode_LOCAL(ExecutionNode startNode)
+            {
+                if (startNode.LineNumber == lineNumber)
+                {
+                    yield return startNode;
+                }
+                else
+                {
+                    if (this.Forward)
+                    {
+                        if (startNode.Has_Forward_Continue)
+                        {
+                            foreach (var x in GetNode_LOCAL(startNode.Forward_Continue)) yield return x;
+                        }
+                        if (startNode.Has_Forward_Branch)
+                        {
+                            foreach (var x in GetNode_LOCAL(startNode.Forward_Branch)) yield return x;
+                        }
+                    }
+                    else
+                    {
+                        if (startNode.Has_Parents)
+                        {
+                            foreach (var y in startNode.Parents) foreach (var x in GetNode_LOCAL(y)) yield return x;
+                        }
+                    }
+                }
+            }
+        }
+
+        public IEnumerable<State> Leafs
+        {
+            get
+            {
+                foreach (ExecutionNode node in GetNode_LOCAL(this._root))
+                {
+                    yield return this.GetState(node);
+                }
+                IEnumerable<ExecutionNode> GetNode_LOCAL(ExecutionNode startNode)
+                {
+                    if (!startNode.Has_Forward_Continue && !startNode.Has_Forward_Branch)
+                    {
+                        yield return startNode; // found a leaf
+                    }
+                    else
+                    {
+                        if (startNode.Has_Forward_Continue)
+                        {
+                            foreach (var x in GetNode_LOCAL(startNode.Forward_Continue)) yield return x;
+                        }
+                        if (startNode.Has_Forward_Branch)
+                        {
+                            foreach (var x in GetNode_LOCAL(startNode.Forward_Branch)) yield return x;
+                        }
+                    }
+                }
+            }
+        }
+
         public State EndState { get { return Tools.Collapse(this.Leafs); } }
 
-        Tv GetTv(Flags flagName, int lineNumber)
-        {
-            return Tools.Collapse(this.GetFromLine(lineNumber)).GetTv5(flagName);
-        }
-        Tv[] GetTv5Array(Rn regName, int lineNumber)
-        {
-            return Tools.Collapse(this.GetFromLine(lineNumber)).GetTv5Array(regName);
-        }
-
+        #region ToString
         public override string ToString()
         {
             return this.ToString(null);
         }
         public string ToString(CFlow flow)
         {
-            return this._root.ToString(flow);
+            return this.Root.ToString(flow);
         }
         public string ToStringOverview(CFlow flow, bool showRegisterValues = false)
         {
             return this.Root.ToStringOverview(flow, 1, showRegisterValues);
         }
+        #endregion
+
+        #region Private Methods
+
+        private IEnumerable<State> GetPreviousStates(ExecutionNode node)
+        {
+            if (node.Has_Parents)
+            {
+                foreach (var v in node.Parents)
+                {
+                    yield return GetState(v);
+                }
+            } 
+        }
+
+        private State GetState(ExecutionNode node)
+        {
+            if (node == null) return null;
+
+            string key = "!DUMMY";
+            State result = new State(this._tools, key, key, -1);
+
+            if (this.Forward)
+            {
+                string headKey = node.NextKey;
+                string tailKey = node.PrevKey;
+                while (node != null)
+                {
+                    if (node.StateUpdate != null)
+                    {
+                        result.Update(node.StateUpdate);
+                        tailKey = node.StateUpdate.PrevKey;
+                    }
+                    if (node.Has_Parents)
+                    {
+                        if (node.Parents.Count != 1) Console.WriteLine("WARNING: GetState: cannot have multiple parents");
+                        node = node.Parents[0];
+                    } else
+                    {
+                        node = null;
+                    }
+                }
+                result.TailKey = tailKey;
+                result.HeadKey = headKey;
+            }
+            else
+            {
+                string headKey = node.NextKey;
+                string tailKey = node.PrevKey;
+                while (node != null)
+                {
+                    //Console.WriteLine("INFO: ExecutionTree:GetState: Adding update " + node.StateUpdate);
+                    if (node.StateUpdate != null)
+                    {
+                        result.Update(node.StateUpdate);
+                        headKey = node.StateUpdate.NextKey;
+                    }
+                    if (node.Has_Parents)
+                    {
+                        if (node.Parents.Count != 1) Console.WriteLine("WARNING: GetState: cannot have multiple parents");
+                        node = node.Parents[0];
+                    }
+                    else
+                    {
+                        node = null;
+                    }
+                }
+                result.TailKey = tailKey;
+                result.HeadKey = headKey;
+            }
+            return result;
+        }
+        #endregion
     }
 }

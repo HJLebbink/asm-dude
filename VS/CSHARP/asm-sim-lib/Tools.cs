@@ -251,13 +251,11 @@ namespace AsmSim
         public static State Collapse(IEnumerable<State> previousStates)
         {
             State result = null;
-            int? lineNumber = null;
             bool first = true;
             foreach (State prev in previousStates)
             {
                 if (first)
                 {
-                    lineNumber = prev.LineNumber;
                     result = prev;
                     first = false;
                 }
@@ -265,12 +263,6 @@ namespace AsmSim
                 {
                     Console.WriteLine("INFO: Collapsing: state1:\n" + result);
                     Console.WriteLine("INFO: Collapsing: state2:\n" + prev);
-                    if (prev.LineNumber != lineNumber)
-                    {
-                        Console.WriteLine("WARNING: Collapse: cannot merge lineNumbers " + lineNumber + " and " + prev.LineNumber);
-                        //throw new Exception();
-                        return null;
-                    }
                     result = new State(result, prev, true);
                 }
             }

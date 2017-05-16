@@ -41,9 +41,9 @@ namespace unit_tests_asm_z3
 
             if (logToDispay2) Console.WriteLine(flow.ToString());
 
-            ExecutionTree2 tree0 = Runner.Construct_ExecutionTree2_Forward(flow, 0, 100, tools);
+            ExecutionTree tree0 = Runner.Construct_ExecutionTree_Forward(flow, 0, 100, tools);
             //ExecutionTree<IExecutionNode> tree0 = Runner.Construct_ExecutionTree_Forward(flow, 0, 100, tools);
-            ExecutionTree<IExecutionNode> tree1 = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 100, tools);
+            ExecutionTree tree1 = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 100, tools);
 
             //Console.WriteLine("Forward:" + tree0.ToString(flow));
             //Console.WriteLine("Backward:" + tree1.ToString(flow));
@@ -235,7 +235,7 @@ namespace unit_tests_asm_z3
             State state2 = Runner.Construct_ExecutionTree_Forward(flow, 0, 10, tools).EndState;
             if (logToDisplay) Console.WriteLine(state2);
 
-            Assert.IsTrue(state2.IsConsistent);
+            TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
         }
 
         [TestMethod]
@@ -263,21 +263,21 @@ namespace unit_tests_asm_z3
 
             State state2 = Runner.Construct_ExecutionTree_Forward(flow, 0, 10, tools).EndState;
             if (logToDisplay2) Console.WriteLine("state2:\n" + state2);
-            Assert.IsTrue(state2.IsConsistent);
+            TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
 
             {
-                State state2a = new State(state2, state2.LineNumber);
+                State state2a = new State(state2);
                 state2a.Add(new BranchInfo(state2a.Get(Flags.ZF), true, 0));
                 if (logToDisplay2) Console.WriteLine("state2 with ZF==0:\n" + state2a);
-                Assert.IsTrue(state2a.IsConsistent);
+                TestTools.AreEqual(Tv.ONE, state2a.IsConsistent);
                 //TestTools.AreEqual(Rn.RAX, 20, state2a);
                 //TestTools.AreEqual(Rn.RAX, 20, state2a);
             }
             {
-                State state2b = new State(state2, state2.LineNumber);
+                State state2b = new State(state2);
                 state2b.Add(new BranchInfo(state2b.Get(Flags.ZF), false, 0));
                 if (logToDisplay2) Console.WriteLine("state2 with ZF==1:\n" + state2b);
-                Assert.IsTrue(state2b.IsConsistent);
+                TestTools.AreEqual(Tv.ONE, state2b.IsConsistent);
                 //TestTools.AreEqual(Rn.RAX, 10, state2b);
                 //TestTools.AreEqual(Rn.RAX, 10, state2b);
             }
@@ -304,7 +304,7 @@ namespace unit_tests_asm_z3
             State state2 = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
             if (logToDisplay) Console.WriteLine("Backward:\n" + state2);
 
-            Assert.IsTrue(state2.IsConsistent);
+            TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
             TestTools.AreEqual(Rn.RAX, 0, state2);
         }
 
@@ -329,7 +329,7 @@ namespace unit_tests_asm_z3
             State state2 = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
             if (logToDisplay) Console.WriteLine("Backward:\n" + state2);
 
-            Assert.IsTrue(state2.IsConsistent);
+            TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
             TestTools.AreEqual(Rn.RBX, 10, state2);
         }
 
@@ -353,7 +353,7 @@ namespace unit_tests_asm_z3
             State state2 = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
             if (logToDisplay) Console.WriteLine("Backward:\n" + state2);
 
-            Assert.IsTrue(state2.IsConsistent);
+            TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
             TestTools.AreEqual(Rn.RAX, 10, state2);
         }
 
@@ -378,7 +378,7 @@ namespace unit_tests_asm_z3
             State state2 = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
             if (logToDisplay) Console.WriteLine("Backward:\n" + state2);
 
-            Assert.IsTrue(state2.IsConsistent);
+            TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
             TestTools.AreEqual(Rn.RAX, 20, state2);
         }
 
@@ -391,8 +391,8 @@ namespace unit_tests_asm_z3
             tools.StateConfig.ZF = true;
             tools.ShowUndefConstraints = false;
 
-            bool logToDisplay2 = true;
-            tools.Quiet = false;// !logToDisplay2;
+            bool logToDisplay2 = false;
+            tools.Quiet = true;// !logToDisplay2;
 
             string programStr =
                 "           jz      label1                      " + Environment.NewLine +
@@ -407,21 +407,21 @@ namespace unit_tests_asm_z3
 
             State state2 = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
             if (logToDisplay2) Console.WriteLine("state2:\n" + state2);
-            Assert.IsTrue(state2.IsConsistent);
+            TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
 
             {
-                State state2a = new State(state2, state2.LineNumber);
+                State state2a = new State(state2);
                 state2a.Add(new BranchInfo(state2a.Get(Flags.ZF), true, 0));
                 if (logToDisplay2) Console.WriteLine("state2 with ZF==0:\n" + state2a);
-                Assert.IsTrue(state2a.IsConsistent);
+                TestTools.AreEqual(Tv.ONE, state2a.IsConsistent);
                 //TestTools.AreEqual(Rn.RAX, 20, state2a);
                 //TestTools.AreEqual(Rn.RAX, 20, state2a);
             }
             {
-                State state2b = new State(state2, state2.LineNumber);
+                State state2b = new State(state2);
                 state2b.Add(new BranchInfo(state2b.Get(Flags.ZF), false, 0));
                 if (logToDisplay2) Console.WriteLine("state2 with ZF==1:\n" + state2b);
-                Assert.IsTrue(state2b.IsConsistent);
+                TestTools.AreEqual(Tv.ONE, state2b.IsConsistent);
                 //TestTools.AreEqual(Rn.RAX, 10, state2b);
                 //TestTools.AreEqual(Rn.RAX, 10, state2b);
             }
@@ -456,21 +456,21 @@ namespace unit_tests_asm_z3
 
             State state2 = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
             if (logToDisplay2) Console.WriteLine("state2:\n" + state2);
-            Assert.IsTrue(state2.IsConsistent);
+            TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
 
             {
-                State state2a = new State(state2, state2.LineNumber);
+                State state2a = new State(state2);
                 state2a.Add(new BranchInfo(state2a.Get(Flags.ZF), true, 0));
                 if (logToDisplay2) Console.WriteLine("state2 with ZF==0:\n" + state2a);
-                Assert.IsTrue(state2a.IsConsistent);
+                TestTools.AreEqual(Tv.ONE, state2a.IsConsistent);
                 TestTools.AreEqual(Rn.RAX, 20, state2a);
                 TestTools.AreEqual(Rn.RAX, 20, state2a);
             }
             {
-                State state2b = new State(state2, state2.LineNumber);
+                State state2b = new State(state2);
                 state2b.Add(new BranchInfo(state2b.Get(Flags.ZF), false, 0));
                 if (logToDisplay2) Console.WriteLine("state2 with ZF==1:\n" + state2b);
-                Assert.IsTrue(state2b.IsConsistent);
+                TestTools.AreEqual(Tv.ONE, state2b.IsConsistent);
                 TestTools.AreEqual(Rn.RAX, 10, state2b);
                 TestTools.AreEqual(Rn.RAX, 10, state2b);
             }
@@ -540,16 +540,16 @@ namespace unit_tests_asm_z3
 
             var tup = Equal_Forward_Backward(programStr, logToDisplay2, tools);
             {
-                State state1a = new State(tup.Forward, tup.Forward.LineNumber);
-                state1a.Add(new BranchInfo(state1a.Ctx.MkEq(state1a.Get(Rn.RAX), state1a.Ctx.MkBV(0, 64)), true, state1a.LineNumber));
+                State state1a = new State(tup.Forward);
+                state1a.Add(new BranchInfo(state1a.Ctx.MkEq(state1a.Get(Rn.RAX), state1a.Ctx.MkBV(0, 64)), true, 0));
                 if (logToDisplay2) Console.WriteLine("Forward:\n" + state1a);
                 TestTools.AreEqual(Rn.RAX, 0, state1a);
                 TestTools.AreEqual(Rn.RBX, 10, state1a);
                 TestTools.AreEqual(Rn.RCX, 20, state1a);
             }
             {
-                State state3a = new State(tup.Backward, tup.Backward.LineNumber);
-                state3a.Add(new BranchInfo(state3a.Ctx.MkEq(state3a.Get(Rn.RAX), state3a.Ctx.MkBV(0, 64)), true, state3a.LineNumber));
+                State state3a = new State(tup.Backward);
+                state3a.Add(new BranchInfo(state3a.Ctx.MkEq(state3a.Get(Rn.RAX), state3a.Ctx.MkBV(0, 64)), true, 0));
                 if (logToDisplay2) Console.WriteLine("Backward:\n" + state3a);
                 TestTools.AreEqual(Rn.RAX, 0, state3a);
                 TestTools.AreEqual(Rn.RBX, 10, state3a);
@@ -582,14 +582,14 @@ namespace unit_tests_asm_z3
 
             //if (logToDisplay) Console.WriteLine("state2:\n" + state2);
 
-            State state3 = new State(state2, state2.LineNumber);
-            State state4 = new State(state2, state2.LineNumber);
+            State state3 = new State(state2);
+            State state4 = new State(state2);
 
-            state3.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.Z, state3.HeadKey, state3.Ctx), true, state3.LineNumber));
+            state3.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.Z, state3.HeadKey, state3.Ctx), true, 0));
             if (logToDisplay) Console.WriteLine("state3:\n" + state3);
             TestTools.AreEqual(Rn.RBX, 20, state3);
 
-            state4.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.Z, state4.HeadKey, state4.Ctx), false, state4.LineNumber));
+            state4.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.Z, state4.HeadKey, state4.Ctx), false, 0));
             if (logToDisplay) Console.WriteLine("state4:\n" + state4);
             TestTools.AreEqual(Rn.RBX, 10, state4);
         }
@@ -605,22 +605,22 @@ namespace unit_tests_asm_z3
             tools.StateConfig.ZF = true;
 
             State state0 = CreateState(tools);
-            State state1 = new State(state0, state0.LineNumber);
-            State state2 = new State(state0, state0.LineNumber);
+            State state1 = new State(state0);
+            State state2 = new State(state0);
             {
                 StateUpdate updateState1 = new StateUpdate(state1.TailKey, Tools.CreateKey(tools.Rand), tools);
-                updateState1.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.C, state1.HeadKey, state1.Ctx), true, state1.LineNumber));
+                updateState1.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.C, state1.HeadKey, state1.Ctx), true, 0));
                 updateState1.Set(Rn.RAX, 10);
                 updateState1.Set(Flags.CF, Tv.ONE);
-                updateState1.Add(new BranchInfo(state1.Get(Flags.ZF), true, state1.LineNumber));
+                updateState1.Add(new BranchInfo(state1.Get(Flags.ZF), true, 0));
                 state1.Update_Forward(updateState1);
             }
             {
                 StateUpdate updateState2 = new StateUpdate(state2.TailKey, Tools.CreateKey(tools.Rand), tools);
-                updateState2.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.C, state2.HeadKey, state2.Ctx), true, state2.LineNumber));
+                updateState2.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.C, state2.HeadKey, state2.Ctx), true, 0));
                 updateState2.Set(Rn.RAX, 20);
                 updateState2.Set(Flags.CF, Tv.ZERO);
-                updateState2.Add(new BranchInfo(state2.Get(Flags.ZF), false, state2.LineNumber));
+                updateState2.Add(new BranchInfo(state2.Get(Flags.ZF), false, 0));
                 state2.Update_Forward(updateState2);
             }
 
@@ -629,14 +629,14 @@ namespace unit_tests_asm_z3
 
 
             State mergedState3 = new State(state1, state2, true);
-            State mergedState4 = new State(mergedState3, mergedState3.LineNumber);
+            State mergedState4 = new State(mergedState3);
 
-            mergedState3.Add(new BranchInfo(mergedState3.Get(Flags.ZF), true, mergedState3.LineNumber));
+            mergedState3.Add(new BranchInfo(mergedState3.Get(Flags.ZF), true, 0));
             if (logToDisplay) Console.WriteLine("=========================================\nmergedState3: we know:\n" + mergedState3);
             TestTools.AreEqual(Flags.CF, true, mergedState3);
             TestTools.AreEqual(Rn.RAX, 10, mergedState3);
 
-            mergedState4.Add(new BranchInfo(mergedState4.Get(Flags.ZF), false, mergedState4.LineNumber));
+            mergedState4.Add(new BranchInfo(mergedState4.Get(Flags.ZF), false, 0));
             if (logToDisplay) Console.WriteLine("=========================================\nmergedState4: we know:\n" + mergedState4);
             TestTools.AreEqual(Flags.CF, false, mergedState4);
             TestTools.AreEqual(Rn.RAX, 20, mergedState4);
@@ -659,37 +659,37 @@ namespace unit_tests_asm_z3
             int nBytes = 1;
 
             State state0 = CreateState(tools);
-            State state1 = new State(state0, state0.LineNumber);
-            State state2 = new State(state0, state0.LineNumber);
+            State state1 = new State(state0);
+            State state2 = new State(state0);
 
             BoolExpr branchCondition = state0.Get(Flags.ZF);
             {
                 StateUpdate updateState1 = new StateUpdate(state1.HeadKey, Tools.CreateKey(state1.Tools.Rand), state1.Tools);
                 updateState1.SetMem(state1.Get(Rn.RAX), 1, nBytes);
-                updateState1.Add(new BranchInfo(branchCondition, false, state1.LineNumber));
+                updateState1.Add(new BranchInfo(branchCondition, false, 0));
                 state1.Update_Forward(updateState1);
             }
             {
                 StateUpdate updateState2 = new StateUpdate(state2.HeadKey, Tools.CreateKey(state2.Tools.Rand), state2.Tools);
                 updateState2.SetMem(state2.Get(Rn.RAX), 2, nBytes);
-                updateState2.Add(new BranchInfo(branchCondition, true, state2.LineNumber));
+                updateState2.Add(new BranchInfo(branchCondition, true, 0));
                 state2.Update_Forward(updateState2);
             }
             State mergedState3 = new State(state1, state2, true);
-            State mergedState4 = new State(mergedState3, mergedState3.LineNumber);
+            State mergedState4 = new State(mergedState3);
 
             //if (logToDisplay) Console.WriteLine("state1=\n" + state1);
             //if (logToDisplay) Console.WriteLine("state2=\n" + state2);
             //if (logToDisplay) Console.WriteLine("mergedState3=\n" + mergedState3);
 
-            mergedState3.Add(new BranchInfo(branchCondition, true, mergedState3.LineNumber));
+            mergedState3.Add(new BranchInfo(branchCondition, true, 0));
             if (logToDisplay) Console.WriteLine("mergedState3 Plus branchCondition=\n" + mergedState3);
 
-            Assert.IsTrue(mergedState3.IsConsistent);
+            TestTools.AreEqual(Tv.ONE, mergedState3.IsConsistent);
             TestTools.AreEqual(1, mergedState3.GetTv5ArrayMem(mergedState3.Get(Rn.RAX), nBytes));
 
-            mergedState4.Add(new BranchInfo(branchCondition, false, mergedState4.LineNumber));
-            Assert.IsTrue(mergedState3.IsConsistent);
+            mergedState4.Add(new BranchInfo(branchCondition, false, 0));
+            TestTools.AreEqual(Tv.ONE, mergedState4.IsConsistent);
             TestTools.AreEqual(2, mergedState4.GetTv5ArrayMem(mergedState4.Get(Rn.RAX), nBytes));
 
         }
@@ -728,7 +728,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_Loop_Backward_1()
         {
-            Tools tools = CreateTools(10000);
+            Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.ZF = true;

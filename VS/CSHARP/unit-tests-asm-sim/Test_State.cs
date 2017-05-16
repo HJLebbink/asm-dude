@@ -44,22 +44,22 @@ namespace unit_tests_asm_z3
             State state2 = CreateState(tools);
             {
                 StateUpdate updateState1 = new StateUpdate(state1.HeadKey, Tools.CreateKey(state1.Tools.Rand), state1.Tools);
-                updateState1.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.C, state1.HeadKey, state1.Ctx), true, state1.LineNumber));
+                updateState1.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.C, state1.HeadKey, state1.Ctx), true, 0));
                 updateState1.Set(Rn.RAX, 10);
                 state1.Update_Forward(updateState1);
             }
             {
                 StateUpdate updateState2 = new StateUpdate(state2.HeadKey, Tools.CreateKey(state2.Tools.Rand), state2.Tools);
-                updateState2.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.C, state2.HeadKey, state2.Ctx), false, state2.LineNumber));
+                updateState2.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.C, state2.HeadKey, state2.Ctx), false, 0));
                 updateState2.Set(Rn.RAX, 10);
                 state2.Update_Forward(updateState2);
             }
             State state1_2 = new State(state1, state2, true);
             if (logToDisplay) Console.WriteLine(state1_2);
 
-            Assert.IsTrue(state1.IsConsistent);
-            Assert.IsTrue(state2.IsConsistent);
-            Assert.IsTrue(state1_2.IsConsistent);
+            TestTools.AreEqual(Tv.ONE, state1.IsConsistent);
+            TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
+            TestTools.AreEqual(Tv.ONE, state1_2.IsConsistent);
             TestTools.AreEqual(Rn.RAX, 10, state1_2);
         }
 
@@ -77,22 +77,22 @@ namespace unit_tests_asm_z3
             BoolExpr branchCondition = tools.Ctx.MkEq(state1.Get(Flags.CF), tools.Ctx.MkTrue());
             {
                 StateUpdate updateState1 = new StateUpdate(state1.HeadKey, Tools.CreateKey(state1.Tools.Rand), state1.Tools);
-                updateState1.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.C, state1.HeadKey, state1.Ctx), true, state1.LineNumber));
+                updateState1.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.C, state1.HeadKey, state1.Ctx), true, 0));
                 updateState1.Set(Rn.RAX, 10);
                 state1.Update_Forward(updateState1);
             }
             {
                 StateUpdate updateState2 = new StateUpdate(state2.HeadKey, Tools.CreateKey(state2.Tools.Rand), state2.Tools);
-                updateState2.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.C, state2.HeadKey, state2.Ctx), false, state2.LineNumber));
+                updateState2.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.C, state2.HeadKey, state2.Ctx), false, 0));
                 updateState2.Set(Rn.RAX, 20);
                 state2.Update_Forward(updateState2);
             }
             State state1_2 = new State(state1, state2, true);
             if (logToDisplay) Console.WriteLine(state1_2);
 
-            Assert.IsTrue(state1.IsConsistent);
-            Assert.IsTrue(state2.IsConsistent);
-            Assert.IsTrue(state1_2.IsConsistent);
+            TestTools.AreEqual(Tv.ONE, state1.IsConsistent);
+            TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
+            TestTools.AreEqual(Tv.ONE, state1_2.IsConsistent);
             TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_000????0", state1_2);
         }
 
@@ -111,19 +111,19 @@ namespace unit_tests_asm_z3
                 updateState0.Set(Rn.RAX, 0);
                 state0.Update_Forward(updateState0);
             }
-            State state1 = new State(state0, state0.LineNumber);
-            State state2 = new State(state0, state0.LineNumber);
+            State state1 = new State(state0);
+            State state2 = new State(state0);
 
             BoolExpr branchCondition = tools.Ctx.MkEq(state0.Get(Flags.CF), tools.Ctx.MkTrue());
             {
                 StateUpdate updateState1 = new StateUpdate(state1.HeadKey, Tools.CreateKey(rand), tools);
-                updateState1.Add(new BranchInfo(branchCondition, true, state1.LineNumber));
+                updateState1.Add(new BranchInfo(branchCondition, true, 0));
                 updateState1.Set(Rn.RAX, 10);
                 state1.Update_Forward(updateState1);
             }
             {
                 StateUpdate updateState2 = new StateUpdate(state2.HeadKey, Tools.CreateKey(rand), tools);
-                updateState2.Add(new BranchInfo(branchCondition, false, state2.LineNumber));
+                updateState2.Add(new BranchInfo(branchCondition, false, 0));
                 updateState2.Set(Rn.RAX, 20);
                 state2.Update_Forward(updateState2);
             }
@@ -135,9 +135,9 @@ namespace unit_tests_asm_z3
             State state1_2 = new State(state1, state2, true);
             if (logToDisplay) Console.WriteLine(state1_2);
 
-            Assert.IsTrue(state1.IsConsistent);
-            Assert.IsTrue(state2.IsConsistent);
-            Assert.IsTrue(state1_2.IsConsistent);
+            TestTools.AreEqual(Tv.ONE, state1.IsConsistent);
+            TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
+            TestTools.AreEqual(Tv.ONE, state1_2.IsConsistent);
             TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_000????0", state1_2);
         }
     }

@@ -16,7 +16,7 @@ namespace unit_tests_asm_z3
 #else
         public const bool LOG_TO_DISPLAY = true;
 #endif
-        public const int DEFAULT_TIMEOUT = 60000;
+        public const int DEFAULT_TIMEOUT = 100;//60000;
 
 
         public static ulong RandUlong(int nBits, Random rand)

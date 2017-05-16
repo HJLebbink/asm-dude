@@ -380,7 +380,7 @@ namespace unit_tests_asm_z3
             BitVecExpr value2 = state.GetMem(address2, nBytes);
             Assert.AreNotEqual(value1, value2); //value1 is not equal to value2 simply because rax and rbx are not related yet
 
-            state.Add(new BranchInfo(state.Ctx.MkEq(state.Get(Rn.RAX), state.Get(Rn.RBX)), true, state.LineNumber));
+            state.Add(new BranchInfo(state.Ctx.MkEq(state.Get(Rn.RAX), state.Get(Rn.RBX)), true, 0));
             // value1 and value2 are now (intuitively) equal; however, the retrieved memory values have not been updated yet to reflect this.
 
             {

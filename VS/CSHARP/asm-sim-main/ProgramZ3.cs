@@ -178,71 +178,28 @@ namespace AsmSim
 
                 if (false)
                 {
-                    int startLine = 0;
-                    string rootKey = "!ROOT";
-                    State startState = new State(tools, rootKey, rootKey, startLine);
-                    BoolExpr conditional = startState.Get(Flags.ZF);
-
                     tools.Quiet = false;
-                    var tree0 = Runner.Construct_ExecutionTree_Forward(startState, flow1, startLine, 10, tools);
+                    var tree0 = Runner.Construct_ExecutionTree_Forward(flow1, 0, 10, tools);
+
+                    int lineNumber_JZ = 0;
+                    State state_FirstLine = tree0.States_After(lineNumber_JZ).First();
+                    var branchInfo = new BranchInfo(state_FirstLine.Get(Flags.ZF), true, lineNumber_JZ);
+
                     State state0 = tree0.EndState;
-                    state0.BranchInfoStore.Add(new BranchInfo(conditional, true, state0.LineNumber));
+                    state0.BranchInfoStore.Add(branchInfo);
                     Console.WriteLine("State0:" + state0);
                 }
                 if (true)
                 {
-                    int startLine = flow1.LastLineNumber;
-                    string rootKey = "!ROOT";
-                    State startState = new State(tools, rootKey, rootKey, startLine);
-                    BoolExpr conditional = startState.Get(Flags.ZF);
-
                     tools.Quiet = false;
-                    var tree1 = Runner.Construct_ExecutionTree_Backward(startState, flow1, startLine, 10, tools);
+                    var tree1 = Runner.Construct_ExecutionTree_Backward(flow1, flow1.LastLineNumber, 10, tools);
+
+                    int lineNumber_JZ = 0;
+                    State state_FirstLine = tree1.States_After(lineNumber_JZ).First();
+                    var branchInfo = new BranchInfo(state_FirstLine.Get(Flags.ZF), false, lineNumber_JZ);
+
                     State state1 = tree1.EndState;
-                    Console.WriteLine("State1:" + state1);
-                }
-            }
-            if (false)
-            {
-                tools.StateConfig.Set_All_Off();
-                tools.StateConfig.RAX = true;
-                tools.StateConfig.ZF = true;
-                tools.StateConfig.PF = true;
-
-                string programStr0 =
-                "           cmp     rax, 0                      " + Environment.NewLine +
-                "           jz      label1                      " + Environment.NewLine +
-                "           mov     rax, 1                      " + Environment.NewLine +
-                "           jp      label1                      " + Environment.NewLine +
-                "           mov     rax, 2                      " + Environment.NewLine +
-                "label1:                                        ";
-
-                CFlow flow1 = new CFlow(programStr0);
-                Console.WriteLine(flow1);
-
-                if (true)
-                {
-                    int startLine = 0;
-                    string rootKey = "!ROOT";
-                    State startState = new State(tools, rootKey, rootKey, startLine);
-                    BoolExpr conditional = startState.Get(Flags.ZF);
-
-                    tools.Quiet = false;
-                    var tree0 = Runner.Construct_ExecutionTree_Forward(startState, flow1, startLine, 10, tools);
-                    State state0 = tree0.EndState;
-                    state0.BranchInfoStore.Add(new BranchInfo(conditional, true, state0.LineNumber));
-                    Console.WriteLine("State0:" + state0);
-                }
-                if (false)
-                {
-                    int startLine = flow1.LastLineNumber;
-                    string rootKey = "!ROOT";
-                    State startState = new State(tools, rootKey, rootKey, startLine);
-                    BoolExpr conditional = startState.Get(Flags.ZF);
-
-                    tools.Quiet = false;
-                    var tree1 = Runner.Construct_ExecutionTree_Backward(startState, flow1, startLine, 10, tools);
-                    State state1 = tree1.EndState;
+                    state1.BranchInfoStore.Add(branchInfo);
                     Console.WriteLine("State1:" + state1);
                 }
             }
@@ -321,7 +278,7 @@ namespace AsmSim
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
-            tools.Quiet = true;
+            
 
             string programStr =
                 "           mov     rax,        0               " + Environment.NewLine +
@@ -331,27 +288,25 @@ namespace AsmSim
             CFlow flow = new CFlow(programStr);
 
             if (false) {
-                ExecutionTree2 tree0 = Runner.Construct_ExecutionTree2_Forward(flow, 0, 100, tools);
+                ExecutionTree tree0 = Runner.Construct_ExecutionTree_Forward(flow, 0, 100, tools);
                 //Console.WriteLine(tree0.ToString(flow));
 
                 //State state = tree0.EndState;
-                foreach (var v in tree0.States(4))
+                foreach (var v in tree0.States_After(4))
                 {
                     Console.WriteLine(v);
                 }
             }
-            if (true) {
-                ExecutionTree2 tree1 = Runner.Construct_ExecutionTree2_Backward(flow, flow.LastLineNumber, 100, tools);
-                Console.WriteLine(tree1.ToString(flow));
+            if (true)
+            {
+                tools.Quiet = false;
+                ExecutionTree tree1 = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 100, tools);
+                //Console.WriteLine(tree1.ToString(flow));
+                foreach (var v in tree1.States_After(3))
+                {
+                    Console.WriteLine(v);
+                }
 
-                Console.WriteLine("EndState:"+tree1.EndState);
-
-                /*
-                 *foreach (var v in tree1.States(3))
-                                {
-                                    Console.WriteLine(v);
-                                }
-                */
             }
         }
         static void EmptyMemoryTest()

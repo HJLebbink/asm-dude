@@ -42,9 +42,6 @@ namespace AsmSim
         private bool Solver_Dirty = false;
         private bool Solver_U_Dirty = false;
 
-        [System.Obsolete("A state need not know the line number, remove this info to ExecutionNode")]
-        public int LineNumber { get; set; }
-
         private string _warningMessage;
         private string _synstaxErrorMessage;
         public bool IsHalted { get; private set; }
@@ -66,7 +63,6 @@ namespace AsmSim
             this._tools = tools;
             this.TailKey = tailKey;
             this.HeadKey = headKey;
-            this.LineNumber = lineNumber;
 
             Tactic tactic = tools.Ctx.MkTactic("qfbv");
             this.Solver = tools.Ctx.MkSolver(tactic);
@@ -75,10 +71,10 @@ namespace AsmSim
         }
 
         /// <summary>Copy constructor</summary>
-        public State(State other, int lineNumber)
+        public State(State other)
         {
             this._tools = other.Tools;
-            this.CopyConstructor(other, lineNumber);
+            this.CopyConstructor(other);
         }
         /// <summary>Merge and Diff constructor</summary>
         public State(State state1, State state2, bool merge)
@@ -98,11 +94,10 @@ namespace AsmSim
             }
         }
         /// <summary>Copy Constructor Method</summary>
-        private void CopyConstructor(State other, int lineNumber)
+        private void CopyConstructor(State other)
         {
             this.HeadKey = other.HeadKey;
             this.TailKey = other.TailKey;
-            this.LineNumber = lineNumber;
 
             Tactic tactic = this.Tools.Ctx.MkTactic("qfbv");
             other.UndefGrounding = false;
@@ -117,13 +112,6 @@ namespace AsmSim
         /// <summary>Merge Constructor Method</summary>
         private void MergeConstructor(State state1, State state2)
         {
-            if (state1.LineNumber != state2.LineNumber)
-            {
-                Console.WriteLine("ERROR: State: unequal line numbers");
-                Console.WriteLine("INFO: state1=" + state1);
-                Console.WriteLine("INFO: state2=" + state2);
-                throw new Exception();
-            }
             state1.UndefGrounding = false;
             state2.UndefGrounding = false;
 
@@ -151,8 +139,8 @@ namespace AsmSim
 
             #region Handle Inconsistent states
             {
-                bool consistent1 = state1.IsConsistent;
-                bool consistent2 = state2.IsConsistent;
+                bool consistent1 = state1.IsConsistent == Tv.ONE;
+                bool consistent2 = state2.IsConsistent == Tv.ONE;
 
                 if (!consistent1 && !consistent2)
                 {
@@ -161,20 +149,18 @@ namespace AsmSim
                 }
                 if (!consistent1)
                 {
-                    this.CopyConstructor(state2, state2.LineNumber);
+                    this.CopyConstructor(state2);
                     this.BranchInfoStore.RemoveKey(sharedConditionStr1);
                     return;
                 }
                 if (!consistent2)
                 {
-                    this.CopyConstructor(state1, state1.LineNumber);
+                    this.CopyConstructor(state1);
                     this.BranchInfoStore.RemoveKey(sharedConditionStr2);
                     return;
                 }
             }
             #endregion
-
-            this.LineNumber = state1.LineNumber;
 
             // merge the contents of both solvers
             {
@@ -478,14 +464,14 @@ namespace AsmSim
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(ToStringConstraints(identStr));
 
-            if (this.IsConsistent)
+            if (this.IsConsistent == Tv.ZERO)
             {
-                sb.Append(ToStringFlags(identStr));
-                sb.AppendLine(ToStringRegs(identStr));
+                sb.Append("[State is Inconsistent]");
             }
             else
             {
-                sb.Append("[State is Inconsistent]");
+                sb.Append(ToStringFlags(identStr));
+                sb.AppendLine(ToStringRegs(identStr));
             }
             //sb.AppendLine(ToStringWarning(identStr));
             return sb.ToString();
@@ -508,7 +494,6 @@ namespace AsmSim
         public string ToStringRegs(string identStr)
         {
             StringBuilder sb = new StringBuilder();
-            //sb.AppendLine(identStr + string.Format("RIP = {0}", this.LineNumber));
             foreach (Rn reg in this.Tools.StateConfig.GetRegOn())
             {
                 Tv[] regContent = this.GetTv5Array(reg, true);
@@ -521,7 +506,7 @@ namespace AsmSim
         public string ToStringConstraints(string identStr)
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("LineNumber=" + this.LineNumber + "; " + ((this.IsConsistent) ? "" : "State is Inconsistent."));
+            sb.AppendLine("State consistency: "+this.IsConsistent);
             if (this.Solver.NumAssertions > 0)
             {
                 sb.AppendLine(identStr + "Current Value constraints:");
@@ -586,15 +571,21 @@ namespace AsmSim
             this.TailKey = freshKey;
         }
 
-        public bool IsConsistent
+        public Tv IsConsistent
         {
             get
             {
                 this.Solver.Push();
                 this.AssertBranchInfoToSolver(false);
-                bool result = (this.Solver.Check() == Status.SATISFIABLE);
+                Status result = this.Solver.Check();
                 this.Solver.Pop();
-                return result;
+
+                if (result == Status.SATISFIABLE)
+                    return Tv.ONE;
+                else if (result == Status.UNSATISFIABLE)
+                    return Tv.ZERO;
+                else
+                    return Tv.UNDETERMINED;
             }
         }
 

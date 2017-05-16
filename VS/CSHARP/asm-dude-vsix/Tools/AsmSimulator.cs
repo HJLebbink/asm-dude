@@ -40,7 +40,7 @@ namespace AsmDude.Tools
         private readonly CFlow _cflow;
         private readonly IDictionary<int, State> _cached_States_After;
         private readonly IDictionary<int, State> _cached_States_Before;
-        private readonly IDictionary<int, ExecutionTree<IExecutionNode>> _cached_Tree_After;
+        private readonly IDictionary<int, ExecutionTree> _cached_Tree;
 
         public readonly AsmSim.Tools Tools;
         private object _updateLock = new object();
@@ -77,7 +77,7 @@ namespace AsmDude.Tools
                 this._cflow = new CFlow(this._buffer.CurrentSnapshot.GetText());
                 this._cached_States_After = new Dictionary<int, State>();
                 this._cached_States_Before = new Dictionary<int, State>();
-                this._cached_Tree_After = new Dictionary<int, ExecutionTree<IExecutionNode>>();
+                this._cached_Tree = new Dictionary<int, ExecutionTree>();
                 this._scheduled_After = new HashSet<int>();
                 this._scheduled_Before = new HashSet<int>();
 
@@ -126,7 +126,7 @@ namespace AsmDude.Tools
             }
         }
 
-        #endregion
+        #endregion Constructors
 
         public (bool IsImplemented, Mnemonic Mnemonic, string Message) Get_Syntax_Errors(int lineNumber)
         {
@@ -214,10 +214,10 @@ namespace AsmDude.Tools
                 //AsmSimZ3.Mnemonics_ng.Tools tools2 = new AsmSimZ3.Mnemonics_ng.Tools(this.Tools.Settings);
                 Context ctx = this.Tools.Ctx;
 
-                State stateB = new State(state_Before, 0);
+                State stateB = new State(state_Before);
                 stateB.UpdateConstName("!B");
 
-                State stateA = new State(state_After, 0);
+                State stateA = new State(state_After);
                 stateA.UpdateConstName("!A");
 
                 State diffState = new State(this.Tools, "!0", "!0", 0);
@@ -358,6 +358,10 @@ namespace AsmDude.Tools
             if (!this.Is_Enabled) return null;
             if (this._cached_States_Before.TryGetValue(lineNumber, out State result))
             {
+                if (result == null)
+                {
+                    AsmDudeToolsStatic.Output_WARNING("AsmSimulator:Get_State_Before: serving state from cache but it is null!");
+                }
                 return result;
             }
             if (create)
@@ -385,7 +389,8 @@ namespace AsmDude.Tools
                 else
                 {
                     this.Calculate_State_Before(lineNumber, false);
-                    return (this._cached_States_Before.TryGetValue(lineNumber, out State result2)) ? result2 : null;
+                    this._cached_States_Before.TryGetValue(lineNumber, out State result2);
+                    return result2;
                 }
             }
             return null;
@@ -418,35 +423,18 @@ namespace AsmDude.Tools
         {
             lock (this._updateLock)
             {
-                DateTime time1 = DateTime.Now;
-
                 this._busy = true;
-                this.Tools.StateConfig = Runner.GetUsage_StateConfig(this._cflow, 0, this._cflow.LastLineNumber, this.Tools);
-
-                ExecutionTree<IExecutionNode> tree = null;
-
-                var prev = new List<(int LineNumber, bool IsBranch)>(this._cflow.GetPrevLineNumber(lineNumber));
-                if (prev.Count == 1)
-                {
-                    int prevLineNumber = prev[0].LineNumber;
-                    tree = Runner.Construct_ExecutionTree_Backward(this._cflow, prevLineNumber, Settings.Default.AsmSim_Number_Of_Steps, this.Tools);
-                }
-                else
-                {
-                    AsmDudeToolsStatic.Output_WARNING("AsmSimulator: Calculate_State_Before: merging control flow paths not enabled yet");
-                }
+                var tree = Get_Tree(lineNumber);
 
                 if (tree != null)
                 {
+                    var state = Get_State_Before(lineNumber, tree);
                     this._cached_States_Before.Remove(lineNumber);
-                    this._cached_States_Before.Add(lineNumber, tree.EndState);
+                    if (state != null) this._cached_States_Before.Add(lineNumber, state);
                 }
-
                 this._scheduled_Before.Remove(lineNumber);
                 this._busy = false;
-                AsmDudeToolsStatic.Print_Speed_Warning(time1, "AsmSimulator:Calculate_State_Before");
             }
-
             if (async)
             {
                 if (this._scheduled_Before.Count > 0)
@@ -466,26 +454,18 @@ namespace AsmDude.Tools
         {
             lock (this._updateLock)
             {
-                DateTime time1 = DateTime.Now;
-
                 this._busy = true;
-                this._scheduled_After.Remove(lineNumber);
-                this.Tools.StateConfig = Runner.GetUsage_StateConfig(this._cflow, 0, this._cflow.LastLineNumber, this.Tools);
-
-                ExecutionTree<IExecutionNode> tree = Runner.Construct_ExecutionTree_Backward(this._cflow, lineNumber, Settings.Default.AsmSim_Number_Of_Steps, this.Tools);
+                var tree = Get_Tree(lineNumber);
 
                 if (tree != null)
                 {
-                    this._cached_States_After.Remove(lineNumber);
-                    this._cached_States_After.Add(lineNumber, tree.EndState);
-
-                    this._cached_Tree_After.Remove(lineNumber);
-                    this._cached_Tree_After.Add(lineNumber, tree);
+                    var state = Get_State_After(lineNumber, tree);
+                    if (state != null) this._cached_States_After.Remove(lineNumber);
+                    this._cached_States_After.Add(lineNumber, state);
                 }
+                this._scheduled_After.Remove(lineNumber);
                 this._busy = false;
-                AsmDudeToolsStatic.Print_Speed_Warning(time1, "AsmSimulator:Calculate_State_After");
             }
-
             if (async)
             {
                 if (this._scheduled_After.Count > 0)
@@ -500,7 +480,33 @@ namespace AsmDude.Tools
                 }
             }            
         }
-        #endregion
 
+        private ExecutionTree Get_Tree(int lineNumber)
+        {
+            ExecutionTree result;
+            if (this._cached_Tree.TryGetValue(lineNumber, out result))
+            {
+                return result;
+            }
+            else
+            {
+                this.Tools.StateConfig = Runner.GetUsage_StateConfig(this._cflow, 0, this._cflow.LastLineNumber, this.Tools);
+                result = Runner.Construct_ExecutionTree_Backward(this._cflow, lineNumber, Settings.Default.AsmSim_Number_Of_Steps, this.Tools);
+                if (result != null) this._cached_Tree.Add(lineNumber, result);
+                return result;
+            }
+        }
+
+        private State Get_State_After(int lineNumber, ExecutionTree tree)
+        {
+            return AsmSim.Tools.Collapse(tree.States_After(lineNumber));
+        }
+
+        private State Get_State_Before(int lineNumber, ExecutionTree tree)
+        {
+            return AsmSim.Tools.Collapse(tree.States_Before(lineNumber));
+        }
+
+        #endregion Private
     }
 }

@@ -26,53 +26,81 @@ using System.Text;
 
 namespace AsmSim
 {
-    public class ExecutionNode : IExecutionNode
+    public class ExecutionNode
     {
-        public int Step { get; set; }
-        public State State { get; private set; }
+        public int LineNumber { get; }
+        public int Step { get; }
+        public StateUpdate StateUpdate { get; private set; }
+        public string PrevKey
+        {
+            get
+            {
+                if (this.StateUpdate != null)
+                {
+                    return this.StateUpdate.PrevKey;
+                }
+                else
+                {
+                    if (this.Has_Parents)
+                    {
+                        if (this.Parents.Count != 1) Console.WriteLine("WARNING: PrevKey: multiple parents and no updatestate, that is not allowed");
+                        return this.Parents[0].NextKey;
+                    }
+                    else
+                    {
+                        return "!BOTTOM";
+                    }
+                }
+            }
+        }
+        public string NextKey
+        {
+            get
+            {
+                if (this.StateUpdate != null)
+                {
+                    return this.StateUpdate.NextKey;
+                }
+                else
+                {
+                    if (this.Has_Forward_Continue)
+                    {
+                        return this.Forward_Continue.PrevKey;
+                    }
+                    else
+                    {
+                        return "!HEAD";
+                    }
+                }
+            }
+        }
 
-        private readonly IExecutionNode _parent;
-        private IExecutionNode _forward_Continue;
-        private IExecutionNode _forward_Branch;
-        private IList<IExecutionNode> _backward;
+        private IList<ExecutionNode> _parents;
+        private ExecutionNode _forward_Continue;
+        private ExecutionNode _forward_Branch;
 
         public bool LoopTerminationNode = false;
 
 
-        public ExecutionNode(int step, State state, IExecutionNode parent)
+        public ExecutionNode(int step, int lineNumber, StateUpdate stateUpdate, ExecutionNode parent)
         {
             this.Step = step;
-            this.State = state;
-            this._parent = parent;
-        }
-
-        public IEnumerable<State> GetFromLine(int lineNumber)
-        {
-            if (this.State.LineNumber == lineNumber)
+            this.LineNumber = lineNumber;
+            this.StateUpdate = stateUpdate;
+            if (parent != null)
             {
-                yield return this.State;
-            }
-            if (this.Has_Forward_Continue)
-            {
-                foreach (var x in this.Forward_Continue.GetFromLine(lineNumber)) yield return x;
-            }
-            if (this.Has_Forward_Branch)
-            {
-                foreach (var x in this.Forward_Branch.GetFromLine(lineNumber)) yield return x;
+                this._parents = new List<ExecutionNode> { parent };
             }
         }
 
-        public IEnumerable<State> Leafs_Forward
+
+        public IEnumerable<StateUpdate> Leafs_Forward
         {
             get
             {
                 if (!this.Has_Forward_Branch && !this.Has_Forward_Continue)
                 {
-                    if (this.State.IsConsistent)
-                    {
-                        yield return this.State;
-                    }
-                    else yield break;
+                    yield return this.StateUpdate;
                 }
                 else
                 {
@@ -88,38 +116,33 @@ namespace AsmSim
             }
         }
 
-        public IEnumerable<State> Leafs_Backward
+        public IEnumerable<StateUpdate> Leafs_Backward
         {
             get
             {
-                if (!this.Has_Backward)
+                if (!this.Has_Parents)
                 {
-                    if (this.State.IsConsistent)
-                    {
-                        yield return this.State;
-                    }
-                    else yield break;
+                    yield return this.StateUpdate;
                 }
                 else
                 {
-                    foreach (var b in this.Backward) foreach (var e in b.Leafs_Backward) yield return e;
+                    foreach (var b in this.Parents) foreach (var e in b.Leafs_Backward) yield return e;
                 }
             }
         }
 
-        public bool HasParent { get { return this._parent != null; } }
-        public IExecutionNode Parent
+        public bool Has_Parents { get { return this._parents != null; } }
+        public IList<ExecutionNode> Parents
         {
-            get { return this.Parent; }
+            get { return this._parents; }
         }
 
         public bool Has_Forward_Continue { get { return (this._forward_Continue != null); } }
         public bool Has_Forward_Branch { get { return (this._forward_Branch != null); } }
-        public bool Has_Backward { get { return (this._backward != null); } }
 
 
         /// <summary>Regular Control Flow node</summary>
-        public IExecutionNode Forward_Continue
+        public ExecutionNode Forward_Continue
         {
             get { return this._forward_Continue; }
             set
@@ -130,7 +153,7 @@ namespace AsmSim
         }
 
         /// <summary>Branch Control Flow node</summary>
-        public IExecutionNode Forward_Branch
+        public ExecutionNode Forward_Branch
         {
             get { return this._forward_Branch; }
             set
@@ -140,15 +163,16 @@ namespace AsmSim
             }
         }
 
-        public IList<IExecutionNode> Backward
+        public void Add_Parent(ExecutionNode node)
         {
-            get { return this._backward; }
-        }
-
-        public void Add_Backward(IExecutionNode node)
-        {
-            if (this._backward == null) this._backward = new List<IExecutionNode>(0);
-            this._backward.Add(node);
+            if (this._parents == null)
+            {
+                this._parents = new List<ExecutionNode> { node };
+            }
+            else
+            {
+                this._parents.Add(node);
+            }
         }
 
         #region ToString
@@ -161,24 +185,16 @@ namespace AsmSim
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("==========================================");
 
-            if (this.State.Warning != null)
+            string lineStr = flow?.GetLineStr(this.LineNumber);
+
             {
-                sb.AppendLine(this.State.Warning);
-            }
-            if (this.State.IsHalted)
-            {
-                sb.AppendLine("Halted at Step " + this.Step + ", Line " + (this.State.LineNumber + 1) + ": " + flow.GetLineStr(this.State.LineNumber) + "\n" + this.State.ToString());
-                sb.AppendLine("Halt message " + this.State.SyntaxError);
-            }
-            else
-            {
-                if (this.State.LineNumber >= 0)
+                if (this.LineNumber >= 0)
                 {
-                    sb.AppendLine("Step " + this.Step + ", Line " + (this.State.LineNumber + 1) + ": " + flow.GetLineStr(this.State.LineNumber) + "\n" + this.State.ToString());
+                    sb.AppendLine("Step " + this.Step + ", Line " + this.LineNumber + ": " + lineStr + "\n" + this.StateUpdate.ToString());
                 }
                 else
                 {
-                    sb.AppendLine("Step " + this.Step + ":" + this.State.ToString());
+                    sb.AppendLine("Step " + this.Step + ":" + this.StateUpdate.ToString());
                 }
                 if (this.Has_Forward_Continue)
                 {
@@ -186,7 +202,7 @@ namespace AsmSim
                 }
                 if (this.Has_Forward_Branch)
                 {
-                    sb.AppendLine("Entering Branch: Step " + this.Step + ", Line " + (this.State.LineNumber + 1) + ": " + flow.GetLineStr(this.State.LineNumber));
+                    sb.AppendLine("Entering Branch: Step " + this.Step + ", Line " + this.LineNumber + ": " + lineStr);
                     sb.AppendLine(this.Forward_Branch.ToString(flow));
                 }
             }
@@ -202,11 +218,9 @@ namespace AsmSim
 
             if (showRegisterValues)
             {
-                sb.Append(this.State.ToStringFlags(identStr + "* "));
-                sb.Append(this.State.ToStringRegs(identStr + "* "));
-                sb.Append(this.State.ToStringConstraints(identStr + "* "));
+                sb.Append(this.StateUpdate.ToString());
             }
-            int lineNumber = this.State.LineNumber;
+            int lineNumber = this.LineNumber;
             sb.AppendLine(identStr + flow.GetLineStr(lineNumber) + " [lineNumber=" + lineNumber + "]");
 
             if (this.Has_Forward_Continue)

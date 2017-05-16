@@ -42,7 +42,7 @@ namespace unit_tests_asm_z3
                 "           mov     rbx,        rax             ";
             CFlow flow = new CFlow(programStr);
 
-            ExecutionTree2 tree0 = Runner.Construct_ExecutionTree2_Forward(flow, 0, 100, tools);
+            ExecutionTree tree0 = Runner.Construct_ExecutionTree_Forward(flow, 0, 100, tools);
 
 
 
