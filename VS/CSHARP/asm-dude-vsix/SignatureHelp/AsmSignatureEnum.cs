@@ -23,11 +23,14 @@
 using AsmDude.Tools;
 using AsmTools;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
-namespace AsmDude.SignatureHelp {
+namespace AsmDude.SignatureHelp
+{
 
-    public enum AsmSignatureEnum : byte {
+    public enum AsmSignatureEnum : byte
+    {
         NONE,
         UNKNOWN,
 
@@ -71,7 +74,7 @@ namespace AsmDude.SignatureHelp {
 
         #region FPU
         FPU0,
-        FPUREG, 
+        FPUREG,
         M2BYTE,
         M14BYTE,
         M28BYTE,
@@ -123,11 +126,13 @@ namespace AsmDude.SignatureHelp {
         CR0, CR1, CR2, CR3, CR4, CR5, CR6, CR7, CR8,
     }
 
-    public static class AsmSignatureTools {
+    public static class AsmSignatureTools
+    {
 
-        public static AsmSignatureEnum[] Parse_Operand_Type_Enum(string str) {
-
-            switch (str.ToUpper().Trim()) {
+        public static AsmSignatureEnum[] Parse_Operand_Type_Enum(string str)
+        {
+            switch (str.ToUpper().Trim())
+            {
 
                 #region Memory
                 case "MEM": return new AsmSignatureEnum[] { AsmSignatureEnum.MEM };
@@ -188,7 +193,7 @@ namespace AsmDude.SignatureHelp {
                 case "SREG": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_SREG };
                 case "CR0–CR7": return new AsmSignatureEnum[] { AsmSignatureEnum.CR0, AsmSignatureEnum.CR1, AsmSignatureEnum.CR2, AsmSignatureEnum.CR3, AsmSignatureEnum.CR4, AsmSignatureEnum.CR5, AsmSignatureEnum.CR6, AsmSignatureEnum.CR7 };
                 case "CR8": return new AsmSignatureEnum[] { AsmSignatureEnum.CR8 };
-                case "REG_DREG": 
+                case "REG_DREG":
                 case "DR0–DR7": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_DREG };
 
                 #endregion
@@ -198,7 +203,7 @@ namespace AsmDude.SignatureHelp {
                 case "R/M16": return new AsmSignatureEnum[] { AsmSignatureEnum.R16, AsmSignatureEnum.M16 };
                 case "R/M32": return new AsmSignatureEnum[] { AsmSignatureEnum.R32, AsmSignatureEnum.M32 };
                 case "R/M64": return new AsmSignatureEnum[] { AsmSignatureEnum.R64, AsmSignatureEnum.M64 };
-                case "R/M32{ER}":  return new AsmSignatureEnum[] { AsmSignatureEnum.R32, AsmSignatureEnum.M32, AsmSignatureEnum.ER };
+                case "R/M32{ER}": return new AsmSignatureEnum[] { AsmSignatureEnum.R32, AsmSignatureEnum.M32, AsmSignatureEnum.ER };
                 case "R/M64{ER}": return new AsmSignatureEnum[] { AsmSignatureEnum.R64, AsmSignatureEnum.M64, AsmSignatureEnum.ER };
 
                 case "REG/M8": return new AsmSignatureEnum[] { AsmSignatureEnum.R8, AsmSignatureEnum.M8 };
@@ -255,7 +260,7 @@ namespace AsmDude.SignatureHelp {
                 case "M94/108BYTE": return new AsmSignatureEnum[] { AsmSignatureEnum.M94BYTE, AsmSignatureEnum.M108BYTE };
                 case "M2BYTE": return new AsmSignatureEnum[] { AsmSignatureEnum.M2BYTE };
                 case "M512BYTE": return new AsmSignatureEnum[] { AsmSignatureEnum.M512BYTE };
-                case "M80BCD":  return new AsmSignatureEnum[] { AsmSignatureEnum.M80 };
+                case "M80BCD": return new AsmSignatureEnum[] { AsmSignatureEnum.M80 };
                 case "M80DEC": return new AsmSignatureEnum[] { AsmSignatureEnum.M80 };
                 #endregion
 
@@ -306,7 +311,7 @@ namespace AsmDude.SignatureHelp {
                 case "XMM/M64{ER}": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.M64, AsmSignatureEnum.ER };
                 case "XMM/M64{SAE}": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.M64, AsmSignatureEnum.SAE };
                 case "XMM/M64/M32BCST": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.M64, AsmSignatureEnum.M32BCST };
-                case "XMM/M128":return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.M128 };
+                case "XMM/M128": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.M128 };
                 case "XMM/M128{K}{Z}": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.M128, AsmSignatureEnum.K, AsmSignatureEnum.Z };
                 case "XMM/M128/M32BCST": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.M128, AsmSignatureEnum.M32BCST };
                 case "XMM/M128/M64BCST": return new AsmSignatureEnum[] { AsmSignatureEnum.XMMREG, AsmSignatureEnum.M128, AsmSignatureEnum.M64BCST };
@@ -357,8 +362,10 @@ namespace AsmDude.SignatureHelp {
             }
         }
         /// <summary>Get brief description of the operand</summary>
-        public static string Get_Doc(AsmSignatureEnum operandType) {
-            switch (operandType) {
+        public static string Get_Doc(AsmSignatureEnum operandType)
+        {
+            switch (operandType)
+            {
                 case AsmSignatureEnum.MEM: return "memory operand";
                 case AsmSignatureEnum.M8: return "8-bits memory operand";
                 case AsmSignatureEnum.M16: return "16-bits memory operand";
@@ -427,15 +434,22 @@ namespace AsmDude.SignatureHelp {
             }
         }
 
-        public static string ToString(IList<AsmSignatureEnum> list, string concat) {
+        public static string ToString(IList<AsmSignatureEnum> list, string concat)
+        {
             int nOperands = list.Count;
-            if (nOperands == 0) {
+            if (nOperands == 0)
+            {
                 return "";
-            } else if (nOperands == 1) {
+            }
+            else if (nOperands == 1)
+            {
                 return ToString(list[0]);
-            } else {
+            }
+            else
+            {
                 StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < nOperands; ++i) {
+                for (int i = 0; i < nOperands; ++i)
+                {
                     sb.Append(ToString(list[i]));
                     if (i < nOperands - 1) sb.Append(concat);
                 }
@@ -443,9 +457,10 @@ namespace AsmDude.SignatureHelp {
             }
         }
 
-        public static string ToString(AsmSignatureEnum operandType) {
-            switch (operandType) {
-
+        public static string ToString(AsmSignatureEnum operandType)
+        {
+            switch (operandType)
+            {
                 case AsmSignatureEnum.REG_AL: return "AL";
                 case AsmSignatureEnum.REG_AX: return "AX";
                 case AsmSignatureEnum.REG_EAX: return "EAX";
@@ -506,13 +521,15 @@ namespace AsmDude.SignatureHelp {
                 case AsmSignatureEnum.SAE: return "{SAE}";
 
                 default:
-                   // AsmDudeToolsStatic.Output("WARNING: AsmSignatureTools:ToString: " + operandType);
+                    // AsmDudeToolsStatic.Output("WARNING: AsmSignatureTools:ToString: " + operandType);
                     return operandType.ToString();
             }
         }
 
-        public static bool Is_Allowed_Operand(Operand op, AsmSignatureEnum operandType) {
-            switch (operandType) {
+        public static bool Is_Allowed_Operand(Operand op, AsmSignatureEnum operandType)
+        {
+            switch (operandType)
+            {
                 case AsmSignatureEnum.UNKNOWN: return true;
                 case AsmSignatureEnum.MEM: return op.IsMem;
                 case AsmSignatureEnum.M8: return (op.IsMem && op.NBits == 8);
@@ -596,8 +613,11 @@ namespace AsmDude.SignatureHelp {
             return true;
         }
 
-        public static bool Is_Allowed_Misc(string misc, ISet<AsmSignatureEnum> allowedOperands) {
-            switch (misc) {
+        public static bool Is_Allowed_Misc(string misc, ISet<AsmSignatureEnum> allowedOperands)
+        {
+            Debug.Assert(misc == misc.ToUpper());
+            switch (misc)
+            {
                 case "PTR":
                     if (allowedOperands.Contains(AsmSignatureEnum.MEM)) return true;
                     if (allowedOperands.Contains(AsmSignatureEnum.M16)) return true;
@@ -647,11 +667,13 @@ namespace AsmDude.SignatureHelp {
             return false;
         }
 
-        public static bool Is_Allowed_Reg(Rn regName, ISet<AsmSignatureEnum> allowedOperands) {
+        public static bool Is_Allowed_Reg(Rn regName, ISet<AsmSignatureEnum> allowedOperands)
+        {
             RegisterType type = RegisterTools.GetRegisterType(regName);
-            switch (type) {
+            switch (type)
+            {
                 case RegisterType.UNKNOWN:
-                    AsmDudeToolsStatic.Output("INFO: AsmSignatureTools: isAllowedReg: registername " + regName +" could not be classified");
+                    AsmDudeToolsStatic.Output("INFO: AsmSignatureTools: isAllowedReg: registername " + regName + " could not be classified");
                     break;
                 case RegisterType.BIT8:
                     if (allowedOperands.Contains(AsmSignatureEnum.R8)) return true;
@@ -693,7 +715,8 @@ namespace AsmDude.SignatureHelp {
                     break;
                 case RegisterType.SEGMENT:
                     if (allowedOperands.Contains(AsmSignatureEnum.REG_SREG)) return true;
-                    switch (regName) {
+                    switch (regName)
+                    {
                         case Rn.CS: if (allowedOperands.Contains(AsmSignatureEnum.REG_CS)) return true; break;
                         case Rn.DS: if (allowedOperands.Contains(AsmSignatureEnum.REG_DS)) return true; break;
                         case Rn.ES: if (allowedOperands.Contains(AsmSignatureEnum.REG_ES)) return true; break;
@@ -724,6 +747,5 @@ namespace AsmDude.SignatureHelp {
             }
             return false;
         }
-
     }
 }

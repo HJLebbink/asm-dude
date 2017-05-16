@@ -22,29 +22,27 @@
 
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
-using System.Diagnostics;
 
-namespace AsmDude.CodeCompletion {
-
+namespace AsmDude.CodeCompletion
+{
     [Export(typeof(IVsTextViewCreationListener))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [TextViewRole(PredefinedTextViewRoles.Interactive)]
-    internal sealed class VsTextViewCreationListener : IVsTextViewCreationListener {
-
+    internal sealed class VsTextViewCreationListener : IVsTextViewCreationListener
+    {
         [Import]
         private IVsEditorAdaptersFactoryService _adaptersFactory = null;
 
         [Import]
         private ICompletionBroker _completionBroker = null;
 
-        public void VsTextViewCreated(IVsTextView textViewAdapter) {
+        public void VsTextViewCreated(IVsTextView textViewAdapter)
+        {
             IWpfTextView view = this._adaptersFactory.GetWpfTextView(textViewAdapter);
-            Debug.Assert(view != null);
             CodeCompletionCommandFilter filter = new CodeCompletionCommandFilter(view, this._completionBroker);
             textViewAdapter.AddCommandFilter(filter, out var next);
             filter.NextCommandHandler = next;

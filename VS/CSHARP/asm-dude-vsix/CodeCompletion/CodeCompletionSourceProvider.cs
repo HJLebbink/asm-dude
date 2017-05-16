@@ -29,13 +29,14 @@ using Microsoft.VisualStudio.Utilities;
 using System;
 using System.ComponentModel.Composition;
 
-namespace AsmDude {
-
+namespace AsmDude
+{
     [Export(typeof(ICompletionSourceProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [Name("asmCompletion")]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    public sealed class CodeCompletionSourceProvider : ICompletionSourceProvider {
+    public sealed class CodeCompletionSourceProvider : ICompletionSourceProvider
+    {
 
         [Import]
         private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
@@ -46,8 +47,10 @@ namespace AsmDude {
         [Import]
         private IContentTypeRegistryService _contentService = null;
 
-        public ICompletionSource TryCreateCompletionSource(ITextBuffer buffer) {
-            Func<CodeCompletionSource> sc = delegate () {
+        public ICompletionSource TryCreateCompletionSource(ITextBuffer buffer)
+        {
+            Func<CodeCompletionSource> sc = delegate ()
+            {
                 var labelGraph = AsmDudeToolsStatic.GetOrCreate_Label_Graph(buffer, this._aggregatorFactory, this._docFactory, this._contentService);
                 var asmSimulator = AsmSimulator.GetOrCreate_AsmSimulator(buffer, this._aggregatorFactory);
                 return new CodeCompletionSource(buffer, labelGraph, asmSimulator);

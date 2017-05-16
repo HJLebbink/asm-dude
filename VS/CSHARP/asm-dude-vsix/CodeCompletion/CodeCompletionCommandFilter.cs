@@ -28,12 +28,14 @@ using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace AsmDude {
-
-    internal sealed class CodeCompletionCommandFilter : IOleCommandTarget {
+namespace AsmDude
+{
+    internal sealed class CodeCompletionCommandFilter : IOleCommandTarget
+    {
         private ICompletionSession _currentSession;
 
-        public CodeCompletionCommandFilter(IWpfTextView textView, ICompletionBroker broker) {
+        public CodeCompletionCommandFilter(IWpfTextView textView, ICompletionBroker broker)
+        {
             this._currentSession = null;
             this.TextView = textView;
             this.Broker = broker;
@@ -44,29 +46,34 @@ namespace AsmDude {
         public ICompletionBroker Broker { get; private set; }
         public IOleCommandTarget NextCommandHandler { get; set; }
 
-        private char GetTypeChar(IntPtr pvaIn) {
+        private char GetTypeChar(IntPtr pvaIn)
+        {
             return (char)(ushort)Marshal.GetObjectForNativeVariant(pvaIn);
         }
 
-        public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
-
+        public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        {
             //if (VsShellUtilities.IsInAutomationFunction(m_provider.ServiceProvider)) {
             //    return _nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
             //}
-
-            if (false) {
+            if (false)
+            {
                 return ExecMethod1(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
-            } else {
+            }
+            else
+            {
                 return ExecMethod2(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
             }
         }
 
-        private int ExecMethod1(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
+        private int ExecMethod1(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:Exec", this.ToString()));
             char typedChar = char.MinValue;
 
             //make sure the input is a char before getting it
-            if ((pguidCmdGroup == VSConstants.VSStd2K) && (nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR)) {
+            if ((pguidCmdGroup == VSConstants.VSStd2K) && (nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR))
+            {
                 typedChar = GetTypeChar(pvaIn);
             }
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:Exec: typedChar={1}", this.ToString(), typedChar));
@@ -75,20 +82,26 @@ namespace AsmDude {
             if (nCmdID == (uint)VSConstants.VSStd2KCmdID.RETURN ||
                 nCmdID == (uint)VSConstants.VSStd2KCmdID.TAB ||
                 char.IsWhiteSpace(typedChar) ||
-                char.IsPunctuation(typedChar)) {
+                char.IsPunctuation(typedChar))
+            {
 
                 //check for a selection
-                if ((this._currentSession != null) && !this._currentSession.IsDismissed) {
+                if ((this._currentSession != null) && !this._currentSession.IsDismissed)
+                {
                     //if the selection is fully selected, commit the current session
-                    if (this._currentSession.SelectedCompletionSet.SelectionStatus.IsSelected) {
+                    if (this._currentSession.SelectedCompletionSet.SelectionStatus.IsSelected)
+                    {
                         this._currentSession.Commit();
 
                         //pass along the command so the char is added to the buffer, except if the command is an enter
-                        if (nCmdID != (uint)VSConstants.VSStd2KCmdID.RETURN) {
+                        if (nCmdID != (uint)VSConstants.VSStd2KCmdID.RETURN)
+                        {
                             this.NextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
                         }
                         return VSConstants.S_OK;
-                    } else { //if there is no selection, dismiss the session
+                    }
+                    else
+                    { //if there is no selection, dismiss the session
                         this._currentSession.Dismiss();
                     }
                 }
@@ -96,20 +109,29 @@ namespace AsmDude {
             //pass along the command so the char is added to the buffer
             int retVal = this.NextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
             bool handled = false;
-            if (!typedChar.Equals(char.MinValue) && char.IsLetterOrDigit(typedChar)) {
-                if (this._currentSession == null || this._currentSession.IsDismissed) { // If there is no active session, bring up completion
-                    if (StartSession()) {
-                        if (this._currentSession != null) {
+            if (!typedChar.Equals(char.MinValue) && char.IsLetterOrDigit(typedChar))
+            {
+                if (this._currentSession == null || this._currentSession.IsDismissed)
+                { // If there is no active session, bring up completion
+                    if (StartSession())
+                    {
+                        if (this._currentSession != null)
+                        {
                             this._currentSession.Filter();
                         }
                     }
-                } else {   //the completion session is already active, so just filter
+                }
+                else
+                {   //the completion session is already active, so just filter
                     this._currentSession.Filter();
                 }
                 handled = true;
-            } else if (nCmdID == (uint)VSConstants.VSStd2KCmdID.BACKSPACE   //redo the filter if there is a deletion
-                    || nCmdID == (uint)VSConstants.VSStd2KCmdID.DELETE) {
-                if (this._currentSession != null && !this._currentSession.IsDismissed) {
+            }
+            else if (nCmdID == (uint)VSConstants.VSStd2KCmdID.BACKSPACE   //redo the filter if there is a deletion
+                  || nCmdID == (uint)VSConstants.VSStd2KCmdID.DELETE)
+            {
+                if (this._currentSession != null && !this._currentSession.IsDismissed)
+                {
                     this._currentSession.Filter();
                 }
                 handled = true;
@@ -118,7 +140,8 @@ namespace AsmDude {
             return retVal;
         }
 
-        private int ExecMethod2(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
+        private int ExecMethod2(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        {
             //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:ExecMethod2", this.ToString()));
 
             bool handledChar = false;
@@ -126,8 +149,10 @@ namespace AsmDude {
             char typedChar = char.MinValue;
 
             #region 1. Pre-process
-            if (pguidCmdGroup == VSConstants.VSStd2K) {
-                switch ((VSConstants.VSStd2KCmdID)nCmdID) {
+            if (pguidCmdGroup == VSConstants.VSStd2K)
+            {
+                switch ((VSConstants.VSStd2KCmdID)nCmdID)
+                {
                     case VSConstants.VSStd2KCmdID.AUTOCOMPLETE:
                     case VSConstants.VSStd2KCmdID.COMPLETEWORD:
                         handledChar = StartSession();
@@ -144,13 +169,18 @@ namespace AsmDude {
                         break;
                     case VSConstants.VSStd2KCmdID.TYPECHAR:
                         typedChar = GetTypeChar(pvaIn);
-                        if (char.IsWhiteSpace(typedChar)) {
+                        if (char.IsWhiteSpace(typedChar))
+                        {
                             Complete(true);
                             handledChar = false;
-                        } else if (AsmTools.AsmSourceTools.IsSeparatorChar(typedChar)) {
+                        }
+                        else if (AsmTools.AsmSourceTools.IsSeparatorChar(typedChar))
+                        {
                             Complete(false);
                             handledChar = false;
-                        } else if (AsmTools.AsmSourceTools.IsRemarkChar(typedChar)) {
+                        }
+                        else if (AsmTools.AsmSourceTools.IsRemarkChar(typedChar))
+                        {
                             Complete(true);
                             handledChar = false;
                         }
@@ -160,19 +190,25 @@ namespace AsmDude {
             #endregion
 
             #region 2. Handle the typed char
-            if (!handledChar) {
+            if (!handledChar)
+            {
                 hresult = this.NextCommandHandler.Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 
-                if (!typedChar.Equals(char.MinValue) && char.IsLetterOrDigit(typedChar)) {
-                //if (!typedChar.Equals(char.MinValue)) {
-                    if ((this._currentSession == null) || this._currentSession.IsDismissed) { // If there is no active session, bring up completion
+                if (!typedChar.Equals(char.MinValue) && char.IsLetterOrDigit(typedChar))
+                {
+                    //if (!typedChar.Equals(char.MinValue)) {
+                    if ((this._currentSession == null) || this._currentSession.IsDismissed)
+                    { // If there is no active session, bring up completion
                         StartSession();
                     }
                     Filter();
                     hresult = VSConstants.S_OK;
-                } else if (nCmdID == (uint)VSConstants.VSStd2KCmdID.BACKSPACE   //redo the filter if there is a deletion
-                        || nCmdID == (uint)VSConstants.VSStd2KCmdID.DELETE) {
-                    if ((this._currentSession != null) && !this._currentSession.IsDismissed) {
+                }
+                else if (nCmdID == (uint)VSConstants.VSStd2KCmdID.BACKSPACE   //redo the filter if there is a deletion
+                      || nCmdID == (uint)VSConstants.VSStd2KCmdID.DELETE)
+                {
+                    if ((this._currentSession != null) && !this._currentSession.IsDismissed)
+                    {
                         Filter();
                     }
                     hresult = VSConstants.S_OK;
@@ -181,9 +217,12 @@ namespace AsmDude {
             #endregion
 
             #region Post-process
-            if (ErrorHandler.Succeeded(hresult)) {
-                if (pguidCmdGroup == VSConstants.VSStd2K) {
-                    switch ((VSConstants.VSStd2KCmdID)nCmdID) {
+            if (ErrorHandler.Succeeded(hresult))
+            {
+                if (pguidCmdGroup == VSConstants.VSStd2K)
+                {
+                    switch ((VSConstants.VSStd2KCmdID)nCmdID)
+                    {
                         case VSConstants.VSStd2KCmdID.TYPECHAR:
                         case VSConstants.VSStd2KCmdID.BACKSPACE:
                         case VSConstants.VSStd2KCmdID.DELETE:
@@ -197,17 +236,22 @@ namespace AsmDude {
             return hresult;
         }
 
-        private bool StartSession() {
-            if (this._currentSession != null) {
+        private bool StartSession()
+        {
+            if (this._currentSession != null)
+            {
                 return false;
             }
             SnapshotPoint caret = this.TextView.Caret.Position.BufferPosition;
             ITextSnapshot snapshot = caret.Snapshot;
 
-            if (this.Broker.IsCompletionActive(this.TextView)) {
+            if (this.Broker.IsCompletionActive(this.TextView))
+            {
                 //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:StartSession. Recycling an existing auto-complete session", this.ToString()));
                 this._currentSession = this.Broker.GetSessions(this.TextView)[0];
-            } else {
+            }
+            else
+            {
                 //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:StartSession. Creating a new auto-complete session", this.ToString()));
                 this._currentSession = this.Broker.CreateCompletionSession(this.TextView, snapshot.CreateTrackingPoint(caret, PointTrackingMode.Positive), true);
             }
@@ -222,21 +266,28 @@ namespace AsmDude {
         /// </summary>
         /// <param name="force">force the selection even if it has not been manually selected</param>
         /// <returns></returns>
-        private bool Complete(bool force) {
-            if (this._currentSession == null) {
+        private bool Complete(bool force)
+        {
+            if (this._currentSession == null)
+            {
                 return false;
             }
-            if (!this._currentSession.SelectedCompletionSet.SelectionStatus.IsSelected && !force) {
+            if (!this._currentSession.SelectedCompletionSet.SelectionStatus.IsSelected && !force)
+            {
                 this._currentSession.Dismiss();
                 return false;
-            } else {
+            }
+            else
+            {
                 this._currentSession.Commit();
                 return true;
             }
         }
 
-        private bool Cancel() {
-            if (this._currentSession == null) {
+        private bool Cancel()
+        {
+            if (this._currentSession == null)
+            {
                 return false;
             }
             this._currentSession.Dismiss();
@@ -246,8 +297,10 @@ namespace AsmDude {
         /// <summary>
         /// Narrow down the list of options as the user types input
         /// </summary>
-        private void Filter() {
-            if (this._currentSession == null) {
+        private void Filter()
+        {
+            if (this._currentSession == null)
+            {
                 return;
             }
             // this._currentSession.SelectedCompletionSet.SelectBestMatch();
@@ -255,10 +308,13 @@ namespace AsmDude {
             this._currentSession.Filter();
         }
 
-        public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText) {
+        public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
+        {
             //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:QueryStatus", this.ToString()));
-            if (pguidCmdGroup == VSConstants.VSStd2K) {
-                switch ((VSConstants.VSStd2KCmdID)prgCmds[0].cmdID) {
+            if (pguidCmdGroup == VSConstants.VSStd2K)
+            {
+                switch ((VSConstants.VSStd2KCmdID)prgCmds[0].cmdID)
+                {
                     case VSConstants.VSStd2KCmdID.AUTOCOMPLETE:
                     case VSConstants.VSStd2KCmdID.COMPLETEWORD:
                         //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:QueryStatus", this.ToString()));
