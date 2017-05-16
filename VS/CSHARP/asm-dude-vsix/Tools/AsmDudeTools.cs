@@ -266,6 +266,7 @@ namespace AsmDude
 
         public SmartThreadPool Thread_Pool { get { return this._smartThreadPool; } }
 
+        /// <summary>Get the collection of Keywords (in CAPITALS)</summary>
         public ICollection<string> Get_Keywords()
         {
             if (this._type == null) this.Init_Data();
@@ -276,13 +277,13 @@ namespace AsmDude
         {
             Debug.Assert(keyword == keyword.ToUpper());
 
-            Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword);
+            Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword, true);
             if (mnemonic != Mnemonic.UNKNOWN)
             {
                 return (AsmSourceTools.IsJump(mnemonic)) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
             }
 
-            return (this._type.TryGetValue(keyword.ToUpper(), out var tokenType)) ? tokenType : AsmTokenType.UNKNOWN;
+            return (this._type.TryGetValue(keyword, out var tokenType)) ? tokenType : AsmTokenType.UNKNOWN;
         }
 
         public AssemblerEnum Get_Assembler(string keyword)
