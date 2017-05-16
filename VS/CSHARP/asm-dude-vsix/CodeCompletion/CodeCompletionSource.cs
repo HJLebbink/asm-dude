@@ -147,7 +147,7 @@ namespace AsmDude
                 { // the current line contains a mnemonic
                     //AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:AugmentCompletionSession; mnemonic=" + mnemonic+ "; previousKeyword="+ previousKeyword);
 
-                    if (AsmSourceTools.IsJump(AsmSourceTools.ParseMnemonic(previousKeyword)))
+                    if (AsmSourceTools.IsJump(AsmSourceTools.ParseMnemonic(previousKeyword, true)))
                     {
                         //AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:AugmentCompletionSession; previous keyword is a jump mnemonic");
                         // previous keyword is jump (or call) mnemonic. Suggest "SHORT" or a label
@@ -226,7 +226,7 @@ namespace AsmDude
                         case AsmTokenType.Register:
                             {
                                 //AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:Mnemonic_Operand_Completions; rn=" + keyword);
-                                Rn regName = RegisterTools.ParseRn(keyword);
+                                Rn regName = RegisterTools.ParseRn(keyword, true);
                                 if (AsmSignatureTools.Is_Allowed_Reg(regName, allowedOperands))
                                 {
                                     if (asmSimulator_Enabled && this._asmSimulator.Tools.StateConfig.IsRegOn(RegisterTools.Get64BitsRegister(regName))) {
@@ -347,6 +347,8 @@ namespace AsmDude
                 {
                     string keyword = mnemonic.ToString();
 
+                    string description = this._asmDudeTools.Mnemonic_Store.GetSignatures(mnemonic).First().Documentation;
+
                     string insertionText = (useCapitals) ? keyword : keyword.ToLower();
                     string archStr = ArchTools.ToString(this._asmDudeTools.Mnemonic_Store.GetArch(mnemonic));
                     string descriptionStr = this._asmDudeTools.Mnemonic_Store.GetDescription(mnemonic);
@@ -354,7 +356,7 @@ namespace AsmDude
                     String displayText = keyword + archStr + descriptionStr;
                     //String description = keyword.PadRight(15) + archStr.PadLeft(8) + descriptionStr;
                     this._icons.TryGetValue(AsmTokenType.Mnemonic, out var imageSource);
-                    completions.Add(new Completion(displayText, insertionText, null, imageSource, ""));
+                    completions.Add(new Completion(displayText, insertionText, description, imageSource, ""));
                 }
             }
 
