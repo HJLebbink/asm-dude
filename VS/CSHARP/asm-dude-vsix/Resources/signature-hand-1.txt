@@ -33,9 +33,9 @@ GENERAL	CMOVPO	Move if parity odd (PF=0) (CMOVNP=CMOVPO)	CMOVcc.html
 GENERAL	CMOVS	Move if sign (SF=1)	CMOVcc.html
 GENERAL	CMOVZ	Move if zero (ZF=1) (CMOVE=CMOVZ)	CMOVcc.html
 ;====================================================================
-GENERAL	CQO	Convert Quadword to OWord	CWD_CDQ_CQO.html
-GENERAL	CWD	Convert Word to Doubleword	CWD_CDQ_CQO.html
-GENERAL	CDQ	Convert Doubleword to Quadword	CWD_CDQ_CQO.html
+GENERAL	CQO	Convert Qword to OWord	CWD_CDQ_CQO.html
+GENERAL	CWD	Convert Word to Dword	CWD_CDQ_CQO.html
+GENERAL	CDQ	Convert Dword to Qword	CWD_CDQ_CQO.html
 ;====================================================================
 GENERAL	JA	Jump if above (CF=0 and ZF=0) (JA=JNBE)	Jcc.html
 GENERAL	JAE	Jump if above or equal (CF=0) (JAE=JNB)	Jcc.html
@@ -128,10 +128,10 @@ GENERAL	PMVGEZB	Packed Conditional Move (greater than or equal to zero)
 GENERAL	PMULHRWC	Packed Multiply High with Rounding	
 GENERAL	RDSHR	Packed Multiply High with Rounding	
 
-GENERAL	V4FMADDPS	Packed Single-Precision Floating-Point Fused Multiply-Add (4-iterations)	https://github.com/HJLebbink/asm-dude/wiki/V4FMADDPS
-GENERAL	V4FNMADDPS	Packed Single-Precision Floating-Point Fused Multiply-Add (4-iterations)	
-GENERAL	V4FMADDSS	Scalar Single-Precision Floating-Point Fused Multiply-Add (4-iterations)	
-GENERAL	V4FNMADDSS	Scalar Single-Precision Floating-Point Fused Multiply-Add (4-iterations)	
+GENERAL	V4FMADDPS	Packed Single-Precision FP Fused Multiply-Add (4-iterations)	https://github.com/HJLebbink/asm-dude/wiki/V4FMADDPS
+GENERAL	V4FNMADDPS	Packed Single-Precision FP Fused Multiply-Add (4-iterations)	
+GENERAL	V4FMADDSS	Scalar Single-Precision FP Fused Multiply-Add (4-iterations)	
+GENERAL	V4FNMADDSS	Scalar Single-Precision FP Fused Multiply-Add (4-iterations)	
 GENERAL	VP4DPWSSD	Dot Product of Signed Words with Dword Accumulation (4-iterations)	https://github.com/HJLebbink/asm-dude/wiki/VP4DPWSSD
 GENERAL	VP4DPWSSDS	Dot Product of Signed Words with Dword Accumulation and Saturation (4-iterations)	
 GENERAL	VPERMB	Permute Packed Bytes Elements	
@@ -145,16 +145,16 @@ GENERAL	VPERMT2PD	Full Permute from Two Tables Overwriting one Table
 
 GENERAL	VPMADD52LUQ	Packed Multiply of Unsigned 52-bit Integers and Add the Low 52-bit Products to Qword Accumulators	
 GENERAL	VPMADD52HUQ	Packed Multiply of Unsigned 52-bit Unsigned Integers and Add High 52-bit Products to 64-bit Accumulators	
-GENERAL	VPMULTISHIFTQB	Select Packed Unaligned Bytes from Quadword Sources	
+GENERAL	VPMULTISHIFTQB	Select Packed Unaligned Bytes from Qword Sources	
 GENERAL	VPOPCNTD	Return the Count of Number of Bits Set to 1 in DWORD	
 GENERAL	VPOPCNTQ	Return the Count of Number of Bits Set to 1 in QWORD	
 
-V4FMADDPS	ZMM{K}{Z},ZMM,M128	AVX512_4FMAPS	V4FMADDPS ZMM1{K}{Z},ZMM2+3,M128	Multiply packed single-precision floating-point values from source register block indicated by zmm2 by values from m128 and accumulate the result in zmm1.
-V4FNMADDPS	ZMM{K}{Z},ZMM,M128	AVX512_4FMAPS	V4FNMADDPS ZMM1{K}{Z},ZMM2+3,M128	Multiply and negate packed single-precision floating-point values from source register block indicated by zmm2 by values from m128 and accumulate the result in zmm1.
-V4FMADDSS	XMM{K}{Z},XMM,M128	AVX512_4FMAPS	V4FMADDSS XMM1{K}{Z},XMM2+3,M128	Multiply scalar single-precision floating-point values from source register block indicated by xmm2 by values from m128 and accumulate the result in xmm1.
-V4FNMADDSS	XMM{K}{Z},XMM,M128	AVX512_4FMAPS	V4FNMADDSS XMM1{K}{Z},XMM2+3,M128	Multiply and negate scalar single-precision floating-point values from source register block indicated by xmm2 by values from m128 and accumulate the result in xmm1.
+V4FMADDPS	ZMM{K}{Z},ZMM,M128	AVX512_4FMAPS	V4FMADDPS ZMM1{K}{Z},ZMM2+3,M128	Multiply packed Single-Precision FP values from source register block indicated by zmm2 by values from m128 and accumulate the result in zmm1.
+V4FNMADDPS	ZMM{K}{Z},ZMM,M128	AVX512_4FMAPS	V4FNMADDPS ZMM1{K}{Z},ZMM2+3,M128	Multiply and negate packed Single-Precision FP values from source register block indicated by zmm2 by values from m128 and accumulate the result in zmm1.
+V4FMADDSS	XMM{K}{Z},XMM,M128	AVX512_4FMAPS	V4FMADDSS XMM1{K}{Z},XMM2+3,M128	Multiply scalar Single-Precision FP values from source register block indicated by xmm2 by values from m128 and accumulate the result in xmm1.
+V4FNMADDSS	XMM{K}{Z},XMM,M128	AVX512_4FMAPS	V4FNMADDSS XMM1{K}{Z},XMM2+3,M128	Multiply and negate scalar Single-Precision FP values from source register block indicated by xmm2 by values from m128 and accumulate the result in xmm1.
 VP4DPWSSD	ZMM{K}{Z},ZMM,M128	AVX512_4VNNIW	VP4DPWSSD ZMM1{K}{Z},ZMM2+3,M128	Multiply signed words from source register block indicated by zmm2 by signed words from m128 and accumulate resulting signed dwords in zmm1.
-VP4DPWSSDS	ZMM{K}{Z},ZMM,M128	AVX512_4VNNIW	VP4DPWSSDS ZMM1{K}{Z},ZMM2+3,M128	Multiply signed words from source register block indicated by zmm2 by signed words from m128 and accumulate the resulting dword results with signed saturation in zmm1.
+VP4DPWSSDS	ZMM{K}{Z},ZMM,M128	AVX512_4VNNIW	VP4DPWSSDS ZMM1{K}{Z},ZMM2+3,M128	Multiply signed words from source register block indicated by zmm2 by signed words from m128 and accumulate the resulting Dword results with signed saturation in zmm1.
 VPERMB	XMM{K}{Z},XMM,XMM/M128	AVX512VL,AVX512VBMI	VPERMB XMM{K}{Z},XMM2,XMM3/M128	Permute bytes in xmm3/m128 using byte indexes in xmm2 and store the result in xmm1 using writemask k1.
 VPERMB	YMM{K}{Z},YMM,YMM/M256	AVX512VL,AVX512VBMI	VPERMB YMM{K}{Z},YMM2,YMM3/M256	Permute bytes in ymm3/m256 using byte indexes in ymm2 and store the result in ymm1 using writemask k1.
 VPERMB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512VBMI	VPERMB ZMM{K}{Z},ZMM2,ZMM3/M512	Permute bytes in zmm3/m512 using byte indexes in zmm2 and store the result in zmm1 using writemask k1.
@@ -167,24 +167,24 @@ VPERMT2B	ZMM{K}{Z},ZMM,ZMM/M512	AVX512VBMI	VPERMT2B ZMM{K}{Z},ZMM2,ZMM3/M512	Per
 VPERMT2W	XMM{K}{Z},XMM,XMM/M128	AVX512VL,AVX512BW	VPERMT2W XMM{K}{Z},XMM2,XMM3/M128	Permute word integers from two tables in xmm3/m128 and xmm1 using indexes in xmm2 and store the result in xmm1 using writemask k1.
 VPERMT2W	YMM{K}{Z},YMM,YMM/M256	AVX512VL,AVX512BW	VPERMT2W YMM{K}{Z},YMM2,YMM3/M256	Permute word integers from two tables in ymm3/m256 and ymm1 using indexes in ymm2 and store the result in ymm1 using writemask k1.
 VPERMT2W	ZMM{K}{Z},ZMM,ZMM/M512	AVX512BW	VPERMT2W ZMM{K}{Z},ZMM2,ZMM3/M512	Permute word integers from two tables in zmm3/m512 and zmm1 using indexes in zmm2 and store the result in zmm1 using writemask k1.
-VPERMT2D	XMM{K}{Z},XMM,XMM/M128/M32BCST	AVX512VL,AVX512F	VPERMT2D XMM{K}{Z},XMM2,XMM3/M128/M32BCST	Permute double-words from two tables in xmm3/m128/m32bcst and xmm1 using indexes in xmm2 and store the result in xmm1 using writemask k1.
-VPERMT2D	YMM{K}{Z},YMM,YMM/M256/M32BCST	AVX512VL,AVX512F	VPERMT2D YMM{K}{Z},YMM2,YMM3/M256/M32BCST	Permute double-words from two tables in ymm3/m256/m32bcst and ymm1 using indexes in ymm2 and store the result in ymm1 using writemask k1.
-VPERMT2D	ZMM{K}{Z},ZMM,ZMM/M512/M32BCST	AVX512F	VPERMT2D ZMM{K}{Z},ZMM2,ZMM3/M512/M32BCST	Permute double-words from two tables in zmm3/m512/m32bcst and zmm1 using indices in zmm2 and store the result in zmm1 using writemask k1.
-VPERMT2Q	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512VL,AVX512F	VPERMT2Q XMM{K}{Z},XMM2,XMM3/M128/M64BCST	Permute quad-words from two tables in xmm3/m128/m64bcst and xmm1 using indexes in xmm2 and store the result in xmm1 using writemask k1.
-VPERMT2Q	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512VL,AVX512F	VPERMT2Q YMM{K}{Z},YMM2,YMM3/M256/M64BCST	Permute quad-words from two tables in ymm3/m256/m64bcst and ymm1 using indexes in ymm2 and store the result in ymm1 using writemask k1.
-VPERMT2Q	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST	AVX512F	VPERMT2Q ZMM{K}{Z},ZMM2,ZMM3/M512/M64BCST	Permute quad-words from two tables in zmm3/m512/m64bcst and zmm1 using indices in zmm2 and store the result in zmm1 using writemask k1.
-VPERMT2PS	XMM{K}{Z},XMM,XMM/M128/M32BCST	AVX512VL,AVX512F	VPERMT2PS XMM{K}{Z},XMM2,XMM3/M128/M32BCST	Permute single-precision FP values from two tables in xmm3/m128/m32bcst and xmm1 using indexes in xmm2 and store the result in xmm1 using writemask k1.
-VPERMT2PS	YMM{K}{Z},YMM,YMM/M256/M32BCST	AVX512VL,AVX512F	VPERMT2PS YMM{K}{Z},YMM2,YMM3/M256/M32BCST	Permute single-precision FP values from two tables in ymm3/m256/m32bcst and ymm1 using indexes in ymm2 and store the result in ymm1 using writemask k1.
-VPERMT2PS	ZMM{K}{Z},ZMM,ZMM/M512/M32BCST	AVX512F	VPERMT2PS ZMM{K}{Z},ZMM2,ZMM3/M512/M32BCST	Permute single-precision FP values from two tables in zmm3/m512/m32bcst and zmm1 using indices in zmm2 and store the result in zmm1 using writemask k1.
-VPERMT2PD	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512VL,AVX512F	VPERMT2PD XMM{K}{Z},XMM2,XMM3/M128/M64BCST	Permute double-precision FP values from two tables in xmm3/m128/m64bcst and xmm1 using indexes in xmm2 and store the result in xmm1 using writemask k1.
-VPERMT2PD	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512VL,AVX512F	VPERMT2PD YMM{K}{Z},YMM2,YMM3/M256/M64BCST	AVX512VL,AVX512F	Permute double-precision FP values from two tables in ymm3/m256/m64bcst and ymm1 using indexes in ymm2 and store the result in ymm1 using writemask k1.
-VPERMT2PD	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST	AVX512F	VPERMT2PD ZMM{K}{Z},ZMM2,ZMM3/M512/M64BCST	Permute double-precision FP values from two tables in zmm3/m512/m64bcst and zmm1 using indices in zmm2 and store the result in zmm1 using writemask k1.
-VPMADD52LUQ	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512IFMA,AVX512VL	VPMADD52LUQ XMM{K}{Z},XMM2,XMM3/M128/M64BCST	Multiply unsigned 52-bit integers in xmm2 and xmm3/m128 and add the low 52 bits of the 104-bit product to the qword unsigned integers in xmm1 using writemask k1.
-VPMADD52LUQ	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512IFMA,AVX512VL	VPMADD52LUQ YMM{K}{Z},YMM2,YMM3/M256/M64BCST	Multiply unsigned 52-bit integers in ymm2 and ymm3/m128 and add the low 52 bits of the 104-bit product to the qword unsigned integers in ymm1 using writemask k1.
-VPMADD52LUQ	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST	AVX512IFMA	VPMADD52LUQ ZMM{K}{Z},ZMM2,ZMM3/M512/M64BCST	Multiply unsigned 52-bit integers in zmm2 and zmm3/m128 and add the low 52 bits of the 104-bit product to the qword unsigned integers in zmm1 using writemask k1.
-VPMADD52HUQ	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512IFMA,AVX512VL	VPMADD52HUQ XMM2,XMM3/M128/M64BCST	Multiply unsigned 52-bit integers in xmm2 and xmm3/m128 and add the high 52 bits of the 104-bit product to the qword unsigned integers in xmm1 using writemask k1.
-VPMADD52HUQ	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512IFMA,AVX512VL	VPMADD52HUQ YMM{K}{Z},YMM2,YMM3/M256/M64BCST	Multiply unsigned 52-bit integers in ymm2 and ymm3/m128 and add the high 52 bits of the 104-bit product to the qword unsigned integers in ymm1 using writemask k1.
-VPMADD52HUQ	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST	AVX512IFMA	VPMADD52HUQ ZMM{K}{Z},ZMM2,ZMM3/M512/M64BCST	Multiply unsigned 52-bit integers in zmm2 and zmm3/m128 and add the high 52 bits of the 104-bit product to the qword unsigned integers in zmm1 using writemask k1.
+VPERMT2D	XMM{K}{Z},XMM,XMM/M128/M32BCST	AVX512VL,AVX512F	VPERMT2D XMM{K}{Z},XMM2,XMM3/M128/M32BCST	Permute Dwords from two tables in xmm3/m128/m32bcst and xmm1 using indexes in xmm2 and store the result in xmm1 using writemask k1.
+VPERMT2D	YMM{K}{Z},YMM,YMM/M256/M32BCST	AVX512VL,AVX512F	VPERMT2D YMM{K}{Z},YMM2,YMM3/M256/M32BCST	Permute Dwords from two tables in ymm3/m256/m32bcst and ymm1 using indexes in ymm2 and store the result in ymm1 using writemask k1.
+VPERMT2D	ZMM{K}{Z},ZMM,ZMM/M512/M32BCST	AVX512F	VPERMT2D ZMM{K}{Z},ZMM2,ZMM3/M512/M32BCST	Permute Dwords from two tables in zmm3/m512/m32bcst and zmm1 using indices in zmm2 and store the result in zmm1 using writemask k1.
+VPERMT2Q	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512VL,AVX512F	VPERMT2Q XMM{K}{Z},XMM2,XMM3/M128/M64BCST	Permute Qwords from two tables in xmm3/m128/m64bcst and xmm1 using indexes in xmm2 and store the result in xmm1 using writemask k1.
+VPERMT2Q	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512VL,AVX512F	VPERMT2Q YMM{K}{Z},YMM2,YMM3/M256/M64BCST	Permute Qwords from two tables in ymm3/m256/m64bcst and ymm1 using indexes in ymm2 and store the result in ymm1 using writemask k1.
+VPERMT2Q	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST	AVX512F	VPERMT2Q ZMM{K}{Z},ZMM2,ZMM3/M512/M64BCST	Permute Qwords from two tables in zmm3/m512/m64bcst and zmm1 using indices in zmm2 and store the result in zmm1 using writemask k1.
+VPERMT2PS	XMM{K}{Z},XMM,XMM/M128/M32BCST	AVX512VL,AVX512F	VPERMT2PS XMM{K}{Z},XMM2,XMM3/M128/M32BCST	Permute Single-Precision FP values from two tables in xmm3/m128/m32bcst and xmm1 using indexes in xmm2 and store the result in xmm1 using writemask k1.
+VPERMT2PS	YMM{K}{Z},YMM,YMM/M256/M32BCST	AVX512VL,AVX512F	VPERMT2PS YMM{K}{Z},YMM2,YMM3/M256/M32BCST	Permute Single-Precision FP values from two tables in ymm3/m256/m32bcst and ymm1 using indexes in ymm2 and store the result in ymm1 using writemask k1.
+VPERMT2PS	ZMM{K}{Z},ZMM,ZMM/M512/M32BCST	AVX512F	VPERMT2PS ZMM{K}{Z},ZMM2,ZMM3/M512/M32BCST	Permute Single-Precision FP values from two tables in zmm3/m512/m32bcst and zmm1 using indices in zmm2 and store the result in zmm1 using writemask k1.
+VPERMT2PD	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512VL,AVX512F	VPERMT2PD XMM{K}{Z},XMM2,XMM3/M128/M64BCST	Permute Double-Precision FP values from two tables in xmm3/m128/m64bcst and xmm1 using indexes in xmm2 and store the result in xmm1 using writemask k1.
+VPERMT2PD	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512VL,AVX512F	VPERMT2PD YMM{K}{Z},YMM2,YMM3/M256/M64BCST	AVX512VL,AVX512F	Permute Double-Precision FP values from two tables in ymm3/m256/m64bcst and ymm1 using indexes in ymm2 and store the result in ymm1 using writemask k1.
+VPERMT2PD	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST	AVX512F	VPERMT2PD ZMM{K}{Z},ZMM2,ZMM3/M512/M64BCST	Permute Double-Precision FP values from two tables in zmm3/m512/m64bcst and zmm1 using indices in zmm2 and store the result in zmm1 using writemask k1.
+VPMADD52LUQ	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512IFMA,AVX512VL	VPMADD52LUQ XMM{K}{Z},XMM2,XMM3/M128/M64BCST	Multiply unsigned 52-bit integers in xmm2 and xmm3/m128 and add the low 52 bits of the 104-bit product to the Qword unsigned integers in xmm1 using writemask k1.
+VPMADD52LUQ	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512IFMA,AVX512VL	VPMADD52LUQ YMM{K}{Z},YMM2,YMM3/M256/M64BCST	Multiply unsigned 52-bit integers in ymm2 and ymm3/m128 and add the low 52 bits of the 104-bit product to the Qword unsigned integers in ymm1 using writemask k1.
+VPMADD52LUQ	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST	AVX512IFMA	VPMADD52LUQ ZMM{K}{Z},ZMM2,ZMM3/M512/M64BCST	Multiply unsigned 52-bit integers in zmm2 and zmm3/m128 and add the low 52 bits of the 104-bit product to the Qword unsigned integers in zmm1 using writemask k1.
+VPMADD52HUQ	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512IFMA,AVX512VL	VPMADD52HUQ XMM2,XMM3/M128/M64BCST	Multiply unsigned 52-bit integers in xmm2 and xmm3/m128 and add the high 52 bits of the 104-bit product to the Qword unsigned integers in xmm1 using writemask k1.
+VPMADD52HUQ	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512IFMA,AVX512VL	VPMADD52HUQ YMM{K}{Z},YMM2,YMM3/M256/M64BCST	Multiply unsigned 52-bit integers in ymm2 and ymm3/m128 and add the high 52 bits of the 104-bit product to the Qword unsigned integers in ymm1 using writemask k1.
+VPMADD52HUQ	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST	AVX512IFMA	VPMADD52HUQ ZMM{K}{Z},ZMM2,ZMM3/M512/M64BCST	Multiply unsigned 52-bit integers in zmm2 and zmm3/m128 and add the high 52 bits of the 104-bit product to the Qword unsigned integers in zmm1 using writemask k1.
 VPMULTISHIFTQB	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512VBMI,AVX512VL	VPMULTISHIFTQB	XMM{K}{Z},XMM2,XMM3/M128/M64BCST	Select unaligned bytes from qwords in xmm3/m128/m64bcst using control bytes in xmm2, write byte results to xmm1 under k1.
 VPMULTISHIFTQB	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512VBMI,AVX512VL	VPMULTISHIFTQB	YMM{K}{Z},YMM2,YMM3/M256/M64BCST	Select unaligned bytes from qwords in ymm3/m256/m64bcst using control bytes in ymm2, write byte results to ymm1 under k1.
 VPMULTISHIFTQB	XMM{K}{Z},ZMM,ZMM/M512/M64BCST	AVX512VBMI,AVX512VL	VPMULTISHIFTQB	ZMM{K}{Z},ZMM2,ZMM3/M512/M64BCST	Select unaligned bytes from qwords in zmm3/m512/m64bcst using control bytes in zmm2, write byte results to zmm1 under k1.
@@ -897,12 +897,12 @@ CMP	R32,R/M32	386	CMP R32,R/M32	Compare r/m32 with r32.
 CMP	R64,R/M64	X64	CMP R64,R/M64	Compare r/m64 with r64.
 
 CMPS	M16,M16	8086	CMPS M16,M16	For legacy mode, compare word at address DS:(E)SI with word at address ES:(E)DI; For 64-bit mode compare word at address (R|E)SI with word at address (R|E)DI. The status flags are set accordingly.
-CMPS	M32,M32	386	CMPS M32,M32	For legacy mode, compare dword at address DS:(E)SI at dword at address ES:(E)DI; For 64-bit mode compare dword at address (R|E)SI at dword at address (R|E)DI. The status flags are set accordingly.
-CMPS	M64,M64	X64	CMPS M64,M64	Compares quadword at address (R|E)SI with quadword at address (R|E)DI and sets the status flags accordingly.
+CMPS	M32,M32	386	CMPS M32,M32	For legacy mode, compare Dword at address DS:(E)SI at Dword at address ES:(E)DI; For 64-bit mode compare Dword at address (R|E)SI at Dword at address (R|E)DI. The status flags are set accordingly.
+CMPS	M64,M64	X64	CMPS M64,M64	Compares Qword at address (R|E)SI with Qword at address (R|E)DI and sets the status flags accordingly.
 CMPS	M8,M8	8086	CMPS M8,M8	For legacy mode, compare byte at address DS:(E)SI with byte at address ES:(E)DI; For 64-bit mode compare byte at address (R|E)SI to byte at address (R|E)DI. The status flags are set accordingly.
 CMPSB		8086	CMPSB	For legacy mode, compare byte at address DS:(E)SI with byte at address ES:(E)DI; For 64-bit mode compare byte at address (R|E)SI with byte at address (R|E)DI. The status flags are set accordingly.
-CMPSD		386	CMPSD	For legacy mode, compare dword at address DS:(E)SI with dword at address ES:(E)DI; For 64-bit mode compare dword at address (R|E)SI with dword at address (R|E)DI. The status flags are set accordingly.
-CMPSQ		X64	CMPSQ	Compares quadword at address (R|E)SI with quadword at address (R|E)DI and sets the status flags accordingly.
+CMPSD		386	CMPSD	For legacy mode, compare Dword at address DS:(E)SI with Dword at address ES:(E)DI; For 64-bit mode compare Dword at address (R|E)SI with Dword at address (R|E)DI. The status flags are set accordingly.
+CMPSQ		X64	CMPSQ	Compares Qword at address (R|E)SI with Qword at address (R|E)DI and sets the status flags accordingly.
 CMPSW		8086	CMPSW	For legacy mode, compare word at address DS:(E)SI with word at address ES:(E)DI; For 64-bit mode compare word at address (R|E)SI with word at address (R|E)DI. The status flags are set accordingly.
 CMPXCHG	R/M16,R16	PENT	CMPXCHG R/M16,R16	Compare AX with r/m16. If equal, ZF is set and r16 is loaded into r/m16. Else, clear ZF and load r/m16 into AX.
 CMPXCHG	R/M32,R32	PENT	CMPXCHG R/M32,R32	Compare EAX with r/m32. If equal, ZF is set and r32 is loaded into r/m32. Else, clear ZF and load r/m32 into EAX.
@@ -919,12 +919,12 @@ CRC32	R32,R/M32	SSE42	CRC32 R32,R/M32	Accumulate CRC32 on r/m32.
 CRC32	R64,R/M8	SSE42	CRC32 R64,R/M8	Accumulate CRC32 on r/m8.
 CRC32	R64,R/M64	SSE42	CRC32 R64,R/M64	Accumulate CRC32 on r/m64.
 
-CVTPD2PI	MM,XMM/M128	SSE2	CVTPD2PI MM,XMM/M128	Convert two packed double-precision floating-point values from xmm/m128 to two packed signed doubleword integers in mm.
-CVTPI2PD	XMM,MM/M64	SSE2	CVTPI2PD XMM,MM/M64	Convert two packed signed doubleword integers from mm/meM64 to two packed double-precision floating-point values in xmm.
-CVTPI2PS	XMM,MM/M64	SSE2	CVTPI2PS XMM,MM/M64	Convert two signed doubleword integers from mm/m64 to two single-precision floating-point values in xmm.
-CVTPS2PI	MM,XMM/M64	SSE2	CVTPS2PI MM,XMM/M64	Convert two packed single-precision floating-point values from xmm/m64 to two packed signed doubleword integers in mm.
-CVTTPD2PI	MM,XMM/M128	SSE2	CVTTPD2PI MM,XMM/M128	Convert two packer double-precision floating-point values from xmm/m128 to two packed signed doubleword integers in mm using truncation.
-CVTTPS2PI	MM,XMM/M64	SSE2	CVTTPS2PI MM,XMM/M64	Convert two single-precision floating-point values from xmm/m64 to two signed doubleword signed integers in mm using truncation.
+CVTPD2PI	MM,XMM/M128	SSE2	CVTPD2PI MM,XMM/M128	Convert two packed Double-Precision FP values from xmm/m128 to two packed signed Dword integers in mm.
+CVTPI2PD	XMM,MM/M64	SSE2	CVTPI2PD XMM,MM/M64	Convert two packed signed Dword integers from mm/meM64 to two packed Double-Precision FP values in xmm.
+CVTPI2PS	XMM,MM/M64	SSE2	CVTPI2PS XMM,MM/M64	Convert two signed Dword integers from mm/m64 to two Single-Precision FP values in xmm.
+CVTPS2PI	MM,XMM/M64	SSE2	CVTPS2PI MM,XMM/M64	Convert two packed Single-Precision FP values from xmm/m64 to two packed signed Dword integers in mm.
+CVTTPD2PI	MM,XMM/M128	SSE2	CVTTPD2PI MM,XMM/M128	Convert two packer Double-Precision FP values from xmm/m128 to two packed signed Dword integers in mm using truncation.
+CVTTPS2PI	MM,XMM/M64	SSE2	CVTTPS2PI MM,XMM/M64	Convert two Single-Precision FP values from xmm/m64 to two signed Dword signed integers in mm using truncation.
 
 CWD		8086	CWD	DX:AX ← sign-extend of AX.
 CWDE		386	CWDE	EAX ← sign-extend of AX.
@@ -953,10 +953,10 @@ FADD	ST(0),ST(I)	8086	FADD ST(0),ST(I)	Add ST(0) to ST(i) and store result in ST
 FADD	ST(I),ST(0)	8086	FADD ST(I),ST(0)	Add ST(i) to ST(0) and store result in ST(i).
 FADDP		8086	FADDP	Add ST(0) to ST(1), store result in ST(1), and pop the register stack.
 FADDP	ST(I),ST(0)	8086	FADDP ST(I),ST(0)	Add ST(0) to ST(i), store result in ST(i), and pop the register stack.
-FBLD	M80DEC	8086	FBLD M80DEC	Convert BCD value to floating-point and push onto the FPU stack.
+FBLD	M80DEC	8086	FBLD M80DEC	Convert BCD value to FP and push onto the FPU stack.
 FBSTP	M80BCD	8086	FBSTP M80BCD	Store ST(0) in m80bcd and pop ST(0).
 FCHS		8086	FCHS	Complements sign of ST(0).
-FCLEX		8086	FCLEX	Clear floating-point exception flags after checking for pending unmasked floating-point exceptions.
+FCLEX		8086	FCLEX	Clear FP exception flags after checking for pending unmasked FP exceptions.
 FCMOVB	ST(0),ST(I)	P6	FCMOVB ST(0),ST(I)	Move if below (CF=1).
 FCMOVBE	ST(0),ST(I)	P6	FCMOVBE ST(0),ST(I)	Move if below or equal (CF=1 or ZF=1).
 FCMOVE	ST(0),ST(I)	P6	FCMOVE ST(0),ST(I)	Move if equal (ZF=1).
@@ -1006,7 +1006,7 @@ FILD	M64INT	8086	FILD M64INT	Push M64int onto the FPU register stack.
 FIMUL	M16INT	8086	FIMUL M16INT	Multiply ST(0) by m16int and store result in ST(0).
 FIMUL	M32INT	8086	FIMUL M32INT	Multiply ST(0) by M32int and store result in ST(0).
 FINCSTP		8086	FINCSTP	Increment the TOP field in the FPU status register.
-FINIT		8086	FINIT	Initialize FPU after checking for pending unmasked floating-point exceptions.
+FINIT		8086	FINIT	Initialize FPU after checking for pending unmasked FP exceptions.
 FIST	M16INT	8086	FIST M16INT	Store ST(0) in m16int.
 FIST	M32INT	8086	FIST M32INT	Store ST(0) in M32int.
 FISTP	M16INT	8086	FISTP M16INT	Store ST(0) in m16int and pop register stack.
@@ -1038,21 +1038,21 @@ FMUL	ST(0),ST(I)	8086	FMUL ST(0),ST(I)	Multiply ST(0) by ST(i) and store result 
 FMUL	ST(I),ST(0)	8086	FMUL ST(I),ST(0)	Multiply ST(i) by ST(0) and store result in ST(i).
 FMULP		8086	FMULP	Multiply ST(1) by ST(0), store result in ST(1), and pop the register stack.
 FMULP	ST(I),ST(0)	8086	FMULP ST(I),ST(0)	Multiply ST(i) by ST(0), store result in ST(i), and pop the register stack.
-FNCLEX		8086	FNCLEX	Clear floating-point exception flags without checking for pending unmasked floating-point exceptions.
-FNINIT		8086	FNINIT	Initialize FPU without checking for pending unmasked floating-point exceptions.
+FNCLEX		8086	FNCLEX	Clear FP exception flags without checking for pending unmasked FP exceptions.
+FNINIT		8086	FNINIT	Initialize FPU without checking for pending unmasked FP exceptions.
 FNOP		8086	FNOP	No operation is performed.
-FNSAVE	M94/108BYTE	8086	FNSAVE M94/108BYTE	Store FPU environment to m94byte or m108byte without checking for pending unmasked floating-point exceptions. Then re-initialize the FPU.
-FNSTCW	M2BYTE	8086	FNSTCW M2BYTE	Store FPU control word to m2byte without checking for pending unmasked floating-point exceptions.
-FNSTENV	M14/28BYTE	8086	FNSTENV M14/28BYTE	Store FPU environment to m14byte or m28byte without checking for pending unmasked floating-point exceptions. Then mask all floating-point exceptions.
-FNSTSW	AX	286	FNSTSW AX	Store FPU status word in AX register without checking for pending unmasked floating-point exceptions.
-FNSTSW	M2BYTE	8086	FNSTSW M2BYTE	Store FPU status word at m2byte without checking for pending unmasked floating-point exceptions.
+FNSAVE	M94/108BYTE	8086	FNSAVE M94/108BYTE	Store FPU environment to m94byte or m108byte without checking for pending unmasked FP exceptions. Then re-initialize the FPU.
+FNSTCW	M2BYTE	8086	FNSTCW M2BYTE	Store FPU control word to m2byte without checking for pending unmasked FP exceptions.
+FNSTENV	M14/28BYTE	8086	FNSTENV M14/28BYTE	Store FPU environment to m14byte or m28byte without checking for pending unmasked FP exceptions. Then mask all FP exceptions.
+FNSTSW	AX	286	FNSTSW AX	Store FPU status word in AX register without checking for pending unmasked FP exceptions.
+FNSTSW	M2BYTE	8086	FNSTSW M2BYTE	Store FPU status word at m2byte without checking for pending unmasked FP exceptions.
 FPATAN		286	FPATAN	Replace ST(1) with arctan(ST(1)/ST(0)) and pop the register stack.
 FPREM		286	FPREM	Replace ST(0) with the remainder obtained from dividing ST(0) by ST(1).
 FPREM1		386	FPREM1	Replace ST(0) with the IEEE remainder obtained from dividing ST(0) by ST(1).
 FPTAN		8086	FPTAN	Replace ST(0) with its approximate tangent and push 1 onto the FPU stack.
 FRNDINT		8086	FRNDINT	Round ST(0) to an integer.
 FRSTOR	M94/108BYTE	8086	FRSTOR M94/108BYTE	Load FPU state from m94byte or m108byte.
-FSAVE	M94/108BYTE	8086	FSAVE M94/108BYTE	Store FPU state to m94byte or m108byte after checking for pending unmasked floating-point exceptions. Then re-initialize the FPU.
+FSAVE	M94/108BYTE	8086	FSAVE M94/108BYTE	Store FPU state to m94byte or m108byte after checking for pending unmasked FP exceptions. Then re-initialize the FPU.
 FSCALE		8086	FSCALE	Scale ST(0) by ST(1).
 FSIN		386	FSIN	Replace ST(0) with the approximate of its sine.
 FSINCOS		386	FSINCOS	Compute the sine and cosine of ST(0); replace ST(0) with the approximate sine, and push the approximate cosine onto the register stack.
@@ -1060,14 +1060,14 @@ FSQRT		8086	FSQRT	Computes square root of ST(0) and stores the result in ST(0).
 FST	M32FP	8086	FST M32FP	Copy ST(0) to M32fp.
 FST	M64FP	8086	FST M64FP	Copy ST(0) to M64fp.
 FST	ST(I)	8086	FST ST(I)	Copy ST(0) to ST(i).
-FSTCW	M2BYTE	8086	FSTCW M2BYTE	Store FPU control word to m2byte after checking for pending unmasked floating-point exceptions.
-FSTENV	M14/28BYTE	8086	FSTENV M14/28BYTE	Store FPU environment to m14byte or m28byte after checking for pending unmasked floating-point exceptions. Then mask all floating-point exceptions.
+FSTCW	M2BYTE	8086	FSTCW M2BYTE	Store FPU control word to m2byte after checking for pending unmasked FP exceptions.
+FSTENV	M14/28BYTE	8086	FSTENV M14/28BYTE	Store FPU environment to m14byte or m28byte after checking for pending unmasked FP exceptions. Then mask all FP exceptions.
 FSTP	M32FP	8086	FSTP M32FP	Copy ST(0) to M32fp and pop register stack.
 FSTP	M64FP	8086	FSTP M64FP	Copy ST(0) to M64fp and pop register stack.
 FSTP	M80FP	8086	FSTP M80FP	Copy ST(0) to m80fp and pop register stack.
 FSTP	ST(I)	8086	FSTP ST(I)	Copy ST(0) to ST(i) and pop register stack.
-FSTSW	AX	286	FSTSW AX	Store FPU status word in AX register after checking for pending unmasked floating-point exceptions.
-FSTSW	M2BYTE	8086	FSTSW M2BYTE	Store FPU status word at m2byte after checking for pending unmasked floating-point exceptions.
+FSTSW	AX	286	FSTSW AX	Store FPU status word in AX register after checking for pending unmasked FP exceptions.
+FSTSW	M2BYTE	8086	FSTSW M2BYTE	Store FPU status word at m2byte after checking for pending unmasked FP exceptions.
 FSUB	M32FP	8086	FSUB M32FP	Subtract M32fp from ST(0) and store result in ST(0).
 FSUB	M64FP	8086	FSUB M64FP	Subtract M64fp from ST(0) and store result in ST(0).
 FSUB	ST(0),ST(I)	8086	FSUB ST(0),ST(I)	Subtract ST(i) from ST(0) and store result in ST(0).
@@ -1109,18 +1109,18 @@ IMUL	R/M64	X64	IMUL R/M64	RDX:RAX ← RAX ∗ r/m64.
 IMUL	R16,R/M16	8086	IMUL R16,R/M16	word register ← word register ∗ r/m16.
 IMUL	R16,R/M16,IMM16	8086	IMUL R16,R/M16,IMM16	word register ← r/m16 ∗ immediate word.
 IMUL	R16,R/M16,IMM8	8086	IMUL R16,R/M16,IMM8	word register ← r/m16 ∗ sign-extended immediate byte.
-IMUL	R32,R/M32	386	IMUL R32,R/M32	doubleword register ← doubleword register ∗ r/m32.
-IMUL	R32,R/M32,IMM32	386	IMUL R32,R/M32,IMM32	doubleword register ← r/m32 ∗ immediate doubleword.
-IMUL	R32,R/M32,IMM8	386	IMUL R32,R/M32,IMM8	doubleword register ← r/m32 ∗ sign-extended immediate byte.
-IMUL	R64,R/M64	X64	IMUL R64,R/M64	Quadword register ← Quadword register ∗ r/m64.
-IMUL	R64,R/M64,IMM32	X64	IMUL R64,R/M64,IMM32	Quadword register ← r/m64 ∗ immediate doubleword.
-IMUL	R64,R/M64,IMM8	X64	IMUL R64,R/M64,IMM8	Quadword register ← r/m64 ∗ sign-extended immediate byte.
+IMUL	R32,R/M32	386	IMUL R32,R/M32	Dword register ← Dword register ∗ r/m32.
+IMUL	R32,R/M32,IMM32	386	IMUL R32,R/M32,IMM32	Dword register ← r/m32 ∗ immediate Dword.
+IMUL	R32,R/M32,IMM8	386	IMUL R32,R/M32,IMM8	Dword register ← r/m32 ∗ sign-extended immediate byte.
+IMUL	R64,R/M64	X64	IMUL R64,R/M64	Qword register ← Qword register ∗ r/m64.
+IMUL	R64,R/M64,IMM32	X64	IMUL R64,R/M64,IMM32	Qword register ← r/m64 ∗ immediate Dword.
+IMUL	R64,R/M64,IMM8	X64	IMUL R64,R/M64,IMM8	Qword register ← r/m64 ∗ sign-extended immediate byte.
 IN	AL,DX	8086	IN AL,DX	Input byte from I/O port in DX into AL.
 IN	AL,IMM8	8086	IN AL,IMM8	Input byte from imm8 I/O port address into AL.
 IN	AX,DX	8086	IN AX,DX	Input word from I/O port in DX into AX.
 IN	AX,IMM8	8086	IN AX,IMM8	Input word from imm8 I/O port address into AX.
-IN	EAX,DX	386	IN EAX,DX	Input doubleword from I/O port in DX into EAX.
-IN	EAX,IMM8	386	IN EAX,IMM8	Input dword from imm8 I/O port address into EAX.
+IN	EAX,DX	386	IN EAX,DX	Input Dword from I/O port in DX into EAX.
+IN	EAX,IMM8	386	IN EAX,IMM8	Input Dword from imm8 I/O port address into EAX.
 
 INC	R/M8	8086	INC R/M8	Increment r/m8 by 1 (does not update CF!).
 INC	R/M16	8086	INC R/M16	Increment r/m16 by 1 (does not update CF!).
@@ -1129,10 +1129,10 @@ INC	R/M64	X64	INC R/M64	Increment r/m64 by 1 (does not update CF!).
 
 INS	M8,DX	8086	INS M8,DX	Input byte from I/O port specified in DX into memory location specified in ES:(E)DI or RDI.
 INS	M16,DX	8086	INS M16,DX	Input word from I/O port specified in DX into memory location specified in ES:(E)DI or RDI.1
-INS	M32,DX	386	INS M32,DX	Input doubleword from I/O port specified in DX into memory location specified in ES:(E)DI or RDI.1
+INS	M32,DX	386	INS M32,DX	Input Dword from I/O port specified in DX into memory location specified in ES:(E)DI or RDI.1
 
 INSB		186	INSB	Input byte from I/O port specified in DX into memory location specified with ES:(E)DI or RDI.1
-INSD		386	INSD	Input doubleword from I/O port specified in DX into memory location specified in ES:(E)DI or RDI.1
+INSD		386	INSD	Input Dword from I/O port specified in DX into memory location specified in ES:(E)DI or RDI.1
 INSW		186	INSW	Input word from I/O port specified in DX into memory location specified in ES:(E)DI or RDI.1
 INTO		8086	INTO	Interrupt 4—if overflow flag is 1.
 INVD		486	INVD	Flush internal caches; initiate flushing of external caches.
@@ -1172,13 +1172,13 @@ LMSW	R/M16	286	LMSW R/M16	Loads r/m16 in machine status word of CR0.
 LOCK		8086	LOCK	Asserts LOCK# signal for duration of the accompanying instruction.
 LODS	M8	8086	LODS M8	For legacy mode, Load byte at address DS:(E)SI into AL. For 64-bit mode load byte at address (R)SI into AL.
 LODS	M16	8086	LODS M16	For legacy mode, Load word at address DS:(E)SI into AX. For 64-bit mode load word at address (R)SI into AX.
-LODS	M32	386	LODS M32	For legacy mode, Load dword at address DS:(E)SI into EAX. For 64-bit mode load dword at address (R)SI into EAX.
-LODS	M64	X64	LODS M64	Load qword at address (R)SI into RAX.
+LODS	M32	386	LODS M32	For legacy mode, Load Dword at address DS:(E)SI into EAX. For 64-bit mode load Dword at address (R)SI into EAX.
+LODS	M64	X64	LODS M64	Load Qword at address (R)SI into RAX.
 
 LODSB		8086	LODSB	For legacy mode, Load byte at address DS:(E)SI into AL. For 64-bit mode load byte at address (R)SI into AL.
 LODSW		8086	LODSW	For legacy mode, Load word at address DS:(E)SI into AX. For 64-bit mode load word at address (R)SI into AX.
-LODSD		386	LODSD	For legacy mode, Load dword at address DS:(E)SI into EAX. For 64-bit mode load dword at address (R)SI into EAX.
-LODSQ		X64	LODSQ	Load qword at address (R)SI into RAX.
+LODSD		386	LODSD	For legacy mode, Load Dword at address DS:(E)SI into EAX. For 64-bit mode load Dword at address (R)SI into EAX.
+LODSQ		X64	LODSQ	Load Qword at address (R)SI into RAX.
 
 LOOP	REL8	8086	LOOP REL8	Decrement CX; jump short if CX!=0.
 LOOP	REL8,CX	8086	LOOP REL8,CX	Decrement CX; jump short if CX!=0.
@@ -1220,8 +1220,8 @@ MONITOR		SSE3	MONITOR	Sets up a linear address range to be monitored by hardware
 
 MOV	AL,MOFFS8	8086	MOV AL,MOFFS8	Move byte at (seg:offset) to AL.
 MOV	AX,MOFFS16	8086	MOV AX,MOFFS16	Move word at (seg:offset) to AX.
-MOV	EAX,MOFFS32	386	MOV EAX,MOFFS32	Move doubleword at (seg:offset) to EAX.
-MOV	RAX,MOFFS64	X64	MOV RAX,MOFFS64	Move quadword at (offset) to RAX.
+MOV	EAX,MOFFS32	386	MOV EAX,MOFFS32	Move Dword at (seg:offset) to EAX.
+MOV	RAX,MOFFS64	X64	MOV RAX,MOFFS64	Move Qword at (offset) to RAX.
 MOV	MOFFS16,AX	8086	MOV MOFFS16,AX	Move AX to (seg:offset).
 MOV	MOFFS32,EAX	386	MOV MOFFS32,EAX	Move EAX to (seg:offset).
 MOV	MOFFS64,RAX	X64	MOV MOFFS64,RAX	Move RAX to (offset).
@@ -1254,32 +1254,32 @@ MOVBE	R16,M16	SSE42	MOVBE R16,M16	Reverse byte order in m16 and move to r16.
 MOVBE	R32,M32	SSE42	MOVBE R32,M32	Reverse byte order in m32 and move to r32.
 MOVBE	R64,M64	SSE42	MOVBE R64,M64	Reverse byte order in m64 and move to r64.
 
-MOVDQ2Q	MM,XMM	SSE2	MOVDQ2Q MM,XMM	Move low quadword from xmm to mmx register.
-MOVQ2DQ	XMM,MM	SSE2	MOVQ2DQ XMM,MM	Move quadword from mmx to low quadword of xmm.
-MOVNTI	M32,R32	MMX	MOVNTI M32,R32	Move doubleword from r32 to m32 using non-temporal hint.
-MOVNTI	M64,R64	X64	MOVNTI M64,R64	Move quadword from r64 to m64 using non-temporal hint.
-MOVNTQ	M64,MM	MMX	MOVNTQ M64,MM	Move quadword from mm to m64 using non-temporal hint.
+MOVDQ2Q	MM,XMM	SSE2	MOVDQ2Q MM,XMM	Move low Qword from xmm to mmx register.
+MOVQ2DQ	XMM,MM	SSE2	MOVQ2DQ XMM,MM	Move Qword from mmx to low Qword of xmm.
+MOVNTI	M32,R32	MMX	MOVNTI M32,R32	Move Dword from r32 to m32 using non-temporal hint.
+MOVNTI	M64,R64	X64	MOVNTI M64,R64	Move Qword from r64 to m64 using non-temporal hint.
+MOVNTQ	M64,MM	MMX	MOVNTQ M64,MM	Move Qword from mm to m64 using non-temporal hint.
 
 MOVS	M8,M8	8086	MOVS M8,M8	For legacy mode, Move byte from address DS:(E)SI to ES:(E)DI. For 64-bit mode move byte from address (R|E)SI to (R|E)DI.
 MOVS	M16,M16	8086	MOVS M16,M16	For legacy mode, move word from address DS:(E)SI to ES:(E)DI. For 64-bit mode move word at address (R|E)SI to (R|E)DI.
-MOVS	M32,M32	386	MOVS M32,M32	For legacy mode, move dword from address DS:(E)SI to ES:(E)DI. For 64-bit mode move dword from address (R|E)SI to (R|E)DI.
-MOVS	M64,M64	X64	MOVS M64,M64	Move qword from address (R|E)SI to (R|E)DI.
+MOVS	M32,M32	386	MOVS M32,M32	For legacy mode, move Dword from address DS:(E)SI to ES:(E)DI. For 64-bit mode move Dword from address (R|E)SI to (R|E)DI.
+MOVS	M64,M64	X64	MOVS M64,M64	Move Qword from address (R|E)SI to (R|E)DI.
 
 MOVSB		8086	MOVSB	For legacy mode, Move byte from address DS:(E)SI to ES:(E)DI. For 64-bit mode move byte from address (R|E)SI to (R|E)DI.
-MOVSD		386	MOVSD	For legacy mode, move dword from address DS:(E)SI to ES:(E)DI. For 64-bit mode move dword from address (R|E)SI to (R|E)DI.
-MOVSQ		X64	MOVSQ	Move qword from address (R|E)SI to (R|E)DI.
+MOVSD		386	MOVSD	For legacy mode, move Dword from address DS:(E)SI to ES:(E)DI. For 64-bit mode move Dword from address (R|E)SI to (R|E)DI.
+MOVSQ		X64	MOVSQ	Move Qword from address (R|E)SI to (R|E)DI.
 MOVSW		8086	MOVSW	For legacy mode, move word from address DS:(E)SI to ES:(E)DI. For 64-bit mode move word at address (R|E)SI to (R|E)DI.
 MOVSX	R16,R/M8	386	MOVSX R16,R/M8	Move byte to word with sign-extension.
-MOVSX	R32,R/M16	386	MOVSX R32,R/M16	Move word to doubleword, with sign-extension.
-MOVSX	R32,R/M8	386	MOVSX R32,R/M8	Move byte to doubleword with sign-extension.
-MOVSX	R64,R/M16	X64	MOVSX R64,R/M16	Move word to quadword with sign-extension.
-MOVSX	R64,R/M8	X64	MOVSX R64,R/M8	Move byte to quadword with sign-extension.
-MOVSXD	R64,R/M32	X64	MOVSXD R64,R/M32	Move doubleword to quadword with sign-extension.
+MOVSX	R32,R/M16	386	MOVSX R32,R/M16	Move word to Dword, with sign-extension.
+MOVSX	R32,R/M8	386	MOVSX R32,R/M8	Move byte to Dword with sign-extension.
+MOVSX	R64,R/M16	X64	MOVSX R64,R/M16	Move word to Qword with sign-extension.
+MOVSX	R64,R/M8	X64	MOVSX R64,R/M8	Move byte to Qword with sign-extension.
+MOVSXD	R64,R/M32	X64	MOVSXD R64,R/M32	Move Dword to Qword with sign-extension.
 MOVZX	R16,R/M8	386	MOVZX R16,R/M8	Move byte to word with zero-extension.
-MOVZX	R32,R/M16	386	MOVZX R32,R/M16	Move word to doubleword, zero-extension.
-MOVZX	R32,R/M8	386	MOVZX R32,R/M8	Move byte to doubleword, zero-extension.
-MOVZX	R64,R/M16	X64	MOVZX R64,R/M16	Move word to quadword, zero-extension.
-MOVZX	R64,R/M8	X64	MOVZX R64,R/M8	Move byte to quadword, zero-extension.
+MOVZX	R32,R/M16	386	MOVZX R32,R/M16	Move word to Dword, zero-extension.
+MOVZX	R32,R/M8	386	MOVZX R32,R/M8	Move byte to Dword, zero-extension.
+MOVZX	R64,R/M16	X64	MOVZX R64,R/M16	Move word to Qword, zero-extension.
+MOVZX	R64,R/M8	X64	MOVZX R64,R/M8	Move byte to Qword, zero-extension.
 
 MUL	R/M8	8086	MUL R/M8	Unsigned multiply (AX ← AL ∗ r/m8).
 MUL	R/M16	8086	MUL R/M16	Unsigned multiply (DX:AX ← AX ∗ r/m16).
@@ -1318,15 +1318,15 @@ OR	R64,R/M64	X64	OR R64,R/M64	r64 OR r/m64.
 
 OUT	DX,AL	8086	OUT DX,AL	Output byte in AL to I/O port address in DX.
 OUT	DX,AX	8086	OUT DX,AX	Output word in AX to I/O port address in DX.
-OUT	DX,EAX	386	OUT DX,EAX	Output doubleword in EAX to I/O port address in DX.
+OUT	DX,EAX	386	OUT DX,EAX	Output Dword in EAX to I/O port address in DX.
 OUT	IMM8,AL	8086	OUT IMM8,AL	Output byte in AL to I/O port address imm8.
 OUT	IMM8,AX	8086	OUT IMM8,AX	Output word in AX to I/O port address imm8.
-OUT	IMM8,EAX	386	OUT IMM8,EAX	Output doubleword in EAX to I/O port address imm8.
+OUT	IMM8,EAX	386	OUT IMM8,EAX	Output Dword in EAX to I/O port address imm8.
 OUTS	DX,M16	8086	OUTS DX,M16	Output word from memory location specified in DS:(E)SI or RSI to I/O port specified in DX.
-OUTS	DX,M32	386	OUTS DX,M32	Output doubleword from memory location specified in DS:(E)SI or RSI to I/O port specified in DX.
+OUTS	DX,M32	386	OUTS DX,M32	Output Dword from memory location specified in DS:(E)SI or RSI to I/O port specified in DX.
 OUTS	DX,M8	8086	OUTS DX,M8	Output byte from memory location specified in DS:(E)SI or RSI to I/O port specified in DX.
 OUTSB		186	OUTSB	Output byte from memory location specified in DS:(E)SI or RSI to I/O port specified in DX.
-OUTSD		386	OUTSD	Output doubleword from memory location specified in DS:(E)SI or RSI to I/O port specified in DX.
+OUTSD		386	OUTSD	Output Dword from memory location specified in DS:(E)SI or RSI to I/O port specified in DX.
 OUTSW		186	OUTSW	Output word from memory location specified in DS:(E)SI or RSI to I/O port specified in DX.
 PAUSE		8086	PAUSE	Gives hint to processor that improves performance of spin-wait loops.
 
@@ -1494,11 +1494,11 @@ SBB	R64,R/M64	X64	SBB R64,R/M64	Subtract with borrow r/m64 from r64.
 
 SCAS	M8	8086	SCAS M8	Compare AL with byte at ES:(E)DI or RDI, then set status flags.
 SCAS	M16	8086	SCAS M16	Compare AX with word at ES:(E)DI or RDI, then set status flags.
-SCAS	M32	386	SCAS M32	Compare EAX with doubleword at ES(E)DI or RDI then set status flags.
-SCAS	M64	X64	SCAS M64	Compare RAX with quadword at RDI or EDI then set status flags.
+SCAS	M32	386	SCAS M32	Compare EAX with Dword at ES(E)DI or RDI then set status flags.
+SCAS	M64	X64	SCAS M64	Compare RAX with Qword at RDI or EDI then set status flags.
 
 SCASB		8086	SCASB	Compare AL with byte at ES:(E)DI or RDI then set status flags.
-SCASD		386	SCASD	Compare EAX with doubleword at ES:(E)DI or RDI then set status flags.
+SCASD		386	SCASD	Compare EAX with Dword at ES:(E)DI or RDI then set status flags.
 SCASW		8086	SCASW	Compare AX with word at ES:(E)DI or RDI then set status flags.
 SFENCE		X64	SFENCE	Serializes store operations.
 SGDT	MEM	286	SGDT MEM	Store Global Descriptor Table Register (GDTR) to mem.
@@ -1591,8 +1591,8 @@ TEST	R/M64,R64	X64	TEST R/M64,R64	AND r64 with r/m64; set SF, ZF, PF according t
 VERR	R/M16	286	VERR R/M16	Set ZF=1 if segment specified with r/m16 can be read.
 VERW	R/M16	286	VERW R/M16	Set ZF=1 if segment specified with r/m16 can be written.
 
-WAIT		8086	WAIT	Check pending unmasked floating-point exceptions.
-FWAIT		8086	FWAIT	Check pending unmasked floating-point exceptions.
+WAIT		8086	WAIT	Check pending unmasked FP exceptions.
+FWAIT		8086	FWAIT	Check pending unmasked FP exceptions.
 
 WBINVD		486	WBINVD	Write back and flush Internal caches; initiate writing-back and flushing of external caches.
 WRMSR		PENT	WRMSR	Write the value in EDX:EAX to Model Specific Register (MSR) specified by ECX.
@@ -1605,12 +1605,12 @@ XADD	R/M64,R64	X64	XADD R/M64,R64	Exchange r64 and r/m64; load sum into r/m64.
 
 XCHG	R/M8,R8	8086	XCHG R/M8,R8	Exchange r8 (byte register) with byte from r/m8.
 XCHG	R/M16,R16	8086	XCHG R/M16,R16	Exchange r16 with word from r/m16.
-XCHG	R/M32,R32	386	XCHG R/M32,R32	Exchange r32 with doubleword from r/m32.
-XCHG	R/M64,R64	X64	XCHG R/M64,R64	Exchange r64 with quadword from r/m64.
+XCHG	R/M32,R32	386	XCHG R/M32,R32	Exchange r32 with Dword from r/m32.
+XCHG	R/M64,R64	X64	XCHG R/M64,R64	Exchange r64 with Qword from r/m64.
 XCHG	R8,R/M8	8086	XCHG R8,R/M8	Exchange byte from r/m8 with r8 (byte register).
 XCHG	R16,R/M16	8086	XCHG R16,R/M16	Exchange word from r/m16 with r16.
-XCHG	R32,R/M32	386	XCHG R32,R/M32	Exchange doubleword from r/m32 with r32.
-XCHG	R64,R/M64	X64	XCHG R64,R/M64	Exchange quadword from r/m64 with r64.
+XCHG	R32,R/M32	386	XCHG R32,R/M32	Exchange Dword from r/m32 with r32.
+XCHG	R64,R/M64	X64	XCHG R64,R/M64	Exchange Qword from r/m64 with r64.
 
 XLAT	M8	8086	XLAT M8	Set AL to memory byte DS:[(E)BX + unsigned AL].
 XLATB		8086	XLATB	Set AL to memory byte DS:[(E)BX + unsigned AL].
