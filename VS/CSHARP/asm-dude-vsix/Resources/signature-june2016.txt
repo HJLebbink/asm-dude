@@ -1011,7 +1011,7 @@ GENERAL	VCVTPD2UDQ	Convert Packed Double-Precision FP Values to Packed Unsigned 
 GENERAL	VCVTPD2UQQ	Convert Packed Double-Precision FP Values to Packed Unsigned Qword Integers	VCVTPD2UQQ.html
 GENERAL	VCVTPH2PS	Convert 16-bit FP values to Single-Precision FP values	VCVTPH2PS.html
 GENERAL	VCVTPS2PH	Convert Single-Precision FP value to 16-bit FP value	VCVTPS2PH.html
-GENERAL	VCVTPS2QQ	Convert Packed Single-Precision FP Values to Packed Singed Qword Integer Values	VCVTPS2QQ.html
+GENERAL	VCVTPS2QQ	Convert Packed Single-Precision FP Values to Packed Signed Qword Integer Values	VCVTPS2QQ.html
 GENERAL	VCVTPS2UDQ	Convert Packed Single-Precision FP Values to Packed Unsigned Dword Integer Values	VCVTPS2UDQ.html
 GENERAL	VCVTPS2UQQ	Convert Packed Single-Precision FP Values to Packed Unsigned Qword Integer Values	VCVTPS2UQQ.html
 GENERAL	VCVTQQ2PD	Convert Packed Qword Integers to Packed Double-Precision FP Values	VCVTQQ2PD.html
@@ -1021,7 +1021,7 @@ GENERAL	VCVTSS2USI	Convert Scalar Single-Precision FP Value to Unsigned Dword In
 GENERAL	VCVTTPD2QQ	Convert with Truncation Packed Double-Precision FP Values to Packed Qword Integers	VCVTTPD2QQ.html
 GENERAL	VCVTTPD2UDQ	Convert with Truncation Packed Double-Precision FP Values to Packed Unsigned Dword Integers	VCVTTPD2UDQ.html
 GENERAL	VCVTTPD2UQQ	Convert with Truncation Packed Double-Precision FP Values to Packed Unsigned Qword Integers	VCVTTPD2UQQ.html
-GENERAL	VCVTTPS2QQ	Convert with Truncation Packed Single-Precision FP Values to Packed Singed Qword Integer Values	VCVTTPS2QQ.html
+GENERAL	VCVTTPS2QQ	Convert with Truncation Packed Single-Precision FP Values to Packed Signed Qword Integer Values	VCVTTPS2QQ.html
 GENERAL	VCVTTPS2UDQ	Convert with Truncation Packed Single-Precision FP Values to Packed Unsigned Dword Integer Values	VCVTTPS2UDQ.html
 GENERAL	VCVTTPS2UQQ	Convert with Truncation Packed Single-Precision FP Values to Packed Unsigned Qword Integer Values	VCVTTPS2UQQ.html
 GENERAL	VCVTTSD2USI	Convert with Truncation Scalar Double-Precision FP Value to Unsigned Integer	VCVTTSD2USI.html
@@ -1039,11 +1039,11 @@ GENERAL	VEXP2PD	Approximation to the Exponential 2^x of Packed Double-Precision 
 GENERAL	VEXP2PS	Approximation to the Exponential 2^x of Packed Single-Precision FP Values with Less Than 2^-23 Relative Error	VEXP2PS.html
 GENERAL	VEXPANDPD	Load Sparse Packed Double-Precision FP Values from Dense Memory	VEXPANDPD.html
 GENERAL	VEXPANDPS	Load Sparse Packed Single-Precision FP Values from Dense Memory	VEXPANDPS.html
-GENERAL	VEXTRACTF128	Extra ct Packed FP Values	VEXTRACTF128_VEXTRACTF32x4_VEXTRACTF64x2_VEXTRACTF32x8_VEXTRACTF64x4.html
-GENERAL	VEXTRACTF64x2	Extra ct Packed FP Values	VEXTRACTF128_VEXTRACTF32x4_VEXTRACTF64x2_VEXTRACTF32x8_VEXTRACTF64x4.html
-GENERAL	VEXTRACTF32x8	Extra ct Packed FP Values	VEXTRACTF128_VEXTRACTF32x4_VEXTRACTF64x2_VEXTRACTF32x8_VEXTRACTF64x4.html
-GENERAL	VEXTRACTF64x4	Extra ct Packed FP Values	VEXTRACTF128_VEXTRACTF32x4_VEXTRACTF64x2_VEXTRACTF32x8_VEXTRACTF64x4.html
-GENERAL	VEXTRACTF32x4	Extra ct Packed FP Values	VEXTRACTF128_VEXTRACTF32x4_VEXTRACTF64x2_VEXTRACTF32x8_VEXTRACTF64x4.html
+GENERAL	VEXTRACTF128	extract Packed FP Values	VEXTRACTF128_VEXTRACTF32x4_VEXTRACTF64x2_VEXTRACTF32x8_VEXTRACTF64x4.html
+GENERAL	VEXTRACTF64x2	extract Packed FP Values	VEXTRACTF128_VEXTRACTF32x4_VEXTRACTF64x2_VEXTRACTF32x8_VEXTRACTF64x4.html
+GENERAL	VEXTRACTF32x8	extract Packed FP Values	VEXTRACTF128_VEXTRACTF32x4_VEXTRACTF64x2_VEXTRACTF32x8_VEXTRACTF64x4.html
+GENERAL	VEXTRACTF64x4	extract Packed FP Values	VEXTRACTF128_VEXTRACTF32x4_VEXTRACTF64x2_VEXTRACTF32x8_VEXTRACTF64x4.html
+GENERAL	VEXTRACTF32x4	extract Packed FP Values	VEXTRACTF128_VEXTRACTF32x4_VEXTRACTF64x2_VEXTRACTF32x8_VEXTRACTF64x4.html
 GENERAL	VEXTRACTI32x4	Extract packed Integer Values	VEXTRACTI128_VEXTRACTI32x4_VEXTRACTI64x2_VEXTRACTI32x8_VEXTRACTI64x4.html
 GENERAL	VEXTRACTI64x4	Extract packed Integer Values	VEXTRACTI128_VEXTRACTI32x4_VEXTRACTI64x2_VEXTRACTI32x8_VEXTRACTI64x4.html
 GENERAL	VEXTRACTI32x8	Extract packed Integer Values	VEXTRACTI128_VEXTRACTI32x4_VEXTRACTI64x2_VEXTRACTI32x8_VEXTRACTI64x4.html
@@ -1117,12 +1117,12 @@ GENERAL	VFPCLASSPD	Tests Types Of a Packed Float64 Values	VFPCLASSPD.html
 GENERAL	VFPCLASSPS	Tests Types Of a Packed Float32 Values	VFPCLASSPS.html
 GENERAL	VFPCLASSSD	Tests Types Of a Scalar Float64 Values	VFPCLASSSD.html
 GENERAL	VFPCLASSSS	Tests Types Of a Scalar Float32 Values	VFPCLASSSS.html
-GENERAL	VGATHERDPD	Gather Packed Double-Precision FP Values Using Signed Dword/Qword Indices	VGATHERDPD_VGATHERQPD.html
-GENERAL	VGATHERQPD	Gather Packed Double-Precision FP Values Using Signed Dword/Qword Indices	VGATHERDPD_VGATHERQPD.html
+GENERAL	VGATHERDPD	Gather Packed Double-Precision FP Values Using Signed Dword Indices	VGATHERDPD_VGATHERQPD.html
+GENERAL	VGATHERQPD	Gather Packed Double-Precision FP Values Using Signed Qword Indices	VGATHERDPD_VGATHERQPD.html
 GENERAL	VGATHERDPS	Gather Packed Single, Packed Double with Signed Dword	VGATHERDPS_VGATHERDPD.html
 GENERAL	VGATHERDPD	Gather Packed Single, Packed Double with Signed Dword	VGATHERDPS_VGATHERDPD.html
-GENERAL	VGATHERDPS	Gather Packed SP FP values Using Signed Dword/Qword Indices	VGATHERDPS_VGATHERQPS.html
-GENERAL	VGATHERQPS	Gather Packed SP FP values Using Signed Dword/Qword Indices	VGATHERDPS_VGATHERQPS.html
+GENERAL	VGATHERDPS	Gather Packed Single-Precision FP values Using Signed Dword Indices	VGATHERDPS_VGATHERQPS.html
+GENERAL	VGATHERQPS	Gather Packed Single-Precision FP values Using Signed Qword Indices	VGATHERDPS_VGATHERQPS.html
 GENERAL	VGATHERPF0QPS	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint	VGATHERPF0DPS_VGATHERPF0QPS_VGATHERPF0DPD_VGATHERPF0QPD.html
 GENERAL	VGATHERPF0QPD	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint	VGATHERPF0DPS_VGATHERPF0QPS_VGATHERPF0DPD_VGATHERPF0QPD.html
 GENERAL	VGATHERPF0DPD	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint	VGATHERPF0DPS_VGATHERPF0QPS_VGATHERPF0DPD_VGATHERPF0QPD.html
@@ -1134,9 +1134,9 @@ GENERAL	VGATHERPF1DPD	Sparse Prefetch Packed SP/DP Data Values with Signed Dword
 GENERAL	VGATHERQPD	Gather Packed Single, Packed Double with Signed Qword Indices	VGATHERQPS_VGATHERQPD.html
 GENERAL	VGATHERQPS	Gather Packed Single, Packed Double with Signed Qword Indices	VGATHERQPS_VGATHERQPD.html
 GENERAL	VGETEXPPD	Convert Exponents of Packed Double-Precision FP Values to Double-Precision FP Values	VGETEXPPD.html
-GENERAL	VGETEXPPS	Convert Exponents of Packed SP FP Values to SP FP Values	VGETEXPPS.html
+GENERAL	VGETEXPPS	Convert Exponents of Packed Single-Precision FP Values to Single-Precision FP Values	VGETEXPPS.html
 GENERAL	VGETEXPSD	Convert Exponents of Scalar Double-Precision FP Values to Double-Precision FP Value	VGETEXPSD.html
-GENERAL	VGETEXPSS	Convert Exponents of Scalar SP FP Values to SP FP Value	VGETEXPSS.html
+GENERAL	VGETEXPSS	Convert Exponents of Scalar Single-Precision FP Values to Single-Precision FP Value	VGETEXPSS.html
 GENERAL	VGETMANTPD	Extract Float64 Vector of Normalized Mantissas from Float64 Vector	VGETMANTPD.html
 GENERAL	VGETMANTPS	Extract Float32 Vector of Normalized Mantissas from Float32 Vector	VGETMANTPS.html
 GENERAL	VGETMANTSD	Extract Float64 of Normalized Mantissas from Float64 Scalar	VGETMANTSD.html
@@ -1154,10 +1154,10 @@ GENERAL	VINSERTI64x4	Insert Packed Integer Values	VINSERTI128_VINSERTI32x4_VINSE
 GENERAL	VMASKMOVPS	Conditional SIMD Packed Loads and Stores	VMASKMOV.html
 GENERAL	VMASKMOVPD	Conditional SIMD Packed Loads and Stores	VMASKMOV.html
 GENERAL	VPBLENDD	Blend Packed Dwords	VPBLENDD.html
-GENERAL	VPBLENDMW	Blend Byte/Word Vectors Using an Opmask Control	VPBLENDMB_VPBLENDMW.html
-GENERAL	VPBLENDMB	Blend Byte/Word Vectors Using an Opmask Control	VPBLENDMB_VPBLENDMW.html
-GENERAL	VPBLENDMD	Blend Int32/Int64 Vectors Using an OpMask Control	VPBLENDMD_VPBLENDMQ.html
-GENERAL	VPBLENDMQ	Blend Int32/Int64 Vectors Using an OpMask Control	VPBLENDMD_VPBLENDMQ.html
+GENERAL	VPBLENDMW	Blend Word Vectors Using an Opmask Control	VPBLENDMB_VPBLENDMW.html
+GENERAL	VPBLENDMB	Blend Byte Vectors Using an Opmask Control	VPBLENDMB_VPBLENDMW.html
+GENERAL	VPBLENDMD	Blend Int32 Vectors Using an OpMask Control	VPBLENDMD_VPBLENDMQ.html
+GENERAL	VPBLENDMQ	Blend Int64 Vectors Using an OpMask Control	VPBLENDMD_VPBLENDMQ.html
 GENERAL	VPBROADCASTQ	Load Integer and Broadcast	VPBROADCAST.html
 GENERAL	VPBROADCASTB	Load Integer and Broadcast	VPBROADCAST.html
 GENERAL	VBROADCASTI32X8	Load Integer and Broadcast	VPBROADCAST.html
@@ -1639,7 +1639,7 @@ DIVPS	XMM,XMM/M128	SSE	DIVPS XMM1,XMM2/M128	Divide packed Single-Precision FP va
 DIVSD	XMM,XMM/M64	SSE2	DIVSD XMM1,XMM2/M64	Divide low Double-Precision FP value in xmm1 by low Double-Precision FP value in xmm2/m64.
 DIVSS	XMM,XMM/M32	SSE	DIVSS XMM1,XMM2/M32	Divide low Single-Precision FP value in xmm1 by low Single-Precision FP value in xmm2/m32.
 DPPD	XMM,XMM/M128,IMM8	SSE4_1	DPPD XMM1,XMM2/M128,IMM8	Selectively multiply packed Double-Precision FP values from xmm1 with packed Double-Precision FP values from xmm2, add and selectively store the packed Double-Precision FP values to xmm1.
-DPPS	XMM,XMM/M128,IMM8	SSE4_1	DPPS XMM1,XMM2/M128,IMM8	Selectively multiply packed SP FP values from xmm1 with packed SP FP values from xmm2, add and selectively store the packed SP FP values or zero values to xmm1.
+DPPS	XMM,XMM/M128,IMM8	SSE4_1	DPPS XMM1,XMM2/M128,IMM8	Selectively multiply packed Single-Precision FP values from xmm1 with packed Single-Precision FP values from xmm2, add and selectively store the packed Single-Precision FP values or zero values to xmm1.
 EMMS			EMMS 	Set the x87 FPU tag word to empty.
 ENTER	IMM16,0		ENTER IMM16,0	Create a stack frame for a procedure.
 ENTER	IMM16,1		ENTER IMM16,1	Create a stack frame with a nested pointer for a procedure.
@@ -2937,8 +2937,8 @@ VDIVSD	XMM{K}{Z},XMM,XMM/M64{ER}	AVX512F	VDIVSD XMM1{K1}{Z},XMM2,XMM3/M64{ER}	Di
 VDIVSS	XMM,XMM,XMM/M32	AVX	VDIVSS XMM1,XMM2,XMM3/M32	Divide low Single-Precision FP value in xmm2 by low Single-Precision FP value in xmm3/m32.
 VDIVSS	XMM{K}{Z},XMM,XMM/M32{ER}	AVX512F	VDIVSS XMM1{K1}{Z},XMM2,XMM3/M32{ER}	Divide low Single-Precision FP value in xmm2 by low Single-Precision FP value in xmm3/m32.
 VDPPD	XMM,XMM,XMM/M128,IMM8	AVX	VDPPD XMM1,XMM2,XMM3/M128,IMM8	Selectively multiply packed Double-Precision FP values from xmm2 with packed Double-Precision FP values from xmm3, add and selectively store the packed Double-Precision FP values to xmm1.
-VDPPS	XMM,XMM,XMM/M128,IMM8	AVX	VDPPS XMM1,XMM2,XMM3/M128,IMM8	Multiply packed SP FP values from xmm1 with packed SP FP values from xmm2/mem selectively add and store to xmm1.
-VDPPS	YMM,YMM,YMM/M256,IMM8	AVX	VDPPS YMM1,YMM2,YMM3/M256,IMM8	Multiply packed Single-Precision FP values from ymm2 with packed SP FP values from ymm3/mem, selectively add pairs of elements and store to ymm1.
+VDPPS	XMM,XMM,XMM/M128,IMM8	AVX	VDPPS XMM1,XMM2,XMM3/M128,IMM8	Multiply packed Single-Precision FP values from xmm1 with packed Single-Precision FP values from xmm2/mem selectively add and store to xmm1.
+VDPPS	YMM,YMM,YMM/M256,IMM8	AVX	VDPPS YMM1,YMM2,YMM3/M256,IMM8	Multiply packed Single-Precision FP values from ymm2 with packed Single-Precision FP values from ymm3/mem, selectively add pairs of elements and store to ymm1.
 VERR	R/M16		VERR R/M16	Set ZF=1 if segment specified with r/m16 can be read.
 VERW	R/M16		VERW R/M16	Set ZF=1 if segment specified with r/m16 can be written.
 VEXP2PD	ZMM{K}{Z},ZMM/M512/M64BCST{SAE}	AVX512ER	VEXP2PD ZMM1{K1}{Z},ZMM2/M512/M64BCST{SAE}	Computes approximations to the exponential 2^x (with less than 2^-23 of maximum relative error) of the packed Double-Precision FP values from zmm2/m512/m64bcst and stores the FP result in zmm1with writemask k1.
@@ -3233,11 +3233,11 @@ VGATHERQPS	YMM{K},VM64Z	AVX512F	VGATHERQPS YMM1{K1},VM64Z	Using signed Qword ind
 VGETEXPPD	XMM{K}{Z},XMM/M128/M64BCST	AVX512VL,AVX512F	VGETEXPPD XMM1{K1}{Z},XMM2/M128/M64BCST	Convert the exponent of packed Double-Precision FP values in the source operand to Double-Precision FP results representing unbiased integer exponents and stores the results in the destination register.
 VGETEXPPD	YMM{K}{Z},YMM/M256/M64BCST	AVX512VL,AVX512F	VGETEXPPD YMM1{K1}{Z},YMM2/M256/M64BCST	Convert the exponent of packed Double-Precision FP values in the source operand to Double-Precision FP results representing unbiased integer exponents and stores the results in the destination register.
 VGETEXPPD	ZMM{K}{Z},ZMM/M512/M64BCST{SAE}	AVX512F	VGETEXPPD ZMM1{K1}{Z},ZMM2/M512/M64BCST{SAE}	Convert the exponent of packed Double-Precision FP values in the source operand to Double-Precision FP results representing unbiased integer exponents and stores the results in the destination under writemask k1.
-VGETEXPPS	XMM{K}{Z},XMM/M128/M32BCST	AVX512VL,AVX512F	VGETEXPPS XMM1{K1}{Z},XMM2/M128/M32BCST	Convert the exponent of packed Single-Precision FP values in the source operand to SP FP results representing unbiased integer exponents and stores the results in the destination register.
-VGETEXPPS	YMM{K}{Z},YMM/M256/M32BCST	AVX512VL,AVX512F	VGETEXPPS YMM1{K1}{Z},YMM2/M256/M32BCST	Convert the exponent of packed Single-Precision FP values in the source operand to SP FP results representing unbiased integer exponents and stores the results in the destination register.
-VGETEXPPS	ZMM{K}{Z},ZMM/M512/M32BCST{SAE}	AVX512F	VGETEXPPS ZMM1{K1}{Z},ZMM2/M512/M32BCST{SAE}	Convert the exponent of packed Single-Precision FP values in the source operand to SP FP results representing unbiased integer exponents and stores the results in the destination register.
+VGETEXPPS	XMM{K}{Z},XMM/M128/M32BCST	AVX512VL,AVX512F	VGETEXPPS XMM1{K1}{Z},XMM2/M128/M32BCST	Convert the exponent of packed Single-Precision FP values in the source operand to Single-Precision FP results representing unbiased integer exponents and stores the results in the destination register.
+VGETEXPPS	YMM{K}{Z},YMM/M256/M32BCST	AVX512VL,AVX512F	VGETEXPPS YMM1{K1}{Z},YMM2/M256/M32BCST	Convert the exponent of packed Single-Precision FP values in the source operand to Single-Precision FP results representing unbiased integer exponents and stores the results in the destination register.
+VGETEXPPS	ZMM{K}{Z},ZMM/M512/M32BCST{SAE}	AVX512F	VGETEXPPS ZMM1{K1}{Z},ZMM2/M512/M32BCST{SAE}	Convert the exponent of packed Single-Precision FP values in the source operand to Single-Precision FP results representing unbiased integer exponents and stores the results in the destination register.
 VGETEXPSD	XMM{K}{Z},XMM,XMM/M64{SAE}	AVX512F	VGETEXPSD XMM1{K1}{Z},XMM2,XMM3/M64{SAE}	Convert the biased exponent (bits 62:52) of the low Double-Precision FP value in xmm3/m64 to a Double-Precision FP value representing unbiased integer exponent. Stores the result to the low 64-bit of xmm1 under the writemask k1 and merge with the other elements of xmm2.
-VGETEXPSS	XMM{K}{Z},XMM,XMM/M32{SAE}	AVX512F	VGETEXPSS XMM1{K1}{Z},XMM2,XMM3/M32{SAE}	Convert the biased exponent (bits 30:23) of the low Single-Precision FP value in xmm3/m32 to a SP FP value representing unbiased integer exponent. Stores the result to xmm1 under the writemask k1 and merge with the other elements of xmm2.
+VGETEXPSS	XMM{K}{Z},XMM,XMM/M32{SAE}	AVX512F	VGETEXPSS XMM1{K1}{Z},XMM2,XMM3/M32{SAE}	Convert the biased exponent (bits 30:23) of the low Single-Precision FP value in xmm3/m32 to a Single-Precision FP value representing unbiased integer exponent. Stores the result to xmm1 under the writemask k1 and merge with the other elements of xmm2.
 VGETMANTPD	XMM{K}{Z},XMM/M128/M64BCST,IMM8	AVX512VL,AVX512F	VGETMANTPD XMM1{K1}{Z},XMM2/M128/M64BCST,IMM8	Get Normalized Mantissa from float64 vector xmm2/m128/m64bcst and store the result in xmm1, using imm8 for sign control and mantissa interval normalization, under writemask.
 VGETMANTPD	YMM{K}{Z},YMM/M256/M64BCST,IMM8	AVX512VL,AVX512F	VGETMANTPD YMM1{K1}{Z},YMM2/M256/M64BCST,IMM8	Get Normalized Mantissa from float64 vector ymm2/m256/m64bcst and store the result in ymm1, using imm8 for sign control and mantissa interval normalization, under writemask.
 VGETMANTPD	ZMM{K}{Z},ZMM/M512/M64BCST{SAE},IMM8	AVX512F	VGETMANTPD ZMM1{K1}{Z},ZMM2/M512/M64BCST{SAE},IMM8	Get Normalized Mantissa from float64 vector zmm2/m512/m64bcst and store the result in zmm1, using imm8 for sign control and mantissa interval normalization, under writemask.
