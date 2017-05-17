@@ -301,7 +301,7 @@ namespace AsmSim
             {
                 tools.Quiet = false;
                 ExecutionTree tree1 = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 100, tools);
-                //Console.WriteLine(tree1.ToString(flow));
+                Console.WriteLine(tree1.ToString(flow));
                 foreach (var v in tree1.States_After(3))
                 {
                     Console.WriteLine(v);

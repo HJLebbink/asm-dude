@@ -37,7 +37,6 @@ namespace AsmDude
     [TextViewRole(PredefinedTextViewRoles.Document)]
     public sealed class CodeCompletionSourceProvider : ICompletionSourceProvider
     {
-
         [Import]
         private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
 

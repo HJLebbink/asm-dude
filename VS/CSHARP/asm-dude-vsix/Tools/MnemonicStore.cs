@@ -159,7 +159,7 @@ namespace AsmDude.Tools
                             if (mnemonic == Mnemonic.UNKNOWN)
                             {
                                 // ignore the unknown mnemonic
-                                //AsmDudeToolsStatic.Output("WARNING: MnemonicStore:loadRegularData: unknown mnemonic in line: " + line);
+                                //AsmDudeToolsStatic.Output_WARNING("MnemonicStore:loadRegularData: unknown mnemonic in line: " + line);
                             }
                             else
                             {
@@ -170,7 +170,7 @@ namespace AsmDude.Tools
                                 else
                                 {
                                     // this happens when the mnemonic is defined in multiple files, using the data from the first file
-                                    //AsmDudeToolsStatic.Output("WARNING: MnemonicStore:loadRegularData: mnemonic " + mnemonic + " already has a description");
+                                    //AsmDudeToolsStatic.Output_WARNING("MnemonicStore:loadRegularData: mnemonic " + mnemonic + " already has a description");
                                 }
                                 if (!this._htmlRef.ContainsKey(mnemonic))
                                 {
@@ -179,7 +179,7 @@ namespace AsmDude.Tools
                                 else
                                 {
                                     // this happens when the mnemonic is defined in multiple files, using the data from the first file
-                                    //AsmDudeToolsStatic.Output("WARNING: MnemonicStore:loadRegularData: mnemonic " + mnemonic + " already has a html ref");
+                                    //AsmDudeToolsStatic.Output_WARNING("MnemonicStore:loadRegularData: mnemonic " + mnemonic + " already has a html ref");
                                 }
                             }
                             #endregion
@@ -190,14 +190,14 @@ namespace AsmDude.Tools
                             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(columns[0]);
                             if (mnemonic == Mnemonic.UNKNOWN)
                             {
-                                AsmDudeToolsStatic.Output("WARNING: MnemonicStore:loadRegularData: unknown mnemonic in line: " + line);
+                                AsmDudeToolsStatic.Output_WARNING("MnemonicStore:loadRegularData: unknown mnemonic in line: " + line);
                             }
                             else
                             {
                                 AsmSignatureElement se = new AsmSignatureElement(mnemonic, columns[1], columns[2], columns[3], columns[4]);
                                 if (Add(se))
                                 {
-                                    AsmDudeToolsStatic.Output("WARNING: MnemonicStore:loadRegularData: signature already exists" + se.ToString());
+                                    AsmDudeToolsStatic.Output_WARNING("MnemonicStore:loadRegularData: signature already exists" + se.ToString());
                                 }
                             }
                             #endregion
@@ -258,7 +258,7 @@ namespace AsmDude.Tools
                             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(columns[1]);
                             if (mnemonic == Mnemonic.UNKNOWN)
                             {
-                                AsmDudeToolsStatic.Output("WARNING: MnemonicStore:loadHandcraftedData: unknown mnemonic in line" + line);
+                                AsmDudeToolsStatic.Output_WARNING("MnemonicStore:loadHandcraftedData: unknown mnemonic in line" + line);
                             }
                             else
                             {
@@ -282,7 +282,7 @@ namespace AsmDude.Tools
                             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(columns[0]);
                             if (mnemonic == Mnemonic.UNKNOWN)
                             {
-                                AsmDudeToolsStatic.Output("WARNING: MnemonicStore:loadHandcraftedData: unknown mnemonic in line" + line);
+                                AsmDudeToolsStatic.Output_WARNING("MnemonicStore:loadHandcraftedData: unknown mnemonic in line" + line);
                             }
                             else
                             {

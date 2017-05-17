@@ -37,7 +37,7 @@ namespace AsmDude.QuickInfo
 
         internal AsmQuickInfoController(ITextView textView, IList<ITextBuffer> subjectBuffers, IQuickInfoBroker quickInfoBroker)
         {
-            //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoController:constructor: file=" + AsmDudeToolsStatic.GetFileName(textView.TextBuffer));
+            //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:constructor: file=" + AsmDudeToolsStatic.GetFileName(textView.TextBuffer));
             this._textView = textView;
             this._subjectBuffers = subjectBuffers;
             this._quickInfoBroker = quickInfoBroker;
@@ -68,7 +68,7 @@ namespace AsmDude.QuickInfo
         /// </summary>
         private void OnTextViewMouseHover(object sender, MouseHoverEventArgs e)
         {
-            //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoController:OnTextViewMouseHover: file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
+            //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
             SnapshotPoint? point = GetMousePosition(new SnapshotPoint(this._textView.TextSnapshot, e.Position));
             if (point != null)
             {
@@ -76,16 +76,16 @@ namespace AsmDude.QuickInfo
                 // Find the broker for this buffer
                 if (!this._quickInfoBroker.IsQuickInfoActive(this._textView))
                 {
-                    //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoController:OnTextViewMouseHover: CreateQuickInfoSession for triggerPoint "+triggerPoint.TextBuffer+"; file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
+                    //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: CreateQuickInfoSession for triggerPoint "+triggerPoint.TextBuffer+"; file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
                     this._session = this._quickInfoBroker.CreateQuickInfoSession(this._textView, triggerPoint, false);
                     this._session.Start();
                 } else
                 {
-                    //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoController:OnTextViewMouseHover: quickInfoBroker is already active; file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
+                    //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: quickInfoBroker is already active; file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
                 }
             } else
             {
-                //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoController:OnTextViewMouseHover: point is null; file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
+                //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: point is null; file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
             }
         }
 

@@ -96,7 +96,7 @@ namespace AsmDude.SignatureHelp
             {
                 if (selectedArchitectures.Contains(a))
                 {
-                    //AsmDudeToolsStatic.Output("INFO: AsmSignatureElement: isAllowed: selected architectures=" + ArchTools.ToString(selectedArchitectures) + "; arch = " + ArchTools.ToString(_arch));
+                    //AsmDudeToolsStatic.Output_INFO("AsmSignatureElement: isAllowed: selected architectures=" + ArchTools.ToString(selectedArchitectures) + "; arch = " + ArchTools.ToString(_arch));
                     return true;
                 }
             }
@@ -150,7 +150,7 @@ namespace AsmDude.SignatureHelp
                     this._operandStr[i] = this._operandStr[i].Trim();
                     if (this._operandStr[i].Length > 0)
                     {
-                        //AsmDudeToolsStatic.Output("INFO: SignatureStore:load: operandStr " + operandStr);
+                        //AsmDudeToolsStatic.Output_INFO("SignatureStore:load: operandStr " + operandStr);
                         IList<AsmSignatureEnum> operandList = new List<AsmSignatureEnum>();
                         AsmSignatureEnum[] operandTypes = AsmSignatureTools.Parse_Operand_Type_Enum(this._operandStr[i]);
                         if ((operandTypes.Length == 1) && ((operandTypes[0] == AsmSignatureEnum.NONE) || (operandTypes[0] == AsmSignatureEnum.UNKNOWN)))

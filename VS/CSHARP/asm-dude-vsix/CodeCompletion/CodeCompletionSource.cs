@@ -46,6 +46,8 @@ namespace AsmDude
 
     public sealed class CodeCompletionSource : ICompletionSource
     {
+        private static int MAX_LENGTH_DESCR_TEXT = 130;
+
         private readonly ITextBuffer _buffer;
         private readonly ILabelGraph _labelGraph;
         private readonly IDictionary<AsmTokenType, ImageSource> _icons;
@@ -65,7 +67,7 @@ namespace AsmDude
 
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
         {
-            //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:AugmentCompletionSession", this.ToString()));
+            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:AugmentCompletionSession", this.ToString()));
 
             if (this._disposed) return;
             if (!Settings.Default.CodeCompletion_On) return;
@@ -86,18 +88,18 @@ namespace AsmDude
                 if (triggerPoint.Position > 1)
                 {
                     char currentTypedChar = (triggerPoint - 1).GetChar();
-                    //AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:AugmentCompletionSession: current char = "+ currentTypedChar);
+                    //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:AugmentCompletionSession: current char = "+ currentTypedChar);
                     if (!currentTypedChar.Equals('#'))
                     { //TODO UGLY since the user can configure this starting character
                         int pos = triggerPoint.Position - line.Start;
                         if (AsmSourceTools.IsInRemark(pos, line.GetText()))
                         {
-                            //AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:AugmentCompletionSession: currently in a remark section");
+                            //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:AugmentCompletionSession: currently in a remark section");
                             return;
                         }
                         else
                         {
-                            // AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:AugmentCompletionSession: not in a remark section");
+                            // AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:AugmentCompletionSession: not in a remark section");
                         }
                     }
                 }
@@ -145,11 +147,11 @@ namespace AsmDude
                 }
                 else
                 { // the current line contains a mnemonic
-                    //AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:AugmentCompletionSession; mnemonic=" + mnemonic+ "; previousKeyword="+ previousKeyword);
+                    //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:AugmentCompletionSession; mnemonic=" + mnemonic+ "; previousKeyword="+ previousKeyword);
 
                     if (AsmSourceTools.IsJump(AsmSourceTools.ParseMnemonic(previousKeyword, true)))
                     {
-                        //AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:AugmentCompletionSession; previous keyword is a jump mnemonic");
+                        //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:AugmentCompletionSession; previous keyword is a jump mnemonic");
                         // previous keyword is jump (or call) mnemonic. Suggest "SHORT" or a label
                         completions = Label_Completions();
                         completions.Add(new Completion("SHORT", (useCapitals) ? "SHORT" : "short", null, this._icons[AsmTokenType.Misc], ""));
@@ -181,7 +183,7 @@ namespace AsmDude
                         completions = this.Mnemonic_Operand_Completions(useCapitals, allowed, line.LineNumber);
                     }
                 }
-                //AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:AugmentCompletionSession; nCompletions=" + completions.Count);
+                //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:AugmentCompletionSession; nCompletions=" + completions.Count);
                 #endregion
 
                 completionSets.Add(new CompletionSet("Tokens", "Tokens", applicableTo, completions, Enumerable.Empty<Completion>()));
@@ -215,7 +217,7 @@ namespace AsmDude
                 AsmTokenType type = this._asmDudeTools.Get_Token_Type(keyword);
 
                 bool selected = AsmDudeToolsStatic.Is_Arch_Switched_On(arch);
-                //AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:Mnemonic_Operand_Completions; keyword=" + keyword +"; selected="+selected +"; arch="+arch);
+                //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:Mnemonic_Operand_Completions; keyword=" + keyword +"; selected="+selected +"; arch="+arch);
 
                 string additionalInfo = null;
 
@@ -225,7 +227,7 @@ namespace AsmDude
                     {
                         case AsmTokenType.Register:
                             {
-                                //AsmDudeToolsStatic.Output("INFO: CodeCompletionSource:Mnemonic_Operand_Completions; rn=" + keyword);
+                                //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:Mnemonic_Operand_Completions; rn=" + keyword);
                                 Rn regName = RegisterTools.ParseRn(keyword, true);
                                 if (AsmSignatureTools.Is_Allowed_Reg(regName, allowedOperands))
                                 {
@@ -249,7 +251,7 @@ namespace AsmDude
                             {
                                 if (AsmSignatureTools.Is_Allowed_Misc(keyword, allowedOperands))
                                 {
-                                    //AsmDudeToolsStatic.Output(string.Format("INFO: AsmCompletionSource:mnemonicOperandCompletions; rn="+ keyword + " is selected"));
+                                    //AsmDudeToolsStatic.Output_INFO(string.Format("AsmCompletionSource:mnemonicOperandCompletions; rn="+ keyword + " is selected"));
                                 }
                                 else
                                 {
@@ -266,21 +268,27 @@ namespace AsmDude
                 }
                 if (selected)
                 {
-                    //AsmDudeToolsStatic.Output("INFO: AsmCompletionSource:AugmentCompletionSession: keyword \"" + keyword + "\" is added to the completions list");
+                    //AsmDudeToolsStatic.Output_INFO("AsmCompletionSource:AugmentCompletionSession: keyword \"" + keyword + "\" is added to the completions list");
 
                     // by default, the entry.Key is with capitals
                     string insertionText = (useCapitals) ? keyword : keyword.ToLower();
                     string archStr = (arch == Arch.NONE) ? "" : " [" + ArchTools.ToString(arch) + "]";
                     string descriptionStr = this._asmDudeTools.Get_Description(keyword);
                     descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
-                    String displayText = keyword + archStr + descriptionStr;
-                    //String description = keyword.PadRight(15) + archStr.PadLeft(8) + descriptionStr;
+                    String displayText = Truncat(keyword + archStr + descriptionStr);
                     this._icons.TryGetValue(type, out var imageSource);
                     completions.Add(new Completion(displayText, insertionText, additionalInfo, imageSource, ""));
                 }
             }
             return completions;
         }
+
+        private static string Truncat(string text)
+        {
+            if (text.Length < MAX_LENGTH_DESCR_TEXT) return text;
+            return text.Substring(0, MAX_LENGTH_DESCR_TEXT) + "...";
+        }
+
 
         private SortedSet<Completion> Label_Completions()
         {
@@ -292,9 +300,10 @@ namespace AsmDude
             foreach (KeyValuePair<string, string> entry in labels)
             {
                 //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:AugmentCompletionSession; label={1}; description={2}", this.ToString(), entry.Key, entry.Value));
-                string displayText = entry.Key + " - " + entry.Value;
+                string displayTextFull = entry.Key + " - " + entry.Value;
+                string displayText = Truncat(displayTextFull);
                 string insertionText = AsmDudeToolsStatic.Retrieve_Regular_Label(entry.Key, usedAssember);
-                completions.Add(new Completion(displayText, insertionText, null, imageSource, ""));
+                completions.Add(new Completion(displayText, insertionText, displayTextFull, imageSource, ""));
             }
             return completions;
         }
@@ -326,13 +335,15 @@ namespace AsmDude
                 this._icons.TryGetValue(AsmTokenType.Directive, out var imageSource);
                 {
                     string insertionText = Settings.Default.CodeFolding_BeginTag;     //the characters that start the outlining region
-                    string description = insertionText + " - keyword to start code folding";
-                    completions.Add(new Completion(description, insertionText, null, imageSource, ""));
+                    string displayTextFull = insertionText + " - keyword to start code folding";
+                    string displayText = Truncat(displayTextFull);
+                    completions.Add(new Completion(displayText, insertionText, displayTextFull, imageSource, ""));
                 }
                 {
                     string insertionText = Settings.Default.CodeFolding_EndTag;       //the characters that end the outlining region
-                    string description = insertionText + " - keyword to end code folding";
-                    completions.Add(new Completion(description, insertionText, null, imageSource, ""));
+                    string displayTextFull = insertionText + " - keyword to end code folding";
+                    string displayText = Truncat(displayTextFull);
+                    completions.Add(new Completion(displayText, insertionText, displayTextFull, imageSource, ""));
                 }
             }
             #endregion
@@ -353,7 +364,7 @@ namespace AsmDude
                     string archStr = ArchTools.ToString(this._asmDudeTools.Mnemonic_Store.GetArch(mnemonic));
                     string descriptionStr = this._asmDudeTools.Mnemonic_Store.GetDescription(mnemonic);
                     descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
-                    String displayText = keyword + archStr + descriptionStr;
+                    String displayText = Truncat(keyword + archStr + descriptionStr);
                     //String description = keyword.PadRight(15) + archStr.PadLeft(8) + descriptionStr;
                     this._icons.TryGetValue(AsmTokenType.Mnemonic, out var imageSource);
                     completions.Add(new Completion(displayText, insertionText, description, imageSource, ""));
@@ -398,10 +409,11 @@ namespace AsmDude
                         string archStr = (arch == Arch.NONE) ? "" : " [" + ArchTools.ToString(arch) + "]";
                         string descriptionStr = this._asmDudeTools.Get_Description(keyword);
                         descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
-                        String displayText = keyword + archStr + descriptionStr;
+                        string displayTextFull = keyword + archStr + descriptionStr;
+                        string displayText = Truncat(displayTextFull);
                         //String description = keyword.PadRight(15) + archStr.PadLeft(8) + descriptionStr;
                         this._icons.TryGetValue(type, out var imageSource);
-                        completions.Add(new Completion(displayText, insertionText, null, imageSource, ""));
+                        completions.Add(new Completion(displayText, insertionText, displayTextFull, imageSource, ""));
                     }
                 }
             }

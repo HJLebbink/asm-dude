@@ -347,7 +347,7 @@ namespace AsmDude.Squiggles
                 });
             } catch (Exception e)
             {
-                AsmDudeToolsStatic.Output(string.Format("ERROR: {0}:labelClashToolTipContent; e={1}", ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:labelClashToolTipContent; e={1}", ToString(), e.ToString()));
             }
             return textBlock;
         }

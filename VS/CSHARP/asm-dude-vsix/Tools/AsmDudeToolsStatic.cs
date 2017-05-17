@@ -183,7 +183,7 @@ namespace AsmDude.Tools
             EnvDTE.Properties propertiesList = dte.get_Properties("FontsAndColors", "TextEditor");
             Property prop = propertiesList.Item("FontFamily");
             string font = (string)prop.Value;
-            //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "ERROR: AsmDudeToolsStatic:getFontType {0}", font));
+            //AsmDudeToolsStatic.Output_ERROR(string.Format("AsmDudeToolsStatic:getFontType {0}", font));
             return new FontFamily(font);
         }
 
@@ -410,7 +410,7 @@ namespace AsmDude.Tools
                 int length = endPos - beginPos;
 
                 string result = line.Substring(beginPos, length);
-                //AsmDudeToolsStatic.Output("INFO: getKeyword: \"" + result + "\".");
+                //AsmDudeToolsStatic.Output_INFO("getKeyword: \"" + result + "\".");
                 return result;
             }
             return null;
@@ -426,14 +426,14 @@ namespace AsmDude.Tools
                 int currentPos = bufferPosition.Value.Position;
 
                 var t = AsmTools.AsmSourceTools.GetKeywordPos(currentPos - startLine, line);
-                //AsmDudeToolsStatic.Output(string.Format("INFO: getKeywordPos: beginPos={0}; endPos={1}.", t.Item1, t.Item2));
+                //AsmDudeToolsStatic.Output_INFO(string.Format("getKeywordPos: beginPos={0}; endPos={1}.", t.Item1, t.Item2));
 
                 int beginPos = t.BeginPos + startLine;
                 int endPos = t.EndPos + startLine;
                 int length = endPos - beginPos;
 
                 SnapshotSpan span = new SnapshotSpan(bufferPosition.Value.Snapshot, beginPos, length);
-                //AsmDudeToolsStatic.Output("INFO: getKeyword: \"" + span.GetText() + "\".");
+                //AsmDudeToolsStatic.Output_INFO("getKeyword: \"" + span.GetText() + "\".");
                 return new TextExtent(span, true);
             }
             return null;

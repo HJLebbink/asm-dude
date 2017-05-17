@@ -48,7 +48,7 @@ namespace AsmDude.AsmDoc
     {
         public KeyProcessor GetAssociatedProcessor(IWpfTextView view)
         {
-            //AsmDudeToolsStatic.Output("INFO: AsmDocKeyProcessorProvider:GetAssociatedProcessor: file=" + AsmDudeToolsStatic.GetFileName(view.TextBuffer));
+            //AsmDudeToolsStatic.Output_INFO("AsmDocKeyProcessorProvider:GetAssociatedProcessor: file=" + AsmDudeToolsStatic.GetFileName(view.TextBuffer));
             return view.Properties.GetOrCreateSingletonProperty(typeof(AsmDocKeyProcessor), () => new AsmDocKeyProcessor(CtrlKeyState.GetStateForView(view)));
         }
     }
@@ -138,7 +138,7 @@ namespace AsmDude.AsmDoc
 
         public IMouseProcessor GetAssociatedProcessor(IWpfTextView view)
         {
-            //AsmDudeToolsStatic.Output("INFO: AsmDocMouseHandlerProvider:GetAssociatedProcessor: file=" + AsmDudeToolsStatic.GetFileName(view.TextBuffer));
+            //AsmDudeToolsStatic.Output_INFO("AsmDocMouseHandlerProvider:GetAssociatedProcessor: file=" + AsmDudeToolsStatic.GetFileName(view.TextBuffer));
 
             var buffer = view.TextBuffer;
 
@@ -192,7 +192,7 @@ namespace AsmDude.AsmDoc
             CtrlKeyState state,
             AsmDudeTools asmDudeTools)
         {
-            //AsmDudeToolsStatic.Output("INFO: AsmDocMouseHandler:constructor: file=" + AsmDudeToolsStatic.GetFileName(view.TextBuffer));
+            //AsmDudeToolsStatic.Output_INFO("AsmDocMouseHandler:constructor: file=" + AsmDudeToolsStatic.GetFileName(view.TextBuffer));
             this._view = view;
             this._commandTarget = commandTarget;
             this._state = state;
@@ -300,7 +300,7 @@ namespace AsmDude.AsmDoc
 
         private bool TryHighlightItemUnderMouse(Point position)
         {
-            //AsmDudeToolsStatic.Output("INFO: AsmDocMouseHandler:TryHighlightItemUnderMouse: position=" + position);
+            //AsmDudeToolsStatic.Output_INFO("AsmDocMouseHandler:TryHighlightItemUnderMouse: position=" + position);
 
             bool updated = false;
             if (!Settings.Default.AsmDoc_On) return false;
@@ -385,7 +385,7 @@ namespace AsmDude.AsmDoc
 
         private bool Dispatch_Goto_Doc(string keyword)
         {
-            //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:DispatchGoToDoc; keyword=\"{1}\".", this.ToString(), keyword));
+            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:DispatchGoToDoc; keyword=\"{1}\".", this.ToString(), keyword));
             int hr = Open_File(keyword);
             return ErrorHandler.Succeeded(hr);
         }
@@ -412,15 +412,15 @@ namespace AsmDude.AsmDoc
             string url = Get_Url(keyword);
             if (url == null)
             { // this situation happens for all keywords that do not have an url specified (such as registers).
-                //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:openFile; url for keyword \"{1}\" is null.", this.ToString(), keyword));
+                //AsmDudeToolsStatic.Output_INFO(string.Format("INFO: {0}:openFile; url for keyword \"{1}\" is null.", this.ToString(), keyword));
                 return 1;
             }
-            //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:openFile; url={1}", this.ToString(), url));
+            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:openFile; url={1}", this.ToString(), url));
 
             var dte2 = Package.GetGlobalService(typeof(SDTE)) as DTE2;
             if (dte2 == null)
             {
-                AsmDudeToolsStatic.Output(string.Format("WARNING: {0}:openFile; dte2 is null.", ToString()));
+                AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:openFile; dte2 is null.", ToString()));
                 return 1;
             } else
             {

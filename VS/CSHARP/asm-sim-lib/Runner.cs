@@ -53,7 +53,7 @@ namespace AsmSim
                 string rootKey = "!0";// Tools.CreateKey(tools.Rand);
                 StateUpdate rootState = new StateUpdate(rootKey, rootKey, tools);
                 int step = 0;
-                var rootNode = new ExecutionNode(step, startLine, rootState, null);
+                var rootNode = new ExecutionNode(step, startLine, rootState);
                 stateTree = new ExecutionTree(rootNode, true, tools);
                 nextNodes.Push(rootNode);
             }
@@ -87,9 +87,12 @@ namespace AsmSim
                                 Console.WriteLine("WARNING: Runner:Construct_ExecutionTree_Forward: according to flow there does not exists a branch yet a branch is computed");
                                 throw new Exception();
                             }
-                            node.Forward_Branch = new ExecutionNode(nextStep, nextLineNumber.Branch, updates.Branch, node);
+                            var newNode = new ExecutionNode(nextStep, nextLineNumber.Branch, updates.Branch);
+                            newNode.Add_Parent(node);
+                            node.Forward_Branch = newNode;
+
                             //if (nextState.IsConsistent) 
-                            nextNodes.Push(node.Forward_Branch);
+                            nextNodes.Push(newNode);
 
                             if (!tools.Quiet) Console.WriteLine("=====================================");
                             if (!tools.Quiet) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Forward: Branch stepNext " + nextStep + ": LINE " + lineNumber + ": " + flow.GetLineStr(lineNumber));
@@ -109,9 +112,12 @@ namespace AsmSim
                                 Console.WriteLine("WARNING: Runner:Construct_ExecutionTree_Forward: according to flow there does not exists a continueyet a continue is computed");
                                 throw new Exception();
                             }
-                            node.Forward_Continue = new ExecutionNode(nextStep, nextLineNumber.Regular, updates.Regular, node);
+                            var newNode = new ExecutionNode(nextStep, nextLineNumber.Regular, updates.Regular);
+                            newNode.Add_Parent(node);
+                            node.Forward_Continue = newNode;
+
                             //if (nextState.IsConsistent) 
-                            nextNodes.Push(node.Forward_Continue);
+                            nextNodes.Push(newNode);
 
                             if (!tools.Quiet) Console.WriteLine("=====================================");
                             if (!tools.Quiet) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Forward: Regular stepNext " + nextStep + ": LINE " + lineNumber + ": " + flow.GetLineStr(lineNumber));
@@ -158,7 +164,7 @@ namespace AsmSim
                 var nextUpdates = updates.Regular;
 
                 int step = 0;
-                var rootNode = new ExecutionNode(step, startLine, nextUpdates, null);
+                var rootNode = new ExecutionNode(step, startLine, nextUpdates);
                 nextNodes.Push(rootNode);
                 stateTree = new ExecutionTree(rootNode, false, tools);
 
@@ -211,14 +217,16 @@ namespace AsmSim
                             var updates = Runner.Execute(flow, prev.LineNumber, (prevKey, prevKey, nextKey, nextKey), tools);
                             var stateUpdate = (prev.IsBranch) ? updates.Branch : updates.Regular;
 
-                            var nextNode = new ExecutionNode(step, prev.LineNumber, stateUpdate, node);
+                            var nextNode = new ExecutionNode(step, prev.LineNumber, stateUpdate);
+                            node.Add_Parent(nextNode);
+
                             if (prev.IsBranch)
                             {
-                                node.Forward_Branch = nextNode;
+                                nextNode.Forward_Branch = node;
                             }
                             else
                             {
-                                node.Forward_Continue = nextNode;
+                                nextNode.Forward_Continue = node;
                             }
 
                             //if (state.IsConsistent)
@@ -263,7 +271,7 @@ namespace AsmSim
                                 var stateUpdate1 = (prev1.IsBranch) ? updates1.Branch : updates1.Regular;
                                 Console.WriteLine("stateUpdate1:" + stateUpdate1);
 
-                                var nextNode1 = new ExecutionNode(step, prev_LineNumber1, stateUpdate1, node);
+                                var nextNode1 = new ExecutionNode(step, prev_LineNumber1, stateUpdate1);
                                 node.Add_Parent(nextNode1);
 
                                 // only continue if the state is consistent; no need to go futher in the past if the state is inconsistent.
@@ -278,7 +286,7 @@ namespace AsmSim
                                 var stateUpdate2 = (prev2.IsBranch) ? updates2.Branch : updates2.Regular;
                                 Console.WriteLine("stateUpdate2:" + stateUpdate2);
 
-                                var nextNode2 = new ExecutionNode(step, prev_LineNumber2, stateUpdate2, node);
+                                var nextNode2 = new ExecutionNode(step, prev_LineNumber2, stateUpdate2);
                                 node.Add_Parent(nextNode2);
 
                                 // only continue if the state is consistent; no need to go futher in the past if the state is inconsistent.

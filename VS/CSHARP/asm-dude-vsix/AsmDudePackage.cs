@@ -57,7 +57,7 @@ namespace AsmDude {
 
         public AsmDudePackage() {
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "=========================================\nINFO: AsmDudePackage: Entering constructor"));
-            //AsmDudeToolsStatic.Output("INFO: AsmDudePackage: Entering constructor");
+            //AsmDudeToolsStatic.Output_INFO("AsmDudePackage: Entering constructor");
         }
 
         #region Package Members
@@ -118,7 +118,7 @@ namespace AsmDude {
                     EnvDTE.Properties asmDudePropertiesList = vsEnvironment.get_Properties("AsmDude", "Asm Documentation");
                     if (asmDudePropertiesList != null) {
                         string url = asmDudePropertiesList.Item("_asmDocUrl").Value as string;
-                        AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete. url=", this.ToString(), url));
+                        AsmDudeToolsStatic.Output_INFO(string.Format("{0}:changeFontAutoComplete. url=", this.ToString(), url));
                     }
                 }
                 if (false) {
@@ -138,38 +138,38 @@ namespace AsmDude {
                             message = string.Format(CultureInfo.CurrentUICulture,
                                 "For Basic, the Text Editor has a tab size of {0}.", tabSize.Value);
                         }
-                        AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, message));
+                        AsmDudeToolsStatic.Output_INFO(string.Format(CultureInfo.CurrentCulture, message));
                     }
                 }
                 if (false) {
                     //EnvDTE.Properties propertiesList = vsEnvironment.get_Properties("Environment", "Keyboard");
                     //EnvDTE.Property prop = propertiesList.Item("Scheme");
-                    //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString(), prop.Value));
+                    //AsmDudeToolsStatic.Output_INFO(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString(), prop.Value));
 
                     EnvDTE.Properties propertiesList = vsEnvironment.get_Properties("Environment", "FontsAndColors");
                     if (propertiesList != null) {
-                        AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString()));
+                        AsmDudeToolsStatic.Output_INFO(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString()));
                     }
                     //EnvDTE.Property prop = propertiesList.Item("Scheme");
-                    //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString(), prop.Value));
+                    //AsmDudeToolsStatic.Output_INFO(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString(), prop.Value));
                 }
                 if (true) {
                     //EnvDTE.Properties propertiesList = vsEnvironment.get_Properties("Environment", "Keyboard");
                     //EnvDTE.Property prop = propertiesList.Item("Scheme");
-                    //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString(), prop.Value));
+                    //AsmDudeToolsStatic.Output_INFO(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString(), prop.Value));
 
                     EnvDTE.Properties propertiesList = vsEnvironment.get_Properties("Environment", "Fonts and Colors");
                     if (propertiesList != null) {
-                        AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString()));
+                        AsmDudeToolsStatic.Output_INFO(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString()));
                     }
                     //EnvDTE.Property prop = propertiesList.Item("Scheme");
-                    //AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString(), prop.Value));
+                    //AsmDudeToolsStatic.Output_INFO(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:changeFontAutoComplete; prop={1}", this.ToString(), prop.Value));
                 }
 
 
 
             } catch (Exception e) {
-                AsmDudeToolsStatic.Output(string.Format(CultureInfo.CurrentCulture, "ERROR: {0}:changeFontAutoComplete {1}", this.ToString(), e.Message));
+                AsmDudeToolsStatic.Output_INFO(string.Format(CultureInfo.CurrentCulture, "ERROR: {0}:changeFontAutoComplete {1}", this.ToString(), e.Message));
             }
         }
         */
@@ -182,9 +182,9 @@ namespace AsmDude {
             // responsible for handling the collection of commands implemented by the package.
             OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if (null == mcs) {
-                AsmDudeToolsStatic.Output("WARNING: could not retrieve the IMenuCommandService.");
+                AsmDudeToolsStatic.Output_WARNING("could not retrieve the IMenuCommandService.");
             } else {
-                //AsmDudeToolsStatic.Output("INFO: retrieved the IMenuCommandService.");
+                //AsmDudeToolsStatic.Output_INFO("retrieved the IMenuCommandService.");
                 // Now create one object derived from MenuCommand for each command defined in
                 // the VSCT file and add it to the command service.
 

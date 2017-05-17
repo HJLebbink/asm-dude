@@ -79,20 +79,12 @@ namespace AsmSim
         private ExecutionNode _forward_Continue;
         private ExecutionNode _forward_Branch;
 
-        public bool LoopTerminationNode = false;
-
-
-        public ExecutionNode(int step, int lineNumber, StateUpdate stateUpdate, ExecutionNode parent)
+        public ExecutionNode(int step, int lineNumber, StateUpdate stateUpdate)
         {
             this.Step = step;
             this.LineNumber = lineNumber;
             this.StateUpdate = stateUpdate;
-            if (parent != null)
-            {
-                this._parents = new List<ExecutionNode> { parent };
-            }
         }
-
 
         public IEnumerable<StateUpdate> Leafs_Forward
         {
@@ -122,7 +114,7 @@ namespace AsmSim
             {
                 if (!this.Has_Parents)
                 {
-                    yield return this.StateUpdate;
+                    if (this.StateUpdate != null) yield return this.StateUpdate;
                 }
                 else
                 {
@@ -190,20 +182,11 @@ namespace AsmSim
             {
                 if (this.LineNumber >= 0)
                 {
-                    sb.AppendLine("Step " + this.Step + ", Line " + this.LineNumber + ": " + lineStr + "\n" + this.StateUpdate.ToString());
+                    sb.AppendLine("Step " + this.Step + ", Line " + this.LineNumber + ": " + lineStr + "\n" + this.StateUpdate?.ToString());
                 }
                 else
                 {
-                    sb.AppendLine("Step " + this.Step + ":" + this.StateUpdate.ToString());
-                }
-                if (this.Has_Forward_Continue)
-                {
-                    sb.AppendLine(this.Forward_Continue.ToString(flow));
-                }
-                if (this.Has_Forward_Branch)
-                {
-                    sb.AppendLine("Entering Branch: Step " + this.Step + ", Line " + this.LineNumber + ": " + lineStr);
-                    sb.AppendLine(this.Forward_Branch.ToString(flow));
+                    sb.AppendLine("Step " + this.Step + ":" + this.StateUpdate?.ToString());
                 }
             }
             return sb.ToString();
@@ -218,7 +201,7 @@ namespace AsmSim
 
             if (showRegisterValues)
             {
-                sb.Append(this.StateUpdate.ToString());
+                sb.Append(this.StateUpdate?.ToString());
             }
             int lineNumber = this.LineNumber;
             sb.AppendLine(identStr + flow.GetLineStr(lineNumber) + " [lineNumber=" + lineNumber + "]");

@@ -431,6 +431,9 @@ namespace AsmDude.Tools
                     var state = Get_State_Before(lineNumber, tree);
                     this._cached_States_Before.Remove(lineNumber);
                     if (state != null) this._cached_States_Before.Add(lineNumber, state);
+                } else
+                {
+                    AsmDudeToolsStatic.Output_INFO("AsmSimulator: Calculate_State_Before: tree for lineNumber " + lineNumber + " is null");
                 }
                 this._scheduled_Before.Remove(lineNumber);
                 this._busy = false;
@@ -483,8 +486,7 @@ namespace AsmDude.Tools
 
         private ExecutionTree Get_Tree(int lineNumber)
         {
-            ExecutionTree result;
-            if (this._cached_Tree.TryGetValue(lineNumber, out result))
+            if (this._cached_Tree.TryGetValue(lineNumber, out ExecutionTree result))
             {
                 return result;
             }
@@ -499,11 +501,16 @@ namespace AsmDude.Tools
 
         private State Get_State_After(int lineNumber, ExecutionTree tree)
         {
-            return AsmSim.Tools.Collapse(tree.States_After(lineNumber));
+            State result = AsmSim.Tools.Collapse(tree.States_After(lineNumber));
+            AsmDudeToolsStatic.Output_INFO("AsmSimulator:Get_State_After: lineNumber " + lineNumber + "\nTree=" + tree.ToString(this._cflow) + "\nState=" + result);
+            return result;
         }
 
         private State Get_State_Before(int lineNumber, ExecutionTree tree)
-        {
+        {           
+            //AsmDudeToolsStatic.Output_INFO("AsmSimulator:Get_State_Before: retrieving state at lineNumber "+lineNumber +" from tree");
+            //IList<State> before = new List<State>(tree.States_Before(lineNumber));
+            // AsmSim.Tools.Collapse(before);
             return AsmSim.Tools.Collapse(tree.States_Before(lineNumber));
         }
 

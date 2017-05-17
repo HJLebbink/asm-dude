@@ -82,7 +82,7 @@ namespace AsmDude.Tools
                 ITextDocumentFactoryService docFactory,
                 IContentType contentType)
         {
-            //AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:constructor: creating a label graph for {0}", AsmDudeToolsStatic.GetFileName(buffer)));
+            //AsmDudeToolsStatic.Output_INFO(string.Format("LabelGraph:constructor: creating a label graph for {0}", AsmDudeToolsStatic.GetFileName(buffer)));
             this._buffer = buffer;
             this._aggregatorFactory = aggregatorFactory;
             this.Error_List_Provider = errorListProvider;
@@ -407,7 +407,7 @@ namespace AsmDude.Tools
 
         private void Buffer_Changed(object sender, TextContentChangedEventArgs e)
         {
-            //AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:OnTextBufferChanged: number of changes={0}; first change: old={1}; new={2}", e.Changes.Count, e.Changes[0].OldText, e.Changes[0].NewText));
+            //AsmDudeToolsStatic.Output_INFO(string.Format("LabelGraph:OnTextBufferChanged: number of changes={0}; first change: old={1}; new={2}", e.Changes.Count, e.Changes[0].OldText, e.Changes[0].NewText));
             if (!this.Is_Enabled) return;
 
             if (true)
@@ -440,7 +440,7 @@ namespace AsmDude.Tools
                                 case 1:
                                     {
                                         int lineNumber = e.Before.GetLineNumberFromPosition(textChange.OldPosition);
-                                        //AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:OnTextBufferChanged: old={0}; new={1}; LineNumber={2}", textChange.OldText, textChange.NewText, lineNumber));
+                                        //AsmDudeToolsStatic.Output_INFO(string.Format("LabelGraph:OnTextBufferChanged: old={0}; new={1}; LineNumber={2}", textChange.OldText, textChange.NewText, lineNumber));
                                         Shift_Linenumber(lineNumber + 1, 1);
                                         Update_Linenumber(buffer, aggregator, lineNumber, (uint)lineNumber);
                                     }
@@ -448,14 +448,14 @@ namespace AsmDude.Tools
                                 case -1:
                                     {
                                         int lineNumber = e.Before.GetLineNumberFromPosition(textChange.OldPosition);
-                                        //AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:OnTextBufferChanged: old={0}; new={1}; LineNumber={2}", textChange.OldText, textChange.NewText, lineNumber));
+                                        //AsmDudeToolsStatic.Output_INFO(string.Format("LabelGraph:OnTextBufferChanged: old={0}; new={1}; LineNumber={2}", textChange.OldText, textChange.NewText, lineNumber));
                                         Shift_Linenumber(lineNumber + 1, -1);
                                         Update_Linenumber(buffer, aggregator, lineNumber, (uint)lineNumber);
                                         Update_Linenumber(buffer, aggregator, lineNumber - 1, (uint)lineNumber);
                                     }
                                     break;
                                 default:
-                                    //AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:OnTextBufferChanged: lineDelta={0}", textChange.LineCountDelta));
+                                    //AsmDudeToolsStatic.Output_INFO(string.Format("LabelGraph:OnTextBufferChanged: lineDelta={0}", textChange.LineCountDelta));
                                     Reset_Delayed();
                                     break;
                             }
@@ -565,8 +565,8 @@ namespace AsmDude.Tools
                     }
                     default:
                     {
-                        //AsmDudeToolsStatic.Output("INFO: LabelGraph:addLineNumber: found text \"" + getText(buffer, asmTokenSpan) + "\" at line " + lineNumber);
-                        break;
+                            //AsmDudeToolsStatic.Output_INFO("LabelGraph:addLineNumber: found text \"" + getText(buffer, asmTokenSpan) + "\" at line " + lineNumber);
+                            break;
                     }
                 }
             }
@@ -690,7 +690,7 @@ namespace AsmDude.Tools
             if (lineCountDelta > 0)
             {
                 /*
-                AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:shiftLineNumber: starting from line {0} everything is shifted +{1}", lineNumber, lineCountDelta));
+                AsmDudeToolsStatic.Output_INFO(string.Format("LabelGraph:shiftLineNumber: starting from line {0} everything is shifted +{1}", lineNumber, lineCountDelta));
 
                 foreach (KeyValuePair<string, IList<uint>> entry in this._usedAt) {
                     IList<uint> values = entry.Value;
@@ -725,9 +725,10 @@ namespace AsmDude.Tools
                     }
                 }
                 */
-            } else
+            }
+            else
             {
-                AsmDudeToolsStatic.Output(string.Format("INFO: LabelGraph:shiftLineNumber: starting from line {0} everything is shifted {1}", lineNumber, lineCountDelta));
+                AsmDudeToolsStatic.Output_INFO(string.Format("LabelGraph:shiftLineNumber: starting from line {0} everything is shifted {1}", lineNumber, lineCountDelta));
             }
         }
 

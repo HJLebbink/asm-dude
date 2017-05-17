@@ -115,7 +115,7 @@ namespace AsmDude.QuickInfo
 
                         int lineNumber = AsmDudeToolsStatic.Get_LineNumber(tagSpan);
 
-                        //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoSource:AugmentQuickInfoSession: keyword=\""+ keyword + "\"; type=" + asmTokenTag.Tag.type +"; file="+AsmDudeToolsStatic.GetFileName(session.TextView.TextBuffer));
+                        //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoSource:AugmentQuickInfoSession: keyword=\""+ keyword + "\"; type=" + asmTokenTag.Tag.type +"; file="+AsmDudeToolsStatic.GetFileName(session.TextView.TextBuffer));
                         applicableToSpan = snapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
 
                         TextBlock description = null;
@@ -335,12 +335,12 @@ namespace AsmDude.QuickInfo
                         {
                             description.FontSize = AsmDudeToolsStatic.Get_Font_Size() + 2;
                             description.FontFamily = AsmDudeToolsStatic.Get_Font_Type();
-                            //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:AugmentQuickInfoSession; setting description fontSize={1}; fontFamily={2}", this.ToString(), description.FontSize, description.FontFamily));
+                            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:AugmentQuickInfoSession; setting description fontSize={1}; fontFamily={2}", this.ToString(), description.FontSize, description.FontFamily));
                             quickInfoContent.Add(description);
                         }
                     }
                 }
-                //AsmDudeToolsStatic.Output("INFO: AsmQuickInfoSource:AugmentQuickInfoSession: applicableToSpan=\"" + applicableToSpan + "\"; quickInfoContent,Count=" + quickInfoContent.Count);
+                //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoSource:AugmentQuickInfoSession: applicableToSpan=\"" + applicableToSpan + "\"; quickInfoContent,Count=" + quickInfoContent.Count);
                 AsmDudeToolsStatic.Print_Speed_Warning(time1, "QuickInfo");
             }
             catch (Exception e)
@@ -434,7 +434,7 @@ namespace AsmDude.QuickInfo
                         lineContent = "";
                     }
                     sb.AppendLine(AsmDudeToolsStatic.Cleanup(string.Format("Used at LINE {0} ({1}){2}", lineNumber + 1, filename, lineContent)));
-                    //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:getLabelDefDescription; sb=\"{1}\"", this.ToString(), sb.ToString()));
+                    //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:getLabelDefDescription; sb=\"{1}\"", this.ToString(), sb.ToString()));
                 }
                 string result = sb.ToString();
                 return result.TrimEnd(Environment.NewLine.ToCharArray());

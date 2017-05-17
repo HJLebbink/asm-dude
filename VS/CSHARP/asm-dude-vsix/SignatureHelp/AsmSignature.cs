@@ -77,7 +77,7 @@ namespace AsmDude.SignatureHelp {
         }
 
         internal void Compute_Current_Parameter() {
-            //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: computeCurrentParameter");
+            //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: computeCurrentParameter");
 
             int nParameters = this.Parameters.Count;
             if (nParameters == 0) {
@@ -88,10 +88,10 @@ namespace AsmDude.SignatureHelp {
             //the number of commas in the current line is the index of the current parameter
             SnapshotPoint position = this._applicableToSpan.GetStartPoint(this._subjectBuffer.CurrentSnapshot);
             string lineStr = this._subjectBuffer.CurrentSnapshot.GetLineFromPosition(position).GetText();
-            //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: computeCurrentParameter. lineStr=" + lineStr);
+            //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: computeCurrentParameter. lineStr=" + lineStr);
 
             int commaCount = AsmSignature.Count_Commas(lineStr);
-            //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: computeCurrentParameter. commaCount="+ commaCount);
+            //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: computeCurrentParameter. commaCount="+ commaCount);
 
             if (commaCount < nParameters) {
                 this.CurrentParameter = this.Parameters[commaCount];

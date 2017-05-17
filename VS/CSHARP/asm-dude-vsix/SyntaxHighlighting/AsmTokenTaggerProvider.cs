@@ -42,13 +42,13 @@ namespace AsmDude
     {
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
-            //AsmDudeToolsStatic.Output("INFO: AsmTokenTagProvider:CreateTagger");
+            //AsmDudeToolsStatic.Output_INFO("AsmTokenTagProvider:CreateTagger");
             Func<ITagger<T>> sc = delegate ()
             {
                 //string filename = AsmDudeToolsStatic.GetFileName(buffer);
                 //if ((filename == null) || (filename.Length == 0))
                 //{
-                //    AsmDudeToolsStatic.Output("INFO: AsmTokenTagProvider:CreateTagger: found a buffer without a filename");
+                //    AsmDudeToolsStatic.Output_INFO("AsmTokenTagProvider:CreateTagger: found a buffer without a filename");
                 //    return new DebugTokenTagger(buffer) as ITagger<T>;
                 //} else {
                 if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.MASM))

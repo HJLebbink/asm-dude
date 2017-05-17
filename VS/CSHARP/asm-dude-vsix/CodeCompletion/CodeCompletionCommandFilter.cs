@@ -142,7 +142,7 @@ namespace AsmDude
 
         private int ExecMethod2(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:ExecMethod2", this.ToString()));
+            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:ExecMethod2", this.ToString()));
 
             bool handledChar = false;
             int hresult = VSConstants.S_OK;
@@ -247,17 +247,17 @@ namespace AsmDude
 
             if (this.Broker.IsCompletionActive(this.TextView))
             {
-                //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:StartSession. Recycling an existing auto-complete session", this.ToString()));
+                //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:StartSession. Recycling an existing auto-complete session", this.ToString()));
                 this._currentSession = this.Broker.GetSessions(this.TextView)[0];
             }
             else
             {
-                //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:StartSession. Creating a new auto-complete session", this.ToString()));
+                //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:StartSession. Creating a new auto-complete session", this.ToString()));
                 this._currentSession = this.Broker.CreateCompletionSession(this.TextView, snapshot.CreateTrackingPoint(caret, PointTrackingMode.Positive), true);
             }
             this._currentSession.Dismissed += (sender, args) => this._currentSession = null;
             this._currentSession.Start();
-            //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:StartSession", this.ToString()));
+            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:StartSession", this.ToString()));
             return true;
         }
 
@@ -310,7 +310,7 @@ namespace AsmDude
 
         public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
         {
-            //AsmDudeToolsStatic.Output(string.Format("INFO: {0}:QueryStatus", this.ToString()));
+            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:QueryStatus", this.ToString()));
             if (pguidCmdGroup == VSConstants.VSStd2K)
             {
                 switch ((VSConstants.VSStd2KCmdID)prgCmds[0].cmdID)

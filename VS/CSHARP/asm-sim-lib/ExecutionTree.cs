@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace AsmSim
 {
@@ -43,7 +44,11 @@ namespace AsmSim
         {
             foreach (ExecutionNode node in GetNode_LOCAL(this._root))
             {
-                yield return Tools.Collapse(this.GetPreviousStates(node));
+                
+
+
+                State state = Tools.Collapse(this.GetPreviousStates(node));
+                if (state != null) yield return state;
             }
             IEnumerable<ExecutionNode> GetNode_LOCAL(ExecutionNode startNode)
             {
@@ -149,8 +154,39 @@ namespace AsmSim
         }
         public string ToString(CFlow flow)
         {
-            return this.Root.ToString(flow);
+            StringBuilder sb = new StringBuilder();
+            this.ToString(this.Root, flow, ref sb);
+            return sb.ToString();
         }
+
+        private void ToString(ExecutionNode node, CFlow flow, ref StringBuilder sb)
+        {
+            sb.Append(node.ToString(flow));
+            if (this.Forward)
+            {
+                if (node.Has_Forward_Continue)
+                {
+                    sb.AppendLine("Forward Regular Continue:");
+                    ToString(node.Forward_Continue, flow, ref sb);
+                }
+                if (node.Has_Forward_Branch)
+                {
+                    sb.AppendLine("Forward Branching:");
+                    ToString(node.Forward_Branch, flow, ref sb);
+                }
+            }
+            else
+            {
+                if (node.Has_Parents)
+                {
+                    foreach (var n in node.Parents)
+                    {
+                        ToString(n, flow, ref sb);
+                    }
+                }
+            }
+        }
+
         public string ToStringOverview(CFlow flow, bool showRegisterValues = false)
         {
             return this.Root.ToStringOverview(flow, 1, showRegisterValues);

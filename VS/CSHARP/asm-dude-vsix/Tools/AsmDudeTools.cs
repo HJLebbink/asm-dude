@@ -61,7 +61,7 @@ namespace AsmDude
         /// </summary>
         private AsmDudeTools()
         {
-            //AsmDudeToolsStatic.Output(string.Format("INFO: AsmDudeTools constructor"));
+            //AsmDudeToolsStatic.Output_INFO("AsmDudeTools constructor");
 
             #region Initialize ErrorListProvider
             IServiceProvider serviceProvider = new ServiceProvider(Package.GetGlobalService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider)) as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
@@ -114,7 +114,7 @@ namespace AsmDude
                         string instruction = e.Mnemonic.ToString() + " " + e.Operands_Str;
                         if (signaturesIntel.ContainsKey(instruction))
                         {
-                            AsmDudeToolsStatic.Output("WARNING: Intel " + instruction + ": is already present with arch " + signaturesIntel[instruction] + "; new arch " + e.Arch_Str);
+                            AsmDudeToolsStatic.Output_WARNING("Intel " + instruction + ": is already present with arch " + signaturesIntel[instruction] + "; new arch " + e.Arch_Str);
                         }
                         else
                         {
@@ -128,7 +128,7 @@ namespace AsmDude
                         string instruction = e.Mnemonic.ToString() + " " + e.Operands_Str;
                         if (signaturesNasm.ContainsKey(instruction))
                         {
-                            // AsmDudeToolsStatic.Output("WARNING: Nasm " + instruction + ": is already present with arch " + signaturesNasm[instruction] + "; new arch " + e.archStr);
+                            // AsmDudeToolsStatic.Output_WARNING("Nasm " + instruction + ": is already present with arch " + signaturesNasm[instruction] + "; new arch " + e.archStr);
                         }
                         else
                         {
@@ -141,27 +141,27 @@ namespace AsmDude
                         string instruction = e.Mnemonic.ToString() + " " + e.Operands_Str;
 
 
-                        //AsmDudeToolsStatic.Output("Intel " + instruction + ": arch" + e.archStr);
+                        //AsmDudeToolsStatic.Output_INFO("Intel " + instruction + ": arch" + e.archStr);
                         if ((e.Arch_Str == null) || (e.Arch_Str.Length == 0))
                         {
                             if (signaturesNasm.ContainsKey(instruction))
                             {
-                                AsmDudeToolsStatic.Output("Intel " + instruction + " has no arch, but NASM has \"" + signaturesNasm[instruction] + "\".");
+                                AsmDudeToolsStatic.Output_INFO("Intel " + instruction + " has no arch, but NASM has \"" + signaturesNasm[instruction] + "\".");
                             }
                             else
                             {
                                 if (signaturesNasm.Count == 1)
                                 {
-                                    AsmDudeToolsStatic.Output("Intel " + instruction + " has no arch, but NASM has \"" + signaturesNasm.GetEnumerator().Current + "\".");
+                                    AsmDudeToolsStatic.Output_INFO("Intel " + instruction + " has no arch, but NASM has \"" + signaturesNasm.GetEnumerator().Current + "\".");
                                 }
                                 else
                                 {
-                                    AsmDudeToolsStatic.Output("Intel " + instruction + " has no arch:");
+                                    AsmDudeToolsStatic.Output_INFO("Intel " + instruction + " has no arch:");
                                     foreach (KeyValuePair<string, string> pair in signaturesNasm)
                                     {
-                                        AsmDudeToolsStatic.Output("\tNASM has " + pair.Key + ": \"" + pair.Value + "\".");
+                                        AsmDudeToolsStatic.Output_INFO("\tNASM has " + pair.Key + ": \"" + pair.Value + "\".");
                                     }
-                                    AsmDudeToolsStatic.Output("    ----");
+                                    AsmDudeToolsStatic.Output_INFO("    ----");
                                 }
                             }
                         }
@@ -173,18 +173,18 @@ namespace AsmDude
                         {
                             foreach (AsmSignatureElement e in intel)
                             {
-                                AsmDudeToolsStatic.Output("INTEL " + mnemonic + ": " + e);
+                                AsmDudeToolsStatic.Output_INFO("INTEL " + mnemonic + ": " + e);
                             }
                             foreach (AsmSignatureElement e in nasm)
                             {
-                                AsmDudeToolsStatic.Output("NASM " + mnemonic + ": " + e);
+                                AsmDudeToolsStatic.Output_INFO("NASM " + mnemonic + ": " + e);
                             }
                         }
                     }
                 }
                 foreach (String str in archs)
                 {
-                    AsmDudeToolsStatic.Output("INTEL arch " + str);
+                    AsmDudeToolsStatic.Output_INFO("INTEL arch " + str);
                 }
             }
             if (false)
@@ -197,7 +197,7 @@ namespace AsmDude
                     {
                         if (this.Mnemonic_Store.GetArch(mnemonic).Contains(arch))
                         {
-                            //AsmDudeToolsStatic.Output("INFO: AsmDudeTools constructor: arch="+arch+"; mnemonic=" + mnemonic);
+                            //AsmDudeToolsStatic.Output_INFO("AsmDudeTools constructor: arch="+arch+"; mnemonic=" + mnemonic);
                             counter++;
                             usedMnemonics.Add(mnemonic);
                         }
@@ -207,7 +207,7 @@ namespace AsmDude
                     {
                         str += mnemonic.ToString() + ",";
                     }
-                    AsmDudeToolsStatic.Output("INFO: AsmDudeTools constructor: Architecture Option " + arch + " enables mnemonics " + str);
+                    AsmDudeToolsStatic.Output_INFO("AsmDudeTools constructor: Architecture Option " + arch + " enables mnemonics " + str);
                 }
             }
 
@@ -225,7 +225,7 @@ namespace AsmDude
 
                     }
                 }
-                AsmDudeToolsStatic.Output(this.Mnemonic_Store.ToString());
+                AsmDudeToolsStatic.Output_INFO(this.Mnemonic_Store.ToString());
             }
             if (false)
             {
@@ -236,7 +236,7 @@ namespace AsmDude
                 {
                     if (!this._mnemonicStore.HasElement(mnemonic))
                     {
-                        AsmDudeToolsStatic.Output("INFO: AsmDudeTools constructor: mnemonic " + mnemonic + " is not present");
+                        AsmDudeToolsStatic.Output_INFO("AsmDudeTools constructor: mnemonic " + mnemonic + " is not present");
                     }
                     foreach (AsmSignatureElement e in this._mnemonicStore.GetSignatures(mnemonic))
                     {
@@ -249,7 +249,7 @@ namespace AsmDude
 
                 foreach (string s in archs)
                 {
-                    AsmDudeToolsStatic.Output(s + ",");
+                    AsmDudeToolsStatic.Output_INFO(s + ",");
                 }
 
             }

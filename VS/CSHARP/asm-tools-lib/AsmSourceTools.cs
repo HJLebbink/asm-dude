@@ -848,7 +848,7 @@ namespace AsmTools
             }
             int beginPos = i;
             // position i points to the start of the current keyword
-            //AsmDudeToolsStatic.Output("getLabelEndPos: found first char of first keyword "+ line[i]+".");
+            //AsmDudeToolsStatic.Output_INFO("getLabelEndPos: found first char of first keyword "+ line[i]+".");
 
             for (; i < nChars; ++i)
             {

@@ -36,7 +36,7 @@ namespace AsmDude.SignatureHelp {
         private readonly MnemonicStore _store;
 
         public AsmSignatureHelpSource(ITextBuffer buffer) {
-            //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource:constructor");
+            //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource:constructor");
             this._buffer = buffer;
             this._store = AsmDudeTools.Instance.Mnemonic_Store;
         }
@@ -83,7 +83,7 @@ namespace AsmDude.SignatureHelp {
         }
 
         public void AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures) {
-            //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: AugmentSignatureHelpSession");
+            //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: AugmentSignatureHelpSession");
 
             //if (true) return;
             if (!Settings.Default.SignatureHelp_On) return;
@@ -96,14 +96,14 @@ namespace AsmDude.SignatureHelp {
 
                 ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
                 string lineStr = line.GetText();
-                //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: AugmentSignatureHelpSession: lineStr=" + lineStr+ "; positionInLine=" + positionInLine);
+                //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: AugmentSignatureHelpSession: lineStr=" + lineStr+ "; positionInLine=" + positionInLine);
 
                 var t = AsmSourceTools.ParseLine(lineStr);
                 IList<Operand> operands = AsmSourceTools.MakeOperands(t.Args);
                 Mnemonic mnemonic = t.Mnemonic;
 
                 ISet<Arch> selectedArchitectures = AsmDudeToolsStatic.Get_Arch_Swithed_On();
-                //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: AugmentSignatureHelpSession: selected architectures=" + ArchTools.ToString(selectedArchitectures));
+                //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: AugmentSignatureHelpSession: selected architectures=" + ArchTools.ToString(selectedArchitectures));
 
                 foreach (AsmSignatureElement se in AsmSignatureHelpSource.Constrain_Signatures(this._store.GetSignatures(mnemonic), operands, selectedArchitectures)) {
                     signatures.Add(Create_Signature(this._buffer, se, applicableToSpan));
@@ -117,13 +117,13 @@ namespace AsmDude.SignatureHelp {
         public ISignature GetBestMatch(ISignatureHelpSession session) {
             //NOT USED!!
 
-            AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: GetBestMatch");
+            AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: GetBestMatch");
 
             if (session.Signatures.Count > 0) {
                 ITrackingSpan applicableToSpan = session.Signatures[0].ApplicableToSpan;
                 string text = applicableToSpan.GetText(applicableToSpan.TextBuffer.CurrentSnapshot).Trim().ToUpper();
 
-                AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: GetBestMatch: session.Signatures.Count=" + session.Signatures.Count);
+                AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: GetBestMatch: session.Signatures.Count=" + session.Signatures.Count);
                 /*
                 if (text.Equals("ADD")) {
                     return session.Signatures[0];
@@ -143,13 +143,13 @@ namespace AsmDude.SignatureHelp {
             StringBuilder sb = new StringBuilder();
             sb.Append(signatureElement.Mnemonic.ToString());
             sb.Append(" ");
-            //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: createSignature: sb=" + sb.ToString());
+            //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: createSignature: sb=" + sb.ToString());
 
             for (int i = 0; i < nOperands; ++i)
             {
                 int locusStart = sb.Length;
                 sb.Append(signatureElement.Get_Operand_Doc(i));
-                //AsmDudeToolsStatic.Output("INFO: AsmSignatureHelpSource: createSignature: i="+i+"; sb=" + sb.ToString());
+                //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: createSignature: i="+i+"; sb=" + sb.ToString());
                 locus[i] = new Span(locusStart, sb.Length - locusStart);
                 if (i < nOperands - 1) sb.Append(", ");
             }
