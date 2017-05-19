@@ -66,7 +66,7 @@ namespace AsmSim
 
         public int NLines { get { return this._sourceCode.Count; } }
 
-        public int LastLineNumber {  get { return this._sourceCode.Count - 1; } }
+        public int LastLineNumber {  get { return this._sourceCode.Count; } }
 
         public bool HasLine(int lineNumber)
         {
@@ -79,6 +79,7 @@ namespace AsmSim
             if (lineNumber >= this._sourceCode.Count)
             {
                 Console.WriteLine("ERROR: CFlow:geLine: lineNumber " + lineNumber + " does not exist");
+                throw new Exception();
                 return ("", Mnemonic.NONE, null);
             }
             return this._sourceCode[lineNumber];
@@ -112,6 +113,11 @@ namespace AsmSim
             if ()
         }
         */
+
+        public bool Has_Prev_LineNumber(int lineNumber)
+        {
+            return this._incomingLines.ContainsKey(lineNumber);
+        }
 
         /// <summary>
         /// Get the previous line numbers and whether those line numbers branched to the current line number

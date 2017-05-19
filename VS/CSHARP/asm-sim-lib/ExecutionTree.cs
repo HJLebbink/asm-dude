@@ -22,130 +22,145 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
+using QuickGraph;
 
 namespace AsmSim
 {
     public class ExecutionTree
     {
-        private ExecutionNode _root;
+        #region Fields
+
         private readonly Tools _tools;
         public bool Forward { get; private set; }
 
-        public ExecutionTree(ExecutionNode rootNode, bool forward, Tools tools)
+        private readonly BidirectionalGraph<string, TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)>> _graph;
+        private readonly IDictionary<int, IList<string>> _lineNumber_2_Key;
+        private readonly IDictionary<string, (int LineNumber, int Step)> _key_2_LineNumber_Step;
+        private readonly string _rootKey;
+
+        #endregion 
+
+        #region Constructors
+        public ExecutionTree(string rootKey, bool forward, Tools tools)
         {
-            this._root = rootNode;
+            this._rootKey = rootKey;
             this._tools = tools;
             this.Forward = forward;
+            this._graph = new BidirectionalGraph<string, TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)>>(false);
+            this._lineNumber_2_Key = new Dictionary<int, IList<string>>();
+            this._key_2_LineNumber_Step = new Dictionary<string, (int LineNumber, int Step)>();
         }
-        public ExecutionNode Root { get { return this._root; } }
+        #endregion
+
+        #region Getters
+
+        public int Step(string key)
+        {
+            return (this._key_2_LineNumber_Step.TryGetValue(key, out var v)) ? v.Step : -1;
+        }
+
+        public int LineNumber(string key)
+        {
+            return (this._key_2_LineNumber_Step.TryGetValue(key, out var v)) ? v.LineNumber : -1;
+        }
 
         public IEnumerable<State> States_Before(int lineNumber)
         {
-            foreach (ExecutionNode node in GetNode_LOCAL(this._root))
+            if (this._lineNumber_2_Key.TryGetValue(lineNumber, out IList<string> keys))
             {
-                
-
-
-                State state = Tools.Collapse(this.GetPreviousStates(node));
-                if (state != null) yield return state;
-            }
-            IEnumerable<ExecutionNode> GetNode_LOCAL(ExecutionNode startNode)
-            {
-                if (startNode.LineNumber == lineNumber)
-                {
-                    yield return startNode;
-                }
-                else
-                {
-                    if (this.Forward)
-                    {
-                        if (startNode.Has_Forward_Continue)
-                        {
-                            foreach (var x in GetNode_LOCAL(startNode.Forward_Continue)) yield return x;
-                        }
-                        if (startNode.Has_Forward_Branch)
-                        {
-                            foreach (var x in GetNode_LOCAL(startNode.Forward_Branch)) yield return x;
-                        }
-                    }
-                    else
-                    {
-                        if (startNode.Has_Parents)
-                        {
-                            foreach (var y in startNode.Parents) foreach (var x in GetNode_LOCAL(y)) yield return x;
-                        }
-                    }
-                }
+                foreach (string key in keys) yield return Get_State_Private(key, false);
             }
         }
 
         public IEnumerable<State> States_After(int lineNumber)
         {
-            foreach (ExecutionNode node in GetNode_LOCAL(this._root))
+            if (this._lineNumber_2_Key.TryGetValue(lineNumber, out IList<string> keys))
             {
-                yield return this.GetState(node);
+                foreach (string key in keys) yield return Get_State_Private(key, true);
             }
-            IEnumerable<ExecutionNode> GetNode_LOCAL(ExecutionNode startNode)
-            {
-                if (startNode.LineNumber == lineNumber)
-                {
-                    yield return startNode;
-                }
-                else
-                {
-                    if (this.Forward)
-                    {
-                        if (startNode.Has_Forward_Continue)
-                        {
-                            foreach (var x in GetNode_LOCAL(startNode.Forward_Continue)) yield return x;
-                        }
-                        if (startNode.Has_Forward_Branch)
-                        {
-                            foreach (var x in GetNode_LOCAL(startNode.Forward_Branch)) yield return x;
-                        }
-                    }
-                    else
-                    {
-                        if (startNode.Has_Parents)
-                        {
-                            foreach (var y in startNode.Parents) foreach (var x in GetNode_LOCAL(y)) yield return x;
-                        }
-                    }
-                }
-            }
+        }
+
+        public State State_After(string key)
+        {
+            if (!this._graph.ContainsVertex(key)) return null;
+            return Get_State_Private(key, true);
+        }
+
+        public State State_Before(string key)
+        {
+            if (!this._graph.ContainsVertex(key)) return null;
+            return Get_State_Private(key, false);
         }
 
         public IEnumerable<State> Leafs
         {
             get
             {
-                foreach (ExecutionNode node in GetNode_LOCAL(this._root))
+                if (this.Forward)
+                    foreach (string key in Get_Leafs_Forward_LOCAL(this._rootKey))
+                        yield return this.Get_State_Private(key, true);
+                else
+                    foreach (string key in Get_Leafs_Backward_LOCAL(this._rootKey))
+                        yield return this.Get_State_Private(key, true);
+
+                IEnumerable<string> Get_Leafs_Forward_LOCAL(string key)
                 {
-                    yield return this.GetState(node);
-                }
-                IEnumerable<ExecutionNode> GetNode_LOCAL(ExecutionNode startNode)
-                {
-                    if (!startNode.Has_Forward_Continue && !startNode.Has_Forward_Branch)
-                    {
-                        yield return startNode; // found a leaf
-                    }
+                    if (this._graph.IsOutEdgesEmpty(key))
+                        yield return key;
                     else
-                    {
-                        if (startNode.Has_Forward_Continue)
-                        {
-                            foreach (var x in GetNode_LOCAL(startNode.Forward_Continue)) yield return x;
-                        }
-                        if (startNode.Has_Forward_Branch)
-                        {
-                            foreach (var x in GetNode_LOCAL(startNode.Forward_Branch)) yield return x;
-                        }
-                    }
+                        foreach (var edge in this._graph.OutEdges(key))
+                            foreach (string v in Get_Leafs_Forward_LOCAL(edge.Target))
+                                yield return v;
+                }
+                IEnumerable<string> Get_Leafs_Backward_LOCAL(string key)
+                {
+                    if (this._graph.IsInEdgesEmpty(key))
+                        yield return key;
+                    else
+                        foreach (var edge in this._graph.InEdges(key))
+                            foreach (string v in Get_Leafs_Backward_LOCAL(edge.Source))
+                                yield return v;
+                }
+            }
+        }
+    
+        public State EndState { get { return Tools.Collapse(this.Leafs); } }
+
+        #endregion
+
+        #region Setters
+
+        public void Add_Vertex(string key, int lineNumber, int step)
+        {
+            if (this._graph.ContainsVertex(key))
+            {
+                Console.WriteLine("WARNING: ExecutionTree: Add_Vertex: key " + key + " already exists");
+            }
+            else
+            {
+                this._graph.AddVertex(key);
+                this._key_2_LineNumber_Step.Add(key, (lineNumber, step));
+                if (this._lineNumber_2_Key.ContainsKey(lineNumber))
+                {
+                    this._lineNumber_2_Key[lineNumber].Add(key);
+                }
+                else
+                {
+                    this._lineNumber_2_Key.Add(lineNumber, new List<string> { key });
                 }
             }
         }
 
-        public State EndState { get { return Tools.Collapse(this.Leafs); } }
+        public void Add_Edge(bool isBranch, StateUpdate stateUpdate)
+        {
+            string prevKey = stateUpdate.PrevKey;
+            string nextKey = stateUpdate.NextKey;
+            this._graph.AddEdge(new TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)>(prevKey, nextKey, (isBranch, stateUpdate)));
+        }
+
+        #endregion
 
         #region ToString
         public override string ToString()
@@ -155,114 +170,180 @@ namespace AsmSim
         public string ToString(CFlow flow)
         {
             StringBuilder sb = new StringBuilder();
-            this.ToString(this.Root, flow, ref sb);
+            foreach (var k in this._key_2_LineNumber_Step)
+            {
+                sb.AppendLine("Key " + k.Key + " -> LineNumber " + k.Value.LineNumber + " Step " + k.Value.Step);
+            }
+
+            this.ToString(this._rootKey, flow, ref sb);
             return sb.ToString();
         }
 
-        private void ToString(ExecutionNode node, CFlow flow, ref StringBuilder sb)
+        private void ToString(string key, CFlow flow, ref StringBuilder sb)
         {
-            sb.Append(node.ToString(flow));
+            int lineNumber = this.LineNumber(key);
+            string codeLine = (flow == null) ? "" : flow.GetLineStr(lineNumber);
+
             if (this.Forward)
             {
-                if (node.Has_Forward_Continue)
+                sb.AppendLine("==========================================");
+                sb.AppendLine("State " + key + ": " + Get_State_Forward_Private(key, true).ToString());
+
+                foreach (var v in this._graph.OutEdges(key))
                 {
-                    sb.AppendLine("Forward Regular Continue:");
-                    ToString(node.Forward_Continue, flow, ref sb);
-                }
-                if (node.Has_Forward_Branch)
-                {
-                    sb.AppendLine("Forward Branching:");
-                    ToString(node.Forward_Branch, flow, ref sb);
+                    Debug.Assert(v.Source == key);
+                    string nextKey = v.Target;
+                    sb.AppendLine("------------------------------------------");
+                    sb.AppendLine("Transition from state " + key + " to " + nextKey + "; execute LINE " + lineNumber + ": \"" + codeLine + "\" " + ((v.Tag.Branch) ? "[Forward Branching]" : "[Forward Continue]"));
+                    ToString(nextKey, flow, ref sb);
                 }
             }
             else
             {
-                if (node.Has_Parents)
+                sb.AppendLine("==========================================");
+                sb.AppendLine("State " + key + ": " + Get_State_Backward_Private(key, true).ToString());
+                foreach (var v in this._graph.InEdges(key))
                 {
-                    foreach (var n in node.Parents)
-                    {
-                        ToString(n, flow, ref sb);
-                    }
+                    Debug.Assert(v.Target == key);
+                    string prevKey = v.Source;
+                    sb.AppendLine("------------------------------------------");
+                    sb.AppendLine("Transition from state " + prevKey + " to " + key + "; execute LINE " + lineNumber + ": \"" + codeLine + "\" " + ((v.Tag.Branch) ? "[Backward Branching] " : "[Backward Continue]"));
+                    ToString(prevKey, flow, ref sb);
                 }
             }
         }
 
         public string ToStringOverview(CFlow flow, bool showRegisterValues = false)
         {
-            return this.Root.ToStringOverview(flow, 1, showRegisterValues);
+            return "TODO";
         }
         #endregion
 
         #region Private Methods
 
-        private IEnumerable<State> GetPreviousStates(ExecutionNode node)
+        private State Get_State_Private(string key, bool after)
         {
-            if (node.Has_Parents)
-            {
-                foreach (var v in node.Parents)
-                {
-                    yield return GetState(v);
-                }
-            } 
+            return (this.Forward) ? Get_State_Forward_Private(key, after) : Get_State_Backward_Private(key, after);
         }
 
-        private State GetState(ExecutionNode node)
+        private State Get_State_Forward_Private(string key, bool after)
         {
-            if (node == null) return null;
+            State result = (this._graph.IsInEdgesEmpty(key))
+                ? new State(this._tools, key, key)
+                : Tools.Collapse(GetStates_LOCAL());
 
-            string key = "!DUMMY";
-            State result = new State(this._tools, key, key, -1);
-
-            if (this.Forward)
+            if (after)
             {
-                string headKey = node.NextKey;
-                string tailKey = node.PrevKey;
-                while (node != null)
+                int outDegree = this._graph.OutDegree(key);
+                if (outDegree == 2)
                 {
-                    if (node.StateUpdate != null)
-                    {
-                        result.Update(node.StateUpdate);
-                        tailKey = node.StateUpdate.PrevKey;
-                    }
-                    if (node.Has_Parents)
-                    {
-                        if (node.Parents.Count != 1) Console.WriteLine("WARNING: GetState: cannot have multiple parents");
-                        node = node.Parents[0];
-                    } else
-                    {
-                        node = null;
-                    }
+                    throw new Exception("NOt implemented yet");
+                } else if (outDegree == 1)
+                {
+                    result.Update_Forward(this._graph.OutEdge(key, 0).Tag.StateUpdate);
                 }
-                result.TailKey = tailKey;
-                result.HeadKey = headKey;
+            }
+            return result;
+
+            IEnumerable<State> GetStates_LOCAL()
+            {
+                foreach (var edge in this._graph.InEdges(key))
+                {
+                    State s = Get_State_Forward_Private(edge.Source, false);
+                    s.Update_Forward(edge.Tag.StateUpdate);
+                    yield return s;
+                }
+            }
+        }
+
+        private State Get_State_Backward_OLD_Private(string key, bool after)
+        {
+            State result = (this._graph.IsInEdgesEmpty(key))
+                ? new State(this._tools, key, key)
+                : Tools.Collapse(GetStates_LOCAL());
+
+            if (after)
+            {
+                int outDegree = this._graph.OutDegree(key);
+                if (outDegree == 2)
+                {
+                    throw new Exception("NOt implemented yet");
+                }
+                else if (outDegree == 1)
+                {
+                    result.Update_Forward(this._graph.OutEdge(key, 0).Tag.StateUpdate);
+                }
+            }
+            return result;
+
+            IEnumerable<State> GetStates_LOCAL()
+            {
+                foreach (var edge in this._graph.InEdges(key))
+                {
+                    State s = Get_State_Backward_OLD_Private(edge.Source, false);
+                    s.Update_Forward(edge.Tag.StateUpdate);
+                    yield return s;
+                }
+            }
+        }
+
+        private State Get_State_Backward_Private(string key, bool after)
+        {
+            int inDegree = this._graph.InDegree(key);
+            State result = null;
+            if (inDegree == 0)
+            {
+                result = new State(this._tools, key, key);
+            }
+            else if (inDegree == 1)
+            {
+                var edge = this._graph.InEdge(key, 0);
+                result = Get_State_Backward_Private(edge.Source, false);
+                result.Update_Forward(edge.Tag.StateUpdate);
+            } 
+            else if (inDegree == 2)
+            {
+                string nextKey;
+                State result1;
+                {
+                    var edge = this._graph.InEdge(key, 0);
+                    StateUpdate update = edge.Tag.StateUpdate;
+                    nextKey = update.NextKey;
+                    update.NextKey = nextKey + "A";
+                    result1 = Get_State_Backward_Private(edge.Source, false);
+                    result1.Update_Forward(update);
+                }
+                State result2;
+                {
+                    var edge = this._graph.InEdge(key, 1);
+                    StateUpdate update = edge.Tag.StateUpdate;
+                    Debug.Assert(nextKey == update.NextKey);
+                    update.NextKey = nextKey + "B";
+                    result2 = Get_State_Backward_Private(edge.Source, false);
+                    result2.Update_Forward(update);
+                }
+                result = new State(result1, result2, true);
             }
             else
             {
-                string headKey = node.NextKey;
-                string tailKey = node.PrevKey;
-                while (node != null)
+                throw new Exception();
+            }
+
+            if (after)
+            {
+                int outDegree = this._graph.OutDegree(key);
+                if (outDegree == 2)
                 {
-                    //Console.WriteLine("INFO: ExecutionTree:GetState: Adding update " + node.StateUpdate);
-                    if (node.StateUpdate != null)
-                    {
-                        result.Update(node.StateUpdate);
-                        headKey = node.StateUpdate.NextKey;
-                    }
-                    if (node.Has_Parents)
-                    {
-                        if (node.Parents.Count != 1) Console.WriteLine("WARNING: GetState: cannot have multiple parents");
-                        node = node.Parents[0];
-                    }
-                    else
-                    {
-                        node = null;
-                    }
+                    throw new Exception("NOt implemented yet");
                 }
-                result.TailKey = tailKey;
-                result.HeadKey = headKey;
+                else if (outDegree == 1)
+                {
+                    result.Update_Forward(this._graph.OutEdge(key, 0).Tag.StateUpdate);
+                }
             }
             return result;
         }
+
         #endregion
     }
 }

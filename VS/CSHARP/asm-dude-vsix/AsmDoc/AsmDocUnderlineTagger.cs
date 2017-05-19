@@ -44,7 +44,7 @@ namespace AsmDude.AsmDoc
 
         #region Private helpers
 
-        void SendEvent(SnapshotSpan span)
+        private void SendEvent(SnapshotSpan span)
         {
             TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(span));
         }

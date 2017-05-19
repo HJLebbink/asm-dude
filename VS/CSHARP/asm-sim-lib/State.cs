@@ -58,7 +58,7 @@ namespace AsmSim
         #region Constructors
 
         /// <summary>Regular constructor</summary>
-        public State(Tools tools, string tailKey, string headKey, int lineNumber)
+        public State(Tools tools, string tailKey, string headKey)
         {
             this._tools = tools;
             this.TailKey = tailKey;
@@ -464,14 +464,15 @@ namespace AsmSim
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(ToStringConstraints(identStr));
 
-            if (this.IsConsistent == Tv.ZERO)
+            Tv consistent = this.IsConsistent;
+            if (consistent != Tv.ONE)
             {
-                sb.Append("[State is Inconsistent]");
+                sb.Append("State consistency: " + consistent);
             }
             else
             {
                 sb.Append(ToStringFlags(identStr));
-                sb.AppendLine(ToStringRegs(identStr));
+                sb.Append(ToStringRegs(identStr));
             }
             //sb.AppendLine(ToStringWarning(identStr));
             return sb.ToString();
@@ -499,14 +500,13 @@ namespace AsmSim
                 Tv[] regContent = this.GetTv5Array(reg, true);
                 var t = ToolsZ3.HasOneValue(regContent);
                 bool showReg = (!(t.hasOneValue && t.value == Tv.UNKNOWN));
-                if (showReg) sb.AppendLine(identStr + string.Format(reg + " = {0} = {1}", ToolsZ3.ToStringBin(regContent), ToolsZ3.ToStringHex(regContent)));
+                if (showReg) sb.Append("\n" + identStr + string.Format(reg + " = {0} = {1}", ToolsZ3.ToStringBin(regContent), ToolsZ3.ToStringHex(regContent)));
             }
             return sb.ToString();
         }
         public string ToStringConstraints(string identStr)
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("State consistency: "+this.IsConsistent);
             if (this.Solver.NumAssertions > 0)
             {
                 sb.AppendLine(identStr + "Current Value constraints:");
@@ -530,7 +530,7 @@ namespace AsmSim
             }
             sb.AppendLine(this.BranchInfoStore.ToString());
 
-            sb.Append("TailKey=" + this.TailKey+ "; HeadKey = " + this.HeadKey );
+            sb.Append("TailKey=" + this.TailKey+ "; HeadKey=" + this.HeadKey );
             return sb.ToString();
         }
         #endregion

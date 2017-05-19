@@ -1447,7 +1447,7 @@ namespace AsmTools
             return Rn.NOREG;
         }
 
-#region Register Classifications
+        #region Register Classifications
         public static bool IsOpmaskRegister(Rn rn)
         {
             switch (rn)
@@ -1734,6 +1734,6 @@ namespace AsmTools
                 default: return false;
             }
         }
-#endregion
+        #endregion
     }
 }

@@ -101,7 +101,6 @@
     <Compile Include="ConditionalElement.cs" />
     <Compile Include="BitOperations.cs" />
     <Compile Include="CFlow.cs" />
-    <Compile Include="ExecutionNode.cs" />
     <Compile Include="ExecutionTree.cs" />
     <Compile Include="Runner.cs" />
     <Compile Include="State.cs" />

@@ -95,17 +95,18 @@ namespace AsmDude.AsmDoc
     /// </summary>
     internal sealed class AsmDocKeyProcessor : KeyProcessor
     {
-        CtrlKeyState _state;
+        private readonly CtrlKeyState _state;
 
         public AsmDocKeyProcessor(CtrlKeyState state)
         {
             this._state = state;
         }
 
-        void UpdateState(KeyEventArgs args)
+        private void UpdateState(KeyEventArgs args)
         {
-            this._state.Enabled = (args.KeyboardDevice.Modifiers & ModifierKeys.Control) != 0 &&
-                             (args.KeyboardDevice.Modifiers & ModifierKeys.Shift) == 0;
+            this._state.Enabled = 
+                ((args.KeyboardDevice.Modifiers & ModifierKeys.Control) != 0) &&
+                ((args.KeyboardDevice.Modifiers & ModifierKeys.Shift) == 0);
         }
 
         public override void PreviewKeyDown(KeyEventArgs args)
@@ -163,7 +164,7 @@ namespace AsmDude.AsmDoc
         /// <summary>
         /// Get the SUIHostCommandDispatcher from the global service provider.
         /// </summary>
-        IOleCommandTarget GetShellCommandDispatcher(ITextView view)
+        private IOleCommandTarget GetShellCommandDispatcher(ITextView view)
         {
             return this.GlobalServiceProvider.GetService(typeof(SUIHostCommandDispatcher)) as IOleCommandTarget;
         }

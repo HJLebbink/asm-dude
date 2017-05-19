@@ -525,7 +525,7 @@ namespace AsmTools
             if (s.StartsWith("ZMMWORD")) return 512;
             if (s.StartsWith("ZWORD")) return 512; //nasm
 
-            Console.WriteLine("AsmSourceTools:GetNbitsMemOperand: could not determine nBits in token " + token + " assuming 32 bits");
+            //Console.WriteLine("AsmSourceTools:GetNbitsMemOperand: could not determine nBits in token " + token + " assuming 32 bits");
 
             return 32;
         }

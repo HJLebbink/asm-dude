@@ -12,7 +12,7 @@ namespace unit_tests_asm_z3
     public class TestTools
     {
 #if DEBUG
-        public const bool LOG_TO_DISPLAY = false;
+        public const bool LOG_TO_DISPLAY = true;
 #else
         public const bool LOG_TO_DISPLAY = true;
 #endif

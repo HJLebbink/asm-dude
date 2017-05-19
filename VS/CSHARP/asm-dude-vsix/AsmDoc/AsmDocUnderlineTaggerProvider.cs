@@ -35,7 +35,7 @@ namespace AsmDude.AsmDoc
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     //[ContentType("code")]
     [TagType(typeof(ClassificationTag))]
-    internal class AsmDocUnderlineTaggerProvider : IViewTaggerProvider
+    internal sealed class AsmDocUnderlineTaggerProvider : IViewTaggerProvider
     {
         [Import]
         private IClassificationTypeRegistryService _classificationTypeRegistry = null;

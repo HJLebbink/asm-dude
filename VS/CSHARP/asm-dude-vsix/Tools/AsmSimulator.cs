@@ -220,7 +220,7 @@ namespace AsmDude.Tools
                 State stateA = new State(state_After);
                 stateA.UpdateConstName("!A");
 
-                State diffState = new State(this.Tools, "!0", "!0", 0);
+                State diffState = new State(this.Tools, "!0", "!0");
                 foreach (var v in stateB.Solver.Assertions)
                 {
                     diffState.Solver.Assert(v as BoolExpr);

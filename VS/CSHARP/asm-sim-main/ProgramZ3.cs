@@ -26,6 +26,7 @@ using AsmTools;
 using System.Reflection;
 using System.Linq;
 using Microsoft.Z3;
+using QuickGraph;
 
 namespace AsmSim
 {
@@ -39,6 +40,7 @@ namespace AsmSim
             System.Version ver = thisAssemName.Version;
             Console.WriteLine(string.Format("Loaded AsmSim version {0}.", ver));
 
+            //TestGraph();
             //TestMnemonic();
             TestExecutionTree();
             //EmptyMemoryTest();
@@ -53,6 +55,41 @@ namespace AsmSim
             Console.ReadKey();
         }
 
+        static void TestGraph()
+        {
+
+            var graph = new BidirectionalGraph<long, TaggedEdge<long, bool>>(false);
+            int rootVertex = 1;
+
+            graph.AddVertex(1);
+            graph.AddVertex(2);
+            graph.AddVertex(3);
+            graph.AddVertex(4);
+
+            graph.AddEdge(new TaggedEdge<long, bool>(1L, 2L, true));
+            graph.AddEdge(new TaggedEdge<long, bool>(1L, 4L, false));
+            graph.AddEdge(new TaggedEdge<long, bool>(2L, 3L, false));
+
+            string ToString(long vertex, int depth)
+            {
+                string result = "";
+                for (int i = 0; i < depth; ++i) result += "  ";
+
+                result += vertex.ToString() + "\n";
+
+                foreach (var v in graph.OutEdges(vertex))
+                {
+                    result += v.Tag + "\n";
+                    result += ToString(v.Target, depth + 2);
+                }
+                return result;
+            }
+
+            Console.WriteLine(ToString(rootVertex, 0));
+
+//            graph.
+
+        }
 
         static void TestMnemonic()
         {
@@ -78,7 +115,7 @@ namespace AsmSim
                 string line3 = "rcl rax, cl";
 
                 string rootKey = "!0";
-                State state = new State(tools, rootKey, rootKey, 0);
+                State state = new State(tools, rootKey, rootKey);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
@@ -96,7 +133,7 @@ namespace AsmSim
                 string line3 = "add rax, rbx";
 
                 string rootKey = "!0";
-                State state = new State(tools, rootKey, rootKey, 0);
+                State state = new State(tools, rootKey, rootKey);
 
                 Console.WriteLine("Before \"" + line3 + "\", we know:\n" + state);
                 state = Runner.SimpleStep_Backward(line3, state);
@@ -114,7 +151,7 @@ namespace AsmSim
 
                 string tailKey = Tools.CreateKey(tools.Rand);
                 string headKey = Tools.CreateKey(tools.Rand);
-                State state = new State(tools, tailKey, headKey, 0);
+                State state = new State(tools, tailKey, headKey);
 
                 string line1 = "add al, bl";
 
@@ -278,35 +315,71 @@ namespace AsmSim
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
-            
+            tools.StateConfig.ZF = true;
 
-            string programStr =
+            string programStr1 =
+                "           cmp     rax,        0               " + Environment.NewLine +
+                "           jz      label1                      " + Environment.NewLine +
                 "           mov     rax,        0               " + Environment.NewLine +
-               // "" + Environment.NewLine +
+                "label1:                                        ";
+
+            string programStr2 =
+                "           mov     rax,        0               " + Environment.NewLine +
                 "           mov     rbx,        10              " + Environment.NewLine +
                 "           mov     rbx,        rax             ";
-            CFlow flow = new CFlow(programStr);
 
-            if (false) {
-                ExecutionTree tree0 = Runner.Construct_ExecutionTree_Forward(flow, 0, 100, tools);
-                //Console.WriteLine(tree0.ToString(flow));
+            CFlow flow = new CFlow(programStr1);
+            Console.WriteLine(flow);
 
-                //State state = tree0.EndState;
-                foreach (var v in tree0.States_After(4))
+            if (false)
+            {
+                tools.Quiet = true;
+                ExecutionTree tree_Forward = Runner.Construct_ExecutionTree_Forward(flow, 0, 100, tools);
+                //Console.WriteLine(tree_Forward.ToString(flow));
+
+                int lineNumber = 1;
+                if (false)
                 {
-                    Console.WriteLine(v);
+                    IList<State> states_Before = new List<State>(tree_Forward.States_Before(lineNumber));
+                    State state_Before = states_Before[0];
+                    Console.WriteLine("Tree_Forward: Before lineNumber " + lineNumber + " \"" + flow.GetLineStr(lineNumber) + "\", we know:\n" + state_Before);
+                }
+                if (false)
+                {
+                    IList<State> states_After = new List<State>(tree_Forward.States_After(lineNumber));
+                    State state_After = states_After[0];
+                    Console.WriteLine("Tree_Forward: After lineNumber " + lineNumber + " \"" + flow.GetLineStr(lineNumber) + "\", we know:\n" + state_After);
+                }
+                if (true)
+                {
+                    State endState = tree_Forward.EndState;
+                    Console.WriteLine("Tree_Forward: in endState we know:\n" + endState);
                 }
             }
             if (true)
             {
                 tools.Quiet = false;
-                ExecutionTree tree1 = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 100, tools);
-                Console.WriteLine(tree1.ToString(flow));
-                foreach (var v in tree1.States_After(3))
-                {
-                    Console.WriteLine(v);
-                }
+                ExecutionTree tree_Backward = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 100, tools);
+                //Console.WriteLine(tree_Backward.ToString(flow));
 
+                int lineNumber = 1;
+                if (false)
+                {
+                    IList<State> states_Before = new List<State>(tree_Backward.States_Before(lineNumber));
+                    State state_Before = states_Before[0];
+                    Console.WriteLine("tree_Backward: Before lineNumber " + lineNumber + " \"" + flow.GetLineStr(lineNumber) + "\", we know:\n" + state_Before);
+                }
+                if (false)
+                {
+                    IList<State> states_After = new List<State>(tree_Backward.States_After(lineNumber));
+                    State state_After = states_After[0];
+                    Console.WriteLine("tree_Backward: After lineNumber " + lineNumber + " \"" + flow.GetLineStr(lineNumber) + "\", we know:\n" + state_After);
+                }
+                if (true)
+                {
+                    State endState = tree_Backward.EndState;
+                    Console.WriteLine("tree_Backward: in endState we know:\n" + endState);
+                }
             }
         }
         static void EmptyMemoryTest()

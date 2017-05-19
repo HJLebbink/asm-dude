@@ -149,39 +149,43 @@ namespace AsmSim
             if (store1 == null) return (BranchPoint1: null, BranchPoint2: null, MergedBranchInfo: store2);
             if (store2 == null) return (BranchPoint1: null, BranchPoint2: null, MergedBranchInfo: store1);
 
-            ICollection<string> keys1 = store1._branchInfo.Keys;
-            ICollection<string> keys2 = store2._branchInfo.Keys;
-
             IList<string> sharedKeys = new List<string>();
-            foreach (string key in keys1)
-            {
-                if (keys2.Contains(key))
-                {
-                    if (store1._branchInfo[key].BranchTaken != store2._branchInfo[key].BranchTaken)
-                    {
-                        sharedKeys.Add(key);
-                    }
-                    else
-                    {
-                        //Console.WriteLine("INFO: State:RetrieveSharedBranchInfo: key " + key + " is shared but has equal branchTaken " + state1.BranchInfo[key].branchTaken);
-                    }
-                }
-            }
-            Debug.Assert(sharedKeys.Count <= 1);
 
-            if (false)
+            if ((store1._branchInfo != null) && (store2._branchInfo != null))
             {
+                ICollection<string> keys1 = store1._branchInfo.Keys;
+                ICollection<string> keys2 = store2._branchInfo.Keys;
+
                 foreach (string key in keys1)
                 {
-                    Console.WriteLine("INFO: State:RetrieveSharedBranchInfo: Keys of state1 " + key);
+                    if (keys2.Contains(key))
+                    {
+                        if (store1._branchInfo[key].BranchTaken != store2._branchInfo[key].BranchTaken)
+                        {
+                            sharedKeys.Add(key);
+                        }
+                        else
+                        {
+                            //Console.WriteLine("INFO: State:RetrieveSharedBranchInfo: key " + key + " is shared but has equal branchTaken " + state1.BranchInfo[key].branchTaken);
+                        }
+                    }
                 }
-                foreach (string key in keys2)
+                Debug.Assert(sharedKeys.Count <= 1);
+
+                if (false)
                 {
-                    Console.WriteLine("INFO: State:RetrieveSharedBranchInfo: Keys of state2 " + key);
-                }
-                foreach (string key in sharedKeys)
-                {
-                    Console.WriteLine("INFO: State:RetrieveSharedBranchInfo: sharedKey " + key);
+                    foreach (string key in keys1)
+                    {
+                        Console.WriteLine("INFO: State:RetrieveSharedBranchInfo: Keys of state1 " + key);
+                    }
+                    foreach (string key in keys2)
+                    {
+                        Console.WriteLine("INFO: State:RetrieveSharedBranchInfo: Keys of state2 " + key);
+                    }
+                    foreach (string key in sharedKeys)
+                    {
+                        Console.WriteLine("INFO: State:RetrieveSharedBranchInfo: sharedKey " + key);
+                    }
                 }
             }
 
@@ -191,15 +195,21 @@ namespace AsmSim
             BranchInfoStore mergeBranchStore = new BranchInfoStore(tools);
             if (sharedKeys.Count == 0)
             {
-                foreach (KeyValuePair<string, BranchInfo> element in store1._branchInfo)
+                if (store1._branchInfo != null)
                 {
-                    mergeBranchStore.Add(element.Value);
-                }
-                foreach (KeyValuePair<string, BranchInfo> element in store2._branchInfo)
-                {
-                    if (!mergeBranchStore.ContainsKey(element.Key))
+                    foreach (KeyValuePair<string, BranchInfo> element in store1._branchInfo)
                     {
                         mergeBranchStore.Add(element.Value);
+                    }
+                }
+                if (store2._branchInfo != null)
+                {
+                    foreach (KeyValuePair<string, BranchInfo> element in store2._branchInfo)
+                    {
+                        if (!mergeBranchStore.ContainsKey(element.Key))
+                        {
+                            mergeBranchStore.Add(element.Value);
+                        }
                     }
                 }
                 if (!tools.Quiet) Console.WriteLine("INFO: State:RetrieveSharedBranchInfo: the two provided states do not share a branching point. This would happen in loops.");

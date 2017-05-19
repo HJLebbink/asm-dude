@@ -35,8 +35,8 @@ namespace AsmSim
     {
         #region Fields
         private readonly Tools _tools;
-        public readonly string PrevKey;
-        public readonly string NextKey;
+        public string PrevKey { get; set; }
+        public string NextKey { get; set; }
         public bool Empty { get; private set; }
         private IList<BranchInfo> _branchInfo;
         #endregion
@@ -504,8 +504,13 @@ namespace AsmSim
         public void Add(BranchInfo branchInfo)
         {
             this.Empty = false;
-            if (this._branchInfo == null) this._branchInfo = new List<BranchInfo>();
-            this._branchInfo.Add(branchInfo);
+            if (this._branchInfo == null)
+            {
+                this._branchInfo = new List<BranchInfo> { branchInfo };
+            } else
+            {
+                this._branchInfo.Add(branchInfo);
+            }
         }
         #endregion Setters
 
@@ -567,6 +572,12 @@ namespace AsmSim
                 BoolExpr b = this.Get_Raw_private(reg, true);
                 if (b != null) sb.AppendLine(reg + ": " + ToolsZ3.ToString(b));
             }
+            foreach (BranchInfo b in this._branchInfo)
+            {
+                sb.AppendLine(b.ToString());
+            }
+
+
             return sb.ToString();
         }
     }

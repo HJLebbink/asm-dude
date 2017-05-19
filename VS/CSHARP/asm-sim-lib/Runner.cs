@@ -32,17 +32,17 @@ namespace AsmSim
     {
         public static ExecutionTree Construct_ExecutionTree_Forward(
             CFlow flow,
-            int startLine,
+            int startLineNumber,
             int maxSteps,
             Tools tools)
         {
-            if (!flow.HasLine(startLine))
+            if (!flow.HasLine(startLineNumber))
             {
-                if (!tools.Quiet) Console.WriteLine("WARNING: Construct_ExecutionTree2_Forward: startLine " + startLine + " does not exist in " + flow);
+                if (!tools.Quiet) Console.WriteLine("WARNING: Construct_ExecutionTree2_Forward: startLine " + startLineNumber + " does not exist in " + flow);
                 return null;
             }
-
-            Stack<ExecutionNode> nextNodes = new Stack<ExecutionNode>();
+            Stack<string> nextKeys = new Stack<string>();
+            int id = 0;
 
             // Get the head of the current state, this head will be the prevKey of the update, nextKey is fresh. 
             // When state is updated, tail is not changed; head is set to the fresh nextKey.
@@ -50,86 +50,93 @@ namespace AsmSim
             #region Create the Root node
             ExecutionTree stateTree;
             {
-                string rootKey = "!0";// Tools.CreateKey(tools.Rand);
-                StateUpdate rootState = new StateUpdate(rootKey, rootKey, tools);
-                int step = 0;
-                var rootNode = new ExecutionNode(step, startLine, rootState);
-                stateTree = new ExecutionTree(rootNode, true, tools);
-                nextNodes.Push(rootNode);
+                string rootKey = "!" + id++; // Tools.CreateKey(tools.Rand);
+                nextKeys.Push(rootKey);
+                stateTree = new ExecutionTree(rootKey, true, tools);
+                stateTree.Add_Vertex(rootKey, startLineNumber, 0);
             }
             #endregion
 
-            while (nextNodes.Count > 0)
+            while (nextKeys.Count > 0)
             {
-                var node = nextNodes.Pop();
-                int nextStep = node.Step + 1;
-
-                if (nextStep <= maxSteps)
+                string prevKey = nextKeys.Pop();
+                int step = stateTree.Step(prevKey);
+                if (step <= maxSteps)
                 {
-                    int lineNumber = node.LineNumber;
-                    if (flow.HasLine(lineNumber))
+                    int currentLineNumber = stateTree.LineNumber(prevKey);
+                    if (flow.HasLine(currentLineNumber))
                     {
-                        string prevKey = node.StateUpdate.NextKey; // the head of the state we depart from will be the previous for the current update
-                        string prevKeyBranch = prevKey;
-                        string nextKey = Tools.CreateKey(tools.Rand);
-                        string nextKeyBranch = nextKey + "!BRANCH";
+                        string nextKey = "!" + id++;// Tools.CreateKey(tools.Rand);
+                        string nextKeyBranch = nextKey + "B";
 
-                        //Console.WriteLine("Going to run line " + lineNumber + "; prev=" + prevKey + "; next=" + nextKey);
+                        var updates = Execute(flow, currentLineNumber, (prevKey, prevKey, nextKey, nextKeyBranch), tools);
+                        var nextLineNumber = flow.GetNextLineNumber(currentLineNumber);
 
-                        var updates = Execute(flow, lineNumber, (prevKey, prevKeyBranch, nextKey, nextKeyBranch), tools);
-                        var nextLineNumber = flow.GetNextLineNumber(lineNumber);
+                        int nextStep = step + 1;
 
-                        #region Handle Branch Control Flow
-                        if (updates.Branch != null)
-                        {
-                            if (nextLineNumber.Branch == -1)
-                            {
-                                Console.WriteLine("WARNING: Runner:Construct_ExecutionTree_Forward: according to flow there does not exists a branch yet a branch is computed");
-                                throw new Exception();
-                            }
-                            var newNode = new ExecutionNode(nextStep, nextLineNumber.Branch, updates.Branch);
-                            newNode.Add_Parent(node);
-                            node.Forward_Branch = newNode;
-
-                            //if (nextState.IsConsistent) 
-                            nextNodes.Push(newNode);
-
-                            if (!tools.Quiet) Console.WriteLine("=====================================");
-                            if (!tools.Quiet) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Forward: Branch stepNext " + nextStep + ": LINE " + lineNumber + ": " + flow.GetLineStr(lineNumber));
-                            if (!tools.Quiet && flow.GetLine(lineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Forward: " + updates.Branch);
-                        }
-                        else if (nextLineNumber.Branch != -1)
-                        {
-                            Console.WriteLine("WARNING: Runner:Construct_ExecutionTree_Forward: according to flow there exists a branch yet no branch is computed");
-                            throw new Exception();
-                        }
-                        #endregion
-                        #region Handle Regular Control Flow
-                        if (updates.Regular != null)
-                        {
-                            if (nextLineNumber.Regular == -1)
-                            {
-                                Console.WriteLine("WARNING: Runner:Construct_ExecutionTree_Forward: according to flow there does not exists a continueyet a continue is computed");
-                                throw new Exception();
-                            }
-                            var newNode = new ExecutionNode(nextStep, nextLineNumber.Regular, updates.Regular);
-                            newNode.Add_Parent(node);
-                            node.Forward_Continue = newNode;
-
-                            //if (nextState.IsConsistent) 
-                            nextNodes.Push(newNode);
-
-                            if (!tools.Quiet) Console.WriteLine("=====================================");
-                            if (!tools.Quiet) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Forward: Regular stepNext " + nextStep + ": LINE " + lineNumber + ": " + flow.GetLineStr(lineNumber));
-                            if (!tools.Quiet && flow.GetLine(lineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Forward: " + updates.Regular);
-                        }
-                        else if (nextLineNumber.Regular != -1)
-                        {
-                            Console.WriteLine("WARNING: Runner:Construct_ExecutionTree_Forward: according to flow there exists a regular continue yet no continue is computed");
-                            throw new Exception();
-                        }
-                        #endregion
+                        HandleBranch_LOCAL(currentLineNumber, nextLineNumber.Branch, nextStep, updates.Branch);
+                        HandleRegular_LOCAL(currentLineNumber, nextLineNumber.Regular, nextStep, updates.Regular);
                     }
+                }
+            }
+            void HandleBranch_LOCAL(int currentLineNumber, int nextLineNumber, int nextStep, StateUpdate update)
+            {
+                if (update != null)
+                {
+                    if (nextLineNumber == -1)
+                    {
+                        Console.WriteLine("WARNING: Runner:Construct_ExecutionTree_Forward: according to flow there does not exists a branch yet a branch is computed");
+                        throw new Exception();
+                    }
+
+                    string prevKey = update.PrevKey;
+                    string nextKey = update.NextKey;
+
+                    stateTree.Add_Vertex(nextKey, nextLineNumber, nextStep);
+                    stateTree.Add_Edge(true, update);
+
+                    //if (nextState.IsConsistent) 
+                    nextKeys.Push(nextKey);
+
+                    if (!tools.Quiet) Console.WriteLine("=====================================");
+                    if (!tools.Quiet) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Forward: stepNext " + nextStep + ": LINE " + currentLineNumber + ": \"" + flow.GetLineStr(currentLineNumber) + "\" Branches to LINE " + nextLineNumber);
+                    if (!tools.Quiet && flow.GetLine(currentLineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Forward: " + update);
+                    if (!tools.Quiet && flow.GetLine(currentLineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: " + stateTree.State_After(nextKey));
+                }
+                else if (nextLineNumber != -1)
+                {
+                    Console.WriteLine("WARNING: Runner:Construct_ExecutionTree_Forward: according to flow there exists a branch yet no branch is computed");
+                    throw new Exception();
+                }
+            }
+            void HandleRegular_LOCAL(int currentLineNumber, int nextLineNumber, int nextStep, StateUpdate update)
+            {
+                if (update != null)
+                {
+                    if (nextLineNumber == -1)
+                    {
+                        Console.WriteLine("WARNING: Runner:Construct_ExecutionTree_Forward: according to flow there does not exists a continueyet a continue is computed");
+                        throw new Exception();
+                    }
+
+                    string prevKey = update.PrevKey;
+                    string nextKey = update.NextKey;
+
+                    stateTree.Add_Vertex(nextKey, nextLineNumber, nextStep);
+                    stateTree.Add_Edge(false, update);
+
+                    //if (nextState.IsConsistent) 
+                    nextKeys.Push(nextKey);
+
+                    if (!tools.Quiet) Console.WriteLine("=====================================");
+                    if (!tools.Quiet) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Forward: stepNext " + nextStep + ": LINE " + currentLineNumber + ": \"" + flow.GetLineStr(currentLineNumber) + "\" Continues to LINE " + nextLineNumber);
+                    if (!tools.Quiet && flow.GetLine(currentLineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Forward: " + update);
+                    if (!tools.Quiet && flow.GetLine(currentLineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: " + stateTree.State_After(nextKey));
+                }
+                else if (nextLineNumber != -1)
+                {
+                    Console.WriteLine("WARNING: Runner:Construct_ExecutionTree_Forward: according to flow there exists a regular continue yet no continue is computed");
+                    throw new Exception();
                 }
             }
             return stateTree;
@@ -137,172 +144,63 @@ namespace AsmSim
 
         public static ExecutionTree Construct_ExecutionTree_Backward(
             CFlow flow,
-            int startLine,
+            int startLineNumber,
             int maxSteps,
             Tools tools)
         {
-            if (!flow.HasLine(startLine))
+            if (!flow.Has_Prev_LineNumber(startLineNumber))
             {
-                if (!tools.Quiet) Console.WriteLine("WARNING: Construct_ExecutionTree_Backward: startLine " + startLine + " does not exist in " + flow);
+                if (!tools.Quiet) Console.WriteLine("WARNING: Construct_ExecutionTree_Backward: startLine " + startLineNumber + " does not exist in " + flow);
                 return null;
             }
 
-            Stack<ExecutionNode> nextNodes = new Stack<ExecutionNode>();
+            Stack<string> prevKeys = new Stack<string>();
+            int id = 0;
 
             // Get the tail of the current state, this tail will be the nextKey, the prevKey is fresh.
             // When the state is updated, the head is unaltered, tail is set to the fresh prevKey.
 
             #region Create the Root node
+            string rootKey = "!" + id--; // Tools.CreateKey(tools.Rand);
+
             ExecutionTree stateTree;
             {
-                string rootKey = "!0";// Tools.CreateKey(tools.Rand);
-                var rootState = new StateUpdate(rootKey, rootKey, tools);
-                string prevKey = Tools.CreateKey(tools.Rand);
-                string prevKeyBranch = prevKey + "!BRANCH";
-
-                var updates = Execute(flow, startLine, (prevKey, prevKeyBranch, rootState.NextKey, rootState.NextKey), tools);
-                var nextUpdates = updates.Regular;
-
-                int step = 0;
-                var rootNode = new ExecutionNode(step, startLine, nextUpdates);
-                nextNodes.Push(rootNode);
-                stateTree = new ExecutionTree(rootNode, false, tools);
-
-                if (!tools.Quiet) Console.WriteLine("===========================================");
-                if (!tools.Quiet) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Backward: step " + step + ": LINE " + startLine + ": " + flow.GetLineStr(startLine));
-                if (!tools.Quiet && flow.GetLine(startLine).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Backward: " + nextUpdates);
+                prevKeys.Push(rootKey);
+                stateTree = new ExecutionTree(rootKey, false, tools);
+                stateTree.Add_Vertex(rootKey, startLineNumber, 0);
             }
             #endregion
 
-            while (nextNodes.Count > 0)
+            while (prevKeys.Count > 0)
             {
-                var node = nextNodes.Pop();
-                int step = node.Step + 1;
-
-                //if (!tools.Quiet && node.LoopTerminationNode) Console.WriteLine("Node is LoopTerminationNode!");
-
-                if (step < maxSteps)
+                string nextKey = prevKeys.Pop();
+                int step = stateTree.Step(nextKey);
+                if (step <= maxSteps)
                 {
-                    string nextKey = node.PrevKey;
-                    int lineNumber = node.LineNumber;
+                    int nextStep = step + 1;
+                    int currentLineNumber = stateTree.LineNumber(nextKey);
 
-                    if (flow.IsBranchPoint(lineNumber))
+                    foreach (var prev in flow.GetPrevLineNumber(currentLineNumber))
                     {
-                        // if a merge point in the two code paths (that are created in this instruction) exists in the existing execution tree,
-                        // and this merge point has a branch condition that is not pinpointed, then we have learned something about a branch condition BC.
-                        // BC is equal to the branch condition of the current instruction. Assert to all states that are accessible the equality.
-
-                        /*
-                        (BoolExpr branchCondition, int mergeLineNumber) = GetMergeCondition(flow, lineNumber, stateTree);
-                        (int nextLineNumberRegular, int nextLineNumberBranch) = flow.GetNextLineNumber(lineNumber);
-
-                        AssertControlFlow(nextLineNumberRegular, mergeLineNumber, tools.Ctx.MkEq(branchCondition, ), stateTree);
-                        AssertControlFlow(nextLineNumberBranch, mergeLineNumber, branchCondition, stateTree);
-                        */
-                    }
-
-                    IList<(int LineNumber, bool IsBranch)> prevLines = new List<(int LineNumber, bool IsBranch)>(flow.GetPrevLineNumber(lineNumber));
-                    if (prevLines.Count == 0)
-                    {
-                        // nothing todo
-                    }
-                    else if (prevLines.Count == 1)
-                    {
-                        var prev = prevLines[0];
-
-                        if (flow.HasLine(prev.LineNumber))
+                        int prev_LineNumber = prev.LineNumber;
+                        if (flow.HasLine(prev_LineNumber))
                         {
-                            string prevKey = Tools.CreateKey(tools.Rand);
+                            string prevKey = "!" + id--;// Tools.CreateKey(tools.Rand);
 
                             var updates = Runner.Execute(flow, prev.LineNumber, (prevKey, prevKey, nextKey, nextKey), tools);
-                            var stateUpdate = (prev.IsBranch) ? updates.Branch : updates.Regular;
+                            var update = (prev.IsBranch) ? updates.Branch : updates.Regular;
 
-                            var nextNode = new ExecutionNode(step, prev.LineNumber, stateUpdate);
-                            node.Add_Parent(nextNode);
+                            stateTree.Add_Vertex(prevKey, prev.LineNumber, nextStep);
+                            stateTree.Add_Edge(prev.IsBranch, update);
 
-                            if (prev.IsBranch)
-                            {
-                                nextNode.Forward_Branch = node;
-                            }
-                            else
-                            {
-                                nextNode.Forward_Continue = node;
-                            }
+                            //if (nextState.IsConsistent) 
+                            prevKeys.Push(prevKey); // only continue if the state is consistent; no need to go futher in the past if the state is inconsistent.
 
-                            //if (state.IsConsistent)
-                            nextNodes.Push(nextNode);// only continue if the state is consistent; no need to go futher in the past if the state is inconsistent.
-
-                            if (!tools.Quiet) Console.WriteLine("===========================================\nINFO: Runner:Construct_ExecutionTree_Backward: step " + step + ": LINE " + prev.LineNumber + ": " + flow.GetLineStr(prev.LineNumber));
-                            if (!tools.Quiet && flow.GetLine(prev.LineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Backward: " + stateUpdate);
+                            if (!tools.Quiet) Console.WriteLine("=====================================");
+                            if (!tools.Quiet) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Backward: stepNext " + nextStep + ": LINE " + prev_LineNumber + ": \"" + flow.GetLineStr(prev_LineNumber));
+                            if (!tools.Quiet && flow.GetLine(prev_LineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Backward: " + update);
+                            //if (!tools.Quiet && flow.GetLine(prev_LineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: " + stateTree.State_After(rootKey));
                         }
-                    }
-                    else if (prevLines.Count == 2)
-                    {
-                        // two code flows merge at this lineNumber
-                        var prev1 = prevLines[0];
-                        var prev2 = prevLines[1];
-
-                        int prev_LineNumber1 = prev1.LineNumber;
-                        int prev_LineNumber2 = prev2.LineNumber;
-
-                        if (flow.HasLine(prev_LineNumber1) && flow.HasLine(prev_LineNumber2))
-                        {
-                            string prevKey = Tools.CreateKey(tools.Rand);
-                            string prevKey1 = prevKey + "!A";
-                            string prevKey2 = prevKey + "!B";
-
-                            StateUpdate stateUpdateMerge;
-                            {
-                                var branchCondition = tools.Ctx.MkBoolConst("BC" + prevKey);
-                                stateUpdateMerge = new StateUpdate(prevKey, node.StateUpdate.PrevKey, tools);
-                                stateUpdateMerge.Set(Rn.RAX, tools.Ctx.MkITE(branchCondition, Tools.Reg_Key(Rn.RAX, prevKey1, tools.Ctx), Tools.Reg_Key(Rn.RAX, prevKey2, tools.Ctx)) as BitVecExpr);
-                                stateUpdateMerge.Set(Rn.RBX, tools.Ctx.MkITE(branchCondition, Tools.Reg_Key(Rn.RBX, prevKey1, tools.Ctx), Tools.Reg_Key(Rn.RBX, prevKey2, tools.Ctx)) as BitVecExpr);
-
-                                //TODO 
-
-                                stateUpdateMerge.Set(Flags.ZF, tools.Ctx.MkITE(branchCondition, Tools.Flag_Key(Flags.ZF, prevKey1, tools.Ctx), Tools.Flag_Key(Flags.ZF, prevKey2, tools.Ctx)) as BoolExpr);
-                                if (!tools.Quiet) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Backward: stateUpdateMerge=" + stateUpdateMerge);
-                            }
-
-                            string prevPrevKey1 = prevKey + "!2!A";
-                            string prevPrevKey2 = prevKey + "!2!B";
-                            {
-                                var updates1 = Execute(flow, prev1.LineNumber, (prevPrevKey1, prevPrevKey1, prevKey1, prevKey1), tools);
-                                var stateUpdate1 = (prev1.IsBranch) ? updates1.Branch : updates1.Regular;
-                                Console.WriteLine("stateUpdate1:" + stateUpdate1);
-
-                                var nextNode1 = new ExecutionNode(step, prev_LineNumber1, stateUpdate1);
-                                node.Add_Parent(nextNode1);
-
-                                // only continue if the state is consistent; no need to go futher in the past if the state is inconsistent.
-                                //if (state1.IsConsistent)
-                                    nextNodes.Push(nextNode1);
-
-                                if (!tools.Quiet) Console.WriteLine("===========================================\nINFO: Runner:Construct_ExecutionTree_Backward: A: step " + step + ": LINE " + prev_LineNumber1 + ": " + flow.GetLineStr(prev_LineNumber1));
-                                if (!tools.Quiet && flow.GetLine(prev_LineNumber1).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Backward: " + stateUpdate1);
-                            }
-                            {
-                                var updates2 = Execute(flow, prev2.LineNumber, (prevPrevKey2, prevPrevKey2, prevKey2, prevKey2), tools);
-                                var stateUpdate2 = (prev2.IsBranch) ? updates2.Branch : updates2.Regular;
-                                Console.WriteLine("stateUpdate2:" + stateUpdate2);
-
-                                var nextNode2 = new ExecutionNode(step, prev_LineNumber2, stateUpdate2);
-                                node.Add_Parent(nextNode2);
-
-                                // only continue if the state is consistent; no need to go futher in the past if the state is inconsistent.
-                                //if (state2.IsConsistent)
-                                    nextNodes.Push(nextNode2);
-
-                                if (!tools.Quiet) Console.WriteLine("===========================================\nINFO: Runner:Construct_ExecutionTree_Backward: B: step " + step + ": LINE " + prev_LineNumber2 + ": " + flow.GetLineStr(prev_LineNumber2));
-                                if (!tools.Quiet && flow.GetLine(prev_LineNumber2).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Backward: " + stateUpdate2);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Runner:Construct_ExecutionTree_Backward: not implemented yet");
-                        return null;
-                        //                            throw new NotImplementedException();
                     }
                 }
             }

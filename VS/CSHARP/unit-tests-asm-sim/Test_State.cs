@@ -29,7 +29,7 @@ namespace unit_tests_asm_z3
         {
             string tailKey = "!INIT";// Tools.CreateKey(tools.Rand);
             string headKey = tailKey;
-            return new State(tools, tailKey, headKey, 0);
+            return new State(tools, tailKey, headKey);
         }
 
         [TestMethod]

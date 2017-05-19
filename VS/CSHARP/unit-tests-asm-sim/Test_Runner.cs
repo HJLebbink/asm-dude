@@ -31,7 +31,7 @@ namespace unit_tests_asm_z3
         {
             string tailKey = "!0";// Tools.CreateKey(tools.Rand);
             string headKey = tailKey;
-            return new State(tools, tailKey, headKey, 0);
+            return new State(tools, tailKey, headKey);
         }
 
         /// <summary>Returns Forward, Backward State</summary>
@@ -301,11 +301,13 @@ namespace unit_tests_asm_z3
             CFlow flow = new CFlow(programStr);
             if (logToDisplay) Console.WriteLine(flow);
             
-            State state2 = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
-            if (logToDisplay) Console.WriteLine("Backward:\n" + state2);
+            var tree = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 10, tools);
+            var state = tree.EndState;
+            if (logToDisplay) Console.WriteLine("Tree:\n"+tree.ToString(flow));
+            if (logToDisplay) Console.WriteLine("Backward:\n" + state);
 
-            TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
-            TestTools.AreEqual(Rn.RAX, 0, state2);
+            TestTools.AreEqual(Tv.ONE, state.IsConsistent);
+            TestTools.AreEqual(Rn.RAX, 0, state);
         }
 
         [TestMethod]
