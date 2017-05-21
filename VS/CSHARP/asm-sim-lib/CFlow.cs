@@ -35,23 +35,25 @@ namespace AsmSim
         public static readonly char LINENUMBER_SEPARATOR = '!';
 
         private string _programStr = "";
-        private IList<(string label, Mnemonic mnemonic, string[] args)> _sourceCode;
-        private readonly IDictionary<int, IList<(int lineNumber, bool isBranch)>> _incomingLines;
-
-        //private readonly BidirectionalGraph<int, IEdge<int>> _data; //TODO use QuickGraph
+        private readonly IList<(string label, Mnemonic mnemonic, string[] args)> _sourceCode;
+        private readonly BidirectionalGraph<int, TaggedEdge<int, bool>> _graph;
 
         /// <summary>Constructor that creates an empty CFlow</summary>
         public CFlow() : this("") {}
 
         public CFlow(string programStr)
         {
-            this._incomingLines = new Dictionary<int, IList<(int lineNumber, bool isBranch)>>();
+            //Console.WriteLine("INFO: CFlow: constructor");
+            this._sourceCode = new List<(string label, Mnemonic mnemonic, string[] args)>(programStr.Length);
+            this._graph = new BidirectionalGraph<int, TaggedEdge<int, bool>>(true); // true because of conditional jump to the next line
             this.Update(programStr);
         }
 
+        #region Setters
         /// <summary>Update this CFlow with the provided programStr: return true if this CFlow has changed.</summary>
         public bool Update(string programStr)
         {
+            //Console.WriteLine("INFO: CFlow:Update");
             //TODO make intelligent code: return true if something has changed.
             //if (this._programStr.Equals(programStr,StringComparison.OrdinalIgnoreCase))
             //{
@@ -59,14 +61,16 @@ namespace AsmSim
             //    return false;
             //}
             this._programStr = programStr;
-            this._incomingLines.Clear();
-            this._sourceCode = this.GetLines(programStr);
+            this.Update_Lines(programStr);
             return true;
         }
+        #endregion
+
+        #region Getters
 
         public int NLines { get { return this._sourceCode.Count; } }
 
-        public int LastLineNumber {  get { return this._sourceCode.Count; } }
+        public int LastLineNumber { get { return this._sourceCode.Count; } }
 
         public bool HasLine(int lineNumber)
         {
@@ -116,7 +120,7 @@ namespace AsmSim
 
         public bool Has_Prev_LineNumber(int lineNumber)
         {
-            return this._incomingLines.ContainsKey(lineNumber);
+            return this._graph.IsInEdgesEmpty(lineNumber);
         }
 
         /// <summary>
@@ -124,41 +128,29 @@ namespace AsmSim
         /// </summary>
         public IEnumerable<(int LineNumber, bool IsBranch)> GetPrevLineNumber(int lineNumber)
         {
-            if (this._incomingLines.TryGetValue(lineNumber, out IList<(int, bool)> incoming))
+            foreach (var v in this._graph.InEdges(lineNumber))
             {
-                return incoming;
+                yield return (v.Source, v.Tag);
             }
-            return Enumerable.Empty<(int LineNumber, bool IsBranch)>();
         }
 
         public (int Regular, int Branch) GetNextLineNumber(int lineNumber)
         {
-            int lineNumberRegular = -1;
-            int lineNumberBranch = -1;
+            int Regular = -1;
+            int Branch = -1;
 
-            //TODO make faster!!
-            foreach (var x in this._incomingLines)
+            foreach (var v in this._graph.OutEdges(lineNumber))
             {
-                foreach (var y in x.Value)
+                if (v.Tag)
                 {
-                    if (y.lineNumber == lineNumber)
-                    {
-                        if (y.isBranch)
-                        {
-                            lineNumberBranch = x.Key;
-                        }
-                        else
-                        {
-                            lineNumberRegular = x.Key;
-                        }
-                        if ((lineNumberBranch != -1) && (lineNumberRegular != -1))
-                        {
-                            return (Regular: lineNumberRegular, Branch: lineNumberBranch);
-                        }
-                    }
+                    Branch = v.Target;
+                }
+                else
+                {
+                    Regular = v.Target;
                 }
             }
-            return (Regular: lineNumberRegular, Branch: lineNumberBranch);
+            return (Regular: Regular, Branch: Branch);
         }
 
         /// <summary>A LoopBranchPoint is a BranchPoint that choices between leaving the loop or staying in the loop.
@@ -197,7 +189,7 @@ namespace AsmSim
                     if (HasCodePath(lineNumber, v.LineNumber))
                     {
                         numberOfLoops++;
-                        loopLineNumber = v.LineNumber; 
+                        loopLineNumber = v.LineNumber;
                     }
                 }
                 if (numberOfLoops > 0)
@@ -239,7 +231,7 @@ namespace AsmSim
             if (this.HasLine(lineNumber))
             {
                 var lineContent = this.GetLine(lineNumber);
-                StaticJump(lineContent.Mnemonic, lineContent.Args, lineNumber, out int jumpTo1, out int jumpTo2);
+                Static_Jump(lineContent.Mnemonic, lineContent.Args, lineNumber, out int jumpTo1, out int jumpTo2);
                 return ((jumpTo1 >= 0) && (jumpTo2 >= 0));
             }
             else
@@ -254,6 +246,8 @@ namespace AsmSim
             var enumerator = this.GetPrevLineNumber(lineNumber).GetEnumerator();
             return (enumerator.MoveNext() && enumerator.MoveNext());
         }
+
+        #endregion
 
         #region ToString Methods
 
@@ -305,8 +299,10 @@ namespace AsmSim
 
         #region Private Methods
 
-        private IList<(string label, Mnemonic mnemonic, string[] args)> GetLines(string programStr)
+        private void Update_Lines(string programStr)
         {
+            //Console.WriteLine("INFO: CFlow:Update_Lines");
+
             #region parse to find all labels
             IDictionary<string, int> labels = this.GetLabels(programStr);
             // replace all labels by annotated label
@@ -323,39 +319,41 @@ namespace AsmSim
             #endregion
             #region Populate IncomingLines
             string[] lines = programStr.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-            IList<(string, Mnemonic, string[])> data = new List<(string, Mnemonic, string[])>(lines.Length);
+
+            this._sourceCode.Clear();
+
             for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
             {
                 var line = AsmSourceTools.ParseLine(lines[lineNumber]);
-                data.Add((line.Label, line.Mnemonic, line.Args));
+                this._sourceCode.Add((line.Label, line.Mnemonic, line.Args));
 
-                this.StaticJump(line.Mnemonic, line.Args, lineNumber, out int jumpTo1, out int jumpTo2);
+                this.Static_Jump(line.Mnemonic, line.Args, lineNumber, out int jumpTo1, out int jumpTo2);
                 if (jumpTo1 != -1)
                 {
-                    this.AddToIncomingLines(lineNumber, jumpTo1, false);
+                    this.Add_Edge(lineNumber, jumpTo1, false);
                 }
                 if (jumpTo2 != -1)
                 {
-                    this.AddToIncomingLines(lineNumber, jumpTo2, true);
+                    this.Add_Edge(lineNumber, jumpTo2, true);
                 }
             }
             #endregion
-            return data;
         }
 
-        private void AddToIncomingLines(int jumpFrom, int jumpTo, bool isBranch)
+        private void Add_Edge(int jumpFrom, int jumpTo, bool isBranch)
         {
-            if (this._incomingLines.ContainsKey(jumpTo))
-            {
-                this._incomingLines[jumpTo].Add((jumpFrom, isBranch));
-            }
-            else
-            {
-                this._incomingLines.Add(jumpTo, new List<(int, bool)> { (jumpFrom, isBranch) });
-            }
+            //Console.WriteLine("INFO: from " + jumpFrom + " to " + jumpTo + " (branch " + isBranch + ")");
+            if (!this._graph.ContainsVertex(jumpFrom)) this._graph.AddVertex(jumpFrom);
+            if (!this._graph.ContainsVertex(jumpTo)) this._graph.AddVertex(jumpTo);
+
+            //if (this._graph.ContainsEdge(jumpFrom, jumpTo)) {
+            //    Console.WriteLine("INFO: Edge already exists: from " + jumpFrom + " to " + jumpTo + " (branch " + isBranch + ")");
+            //}
+
+            this._graph.AddEdge(new TaggedEdge<int, bool>(jumpFrom, jumpTo, isBranch));
         }
 
-        private void StaticJump(Mnemonic mnemonic, string[] args, int lineNumber, out int jumpTo1, out int jumpTo2)
+        private void Static_Jump(Mnemonic mnemonic, string[] args, int lineNumber, out int jumpTo1, out int jumpTo2)
         {
             jumpTo1 = -1;
             jumpTo2 = -1;
@@ -420,7 +418,7 @@ namespace AsmSim
                 case Mnemonic.RET:
                 case Mnemonic.IRET:
                 case Mnemonic.INT:
-                case Mnemonic.INTO:
+                case Mnemonic.INTO: return;
                    //throw new NotImplementedException();
                 default:
                     jumpTo1 = lineNumber + 1;
