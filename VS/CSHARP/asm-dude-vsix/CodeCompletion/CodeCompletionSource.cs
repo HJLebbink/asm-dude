@@ -46,7 +46,7 @@ namespace AsmDude
 
     public sealed class CodeCompletionSource : ICompletionSource
     {
-        private static int MAX_LENGTH_DESCR_TEXT = 130;
+        private static int MAX_LENGTH_DESCR_TEXT = 120;
 
         private readonly ITextBuffer _buffer;
         private readonly ILabelGraph _labelGraph;
@@ -120,8 +120,6 @@ namespace AsmDude
                 string partialKeyword = applicableTo.GetText(snapshot);
                 bool useCapitals = AsmDudeToolsStatic.Is_All_Upper(partialKeyword);
 
-                SortedSet<Completion> completions = null;
-
                 string lineStr = line.GetText();
                 var t = AsmSourceTools.ParseLine(lineStr);
                 Mnemonic mnemonic = t.Mnemonic;
@@ -137,12 +135,22 @@ namespace AsmDude
                     if (previousKeyword.Equals("INVOKE")) //TODO INVOKE is a MASM keyword not a NASM one...
                     {
                         // Suggest a label
-                        completions = Label_Completions();
+                        var completions = Label_Completions(useCapitals, false);
+                        completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
                     }
                     else
                     {
-                        ISet<AsmTokenType> selected = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic };
-                        completions = Selected_Completions(useCapitals, selected);
+                        ISet<AsmTokenType> selected1 = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic };
+                        var completions1 = Selected_Completions(useCapitals, selected1, true);
+                        completionSets.Add(new CompletionSet("All", "All", applicableTo, completions1, Enumerable.Empty<Completion>()));
+
+                        ISet<AsmTokenType> selected2 = new HashSet<AsmTokenType> { AsmTokenType.Jump, AsmTokenType.Mnemonic };
+                        var completions2 = Selected_Completions(useCapitals, selected2, false);
+                        completionSets.Add(new CompletionSet("Instr", "Instr", applicableTo, completions2, Enumerable.Empty<Completion>()));
+
+                        ISet<AsmTokenType> selected3 = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Misc };
+                        var completions3 = Selected_Completions(useCapitals, selected3, true);
+                        completionSets.Add(new CompletionSet("Directive", "Directive", applicableTo, completions3, Enumerable.Empty<Completion>()));
                     }
                 }
                 else
@@ -153,14 +161,15 @@ namespace AsmDude
                     {
                         //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:AugmentCompletionSession; previous keyword is a jump mnemonic");
                         // previous keyword is jump (or call) mnemonic. Suggest "SHORT" or a label
-                        completions = Label_Completions();
-                        completions.Add(new Completion("SHORT", (useCapitals) ? "SHORT" : "short", null, this._icons[AsmTokenType.Misc], ""));
-                        completions.Add(new Completion("NEAR", (useCapitals) ? "NEAR" : "near", null, this._icons[AsmTokenType.Misc], ""));
+                        var completions = Label_Completions(useCapitals, true);
+                        completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
+
                     }
                     else if (previousKeyword.Equals("SHORT") || previousKeyword.Equals("NEAR"))
                     {
                         // Suggest a label
-                        completions = Label_Completions();
+                        var completions = Label_Completions(useCapitals, false);
+                        completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
                     }
                     else
                     {
@@ -180,14 +189,11 @@ namespace AsmDude
                                 }
                             }
                         }
-                        completions = this.Mnemonic_Operand_Completions(useCapitals, allowed, line.LineNumber);
+                        var completions = this.Mnemonic_Operand_Completions(useCapitals, allowed, line.LineNumber);
+                        completionSets.Add(new CompletionSet("All", "All", applicableTo, completions, Enumerable.Empty<Completion>()));
                     }
                 }
-                //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:AugmentCompletionSession; nCompletions=" + completions.Count);
                 #endregion
-
-                completionSets.Add(new CompletionSet("Tokens", "Tokens", applicableTo, completions, Enumerable.Empty<Completion>()));
-
                 AsmDudeToolsStatic.Print_Speed_Warning(time1, "Code Completion");
             }
             catch (Exception e)
@@ -205,22 +211,68 @@ namespace AsmDude
             }
         }
 
+        /// <summary> check if the architecture of a register is switched on</summary>
+        public static bool Is_Register_Switched_On(Arch arch)
+        {
+            switch (arch)
+            {
+                case Arch.NONE: return true;
+                case Arch.AVX512_VL:
+                    return AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX512_VL);
+                case Arch.AVX512_F:
+                    return 
+                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX512_VL) |
+                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX512_F);
+                case Arch.AVX:
+                    return
+                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX512_VL) |
+                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX512_F) |
+                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX);
+                case Arch.SSE2:
+                    return
+                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX512_VL) |
+                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX512_F) |
+                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX) |
+                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.SSE2);
+                case Arch.SSE:
+                    return
+                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX512_VL) |
+                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX512_F) |
+                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX) |
+                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.SSE2) |
+                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.SSE);
+                case Arch.MMX:
+                    return AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.MMX);
+                case Arch.X64:
+                    return AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.X64);
+                case Arch.ARCH_8086:
+                    return 
+                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX512_VL) |
+                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX512_F) |
+                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX) |
+                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.SSE2) |
+                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.SSE) |
+                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.ARCH_8086);
+                default: return false;
+            }
+        }
+
         #region Private Methods
-        private SortedSet<Completion> Mnemonic_Operand_Completions(bool useCapitals, ISet<AsmSignatureEnum> allowedOperands, int lineNumber)
+        private IEnumerable<Completion> Mnemonic_Operand_Completions(bool useCapitals, ISet<AsmSignatureEnum> allowedOperands, int lineNumber)
         {
             bool asmSimulator_Enabled = this._asmSimulator.Is_Enabled;
 
             SortedSet<Completion> completions = new SortedSet<Completion>(new CompletionComparer());
             foreach (string keyword in this._asmDudeTools.Get_Keywords())
             {
-                Arch arch = this._asmDudeTools.Get_Architecture(keyword);
                 AsmTokenType type = this._asmDudeTools.Get_Token_Type(keyword);
 
-                bool selected = AsmDudeToolsStatic.Is_Arch_Switched_On(arch);
+                Arch arch = this._asmDudeTools.Get_Architecture(keyword);
+                bool selected = Is_Register_Switched_On(arch);
+
                 //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:Mnemonic_Operand_Completions; keyword=" + keyword +"; selected="+selected +"; arch="+arch);
 
                 string additionalInfo = null;
-
                 if (selected)
                 {
                     switch (type)
@@ -289,10 +341,14 @@ namespace AsmDude
             return text.Substring(0, MAX_LENGTH_DESCR_TEXT) + "...";
         }
 
-
-        private SortedSet<Completion> Label_Completions()
+        private IEnumerable<Completion> Label_Completions(bool useCapitals, bool addSpecialKeywords)
         {
-            SortedSet<Completion> completions = new SortedSet<Completion>(new CompletionComparer());
+            if (addSpecialKeywords)
+            {
+                yield return new Completion("SHORT", (useCapitals) ? "SHORT" : "short", null, this._icons[AsmTokenType.Misc], "");
+                yield return new Completion("NEAR", (useCapitals) ? "NEAR" : "near", null, this._icons[AsmTokenType.Misc], "");
+            }
+
             ImageSource imageSource = this._icons[AsmTokenType.Label];
             AssemblerEnum usedAssember = AsmDudeToolsStatic.Used_Assembler;
 
@@ -303,9 +359,8 @@ namespace AsmDude
                 string displayTextFull = entry.Key + " - " + entry.Value;
                 string displayText = Truncat(displayTextFull);
                 string insertionText = AsmDudeToolsStatic.Retrieve_Regular_Label(entry.Key, usedAssember);
-                completions.Add(new Completion(displayText, insertionText, displayTextFull, imageSource, ""));
+                yield return new Completion(displayText, insertionText, displayTextFull, imageSource, "");
             }
-            return completions;
         }
 
         private IEnumerable<Mnemonic> Get_Allowed_Mnemonics(ISet<Arch> selectedArchitectures)
@@ -324,13 +379,13 @@ namespace AsmDude
             }
         }
 
-        private SortedSet<Completion> Selected_Completions(bool useCapitals, ISet<AsmTokenType> selectedTypes)
+        private IEnumerable<Completion> Selected_Completions(bool useCapitals, ISet<AsmTokenType> selectedTypes, bool addSpecialKeywords)
         {
             SortedSet<Completion> completions = new SortedSet<Completion>(new CompletionComparer());
 
             //Add the completions of AsmDude directives (such as code folding directives)
             #region 
-            if (Settings.Default.CodeFolding_On)
+            if (addSpecialKeywords && Settings.Default.CodeFolding_On)
             {
                 this._icons.TryGetValue(AsmTokenType.Directive, out var imageSource);
                 {
@@ -349,24 +404,22 @@ namespace AsmDude
             #endregion
             AssemblerEnum usedAssember = AsmDudeToolsStatic.Used_Assembler;
 
-            #region
+            #region Add completions
 
             if (selectedTypes.Contains(AsmTokenType.Mnemonic))
             {
                 ISet<Arch> selectedArchs = AsmDudeToolsStatic.Get_Arch_Swithed_On();
+                this._icons.TryGetValue(AsmTokenType.Mnemonic, out var imageSource);
                 foreach (Mnemonic mnemonic in Get_Allowed_Mnemonics(selectedArchs))
                 {
                     string keyword = mnemonic.ToString();
-
                     string description = this._asmDudeTools.Mnemonic_Store.GetSignatures(mnemonic).First().Documentation;
-
                     string insertionText = (useCapitals) ? keyword : keyword.ToLower();
                     string archStr = ArchTools.ToString(this._asmDudeTools.Mnemonic_Store.GetArch(mnemonic));
                     string descriptionStr = this._asmDudeTools.Mnemonic_Store.GetDescription(mnemonic);
                     descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
                     String displayText = Truncat(keyword + archStr + descriptionStr);
                     //String description = keyword.PadRight(15) + archStr.PadLeft(8) + descriptionStr;
-                    this._icons.TryGetValue(AsmTokenType.Mnemonic, out var imageSource);
                     completions.Add(new Completion(displayText, insertionText, description, imageSource, ""));
                 }
             }

@@ -267,7 +267,7 @@ namespace AsmDude
         public SmartThreadPool Thread_Pool { get { return this._smartThreadPool; } }
 
         /// <summary>Get the collection of Keywords (in CAPITALS)</summary>
-        public ICollection<string> Get_Keywords()
+        public IEnumerable<string> Get_Keywords()
         {
             if (this._type == null) this.Init_Data();
             return this._type.Keys;

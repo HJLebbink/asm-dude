@@ -286,10 +286,7 @@ namespace AsmDude
 
         private bool Cancel()
         {
-            if (this._currentSession == null)
-            {
-                return false;
-            }
+            if (this._currentSession == null) return false;
             this._currentSession.Dismiss();
             return true;
         }
@@ -299,13 +296,14 @@ namespace AsmDude
         /// </summary>
         private void Filter()
         {
-            if (this._currentSession == null)
-            {
-                return;
-            }
-            // this._currentSession.SelectedCompletionSet.SelectBestMatch();
-            //this._currentSession.SelectedCompletionSet.Recalculate();
-            this._currentSession.Filter();
+            if (this._currentSession == null) return;
+            if (this._currentSession.IsDismissed) return;
+
+            this._currentSession.SelectedCompletionSet.SelectBestMatch();
+            this._currentSession.SelectedCompletionSet.Recalculate();
+            //this._currentSession.
+            //this._currentSession.SelectedCompletionSet.Filter();
+//            this._currentSession.Filter()
         }
 
         public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
