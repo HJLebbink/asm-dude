@@ -27,31 +27,31 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 
-namespace AsmDude.SignatureHelp {
-
+namespace AsmDude.SignatureHelp
+{
     [Export(typeof(IVsTextViewCreationListener))]
     [Name("Signature Help controller")]
     [TextViewRole(PredefinedTextViewRoles.Editable)]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    internal sealed class AsmSignatureHelpCommandProvider : IVsTextViewCreationListener {
-
+    internal sealed class AsmSignatureHelpCommandProvider : IVsTextViewCreationListener
+    {
         [Import]
         private IVsEditorAdaptersFactoryService _adapterService = null;
 
         [Import]
         private ISignatureHelpBroker _signatureHelpBroker = null;
 
-        public void VsTextViewCreated(IVsTextView textViewAdapter) {
-            //if (Settings.Default.SignatureHelp_On) {
-                ITextView textView = this._adapterService.GetWpfTextView(textViewAdapter);
-                if (textView == null) {
-                    return;
-                }
-                textView.Properties.GetOrCreateSingletonProperty(
-                     () => new AsmSignatureHelpCommandFilter(textViewAdapter, textView, this._signatureHelpBroker)
-                );
-            //}
+        public void VsTextViewCreated(IVsTextView textViewAdapter)
+        {
+            ITextView textView = this._adapterService.GetWpfTextView(textViewAdapter);
+            if (textView == null)
+            {
+                return;
+            }
+            textView.Properties.GetOrCreateSingletonProperty(
+                 () => new AsmSignatureHelpCommandFilter(textViewAdapter, textView, this._signatureHelpBroker)
+            );
         }
     }
 }

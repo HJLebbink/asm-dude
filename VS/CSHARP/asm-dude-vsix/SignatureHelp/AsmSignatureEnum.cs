@@ -28,7 +28,6 @@ using System.Text;
 
 namespace AsmDude.SignatureHelp
 {
-
     public enum AsmSignatureEnum : byte
     {
         NONE,

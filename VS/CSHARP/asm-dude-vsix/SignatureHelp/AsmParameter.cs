@@ -23,10 +23,12 @@
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
-namespace AsmDude.SignatureHelp {
-
-    internal class AsmParameter : IParameter {
-        public AsmParameter(string documentation, Span locus, string name, ISignature signature) {
+namespace AsmDude.SignatureHelp
+{
+    internal class AsmParameter : IParameter
+    {
+        public AsmParameter(string documentation, Span locus, string name, ISignature signature)
+        {
             this.Documentation = documentation;
             this.Locus = locus;
             this.Name = name;

@@ -31,16 +31,18 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using System;
 using System.Runtime.InteropServices;
 
-namespace AsmDude.SignatureHelp {
-
-    internal sealed class AsmSignatureHelpCommandFilter : IOleCommandTarget {
+namespace AsmDude.SignatureHelp
+{
+    internal sealed class AsmSignatureHelpCommandFilter : IOleCommandTarget
+    {
         private readonly ITextView _textView;
         private readonly ISignatureHelpBroker _broker;
 
         private ISignatureHelpSession _session;
         private IOleCommandTarget _nextCommandHandler;
 
-        internal AsmSignatureHelpCommandFilter(IVsTextView textViewAdapter, ITextView textView, ISignatureHelpBroker broker) {
+        internal AsmSignatureHelpCommandFilter(IVsTextView textViewAdapter, ITextView textView, ISignatureHelpBroker broker)
+        {
             this._textView = textView;
             this._broker = broker;
 
@@ -48,37 +50,51 @@ namespace AsmDude.SignatureHelp {
             textViewAdapter.AddCommandFilter(this, out this._nextCommandHandler);
         }
 
-        private char GetTypeChar(IntPtr pvaIn) {
+        private char GetTypeChar(IntPtr pvaIn)
+        {
             return (char)(ushort)Marshal.GetObjectForNativeVariant(pvaIn);
         }
 
-        public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut) {
-            try {
+        public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        {
+            try
+            {
                 SnapshotPoint currentPoint = this._textView.Caret.Position.BufferPosition;
-                if ((currentPoint != null) && (currentPoint > 0)) {
+                if ((currentPoint != null) && (currentPoint > 0))
+                {
                     SnapshotPoint point = currentPoint - 1;
-                    if (point.Position > 1) {
+                    if (point.Position > 1)
+                    {
                         ITextSnapshotLine line = point.Snapshot.GetLineFromPosition(point.Position);
                         string lineStr = line.GetText();
 
                         int pos = point.Position - line.Start;
-                        if (!AsmSourceTools.IsInRemark(pos, lineStr)) { //check if current position is in a remark; if we are in a remark, no signature help
+                        if (!AsmSourceTools.IsInRemark(pos, lineStr))
+                        { //check if current position is in a remark; if we are in a remark, no signature help
 
-                            if ((pguidCmdGroup == VSConstants.VSStd2K) && (nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR)) {
+                            if ((pguidCmdGroup == VSConstants.VSStd2K) && (nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR))
+                            {
                                 char typedChar = GetTypeChar(pvaIn);
-                                if (char.IsWhiteSpace(typedChar) || typedChar.Equals(',')) {
+                                if (char.IsWhiteSpace(typedChar) || typedChar.Equals(','))
+                                {
                                     var t = AsmSourceTools.ParseLine(lineStr);
                                     if (this._session != null) this._session.Dismiss(); // cleanup previous session
-                                    if (t.Mnemonic != Mnemonic.UNKNOWN) {
+                                    if (t.Mnemonic != Mnemonic.UNKNOWN)
+                                    {
                                         this._session = this._broker.TriggerSignatureHelp(this._textView);
                                     }
-                                } else if (AsmSourceTools.IsRemarkChar(typedChar) && (this._session != null)) {
+                                }
+                                else if (AsmSourceTools.IsRemarkChar(typedChar) && (this._session != null))
+                                {
                                     this._session.Dismiss();
                                     this._session = null;
                                 }
-                            } else {
+                            }
+                            else
+                            {
                                 bool enterPressed = (nCmdID == (uint)VSConstants.VSStd2KCmdID.RETURN);
-                                if (enterPressed && (this._session != null)) {
+                                if (enterPressed && (this._session != null))
+                                {
                                     this._session.Dismiss();
                                     this._session = null;
                                 }
@@ -86,13 +102,16 @@ namespace AsmDude.SignatureHelp {
                         }
                     }
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Exec; e={1}", ToString(), e.ToString()));
             }
             return this._nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
         }
 
-        public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText) {
+        public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
+        {
             return this._nextCommandHandler.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
         }
     }

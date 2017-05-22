@@ -80,7 +80,6 @@ namespace AsmDude {
             sb.Append("----------------------------------");
             AsmDudeToolsStatic.Output(sb.ToString());
         }
-
         #endregion
 
         #region Disassembly window experiments

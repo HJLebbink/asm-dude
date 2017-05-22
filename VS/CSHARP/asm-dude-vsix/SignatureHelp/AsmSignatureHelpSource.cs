@@ -29,13 +29,15 @@ using AsmDude.Tools;
 using AsmTools;
 using System.Text;
 
-namespace AsmDude.SignatureHelp {
-
-    internal class AsmSignatureHelpSource : ISignatureHelpSource {
+namespace AsmDude.SignatureHelp
+{
+    internal class AsmSignatureHelpSource : ISignatureHelpSource
+    {
         private readonly ITextBuffer _buffer;
         private readonly MnemonicStore _store;
 
-        public AsmSignatureHelpSource(ITextBuffer buffer) {
+        public AsmSignatureHelpSource(ITextBuffer buffer)
+        {
             //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource:constructor");
             this._buffer = buffer;
             this._store = AsmDudeTools.Instance.Mnemonic_Store;
@@ -50,25 +52,35 @@ namespace AsmDude.SignatureHelp {
         public static IEnumerable<AsmSignatureElement> Constrain_Signatures(
                 IEnumerable<AsmSignatureElement> data,
                 IList<Operand> operands,
-                ISet<Arch> selectedArchitectures) {
+                ISet<Arch> selectedArchitectures)
+        {
 
-            foreach (AsmSignatureElement asmSignatureElement in data) {
+            foreach (AsmSignatureElement asmSignatureElement in data)
+            {
                 bool allowed = true;
 
                 //1] constrain on architecture
-                if (!asmSignatureElement.Is_Allowed(selectedArchitectures)) {
+                if (!asmSignatureElement.Is_Allowed(selectedArchitectures))
+                {
                     allowed = false;
                 }
 
                 //2] constrain on operands
-                if (allowed) {
-                    if ((operands == null) || (operands.Count == 0)) {
+                if (allowed)
+                {
+                    if ((operands == null) || (operands.Count == 0))
+                    {
                         // do nothing
-                    } else {
-                        for (int i = 0; i < operands.Count; ++i) {
+                    }
+                    else
+                    {
+                        for (int i = 0; i < operands.Count; ++i)
+                        {
                             Operand operand = operands[i];
-                            if (operand != null) {
-                                if (!asmSignatureElement.Is_Allowed(operand, i)) {
+                            if (operand != null)
+                            {
+                                if (!asmSignatureElement.Is_Allowed(operand, i))
+                                {
                                     allowed = false;
                                     break;
                                 }
@@ -76,19 +88,22 @@ namespace AsmDude.SignatureHelp {
                         }
                     }
                 }
-                if (allowed) {
+                if (allowed)
+                {
                     yield return asmSignatureElement;
                 }
             }
         }
 
-        public void AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures) {
+        public void AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures)
+        {
             //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: AugmentSignatureHelpSession");
 
             //if (true) return;
             if (!Settings.Default.SignatureHelp_On) return;
 
-            try {
+            try
+            {
                 DateTime time1 = DateTime.Now;
                 ITextSnapshot snapshot = this._buffer.CurrentSnapshot;
                 int position = session.GetTriggerPoint(this._buffer).GetPosition(snapshot);
@@ -105,21 +120,26 @@ namespace AsmDude.SignatureHelp {
                 ISet<Arch> selectedArchitectures = AsmDudeToolsStatic.Get_Arch_Swithed_On();
                 //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: AugmentSignatureHelpSession: selected architectures=" + ArchTools.ToString(selectedArchitectures));
 
-                foreach (AsmSignatureElement se in AsmSignatureHelpSource.Constrain_Signatures(this._store.GetSignatures(mnemonic), operands, selectedArchitectures)) {
+                foreach (AsmSignatureElement se in AsmSignatureHelpSource.Constrain_Signatures(this._store.GetSignatures(mnemonic), operands, selectedArchitectures))
+                {
                     signatures.Add(Create_Signature(this._buffer, se, applicableToSpan));
                 }
                 AsmDudeToolsStatic.Print_Speed_Warning(time1, "Signature Help");
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:AugmentSignatureHelpSession; e={1}", ToString(), e.ToString()));
             }
         }
 
-        public ISignature GetBestMatch(ISignatureHelpSession session) {
+        public ISignature GetBestMatch(ISignatureHelpSession session)
+        {
             //NOT USED!!
 
             AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: GetBestMatch");
 
-            if (session.Signatures.Count > 0) {
+            if (session.Signatures.Count > 0)
+            {
                 ITrackingSpan applicableToSpan = session.Signatures[0].ApplicableToSpan;
                 string text = applicableToSpan.GetText(applicableToSpan.TextBuffer.CurrentSnapshot).Trim().ToUpper();
 
@@ -173,8 +193,10 @@ namespace AsmDude.SignatureHelp {
         }
 
         private bool _isDisposed;
-        public void Dispose() {
-            if (!this._isDisposed) {
+        public void Dispose()
+        {
+            if (!this._isDisposed)
+            {
                 GC.SuppressFinalize(this);
                 this._isDisposed = true;
             }

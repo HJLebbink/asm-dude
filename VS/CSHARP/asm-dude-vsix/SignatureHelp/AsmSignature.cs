@@ -20,15 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude.Tools;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using System;
 using System.Collections.ObjectModel;
 
-namespace AsmDude.SignatureHelp {
-
-    internal class AsmSignature : ISignature {
+namespace AsmDude.SignatureHelp
+{
+    internal class AsmSignature : ISignature
+    {
         private readonly ITextBuffer _subjectBuffer;
 
         private IParameter _currentParameter;
@@ -38,7 +38,8 @@ namespace AsmDude.SignatureHelp {
         private ReadOnlyCollection<IParameter> _parameters;
         private string _printContent;
 
-        internal AsmSignature(ITextBuffer subjectBuffer, string content, string doc, ReadOnlyCollection<IParameter> parameters) {
+        internal AsmSignature(ITextBuffer subjectBuffer, string content, string doc, ReadOnlyCollection<IParameter> parameters)
+        {
             this._subjectBuffer = subjectBuffer;
             this._content = content;
             this._documentation = doc;
@@ -47,10 +48,13 @@ namespace AsmDude.SignatureHelp {
         }
         public event EventHandler<CurrentParameterChangedEventArgs> CurrentParameterChanged;
 
-        public IParameter CurrentParameter {
+        public IParameter CurrentParameter
+        {
             get { return this._currentParameter; }
-            internal set {
-                if (this._currentParameter != value) {
+            internal set
+            {
+                if (this._currentParameter != value)
+                {
                     IParameter prevCurrentParameter = this._currentParameter;
                     this._currentParameter = value;
                     RaiseCurrentParameterChanged(prevCurrentParameter, this._currentParameter);
@@ -58,16 +62,20 @@ namespace AsmDude.SignatureHelp {
             }
         }
 
-        private void RaiseCurrentParameterChanged(IParameter prevCurrentParameter, IParameter newCurrentParameter) {
+        private void RaiseCurrentParameterChanged(IParameter prevCurrentParameter, IParameter newCurrentParameter)
+        {
             CurrentParameterChanged?.Invoke(this, new CurrentParameterChangedEventArgs(prevCurrentParameter, newCurrentParameter));
         }
 
-        public static int Count_Commas(string str) {
+        public static int Count_Commas(string str)
+        {
             int currentIndex = 0;
             int commaCount = 0;
-            while (currentIndex < str.Length) {
+            while (currentIndex < str.Length)
+            {
                 int commaIndex = str.IndexOf(',', currentIndex);
-                if (commaIndex == -1) {
+                if (commaIndex == -1)
+                {
                     break;
                 }
                 commaCount++;
@@ -76,11 +84,13 @@ namespace AsmDude.SignatureHelp {
             return commaCount;
         }
 
-        internal void Compute_Current_Parameter() {
+        internal void Compute_Current_Parameter()
+        {
             //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: computeCurrentParameter");
 
             int nParameters = this.Parameters.Count;
-            if (nParameters == 0) {
+            if (nParameters == 0)
+            {
                 this.CurrentParameter = null;
                 return;
             }
@@ -93,38 +103,47 @@ namespace AsmDude.SignatureHelp {
             int commaCount = AsmSignature.Count_Commas(lineStr);
             //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: computeCurrentParameter. commaCount="+ commaCount);
 
-            if (commaCount < nParameters) {
+            if (commaCount < nParameters)
+            {
                 this.CurrentParameter = this.Parameters[commaCount];
-            } else {
+            }
+            else
+            {
                 this.CurrentParameter = null;
             }
         }
 
-        internal void OnSubjectBufferChanged(object sender, TextContentChangedEventArgs e) {
+        internal void OnSubjectBufferChanged(object sender, TextContentChangedEventArgs e)
+        {
             Compute_Current_Parameter();
         }
 
-        public ITrackingSpan ApplicableToSpan {
+        public ITrackingSpan ApplicableToSpan
+        {
             get { return (this._applicableToSpan); }
             internal set { this._applicableToSpan = value; }
         }
 
-        public string Content {
+        public string Content
+        {
             get { return (this._content); }
             internal set { this._content = value; }
         }
 
-        public string Documentation {
+        public string Documentation
+        {
             get { return (this._documentation); }
             internal set { this._documentation = value; }
         }
 
-        public ReadOnlyCollection<IParameter> Parameters {
+        public ReadOnlyCollection<IParameter> Parameters
+        {
             get { return (this._parameters); }
             internal set { this._parameters = value; }
         }
 
-        public string PrettyPrintedContent {
+        public string PrettyPrintedContent
+        {
             get { return (this._printContent); }
             internal set { this._printContent = value; }
         }
