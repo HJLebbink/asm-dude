@@ -131,7 +131,7 @@ namespace AsmDude.Tools
         public (bool IsImplemented, Mnemonic Mnemonic, string Message) Get_Syntax_Errors(int lineNumber)
         {
             var dummyKeys = ("", "", "", "");
-            var content = this._cflow.GetLine(lineNumber);
+            var content = this._cflow.Get_Line(lineNumber);
             var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, this.Tools);
             if (opcodeBase == null) return (IsImplemented: false, Mnemonic: Mnemonic.NONE, Message: null);
 
@@ -154,7 +154,7 @@ namespace AsmDude.Tools
             lock (this._updateLock)
             {
                 var dummyKeys = ("", "", "", "");
-                var content = this._cflow.GetLine(lineNumber);
+                var content = this._cflow.Get_Line(lineNumber);
                 var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, this.Tools);
 
                 string message = "";
@@ -198,7 +198,7 @@ namespace AsmDude.Tools
 
         public string Get_Redundant_Instruction_Warnings(int lineNumber)
         {
-            var content = this._cflow.GetLine(lineNumber);
+            var content = this._cflow.Get_Line(lineNumber);
             if (content.Mnemonic == Mnemonic.NONE) return "";
             if (content.Mnemonic == Mnemonic.NOP) return "";
             if (content.Mnemonic == Mnemonic.UNKNOWN) return "";
@@ -264,7 +264,7 @@ namespace AsmDude.Tools
                     if (tv != Tv.ONE) return "";
                 }
             }
-            string message = "\"" + this._cflow.GetLineStr(lineNumber) + "\" is redundant.";
+            string message = "\"" + this._cflow.Get_Line_Str(lineNumber) + "\" is redundant.";
             AsmDudeToolsStatic.Output_INFO("AsmSimulator: Has_Redundant_Instruction_Warnings: lineNumber " + lineNumber + ": "+ message);
             return message;
         }

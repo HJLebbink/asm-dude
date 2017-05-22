@@ -182,7 +182,7 @@ namespace AsmSim
         private void ToString(string key, CFlow flow, ref StringBuilder sb)
         {
             int lineNumber = this.LineNumber(key);
-            string codeLine = (flow == null) ? "" : flow.GetLineStr(lineNumber);
+            string codeLine = (flow == null) ? "" : flow.Get_Line_Str(lineNumber);
 
             if (this.Forward)
             {

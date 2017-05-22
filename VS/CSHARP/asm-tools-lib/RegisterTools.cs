@@ -1447,8 +1447,9 @@ namespace AsmTools
             return Rn.NOREG;
         }
 
-        #region Register Classifications
-        public static bool IsOpmaskRegister(Rn rn)
+
+    #region Register Classifications
+    public static bool IsOpmaskRegister(Rn rn)
         {
             switch (rn)
             {

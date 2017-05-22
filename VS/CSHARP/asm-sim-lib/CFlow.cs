@@ -77,21 +77,21 @@ namespace AsmSim
             return (lineNumber >= 0) && (lineNumber < this._sourceCode.Count);
         }
 
-        public (string Label, Mnemonic Mnemonic, string[] Args) GetLine(int lineNumber)
+        public (string Label, Mnemonic Mnemonic, string[] Args) Get_Line(int lineNumber)
         {
             Debug.Assert(lineNumber >= 0);
             if (lineNumber >= this._sourceCode.Count)
             {
                 Console.WriteLine("ERROR: CFlow:geLine: lineNumber " + lineNumber + " does not exist");
-                throw new Exception();
+                //throw new Exception();
                 return ("", Mnemonic.NONE, null);
             }
             return this._sourceCode[lineNumber];
         }
 
-        public string GetLineStr(int lineNumber)
+        public string Get_Line_Str(int lineNumber)
         {
-            return (this.HasLine(lineNumber)) ? CFlow.ToString(this.GetLine(lineNumber)) : "";
+            return (this.HasLine(lineNumber)) ? CFlow.ToString(this.Get_Line(lineNumber)) : "";
         }
         /*
         /// <summary>for the provided mergePoint, return the branchKeys </summary>
@@ -120,13 +120,28 @@ namespace AsmSim
 
         public bool Has_Prev_LineNumber(int lineNumber)
         {
-            return this._graph.IsInEdgesEmpty(lineNumber);
+            return !this._graph.IsInEdgesEmpty(lineNumber);
+        }
+
+        public bool Has_Next_LineNumber(int lineNumber)
+        {
+            return !this._graph.IsOutEdgesEmpty(lineNumber);
+        }
+
+        public int Number_Prev_LineNumbers(int lineNumber)
+        {
+            return this._graph.InDegree(lineNumber);
+        }
+
+        public int Number_Next_LineNumbers(int lineNumber)
+        {
+            return this._graph.OutDegree(lineNumber);
         }
 
         /// <summary>
         /// Get the previous line numbers and whether those line numbers branched to the current line number
         /// </summary>
-        public IEnumerable<(int LineNumber, bool IsBranch)> GetPrevLineNumber(int lineNumber)
+        public IEnumerable<(int LineNumber, bool IsBranch)> Get_Prev_LineNumber(int lineNumber)
         {
             foreach (var v in this._graph.InEdges(lineNumber))
             {
@@ -134,7 +149,7 @@ namespace AsmSim
             }
         }
 
-        public (int Regular, int Branch) GetNextLineNumber(int lineNumber)
+        public (int Regular, int Branch) Get_Next_LineNumber(int lineNumber)
         {
             int Regular = -1;
             int Branch = -1;
@@ -159,7 +174,7 @@ namespace AsmSim
         {
             if (this.IsBranchPoint(lineNumber))
             {
-                var next = this.GetNextLineNumber(lineNumber);
+                var next = this.Get_Next_LineNumber(lineNumber);
                 bool hasCodePath_Branch = HasCodePath(next.Branch, lineNumber);
                 bool hasCodePath_Regular = HasCodePath(next.Regular, lineNumber);
 
@@ -184,7 +199,7 @@ namespace AsmSim
                 int loopLineNumber = -1;
                 // TODO return the smalles loop 
 
-                foreach (var v in this.GetPrevLineNumber(lineNumber))
+                foreach (var v in this.Get_Prev_LineNumber(lineNumber))
                 {
                     if (HasCodePath(lineNumber, v.LineNumber))
                     {
@@ -218,7 +233,7 @@ namespace AsmSim
                 if (this.HasLine(lineNumber2) && !result.Contains(lineNumber2))
                 {
                     result.Add(lineNumber2);
-                    var next = this.GetNextLineNumber(lineNumber2);
+                    var next = this.Get_Next_LineNumber(lineNumber2);
                     FutureLineNumbers_Local(next.Regular);
                     FutureLineNumbers_Local(next.Branch);
                 }
@@ -230,7 +245,7 @@ namespace AsmSim
         {
             if (this.HasLine(lineNumber))
             {
-                var lineContent = this.GetLine(lineNumber);
+                var lineContent = this.Get_Line(lineNumber);
                 Static_Jump(lineContent.Mnemonic, lineContent.Args, lineNumber, out int jumpTo1, out int jumpTo2);
                 return ((jumpTo1 >= 0) && (jumpTo2 >= 0));
             }
@@ -243,7 +258,7 @@ namespace AsmSim
         /// <summary>A MergePoint is a code line which has at least two control flows that merge into this line</summary>
         public bool IsMergePoint(int lineNumber)
         {
-            var enumerator = this.GetPrevLineNumber(lineNumber).GetEnumerator();
+            var enumerator = this.Get_Prev_LineNumber(lineNumber).GetEnumerator();
             return (enumerator.MoveNext() && enumerator.MoveNext());
         }
 
@@ -280,14 +295,14 @@ namespace AsmSim
             for (int i = 0; i < this._sourceCode.Count; ++i)
             {
                 sb.Append("Line " + i + ": ");
-                sb.Append(this.GetLineStr(i));
+                sb.Append(this.Get_Line_Str(i));
                 sb.Append(" [Prev:");
-                foreach (var previous in this.GetPrevLineNumber(i))
+                foreach (var previous in this.Get_Prev_LineNumber(i))
                 {
                     sb.Append(previous.LineNumber + ((previous.IsBranch) ? "B" : "R") + ",");  // B=Branching; R=Regular Continuation
                 }
                 sb.Append("][Next:");
-                var nextLineNumber = this.GetNextLineNumber(i);
+                var nextLineNumber = this.Get_Next_LineNumber(i);
                 if (nextLineNumber.Regular != -1) sb.Append(nextLineNumber.Regular + "R,");
                 if (nextLineNumber.Branch != -1) sb.Append(nextLineNumber.Branch + "B");
                 sb.AppendLine("]");

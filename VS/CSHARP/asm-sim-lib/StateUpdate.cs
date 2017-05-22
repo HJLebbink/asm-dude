@@ -572,11 +572,13 @@ namespace AsmSim
                 BoolExpr b = this.Get_Raw_private(reg, true);
                 if (b != null) sb.AppendLine(reg + ": " + ToolsZ3.ToString(b));
             }
-            foreach (BranchInfo b in this._branchInfo)
+            if (this._branchInfo != null)
             {
-                sb.AppendLine(b.ToString());
+                foreach (BranchInfo b in this._branchInfo)
+                {
+                    sb.AppendLine(b.ToString());
+                }
             }
-
 
             return sb.ToString();
         }

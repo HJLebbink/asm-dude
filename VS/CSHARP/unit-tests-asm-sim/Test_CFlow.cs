@@ -28,25 +28,25 @@ namespace unit_tests_asm_z3
             if (logToDisplay) Console.WriteLine(flow);
 
             Assert.AreEqual(9, flow.NLines);
-            Assert.AreEqual((1, 3), flow.GetNextLineNumber(0));
-            Assert.AreEqual((2, -1), flow.GetNextLineNumber(1));
-            Assert.AreEqual((-1, 5), flow.GetNextLineNumber(2));
-            Assert.AreEqual((4, -1), flow.GetNextLineNumber(3));
-            Assert.AreEqual((5, -1), flow.GetNextLineNumber(4));
-            Assert.AreEqual((6, -1), flow.GetNextLineNumber(5));
-            Assert.AreEqual((7, -1), flow.GetNextLineNumber(6));
-            Assert.AreEqual((8, 8), flow.GetNextLineNumber(7));
-            Assert.AreEqual((9, -1), flow.GetNextLineNumber(8));
+            Assert.AreEqual((1, 3), flow.Get_Next_LineNumber(0));
+            Assert.AreEqual((2, -1), flow.Get_Next_LineNumber(1));
+            Assert.AreEqual((-1, 5), flow.Get_Next_LineNumber(2));
+            Assert.AreEqual((4, -1), flow.Get_Next_LineNumber(3));
+            Assert.AreEqual((5, -1), flow.Get_Next_LineNumber(4));
+            Assert.AreEqual((6, -1), flow.Get_Next_LineNumber(5));
+            Assert.AreEqual((7, -1), flow.Get_Next_LineNumber(6));
+            Assert.AreEqual((8, 8), flow.Get_Next_LineNumber(7));
+            Assert.AreEqual((9, -1), flow.Get_Next_LineNumber(8));
 
-            var p0 = new List<(int LineNumber, bool IsBranch)>(flow.GetPrevLineNumber(0));
-            var p1 = new List<(int LineNumber, bool IsBranch)>(flow.GetPrevLineNumber(1));
-            var p2 = new List<(int LineNumber, bool IsBranch)>(flow.GetPrevLineNumber(2));
-            var p3 = new List<(int LineNumber, bool IsBranch)>(flow.GetPrevLineNumber(3));
-            var p4 = new List<(int LineNumber, bool IsBranch)>(flow.GetPrevLineNumber(4));
-            var p5 = new List<(int LineNumber, bool IsBranch)>(flow.GetPrevLineNumber(5));
-            var p6 = new List<(int LineNumber, bool IsBranch)>(flow.GetPrevLineNumber(6));
-            var p7 = new List<(int LineNumber, bool IsBranch)>(flow.GetPrevLineNumber(7));
-            var p8 = new List<(int LineNumber, bool IsBranch)>(flow.GetPrevLineNumber(8));
+            var p0 = new List<(int LineNumber, bool IsBranch)>(flow.Get_Prev_LineNumber(0));
+            var p1 = new List<(int LineNumber, bool IsBranch)>(flow.Get_Prev_LineNumber(1));
+            var p2 = new List<(int LineNumber, bool IsBranch)>(flow.Get_Prev_LineNumber(2));
+            var p3 = new List<(int LineNumber, bool IsBranch)>(flow.Get_Prev_LineNumber(3));
+            var p4 = new List<(int LineNumber, bool IsBranch)>(flow.Get_Prev_LineNumber(4));
+            var p5 = new List<(int LineNumber, bool IsBranch)>(flow.Get_Prev_LineNumber(5));
+            var p6 = new List<(int LineNumber, bool IsBranch)>(flow.Get_Prev_LineNumber(6));
+            var p7 = new List<(int LineNumber, bool IsBranch)>(flow.Get_Prev_LineNumber(7));
+            var p8 = new List<(int LineNumber, bool IsBranch)>(flow.Get_Prev_LineNumber(8));
 
             Assert.AreEqual(0, p0.Count);
             Assert.AreEqual(1, p1.Count);

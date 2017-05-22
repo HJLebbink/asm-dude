@@ -863,8 +863,8 @@ namespace AsmSim
             {
                 this.RegularUpdate.Set(Rn.DX, this.Ctx.MkExtract(32, 16, this.Ctx.MkSignExt(16, this.Get(Rn.AX))));
             }
-            public override IEnumerable<Rn> RegsReadStatic { get { return new List<Rn>(1) { Rn.AX }; } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return new List<Rn>(1) { Rn.DX }; } }
+            public override IEnumerable<Rn> RegsReadStatic { get { yield return Rn.AX; } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { yield return Rn.DX; } }
         }
         /// <summary>Convert doubleword to quadword</summary>
         public sealed class Cdq : Opcode0Base
@@ -874,8 +874,8 @@ namespace AsmSim
             {
                 this.RegularUpdate.Set(Rn.EDX, this.Ctx.MkExtract(64, 32, this.Ctx.MkSignExt(32, this.Get(Rn.EAX))));
             }
-            public override IEnumerable<Rn> RegsReadStatic { get { return new List<Rn>(1) { Rn.EAX }; } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return new List<Rn>(1) { Rn.EDX }; } }
+            public override IEnumerable<Rn> RegsReadStatic { get { yield return Rn.EAX; } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { yield return Rn.EDX; } }
         }
         /// <summary>Convert quadword to octoword</summary>
         public sealed class Cqo : Opcode0Base
@@ -885,8 +885,8 @@ namespace AsmSim
             {
                 this.RegularUpdate.Set(Rn.RDX, this.Ctx.MkExtract(128, 64, this.Ctx.MkSignExt(64, this.Get(Rn.RAX))));
             }
-            public override IEnumerable<Rn> RegsReadStatic { get { return new List<Rn>(1) { Rn.RAX }; } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return new List<Rn>(1) { Rn.RDX }; } }
+            public override IEnumerable<Rn> RegsReadStatic { get { yield return Rn.RAX; } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { yield return Rn.RDX; } }
         }
         /// <summary>Convert byte to word</summary>
         public sealed class Cbw : Opcode0Base
@@ -896,8 +896,8 @@ namespace AsmSim
             {
                 this.RegularUpdate.Set(Rn.AX, this.Ctx.MkSignExt(8, this.Get(Rn.AL)));
             }
-            public override IEnumerable<Rn> RegsReadStatic { get { return new List<Rn>(1) { Rn.AL }; } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return new List<Rn>(1) { Rn.AH }; } }
+            public override IEnumerable<Rn> RegsReadStatic { get { yield return Rn.AL; } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { yield return Rn.AH; } }
         }
         /// <summary>Convert word to doubleword in EAX register</summary>
         public sealed class Cwde : Opcode0Base
@@ -907,8 +907,8 @@ namespace AsmSim
             {
                 this.RegularUpdate.Set(Rn.EAX, this.Ctx.MkSignExt(16, this.Get(Rn.AX)));
             }
-            public override IEnumerable<Rn> RegsReadStatic { get { return new List<Rn>(1) { Rn.AX }; } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return new List<Rn>(1) { Rn.EAX }; } }
+            public override IEnumerable<Rn> RegsReadStatic { get { yield return Rn.AX; } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { yield return Rn.EAX; } }
         }
         /// <summary>Move and sign extend</summary>
         public sealed class Cdqe : Opcode0Base
@@ -918,8 +918,8 @@ namespace AsmSim
             {
                 this.RegularUpdate.Set(Rn.RAX, this.Ctx.MkSignExt(32, this.Get(Rn.EAX)));
             }
-            public override IEnumerable<Rn> RegsReadStatic { get { return new List<Rn>(1) { Rn.EAX }; } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return new List<Rn>(1) { Rn.RAX }; } }
+            public override IEnumerable<Rn> RegsReadStatic { get { yield return Rn.EAX; } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { yield return Rn.RAX; } }
         }
 
         /// <summary>Move and sign extend</summary>
@@ -1306,6 +1306,7 @@ namespace AsmSim
                 {
                     if (this.NOperands == 1)
                     {
+                        if (this.op1 == null) yield break;
                         switch (this.op1.NBits)
                         {
                             case 8:
@@ -1334,6 +1335,7 @@ namespace AsmSim
             {
                 get
                 {
+                    if (this.op1 == null) yield break;
                     if (this.NOperands == 1)
                     {
                         switch (this.op1.NBits)
@@ -1358,10 +1360,7 @@ namespace AsmSim
                     }
                     else
                     {
-                        foreach (Rn r in ToRegEnumerable(this.op1))
-                        {
-                            yield return r;
-                        }
+                        foreach (Rn r in ToRegEnumerable(this.op1)) yield return r;
                     }
                 }
             }
@@ -1432,6 +1431,7 @@ namespace AsmSim
             {
                 get
                 {
+                    if (this.op1 == null) yield break;
                     switch (this.op1.NBits)
                     {
                         case 8:
@@ -1455,6 +1455,7 @@ namespace AsmSim
             {
                 get
                 {
+                    if (this.op1 == null) yield break;
                     switch (this.op1.NBits)
                     {
                         case 8:
@@ -1554,6 +1555,7 @@ namespace AsmSim
             {
                 get
                 {
+                    if (this.op1 == null) yield break;
                     switch (this.op1.NBits)
                     {
                         case 8:
@@ -1577,6 +1579,7 @@ namespace AsmSim
             {
                 get
                 {
+                    if (this.op1 == null) yield break;
                     switch (this.op1.NBits)
                     {
                         case 8:
@@ -1676,6 +1679,7 @@ namespace AsmSim
             {
                 get
                 {
+                    if (this.op1 == null) yield break;
                     switch (this.op1.NBits)
                     {
                         case 8:
@@ -1699,6 +1703,7 @@ namespace AsmSim
             {
                 get
                 {
+                    if (this.op1 == null) yield break;
                     switch (this.op1.NBits)
                     {
                         case 8:

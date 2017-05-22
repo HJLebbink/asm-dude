@@ -342,13 +342,13 @@ namespace AsmSim
                 {
                     IList<State> states_Before = new List<State>(tree_Forward.States_Before(lineNumber));
                     State state_Before = states_Before[0];
-                    Console.WriteLine("Tree_Forward: Before lineNumber " + lineNumber + " \"" + flow.GetLineStr(lineNumber) + "\", we know:\n" + state_Before);
+                    Console.WriteLine("Tree_Forward: Before lineNumber " + lineNumber + " \"" + flow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
                 }
                 if (false)
                 {
                     IList<State> states_After = new List<State>(tree_Forward.States_After(lineNumber));
                     State state_After = states_After[0];
-                    Console.WriteLine("Tree_Forward: After lineNumber " + lineNumber + " \"" + flow.GetLineStr(lineNumber) + "\", we know:\n" + state_After);
+                    Console.WriteLine("Tree_Forward: After lineNumber " + lineNumber + " \"" + flow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
                 }
                 if (true)
                 {
@@ -367,13 +367,13 @@ namespace AsmSim
                 {
                     IList<State> states_Before = new List<State>(tree_Backward.States_Before(lineNumber));
                     State state_Before = states_Before[0];
-                    Console.WriteLine("tree_Backward: Before lineNumber " + lineNumber + " \"" + flow.GetLineStr(lineNumber) + "\", we know:\n" + state_Before);
+                    Console.WriteLine("tree_Backward: Before lineNumber " + lineNumber + " \"" + flow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
                 }
                 if (false)
                 {
                     IList<State> states_After = new List<State>(tree_Backward.States_After(lineNumber));
                     State state_After = states_After[0];
-                    Console.WriteLine("tree_Backward: After lineNumber " + lineNumber + " \"" + flow.GetLineStr(lineNumber) + "\", we know:\n" + state_After);
+                    Console.WriteLine("tree_Backward: After lineNumber " + lineNumber + " \"" + flow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
                 }
                 if (true)
                 {
