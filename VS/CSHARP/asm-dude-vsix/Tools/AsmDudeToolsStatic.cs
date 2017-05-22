@@ -57,7 +57,7 @@ namespace AsmDude.Tools
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
 
-        public static ILabelGraph GetOrCreate_Label_Graph(
+        public static LabelGraph GetOrCreate_Label_Graph(
             ITextBuffer buffer,
             IBufferTagAggregatorFactoryService aggregatorFactory,
             ITextDocumentFactoryService docFactory,

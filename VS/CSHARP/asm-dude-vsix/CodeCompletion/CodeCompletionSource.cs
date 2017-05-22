@@ -49,13 +49,13 @@ namespace AsmDude
         private static int MAX_LENGTH_DESCR_TEXT = 120;
 
         private readonly ITextBuffer _buffer;
-        private readonly ILabelGraph _labelGraph;
+        private readonly LabelGraph _labelGraph;
         private readonly IDictionary<AsmTokenType, ImageSource> _icons;
         private readonly AsmDudeTools _asmDudeTools;
         private readonly AsmSimulator _asmSimulator;
         private bool _disposed = false;
 
-        public CodeCompletionSource(ITextBuffer buffer, ILabelGraph labelGraph, AsmSimulator asmSimulator)
+        public CodeCompletionSource(ITextBuffer buffer, LabelGraph labelGraph, AsmSimulator asmSimulator)
         {
             this._buffer = buffer;
             this._labelGraph = labelGraph;

@@ -47,7 +47,7 @@ namespace AsmDude.QuickInfo
     {
         private readonly ITextBuffer _sourceBuffer;
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
-        private readonly ILabelGraph _labelGraph;
+        private readonly LabelGraph _labelGraph;
         private readonly AsmSimulator _asmSimulator;
         private readonly AsmDudeTools _asmDudeTools;
         private readonly Brush _foreground;
@@ -56,8 +56,8 @@ namespace AsmDude.QuickInfo
 
         public AsmQuickInfoSource(
                 ITextBuffer buffer,
-                 IBufferTagAggregatorFactoryService aggregatorFactory,
-                ILabelGraph labelGraph,
+                IBufferTagAggregatorFactoryService aggregatorFactory,
+                LabelGraph labelGraph,
                 AsmSimulator asmSimulator)
         {
             this._sourceBuffer = buffer;

@@ -47,7 +47,7 @@ namespace AsmDude.Squiggles
         private readonly ITextBuffer _sourceBuffer;
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
         private readonly ErrorListProvider _errorListProvider;
-        private readonly ILabelGraph _labelGraph;
+        private readonly LabelGraph _labelGraph;
         private readonly AsmSimulator _asmSimulator;
         private readonly Brush _foreground;
         private readonly SyntaxAnalysis _syntaxAnalysis;
@@ -59,7 +59,7 @@ namespace AsmDude.Squiggles
         internal SquigglesTagger(
             ITextBuffer buffer,
             IBufferTagAggregatorFactoryService aggregatorFactory,
-            ILabelGraph labelGraph,
+            LabelGraph labelGraph,
             AsmSimulator asmSimulator)
         {
             //AsmDudeToolsStatic.Output_INFO("SquigglesTagger: constructor");

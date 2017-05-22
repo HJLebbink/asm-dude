@@ -33,7 +33,7 @@ using AsmTools;
 
 namespace AsmDude.Tools
 {
-    public sealed class LabelGraph : ILabelGraph
+    public sealed class LabelGraph
     {
         #region Fields
         /// <summary>
