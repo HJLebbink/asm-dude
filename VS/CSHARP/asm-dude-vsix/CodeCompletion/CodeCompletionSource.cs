@@ -136,21 +136,25 @@ namespace AsmDude
                     {
                         // Suggest a label
                         var completions = Label_Completions(useCapitals, false);
-                        completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
+                        if (completions.Any<Completion>()) completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
                     }
                     else
                     {
-                        ISet<AsmTokenType> selected1 = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic };
-                        var completions1 = Selected_Completions(useCapitals, selected1, true);
-                        completionSets.Add(new CompletionSet("All", "All", applicableTo, completions1, Enumerable.Empty<Completion>()));
-
-                        ISet<AsmTokenType> selected2 = new HashSet<AsmTokenType> { AsmTokenType.Jump, AsmTokenType.Mnemonic };
-                        var completions2 = Selected_Completions(useCapitals, selected2, false);
-                        completionSets.Add(new CompletionSet("Instr", "Instr", applicableTo, completions2, Enumerable.Empty<Completion>()));
-
-                        ISet<AsmTokenType> selected3 = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Misc };
-                        var completions3 = Selected_Completions(useCapitals, selected3, true);
-                        completionSets.Add(new CompletionSet("Directive", "Directive", applicableTo, completions3, Enumerable.Empty<Completion>()));
+                        {
+                            ISet<AsmTokenType> selected1 = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic };
+                            var completions1 = Selected_Completions(useCapitals, selected1, true);
+                            if (completions1.Any<Completion>()) completionSets.Add(new CompletionSet("All", "All", applicableTo, completions1, Enumerable.Empty<Completion>()));
+                        }
+                        if (false) {
+                            ISet<AsmTokenType> selected2 = new HashSet<AsmTokenType> { AsmTokenType.Jump, AsmTokenType.Mnemonic };
+                            var completions2 = Selected_Completions(useCapitals, selected2, false);
+                            if (completions2.Any<Completion>()) completionSets.Add(new CompletionSet("Instr", "Instr", applicableTo, completions2, Enumerable.Empty<Completion>()));
+                        }
+                        if (false) {
+                            ISet<AsmTokenType> selected3 = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Misc };
+                            var completions3 = Selected_Completions(useCapitals, selected3, true);
+                            if (completions3.Any<Completion>()) completionSets.Add(new CompletionSet("Directive", "Directive", applicableTo, completions3, Enumerable.Empty<Completion>()));
+                        }
                     }
                 }
                 else
@@ -162,14 +166,14 @@ namespace AsmDude
                         //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:AugmentCompletionSession; previous keyword is a jump mnemonic");
                         // previous keyword is jump (or call) mnemonic. Suggest "SHORT" or a label
                         var completions = Label_Completions(useCapitals, true);
-                        completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
+                        if (completions.Any<Completion>()) completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
 
                     }
                     else if (previousKeyword.Equals("SHORT") || previousKeyword.Equals("NEAR"))
                     {
                         // Suggest a label
                         var completions = Label_Completions(useCapitals, false);
-                        completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
+                        if (completions.Any<Completion>()) completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
                     }
                     else
                     {
@@ -190,7 +194,7 @@ namespace AsmDude
                             }
                         }
                         var completions = this.Mnemonic_Operand_Completions(useCapitals, allowed, line.LineNumber);
-                        completionSets.Add(new CompletionSet("All", "All", applicableTo, completions, Enumerable.Empty<Completion>()));
+                        if (completions.Any<Completion>()) completionSets.Add(new CompletionSet("All", "All", applicableTo, completions, Enumerable.Empty<Completion>()));
                     }
                 }
                 #endregion

@@ -592,7 +592,7 @@ namespace AsmDude.Squiggles
 
                             if (Settings.Default.IntelliSense_Show_ClashingLabels)
                             {
-                                foreach (KeyValuePair<uint, string> entry in this._labelGraph.Label_Clashes)
+                                foreach (var entry in this._labelGraph.Label_Clashes) // TODO Label_Clashes does not return the classes in any particular order, 
                                 {
                                     string label = entry.Value;
                                     int lineNumber = this._labelGraph.Get_Linenumber(entry.Key);
@@ -615,7 +615,7 @@ namespace AsmDude.Squiggles
                             }
                             if (Settings.Default.IntelliSense_Show_UndefinedLabels)
                             {
-                                foreach (KeyValuePair<uint, string> entry in this._labelGraph.Undefined_Labels)
+                                foreach (var entry in this._labelGraph.Undefined_Labels)
                                 {
                                     string label = entry.Value;
                                     int lineNumber = this._labelGraph.Get_Linenumber(entry.Key);
@@ -638,10 +638,10 @@ namespace AsmDude.Squiggles
                             }
                             if (Settings.Default.IntelliSense_Show_Undefined_Includes)
                             {
-                                foreach (var tup in this._labelGraph.Undefined_Includes)
+                                foreach (var entry in this._labelGraph.Undefined_Includes)
                                 {
-                                    string include = tup.Include_Filename;
-                                    int lineNumber = tup.LineNumber;
+                                    string include = entry.Include_Filename;
+                                    int lineNumber = entry.LineNumber;
                                     //TODO retrieve the lineContent of the correct buffer!
                                     string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
 
@@ -650,9 +650,9 @@ namespace AsmDude.Squiggles
                                         SubcategoryIndex = (int)AsmErrorEnum.INCLUDE_UNDEFINED,
                                         Line = lineNumber,
                                         Column = Get_Keyword_Begin_End(lineContent, include),
-                                        Text = "Could not resolve include \"" + include + "\" at line " + (lineNumber + 1) + " in file \"" + tup.Source_Filename + "\"",
+                                        Text = "Could not resolve include \"" + include + "\" at line " + (lineNumber + 1) + " in file \"" + entry.Source_Filename + "\"",
                                         ErrorCategory = TaskErrorCategory.Warning,
-                                        Document = tup.Source_Filename
+                                        Document = entry.Source_Filename
                                     };
                                     errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
                                     errorTasks.Add(errorTask);

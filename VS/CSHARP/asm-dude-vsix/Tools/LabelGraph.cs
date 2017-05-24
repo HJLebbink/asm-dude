@@ -20,16 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude.SyntaxHighlighting;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Tagging;
-using Microsoft.VisualStudio.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Tagging;
+using Microsoft.VisualStudio.Utilities;
+
 using AsmTools;
+using AsmDude.SyntaxHighlighting;
+using QuickGraph;
 
 namespace AsmDude.Tools
 {
@@ -56,6 +59,9 @@ namespace AsmDude.Tools
         /// LineNumber = the lineNumber at which the include is defined
         /// </summary>
         private readonly IList<(string Include_Filename, string Path, string Source_Filename, int LineNumber)> _undefined_includes;
+
+        //private readonly BidirectionalGraph<uint, TaggedEdge<uint, (string LabelSource, string LabelTarget)>> _graph; TODO consider using graph
+
         private readonly IDictionary<string, IList<uint>> _usedAt;
         private readonly IDictionary<string, IList<uint>> _defAt;
         private readonly IDictionary<string, IList<uint>> _defAt_PROTO;
@@ -90,6 +96,8 @@ namespace AsmDude.Tools
             this._contentType = contentType;
 
             this._filenames = new Dictionary<uint, string>();
+
+            //this._graph = new BidirectionalGraph<uint, TaggedEdge<uint, (string LabelSource, string LabelTarget)>>(false);
             this._usedAt = new Dictionary<string, IList<uint>>();
             this._defAt = new Dictionary<string, IList<uint>>();
             this._defAt_PROTO = new Dictionary<string, IList<uint>>();
@@ -137,30 +145,25 @@ namespace AsmDude.Tools
             return id <= 0xFFFFFF;
         }
 
-        public SortedDictionary<uint, string> Label_Clashes //TODO consider returning an IEnumerable
+        public IEnumerable<(uint Key, string Value)> Label_Clashes //TODO consider returning an IEnumerable
         {
             get
             {
-                SortedDictionary<uint, string> result = new SortedDictionary<uint, string>();
-                lock (this._updateLock)
+                foreach (KeyValuePair<string, IList<uint>> entry in this._defAt)
                 {
-                    foreach (KeyValuePair<string, IList<uint>> entry in this._defAt)
+                    if (entry.Value.Count > 1)
                     {
-                        if (entry.Value.Count > 1)
+                        string label = entry.Key;
+                        foreach (uint id in entry.Value)
                         {
-                            string label = entry.Key;
-                            foreach (uint id in entry.Value)
-                            {
-                                result.Add(id, label);
-                            }
+                            yield return (id, label);
                         }
                     }
                 }
-                return result;
             }
         }
 
-        public SortedDictionary<uint, string> Undefined_Labels //TODO consider returning an IEnumerable
+        public IEnumerable<(uint Key, string Value)> Undefined_Labels //TODO consider returning an IEnumerable
         {
             get
             {
@@ -192,7 +195,11 @@ namespace AsmDude.Tools
                         }
                     }
                 }
-                return result;
+
+                foreach (var v in result)
+                {
+                    yield return (v.Key, v.Value);
+                }
             }
         }
 
@@ -357,7 +364,7 @@ namespace AsmDude.Tools
 
         public event EventHandler<CustomEventArgs> Reset_Done_Event;
 
-        public IList<(string Include_Filename, string Path, string Source_Filename, int LineNumber)> Undefined_Includes { get { return this._undefined_includes; } }
+        public IEnumerable<(string Include_Filename, string Path, string Source_Filename, int LineNumber)> Undefined_Includes { get { return this._undefined_includes; } }
 
         #endregion Public Methods
 
@@ -412,6 +419,7 @@ namespace AsmDude.Tools
 
             if (true)
             {
+                if (e.Changes.Count == 0) return;
                 Reset_Delayed();
             }
             else
