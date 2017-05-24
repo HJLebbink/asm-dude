@@ -25,9 +25,7 @@ using Microsoft.Z3;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace AsmSim
 {
@@ -559,6 +557,31 @@ namespace AsmSim
             }
         }
 
+
+        public string ToString2()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (Flags flag in this._tools.StateConfig.GetFlagOn())
+            {
+                BoolExpr b = this.Get_Raw_private(flag, true);
+                if (b != null) sb.AppendLine(flag + ": " + ToolsZ3.ToString(b));
+            }
+            foreach (Rn reg in this._tools.StateConfig.GetRegOn())
+            {
+                BoolExpr b = this.Get_Raw_private(reg, true);
+                if (b != null) sb.AppendLine(reg + ": " + ToolsZ3.ToString(b));
+            }
+            if (this._branchInfo != null)
+            {
+                foreach (BranchInfo b in this._branchInfo)
+                {
+                    sb.AppendLine(b.ToString());
+                }
+            }
+            return sb.ToString();
+        }
+
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder("StateUpdate: PrevKey=" + this.PrevKey + "; NextKey=" + this.NextKey + "\n");
@@ -579,7 +602,6 @@ namespace AsmSim
                     sb.AppendLine(b.ToString());
                 }
             }
-
             return sb.ToString();
         }
     }

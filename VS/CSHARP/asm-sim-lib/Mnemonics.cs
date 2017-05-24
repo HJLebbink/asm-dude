@@ -2526,7 +2526,7 @@ namespace AsmSim
                             lineNumber = (int)this.op1.Imm;
                             break;
                         case Ot1.UNKNOWN: // assuming it is a string with a line number in it.
-                            lineNumber = ToolsZ3.GetLineNumberFromLabel(this.op1.ToString(), CFlow.LINENUMBER_SEPARATOR);
+                            lineNumber = ToolsZ3.GetLineNumberFromLabel(this.op1.ToString(), StaticFlow.LINENUMBER_SEPARATOR);
                             break;
                         default:
                             throw new Exception();
@@ -2656,7 +2656,7 @@ namespace AsmSim
                             lineNumber = (int)this.op1.Imm;
                             break;
                         case Ot1.UNKNOWN: // assuming it is a string with a line number in it.
-                            lineNumber = ToolsZ3.GetLineNumberFromLabel(this.op1.ToString(), CFlow.LINENUMBER_SEPARATOR);
+                            lineNumber = ToolsZ3.GetLineNumberFromLabel(this.op1.ToString(), StaticFlow.LINENUMBER_SEPARATOR);
                             break;
                         default:
                             throw new Exception();

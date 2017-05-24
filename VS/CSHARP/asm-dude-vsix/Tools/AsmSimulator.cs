@@ -37,10 +37,10 @@ namespace AsmDude.Tools
     {
         private readonly ITextBuffer _buffer;
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
-        private readonly CFlow _cflow;
+        private readonly StaticFlow _cflow;
         private readonly IDictionary<int, State> _cached_States_After;
         private readonly IDictionary<int, State> _cached_States_Before;
-        private readonly IDictionary<int, ExecutionTree> _cached_Tree;
+        private readonly IDictionary<int, DynamicFlow> _cached_Tree;
 
         public readonly AsmSim.Tools Tools;
         private object _updateLock = new object();
@@ -74,10 +74,9 @@ namespace AsmDude.Tools
                 AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: swithed on");
                 this.Is_Enabled = true;
 
-                this._cflow = new CFlow(this._buffer.CurrentSnapshot.GetText());
                 this._cached_States_After = new Dictionary<int, State>();
                 this._cached_States_Before = new Dictionary<int, State>();
-                this._cached_Tree = new Dictionary<int, ExecutionTree>();
+                this._cached_Tree = new Dictionary<int, DynamicFlow>();
                 this._scheduled_After = new HashSet<int>();
                 this._scheduled_Before = new HashSet<int>();
 
@@ -117,6 +116,10 @@ namespace AsmDude.Tools
                     this.Tools.Parameters.mode_32bit = true;
                     this.Tools.Parameters.mode_16bit = false;
                 }
+                this._cflow = new StaticFlow(this._buffer.CurrentSnapshot.GetText(), this.Tools);
+
+
+
                 this._buffer.Changed += this.Buffer_Changed;
             }
             else
@@ -484,29 +487,29 @@ namespace AsmDude.Tools
             }            
         }
 
-        private ExecutionTree Get_Tree(int lineNumber)
+        private DynamicFlow Get_Tree(int lineNumber)
         {
-            if (this._cached_Tree.TryGetValue(lineNumber, out ExecutionTree result))
+            if (this._cached_Tree.TryGetValue(lineNumber, out DynamicFlow result))
             {
                 return result;
             }
             else
             {
                 this.Tools.StateConfig = Runner.GetUsage_StateConfig(this._cflow, 0, this._cflow.LastLineNumber, this.Tools);
-                result = Runner.Construct_ExecutionTree_Backward(this._cflow, lineNumber, Settings.Default.AsmSim_Number_Of_Steps, this.Tools);
+                result = Runner.Construct_ExecutionGraph_Backward(this._cflow, lineNumber, Settings.Default.AsmSim_Number_Of_Steps, this.Tools);
                 if (result != null) this._cached_Tree.Add(lineNumber, result);
                 return result;
             }
         }
 
-        private State Get_State_After(int lineNumber, ExecutionTree tree)
+        private State Get_State_After(int lineNumber, DynamicFlow tree)
         {
             State result = AsmSim.Tools.Collapse(tree.States_After(lineNumber));
             AsmDudeToolsStatic.Output_INFO("AsmSimulator:Get_State_After: lineNumber " + lineNumber + "\nTree=" + tree.ToString(this._cflow) + "\nState=" + result);
             return result;
         }
 
-        private State Get_State_Before(int lineNumber, ExecutionTree tree)
+        private State Get_State_Before(int lineNumber, DynamicFlow tree)
         {           
             //AsmDudeToolsStatic.Output_INFO("AsmSimulator:Get_State_Before: retrieving state at lineNumber "+lineNumber +" from tree");
             //IList<State> before = new List<State>(tree.States_Before(lineNumber));

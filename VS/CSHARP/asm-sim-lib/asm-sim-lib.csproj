@@ -7,7 +7,7 @@
     <ProjectGuid>{E0D833C8-652E-4026-BDC1-13568940B1A8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AsmSimZ3</RootNamespace>
+    <RootNamespace>AsmSim</RootNamespace>
     <AssemblyName>asm-z3-lib</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -87,7 +87,9 @@
     <Reference Include="Microsoft.VisualStudio.Shell.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -100,8 +102,10 @@
     <Compile Include="BranchInfoStore.cs" />
     <Compile Include="ConditionalElement.cs" />
     <Compile Include="BitOperations.cs" />
-    <Compile Include="CFlow.cs" />
-    <Compile Include="ExecutionTree.cs" />
+    <Compile Include="DotVisualizer.cs" />
+    <Compile Include="GraphTools.cs" />
+    <Compile Include="StaticFlow.cs" />
+    <Compile Include="DynamicFlow.cs" />
     <Compile Include="Runner.cs" />
     <Compile Include="State.cs" />
     <Compile Include="StateConfig.cs" />

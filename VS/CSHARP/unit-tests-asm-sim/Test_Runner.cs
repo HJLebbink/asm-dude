@@ -37,13 +37,13 @@ namespace unit_tests_asm_z3
         /// <summary>Returns Forward, Backward State</summary>
         private (State Forward, State Backward) Equal_Forward_Backward(string programStr, bool logToDispay2, Tools tools)
         {
-            CFlow flow = new CFlow(programStr);
+            StaticFlow flow = new StaticFlow(programStr, tools);
 
             if (logToDispay2) Console.WriteLine(flow.ToString());
 
-            ExecutionTree tree0 = Runner.Construct_ExecutionTree_Forward(flow, 0, 100, tools);
-            //ExecutionTree<IExecutionNode> tree0 = Runner.Construct_ExecutionTree_Forward(flow, 0, 100, tools);
-            ExecutionTree tree1 = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 100, tools);
+            DynamicFlow tree0 = Runner.Construct_ExecutionGraph_Forward(flow, 0, 100, tools);
+            //ExecutionGraph<IExecutionNode> tree0 = Runner.Construct_ExecutionGraph_Forward(flow, 0, 100, tools);
+            DynamicFlow tree1 = Runner.Construct_ExecutionGraph_Backward(flow, flow.LastLineNumber, 100, tools);
 
             //Console.WriteLine("Forward:" + tree0.ToString(flow));
             //Console.WriteLine("Backward:" + tree1.ToString(flow));
@@ -229,10 +229,10 @@ namespace unit_tests_asm_z3
                 "           jz      label1                      " + Environment.NewLine +
                 "label1:                                        ";
 
-            CFlow flow = new CFlow(programStr);
+            StaticFlow flow = new StaticFlow(programStr, tools);
             if (logToDisplay) Console.WriteLine(flow);
 
-            State state2 = Runner.Construct_ExecutionTree_Forward(flow, 0, 10, tools).EndState;
+            State state2 = Runner.Construct_ExecutionGraph_Forward(flow, 0, 10, tools).EndState;
             if (logToDisplay) Console.WriteLine(state2);
 
             TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
@@ -258,10 +258,10 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        20              " + Environment.NewLine +
                 "label2:                                        ";
 
-            CFlow flow = new CFlow(programStr);
+            StaticFlow flow = new StaticFlow(programStr, tools);
             if (logToDisplay2) Console.WriteLine(flow);
 
-            State state2 = Runner.Construct_ExecutionTree_Forward(flow, 0, 10, tools).EndState;
+            State state2 = Runner.Construct_ExecutionGraph_Forward(flow, 0, 10, tools).EndState;
             if (logToDisplay2) Console.WriteLine("state2:\n" + state2);
             TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
 
@@ -298,10 +298,10 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        0               " + Environment.NewLine +
                 "label1:                                        ";
 
-            CFlow flow = new CFlow(programStr);
+            StaticFlow flow = new StaticFlow(programStr, tools);
             if (logToDisplay) Console.WriteLine(flow);
             
-            var tree = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 10, tools);
+            var tree = Runner.Construct_ExecutionGraph_Backward(flow, flow.LastLineNumber, 10, tools);
             var state = tree.EndState;
             if (logToDisplay) Console.WriteLine("Tree:\n"+tree.ToString(flow));
             if (logToDisplay) Console.WriteLine("Backward:\n" + state);
@@ -327,8 +327,8 @@ namespace unit_tests_asm_z3
                 "           mov     rbx,        10              " + Environment.NewLine +
                 "label2:                                        ";
 
-            CFlow flow = new CFlow(programStr);
-            State state2 = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
+            StaticFlow flow = new StaticFlow(programStr, tools);
+            State state2 = Runner.Construct_ExecutionGraph_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
             if (logToDisplay) Console.WriteLine("Backward:\n" + state2);
 
             TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
@@ -351,8 +351,8 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        10              " + Environment.NewLine +
                 "label2:                                        ";
 
-            CFlow flow = new CFlow(programStr);
-            State state2 = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
+            StaticFlow flow = new StaticFlow(programStr, tools);
+            State state2 = Runner.Construct_ExecutionGraph_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
             if (logToDisplay) Console.WriteLine("Backward:\n" + state2);
 
             TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
@@ -376,8 +376,8 @@ namespace unit_tests_asm_z3
                 "label2:                                        " + Environment.NewLine +
                 "           mov     rax,        20              ";
 
-            CFlow flow = new CFlow(programStr);
-            State state2 = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
+            StaticFlow flow = new StaticFlow(programStr, tools);
+            State state2 = Runner.Construct_ExecutionGraph_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
             if (logToDisplay) Console.WriteLine("Backward:\n" + state2);
 
             TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
@@ -404,10 +404,10 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        20              " + Environment.NewLine +
                 "label2:                                        ";
  
-            CFlow flow = new CFlow(programStr);
+            StaticFlow flow = new StaticFlow(programStr, tools);
             if (logToDisplay2) Console.WriteLine(flow);
 
-            State state2 = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
+            State state2 = Runner.Construct_ExecutionGraph_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
             if (logToDisplay2) Console.WriteLine("state2:\n" + state2);
             TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
 
@@ -453,10 +453,10 @@ namespace unit_tests_asm_z3
                 "           jz      label3                      " + Environment.NewLine +
                 "label3:                                        ";
 
-            CFlow flow = new CFlow(programStr);
+            StaticFlow flow = new StaticFlow(programStr, tools);
             if (logToDisplay2) Console.WriteLine(flow);
 
-            State state2 = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
+            State state2 = Runner.Construct_ExecutionGraph_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
             if (logToDisplay2) Console.WriteLine("state2:\n" + state2);
             TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
 
@@ -579,8 +579,8 @@ namespace unit_tests_asm_z3
                 "label2:                                        " + Environment.NewLine +
                 "           mov     rbx, qword ptr[rax]         ";
 
-            CFlow flow = new CFlow(programStr);
-            State state2 = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
+            StaticFlow flow = new StaticFlow(programStr, tools);
+            State state2 = Runner.Construct_ExecutionGraph_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
 
             //if (logToDisplay) Console.WriteLine("state2:\n" + state2);
 
@@ -715,12 +715,12 @@ namespace unit_tests_asm_z3
                 "           dec        rax                      " + Environment.NewLine +
                 "           jnz        label1                   ";
 
-            CFlow flow = new CFlow(programStr);
+            StaticFlow flow = new StaticFlow(programStr, tools);
             if (logToDisplay2) Console.WriteLine(flow);
 
             if (true)
             { 
-                State state = Runner.Construct_ExecutionTree_Forward(flow, 0, 20, tools).EndState;
+                State state = Runner.Construct_ExecutionGraph_Forward(flow, 0, 20, tools).EndState;
                 if (logToDisplay2) Console.WriteLine(state);
                 TestTools.AreEqual(Rn.RAX, 0, state);
                 TestTools.AreEqual(Rn.RBX, 3, state);
@@ -743,12 +743,12 @@ namespace unit_tests_asm_z3
                 "label1:    dec        rax                      " + Environment.NewLine +
                 "           jnz        label1                   ";
 
-            CFlow flow = new CFlow(programStr);
+            StaticFlow flow = new StaticFlow(programStr, tools);
             if (logToDisplay2) Console.WriteLine(flow);
 
             if (true)
             {   // backward
-                State state = Runner.Construct_ExecutionTree_Backward(flow, flow.NLines - 1, 10, tools).EndState;
+                State state = Runner.Construct_ExecutionGraph_Backward(flow, flow.NLines - 1, 10, tools).EndState;
                 if (logToDisplay2) Console.WriteLine(state);
                 TestTools.AreEqual(Rn.RAX, 0, state);
             }

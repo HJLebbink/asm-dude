@@ -24,7 +24,7 @@ namespace unit_tests_asm_z3
                 "           jz      label3                      " + Environment.NewLine +
                 "label3:                                        ";
 
-            CFlow flow = new CFlow(programStr);
+            StaticFlow flow = new StaticFlow(programStr, new Tools());
             if (logToDisplay) Console.WriteLine(flow);
 
             Assert.AreEqual(9, flow.NLines);
@@ -80,15 +80,15 @@ namespace unit_tests_asm_z3
                 "           dec     rax                ;line 3         " + Environment.NewLine +
                 "           jnz     label1             ;line 4         " + Environment.NewLine +
                 "           mov     rcx,        1      ;line 5         ";
-            CFlow flow = new CFlow(programStr);
+            StaticFlow flow = new StaticFlow(programStr, new Tools());
             if (logToDisplay) Console.WriteLine(flow);
 
-            Assert.IsFalse(flow.IsBranchPoint(0));
-            Assert.IsFalse(flow.IsBranchPoint(1));
-            Assert.IsFalse(flow.IsBranchPoint(2));
-            Assert.IsFalse(flow.IsBranchPoint(3));
-            Assert.IsTrue(flow.IsBranchPoint(4));
-            Assert.IsFalse(flow.IsBranchPoint(5));
+            Assert.IsFalse(flow.Is_Branch_Point(0));
+            Assert.IsFalse(flow.Is_Branch_Point(1));
+            Assert.IsFalse(flow.Is_Branch_Point(2));
+            Assert.IsFalse(flow.Is_Branch_Point(3));
+            Assert.IsTrue(flow.Is_Branch_Point(4));
+            Assert.IsFalse(flow.Is_Branch_Point(5));
         }
 
         [TestMethod]
@@ -101,15 +101,15 @@ namespace unit_tests_asm_z3
                "           dec     rax                ;line 3         " + Environment.NewLine +
                "           jnz     label1             ;line 4         " + Environment.NewLine +
                "           mov     rcx,        1      ;line 5         ";
-            CFlow flow = new CFlow(programStr);
+            StaticFlow flow = new StaticFlow(programStr, new Tools());
             if (logToDisplay) Console.WriteLine(flow);
 
-            Assert.IsFalse(flow.IsMergePoint(0));
-            Assert.IsTrue(flow.IsMergePoint(1));
-            Assert.IsFalse(flow.IsMergePoint(2));
-            Assert.IsFalse(flow.IsMergePoint(3));
-            Assert.IsFalse(flow.IsMergePoint(4));
-            Assert.IsFalse(flow.IsMergePoint(5));
+            Assert.IsFalse(flow.Is_Merge_Point(0));
+            Assert.IsTrue(flow.Is_Merge_Point(1));
+            Assert.IsFalse(flow.Is_Merge_Point(2));
+            Assert.IsFalse(flow.Is_Merge_Point(3));
+            Assert.IsFalse(flow.Is_Merge_Point(4));
+            Assert.IsFalse(flow.Is_Merge_Point(5));
         }
 
         [TestMethod]
@@ -123,7 +123,7 @@ namespace unit_tests_asm_z3
                 "           jnz     label1             ;line 4         " + Environment.NewLine +
                 "           mov     rcx,        1      ;line 5         ";
 
-            CFlow flow = new CFlow(programStr);
+            StaticFlow flow = new StaticFlow(programStr, new Tools());
             if (logToDisplay) Console.WriteLine(flow);
 
             var v = flow.FutureLineNumbers(1);
@@ -148,7 +148,7 @@ namespace unit_tests_asm_z3
                 "           jnz     label1             ;line 4         " + Environment.NewLine +
                 "           mov     rcx,        1      ;line 5         ";
 
-            CFlow flow = new CFlow(programStr);
+            StaticFlow flow = new StaticFlow(programStr, new Tools());
             if (logToDisplay) Console.WriteLine(flow);
 
             Assert.IsTrue(flow.HasCodePath(1, 4));
@@ -168,32 +168,32 @@ namespace unit_tests_asm_z3
                 "           jnz     label1             ;line 4         " + Environment.NewLine +
                 "           mov     rcx,        1      ;line 5         ";
 
-            CFlow flow = new CFlow(programStr);
+            StaticFlow flow = new StaticFlow(programStr, new Tools());
             if (logToDisplay) Console.WriteLine(flow);
 
             {
-                var v = flow.IsLoopBranchPoint(0);
+                var v = flow.Is_Loop_Branch_Point(0);
                 Assert.IsFalse(v.IsLoopBranchPoint);
             }
             {
-                var v = flow.IsLoopBranchPoint(1);
+                var v = flow.Is_Loop_Branch_Point(1);
                 Assert.IsFalse(v.IsLoopBranchPoint);
             }
             {
-                var v = flow.IsLoopBranchPoint(2);
+                var v = flow.Is_Loop_Branch_Point(2);
                 Assert.IsFalse(v.IsLoopBranchPoint);
             }
             {
-                var v = flow.IsLoopBranchPoint(3);
+                var v = flow.Is_Loop_Branch_Point(3);
                 Assert.IsFalse(v.IsLoopBranchPoint);
             }
             {
-                var v = flow.IsLoopBranchPoint(4);
+                var v = flow.Is_Loop_Branch_Point(4);
                 Assert.IsTrue(v.IsLoopBranchPoint);
                 Assert.IsFalse(v.BranchToExitLoop);
             }
             {
-                var v = flow.IsLoopBranchPoint(5);
+                var v = flow.Is_Loop_Branch_Point(5);
                 Assert.IsFalse(v.IsLoopBranchPoint);
             }
         }
@@ -209,32 +209,32 @@ namespace unit_tests_asm_z3
                 "           jnz     label1             ;line 4         " + Environment.NewLine +
                 "           mov     rcx,        1      ;line 5         ";
 
-            CFlow flow = new CFlow(programStr);
+            StaticFlow flow = new StaticFlow(programStr, new Tools());
             if (logToDisplay) Console.WriteLine(flow);
 
             {
-                var v = flow.IsLoopMergePoint(0);
+                var v = flow.Is_Loop_Merge_Point(0);
                 Assert.IsFalse(v.IsLoopMergePoint);
             }
             {
-                var v = flow.IsLoopMergePoint(1);
+                var v = flow.Is_Loop_Merge_Point(1);
                 Assert.IsTrue(v.IsLoopMergePoint);
                 //Assert.IsFalse(v.BranchToExitLoop);
             }
             {
-                var v = flow.IsLoopMergePoint(2);
+                var v = flow.Is_Loop_Merge_Point(2);
                 Assert.IsFalse(v.IsLoopMergePoint);
             }
             {
-                var v = flow.IsLoopMergePoint(3);
+                var v = flow.Is_Loop_Merge_Point(3);
                 Assert.IsFalse(v.IsLoopMergePoint);
             }
             {
-                var v = flow.IsLoopMergePoint(4);
+                var v = flow.Is_Loop_Merge_Point(4);
                 Assert.IsFalse(v.IsLoopMergePoint);
             }
             {
-                var v = flow.IsLoopMergePoint(5);
+                var v = flow.Is_Loop_Merge_Point(5);
                 Assert.IsFalse(v.IsLoopMergePoint);
             }
         }

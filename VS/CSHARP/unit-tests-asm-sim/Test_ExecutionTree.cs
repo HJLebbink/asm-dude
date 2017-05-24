@@ -7,7 +7,7 @@ using AsmTools;
 namespace unit_tests_asm_z3
 {
     [TestClass]
-    public class Test_ExecutionTree
+    public class Test_ExecutionGraph
     {
         const bool logToDisplay = true;// TestTools.LOG_TO_DISPLAY;
 
@@ -31,7 +31,7 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
-        public void Test_ExecutionTree_Forward_1()
+        public void Test_ExecutionGraph_Forward_1()
         {
             Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
@@ -42,11 +42,11 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        0       ; line 0        " + Environment.NewLine +
                 "           mov     rbx,        10      ; line 1        " + Environment.NewLine +
                 "           mov     rbx,        rax     ; line 2        ";
-            CFlow flow = new CFlow(programStr);
+            StaticFlow flow = new StaticFlow(programStr, tools);
             if (logToDisplay) Console.WriteLine(flow);
 
             if (true) {
-                ExecutionTree tree_Forward = Runner.Construct_ExecutionTree_Forward(flow, 0, 100, tools);
+                DynamicFlow tree_Forward = Runner.Construct_ExecutionGraph_Forward(flow, 0, 100, tools);
                 if (logToDisplay) Console.WriteLine(tree_Forward.ToString(flow));
 
                 {
@@ -107,7 +107,7 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
-        public void Test_ExecutionTree_Backward_1()
+        public void Test_ExecutionGraph_Backward_1()
         {
             Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
@@ -118,12 +118,12 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        0       ; line 0        " + Environment.NewLine +
                 "           mov     rbx,        10      ; line 1        " + Environment.NewLine +
                 "           mov     rbx,        rax     ; line 2        ";
-            CFlow flow = new CFlow(programStr);
+            StaticFlow flow = new StaticFlow(programStr, tools);
             if (logToDisplay) Console.WriteLine(flow);
 
             if (true)
             {
-                ExecutionTree tree_Backward = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 100, tools);
+                DynamicFlow tree_Backward = Runner.Construct_ExecutionGraph_Backward(flow, flow.LastLineNumber, 100, tools);
                 if (logToDisplay) Console.WriteLine(tree_Backward.ToString(flow));
                 {
                     int lineNumber = 0;

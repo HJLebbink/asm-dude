@@ -31,7 +31,7 @@ namespace AsmSim
     public class State
     {
         #region Fields
-        public static readonly bool SIMPLIFY_ON = true;
+        public static readonly bool SIMPLIFY_ON = false;
 
         public readonly Tools _tools;
         public Tools Tools { get { return this._tools; } }

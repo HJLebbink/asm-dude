@@ -32,6 +32,7 @@ namespace AsmSim
 {
     class AsmSimMain
     {
+        [STAThread]
         static void Main(string[] args)
         {
             DateTime startTime = DateTime.Now;
@@ -42,7 +43,7 @@ namespace AsmSim
 
             //TestGraph();
             //TestMnemonic();
-            TestExecutionTree();
+            TestExecutionGraph();
             //EmptyMemoryTest();
             //ProgramSynthesis1();
             
@@ -185,11 +186,11 @@ namespace AsmSim
                     "label2:                                        " + Environment.NewLine +
                     "           mov     rbx,        0               ";
 
-                CFlow flow1 = new CFlow(programStr);
+                StaticFlow flow1 = new StaticFlow(programStr, tools);
                 Console.WriteLine(flow1);
 
                 tools.Quiet = false;
-                var tree1 = Runner.Construct_ExecutionTree_Backward(flow1, flow1.LastLineNumber, 20, tools);
+                var tree1 = Runner.Construct_ExecutionGraph_Backward(flow1, flow1.LastLineNumber, 20, tools);
            
                 Console.WriteLine(tree1.EndState);
             }
@@ -210,13 +211,13 @@ namespace AsmSim
                 "label2:                                        " + Environment.NewLine +
                 "           mov     bl, byte ptr[rax]         ";
 
-                CFlow flow1 = new CFlow(programStr0);
+                StaticFlow flow1 = new StaticFlow(programStr0, tools);
                 Console.WriteLine(flow1);
 
                 if (false)
                 {
                     tools.Quiet = false;
-                    var tree0 = Runner.Construct_ExecutionTree_Forward(flow1, 0, 10, tools);
+                    var tree0 = Runner.Construct_ExecutionGraph_Forward(flow1, 0, 10, tools);
 
                     int lineNumber_JZ = 0;
                     State state_FirstLine = tree0.States_After(lineNumber_JZ).First();
@@ -229,7 +230,7 @@ namespace AsmSim
                 if (true)
                 {
                     tools.Quiet = false;
-                    var tree1 = Runner.Construct_ExecutionTree_Backward(flow1, flow1.LastLineNumber, 10, tools);
+                    var tree1 = Runner.Construct_ExecutionGraph_Backward(flow1, flow1.LastLineNumber, 10, tools);
 
                     int lineNumber_JZ = 0;
                     State state_FirstLine = tree1.States_After(lineNumber_JZ).First();
@@ -250,8 +251,8 @@ namespace AsmSim
                     "mov rbx, 1" + Environment.NewLine +
                     "mov ptr qword[rbx], 3"; 
                 
-                CFlow flow1 = new CFlow(programStr1);
-                CFlow flow2 = new CFlow(programStr2);
+                StaticFlow flow1 = new StaticFlow(programStr1, tools);
+                StaticFlow flow2 = new StaticFlow(programStr2, tools);
 
                 tools.Quiet = true;
                 tools.StateConfig.Set_All_Off();
@@ -259,8 +260,8 @@ namespace AsmSim
                 tools.StateConfig.RBX = true;
                 tools.StateConfig.mem = true;
 
-                var tree1 = Runner.Construct_ExecutionTree_Forward(flow1, 0, 3, tools);
-                var tree2 = Runner.Construct_ExecutionTree_Forward(flow2, 0, 3, tools);
+                var tree1 = Runner.Construct_ExecutionGraph_Forward(flow1, 0, 3, tools);
+                var tree2 = Runner.Construct_ExecutionGraph_Forward(flow2, 0, 3, tools);
 
                 //Console.WriteLine(tree1.ToString(flow1));
                 State state1 = tree1.EndState;
@@ -281,13 +282,13 @@ namespace AsmSim
                     "mov rax, 1" + Environment.NewLine +
                     "mov rbx, 1";
 
-                CFlow flow1 = new CFlow(programStr1);
-                CFlow flow2 = new CFlow(programStr2);
+                StaticFlow flow1 = new StaticFlow(programStr1, tools);
+                StaticFlow flow2 = new StaticFlow(programStr2, tools);
 
                 tools.Quiet = true;
 
-                var tree1 = Runner.Construct_ExecutionTree_Forward(flow1, 0, 3, tools);
-                var tree2 = Runner.Construct_ExecutionTree_Forward(flow2, 0, 3, tools);
+                var tree1 = Runner.Construct_ExecutionGraph_Forward(flow1, 0, 3, tools);
+                var tree2 = Runner.Construct_ExecutionGraph_Forward(flow2, 0, 3, tools);
 
                 //Console.WriteLine(tree1.ToString(flow1));
 
@@ -302,7 +303,7 @@ namespace AsmSim
             }
         }
 
-        static void TestExecutionTree()
+        static void TestExecutionGraph()
         {
             Dictionary<string, string> settings = new Dictionary<string, string>
             {
@@ -328,27 +329,29 @@ namespace AsmSim
                 "           mov     rbx,        10              " + Environment.NewLine +
                 "           mov     rbx,        rax             ";
 
-            CFlow flow = new CFlow(programStr1);
-            Console.WriteLine(flow);
+            StaticFlow sFlow = new StaticFlow(programStr1, tools);
+            Console.WriteLine(sFlow);
 
-            if (false)
+            if (true)
             {
                 tools.Quiet = true;
-                ExecutionTree tree_Forward = Runner.Construct_ExecutionTree_Forward(flow, 0, 100, tools);
+                DynamicFlow tree_Forward = Runner.Construct_ExecutionGraph_Forward(sFlow, 0, 100, tools);
                 //Console.WriteLine(tree_Forward.ToString(flow));
+                DotVisualizer.SaveToDot(sFlow, tree_Forward, "test1.dot");
+
 
                 int lineNumber = 1;
                 if (false)
                 {
                     IList<State> states_Before = new List<State>(tree_Forward.States_Before(lineNumber));
                     State state_Before = states_Before[0];
-                    Console.WriteLine("Tree_Forward: Before lineNumber " + lineNumber + " \"" + flow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
+                    Console.WriteLine("Tree_Forward: Before lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
                 }
                 if (false)
                 {
                     IList<State> states_After = new List<State>(tree_Forward.States_After(lineNumber));
                     State state_After = states_After[0];
-                    Console.WriteLine("Tree_Forward: After lineNumber " + lineNumber + " \"" + flow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
+                    Console.WriteLine("Tree_Forward: After lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
                 }
                 if (true)
                 {
@@ -356,10 +359,10 @@ namespace AsmSim
                     Console.WriteLine("Tree_Forward: in endState we know:\n" + endState);
                 }
             }
-            if (true)
+            if (false)
             {
                 tools.Quiet = false;
-                ExecutionTree tree_Backward = Runner.Construct_ExecutionTree_Backward(flow, flow.LastLineNumber, 100, tools);
+                DynamicFlow tree_Backward = Runner.Construct_ExecutionGraph_Backward(sFlow, sFlow.LastLineNumber, 100, tools);
                 //Console.WriteLine(tree_Backward.ToString(flow));
 
                 int lineNumber = 1;
@@ -367,13 +370,13 @@ namespace AsmSim
                 {
                     IList<State> states_Before = new List<State>(tree_Backward.States_Before(lineNumber));
                     State state_Before = states_Before[0];
-                    Console.WriteLine("tree_Backward: Before lineNumber " + lineNumber + " \"" + flow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
+                    Console.WriteLine("tree_Backward: Before lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
                 }
                 if (false)
                 {
                     IList<State> states_After = new List<State>(tree_Backward.States_After(lineNumber));
                     State state_After = states_After[0];
-                    Console.WriteLine("tree_Backward: After lineNumber " + lineNumber + " \"" + flow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
+                    Console.WriteLine("tree_Backward: After lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
                 }
                 if (true)
                 {

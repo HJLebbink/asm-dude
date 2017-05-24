@@ -25,9 +25,6 @@ using Microsoft.Z3;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AsmSim
 {
@@ -38,6 +35,8 @@ namespace AsmSim
         private readonly AsmParameters _p;
         public StateConfig StateConfig { get; set; }
         public bool ShowUndefConstraints { get; set; }
+
+        public Tools() : this(new Dictionary<string, string>()) {}
 
         public Tools(Dictionary<string, string> settings)
         {
@@ -261,8 +260,8 @@ namespace AsmSim
                 }
                 else
                 {
-                    Console.WriteLine("INFO: Collapsing: state1:\n" + result);
-                    Console.WriteLine("INFO: Collapsing: state2:\n" + prev);
+                    Console.WriteLine("INFO: Tools:Collapsing: state1:\n" + result);
+                    Console.WriteLine("INFO: Tools:Collapsing: state2:\n" + prev);
                     result = new State(result, prev, true);
                 }
             }

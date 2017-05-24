@@ -28,7 +28,7 @@ using QuickGraph;
 
 namespace AsmSim
 {
-    public class ExecutionTree
+    public class DynamicFlow
     {
         #region Fields
 
@@ -39,11 +39,11 @@ namespace AsmSim
         private readonly IDictionary<int, IList<string>> _lineNumber_2_Key;
         private readonly IDictionary<string, (int LineNumber, int Step)> _key_2_LineNumber_Step;
         private readonly string _rootKey;
-
+        public BidirectionalGraph<string, TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)>> Graph { get { return this._graph; } }
         #endregion 
 
         #region Constructors
-        public ExecutionTree(string rootKey, bool forward, Tools tools)
+        public DynamicFlow(string rootKey, bool forward, Tools tools)
         {
             this._rootKey = rootKey;
             this._tools = tools;
@@ -105,6 +105,7 @@ namespace AsmSim
                     foreach (string key in Get_Leafs_Backward_LOCAL(this._rootKey))
                         yield return this.Get_State_Private(key, true);
 
+                #region Local Methods
                 IEnumerable<string> Get_Leafs_Forward_LOCAL(string key)
                 {
                     if (this._graph.IsOutEdgesEmpty(key))
@@ -123,6 +124,7 @@ namespace AsmSim
                             foreach (string v in Get_Leafs_Backward_LOCAL(edge.Source))
                                 yield return v;
                 }
+                #endregion
             }
         }
     
@@ -136,7 +138,7 @@ namespace AsmSim
         {
             if (this._graph.ContainsVertex(key))
             {
-                Console.WriteLine("WARNING: ExecutionTree: Add_Vertex: key " + key + " already exists");
+                Console.WriteLine("INFO: ExecutionGraph: Add_Vertex: key " + key + " already exists");
             }
             else
             {
@@ -167,7 +169,7 @@ namespace AsmSim
         {
             return this.ToString(null);
         }
-        public string ToString(CFlow flow)
+        public string ToString(StaticFlow flow)
         {
             StringBuilder sb = new StringBuilder();
             foreach (var k in this._key_2_LineNumber_Step)
@@ -179,7 +181,7 @@ namespace AsmSim
             return sb.ToString();
         }
 
-        private void ToString(string key, CFlow flow, ref StringBuilder sb)
+        private void ToString(string key, StaticFlow flow, ref StringBuilder sb)
         {
             int lineNumber = this.LineNumber(key);
             string codeLine = (flow == null) ? "" : flow.Get_Line_Str(lineNumber);
@@ -213,7 +215,7 @@ namespace AsmSim
             }
         }
 
-        public string ToStringOverview(CFlow flow, bool showRegisterValues = false)
+        public string ToStringOverview(StaticFlow flow, bool showRegisterValues = false)
         {
             return "TODO";
         }

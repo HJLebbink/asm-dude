@@ -32,48 +32,45 @@ namespace AsmSim
 {
     public static class Runner
     {
-        public static ExecutionTree Construct_ExecutionTree_Forward(
-            CFlow flow,
+        public static DynamicFlow Construct_ExecutionGraph_Forward(
+            StaticFlow flow,
             int startLineNumber,
             int maxSteps,
             Tools tools)
         {
             if (!flow.HasLine(startLineNumber))
             {
-                if (!tools.Quiet) Console.WriteLine("WARNING: Construct_ExecutionTree2_Forward: startLine " + startLineNumber + " does not exist in " + flow);
+                if (!tools.Quiet) Console.WriteLine("WARNING: Construct_ExecutionGraph2_Forward: startLine " + startLineNumber + " does not exist in " + flow);
                 return null;
             }
-            Stack<string> nextKeys = new Stack<string>();
-            int id = 0;
+            var nextKeys = new Stack<string>();
 
             // Get the head of the current state, this head will be the prevKey of the update, nextKey is fresh. 
             // When state is updated, tail is not changed; head is set to the fresh nextKey.
 
             #region Create the Root node
-            ExecutionTree stateTree;
+            DynamicFlow executionGraph;
             {
-                string rootKey = "!" + id++; // Tools.CreateKey(tools.Rand);
+                string rootKey = flow.Get_Key(startLineNumber);
                 nextKeys.Push(rootKey);
-                stateTree = new ExecutionTree(rootKey, true, tools);
-                stateTree.Add_Vertex(rootKey, startLineNumber, 0);
+                executionGraph = new DynamicFlow(rootKey, true, tools);
+                executionGraph.Add_Vertex(rootKey, startLineNumber, 0);
             }
             #endregion
 
             while (nextKeys.Count > 0)
             {
                 string prevKey = nextKeys.Pop();
-                int step = stateTree.Step(prevKey);
+                int step = executionGraph.Step(prevKey);
                 if (step <= maxSteps)
                 {
-                    int currentLineNumber = stateTree.LineNumber(prevKey);
+                    int currentLineNumber = executionGraph.LineNumber(prevKey);
                     if (flow.HasLine(currentLineNumber))
                     {
-                        string nextKey = "!" + id++;// Tools.CreateKey(tools.Rand);
-                        string nextKeyBranch = nextKey + "B";
+                        var nextLineNumber = flow.Get_Next_LineNumber(currentLineNumber);
+                        (string nextKey, string nextKeyBranch) = flow.Get_Key(nextLineNumber);
 
                         var updates = Execute(flow, currentLineNumber, (prevKey, prevKey, nextKey, nextKeyBranch), tools);
-                        var nextLineNumber = flow.Get_Next_LineNumber(currentLineNumber);
-
                         int nextStep = step + 1;
 
                         HandleBranch_LOCAL(currentLineNumber, nextLineNumber.Branch, nextStep, updates.Branch);
@@ -87,28 +84,29 @@ namespace AsmSim
                 {
                     if (nextLineNumber == -1)
                     {
-                        Console.WriteLine("WARNING: Runner:Construct_ExecutionTree_Forward: according to flow there does not exists a branch yet a branch is computed");
-                        throw new Exception();
+                        Console.WriteLine("WARNING: Runner:Construct_ExecutionGraph_Forward: according to flow there does not exists a branch yet a branch is computed");
+                        return;
                     }
-
                     string prevKey = update.PrevKey;
                     string nextKey = update.NextKey;
 
-                    stateTree.Add_Vertex(nextKey, nextLineNumber, nextStep);
-                    stateTree.Add_Edge(true, update);
+                    executionGraph.Add_Vertex(nextKey, nextLineNumber, nextStep);
+                    executionGraph.Add_Edge(true, update);
 
                     //if (nextState.IsConsistent) 
                     nextKeys.Push(nextKey);
 
+                    #region Display
                     if (!tools.Quiet) Console.WriteLine("=====================================");
-                    if (!tools.Quiet) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Forward: stepNext " + nextStep + ": LINE " + currentLineNumber + ": \"" + flow.Get_Line_Str(currentLineNumber) + "\" Branches to LINE " + nextLineNumber);
-                    if (!tools.Quiet && flow.Get_Line(currentLineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Forward: " + update);
-                    if (!tools.Quiet && flow.Get_Line(currentLineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: " + stateTree.State_After(nextKey));
+                    if (!tools.Quiet) Console.WriteLine("INFO: Runner:Construct_ExecutionGraph_Forward: stepNext " + nextStep + ": LINE " + currentLineNumber + ": \"" + flow.Get_Line_Str(currentLineNumber) + "\" Branches to LINE " + nextLineNumber);
+                    if (!tools.Quiet && flow.Get_Line(currentLineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: Runner:Construct_ExecutionGraph_Forward: " + update);
+                    if (!tools.Quiet && flow.Get_Line(currentLineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: " + executionGraph.State_After(nextKey));
+                    #endregion
                 }
                 else if (nextLineNumber != -1)
                 {
-                    Console.WriteLine("WARNING: Runner:Construct_ExecutionTree_Forward: according to flow there exists a branch yet no branch is computed");
-                    throw new Exception();
+                    Console.WriteLine("WARNING: Runner:Construct_ExecutionGraph_Forward: according to flow there exists a branch yet no branch is computed");
+                    return;
                 }
             }
             void HandleRegular_LOCAL(int currentLineNumber, int nextLineNumber, int nextStep, StateUpdate update)
@@ -117,68 +115,67 @@ namespace AsmSim
                 {
                     if (nextLineNumber == -1)
                     {
-                        Console.WriteLine("WARNING: Runner:Construct_ExecutionTree_Forward: according to flow there does not exists a continueyet a continue is computed");
+                        Console.WriteLine("WARNING: Runner:Construct_ExecutionGraph_Forward: according to flow there does not exists a continueyet a continue is computed");
                         throw new Exception();
                     }
 
                     string prevKey = update.PrevKey;
                     string nextKey = update.NextKey;
 
-                    stateTree.Add_Vertex(nextKey, nextLineNumber, nextStep);
-                    stateTree.Add_Edge(false, update);
+                    executionGraph.Add_Vertex(nextKey, nextLineNumber, nextStep);
+                    executionGraph.Add_Edge(false, update);
 
                     //if (nextState.IsConsistent) 
                     nextKeys.Push(nextKey);
 
                     if (!tools.Quiet) Console.WriteLine("=====================================");
-                    if (!tools.Quiet) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Forward: stepNext " + nextStep + ": LINE " + currentLineNumber + ": \"" + flow.Get_Line_Str(currentLineNumber) + "\" Continues to LINE " + nextLineNumber);
-                    if (!tools.Quiet && flow.Get_Line(currentLineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Forward: " + update);
-                    if (!tools.Quiet && flow.Get_Line(currentLineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: " + stateTree.State_After(nextKey));
+                    if (!tools.Quiet) Console.WriteLine("INFO: Runner:Construct_ExecutionGraph_Forward: stepNext " + nextStep + ": LINE " + currentLineNumber + ": \"" + flow.Get_Line_Str(currentLineNumber) + "\" Continues to LINE " + nextLineNumber);
+                    if (!tools.Quiet && flow.Get_Line(currentLineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: Runner:Construct_ExecutionGraph_Forward: " + update);
+                    if (!tools.Quiet && flow.Get_Line(currentLineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: " + executionGraph.State_After(nextKey));
                 }
                 else if (nextLineNumber != -1)
                 {
-                    Console.WriteLine("WARNING: Runner:Construct_ExecutionTree_Forward: according to flow there exists a regular continue yet no continue is computed");
+                    Console.WriteLine("WARNING: Runner:Construct_ExecutionGraph_Forward: according to flow there exists a regular continue yet no continue is computed");
                     throw new Exception();
                 }
             }
-            return stateTree;
+            return executionGraph;
         }
 
-        public static ExecutionTree Construct_ExecutionTree_Backward(
-            CFlow flow,
+        public static DynamicFlow Construct_ExecutionGraph_Backward(
+            StaticFlow flow,
             int startLineNumber,
             int maxSteps,
             Tools tools)
         {
-            return Construct_ExecutionTree_Backward_OLD(flow, startLineNumber, maxSteps, tools);
-            //return Construct_ExecutionTree_Backward_Exp(flow, startLineNumber, maxSteps, tools);
+            return Construct_ExecutionGraph_Backward_OLD(flow, startLineNumber, maxSteps, tools);
+            //return Construct_ExecutionGraph_Backward_Exp(flow, startLineNumber, maxSteps, tools);
         }
 
-        public static ExecutionTree Construct_ExecutionTree_Backward_OLD(
-            CFlow flow,
+        public static DynamicFlow Construct_ExecutionGraph_Backward_OLD(
+            StaticFlow flow,
             int startLineNumber,
             int maxSteps,
             Tools tools)
         {
             if (!flow.Has_Prev_LineNumber(startLineNumber))
             {
-                if (!tools.Quiet) Console.WriteLine("WARNING: Construct_ExecutionTree_Backward: startLine " + startLineNumber + " does not exist in " + flow);
+                if (!tools.Quiet) Console.WriteLine("WARNING: Construct_ExecutionGraph_Backward: startLine " + startLineNumber + " does not exist in " + flow);
                 return null;
             }
 
             Queue<string> prevKeys = new Queue<string>();
-            int id = 0;
 
             // Get the tail of the current state, this tail will be the nextKey, the prevKey is fresh.
             // When the state is updated, the head is unaltered, tail is set to the fresh prevKey.
 
             #region Create the Root node
-            string rootKey = "!" + id--; // Tools.CreateKey(tools.Rand);
+            string rootKey = flow.Get_Key(startLineNumber);
 
-            ExecutionTree stateTree;
+            DynamicFlow stateTree;
             {
                 prevKeys.Enqueue(rootKey);
-                stateTree = new ExecutionTree(rootKey, false, tools);
+                stateTree = new DynamicFlow(rootKey, false, tools);
                 stateTree.Add_Vertex(rootKey, startLineNumber, 0);
             }
             #endregion
@@ -197,7 +194,7 @@ namespace AsmSim
                         int prev_LineNumber = prev.LineNumber;
                         if (flow.HasLine(prev_LineNumber))
                         {
-                            string prevKey = "!" + id--;// Tools.CreateKey(tools.Rand);
+                            string prevKey = flow.Get_Key(prev.LineNumber);
 
                             var updates = Runner.Execute(flow, prev.LineNumber, (prevKey, prevKey, nextKey, nextKey), tools);
                             var update = (prev.IsBranch) ? updates.Branch : updates.Regular;
@@ -209,8 +206,8 @@ namespace AsmSim
                             prevKeys.Enqueue(prevKey); // only continue if the state is consistent; no need to go futher in the past if the state is inconsistent.
 
                             if (!tools.Quiet) Console.WriteLine("=====================================");
-                            if (!tools.Quiet) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Backward: stepNext " + nextStep + ": LINE " + prev_LineNumber + ": \"" + flow.Get_Line_Str(prev_LineNumber));
-                            if (!tools.Quiet && flow.Get_Line(prev_LineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Backward: " + update);
+                            if (!tools.Quiet) Console.WriteLine("INFO: Runner:Construct_ExecutionGraph_Backward: stepNext " + nextStep + ": LINE " + prev_LineNumber + ": \"" + flow.Get_Line_Str(prev_LineNumber));
+                            if (!tools.Quiet && flow.Get_Line(prev_LineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: Runner:Construct_ExecutionGraph_Backward: " + update);
                             //if (!tools.Quiet && flow.GetLine(prev_LineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: " + stateTree.State_After(rootKey));
                         }
                     }
@@ -219,14 +216,14 @@ namespace AsmSim
             return stateTree;
         }
 
-        public static ExecutionTree Construct_ExecutionTree_Pseudo_Backward_1(
-            CFlow flow,
+        public static DynamicFlow Construct_ExecutionGraph_Pseudo_Backward_1(
+            StaticFlow flow,
             int startLineNumber,
             int maxSteps,
             Tools tools)
         {
             int id = 0;
-            ExecutionTree tree = new ExecutionTree("!" + id++, true, tools);
+            DynamicFlow tree = new DynamicFlow("!" + id++, true, tools);
 
             IList<int> startLines = Get_Start_Lines_LOCAL(startLineNumber, maxSteps);
 
@@ -266,20 +263,20 @@ namespace AsmSim
             #endregion
         }
 
-        public static ExecutionTree Construct_ExecutionTree_Pseudo_Backward_2(
-            CFlow flow,
+        public static DynamicFlow Construct_ExecutionGraph_Pseudo_Backward_2(
+            StaticFlow flow,
             int startLineNumber,
             int maxSteps,
             Tools tools)
         {
             int id = 0;
-            ExecutionTree tree = new ExecutionTree("!"+id++, true, tools);
+            DynamicFlow tree = new DynamicFlow("!"+id++, true, tools);
             Update_Pseudo_Backward_LOCAL(startLineNumber);
             return tree;
 
             string Update_Pseudo_Backward_LOCAL(int lineNumber) {
 
-                if (flow.IsMergePoint(lineNumber))
+                if (flow.Is_Merge_Point(lineNumber))
                 {
                     int inFlow = flow.Number_Prev_LineNumbers(lineNumber);
 
@@ -296,7 +293,7 @@ namespace AsmSim
                         Console.WriteLine("Not implemented yet");
                     }
                 }
-                else if (flow.IsBranchPoint(lineNumber))
+                else if (flow.Is_Branch_Point(lineNumber))
                 {
 
                 } 
@@ -331,7 +328,7 @@ namespace AsmSim
                 {
                     if (nextLineNumber == -1)
                     {
-                        Console.WriteLine("WARNING: Runner:Construct_ExecutionTree_Forward: according to flow there does not exists a branch yet a branch is computed");
+                        Console.WriteLine("WARNING: Runner:Construct_ExecutionGraph_Forward: according to flow there does not exists a branch yet a branch is computed");
                         throw new Exception();
                     }
 
@@ -342,13 +339,13 @@ namespace AsmSim
                     tree.Add_Edge(true, update);
 
                     if (!tools.Quiet) Console.WriteLine("=====================================");
-                    if (!tools.Quiet) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Forward: stepNext " + nextStep + ": LINE " + currentLineNumber + ": \"" + flow.Get_Line_Str(currentLineNumber) + "\" Branches to LINE " + nextLineNumber);
-                    if (!tools.Quiet && flow.Get_Line(currentLineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Forward: " + update);
+                    if (!tools.Quiet) Console.WriteLine("INFO: Runner:Construct_ExecutionGraph_Forward: stepNext " + nextStep + ": LINE " + currentLineNumber + ": \"" + flow.Get_Line_Str(currentLineNumber) + "\" Branches to LINE " + nextLineNumber);
+                    if (!tools.Quiet && flow.Get_Line(currentLineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: Runner:Construct_ExecutionGraph_Forward: " + update);
                     if (!tools.Quiet && flow.Get_Line(currentLineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: " + tree.State_After(nextKey));
                 }
                 else if (nextLineNumber != -1)
                 {
-                    Console.WriteLine("WARNING: Runner:Construct_ExecutionTree_Forward: according to flow there exists a branch yet no branch is computed");
+                    Console.WriteLine("WARNING: Runner:Construct_ExecutionGraph_Forward: according to flow there exists a branch yet no branch is computed");
                     throw new Exception();
                 }
             }
@@ -358,7 +355,7 @@ namespace AsmSim
                 {
                     if (nextLineNumber == -1)
                     {
-                        Console.WriteLine("WARNING: Runner:Construct_ExecutionTree_Forward: according to flow there does not exists a continueyet a continue is computed");
+                        Console.WriteLine("WARNING: Runner:Construct_ExecutionGraph_Forward: according to flow there does not exists a continueyet a continue is computed");
                         throw new Exception();
                     }
 
@@ -369,13 +366,13 @@ namespace AsmSim
                     tree.Add_Edge(false, update);
 
                     if (!tools.Quiet) Console.WriteLine("=====================================");
-                    if (!tools.Quiet) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Forward: stepNext " + nextStep + ": LINE " + currentLineNumber + ": \"" + flow.Get_Line_Str(currentLineNumber) + "\" Continues to LINE " + nextLineNumber);
-                    if (!tools.Quiet && flow.Get_Line(currentLineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: Runner:Construct_ExecutionTree_Forward: " + update);
+                    if (!tools.Quiet) Console.WriteLine("INFO: Runner:Construct_ExecutionGraph_Forward: stepNext " + nextStep + ": LINE " + currentLineNumber + ": \"" + flow.Get_Line_Str(currentLineNumber) + "\" Continues to LINE " + nextLineNumber);
+                    if (!tools.Quiet && flow.Get_Line(currentLineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: Runner:Construct_ExecutionGraph_Forward: " + update);
                     if (!tools.Quiet && flow.Get_Line(currentLineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: " + tree.State_After(nextKey));
                 }
                 else if (nextLineNumber != -1)
                 {
-                    Console.WriteLine("WARNING: Runner:Construct_ExecutionTree_Forward: according to flow there exists a regular continue yet no continue is computed");
+                    Console.WriteLine("WARNING: Runner:Construct_ExecutionGraph_Forward: according to flow there exists a regular continue yet no continue is computed");
                     throw new Exception();
                 }
             }
@@ -445,7 +442,7 @@ namespace AsmSim
         }
 
         public static (StateUpdate Regular, StateUpdate Branch) Execute(
-            CFlow flow,
+            StaticFlow flow,
             int lineNumber,
             (string prevKey, string prevKeyBranch, string nextKey, string nextKeyBranch) keys,
             Tools tools)
@@ -461,7 +458,7 @@ namespace AsmSim
 
         /// <summary>Get the branch condition for the provided lineNumber</summary>
         public static (BoolExpr Regular, BoolExpr Branch) GetBranchCondition(
-            CFlow flow,
+            StaticFlow flow,
             int lineNumber,
             (string prevKey, string prevKeyBranch, string nextKey, string nextKeyBranch) keys,
             Tools tools)
@@ -474,7 +471,7 @@ namespace AsmSim
         }
 
         public static StateConfig GetUsage_StateConfig(
-            CFlow flow,
+            StaticFlow flow,
             int lineNumberBegin,
             int lineNumberEnd,
             Tools tools)
@@ -488,7 +485,7 @@ namespace AsmSim
             return config;
         }
         public static (ISet<Rn> Regs, Flags Flags, bool Mem) GetUsage(
-            CFlow flow,
+            StaticFlow flow,
             int lineNumberBegin,
             int lineNumberEnd,
             Tools tools)

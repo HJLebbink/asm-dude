@@ -25,48 +25,60 @@ using QuickGraph;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
 
 namespace AsmSim
 {
-    public class CFlow
+    public class StaticFlow
     {
         public static readonly char LINENUMBER_SEPARATOR = '!';
+
+        private readonly Tools _tools;
+        private int _id = 0;
 
         private string _programStr = "";
         private readonly IList<(string label, Mnemonic mnemonic, string[] args)> _sourceCode;
         private readonly BidirectionalGraph<int, TaggedEdge<int, bool>> _graph;
 
         /// <summary>Constructor that creates an empty CFlow</summary>
-        public CFlow() : this("") {}
+        public StaticFlow(Tools tools) : this("", tools) {}
 
-        public CFlow(string programStr)
+        public StaticFlow(string programStr, Tools tools)
         {
             //Console.WriteLine("INFO: CFlow: constructor");
+            this._tools = tools;
             this._sourceCode = new List<(string label, Mnemonic mnemonic, string[] args)>(programStr.Length);
             this._graph = new BidirectionalGraph<int, TaggedEdge<int, bool>>(true); // true because of conditional jump to the next line
             this.Update(programStr);
         }
 
-        #region Setters
-        /// <summary>Update this CFlow with the provided programStr: return true if this CFlow has changed.</summary>
-        public bool Update(string programStr)
-        {
-            //Console.WriteLine("INFO: CFlow:Update");
-            //TODO make intelligent code: return true if something has changed.
-            //if (this._programStr.Equals(programStr,StringComparison.OrdinalIgnoreCase))
-            //{
-            //    Console.WriteLine("INFO: CFlow:Update: superfluous update. Doing nothing");
-            //    return false;
-            //}
-            this._programStr = programStr;
-            this.Update_Lines(programStr);
-            return true;
-        }
-        #endregion
-
         #region Getters
+
+        public string Get_Key(int lineNumber)
+        {
+            if (false)
+            {
+                return Tools.CreateKey(this._tools.Rand);
+            }
+            else
+            {
+                return "!" + lineNumber.ToString();
+            }
+        }
+        public (string Key1, string Key2) Get_Key((int lineNumber1, int lineNumber2) lineNumber)
+        {
+            if (true)
+            {
+                string key1 = Get_Key(lineNumber.lineNumber1);
+                string key2 = Get_Key(lineNumber.lineNumber2);
+                return (Key1: key1, Key2: key2);
+            } else
+            {
+                string key1 = Tools.CreateKey(this._tools.Rand);
+                string key2 = key1 + "B";
+                return (Key1: key1, Key2: key2);
+            }
+        }
 
         public int NLines { get { return this._sourceCode.Count; } }
 
@@ -82,8 +94,7 @@ namespace AsmSim
             Debug.Assert(lineNumber >= 0);
             if (lineNumber >= this._sourceCode.Count)
             {
-                Console.WriteLine("ERROR: CFlow:geLine: lineNumber " + lineNumber + " does not exist");
-                //throw new Exception();
+                Console.WriteLine("WARING: CFlow:geLine: lineNumber " + lineNumber + " does not exist");
                 return ("", Mnemonic.NONE, null);
             }
             return this._sourceCode[lineNumber];
@@ -91,32 +102,20 @@ namespace AsmSim
 
         public string Get_Line_Str(int lineNumber)
         {
-            return (this.HasLine(lineNumber)) ? CFlow.ToString(this.Get_Line(lineNumber)) : "";
+            return (this.HasLine(lineNumber)) ? StaticFlow.ToString(this.Get_Line(lineNumber)) : "";
         }
-        /*
-        /// <summary>for the provided mergePoint, return the branchKeys </summary>
-        public (string Regular, string Branch) getBranchKeys(int lineNumber)
+        
+        /// <summary>for the provided mergePoint (at the provided lineNumber), return the lineNumber at which the merging path branched</summary>
+        public int Get_Branch_LineNumber(int lineNumber)
         {
-            if (this.IsMergePoint(lineNumber))
-            {
-                IList<(int LineNumber, bool IsBranch)> prevLines = new List<(int, bool)>(this.GetPrevLineNumber(lineNumber));
-                int lineNumber1 = prevLines[0].LineNumber;
-                int lineNumber2 = prevLines[1].LineNumber;
-
-                int mergedLineNumber = this.GetFirstMergePoint(lineNumber1, lineNumber2);
-                this.GetLine(mergedLineNumber);
-
-
-            }
-            else throw new Exception();
+            return 0;// GraphTools<bool>.Get_First_Branch_Point(lineNumber, this._graph);
         }
 
         /// <summary> Get the first lineNumber in which the branches in the both lineNumbers merge</summary>
-        public int GetFirstMergePoint(int lineNumber1, int lineNumber2)
+        public int Get_First_Merge_Point(int lineNumber1, int lineNumber2)
         {
-            if ()
+            return 0;// GraphTools<bool>.Get_First_Mutual_Branch_Point_Backwards()
         }
-        */
 
         public bool Has_Prev_LineNumber(int lineNumber)
         {
@@ -143,10 +142,7 @@ namespace AsmSim
         /// </summary>
         public IEnumerable<(int LineNumber, bool IsBranch)> Get_Prev_LineNumber(int lineNumber)
         {
-            foreach (var v in this._graph.InEdges(lineNumber))
-            {
-                yield return (v.Source, v.Tag);
-            }
+            foreach (var v in this._graph.InEdges(lineNumber)) yield return (v.Source, v.Tag);
         }
 
         public (int Regular, int Branch) Get_Next_LineNumber(int lineNumber)
@@ -170,9 +166,9 @@ namespace AsmSim
 
         /// <summary>A LoopBranchPoint is a BranchPoint that choices between leaving the loop or staying in the loop.
         /// BranchToExitLoop is true if the branch code flow is used to leave the loop.</summary>
-        public (bool IsLoopBranchPoint, bool BranchToExitLoop) IsLoopBranchPoint(int lineNumber)
+        public (bool IsLoopBranchPoint, bool BranchToExitLoop) Is_Loop_Branch_Point(int lineNumber)
         {
-            if (this.IsBranchPoint(lineNumber))
+            if (this.Is_Branch_Point(lineNumber))
             {
                 var next = this.Get_Next_LineNumber(lineNumber);
                 bool hasCodePath_Branch = HasCodePath(next.Branch, lineNumber);
@@ -191,13 +187,13 @@ namespace AsmSim
         }
 
         /// <summary>A LoopMergePoint is a MergePoint that merges a loop with its begin point.</summary>
-        public (bool IsLoopMergePoint, int LoopLineNumber) IsLoopMergePoint(int lineNumber)
+        public (bool IsLoopMergePoint, int LoopLineNumber) Is_Loop_Merge_Point(int lineNumber)
         {
-            if (this.IsMergePoint(lineNumber))
+            if (this.Is_Merge_Point(lineNumber))
             {
                 int numberOfLoops = 0;
                 int loopLineNumber = -1;
-                // TODO return the smalles loop 
+                // TODO return the smallest loop 
 
                 foreach (var v in this.Get_Prev_LineNumber(lineNumber))
                 {
@@ -241,27 +237,34 @@ namespace AsmSim
         }
 
         /// <summary>A BranchPoint is an code line that has two next states (that need not be different)</summary>
-        public bool IsBranchPoint(int lineNumber)
+        public bool Is_Branch_Point(int lineNumber)
         {
-            if (this.HasLine(lineNumber))
-            {
-                var lineContent = this.Get_Line(lineNumber);
-                Static_Jump(lineContent.Mnemonic, lineContent.Args, lineNumber, out int jumpTo1, out int jumpTo2);
-                return ((jumpTo1 >= 0) && (jumpTo2 >= 0));
-            }
-            else
-            {
-                return false;
-            }
+            return (this._graph.OutDegree(lineNumber) > 1);
         }
 
         /// <summary>A MergePoint is a code line which has at least two control flows that merge into this line</summary>
-        public bool IsMergePoint(int lineNumber)
+        public bool Is_Merge_Point(int lineNumber)
         {
-            var enumerator = this.Get_Prev_LineNumber(lineNumber).GetEnumerator();
-            return (enumerator.MoveNext() && enumerator.MoveNext());
+            return (this._graph.InDegree(lineNumber) > 1);
         }
 
+        #endregion
+
+        #region Setters
+        /// <summary>Update this CFlow with the provided programStr: return true if this CFlow has changed.</summary>
+        public bool Update(string programStr)
+        {
+            //Console.WriteLine("INFO: CFlow:Update");
+            //TODO make intelligent code: return true if something has changed.
+            //if (this._programStr.Equals(programStr,StringComparison.OrdinalIgnoreCase))
+            //{
+            //    Console.WriteLine("INFO: CFlow:Update: superfluous update. Doing nothing");
+            //    return false;
+            //}
+            this._programStr = programStr;
+            this.Update_Lines(programStr);
+            return true;
+        }
         #endregion
 
         #region ToString Methods
