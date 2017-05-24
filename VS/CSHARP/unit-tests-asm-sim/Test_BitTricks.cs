@@ -138,7 +138,6 @@ namespace unit_tests_asm_z3
                 {
                     ulong rax_value = 0x61a4292198602827;
                     ulong rbx_value = 0x8739140220c24080;
-
                     StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools);
                     updateState.Set(Rn.RAX, rax_value);
                     updateState.Set(Rn.RBX, rbx_value);

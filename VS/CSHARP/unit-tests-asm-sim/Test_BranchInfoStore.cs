@@ -47,14 +47,14 @@ namespace unit_tests_asm_z3
                 string nextKey1 = Tools.CreateKey(tools.Rand);
                 StateUpdate stateUpdate1 = new StateUpdate(state1.HeadKey, nextKey1, tools);
                 stateUpdate1.Set(Rn.RAX, 10);
-                stateUpdate1.Add(new AsmSim.BranchInfo(branchCondition, true, 0));
+                stateUpdate1.BranchInfo = new BranchInfo(branchCondition, true, 0);
                 state1.Update_Forward(stateUpdate1);
             }
             {
                 string nextKey2 = Tools.CreateKey(tools.Rand);
                 StateUpdate stateUpdate2 = new StateUpdate(state2.HeadKey, nextKey2, tools);
                 stateUpdate2.Set(Rn.RAX, 20);
-                stateUpdate2.Add(new AsmSim.BranchInfo(branchCondition, false, 0));
+                stateUpdate2.BranchInfo = new AsmSim.BranchInfo(branchCondition, false, 0);
                 state2.Update_Forward(stateUpdate2);
             }
 

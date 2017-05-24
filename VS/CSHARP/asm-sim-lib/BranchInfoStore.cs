@@ -50,6 +50,7 @@ namespace AsmSim
         }
         #endregion
 
+        #region Getters
         public int Count { get { return (this._branchInfo == null) ? 0 : this._branchInfo.Count; } }
 
         public IEnumerable<BranchInfo> Values
@@ -67,84 +68,17 @@ namespace AsmSim
             }
         }
 
+        #endregion
+
+        #region Setters
         public void Clear()
         {
             this._branchInfo?.Clear();
         }
+        #endregion
 
         public static (BranchInfo BranchPoint1, BranchInfo BranchPoint2, BranchInfoStore MergedBranchInfo) RetrieveSharedBranchInfo(
             BranchInfoStore store1, BranchInfoStore store2, Tools tools)
-        {
-            //return RetrieveSharedBranchInfo_new(store1, store2, tools);
-            return RetrieveSharedBranchInfo_OLD(store1, store2, tools);
-        }
-
-        public static (BranchInfo BranchPoint1, BranchInfo BranchPoint2, BranchInfoStore MergedBranchInfo) RetrieveSharedBranchInfo_new(
-            BranchInfoStore store1, BranchInfoStore store2, Tools tools)
-        {
-            if (store1 == null) return (BranchPoint1: null, BranchPoint2: null, MergedBranchInfo: store2);
-            if (store2 == null) return (BranchPoint1: null, BranchPoint2: null, MergedBranchInfo: store1);
-
-            // foreach linenumber that is both in store1 and store2, check if they are dual, if so return both branch points
-
-            ISet<int> lineNumbers1 = new HashSet<int>();
-            foreach (var v in store1.Values) lineNumbers1.Add(v.LineNumber);
-
-            foreach (var v in store2.Values)
-            {
-                if (lineNumbers1.Contains(v.LineNumber))
-                {   // found a lineNumber that is both in store1 and store2
-                    var t = RetrieveSharedBranchInfo(store1, store2, v.LineNumber, tools);
-                    if (t.MergedBranchInfo != null)
-                    {
-                        return t; // we found a solution, return it;
-                    }
-                }
-            }
-
-            BranchInfoStore store = new BranchInfoStore(tools);
-            store.Add(store1._branchInfo);
-            store.Add(store2._branchInfo);
-            return (null, null, store);
-        }
-
-        private static (BranchInfo BranchPoint1, BranchInfo BranchPoint2, BranchInfoStore MergedBranchInfo) RetrieveSharedBranchInfo(
-            BranchInfoStore store1, BranchInfoStore store2, int lineNumber, Tools tools)
-        {
-            IList<BranchInfo> branchInfoList1 = new List<BranchInfo>(2);
-            IList<BranchInfo> branchInfoList2 = new List<BranchInfo>(2);
-
-            foreach (var b in store1.Values) if (b.LineNumber == lineNumber) branchInfoList1.Add(b);
-            foreach (var b in store2.Values) if (b.LineNumber == lineNumber) branchInfoList2.Add(b);
-
-            if (branchInfoList1.Count == 0) return (null, null, null);
-            if (branchInfoList2.Count == 0) return (null, null, null);
-
-            if ((branchInfoList1.Count == 1) && (branchInfoList2.Count == 1))
-            {
-                BranchInfo br1 = branchInfoList1[0];
-                BranchInfo br2 = branchInfoList2[0];
-
-                //Console.WriteLine("INFO: RetrieveSharedBranchInfo: br1=" + br1 + "; br2=" + br2);
-
-                if (br1.BranchTaken && !br2.BranchTaken)
-                {
-                    return (BranchPoint1: br1, BranchPoint2: br2, MergedBranchInfo: new BranchInfoStore(tools));
-                }
-                else if (!br1.BranchTaken && br2.BranchTaken)
-                {
-                    return (BranchPoint1: br1, BranchPoint2: br2, MergedBranchInfo: new BranchInfoStore(tools));
-                }
-                else
-                {
-                    Console.WriteLine("WARNING: RetrieveSharedBranchInfo: A");
-                }
-            }
-            Console.WriteLine("WARNING: RetrieveSharedBranchInfo: B");
-            return (null, null, null);
-        }
-
-        public static (BranchInfo BranchPoint1, BranchInfo BranchPoint2, BranchInfoStore MergedBranchInfo) RetrieveSharedBranchInfo_OLD(BranchInfoStore store1, BranchInfoStore store2, Tools tools)
         {
             if (store1 == null) return (BranchPoint1: null, BranchPoint2: null, MergedBranchInfo: store2);
             if (store2 == null) return (BranchPoint1: null, BranchPoint2: null, MergedBranchInfo: store1);
@@ -266,6 +200,7 @@ namespace AsmSim
 
         public void Add(BranchInfo branchInfo)
         {
+            if (branchInfo == null) return;
             if (this._branchInfo == null)
             {
                 this._branchInfo = new Dictionary<string, BranchInfo>();

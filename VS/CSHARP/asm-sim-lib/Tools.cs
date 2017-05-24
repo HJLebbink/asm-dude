@@ -260,9 +260,10 @@ namespace AsmSim
                 }
                 else
                 {
-                    Console.WriteLine("INFO: Tools:Collapsing: state1:\n" + result);
-                    Console.WriteLine("INFO: Tools:Collapsing: state2:\n" + prev);
+                    Console.WriteLine("INFO: Tools:Collapse: state1:\n" + result);
+                    Console.WriteLine("INFO: Tools:Collapse: state2:\n" + prev);
                     result = new State(result, prev, true);
+                    Console.WriteLine("INFO: Tools:Collapse: merged state:\n" + result);
                 }
             }
             return result;

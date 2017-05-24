@@ -72,7 +72,7 @@ namespace AsmSim
         public static void Visualize(
             this IVertexAndEdgeListGraph<string, TaggedEdge<string, string>> graph,
             string fileName,
-            string dir = @"c:\temp\")
+            string dir = @"C:\Temp\AsmSim")
         {
             var fullFileName = Path.Combine(dir, fileName);
             var viz = new GraphvizAlgorithm<string, TaggedEdge<string, string>>(graph);
@@ -101,13 +101,16 @@ namespace AsmSim
                 string output = outputFileName;
                 File.WriteAllText(output, dot);
 
-                // assumes dot.exe is on the path:
-                var args = string.Format(@"{0} -Tjpg -O", output);
-                var process = System.Diagnostics.Process.Start("dot.exe", args);
                 if (true)
                 {
-                    process.WaitForExit();
-                    DotVisualizer.ShowPicture(outputFileName + ".jpg");
+                    // assumes dot.exe is on the path:
+                    var args = string.Format(@"{0} -Tjpg -O", output);
+                    var process = System.Diagnostics.Process.Start("dot.exe", args);
+                    if (true)
+                    {
+                        process.WaitForExit();
+                        DotVisualizer.ShowPicture(outputFileName + ".jpg");
+                    }
                 }
                 return output;
             }

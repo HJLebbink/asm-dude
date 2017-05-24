@@ -496,7 +496,7 @@ namespace AsmDude.Tools
             else
             {
                 this.Tools.StateConfig = Runner.GetUsage_StateConfig(this._cflow, 0, this._cflow.LastLineNumber, this.Tools);
-                result = Runner.Construct_ExecutionGraph_Backward(this._cflow, lineNumber, Settings.Default.AsmSim_Number_Of_Steps, this.Tools);
+                result = Runner.Construct_DynamicFlow_Backward(this._cflow, lineNumber, Settings.Default.AsmSim_Number_Of_Steps, this.Tools);
                 if (result != null) this._cached_Tree.Add(lineNumber, result);
                 return result;
             }

@@ -41,9 +41,9 @@ namespace unit_tests_asm_z3
 
             if (logToDispay2) Console.WriteLine(flow.ToString());
 
-            DynamicFlow tree0 = Runner.Construct_ExecutionGraph_Forward(flow, 0, 100, tools);
-            //ExecutionGraph<IExecutionNode> tree0 = Runner.Construct_ExecutionGraph_Forward(flow, 0, 100, tools);
-            DynamicFlow tree1 = Runner.Construct_ExecutionGraph_Backward(flow, flow.LastLineNumber, 100, tools);
+            DynamicFlow tree0 = Runner.Construct_DynamicFlow_Forward(flow, 0, 100, tools);
+            //DynamicFlow<IExecutionNode> tree0 = Runner.Construct_DynamicFlow_Forward(flow, 0, 100, tools);
+            DynamicFlow tree1 = Runner.Construct_DynamicFlow_Backward(flow, flow.LastLineNumber, 100, tools);
 
             //Console.WriteLine("Forward:" + tree0.ToString(flow));
             //Console.WriteLine("Backward:" + tree1.ToString(flow));
@@ -232,7 +232,7 @@ namespace unit_tests_asm_z3
             StaticFlow flow = new StaticFlow(programStr, tools);
             if (logToDisplay) Console.WriteLine(flow);
 
-            State state2 = Runner.Construct_ExecutionGraph_Forward(flow, 0, 10, tools).EndState;
+            State state2 = Runner.Construct_DynamicFlow_Forward(flow, 0, 10, tools).EndState;
             if (logToDisplay) Console.WriteLine(state2);
 
             TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
@@ -261,7 +261,7 @@ namespace unit_tests_asm_z3
             StaticFlow flow = new StaticFlow(programStr, tools);
             if (logToDisplay2) Console.WriteLine(flow);
 
-            State state2 = Runner.Construct_ExecutionGraph_Forward(flow, 0, 10, tools).EndState;
+            State state2 = Runner.Construct_DynamicFlow_Forward(flow, 0, 10, tools).EndState;
             if (logToDisplay2) Console.WriteLine("state2:\n" + state2);
             TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
 
@@ -301,7 +301,7 @@ namespace unit_tests_asm_z3
             StaticFlow flow = new StaticFlow(programStr, tools);
             if (logToDisplay) Console.WriteLine(flow);
             
-            var tree = Runner.Construct_ExecutionGraph_Backward(flow, flow.LastLineNumber, 10, tools);
+            var tree = Runner.Construct_DynamicFlow_Backward(flow, flow.LastLineNumber, 10, tools);
             var state = tree.EndState;
             if (logToDisplay) Console.WriteLine("Tree:\n"+tree.ToString(flow));
             if (logToDisplay) Console.WriteLine("Backward:\n" + state);
@@ -328,7 +328,7 @@ namespace unit_tests_asm_z3
                 "label2:                                        ";
 
             StaticFlow flow = new StaticFlow(programStr, tools);
-            State state2 = Runner.Construct_ExecutionGraph_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
+            State state2 = Runner.Construct_DynamicFlow_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
             if (logToDisplay) Console.WriteLine("Backward:\n" + state2);
 
             TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
@@ -352,7 +352,7 @@ namespace unit_tests_asm_z3
                 "label2:                                        ";
 
             StaticFlow flow = new StaticFlow(programStr, tools);
-            State state2 = Runner.Construct_ExecutionGraph_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
+            State state2 = Runner.Construct_DynamicFlow_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
             if (logToDisplay) Console.WriteLine("Backward:\n" + state2);
 
             TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
@@ -377,7 +377,7 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        20              ";
 
             StaticFlow flow = new StaticFlow(programStr, tools);
-            State state2 = Runner.Construct_ExecutionGraph_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
+            State state2 = Runner.Construct_DynamicFlow_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
             if (logToDisplay) Console.WriteLine("Backward:\n" + state2);
 
             TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
@@ -407,7 +407,7 @@ namespace unit_tests_asm_z3
             StaticFlow flow = new StaticFlow(programStr, tools);
             if (logToDisplay2) Console.WriteLine(flow);
 
-            State state2 = Runner.Construct_ExecutionGraph_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
+            State state2 = Runner.Construct_DynamicFlow_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
             if (logToDisplay2) Console.WriteLine("state2:\n" + state2);
             TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
 
@@ -456,7 +456,7 @@ namespace unit_tests_asm_z3
             StaticFlow flow = new StaticFlow(programStr, tools);
             if (logToDisplay2) Console.WriteLine(flow);
 
-            State state2 = Runner.Construct_ExecutionGraph_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
+            State state2 = Runner.Construct_DynamicFlow_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
             if (logToDisplay2) Console.WriteLine("state2:\n" + state2);
             TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
 
@@ -580,7 +580,7 @@ namespace unit_tests_asm_z3
                 "           mov     rbx, qword ptr[rax]         ";
 
             StaticFlow flow = new StaticFlow(programStr, tools);
-            State state2 = Runner.Construct_ExecutionGraph_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
+            State state2 = Runner.Construct_DynamicFlow_Backward(flow, flow.LastLineNumber, 10, tools).EndState;
 
             //if (logToDisplay) Console.WriteLine("state2:\n" + state2);
 
@@ -610,19 +610,23 @@ namespace unit_tests_asm_z3
             State state1 = new State(state0);
             State state2 = new State(state0);
             {
-                StateUpdate updateState1 = new StateUpdate(state1.TailKey, Tools.CreateKey(tools.Rand), tools);
-                updateState1.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.C, state1.HeadKey, state1.Ctx), true, 0));
+                StateUpdate updateState1 = new StateUpdate(state1.TailKey, Tools.CreateKey(tools.Rand), tools)
+                {
+                    BranchInfo = new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.C, state1.HeadKey, state1.Ctx), true, 0)
+                };
                 updateState1.Set(Rn.RAX, 10);
                 updateState1.Set(Flags.CF, Tv.ONE);
-                updateState1.Add(new BranchInfo(state1.Get(Flags.ZF), true, 0));
+                updateState1.BranchInfo = new BranchInfo(state1.Get(Flags.ZF), true, 0);
                 state1.Update_Forward(updateState1);
             }
             {
-                StateUpdate updateState2 = new StateUpdate(state2.TailKey, Tools.CreateKey(tools.Rand), tools);
-                updateState2.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.C, state2.HeadKey, state2.Ctx), true, 0));
+                StateUpdate updateState2 = new StateUpdate(state2.TailKey, Tools.CreateKey(tools.Rand), tools)
+                {
+                    BranchInfo = new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.C, state2.HeadKey, state2.Ctx), true, 0)
+                };
                 updateState2.Set(Rn.RAX, 20);
                 updateState2.Set(Flags.CF, Tv.ZERO);
-                updateState2.Add(new BranchInfo(state2.Get(Flags.ZF), false, 0));
+                updateState2.BranchInfo = new BranchInfo(state2.Get(Flags.ZF), false, 0);
                 state2.Update_Forward(updateState2);
             }
 
@@ -668,13 +672,13 @@ namespace unit_tests_asm_z3
             {
                 StateUpdate updateState1 = new StateUpdate(state1.HeadKey, Tools.CreateKey(state1.Tools.Rand), state1.Tools);
                 updateState1.SetMem(state1.Get(Rn.RAX), 1, nBytes);
-                updateState1.Add(new BranchInfo(branchCondition, false, 0));
+                updateState1.BranchInfo = new BranchInfo(branchCondition, false, 0);
                 state1.Update_Forward(updateState1);
             }
             {
                 StateUpdate updateState2 = new StateUpdate(state2.HeadKey, Tools.CreateKey(state2.Tools.Rand), state2.Tools);
                 updateState2.SetMem(state2.Get(Rn.RAX), 2, nBytes);
-                updateState2.Add(new BranchInfo(branchCondition, true, 0));
+                updateState2.BranchInfo = new BranchInfo(branchCondition, true, 0);
                 state2.Update_Forward(updateState2);
             }
             State mergedState3 = new State(state1, state2, true);
@@ -720,7 +724,7 @@ namespace unit_tests_asm_z3
 
             if (true)
             { 
-                State state = Runner.Construct_ExecutionGraph_Forward(flow, 0, 20, tools).EndState;
+                State state = Runner.Construct_DynamicFlow_Forward(flow, 0, 20, tools).EndState;
                 if (logToDisplay2) Console.WriteLine(state);
                 TestTools.AreEqual(Rn.RAX, 0, state);
                 TestTools.AreEqual(Rn.RBX, 3, state);
@@ -748,7 +752,7 @@ namespace unit_tests_asm_z3
 
             if (true)
             {   // backward
-                State state = Runner.Construct_ExecutionGraph_Backward(flow, flow.NLines - 1, 10, tools).EndState;
+                State state = Runner.Construct_DynamicFlow_Backward(flow, flow.NLines - 1, 10, tools).EndState;
                 if (logToDisplay2) Console.WriteLine(state);
                 TestTools.AreEqual(Rn.RAX, 0, state);
             }

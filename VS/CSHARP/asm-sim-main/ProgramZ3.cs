@@ -43,7 +43,7 @@ namespace AsmSim
 
             //TestGraph();
             //TestMnemonic();
-            TestExecutionGraph();
+            TestDynamicFlow();
             //EmptyMemoryTest();
             //ProgramSynthesis1();
             
@@ -157,7 +157,8 @@ namespace AsmSim
                 string line1 = "add al, bl";
 
                 state.Reset();
-                StateUpdate updateState = new StateUpdate(state.TailKey, Tools.CreateKey(state.Tools.Rand), state.Tools);
+                string nextKey = Tools.CreateKey(state.Tools.Rand);
+                StateUpdate updateState = new StateUpdate(state.TailKey, nextKey, state.Tools);
                 updateState.Set(Rn.AL, a);
                 updateState.Set(Rn.BL, b);
 
@@ -190,7 +191,7 @@ namespace AsmSim
                 Console.WriteLine(flow1);
 
                 tools.Quiet = false;
-                var tree1 = Runner.Construct_ExecutionGraph_Backward(flow1, flow1.LastLineNumber, 20, tools);
+                var tree1 = Runner.Construct_DynamicFlow_Backward(flow1, flow1.LastLineNumber, 20, tools);
            
                 Console.WriteLine(tree1.EndState);
             }
@@ -217,7 +218,7 @@ namespace AsmSim
                 if (false)
                 {
                     tools.Quiet = false;
-                    var tree0 = Runner.Construct_ExecutionGraph_Forward(flow1, 0, 10, tools);
+                    var tree0 = Runner.Construct_DynamicFlow_Forward(flow1, 0, 10, tools);
 
                     int lineNumber_JZ = 0;
                     State state_FirstLine = tree0.States_After(lineNumber_JZ).First();
@@ -230,7 +231,7 @@ namespace AsmSim
                 if (true)
                 {
                     tools.Quiet = false;
-                    var tree1 = Runner.Construct_ExecutionGraph_Backward(flow1, flow1.LastLineNumber, 10, tools);
+                    var tree1 = Runner.Construct_DynamicFlow_Backward(flow1, flow1.LastLineNumber, 10, tools);
 
                     int lineNumber_JZ = 0;
                     State state_FirstLine = tree1.States_After(lineNumber_JZ).First();
@@ -260,8 +261,8 @@ namespace AsmSim
                 tools.StateConfig.RBX = true;
                 tools.StateConfig.mem = true;
 
-                var tree1 = Runner.Construct_ExecutionGraph_Forward(flow1, 0, 3, tools);
-                var tree2 = Runner.Construct_ExecutionGraph_Forward(flow2, 0, 3, tools);
+                var tree1 = Runner.Construct_DynamicFlow_Forward(flow1, 0, 3, tools);
+                var tree2 = Runner.Construct_DynamicFlow_Forward(flow2, 0, 3, tools);
 
                 //Console.WriteLine(tree1.ToString(flow1));
                 State state1 = tree1.EndState;
@@ -287,8 +288,8 @@ namespace AsmSim
 
                 tools.Quiet = true;
 
-                var tree1 = Runner.Construct_ExecutionGraph_Forward(flow1, 0, 3, tools);
-                var tree2 = Runner.Construct_ExecutionGraph_Forward(flow2, 0, 3, tools);
+                var tree1 = Runner.Construct_DynamicFlow_Forward(flow1, 0, 3, tools);
+                var tree2 = Runner.Construct_DynamicFlow_Forward(flow2, 0, 3, tools);
 
                 //Console.WriteLine(tree1.ToString(flow1));
 
@@ -303,7 +304,7 @@ namespace AsmSim
             }
         }
 
-        static void TestExecutionGraph()
+        static void TestDynamicFlow()
         {
             Dictionary<string, string> settings = new Dictionary<string, string>
             {
@@ -329,13 +330,24 @@ namespace AsmSim
                 "           mov     rbx,        10              " + Environment.NewLine +
                 "           mov     rbx,        rax             ";
 
+            string programStr3 =
+                "           cmp     rax,        0               " + Environment.NewLine +
+                "           jz      label1                      " + Environment.NewLine +
+                "           mov     rax,        0               " + Environment.NewLine +
+                "           jmp     label2                      " + Environment.NewLine +
+                "label1:                                        " + Environment.NewLine +
+                "           mov     rax,        1               " + Environment.NewLine +
+                "label2:";
+
+
+
             StaticFlow sFlow = new StaticFlow(programStr1, tools);
             Console.WriteLine(sFlow);
 
             if (true)
             {
                 tools.Quiet = true;
-                DynamicFlow tree_Forward = Runner.Construct_ExecutionGraph_Forward(sFlow, 0, 100, tools);
+                DynamicFlow tree_Forward = Runner.Construct_DynamicFlow_Forward(sFlow, 0, 100, tools);
                 //Console.WriteLine(tree_Forward.ToString(flow));
                 DotVisualizer.SaveToDot(sFlow, tree_Forward, "test1.dot");
 
@@ -359,11 +371,12 @@ namespace AsmSim
                     Console.WriteLine("Tree_Forward: in endState we know:\n" + endState);
                 }
             }
-            if (false)
+            if (true)
             {
-                tools.Quiet = false;
-                DynamicFlow tree_Backward = Runner.Construct_ExecutionGraph_Backward(sFlow, sFlow.LastLineNumber, 100, tools);
+                tools.Quiet = true;
+                DynamicFlow tree_Backward = Runner.Construct_DynamicFlow_Backward(sFlow, sFlow.LastLineNumber, 100, tools);
                 //Console.WriteLine(tree_Backward.ToString(flow));
+                DotVisualizer.SaveToDot(sFlow, tree_Backward, "test2.dot");
 
                 int lineNumber = 1;
                 if (false)

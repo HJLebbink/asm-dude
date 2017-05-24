@@ -2556,8 +2556,8 @@ namespace AsmSim
                 }
                 else
                 {
-                    this.RegularUpdate.Add(new BranchInfo(jumpConditional, false, this.LineNumber));
-                    this.BranchUpdate.Add(new BranchInfo(jumpConditional, true, this.LineNumber));
+                    this.RegularUpdate.BranchInfo = new BranchInfo(jumpConditional, false, this.LineNumber);
+                    this.BranchUpdate.BranchInfo = new BranchInfo(jumpConditional, true, this.LineNumber);
                 }
             }
         }

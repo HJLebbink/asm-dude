@@ -7,7 +7,7 @@ using AsmTools;
 namespace unit_tests_asm_z3
 {
     [TestClass]
-    public class Test_ExecutionGraph
+    public class Test_DynamicFlow
     {
         const bool logToDisplay = true;// TestTools.LOG_TO_DISPLAY;
 
@@ -31,7 +31,7 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
-        public void Test_ExecutionGraph_Forward_1()
+        public void Test_DynamicFlow_Forward_1()
         {
             Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
@@ -46,7 +46,7 @@ namespace unit_tests_asm_z3
             if (logToDisplay) Console.WriteLine(flow);
 
             if (true) {
-                DynamicFlow tree_Forward = Runner.Construct_ExecutionGraph_Forward(flow, 0, 100, tools);
+                DynamicFlow tree_Forward = Runner.Construct_DynamicFlow_Forward(flow, 0, 100, tools);
                 if (logToDisplay) Console.WriteLine(tree_Forward.ToString(flow));
 
                 {
@@ -107,7 +107,7 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
-        public void Test_ExecutionGraph_Backward_1()
+        public void Test_DynamicFlow_Backward_1()
         {
             Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
@@ -123,7 +123,7 @@ namespace unit_tests_asm_z3
 
             if (true)
             {
-                DynamicFlow tree_Backward = Runner.Construct_ExecutionGraph_Backward(flow, flow.LastLineNumber, 100, tools);
+                DynamicFlow tree_Backward = Runner.Construct_DynamicFlow_Backward(flow, flow.LastLineNumber, 100, tools);
                 if (logToDisplay) Console.WriteLine(tree_Backward.ToString(flow));
                 {
                     int lineNumber = 0;

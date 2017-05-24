@@ -105,18 +105,6 @@ namespace AsmSim
             return (this.HasLine(lineNumber)) ? StaticFlow.ToString(this.Get_Line(lineNumber)) : "";
         }
         
-        /// <summary>for the provided mergePoint (at the provided lineNumber), return the lineNumber at which the merging path branched</summary>
-        public int Get_Branch_LineNumber(int lineNumber)
-        {
-            return 0;// GraphTools<bool>.Get_First_Branch_Point(lineNumber, this._graph);
-        }
-
-        /// <summary> Get the first lineNumber in which the branches in the both lineNumbers merge</summary>
-        public int Get_First_Merge_Point(int lineNumber1, int lineNumber2)
-        {
-            return 0;// GraphTools<bool>.Get_First_Mutual_Branch_Point_Backwards()
-        }
-
         public bool Has_Prev_LineNumber(int lineNumber)
         {
             return !this._graph.IsInEdgesEmpty(lineNumber);

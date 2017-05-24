@@ -245,7 +245,7 @@ namespace AsmSim
             this.UndefGrounding = false;
             foreach (BoolExpr expr in stateUpdate.Value) this.Solver.Assert(expr);
             foreach (BoolExpr expr in stateUpdate.Undef) this.Solver_U.Assert(expr);
-            foreach (BranchInfo branchInfo in stateUpdate.BranchInfo) this.BranchInfoStore.Add(branchInfo);
+            this.BranchInfoStore.Add(stateUpdate.BranchInfo);
 
             this.Solver_Dirty = true;
             this.Solver_U_Dirty = true;
@@ -254,17 +254,16 @@ namespace AsmSim
         {
             if (stateUpdate == null) return;
             //if (stateUpdate.Empty) return;
-
             this.Update(stateUpdate);
             this.HeadKey = stateUpdate.NextKey;
         }
-        public void Update_Backward(StateUpdate stateUpdate)
+        public void Update_Backward(StateUpdate stateUpdate, string prevKey)
         {
             if (stateUpdate == null) return;
             if (stateUpdate.Empty) return;
 
             this.Update(stateUpdate);
-            this.TailKey = stateUpdate.PrevKey;
+            this.TailKey = prevKey;
         }
 
         public void Add(BranchInfo branchInfo)

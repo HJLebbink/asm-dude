@@ -36,13 +36,13 @@ namespace AsmSim
         /// <param name="graph"></param>
         /// <returns></returns>
 
-        public static IEnumerable<(int Vertex, int Step)> Get_First_Branch_Point_Backwards(int vertex, BidirectionalGraph<int, TaggedEdge<int, ITag>> graph)
+        public static IEnumerable<(string Vertex, int Step)> Get_First_Branch_Point_Backwards(string vertex, BidirectionalGraph<string, TaggedEdge<string, ITag>> graph)
         {
-            ISet<int> visited = new HashSet<int>();
+            var visited = new HashSet<string>();
             return Get_Branch_Point_Backwards_LOCAL(vertex, 0);
 
             #region Local Method
-            IEnumerable<(int Vertex, int Step)> Get_Branch_Point_Backwards_LOCAL(int v1, int step)
+            IEnumerable<(string Vertex, int Step)> Get_Branch_Point_Backwards_LOCAL(string v1, int step)
             {
                 if (visited.Contains(v1)) yield break;
 
@@ -61,20 +61,20 @@ namespace AsmSim
             }
             #endregion
         }
-        public static IEnumerable<(int Vertex, int Step)> Get_First_Mutual_Branch_Point_Backwards(int vertex, BidirectionalGraph<int, TaggedEdge<int, ITag>> graph)
+        public static IEnumerable<(string Vertex, int Step)> Get_First_Mutual_Branch_Point_Backwards(string vertex, BidirectionalGraph<string, TaggedEdge<string, ITag>> graph)
         {
             int inDegree = graph.InDegree(vertex);
             if (inDegree < 2) yield break; // the provided vertex is not a mergePoint
 
             if (inDegree == 2)
             {
-                int s1 = graph.InEdge(vertex, 0).Source;
-                int s2 = graph.InEdge(vertex, 1).Source;
+                string s1 = graph.InEdge(vertex, 0).Source;
+                string s2 = graph.InEdge(vertex, 1).Source;
 
                 if (s1 != s2)
                 {
-                    var branchPoints1 = new Dictionary<int, int>();
-                    var branchPoints2 = new Dictionary<int, int>();
+                    var branchPoints1 = new Dictionary<string, int>();
+                    var branchPoints2 = new Dictionary<string, int>();
 
                     foreach (var v in Get_First_Branch_Point_Backwards(s1, graph)) branchPoints1.Add(v.Vertex, v.Step);
                     foreach (var v in Get_First_Branch_Point_Backwards(s2, graph)) branchPoints2.Add(v.Vertex, v.Step);
@@ -82,7 +82,7 @@ namespace AsmSim
                     var v1 = branchPoints1.Keys;
                     var v2 = branchPoints2.Keys;
 
-                    foreach (int mutual in v1.Intersect<int>(v2))
+                    foreach (string mutual in v1.Intersect<string>(v2))
                     {
                         int step = Math.Max(branchPoints1[mutual], branchPoints2[mutual]);
                         yield return (mutual, step);
@@ -92,6 +92,35 @@ namespace AsmSim
             else
             {
                 Console.WriteLine("WARNING: Get_First_Mutual_Branch_Point_Backwards: multiple merge points at this the provided vertex " + vertex);
+            }
+        }
+
+
+        public static string Get_Branch_Point(string vertex1, string vertex2, BidirectionalGraph<string, TaggedEdge<string, ITag>> graph)
+        {
+            if (vertex1 == vertex2)
+            {
+                Console.WriteLine("WARNING: GraphTools:Get_First_Branch_Point: vertex1=vertex2=" + vertex1);
+                return null;
+            }
+
+            var branchPoints1 = new HashSet<string>();
+            var branchPoints2 = new HashSet<string>();
+
+            foreach (var v in Get_First_Branch_Point_Backwards(vertex1, graph)) branchPoints1.Add(v.Vertex);
+            foreach (var v in Get_First_Branch_Point_Backwards(vertex2, graph)) branchPoints2.Add(v.Vertex);
+
+            var m = new List<string>(branchPoints1.Intersect<string>(branchPoints2));
+            switch (m.Count)
+            {
+                case 0:
+                    Console.WriteLine("WARNING: GraphTools:Get_First_Branch_Point: no mutual branch point found");
+                    return null;
+                case 1:
+                    return m[0];
+                default:
+                    Console.WriteLine("WARNING: GraphTools:Get_First_Branch_Point: multiple mutual branch points found, returning first.");
+                    return m[0];    
             }
         }
     }

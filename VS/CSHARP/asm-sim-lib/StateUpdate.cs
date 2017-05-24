@@ -33,10 +33,12 @@ namespace AsmSim
     {
         #region Fields
         private readonly Tools _tools;
-        public string PrevKey { get; set; }
-        public string NextKey { get; set; }
+        private string _nextKey;
+        private string _prevKey;
+        private BoolExpr _branchCondition;
+        private string _prevKey2;
         public bool Empty { get; private set; }
-        private IList<BranchInfo> _branchInfo;
+        private BranchInfo _branchInfo;
         #endregion
 
         #region Flags
@@ -103,14 +105,32 @@ namespace AsmSim
         private ArrayExpr _mem_Full = null;
         #endregion
 
+        #region Constructor
+
         /// <summary> Constructor </summary>
         public StateUpdate(string prevKey, string nextKey, Tools tools)
         {
-            this.PrevKey = prevKey;
-            this.NextKey = nextKey;
+            this._branchCondition = null;
+            this._prevKey = prevKey;
+            this._prevKey2 = null;
+            this._nextKey = nextKey;
             this._tools = tools;
             this.Empty = true;
         }
+
+        //TODO consider creating a special StateUpdateMerge class
+        public StateUpdate(BoolExpr branchCondition, string prevKey1, string prevKey2, string nextKey, Tools tools)
+        {
+            this._branchCondition = branchCondition;
+            this._prevKey = prevKey1;
+            this._prevKey2 = prevKey2;
+            this._nextKey = nextKey;
+            this._tools = tools;
+            this.Empty = true;
+        }
+
+
+        #endregion
 
         //TODO
         public BitVecExpr NextLineNumberExpr { get; set; }
@@ -124,11 +144,11 @@ namespace AsmSim
 
                 foreach (Flags flag in this._tools.StateConfig.GetFlagOn())
                 {
-                    yield return this.Get_private(flag, false);
+                    yield return this.Get_Private(flag, false);
                 }
                 foreach (Rn reg in this._tools.StateConfig.GetRegOn())
                 {
-                    yield return this.Get_private(reg, false);
+                    yield return this.Get_Private(reg, false);
                 }
                 if (this._tools.StateConfig.mem)
                 {
@@ -138,7 +158,7 @@ namespace AsmSim
                     }
                     else
                     {
-                        yield return this._mem_Update ?? ctx.MkEq(Tools.Mem_Key(this.NextKey, ctx), Tools.Mem_Key(this.PrevKey, ctx));
+                        yield return this._mem_Update ?? ctx.MkEq(Tools.Mem_Key(this.NextKey, ctx), Tools.Mem_Key(this._prevKey, ctx));
                     }
                 }
             }
@@ -151,11 +171,11 @@ namespace AsmSim
 
                 foreach (Flags flag in this._tools.StateConfig.GetFlagOn())
                 {
-                    yield return this.Get_private(flag, true);
+                    yield return this.Get_Private(flag, true);
                 }
                 foreach (Rn reg in this._tools.StateConfig.GetRegOn())
                 {
-                    yield return this.Get_private(reg, true);
+                    yield return this.Get_Private(reg, true);
                 }
                 if (this._tools.StateConfig.mem)
                 {
@@ -165,29 +185,46 @@ namespace AsmSim
                     }
                     else
                     {
-                        yield return this._mem_Update_U ?? ctx.MkEq(Tools.Mem_Key(this.NextKey, ctx), Tools.Mem_Key(this.PrevKey, ctx));
+                        if (this._branchCondition == null)
+                        {
+                            yield return this._mem_Update_U ?? ctx.MkEq(Tools.Mem_Key(this.NextKey, ctx), Tools.Mem_Key(this._prevKey, ctx));
+                        }
+                        else
+                        {
+                            throw new Exception("TODO");
+                        }
                     }
                 }
             }
         }
-        public IEnumerable<BranchInfo> BranchInfo
-        {
-            get
+        public BranchInfo BranchInfo { 
+            get { return this._branchInfo; }
+            set
             {
-                if (this._branchInfo == null) yield break;
-                foreach (BranchInfo branchInfo in this._branchInfo)
-                {
-                    yield return branchInfo;
-                }
+                if (value != null) this.Empty = false;
+                if (this._branchInfo != null) Console.WriteLine("WARNING: StatusUpdate:BranchInfo.Set: branchInfo is already set.");
+                this._branchInfo = value;
             }
         }
 
-        private BoolExpr Get_private(Rn reg, bool undef)
+
+        private BoolExpr Get_Private(Rn reg, bool undef)
         {
             Context ctx = this._tools.Ctx;
-            return this.Get_Raw_private(reg, undef) ?? ctx.MkEq(Tools.Reg_Key(reg, this.NextKey, ctx), Tools.Reg_Key(reg, this.PrevKey, ctx));
+
+            if (this._branchCondition == null)
+            {
+                return Get_Raw_Private(reg, undef) ?? ctx.MkEq(Tools.Reg_Key(reg, this.NextKey, ctx), Tools.Reg_Key(reg, this._prevKey, ctx));
+            }
+            else
+            {
+                return ctx.MkEq(
+                    Tools.Reg_Key(reg, this.NextKey, ctx), 
+                    ctx.MkITE(this._branchCondition, Tools.Reg_Key(reg, this._prevKey, ctx), Tools.Reg_Key(reg, this._prevKey2, ctx))); 
+            }
+
         }
-        private BoolExpr Get_Raw_private(Rn reg, bool undef)
+        private BoolExpr Get_Raw_Private(Rn reg, bool undef)
         {
             switch (reg)
             {
@@ -214,12 +251,21 @@ namespace AsmSim
                 default: throw new Exception();
             }
         }
-        private BoolExpr Get_private(Flags flag, bool undef)
+
+        private BoolExpr Get_Private(Flags flag, bool undef)
         {
             Context ctx = this._tools.Ctx;
-            return this.Get_Raw_private(flag, undef) ?? ctx.MkEq(Tools.Flag_Key(flag, this.NextKey, ctx), Tools.Flag_Key(flag, this.PrevKey, ctx));
+            if (this._branchCondition == null)
+            {
+                return Get_Raw_Private(flag, undef) ?? ctx.MkEq(Tools.Flag_Key(flag, this.NextKey, ctx), Tools.Flag_Key(flag, this._prevKey, ctx));
+            }
+            else
+            {
+                return ctx.MkEq(Tools.Flag_Key(flag, this.NextKey, ctx), ctx.MkITE(this._branchCondition, Tools.Flag_Key(flag, this._prevKey, ctx), Tools.Flag_Key(flag, this._prevKey2, ctx)));
+            }
+
         }
-        private BoolExpr Get_Raw_private(Flags flag, bool undef)
+        private BoolExpr Get_Raw_Private(Flags flag, bool undef)
         {
             switch (flag)
             {
@@ -235,6 +281,60 @@ namespace AsmSim
         #endregion
 
         #region Setters
+
+        public string NextKey
+        {
+            get { return this._nextKey; }
+
+            set
+            {
+                if (this._nextKey == null)
+                {
+                    this._nextKey = value;
+                }
+                else if (this._nextKey != value)
+                {
+                    Context ctx = this._tools.Ctx;
+
+                    foreach (Flags flag in this._tools.StateConfig.GetFlagOn())
+                    {
+                        {
+                            var expr = this.Get_Raw_Private(flag, false);
+                            if (expr != null) this.Set_Private(flag, expr.Substitute(Tools.Flag_Key(flag, this._nextKey, ctx), Tools.Flag_Key(flag, value, ctx)) as BoolExpr, false);
+                        }
+                        {
+                            var expr = this.Get_Raw_Private(flag, true);
+                            if (expr != null) this.Set_Private(flag, expr.Substitute(Tools.Flag_Key(flag, this._nextKey, ctx), Tools.Flag_Key(flag, value, ctx)) as BoolExpr, true);
+                        }
+                    }
+                    foreach (Rn reg in this._tools.StateConfig.GetRegOn())
+                    {
+                        {
+                            var expr = this.Get_Raw_Private(reg, false);
+                            if (expr != null) this.Set_Private(reg, expr.Substitute(Tools.Reg_Key(reg, this._nextKey, ctx), Tools.Reg_Key(reg, value, ctx)) as BoolExpr, false);
+                        }
+                        {
+                            var expr = this.Get_Raw_Private(reg, true);
+                            if (expr != null) this.Set_Private(reg, expr.Substitute(Tools.Reg_Key(reg, this._nextKey, ctx), Tools.Reg_Key(reg, value, ctx)) as BoolExpr, true);
+                        }
+                    }
+                    if (this._tools.StateConfig.mem)
+                    {
+                        if (this._mem_Update != null)
+                        {
+                            this._mem_Update = this._mem_Update.Substitute(Tools.Mem_Key(this._nextKey, ctx), Tools.Mem_Key(value, ctx)) as BoolExpr;
+                        }
+                        if (this._mem_Update_U != null)
+                        {
+                            this._mem_Update_U = this._mem_Update_U.Substitute(Tools.Mem_Key(this._nextKey, ctx), Tools.Mem_Key(value, ctx)) as BoolExpr;
+                        }
+                    }
+                    this._nextKey = value;
+                }
+            }
+        }
+
+
         #region Set Flag
         public void Set(Flags flag, bool value)
         {
@@ -301,8 +401,8 @@ namespace AsmSim
                 }
             }
 
-            this.Set_private(flag, value_Constraint, false);
-            this.Set_private(flag, undef_Constraint, true);
+            this.Set_Private(flag, value_Constraint, false);
+            this.Set_Private(flag, undef_Constraint, true);
         }
         public void Set_SF_ZF_PF(BitVecExpr value)
         {
@@ -311,7 +411,7 @@ namespace AsmSim
             this.Set(Flags.ZF, ToolsFlags.Create_ZF(value, ctx));
             this.Set(Flags.PF, ToolsFlags.Create_PF(value, ctx));
         }
-        private void Set_private(Flags flag, BoolExpr value, bool undef)
+        private void Set_Private(Flags flag, BoolExpr value, bool undef)
         {
             switch (flag)
             {
@@ -368,14 +468,14 @@ namespace AsmSim
                     }
                 case 16:
                     {
-                        BitVecExpr prefix = ctx.MkExtract(63, 16, Tools.Reg_Key(reg64, this.PrevKey, ctx));
+                        BitVecExpr prefix = ctx.MkExtract(63, 16, Tools.Reg_Key(reg64, this._prevKey, ctx));
                         value = ctx.MkConcat(prefix, value);
                         undef = ctx.MkConcat(prefix, undef);
                         break;
                     }
                 case 8:
                     {
-                        BitVecExpr reg64Expr = Tools.Reg_Key(reg64, this.PrevKey, ctx);
+                        BitVecExpr reg64Expr = Tools.Reg_Key(reg64, this._prevKey, ctx);
                         if (RegisterTools.Is8BitHigh(reg))
                         {
                             BitVecExpr postFix = ctx.MkExtract(7, 0, reg64Expr);
@@ -402,12 +502,12 @@ namespace AsmSim
                 BoolExpr value_Constraint = ctx.MkEq(key, value) as BoolExpr;
                 BoolExpr undef_Constraint = ctx.MkEq(key, undef) as BoolExpr;
 
-                if (this.Get_Raw_private(reg64, false) != null) throw new Exception("Multiple assignments to register " + reg64);
-                this.Set_private(reg64, value_Constraint, false);
-                this.Set_private(reg64, undef_Constraint, true);
+                if (this.Get_Raw_Private(reg64, false) != null) throw new Exception("Multiple assignments to register " + reg64);
+                this.Set_Private(reg64, value_Constraint, false);
+                this.Set_Private(reg64, undef_Constraint, true);
             }
         }
-        private void Set_private(Rn reg, BoolExpr value, bool undef)
+        private void Set_Private(Rn reg, BoolExpr value, bool undef)
         {
             switch (reg)
             {
@@ -459,8 +559,8 @@ namespace AsmSim
         {
             this.Empty = false;
 
-            ArrayExpr newMemContent = Tools.Set_Value_To_Mem(value, address, this.PrevKey, this._tools.Ctx);
-            ArrayExpr newMemContent_U = Tools.Set_Value_To_Mem(undef, address, this.PrevKey, this._tools.Ctx);
+            ArrayExpr newMemContent = Tools.Set_Value_To_Mem(value, address, this._prevKey, this._tools.Ctx);
+            ArrayExpr newMemContent_U = Tools.Set_Value_To_Mem(undef, address, this._prevKey, this._tools.Ctx);
             ArrayExpr memKey = Tools.Mem_Key(this.NextKey, this._tools.Ctx);
 
             //Console.WriteLine("SetMem: memKey=" + memKey + "; new Value=" + newMemContent);
@@ -489,7 +589,7 @@ namespace AsmSim
             }
             else if (operand.IsMem)
             {
-                BitVecExpr address = Tools.Calc_Effective_Address(operand, this.PrevKey, this._tools.Ctx);
+                BitVecExpr address = Tools.Calc_Effective_Address(operand, this._prevKey, this._tools.Ctx);
                 this.SetMem(address, value, undef);
             }
             else
@@ -499,19 +599,9 @@ namespace AsmSim
         }
         #endregion
 
-        public void Add(BranchInfo branchInfo)
-        {
-            this.Empty = false;
-            if (this._branchInfo == null)
-            {
-                this._branchInfo = new List<BranchInfo> { branchInfo };
-            } else
-            {
-                this._branchInfo.Add(branchInfo);
-            }
-        }
         #endregion Setters
 
+        /*
         public void Merge(StateUpdate other, BoolExpr branchCondition)
         {
             Debug.Assert(other != null);
@@ -529,78 +619,70 @@ namespace AsmSim
 
             void MergeReg(Rn reg, bool undef)
             {
-                BoolExpr b1 = this.Get_private(reg, undef);
-                BoolExpr b2 = other.Get_private(reg, undef);
+                BoolExpr b1 = this.Get_Private(reg, undef);
+                BoolExpr b2 = other.Get_Private(reg, undef);
 
                 if (b1 == null)
                 {
-                    if (b2 != null) this.Set_private(reg, b2, undef);
+                    if (b2 != null) this.Set_Private(reg, b2, undef);
                 }
                 else
                 {
-                    if (b2 != null) this.Set_private(reg, this._tools.Ctx.MkITE(branchCondition, b1, b2) as BoolExpr, undef);
+                    if (b2 != null) this.Set_Private(reg, this._tools.Ctx.MkITE(branchCondition, b1, b2) as BoolExpr, undef);
                 }
             }
             void MergeFlag(Flags flag, bool undef)
             {
-                BoolExpr b1 = this.Get_private(flag, undef);
-                BoolExpr b2 = other.Get_private(flag, undef);
+                BoolExpr b1 = this.Get_Private(flag, undef);
+                BoolExpr b2 = other.Get_Private(flag, undef);
 
                 if (b1 == null)
                 {
-                    if (b2 != null) this.Set_private(flag, b2, undef);
+                    if (b2 != null) this.Set_Private(flag, b2, undef);
                 }
                 else
                 {
-                    if (b2 != null) this.Set_private(flag, this._tools.Ctx.MkITE(branchCondition, b1, b2) as BoolExpr, undef);
+                    if (b2 != null) this.Set_Private(flag, this._tools.Ctx.MkITE(branchCondition, b1, b2) as BoolExpr, undef);
                 }
             }
         }
-
-
+        */
         public string ToString2()
         {
             StringBuilder sb = new StringBuilder();
             foreach (Flags flag in this._tools.StateConfig.GetFlagOn())
             {
-                BoolExpr b = this.Get_Raw_private(flag, true);
+                BoolExpr b = this.Get_Raw_Private(flag, true);
                 if (b != null) sb.AppendLine(flag + ": " + ToolsZ3.ToString(b));
             }
             foreach (Rn reg in this._tools.StateConfig.GetRegOn())
             {
-                BoolExpr b = this.Get_Raw_private(reg, true);
+                BoolExpr b = this.Get_Raw_Private(reg, true);
                 if (b != null) sb.AppendLine(reg + ": " + ToolsZ3.ToString(b));
             }
             if (this._branchInfo != null)
             {
-                foreach (BranchInfo b in this._branchInfo)
-                {
-                    sb.AppendLine(b.ToString());
-                }
+                sb.AppendLine(this._branchInfo.ToString());
             }
             return sb.ToString();
         }
 
-
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder("StateUpdate: PrevKey=" + this.PrevKey + "; NextKey=" + this.NextKey + "\n");
+            StringBuilder sb = new StringBuilder("StateUpdate: PrevKey=" + this._prevKey + "; NextKey=" + this.NextKey + "\n");
             foreach (Flags flag in this._tools.StateConfig.GetFlagOn())
             {
-                BoolExpr b = this.Get_Raw_private(flag, true);
+                BoolExpr b = this.Get_Raw_Private(flag, true);
                 if (b != null) sb.AppendLine(flag + ": " + ToolsZ3.ToString(b));
             }
             foreach (Rn reg in this._tools.StateConfig.GetRegOn())
             {
-                BoolExpr b = this.Get_Raw_private(reg, true);
+                BoolExpr b = this.Get_Raw_Private(reg, true);
                 if (b != null) sb.AppendLine(reg + ": " + ToolsZ3.ToString(b));
             }
             if (this._branchInfo != null)
             {
-                foreach (BranchInfo b in this._branchInfo)
-                {
-                    sb.AppendLine(b.ToString());
-                }
+                sb.AppendLine(this._branchInfo.ToString());
             }
             return sb.ToString();
         }
