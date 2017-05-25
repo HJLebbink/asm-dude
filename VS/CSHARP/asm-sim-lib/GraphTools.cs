@@ -100,8 +100,8 @@ namespace AsmSim
         {
             if (vertex1 == vertex2)
             {
-                Console.WriteLine("WARNING: GraphTools:Get_First_Branch_Point: vertex1=vertex2=" + vertex1);
-                return null;
+                Console.WriteLine("INFO: GraphTools:Get_First_Branch_Point: vertex1=vertex2=" + vertex1);
+                return vertex1;
             }
 
             var branchPoints1 = new HashSet<string>();

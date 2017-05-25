@@ -46,13 +46,18 @@ namespace AsmSim
         {
             this._rootKey = rootKey;
             this._tools = tools;
-            this._graph = new BidirectionalGraph<string, TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)>>(false);
+            this._graph = new BidirectionalGraph<string, TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)>>(true);
             this._lineNumber_2_Key = new Dictionary<int, IList<string>>();
             this._key_2_LineNumber_Step = new Dictionary<string, (int LineNumber, int Step)>();
         }
         #endregion
 
         #region Getters
+
+        public bool Has_Vertex(string key)
+        {
+            return this._graph.ContainsVertex(key);
+        }
 
         public int Step(string key)
         {
@@ -68,28 +73,50 @@ namespace AsmSim
         {
             if (this._lineNumber_2_Key.TryGetValue(lineNumber, out IList<string> keys))
             {
-                foreach (string key in keys) yield return Get_State_Private(key, false);
+                foreach (string key in keys) yield return Construct_State_Private(key, false);
             }
+        }
+
+        public State States_Before(int lineNumber, int index)
+        {
+            int counter = 0;
+            foreach (State state in States_Before(lineNumber))
+            {
+                if (index == counter) return state;
+                counter++;
+            }
+            return null;
         }
 
         public IEnumerable<State> States_After(int lineNumber)
         {
             if (this._lineNumber_2_Key.TryGetValue(lineNumber, out IList<string> keys))
             {
-                foreach (string key in keys) yield return Get_State_Private(key, true);
+                foreach (string key in keys) yield return Construct_State_Private(key, true);
             }
+        }
+
+        public State States_After(int lineNumber, int index)
+        {
+            int counter = 0;
+            foreach (State state in States_After(lineNumber))
+            {
+                if (index == counter) return state;
+                counter++;
+            }
+            return null;
         }
 
         public State State_After(string key)
         {
             if (!this._graph.ContainsVertex(key)) return null;
-            return Get_State_Private(key, true);
+            return Construct_State_Private(key, true);
         }
 
         public State State_Before(string key)
         {
             if (!this._graph.ContainsVertex(key)) return null;
-            return Get_State_Private(key, false);
+            return Construct_State_Private(key, false);
         }
 
         public IEnumerable<State> Leafs
@@ -99,7 +126,7 @@ namespace AsmSim
                 var alreadyVisisted = new HashSet<string>();
                 foreach (string key in Get_Leafs_Forward_LOCAL(this._rootKey))
                 {
-                    yield return this.Get_State_Private(key, true);
+                    yield return this.Construct_State_Private(key, true);
                 }
 
                 #region Local Methods
@@ -144,7 +171,16 @@ namespace AsmSim
         }
 
         public void Add_Edge(bool isBranch, StateUpdate stateUpdate, string source, string target)
-        {
+        { 
+            if (this._graph.TryGetEdge(source, target, out var tag))
+            {
+                if (tag.Tag.Branch == isBranch)
+                {
+                    Console.WriteLine("WARNING: DynamicFlow.Add_Edge: edge " + source + "->" + target + " with branch=" + isBranch + " already exists");
+                    throw new Exception();
+                    return;
+                }
+            }
             this._graph.AddEdge(new TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)>(source, target, (isBranch, stateUpdate)));
         }
 
@@ -173,7 +209,7 @@ namespace AsmSim
             string codeLine = (flow == null) ? "" : flow.Get_Line_Str(lineNumber);
 
             sb.AppendLine("==========================================");
-            sb.AppendLine("State " + key + ": " + Get_State_Private(key, true).ToString());
+            sb.AppendLine("State " + key + ": " + Construct_State_Private(key, true).ToString());
 
             foreach (var v in this._graph.OutEdges(key))
             {
@@ -193,72 +229,7 @@ namespace AsmSim
 
         #region Private Methods
 
-        private State Merge_State_Update(string target, string source1, StateUpdate update1, string source2, StateUpdate update2)
-        {
-            State state1 = Get_State_Private(source1, false);
-            State state2 = Get_State_Private(source2, false);
-
-            string branchKey = GraphTools<(bool, StateUpdate)>.Get_Branch_Point(source1, source2, this._graph);
-            BranchInfo bi = this.Get_Branch_Condition(branchKey, source1);
-
-            string nextKey1 = target + "A";
-            update1.NextKey = nextKey1;
-            state1.Update_Forward(update1);
-            
-            string nextKey2 = target + "B";
-            update2.NextKey = nextKey2;
-            state2.Update_Forward(update2);
-
-            var sharedBranchInfo = BranchInfoStore.RetrieveSharedBranchInfo(state1.BranchInfoStore, state2.BranchInfoStore, this._tools);
-
-            State result = new State(this._tools, state1.TailKey, state1.HeadKey);
-            if (state1.TailKey != state2.TailKey) throw new Exception();
-            //if (state1.HeadKey != state2.HeadKey) throw new Exception();
-
-            result.Solver.Assert(state1.Solver.Assertions);
-            result.Solver.Assert(state2.Solver.Assertions);
-            result.Solver_U.Assert(state1.Solver_U.Assertions);
-            result.Solver_U.Assert(state2.Solver_U.Assertions);
-
-            foreach (var v in sharedBranchInfo.MergedBranchInfo.Values)
-            {
-                result.Add(v);
-            }
-            BoolExpr bc = sharedBranchInfo.BranchPoint1.BranchCondition;
-
-            result.Update_Forward(new StateUpdate(bc, nextKey1, nextKey2, target, this._tools));
-            return result;
-        }
-
-        private BranchInfo Get_Branch_Condition(string branchKey, string sourceForTrueBranch)
-        {
-            if (branchKey == null)
-            {
-                Console.WriteLine("WARNING: DynamicFlow:Get_Branch_Condition: BranchKey is null;");
-                return null;
-            }
-            if (this._graph.OutDegree(branchKey) != 2)
-            {
-                Console.WriteLine("WARNING: DynamicFlow:Get_Branch_Condition: incorrect out degree;");
-                return null;
-            }
-            var edge1 = this._graph.OutEdge(branchKey, 0).Tag;
-            var edge2 = this._graph.OutEdge(branchKey, 1).Tag;
-
-            if (edge1.StateUpdate.BranchInfo == null)
-            {
-                Console.WriteLine("WARNING: DynamicFlow:Get_Branch_Condition: branchinfo of edge1 is null");
-                return null;
-            }
-            if (edge2.StateUpdate.BranchInfo == null)
-            {
-                Console.WriteLine("WARNING: DynamicFlow:Get_Branch_Condition: branchinfo of edge2 is null");
-                return null;
-            }
-            return edge1.StateUpdate.BranchInfo;
-        }
-
-        private State Get_State_Private(string key, bool after)
+        private State Construct_State_Private(string key, bool after)
         {
             State result;
 
@@ -269,13 +240,13 @@ namespace AsmSim
                     break;
                 case 1:
                     var edge = this._graph.InEdge(key, 0);
-                    result = Get_State_Private(edge.Source, false);
+                    result = Construct_State_Private(edge.Source, false); // recursive call
                     result.Update_Forward(edge.Tag.StateUpdate);
                     break;
                 case 2:
                     var edge1 = this._graph.InEdge(key, 0);
                     var edge2 = this._graph.InEdge(key, 1);
-                    result = Merge_State_Update(key, edge1.Source, edge1.Tag.StateUpdate, edge2.Source, edge2.Tag.StateUpdate);
+                    result = Merge_State_Update_LOCAL(key, edge1.Source, edge1.Tag.StateUpdate, edge2.Source, edge2.Tag.StateUpdate);
                     break;
                 default:
                     throw new Exception("Not implemented yet");
@@ -304,11 +275,91 @@ namespace AsmSim
             {
                 foreach (var edge in this._graph.InEdges(key))
                 {
-                    State s = Get_State_Private(edge.Source, false);
+                    State s = Construct_State_Private(edge.Source, false);
                     s.Update_Forward(edge.Tag.StateUpdate);
                     yield return s;
                 }
             }
+
+            State Merge_State_Update_LOCAL(string target, string source1, StateUpdate update1, string source2, StateUpdate update2)
+            {
+                State state1 = this.Construct_State_Private(source1, false); // recursive call
+                State state2 = this.Construct_State_Private(source2, false); // recursive call
+                         
+                StateUpdate mergeStateUpdate;
+                {
+                    string nextKey1 = target + "A";
+                    update1.NextKey = nextKey1;
+                    state1.Update_Forward(update1);
+
+                    string nextKey2 = target + "B";
+                    update2.NextKey = nextKey2;
+                    state2.Update_Forward(update2);
+
+                    string branchKey = GraphTools<(bool, StateUpdate)>.Get_Branch_Point(source1, source2, this._graph);
+                    Console.WriteLine("INFO: DynamicFlow:Construct_State_Private:GetStates_LOCAL: retrieved branchKey " + branchKey);
+                    BranchInfo branchInfo1 = Get_Branch_Condition_LOCAL(branchKey, source1);
+                    BoolExpr bc = branchInfo1.BranchCondition;
+
+                    mergeStateUpdate = (branchInfo1.BranchTaken)
+                        ? new StateUpdate(bc, nextKey2, nextKey1, target, this._tools)
+                        : new StateUpdate(bc, nextKey1, nextKey2, target, this._tools);
+                }
+
+                State state3 = new State(this._tools, state1.TailKey, state1.HeadKey);
+                if (state1.TailKey != state2.TailKey) throw new Exception();
+
+                {   // merge the states state1 and state2 into state3 
+                    {
+                        var tempSet = new HashSet<BoolExpr>();
+                        foreach (var v1 in state1.Solver.Assertions) tempSet.Add(v1);
+                        foreach (var v1 in state2.Solver.Assertions) tempSet.Add(v1);
+                        foreach (var v1 in tempSet) state3.Solver.Assert(v1);
+                    }
+                    {
+                        var tempSet = new HashSet<BoolExpr>();
+                        foreach (var v1 in state1.Solver_U.Assertions) tempSet.Add(v1);
+                        foreach (var v1 in state2.Solver_U.Assertions) tempSet.Add(v1);
+                        foreach (var v1 in tempSet) state3.Solver_U.Assert(v1);
+                    }
+                    var sharedBranchInfo = BranchInfoStore.RetrieveSharedBranchInfo(state1.BranchInfoStore, state2.BranchInfoStore, this._tools);
+                    foreach (var branchInfo in sharedBranchInfo.MergedBranchInfo.Values) state3.Add(branchInfo);
+                    state3.Update_Forward(mergeStateUpdate);
+                }
+                return state3;
+            }
+
+            BranchInfo Get_Branch_Condition_LOCAL(string branchKey, string source1)
+            {
+                if (branchKey == null)
+                {
+                    Console.WriteLine("WARNING: DynamicFlow:Get_Branch_Condition: BranchKey is null;");
+                    return null;
+                }
+                if (this._graph.OutDegree(branchKey) != 2)
+                {
+                    Console.WriteLine("WARNING: DynamicFlow:Get_Branch_Condition: incorrect out degree;");
+                    return null;
+                }
+                var edge1 = this._graph.OutEdge(branchKey, 0);
+                var edge2 = this._graph.OutEdge(branchKey, 1);
+
+                if (edge1.Tag.StateUpdate.BranchInfo == null)
+                {
+                    Console.WriteLine("WARNING: DynamicFlow:Get_Branch_Condition: branchinfo of edge1 is null");
+                    return null;
+                }
+                if (edge2.Tag.StateUpdate.BranchInfo == null)
+                {
+                    Console.WriteLine("WARNING: DynamicFlow:Get_Branch_Condition: branchinfo of edge2 is null");
+                    return null;
+                }
+
+                //if (edge2.)
+
+                return edge1.Tag.StateUpdate.BranchInfo;
+            }
+
             #endregion
         }
 

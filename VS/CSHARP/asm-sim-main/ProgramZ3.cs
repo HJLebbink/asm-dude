@@ -320,9 +320,10 @@ namespace AsmSim
             tools.StateConfig.ZF = true;
 
             string programStr1 =
+                "           mov     rax,        0               " + Environment.NewLine +
                 "           cmp     rax,        0               " + Environment.NewLine +
                 "           jz      label1                      " + Environment.NewLine +
-                "           mov     rax,        0               " + Environment.NewLine +
+               // "           mov     rax,        0               " + Environment.NewLine +
                 "label1:                                        ";
 
             string programStr2 =
@@ -339,12 +340,22 @@ namespace AsmSim
                 "           mov     rax,        1               " + Environment.NewLine +
                 "label2:";
 
+            string programStr4 =
+                "           jz      label1                      " + Environment.NewLine +
+                "           mov     rax,        10              " + Environment.NewLine +
+                "           jmp     label2                      " + Environment.NewLine +
+                "label1:                                        " + Environment.NewLine +
+                "           mov     rax,        20              " + Environment.NewLine +
+                "label2:                                        " + Environment.NewLine +
+                "           mov     rbx,        rax             " + Environment.NewLine +
+                "           jz      label3                      " + Environment.NewLine +
+                "label3:                                        ";
 
 
             StaticFlow sFlow = new StaticFlow(programStr1, tools);
             Console.WriteLine(sFlow);
 
-            if (true)
+            if (false)
             {
                 tools.Quiet = true;
                 DynamicFlow tree_Forward = Runner.Construct_DynamicFlow_Forward(sFlow, 0, 100, tools);
@@ -373,7 +384,7 @@ namespace AsmSim
             }
             if (true)
             {
-                tools.Quiet = true;
+                tools.Quiet = false;
                 DynamicFlow tree_Backward = Runner.Construct_DynamicFlow_Backward(sFlow, sFlow.LastLineNumber, 100, tools);
                 //Console.WriteLine(tree_Backward.ToString(flow));
                 DotVisualizer.SaveToDot(sFlow, tree_Backward, "test2.dot");

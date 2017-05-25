@@ -157,50 +157,55 @@ namespace AsmSim
             #region Create the Root node
             string rootKey = flow.Get_Key(startLineNumber);
 
-            DynamicFlow dynamicFlow;
+            DynamicFlow dFlow;
             {
                 prevKeys.Push(rootKey);
-                dynamicFlow = new DynamicFlow(rootKey, tools);
-                dynamicFlow.Add_Vertex(rootKey, startLineNumber, 0);
+                dFlow = new DynamicFlow(rootKey, tools);
+                dFlow.Add_Vertex(rootKey, startLineNumber, 0);
             }
             #endregion
 
             while (prevKeys.Count > 0)
             {
                 string nextKey = prevKeys.Pop();
-                int step = dynamicFlow.Step(nextKey);
-                if (step <= maxSteps)
+
+                if (true) //!dFlow.Has_Vertex(nextKey))
                 {
-                    int nextStep = step + 1;
-                    int currentLineNumber = dynamicFlow.LineNumber(nextKey);
-
-                    foreach (var prev in flow.Get_Prev_LineNumber(currentLineNumber))
+                    int step = dFlow.Step(nextKey);
+                    if (step <= maxSteps)
                     {
-                        int prev_LineNumber = prev.LineNumber;
-                        if (flow.HasLine(prev_LineNumber))
+                        int nextStep = step + 1;
+                        int currentLineNumber = dFlow.LineNumber(nextKey);
+
+                        foreach (var prev in flow.Get_Prev_LineNumber(currentLineNumber))
                         {
-                            string prevKey = flow.Get_Key(prev.LineNumber);
+                            int prev_LineNumber = prev.LineNumber;
+                            if (flow.HasLine(prev_LineNumber))
+                            {
+                                string prevKey = flow.Get_Key(prev.LineNumber);
 
-                            var updates = Runner.Execute(flow, prev.LineNumber, (prevKey, prevKey, nextKey, nextKey), tools);
-                            var update = (prev.IsBranch) ? updates.Branch : updates.Regular;
+                                var updates = Runner.Execute(flow, prev.LineNumber, (prevKey, prevKey, nextKey, nextKey), tools);
+                                var update = (prev.IsBranch) ? updates.Branch : updates.Regular;
 
-                            dynamicFlow.Add_Vertex(prevKey, prev.LineNumber, nextStep);
-                            dynamicFlow.Add_Edge(prev.IsBranch, update, prevKey, nextKey);
+                                dFlow.Add_Vertex(prevKey, prev.LineNumber, nextStep);
+                                dFlow.Add_Edge(prev.IsBranch, update, prevKey, nextKey);
 
-                            //if (nextState.IsConsistent) 
-                            prevKeys.Push(prevKey); // only continue if the state is consistent; no need to go futher in the past if the state is inconsistent.
+                                Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Backward: scheduling key " + prevKey);
+                                //if (nextState.IsConsistent) 
+                                prevKeys.Push(prevKey); // only continue if the state is consistent; no need to go futher in the past if the state is inconsistent.
 
-                            #region Display
-                            if (!tools.Quiet) Console.WriteLine("=====================================");
-                            if (!tools.Quiet) Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Backward: stepNext " + nextStep + ": LINE " + prev_LineNumber + ": \"" + flow.Get_Line_Str(prev_LineNumber));
-                            if (!tools.Quiet && flow.Get_Line(prev_LineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Backward: " + update);
-                            //if (!tools.Quiet && flow.GetLine(prev_LineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: " + stateTree.State_After(rootKey));
-                            #endregion
+                                #region Display
+                                if (!tools.Quiet) Console.WriteLine("=====================================");
+                                if (!tools.Quiet) Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Backward: stepNext " + nextStep + ": LINE " + prev_LineNumber + ": \"" + flow.Get_Line_Str(prev_LineNumber) + "; branch=" + prev.IsBranch);
+                                if (!tools.Quiet && flow.Get_Line(prev_LineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Backward: " + update);
+                                //if (!tools.Quiet && flow.GetLine(prev_LineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: " + stateTree.State_After(rootKey));
+                                #endregion
+                            }
                         }
                     }
                 }
             }
-            return dynamicFlow;
+            return dFlow;
         }
 
         /// <summary>Perform one step forward and return the regular branch</summary>
