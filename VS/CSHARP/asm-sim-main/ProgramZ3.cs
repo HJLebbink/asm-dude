@@ -43,7 +43,8 @@ namespace AsmSim
 
             //TestGraph();
             //TestMnemonic();
-            TestDynamicFlow();
+            TestMemorySpeed();
+            //TestDynamicFlow();
             //EmptyMemoryTest();
             //ProgramSynthesis1();
             
@@ -54,6 +55,152 @@ namespace AsmSim
             Console.WriteLine(string.Format("Elapsed time " + elapsedSec + " sec"));
             Console.WriteLine(string.Format("Press any key to continue."));
             Console.ReadKey();
+        }
+
+        static void TestMemorySpeed()
+        {
+            Dictionary<string, string> settings = new Dictionary<string, string>
+            {
+                { "unsat-core", "false" },    // enable generation of unsat cores
+                { "model", "false" },         // enable model generation
+                { "proof", "false" },         // enable proof generation
+                { "timeout", "60000" }        // 60000=1min
+            };
+            Context ctx = new Context(settings);
+
+            /*
+             * 
+            string line1 = "mov qword ptr [rax], rbx";
+            string line2 = "mov rcx, qword ptr [rax]";
+             * 
+            (declare-const RAX!0 (_ BitVec 64))
+            (declare-const RAX!1 (_ BitVec 64))
+            (declare-const RAX!2 (_ BitVec 64))
+
+            (declare-const RBX!0 (_ BitVec 64))
+            (declare-const RBX!1 (_ BitVec 64))
+            (declare-const RBX!2 (_ BitVec 64))
+
+            (declare-const RCX!0 (_ BitVec 64))
+            (declare-const RCX!1 (_ BitVec 64))
+            (declare-const RCX!2 (_ BitVec 64))
+
+            (declare-fun MEM!0 () (Array (_ BitVec 64) (_ BitVec 8)))
+            (declare-fun MEM!1 () (Array (_ BitVec 64) (_ BitVec 8)))
+            (declare-fun MEM!2 () (Array (_ BitVec 64) (_ BitVec 8)))
+
+            (assert (= RAX!1 RAX!0))
+            (assert (= RBX!1 RBX!0))
+            (assert (= RCX!1 RCX!0))
+            (assert (let ((a!1 (store (store (store MEM!0 RAX!0 ((_ extract 7 0) RBX!0)) (bvadd #x0000000000000001 RAX!0) ((_ extract 15 8) RBX!0)) (bvadd #x0000000000000002 RAX!0) ((_ extract 23 16) RBX!0)))) (let ((a!2 (store (store (store a!1 (bvadd #x0000000000000003 RAX!0) ((_ extract 31 24) RBX!0)) (bvadd #x0000000000000004 RAX!0) ((_ extract 39 32) RBX!0)) (bvadd #x0000000000000005 RAX!0) ((_ extract 47 40) RBX!0)))) (= MEM!1 (store (store a!2 (bvadd #x0000000000000006 RAX!0) ((_ extract 55 48) RBX!0)) (bvadd #x0000000000000007 RAX!0) ((_ extract 63 56) RBX!0))))))
+
+            (assert (= RAX!2 RAX!1))
+            (assert (= RBX!2 RBX!1))
+            (assert (let ((a!1 (concat (select MEM!1 (bvadd RAX!1 #x0000000000000002)) (concat (select MEM!1 (bvadd RAX!1 #x0000000000000001)) (select MEM!1 RAX!1))))) (let ((a!2 (concat (select MEM!1 (bvadd RAX!1 #x0000000000000004)) (concat (select MEM!1 (bvadd RAX!1 #x0000000000000003)) a!1)))) (let ((a!3 (concat (select MEM!1 (bvadd RAX!1 #x0000000000000006)) (concat (select MEM!1 (bvadd RAX!1 #x0000000000000005)) a!2)))) (= RCX!2 (concat (select MEM!1 (bvadd RAX!1 #x0000000000000007)) a!3))))))
+            (assert (= MEM!2 MEM!1))
+             */
+            
+            //Solver solver = ctx.MkSolver("QF_ABV");
+            //Solver solver = ctx.MkSolver("QF_BV");
+            Solver solver = ctx.MkSolver(ctx.MkTactic("qfbv"));
+            //Solver solver = ctx.MkSolver();
+
+            BitVecExpr rax0 = ctx.MkBVConst("RAX!0", 64);
+            BitVecExpr rax1 = ctx.MkBVConst("RAX!1", 64);
+            BitVecExpr rax2 = ctx.MkBVConst("RAX!2", 64);
+
+            BitVecExpr rbx0 = ctx.MkBVConst("RBX!0", 64);
+            BitVecExpr rbx1 = ctx.MkBVConst("RBX!1", 64);
+            BitVecExpr rbx2 = ctx.MkBVConst("RBX!2", 64);
+
+            BitVecExpr rcx0 = ctx.MkBVConst("RCX!0", 64);
+            BitVecExpr rcx1 = ctx.MkBVConst("RCX!1", 64);
+            BitVecExpr rcx2 = ctx.MkBVConst("RCX!2", 64);
+
+            ArrayExpr mem0 = ctx.MkArrayConst("MEM!0", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+            ArrayExpr mem1 = ctx.MkArrayConst("MEM!1", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+            ArrayExpr mem2 = ctx.MkArrayConst("MEM!2", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+
+            if (true)
+            {
+                #region mov qword ptr [rax], rbx
+
+                solver.Assert(ctx.MkEq(rax1, rax0));
+                solver.Assert(ctx.MkEq(rbx1, rbx0));
+                solver.Assert(ctx.MkEq(rcx1, rcx0));
+                ArrayExpr memX0 = ctx.MkStore(mem0, ctx.MkBVAdd(ctx.MkBV(0, 64), rax0), ctx.MkExtract((1 * 8) - 1, 0 * 8, rbx0));
+                ArrayExpr memX1 = ctx.MkStore(memX0, ctx.MkBVAdd(ctx.MkBV(1, 64), rax0), ctx.MkExtract((2 * 8) - 1, 1 * 8, rbx0));
+                ArrayExpr memX2 = ctx.MkStore(memX1, ctx.MkBVAdd(ctx.MkBV(2, 64), rax0), ctx.MkExtract((3 * 8) - 1, 2 * 8, rbx0));
+                ArrayExpr memX3 = ctx.MkStore(memX2, ctx.MkBVAdd(ctx.MkBV(3, 64), rax0), ctx.MkExtract((4 * 8) - 1, 3 * 8, rbx0));
+                ArrayExpr memX4 = ctx.MkStore(memX3, ctx.MkBVAdd(ctx.MkBV(4, 64), rax0), ctx.MkExtract((5 * 8) - 1, 4 * 8, rbx0));
+                ArrayExpr memX5 = ctx.MkStore(memX4, ctx.MkBVAdd(ctx.MkBV(5, 64), rax0), ctx.MkExtract((6 * 8) - 1, 5 * 8, rbx0));
+                ArrayExpr memX6 = ctx.MkStore(memX5, ctx.MkBVAdd(ctx.MkBV(6, 64), rax0), ctx.MkExtract((7 * 8) - 1, 6 * 8, rbx0));
+                ArrayExpr memX7 = ctx.MkStore(memX6, ctx.MkBVAdd(ctx.MkBV(7, 64), rax0), ctx.MkExtract((8 * 8) - 1, 7 * 8, rbx0));
+                solver.Assert(ctx.MkEq(mem1, memX7).Simplify() as BoolExpr);
+
+                #endregion
+                #region mov rcx, qword ptr [rax]
+                solver.Assert(ctx.MkEq(rax2, rax1));
+                solver.Assert(ctx.MkEq(rbx2, rbx1));
+                BitVecExpr y0 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(0, 64), rax1)) as BitVecExpr;
+                BitVecExpr y1 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(1, 64), rax1)) as BitVecExpr;
+                BitVecExpr y2 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(2, 64), rax1)) as BitVecExpr;
+                BitVecExpr y3 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(3, 64), rax1)) as BitVecExpr;
+                BitVecExpr y4 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(4, 64), rax1)) as BitVecExpr;
+                BitVecExpr y5 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(5, 64), rax1)) as BitVecExpr;
+                BitVecExpr y6 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(6, 64), rax1)) as BitVecExpr;
+                BitVecExpr y7 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(7, 64), rax1)) as BitVecExpr;
+                BitVecExpr y = ctx.MkConcat(y7, ctx.MkConcat(y6, ctx.MkConcat(y5, ctx.MkConcat(y4, ctx.MkConcat(y3, ctx.MkConcat(y2, ctx.MkConcat(y1, y0)))))));
+                solver.Assert(ctx.MkEq(rcx2, y).Simplify() as BoolExpr);
+                solver.Assert(ctx.MkEq(mem2, mem1));
+                #endregion
+                //Console.WriteLine(solver);
+            }
+            else
+            {
+                solver.Assert(ctx.MkEq(rax1, rax0));
+                solver.Assert(ctx.MkEq(rbx1, rbx0));
+                solver.Assert(ctx.MkEq(rcx1, rcx0));
+
+                ArrayExpr mem1_0 = ctx.MkArrayConst("MEM!1-0", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                ArrayExpr mem1_1 = ctx.MkArrayConst("MEM!1-1", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                ArrayExpr mem1_2 = ctx.MkArrayConst("MEM!1-2", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                ArrayExpr mem1_3 = ctx.MkArrayConst("MEM!1-3", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                ArrayExpr mem1_4 = ctx.MkArrayConst("MEM!1-4", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                ArrayExpr mem1_5 = ctx.MkArrayConst("MEM!1-5", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                ArrayExpr mem1_6 = ctx.MkArrayConst("MEM!1-6", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+
+                solver.Assert(ctx.MkEq(mem1_0, ctx.MkStore(mem0,   ctx.MkBVAdd(ctx.MkBV(0, 64), rax0), ctx.MkExtract((1 * 8) - 1, 0 * 8, rbx0))));
+                solver.Assert(ctx.MkEq(mem1_1, ctx.MkStore(mem1_0, ctx.MkBVAdd(ctx.MkBV(1, 64), rax0), ctx.MkExtract((2 * 8) - 1, 1 * 8, rbx0))));
+                solver.Assert(ctx.MkEq(mem1_2, ctx.MkStore(mem1_1, ctx.MkBVAdd(ctx.MkBV(2, 64), rax0), ctx.MkExtract((3 * 8) - 1, 2 * 8, rbx0))));
+                solver.Assert(ctx.MkEq(mem1_3, ctx.MkStore(mem1_2, ctx.MkBVAdd(ctx.MkBV(3, 64), rax0), ctx.MkExtract((4 * 8) - 1, 3 * 8, rbx0))));
+                solver.Assert(ctx.MkEq(mem1_4, ctx.MkStore(mem1_3, ctx.MkBVAdd(ctx.MkBV(4, 64), rax0), ctx.MkExtract((5 * 8) - 1, 4 * 8, rbx0))));
+                solver.Assert(ctx.MkEq(mem1_5, ctx.MkStore(mem1_4, ctx.MkBVAdd(ctx.MkBV(5, 64), rax0), ctx.MkExtract((6 * 8) - 1, 5 * 8, rbx0))));
+                solver.Assert(ctx.MkEq(mem1_6, ctx.MkStore(mem1_5, ctx.MkBVAdd(ctx.MkBV(6, 64), rax0), ctx.MkExtract((7 * 8) - 1, 6 * 8, rbx0))));
+                solver.Assert(ctx.MkEq(mem1, ctx.MkStore(mem1_6,   ctx.MkBVAdd(ctx.MkBV(7, 64), rax0), ctx.MkExtract((8 * 8) - 1, 7 * 8, rbx0))));
+
+                solver.Assert(ctx.MkEq(rax2, rax1));
+                solver.Assert(ctx.MkEq(rbx2, rbx1));
+                BitVecExpr y0 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(0, 64), rax1)) as BitVecExpr;
+                BitVecExpr y1 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(1, 64), rax1)) as BitVecExpr;
+                BitVecExpr y2 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(2, 64), rax1)) as BitVecExpr;
+                BitVecExpr y3 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(3, 64), rax1)) as BitVecExpr;
+                BitVecExpr y4 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(4, 64), rax1)) as BitVecExpr;
+                BitVecExpr y5 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(5, 64), rax1)) as BitVecExpr;
+                BitVecExpr y6 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(6, 64), rax1)) as BitVecExpr;
+                BitVecExpr y7 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(7, 64), rax1)) as BitVecExpr;
+                BitVecExpr y = ctx.MkConcat(y7, ctx.MkConcat(y6, ctx.MkConcat(y5, ctx.MkConcat(y4, ctx.MkConcat(y3, ctx.MkConcat(y2, ctx.MkConcat(y1, y0)))))));
+                solver.Assert(ctx.MkEq(rcx2, y).Simplify() as BoolExpr);
+                solver.Assert(ctx.MkEq(mem2, mem1));
+
+                //Console.WriteLine(solver);
+            }
+
+            Status status_Pos = solver.Check(ctx.MkEq(rbx2, rcx2));
+            Console.WriteLine("Status Pos = " + status_Pos);
+
+            Status status_Neg = solver.Check(ctx.MkNot(ctx.MkEq(rbx2, rcx2)));
+            Console.WriteLine("Status Neg = "+status_Neg);
         }
 
         static void TestGraph()
@@ -221,8 +368,8 @@ namespace AsmSim
                     var tree0 = Runner.Construct_DynamicFlow_Forward(flow1, 0, 10, tools);
 
                     int lineNumber_JZ = 0;
-                    State state_FirstLine = tree0.States_After(lineNumber_JZ).First();
-                    var branchInfo = new BranchInfo(state_FirstLine.Get(Flags.ZF), true, lineNumber_JZ);
+                    State state_FirstLine = tree0.States_Before(lineNumber_JZ, 0);
+                    var branchInfo = new BranchInfo(state_FirstLine.Get(Flags.ZF), true);
 
                     State state0 = tree0.EndState;
                     state0.BranchInfoStore.Add(branchInfo);
@@ -234,8 +381,8 @@ namespace AsmSim
                     var tree1 = Runner.Construct_DynamicFlow_Backward(flow1, flow1.LastLineNumber, 10, tools);
 
                     int lineNumber_JZ = 0;
-                    State state_FirstLine = tree1.States_After(lineNumber_JZ).First();
-                    var branchInfo = new BranchInfo(state_FirstLine.Get(Flags.ZF), false, lineNumber_JZ);
+                    State state_FirstLine = tree1.States_Before(lineNumber_JZ, 0);
+                    var branchInfo = new BranchInfo(state_FirstLine.Get(Flags.ZF), false);
 
                     State state1 = tree1.EndState;
                     state1.BranchInfoStore.Add(branchInfo);
@@ -320,10 +467,9 @@ namespace AsmSim
             tools.StateConfig.ZF = true;
 
             string programStr1 =
-                "           mov     rax,        0               " + Environment.NewLine +
                 "           cmp     rax,        0               " + Environment.NewLine +
                 "           jz      label1                      " + Environment.NewLine +
-               // "           mov     rax,        0               " + Environment.NewLine +
+                "           mov     rax,        0               " + Environment.NewLine +
                 "label1:                                        ";
 
             string programStr2 =
@@ -341,18 +487,15 @@ namespace AsmSim
                 "label2:";
 
             string programStr4 =
-                "           jz      label1                      " + Environment.NewLine +
-                "           mov     rax,        10              " + Environment.NewLine +
-                "           jmp     label2                      " + Environment.NewLine +
+                "           mov        rbx,     0               " + Environment.NewLine +
+                "           mov        rax,     0x3             " + Environment.NewLine +
                 "label1:                                        " + Environment.NewLine +
-                "           mov     rax,        20              " + Environment.NewLine +
-                "label2:                                        " + Environment.NewLine +
-                "           mov     rbx,        rax             " + Environment.NewLine +
-                "           jz      label3                      " + Environment.NewLine +
-                "label3:                                        ";
+                "           inc        rbx                      " + Environment.NewLine +
+                "           dec        rax                      " + Environment.NewLine +
+                "           jnz        label1                   ";
 
 
-            StaticFlow sFlow = new StaticFlow(programStr1, tools);
+            StaticFlow sFlow = new StaticFlow(programStr4, tools);
             Console.WriteLine(sFlow);
 
             if (false)
@@ -551,14 +694,14 @@ namespace AsmSim
                         ctx.MkAnd(ctx.MkEq(reg1, rax_1), ctx.MkNot(ctx.MkEq(reg1, ctx.MkBVAdd(rax_0, ctx.MkBV(1, 8)))))
                     )));
                     */
-                    /*
-                    solver.Assert(ctx.MkQuantifier(true, new Expr[] { reg1 }, ctx.MkAnd(
-                        ctx.MkIff(ctx.MkEq(reg1, rax_1), ctx.MkEq(reg1, ctx.MkBVAdd(rax_0, ctx.MkBV(1, 8)))),
-                        ctx.MkIff(ctx.MkEq(reg2, rax_1), ctx.MkEq(reg2, ctx.MkBVAdd(rax_0, ctx.MkBV(1, 8)))),
-                        ctx.MkNot(ctx.MkEq(reg1, reg2))
-                    )));
-                    */
-                }
+            /*
+            solver.Assert(ctx.MkQuantifier(true, new Expr[] { reg1 }, ctx.MkAnd(
+                ctx.MkIff(ctx.MkEq(reg1, rax_1), ctx.MkEq(reg1, ctx.MkBVAdd(rax_0, ctx.MkBV(1, 8)))),
+                ctx.MkIff(ctx.MkEq(reg2, rax_1), ctx.MkEq(reg2, ctx.MkBVAdd(rax_0, ctx.MkBV(1, 8)))),
+                ctx.MkNot(ctx.MkEq(reg1, reg2))
+            )));
+            */
+        }
 
 
                 foreach (BoolExpr b in solver.Assertions) Console.WriteLine("Solver A: " + b);

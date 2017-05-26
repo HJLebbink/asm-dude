@@ -29,17 +29,12 @@ namespace AsmSim
         public readonly BoolExpr BranchCondition;
         public readonly string Key;
         public readonly bool BranchTaken;
-        public readonly int LineNumber;
 
-        public BranchInfo(BoolExpr condition, bool taken) : this(condition, taken, 0)
-        { }
-
-        public BranchInfo(BoolExpr condition, bool taken, int lineNumber)
+        public BranchInfo(BoolExpr condition, bool taken)
         {
             this.BranchCondition = condition;
             this.Key = condition.ToString();
             this.BranchTaken = taken;
-            this.LineNumber = lineNumber;
         }
         public BoolExpr GetData(Context ctx)
         {
@@ -47,7 +42,7 @@ namespace AsmSim
         }
         public override string ToString()
         {
-            return "BranchInfo: "+this.BranchCondition + " (taken " + this.BranchTaken + "; lineNumber " + this.LineNumber + ")";
+            return "BranchInfo: "+this.BranchCondition + "\n(branch taken " + this.BranchTaken + ")";
         }
     }
 }

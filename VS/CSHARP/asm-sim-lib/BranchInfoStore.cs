@@ -178,15 +178,15 @@ namespace AsmSim
             if (branchPoints1 == null)
             {
                 BoolExpr freshBranchCondition = tools.Ctx.MkBoolConst("BRANCH!" + Tools.CreateKey(tools.Rand));
-                branchPoints1 = new BranchInfo(freshBranchCondition, true, -1);
-                branchPoints2 = new BranchInfo(freshBranchCondition, false, -1);
+                branchPoints1 = new BranchInfo(freshBranchCondition, true);
+                branchPoints2 = new BranchInfo(freshBranchCondition, false);
             }
             return (BranchPoint1: branchPoints1, BranchPoint2: branchPoints2, MergedBranchInfo: mergeBranchStore);
         }
 
         public bool ContainsKey(string key)
         {
-            return this._branchInfo.ContainsKey(key);
+            return (this._branchInfo == null) ? false : this._branchInfo.ContainsKey(key);
         }
 
         public void RemoveKey(string branchInfoKey)
@@ -231,7 +231,7 @@ namespace AsmSim
                 foreach (KeyValuePair<string, BranchInfo> entry in this._branchInfo)
                 {
                     BoolExpr e = entry.Value.GetData(this._tools.Ctx);
-                    sb.AppendLine(string.Format("   {0}: {1} [LineNumber {2}]", i, ToolsZ3.ToString(e), entry.Value.LineNumber));
+                    sb.AppendLine(string.Format("   {0}: {1}", i, ToolsZ3.ToString(e)));
                     i++;
                 }
             }

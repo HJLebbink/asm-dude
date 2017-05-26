@@ -31,7 +31,7 @@ namespace AsmSim
     public class State
     {
         #region Fields
-        public static readonly bool SIMPLIFY_ON = false;
+        public static readonly bool SIMPLIFY_ON = true;
 
         public readonly Tools _tools;
         public Tools Tools { get { return this._tools; } }
@@ -57,6 +57,19 @@ namespace AsmSim
 
         #region Constructors
 
+        private Solver CreateSolver(Context ctx)
+        {
+            if (true)
+            {
+                Tactic tactic = ctx.MkTactic("qfbv");
+                return ctx.MkSolver(tactic);
+            }
+            else
+            {
+                return ctx.MkSolver("QF_ABV");
+            }
+        }
+
         /// <summary>Regular constructor</summary>
         public State(Tools tools, string tailKey, string headKey)
         {
@@ -64,9 +77,8 @@ namespace AsmSim
             this.TailKey = tailKey;
             this.HeadKey = headKey;
 
-            Tactic tactic = tools.Ctx.MkTactic("qfbv");
-            this.Solver = tools.Ctx.MkSolver(tactic);
-            this.Solver_U = tools.Ctx.MkSolver(tactic);
+            this.Solver = CreateSolver(tools.Ctx);
+            this.Solver_U = CreateSolver(tools.Ctx);
             this._branchInfoStore = new BranchInfoStore(this.Tools);
         }
 
@@ -80,9 +92,8 @@ namespace AsmSim
         public State(State state1, State state2, bool merge)
         {
             this._tools = state1.Tools;
-            Tactic tactic = this.Tools.Ctx.MkTactic("qfbv");
-            this.Solver = this.Tools.Ctx.MkSolver(tactic);
-            this.Solver_U = this.Tools.Ctx.MkSolver(tactic);
+            this.Solver = CreateSolver(this._tools.Ctx);
+            this.Solver_U = CreateSolver(this._tools.Ctx);
 
             if (merge)
             {
@@ -99,10 +110,9 @@ namespace AsmSim
             this.HeadKey = other.HeadKey;
             this.TailKey = other.TailKey;
 
-            Tactic tactic = this.Tools.Ctx.MkTactic("qfbv");
             other.UndefGrounding = false;
-            this.Solver = this.Tools.Ctx.MkSolver(tactic);
-            this.Solver_U = this.Tools.Ctx.MkSolver(tactic);
+            this.Solver = CreateSolver(this._tools.Ctx);
+            this.Solver_U = CreateSolver(this._tools.Ctx);
 
             this.Solver.Assert(other.Solver.Assertions);
             this.Solver_U.Assert(other.Solver_U.Assertions);
@@ -461,6 +471,7 @@ namespace AsmSim
         public string ToString(string identStr)
         {
             StringBuilder sb = new StringBuilder();
+
             sb.AppendLine(ToStringConstraints(identStr));
 
             Tv consistent = this.IsConsistent;
@@ -506,6 +517,9 @@ namespace AsmSim
         public string ToStringConstraints(string identStr)
         {
             StringBuilder sb = new StringBuilder();
+
+            sb.Append(this.Solver);
+
             if (this.Solver.NumAssertions > 0)
             {
                 sb.AppendLine(identStr + "Current Value constraints:");

@@ -133,7 +133,7 @@ namespace AsmDude.Tools
 
         public (bool IsImplemented, Mnemonic Mnemonic, string Message) Get_Syntax_Errors(int lineNumber)
         {
-            var dummyKeys = ("", "", "", "");
+            var dummyKeys = ("", "", "");
             var content = this._cflow.Get_Line(lineNumber);
             var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, this.Tools);
             if (opcodeBase == null) return (IsImplemented: false, Mnemonic: Mnemonic.NONE, Message: null);
@@ -156,7 +156,7 @@ namespace AsmDude.Tools
 
             lock (this._updateLock)
             {
-                var dummyKeys = ("", "", "", "");
+                var dummyKeys = ("", "", "");
                 var content = this._cflow.Get_Line(lineNumber);
                 var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, this.Tools);
 

@@ -162,7 +162,7 @@ namespace AsmSim
             return (value:value, undef:undef);
         }
 
-        private static (bool valid, ulong value) IsSimpleAssignment(string name, BoolExpr e)
+        private static (bool valid, ulong value) IsSimpleAssignment_UNUSED(string name, BoolExpr e)
         {
             if (e.IsEq)
             {
@@ -726,28 +726,6 @@ namespace AsmSim
         #endregion
 
         #endregion Public Methods
-
-        private static bool Contains_UNUSED(Expr e, string element)
-        {
-            if (e.IsConst)
-            {
-                if (e.ToString().Equals(element))
-                {
-                    return true;
-                }
-            }
-            else
-            {
-                foreach (Expr e2 in e.Args)
-                {
-                    if (Contains_UNUSED(e2, element))
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
 
         public static Expr UpdateConstName(Expr expr, string postfix, Context ctx)
         {
