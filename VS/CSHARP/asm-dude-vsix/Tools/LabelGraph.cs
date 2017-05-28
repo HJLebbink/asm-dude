@@ -23,7 +23,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
@@ -32,7 +31,6 @@ using Microsoft.VisualStudio.Utilities;
 
 using AsmTools;
 using AsmDude.SyntaxHighlighting;
-using QuickGraph;
 
 namespace AsmDude.Tools
 {
@@ -71,12 +69,8 @@ namespace AsmDude.Tools
         public bool Is_Enabled { get; private set; }
         public ErrorListProvider Error_List_Provider { get; private set; }
 
+        private readonly Delay _delay;
         private object _updateLock = new object();
-
-        private bool _busy;
-        private bool _waiting;
-        private bool _scheduled;
-
         #endregion Private Fields
 
         #region Public Methods
@@ -107,12 +101,17 @@ namespace AsmDude.Tools
 
             this._thisFilename = AsmDudeToolsStatic.GetFileName(this._buffer);
             this.Is_Enabled = true;
-            this._busy = false;
-            this._waiting = false;
-            this._scheduled = false;
 
+            this._delay = new Delay(AsmDudePackage.msSleepBeforeAsyncExecution, 10, AsmDudeTools.Instance.Thread_Pool);
+            this._delay.Done += (o, i) => { AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Reset_Private); };
+
+            this.Reset();
             this._buffer.ChangedLowPriority += this.Buffer_Changed;
-            this.Reset_Delayed();
+        }
+
+        public void Reset()
+        {
+            this._delay.Reset();
         }
 
         public int Get_Linenumber(uint id)
@@ -295,34 +294,10 @@ namespace AsmDude.Tools
             return results;
         }
 
-        public void Reset_Delayed()
-        {
-            if (this._waiting)
-            {
-                AsmDudeToolsStatic.Output_INFO("LabelGraph:Reset_Delayed: already waiting for execution. Skipping this call.");
-                return;
-            }
-            if (this._busy)
-            {
-                AsmDudeToolsStatic.Output_INFO("LabelGraph:Reset_Delayed: busy; scheduling this call.");
-                this._scheduled = true;
-            } else
-            {
-                AsmDudeToolsStatic.Output_INFO("LabelGraph:Reset_Delayed: going to execute this call.");
-                AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Reset);
-            }
-        }
-
-        private void Reset()
+        private void Reset_Private()
         {
             if (!this.Is_Enabled) return;
 
-            this._waiting = true;
-            Thread.Sleep(AsmDudePackage.msSleepBeforeAsyncExecution);
-            this._busy = true;
-            this._waiting = false;
-
-            #region Payload
             lock (this._updateLock)
             {
                 DateTime time1 = DateTime.Now;
@@ -350,16 +325,7 @@ namespace AsmDude.Tools
 #                   endif
                 }
             }
-            #endregion Payload
-
             On_Reset_Done_Event(new CustomEventArgs("Resetting LabelGraph is finished"));
-
-            this._busy = false;
-            if (this._scheduled)
-            {
-                this._scheduled = false;
-                Reset_Delayed();
-            }
         }
 
         public event EventHandler<CustomEventArgs> Reset_Done_Event;
@@ -419,8 +385,7 @@ namespace AsmDude.Tools
 
             if (true)
             {
-                if (e.Changes.Count == 0) return;
-                Reset_Delayed();
+                this.Reset();
             }
             else
             {
@@ -464,12 +429,12 @@ namespace AsmDude.Tools
                                     break;
                                 default:
                                     //AsmDudeToolsStatic.Output_INFO(string.Format("LabelGraph:OnTextBufferChanged: lineDelta={0}", textChange.LineCountDelta));
-                                    Reset_Delayed();
+                                    this.Reset();
                                     break;
                             }
                             break;
                         default:
-                            Reset_Delayed();
+                            this.Reset();
                             break;
                     }
                 }
@@ -736,7 +701,7 @@ namespace AsmDude.Tools
             }
             else
             {
-                AsmDudeToolsStatic.Output_INFO(string.Format("LabelGraph:shiftLineNumber: starting from line {0} everything is shifted {1}", lineNumber, lineCountDelta));
+                //AsmDudeToolsStatic.Output_INFO(string.Format("LabelGraph:shiftLineNumber: starting from line {0} everything is shifted {1}", lineNumber, lineCountDelta));
             }
         }
 

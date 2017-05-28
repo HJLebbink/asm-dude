@@ -60,7 +60,7 @@ namespace AsmDude.CodeFolding
         private ITextSnapshot _snapshot;
         private IList<Region> _regions;
 
-        private Delay _delay;
+        private readonly Delay _delay;
         private object _updateLock = new object();
         private bool _enabled;
         #endregion Private Fields
@@ -81,14 +81,14 @@ namespace AsmDude.CodeFolding
 
             this._enabled = true;
 
-            this._delay = new Delay(1000, 10);
+            this._delay = new Delay(AsmDudePackage.msSleepBeforeAsyncExecution, 10, AsmDudeTools.Instance.Thread_Pool);
             this._delay.Done += (o, i) => { AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Parse); };
 
             this._delay.Reset();
-            this._buffer.ChangedLowPriority += this._buffer_ChangedLowPriority;
+            this._buffer.ChangedLowPriority += this.Buffer_Changed;
         }
 
-        private void _buffer_ChangedLowPriority(object sender, TextContentChangedEventArgs e)
+        private void Buffer_Changed(object sender, TextContentChangedEventArgs e)
         {
             this._delay.Reset();
         }
@@ -631,7 +631,7 @@ namespace AsmDude.CodeFolding
             this._enabled = false;
             lock (this._updateLock)
             {
-                this._buffer.ChangedLowPriority -= this._buffer_ChangedLowPriority;
+                this._buffer.ChangedLowPriority -= this.Buffer_Changed;
                 this._regions.Clear();
             }
             AsmDudeToolsStatic.Disable_Message(msg, filename, this._errorListProvider);

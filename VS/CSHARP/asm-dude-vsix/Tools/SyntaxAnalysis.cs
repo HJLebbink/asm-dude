@@ -37,11 +37,8 @@ namespace AsmDude.Tools
         private readonly IDictionary<int, (Mnemonic Mnemonic, string Message)> _syntax_Errors;
         private readonly ISet<int> _isNotImplemented;
 
+        private readonly Delay _delay;
         private object _updateLock = new object();
-
-        private bool _busy;
-        private bool _waiting;
-        private bool _scheduled;
         #endregion Fields
 
         public SyntaxAnalysis(ITextBuffer buffer, AsmSimulator asmSimulator)
@@ -52,12 +49,11 @@ namespace AsmDude.Tools
             this._syntax_Errors = new Dictionary<int, (Mnemonic Mnemonic, string Message)>();
             this._isNotImplemented = new HashSet<int>();
 
-            this._busy = false;
-            this._waiting = false;
-            this._scheduled = false;
+            this._delay = new Delay(AsmDudePackage.msSleepBeforeAsyncExecution, 10, AsmDudeTools.Instance.Thread_Pool);
+            this._delay.Done += (o, i) => { AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Reset_Private); };
 
+            this.Reset();
             this._sourceBuffer.ChangedLowPriority += this.Buffer_Changed;
-            this.Reset_Delayed();
         }
 
         public IEnumerable<(int LineNumber, Mnemonic Mnemonic, string Message)> SyntaxErrors
@@ -83,23 +79,9 @@ namespace AsmDude.Tools
         {
             return this._syntax_Errors.TryGetValue(lineNumber, out (Mnemonic Mnemonic, string Message) error) ? error : (Mnemonic.NONE, ""); 
         }
-        public void Reset_Delayed()
+        public void Reset()
         {
-            if (this._waiting)
-            {
-                AsmDudeToolsStatic.Output_INFO("SyntaxErrorList:Reset_Delayed: already waiting for execution. Skipping this call.");
-                return;
-            }
-            if (this._busy)
-            {
-                AsmDudeToolsStatic.Output_INFO("SyntaxErrorList:Reset_Delayed: busy; scheduling this call.");
-                this._scheduled = true;
-            }
-            else
-            {
-                AsmDudeToolsStatic.Output_INFO("SyntaxErrorList:Reset_Delayed: going to execute this call.");
-                AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Reset);
-            }
+            this._delay.Reset();
         }
 
         public event EventHandler<LineUpdatedEventArgs> Line_Updated_Event;
@@ -108,38 +90,19 @@ namespace AsmDude.Tools
         #region Private Methods
         private void Buffer_Changed(object sender, TextContentChangedEventArgs e)
         {
-            bool nonSpaceAdded = false;
-            foreach (var c in e.Changes) if (c.NewText != " ") nonSpaceAdded = true;
-            if (!nonSpaceAdded) return;
-
-            this.Reset_Delayed();
+            this.Reset();
         }
 
-        private void Reset()
+        private void Reset_Private()
         {
-            this._waiting = true;
-            Thread.Sleep(AsmDudePackage.msSleepBeforeAsyncExecution);
-            this._busy = true;
-            this._waiting = false;
-
-            #region Payload
             lock (this._updateLock)
             {
                 DateTime time1 = DateTime.Now;
-
                 this._syntax_Errors.Clear();
                 this._isNotImplemented.Clear();
                 this.Add_All();
                 this.Reset_Done_Event(this, new EventArgs());
                 AsmDudeToolsStatic.Print_Speed_Warning(time1, "SyntaxAnalysis");
-            }
-            #endregion Payload
-
-            this._busy = false;
-            if (this._scheduled)
-            {
-                this._scheduled = false;
-                Reset_Delayed();
             }
         }
 

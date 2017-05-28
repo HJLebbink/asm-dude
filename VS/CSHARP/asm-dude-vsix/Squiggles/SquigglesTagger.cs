@@ -75,7 +75,7 @@ namespace AsmDude.Squiggles
                     this.Update_Squiggles_Tasks_Async();
                     this.Update_Error_Tasks_Labels_Async();
                 };
-                this._labelGraph.Reset_Delayed();
+                this._labelGraph.Reset();
             }
 
             this._asmSimulator = asmSimulator;
@@ -93,7 +93,7 @@ namespace AsmDude.Squiggles
                     //this.Update_Squiggles_Tasks_Async();
                     //this.Update_Error_Tasks_AsmSim_Async();
                 };
-                this._syntaxAnalysis.Reset_Delayed();
+                this._syntaxAnalysis.Reset();
 
 
                 this._semanticAnalysis = new SemanticAnalysis(buffer, asmSimulator);
@@ -108,7 +108,7 @@ namespace AsmDude.Squiggles
                     //this.Update_Squiggles_Tasks_Async();
                     //this.Update_Error_Tasks_AsmSim_Async();
                 };
-                this._semanticAnalysis.Reset_Delayed();
+                this._semanticAnalysis.Reset();
             }
         }
 
@@ -220,8 +220,8 @@ namespace AsmDude.Squiggles
 
                                 //AsmDudeToolsStatic.Output_INFO("SquigglesTagger:GetTags: found register " + regName + " at line " + lineNumber);
 
-                                State state_Before = this._asmSimulator.Get_State_Before(lineNumber, false, false);
-                                State state_After = this._asmSimulator.Get_State_After(lineNumber, false, false);
+                                State state_Before = this._asmSimulator.Get_State_Before(lineNumber, false, false).State;
+                                State state_After = this._asmSimulator.Get_State_After(lineNumber, false, false).State;
 
                                 //string registerContent = state.GetString(regName);
                                 bool hasContent_Before = (state_Before == null) ? false : this._asmSimulator.Has_Register_Value(regName, state_Before);
