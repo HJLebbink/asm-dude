@@ -28,15 +28,12 @@ using Microsoft.VisualStudio.Text;
 using System.Windows.Controls;
 using AsmDude.Tools;
 using AsmDude.SyntaxHighlighting;
-using System.Threading;
 using System.Text;
 using Microsoft.VisualStudio.Shell;
 using AsmTools;
-using Amib.Threading;
 
 namespace AsmDude.CodeFolding
 {
-
     class PartialRegion
     {
         public int StartLine { get; set; }
@@ -53,7 +50,6 @@ namespace AsmDude.CodeFolding
 
     internal sealed class CodeFoldingTagger : ITagger<IOutliningRegionTag>
     {
-
         #region Private Fields
         private string startRegionTag = Settings.Default.CodeFolding_BeginTag;  //the characters that start the outlining region
         private string endRegionTag = Settings.Default.CodeFolding_EndTag;      //the characters that end the outlining region
@@ -63,14 +59,10 @@ namespace AsmDude.CodeFolding
         private readonly ErrorListProvider _errorListProvider;
         private ITextSnapshot _snapshot;
         private IList<Region> _regions;
+
+        private Delay _delay;
         private object _updateLock = new object();
         private bool _enabled;
-
-        private bool _busy;
-        private bool _waiting;
-        private bool _scheduled;
-
-
         #endregion Private Fields
 
         /// <summary>Constructor</summary>
@@ -86,15 +78,20 @@ namespace AsmDude.CodeFolding
 
             this._snapshot = buffer.CurrentSnapshot;
             this._regions = new List<Region>();
-            this._enabled = true;
-            this._busy = false;
-            this._waiting = false;
-            this._scheduled = false;
 
-            Parse_Delayed();
-            this._buffer.ChangedLowPriority += this.Buffer_Changed;
+            this._enabled = true;
+
+            this._delay = new Delay(1000, 10);
+            this._delay.Done += (o, i) => { AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Parse); };
+
+            this._delay.Reset();
+            this._buffer.ChangedLowPriority += this._buffer_ChangedLowPriority;
         }
 
+        private void _buffer_ChangedLowPriority(object sender, TextContentChangedEventArgs e)
+        {
+            this._delay.Reset();
+        }
 
         public IEnumerable<ITagSpan<IOutliningRegionTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
@@ -200,16 +197,6 @@ namespace AsmDude.CodeFolding
             run.FontSize -= 1;
             description.Inlines.Add(run);
             return description;
-        }
-
-        private void Buffer_Changed(object sender, TextContentChangedEventArgs e)
-        {
-            // If this isn't the most up-to-date version of the buffer, then ignore it for now (we'll eventually get another change event).
-            if (e.After != this._buffer.CurrentSnapshot)
-            {
-                return;
-            }
-            Parse_Delayed();
         }
 
         /// <summary>
@@ -399,37 +386,10 @@ namespace AsmDude.CodeFolding
             return -1;
         }
 
-        /// <summary>
-        /// execute the parse method with a delay.
-        /// </summary>
-        private void Parse_Delayed()
-        {
-            if (this._waiting)
-            {
-                AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger:Parse_Delayed: already waiting for execution. Skipping this call.");
-                return;
-            }
-            if (this._busy)
-            {
-                AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger:Parse_Delayed: busy; scheduling this call.");
-                this._scheduled = true;
-            }
-            else
-            {
-                AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger:Parse_Delayed: going to execute this call.");
-                AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Parse);
-            }
-        }
         private void Parse()
         {
             if (!this._enabled) return;
 
-            this._waiting = true;
-            Thread.Sleep(AsmDudePackage.msSleepBeforeAsyncExecution);
-            this._busy = true;
-            this._waiting = false;
-
-            #region Payload
             lock (this._updateLock)
             {
                 DateTime time1 = DateTime.Now;
@@ -536,14 +496,6 @@ namespace AsmDude.CodeFolding
                     Disable();
 #                   endif
                 }
-            }
-            #endregion Payload
-
-            this._busy = false;
-            if (this._scheduled)
-            {
-                this._scheduled = false;
-                Parse_Delayed();
             }
         }
 
@@ -679,7 +631,7 @@ namespace AsmDude.CodeFolding
             this._enabled = false;
             lock (this._updateLock)
             {
-                this._buffer.ChangedLowPriority -= this.Buffer_Changed;
+                this._buffer.ChangedLowPriority -= this._buffer_ChangedLowPriority;
                 this._regions.Clear();
             }
             AsmDudeToolsStatic.Disable_Message(msg, filename, this._errorListProvider);

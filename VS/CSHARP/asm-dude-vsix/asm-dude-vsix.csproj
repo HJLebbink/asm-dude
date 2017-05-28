@@ -246,6 +246,7 @@
     <Compile Include="Tools\ApplicationInformation.cs" />
     <Compile Include="Tools\AsmDudeTools.cs" />
     <Compile Include="Tools\AsmDudeToolsStatic.cs" />
+    <Compile Include="Tools\Delay.cs" />
     <Compile Include="Tools\LineUpdatedEventArgs.cs" />
     <Compile Include="Tools\LabelGraph.cs" />
     <Compile Include="Tools\MnemonicStore.cs" />
