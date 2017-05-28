@@ -82,6 +82,7 @@ namespace AsmSim
 
         public int NLines { get { return this._sourceCode.Count; } }
 
+        public int FirstLineNumber { get { return 0; } }
         public int LastLineNumber { get { return this._sourceCode.Count; } }
 
         public bool HasLine(int lineNumber)

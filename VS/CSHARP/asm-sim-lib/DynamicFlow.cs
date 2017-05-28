@@ -26,6 +26,7 @@ using System.Diagnostics;
 using System.Text;
 using QuickGraph;
 using Microsoft.Z3;
+using AsmTools;
 
 namespace AsmSim
 {
@@ -37,14 +38,13 @@ namespace AsmSim
         private readonly BidirectionalGraph<string, TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)>> _graph;
         private readonly IDictionary<int, IList<string>> _lineNumber_2_Key;
         private readonly IDictionary<string, (int LineNumber, int Step)> _key_2_LineNumber_Step;
-        private readonly string _rootKey;
-        public BidirectionalGraph<string, TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)>> Graph { get { return this._graph; } }
+        private string _rootKey;
+        private object _updateLock = new object();
         #endregion 
 
         #region Constructors
-        public DynamicFlow(string rootKey, Tools tools)
+        public DynamicFlow(Tools tools)
         {
-            this._rootKey = rootKey;
             this._tools = tools;
             this._graph = new BidirectionalGraph<string, TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)>>(true);
             this._lineNumber_2_Key = new Dictionary<int, IList<string>>();
@@ -53,6 +53,8 @@ namespace AsmSim
         #endregion
 
         #region Getters
+
+        public BidirectionalGraph<string, TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)>> Graph { get { return this._graph; } }
 
         public bool Has_Vertex(string key)
         {
@@ -175,7 +177,193 @@ namespace AsmSim
 
         #region Setters
 
-        public void Add_Vertex(string key, int lineNumber, int step)
+        public void Reset(StaticFlow sFlow, bool forward)
+        {
+            this._rootKey = "!" +sFlow.FirstLineNumber;
+            this._graph.Clear();
+            this._lineNumber_2_Key.Clear();
+            this._key_2_LineNumber_Step.Clear();
+
+            lock (this._updateLock)
+            {
+                if (forward)
+                {
+                    this.Update_Forward(sFlow, sFlow.FirstLineNumber, sFlow.NLines * 2);
+                }
+                else
+                {
+                    this.Update_Backward(sFlow, sFlow.FirstLineNumber, sFlow.NLines * 2);
+                }
+            }
+        }
+
+        private void Update_Forward(
+            StaticFlow sFlow,
+            int startLineNumber,
+            int maxSteps)
+        {
+            if (!sFlow.HasLine(startLineNumber))
+            {
+                if (!this._tools.Quiet) Console.WriteLine("WARNING: Construct_DynamicFlow2_Forward: startLine " + startLineNumber + " does not exist in " + sFlow);
+                return;
+            }
+            var nextKeys = new Stack<string>();
+
+            // Get the head of the current state, this head will be the prevKey of the update, nextKey is fresh. 
+            // When state is updated, tail is not changed; head is set to the fresh nextKey.
+
+            #region Create the Root node
+            {
+                string rootKey = sFlow.Get_Key(startLineNumber);
+                nextKeys.Push(rootKey);
+                this.Add_Vertex(rootKey, startLineNumber, 0);
+            }
+            #endregion
+
+            while (nextKeys.Count > 0)
+            {
+                string prevKey = nextKeys.Pop();
+                int step = this.Step(prevKey);
+                if (step <= maxSteps)
+                {
+                    int currentLineNumber = this.LineNumber(prevKey);
+                    if (sFlow.HasLine(currentLineNumber))
+                    {
+                        var nextLineNumber = sFlow.Get_Next_LineNumber(currentLineNumber);
+                        (string nextKey, string nextKeyBranch) = sFlow.Get_Key(nextLineNumber);
+
+                        var updates = Runner.Execute(sFlow, currentLineNumber, (prevKey, nextKey, nextKeyBranch), this._tools);
+                        int nextStep = step + 1;
+
+                        HandleBranch_LOCAL(currentLineNumber, nextLineNumber.Branch, nextStep, updates.Branch, prevKey, nextKeyBranch);
+                        HandleRegular_LOCAL(currentLineNumber, nextLineNumber.Regular, nextStep, updates.Regular, prevKey, nextKey);
+                    }
+                }
+            }
+            #region Local Methods
+            void HandleBranch_LOCAL(int currentLineNumber, int nextLineNumber, int nextStep, StateUpdate update, string prevKey, string nextKey)
+            {
+                if (update != null)
+                {
+                    if (nextLineNumber == -1)
+                    {
+                        //Console.WriteLine("WARNING: Runner:Construct_DynamicFlow_Forward: according to flow there does not exists a branch yet a branch is computed");
+                        return;
+                    }
+                    if (!this.Has_Edge(prevKey, nextKey, true))
+                    {
+                        this.Add_Vertex(nextKey, nextLineNumber, nextStep);
+                        this.Add_Edge(true, update, prevKey, nextKey);
+                        nextKeys.Push(nextKey);
+
+                        #region Display
+                        if (!this._tools.Quiet) Console.WriteLine("=====================================");
+                        if (!this._tools.Quiet) Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Forward: stepNext " + nextStep + ": LINE " + currentLineNumber + ": \"" + sFlow.Get_Line_Str(currentLineNumber) + "\" Branches to LINE " + nextLineNumber);
+                        if (!this._tools.Quiet && sFlow.Get_Line(currentLineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Forward: " + update);
+                        //if (!this._tools.Quiet && sFlow.Get_Line(currentLineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: " + this.State_After(nextKey));
+                        #endregion
+                    }
+                }
+                else if (nextLineNumber != -1)
+                {
+                    //Console.WriteLine("WARNING: Runner:Construct_DynamicFlow_Forward: according to flow there exists a branch yet no branch is computed");
+                    return;
+                }
+            }
+            void HandleRegular_LOCAL(int currentLineNumber, int nextLineNumber, int nextStep, StateUpdate update, string prevKey, string nextKey)
+            {
+                if (update != null)
+                {
+                    if (nextLineNumber == -1)
+                    {
+                        Console.WriteLine("WARNING: Runner:Construct_DynamicFlow_Forward: according to flow there does not exists a continue yet a continue is computed");
+                        //throw new Exception();
+                    }
+                    if (!this.Has_Edge(prevKey, nextKey, false))
+                    {
+                        this.Add_Vertex(nextKey, nextLineNumber, nextStep);
+                        this.Add_Edge(false, update, prevKey, nextKey);
+                        nextKeys.Push(nextKey);
+
+                        #region Display
+                        if (!this._tools.Quiet) Console.WriteLine("=====================================");
+                        if (!this._tools.Quiet) Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Forward: stepNext " + nextStep + ": LINE " + currentLineNumber + ": \"" + sFlow.Get_Line_Str(currentLineNumber) + "\" Continues to LINE " + nextLineNumber);
+                        if (!this._tools.Quiet && sFlow.Get_Line(currentLineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Forward: " + update);
+                        //if (!this._tools.Quiet && sFlow.Get_Line(currentLineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: " + this.State_After(nextKey));
+                        #endregion
+                    }
+                }
+                else if (nextLineNumber != -1)
+                {
+                    Console.WriteLine("WARNING: Runner:Construct_DynamicFlow_Forward: according to flow there exists a regular continue yet no continue is computed");
+                    //throw new Exception();
+                }
+            }
+            #endregion
+        }
+
+        private void Update_Backward(
+            StaticFlow sFlow, 
+            int startLineNumber,
+            int maxSteps)
+        {
+            if (!sFlow.Has_Prev_LineNumber(startLineNumber))
+            {
+                if (!this._tools.Quiet) Console.WriteLine("WARNING: Construct_DynamicFlow_Backward: startLine " + startLineNumber + " does not exist in " + sFlow);
+                return;
+            }
+
+            var prevKeys = new Stack<string>();
+
+            // Get the tail of the current state, this tail will be the nextKey, the prevKey is fresh.
+            // When the state is updated, the head is unaltered, tail is set to the fresh prevKey.
+
+            #region Create the Root node
+            string rootKey = sFlow.Get_Key(startLineNumber);
+
+                prevKeys.Push(rootKey);
+                this.Add_Vertex(rootKey, startLineNumber, 0);
+            #endregion
+
+            while (prevKeys.Count > 0)
+            {
+                string nextKey = prevKeys.Pop();
+
+                int step = this.Step(nextKey);
+                if (step <= maxSteps)
+                {
+                    int nextStep = step + 1;
+                    int currentLineNumber = this.LineNumber(nextKey);
+
+                    foreach (var prev in sFlow.Get_Prev_LineNumber(currentLineNumber))
+                    {
+                        if (sFlow.HasLine(prev.LineNumber))
+                        {
+                            string prevKey = sFlow.Get_Key(prev.LineNumber);
+                            if (!this.Has_Edge(prevKey, nextKey, prev.IsBranch))
+                            {
+                                var updates = Runner.Execute(sFlow, prev.LineNumber, (prevKey, nextKey, nextKey), this._tools);
+                                var update = (prev.IsBranch) ? updates.Branch : updates.Regular;
+
+                                    this.Add_Vertex(prevKey, prev.LineNumber, nextStep);
+                                    this.Add_Edge(prev.IsBranch, update, prevKey, nextKey);
+                                Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Backward: scheduling key " + prevKey);
+                                prevKeys.Push(prevKey); // only continue if the state is consistent; no need to go futher in the past if the state is inconsistent.
+
+                                #region Display
+                                if (!this._tools.Quiet) Console.WriteLine("=====================================");
+                                if (!this._tools.Quiet) Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Backward: stepNext " + nextStep + ": LINE " + prev.LineNumber + ": \"" + sFlow.Get_Line_Str(prev.LineNumber) + "; branch=" + prev.IsBranch);
+                                if (!this._tools.Quiet && sFlow.Get_Line(prev.LineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Backward: " + update);
+                                //if (!tools.Quiet && flow.GetLine(prev_LineNumber).Mnemonic != Mnemonic.UNKNOWN) Console.WriteLine("INFO: " + stateTree.State_After(rootKey));
+                                #endregion
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void Add_Vertex(string key, int lineNumber, int step)
         {
             if (!this._graph.ContainsVertex(key))
             {
@@ -226,13 +414,15 @@ namespace AsmSim
             return sb.ToString();
         }
 
-        private void ToString(string key, StaticFlow flow, ref StringBuilder sb)
+        private void ToString(string key, StaticFlow sFlow, ref StringBuilder sb)
         {
+            if (!this.Has_Vertex(key)) return;
+
             int lineNumber = this.LineNumber(key);
-            string codeLine = (flow == null) ? "" : flow.Get_Line_Str(lineNumber);
+            string codeLine = (sFlow == null) ? "" : sFlow.Get_Line_Str(lineNumber);
 
             sb.AppendLine("==========================================");
-            sb.AppendLine("State " + key + ": " + Construct_State_Private(key, true).ToString());
+            sb.AppendLine("State " + key + ": " + Construct_State_Private(key, true)?.ToString());
 
             foreach (var v in this._graph.OutEdges(key))
             {
@@ -240,7 +430,7 @@ namespace AsmSim
                 string nextKey = v.Target;
                 sb.AppendLine("------------------------------------------");
                 sb.AppendLine("Transition from state " + key + " to " + nextKey + "; execute LINE " + lineNumber + ": \"" + codeLine + "\" " + ((v.Tag.Branch) ? "[Forward Branching]" : "[Forward Continue]"));
-                ToString(nextKey, flow, ref sb);
+                ToString(nextKey, sFlow, ref sb);
             }
         }
 
@@ -262,34 +452,38 @@ namespace AsmSim
 
             State Construct_State_Private_LOCAL(string key_LOCAL, bool after_LOCAL)
             {
-                if (alreadyVisisted.Contains(key_LOCAL)) // round a cycle
-                { 
-                    Console.WriteLine("WARNING: DynamicFlow: Construct_State_Private: Found cycle, returning empty state");
-                    result = new State(this._tools, key_LOCAL, key_LOCAL);
-                } else
+                if (alreadyVisisted.Contains(key_LOCAL)) // found a cycle
                 {
-                    alreadyVisisted.Add(key_LOCAL);
+                    Console.WriteLine("WARNING: DynamicFlow: Construct_State_Private: Found cycle. not implemented yet.");
+                    return new State(this._tools, key_LOCAL, key_LOCAL);
+                }
+                if (!this.Has_Vertex(key_LOCAL))
+                {
+                    Console.WriteLine("WARNING: DynamicFlow: Construct_State_Private: key " + key_LOCAL + " not found.");
+                    return new State(this._tools, key_LOCAL, key_LOCAL);
+                }
 
-                    switch (this._graph.InDegree(key_LOCAL))
-                    {
-                        case 0:
-                            result = new State(this._tools, key_LOCAL, key_LOCAL);
-                            break;
-                        case 1:
-                            var edge = this._graph.InEdge(key_LOCAL, 0);
-                            result = Construct_State_Private_LOCAL(edge.Source, false); // recursive call
-                            result.Update_Forward(edge.Tag.StateUpdate);
-                            break;
-                        case 2:
-                            var edge1 = this._graph.InEdge(key_LOCAL, 0);
-                            var edge2 = this._graph.InEdge(key_LOCAL, 1);
-                            result = Merge_State_Update_LOCAL(key_LOCAL, edge1.Source, edge1.Tag.StateUpdate, edge2.Source, edge2.Tag.StateUpdate);
-                            break;
-                        default:
-                            throw new Exception("Not implemented yet");
-                            //result = Tools.Collapse(GetStates_LOCAL());
-                            break;
-                    }
+                alreadyVisisted.Add(key_LOCAL);
+
+                switch (this._graph.InDegree(key_LOCAL))
+                {
+                    case 0:
+                        result = new State(this._tools, key_LOCAL, key_LOCAL);
+                        break;
+                    case 1:
+                        var edge = this._graph.InEdge(key_LOCAL, 0);
+                        result = Construct_State_Private_LOCAL(edge.Source, false); // recursive call
+                        result.Update_Forward(edge.Tag.StateUpdate);
+                        break;
+                    case 2:
+                        var edge1 = this._graph.InEdge(key_LOCAL, 0);
+                        var edge2 = this._graph.InEdge(key_LOCAL, 1);
+                        result = Merge_State_Update_LOCAL(key_LOCAL, edge1.Source, edge1.Tag.StateUpdate, edge2.Source, edge2.Tag.StateUpdate);
+                        break;
+                    default:
+                        Console.WriteLine("WARNING: DynamicFlow:Construct_State_Private: inDegree = " + this._graph.InDegree(key_LOCAL) + " is not implemented yet");
+                        result = new State(this._tools, key_LOCAL, key_LOCAL);
+                        break;
                 }
                 if (after_LOCAL)
                 {
@@ -301,9 +495,28 @@ namespace AsmSim
                             var edge = this._graph.OutEdge(key_LOCAL, 0);
                             result.Update_Forward(edge.Tag.StateUpdate);
                             break;
+                        case 2:
+                            State state1 = new State(result);
+                            State state2 = new State(result);
+                            {
+                                var edge1 = this._graph.OutEdge(key_LOCAL, 0);
+                                state1.Update_Forward(edge1.Tag.StateUpdate);
+                            }
+                            {
+                                var edge2 = this._graph.OutEdge(key_LOCAL, 1);
+                                state2.Update_Forward(edge2.Tag.StateUpdate);
+                            }
+                            result = new State(state1, state2, true);
+                            break;
                         default:
-                            throw new Exception("NOt implemented yet");
+                            Console.WriteLine("WARNING: DynamicFlow:Construct_State_Private: OutDegree = " + this._graph.OutDegree(key_LOCAL) + " is not implemented yet");
+                            result = new State(this._tools, key_LOCAL, key_LOCAL);
+                            break;
                     }
+                }
+                if (result == null)
+                {
+                    Console.WriteLine("WARNING: DynamicFlow:Construct_State_Private: Returning null!");
                 }
                 return result;
             }

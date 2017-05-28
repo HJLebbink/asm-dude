@@ -288,11 +288,10 @@ namespace AsmDude
                                 if (AsmSignatureTools.Is_Allowed_Reg(regName, allowedOperands))
                                 {
                                     if (asmSimulator_Enabled && this._asmSimulator.Tools.StateConfig.IsRegOn(RegisterTools.Get64BitsRegister(regName))) {
-                                        State state = this._asmSimulator.Get_State_Before(lineNumber, false, false);
+                                        State state = this._asmSimulator.Get_State_Before(lineNumber, false, false).State;
                                         if (state != null)
                                         {
-                                            Tv[] content = state.GetTv5Array(regName);
-                                            additionalInfo = ToolsZ3.ToStringHex(content) + " = " + ToolsZ3.ToStringBin(content);
+                                            additionalInfo = this._asmSimulator.Get_Register_Value(regName, state);
                                         }
                                         AsmDudeToolsStatic.Output_INFO("AsmCompletionSource:Mnemonic_Operand_Completions; register " + keyword + " is selected and has value " + additionalInfo);
                                     }

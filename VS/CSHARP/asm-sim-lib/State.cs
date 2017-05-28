@@ -343,6 +343,7 @@ namespace AsmSim
             {
                 regExpr = this.Ctx.MkExtract(15, 8, regExpr);
             }
+            //XXX TODO Threading issue here!
             Tv[] result = ToolsZ3.GetTvArray(regExpr, RegisterTools.NBits(regName), this.Solver, this.Solver_U, this.Ctx);
 
             if (popNeeded)
@@ -517,9 +518,6 @@ namespace AsmSim
         public string ToStringConstraints(string identStr)
         {
             StringBuilder sb = new StringBuilder();
-
-            sb.Append(this.Solver);
-
             if (this.Solver.NumAssertions > 0)
             {
                 sb.AppendLine(identStr + "Current Value constraints:");

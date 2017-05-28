@@ -173,14 +173,15 @@ namespace AsmDude.QuickInfo
                                     {
                                         Rn reg = RegisterTools.ParseRn(keywordUpper, true);
 
-                                        State state_Before = this._asmSimulator.Get_State_Before(lineNumber, true, true);
-                                        string reg_Content_Before = this._asmSimulator.Get_Register_Value(reg, state_Before);
+                                        var state_Before = this._asmSimulator.Get_State_Before(lineNumber, true, true);
+                                        string reg_Content_Before = (state_Before.Bussy) 
+                                            ? "[Dave, I'm working on it.]" 
+                                            : this._asmSimulator.Get_Register_Value(reg, state_Before.State);
 
-                                        State state_After = this._asmSimulator.Get_State_After(lineNumber, true, true);
-                                        string reg_Content_After = this._asmSimulator.Get_Register_Value(reg, state_After);
-
-                                        if (reg_Content_Before.Length == 0) reg_Content_Before = "[Bussy calculating register content]";
-                                        if (reg_Content_After.Length == 0) reg_Content_After = "[Bussy calculating register content]";
+                                        var state_After = this._asmSimulator.Get_State_After(lineNumber, true, true);
+                                        string reg_Content_After = (state_After.Bussy)
+                                            ? "[Dave, I'm working on it.]"
+                                            : this._asmSimulator.Get_Register_Value(reg, state_After.State);
 
                                         string msg = "\n" + reg + " before: " + reg_Content_Before + "\n" + reg + " after:  " + reg_Content_After;
                                         description.Inlines.Add(new Run(AsmSourceTools.Linewrap(msg, AsmDudePackage.maxNumberOfCharsInToolTips))

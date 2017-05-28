@@ -334,12 +334,12 @@ namespace AsmSim
                     "label2:                                        " + Environment.NewLine +
                     "           mov     rbx,        0               ";
 
-                StaticFlow flow1 = new StaticFlow(programStr, tools);
-                Console.WriteLine(flow1);
+                StaticFlow sFlow1 = new StaticFlow(programStr, tools);
+                Console.WriteLine(sFlow1);
 
                 tools.Quiet = false;
-                var tree1 = Runner.Construct_DynamicFlow_Backward(flow1, flow1.LastLineNumber, 20, tools);
-           
+                var tree1 = new DynamicFlow(tools);
+                tree1.Reset(sFlow1, false);
                 Console.WriteLine(tree1.EndState);
             }
             if (false)

@@ -45,6 +45,7 @@ namespace AsmSim
             IEnumerable<(string Vertex, int Step)> Get_Branch_Point_Backwards_LOCAL(string v1, int step)
             {
                 if (visited.Contains(v1)) yield break;
+                if (!graph.ContainsVertex(v1)) yield break;
 
                 if (graph.OutDegree(v1) > 1)
                 {
@@ -63,6 +64,8 @@ namespace AsmSim
         }
         public static IEnumerable<(string Vertex, int Step)> Get_First_Mutual_Branch_Point_Backwards(string vertex, BidirectionalGraph<string, TaggedEdge<string, ITag>> graph)
         {
+            if (!graph.ContainsVertex(vertex)) yield break;
+
             int inDegree = graph.InDegree(vertex);
             if (inDegree < 2) yield break; // the provided vertex is not a mergePoint
 
@@ -94,7 +97,6 @@ namespace AsmSim
                 Console.WriteLine("WARNING: Get_First_Mutual_Branch_Point_Backwards: multiple merge points at this the provided vertex " + vertex);
             }
         }
-
 
         public static string Get_Branch_Point(string vertex1, string vertex2, BidirectionalGraph<string, TaggedEdge<string, ITag>> graph)
         {
