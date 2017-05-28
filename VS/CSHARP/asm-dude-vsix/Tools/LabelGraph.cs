@@ -66,7 +66,7 @@ namespace AsmDude.Tools
         private readonly ISet<uint> _hasLabel;
         private readonly ISet<uint> _hasDef;
 
-        public bool Is_Enabled { get; private set; }
+        public bool Enabled { get; private set; }
         public ErrorListProvider Error_List_Provider { get; private set; }
 
         private readonly Delay _delay;
@@ -100,10 +100,10 @@ namespace AsmDude.Tools
             this._undefined_includes = new List<(string Include_Filename, string Path, string Source_Filename, int LineNumber)>();
 
             this._thisFilename = AsmDudeToolsStatic.GetFileName(this._buffer);
-            this.Is_Enabled = true;
+            this.Enabled = true;
 
             this._delay = new Delay(AsmDudePackage.msSleepBeforeAsyncExecution, 10, AsmDudeTools.Instance.Thread_Pool);
-            this._delay.Done += (o, i) => { AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Reset_Private); };
+            this._delay.Done_Event += (o, i) => { AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Reset_Private); };
 
             this.Reset();
             this._buffer.ChangedLowPriority += this.Buffer_Changed;
@@ -296,7 +296,7 @@ namespace AsmDude.Tools
 
         private void Reset_Private()
         {
-            if (!this.Is_Enabled) return;
+            if (!this.Enabled) return;
 
             lock (this._updateLock)
             {
@@ -341,7 +341,7 @@ namespace AsmDude.Tools
             string msg = string.Format("Performance of LabelGraph is horrible: disabling label analysis for {0}.", this._thisFilename);
             AsmDudeToolsStatic.Output_WARNING(msg);
 
-            this.Is_Enabled = false;
+            this.Enabled = false;
             lock (this._updateLock)
             {
                 this._buffer.ChangedLowPriority -= this.Buffer_Changed;
@@ -381,7 +381,7 @@ namespace AsmDude.Tools
         private void Buffer_Changed(object sender, TextContentChangedEventArgs e)
         {
             //AsmDudeToolsStatic.Output_INFO(string.Format("LabelGraph:OnTextBufferChanged: number of changes={0}; first change: old={1}; new={2}", e.Changes.Count, e.Changes[0].OldText, e.Changes[0].NewText));
-            if (!this.Is_Enabled) return;
+            if (!this.Enabled) return;
 
             if (true)
             {

@@ -277,7 +277,6 @@ namespace AsmSim
                     if (nextLineNumber == -1)
                     {
                         Console.WriteLine("WARNING: Runner:Construct_DynamicFlow_Forward: according to flow there does not exists a continue yet a continue is computed");
-                        //throw new Exception();
                     }
                     if (!this.Has_Edge(prevKey, nextKey, false))
                     {
@@ -296,7 +295,6 @@ namespace AsmSim
                 else if (nextLineNumber != -1)
                 {
                     Console.WriteLine("WARNING: Runner:Construct_DynamicFlow_Forward: according to flow there exists a regular continue yet no continue is computed");
-                    //throw new Exception();
                 }
             }
             #endregion
@@ -387,7 +385,6 @@ namespace AsmSim
                 if (tag.Tag.Branch == isBranch)
                 {
                     Console.WriteLine("WARNING: DynamicFlow.Add_Edge: edge " + source + "->" + target + " with branch=" + isBranch + " already exists");
-                    throw new Exception();
                     return;
                 }
             }
@@ -565,7 +562,6 @@ namespace AsmSim
                 if (state1.TailKey != state2.TailKey)
                 {
                     Console.WriteLine("WARNING: DynamicFlow: Merge_State_Update_LOCAL: tails are unequal: tail1=" + state1.TailKey + "; tail2=" + state2.TailKey);
-                   // throw new Exception();
                 }
                 {   // merge the states state1 and state2 into state3 
                     {

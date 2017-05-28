@@ -169,7 +169,7 @@ namespace AsmDude.QuickInfo
                                         });
                                     }
 
-                                    if (this._asmSimulator.Is_Enabled & Settings.Default.AsmSim_Decorate_Registers)
+                                    if (this._asmSimulator.Enabled & Settings.Default.AsmSim_Decorate_Registers)
                                     {
                                         Rn reg = RegisterTools.ParseRn(keywordUpper, true);
 
@@ -377,7 +377,7 @@ namespace AsmDude.QuickInfo
 
         private string Get_Label_Description(string label)
         {
-            if (this._labelGraph.Is_Enabled)
+            if (this._labelGraph.Enabled)
             {
                 StringBuilder sb = new StringBuilder();
                 SortedSet<uint> labelDefs = this._labelGraph.Get_Label_Def_Linenumbers(label);
@@ -409,7 +409,7 @@ namespace AsmDude.QuickInfo
 
         private string Get_Label_Def_Description(string full_Qualified_Label, string label)
         {
-            if (!this._labelGraph.Is_Enabled)
+            if (!this._labelGraph.Enabled)
             {
                 return "Label analysis is disabled";
             }

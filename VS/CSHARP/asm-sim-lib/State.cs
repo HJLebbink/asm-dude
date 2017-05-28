@@ -155,7 +155,6 @@ namespace AsmSim
                 if (!consistent1 && !consistent2)
                 {
                     Console.WriteLine("WARNING: State: merge constructor: states have to be consistent. state1 consistent = " + consistent1 + "; state2 consistent = " + consistent2);
-                    throw new Exception();
                 }
                 if (!consistent1)
                 {
@@ -569,17 +568,6 @@ namespace AsmSim
                     this.Solver_U.Assert(ToolsZ3.UpdateConstName(e, postfix, this.Ctx) as BoolExpr);
                 }
             }
-        }
-
-        public void Reset()
-        {
-            throw new Exception(); //TODO this code has a bug!
-            this.BranchInfoStore.Clear();
-            this.Solver.Reset();
-            this.Solver_U.Reset();
-            string freshKey = "!RESET"; // Tools.CreateKey(this._tools.Rand);
-            this.HeadKey = freshKey;
-            this.TailKey = freshKey;
         }
 
         public Tv IsConsistent

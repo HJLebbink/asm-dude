@@ -65,9 +65,9 @@ namespace AsmDude.Tools
         {
             Thread.Sleep(this._delayInMs);
             //AsmDudeToolsStatic.Output_INFO("Delay:Timer: delay elapsed");
-            this.Done(this, new EventArgs());
+            this.Done_Event(this, new EventArgs());
         }
 
-        public event EventHandler<EventArgs> Done;
+        public event EventHandler<EventArgs> Done_Event;
     }
 }

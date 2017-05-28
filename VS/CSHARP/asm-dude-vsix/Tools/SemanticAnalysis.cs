@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using AsmSim;
 using Microsoft.VisualStudio.Text;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,6 @@ namespace AsmDude.Tools
     internal sealed class SemanticAnalysis
     {
         #region Private Fields
-        private readonly ITextBuffer _sourceBuffer;
         private readonly AsmSimulator _asmSimulator;
         private readonly AsmSim.Tools _tools;
         private readonly IDictionary<int, string> _usage_Undefined;
@@ -39,19 +39,17 @@ namespace AsmDude.Tools
         private object _updateLock = new object();
         #endregion Private Fields
 
-        public SemanticAnalysis(ITextBuffer buffer, AsmSimulator asmSimulator)
+        public SemanticAnalysis(AsmSimulator asmSimulator)
         {
-            this._sourceBuffer = buffer;
             this._asmSimulator = asmSimulator;
             this._tools = asmSimulator.Tools;
             this._usage_Undefined = new Dictionary<int, string>();
             this._redundant_Instruction = new Dictionary<int, string>();
 
             this._delay = new Delay(AsmDudePackage.msSleepBeforeAsyncExecution, 10, AsmDudeTools.Instance.Thread_Pool);
-            this._delay.Done += (o, i) => { AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Reset_Private); };
+            this._delay.Done_Event += (o, i) => { AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Reset_Private); };
 
-            this._sourceBuffer.ChangedLowPriority += this.Buffer_Changed;
-            this.Reset();
+            this._asmSimulator.Reset_Done_Event += (o, i) => { this._delay.Reset(); };
         }
 
         #region Usage Undefined
@@ -85,26 +83,17 @@ namespace AsmDude.Tools
         }
         #endregion
 
-        public void Reset()
-        {
-            this._delay.Reset();
-        }
 
         public event EventHandler<LineUpdatedEventArgs> Line_Updated_Event;
         public event EventHandler<EventArgs> Reset_Done_Event;
 
         #region Private Methods
-        private void Buffer_Changed(object sender, TextContentChangedEventArgs e)
-        {
-            this.Reset();
-        }
 
         private void Reset_Private()
         {
             lock (this._updateLock)
             {
                 DateTime time1 = DateTime.Now;
-                
                 this._usage_Undefined.Clear();
                 this._redundant_Instruction.Clear();
                 this.Add_All();
@@ -119,14 +108,13 @@ namespace AsmDude.Tools
             bool update_Redundant_Instruction = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Show_Redundant_Instructions || Settings.Default.AsmSim_Decorate_Redundant_Instructions);
             bool update_Known_Register = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Decorate_Registers);
 
-            ITextSnapshot snapShot = this._sourceBuffer.CurrentSnapshot;
-            for (int lineNumber = 0; lineNumber < snapShot.LineCount; ++lineNumber)
+            StaticFlow sFlow = this._asmSimulator.StaticFlow;
+            for (int lineNumber = sFlow.FirstLineNumber; lineNumber < sFlow.LastLineNumber; ++lineNumber)
             {
                 {
                     if (update_Known_Register)
                     {
                         this._asmSimulator.Get_State_After(lineNumber, false, true);
-                        //yyy
                         this._asmSimulator.Get_State_Before(lineNumber, false, true);
                         this.Line_Updated_Event(this, new LineUpdatedEventArgs(lineNumber, AsmErrorEnum.NONE));
                     }

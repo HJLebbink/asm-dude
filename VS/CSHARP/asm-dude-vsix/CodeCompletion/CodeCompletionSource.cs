@@ -264,7 +264,7 @@ namespace AsmDude
         #region Private Methods
         private IEnumerable<Completion> Mnemonic_Operand_Completions(bool useCapitals, ISet<AsmSignatureEnum> allowedOperands, int lineNumber)
         {
-            bool asmSimulator_Enabled = this._asmSimulator.Is_Enabled;
+            bool asmSimulator_Enabled = this._asmSimulator.Enabled;
 
             SortedSet<Completion> completions = new SortedSet<Completion>(new CompletionComparer());
             foreach (string keyword in this._asmDudeTools.Get_Keywords())

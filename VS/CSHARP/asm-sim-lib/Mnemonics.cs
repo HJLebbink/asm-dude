@@ -724,7 +724,7 @@ namespace AsmSim
                 }
                 else
                 {
-                    throw new Exception();
+                    return;
                 }
             }
             public override IEnumerable<Rn> RegsReadStatic
@@ -785,7 +785,11 @@ namespace AsmSim
                         newRspExpr = this.Ctx.MkBVAdd(rspExpr, this.Ctx.MkBV(2, 64));
                         this.RegularUpdate.Set(this.op1, this.GetMem(newRspExpr, 2));
                     }
-                    else throw new Exception();
+                    else
+                    {
+                        this.SyntaxError += "UNKNOWN";
+                        return;
+                    }
                     this.RegularUpdate.Set(Rn.RSP, newRspExpr);
                 }
                 else if (this._t.Parameters.mode_32bit) // stackAddrSize == 32
@@ -802,7 +806,11 @@ namespace AsmSim
                         newEspExpr = this.Ctx.MkBVAdd(espExpr, this.Ctx.MkBV(2, 32));
                         this.RegularUpdate.Set(this.op1, this.GetMem(newEspExpr, 2));
                     }
-                    else throw new Exception();
+                    else
+                    {
+                        this.SyntaxError += "UNKNOWN";
+                        return;
+                    }
                     this.RegularUpdate.Set(Rn.ESP, newEspExpr);
                 }
                 else if (this._t.Parameters.mode_16bit)
@@ -819,7 +827,11 @@ namespace AsmSim
                         newSpExpr = this.Ctx.MkBVAdd(spExpr, this.Ctx.MkBV(2, 16));
                         this.RegularUpdate.Set(this.op1, this.GetMem(newSpExpr, 2));
                     }
-                    else throw new Exception();
+                    else
+                    {
+                        this.SyntaxError += "UNKNOWN";
+                        return;
+                    }
                     this.RegularUpdate.Set(Rn.SP, newSpExpr);
                 }
             }
@@ -1264,7 +1276,7 @@ namespace AsmSim
                                         cf = ctx.MkNot(ctx.MkEq(ctx.MkSignExt(nBits, raxValue), newValue));
                                         break;
                                     }
-                                default: throw new Exception();
+                                default: return;
                             }
                             break;
                         }
@@ -1287,7 +1299,7 @@ namespace AsmSim
                             cf = ctx.MkNot(ctx.MkEq(signExtendedTruncatedValue, newValue));
                             break;
                         }
-                    default: throw new Exception();
+                    default: return;
                 }
 
                 BoolExpr of = cf;
@@ -1321,7 +1333,7 @@ namespace AsmSim
                             case 64:
                                 yield return Rn.RAX;
                                 break;
-                            default: throw new Exception();
+                            default: break;
                         }
                         foreach (Rn r in ToRegEnumerable(this.op1)) yield return r;
                     }
@@ -1355,7 +1367,7 @@ namespace AsmSim
                                 yield return Rn.RAX;
                                 yield return Rn.RDX;
                                 break;
-                            default: throw new Exception();
+                            default: break;
                         }
                     }
                     else
@@ -1414,7 +1426,7 @@ namespace AsmSim
                             cf = ctx.MkNot(ctx.MkEq(ctx.MkZeroExt(nBits, raxValue), newValue));
                             break;
                         }
-                    default: throw new Exception();
+                    default: return;
                 }
 
                 BoolExpr of = cf;
@@ -1446,7 +1458,7 @@ namespace AsmSim
                         case 64:
                             yield return Rn.RAX;
                             break;
-                        default: throw new Exception();
+                        default: break;
                     }
                     foreach (Rn r in ToRegEnumerable(this.op1)) yield return r;
                 }
@@ -1473,7 +1485,7 @@ namespace AsmSim
                             yield return Rn.RAX;
                             yield return Rn.RDX;
                             break;
-                        default: throw new Exception();
+                        default: break;
                     }
                 }
             }
@@ -1507,7 +1519,7 @@ namespace AsmSim
                         term1 = ctx.MkConcat(this.Get(Rn.RDX), this.Get(Rn.RAX));
                         maxValue = ctx.MkBV(0xFFFF_FFFF_FFFF_FFFF, nBits * 2);
                         break;
-                    default: throw new Exception();
+                    default: return;
                 }
 
                 BitVecExpr op1Value = this.Op1Value;
@@ -1540,7 +1552,7 @@ namespace AsmSim
                         this.RegularUpdate.Set(Rn.RAX, ctx.MkITE(DE_Excepton, this.Undef(Rn.RAX), ctx.MkExtract(nBits - 1, 0, quotient)) as BitVecExpr);
                         this.RegularUpdate.Set(Rn.RDX, ctx.MkITE(DE_Excepton, this.Undef(Rn.RDX), ctx.MkExtract(nBits - 1, 0, remainder)) as BitVecExpr);
                         break;
-                    default: throw new Exception();
+                    default: return;
                 }
 
                 this.RegularUpdate.Set(Flags.CF, Tv.UNDEFINED);
@@ -1570,7 +1582,7 @@ namespace AsmSim
                         case 64:
                             yield return Rn.RAX;
                             break;
-                        default: throw new Exception();
+                        default: break;
                     }
                     foreach (Rn r in ToRegEnumerable(this.op1)) yield return r;
                 }
@@ -1597,7 +1609,7 @@ namespace AsmSim
                             yield return Rn.RAX;
                             yield return Rn.RDX;
                             break;
-                        default: throw new Exception();
+                        default: break;
                     }
                 }
             }
@@ -1630,7 +1642,7 @@ namespace AsmSim
                         term1 = ctx.MkConcat(this.Get(Rn.RDX), this.Get(Rn.RAX));
                         maxValue = ctx.MkBV(0xFFFF_FFFF_FFFF_FFFF, nBits * 2);
                         break;
-                    default: throw new Exception();
+                    default: return;
                 }
 
                 BitVecExpr op1Value = this.Op1Value;
@@ -1664,7 +1676,7 @@ namespace AsmSim
                         this.RegularUpdate.Set(Rn.RAX, ctx.MkITE(DE_Excepton, this.Undef(Rn.RAX), ctx.MkExtract(nBits - 1, 0, quotient)) as BitVecExpr);
                         this.RegularUpdate.Set(Rn.RDX, ctx.MkITE(DE_Excepton, this.Undef(Rn.RDX), ctx.MkExtract(nBits - 1, 0, remainder)) as BitVecExpr);
                         break;
-                    default: throw new Exception();
+                    default: return;
                 }
 
                 this.RegularUpdate.Set(Flags.CF, Tv.UNDEFINED);
@@ -1694,7 +1706,7 @@ namespace AsmSim
                         case 64:
                             yield return Rn.RAX;
                             break;
-                        default: throw new Exception();
+                        default: break;
                     }
                     foreach (Rn r in ToRegEnumerable(this.op1)) yield return r;
                 }
@@ -1721,7 +1733,7 @@ namespace AsmSim
                             yield return Rn.RAX;
                             yield return Rn.RDX;
                             break;
-                        default: throw new Exception();
+                        default: break;
                     }
                 }
             }
@@ -1843,7 +1855,7 @@ namespace AsmSim
                     case Mnemonic.XOR: value = this.Ctx.MkBVXOR(this.Op1Value, this.Op2Value); break;
                     case Mnemonic.AND: value = this.Ctx.MkBVAND(this.Op1Value, this.Op2Value); break;
                     case Mnemonic.OR: value = this.Ctx.MkBVOR(this.Op1Value, this.Op2Value); break;
-                    default: throw new Exception();
+                    default: return;
                 }
                 this.RegularUpdate.Set(this.op1, value);
                 this.RegularUpdate.Set(Flags.CF, Tv.ZERO);
@@ -2364,7 +2376,7 @@ namespace AsmSim
                     case Mnemonic.BT:
                         break;
                     default:
-                        throw new NotImplementedException();
+                        return;
                 }
                 // zero flag is unaffected
                 this.RegularUpdate.Set(Flags.OF, Tv.UNDEFINED);
@@ -2515,12 +2527,10 @@ namespace AsmSim
                     {
                         case Ot1.reg:
                             this.SyntaxError = "WARNING: OpcodeJumpBase: jumping based on registry value is not supported.";
-                            //throw new Exception();
                             break;
                         case Ot1.mem:
                             // unsupported
                             this.SyntaxError = "WARNING: OpcodeJumpBase: jumping based on memory value is not supported.";
-                            //throw new Exception();
                             break;
                         case Ot1.imm: // assuming the imm is an line number
                             lineNumber = (int)this.op1.Imm;
@@ -2529,7 +2539,8 @@ namespace AsmSim
                             lineNumber = ToolsZ3.GetLineNumberFromLabel(this.op1.ToString(), StaticFlow.LINENUMBER_SEPARATOR);
                             break;
                         default:
-                            throw new Exception();
+                            this.SyntaxError = "WARNING: OpcodeJumpBase: UNKNOWN.";
+                            break;
                     }
                     if (lineNumber < 0)
                     {
@@ -2647,11 +2658,13 @@ namespace AsmSim
                     {
                         case Ot1.reg:
                             this.SyntaxError = "WARNING: Call: jumping based on registry value is not supported.";
-                            throw new Exception();
+                            lineNumber = -1;
+                            break;
                         case Ot1.mem:
                             // unsupported
                             this.SyntaxError = "WARNING: Call: jumping based on memory value is not supported.";
-                            throw new Exception();
+                            lineNumber = -1;
+                            break;
                         case Ot1.imm: // assuming the imm is an line number
                             lineNumber = (int)this.op1.Imm;
                             break;
@@ -2659,7 +2672,8 @@ namespace AsmSim
                             lineNumber = ToolsZ3.GetLineNumberFromLabel(this.op1.ToString(), StaticFlow.LINENUMBER_SEPARATOR);
                             break;
                         default:
-                            throw new Exception();
+                            lineNumber = -1;
+                            break;
                     }
                     if (lineNumber < 0)
                     {
@@ -2761,7 +2775,7 @@ namespace AsmSim
                     nextLineNumberExpr = this.GetMem(newSpExpr, 2);
                     this.RegularUpdate.Set(Rn.SP, newSpExpr);
                 }
-                else throw new Exception();
+                else return;
 
                 this.RegularUpdate.NextLineNumberExpr = nextLineNumberExpr;
             }

@@ -454,6 +454,8 @@ namespace AsmSim
         {
             this.Empty = false;
 
+            //            if (value == null) return;
+            //            if (undef == null) return;
             Debug.Assert(value != null);
             Debug.Assert(undef != null);
 

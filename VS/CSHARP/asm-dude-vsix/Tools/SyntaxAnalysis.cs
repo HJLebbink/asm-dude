@@ -20,18 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using AsmSim;
 using AsmTools;
 using Microsoft.VisualStudio.Text;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace AsmDude.Tools
 {
     internal sealed class SyntaxAnalysis
     {
         #region Fields
-        private readonly ITextBuffer _sourceBuffer;
         private readonly AsmSimulator _asmSimulator;
         private readonly AsmSim.Tools _tools;
         private readonly IDictionary<int, (Mnemonic Mnemonic, string Message)> _syntax_Errors;
@@ -41,19 +40,17 @@ namespace AsmDude.Tools
         private object _updateLock = new object();
         #endregion Fields
 
-        public SyntaxAnalysis(ITextBuffer buffer, AsmSimulator asmSimulator)
+        public SyntaxAnalysis(AsmSimulator asmSimulator)
         {
-            this._sourceBuffer = buffer;
             this._asmSimulator = asmSimulator;
             this._tools = asmSimulator.Tools;
             this._syntax_Errors = new Dictionary<int, (Mnemonic Mnemonic, string Message)>();
             this._isNotImplemented = new HashSet<int>();
 
             this._delay = new Delay(AsmDudePackage.msSleepBeforeAsyncExecution, 10, AsmDudeTools.Instance.Thread_Pool);
-            this._delay.Done += (o, i) => { AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Reset_Private); };
+            this._delay.Done_Event += (o, i) => { AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Reset_Private); };
 
-            this.Reset();
-            this._sourceBuffer.ChangedLowPriority += this.Buffer_Changed;
+            this._asmSimulator.Reset_Done_Event += (o, i) => { this._delay.Reset(); };
         }
 
         public IEnumerable<(int LineNumber, Mnemonic Mnemonic, string Message)> SyntaxErrors
@@ -79,19 +76,11 @@ namespace AsmDude.Tools
         {
             return this._syntax_Errors.TryGetValue(lineNumber, out (Mnemonic Mnemonic, string Message) error) ? error : (Mnemonic.NONE, ""); 
         }
-        public void Reset()
-        {
-            this._delay.Reset();
-        }
 
         public event EventHandler<LineUpdatedEventArgs> Line_Updated_Event;
         public event EventHandler<EventArgs> Reset_Done_Event;
 
         #region Private Methods
-        private void Buffer_Changed(object sender, TextContentChangedEventArgs e)
-        {
-            this.Reset();
-        }
 
         private void Reset_Private()
         {
@@ -111,8 +100,8 @@ namespace AsmDude.Tools
             bool update_Syntax_Error = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Show_Syntax_Errors || Settings.Default.AsmSim_Decorate_Syntax_Errors);
             bool update_Not_Implemented = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Decorate_Unimplemented);
 
-            ITextSnapshot snapShot = this._sourceBuffer.CurrentSnapshot;
-            for (int lineNumber = 0; lineNumber < snapShot.LineCount; ++lineNumber)
+            StaticFlow sFlow = this._asmSimulator.StaticFlow;
+            for (int lineNumber = sFlow.FirstLineNumber; lineNumber < sFlow.LastLineNumber; ++lineNumber)
             {
                 var syntaxInfo = this._asmSimulator.Get_Syntax_Errors(lineNumber);
 

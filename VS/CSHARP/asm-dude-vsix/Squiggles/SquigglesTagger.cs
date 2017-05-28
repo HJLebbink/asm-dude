@@ -69,7 +69,7 @@ namespace AsmDude.Squiggles
             this._foreground = AsmDudeToolsStatic.GetFontColor();
 
             this._labelGraph = labelGraph;
-            if (this._labelGraph.Is_Enabled)
+            if (this._labelGraph.Enabled)
             {
                 this._labelGraph.Reset_Done_Event += (o, i) => {
                     this.Update_Squiggles_Tasks_Async();
@@ -79,9 +79,9 @@ namespace AsmDude.Squiggles
             }
 
             this._asmSimulator = asmSimulator;
-            if (this._asmSimulator.Is_Enabled)
+            if (this._asmSimulator.Enabled)
             {
-                this._syntaxAnalysis = new SyntaxAnalysis(buffer, asmSimulator);
+                this._syntaxAnalysis = new SyntaxAnalysis(asmSimulator);
                 this._syntaxAnalysis.Line_Updated_Event += (o, e) =>
                 {
                     AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handling _syntaxAnalysis.Line_Updated_Event: received an event from " + o + ". Line " + e.LineNumber);
@@ -93,10 +93,8 @@ namespace AsmDude.Squiggles
                     //this.Update_Squiggles_Tasks_Async();
                     //this.Update_Error_Tasks_AsmSim_Async();
                 };
-                this._syntaxAnalysis.Reset();
-
-
-                this._semanticAnalysis = new SemanticAnalysis(buffer, asmSimulator);
+                
+                this._semanticAnalysis = new SemanticAnalysis(asmSimulator);
                 this._semanticAnalysis.Line_Updated_Event += (o, e) =>
                 {
                     AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handling _semanticAnalysis.Line_Updated_Event: received an event from " + o + ". Line " + e.LineNumber);
@@ -108,8 +106,14 @@ namespace AsmDude.Squiggles
                     //this.Update_Squiggles_Tasks_Async();
                     //this.Update_Error_Tasks_AsmSim_Async();
                 };
-                this._semanticAnalysis.Reset();
+
+                this._asmSimulator.Reset();
             }
+        }
+
+        private void _asmSimulator_Reset_Done(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         public IEnumerable<ITagSpan<IErrorTag>> GetTags(NormalizedSnapshotSpanCollection spans)
@@ -119,8 +123,8 @@ namespace AsmDude.Squiggles
                 yield break;
             }
 
-            bool labelGraph_Enabled = this._labelGraph.Is_Enabled;
-            bool asmSimulator_Enabled = this._asmSimulator.Is_Enabled;
+            bool labelGraph_Enabled = this._labelGraph.Enabled;
+            bool asmSimulator_Enabled = this._asmSimulator.Enabled;
 
             if (!labelGraph_Enabled && !asmSimulator_Enabled)
             {   // nothing to decorate
@@ -376,7 +380,7 @@ namespace AsmDude.Squiggles
 
         private void Update_Error_Task_AsmSim(int lineNumber, AsmErrorEnum error)
         {
-            if (!this._asmSimulator.Is_Enabled) return;
+            if (!this._asmSimulator.Enabled) return;
 
             var errorTasks = this._errorListProvider.Tasks;
             bool errorListNeedsRefresh = false;
@@ -438,7 +442,7 @@ namespace AsmDude.Squiggles
         #region Async
         private async void Update_Error_Tasks_AsmSim_Async()
         {
-            if (!this._asmSimulator.Is_Enabled) return;
+            if (!this._asmSimulator.Enabled) return;
             await System.Threading.Tasks.Task.Run(() =>
             {
                 lock (this._updateLock)
@@ -560,7 +564,7 @@ namespace AsmDude.Squiggles
 
         private async void Update_Error_Tasks_Labels_Async()
         {
-            if (!this._labelGraph.Is_Enabled) return;
+            if (!this._labelGraph.Enabled) return;
 
             await System.Threading.Tasks.Task.Run(() =>
             {

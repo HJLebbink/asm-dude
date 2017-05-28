@@ -82,7 +82,7 @@ namespace AsmDude.CodeFolding
             this._enabled = true;
 
             this._delay = new Delay(AsmDudePackage.msSleepBeforeAsyncExecution, 10, AsmDudeTools.Instance.Thread_Pool);
-            this._delay.Done += (o, i) => { AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Parse); };
+            this._delay.Done_Event += (o, i) => { AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Parse); };
 
             this._delay.Reset();
             this._buffer.ChangedLowPriority += this.Buffer_Changed;
