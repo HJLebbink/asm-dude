@@ -747,11 +747,11 @@ namespace unit_tests_asm_z3
             if (logToDisplay) Console.WriteLine("mergedState3 Plus branchCondition=\n" + mergedState3);
 
             TestTools.AreEqual(Tv.ONE, mergedState3.IsConsistent);
-            TestTools.AreEqual(1, mergedState3.GetTv5ArrayMem(mergedState3.Get(Rn.RAX), nBytes));
+            TestTools.AreEqual(1, mergedState3.GetTvArrayMem(mergedState3.Get(Rn.RAX), nBytes));
 
             mergedState4.Add(new BranchInfo(branchCondition, false));
             TestTools.AreEqual(Tv.ONE, mergedState4.IsConsistent);
-            TestTools.AreEqual(2, mergedState4.GetTv5ArrayMem(mergedState4.Get(Rn.RAX), nBytes));
+            TestTools.AreEqual(2, mergedState4.GetTvArrayMem(mergedState4.Get(Rn.RAX), nBytes));
 
         }
 

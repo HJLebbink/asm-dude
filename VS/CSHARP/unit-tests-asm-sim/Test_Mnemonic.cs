@@ -1789,12 +1789,12 @@ namespace unit_tests_asm_z3
 
                 state = Runner.SimpleStep_Forward(line1, state);
 
-                Tv cf = state.GetTv5(Flags.CF);
-                Tv of = state.GetTv5(Flags.OF);
-                Tv af = state.GetTv5(Flags.AF);
-                Tv sf = state.GetTv5(Flags.SF);
-                Tv zf = state.GetTv5(Flags.ZF);
-                Tv pf = state.GetTv5(Flags.PF);
+                Tv cf = state.GetTv(Flags.CF);
+                Tv of = state.GetTv(Flags.OF);
+                Tv af = state.GetTv(Flags.AF);
+                Tv sf = state.GetTv(Flags.SF);
+                Tv zf = state.GetTv(Flags.ZF);
+                Tv pf = state.GetTv(Flags.PF);
 
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -1803,12 +1803,12 @@ namespace unit_tests_asm_z3
                 TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001", state);
 
                 //If the count is 0, the flags are not affected.
-                Assert.AreEqual(state.GetTv5(Flags.CF), cf);
-                Assert.AreEqual(state.GetTv5(Flags.OF), of);
-                Assert.AreEqual(state.GetTv5(Flags.AF), af);
-                Assert.AreEqual(state.GetTv5(Flags.SF), sf);
-                Assert.AreEqual(state.GetTv5(Flags.ZF), zf);
-                Assert.AreEqual(state.GetTv5(Flags.PF), pf);
+                Assert.AreEqual(state.GetTv(Flags.CF), cf);
+                Assert.AreEqual(state.GetTv(Flags.OF), of);
+                Assert.AreEqual(state.GetTv(Flags.AF), af);
+                Assert.AreEqual(state.GetTv(Flags.SF), sf);
+                Assert.AreEqual(state.GetTv(Flags.ZF), zf);
+                Assert.AreEqual(state.GetTv(Flags.PF), pf);
             }
         }
 

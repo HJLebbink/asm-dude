@@ -52,6 +52,9 @@ namespace AsmDude.Tools
             this._asmSimulator.Reset_Done_Event += (o, i) => { this._delay.Reset(); };
         }
 
+        public event EventHandler<LineUpdatedEventArgs> Line_Updated_Event;
+        //public event EventHandler<EventArgs> Reset_Done_Event;
+
         #region Usage Undefined
         public IEnumerable<(int LineNumber, string Message)> Usage_Undefined
         {
@@ -83,10 +86,6 @@ namespace AsmDude.Tools
         }
         #endregion
 
-
-        public event EventHandler<LineUpdatedEventArgs> Line_Updated_Event;
-        public event EventHandler<EventArgs> Reset_Done_Event;
-
         #region Private Methods
 
         private void Reset_Private()
@@ -97,7 +96,7 @@ namespace AsmDude.Tools
                 this._usage_Undefined.Clear();
                 this._redundant_Instruction.Clear();
                 this.Add_All();
-                this.Reset_Done_Event(this, new EventArgs());
+                //this.Reset_Done_Event(this, new EventArgs());
                 AsmDudeToolsStatic.Print_Speed_Warning(time1, "SemanticAnalysis");
             }
         }
@@ -116,7 +115,7 @@ namespace AsmDude.Tools
                     {
                         this._asmSimulator.Get_State_After(lineNumber, false, true);
                         this._asmSimulator.Get_State_Before(lineNumber, false, true);
-                        this.Line_Updated_Event(this, new LineUpdatedEventArgs(lineNumber, AsmErrorEnum.NONE));
+                        this.Line_Updated_Event(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.NONE));
                     }
                 }
                 {
@@ -126,7 +125,7 @@ namespace AsmDude.Tools
                         if (message.Length > 0)
                         {
                             this._usage_Undefined.Add(lineNumber, message);
-                            this.Line_Updated_Event(this, new LineUpdatedEventArgs(lineNumber, AsmErrorEnum.USAGE_OF_UNDEFINED));
+                            this.Line_Updated_Event(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.USAGE_OF_UNDEFINED));
                         }
                     }
                 }
@@ -137,7 +136,7 @@ namespace AsmDude.Tools
                         if (message.Length > 0)
                         {
                             this._redundant_Instruction.Add(lineNumber, message);
-                            this.Line_Updated_Event(this, new LineUpdatedEventArgs(lineNumber, AsmErrorEnum.REDUNDANT));
+                            this.Line_Updated_Event(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.REDUNDANT));
                         }
                     }
                 }

@@ -84,29 +84,38 @@ namespace AsmDude.Squiggles
                 this._syntaxAnalysis = new SyntaxAnalysis(asmSimulator);
                 this._syntaxAnalysis.Line_Updated_Event += (o, e) =>
                 {
-                    AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handling _syntaxAnalysis.Line_Updated_Event: received an event from " + o + ". Line " + e.LineNumber);
+                    //AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handling _syntaxAnalysis.Line_Updated_Event: received an event from " + o + ". Line " + e.LineNumber);
                     this.Update_Squiggles_Tasks(e.LineNumber);
-                    this.Update_Error_Task_AsmSim(e.LineNumber, e.Error);
+                    this.Update_Error_Task_AsmSim(e.LineNumber, e.Message);
                 };
+                /*
                 this._syntaxAnalysis.Reset_Done_Event += (o, e) => {
                     AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handling _syntaxAnalysis.Reset_Done_Event: received an event from " + o + ".");
                     //this.Update_Squiggles_Tasks_Async();
                     //this.Update_Error_Tasks_AsmSim_Async();
                 };
-                
+                */
                 this._semanticAnalysis = new SemanticAnalysis(asmSimulator);
                 this._semanticAnalysis.Line_Updated_Event += (o, e) =>
                 {
-                    AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handling _semanticAnalysis.Line_Updated_Event: received an event from " + o + ". Line " + e.LineNumber);
+                    //AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handling _semanticAnalysis.Line_Updated_Event: received an event from " + o + ". Line " + e.LineNumber);
                     this.Update_Squiggles_Tasks(e.LineNumber);
-                    this.Update_Error_Task_AsmSim(e.LineNumber, e.Error);
+                    this.Update_Error_Task_AsmSim(e.LineNumber, e.Message);
                 };
+                this._asmSimulator.Line_Updated_Event += (o, e) =>
+                {
+                    //AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handling _semanticAnalysis.Line_Updated_Event: received an event from " + o + ". Line " + e.LineNumber);
+                    this.Update_Squiggles_Tasks(e.LineNumber);
+                    this.Update_Error_Task_AsmSim(e.LineNumber, e.Message);
+                };
+
+                /*
                 this._semanticAnalysis.Reset_Done_Event += (o, e) => {
                     AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handling _semanticAnalysis.Reset_Done_Event: received an event from " + o + ".");
                     //this.Update_Squiggles_Tasks_Async();
                     //this.Update_Error_Tasks_AsmSim_Async();
                 };
-
+                */
                 this._asmSimulator.Reset();
             }
         }
@@ -378,7 +387,7 @@ namespace AsmDude.Squiggles
             return (startPos | ((startPos + lengthKeyword) << 16));
         }
 
-        private void Update_Error_Task_AsmSim(int lineNumber, AsmErrorEnum error)
+        private void Update_Error_Task_AsmSim(int lineNumber, AsmMessageEnum error)
         {
             if (!this._asmSimulator.Enabled) return;
 
@@ -389,7 +398,7 @@ namespace AsmDude.Squiggles
             for (int i = errorTasks.Count - 1; i >= 0; --i)
             {
                 var task = errorTasks[i];
-                if (((AsmErrorEnum)task.SubcategoryIndex == error) && (task.Line == lineNumber))
+                if (((AsmMessageEnum)task.SubcategoryIndex == error) && (task.Line == lineNumber))
                 {
                     errorTasks.RemoveAt(i);
                     errorListNeedsRefresh = true;
@@ -399,7 +408,7 @@ namespace AsmDude.Squiggles
 
             switch (error)
             {
-                case AsmErrorEnum.SYNTAX_ERROR:
+                case AsmMessageEnum.SYNTAX_ERROR:
                     {
                         if (Settings.Default.AsmSim_Show_Syntax_Errors)
                         {
@@ -409,7 +418,7 @@ namespace AsmDude.Squiggles
                         }
                         break;
                     }
-                case AsmErrorEnum.USAGE_OF_UNDEFINED:
+                case AsmMessageEnum.USAGE_OF_UNDEFINED:
                     {
                         if (Settings.Default.AsmSim_Show_Usage_Of_Undefined)
                         {
@@ -419,7 +428,7 @@ namespace AsmDude.Squiggles
                         }
                         break;
                     }
-                case AsmErrorEnum.REDUNDANT:
+                case AsmMessageEnum.REDUNDANT:
                     {
                         if (Settings.Default.AsmSim_Show_Redundant_Instructions)
                         {
@@ -461,10 +470,10 @@ namespace AsmDude.Squiggles
                             #region Remove stale error tasks from the error list
                             for (int i = errorTasks.Count - 1; i >= 0; --i)
                             {
-                                AsmErrorEnum subCategory = (AsmErrorEnum)errorTasks[i].SubcategoryIndex;
-                                if ((subCategory == AsmErrorEnum.USAGE_OF_UNDEFINED) || 
-                                    (subCategory == AsmErrorEnum.SYNTAX_ERROR) ||
-                                    (subCategory == AsmErrorEnum.REDUNDANT))
+                                AsmMessageEnum subCategory = (AsmMessageEnum)errorTasks[i].SubcategoryIndex;
+                                if ((subCategory == AsmMessageEnum.USAGE_OF_UNDEFINED) || 
+                                    (subCategory == AsmMessageEnum.SYNTAX_ERROR) ||
+                                    (subCategory == AsmMessageEnum.REDUNDANT))
                                 {
                                     errorTasks.RemoveAt(i);
                                     errorListNeedsRefresh = true;
@@ -519,7 +528,7 @@ namespace AsmDude.Squiggles
 
             ErrorTask errorTask = new ErrorTask()
             {
-                SubcategoryIndex = (int)AsmErrorEnum.SYNTAX_ERROR,
+                SubcategoryIndex = (int)AsmMessageEnum.SYNTAX_ERROR,
                 Line = lineNumber,
                 Column = Get_Keyword_Begin_End(lineContent, mnemonic.ToString()),
                 Text = "Syntax Error: " + message,
@@ -535,7 +544,7 @@ namespace AsmDude.Squiggles
             //string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
             ErrorTask errorTask = new ErrorTask()
             {
-                SubcategoryIndex = (int)AsmErrorEnum.USAGE_OF_UNDEFINED,
+                SubcategoryIndex = (int)AsmMessageEnum.USAGE_OF_UNDEFINED,
                 Line = lineNumber,
                 Column = 0, // Get_Keyword_Begin_End(lineContent, mnemonic.ToString()),
                 Text = "Semantic Warning: " + message,
@@ -551,7 +560,7 @@ namespace AsmDude.Squiggles
             //string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
             ErrorTask errorTask = new ErrorTask()
             {
-                SubcategoryIndex = (int)AsmErrorEnum.REDUNDANT,
+                SubcategoryIndex = (int)AsmMessageEnum.REDUNDANT,
                 Line = lineNumber,
                 Column = 0, // Get_Keyword_Begin_End(lineContent, mnemonic.ToString()),
                 Text = "Semantic Warning: " + message,
@@ -583,10 +592,10 @@ namespace AsmDude.Squiggles
                             #region Remove stale error tasks from the error list
                             for (int i = errorTasks.Count - 1; i >= 0; --i)
                             {
-                                AsmErrorEnum subCategory = (AsmErrorEnum)errorTasks[i].SubcategoryIndex;
-                                if ((subCategory == AsmErrorEnum.LABEL_UNDEFINED) ||
-                                    (subCategory == AsmErrorEnum.LABEL_CLASH) ||
-                                    (subCategory == AsmErrorEnum.INCLUDE_UNDEFINED))
+                                AsmMessageEnum subCategory = (AsmMessageEnum)errorTasks[i].SubcategoryIndex;
+                                if ((subCategory == AsmMessageEnum.LABEL_UNDEFINED) ||
+                                    (subCategory == AsmMessageEnum.LABEL_CLASH) ||
+                                    (subCategory == AsmMessageEnum.INCLUDE_UNDEFINED))
                                 {
                                     errorTasks.RemoveAt(i);
                                     errorListNeedsRefresh = true;
@@ -605,7 +614,7 @@ namespace AsmDude.Squiggles
 
                                     ErrorTask errorTask = new ErrorTask()
                                     {
-                                        SubcategoryIndex = (int)AsmErrorEnum.LABEL_CLASH,
+                                        SubcategoryIndex = (int)AsmMessageEnum.LABEL_CLASH,
                                         Line = this._labelGraph.Get_Linenumber(entry.Key),
                                         Column = Get_Keyword_Begin_End(lineContent, label),
                                         Text = "Label Clash: \"" + label + "\"",
@@ -628,7 +637,7 @@ namespace AsmDude.Squiggles
 
                                     ErrorTask errorTask = new ErrorTask()
                                     {
-                                        SubcategoryIndex = (int)AsmErrorEnum.LABEL_UNDEFINED,
+                                        SubcategoryIndex = (int)AsmMessageEnum.LABEL_UNDEFINED,
                                         Line = lineNumber,
                                         Column = Get_Keyword_Begin_End(lineContent, label),
                                         Text = "Undefined Label: \"" + label + "\"",
@@ -651,7 +660,7 @@ namespace AsmDude.Squiggles
 
                                     ErrorTask errorTask = new ErrorTask()
                                     {
-                                        SubcategoryIndex = (int)AsmErrorEnum.INCLUDE_UNDEFINED,
+                                        SubcategoryIndex = (int)AsmMessageEnum.INCLUDE_UNDEFINED,
                                         Line = lineNumber,
                                         Column = Get_Keyword_Begin_End(lineContent, include),
                                         Text = "Could not resolve include \"" + include + "\" at line " + (lineNumber + 1) + " in file \"" + entry.Source_Filename + "\"",
@@ -681,7 +690,13 @@ namespace AsmDude.Squiggles
 
         private void Update_Squiggles_Tasks(int lineNumber)
         {
-            this.TagsChanged(this, new SnapshotSpanEventArgs(this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent));
+            try
+            {
+                this.TagsChanged(this, new SnapshotSpanEventArgs(this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent));
+            } catch (Exception e)
+            {
+                AsmDudeToolsStatic.Output_ERROR("SquiggleTagger: Update_Squiggles_Tasks: e=" + e.ToString());
+            }
         }
              
         private async void Update_Squiggles_Tasks_Async()

@@ -78,7 +78,7 @@ namespace AsmDude.Tools
         }
 
         public event EventHandler<LineUpdatedEventArgs> Line_Updated_Event;
-        public event EventHandler<EventArgs> Reset_Done_Event;
+       // public event EventHandler<EventArgs> Reset_Done_Event;
 
         #region Private Methods
 
@@ -90,7 +90,7 @@ namespace AsmDude.Tools
                 this._syntax_Errors.Clear();
                 this._isNotImplemented.Clear();
                 this.Add_All();
-                this.Reset_Done_Event(this, new EventArgs());
+                //this.Reset_Done_Event(this, new EventArgs());
                 AsmDudeToolsStatic.Print_Speed_Warning(time1, "SyntaxAnalysis");
             }
         }
@@ -112,7 +112,7 @@ namespace AsmDude.Tools
                         if (update_Syntax_Error)
                         {
                             this._syntax_Errors.Add(lineNumber, (syntaxInfo.Mnemonic, syntaxInfo.Message));
-                            this.Line_Updated_Event(this, new LineUpdatedEventArgs(lineNumber, AsmErrorEnum.SYNTAX_ERROR));
+                            this.Line_Updated_Event(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.SYNTAX_ERROR));
                         }
                     }
                 }
@@ -121,7 +121,7 @@ namespace AsmDude.Tools
                     if (update_Not_Implemented)
                     {
                         this._isNotImplemented.Add(lineNumber);
-                        this.Line_Updated_Event(this, new LineUpdatedEventArgs(lineNumber, AsmErrorEnum.NOT_IMPLEMENTED));
+                        this.Line_Updated_Event(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.NOT_IMPLEMENTED));
                     }
                 }
             }

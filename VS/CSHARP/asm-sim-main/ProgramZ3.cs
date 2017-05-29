@@ -303,7 +303,6 @@ namespace AsmSim
 
                 string line1 = "add al, bl";
 
-                state.Reset();
                 string nextKey = Tools.CreateKey(state.Tools.Rand);
                 StateUpdate updateState = new StateUpdate(state.TailKey, nextKey, state.Tools);
                 updateState.Set(Rn.AL, a);
@@ -315,7 +314,7 @@ namespace AsmSim
                 state = Runner.SimpleStep_Forward(line1, state);
                 Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
 
-                Console.WriteLine(ToolsZ3.ToStringBin(state.GetTv5Array(Rn.AL)));
+                Console.WriteLine(ToolsZ3.ToStringBin(state.GetTvArray(Rn.AL)));
             }
             if (false)
             {

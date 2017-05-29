@@ -487,7 +487,7 @@ namespace AsmDude.Tools
 
             ErrorTask errorTask = new ErrorTask()
             {
-                SubcategoryIndex = (int)AsmErrorEnum.OTHER,
+                SubcategoryIndex = (int)AsmMessageEnum.OTHER,
                 Text = msg,
                 ErrorCategory = TaskErrorCategory.Message,
                 Document = filename

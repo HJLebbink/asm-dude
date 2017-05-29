@@ -287,12 +287,9 @@ namespace AsmDude
                                 Rn regName = RegisterTools.ParseRn(keyword, true);
                                 if (AsmSignatureTools.Is_Allowed_Reg(regName, allowedOperands))
                                 {
-                                    if (asmSimulator_Enabled && this._asmSimulator.Tools.StateConfig.IsRegOn(RegisterTools.Get64BitsRegister(regName))) {
-                                        State state = this._asmSimulator.Get_State_Before(lineNumber, false, false).State;
-                                        if (state != null)
-                                        {
-                                            additionalInfo = this._asmSimulator.Get_Register_Value(regName, state);
-                                        }
+                                    if (asmSimulator_Enabled && this._asmSimulator.Tools.StateConfig.IsRegOn(RegisterTools.Get64BitsRegister(regName)))
+                                    {
+                                        additionalInfo = this._asmSimulator.Get_Register_Value(regName, lineNumber, true);
                                         AsmDudeToolsStatic.Output_INFO("AsmCompletionSource:Mnemonic_Operand_Completions; register " + keyword + " is selected and has value " + additionalInfo);
                                     }
                                 }

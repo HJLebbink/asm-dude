@@ -235,7 +235,6 @@ namespace AsmSim
                                 BitVecExpr address = Tools.Calc_Effective_Address(operand, key, ctx);
                                 int nBytes = nBits >> 3;
                                 return Tools.Get_Value_From_Mem(address, nBytes, key, ctx);
-                                //return address;
                             }
                         case Ot1.imm:
                             {

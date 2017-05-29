@@ -32,6 +32,7 @@ namespace AsmSim
     {
         #region Fields
         public static readonly bool SIMPLIFY_ON = true;
+        public static readonly bool ADD_COMPUTED_VALUES = true;
 
         public readonly Tools _tools;
         public Tools Tools { get { return this._tools; } }
@@ -49,6 +50,10 @@ namespace AsmSim
         public string HeadKey = null;
         public string TailKey = null;
 
+        private bool _frozen;
+        private readonly IDictionary<Rn, Tv[]> _cached_Reg_Values;
+        private readonly IDictionary<Flags, Tv> _cached_Flag_Values;
+
         public Context Ctx { get { return this.Tools.Ctx; } }
 
         private BranchInfoStore _branchInfoStore;
@@ -56,20 +61,6 @@ namespace AsmSim
         #endregion
 
         #region Constructors
-
-        private Solver CreateSolver(Context ctx)
-        {
-            if (true)
-            {
-                Tactic tactic = ctx.MkTactic("qfbv");
-                return ctx.MkSolver(tactic);
-            }
-            else
-            {
-                return ctx.MkSolver("QF_ABV");
-            }
-        }
-
         /// <summary>Regular constructor</summary>
         public State(Tools tools, string tailKey, string headKey)
         {
@@ -80,12 +71,17 @@ namespace AsmSim
             this.Solver = CreateSolver(tools.Ctx);
             this.Solver_U = CreateSolver(tools.Ctx);
             this._branchInfoStore = new BranchInfoStore(this.Tools);
+            this._cached_Reg_Values = new Dictionary<Rn, Tv[]>();
+            this._cached_Flag_Values = new Dictionary<Flags, Tv>();
         }
 
         /// <summary>Copy constructor</summary>
         public State(State other)
         {
             this._tools = other.Tools;
+            this._cached_Reg_Values = new Dictionary<Rn, Tv[]>();
+            this._cached_Flag_Values = new Dictionary<Flags, Tv>();
+
             this.CopyConstructor(other);
         }
         /// <summary>Merge and Diff constructor</summary>
@@ -95,6 +91,9 @@ namespace AsmSim
             this.Solver = CreateSolver(this._tools.Ctx);
             this.Solver_U = CreateSolver(this._tools.Ctx);
 
+            this._cached_Reg_Values = new Dictionary<Rn, Tv[]>();
+            this._cached_Flag_Values = new Dictionary<Flags, Tv>();
+
             if (merge)
             {
                 this.MergeConstructor(state1, state2);
@@ -102,6 +101,18 @@ namespace AsmSim
             else
             {
                 this.DiffConstructor(state1, state2);
+            }
+        }
+        private Solver CreateSolver(Context ctx)
+        {
+            if (true)
+            {
+                Tactic tactic = ctx.MkTactic("qfbv");
+                return ctx.MkSolver(tactic);
+            }
+            else
+            {
+                return ctx.MkSolver("QF_ABV");
             }
         }
         /// <summary>Copy Constructor Method</summary>
@@ -245,7 +256,32 @@ namespace AsmSim
         }
         #endregion
 
-        #region Update
+        #region Setters
+
+        public bool Frozen
+        {
+            get { return this._frozen; }
+            set
+            {
+                if (value)
+                {
+                    if (!this._frozen)
+                    {
+                        this._frozen = true;
+                    }
+                }
+                else
+                {
+                    if (this._frozen)
+                    {
+                        this._frozen = false;
+                        this._cached_Reg_Values.Clear();
+                        this._cached_Flag_Values.Clear();
+                    }
+                }
+            }
+        }
+
         public void Update(StateUpdate stateUpdate)
         {
             if (stateUpdate == null) return;
@@ -284,13 +320,11 @@ namespace AsmSim
         #region Getters 
         public bool IsUndefined(Flags flagName, bool addBranchInfo = true)
         {
-            //TODO this can be done faster;
-            return (this.GetTv5(flagName, addBranchInfo) == Tv.UNDEFINED);
+            return (this.GetTv(flagName, addBranchInfo) == Tv.UNDEFINED);
         }
         public bool IsUndefined(Rn regName, bool addBranchInfo = true)
         {
-            //TODO this can be done faster;
-            Tv[] result = this.GetTv5Array(regName, addBranchInfo);
+            Tv[] result = this.GetTvArray(regName, addBranchInfo);
             foreach (Tv tv in result)
             {
                 if (tv == Tv.UNDEFINED) return true;
@@ -298,8 +332,21 @@ namespace AsmSim
             return false;
         }
 
-        public Tv GetTv5(Flags flagName, bool addBranchInfo = true)
+        public Tv GetTv_Cached(Flags flagName)
         {
+            this._cached_Flag_Values.TryGetValue(flagName, out var value);
+            return value;
+        }
+
+        public Tv GetTv(Flags flagName, bool addBranchInfo = true)
+        {
+            if (!addBranchInfo) throw new Exception(); //TODO
+
+            if (this.Frozen && this._cached_Flag_Values.ContainsKey(flagName))
+            {
+                return this._cached_Flag_Values[flagName];
+            }
+
             this.UndefGrounding = true; // needed!
 
             bool popNeeded = false;
@@ -319,10 +366,29 @@ namespace AsmSim
                 this.Solver.Pop();
                 this.Solver_U.Pop();
             }
+
+            if (this.Frozen)
+            {
+                this._cached_Flag_Values[flagName] = result;
+            }
             return result;
         }
-        public Tv[] GetTv5Array(Rn regName, bool addBranchInfo = true)
+
+        public Tv[] GetTvArray_Cached(Rn regName)
         {
+            this._cached_Reg_Values.TryGetValue(regName, out var value);
+            return value;
+        }
+
+        public Tv[] GetTvArray(Rn regName, bool addBranchInfo = true)
+        {
+            if (!addBranchInfo) throw new Exception(); //TODO
+
+            if (this.Frozen && this._cached_Reg_Values.ContainsKey(regName))
+            {
+                return this._cached_Reg_Values[regName];
+            }
+
             Rn reg64 = RegisterTools.Get64BitsRegister(regName);
             if (reg64 == Rn.NOREG) return new Tv[RegisterTools.NBits(regName)];
 
@@ -342,7 +408,7 @@ namespace AsmSim
             {
                 regExpr = this.Ctx.MkExtract(15, 8, regExpr);
             }
-            //XXX TODO Threading issue here!
+
             Tv[] result = ToolsZ3.GetTvArray(regExpr, RegisterTools.NBits(regName), this.Solver, this.Solver_U, this.Ctx);
 
             if (popNeeded)
@@ -350,10 +416,29 @@ namespace AsmSim
                 this.Solver.Pop();
                 this.Solver_U.Pop();
             }
+
+            if (this.Frozen)
+            {
+                if (ADD_COMPUTED_VALUES && RegisterTools.NBits(regName) == 64)
+                {
+                    ulong? value = ToolsZ3.GetUlong(result);
+                    if (value != null)
+                    {
+                        this.Solver.Assert(this.Ctx.MkEq(regExpr, this.Ctx.MkBV(value.Value, 64)));
+                        this.Solver_Dirty = true;
+                    }
+                }
+
+                this._cached_Reg_Values[regName] = result;
+            }
+
             return result;
         }
-        public Tv[] GetTv5ArrayMem(BitVecExpr address, int nBytes, bool addBranchInfo = true)
+
+        public Tv[] GetTvArrayMem(BitVecExpr address, int nBytes, bool addBranchInfo = true)
         {
+            if (!addBranchInfo) throw new Exception(); //TODO
+
             this.UndefGrounding = true; // needed!
 
             bool popNeeded = false;
@@ -495,7 +580,7 @@ namespace AsmSim
                 char c = ' ';
                 if (this.Tools.StateConfig.IsFlagOn(flag))
                 {
-                    c = ToolsZ3.ToStringBin(this.GetTv5(flag, true));
+                    c = ToolsZ3.ToStringBin(this.GetTv(flag, true));
                 }
                 sb.Append(flag.ToString() + "=" + c + "; ");
             }
@@ -507,7 +592,7 @@ namespace AsmSim
             StringBuilder sb = new StringBuilder();
             foreach (Rn reg in this.Tools.StateConfig.GetRegOn())
             {
-                Tv[] regContent = this.GetTv5Array(reg, true);
+                Tv[] regContent = this.GetTvArray(reg, true);
                 var t = ToolsZ3.HasOneValue(regContent);
                 bool showReg = (!(t.hasOneValue && t.value == Tv.UNKNOWN));
                 if (showReg) sb.Append("\n" + identStr + string.Format(reg + " = {0} = {1}", ToolsZ3.ToStringBin(regContent), ToolsZ3.ToStringHex(regContent)));

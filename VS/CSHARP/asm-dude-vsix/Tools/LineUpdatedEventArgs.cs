@@ -36,11 +36,11 @@ namespace AsmDude.Tools {
     public class LineUpdatedEventArgs : EventArgs
     {
         public int LineNumber { get; set; }
-        public AsmErrorEnum Error { get; set; }
-        public LineUpdatedEventArgs(int lineNumber, AsmErrorEnum error)
+        public AsmMessageEnum Message { get; set; }
+        public LineUpdatedEventArgs(int lineNumber, AsmMessageEnum message)
         {
             this.LineNumber = lineNumber;
-            this.Error = error;
+            this.Message = message;
         }
     }
 }

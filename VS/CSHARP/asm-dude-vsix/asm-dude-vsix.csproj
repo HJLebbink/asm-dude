@@ -200,7 +200,7 @@
     <Compile Include="CodeCompletion\VsTextViewCreationListener.cs" />
     <Compile Include="CodeFolding\CodeFoldingTagger.cs" />
     <Compile Include="CodeFolding\CodeFoldingTaggerProvider.cs" />
-    <Compile Include="Tools\AsmErrorEnum.cs" />
+    <Compile Include="Tools\AsmMessageEnum.cs" />
     <Compile Include="Squiggles\SquigglesTagger.cs" />
     <Compile Include="Squiggles\SquigglesTaggerProvider.cs" />
     <Compile Include="HighlightWord\HighlightWordTagger.cs" />

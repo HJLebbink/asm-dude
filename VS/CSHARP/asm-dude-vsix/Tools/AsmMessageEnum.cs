@@ -25,7 +25,7 @@ using System;
 namespace AsmDude.Tools
 {
     [Flags]
-    public enum AsmErrorEnum
+    public enum AsmMessageEnum
     {
         NONE               = 0,
 
@@ -37,6 +37,7 @@ namespace AsmDude.Tools
         NOT_IMPLEMENTED    = 1 << 6,
         REDUNDANT          = 1 << 7,
 
-        OTHER              = 1 << 8
+        DECORATE_REG       = 1 << 8,
+        OTHER              = 1 << 9
     }
 }
