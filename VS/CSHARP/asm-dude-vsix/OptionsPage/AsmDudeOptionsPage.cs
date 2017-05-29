@@ -79,17 +79,29 @@ namespace AsmDude.OptionsPage
             #region Syntax Highlighting
             this._asmDudeOptionsPageUI.SyntaxHighlighting_On = Settings.Default.SyntaxHighlighting_On;
             this._asmDudeOptionsPageUI.UsedAssembler = AsmDudeToolsStatic.Used_Assembler;
+
             this._asmDudeOptionsPageUI.ColorMnemonic = Settings.Default.SyntaxHighlighting_Opcode;
+            this._asmDudeOptionsPageUI.ColorMnemonic_Italic = Settings.Default.SyntaxHighlighting_Opcode_Italic;
             this._asmDudeOptionsPageUI.ColorRegister = Settings.Default.SyntaxHighlighting_Register;
+            this._asmDudeOptionsPageUI.ColorRegister_Italic = Settings.Default.SyntaxHighlighting_Register_Italic;
             this._asmDudeOptionsPageUI.ColorRemark = Settings.Default.SyntaxHighlighting_Remark;
+            this._asmDudeOptionsPageUI.ColorRemark_Italic = Settings.Default.SyntaxHighlighting_Remark_Italic;
             this._asmDudeOptionsPageUI.ColorDirective = Settings.Default.SyntaxHighlighting_Directive;
+            this._asmDudeOptionsPageUI.ColorDirective_Italic = Settings.Default.SyntaxHighlighting_Directive_Italic;
             this._asmDudeOptionsPageUI.ColorConstant = Settings.Default.SyntaxHighlighting_Constant;
+            this._asmDudeOptionsPageUI.ColorConstant_Italic = Settings.Default.SyntaxHighlighting_Constant_Italic;
             this._asmDudeOptionsPageUI.ColorJump = Settings.Default.SyntaxHighlighting_Jump;
+            this._asmDudeOptionsPageUI.ColorJump_Italic = Settings.Default.SyntaxHighlighting_Jump_Italic;
             this._asmDudeOptionsPageUI.ColorLabel = Settings.Default.SyntaxHighlighting_Label;
+            this._asmDudeOptionsPageUI.ColorLabel_Italic = Settings.Default.SyntaxHighlighting_Label_Italic;
             this._asmDudeOptionsPageUI.ColorMisc = Settings.Default.SyntaxHighlighting_Misc;
+            this._asmDudeOptionsPageUI.ColorMisc_Italic = Settings.Default.SyntaxHighlighting_Misc_Italic;
             this._asmDudeOptionsPageUI.ColorUserDefined1 = Settings.Default.SyntaxHighlighting_Userdefined1;
+            this._asmDudeOptionsPageUI.ColorUserDefined1_Italic = Settings.Default.SyntaxHighlighting_Userdefined1_Italic;
             this._asmDudeOptionsPageUI.ColorUserDefined2 = Settings.Default.SyntaxHighlighting_Userdefined2;
+            this._asmDudeOptionsPageUI.ColorUserDefined2_Italic = Settings.Default.SyntaxHighlighting_Userdefined2_Italic;
             this._asmDudeOptionsPageUI.ColorUserDefined3 = Settings.Default.SyntaxHighlighting_Userdefined3;
+            this._asmDudeOptionsPageUI.ColorUserDefined3_Italic = Settings.Default.SyntaxHighlighting_Userdefined3_Italic;
             #endregion
 
             #region Keyword Highlighting
@@ -369,9 +381,19 @@ namespace AsmDude.OptionsPage
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: stored=" + Settings.Default.SyntaxHighlighting_Opcode + "; new colorMnemonic=" + this._asmDudeOptionsPageUI.ColorMnemonic);
                 changed = true;
             }
+            if (Settings.Default.SyntaxHighlighting_Opcode_Italic != this._asmDudeOptionsPageUI.ColorMnemonic_Italic)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: stored=" + Settings.Default.SyntaxHighlighting_Opcode_Italic + "; new ColorMnemonic_Italic=" + this._asmDudeOptionsPageUI.ColorMnemonic_Italic);
+                changed = true;
+            }
             if (Settings.Default.SyntaxHighlighting_Register.ToArgb() != this._asmDudeOptionsPageUI.ColorRegister.ToArgb())
             {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: colorRegister=" + this._asmDudeOptionsPageUI.ColorRegister);
+                changed = true;
+            }
+            if (Settings.Default.SyntaxHighlighting_Register_Italic != this._asmDudeOptionsPageUI.ColorRegister_Italic)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: stored=" + Settings.Default.SyntaxHighlighting_Register_Italic + "; new ColorMnemonic_Italic=" + this._asmDudeOptionsPageUI.ColorRegister);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Remark.ToArgb() != this._asmDudeOptionsPageUI.ColorRemark.ToArgb())
@@ -379,9 +401,19 @@ namespace AsmDude.OptionsPage
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: colorRemark=" + this._asmDudeOptionsPageUI.ColorRemark);
                 changed = true;
             }
+            if (Settings.Default.SyntaxHighlighting_Remark_Italic != this._asmDudeOptionsPageUI.ColorRemark_Italic)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: stored=" + Settings.Default.SyntaxHighlighting_Remark_Italic + "; new ColorRemark_Italic=" + this._asmDudeOptionsPageUI.ColorRemark_Italic);
+                changed = true;
+            }
             if (Settings.Default.SyntaxHighlighting_Directive.ToArgb() != this._asmDudeOptionsPageUI.ColorDirective.ToArgb())
             {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: colorDirective=" + this._asmDudeOptionsPageUI.ColorDirective);
+                changed = true;
+            }
+            if (Settings.Default.SyntaxHighlighting_Directive_Italic != this._asmDudeOptionsPageUI.ColorDirective_Italic)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: stored=" + Settings.Default.SyntaxHighlighting_Directive_Italic + "; new ColorDirective_Italic=" + this._asmDudeOptionsPageUI.ColorDirective_Italic);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Constant.ToArgb() != this._asmDudeOptionsPageUI.ColorConstant.ToArgb())
@@ -389,9 +421,19 @@ namespace AsmDude.OptionsPage
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: colorConstant=" + this._asmDudeOptionsPageUI.ColorConstant);
                 changed = true;
             }
+            if (Settings.Default.SyntaxHighlighting_Constant_Italic != this._asmDudeOptionsPageUI.ColorConstant_Italic)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: stored=" + Settings.Default.SyntaxHighlighting_Constant_Italic + "; new ColorConstant_Italic=" + this._asmDudeOptionsPageUI.ColorConstant_Italic);
+                changed = true;
+            }
             if (Settings.Default.SyntaxHighlighting_Jump.ToArgb() != this._asmDudeOptionsPageUI.ColorJump.ToArgb())
             {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: colorJump=" + this._asmDudeOptionsPageUI.ColorJump);
+                changed = true;
+            }
+            if (Settings.Default.SyntaxHighlighting_Jump_Italic != this._asmDudeOptionsPageUI.ColorJump_Italic)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: stored=" + Settings.Default.SyntaxHighlighting_Jump_Italic + "; new ColorJump_Italic=" + this._asmDudeOptionsPageUI.ColorJump_Italic);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Label.ToArgb() != this._asmDudeOptionsPageUI.ColorLabel.ToArgb())
@@ -399,9 +441,19 @@ namespace AsmDude.OptionsPage
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: colorLabel=" + this._asmDudeOptionsPageUI.ColorLabel);
                 changed = true;
             }
+            if (Settings.Default.SyntaxHighlighting_Label_Italic != this._asmDudeOptionsPageUI.ColorLabel_Italic)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: stored=" + Settings.Default.SyntaxHighlighting_Label_Italic + "; new ColorLabel_Italic=" + this._asmDudeOptionsPageUI.ColorLabel_Italic);
+                changed = true;
+            }
             if (Settings.Default.SyntaxHighlighting_Misc.ToArgb() != this._asmDudeOptionsPageUI.ColorMisc.ToArgb())
             {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: colorMisc=" + this._asmDudeOptionsPageUI.ColorMisc);
+                changed = true;
+            }
+            if (Settings.Default.SyntaxHighlighting_Misc_Italic != this._asmDudeOptionsPageUI.ColorMisc_Italic)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: stored=" + Settings.Default.SyntaxHighlighting_Misc_Italic + "; new ColorMisc_Italic=" + this._asmDudeOptionsPageUI.ColorMisc_Italic);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Userdefined1.ToArgb() != this._asmDudeOptionsPageUI.ColorUserDefined1.ToArgb())
@@ -409,14 +461,29 @@ namespace AsmDude.OptionsPage
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: ColorUserDefined1=" + this._asmDudeOptionsPageUI.ColorUserDefined1);
                 changed = true;
             }
+            if (Settings.Default.SyntaxHighlighting_Userdefined1_Italic != this._asmDudeOptionsPageUI.ColorUserDefined1_Italic)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: stored=" + Settings.Default.SyntaxHighlighting_Userdefined1_Italic + "; new ColorUserDefined1_Italic=" + this._asmDudeOptionsPageUI.ColorUserDefined1_Italic);
+                changed = true;
+            }
             if (Settings.Default.SyntaxHighlighting_Userdefined2.ToArgb() != this._asmDudeOptionsPageUI.ColorUserDefined2.ToArgb())
             {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: ColorUserDefined2=" + this._asmDudeOptionsPageUI.ColorUserDefined2);
                 changed = true;
             }
+            if (Settings.Default.SyntaxHighlighting_Userdefined2_Italic != this._asmDudeOptionsPageUI.ColorUserDefined2_Italic)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: stored=" + Settings.Default.SyntaxHighlighting_Userdefined2_Italic + "; new ColorUserDefined2_Italic=" + this._asmDudeOptionsPageUI.ColorUserDefined2_Italic);
+                changed = true;
+            }
             if (Settings.Default.SyntaxHighlighting_Userdefined3.ToArgb() != this._asmDudeOptionsPageUI.ColorUserDefined3.ToArgb())
             {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: ColorUserDefined3=" + this._asmDudeOptionsPageUI.ColorUserDefined3);
+                changed = true;
+            }
+            if (Settings.Default.SyntaxHighlighting_Userdefined3_Italic != this._asmDudeOptionsPageUI.ColorUserDefined3_Italic)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: stored=" + Settings.Default.SyntaxHighlighting_Userdefined3_Italic + "; new ColorUserDefined3_Italic=" + this._asmDudeOptionsPageUI.ColorUserDefined3_Italic);
                 changed = true;
             }
             #endregion
@@ -984,9 +1051,21 @@ namespace AsmDude.OptionsPage
                 changed = true;
                 restartNeeded = true;
             }
+            if (Settings.Default.SyntaxHighlighting_Opcode_Italic != this._asmDudeOptionsPageUI.ColorMnemonic_Italic)
+            {
+                Settings.Default.SyntaxHighlighting_Opcode_Italic = this._asmDudeOptionsPageUI.ColorMnemonic_Italic;
+                changed = true;
+                restartNeeded = true;
+            }
             if (Settings.Default.SyntaxHighlighting_Register.ToArgb() != this._asmDudeOptionsPageUI.ColorRegister.ToArgb())
             {
                 Settings.Default.SyntaxHighlighting_Register = this._asmDudeOptionsPageUI.ColorRegister;
+                changed = true;
+                restartNeeded = true;
+            }
+            if (Settings.Default.SyntaxHighlighting_Register_Italic != this._asmDudeOptionsPageUI.ColorRegister_Italic)
+            {
+                Settings.Default.SyntaxHighlighting_Register_Italic = this._asmDudeOptionsPageUI.ColorRegister_Italic;
                 changed = true;
                 restartNeeded = true;
             }
@@ -996,9 +1075,21 @@ namespace AsmDude.OptionsPage
                 changed = true;
                 restartNeeded = true;
             }
+            if (Settings.Default.SyntaxHighlighting_Remark_Italic != this._asmDudeOptionsPageUI.ColorRemark_Italic)
+            {
+                Settings.Default.SyntaxHighlighting_Remark_Italic = this._asmDudeOptionsPageUI.ColorRemark_Italic;
+                changed = true;
+                restartNeeded = true;
+            }
             if (Settings.Default.SyntaxHighlighting_Directive.ToArgb() != this._asmDudeOptionsPageUI.ColorDirective.ToArgb())
             {
                 Settings.Default.SyntaxHighlighting_Directive = this._asmDudeOptionsPageUI.ColorDirective;
+                changed = true;
+                restartNeeded = true;
+            }
+            if (Settings.Default.SyntaxHighlighting_Directive_Italic != this._asmDudeOptionsPageUI.ColorDirective_Italic)
+            {
+                Settings.Default.SyntaxHighlighting_Directive_Italic = this._asmDudeOptionsPageUI.ColorDirective_Italic;
                 changed = true;
                 restartNeeded = true;
             }
@@ -1008,9 +1099,21 @@ namespace AsmDude.OptionsPage
                 changed = true;
                 restartNeeded = true;
             }
+            if (Settings.Default.SyntaxHighlighting_Constant_Italic != this._asmDudeOptionsPageUI.ColorConstant_Italic)
+            {
+                Settings.Default.SyntaxHighlighting_Constant_Italic = this._asmDudeOptionsPageUI.ColorConstant_Italic;
+                changed = true;
+                restartNeeded = true;
+            }
             if (Settings.Default.SyntaxHighlighting_Jump.ToArgb() != this._asmDudeOptionsPageUI.ColorJump.ToArgb())
             {
                 Settings.Default.SyntaxHighlighting_Jump = this._asmDudeOptionsPageUI.ColorJump;
+                changed = true;
+                restartNeeded = true;
+            }
+            if (Settings.Default.SyntaxHighlighting_Jump_Italic != this._asmDudeOptionsPageUI.ColorJump_Italic)
+            {
+                Settings.Default.SyntaxHighlighting_Jump_Italic = this._asmDudeOptionsPageUI.ColorJump_Italic;
                 changed = true;
                 restartNeeded = true;
             }
@@ -1020,9 +1123,21 @@ namespace AsmDude.OptionsPage
                 changed = true;
                 restartNeeded = true;
             }
+            if (Settings.Default.SyntaxHighlighting_Label_Italic != this._asmDudeOptionsPageUI.ColorLabel_Italic)
+            {
+                Settings.Default.SyntaxHighlighting_Label_Italic = this._asmDudeOptionsPageUI.ColorLabel_Italic;
+                changed = true;
+                restartNeeded = true;
+            }
             if (Settings.Default.SyntaxHighlighting_Misc.ToArgb() != this._asmDudeOptionsPageUI.ColorMisc.ToArgb())
             {
                 Settings.Default.SyntaxHighlighting_Misc = this._asmDudeOptionsPageUI.ColorMisc;
+                changed = true;
+                restartNeeded = true;
+            }
+            if (Settings.Default.SyntaxHighlighting_Misc_Italic != this._asmDudeOptionsPageUI.ColorMisc_Italic)
+            {
+                Settings.Default.SyntaxHighlighting_Misc_Italic = this._asmDudeOptionsPageUI.ColorMisc_Italic;
                 changed = true;
                 restartNeeded = true;
             }
@@ -1032,15 +1147,33 @@ namespace AsmDude.OptionsPage
                 changed = true;
                 restartNeeded = true;
             }
+            if (Settings.Default.SyntaxHighlighting_Userdefined1_Italic != this._asmDudeOptionsPageUI.ColorUserDefined1_Italic)
+            {
+                Settings.Default.SyntaxHighlighting_Userdefined1_Italic = this._asmDudeOptionsPageUI.ColorUserDefined1_Italic;
+                changed = true;
+                restartNeeded = true;
+            }
             if (Settings.Default.SyntaxHighlighting_Userdefined2.ToArgb() != this._asmDudeOptionsPageUI.ColorUserDefined2.ToArgb())
             {
                 Settings.Default.SyntaxHighlighting_Userdefined2 = this._asmDudeOptionsPageUI.ColorUserDefined2;
                 changed = true;
                 restartNeeded = true;
             }
+            if (Settings.Default.SyntaxHighlighting_Userdefined2_Italic != this._asmDudeOptionsPageUI.ColorUserDefined2_Italic)
+            {
+                Settings.Default.SyntaxHighlighting_Userdefined2_Italic = this._asmDudeOptionsPageUI.ColorUserDefined2_Italic;
+                changed = true;
+                restartNeeded = true;
+            }
             if (Settings.Default.SyntaxHighlighting_Userdefined3.ToArgb() != this._asmDudeOptionsPageUI.ColorUserDefined3.ToArgb())
             {
                 Settings.Default.SyntaxHighlighting_Userdefined3 = this._asmDudeOptionsPageUI.ColorUserDefined3;
+                changed = true;
+                restartNeeded = true;
+            }
+            if (Settings.Default.SyntaxHighlighting_Userdefined3_Italic != this._asmDudeOptionsPageUI.ColorUserDefined3_Italic)
+            {
+                Settings.Default.SyntaxHighlighting_Userdefined3_Italic = this._asmDudeOptionsPageUI.ColorUserDefined3_Italic;
                 changed = true;
                 restartNeeded = true;
             }

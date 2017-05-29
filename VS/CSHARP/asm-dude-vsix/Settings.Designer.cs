@@ -1354,5 +1354,137 @@ namespace AsmDude {
                 this["AsmSim_Decorate_Redundant_Instructions"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SyntaxHighlighting_Opcode_Italic {
+            get {
+                return ((bool)(this["SyntaxHighlighting_Opcode_Italic"]));
+            }
+            set {
+                this["SyntaxHighlighting_Opcode_Italic"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SyntaxHighlighting_Register_Italic {
+            get {
+                return ((bool)(this["SyntaxHighlighting_Register_Italic"]));
+            }
+            set {
+                this["SyntaxHighlighting_Register_Italic"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool SyntaxHighlighting_Remark_Italic {
+            get {
+                return ((bool)(this["SyntaxHighlighting_Remark_Italic"]));
+            }
+            set {
+                this["SyntaxHighlighting_Remark_Italic"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SyntaxHighlighting_Directive_Italic {
+            get {
+                return ((bool)(this["SyntaxHighlighting_Directive_Italic"]));
+            }
+            set {
+                this["SyntaxHighlighting_Directive_Italic"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SyntaxHighlighting_Constant_Italic {
+            get {
+                return ((bool)(this["SyntaxHighlighting_Constant_Italic"]));
+            }
+            set {
+                this["SyntaxHighlighting_Constant_Italic"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SyntaxHighlighting_Jump_Italic {
+            get {
+                return ((bool)(this["SyntaxHighlighting_Jump_Italic"]));
+            }
+            set {
+                this["SyntaxHighlighting_Jump_Italic"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SyntaxHighlighting_Label_Italic {
+            get {
+                return ((bool)(this["SyntaxHighlighting_Label_Italic"]));
+            }
+            set {
+                this["SyntaxHighlighting_Label_Italic"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SyntaxHighlighting_Misc_Italic {
+            get {
+                return ((bool)(this["SyntaxHighlighting_Misc_Italic"]));
+            }
+            set {
+                this["SyntaxHighlighting_Misc_Italic"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SyntaxHighlighting_Userdefined1_Italic {
+            get {
+                return ((bool)(this["SyntaxHighlighting_Userdefined1_Italic"]));
+            }
+            set {
+                this["SyntaxHighlighting_Userdefined1_Italic"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SyntaxHighlighting_Userdefined2_Italic {
+            get {
+                return ((bool)(this["SyntaxHighlighting_Userdefined2_Italic"]));
+            }
+            set {
+                this["SyntaxHighlighting_Userdefined2_Italic"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SyntaxHighlighting_Userdefined3_Italic {
+            get {
+                return ((bool)(this["SyntaxHighlighting_Userdefined3_Italic"]));
+            }
+            set {
+                this["SyntaxHighlighting_Userdefined3_Italic"] = value;
+            }
+        }
     }
 }

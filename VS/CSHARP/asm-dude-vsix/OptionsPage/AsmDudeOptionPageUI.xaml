@@ -20,47 +20,58 @@
                             </Grid>
                             <Grid>
                                 <Label Content="Mnemonic:" HorizontalAlignment="Left"/>
-                                <xctk:ColorPicker x:Name="colorMnemonic_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for mnemonics." Margin="140,0,0,0"/>
+                                <CheckBox x:Name="ColorMnemonic_Italic_UI" Content="Italic" Margin="130,6,0,2" HorizontalAlignment="Left" Width="Auto" />
+                                <xctk:ColorPicker x:Name="ColorMnemonic_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for mnemonics." Margin="180,0,0,0"/>
                             </Grid>
                             <Grid>
                                 <Label Content="Register:" HorizontalAlignment="Left"/>
-                                <xctk:ColorPicker x:Name="colorRegister_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for registers" Margin="140,0,0,0"/>
+                                <CheckBox x:Name="ColorRegister_Italic_UI" Content="Italic" Margin="130,6,0,2" HorizontalAlignment="Left" Width="Auto" />
+                                <xctk:ColorPicker x:Name="ColorRegister_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for registers" Margin="180,0,0,0"/>
                             </Grid>
                             <Grid>
                                 <Label Content="Remark:" HorizontalAlignment="Left"/>
-                                <xctk:ColorPicker x:Name="colorRemark_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for remarks" Margin="140,0,0,0"/>
+                                <CheckBox x:Name="ColorRemark_Italic_UI" Content="Italic" Margin="130,6,0,2" HorizontalAlignment="Left" Width="Auto" />
+                                <xctk:ColorPicker x:Name="ColorRemark_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for remarks" Margin="180,0,0,0"/>
                             </Grid>
                             <Grid>
                                 <Label Content="Directive:" HorizontalAlignment="Left"/>
-                                <xctk:ColorPicker x:Name="colorDirective_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for compiler directives" Margin="140,0,0,0"/>
+                                <CheckBox x:Name="ColorDirective_Italic_UI" Content="Italic" Margin="130,6,0,2" HorizontalAlignment="Left" Width="Auto" />
+                                <xctk:ColorPicker x:Name="ColorDirective_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for compiler directives" Margin="180,0,0,0"/>
                             </Grid>
                             <Grid>
                                 <Label Content="Constant:" HorizontalAlignment="Left"/>
-                                <xctk:ColorPicker x:Name="colorConstant_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for constants" Margin="140,0,0,0"/>
+                                <CheckBox x:Name="ColorConstant_Italic_UI" Content="Italic" Margin="130,6,0,2" HorizontalAlignment="Left" Width="Auto" />
+                                <xctk:ColorPicker x:Name="ColorConstant_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for constants" Margin="180,0,0,0"/>
                             </Grid>
                             <Grid>
                                 <Label Content="Jump:" HorizontalAlignment="Left"/>
-                                <xctk:ColorPicker x:Name="colorJump_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for jump mnemonics" Margin="140,0,0,0"/>
+                                <CheckBox x:Name="ColorJump_Italic_UI" Content="Italic" Margin="130,6,0,2" HorizontalAlignment="Left" Width="Auto" />
+                                <xctk:ColorPicker x:Name="ColorJump_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for jump mnemonics" Margin="180,0,0,0"/>
                             </Grid>
                             <Grid>
                                 <Label Content="Label:" HorizontalAlignment="Left"/>
-                                <xctk:ColorPicker x:Name="colorLabel_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for labels" Margin="140,0,0,0"/>
+                                <CheckBox x:Name="ColorLabel_Italic_UI" Content="Italic" Margin="130,6,0,2" HorizontalAlignment="Left" Width="Auto" />
+                                <xctk:ColorPicker x:Name="ColorLabel_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for labels" Margin="180,0,0,0"/>
                             </Grid>
                             <Grid>
                                 <Label Content="Misc:" HorizontalAlignment="Left"/>
-                                <xctk:ColorPicker x:Name="colorMisc_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for misc" Margin="140,0,0,0"/>
+                                <CheckBox x:Name="ColorMisc_Italic_UI" Content="Italic" Margin="130,6,0,2" HorizontalAlignment="Left" Width="Auto" />
+                                <xctk:ColorPicker x:Name="ColorMisc_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for misc" Margin="180,0,0,0"/>
                             </Grid>
                             <Grid>
                                 <Label Content="User defined 1:" HorizontalAlignment="Left"/>
-                                <xctk:ColorPicker x:Name="ColorUserDefined1_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for user defined 1. Locate AsmDudeData.xml and add your macro names." Margin="140,0,0,0"/>
+                                <CheckBox x:Name="ColorUserDefined1_Italic_UI" Content="Italic" Margin="130,6,0,2" HorizontalAlignment="Left" Width="Auto" />
+                                <xctk:ColorPicker x:Name="ColorUserDefined1_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for user defined 1. Locate AsmDudeData.xml and add your macro names." Margin="180,0,0,0"/>
                             </Grid>
                             <Grid>
                                 <Label Content="User defined 2:" HorizontalAlignment="Left"/>
-                                <xctk:ColorPicker x:Name="ColorUserDefined2_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for user defined 2. Locate AsmDudeData.xml and add your macro names." Margin="140,0,0,0"/>
+                                <CheckBox x:Name="ColorUserDefined2_Italic_UI" Content="Italic" Margin="130,6,0,2" HorizontalAlignment="Left" Width="Auto" />
+                                <xctk:ColorPicker x:Name="ColorUserDefined2_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for user defined 2. Locate AsmDudeData.xml and add your macro names." Margin="180,0,0,0"/>
                             </Grid>
                             <Grid>
                                 <Label Content="User defined 3:" HorizontalAlignment="Left"/>
-                                <xctk:ColorPicker x:Name="ColorUserDefined3_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for user defined 3. Locate AsmDudeData.xml and add your macro names." Margin="140,0,0,0"/>
+                                <CheckBox x:Name="ColorUserDefined3_Italic_UI" Content="Italic" Margin="130,6,0,2" HorizontalAlignment="Left" Width="Auto" />
+                                <xctk:ColorPicker x:Name="ColorUserDefined3_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for user defined 3. Locate AsmDudeData.xml and add your macro names." Margin="180,0,0,0"/>
                             </Grid>
                             <GroupBox>
                                 <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" Margin="5,4,0,0" >

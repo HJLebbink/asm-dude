@@ -131,6 +131,7 @@ namespace AsmDude.QuickInfo
                                     string descr = this._asmDudeTools.Get_Description(keywordUpper);
                                     if (descr.Length > 0)
                                     {
+                                        if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
                                         description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
                                         {
                                             Foreground = this._foreground
@@ -147,6 +148,7 @@ namespace AsmDude.QuickInfo
                                     string descr = this._asmDudeTools.Get_Description(keywordUpper);
                                     if (descr.Length > 0)
                                     {
+                                        if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
                                         description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
                                         {
                                             Foreground = this._foreground
@@ -160,10 +162,11 @@ namespace AsmDude.QuickInfo
                                     description.Inlines.Add(Make_Run1("Register ", this._foreground));
                                     description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Register))));
 
-                                    string register_Descr = this._asmDudeTools.Get_Description(keywordUpper);
-                                    if (register_Descr.Length > 0)
+                                    string descr = this._asmDudeTools.Get_Description(keywordUpper);
+                                    if (descr.Length > 0)
                                     {
-                                        description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + register_Descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                        if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
+                                        description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
                                         {
                                             Foreground = this._foreground
                                         });
@@ -172,17 +175,8 @@ namespace AsmDude.QuickInfo
                                     if (this._asmSimulator.Enabled & Settings.Default.AsmSim_Decorate_Registers)
                                     {
                                         Rn reg = RegisterTools.ParseRn(keywordUpper, true);
-
-                                        var state_Before = this._asmSimulator.Get_State_Before(lineNumber, true, true);
-                                        string reg_Content_Before = (state_Before.Bussy) 
-                                            ? "[Dave, I'm working on it.]" 
-                                            : this._asmSimulator.Get_Register_Value(reg, state_Before.State);
-
-                                        var state_After = this._asmSimulator.Get_State_After(lineNumber, true, true);
-                                        string reg_Content_After = (state_After.Bussy)
-                                            ? "[Dave, I'm working on it.]"
-                                            : this._asmSimulator.Get_Register_Value(reg, state_After.State);
-
+                                        string reg_Content_Before = this._asmSimulator.Get_Register_Value(reg, lineNumber, true);
+                                        string reg_Content_After = this._asmSimulator.Get_Register_Value(reg, lineNumber, false);
                                         string msg = "\n" + reg + " before: " + reg_Content_Before + "\n" + reg + " after:  " + reg_Content_After;
                                         description.Inlines.Add(new Run(AsmSourceTools.Linewrap(msg, AsmDudePackage.maxNumberOfCharsInToolTips))
                                         {
@@ -202,7 +196,7 @@ namespace AsmDude.QuickInfo
                                     {
                                         string archStr = ":" + ArchTools.ToString(this._asmDudeTools.Mnemonic_Store.GetArch(mmemonic)) + " ";
                                         string descr = this._asmDudeTools.Mnemonic_Store.GetDescription(mmemonic);
-
+                                        if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
                                         description.Inlines.Add(new Run(AsmSourceTools.Linewrap(archStr + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
                                         {
                                             Foreground = this._foreground
@@ -229,6 +223,7 @@ namespace AsmDude.QuickInfo
                                     }
                                     if (descr.Length > 0)
                                     {
+                                        if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
                                         description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
                                         {
                                             Foreground = this._foreground
@@ -259,6 +254,7 @@ namespace AsmDude.QuickInfo
                                     string descr = Get_Label_Def_Description(full_Qualified_Label, label);
                                     if (descr.Length > 0)
                                     {
+                                        if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
                                         description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
                                         {
                                             Foreground = this._foreground
@@ -288,6 +284,7 @@ namespace AsmDude.QuickInfo
                                     string descr = this._asmDudeTools.Get_Description(keywordUpper);
                                     if (descr.Length > 0)
                                     {
+                                        if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
                                         description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
                                         {
                                             Foreground = this._foreground
@@ -304,6 +301,7 @@ namespace AsmDude.QuickInfo
                                     string descr = this._asmDudeTools.Get_Description(keywordUpper);
                                     if (descr.Length > 0)
                                     {
+                                        if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
                                         description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
                                         {
                                             Foreground = this._foreground
@@ -320,6 +318,7 @@ namespace AsmDude.QuickInfo
                                     string descr = this._asmDudeTools.Get_Description(keywordUpper);
                                     if (descr.Length > 0)
                                     {
+                                        if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
                                         description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
                                         {
                                             Foreground = this._foreground

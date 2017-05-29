@@ -53,20 +53,31 @@ namespace AsmDude.OptionsPage
 
         private void SyntaxHighlighting_Update(bool value)
         {
-            this.colorMnemonic_UI.IsEnabled = value;
-            this.colorRegister_UI.IsEnabled = value;
-            this.colorRemark_UI.IsEnabled = value;
-            this.colorDirective_UI.IsEnabled = value;
-            this.colorConstant_UI.IsEnabled = value;
-            this.colorJump_UI.IsEnabled = value;
-            this.colorLabel_UI.IsEnabled = value;
-            this.colorMisc_UI.IsEnabled = value;
+            this.ColorMnemonic_UI.IsEnabled = value;
+            this.ColorMnemonic_Italic_UI.IsEnabled = value;
+            this.ColorRegister_UI.IsEnabled = value;
+            this.ColorRegister_Italic_UI.IsEnabled = value;
+            this.ColorRemark_UI.IsEnabled = value;
+            this.ColorRemark_Italic_UI.IsEnabled = value;
+            this.ColorDirective_UI.IsEnabled = value;
+            this.ColorDirective_Italic_UI.IsEnabled = value;
+            this.ColorConstant_UI.IsEnabled = value;
+            this.ColorConstant_Italic_UI.IsEnabled = value;
+            this.ColorJump_UI.IsEnabled = value;
+            this.ColorJump_Italic_UI.IsEnabled = value;
+            this.ColorLabel_UI.IsEnabled = value;
+            this.ColorLabel_Italic_UI.IsEnabled = value;
+            this.ColorMisc_UI.IsEnabled = value;
+            this.ColorMisc_Italic_UI.IsEnabled = value;
             this.ColorUserDefined1_UI.IsEnabled = value;
+            this.ColorUserDefined1_Italic_UI.IsEnabled = value;
             this.ColorUserDefined2_UI.IsEnabled = value;
+            this.ColorUserDefined2_Italic_UI.IsEnabled = value;
             this.ColorUserDefined3_UI.IsEnabled = value;
+            this.ColorUserDefined3_Italic_UI.IsEnabled = value;
         }
 
-        private void AsmDoc_Update(bool value)
+    private void AsmDoc_Update(bool value)
         {
             this.AsmDoc_Url_UI.IsEnabled = value;
         }
@@ -166,58 +177,114 @@ namespace AsmDude.OptionsPage
 
         public System.Drawing.Color ColorMnemonic
         {
-            get { return (this.colorMnemonic_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.colorMnemonic_UI.SelectedColor.Value) : System.Drawing.Color.Blue; }
-            set { this.colorMnemonic_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
+            get { return (this.ColorMnemonic_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorMnemonic_UI.SelectedColor.Value) : System.Drawing.Color.Blue; }
+            set { this.ColorMnemonic_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
+        public bool ColorMnemonic_Italic
+        {
+            get { return this.ColorMnemonic_Italic_UI.IsChecked ?? false; }
+            set { this.ColorMnemonic_Italic_UI.IsChecked = value; }
+        }
+
         public System.Drawing.Color ColorRegister
         {
-            get { return (this.colorRegister_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.colorRegister_UI.SelectedColor.Value) : System.Drawing.Color.DarkRed; }
-            set { this.colorRegister_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
+            get { return (this.ColorRegister_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorRegister_UI.SelectedColor.Value) : System.Drawing.Color.DarkRed; }
+            set { this.ColorRegister_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
+        }
+        public bool ColorRegister_Italic
+        {
+            get { return this.ColorRegister_Italic_UI.IsChecked ?? false; }
+            set { this.ColorRegister_Italic_UI.IsChecked = value; }
         }
         public System.Drawing.Color ColorRemark
         {
-            get { return (this.colorRemark_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.colorRemark_UI.SelectedColor.Value) : System.Drawing.Color.Green; }
-            set { this.colorRemark_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
+            get { return (this.ColorRemark_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorRemark_UI.SelectedColor.Value) : System.Drawing.Color.Green; }
+            set { this.ColorRemark_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
+        }
+        public bool ColorRemark_Italic
+        {
+            get { return this.ColorRemark_Italic_UI.IsChecked ?? false; }
+            set { this.ColorRemark_Italic_UI.IsChecked = value; }
         }
         public System.Drawing.Color ColorDirective
         {
-            get { return (this.colorDirective_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.colorDirective_UI.SelectedColor.Value) : System.Drawing.Color.Magenta; }
-            set { this.colorDirective_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
+            get { return (this.ColorDirective_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorDirective_UI.SelectedColor.Value) : System.Drawing.Color.Magenta; }
+            set { this.ColorDirective_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
+        }
+        public bool ColorDirective_Italic
+        {
+            get { return this.ColorDirective_Italic_UI.IsChecked ?? false; }
+            set { this.ColorDirective_Italic_UI.IsChecked = value; }
         }
         public System.Drawing.Color ColorConstant
         {
-            get { return (this.colorConstant_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.colorConstant_UI.SelectedColor.Value) : System.Drawing.Color.Chocolate; }
-            set { this.colorConstant_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
+            get { return (this.ColorConstant_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorConstant_UI.SelectedColor.Value) : System.Drawing.Color.Chocolate; }
+            set { this.ColorConstant_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
+        }
+        public bool ColorConstant_Italic
+        {
+            get { return this.ColorConstant_Italic_UI.IsChecked ?? false; }
+            set { this.ColorConstant_Italic_UI.IsChecked = value; }
         }
         public System.Drawing.Color ColorJump
         {
-            get { return (this.colorJump_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.colorJump_UI.SelectedColor.Value) : System.Drawing.Color.Blue; }
-            set { this.colorJump_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
+            get { return (this.ColorJump_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorJump_UI.SelectedColor.Value) : System.Drawing.Color.Blue; }
+            set { this.ColorJump_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
+        }
+        public bool ColorJump_Italic
+        {
+            get { return this.ColorJump_Italic_UI.IsChecked ?? false; }
+            set { this.ColorJump_Italic_UI.IsChecked = value; }
         }
         public System.Drawing.Color ColorLabel
         {
-            get { return (this.colorLabel_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.colorLabel_UI.SelectedColor.Value) : System.Drawing.Color.OrangeRed; }
-            set { this.colorLabel_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
+            get { return (this.ColorLabel_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorLabel_UI.SelectedColor.Value) : System.Drawing.Color.OrangeRed; }
+            set { this.ColorLabel_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
+        }
+        public bool ColorLabel_Italic
+        {
+            get { return this.ColorLabel_Italic_UI.IsChecked ?? false; }
+            set { this.ColorLabel_Italic_UI.IsChecked = value; }
         }
         public System.Drawing.Color ColorMisc
         {
-            get { return (this.colorMisc_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.colorMisc_UI.SelectedColor.Value) : System.Drawing.Color.DarkOrange; }
-            set { this.colorMisc_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
+            get { return (this.ColorMisc_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorMisc_UI.SelectedColor.Value) : System.Drawing.Color.DarkOrange; }
+            set { this.ColorMisc_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
+        }
+        public bool ColorMisc_Italic
+        {
+            get { return this.ColorMisc_Italic_UI.IsChecked ?? false; }
+            set { this.ColorMisc_Italic_UI.IsChecked = value; }
         }
         public System.Drawing.Color ColorUserDefined1
         {
             get { return (this.ColorUserDefined1_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorUserDefined1_UI.SelectedColor.Value) : System.Drawing.Color.Silver; }
             set { this.ColorUserDefined1_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
+        public bool ColorUserDefined1_Italic
+        {
+            get { return this.ColorUserDefined1_Italic_UI.IsChecked ?? false; }
+            set { this.ColorUserDefined1_Italic_UI.IsChecked = value; }
+        }
         public System.Drawing.Color ColorUserDefined2
         {
             get { return (this.ColorUserDefined2_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorUserDefined2_UI.SelectedColor.Value) : System.Drawing.Color.Silver; }
             set { this.ColorUserDefined2_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
+        public bool ColorUserDefined2_Italic
+        {
+            get { return this.ColorUserDefined2_Italic_UI.IsChecked ?? false; }
+            set { this.ColorUserDefined2_Italic_UI.IsChecked = value; }
+        }
         public System.Drawing.Color ColorUserDefined3
         {
             get { return (this.ColorUserDefined3_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorUserDefined3_UI.SelectedColor.Value) : System.Drawing.Color.Silver; }
             set { this.ColorUserDefined3_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
+        }
+        public bool ColorUserDefined3_Italic
+        {
+            get { return this.ColorUserDefined3_Italic_UI.IsChecked ?? false; }
+            set { this.ColorUserDefined3_Italic_UI.IsChecked = value; }
         }
         #endregion Syntax Highlighting
 
