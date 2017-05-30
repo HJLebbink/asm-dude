@@ -31,22 +31,14 @@ namespace AsmSim
     public class BranchInfoStore
     {
         #region Fields
-        private readonly Tools _tools;
+        private readonly Context _ctx;
         private IDictionary<string, BranchInfo> _branchInfo;
         #endregion
 
         #region Constructors
-        public BranchInfoStore(Tools tools)
+        public BranchInfoStore(Context ctx)
         {
-            this._tools = tools;
-        }
-        public BranchInfoStore(BranchInfoStore other)
-        {
-            this._tools = other._tools;
-            if (other._branchInfo != null)
-            {
-                this._branchInfo = new Dictionary<string, BranchInfo>(other._branchInfo);
-            }
+            this._ctx = ctx;
         }
         #endregion
 
@@ -77,11 +69,11 @@ namespace AsmSim
         }
         #endregion
 
-        public static (BranchInfo BranchPoint1, BranchInfo BranchPoint2, BranchInfoStore MergedBranchInfo) RetrieveSharedBranchInfo(
-            BranchInfoStore store1, BranchInfoStore store2, Tools tools)
+        public static BranchInfoStore RetrieveSharedBranchInfo(
+            BranchInfoStore store1, BranchInfoStore store2, Context ctx)
         {
-            if (store1 == null) return (BranchPoint1: null, BranchPoint2: null, MergedBranchInfo: store2);
-            if (store2 == null) return (BranchPoint1: null, BranchPoint2: null, MergedBranchInfo: store1);
+            if (store1 == null) return store2;
+            if (store2 == null) return store1;
 
             IList<string> sharedKeys = new List<string>();
 
@@ -123,17 +115,14 @@ namespace AsmSim
                 }
             }
 
-            BranchInfo branchPoints1 = null;
-            BranchInfo branchPoints2 = null;
-
-            BranchInfoStore mergeBranchStore = new BranchInfoStore(tools);
+            BranchInfoStore mergeBranchStore = new BranchInfoStore(ctx);
             if (sharedKeys.Count == 0)
             {
                 if (store1._branchInfo != null)
                 {
                     foreach (KeyValuePair<string, BranchInfo> element in store1._branchInfo)
                     {
-                        mergeBranchStore.Add(element.Value);
+                        mergeBranchStore.Add(element.Value.Translate(ctx));
                     }
                 }
                 if (store2._branchInfo != null)
@@ -142,25 +131,22 @@ namespace AsmSim
                     {
                         if (!mergeBranchStore.ContainsKey(element.Key))
                         {
-                            mergeBranchStore.Add(element.Value);
+                            mergeBranchStore.Add(element.Value.Translate(ctx));
                         }
                     }
                 }
-                if (!tools.Quiet) Console.WriteLine("INFO: State:RetrieveSharedBranchInfo: the two provided states do not share a branching point. This would happen in loops.");
+                //if (!tools.Quiet) Console.WriteLine("INFO: State:RetrieveSharedBranchInfo: the two provided states do not share a branching point. This would happen in loops.");
             }
             else
             {
                 //only use the first sharedKey
 
                 string key = sharedKeys[0];
-                branchPoints1 = store1._branchInfo[key];
-                branchPoints2 = store2._branchInfo[key];
-
                 foreach (KeyValuePair<string, BranchInfo> element in store1._branchInfo)
                 {
                     if (!element.Key.Equals(key))
                     {
-                        mergeBranchStore.Add(element.Value);
+                        mergeBranchStore.Add(element.Value.Translate(ctx));
                     }
                 }
                 foreach (KeyValuePair<string, BranchInfo> element in store2._branchInfo)
@@ -169,19 +155,13 @@ namespace AsmSim
                     {
                         if (!mergeBranchStore.ContainsKey(element.Key))
                         {
-                            mergeBranchStore.Add(element.Value);
+                            mergeBranchStore.Add(element.Value.Translate(ctx));
                         }
                     }
                 }
             }
 
-            if (branchPoints1 == null)
-            {
-                BoolExpr freshBranchCondition = tools.Ctx.MkBoolConst("BRANCH!" + Tools.CreateKey(tools.Rand));
-                branchPoints1 = new BranchInfo(freshBranchCondition, true);
-                branchPoints2 = new BranchInfo(freshBranchCondition, false);
-            }
-            return (BranchPoint1: branchPoints1, BranchPoint2: branchPoints2, MergedBranchInfo: mergeBranchStore);
+            return mergeBranchStore;
         }
 
         public bool ContainsKey(string key)
@@ -230,7 +210,7 @@ namespace AsmSim
                 int i = 0;
                 foreach (KeyValuePair<string, BranchInfo> entry in this._branchInfo)
                 {
-                    BoolExpr e = entry.Value.GetData(this._tools.Ctx);
+                    BoolExpr e = entry.Value.GetData(this._ctx);
                     sb.AppendLine(string.Format("   {0}: {1}", i, ToolsZ3.ToString(e)));
                     i++;
                 }

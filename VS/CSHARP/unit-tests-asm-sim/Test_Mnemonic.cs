@@ -830,7 +830,7 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
 
-                BoolExpr overflowExpr = ToolsFlags.Create_OF_Sub(al0, bl0, nBits, state.Ctx);
+                BoolExpr overflowExpr = ToolsFlags.Create_OF_Sub(al0.Translate(state.Ctx) as BitVecExpr, bl0.Translate(state.Ctx) as BitVecExpr, nBits, state.Ctx);
                 BoolExpr eq = state.Ctx.MkEq(state.Get(Flags.OF), overflowExpr);
                 Assert.AreEqual(Tv.ONE, ToolsZ3.GetTv(eq, state.Solver, state.Ctx));
             }

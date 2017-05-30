@@ -100,7 +100,7 @@ namespace unit_tests_asm_z3
             string line10 = "mov      rdx, 0";
             string line11 = "idiv     r8";
 
-            if (true) {   // forward
+            if (false) {
                 State state = CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line0, state);
@@ -188,7 +188,6 @@ namespace unit_tests_asm_z3
 
             {   // forward
                 State state = CreateState(tools);
-                Context ctx = state.Ctx;
 
                 BitVecExpr rax0 = state.Get(Rn.RAX);
                 BitVecExpr rbx0 = state.Get(Rn.RBX);
@@ -206,7 +205,10 @@ namespace unit_tests_asm_z3
                 if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
 
                 // ebx is minimum of ebx and eax
+                Context ctx = state.Ctx;
                 BitVecExpr rbx1 = state.Get(Rn.RBX);
+                rax0 = rax0.Translate(ctx) as BitVecExpr;
+                rbx0 = rbx0.Translate(ctx) as BitVecExpr;
                 BoolExpr t = ctx.MkEq(rbx1, ctx.MkITE(ctx.MkBVUGT(rax0, rbx0), rbx0, rax0));
 
                 {
@@ -356,15 +358,7 @@ namespace unit_tests_asm_z3
 
             {   // forward
                 State state = CreateState(tools);
-                Context ctx = state.Ctx;
-                BitVecExpr zero = ctx.MkBV(0, 8);
-
-
                 BitVecExpr bytes = state.Get(Rn.EBX);
-                BitVecExpr byte1 = ctx.MkExtract((1 * 8) - 1, (0 * 8), bytes);
-                BitVecExpr byte2 = ctx.MkExtract((2 * 8) - 1, (1 * 8), bytes);
-                BitVecExpr byte3 = ctx.MkExtract((3 * 8) - 1, (2 * 8), bytes);
-                BitVecExpr byte4 = ctx.MkExtract((4 * 8) - 1, (3 * 8), bytes);
 
                 if (false)
                 {   // line 1
@@ -379,6 +373,15 @@ namespace unit_tests_asm_z3
                 //if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
                 state = Runner.SimpleStep_Forward(line5, state);
                 //if (logToDisplay) Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+
+
+                Context ctx = state.Ctx;
+                BitVecExpr zero = ctx.MkBV(0, 8);
+                bytes = bytes.Translate(ctx) as BitVecExpr;
+                BitVecExpr byte1 = ctx.MkExtract((1 * 8) - 1, (0 * 8), bytes);
+                BitVecExpr byte2 = ctx.MkExtract((2 * 8) - 1, (1 * 8), bytes);
+                BitVecExpr byte3 = ctx.MkExtract((3 * 8) - 1, (2 * 8), bytes);
+                BitVecExpr byte4 = ctx.MkExtract((4 * 8) - 1, (3 * 8), bytes);
 
                 {
                     // if at least one of the bytes is equal to zero, then ECX cannot be equal to zero
@@ -439,19 +442,7 @@ namespace unit_tests_asm_z3
 
             {   // forward
                 State state = CreateState(tools);
-                Context ctx = state.Ctx;
-                BitVecExpr zero = ctx.MkBV(0, 8);
-
-
                 BitVecExpr bytes = state.Get(Rn.RBX);
-                BitVecExpr byte1 = ctx.MkExtract((1 * 8) - 1, (0 * 8), bytes);
-                BitVecExpr byte2 = ctx.MkExtract((2 * 8) - 1, (1 * 8), bytes);
-                BitVecExpr byte3 = ctx.MkExtract((3 * 8) - 1, (2 * 8), bytes);
-                BitVecExpr byte4 = ctx.MkExtract((4 * 8) - 1, (3 * 8), bytes);
-                BitVecExpr byte5 = ctx.MkExtract((5 * 8) - 1, (4 * 8), bytes);
-                BitVecExpr byte6 = ctx.MkExtract((6 * 8) - 1, (5 * 8), bytes);
-                BitVecExpr byte7 = ctx.MkExtract((7 * 8) - 1, (6 * 8), bytes);
-                BitVecExpr byte8 = ctx.MkExtract((8 * 8) - 1, (7 * 8), bytes);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
@@ -474,21 +465,33 @@ namespace unit_tests_asm_z3
                 {
                     // if at least one of the bytes is equal to zero, then ECX cannot be equal to zero
                     // if ECX is zero, then none of the bytes is equal to zero.
+                    Context ctx = state.Ctx;
+                    BitVecExpr zero8 = ctx.MkBV(0, 8);
+                    bytes = bytes.Translate(ctx) as BitVecExpr;
+
+                    BitVecExpr byte1 = ctx.MkExtract((1 * 8) - 1, (0 * 8), bytes);
+                    BitVecExpr byte2 = ctx.MkExtract((2 * 8) - 1, (1 * 8), bytes);
+                    BitVecExpr byte3 = ctx.MkExtract((3 * 8) - 1, (2 * 8), bytes);
+                    BitVecExpr byte4 = ctx.MkExtract((4 * 8) - 1, (3 * 8), bytes);
+                    BitVecExpr byte5 = ctx.MkExtract((5 * 8) - 1, (4 * 8), bytes);
+                    BitVecExpr byte6 = ctx.MkExtract((6 * 8) - 1, (5 * 8), bytes);
+                    BitVecExpr byte7 = ctx.MkExtract((7 * 8) - 1, (6 * 8), bytes);
+                    BitVecExpr byte8 = ctx.MkExtract((8 * 8) - 1, (7 * 8), bytes);
 
                     BoolExpr property = ctx.MkEq(
                         ctx.MkOr(
-                            ctx.MkEq(byte1, zero),
-                            ctx.MkEq(byte2, zero),
-                            ctx.MkEq(byte3, zero),
-                            ctx.MkEq(byte4, zero),
-                            ctx.MkEq(byte5, zero),
-                            ctx.MkEq(byte6, zero),
-                            ctx.MkEq(byte7, zero),
-                            ctx.MkEq(byte8, zero)
+                            ctx.MkEq(byte1, zero8),
+                            ctx.MkEq(byte2, zero8),
+                            ctx.MkEq(byte3, zero8),
+                            ctx.MkEq(byte4, zero8),
+                            ctx.MkEq(byte5, zero8),
+                            ctx.MkEq(byte6, zero8),
+                            ctx.MkEq(byte7, zero8),
+                            ctx.MkEq(byte8, zero8)
                         ),
                         ctx.MkNot(ctx.MkEq(state.Get(Rn.RCX), ctx.MkBV(0, 64)))
                     );
-                    TestTools.AreEqual(Tv.ONE, ToolsZ3.GetTv(property, state.Solver, state.Ctx));
+                    TestTools.AreEqual(Tv.ONE, ToolsZ3.GetTv(property, state.Solver, ctx));
                 }
             }
         }

@@ -37,6 +37,16 @@ namespace AsmSim
         public bool ShowUndefConstraints { get; set; }
 
         public Tools() : this(new Dictionary<string, string>()) {}
+        public Tools(Tools other)
+        {
+            this.Settings = new Dictionary<string, string>(other.Settings);
+            this._ctx = new Context(other.Settings);
+            this._rand = other.Rand; //new Random();
+            this._p = other._p;
+            this.Quiet = other.Quiet;
+            this.ShowUndefConstraints = other.ShowUndefConstraints;
+            this.StateConfig = other.StateConfig;
+        }
 
         public Tools(Dictionary<string, string> settings)
         {

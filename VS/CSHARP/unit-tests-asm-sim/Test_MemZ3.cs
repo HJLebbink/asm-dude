@@ -42,6 +42,13 @@ namespace unit_tests_asm_z3
             return new Tools(settings);
         }
 
+        private State CreateState(StateConfig stateConfig)
+        {
+            Tools tools = CreateTools();
+            tools.StateConfig = stateConfig;
+            return CreateState(tools);
+        }
+
         private State CreateState(Tools tools)
         {
             string tailKey = "!0";// Tools.CreateKey(tools.Rand);
@@ -52,13 +59,14 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MemZ3_Forward_SetGet0()
         {
-            Tools tools = CreateTools();
-            tools.StateConfig.Set_All_Off();
-            tools.StateConfig.RAX = true;
-            tools.StateConfig.RBX = true;
-            tools.StateConfig.mem = true;
+            StateConfig stateConfig = new StateConfig();
+            stateConfig.Set_All_Off();
+            stateConfig.RAX = true;
+            stateConfig.RBX = true;
+            stateConfig.mem = true;
 
-            State state = CreateState(tools);
+            State state = CreateState(stateConfig);
+            Tools tools = state.Tools;
 
             BitVecExpr address1 = Tools.Calc_Effective_Address("qword ptr[rax]", state.HeadKey, tools);
             BitVecExpr value1 = state.Get(Rn.RBX);
@@ -81,14 +89,15 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MemZ3_Forward_SetGet1()
         {
-            Tools tools = CreateTools();
-            tools.StateConfig.Set_All_Off();
-            tools.StateConfig.RAX = true;
-            tools.StateConfig.R8 = true;
-            tools.StateConfig.R9 = true;
-            tools.StateConfig.mem = true;
+            StateConfig stateConfig = new StateConfig();
+            stateConfig.Set_All_Off();
+            stateConfig.RAX = true;
+            stateConfig.R8 = true;
+            stateConfig.R9 = true;
+            stateConfig.mem = true;
 
-            State state = CreateState(tools);
+            State state = CreateState(stateConfig);
+            Tools tools = state.Tools;
 
             BitVecExpr address1 = Tools.Calc_Effective_Address("qword ptr[rax]", state.HeadKey, tools);
             BitVecExpr value1a = state.Get(Rn.R8);
@@ -120,15 +129,16 @@ namespace unit_tests_asm_z3
 
         [TestMethod]
         public void Test_MemZ3_Forward_Eq1()
-        { 
-            Tools tools = CreateTools();
-            tools.StateConfig.Set_All_Off();
-            tools.StateConfig.RAX = true;
-            tools.StateConfig.RBX = true;
-            tools.StateConfig.RCX = true;
-            tools.StateConfig.mem = true;
+        {
+            StateConfig stateConfig = new StateConfig();
+            stateConfig.Set_All_Off();
+            stateConfig.RAX = true;
+            stateConfig.RBX = true;
+            stateConfig.RCX = true;
+            stateConfig.mem = true;
 
-            State state = CreateState(tools);
+            State state = CreateState(stateConfig);
+            Tools tools = state.Tools;
 
             {
                 StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
@@ -137,6 +147,9 @@ namespace unit_tests_asm_z3
                 updateState.Set(Rn.RCX, 5);
                 state.Update_Forward(updateState);
             }
+            //TestTools.AreEqual(Rn.RAX, 20, state);
+            TestTools.AreEqual(Rn.RBX, 10, state);
+            TestTools.AreEqual(Rn.RCX, 5, state);
 
             BitVecExpr address1 = Tools.Calc_Effective_Address("qword ptr[rax + 2 * rbx + 10]", state.HeadKey, tools);
             BitVecExpr address2 = Tools.Calc_Effective_Address("qword ptr[rax + 4 * rcx + 10]", state.HeadKey, tools);
@@ -172,14 +185,15 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MemZ3_Forward_Eq2()
         {
-            Tools tools = CreateTools();
-            tools.StateConfig.Set_All_Off();
-            tools.StateConfig.RAX = true;
-            tools.StateConfig.RBX = true;
-            tools.StateConfig.RCX = true;
-            tools.StateConfig.mem = true;
+            StateConfig stateConfig = new StateConfig();
+            stateConfig.Set_All_Off();
+            stateConfig.RAX = true;
+            stateConfig.RBX = true;
+            stateConfig.RCX = true;
+            stateConfig.mem = true;
 
-            State state = CreateState(tools);
+            State state = CreateState(stateConfig);
+            Tools tools = state.Tools;
 
             {
                 StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
@@ -224,15 +238,17 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MemZ3_Forward_Eq3()
         {
-            Tools tools = CreateTools();
-            tools.StateConfig.Set_All_Off();
-            tools.StateConfig.RAX = true;
-            tools.StateConfig.RBX = true;
-            tools.StateConfig.RCX = true;
-            tools.StateConfig.R8 = true;
-            tools.StateConfig.mem = true;
+            StateConfig stateConfig = new StateConfig();
+            stateConfig.Set_All_Off();
+            stateConfig.RAX = true;
+            stateConfig.RBX = true;
+            stateConfig.RCX = true;
+            stateConfig.R8 = true;
+            stateConfig.mem = true;
 
-            State state = CreateState(tools);
+            State state = CreateState(stateConfig);
+            Tools tools = state.Tools;
+
             {
                 StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
                 updateState.Set(Rn.RBX, 10);
@@ -268,15 +284,17 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MemZ3_Forward_Eq4()
         {
-            Tools tools = CreateTools();
-            tools.StateConfig.Set_All_Off();
-            tools.StateConfig.RAX = true;
-            tools.StateConfig.RBX = true;
-            tools.StateConfig.RCX = true;
-            tools.StateConfig.RDX = true;
-            tools.StateConfig.mem = true;
+            StateConfig stateConfig = new StateConfig();
+            stateConfig.Set_All_Off();
+            stateConfig.RAX = true;
+            stateConfig.RBX = true;
+            stateConfig.RCX = true;
+            stateConfig.RDX = true;
+            stateConfig.mem = true;
 
-            State state = CreateState(tools);
+            State state = CreateState(stateConfig);
+            Tools tools = state.Tools;
+
             {
                 StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
                 updateState.Set(Rn.RAX, state.Get(Rn.RBX));
@@ -309,15 +327,17 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MemZ3_Forward_Eq5()
         {
-            Tools tools = CreateTools();
-            tools.StateConfig.Set_All_Off();
-            tools.StateConfig.RAX = true;
-            tools.StateConfig.RBX = true;
-            tools.StateConfig.RCX = true;
-            tools.StateConfig.RDX = true;
-            tools.StateConfig.mem = true;
+            StateConfig stateConfig = new StateConfig();
+            stateConfig.Set_All_Off();
+            stateConfig.RAX = true;
+            stateConfig.RBX = true;
+            stateConfig.RCX = true;
+            stateConfig.RDX = true;
+            stateConfig.mem = true;
 
-            State state = CreateState(tools);
+            State state = CreateState(stateConfig);
+            Tools tools = state.Tools;
+
             {
                 StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
                 updateState.Set(Rn.RAX, state.Get(Rn.RBX));
@@ -358,15 +378,16 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MemZ3_Forward_Eq6()
         {
-            Tools tools = CreateTools();
-            tools.StateConfig.Set_All_Off();
-            tools.StateConfig.RAX = true;
-            tools.StateConfig.RBX = true;
-            tools.StateConfig.RCX = true;
-            tools.StateConfig.RDX = true;
-            tools.StateConfig.mem = true;
+            StateConfig stateConfig = new StateConfig();
+            stateConfig.Set_All_Off();
+            stateConfig.RAX = true;
+            stateConfig.RBX = true;
+            stateConfig.RCX = true;
+            stateConfig.RDX = true;
+            stateConfig.mem = true;
 
-            State state = CreateState(tools);
+            State state = CreateState(stateConfig);
+            Tools tools = state.Tools;
 
             Rn reg1 = Rn.CL;
             Rn reg2 = Rn.DL;

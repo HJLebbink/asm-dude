@@ -438,6 +438,7 @@ namespace AsmSim
 
         private State Construct_State_Private(string key, bool after)
         {
+            Tools tools = new Tools(this._tools);
             var alreadyVisisted = new HashSet<string>();
             return Construct_State_Private_LOCAL(key, after);
 
@@ -445,17 +446,16 @@ namespace AsmSim
 
             State Construct_State_Private_LOCAL(string key_LOCAL, bool after_LOCAL)
             {
-
                 #region Payload
                 if (alreadyVisisted.Contains(key_LOCAL)) // found a cycle
                 {
                     Console.WriteLine("WARNING: DynamicFlow: Construct_State_Private: Found cycle at key "+key_LOCAL+ "; not implemented yet.");
-                    return new State(this._tools, key_LOCAL, key_LOCAL);
+                    return new State(tools, key_LOCAL, key_LOCAL);
                 }
                 if (!this.Has_Vertex(key_LOCAL))
                 {
                     Console.WriteLine("WARNING: DynamicFlow: Construct_State_Private: key " + key_LOCAL + " not found.");
-                    return new State(this._tools, key_LOCAL, key_LOCAL);
+                    return new State(tools, key_LOCAL, key_LOCAL);
                 }
 
                 //alreadyVisisted.Add(key_LOCAL); // make better cycle detection method, this does not work
@@ -464,12 +464,12 @@ namespace AsmSim
                 switch (this._graph.InDegree(key_LOCAL))
                 {
                     case 0:
-                        result = new State(this._tools, key_LOCAL, key_LOCAL);
+                        result = new State(tools, key_LOCAL, key_LOCAL);
                         break;
                     case 1:
                         var edge = this._graph.InEdge(key_LOCAL, 0);
                         result = Construct_State_Private_LOCAL(edge.Source, false); // recursive call
-                        result.Update_Forward(edge.Tag.StateUpdate);
+                         result.Update_Forward(edge.Tag.StateUpdate);
                         break;
                     case 2:
                         var edge1 = this._graph.InEdge(key_LOCAL, 0);
@@ -478,7 +478,7 @@ namespace AsmSim
                         break;
                     default:
                         Console.WriteLine("WARNING: DynamicFlow:Construct_State_Private: inDegree = " + this._graph.InDegree(key_LOCAL) + " is not implemented yet");
-                        result = new State(this._tools, key_LOCAL, key_LOCAL);
+                        result = new State(tools, key_LOCAL, key_LOCAL);
                         break;
                 }
                 if (after_LOCAL)
@@ -555,8 +555,8 @@ namespace AsmSim
                             }
                         }
                         mergeStateUpdate = (branch)
-                            ? new StateUpdate(branchInfo.BranchCondition, nextKey1, nextKey2, target, this._tools)
-                            : new StateUpdate(branchInfo.BranchCondition, nextKey2, nextKey1, target, this._tools);
+                            ? new StateUpdate(branchInfo.BranchCondition, nextKey2, nextKey1, target, this._tools)
+                            : new StateUpdate(branchInfo.BranchCondition, nextKey1, nextKey2, target, this._tools);
                     }
                 }
 
@@ -568,18 +568,18 @@ namespace AsmSim
                 {   // merge the states state1 and state2 into state3 
                     {
                         var tempSet = new HashSet<BoolExpr>();
-                        foreach (var v1 in state1.Solver.Assertions) tempSet.Add(v1);
-                        foreach (var v1 in state2.Solver.Assertions) tempSet.Add(v1);
+                        foreach (var v1 in state1.Solver.Assertions) tempSet.Add(v1.Translate(state3.Ctx) as BoolExpr);
+                        foreach (var v1 in state2.Solver.Assertions) tempSet.Add(v1.Translate(state3.Ctx) as BoolExpr);
                         foreach (var v1 in tempSet) state3.Solver.Assert(v1);
                     }
                     {
                         var tempSet = new HashSet<BoolExpr>();
-                        foreach (var v1 in state1.Solver_U.Assertions) tempSet.Add(v1);
-                        foreach (var v1 in state2.Solver_U.Assertions) tempSet.Add(v1);
+                        foreach (var v1 in state1.Solver_U.Assertions) tempSet.Add(v1.Translate(state3.Ctx) as BoolExpr);
+                        foreach (var v1 in state2.Solver_U.Assertions) tempSet.Add(v1.Translate(state3.Ctx) as BoolExpr);
                         foreach (var v1 in tempSet) state3.Solver_U.Assert(v1);
                     }
-                    var sharedBranchInfo = BranchInfoStore.RetrieveSharedBranchInfo(state1.BranchInfoStore, state2.BranchInfoStore, this._tools);
-                    foreach (var branchInfo in sharedBranchInfo.MergedBranchInfo.Values) state3.Add(branchInfo);
+                    var sharedBranchInfo = BranchInfoStore.RetrieveSharedBranchInfo(state1.BranchInfoStore, state2.BranchInfoStore, state3.Ctx);
+                    foreach (var branchInfo in sharedBranchInfo.Values) state3.Add(branchInfo);
                     state3.Update_Forward(mergeStateUpdate);
                 }
                 return state3;

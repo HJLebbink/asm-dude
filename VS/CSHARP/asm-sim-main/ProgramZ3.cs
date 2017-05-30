@@ -42,9 +42,9 @@ namespace AsmSim
             Console.WriteLine(string.Format("Loaded AsmSim version {0}.", ver));
 
             //TestGraph();
-            //TestMnemonic();
+            TestMnemonic();
             //TestMemorySpeed();
-            TestDynamicFlow();
+            //TestDynamicFlow();
             //EmptyMemoryTest();
             //ProgramSynthesis1();
             
@@ -252,6 +252,25 @@ namespace AsmSim
             tools.StateConfig.Set_All_Off();
 
             if (true)
+            {
+                tools.StateConfig.Set_All_Off();
+                tools.StateConfig.Set_All_Flags_On();
+                tools.StateConfig.RAX = true;
+
+                string line1 = "mov rax, 1";
+                string line2 = "shl rax, 65"; // special behaviour: shift left too large; 65 mod 64 = 1
+
+                {   // forward
+                    string rootKey = "!INIT";
+                    State state = new State(tools, rootKey, rootKey);
+                    state = Runner.SimpleStep_Forward(line1, state);
+                    state = Runner.SimpleStep_Forward(line2, state);
+
+                    Console.WriteLine("IsConsistent=" + state.IsConsistent);
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+            }
+            if (false)
             {
                 tools.StateConfig.RAX = true;
                 tools.StateConfig.RBX = true;
@@ -494,7 +513,7 @@ namespace AsmSim
                 "           jnz        label1                   ";
 
 
-            StaticFlow sFlow = new StaticFlow(programStr1, tools);
+            StaticFlow sFlow = new StaticFlow(programStr2, tools);
             Console.WriteLine(sFlow);
 
             if (true)
@@ -513,13 +532,13 @@ namespace AsmSim
                     State state_Before = states_Before[0];
                     Console.WriteLine("Tree_Forward: Before lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
                 }
-                if (false)
+                if (true)
                 {
                     IList<State> states_After = new List<State>(dFlow.States_After(lineNumber));
                     State state_After = states_After[0];
                     Console.WriteLine("Tree_Forward: After lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
                 }
-                if (true)
+                if (false)
                 {
                     State endState = dFlow.EndState;
                     Console.WriteLine("Tree_Forward: in endState we know:\n" + endState);

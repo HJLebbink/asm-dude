@@ -32,10 +32,12 @@ namespace AsmSim
     {
         #region Fields
         public static readonly bool SIMPLIFY_ON = true;
-        public static readonly bool ADD_COMPUTED_VALUES = true;
+        public static readonly bool ADD_COMPUTED_VALUES = false;
 
-        public readonly Tools _tools;
+        private readonly Tools _tools;
         public Tools Tools { get { return this._tools; } }
+        private readonly Context _ctx;
+        public Context Ctx { get { return this._ctx; } }
 
         public Solver Solver { get; private set; }
         public Solver Solver_U { get; private set; }
@@ -54,7 +56,6 @@ namespace AsmSim
         private readonly IDictionary<Rn, Tv[]> _cached_Reg_Values;
         private readonly IDictionary<Flags, Tv> _cached_Flag_Values;
 
-        public Context Ctx { get { return this.Tools.Ctx; } }
 
         private BranchInfoStore _branchInfoStore;
         public BranchInfoStore BranchInfoStore { get { return this._branchInfoStore; } }
@@ -64,13 +65,15 @@ namespace AsmSim
         /// <summary>Regular constructor</summary>
         public State(Tools tools, string tailKey, string headKey)
         {
-            this._tools = tools;
+            this._tools = new Tools(tools);
+            this._ctx = this._tools.Ctx;
+
             this.TailKey = tailKey;
             this.HeadKey = headKey;
 
-            this.Solver = CreateSolver(tools.Ctx);
-            this.Solver_U = CreateSolver(tools.Ctx);
-            this._branchInfoStore = new BranchInfoStore(this.Tools);
+            this.Solver = this.CreateSolver();
+            this.Solver_U = this.CreateSolver();
+            this._branchInfoStore = new BranchInfoStore(this._ctx);
             this._cached_Reg_Values = new Dictionary<Rn, Tv[]>();
             this._cached_Flag_Values = new Dictionary<Flags, Tv>();
         }
@@ -78,7 +81,9 @@ namespace AsmSim
         /// <summary>Copy constructor</summary>
         public State(State other)
         {
-            this._tools = other.Tools;
+            this._tools = new Tools(other.Tools);
+            this._ctx = this._tools.Ctx;
+
             this._cached_Reg_Values = new Dictionary<Rn, Tv[]>();
             this._cached_Flag_Values = new Dictionary<Flags, Tv>();
 
@@ -87,9 +92,11 @@ namespace AsmSim
         /// <summary>Merge and Diff constructor</summary>
         public State(State state1, State state2, bool merge)
         {
-            this._tools = state1.Tools;
-            this.Solver = CreateSolver(this._tools.Ctx);
-            this.Solver_U = CreateSolver(this._tools.Ctx);
+            this._tools = new Tools(state1.Tools);
+            this._ctx = this._tools.Ctx;
+
+            this.Solver = this.CreateSolver();
+            this.Solver_U = this.CreateSolver();
 
             this._cached_Reg_Values = new Dictionary<Rn, Tv[]>();
             this._cached_Flag_Values = new Dictionary<Flags, Tv>();
@@ -103,16 +110,16 @@ namespace AsmSim
                 this.DiffConstructor(state1, state2);
             }
         }
-        private Solver CreateSolver(Context ctx)
+        private Solver CreateSolver()
         {
             if (true)
             {
-                Tactic tactic = ctx.MkTactic("qfbv");
-                return ctx.MkSolver(tactic);
+                Tactic tactic = this._ctx.MkTactic("qfbv");
+                return this._ctx.MkSolver(tactic);
             }
             else
             {
-                return ctx.MkSolver("QF_ABV");
+                return this._ctx.MkSolver("QF_ABV");
             }
         }
         /// <summary>Copy Constructor Method</summary>
@@ -122,13 +129,24 @@ namespace AsmSim
             this.TailKey = other.TailKey;
 
             other.UndefGrounding = false;
-            this.Solver = CreateSolver(this._tools.Ctx);
-            this.Solver_U = CreateSolver(this._tools.Ctx);
 
-            this.Solver.Assert(other.Solver.Assertions);
-            this.Solver_U.Assert(other.Solver_U.Assertions);
+            this.Solver = this.CreateSolver();
+            this.Solver_U = this.CreateSolver();
 
-            this._branchInfoStore = new BranchInfoStore(other.BranchInfoStore);
+            foreach (var v in other.Solver.Assertions)
+            {
+                this.Solver.Assert(v.Translate(this._ctx) as BoolExpr);
+            }
+            foreach (var v in other.Solver_U.Assertions)
+            {
+                this.Solver_U.Assert(v.Translate(this._ctx) as BoolExpr);
+            }
+
+            this._branchInfoStore = new BranchInfoStore(this._ctx);
+            foreach (var v in other.BranchInfoStore.Values)
+            {
+                this._branchInfoStore.Add(new BranchInfo(v.BranchCondition.Translate(this._ctx) as BoolExpr, v.BranchTaken));
+            }
         }
         /// <summary>Merge Constructor Method</summary>
         private void MergeConstructor(State state1, State state2)
@@ -141,8 +159,7 @@ namespace AsmSim
             state2.Simplify();
             #endregion
 
-            var shared = BranchInfoStore.RetrieveSharedBranchInfo(state1.BranchInfoStore, state2.BranchInfoStore, this.Tools);
-            this._branchInfoStore = shared.MergedBranchInfo;
+            this._branchInfoStore = BranchInfoStore.RetrieveSharedBranchInfo(state1.BranchInfoStore, state2.BranchInfoStore, this._ctx);
 
             #region Handle Inconsistent states
             {
@@ -179,7 +196,7 @@ namespace AsmSim
 
             // merge the head and tail
             {
-                Context ctx = this.Tools.Ctx;
+                Context ctx = this._ctx;
                 if (state1.HeadKey == state2.HeadKey)
                 {
                     this.HeadKey = state1.HeadKey;
@@ -254,9 +271,9 @@ namespace AsmSim
             //if (stateUpdate.Empty) return;
 
             this.UndefGrounding = false;
-            foreach (BoolExpr expr in stateUpdate.Value) this.Solver.Assert(expr);
-            foreach (BoolExpr expr in stateUpdate.Undef) this.Solver_U.Assert(expr);
-            this.BranchInfoStore.Add(stateUpdate.BranchInfo);
+            foreach (BoolExpr expr in stateUpdate.Value) this.Solver.Assert(expr.Translate(this._ctx) as BoolExpr);
+            foreach (BoolExpr expr in stateUpdate.Undef) this.Solver_U.Assert(expr.Translate(this._ctx) as BoolExpr);
+            this.BranchInfoStore.Add(stateUpdate.BranchInfo?.Translate(this._ctx));
 
             this.Solver_Dirty = true;
             this.Solver_U_Dirty = true;
@@ -279,7 +296,7 @@ namespace AsmSim
 
         public void Add(BranchInfo branchInfo)
         {
-            this.BranchInfoStore.Add(branchInfo);
+            this.BranchInfoStore.Add(branchInfo.Translate(this._ctx));
         }
         #endregion
 
@@ -466,6 +483,11 @@ namespace AsmSim
 
                     if (value)
                     {
+                     //   this._undefStore = new BoolExpr[this.Solver_U.NumAssertions];
+                    //    for (int i = 0; i<this.Solver_U.NumAssertions; ++i)
+                     //   {
+                      //      this._undefStore[i] = this.Solver_U.Assertions[i];
+                     // }
                         this._undefStore = this.Solver_U.Assertions;
 
                         string key = this.TailKey;
@@ -579,7 +601,7 @@ namespace AsmSim
             }
             if (this.Tools.ShowUndefConstraints)
             {
-                if (this.Solver_U.NumAssertions > 0)
+                //if (this.Solver_U.NumAssertions > 0)
                 {
                     sb.AppendLine(identStr + "Current Undef constraints:");
                     for (int i = 0; i < (int)this.Solver_U.NumAssertions; ++i)
@@ -788,11 +810,9 @@ namespace AsmSim
 
         private void AssertBranchInfoToSolver(bool addUndef = true)
         {
-            Context ctx = this.Ctx;
             foreach (BranchInfo e in this.BranchInfoStore.Values)
             {
-                BoolExpr expr = e.GetData(ctx);
-                //BoolExpr expr = e.GetData(ctx).Translate(ctx) as BoolExpr;
+                BoolExpr expr = e.GetData(this._ctx);
                 this.Solver.Assert(expr);
                 if (addUndef)
                 {

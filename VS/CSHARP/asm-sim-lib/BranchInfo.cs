@@ -36,6 +36,12 @@ namespace AsmSim
             this.Key = condition.ToString();
             this.BranchTaken = taken;
         }
+
+        public BranchInfo Translate(Context ctx)
+        {
+            return new BranchInfo(this.BranchCondition.Translate(ctx) as BoolExpr, this.BranchTaken);
+        }
+
         public BoolExpr GetData(Context ctx)
         {
             if (false)

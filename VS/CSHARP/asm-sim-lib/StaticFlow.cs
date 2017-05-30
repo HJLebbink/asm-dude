@@ -34,7 +34,6 @@ namespace AsmSim
         public static readonly char LINENUMBER_SEPARATOR = '!';
 
         private readonly Tools _tools;
-        private int _id = 0;
 
         private string _programStr = "";
         private readonly IList<(string label, Mnemonic mnemonic, string[] args)> _sourceCode;

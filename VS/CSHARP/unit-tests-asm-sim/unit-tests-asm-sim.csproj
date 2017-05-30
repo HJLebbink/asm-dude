@@ -98,7 +98,6 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Test_BitTricks.cs" />
-    <Compile Include="Test_BranchInfoStore.cs" />
     <Compile Include="Test_CFlow.cs" />
     <Compile Include="Test_ExecutionTree.cs" />
     <Compile Include="Test_FlagTools.cs" />
