@@ -35,21 +35,19 @@ namespace unit_tests_asm_z3
         }
 
         /// <summary>Returns Forward, Backward State</summary>
-        private (State Forward, State Backward) Equal_Forward_Backward(string programStr, bool logToDispay2, Tools tools)
+        private State Equal_Forward_Backward(string programStr, bool logToDispay2, Tools tools)
         {
-            StaticFlow staticFlow = new StaticFlow(programStr, tools);
+            StaticFlow sFlow = new StaticFlow(programStr, tools);
+            if (logToDispay2) Console.WriteLine(sFlow.ToString());
 
-            if (logToDispay2) Console.WriteLine(staticFlow.ToString());
+            DynamicFlow dFlow0 = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
+            DynamicFlow dFlow1 = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
-            DynamicFlow tree0 = Runner.Construct_DynamicFlow_Forward(staticFlow, 0, 100, tools);
-            //DynamicFlow<IExecutionNode> tree0 = Runner.Construct_DynamicFlow_Forward(staticFlow, 0, 100, tools);
-            DynamicFlow tree1 = Runner.Construct_DynamicFlow_Backward(staticFlow, staticFlow.LastLineNumber, 100, tools);
+            //Console.WriteLine("Forward:" + tree0.ToString(dFlow0));
+            //Console.WriteLine("Backward:" + tree1.ToString(dFlow1));
 
-            //Console.WriteLine("Forward:" + tree0.ToString(staticFlow));
-            //Console.WriteLine("Backward:" + tree1.ToString(staticFlow));
-
-            State state0 = tree0.EndState;
-            State state1 = tree1.EndState;
+            State state0 = dFlow0.EndState;
+            State state1 = dFlow1.EndState;
 
             if (logToDispay2)
             {
@@ -62,7 +60,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("=================================================================");
             }
             TestTools.AreEqual(state0, state1);
-            return (Forward: state0, Backward: state1);
+            return state0;
         }
         #endregion Private Methods
 
@@ -113,7 +111,7 @@ namespace unit_tests_asm_z3
                 "           clc       ; clear CF                " + Environment.NewLine +
                 "           stc       ; set CF                  " + Environment.NewLine +
                 "           cmc       ; complement CF           ";
-            State state = Equal_Forward_Backward(programStr, logToDisplay, tools).Backward;
+            State state = Equal_Forward_Backward(programStr, logToDisplay, tools);
             TestTools.AreEqual(Flags.CF, Tv.ZERO, state);
         }
 
@@ -129,10 +127,9 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        0               " + Environment.NewLine +
                 "           mov     rbx,        10              " + Environment.NewLine +
                 "           mov     rbx,        rax             ";
-            State state = Equal_Forward_Backward(programStr, logToDisplay, tools).Backward;
+            State state = Equal_Forward_Backward(programStr, logToDisplay, tools);
             TestTools.AreEqual(Rn.RAX, 0, state);
             TestTools.AreEqual(Rn.RBX, 0, state);
-            // flags are unaltered
         }
 
         [TestMethod]
@@ -148,7 +145,7 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        10              " + Environment.NewLine +
                 "           mov     rbx,        20              " + Environment.NewLine +
                 "           add     rax,        rbx             ";
-            State state = Equal_Forward_Backward(programStr, logToDisplay, tools).Backward;
+            State state = Equal_Forward_Backward(programStr, logToDisplay, tools);
 
             ulong result = 10 + 20;
             uint nBits = 64;
@@ -177,7 +174,7 @@ namespace unit_tests_asm_z3
                 "           mov     rbx,        20              " + Environment.NewLine +
                 "" + Environment.NewLine +
                 "           add     rax,        rbx             ";
-            State state = Equal_Forward_Backward(programStr, logToDisplay, tools).Backward;
+            State state = Equal_Forward_Backward(programStr, logToDisplay, tools);
 
             ulong result = 10 + 20;
             uint nBits = 64;
@@ -204,7 +201,7 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        20              " + Environment.NewLine +
                 "           mov     rbx,        rax             " + Environment.NewLine +
                 "           xor     rbx,        rax             ";
-            State state = Equal_Forward_Backward(programStr, logToDisplay, tools).Backward;
+            State state = Equal_Forward_Backward(programStr, logToDisplay, tools);
 
             ulong result = 20 ^ 20;
             uint nBits = 64;
@@ -218,75 +215,7 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
-        public void Test_Runner_Jmp_Forward_1()
-        {
-            Tools tools = CreateTools();
-            tools.StateConfig.Set_All_Off();
-            tools.StateConfig.RAX = true;
-            tools.StateConfig.ZF = true;
-
-            string programStr =
-                "           jz      label1                      " + Environment.NewLine +
-                "label1:                                        ";
-
-            StaticFlow staticFlow = new StaticFlow(programStr, tools);
-            if (logToDisplay) Console.WriteLine(staticFlow);
-
-            State state2 = Runner.Construct_DynamicFlow_Forward(staticFlow, 0, 10, tools).EndState;
-            if (logToDisplay) Console.WriteLine(state2);
-
-            TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
-        }
-
-        [TestMethod]
-        public void Test_Runner_Jmp_Forward_5()
-        {
-            Tools tools = CreateTools();
-            tools.StateConfig.Set_All_Off();
-            tools.StateConfig.RAX = true;
-            tools.StateConfig.ZF = true;
-            tools.ShowUndefConstraints = false;
-
-            bool logToDisplay2 = true;
-            tools.Quiet = false;// !logToDisplay2;
-
-            string programStr =
-                "           jz      label1                      " + Environment.NewLine +
-                "           mov     rax,        10              " + Environment.NewLine +
-                "           jmp     label2                      " + Environment.NewLine +
-                "label1:                                        " + Environment.NewLine +
-                "           mov     rax,        20              " + Environment.NewLine +
-                "label2:                                        ";
-
-            StaticFlow staticFlow = new StaticFlow(programStr, tools);
-            if (logToDisplay2) Console.WriteLine(staticFlow);
-
-            var dFlow = Runner.Construct_DynamicFlow_Forward(staticFlow, 0, 10, tools);
-            State state2 = dFlow.EndState;
-
-            if (logToDisplay2) Console.WriteLine("state2:\n" + state2);
-            TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
-
-            var branch_Condition = dFlow.Get_Branch_Condition(0);
-            {
-                State state2a = new State(state2);
-                state2a.Add(new BranchInfo(branch_Condition, true));
-                if (logToDisplay2) Console.WriteLine("state2 with ZF==0:\n" + state2a);
-                TestTools.AreEqual(Tv.ONE, state2a.IsConsistent);
-                TestTools.AreEqual(Rn.RAX, 20, state2a);
-            }
-            {
-                State state2b = new State(state2);
-                state2b.Add(new BranchInfo(branch_Condition, false));
-                if (logToDisplay2) Console.WriteLine("state2 with ZF==1:\n" + state2b);
-                TestTools.AreEqual(Tv.ONE, state2b.IsConsistent);
-                TestTools.AreEqual(Rn.RAX, 10, state2b);
-            }
-        }
-
-
-        [TestMethod]
-        public void Test_Runner_Jmp_Backward_1()
+        public void Test_Runner_Jmp_1()
         {
             Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
@@ -299,20 +228,20 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        0               " + Environment.NewLine +
                 "label1:                                        ";
 
-            StaticFlow staticFlow = new StaticFlow(programStr, tools);
-            if (logToDisplay) Console.WriteLine(staticFlow);
+            StaticFlow sFlow = new StaticFlow(programStr, tools);
+            if (logToDisplay) Console.WriteLine(sFlow);
             
-            var dynamicFlow = Runner.Construct_DynamicFlow_Backward(staticFlow, staticFlow.LastLineNumber, 10, tools);
-            var state = dynamicFlow.EndState;
-            if (logToDisplay) Console.WriteLine("DynamicFlow:\n" + dynamicFlow.ToString(staticFlow));
-            if (logToDisplay) Console.WriteLine("Backward:\n" + state);
+            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            var state = dFlow.EndState;
+            //if (logToDisplay) Console.WriteLine("DynamicFlow:\n" + dFlow.ToString(staticFlow));
+            if (logToDisplay) Console.WriteLine(state);
 
             TestTools.AreEqual(Tv.ONE, state.IsConsistent);
             TestTools.AreEqual(Rn.RAX, 0, state);
         }
 
         [TestMethod]
-        public void Test_Runner_Jmp_Backward_2()
+        public void Test_Runner_Jmp_2()
         {
             Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
@@ -328,16 +257,17 @@ namespace unit_tests_asm_z3
                 "           mov     rbx,        10              " + Environment.NewLine +
                 "label2:                                        ";
 
-            StaticFlow staticFlow = new StaticFlow(programStr, tools);
-            State state2 = Runner.Construct_DynamicFlow_Backward(staticFlow, staticFlow.LastLineNumber, 10, tools).EndState;
-            if (logToDisplay) Console.WriteLine("Backward:\n" + state2);
+            StaticFlow sFlow = new StaticFlow(programStr, tools);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            State state = dFlow.EndState;
+            if (logToDisplay) Console.WriteLine(state);
 
-            TestTools.AreEqual(Tv.ONE, state2.IsConsistent);
-            TestTools.AreEqual(Rn.RBX, 10, state2);
+            TestTools.AreEqual(Tv.ONE, state.IsConsistent);
+            TestTools.AreEqual(Rn.RBX, 10, state);
         }
 
         [TestMethod]
-        public void Test_Runner_Jmp_Backward_3()
+        public void Test_Runner_Jmp_3()
         {
             Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
@@ -352,16 +282,17 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        10              " + Environment.NewLine +
                 "label2:                                        ";
 
-            StaticFlow staticFlow = new StaticFlow(programStr, tools);
-            State state = Runner.Construct_DynamicFlow_Backward(staticFlow, staticFlow.LastLineNumber, 10, tools).EndState;
-            if (logToDisplay) Console.WriteLine("Backward:\n" + state);
+            StaticFlow sFlow = new StaticFlow(programStr, tools);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            State state = dFlow.EndState;
+            if (logToDisplay) Console.WriteLine(state);
 
             TestTools.AreEqual(Tv.ONE, state.IsConsistent);
             TestTools.AreEqual(Rn.RAX, 10, state);
         }
 
         [TestMethod]
-        public void Test_Runner_Jmp_Backward_4()
+        public void Test_Runner_Jmp_4()
         {
             Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
@@ -377,16 +308,17 @@ namespace unit_tests_asm_z3
                 "label2:                                        " + Environment.NewLine +
                 "           mov     rax,        20              ";
 
-            StaticFlow staticFlow = new StaticFlow(programStr, tools);
-            State state = Runner.Construct_DynamicFlow_Backward(staticFlow, staticFlow.LastLineNumber, 10, tools).EndState;
-            if (logToDisplay) Console.WriteLine("Backward:\n" + state);
+            StaticFlow sFlow = new StaticFlow(programStr, tools);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            State state = dFlow.EndState;
+            if (logToDisplay) Console.WriteLine(state);
 
             TestTools.AreEqual(Tv.ONE, state.IsConsistent);
             TestTools.AreEqual(Rn.RAX, 20, state);
         }
 
         [TestMethod]
-        public void Test_Runner_Jmp_Backward_5()
+        public void Test_Runner_Jmp_5()
         {
             Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
@@ -406,9 +338,8 @@ namespace unit_tests_asm_z3
                 "label2:                                        ";
  
             StaticFlow sFlow = new StaticFlow(programStr, tools);
-            if (logToDisplay2) Console.WriteLine(sFlow);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
-            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, sFlow.LastLineNumber, 10, tools);
             State state0 = dFlow.States_Before(0, 0);
             Assert.IsNotNull(state0);
             State state = dFlow.EndState;
@@ -435,11 +366,10 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
-        public void Test_Runner_Jmp_Backward_6()
+        public void Test_Runner_Jmp_6()
         {
             Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
-            tools.StateConfig.RAX = true;
             tools.StateConfig.ZF = true;
             tools.ShowUndefConstraints = false;
 
@@ -453,7 +383,7 @@ namespace unit_tests_asm_z3
             StaticFlow sFlow = new StaticFlow(programStr, tools);
             if (logToDisplay2) Console.WriteLine(sFlow);
 
-            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, sFlow.LastLineNumber, 10, tools);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             State state = dFlow.EndState;
             Assert.IsNotNull(state);
 
@@ -468,19 +398,17 @@ namespace unit_tests_asm_z3
                 state2a.Add(new BranchInfo(branch_Condition, true));
                 if (logToDisplay2) Console.WriteLine("state with ZF = true:\n" + state2a);
                 TestTools.AreEqual(Tv.ONE, state2a.IsConsistent);
-                //TestTools.AreEqual(Rn.RAX, 20, state2a);
             }
             {
                 State state2b = new State(state);
                 state2b.Add(new BranchInfo(branch_Condition, false));
                 if (logToDisplay2) Console.WriteLine("state with ZF = false:\n" + state2b);
                 TestTools.AreEqual(Tv.ONE, state2b.IsConsistent);
-                //TestTools.AreEqual(Rn.RAX, 10, state2b);
             }
         }
 
         [TestMethod]
-        public void Test_Runner_Jmp_Backward_7()
+        public void Test_Runner_Jmp_7()
         {
             Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
@@ -504,9 +432,7 @@ namespace unit_tests_asm_z3
                 "label3:                                        ";
 
             StaticFlow sFlow = new StaticFlow(programStr, tools);
-            if (logToDisplay2) Console.WriteLine(sFlow);
-
-            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, sFlow.LastLineNumber, 10, tools);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             //DotVisualizer.SaveToDot(sFlow, dFlow, "test1.dot");
 
             State state = dFlow.EndState;
@@ -533,7 +459,7 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
-        public void Test_Runner_Mem1()
+        public void Test_Runner_Mem_1()
         {
             Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
@@ -548,7 +474,7 @@ namespace unit_tests_asm_z3
                 "           mov     rdx,        qword ptr[rax]  ";
 
             var sFlow = new StaticFlow(programStr, tools);
-            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, sFlow.LastLineNumber, 100, tools);
+            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             State state = dFlow.EndState;
 
             TestTools.AreEqual(Rn.RCX, 20, state);
@@ -556,7 +482,7 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
-        public void Test_Runner_Mem2()
+        public void Test_Runner_Mem_2()
         {
             Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
@@ -574,7 +500,7 @@ namespace unit_tests_asm_z3
                 "           mov     rcx, qword ptr [rbx]        ";
 
             var sFlow = new StaticFlow(programStr, tools);
-            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, sFlow.LastLineNumber, 100, tools);
+            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             State state = dFlow.EndState;
 
             TestTools.AreEqual(Rn.RAX, 0, state);
@@ -583,7 +509,7 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
-        public void Test_Runner_Mem3()
+        public void Test_Runner_Mem_3()
         {
             Tools tools = CreateTools(); // test is slow (9min - 17min)
             tools.StateConfig.Set_All_Off();
@@ -601,7 +527,7 @@ namespace unit_tests_asm_z3
                 "           mov     rcx, qword ptr [rbx]        ";
 
             var sFlow = new StaticFlow(programStr, tools);
-            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, sFlow.LastLineNumber, 100, tools);
+            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             State state0 = dFlow.States_Before(0, 0);
             State state = dFlow.EndState;
 
@@ -613,7 +539,7 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
-        public void Test_Runner_Merge_Mem_Backward_1()
+        public void Test_Runner_Mem_Merge_1()
         {
             Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
@@ -621,7 +547,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RBX = true;
             tools.StateConfig.ZF = true;
             tools.StateConfig.mem = true;
-            tools.Quiet = false;
+            tools.Quiet = true;
 
             string programStr =
                 "           jz      label1                      " + Environment.NewLine +
@@ -633,11 +559,9 @@ namespace unit_tests_asm_z3
                 "           mov     bl, byte ptr[rax]         ";
 
             StaticFlow sFlow = new StaticFlow(programStr, tools);
-            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, sFlow.LastLineNumber, 10, tools);
+            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             State state0 = dFlow.States_Before(0, 0);
             State state = dFlow.EndState;
-
-            //if (logToDisplay) Console.WriteLine("state2:\n" + state2);
 
             State state3 = new State(state);
             State state4 = new State(state);
@@ -652,111 +576,7 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
-        public void Test_Runner_Merge_Reg_Forward_1()
-        {
-            Tools tools = CreateTools();
-            tools.StateConfig.Set_All_Off();
-            tools.StateConfig.RAX = true;
-            tools.StateConfig.RBX = true;
-            tools.StateConfig.CF = true;
-            tools.StateConfig.ZF = true;
-
-            State state0 = CreateState(tools);
-            State state1 = new State(state0);
-            State state2 = new State(state0);
-            {
-                StateUpdate updateState1 = new StateUpdate(state1.TailKey, Tools.CreateKey(tools.Rand), tools)
-                {
-                    BranchInfo = new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.C, state1.HeadKey, state1.Ctx), true)
-                };
-                updateState1.Set(Rn.RAX, 10);
-                updateState1.Set(Flags.CF, Tv.ONE);
-                updateState1.BranchInfo = new BranchInfo(state1.Get(Flags.ZF), true);
-                state1.Update_Forward(updateState1);
-            }
-            {
-                StateUpdate updateState2 = new StateUpdate(state2.TailKey, Tools.CreateKey(tools.Rand), tools)
-                {
-                    BranchInfo = new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.C, state2.HeadKey, state2.Ctx), true)
-                };
-                updateState2.Set(Rn.RAX, 20);
-                updateState2.Set(Flags.CF, Tv.ZERO);
-                updateState2.BranchInfo = new BranchInfo(state2.Get(Flags.ZF), false);
-                state2.Update_Forward(updateState2);
-            }
-
-            if (logToDisplay) Console.WriteLine("=========================================\nstate1: we know:\n" + state1);
-            if (logToDisplay) Console.WriteLine("=========================================\nstate2: we know:\n" + state2);
-
-
-            State mergedState3 = new State(state1, state2, true);
-            State mergedState4 = new State(mergedState3);
-
-            mergedState3.Add(new BranchInfo(mergedState3.Get(Flags.ZF), true));
-            if (logToDisplay) Console.WriteLine("=========================================\nmergedState3: we know:\n" + mergedState3);
-            TestTools.AreEqual(Flags.CF, true, mergedState3);
-            TestTools.AreEqual(Rn.RAX, 10, mergedState3);
-
-            mergedState4.Add(new BranchInfo(mergedState4.Get(Flags.ZF), false));
-            if (logToDisplay) Console.WriteLine("=========================================\nmergedState4: we know:\n" + mergedState4);
-            TestTools.AreEqual(Flags.CF, false, mergedState4);
-            TestTools.AreEqual(Rn.RAX, 20, mergedState4);
-
-            if (logToDisplay) Console.WriteLine(state1);
-            if (logToDisplay) Console.WriteLine(state2);
-            if (logToDisplay) Console.WriteLine(mergedState3);
-        }
-
-        [TestMethod]
-        public void Test_Runner_Merge_Mem_Forward_1()
-        {
-            Tools tools = CreateTools();
-            tools.StateConfig.Set_All_Off();
-            tools.StateConfig.RAX = true;
-            tools.StateConfig.ZF = true;
-            tools.StateConfig.mem = true;
-            tools.Quiet = false;
-
-            int nBytes = 1;
-
-            State state0 = CreateState(tools);
-            State state1 = new State(state0);
-            State state2 = new State(state0);
-
-            BoolExpr branchCondition = state0.Get(Flags.ZF);
-            {
-                StateUpdate updateState1 = new StateUpdate(state1.HeadKey, Tools.CreateKey(state1.Tools.Rand), state1.Tools);
-                updateState1.SetMem(state1.Get(Rn.RAX), 1, nBytes);
-                updateState1.BranchInfo = new BranchInfo(branchCondition, false);
-                state1.Update_Forward(updateState1);
-            }
-            {
-                StateUpdate updateState2 = new StateUpdate(state2.HeadKey, Tools.CreateKey(state2.Tools.Rand), state2.Tools);
-                updateState2.SetMem(state2.Get(Rn.RAX), 2, nBytes);
-                updateState2.BranchInfo = new BranchInfo(branchCondition, true);
-                state2.Update_Forward(updateState2);
-            }
-            State mergedState3 = new State(state1, state2, true);
-            State mergedState4 = new State(mergedState3);
-
-            //if (logToDisplay) Console.WriteLine("state1=\n" + state1);
-            //if (logToDisplay) Console.WriteLine("state2=\n" + state2);
-            //if (logToDisplay) Console.WriteLine("mergedState3=\n" + mergedState3);
-
-            mergedState3.Add(new BranchInfo(branchCondition, true));
-            if (logToDisplay) Console.WriteLine("mergedState3 Plus branchCondition=\n" + mergedState3);
-
-            TestTools.AreEqual(Tv.ONE, mergedState3.IsConsistent);
-            TestTools.AreEqual(1, mergedState3.GetTvArrayMem(mergedState3.Get(Rn.RAX), nBytes));
-
-            mergedState4.Add(new BranchInfo(branchCondition, false));
-            TestTools.AreEqual(Tv.ONE, mergedState4.IsConsistent);
-            TestTools.AreEqual(2, mergedState4.GetTvArrayMem(mergedState4.Get(Rn.RAX), nBytes));
-
-        }
-
-        [TestMethod]
-        public void Test_Runner_Loop_Forward_1()
+        public void Test_Runner_Loop_1()
         {
             Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
@@ -774,12 +594,13 @@ namespace unit_tests_asm_z3
                 "           dec        rax                      " + Environment.NewLine +
                 "           jnz        label1                   ";
 
-            StaticFlow staticFlow = new StaticFlow(programStr, tools);
-            if (logToDisplay2) Console.WriteLine(staticFlow);
+            StaticFlow sFlow = new StaticFlow(programStr, tools);
+            if (logToDisplay2) Console.WriteLine(sFlow);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
 
-            if (false)
+            if (true)
             { 
-                State state = Runner.Construct_DynamicFlow_Forward(staticFlow, 0, 20, tools).EndState;
+                State state = dFlow.EndState;
                 if (logToDisplay2) Console.WriteLine(state);
                 TestTools.AreEqual(Rn.RAX, 0, state);
                 TestTools.AreEqual(Rn.RBX, 3, state);
@@ -788,7 +609,7 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
-        public void Test_Runner_Loop_Backward_1()
+        public void Test_Runner_Loop_2()
         {
             Tools tools = CreateTools();
             tools.StateConfig.Set_All_Off();
@@ -803,12 +624,13 @@ namespace unit_tests_asm_z3
                 "label1:    dec        rax                      " + Environment.NewLine +
                 "           jnz        label1                   ";
 
-            StaticFlow staticFlow = new StaticFlow(programStr, tools);
-            if (logToDisplay2) Console.WriteLine(staticFlow);
+            StaticFlow sFlow = new StaticFlow(programStr, tools);
+            if (logToDisplay2) Console.WriteLine(sFlow);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
             if (false)
             {   // backward
-                State state = Runner.Construct_DynamicFlow_Backward(staticFlow, staticFlow.NLines - 1, 10, tools).EndState;
+                State state = dFlow.EndState;
                 if (logToDisplay2) Console.WriteLine(state);
                 TestTools.AreEqual(Rn.RAX, 0, state);
             }

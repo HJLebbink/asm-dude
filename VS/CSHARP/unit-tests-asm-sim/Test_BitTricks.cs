@@ -49,6 +49,129 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
+        public void Test_BitTricks_Mod3()
+        {
+            /*
+            mod3_A    PROC
+            ; parameter 1: rcx
+                mov       r8, 0aaaaaaaaaaaaaaabH      ;; (scaled) reciprocal of 3
+                mov       rax, rcx
+                mul       r8                          ;; multiply with reciprocal
+                shr       rdx, 1                      ;; quotient
+                lea       r9, QWORD PTR [rdx+rdx*2]   ;; back multiply with 3
+                neg       r9
+                add       rcx, r9                     ;; subtract from dividend 
+                mov       rax, rcx                    ;; remainder
+                ret
+            mod3_A    ENDP
+
+            mod3_B    PROC
+            ; parameter 1: rcx
+		        mov		  r8, 3
+                mov       rax, rcx
+		        xor       rdx, rdx
+		        idiv      r8
+                mov       rax, rdx
+                ret
+            mod3_B    ENDP
+            */
+
+            Tools tools = CreateTools(0);
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RCX = true;
+            tools.StateConfig.RDX = true;
+            tools.StateConfig.R8 = true;
+            tools.StateConfig.R9 = true;
+            tools.StateConfig.R10 = true;
+
+            string line0 = "mov       rcx, r10";
+
+            string line1 = "mov       r8, 0aaaaaaaaaaaaaaabH";
+            string line2 = "mov       rax, rcx"; 
+            string line3 = "mul       r8";
+            string line4 = "shr       rdx, 1";
+            string line5 = "lea       r9, QWORD PTR [rdx+rdx*2]";
+            string line6 = "neg       r9";
+            string line7 = "add       rcx, r9"; // rcx has result of 
+
+            string line8 = "mov       r8, 3";
+            string line9 = "mov       rax, r10";
+            string line10 = "mov      rdx, 0";
+            string line11 = "idiv     r8";
+
+            if (true) {   // forward
+                State state = CreateState(tools);
+
+                state = Runner.SimpleStep_Forward(line0, state);
+                state = Runner.SimpleStep_Forward(line1, state);
+                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+
+                state = Runner.SimpleStep_Forward(line2, state);
+                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+
+                state = Runner.SimpleStep_Forward(line3, state);
+                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+
+                state = Runner.SimpleStep_Forward(line4, state);
+                if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+
+                state = Runner.SimpleStep_Forward(line5, state);
+                if (logToDisplay) Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+
+                state = Runner.SimpleStep_Forward(line6, state);
+                if (logToDisplay) Console.WriteLine("After \"" + line6 + "\", we know:\n" + state);
+
+                state = Runner.SimpleStep_Forward(line7, state);
+                if (logToDisplay) Console.WriteLine("After \"" + line7 + "\", we know:\n" + state);
+
+                state = Runner.SimpleStep_Forward(line8, state);
+                if (logToDisplay) Console.WriteLine("After \"" + line8 + "\", we know:\n" + state);
+
+                state = Runner.SimpleStep_Forward(line9, state);
+                if (logToDisplay) Console.WriteLine("After \"" + line9 + "\", we know:\n" + state);
+
+                state = Runner.SimpleStep_Forward(line10, state);
+                if (logToDisplay) Console.WriteLine("After \"" + line10 + "\", we know:\n" + state);
+
+                state = Runner.SimpleStep_Forward(line11, state);
+                if (logToDisplay) Console.WriteLine("After \"" + line11 + "\", we know:\n" + state);
+
+
+                Context ctx = state.Ctx;
+                BoolExpr t = ctx.MkEq(state.Get(Rn.RCX), state.Get(Rn.RDX));
+
+                if (false)
+                {// this test does not seem to terminate
+                    state.Solver.Push();
+                    state.Solver.Assert(t);
+                    if (state.Solver.Check() != Status.SATISFIABLE)
+                    {
+                        if (logToDisplay) Console.WriteLine("UnsatCore has " + state.Solver.UnsatCore.Length + " elements");
+                        foreach (BoolExpr b in state.Solver.UnsatCore)
+                        {
+                            if (logToDisplay) Console.WriteLine("UnsatCore=" + b);
+                        }
+                        Assert.Fail();
+                    }
+                    state.Solver.Pop();
+                }
+                if (true)
+                {   // this test does not seem to terminate
+                    state.Solver.Push();
+                    state.Solver.Assert(ctx.MkNot(t));
+                    if (state.Solver.Check() == Status.SATISFIABLE)
+                    {
+                        if (logToDisplay) Console.WriteLine("Model=" + state.Solver.Model);
+                        Assert.Fail();
+                    }
+                    state.Solver.Pop();
+                }
+                Assert.AreEqual(Tv.ONE, ToolsZ3.GetTv(t, state.Solver, state.Ctx));
+            }
+        }
+
+        [TestMethod]
         public void Test_BitTricks_Min_Unsigned()
         {
             Tools tools = CreateTools();
@@ -293,6 +416,7 @@ namespace unit_tests_asm_z3
                 }
             }
         }
+
         [TestMethod]
         public void Test_BitTricks_Parallel_Search_GPR_2()
         {

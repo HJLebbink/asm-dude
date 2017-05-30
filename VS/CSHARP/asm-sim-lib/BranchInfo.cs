@@ -38,11 +38,19 @@ namespace AsmSim
         }
         public BoolExpr GetData(Context ctx)
         {
-            return (this.BranchTaken) ? this.BranchCondition : ctx.MkNot(this.BranchCondition);
+            if (false)
+            {
+                BoolExpr bc = this.BranchCondition.Translate(ctx) as BoolExpr;
+                return (this.BranchTaken) ? bc : ctx.MkNot(bc);
+            }
+            else
+            {
+                return (this.BranchTaken) ? this.BranchCondition : ctx.MkNot(this.BranchCondition);
+            }
         }
         public override string ToString()
         {
-            return "BranchInfo: "+this.BranchCondition + "\n(branch taken " + this.BranchTaken + ")";
+            return "BranchInfo: " + this.BranchCondition + "\n(branch taken " + this.BranchTaken + ")";
         }
     }
 }

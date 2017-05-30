@@ -321,7 +321,7 @@ namespace AsmDude.Tools
             var state = (before) ? this.Get_State_Before(lineNumber, true, true) : this.Get_State_After(lineNumber, true, true);
             if (state.Bussy)
             {
-                return "[Dave, I'm bussy acquiring the state for line " + lineNumber + "]";
+                return "[Dave, I'm bussy acquiring the state for line " + (lineNumber+1) + "]"; // plus 1 for the lineNumber because lineNumber 0 is shown as lineNumber 1
             }
 
             Tv[] reg = state.State.GetTvArray_Cached(name);

@@ -133,30 +133,16 @@ namespace AsmSim
         /// <summary>Merge Constructor Method</summary>
         private void MergeConstructor(State state1, State state2)
         {
+            #region Prepare States
             state1.UndefGrounding = false;
             state2.UndefGrounding = false;
 
             state1.Simplify();
             state2.Simplify();
+            #endregion
 
             var shared = BranchInfoStore.RetrieveSharedBranchInfo(state1.BranchInfoStore, state2.BranchInfoStore, this.Tools);
             this._branchInfoStore = shared.MergedBranchInfo;
-
-            BoolExpr sharedCondition1 = shared.BranchPoint1?.BranchCondition;
-            BoolExpr sharedCondition2 = shared.BranchPoint2?.BranchCondition;
-
-            BoolExpr freshBranchExpr = this.Ctx.MkBoolConst("Branch" + Tools.CreateKey(state1.Tools.Rand));
-            if (sharedCondition1 == null) sharedCondition1 = freshBranchExpr;
-            string sharedConditionStr1 = sharedCondition1.FuncDecl.Name.ToString();
-            if (sharedCondition2 == null) sharedCondition2 = freshBranchExpr;
-            string sharedConditionStr2 = sharedCondition2.FuncDecl.Name.ToString();
-
-            if (sharedCondition1 != sharedCondition2)
-            {
-                Console.WriteLine("INFO: merge: sharedCondition1=" + sharedCondition1);
-                Console.WriteLine("INFO: merge: sharedCondition2=" + sharedCondition2);
-                this.Solver.Assert(this.Tools.Ctx.MkEq(sharedCondition1, sharedCondition2));
-            }
 
             #region Handle Inconsistent states
             {
@@ -170,13 +156,11 @@ namespace AsmSim
                 if (!consistent1)
                 {
                     this.CopyConstructor(state2);
-                    this.BranchInfoStore.RemoveKey(sharedConditionStr1);
                     return;
                 }
                 if (!consistent2)
                 {
                     this.CopyConstructor(state1);
-                    this.BranchInfoStore.RemoveKey(sharedConditionStr2);
                     return;
                 }
             }
@@ -192,24 +176,7 @@ namespace AsmSim
                 foreach (BoolExpr b in state2.Solver_U.Assertions) mergedContent_U.Add(b);
                 foreach (BoolExpr b in mergedContent_U) this.Solver_U.Assert(b);
             }
-            // retrieve whether branch 1 is the branch condition
-            bool state1BranchCondition;
-            {
-                bool found = false;
-                foreach (BranchInfo v in state1.BranchInfoStore.Values)
-                {
-                    if (v.Key == sharedConditionStr1)
-                    {
-                        state1BranchCondition = v.BranchTaken;
-                        found = true;
-                    }
-                }
-                if (!found)
-                {
-                    Console.WriteLine("WARNING: State:MergeConstructor: could not find branchConditionStr=" + sharedConditionStr1);
-                    state1BranchCondition = true;
-                }
-            }
+
             // merge the head and tail
             {
                 Context ctx = this.Tools.Ctx;
@@ -224,16 +191,16 @@ namespace AsmSim
                     string head2 = state2.HeadKey;
 
                     StateUpdate stateUpdateForward = new StateUpdate("!ERROR_1", this.HeadKey, this.Tools);
-
+                    BoolExpr dummyBranchCondttion = ctx.MkBoolConst("DymmyBC" + this.HeadKey);
                     foreach (Rn reg in this.Tools.StateConfig.GetRegOn())
                     {
-                        stateUpdateForward.Set(reg, ctx.MkITE(sharedCondition1, Tools.Reg_Key(reg, head1, ctx), Tools.Reg_Key(reg, head2, ctx)) as BitVecExpr);
+                        stateUpdateForward.Set(reg, ctx.MkITE(dummyBranchCondttion, Tools.Reg_Key(reg, head1, ctx), Tools.Reg_Key(reg, head2, ctx)) as BitVecExpr);
                     }
                     foreach (Flags flag in this.Tools.StateConfig.GetFlagOn())
                     {
-                        stateUpdateForward.Set(flag, ctx.MkITE(sharedCondition1, Tools.Flag_Key(flag, head1, ctx), Tools.Flag_Key(flag, head2, ctx)) as BoolExpr);
+                        stateUpdateForward.Set(flag, ctx.MkITE(dummyBranchCondttion, Tools.Flag_Key(flag, head1, ctx), Tools.Flag_Key(flag, head2, ctx)) as BoolExpr);
                     }
-                    stateUpdateForward.SetMem(ctx.MkITE(sharedCondition1, Tools.Mem_Key(head1, ctx), Tools.Mem_Key(head2, ctx)) as ArrayExpr);
+                    stateUpdateForward.SetMem(ctx.MkITE(dummyBranchCondttion, Tools.Mem_Key(head1, ctx), Tools.Mem_Key(head2, ctx)) as ArrayExpr);
 
                     this.Update_Forward(stateUpdateForward);
                 }
@@ -245,7 +212,6 @@ namespace AsmSim
                 {
                     this.TailKey = Tools.CreateKey(this.Tools.Rand);
                     //TODO does merging the tail make any sense?
-
                 }
             }
         }
@@ -826,6 +792,7 @@ namespace AsmSim
             foreach (BranchInfo e in this.BranchInfoStore.Values)
             {
                 BoolExpr expr = e.GetData(ctx);
+                //BoolExpr expr = e.GetData(ctx).Translate(ctx) as BoolExpr;
                 this.Solver.Assert(expr);
                 if (addUndef)
                 {

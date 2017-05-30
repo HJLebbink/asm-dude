@@ -43,8 +43,8 @@ namespace AsmSim
 
             //TestGraph();
             //TestMnemonic();
-            TestMemorySpeed();
-            //TestDynamicFlow();
+            //TestMemorySpeed();
+            TestDynamicFlow();
             //EmptyMemoryTest();
             //ProgramSynthesis1();
             
@@ -364,7 +364,7 @@ namespace AsmSim
                 if (false)
                 {
                     tools.Quiet = false;
-                    var tree0 = Runner.Construct_DynamicFlow_Forward(flow1, 0, 10, tools);
+                    var tree0 = Runner.Construct_DynamicFlow_Forward(flow1, tools);
 
                     int lineNumber_JZ = 0;
                     State state_FirstLine = tree0.States_Before(lineNumber_JZ, 0);
@@ -377,7 +377,7 @@ namespace AsmSim
                 if (true)
                 {
                     tools.Quiet = false;
-                    var tree1 = Runner.Construct_DynamicFlow_Backward(flow1, flow1.LastLineNumber, 10, tools);
+                    var tree1 = Runner.Construct_DynamicFlow_Backward(flow1, tools);
 
                     int lineNumber_JZ = 0;
                     State state_FirstLine = tree1.States_Before(lineNumber_JZ, 0);
@@ -407,8 +407,8 @@ namespace AsmSim
                 tools.StateConfig.RBX = true;
                 tools.StateConfig.mem = true;
 
-                var tree1 = Runner.Construct_DynamicFlow_Forward(flow1, 0, 3, tools);
-                var tree2 = Runner.Construct_DynamicFlow_Forward(flow2, 0, 3, tools);
+                var tree1 = Runner.Construct_DynamicFlow_Forward(flow1, tools);
+                var tree2 = Runner.Construct_DynamicFlow_Forward(flow2, tools);
 
                 //Console.WriteLine(tree1.ToString(flow1));
                 State state1 = tree1.EndState;
@@ -434,8 +434,8 @@ namespace AsmSim
 
                 tools.Quiet = true;
 
-                var tree1 = Runner.Construct_DynamicFlow_Forward(flow1, 0, 3, tools);
-                var tree2 = Runner.Construct_DynamicFlow_Forward(flow2, 0, 3, tools);
+                var tree1 = Runner.Construct_DynamicFlow_Forward(flow1, tools);
+                var tree2 = Runner.Construct_DynamicFlow_Forward(flow2, tools);
 
                 //Console.WriteLine(tree1.ToString(flow1));
 
@@ -494,60 +494,35 @@ namespace AsmSim
                 "           jnz        label1                   ";
 
 
-            StaticFlow sFlow = new StaticFlow(programStr4, tools);
+            StaticFlow sFlow = new StaticFlow(programStr1, tools);
             Console.WriteLine(sFlow);
 
-            if (false)
+            if (true)
             {
                 tools.Quiet = true;
-                DynamicFlow tree_Forward = Runner.Construct_DynamicFlow_Forward(sFlow, 0, 100, tools);
-                //Console.WriteLine(tree_Forward.ToString(flow));
-                DotVisualizer.SaveToDot(sFlow, tree_Forward, "test1.dot");
+                DynamicFlow dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
+                //DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
+                //Console.WriteLine(tree_Forward.ToString(flow));
+                //DotVisualizer.SaveToDot(sFlow, tree_Forward, "test1.dot");
 
                 int lineNumber = 1;
                 if (false)
                 {
-                    IList<State> states_Before = new List<State>(tree_Forward.States_Before(lineNumber));
+                    IList<State> states_Before = new List<State>(dFlow.States_Before(lineNumber));
                     State state_Before = states_Before[0];
                     Console.WriteLine("Tree_Forward: Before lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
                 }
                 if (false)
                 {
-                    IList<State> states_After = new List<State>(tree_Forward.States_After(lineNumber));
+                    IList<State> states_After = new List<State>(dFlow.States_After(lineNumber));
                     State state_After = states_After[0];
                     Console.WriteLine("Tree_Forward: After lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
                 }
                 if (true)
                 {
-                    State endState = tree_Forward.EndState;
+                    State endState = dFlow.EndState;
                     Console.WriteLine("Tree_Forward: in endState we know:\n" + endState);
-                }
-            }
-            if (true)
-            {
-                tools.Quiet = false;
-                DynamicFlow tree_Backward = Runner.Construct_DynamicFlow_Backward(sFlow, sFlow.LastLineNumber, 100, tools);
-                //Console.WriteLine(tree_Backward.ToString(flow));
-                DotVisualizer.SaveToDot(sFlow, tree_Backward, "test2.dot");
-
-                int lineNumber = 1;
-                if (false)
-                {
-                    IList<State> states_Before = new List<State>(tree_Backward.States_Before(lineNumber));
-                    State state_Before = states_Before[0];
-                    Console.WriteLine("tree_Backward: Before lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
-                }
-                if (false)
-                {
-                    IList<State> states_After = new List<State>(tree_Backward.States_After(lineNumber));
-                    State state_After = states_After[0];
-                    Console.WriteLine("tree_Backward: After lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
-                }
-                if (true)
-                {
-                    State endState = tree_Backward.EndState;
-                    Console.WriteLine("tree_Backward: in endState we know:\n" + endState);
                 }
             }
         }

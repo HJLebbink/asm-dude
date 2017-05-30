@@ -30,11 +30,21 @@ namespace AsmSim
 {
     public static class Runner
     {
+        public static DynamicFlow Construct_DynamicFlow_Backward(StaticFlow sFlow, Tools tools)
+        {
+            return Construct_DynamicFlow_Backward(sFlow, sFlow.LastLineNumber, sFlow.NLines * 2, tools);
+        }
+
         public static DynamicFlow Construct_DynamicFlow_Backward(StaticFlow sFlow, int startLine, int nSteps, Tools tools)
         {
             DynamicFlow dFlow = new DynamicFlow(tools);
             dFlow.Reset(sFlow, false);
             return dFlow;
+        }
+
+        public static DynamicFlow Construct_DynamicFlow_Forward(StaticFlow sFlow, Tools tools)
+        {
+            return Construct_DynamicFlow_Forward(sFlow, sFlow.FirstLineNumber, sFlow.NLines * 2, tools);
         }
 
         public static DynamicFlow Construct_DynamicFlow_Forward(StaticFlow sFlow, int startLine, int nSteps, Tools tools)
