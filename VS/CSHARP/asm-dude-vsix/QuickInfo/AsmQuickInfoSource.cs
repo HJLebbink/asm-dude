@@ -119,8 +119,8 @@ namespace AsmDude.QuickInfo
                         applicableToSpan = snapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
 
                         TextBlock description = null;
-
-                        switch (asmTokenTag.Tag.Type)
+                        AsmTokenType type = asmTokenTag.Tag.Type;
+                        switch (type)
                         {
                             case AsmTokenType.Misc:
                                 {
@@ -190,7 +190,7 @@ namespace AsmDude.QuickInfo
                                 {
                                     description = new TextBlock();
                                     description.Inlines.Add(Make_Run1("Mnemonic ", this._foreground));
-                                    description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Opcode))));
+                                    description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor((type == AsmTokenType.Mnemonic) ? Settings.Default.SyntaxHighlighting_Opcode : Settings.Default.SyntaxHighlighting_Jump))));
 
                                     Mnemonic mmemonic = AsmSourceTools.ParseMnemonic(keywordUpper, true);
                                     {
