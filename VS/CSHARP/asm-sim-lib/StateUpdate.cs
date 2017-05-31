@@ -143,17 +143,10 @@ namespace AsmSim
         {
             lock (this._ctxLock)
             {
-                if (this.Reset)
-                {
-                    return;
-                }
-                else
-                {
-                    Context ctx = state.Ctx;
-                    foreach (BoolExpr expr in this.Value) state.Solver.Assert(expr.Translate(ctx) as BoolExpr);
-                    foreach (BoolExpr expr in this.Undef) state.Solver_U.Assert(expr.Translate(ctx) as BoolExpr);
-                    state.BranchInfoStore.Add(this.BranchInfo?.Translate(ctx));
-                }
+                Context ctx = state.Ctx;
+                if (!this.Reset) foreach (BoolExpr expr in this.Value) state.Solver.Assert(expr.Translate(ctx) as BoolExpr);
+                foreach (BoolExpr expr in this.Undef) state.Solver_U.Assert(expr.Translate(ctx) as BoolExpr);
+                state.BranchInfoStore.Add(this.BranchInfo?.Translate(ctx));
             }
         }
 

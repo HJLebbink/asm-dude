@@ -126,8 +126,10 @@ namespace AsmSim
             var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, keys, tools);
             if ((opcodeBase == null) || opcodeBase.IsHalted)
             {
-                StateUpdate resetState = new StateUpdate(keys.PrevKey, keys.NextKey, tools, new Context(tools.Settings));
-                resetState.Reset = true;
+                StateUpdate resetState = new StateUpdate(keys.PrevKey, keys.NextKey, tools, new Context(tools.Settings))
+                {
+                    Reset = true
+                };
                 return (Regular: resetState, Branch: null);
             }
             opcodeBase.Execute();
@@ -473,9 +475,9 @@ namespace AsmSim
 
                 #endregion SSE
 
-                default: return new NotImplemented(mnemonic, args, keys, t);
+                default: return null;
             }
-            return new NotImplemented(mnemonic, args, keys, t);
+            return null;
         }
     }
 }

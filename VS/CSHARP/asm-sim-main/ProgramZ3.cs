@@ -484,6 +484,7 @@ namespace AsmSim
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
             tools.StateConfig.ZF = true;
+            tools.ShowUndefConstraints = true;
 
             string programStr1 =
                 "           cmp     rax,        0               " + Environment.NewLine +

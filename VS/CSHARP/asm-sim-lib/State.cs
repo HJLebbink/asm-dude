@@ -126,6 +126,9 @@ namespace AsmSim
         /// <summary>Copy Constructor Method</summary>
         private void CopyConstructor(State other)
         {
+            //TODO how to block that other is updated
+
+
             this.HeadKey = other.HeadKey;
             this.TailKey = other.TailKey;
             lock (this._ctxLock)
@@ -439,6 +442,7 @@ namespace AsmSim
                 }
                 catch (Exception e)
                 {
+                   // Conso
                     throw new Exception();
                     return new Tv[RegisterTools.NBits(regName)];
                 }
