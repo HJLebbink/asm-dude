@@ -27,6 +27,7 @@ using System.Text;
 using QuickGraph;
 using Microsoft.Z3;
 using AsmTools;
+using Amib.Threading;
 
 namespace AsmSim
 {
@@ -34,6 +35,7 @@ namespace AsmSim
     {
         #region Fields
         private readonly Tools _tools;
+
         private readonly BidirectionalGraph<string, TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)>> _graph;
         private readonly IDictionary<int, string> _lineNumber_2_Key;
         private readonly IDictionary<string, int> _key_2_LineNumber;
@@ -64,12 +66,12 @@ namespace AsmSim
             return "NOKEY";
         }
 
-        public bool Has_Vertex(string key)
+        private bool Has_Vertex(string key)
         {
             return this._graph.ContainsVertex(key);
         }
 
-        public bool Has_Edge(string source, string target, bool isBranch)
+        private bool Has_Edge(string source, string target, bool isBranch)
         {
             if (this._graph.TryGetEdge(source, target, out var tag))
             {
@@ -133,7 +135,7 @@ namespace AsmSim
             return Construct_State_Private(key, false);
         }
 
-        public bool Has_Branch(int lineNumber)
+        private bool Has_Branch(int lineNumber)
         {
             string key = this._lineNumber_2_Key[lineNumber];
             return (this._graph.OutDegree(key) > 1);
@@ -182,28 +184,25 @@ namespace AsmSim
 
         public void Reset(StaticFlow sFlow, bool forward)
         {
-            this._rootKey = "!" +sFlow.FirstLineNumber;
-            this._graph.Clear();
-            this._lineNumber_2_Key.Clear();
-            this._key_2_LineNumber.Clear();
-
             lock (this._updateLock)
             {
+                this._rootKey = "!" + sFlow.FirstLineNumber;
+                this._graph.Clear();
+                this._lineNumber_2_Key.Clear();
+                this._key_2_LineNumber.Clear();
+
                 if (forward)
                 {
-                    this.Update_Forward(sFlow, sFlow.FirstLineNumber, sFlow.NLines * 2);
+                    this.Update_Forward(sFlow, sFlow.FirstLineNumber);
                 }
                 else
                 {
-                    this.Update_Backward(sFlow, sFlow.LastLineNumber, sFlow.NLines * 2);
+                    this.Update_Backward(sFlow, sFlow.LastLineNumber);
                 }
             }
         }
 
-        private void Update_Forward(
-            StaticFlow sFlow,
-            int startLineNumber,
-            int maxSteps)
+        private void Update_Forward(StaticFlow sFlow, int startLineNumber)
         {
             if (!sFlow.HasLine(startLineNumber))
             {
@@ -295,29 +294,26 @@ namespace AsmSim
                     Console.WriteLine("WARNING: Runner:Construct_DynamicFlow_Forward: according to flow there exists a regular continue yet no continue is computed");
                 }
             }
+
             #endregion
         }
 
-        private void Update_Backward(
-            StaticFlow sFlow, 
-            int startLineNumber,
-            int maxSteps)
+        private void Update_Backward(StaticFlow sFlow, int startLineNumber)
         {
             if (!sFlow.Has_Prev_LineNumber(startLineNumber))
             {
                 if (!this._tools.Quiet) Console.WriteLine("WARNING: DynamicFlow:Update_Backward startLine " + startLineNumber + " does not have a previous line in " + sFlow);
                 return;
             }
-
             var prevKeys = new Stack<string>();
 
             // Get the tail of the current state, this tail will be the nextKey, the prevKey is fresh.
             // When the state is updated, the head is unaltered, tail is set to the fresh prevKey.
 
             #region Create the Root node
-                string rootKey = sFlow.Get_Key(startLineNumber);
-                prevKeys.Push(rootKey);
-                this.Add_Vertex(rootKey, startLineNumber);
+            string rootKey = sFlow.Get_Key(startLineNumber);
+            prevKeys.Push(rootKey);
+            this.Add_Vertex(rootKey, startLineNumber);
             #endregion
 
             while (prevKeys.Count > 0)
@@ -440,7 +436,10 @@ namespace AsmSim
         {
             Tools tools = new Tools(this._tools);
             var alreadyVisisted = new HashSet<string>();
-            return Construct_State_Private_LOCAL(key, after);
+            lock (this._updateLock)
+            {
+                return Construct_State_Private_LOCAL(key, after);
+            }
 
             #region Local Methods
 
@@ -469,7 +468,7 @@ namespace AsmSim
                     case 1:
                         var edge = this._graph.InEdge(key_LOCAL, 0);
                         result = Construct_State_Private_LOCAL(edge.Source, false); // recursive call
-                         result.Update_Forward(edge.Tag.StateUpdate);
+                        result.Update_Forward(edge.Tag.StateUpdate);
                         break;
                     case 2:
                         var edge1 = this._graph.InEdge(key_LOCAL, 0);
@@ -540,8 +539,9 @@ namespace AsmSim
                     if (branchInfo == null)
                     {
                         Console.WriteLine("WARNING: DynamicFlow:Construct_State_Private:GetStates_LOCAL: branchInfo1 is null");
-                        BoolExpr bc = this._tools.Ctx.MkBoolConst("BC!" + target);
-                        mergeStateUpdate = new StateUpdate(bc, nextKey1, nextKey2, target, this._tools);
+                        Context ctx = new Context(this._tools.Settings);
+                        BoolExpr bc = ctx.MkBoolConst("BC!" + target);
+                        mergeStateUpdate = new StateUpdate(bc, nextKey1, nextKey2, target, ctx, this._tools);
                     }
                     else
                     {
@@ -554,9 +554,10 @@ namespace AsmSim
                                 break;
                             }
                         }
+                        Context ctx = new Context(this._tools.Settings);
                         mergeStateUpdate = (branch)
-                            ? new StateUpdate(branchInfo.BranchCondition, nextKey2, nextKey1, target, this._tools)
-                            : new StateUpdate(branchInfo.BranchCondition, nextKey1, nextKey2, target, this._tools);
+                            ? new StateUpdate(branchInfo.BranchCondition, nextKey2, nextKey1, target, ctx, this._tools)
+                            : new StateUpdate(branchInfo.BranchCondition, nextKey1, nextKey2, target, ctx, this._tools);
                     }
                 }
 

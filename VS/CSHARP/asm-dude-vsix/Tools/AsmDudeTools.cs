@@ -48,7 +48,8 @@ namespace AsmDude
 
         private readonly MnemonicStore _mnemonicStore;
         private readonly PerformanceStore _performanceStore;
-        private readonly SmartThreadPool _smartThreadPool;
+        private readonly SmartThreadPool _threadPool;
+        private IWorkItemResult _current;
 
         #region Singleton Stuff
         private static readonly Lazy<AsmDudeTools> lazy = new Lazy<AsmDudeTools>(() => new AsmDudeTools());
@@ -72,8 +73,7 @@ namespace AsmDude
             };
             #endregion
 
-            this._smartThreadPool = new SmartThreadPool();
-            //this._smartThreadPool.Start(); // There seems no need to start this threadpool, it is started by default
+            this._threadPool = new SmartThreadPool();
 
             #region load Signature Store and Performance Store
             string path = AsmDudeToolsStatic.Get_Install_Path() + "Resources" + Path.DirectorySeparatorChar;
@@ -264,7 +264,7 @@ namespace AsmDude
 
         public PerformanceStore Performance_Store { get { return this._performanceStore; } }
 
-        public SmartThreadPool Thread_Pool { get { return this._smartThreadPool; } }
+        public SmartThreadPool Thread_Pool { get { return this._threadPool; } }
 
         /// <summary>Get the collection of Keywords (in CAPITALS)</summary>
         public IEnumerable<string> Get_Keywords()
@@ -498,7 +498,7 @@ namespace AsmDude
         public void Dispose()
         {
             this._errorListProvider.Dispose();
-            this._smartThreadPool.Dispose();
+            this._threadPool.Dispose();
         }
 
         #endregion

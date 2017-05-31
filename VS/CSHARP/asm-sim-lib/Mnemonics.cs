@@ -53,18 +53,18 @@ namespace AsmSim
 
             protected void CreateRegularUpdate()
             {
-                if (this._regularUpdate == null) this._regularUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKey, this._t);
+                if (this._regularUpdate == null) this._regularUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKey, this._t, this.Ctx);
             }
             protected void CreateBranchUpdate()
             {
-                if (this._branchUpdate == null) this._branchUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKeyBranch, this._t);
+                if (this._branchUpdate == null) this._branchUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKeyBranch, this._t, this.Ctx);
             }
 
             protected StateUpdate RegularUpdate
             {
                 get
                 {
-                    if (this._regularUpdate == null) this._regularUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKey, this._t);
+                    if (this._regularUpdate == null) this._regularUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKey, this._t, this.Ctx);
                     return this._regularUpdate;
                 }
             }
@@ -72,7 +72,7 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this._branchUpdate == null) this._branchUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKeyBranch, this._t);
+                    if (this._branchUpdate == null) this._branchUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKeyBranch, this._t, this.Ctx);
                     return this._branchUpdate;
                 }
             }
@@ -83,7 +83,7 @@ namespace AsmSim
                 this._args = args;
                 this._t = t;
                 this.keys = keys;
-                this.Ctx = t.Ctx;
+                this.Ctx = new Context(t.Settings);
             }
 
             public abstract void Execute();
@@ -104,9 +104,9 @@ namespace AsmSim
             {
                 return Tools.Reg_Key_Fresh(regName, this._t.Rand, this.Ctx);
             }
-            public static BitVecExpr Undef(Rn regName, Tools t)
+            public static BitVecExpr Undef(Rn regName, Random rand, Context ctx)
             {
-                return Tools.Reg_Key_Fresh(regName, t.Rand, t.Ctx);
+                return Tools.Reg_Key_Fresh(regName, rand, ctx);
             }
             /// <summary>Get the current value of the provided flag</summary>
             public BoolExpr Get(Flags flagName)
@@ -122,9 +122,9 @@ namespace AsmSim
             {
                 return Tools.Flag_Key_Fresh(flagName, this._t.Rand, this.Ctx);
             }
-            public static BoolExpr Undef(Flags flagName, Tools t)
+            public static BoolExpr Undef(Flags flagName, Random rand, Context ctx)
             {
-                return Tools.Flag_Key_Fresh(flagName, t.Rand, t.Ctx);
+                return Tools.Flag_Key_Fresh(flagName, rand, ctx);
             }
 
             public BitVecExpr GetMem(BitVecExpr address, int nBytes)
@@ -1950,11 +1950,10 @@ namespace AsmSim
             }
             public void UpdateFlagsShift(BitVecExpr value, BoolExpr cfIn, BitVecExpr shiftCount, BoolExpr shiftTooLarge, bool left)
             {
-                ShiftRotateBase.UpdateFlagsShift(value, cfIn, shiftCount, shiftTooLarge, left, this.keys.PrevKey, this.RegularUpdate, this._t);
+                ShiftRotateBase.UpdateFlagsShift(value, cfIn, shiftCount, shiftTooLarge, left, this.keys.PrevKey, this.RegularUpdate, this._t.Rand, this.Ctx);
             }
-            public static void UpdateFlagsShift(BitVecExpr value, BoolExpr cfIn, BitVecExpr shiftCount, BoolExpr shiftTooLarge, bool left, string prevKey, StateUpdate stateUpdate, Tools t)
+            public static void UpdateFlagsShift(BitVecExpr value, BoolExpr cfIn, BitVecExpr shiftCount, BoolExpr shiftTooLarge, bool left, string prevKey, StateUpdate stateUpdate, Random rand, Context ctx)
             {
-                Context ctx = t.Ctx;
                 uint nBits = shiftCount.SortSize;
                 BoolExpr isZero = ctx.MkEq(shiftCount, ctx.MkBV(0, nBits));
                 BoolExpr isOne = ctx.MkEq(shiftCount, ctx.MkBV(1, nBits));
@@ -1973,18 +1972,18 @@ namespace AsmSim
                 }
 
                 BoolExpr of =
-                    ctx.MkITE(shiftTooLarge, OpcodeBase.Undef(Flags.OF, t),
+                    ctx.MkITE(shiftTooLarge, OpcodeBase.Undef(Flags.OF, rand, ctx),
                         ctx.MkITE(isZero, OpcodeBase.Get(Flags.OF, prevKey, ctx),
-                            ctx.MkITE(isOne, of_tmp, OpcodeBase.Undef(Flags.OF, t)))) as BoolExpr;
+                            ctx.MkITE(isOne, of_tmp, OpcodeBase.Undef(Flags.OF, rand, ctx)))) as BoolExpr;
                 #endregion
 
                 #region Set the Flags
                 stateUpdate.Set(Flags.OF, of);
-                stateUpdate.Set(Flags.CF, ctx.MkITE(shiftTooLarge, OpcodeBase.Undef(Flags.CF, t), ctx.MkITE(isZero, OpcodeBase.Get(Flags.CF, prevKey, ctx), cfIn)) as BoolExpr);
+                stateUpdate.Set(Flags.CF, ctx.MkITE(shiftTooLarge, OpcodeBase.Undef(Flags.CF, rand, ctx), ctx.MkITE(isZero, OpcodeBase.Get(Flags.CF, prevKey, ctx), cfIn)) as BoolExpr);
                 stateUpdate.Set(Flags.PF, ctx.MkITE(isZero, OpcodeBase.Get(Flags.PF, prevKey, ctx), ToolsFlags.Create_PF(value, ctx)) as BoolExpr);
                 stateUpdate.Set(Flags.ZF, ctx.MkITE(isZero, OpcodeBase.Get(Flags.ZF, prevKey, ctx), ToolsFlags.Create_ZF(value, ctx)) as BoolExpr);
                 stateUpdate.Set(Flags.SF, ctx.MkITE(isZero, OpcodeBase.Get(Flags.SF, prevKey, ctx), ToolsFlags.Create_SF(value, value.SortSize, ctx)) as BoolExpr);
-                stateUpdate.Set(Flags.AF, ctx.MkITE(isZero, OpcodeBase.Get(Flags.AF, prevKey, ctx), OpcodeBase.Undef(Flags.AF, t)) as BoolExpr);
+                stateUpdate.Set(Flags.AF, ctx.MkITE(isZero, OpcodeBase.Get(Flags.AF, prevKey, ctx), OpcodeBase.Undef(Flags.AF, rand, ctx)) as BoolExpr);
                 #endregion
 
             }
@@ -2037,7 +2036,7 @@ namespace AsmSim
             public override void Execute()
             {
                 var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this.Ctx);
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SAR, this.Op1Value, shiftCount.shiftCount, this._t);
+                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SAR, this.Op1Value, shiftCount.shiftCount, this.Ctx, this._t.Rand);
                 this.UpdateFlagsShift(shiftValue.result, shiftValue.cf, shiftCount.shiftCount, shiftCount.tooLarge, false);
                 this.RegularUpdate.Set(this.op1, shiftValue.result);
             }
@@ -2050,7 +2049,7 @@ namespace AsmSim
             public override void Execute()
             {
                 var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this.Ctx);
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SAL, this.Op1Value, shiftCount.shiftCount, this._t);
+                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SAL, this.Op1Value, shiftCount.shiftCount, this.Ctx, this._t.Rand);
                 this.UpdateFlagsShift(shiftValue.result, shiftValue.cf, shiftCount.shiftCount, shiftCount.tooLarge, true);
                 this.RegularUpdate.Set(this.op1, shiftValue.result);
             }
@@ -2063,7 +2062,7 @@ namespace AsmSim
             public override void Execute()
             {
                 var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this.Ctx);
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SHR, this.Op1Value, shiftCount.shiftCount, this._t);
+                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SHR, this.Op1Value, shiftCount.shiftCount, this.Ctx, this._t.Rand);
                 this.UpdateFlagsShift(shiftValue.result, shiftValue.cf, shiftCount.shiftCount, shiftCount.tooLarge, false);
                 this.RegularUpdate.Set(this.op1, shiftValue.result);
             }
@@ -2076,7 +2075,7 @@ namespace AsmSim
             public override void Execute()
             {
                 var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this.Ctx);
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SHL, this.Op1Value, shiftCount.shiftCount, this._t);
+                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SHL, this.Op1Value, shiftCount.shiftCount, this.Ctx, this._t.Rand);
                 this.UpdateFlagsShift(shiftValue.result, shiftValue.cf, shiftCount.shiftCount, shiftCount.tooLarge, true);
                 this.RegularUpdate.Set(this.op1, shiftValue.result);
             }
@@ -2092,7 +2091,7 @@ namespace AsmSim
             public override void Execute()
             {
                 var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this.Ctx);
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.ROR, this.Op1Value, shiftCount.shiftCount, this._t);
+                var shiftValue = BitOperations.ShiftOperations(Mnemonic.ROR, this.Op1Value, shiftCount.shiftCount, this.Ctx, this._t.Rand);
                 this.UpdateFlagsRotate(shiftValue.result, shiftValue.cf, shiftCount.shiftCount, false);
                 this.RegularUpdate.Set(this.op1, shiftValue.result);
             }
@@ -2105,7 +2104,7 @@ namespace AsmSim
             public override void Execute()
             {
                 var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this.Ctx);
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.RCR, this.Op1Value, shiftCount.shiftCount, this.Get(Flags.CF), this.keys.PrevKey, this._t);
+                var shiftValue = BitOperations.ShiftOperations(Mnemonic.RCR, this.Op1Value, shiftCount.shiftCount, this.Get(Flags.CF), this.keys.PrevKey, this.Ctx);
                 this.UpdateFlagsRotate(shiftValue.result, shiftValue.cf, shiftCount.shiftCount, false);
                 this.RegularUpdate.Set(this.op1, shiftValue.result);
             }
@@ -2119,7 +2118,7 @@ namespace AsmSim
             public override void Execute()
             {
                 var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this.Ctx);
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.RCL, this.Op1Value, shiftCount.shiftCount, this.Get(Flags.CF), this.keys.PrevKey, this._t);
+                var shiftValue = BitOperations.ShiftOperations(Mnemonic.RCL, this.Op1Value, shiftCount.shiftCount, this.Get(Flags.CF), this.keys.PrevKey, this.Ctx);
                 this.UpdateFlagsRotate(shiftValue.result, shiftValue.cf, shiftCount.shiftCount, true);
                 this.RegularUpdate.Set(this.op1, shiftValue.result);
             }
@@ -2133,7 +2132,7 @@ namespace AsmSim
             public override void Execute()
             {
                 var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this.Ctx);
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.ROL, this.Op1Value, shiftCount.shiftCount, this._t);
+                var shiftValue = BitOperations.ShiftOperations(Mnemonic.ROL, this.Op1Value, shiftCount.shiftCount, this.Ctx, this._t.Rand);
                 this.UpdateFlagsRotate(shiftValue.result, shiftValue.cf, shiftCount.shiftCount, true);
                 this.RegularUpdate.Set(this.op1, shiftValue.result);
             }
@@ -2165,7 +2164,7 @@ namespace AsmSim
             public override void Execute()
             {
                 BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this.Ctx).shiftCount;
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.ROR, this.Op1Value, shiftCount, this._t);
+                var shiftValue = BitOperations.ShiftOperations(Mnemonic.ROR, this.Op1Value, shiftCount, this.Ctx, this._t.Rand);
                 this.RegularUpdate.Set(this.op1, shiftValue.result);
             }
         }
@@ -2175,7 +2174,7 @@ namespace AsmSim
             public override void Execute()
             {
                 BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this.Ctx).shiftCount;
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SAR, this.Op1Value, shiftCount, this._t);
+                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SAR, this.Op1Value, shiftCount, this.Ctx, this._t.Rand);
                 this.RegularUpdate.Set(this.op1, shiftValue.result);
             }
         }
@@ -2185,7 +2184,7 @@ namespace AsmSim
             public override void Execute()
             {
                 BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this.Ctx).shiftCount;
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SHL, this.Op1Value, shiftCount, this._t);
+                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SHL, this.Op1Value, shiftCount, this.Ctx, this._t.Rand);
                 this.RegularUpdate.Set(this.op1, shiftValue.result);
             }
         }
@@ -2195,7 +2194,7 @@ namespace AsmSim
             public override void Execute()
             {
                 BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this.Ctx).shiftCount;
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SHR, this.Op1Value, shiftCount, this._t);
+                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SHR, this.Op1Value, shiftCount, this.Ctx, this._t.Rand);
                 this.RegularUpdate.Set(this.op1, shiftValue.result);
             }
         }
@@ -2254,7 +2253,7 @@ namespace AsmSim
                 BoolExpr bitValue = ToolsZ3.GetBit(value_in, bitPos64, ctx);
                 BoolExpr cf = ctx.MkITE(ctx.MkEq(nShifts, ctx.MkBV(0, 8)), this.Undef(Flags.CF), bitValue) as BoolExpr;
 
-                ShiftRotateBase.UpdateFlagsShift(value_out, cf, shiftCount.shiftCount, shiftCount.tooLarge, false, this.keys.PrevKey, this.RegularUpdate, this._t);
+                ShiftRotateBase.UpdateFlagsShift(value_out, cf, shiftCount.shiftCount, shiftCount.tooLarge, false, this.keys.PrevKey, this.RegularUpdate, this._t.Rand, this.Ctx);
                 this.RegularUpdate.Set(this.op1, value_out);
             }
         }
@@ -2282,7 +2281,7 @@ namespace AsmSim
                 BoolExpr bitValue = ToolsZ3.GetBit(value_in, bitPos64, ctx);
                 BoolExpr cf = ctx.MkITE(ctx.MkEq(nShifts, ctx.MkBV(0, 8)), this.Undef(Flags.CF), bitValue) as BoolExpr;
 
-                ShiftRotateBase.UpdateFlagsShift(value_out, cf, shiftTup.shiftCount, shiftTup.tooLarge, true, this.keys.PrevKey, this.RegularUpdate, this._t);
+                ShiftRotateBase.UpdateFlagsShift(value_out, cf, shiftTup.shiftCount, shiftTup.tooLarge, true, this.keys.PrevKey, this.RegularUpdate, this._t.Rand, this.Ctx);
                 this.RegularUpdate.Set(this.op1, value_out);
             }
         }
@@ -2576,7 +2575,7 @@ namespace AsmSim
             public Jmp(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.JMP, args, Ot1.imm | Ot1.mem | Ot1.reg | Ot1.UNKNOWN, keys, t) { }
             protected sealed override BoolExpr Jump
             {
-                get { return this._t.Ctx.MkTrue(); }
+                get { return this.Ctx.MkTrue(); }
             }
         }
         public sealed class Jmpcc : OpcodeJumpBase

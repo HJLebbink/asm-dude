@@ -117,16 +117,19 @@ namespace AsmSim
         }
 
         public static (StateUpdate Regular, StateUpdate Branch) Execute(
-            StaticFlow flow,
+            StaticFlow sFlow,
             int lineNumber,
-            (string prevKey, string nextKey, string nextKeyBranch) keys,
+            (string PrevKey, string NextKey, string NextKeyBranch) keys,
             Tools tools)
         {
-            var content = flow.Get_Line(lineNumber);
+            var content = sFlow.Get_Line(lineNumber);
             var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, keys, tools);
-            if (opcodeBase == null) return (Regular: null, Branch: null);
-            if (opcodeBase.IsHalted) return (Regular: null, Branch: null);
-
+            if ((opcodeBase == null) || opcodeBase.IsHalted)
+            {
+                StateUpdate resetState = new StateUpdate(keys.PrevKey, keys.NextKey, tools, new Context(tools.Settings));
+                resetState.Reset = true;
+                return (Regular: resetState, Branch: null);
+            }
             opcodeBase.Execute();
             return opcodeBase.Updates;
         }

@@ -129,6 +129,9 @@
     <PackageReference Include="QuickGraph">
       <Version>3.6.61119.7</Version>
     </PackageReference>
+    <PackageReference Include="SmartThreadPool.dll">
+      <Version>2.2.4</Version>
+    </PackageReference>
     <PackageReference Include="System.ValueTuple">
       <Version>4.4.0-preview1-25305-02</Version>
     </PackageReference>

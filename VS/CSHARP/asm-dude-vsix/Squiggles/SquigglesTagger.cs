@@ -104,7 +104,7 @@ namespace AsmDude.Squiggles
                 };
                 this._asmSimulator.Line_Updated_Event += (o, e) =>
                 {
-                    //AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handling _semanticAnalysis.Line_Updated_Event: received an event from " + o + ". Line " + e.LineNumber);
+                    AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handling _semanticAnalysis.Line_Updated_Event: received an event from " + o + ". Line " + e.LineNumber + ": "+e.Message);
                     this.Update_Squiggles_Tasks(e.LineNumber);
                     this.Update_Error_Task_AsmSim(e.LineNumber, e.Message);
                 };
@@ -230,15 +230,10 @@ namespace AsmDude.Squiggles
                             if (Decorate_Registers_Known_Register_Values)
                             {
                                 Rn regName = RegisterTools.ParseRn(tagSpan.GetText());
-
                                 //AsmDudeToolsStatic.Output_INFO("SquigglesTagger:GetTags: found register " + regName + " at line " + lineNumber);
-
-                                State state_Before = this._asmSimulator.Get_State_Before(lineNumber, false, false).State;
-                                State state_After = this._asmSimulator.Get_State_After(lineNumber, false, false).State;
-
-                                //string registerContent = state.GetString(regName);
-                                bool hasContent_Before = (state_Before == null) ? false : this._asmSimulator.Has_Register_Value(regName, state_Before);
-                                bool hasContent_After = (state_After == null) ? false : this._asmSimulator.Has_Register_Value(regName, state_After);
+                                bool preCompute = true;
+                                bool hasContent_Before = this._asmSimulator.Has_Register_Value(regName, lineNumber, true, preCompute);
+                                bool hasContent_After = this._asmSimulator.Has_Register_Value(regName, lineNumber, false, preCompute);
 
                                 if (hasContent_Before || hasContent_After)
                                 {   // only show squiggles to indicate that information is available

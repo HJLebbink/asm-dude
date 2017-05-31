@@ -758,9 +758,9 @@ namespace unit_tests_asm_z3
             string line1 = "cmovz rbx, rax";
 
             State state = CreateState(tools);
-
+            Context ctx = state.Ctx;
             {
-                StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools);
+                StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools, ctx);
                 updateState.Set(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_0000000U");
                 updateState.Set(Rn.RBX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000010");
                 state.Update_Forward(updateState);
@@ -852,7 +852,9 @@ namespace unit_tests_asm_z3
                 ulong b = 0b0000_0100;
 
                 State state = CreateState(tools);
-                StateUpdate updateState = new StateUpdate(state.TailKey, Tools.CreateKey(state.Tools.Rand), tools);
+                Context ctx = state.Ctx;
+
+                StateUpdate updateState = new StateUpdate(state.TailKey, Tools.CreateKey(state.Tools.Rand), tools, ctx);
                 updateState.Set(Rn.AL, a);
                 updateState.Set(Rn.BL, b);
 
@@ -870,7 +872,9 @@ namespace unit_tests_asm_z3
                 ulong b = 0b1000_0000;
 
                 State state = CreateState(tools);
-                StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", tools);
+                Context ctx = state.Ctx;
+
+                StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", tools, ctx);
                 updateState.Set(Rn.AL, a);
                 updateState.Set(Rn.BL, b);
                 state.Update_Forward(updateState);
@@ -888,7 +892,9 @@ namespace unit_tests_asm_z3
                 ulong b = 0b0000_0100;
 
                 State state = CreateState(tools);
-                StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", tools);
+                Context ctx = state.Ctx;
+
+                StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", tools, ctx);
                 updateState.Set(Rn.AL, a);
                 updateState.Set(Rn.BL, b);
                 state.Update_Forward(updateState);
@@ -924,7 +930,9 @@ namespace unit_tests_asm_z3
                     ulong result = (rax_value + rbx_value);
 
                     State state = CreateState(tools);
-                    StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools);
+                    Context ctx = state.Ctx;
+
+                    StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools, ctx);
                     updateState.Set(Rn.RAX, rax_value);
                     updateState.Set(Rn.RBX, rbx_value);
                     state.Update_Forward(updateState);
@@ -953,7 +961,9 @@ namespace unit_tests_asm_z3
                     ulong result = (ax_value + bx_value) & 0xFFFF;
 
                     State state = CreateState(tools);
-                    StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools);
+                    Context ctx = state.Ctx;
+
+                    StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools, ctx);
                     updateState.Set(Rn.AX, ax_value);
                     updateState.Set(Rn.BX, bx_value);
                     state.Update_Forward(updateState);
@@ -2941,8 +2951,9 @@ namespace unit_tests_asm_z3
 
             {   // forward
                 State state = CreateState(tools);
+                Context ctx = state.Ctx;
 
-                StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools);
+                StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools, ctx);
                 updateState.Set(Rn.RAX, "0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_00U0");
                 state.Update_Forward(updateState);
 
@@ -2988,8 +2999,9 @@ namespace unit_tests_asm_z3
 
             {   // forward
                 State state = CreateState(tools);
+                Context ctx = state.Ctx;
 
-                StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools);
+                StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools, ctx);
                 updateState.Set(Rn.EAX, "????_????_????_????_????_????_????_UU??");
                 state.Update_Forward(updateState);
 

@@ -30,7 +30,6 @@ namespace AsmSim
 {
     public class Tools
     {
-        private readonly Context _ctx;
         private readonly Random _rand;
         private readonly AsmParameters _p;
         public StateConfig StateConfig { get; set; }
@@ -40,7 +39,6 @@ namespace AsmSim
         public Tools(Tools other)
         {
             this.Settings = new Dictionary<string, string>(other.Settings);
-            this._ctx = new Context(other.Settings);
             this._rand = other.Rand; //new Random();
             this._p = other._p;
             this.Quiet = other.Quiet;
@@ -51,7 +49,6 @@ namespace AsmSim
         public Tools(Dictionary<string, string> settings)
         {
             this.Settings = settings;
-            this._ctx = new Context(settings);
             this._rand = new Random();
             this._p = new AsmParameters();
             this.Quiet = true;
@@ -61,7 +58,6 @@ namespace AsmSim
         }
 
         public Dictionary<string, string> Settings { get; private set; }
-        public Context Ctx { get { return this._ctx; } }
         public Random Rand { get { return this._rand; } }
         public AsmParameters Parameters { get { return this._p; } }
         public bool Quiet { get; set; }
@@ -130,9 +126,9 @@ namespace AsmSim
             return ctx.MkBoolConst(Flag_Name_Fresh(flag, rand));
         }
 
-        public static BitVecExpr Calc_Effective_Address(string op, string key, Tools tools)
+        public static BitVecExpr Calc_Effective_Address(string op, string key, Tools tools, Context ctx)
         {
-            return Calc_Effective_Address(new Operand(op, tools.Parameters), key, tools.Ctx);
+            return Calc_Effective_Address(new Operand(op, tools.Parameters), key, ctx);
         }
         public static BitVecExpr Calc_Effective_Address(Operand op, string key, Context ctx)
         {

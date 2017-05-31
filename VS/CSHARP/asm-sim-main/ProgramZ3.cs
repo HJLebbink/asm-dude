@@ -42,9 +42,9 @@ namespace AsmSim
             Console.WriteLine(string.Format("Loaded AsmSim version {0}.", ver));
 
             //TestGraph();
-            TestMnemonic();
+            //TestMnemonic();
             //TestMemorySpeed();
-            //TestDynamicFlow();
+            TestDynamicFlow();
             //EmptyMemoryTest();
             //ProgramSynthesis1();
             
@@ -249,9 +249,10 @@ namespace AsmSim
                 { "timeout", "1000" }
             };
             Tools tools = new Tools(settings);
+            Context ctx = new Context(settings);
             tools.StateConfig.Set_All_Off();
 
-            if (true)
+            if (false)
             {
                 tools.StateConfig.Set_All_Off();
                 tools.StateConfig.Set_All_Flags_On();
@@ -323,7 +324,7 @@ namespace AsmSim
                 string line1 = "add al, bl";
 
                 string nextKey = Tools.CreateKey(state.Tools.Rand);
-                StateUpdate updateState = new StateUpdate(state.TailKey, nextKey, state.Tools);
+                StateUpdate updateState = new StateUpdate(state.TailKey, nextKey, state.Tools, ctx);
                 updateState.Set(Rn.AL, a);
                 updateState.Set(Rn.BL, b);
 
@@ -492,6 +493,7 @@ namespace AsmSim
 
             string programStr2 =
                 "           mov     rax,        0               " + Environment.NewLine +
+                "           aaa                                 " + Environment.NewLine +
                 "           mov     rbx,        10              " + Environment.NewLine +
                 "           mov     rbx,        rax             ";
 
@@ -518,30 +520,30 @@ namespace AsmSim
 
             if (true)
             {
-                tools.Quiet = true;
+                tools.Quiet = false;
                 DynamicFlow dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
                 //DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
-                //Console.WriteLine(tree_Forward.ToString(flow));
-                //DotVisualizer.SaveToDot(sFlow, tree_Forward, "test1.dot");
+                Console.WriteLine(dFlow.ToString(sFlow));
+                //DotVisualizer.SaveToDot(sFlow, dFlow, "test1.dot");
 
                 int lineNumber = 1;
                 if (false)
                 {
                     IList<State> states_Before = new List<State>(dFlow.States_Before(lineNumber));
                     State state_Before = states_Before[0];
-                    Console.WriteLine("Tree_Forward: Before lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
+                    Console.WriteLine("Before lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
                 }
                 if (true)
                 {
                     IList<State> states_After = new List<State>(dFlow.States_After(lineNumber));
                     State state_After = states_After[0];
-                    Console.WriteLine("Tree_Forward: After lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
+                    Console.WriteLine("After lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
                 }
                 if (false)
                 {
                     State endState = dFlow.EndState;
-                    Console.WriteLine("Tree_Forward: in endState we know:\n" + endState);
+                    Console.WriteLine("in endState we know:\n" + endState);
                 }
             }
         }

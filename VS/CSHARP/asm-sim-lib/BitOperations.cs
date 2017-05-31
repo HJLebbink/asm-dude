@@ -116,11 +116,11 @@ namespace AsmSim
             Mnemonic op,
             BitVecExpr value,
             BitVecExpr nShifts,
-            Tools tools)
+            Context ctx, 
+            Random rand)
         {
             Debug.Assert(nShifts.SortSize == 8);
 
-            Context ctx = tools.Ctx;
             BitVecExpr value_out;
 
             BitVecNum one = ctx.MkBV(1, 8);
@@ -166,11 +166,10 @@ namespace AsmSim
             bitPos = ctx.MkZeroExt(value.SortSize - 8, bitPos);
             BoolExpr bitValue = ToolsZ3.GetBit(value, bitPos, ctx);
 
-            BoolExpr CF_undef = Tools.Flag_Key_Fresh(Flags.CF, tools.Rand, ctx);
+            BoolExpr CF_undef = Tools.Flag_Key_Fresh(Flags.CF, rand, ctx);
             BoolExpr cf = ctx.MkITE(ctx.MkEq(nShifts, ctx.MkBV(0, 8)), CF_undef, bitValue) as BoolExpr;
             return (result: value_out, cf: cf);
         }
-
 
         public static (BitVecExpr result, BoolExpr cf) ShiftOperations(
             Mnemonic op,
@@ -178,12 +177,11 @@ namespace AsmSim
             BitVecExpr nShifts,
             BoolExpr carryIn,
             string prevKey,
-            Tools tools)
+            Context ctx)
         {
             Debug.Assert(nShifts.SortSize == 8);
             //Console.WriteLine("ShiftOperations:nShifts=" + nShifts);
 
-            Context ctx = tools.Ctx;
             uint nBits = value.SortSize;
             BitVecExpr carryBV = ctx.MkITE(carryIn, ctx.MkBV(1,1), ctx.MkBV(0, 1)) as BitVecExpr;
             BitVecExpr nShifts65 = ctx.MkZeroExt(nBits + 1 - 8, nShifts);

@@ -28,17 +28,17 @@ namespace AsmDude.Tools
 {
     public class Delay
     {
-        private readonly SmartThreadPool _pool;
+        private readonly SmartThreadPool _threadPool;
         private readonly int _delayInMs;
         private readonly int _maxResets;
         private int _nResets;
         private IWorkItemResult _current;
 
-        public Delay(int delayInMs, int maxResets, SmartThreadPool pool)
+        public Delay(int delayInMs, int maxResets, SmartThreadPool threadPool)
         {
             this._delayInMs = delayInMs;
             this._maxResets = maxResets;
-            this._pool = pool;
+            this._threadPool = threadPool;
         }
 
         public void Reset()
@@ -47,7 +47,7 @@ namespace AsmDude.Tools
             {
                 //AsmDudeToolsStatic.Output_INFO("Delay:Reset: starting a new timer");
                 this._nResets = 0;
-                this._current = this._pool.QueueWorkItem(this.Timer);
+                this._current = this._threadPool.QueueWorkItem(this.Timer);
             }
             else
             {
@@ -56,7 +56,7 @@ namespace AsmDude.Tools
                     //AsmDudeToolsStatic.Output_INFO("Delay:Reset: resetting the timer: "+this._nResets);
                     this._current.Cancel(true);
                     this._nResets++;
-                    this._current = this._pool.QueueWorkItem(this.Timer);
+                    this._current = this._threadPool.QueueWorkItem(this.Timer);
                 }
             }
         }

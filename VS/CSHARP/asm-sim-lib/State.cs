@@ -56,6 +56,7 @@ namespace AsmSim
         private readonly IDictionary<Rn, Tv[]> _cached_Reg_Values;
         private readonly IDictionary<Flags, Tv> _cached_Flag_Values;
 
+        private object _ctxLock = new object();
 
         private BranchInfoStore _branchInfoStore;
         public BranchInfoStore BranchInfoStore { get { return this._branchInfoStore; } }
@@ -66,7 +67,7 @@ namespace AsmSim
         public State(Tools tools, string tailKey, string headKey)
         {
             this._tools = new Tools(tools);
-            this._ctx = this._tools.Ctx;
+            this._ctx = new Context(tools.Settings);
 
             this.TailKey = tailKey;
             this.HeadKey = headKey;
@@ -82,7 +83,7 @@ namespace AsmSim
         public State(State other)
         {
             this._tools = new Tools(other.Tools);
-            this._ctx = this._tools.Ctx;
+            this._ctx = new Context(other.Tools.Settings);
 
             this._cached_Reg_Values = new Dictionary<Rn, Tv[]>();
             this._cached_Flag_Values = new Dictionary<Flags, Tv>();
@@ -93,7 +94,7 @@ namespace AsmSim
         public State(State state1, State state2, bool merge)
         {
             this._tools = new Tools(state1.Tools);
-            this._ctx = this._tools.Ctx;
+            this._ctx = new Context(state1.Tools.Settings);
 
             this.Solver = this.CreateSolver();
             this.Solver_U = this.CreateSolver();
@@ -127,108 +128,115 @@ namespace AsmSim
         {
             this.HeadKey = other.HeadKey;
             this.TailKey = other.TailKey;
-
-            other.UndefGrounding = false;
-
-            this.Solver = this.CreateSolver();
-            this.Solver_U = this.CreateSolver();
-
-            foreach (var v in other.Solver.Assertions)
+            lock (this._ctxLock)
             {
-                this.Solver.Assert(v.Translate(this._ctx) as BoolExpr);
-            }
-            foreach (var v in other.Solver_U.Assertions)
-            {
-                this.Solver_U.Assert(v.Translate(this._ctx) as BoolExpr);
-            }
+                other.UndefGrounding = false;
 
-            this._branchInfoStore = new BranchInfoStore(this._ctx);
-            foreach (var v in other.BranchInfoStore.Values)
-            {
-                this._branchInfoStore.Add(new BranchInfo(v.BranchCondition.Translate(this._ctx) as BoolExpr, v.BranchTaken));
+                this.Solver = this.CreateSolver();
+                this.Solver_U = this.CreateSolver();
+
+                foreach (var v in other.Solver.Assertions)
+                {
+                    this.Solver.Assert(v.Translate(this._ctx) as BoolExpr);
+                }
+                foreach (var v in other.Solver_U.Assertions)
+                {
+                    this.Solver_U.Assert(v.Translate(this._ctx) as BoolExpr);
+                }
+
+                this._branchInfoStore = new BranchInfoStore(this._ctx);
+                foreach (var v in other.BranchInfoStore.Values)
+                {
+                    this._branchInfoStore.Add(new BranchInfo(v.BranchCondition.Translate(this._ctx) as BoolExpr, v.BranchTaken));
+                }
             }
         }
         /// <summary>Merge Constructor Method</summary>
         private void MergeConstructor(State state1, State state2)
         {
-            #region Prepare States
-            state1.UndefGrounding = false;
-            state2.UndefGrounding = false;
-
-            state1.Simplify();
-            state2.Simplify();
-            #endregion
-
-            this._branchInfoStore = BranchInfoStore.RetrieveSharedBranchInfo(state1.BranchInfoStore, state2.BranchInfoStore, this._ctx);
-
-            #region Handle Inconsistent states
+            lock (this._ctxLock)
             {
-                bool consistent1 = state1.IsConsistent == Tv.ONE;
-                bool consistent2 = state2.IsConsistent == Tv.ONE;
+                #region Prepare States
+                state1.UndefGrounding = false;
+                state2.UndefGrounding = false;
 
-                if (!consistent1 && !consistent2)
-                {
-                    Console.WriteLine("WARNING: State: merge constructor: states have to be consistent. state1 consistent = " + consistent1 + "; state2 consistent = " + consistent2);
-                }
-                if (!consistent1)
-                {
-                    this.CopyConstructor(state2);
-                    return;
-                }
-                if (!consistent2)
-                {
-                    this.CopyConstructor(state1);
-                    return;
-                }
-            }
-            #endregion
+                state1.Simplify();
+                state2.Simplify();
+                #endregion
 
-            // merge the contents of both solvers
-            {
-                ISet<BoolExpr> mergedContent = new HashSet<BoolExpr>(state1.Solver.Assertions);
-                foreach (BoolExpr b in state2.Solver.Assertions) mergedContent.Add(b);
-                foreach (BoolExpr b in mergedContent) this.Solver.Assert(b);
+                this._branchInfoStore = BranchInfoStore.RetrieveSharedBranchInfo(state1.BranchInfoStore, state2.BranchInfoStore, this._ctx);
 
-                ISet<BoolExpr> mergedContent_U = new HashSet<BoolExpr>(state1.Solver_U.Assertions);
-                foreach (BoolExpr b in state2.Solver_U.Assertions) mergedContent_U.Add(b);
-                foreach (BoolExpr b in mergedContent_U) this.Solver_U.Assert(b);
-            }
-
-            // merge the head and tail
-            {
-                Context ctx = this._ctx;
-                if (state1.HeadKey == state2.HeadKey)
+                #region Handle Inconsistent states
                 {
-                    this.HeadKey = state1.HeadKey;
-                }
-                else
-                {
-                    this.HeadKey = Tools.CreateKey(this.Tools.Rand);
-                    string head1 = state1.HeadKey;
-                    string head2 = state2.HeadKey;
+                    bool consistent1 = state1.IsConsistent == Tv.ONE;
+                    bool consistent2 = state2.IsConsistent == Tv.ONE;
 
-                    StateUpdate stateUpdateForward = new StateUpdate("!ERROR_1", this.HeadKey, this.Tools);
-                    BoolExpr dummyBranchCondttion = ctx.MkBoolConst("DymmyBC" + this.HeadKey);
-                    foreach (Rn reg in this.Tools.StateConfig.GetRegOn())
+                    if (!consistent1 && !consistent2)
                     {
-                        stateUpdateForward.Set(reg, ctx.MkITE(dummyBranchCondttion, Tools.Reg_Key(reg, head1, ctx), Tools.Reg_Key(reg, head2, ctx)) as BitVecExpr);
+                        Console.WriteLine("WARNING: State: merge constructor: states have to be consistent. state1 consistent = " + consistent1 + "; state2 consistent = " + consistent2);
                     }
-                    foreach (Flags flag in this.Tools.StateConfig.GetFlagOn())
+                    if (!consistent1)
                     {
-                        stateUpdateForward.Set(flag, ctx.MkITE(dummyBranchCondttion, Tools.Flag_Key(flag, head1, ctx), Tools.Flag_Key(flag, head2, ctx)) as BoolExpr);
+                        this.CopyConstructor(state2);
+                        return;
                     }
-                    stateUpdateForward.SetMem(ctx.MkITE(dummyBranchCondttion, Tools.Mem_Key(head1, ctx), Tools.Mem_Key(head2, ctx)) as ArrayExpr);
+                    if (!consistent2)
+                    {
+                        this.CopyConstructor(state1);
+                        return;
+                    }
+                }
+                #endregion
 
-                    this.Update_Forward(stateUpdateForward);
-                }
-                if (state1.TailKey == state2.TailKey)
+                // merge the contents of both solvers
                 {
-                    this.TailKey = state1.TailKey;
+                    ISet<BoolExpr> mergedContent = new HashSet<BoolExpr>();
+                    foreach (BoolExpr b in state1.Solver.Assertions) mergedContent.Add(b.Translate(this._ctx) as BoolExpr);
+                    foreach (BoolExpr b in state2.Solver.Assertions) mergedContent.Add(b.Translate(this._ctx) as BoolExpr);
+                    foreach (BoolExpr b in mergedContent) this.Solver.Assert(b);
+
+                    ISet<BoolExpr> mergedContent_U = new HashSet<BoolExpr>();
+                    foreach (BoolExpr b in state1.Solver_U.Assertions) mergedContent_U.Add(b.Translate(this._ctx) as BoolExpr);
+                    foreach (BoolExpr b in state2.Solver_U.Assertions) mergedContent_U.Add(b.Translate(this._ctx) as BoolExpr);
+                    foreach (BoolExpr b in mergedContent_U) this.Solver_U.Assert(b);
                 }
-                else
+
+                // merge the head and tail
                 {
-                    this.TailKey = Tools.CreateKey(this.Tools.Rand);
-                    //TODO does merging the tail make any sense?
+                    Context ctx = this._ctx;
+                    if (state1.HeadKey == state2.HeadKey)
+                    {
+                        this.HeadKey = state1.HeadKey;
+                    }
+                    else
+                    {
+                        this.HeadKey = Tools.CreateKey(this.Tools.Rand);
+                        string head1 = state1.HeadKey;
+                        string head2 = state2.HeadKey;
+
+                        StateUpdate stateUpdateForward = new StateUpdate("!ERROR_1", this.HeadKey, this.Tools, this.Ctx);
+                        BoolExpr dummyBranchCondttion = ctx.MkBoolConst("DymmyBC" + this.HeadKey);
+                        foreach (Rn reg in this.Tools.StateConfig.GetRegOn())
+                        {
+                            stateUpdateForward.Set(reg, ctx.MkITE(dummyBranchCondttion, Tools.Reg_Key(reg, head1, ctx), Tools.Reg_Key(reg, head2, ctx)) as BitVecExpr);
+                        }
+                        foreach (Flags flag in this.Tools.StateConfig.GetFlagOn())
+                        {
+                            stateUpdateForward.Set(flag, ctx.MkITE(dummyBranchCondttion, Tools.Flag_Key(flag, head1, ctx), Tools.Flag_Key(flag, head2, ctx)) as BoolExpr);
+                        }
+                        stateUpdateForward.SetMem(ctx.MkITE(dummyBranchCondttion, Tools.Mem_Key(head1, ctx), Tools.Mem_Key(head2, ctx)) as ArrayExpr);
+
+                        this.Update_Forward(stateUpdateForward);
+                    }
+                    if (state1.TailKey == state2.TailKey)
+                    {
+                        this.TailKey = state1.TailKey;
+                    }
+                    else
+                    {
+                        this.TailKey = Tools.CreateKey(this.Tools.Rand);
+                        //TODO does merging the tail make any sense?
+                    }
                 }
             }
         }
@@ -270,11 +278,11 @@ namespace AsmSim
             if (stateUpdate == null) return;
             //if (stateUpdate.Empty) return;
 
-            this.UndefGrounding = false;
-            foreach (BoolExpr expr in stateUpdate.Value) this.Solver.Assert(expr.Translate(this._ctx) as BoolExpr);
-            foreach (BoolExpr expr in stateUpdate.Undef) this.Solver_U.Assert(expr.Translate(this._ctx) as BoolExpr);
-            this.BranchInfoStore.Add(stateUpdate.BranchInfo?.Translate(this._ctx));
-
+            lock (this._ctxLock)
+            {
+                this.UndefGrounding = false;
+                stateUpdate.Update(this);
+            }
             this.Solver_Dirty = true;
             this.Solver_U_Dirty = true;
         }
@@ -296,7 +304,10 @@ namespace AsmSim
 
         public void Add(BranchInfo branchInfo)
         {
-            this.BranchInfoStore.Add(branchInfo.Translate(this._ctx));
+            lock (this._ctxLock)
+            {
+                this.BranchInfoStore.Add(branchInfo.Translate(this._ctx));
+            }
         }
         #endregion
 
@@ -329,32 +340,33 @@ namespace AsmSim
             {
                 return this._cached_Flag_Values[flagName];
             }
-
-            this.UndefGrounding = true; // needed!
-
-            bool popNeeded = false;
-            if ((this.BranchInfoStore != null) && addBranchInfo && (this.BranchInfoStore.Count > 0))
+            lock (this._ctxLock)
             {
-                this.Solver.Push();
-                this.Solver_U.Push();
-                this.AssertBranchInfoToSolver();
-                popNeeded = true;
-            }
+                this.UndefGrounding = true; // needed!
 
-            BoolExpr flagExpr = this.Get(flagName);
-            Tv result = ToolsZ3.GetTv(flagExpr, flagExpr, this.Solver, this.Solver_U, this.Ctx);
+                bool popNeeded = false;
+                if ((this.BranchInfoStore != null) && addBranchInfo && (this.BranchInfoStore.Count > 0))
+                {
+                    this.Solver.Push();
+                    this.Solver_U.Push();
+                    this.AssertBranchInfoToSolver();
+                    popNeeded = true;
+                }
 
-            if (popNeeded)
-            {
-                this.Solver.Pop();
-                this.Solver_U.Pop();
-            }
+                BoolExpr flagExpr = this.Get(flagName);
+                Tv result = ToolsZ3.GetTv(flagExpr, flagExpr, this.Solver, this.Solver_U, this.Ctx);
 
-            if (this.Frozen)
-            {
-                this._cached_Flag_Values[flagName] = result;
+                if (popNeeded)
+                {
+                    this.Solver.Pop();
+                    this.Solver_U.Pop();
+                }
+                if (this.Frozen)
+                {
+                    this._cached_Flag_Values[flagName] = result;
+                }
+                return result;
             }
-            return result;
         }
 
         public Tv[] GetTvArray_Cached(Rn regName)
@@ -363,59 +375,74 @@ namespace AsmSim
             return value;
         }
 
+        public void Update_TvArray_Cached(Rn regName)
+        {
+            this.GetTvArray(regName);
+        }
+
         public Tv[] GetTvArray(Rn regName, bool addBranchInfo = true)
         {
             if (!addBranchInfo) throw new Exception(); //TODO
 
-            if (this.Frozen && this._cached_Reg_Values.ContainsKey(regName))
+            if (this.Frozen && (this._cached_Reg_Values.TryGetValue(regName, out var value)))
             {
-                return this._cached_Reg_Values[regName];
+                return value;
             }
 
             Rn reg64 = RegisterTools.Get64BitsRegister(regName);
             if (reg64 == Rn.NOREG) return new Tv[RegisterTools.NBits(regName)];
 
-            this.UndefGrounding = true; // needed!
-
-            bool popNeeded = false;
-            if ((this.BranchInfoStore != null) && addBranchInfo && (this.BranchInfoStore.Count > 0))
+            lock (this._ctxLock)
             {
-                this.Solver.Push();
-                this.Solver_U.Push();
-                this.AssertBranchInfoToSolver();
-                popNeeded = true;
-            }
-
-            BitVecExpr regExpr = this.Get(reg64);
-            if (RegisterTools.Is8BitHigh(regName))
-            {
-                regExpr = this.Ctx.MkExtract(15, 8, regExpr);
-            }
-
-            Tv[] result = ToolsZ3.GetTvArray(regExpr, RegisterTools.NBits(regName), this.Solver, this.Solver_U, this.Ctx);
-
-            if (popNeeded)
-            {
-                this.Solver.Pop();
-                this.Solver_U.Pop();
-            }
-
-            if (this.Frozen)
-            {
-                if (ADD_COMPUTED_VALUES && RegisterTools.NBits(regName) == 64)
+                try
                 {
-                    ulong? value = ToolsZ3.GetUlong(result);
-                    if (value != null)
+                    this.UndefGrounding = true; // needed!
+
+                    bool popNeeded = false;
+                    if ((this.BranchInfoStore != null) && addBranchInfo && (this.BranchInfoStore.Count > 0))
                     {
-                        this.Solver.Assert(this.Ctx.MkEq(regExpr, this.Ctx.MkBV(value.Value, 64)));
-                        this.Solver_Dirty = true;
+                        this.Solver.Push();
+                        this.Solver_U.Push();
+                        this.AssertBranchInfoToSolver();
+                        popNeeded = true;
                     }
+
+                    BitVecExpr regExpr = this.Get(reg64);
+                    if (RegisterTools.Is8BitHigh(regName))
+                    {
+                        regExpr = this.Ctx.MkExtract(15, 8, regExpr);
+                    }
+
+                    Tv[] result = ToolsZ3.GetTvArray(regExpr, RegisterTools.NBits(regName), this.Solver, this.Solver_U, this.Ctx);
+
+                    if (popNeeded)
+                    {
+                        this.Solver.Pop();
+                        this.Solver_U.Pop();
+                    }
+
+                    if (this.Frozen)
+                    {
+                        if (ADD_COMPUTED_VALUES && RegisterTools.NBits(regName) == 64)
+                        {
+                            ulong? value2 = ToolsZ3.GetUlong(result);
+                            if (value2 != null)
+                            {
+                                this.Solver.Assert(this.Ctx.MkEq(regExpr, this.Ctx.MkBV(value2.Value, 64)));
+                                this.Solver_Dirty = true;
+                            }
+                        }
+
+                        this._cached_Reg_Values[regName] = result;
+                    }
+                    return result;
                 }
-
-                this._cached_Reg_Values[regName] = result;
+                catch (Exception e)
+                {
+                    throw new Exception();
+                    return new Tv[RegisterTools.NBits(regName)];
+                }
             }
-
-            return result;
         }
 
         public Tv[] GetTvArrayMem(BitVecExpr address, int nBytes, bool addBranchInfo = true)
@@ -446,32 +473,47 @@ namespace AsmSim
 
         public BitVecExpr Get(Rn regName)
         {
-            return Tools.Reg_Key(regName, this.HeadKey, this.Ctx);
+            lock (this._ctxLock)
+            {
+                return Tools.Reg_Key(regName, this.HeadKey, this.Ctx);
+            }
         }
         public BoolExpr Get(Flags flagName)
         {
-            return Tools.Flag_Key(flagName, this.HeadKey, this.Ctx);
+            lock (this._ctxLock)
+            {
+                return Tools.Flag_Key(flagName, this.HeadKey, this.Ctx);
+            }
         }
 
         public BitVecExpr GetTail(Rn regName)
         {
-            return Tools.Reg_Key(regName, this.TailKey, this.Ctx);
+            lock (this._ctxLock)
+            {
+                return Tools.Reg_Key(regName, this.TailKey, this.Ctx);
+            }
         }
         public BoolExpr GetTail(Flags flagName)
         {
-            return Tools.Flag_Key(flagName, this.TailKey, this.Ctx);
+            lock (this._ctxLock)
+            {
+                return Tools.Flag_Key(flagName, this.TailKey, this.Ctx);
+            }
         }
 
         public BitVecExpr GetMem(BitVecExpr address, int nBytes)
         {
-            return Tools.Get_Value_From_Mem(address, nBytes, this.HeadKey, this.Ctx);
+            lock (this._ctxLock)
+            {
+                return Tools.Get_Value_From_Mem(address, nBytes, this.HeadKey, this.Ctx);
+            }
         }
 
         #endregion
 
         #region UndefGrounding
         private bool _hasUndefGrounding = false;
-        public bool UndefGrounding
+        private bool UndefGrounding
         {
             get { return this._hasUndefGrounding; }
             set
@@ -521,25 +563,28 @@ namespace AsmSim
         #region ToString
         public override string ToString()
         {
-            this.UndefGrounding = true; // needed!
-
-            bool popNeeded = false;
-            if ((this.BranchInfoStore != null) && (this.BranchInfoStore.Count > 0))
+            lock (this._ctxLock)
             {
-                this.Solver.Push();
-                this.Solver_U.Push();
-                this.AssertBranchInfoToSolver();
-                popNeeded = true;
-            }
+                this.UndefGrounding = true; // needed!
 
-            string result = this.ToString("");
+                bool popNeeded = false;
+                if ((this.BranchInfoStore != null) && (this.BranchInfoStore.Count > 0))
+                {
+                    this.Solver.Push();
+                    this.Solver_U.Push();
+                    this.AssertBranchInfoToSolver();
+                    popNeeded = true;
+                }
 
-            if (popNeeded)
-            {
-                this.Solver.Pop();
-                this.Solver_U.Pop();
+                string result = this.ToString("");
+
+                if (popNeeded)
+                {
+                    this.Solver.Pop();
+                    this.Solver_U.Pop();
+                }
+                return result;
             }
-            return result;
         }
         public string ToString(string identStr)
         {
@@ -624,21 +669,23 @@ namespace AsmSim
         {
             this.HeadKey = this.HeadKey + postfix;
             this.TailKey = this.TailKey + postfix;
-
+            lock (this._ctxLock)
             {
-                BoolExpr[] content = this.Solver.Assertions;
-                this.Solver.Reset();
-                foreach (BoolExpr e in content)
                 {
-                    this.Solver.Assert(ToolsZ3.UpdateConstName(e, postfix, this.Ctx) as BoolExpr);
+                    BoolExpr[] content = this.Solver.Assertions;
+                    this.Solver.Reset();
+                    foreach (BoolExpr e in content)
+                    {
+                        this.Solver.Assert(ToolsZ3.UpdateConstName(e, postfix, this.Ctx) as BoolExpr);
+                    }
                 }
-            }
-            {
-                BoolExpr[] content = this.Solver_U.Assertions;
-                this.Solver_U.Reset();
-                foreach (BoolExpr e in content)
                 {
-                    this.Solver_U.Assert(ToolsZ3.UpdateConstName(e, postfix, this.Ctx) as BoolExpr);
+                    BoolExpr[] content = this.Solver_U.Assertions;
+                    this.Solver_U.Reset();
+                    foreach (BoolExpr e in content)
+                    {
+                        this.Solver_U.Assert(ToolsZ3.UpdateConstName(e, postfix, this.Ctx) as BoolExpr);
+                    }
                 }
             }
         }
@@ -647,17 +694,20 @@ namespace AsmSim
         {
             get
             {
-                this.Solver.Push();
-                this.AssertBranchInfoToSolver(false);
-                Status result = this.Solver.Check();
-                this.Solver.Pop();
+                lock (this._ctxLock)
+                {
+                    this.Solver.Push();
+                    this.AssertBranchInfoToSolver(false);
+                    Status result = this.Solver.Check();
+                    this.Solver.Pop();
 
-                if (result == Status.SATISFIABLE)
-                    return Tv.ONE;
-                else if (result == Status.UNSATISFIABLE)
-                    return Tv.ZERO;
-                else
-                    return Tv.UNDETERMINED;
+                    if (result == Status.SATISFIABLE)
+                        return Tv.ONE;
+                    else if (result == Status.UNSATISFIABLE)
+                        return Tv.ZERO;
+                    else
+                        return Tv.UNDETERMINED;
+                }
             }
         }
 
@@ -669,103 +719,109 @@ namespace AsmSim
         {
             //Console.WriteLine("INFO: MemZ3:isEqual: testing whether a=" + a + " is equal to b=" + b);
             const bool method1 = true; // the other method seems not to work
-
-            Tv eq = Tv.UNKNOWN;
-            Tv uneq = Tv.UNKNOWN;
-
-            this.Solver.Push();
-            this.AssertBranchInfoToSolver(false);
+            lock (this._ctxLock)
             {
-                Status status;
-                BoolExpr tmp1 = this.Ctx.MkEq(value1, value2);
-                if (method1)
-                {
-                    this.Solver.Push();
 
-                    this.Solver.Assert(tmp1);
-                    status = this.Solver.Check();
-                }
-                else
-                {
-                    status = this.Solver.Check(tmp1);
-                }
-                switch (status)
-                {
-                    case Status.SATISFIABLE:
-                        eq = Tv.ONE;
-                        break;
-                    case Status.UNSATISFIABLE:
-                        eq = Tv.ZERO;
-                        break;
-                    case Status.UNKNOWN:
-                        Console.WriteLine("WARNING: State:equalValue: A: ReasonUnknown = " + this.Solver.ReasonUnknown);
-                        break;
-                }
-                if (method1)
-                {
-                    this.Solver.Pop();
-                }
-            }
-            {
-                Status status;
-                //BoolExpr tmp1 = _ctx.MkDistinct(value1, value2);
-                BoolExpr tmp1 = this.Ctx.MkNot(this.Ctx.MkEq(value1, value2));
-                if (method1)
-                {
-                    this.Solver.Assert(tmp1);
-                    status = this.Solver.Check();
-                }
-                else
-                {
-                    status = this.Solver.Check(tmp1);
-                }
-                switch (status)
-                {
-                    case Status.SATISFIABLE:
-                        uneq = Tv.ONE;
-                        break;
-                    case Status.UNSATISFIABLE:
-                        uneq = Tv.ZERO;
-                        break;
-                    case Status.UNKNOWN:
-                        Console.WriteLine("WARNING: State:equalValue: B: ReasonUnknown = " + this.Solver.ReasonUnknown);
-                        break;
-                }
-            }
-            this.Solver.Pop(); // get rid of context that had been added
+                Tv eq = Tv.UNKNOWN;
+                Tv uneq = Tv.UNKNOWN;
 
-            if ((eq == Tv.ONE) && (uneq == Tv.ONE))
-            {
+                this.Solver.Push();
+                this.AssertBranchInfoToSolver(false);
+                {
+                    Status status;
+                    BoolExpr tmp1 = this.Ctx.MkEq(value1, value2);
+                    if (method1)
+                    {
+                        this.Solver.Push();
+
+                        this.Solver.Assert(tmp1);
+                        status = this.Solver.Check();
+                    }
+                    else
+                    {
+                        status = this.Solver.Check(tmp1);
+                    }
+                    switch (status)
+                    {
+                        case Status.SATISFIABLE:
+                            eq = Tv.ONE;
+                            break;
+                        case Status.UNSATISFIABLE:
+                            eq = Tv.ZERO;
+                            break;
+                        case Status.UNKNOWN:
+                            Console.WriteLine("WARNING: State:equalValue: A: ReasonUnknown = " + this.Solver.ReasonUnknown);
+                            break;
+                    }
+                    if (method1)
+                    {
+                        this.Solver.Pop();
+                    }
+                }
+                {
+                    Status status;
+                    //BoolExpr tmp1 = _ctx.MkDistinct(value1, value2);
+                    BoolExpr tmp1 = this.Ctx.MkNot(this.Ctx.MkEq(value1, value2));
+                    if (method1)
+                    {
+                        this.Solver.Assert(tmp1);
+                        status = this.Solver.Check();
+                    }
+                    else
+                    {
+                        status = this.Solver.Check(tmp1);
+                    }
+                    switch (status)
+                    {
+                        case Status.SATISFIABLE:
+                            uneq = Tv.ONE;
+                            break;
+                        case Status.UNSATISFIABLE:
+                            uneq = Tv.ZERO;
+                            break;
+                        case Status.UNKNOWN:
+                            Console.WriteLine("WARNING: State:equalValue: B: ReasonUnknown = " + this.Solver.ReasonUnknown);
+                            break;
+                    }
+                }
+                this.Solver.Pop(); // get rid of context that had been added
+
+                if ((eq == Tv.ONE) && (uneq == Tv.ONE))
+                {
+                    return Tv.UNKNOWN;
+                }
+                if ((eq == Tv.ONE) && (uneq == Tv.ZERO))
+                {
+                    return Tv.ONE;
+                }
+                if ((eq == Tv.ZERO) && (uneq == Tv.ONE))
+                {
+                    return Tv.ZERO;
+                }
+                if ((eq == Tv.ONE) && (uneq == Tv.ONE))
+                {
+                    return Tv.INCONSISTENT;
+                }
                 return Tv.UNKNOWN;
             }
-            if ((eq == Tv.ONE) && (uneq == Tv.ZERO))
-            {
-                return Tv.ONE;
-            }
-            if ((eq == Tv.ZERO) && (uneq == Tv.ONE))
-            {
-                return Tv.ZERO;
-            }
-            if ((eq == Tv.ONE) && (uneq == Tv.ONE))
-            {
-                return Tv.INCONSISTENT;
-            }
-            return Tv.UNKNOWN;
         }
 
         public void Simplify()
         {
             if (SIMPLIFY_ON)
             {
-                if (this.Solver_Dirty)
+                lock (this._ctxLock)
                 {
-                    ToolsZ3.Consolidate(false, this.Solver, this.Solver_U, this.Ctx);
-                    this.Solver_Dirty = false;
-                }
-                if (this.Solver_U_Dirty)
-                {
-                    ToolsZ3.Consolidate(true, this.Solver, this.Solver_U, this.Ctx);
-                    this.Solver_U_Dirty = false;
+                    if (this.Solver_Dirty)
+                    {
+                        ToolsZ3.Consolidate(false, this.Solver, this.Solver_U, this.Ctx);
+                        this.Solver_Dirty = false;
+                    }
+                    if (this.Solver_U_Dirty)
+                    {
+                        ToolsZ3.Consolidate(true, this.Solver, this.Solver_U, this.Ctx);
+                        this.Solver_U_Dirty = false;
+                    }
                 }
             }
         }
