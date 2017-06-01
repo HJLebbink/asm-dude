@@ -7,16 +7,13 @@
 	inc rax
 	#endregion
 
-	;vaddpd xmm1, xmm2, xmm3 ; inimplemented instruction to stop the simulator
-	cmp byte[rax+rbx], 0
-
-
-
+	vaddpd xmm1, xmm2, xmm3 ; inimplemented instruction to stop the simulator
+	
 
 	#region Semantic Error: usage of undefined carry 
-	mov cl, 1
+	mov cl, 0
 	bsf ax, cx
-	rcl eax, 1
+	add eax, 1
 	#endregion
 
 	vaddpd xmm1, xmm2, xmm3 ; inimplemented instruction to stop the simulator
@@ -34,9 +31,10 @@
 	popcnt rbx, rax
 	#endregion
 
-	;vaddpd xmm1, xmm2, xmm3 ; inimplemented instruction to stop the simulator
+	vaddpd xmm1, xmm2, xmm3 ; inimplemented instruction to stop the simulator
 
 	#region moving undefined values to memory and retrieving it.
+	mov cx, 0
 	bsf ax, cx
 	mov ptr dword [rbx], eax
 	mov rcx, ptr qword [rbx]
@@ -46,7 +44,7 @@
 
 	#region Redundant instruction warning
 	mov rax, rbx
-	mov rbx, rax, 1
+	mov rbx, rax
 	#endregion
 
 

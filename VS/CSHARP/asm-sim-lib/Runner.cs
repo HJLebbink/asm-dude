@@ -126,7 +126,7 @@ namespace AsmSim
             var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, keys, tools);
             if ((opcodeBase == null) || opcodeBase.IsHalted)
             {
-                StateUpdate resetState = new StateUpdate(keys.PrevKey, keys.NextKey, tools, new Context(tools.Settings))
+                StateUpdate resetState = new StateUpdate(keys.PrevKey, keys.NextKey, tools, new Context(new Dictionary<string, string>(tools.Settings)))
                 {
                     Reset = true
                 };

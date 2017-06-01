@@ -175,8 +175,8 @@ namespace AsmDude.QuickInfo
                                     if (this._asmSimulator.Enabled & Settings.Default.AsmSim_Decorate_Registers)
                                     {
                                         Rn reg = RegisterTools.ParseRn(keywordUpper, true);
-                                        string reg_Content_Before = this._asmSimulator.Get_Register_Value(reg, lineNumber, true, false, false);
-                                        string reg_Content_After = this._asmSimulator.Get_Register_Value(reg, lineNumber, false, false, false);
+                                        string reg_Content_Before = this._asmSimulator.Get_Register_Value(reg, lineNumber, true, false, false).Value;
+                                        string reg_Content_After = this._asmSimulator.Get_Register_Value(reg, lineNumber, false, false, false).Value;
                                         string msg = "\n" + reg + " before: " + reg_Content_Before + "\n" + reg + " after:  " + reg_Content_After;
                                         description.Inlines.Add(new Run(AsmSourceTools.Linewrap(msg, AsmDudePackage.maxNumberOfCharsInToolTips))
                                         {

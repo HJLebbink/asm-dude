@@ -57,11 +57,71 @@ namespace AsmSim
 
         public BidirectionalGraph<string, TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)>> Graph { get { return this._graph; } }
 
+        public bool Is_Branch_Point(int lineNumber)
+        {
+            string key = this.Key(lineNumber);
+            if (this.Has_Vertex(key))
+            {
+                return this._graph.OutDegree(key) > 1;
+            }
+            return false;
+        }
+
+        public bool Is_Merge_Point(int lineNumber)
+        {
+            string key = this.Key(lineNumber);
+            if (this.Has_Vertex(key))
+            {
+                return this._graph.InDegree(key) > 1;
+            }
+            return false;
+        }
+
         public string Key(int lineNumber)
         {
             if (this._lineNumber_2_Key.TryGetValue(lineNumber, out var key))
             {
                 return key;
+            }
+            return "NOKEY";
+        }
+
+        public string Key_Previous(int lineNumber)
+        {
+            string key = this.Key(lineNumber);
+            if (this.Has_Vertex(key))
+            {
+                switch (this._graph.InDegree(key))
+                {
+                    case 0:
+                        Console.WriteLine("WARNING: DynamicFlow: Key_Previous: no previous key");
+                        return "NOKEY";
+                    case 1:
+                        return this._graph.InEdge(key, 0).Source;
+                    default:
+                        Console.WriteLine("WARNING: DynamicFlow: Key_Previous: multiple previous keys, returning the first one");
+                        return this._graph.InEdge(key, 0).Source;
+                }
+            }
+            return "NOKEY";
+        }
+
+        public string Key_Next(int lineNumber)
+        {
+            string key = this.Key(lineNumber);
+            if (this.Has_Vertex(key))
+            {
+                switch (this._graph.OutDegree(key))
+                {
+                    case 0:
+                        Console.WriteLine("WARNING: DynamicFlow: Key_Next: no next key");
+                        return "NOKEY";
+                    case 1:
+                        return this._graph.OutEdge(key, 0).Target;
+                    default:
+                        Console.WriteLine("WARNING: DynamicFlow: Key_Next: multiple next keys, returning the first one");
+                        return this._graph.OutEdge(key, 0).Target;
+                }
             }
             return "NOKEY";
         }

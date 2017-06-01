@@ -289,8 +289,12 @@ namespace AsmDude
                                 {
                                     if (asmSimulator_Enabled && this._asmSimulator.Tools.StateConfig.IsRegOn(RegisterTools.Get64BitsRegister(regName)))
                                     {
-                                        additionalInfo = this._asmSimulator.Get_Register_Value(regName, lineNumber, true, false, false);
-                                        AsmDudeToolsStatic.Output_INFO("AsmCompletionSource:Mnemonic_Operand_Completions; register " + keyword + " is selected and has value " + additionalInfo);
+                                        var v = this._asmSimulator.Get_Register_Value(regName, lineNumber, true, false, false);
+                                        if (!v.Bussy)
+                                        {
+                                            additionalInfo = v.Value;
+                                            AsmDudeToolsStatic.Output_INFO("AsmCompletionSource:Mnemonic_Operand_Completions; register " + keyword + " is selected and has value " + additionalInfo);
+                                        }
                                     }
                                 }
                                 else

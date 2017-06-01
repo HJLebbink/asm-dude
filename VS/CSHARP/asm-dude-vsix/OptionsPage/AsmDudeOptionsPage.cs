@@ -894,6 +894,13 @@ namespace AsmDude.OptionsPage
             {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_On=" + this._asmDudeOptionsPageUI.AsmSim_On);
                 changed = true;
+
+                if (!this._asmDudeOptionsPageUI.AsmSim_On)
+                {
+                    string title = null;
+                    string message = "I'm sorry "+ Environment.UserName + ", I'm afraid I can't do that";
+                    int result = VsShellUtilities.ShowMessageBox(this.Site, message, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                }
             }
             if (Settings.Default.AsmSim_Number_Of_Steps != this._asmDudeOptionsPageUI.AsmSim_Number_Of_Steps)
             {

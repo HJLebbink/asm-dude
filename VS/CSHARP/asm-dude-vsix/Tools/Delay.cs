@@ -29,25 +29,25 @@ namespace AsmDude.Tools
     public class Delay
     {
         private readonly SmartThreadPool _threadPool;
-        private readonly int _delayInMs;
+        private readonly int _defaultDelayInMs;
         private readonly int _maxResets;
         private int _nResets;
         private IWorkItemResult _current;
 
-        public Delay(int delayInMs, int maxResets, SmartThreadPool threadPool)
+        public Delay(int defaultDelayInMs, int maxResets, SmartThreadPool threadPool)
         {
-            this._delayInMs = delayInMs;
+            this._defaultDelayInMs = defaultDelayInMs;
             this._maxResets = maxResets;
             this._threadPool = threadPool;
         }
 
-        public void Reset()
+        public void Reset(int delay = -1)
         {
             if ((this._current == null) || (this._current.IsCompleted) || (this._current.IsCanceled))
             {
                 //AsmDudeToolsStatic.Output_INFO("Delay:Reset: starting a new timer");
                 this._nResets = 0;
-                this._current = this._threadPool.QueueWorkItem(this.Timer);
+                this._current = this._threadPool.QueueWorkItem(this.Timer, delay);
             }
             else
             {
@@ -56,16 +56,16 @@ namespace AsmDude.Tools
                     //AsmDudeToolsStatic.Output_INFO("Delay:Reset: resetting the timer: "+this._nResets);
                     this._current.Cancel(true);
                     this._nResets++;
-                    this._current = this._threadPool.QueueWorkItem(this.Timer);
+                    this._current = this._threadPool.QueueWorkItem(this.Timer, delay);
                 }
             }
         }
 
-        private void Timer()
+        private void Timer(int delay)
         {
-            Thread.Sleep(this._delayInMs);
+            Thread.Sleep((delay == -1) ? this._defaultDelayInMs : delay);
             //AsmDudeToolsStatic.Output_INFO("Delay:Timer: delay elapsed");
-            this.Done_Event(this, new EventArgs());
+            this.Done_Event?.Invoke(this, new EventArgs());
         }
 
         public event EventHandler<EventArgs> Done_Event;

@@ -50,8 +50,6 @@ namespace AsmDude.Squiggles
         private readonly LabelGraph _labelGraph;
         private readonly AsmSimulator _asmSimulator;
         private readonly Brush _foreground;
-        private readonly SyntaxAnalysis _syntaxAnalysis;
-        private readonly SemanticAnalysis _semanticAnalysis;
         private object _updateLock = new object();
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
         #endregion Private Fields
@@ -71,7 +69,8 @@ namespace AsmDude.Squiggles
             this._labelGraph = labelGraph;
             if (this._labelGraph.Enabled)
             {
-                this._labelGraph.Reset_Done_Event += (o, i) => {
+                this._labelGraph.Reset_Done_Event += (o, i) => 
+                {
                     this.Update_Squiggles_Tasks_Async();
                     this.Update_Error_Tasks_Labels_Async();
                 };
@@ -81,48 +80,19 @@ namespace AsmDude.Squiggles
             this._asmSimulator = asmSimulator;
             if (this._asmSimulator.Enabled)
             {
-                this._syntaxAnalysis = new SyntaxAnalysis(asmSimulator);
-                this._syntaxAnalysis.Line_Updated_Event += (o, e) =>
-                {
-                    //AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handling _syntaxAnalysis.Line_Updated_Event: received an event from " + o + ". Line " + e.LineNumber);
-                    this.Update_Squiggles_Tasks(e.LineNumber);
-                    this.Update_Error_Task_AsmSim(e.LineNumber, e.Message);
-                };
-                /*
-                this._syntaxAnalysis.Reset_Done_Event += (o, e) => {
-                    AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handling _syntaxAnalysis.Reset_Done_Event: received an event from " + o + ".");
-                    //this.Update_Squiggles_Tasks_Async();
-                    //this.Update_Error_Tasks_AsmSim_Async();
-                };
-                */
-                this._semanticAnalysis = new SemanticAnalysis(asmSimulator);
-                this._semanticAnalysis.Line_Updated_Event += (o, e) =>
-                {
-                    //AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handling _semanticAnalysis.Line_Updated_Event: received an event from " + o + ". Line " + e.LineNumber);
-                    this.Update_Squiggles_Tasks(e.LineNumber);
-                    this.Update_Error_Task_AsmSim(e.LineNumber, e.Message);
-                };
                 this._asmSimulator.Line_Updated_Event += (o, e) =>
                 {
-                    AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handling _semanticAnalysis.Line_Updated_Event: received an event from " + o + ". Line " + e.LineNumber + ": "+e.Message);
+                    AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handling _asmSimulator.Line_Updated_Event: event from " + o + ". Line " + e.LineNumber + ": "+e.Message);
                     this.Update_Squiggles_Tasks(e.LineNumber);
                     this.Update_Error_Task_AsmSim(e.LineNumber, e.Message);
                 };
-
-                /*
-                this._semanticAnalysis.Reset_Done_Event += (o, e) => {
-                    AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handling _semanticAnalysis.Reset_Done_Event: received an event from " + o + ".");
-                    //this.Update_Squiggles_Tasks_Async();
-                    //this.Update_Error_Tasks_AsmSim_Async();
+                this._asmSimulator.Reset_Done_Event += (o, e) =>
+                {
+                    AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handling _asmSimulator.Reset_Done_Event: event from " + o);
+                    this.Update_Error_Tasks_AsmSim_Async();
                 };
-                */
                 this._asmSimulator.Reset();
             }
-        }
-
-        private void _asmSimulator_Reset_Done(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
         }
 
         public IEnumerable<ITagSpan<IErrorTag>> GetTags(NormalizedSnapshotSpanCollection spans)
@@ -231,21 +201,19 @@ namespace AsmDude.Squiggles
                             {
                                 Rn regName = RegisterTools.ParseRn(tagSpan.GetText());
                                 //AsmDudeToolsStatic.Output_INFO("SquigglesTagger:GetTags: found register " + regName + " at line " + lineNumber);
-                                bool preCompute = true;
-                                bool hasContent_Before = this._asmSimulator.Has_Register_Value(regName, lineNumber, true, preCompute);
-                                bool hasContent_After = this._asmSimulator.Has_Register_Value(regName, lineNumber, false, preCompute);
-
-                                if (hasContent_Before || hasContent_After)
-                                {   // only show squiggles to indicate that information is available
-
-                                    //PredefinedErrorTypeNames.Warning is green
-                                    //PredefinedErrorTypeNames.SyntaxError is red
-                                    //PredefinedErrorTypeNames.CompilerError is blue
-                                    //PredefinedErrorTypeNames.Suggestion is NOTHING
-                                    //PredefinedErrorTypeNames.OtherError is purple
-
-                                    //AsmDudeToolsStatic.Output_INFO("SquigglesTagger:GetTags: adding squiggles for register " + regName + " at line " + lineNumber);
-                                    yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.Warning));
+                                bool preCompute = false;
+                                var v1 = this._asmSimulator.Has_Register_Value(regName, lineNumber, true, preCompute);
+                                if (!v1.Bussy)
+                                {
+                                    var v2 = this._asmSimulator.Has_Register_Value(regName, lineNumber, false, preCompute);
+                                    if (!v2.Bussy)
+                                    {
+                                        if ((v1.HasValue || v2.HasValue))
+                                        {   // only show squiggles to indicate that information is available
+                                            //AsmDudeToolsStatic.Output_INFO("SquigglesTagger:GetTags: adding squiggles for register " + regName + " at line " + lineNumber);
+                                            yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.Warning));
+                                        }
+                                    }
                                 }
                             }
                             break;
@@ -254,11 +222,11 @@ namespace AsmDude.Squiggles
                         {
                             if (Decorate_Syntax_Errors || Decorate_Unimplemented)
                             {
-                                if (this._syntaxAnalysis.IsImplemented(lineNumber))
+                                if (this._asmSimulator.IsImplemented(lineNumber))
                                 {
-                                    if (Decorate_Syntax_Errors && this._syntaxAnalysis.HasSyntaxError(lineNumber))
+                                    if (Decorate_Syntax_Errors && this._asmSimulator.HasSyntaxError(lineNumber))
                                     {
-                                        string message = AsmSourceTools.Linewrap("Syntax Error: " + this._syntaxAnalysis.Get_Syntax_Error(lineNumber).Message, AsmDudePackage.maxNumberOfCharsInToolTips);
+                                        string message = AsmSourceTools.Linewrap("Syntax Error: " + this._asmSimulator.Get_Syntax_Error(lineNumber).Message, AsmDudePackage.maxNumberOfCharsInToolTips);
                                         yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.SyntaxError, message));
                                     }
                                 }
@@ -270,17 +238,17 @@ namespace AsmDude.Squiggles
                             }
                             if (Decorate_Usage_Of_Undefined)
                             {
-                                if (this._semanticAnalysis.Has_Usage_Undefined_Warning(lineNumber))
+                                if (this._asmSimulator.Has_Usage_Undefined_Warning(lineNumber))
                                 {
-                                    string message = AsmSourceTools.Linewrap("Semantic Warning: " + this._semanticAnalysis.Get_Usage_Undefined_Warning(lineNumber), AsmDudePackage.maxNumberOfCharsInToolTips);
+                                    string message = AsmSourceTools.Linewrap("Semantic Warning: " + this._asmSimulator.Get_Usage_Undefined_Warning(lineNumber), AsmDudePackage.maxNumberOfCharsInToolTips);
                                     yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.OtherError, message));
                                 }
                             }
                             if (Decorate_Redundant_Instructions)
                             {
-                                if (this._semanticAnalysis.Has_Redundant_Instruction_Warning(lineNumber))
+                                if (this._asmSimulator.Has_Redundant_Instruction_Warning(lineNumber))
                                 {
-                                    string message = AsmSourceTools.Linewrap("Semantic Warning: " + this._semanticAnalysis.Get_Redundant_Instruction_Warning(lineNumber), AsmDudePackage.maxNumberOfCharsInToolTips);
+                                    string message = AsmSourceTools.Linewrap("Semantic Warning: " + this._asmSimulator.Get_Redundant_Instruction_Warning(lineNumber), AsmDudePackage.maxNumberOfCharsInToolTips);
                                     yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.OtherError, message));
                                 }
                             }
@@ -407,7 +375,7 @@ namespace AsmDude.Squiggles
                     {
                         if (Settings.Default.AsmSim_Show_Syntax_Errors)
                         {
-                            var tup = this._syntaxAnalysis.Get_Syntax_Error(lineNumber);
+                            var tup = this._asmSimulator.Get_Syntax_Error(lineNumber);
                             this.AddErrorTask_SyntaxError(lineNumber, tup.Message, tup.Mnemonic);
                             errorListNeedsRefresh = true;
                         }
@@ -417,7 +385,7 @@ namespace AsmDude.Squiggles
                     {
                         if (Settings.Default.AsmSim_Show_Usage_Of_Undefined)
                         {
-                            var tup = this._semanticAnalysis.Get_Usage_Undefined_Warning(lineNumber);
+                            var tup = this._asmSimulator.Get_Usage_Undefined_Warning(lineNumber);
                             this.AddErrorTask_UsageUndefined(lineNumber, tup);
                             errorListNeedsRefresh = true;
                         }
@@ -427,7 +395,7 @@ namespace AsmDude.Squiggles
                     {
                         if (Settings.Default.AsmSim_Show_Redundant_Instructions)
                         {
-                            var tup = this._semanticAnalysis.Get_Redundant_Instruction_Warning(lineNumber);
+                            var tup = this._asmSimulator.Get_Redundant_Instruction_Warning(lineNumber);
                             this.AddErrorTask_RedundantInstruction(lineNumber, tup);
                             errorListNeedsRefresh = true;
                         }
@@ -478,7 +446,7 @@ namespace AsmDude.Squiggles
 
                             if (Settings.Default.AsmSim_Show_Syntax_Errors)
                             {
-                                foreach (var tup in this._syntaxAnalysis.SyntaxErrors)
+                                foreach (var tup in this._asmSimulator.SyntaxErrors)
                                 {
                                     this.AddErrorTask_SyntaxError(tup.LineNumber, tup.Message, tup.Mnemonic);
                                     errorListNeedsRefresh = true;
@@ -486,7 +454,7 @@ namespace AsmDude.Squiggles
                             }
                             if (Settings.Default.AsmSim_Show_Usage_Of_Undefined)
                             {
-                                foreach (var tup in this._semanticAnalysis.Usage_Undefined)
+                                foreach (var tup in this._asmSimulator.Usage_Undefined)
                                 {
                                     this.AddErrorTask_UsageUndefined(tup.LineNumber, tup.Message);
                                     errorListNeedsRefresh = true;
@@ -494,7 +462,7 @@ namespace AsmDude.Squiggles
                             }
                             if (Settings.Default.AsmSim_Show_Redundant_Instructions)
                             {
-                                foreach (var tup in this._semanticAnalysis.Redundant_Instruction)
+                                foreach (var tup in this._asmSimulator.Redundant_Instruction)
                                 {
                                     this.AddErrorTask_RedundantInstruction(tup.LineNumber, tup.Message);
                                     errorListNeedsRefresh = true;

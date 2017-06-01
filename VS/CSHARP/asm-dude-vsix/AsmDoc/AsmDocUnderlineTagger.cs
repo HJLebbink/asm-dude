@@ -42,15 +42,6 @@ namespace AsmDude.AsmDoc
             this._underlineSpan = null;
         }
 
-        #region Private helpers
-
-        private void SendEvent(SnapshotSpan span)
-        {
-            TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(span));
-        }
-
-        #endregion
-
         #region UnderlineClassification public members
 
         public SnapshotSpan? CurrentUnderlineSpan { get { return this._underlineSpan; } }
@@ -63,14 +54,16 @@ namespace AsmDude.AsmDoc
             if (!oldSpan.HasValue && !this._underlineSpan.HasValue)
             {
                 return;
-            } else if (oldSpan.HasValue && this._underlineSpan.HasValue && oldSpan == this._underlineSpan)
+            }
+            else if (oldSpan.HasValue && this._underlineSpan.HasValue && oldSpan == this._underlineSpan)
             {
                 return;
             }
             if (!this._underlineSpan.HasValue)
             {
-                SendEvent(oldSpan.Value);
-            } else
+                this.TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(oldSpan.Value));
+            }
+            else
             {
                 SnapshotSpan updateSpan = this._underlineSpan.Value;
                 if (oldSpan.HasValue)
@@ -79,7 +72,7 @@ namespace AsmDude.AsmDoc
                         Span.FromBounds(Math.Min(updateSpan.Start, oldSpan.Value.Start),
                                         Math.Max(updateSpan.End, oldSpan.Value.End)));
                 }
-                SendEvent(updateSpan);
+                this.TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(updateSpan));
             }
         }
 

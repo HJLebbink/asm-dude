@@ -31,6 +31,7 @@ using AsmDude.SyntaxHighlighting;
 using System.Text;
 using Microsoft.VisualStudio.Shell;
 using AsmTools;
+using Amib.Threading;
 
 namespace AsmDude.CodeFolding
 {
@@ -61,6 +62,8 @@ namespace AsmDude.CodeFolding
         private IList<Region> _regions;
 
         private readonly Delay _delay;
+        private IWorkItemResult _thread_Result;
+
         private object _updateLock = new object();
         private bool _enabled;
         #endregion Private Fields
@@ -82,7 +85,14 @@ namespace AsmDude.CodeFolding
             this._enabled = true;
 
             this._delay = new Delay(AsmDudePackage.msSleepBeforeAsyncExecution, 10, AsmDudeTools.Instance.Thread_Pool);
-            this._delay.Done_Event += (o, i) => { AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Parse); };
+            this._delay.Done_Event += (o, i) => 
+            {
+                if ((this._thread_Result != null) && (!this._thread_Result.IsCanceled))
+                {
+                    this._thread_Result.Cancel();
+                }
+                AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Parse);
+            };
 
             this._delay.Reset();
             this._buffer.ChangedLowPriority += this.Buffer_Changed;
@@ -604,14 +614,7 @@ namespace AsmDude.CodeFolding
             this._regions = newRegions;
             if (changeStart <= changeEnd)
             {
-                if (TagsChanged != null)
-                {
-                    TagsChanged(this, new SnapshotSpanEventArgs(new SnapshotSpan(this._snapshot, Span.FromBounds(changeStart, changeEnd))));
-                }
-                else
-                {
-                    AsmDudeToolsStatic.Output_WARNING("CodeFoldingTagger:updateChangedSpans: TagsChanged is null");
-                }
+                this.TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(new SnapshotSpan(this._snapshot, Span.FromBounds(changeStart, changeEnd))));
             }
         }
 

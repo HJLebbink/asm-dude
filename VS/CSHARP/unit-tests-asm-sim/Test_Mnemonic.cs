@@ -974,12 +974,12 @@ namespace unit_tests_asm_z3
                     //if (logToDisplay) Console.WriteLine("After \"" + line + "\", we know:\n" + state);
 
                     TestTools.AreEqual(Rn.AX, result, state);
-                    Assert.AreEqual(TestTools.ToTv5(TestTools.Calc_CF_Add(nBits, ax_value, bx_value)), TestTools.GetTv5(Flags.CF, state, true), "CF: ax=" + ax_value + "; bx=" + bx_value);
-                    Assert.AreEqual(TestTools.ToTv5(TestTools.Calc_OF_Add(nBits, ax_value, bx_value)), TestTools.GetTv5(Flags.OF, state, true), "OF: ax=" + ax_value + "; bx=" + bx_value);
-                    Assert.AreEqual(TestTools.ToTv5(TestTools.Calc_AF_Add(ax_value, bx_value)), TestTools.GetTv5(Flags.AF, state, true), "AF: ax=" + ax_value + "; bx=" + bx_value);
-                    Assert.AreEqual(TestTools.ToTv5(TestTools.Calc_PF(result)), TestTools.GetTv5(Flags.PF, state, true), "PF: ax=" + ax_value + "; bx=" + bx_value);
-                    Assert.AreEqual(TestTools.ToTv5(TestTools.Calc_ZF(result)), TestTools.GetTv5(Flags.ZF, state, true), "ZF: ax=" + ax_value + "; bx=" + bx_value);
-                    Assert.AreEqual(TestTools.ToTv5(TestTools.Calc_SF(nBits, result)), TestTools.GetTv5(Flags.SF, state, true), "SF: ax=" + ax_value + "; bx=" + bx_value);
+                    Assert.AreEqual(TestTools.ToTv5(TestTools.Calc_CF_Add(nBits, ax_value, bx_value)), TestTools.GetTv5(Flags.CF, state), "CF: ax=" + ax_value + "; bx=" + bx_value);
+                    Assert.AreEqual(TestTools.ToTv5(TestTools.Calc_OF_Add(nBits, ax_value, bx_value)), TestTools.GetTv5(Flags.OF, state), "OF: ax=" + ax_value + "; bx=" + bx_value);
+                    Assert.AreEqual(TestTools.ToTv5(TestTools.Calc_AF_Add(ax_value, bx_value)), TestTools.GetTv5(Flags.AF, state), "AF: ax=" + ax_value + "; bx=" + bx_value);
+                    Assert.AreEqual(TestTools.ToTv5(TestTools.Calc_PF(result)), TestTools.GetTv5(Flags.PF, state), "PF: ax=" + ax_value + "; bx=" + bx_value);
+                    Assert.AreEqual(TestTools.ToTv5(TestTools.Calc_ZF(result)), TestTools.GetTv5(Flags.ZF, state), "ZF: ax=" + ax_value + "; bx=" + bx_value);
+                    Assert.AreEqual(TestTools.ToTv5(TestTools.Calc_SF(nBits, result)), TestTools.GetTv5(Flags.SF, state), "SF: ax=" + ax_value + "; bx=" + bx_value);
                 }
             }
         }

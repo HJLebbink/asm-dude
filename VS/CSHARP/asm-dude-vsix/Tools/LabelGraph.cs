@@ -70,11 +70,11 @@ namespace AsmDude.Tools
         public ErrorListProvider Error_List_Provider { get; private set; }
 
         private readonly Delay _delay;
+        private bool _bussy = false;
         private object _updateLock = new object();
         #endregion Private Fields
 
-        #region Public Methods
-
+        #region Constructor
         public LabelGraph(
                 ITextBuffer buffer,
                 IBufferTagAggregatorFactoryService aggregatorFactory,
@@ -102,12 +102,24 @@ namespace AsmDude.Tools
             this._thisFilename = AsmDudeToolsStatic.GetFileName(this._buffer);
             this.Enabled = true;
 
-            this._delay = new Delay(AsmDudePackage.msSleepBeforeAsyncExecution, 10, AsmDudeTools.Instance.Thread_Pool);
-            this._delay.Done_Event += (o, i) => { AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Reset_Private); };
+            this._delay = new Delay(AsmDudePackage.msSleepBeforeAsyncExecution, 100, AsmDudeTools.Instance.Thread_Pool);
+            this._delay.Done_Event += (o, i) => {
+                if (this._bussy)
+                {
+                    this._delay.Reset();
+                }
+                else
+                {
+                    AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Reset_Private);
+                }
+            };
 
             this.Reset();
             this._buffer.ChangedLowPriority += this.Buffer_Changed;
         }
+        #endregion
+
+        #region Public Methods
 
         public void Reset()
         {
@@ -301,6 +313,7 @@ namespace AsmDude.Tools
             lock (this._updateLock)
             {
                 DateTime time1 = DateTime.Now;
+                this._bussy = true;
 
                 this._usedAt.Clear();
                 this._defAt.Clear();
@@ -324,11 +337,12 @@ namespace AsmDude.Tools
                     Disable();
 #                   endif
                 }
+                this._bussy = false;
             }
-            On_Reset_Done_Event(new CustomEventArgs("Resetting LabelGraph is finished"));
+            this.Reset_Done_Event?.Invoke(this, new EventArgs());
         }
 
-        public event EventHandler<CustomEventArgs> Reset_Done_Event;
+        public event EventHandler<EventArgs> Reset_Done_Event;
 
         public IEnumerable<(string Include_Filename, string Path, string Source_Filename, int LineNumber)> Undefined_Includes { get { return this._undefined_includes; } }
 
@@ -358,24 +372,6 @@ namespace AsmDude.Tools
         private static int Get_Line_Number(IMappingTagSpan<AsmTokenTag> tag)
         {
             return AsmDudeToolsStatic.Get_LineNumber(tag.Span.GetSpans(tag.Span.AnchorBuffer)[0]);
-        }
-
-        private void On_Reset_Done_Event(CustomEventArgs e)
-        {
-            // Make a temporary copy of the event to avoid possibility of
-            // a race condition if the last subscriber un-subscribes
-            // immediately after the null check and before the event is raised.
-            EventHandler<CustomEventArgs> handler = this.Reset_Done_Event;
-
-            // Event will be null if there are no subscribers
-            if (handler != null)
-            {
-                // Format the string to send inside the CustomEventArgs parameter
-                e.Message += String.Format(" at {0}", DateTime.Now.ToString());
-
-                // Use the () operator to raise the event.
-                handler(this, e);
-            }
         }
 
         private void Buffer_Changed(object sender, TextContentChangedEventArgs e)

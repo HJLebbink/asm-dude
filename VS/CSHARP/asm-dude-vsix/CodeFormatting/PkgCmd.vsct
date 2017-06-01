@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <!-- 
+  This is the file that defines the actual layout and type of the commands.
+  It is divided in different sections (e.g. command definition, command
+  placement, ...), with each defining a specific set of properties.
+  See the comment before each section or the VSCT schema for more details 
+  about how to use it.
+  -->
+
+  <!--
+  The VSCT compiler (the tool that translates this file into the binary format
+  that VisualStudio will consume) has the ability to import external files with
+  definition of constants that can be used inside the definition of your command.
+  The way to include these files is to add an "Extern" tag to your VSCT file and
+  specify the name of the file to reference inside the href attribute.
+  Using this ability of the compiler here, we include some files defining some
+  of the constants that we will use inside the file.
+  -->
+
+  <!--This is the file that defines the IDs for all the commands exposed by VisualStudio.-->
+  <Extern href="stdidcmd.h" />
+
+  <!--This header contains the command ids for the menus provided by the shell.-->
+  <Extern href="vsshlids.h"/>
+
+  <!--This header contains the image monikers for various images-->
+  <Include href="KnownImageIds.vsct"/>
+
+  <!--This header contains data for a custom image moniker-->
+  <!--
+  NOTE: The custom moniker data does not have to be defined in a separate file, it can also
+  be defined in this .vsct file.
+  -->
+  <Include href="CustomMoniker.vsct"/>
+  
+  <!--
+  The first section of this file is the Commands section. This is where we define
+  the commands, menus and menu groups. This section uses a Guid to identify the
+  package that provides the command defined inside it.
+  Note that the package's GUID is expressed as a symbol that the compiler will
+  translate in an actual GUID at compile time. It is not allow to use an actual
+  GUID for the package attribute.
+  -->
+  <Commands package="guidMenuAndCommandsPkg">
+    <!--
+    Inside this section we can have different sub-sections: one for the menus, another
+    for the menu groups, one for the buttons (the actual commands), one for the combos
+    and the last one for the bitmaps used. Each element is identified by a command id that
+    is a unique pair of guid and numeric identifier; the guid part of the identifier is usually
+    called "command set" and is used to group different command inside a logically related
+    group; your package should define its own command set in order to avoid collisions
+    with command ids defined by other packages.
+    In the VSCT syntax you have to specify this unique identifier using two required attributes:
+    the guid attribute for the command set and the id attribute for the numeric part.
+    -->
+
+    <!-- This is the sub-section that defines the menus and toolbars. -->
+    <Menus>
+      <!--
+      To define a menu element we need an ID, a parent group, a display priority,
+      a menu type, a name and a default text. The exception to requiring a parent
+      is if we are a top level piece of UI (i.e. a toolbar or a context menu. In other
+      words an element that doesn't live on any other command UI, or if we will later 
+      parent our command via a CommandPlacement element to one or more locations).
+      
+      In this example we define a toolbar, so we set the type attribute to Toolbar.
+      
+      Toolbars can set their priority field to affect where they are shown in the toolbar
+      tray. The lower 16 bits of the priority value is taken as a vertical row offset from
+      row 0 (where the standard toolbar is) and is further interpreted as a priority offset
+      within the row the toolbar appears in. So below, by specifying we are at priority 
+      0x0001 we say we want to be in the first row (below the standard toolbar) with a 
+      priority value of 1 relative to other toolbar's priority values that are in that same 
+      row.
+     
+     
+      <Menu guid="guidMenuAndCommandsCmdSet" id="MyToolbar" priority="0x0001" type="Toolbar">        
+        <Strings>
+          <ButtonText>AsmDude Toolbar</ButtonText>
+        </Strings>
+      </Menu>
+   -->
+    </Menus>
+
+    <!--
+    In this section we define new menu groups. A group is a container for menus or buttons (commands); 
+    from a visual point of view you can see the group as the part of a menu contained between separators. 
+    The parent of a group must be a menu/toolbar.
+    -->
+    <Groups>
+      <!--
+      To define a group we have to specify its ID, the parent and its display priority.
+      In this case we use as our parent menu the Tools menu of VS; its ID is defined in vsshlids.h.
+     
+      <Group guid="guidMenuAndCommandsCmdSet" id="MyMenuGroup" priority="0x600">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
+      </Group>
+ -->
+      <!--
+      The second group is created inside the main toolbar of VisualStudio. Again, you can find
+      the ID inside vsshlids.h.
+      
+      <Group guid="guidMenuAndCommandsCmdSet" id="MyMainToolbarGroup" priority="0x100">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_TOOL_STANDARD"/>
+      </Group>
+-->
+      <!--
+      Here we create a menu group for the toolbar defined above in the Menus section. We always
+      need a menu group because this is the only possible container for commands.
+      -->
+      <Group guid="guidMenuAndCommandsCmdSet" id="MyToolbarGroup" priority="0x100">
+        <Parent guid="guidMenuAndCommandsCmdSet" id="MyToolbar"/>
+      </Group>
+
+      <!--
+      Now create a new group inside the standard editor's context menu. As always the ID of this
+      menu is defined inside vsshlids.h.
+         -->
+      <Group guid="guidMenuAndCommandsCmdSet" id="MyEditorCtxGroup" priority="0x600">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN"/>
+      </Group>
+   
+    </Groups>
+
+    <!--
+    This section defines the elements the user can interact with, like a menu command or a button
+    or combo box.
+    -->
+    <Buttons>
+      
+      <Button guid="guidMenuAndCommandsCmdSet" id="cmdidMyCommand1" priority="0x100" type="Button">
+        <Parent guid="guidMenuAndCommandsCmdSet" id="MyMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="GoToNext"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>AsmDude: Upper Case</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidMenuAndCommandsCmdSet" id="cmdidMyCommand2" priority="0x100" type="Button">
+        <Parent guid="guidMenuAndCommandsCmdSet" id="MyMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="Search"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>AsmDude: Lower Case</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidMenuAndCommandsCmdSet" id="cmdidMyCommand3" priority="0x100" type="Button">
+        <Parent guid="guidMenuAndCommandsCmdSet" id="MyMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="Search"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>AsmDude: Auto Format</ButtonText>
+        </Strings>
+      </Button>
+ 
+    </Buttons>
+  </Commands>
+
+  
+  <!--
+  Inside this section, we have the ability to place menu groups inside some other menu or
+  menu / commands inside other groups.
+  For instance, it is possible to place one of VisualStudio's menus or commands inside one of our
+  groups or one of our groups inside a menu defined somewhere else.
+  -->
+  <CommandPlacements>
+    <!--Here we place two commands inside the empty menu group we created in the Groups section.-->
+    <CommandPlacement guid="guidMenuAndCommandsCmdSet" id="cmdidMyCommand1" priority="0x100">
+      <Parent guid="guidMenuAndCommandsCmdSet" id="MyEditorCtxGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidMenuAndCommandsCmdSet" id="cmdidMyCommand2" priority="0x100">
+      <Parent guid="guidMenuAndCommandsCmdSet" id="MyEditorCtxGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidMenuAndCommandsCmdSet" id="cmdidMyCommand3" priority="0x100">
+      <Parent guid="guidMenuAndCommandsCmdSet" id="MyEditorCtxGroup"/>
+    </CommandPlacement>
+
+    <!--Now we place a previously defined group inside the Solution Explorer's toolbar. -->
+    <CommandPlacement guid="guidMenuAndCommandsCmdSet" id="MyToolbarGroup" priority="0x600">
+      <Parent guid="guidSHLMainMenu" id="IDM_VS_TOOL_PROJWIN"/>
+    </CommandPlacement>
+   
+  </CommandPlacements>
+
+  
+  <!--This section is where you can associate a command with a keyboard shortcut; this association is
+  valid within a specific UI context, that is when the shell is inside a specific mode, e.g. during
+  debugging, editing a file or when the user is using a specific designer.-->
+  <KeyBindings>
+    <!--
+    To define a binding, we have to specify the sequence of keys to press to activate the command (keystate).
+    A key binding can use one or two key and optionally up to two modifiers (Alt, Control or Shift keys); the
+    keys are specified using the key1 and key2 attributes (key2 can be omitted) and the modifiers using the
+    mod1 and mod2 attributes (both optional).
+
+    The editor attribute is used to specify the UI context that activates the key binding.
+
+    Notice that Visual Studio has a lot of components and commands, so it can be difficult to find a
+    key binding not used by somebody else; if the key bindings are conflicting only one will be used
+    and one problem is that the shell will not inform the user that a conflict was found. The only
+    way to detect the problem is to start Visual Studio under debugger, try to execute any command
+    and look if there is a message in the output window about a duplicated accelerator found.
+    -->
+
+    <!--
+    In this example we want to use the <Control><1> binding for the first command defined in
+    the Buttons section above, so this is its definition:
+
+    <KeyBinding guid="guidMenuAndCommandsCmdSet" id="cmdidMyCommand1" editor="guidVSStd97" key1="U" mod1="Control" />
+    <KeyBinding guid="guidMenuAndCommandsCmdSet" id="cmdidMyCommand2" editor="guidVSStd97" key1="L" mod1="Control" />
+    <KeyBinding guid="guidMenuAndCommandsCmdSet" id="cmdidMyCommand3" editor="guidVSStd97" key1="L" mod1="Control" />
+    -->
+  </KeyBindings>
+
+
+  <!--
+  In this example we have always used descriptive names for the GUIDs and numeric IDs inside the definition
+  of the elements. The VSCT compiler actually enforces the usage of these names instead of hard-coding
+  the numbers in the definitions.
+
+  We have also seen that the compiler can read some of these constants from the files imported with the
+  "Extern" tag at the beginning of the file. The problem is then how to define the other constants.
+
+  The "Symbols" section is where this association between descriptive names and actual values happen.
+  -->
+  <Symbols>
+    <!--
+    The definition of symbols in a VSCT file derives from the way the IDs of the elements are defined
+    by the command table. We have seen that the ID is a GUID/Number pair, where the GUID is also called
+    Command Set and it provides the context in which the numeric ID is evaluated.
+
+    It makes then sense for the VSCT schema to define the GuidSymbl tag as top level element containig
+    the definiton of the numeric IDs.
+    -->
+
+    <!--The first GUID defined here is the one for the package. It does not contains numeric IDs.-->
+    <GuidSymbol name="guidMenuAndCommandsPkg" value="{3C7C5ABE-82AC-4A37-B077-0FF60E8B1FD3}" />
+    
+    <!--The GUID for the command set is the one that contains the numeric IDs used in this sample
+        with the only exception of the one used for the bitmap.-->
+    <GuidSymbol name="guidMenuAndCommandsCmdSet" value="{19492BCB-32B3-4EC3-8826-D67CD5526653}">
+      <IDSymbol name="MyToolbar" value="0x101" />
+      <IDSymbol name="MyMenuGroup" value="0x1010" />
+      <IDSymbol name="MyToolbarGroup" value="0x1011" />
+      <IDSymbol name="MyMainToolbarGroup" value="0x1012" />
+      <IDSymbol name="MyEditorCtxGroup" value="0x1013" />
+      <IDSymbol name="cmdidMyCommand1" value="0x2001" />
+      <IDSymbol name="cmdidMyCommand2" value="0x2002" />
+      <IDSymbol name="cmdidMyCommand3" value="0x2003" />
+    </GuidSymbol>
+
+  </Symbols>
+</CommandTable>

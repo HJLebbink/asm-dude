@@ -153,9 +153,9 @@ namespace unit_tests_asm_z3
         }
 
         #region AreEqual Flags
-        public static Tv GetTv5(Flags flag, State state, bool addBranchInfo)
+        public static Tv GetTv5(Flags flag, State state)
         {
-            return state.GetTv(flag, addBranchInfo);
+            return state.GetTv(flag);
         }
         public static void AreEqual(Flags flags, bool expected, State state)
         {
@@ -191,7 +191,7 @@ namespace unit_tests_asm_z3
             int nBits = RegisterTools.NBits(name);
 
             Assert.AreEqual(nBits, expectedTvArray.Length);
-            Tv[] actualTvArray = state.GetTvArray(name, true);
+            Tv[] actualTvArray = state.GetTvArray(name);
             Assert.AreEqual(nBits, actualTvArray.Length);
 
             ulong? actualLong = ToolsZ3.GetUlong(actualTvArray);
