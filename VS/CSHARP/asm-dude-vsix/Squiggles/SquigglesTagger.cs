@@ -222,9 +222,9 @@ namespace AsmDude.Squiggles
                         {
                             if (Decorate_Syntax_Errors || Decorate_Unimplemented)
                             {
-                                if (this._asmSimulator.IsImplemented(lineNumber))
+                                if (this._asmSimulator.Is_Implemented(lineNumber))
                                 {
-                                    if (Decorate_Syntax_Errors && this._asmSimulator.HasSyntaxError(lineNumber))
+                                    if (Decorate_Syntax_Errors && this._asmSimulator.Has_Syntax_Error(lineNumber))
                                     {
                                         string message = AsmSourceTools.Linewrap("Syntax Error: " + this._asmSimulator.Get_Syntax_Error(lineNumber).Message, AsmDudePackage.maxNumberOfCharsInToolTips);
                                         yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.SyntaxError, message));
@@ -376,7 +376,7 @@ namespace AsmDude.Squiggles
                         if (Settings.Default.AsmSim_Show_Syntax_Errors)
                         {
                             var tup = this._asmSimulator.Get_Syntax_Error(lineNumber);
-                            this.AddErrorTask_SyntaxError(lineNumber, tup.Message, tup.Mnemonic);
+                            if (tup.Message.Length > 0) this.AddErrorTask_SyntaxError(lineNumber, tup.Message, tup.Mnemonic);
                             errorListNeedsRefresh = true;
                         }
                         break;
@@ -386,7 +386,7 @@ namespace AsmDude.Squiggles
                         if (Settings.Default.AsmSim_Show_Usage_Of_Undefined)
                         {
                             var tup = this._asmSimulator.Get_Usage_Undefined_Warning(lineNumber);
-                            this.AddErrorTask_UsageUndefined(lineNumber, tup);
+                            if (tup.Length > 0) this.AddErrorTask_UsageUndefined(lineNumber, tup);
                             errorListNeedsRefresh = true;
                         }
                         break;
@@ -396,7 +396,7 @@ namespace AsmDude.Squiggles
                         if (Settings.Default.AsmSim_Show_Redundant_Instructions)
                         {
                             var tup = this._asmSimulator.Get_Redundant_Instruction_Warning(lineNumber);
-                            this.AddErrorTask_RedundantInstruction(lineNumber, tup);
+                            if (tup.Length > 0) this.AddErrorTask_RedundantInstruction(lineNumber, tup);
                             errorListNeedsRefresh = true;
                         }
                         break;
@@ -407,7 +407,7 @@ namespace AsmDude.Squiggles
             if (errorListNeedsRefresh)
             {
                 this._errorListProvider.Refresh();
-                this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
+                //this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
             }
         }
 
@@ -446,7 +446,7 @@ namespace AsmDude.Squiggles
 
                             if (Settings.Default.AsmSim_Show_Syntax_Errors)
                             {
-                                foreach (var tup in this._asmSimulator.SyntaxErrors)
+                                foreach (var tup in this._asmSimulator.Syntax_Errors)
                                 {
                                     this.AddErrorTask_SyntaxError(tup.LineNumber, tup.Message, tup.Mnemonic);
                                     errorListNeedsRefresh = true;
@@ -472,7 +472,7 @@ namespace AsmDude.Squiggles
                             if (errorListNeedsRefresh)
                             {
                                 this._errorListProvider.Refresh();
-                                this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
+                                //this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
                             }
                         }
                         #endregion Update Error Tasks
@@ -638,7 +638,7 @@ namespace AsmDude.Squiggles
                             if (errorListNeedsRefresh)
                             {
                                 this._errorListProvider.Refresh();
-                                this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
+                                //this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
                             }
                         }
                         #endregion Update Error Tasks

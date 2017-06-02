@@ -170,6 +170,7 @@ namespace AsmDude.Tools
         public event EventHandler<LineUpdatedEventArgs> Line_Updated_Event;
         public event EventHandler<EventArgs> Reset_Done_Event;
 
+        #region Reset
         public void Reset(int delay = -1)
         {
             this._delay.Reset(delay);
@@ -236,80 +237,105 @@ namespace AsmDude.Tools
                 bool update_Redundant_Instruction = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Show_Redundant_Instructions || Settings.Default.AsmSim_Decorate_Redundant_Instructions);
                 bool update_Known_Register = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Decorate_Registers);
 
-
                 foreach (int lineNumber in LineNumber_Centered_LOCAL(this._sFlow.FirstLineNumber, this._last_Changed_LineNumber, this._sFlow.LastLineNumber))
                 {
                     this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.USAGE_OF_UNDEFINED));
                 }
-
-
                 foreach (int lineNumber in LineNumber_Centered_LOCAL(this._sFlow.FirstLineNumber, this._last_Changed_LineNumber, this._sFlow.LastLineNumber))
                 {
-                    var syntaxInfo = this.Get_Syntax_Errors(lineNumber);
-
-                    if (!syntaxInfo.IsImplemented) // the operation is not implemented
+                    try
                     {
-                        if (decorate_Not_Implemented)
+                        var syntaxInfo = this.Calculate_Syntax_Errors(lineNumber);
+                        if (!syntaxInfo.IsImplemented) // the operation is not implemented
                         {
-                            this._isNotImplemented.Add(lineNumber);
-                            this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.NOT_IMPLEMENTED));
-                        }
-                    }
-                    else
-                    {
-                        if (syntaxInfo.Message != null) // found a syntax error
-                        {
-                            if (update_Syntax_Error)
+                            if (decorate_Not_Implemented)
                             {
-                                this._syntax_Errors.Add(lineNumber, (syntaxInfo.Mnemonic, syntaxInfo.Message));
-                                this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.SYNTAX_ERROR));
+                                this._isNotImplemented.Add(lineNumber);
+                                this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.NOT_IMPLEMENTED));
                             }
                         }
-                        else // operation is implemented and no syntax error
+                        else
                         {
-                            if (update_Known_Register)
+                            if (syntaxInfo.Message != null) // found a syntax error
                             {
-                                var content = this._sFlow.Get_Line(lineNumber);
-                                foreach (var v in content.Args)
+                                if (update_Syntax_Error)
                                 {
-                                    Rn regName = RegisterTools.ParseRn(v, true);
-                                    if (regName != Rn.NOREG)
+                                    this._syntax_Errors.Add(lineNumber, (syntaxInfo.Mnemonic, syntaxInfo.Message));
+                                    this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.SYNTAX_ERROR));
+                                }
+                            }
+                            else // operation is implemented and no syntax error
+                            {
+                                if (update_Known_Register)
+                                {
+                                    var content = this._sFlow.Get_Line(lineNumber);
+                                    foreach (var v in content.Args)
                                     {
-                                        this.PreCompute_Register_Value(regName, lineNumber, true);
-                                        this.PreCompute_Register_Value(regName, lineNumber, false);
-                                        this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
+                                        Rn regName = RegisterTools.ParseRn(v, true);
+                                        if (regName != Rn.NOREG)
+                                        {
+                                            this.PreCompute_Register_Value(regName, lineNumber, true);
+                                            this.PreCompute_Register_Value(regName, lineNumber, false);
+                                            this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
+                                        }
+                                    }
+                                }
+                                if (update_Usage_Undefined)
+                                {
+                                    string message = this.Calculate_Usage_Undefined_Warnings(lineNumber);
+                                    if (message.Length > 0)
+                                    {
+                                        this._usage_Undefined.Add(lineNumber, message);
+                                        this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.USAGE_OF_UNDEFINED));
+                                    }
+                                }
+                                if (update_Redundant_Instruction)
+                                {
+                                    string message = this.Calculate_Redundant_Instruction_Warnings(lineNumber);
+                                    if (message.Length > 0)
+                                    {
+
+                                        this._redundant_Instruction.Add(lineNumber, message);
+                                        this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.REDUNDANT));
                                     }
                                 }
                             }
-                            if (update_Usage_Undefined)
-                            {
-                                string message = this.Get_Usage_Undefined_Warnings(lineNumber);
-                                if (message.Length > 0)
-                                {
-                                    this._usage_Undefined.Add(lineNumber, message);
-                                    this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.USAGE_OF_UNDEFINED));
-                                }
-                            }
-                            if (update_Redundant_Instruction)
-                            {
-                                string message = this.Get_Redundant_Instruction_Warnings(lineNumber);
-                                if (message.Length > 0)
-                                {
-
-                                    this._redundant_Instruction.Add(lineNumber, message);
-                                    this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.REDUNDANT));
-                                }
-                            }
                         }
+                    }
+                    catch (Exception e)
+                    {
+                        AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:PreCalculate_LOCAL; e={1}", ToString(), e.ToString()));
                     }
                 }
             }
             #endregion
         }
+        #endregion
 
-        public StaticFlow StaticFlow { get { return this._sFlow; } }
-
-        public (bool IsImplemented, Mnemonic Mnemonic, string Message) Get_Syntax_Errors(int lineNumber)
+        #region Syntax Errors
+        public IEnumerable<(int LineNumber, Mnemonic Mnemonic, string Message)> Syntax_Errors
+        {
+            get
+            {
+                foreach (var x in this._syntax_Errors)
+                {
+                    yield return (x.Key, x.Value.Mnemonic, x.Value.Message);
+                }
+            }
+        }
+        public bool Is_Implemented(int lineNumber)
+        {
+            return !this._isNotImplemented.Contains(lineNumber);
+        }
+        public bool Has_Syntax_Error(int lineNumber)
+        {
+            return this._syntax_Errors.ContainsKey(lineNumber);
+        }
+        public (Mnemonic Mnemonic, string Message) Get_Syntax_Error(int lineNumber)
+        {
+            return this._syntax_Errors.TryGetValue(lineNumber, out (Mnemonic Mnemonic, string Message) error) ? error : (Mnemonic.NONE, "");
+        }
+        private (bool IsImplemented, Mnemonic Mnemonic, string Message) Calculate_Syntax_Errors(int lineNumber)
         {
             var dummyKeys = ("", "", "");
             var content = this._sFlow.Get_Line(lineNumber);
@@ -327,32 +353,6 @@ namespace AsmDude.Tools
                     : (IsImplemented: true, Mnemonic: content.Mnemonic, Message: null);
             }
         }
-
-        #region Syntax Errors
-
-        public IEnumerable<(int LineNumber, Mnemonic Mnemonic, string Message)> SyntaxErrors
-        {
-            get
-            {
-                foreach (var x in this._syntax_Errors)
-                {
-                    yield return (x.Key, x.Value.Mnemonic, x.Value.Message);
-                }
-            }
-        }
-        public bool IsImplemented(int lineNumber)
-        {
-            return !this._isNotImplemented.Contains(lineNumber);
-        }
-
-        public bool HasSyntaxError(int lineNumber)
-        {
-            return this._syntax_Errors.ContainsKey(lineNumber);
-        }
-        public (Mnemonic Mnemonic, string Message) Get_Syntax_Error(int lineNumber)
-        {
-            return this._syntax_Errors.TryGetValue(lineNumber, out (Mnemonic Mnemonic, string Message) error) ? error : (Mnemonic.NONE, "");
-        }
         #endregion
 
         #region Usage Undefined
@@ -360,7 +360,6 @@ namespace AsmDude.Tools
         {
             get { foreach (var x in this._usage_Undefined) yield return (x.Key, x.Value); }
         }
-
         public bool Has_Usage_Undefined_Warning(int lineNumber)
         {
             return this._usage_Undefined.ContainsKey(lineNumber);
@@ -369,8 +368,7 @@ namespace AsmDude.Tools
         {
             return this._usage_Undefined.TryGetValue(lineNumber, out string message) ? message : "";
         }
-
-        public string Get_Usage_Undefined_Warnings(int lineNumber)
+        private string Calculate_Usage_Undefined_Warnings(int lineNumber)
         {
             lock (this._updateLock)
             {
@@ -434,8 +432,7 @@ namespace AsmDude.Tools
         {
             return this._redundant_Instruction.TryGetValue(lineNumber, out string message) ? message : "";
         }
-
-        public string Get_Redundant_Instruction_Warnings(int lineNumber)
+        private string Calculate_Redundant_Instruction_Warnings(int lineNumber)
         {
             var content = this._sFlow.Get_Line(lineNumber);
             if (content.Mnemonic == Mnemonic.NONE) return "";
@@ -475,96 +472,112 @@ namespace AsmDude.Tools
         #endregion
 
         #region Getters
-        public void PreCompute_Register_Value(Rn name, int lineNumber, bool before)
+        private void PreCompute_Register_Value(Rn name, int lineNumber, bool before)
         {
             // get the register value and discard the result, the value will be added to the cache
-            Get_Register_Value(name, lineNumber, before, false, true);
+            this.Get_Register_Value(name, lineNumber, before, false, true);
         }
 
         public (string Value, bool Bussy) Get_Register_Value(Rn name, int lineNumber, bool before, bool async, bool create)
         {
-            if (!this.Enabled) return ("", false);
+            try
+            {
+                if (!this.Enabled) return ("", false);
 
-            var state = (before) ? this.Get_State_Before(lineNumber, async, create) : this.Get_State_After(lineNumber, async, create);
-            if (state.Bussy)
-            {
-                this._threadPool2.QueueWorkItem(Update_State_And_TvArray_LOCAL);
-                this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
-                return ("[I'm bussy and haven't acquired the state of line " + (lineNumber+1) + " yet.]", true); // plus 1 for the lineNumber because lineNumber 0 is shown as lineNumber 1
-            }
-            if (state.State == null)
-            {
-                this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
-                return ("[I'm confused, sorry about that.]", true);
-            }
-
-            Tv[] reg = state.State.GetTvArray_Cached(name);
-            if (reg == null)
-            {
-                this._threadPool2.QueueWorkItem(Update_TvArray_LOCAL, state.State);
-                this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
-                return ("[I'm bussy determining the bits of " + name + ".]", true);
-            }
-            else
-            {
-                this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
-                return (ToString_LOCAL(reg), false);
-            }
-
-            #region Local Methods
-
-            void Update_State_And_TvArray_LOCAL()
-            {
-                var state2 = (before) ? this.Get_State_Before(lineNumber, false, true) : this.Get_State_After(lineNumber, false, true);
-                Update_TvArray_LOCAL(state2.State);
-            }
-
-            void Update_TvArray_LOCAL(State state2)
-            {
-                state2.Update_TvArray_Cached(name);
-                this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
-            }
-
-            string ToString_LOCAL(Tv[] array)
-            {
-                if (false)
+                var state = (before) ? this.Get_State_Before(lineNumber, async, create) : this.Get_State_After(lineNumber, async, create);
+                if (state.Bussy)
                 {
-                    return string.Format("{0} = {1}\n{2}", ToolsZ3.ToStringHex(reg), ToolsZ3.ToStringBin(reg), state.State.ToStringConstraints("") + state.State.ToStringRegs("") + state.State.ToStringFlags(""));
+                    this._threadPool2.QueueWorkItem(Update_State_And_TvArray_LOCAL);
+                    this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
+                    return ("[I'm bussy and haven't acquired the state of line " + (lineNumber + 1) + " yet.]", true); // plus 1 for the lineNumber because lineNumber 0 is shown as lineNumber 1
+                }
+                if (state.State == null)
+                {
+                    this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
+                    return ("[I'm confused, sorry about that.]", true);
+                }
+
+                Tv[] reg = state.State.GetTvArray_Cached(name);
+                if (reg == null)
+                {
+                    this._threadPool2.QueueWorkItem(Update_TvArray_LOCAL, state.State);
+                    this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
+                    return ("[I'm bussy determining the bits of " + name + ".]", true);
                 }
                 else
                 {
-                    return string.Format("{0} = {1}", ToolsZ3.ToStringHex(reg), ToolsZ3.ToStringBin(reg));
+                    this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
+                    return (ToString_LOCAL(reg), false);
                 }
+
+                #region Local Methods
+
+                void Update_State_And_TvArray_LOCAL()
+                {
+                    var state2 = (before) ? this.Get_State_Before(lineNumber, false, true) : this.Get_State_After(lineNumber, false, true);
+                    Update_TvArray_LOCAL(state2.State);
+                }
+
+                void Update_TvArray_LOCAL(State state2)
+                {
+                    state2.Update_TvArray_Cached(name);
+                    this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
+                }
+
+                string ToString_LOCAL(Tv[] array)
+                {
+                    if (false)
+                    {
+                        return string.Format("{0} = {1}\n{2}", ToolsZ3.ToStringHex(reg), ToolsZ3.ToStringBin(reg), state.State.ToStringConstraints("") + state.State.ToStringRegs("") + state.State.ToStringFlags(""));
+                    }
+                    else
+                    {
+                        return string.Format("{0} = {1}", ToolsZ3.ToStringHex(reg), ToolsZ3.ToStringBin(reg));
+                    }
+                }
+                #endregion
             }
-            #endregion
+            catch (Exception e)
+            {
+                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Get_Register_Value; e={1}", ToString(), e.ToString()));
+                return ("Exception in AsmSimulator:Get_Register_Value", false);
+            }
         }
-    
+
         public (bool HasValue, bool Bussy) Has_Register_Value(Rn name, int lineNumber, bool before, bool create = false)
         {
-            var state = (before) 
-                ? this.Get_State_Before(lineNumber, false, false)
-                : this.Get_State_After(lineNumber, false, false);
-            if (state.Bussy)
+            try
             {
-                return (false, true);
-            }
-            else if (state.State == null) 
-            {
-                if (create) PreCompute_Register_Value(name, lineNumber, before);
-                return (false, true);
-            }
-            else
-            {
-                Tv[] content = state.State.GetTvArray_Cached(name);
-                if (content == null)
+                var state = (before)
+                    ? this.Get_State_Before(lineNumber, false, false)
+                    : this.Get_State_After(lineNumber, false, false);
+                if (state.Bussy)
+                {
+                    return (false, true);
+                }
+                else if (state.State == null)
                 {
                     if (create) PreCompute_Register_Value(name, lineNumber, before);
                     return (false, true);
                 }
-                foreach (Tv tv in content)
+                else
                 {
-                    if ((tv == Tv.ONE) || (tv == Tv.ZERO) || (tv == Tv.UNDEFINED)) return (true, false);
+                    Tv[] content = state.State.GetTvArray_Cached(name);
+                    if (content == null)
+                    {
+                        if (create) PreCompute_Register_Value(name, lineNumber, before);
+                        return (false, true);
+                    }
+                    foreach (Tv tv in content)
+                    {
+                        if ((tv == Tv.ONE) || (tv == Tv.ZERO) || (tv == Tv.UNDEFINED)) return (true, false);
+                    }
+                    return (false, false);
                 }
+            }
+            catch (Exception e)
+            {
+                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Has_Register_Value; e={1}", ToString(), e.ToString()));
                 return (false, false);
             }
         }
@@ -574,7 +587,7 @@ namespace AsmDude.Tools
         /// returns null otherwise and schedules its computation. 
         /// if the state is not computed yet, 
         /// return null and create one in a different thread according to the provided createState boolean.</summary>
-        public (State State, bool Bussy) Get_State_After(int lineNumber, bool async, bool create)
+        private (State State, bool Bussy) Get_State_After(int lineNumber, bool async, bool create)
         {
             if (!this.Enabled) return (State: null, Bussy: false);
             if (this._cached_States_After.TryGetValue(lineNumber, out State result))
@@ -625,7 +638,7 @@ namespace AsmDude.Tools
             #endregion
         }
 
-        public (State State, bool Bussy) Get_State_Before(int lineNumber, bool async, bool create)
+        private (State State, bool Bussy) Get_State_Before(int lineNumber, bool async, bool create)
         {
             if (!this.Enabled) return (State: null, Bussy: false);
             if (this._cached_States_Before.TryGetValue(lineNumber, out State result))

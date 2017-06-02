@@ -61,7 +61,7 @@ namespace AsmSim
             }
             else
             {
-                return "!" + lineNumber.ToString();
+                return "!" + (lineNumber + 1).ToString();
             }
         }
         public (string Key1, string Key2) Get_Key((int lineNumber1, int lineNumber2) lineNumber)

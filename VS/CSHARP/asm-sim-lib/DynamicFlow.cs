@@ -27,7 +27,6 @@ using System.Text;
 using QuickGraph;
 using Microsoft.Z3;
 using AsmTools;
-using Amib.Threading;
 
 namespace AsmSim
 {
@@ -495,21 +494,21 @@ namespace AsmSim
         private State Construct_State_Private(string key, bool after)
         {
             Tools tools = new Tools(this._tools);
-            var alreadyVisisted = new HashSet<string>();
+            var visisted = new List<string>();
             lock (this._updateLock)
             {
-                return Construct_State_Private_LOCAL(key, after);
+                return Construct_State_Private_LOCAL(key, after, visisted) ?? new State(tools, key, key);
             }
 
             #region Local Methods
 
-            State Construct_State_Private_LOCAL(string key_LOCAL, bool after_LOCAL)
+            State Construct_State_Private_LOCAL(string key_LOCAL, bool after_LOCAL, ICollection<string> visited_LOCAL)
             {
                 #region Payload
-                if (alreadyVisisted.Contains(key_LOCAL)) // found a cycle
+                if (visited_LOCAL.Contains(key_LOCAL)) // found a cycle
                 {
                     Console.WriteLine("WARNING: DynamicFlow: Construct_State_Private: Found cycle at key "+key_LOCAL+ "; not implemented yet.");
-                    return new State(tools, key_LOCAL, key_LOCAL);
+                    return null; //new State(tools, key_LOCAL, key_LOCAL);
                 }
                 if (!this.Has_Vertex(key_LOCAL))
                 {
@@ -517,8 +516,8 @@ namespace AsmSim
                     return new State(tools, key_LOCAL, key_LOCAL);
                 }
 
-                //alreadyVisisted.Add(key_LOCAL); // make better cycle detection method, this does not work
                 State result;
+                visited_LOCAL.Add(key_LOCAL);
 
                 switch (this._graph.InDegree(key_LOCAL))
                 {
@@ -527,13 +526,22 @@ namespace AsmSim
                         break;
                     case 1:
                         var edge = this._graph.InEdge(key_LOCAL, 0);
-                        result = Construct_State_Private_LOCAL(edge.Source, false); // recursive call
-                        result.Update_Forward(edge.Tag.StateUpdate);
+                        if (edge.Tag.StateUpdate.Reset)
+                        {
+                            result = new State(tools, key_LOCAL, key_LOCAL);
+                        } 
+                        else
+                        {
+                            result = Construct_State_Private_LOCAL(edge.Source, false, visited_LOCAL); // recursive call
+                            if (result == null) return null;
+                            result.Update_Forward(edge.Tag.StateUpdate);
+                        }
                         break;
                     case 2:
                         var edge1 = this._graph.InEdge(key_LOCAL, 0);
                         var edge2 = this._graph.InEdge(key_LOCAL, 1);
-                        result = Merge_State_Update_LOCAL(key_LOCAL, edge1.Source, edge1.Tag.StateUpdate, edge2.Source, edge2.Tag.StateUpdate);
+                        result = Merge_State_Update_LOCAL(key_LOCAL, edge1.Source, edge1.Tag.StateUpdate, edge2.Source, edge2.Tag.StateUpdate, visited_LOCAL);
+                        if (result == null) return null;
                         break;
                     default:
                         Console.WriteLine("WARNING: DynamicFlow:Construct_State_Private: inDegree = " + this._graph.InDegree(key_LOCAL) + " is not implemented yet");
@@ -552,11 +560,11 @@ namespace AsmSim
                             break;
                         case 2:
                             State state1 = new State(result);
-                            State state2 = new State(result);
                             {
                                 var edge1 = this._graph.OutEdge(key_LOCAL, 0);
                                 state1.Update_Forward(edge1.Tag.StateUpdate);
                             }
+                            State state2 = new State(result);
                             {
                                 var edge2 = this._graph.OutEdge(key_LOCAL, 1);
                                 state2.Update_Forward(edge2.Tag.StateUpdate);
@@ -579,11 +587,13 @@ namespace AsmSim
                 return result;
             }
 
-            State Merge_State_Update_LOCAL(string target, string source1, StateUpdate update1, string source2, StateUpdate update2)
+            State Merge_State_Update_LOCAL(string target, string source1, StateUpdate update1, string source2, StateUpdate update2, ICollection<string> visited2)
             {
-                State state1 = Construct_State_Private_LOCAL(source1, false); // recursive call
-                State state2 = Construct_State_Private_LOCAL(source2, false); // recursive call
-                         
+                State state1 = Construct_State_Private_LOCAL(source1, false, new List<string>(visited2)); // recursive call
+                if (state1 == null) return null;
+                State state2 = Construct_State_Private_LOCAL(source2, false, new List<string>(visited2)); // recursive call
+                if (state2 == null) return null;
+
                 StateUpdate mergeStateUpdate;
                 {
                     string nextKey1 = target + "A";

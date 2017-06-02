@@ -11,6 +11,11 @@ label1:
 
 
 
+	mov rcx, 10
+labelx:
+	dec rcx
+	jnz labelx
+	mov rax, rcx
 
 	aaa 
 

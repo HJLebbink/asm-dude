@@ -495,8 +495,8 @@ namespace AsmDude.Tools
             errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
 
             errorListProvider.Tasks.Add(errorTask);
-            errorListProvider.Show(); // do not use BringToFront since that will select the error window.
             errorListProvider.Refresh();
+            //errorListProvider.Show(); // do not use BringToFront since that will select the error window.
         }
 
         public static MicroArch Get_MicroArch_Switched_On()
