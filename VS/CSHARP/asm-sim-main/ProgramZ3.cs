@@ -43,8 +43,8 @@ namespace AsmSim
 
             //TestGraph();
             //TestMnemonic();
-            //TestMemorySpeed();
-            TestDynamicFlow();
+            TestMemorySpeed();
+            //TestDynamicFlow();
             //EmptyMemoryTest();
             //ProgramSynthesis1();
             
@@ -102,8 +102,11 @@ namespace AsmSim
             
             //Solver solver = ctx.MkSolver("QF_ABV");
             //Solver solver = ctx.MkSolver("QF_BV");
-            Solver solver = ctx.MkSolver(ctx.MkTactic("qfbv"));
-            //Solver solver = ctx.MkSolver();
+            //Solver solver = ctx.MkSolver(ctx.MkTactic("qfbv"));
+            //Solver solver = ctx.MkSolver(ctx.MkTactic("simplify"));
+            //Solver solver = ctx.MkSimpleSolver();
+            Solver solver = ctx.MkSolver();
+
 
             BitVecExpr rax0 = ctx.MkBVConst("RAX!0", 64);
             BitVecExpr rax1 = ctx.MkBVConst("RAX!1", 64);
@@ -136,7 +139,7 @@ namespace AsmSim
                 ArrayExpr memX5 = ctx.MkStore(memX4, ctx.MkBVAdd(ctx.MkBV(5, 64), rax0), ctx.MkExtract((6 * 8) - 1, 5 * 8, rbx0));
                 ArrayExpr memX6 = ctx.MkStore(memX5, ctx.MkBVAdd(ctx.MkBV(6, 64), rax0), ctx.MkExtract((7 * 8) - 1, 6 * 8, rbx0));
                 ArrayExpr memX7 = ctx.MkStore(memX6, ctx.MkBVAdd(ctx.MkBV(7, 64), rax0), ctx.MkExtract((8 * 8) - 1, 7 * 8, rbx0));
-                solver.Assert(ctx.MkEq(mem1, memX7).Simplify() as BoolExpr);
+                solver.Assert(ctx.MkEq(mem1, memX7));
 
                 #endregion
                 #region mov rcx, qword ptr [rax]
@@ -151,7 +154,7 @@ namespace AsmSim
                 BitVecExpr y6 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(6, 64), rax1)) as BitVecExpr;
                 BitVecExpr y7 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(7, 64), rax1)) as BitVecExpr;
                 BitVecExpr y = ctx.MkConcat(y7, ctx.MkConcat(y6, ctx.MkConcat(y5, ctx.MkConcat(y4, ctx.MkConcat(y3, ctx.MkConcat(y2, ctx.MkConcat(y1, y0)))))));
-                solver.Assert(ctx.MkEq(rcx2, y).Simplify() as BoolExpr);
+                solver.Assert(ctx.MkEq(rcx2, y));
                 solver.Assert(ctx.MkEq(mem2, mem1));
                 #endregion
                 //Console.WriteLine(solver);
@@ -190,17 +193,131 @@ namespace AsmSim
                 BitVecExpr y6 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(6, 64), rax1)) as BitVecExpr;
                 BitVecExpr y7 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(7, 64), rax1)) as BitVecExpr;
                 BitVecExpr y = ctx.MkConcat(y7, ctx.MkConcat(y6, ctx.MkConcat(y5, ctx.MkConcat(y4, ctx.MkConcat(y3, ctx.MkConcat(y2, ctx.MkConcat(y1, y0)))))));
-                solver.Assert(ctx.MkEq(rcx2, y).Simplify() as BoolExpr);
+                solver.Assert(ctx.MkEq(rcx2, y));
                 solver.Assert(ctx.MkEq(mem2, mem1));
 
                 //Console.WriteLine(solver);
             }
+            bool method1 = false;
+            bool method2 = false;
 
-            Status status_Pos = solver.Check(ctx.MkEq(rbx2, rcx2));
-            Console.WriteLine("Status Pos = " + status_Pos);
+            var constraints = solver.Assertions;
+            {
+                BoolExpr t = ctx.MkNot(ctx.MkEq(rbx2, rcx2));
+                Console.WriteLine("test=" + t);
+                Status status;
+                DateTime startTime = DateTime.Now;
+                if (method1)
+                {
+                    solver.Reset();
+                    solver.Assert(constraints);
+                    solver.Assert(t);
+                    status = solver.Check();
+                }
+                else if (method2)
+                {
+                    solver.Push();
+                    solver.Assert(t);
+                    status = solver.Check();
+                }
+                else
+                {
+                    status = solver.Check(t);
+                }
+                double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
+                Console.WriteLine("Status Neg = " + status + ": Elapsed time " + elapsedSec + " sec");
+                Console.WriteLine(solver.Statistics);
 
-            Status status_Neg = solver.Check(ctx.MkNot(ctx.MkEq(rbx2, rcx2)));
-            Console.WriteLine("Status Neg = "+status_Neg);
+                if (method1)
+                {
+                    // do nothing
+                }
+                else if (method2)
+                {
+                    solver.Pop();
+                }
+                else
+                {
+                    // do nothing
+                }
+            }
+            {
+                BoolExpr t = ctx.MkEq(rbx2, rcx2);
+                Console.WriteLine("test=" + t);
+                Status status;
+                DateTime startTime = DateTime.Now;
+                if (method1)
+                {
+                    solver.Reset();
+                    solver.Assert(constraints);
+                    solver.Assert(t);
+                    status = solver.Check();
+                }
+                else if (method2)
+                {
+                    solver.Push();
+                    solver.Assert(t);
+                    status = solver.Check();
+                }
+                else
+                {
+                    status = solver.Check(t);
+                }
+                double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
+                Console.WriteLine("Status Pos = " + status + ": Elapsed time " + elapsedSec + " sec");
+                Console.WriteLine(solver.Statistics);
+                if (method1)
+                {
+                    // do nothing
+                }
+                else if (method2)
+                {
+                    solver.Pop();
+                }
+                else
+                {
+                    // do nothing
+                }
+            }
+            {
+                BoolExpr t = ctx.MkNot(ctx.MkEq(rbx2, rcx2));
+                Console.WriteLine("test=" + t);
+                Status status;
+                DateTime startTime = DateTime.Now;
+                if (method1)
+                {
+                    solver.Reset();
+                    solver.Assert(constraints);
+                    solver.Assert(t);
+                    status = solver.Check();
+                }
+                else if (method2)
+                {
+                    solver.Push();
+                    solver.Assert(t);
+                    status = solver.Check();
+                }
+                else
+                {
+                    status = solver.Check(t);
+                }
+                double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
+                Console.WriteLine("Status Neg = " + status + ": Elapsed time " + elapsedSec + " sec");
+                Console.WriteLine(solver.Statistics);
+
+                if (method1)
+                {
+                    // do nothing
+                }
+                else if (method2)
+                {
+                    solver.Pop();
+                }
+                else
+                {
+                    // do nothing
+                }
+            }
         }
 
         static void TestGraph()
@@ -255,7 +372,7 @@ namespace AsmSim
             if (false)
             {
                 tools.StateConfig.Set_All_Off();
-                tools.StateConfig.Set_All_Flags_On();
+                //tools.StateConfig.Set_All_Flags_On();
                 tools.StateConfig.RAX = true;
 
                 string line1 = "mov rax, 1";
@@ -264,11 +381,47 @@ namespace AsmSim
                 {   // forward
                     string rootKey = "!INIT";
                     State state = new State(tools, rootKey, rootKey);
+
+                    Console.WriteLine("Before \"" + line1 + "\", we know:\n" + state);
                     state = Runner.SimpleStep_Forward(line1, state);
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                     state = Runner.SimpleStep_Forward(line2, state);
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
 
                     Console.WriteLine("IsConsistent=" + state.IsConsistent);
-                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+            }
+            if (true)
+            {
+                bool logToDisplay = true;
+
+                tools.StateConfig.Set_All_Off();
+                tools.StateConfig.Set_All_Flags_On();
+                tools.StateConfig.RAX = true;
+                tools.StateConfig.RBX = true;
+                tools.ShowUndefConstraints = true;
+
+                Random rand = new Random((int)DateTime.Now.Ticks);
+
+                for (int i = 0; i < 1; ++i)
+                {
+                    ulong value_rax = ToolsZ3.GetRandomUlong(rand);
+                    ulong value_rbx = ToolsZ3.GetRandomUlong(rand);
+                    ulong value_result = value_rax ^ value_rbx;
+
+                    string line1 = "mov rax, " + value_rax;
+                    string line2 = "mov rbx, " + value_rbx;
+                    string line3 = "xor rax, rbx";
+
+                    State state = new State(tools, "!0", "!0");
+                    if (logToDisplay) Console.WriteLine("Before line 3 with \"" + line3 + "\", we know:\n" + state);
+                    state = Runner.SimpleStep_Backward(line3, state);
+                    if (logToDisplay) Console.WriteLine("After line 3 with \"" + line3 + "\", we know:\n" + state);
+
+                    state = Runner.SimpleStep_Backward(line2, state);
+                    if (logToDisplay) Console.WriteLine("After line 2 with \"" + line2 + "\", we know:\n" + state);
+                    state = Runner.SimpleStep_Backward(line1, state);
+                    if (logToDisplay) Console.WriteLine("After line 1 with \"" + line1 + "\", we know:\n" + state);
                 }
             }
             if (false)

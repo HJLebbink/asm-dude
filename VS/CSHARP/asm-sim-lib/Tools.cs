@@ -251,7 +251,7 @@ namespace AsmSim
                 BitVecExpr address2 = ctx.MkBVAdd(address, ctx.MkBV(i, 64));
                 mem = ctx.MkStore(mem, address2, ctx.MkExtract((8 * (i + 1)) - 1, (8 * i), value));
             }
-            return mem.Simplify() as ArrayExpr;
+            return mem;
         }
         public static State Collapse(IEnumerable<State> previousStates)
         {

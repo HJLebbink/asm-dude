@@ -64,11 +64,6 @@ namespace AsmSim
         {
             Debug.Assert(a.SortSize >= 4);
             Debug.Assert(b.SortSize >= 4);
-            //TODO check if this code is equal to FlagTools.Create_AF_Sub
-            //BitVecExpr ay = ctx.MkConcat(bv0_1bit, ctx.MkExtract(3, 0, ax));
-            //BitVecExpr by = ctx.MkConcat(bv0_1bit, ctx.MkExtract(3, 0, bx2));
-            //BitVecExpr ry = ctx.MkBVSub(ay, by);
-            //AuxiliaryFlag af = ctx.MkEq(ctx.MkExtract(3, 3, ry), bv1_1bit).Simplify() as BoolExpr; ;
             return Create_CF_Sub(ctx.MkExtract(3, 0, a), ctx.MkExtract(3, 0, b), 4, ctx);
         }
         public static BoolExpr Create_AF_Mul(BitVecExpr a, BitVecExpr b, Context ctx)

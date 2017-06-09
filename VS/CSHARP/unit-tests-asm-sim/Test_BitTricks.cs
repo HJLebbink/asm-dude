@@ -49,6 +49,51 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
+        public void Test_BitTricks_LegatosMutliplier()
+        {
+            /*
+            LDX #8    ; 1; load X immediate with the 8
+            LDA #0    ; 2; load A immediate with the 0
+            CLC       ; 3; set C to 0 LOOP
+    LOOP:   ROR F1    ; 4; rotate F1 right circular through C
+            BCC ZCOEF ; 5; branch to ZCOEF if C = 0
+            CLC       ; 6; set C to 0
+            ADC F2    ; 7; set A to A+F2+C and C to the carry ZCOEF
+    ZCOEF:  ROR A     ; 8; rotate A right circular through C
+            ROR LOW   ; 9; rotate LOW right circular through C
+            DEX       ;10; set X to X-1
+            BNE LOOP  ;11; branch to LOOP if Z = 0
+            */
+
+            #region Stateconfig
+            Tools tools = CreateTools(0);
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.CF = true;
+            tools.StateConfig.ZF = true;
+
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RCX = true;
+            tools.StateConfig.RDX = true;
+            tools.StateConfig.R8 = true;
+            tools.StateConfig.R9 = true;
+            tools.StateConfig.R10 = true;
+            #endregion
+
+            string programStr =
+                "           clc                                 " + Environment.NewLine +
+                "           ror al, 1                           " + Environment.NewLine +
+                "           jnc ZCOEF                           ";
+
+            StaticFlow sFlow = new StaticFlow(programStr, tools);
+            if (logToDisplay) Console.WriteLine(sFlow);
+
+            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            if (logToDisplay) Console.WriteLine("DynamicFlow:\n" + dFlow.ToString(sFlow));
+
+            var state = dFlow.EndState;
+        }
+
+        [TestMethod]
         public void Test_BitTricks_Mod3()
         {
             /*

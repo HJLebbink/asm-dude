@@ -855,11 +855,13 @@ namespace unit_tests_asm_z3
                 Context ctx = state.Ctx;
 
                 StateUpdate updateState = new StateUpdate(state.TailKey, Tools.CreateKey(state.Tools.Rand), tools, ctx);
+                if (logToDisplay) Console.WriteLine("Intially, we know:\n" + state);
+
                 updateState.Set(Rn.AL, a);
                 updateState.Set(Rn.BL, b);
 
                 state.Update_Forward(updateState);
-                //if (logToDisplay) Console.WriteLine("Before \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay) Console.WriteLine("Before \"" + line1 + "\", we know:\n" + state);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);

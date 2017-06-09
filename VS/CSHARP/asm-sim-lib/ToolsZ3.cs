@@ -156,9 +156,6 @@ namespace AsmSim
                 value = (value == null) ? next_value : ctx.MkConcat(next_value, value);
                 undef = (undef == null) ? next_undef : ctx.MkConcat(next_undef, undef);
             }
-            value = value.Simplify() as BitVecExpr;
-            undef = undef.Simplify() as BitVecExpr;
-
             return (value: value, undef: undef);
         }
 

@@ -100,10 +100,9 @@ namespace AsmSim
             BitVecExpr bx = ctx.MkConcat(bv0_1bit, b);
             BitVecExpr bx2 = ctx.MkBVAdd(bx, ctx.MkITE(carry, ctx.MkBV(1, nBits + 1), ctx.MkBV(0, nBits + 1)) as BitVecExpr);
             BitVecExpr rx = ctx.MkBVSub(ax, bx2);
-            BitVecExpr result = ctx.MkExtract(nBits - 1, 0, rx).Simplify() as BitVecExpr; ;
+            BitVecExpr result = ctx.MkExtract(nBits - 1, 0, rx);
 
             BoolExpr cf = ToolsFlags.Create_CF_Sub(ax, bx2, nBits, ctx);
-            //BoolExpr cf = ctx.MkEq(ctx.MkExtract(nBits, nBits, rx), bv1_1bit).Simplify() as BoolExpr;
             BoolExpr of = ToolsFlags.Create_OF_Sub(ax, bx2, nBits, ctx);
             BoolExpr af = ToolsFlags.Create_AF_Sub(ax, bx2, ctx);
             return (result:result, cf:cf, of:of, af:af);

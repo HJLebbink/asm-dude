@@ -1,11 +1,9 @@
 ﻿using AsmSim;
 using AsmTools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Diagnostics;
 using System;
 using System.Numerics;
 using Microsoft.Z3;
-using AsmSim.Mnemonics;
 
 namespace unit_tests_asm_z3
 {

@@ -429,7 +429,7 @@ namespace unit_tests_asm_z3 {
             Console.WriteLine("mov qword ptr[rax], rcx");
             mem = ctx.MkStore(mem, rax, rcx);
             Console.WriteLine("mov rdx, qword ptr[rax]");
-            state.Assert(ctx.MkEq(rdx, ctx.MkSelect(mem, rax).Simplify()));
+            state.Assert(ctx.MkEq(rdx, ctx.MkSelect(mem, rax)));
 
             #region Write to console
 

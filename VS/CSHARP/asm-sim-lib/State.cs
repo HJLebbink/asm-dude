@@ -31,7 +31,7 @@ namespace AsmSim
     public class State
     {
         #region Fields
-        public static readonly bool SIMPLIFY_ON = true;
+        public static readonly bool SIMPLIFY_ON = false;
         public static readonly bool ADD_COMPUTED_VALUES = false;
 
         private readonly Tools _tools;
@@ -76,15 +76,10 @@ namespace AsmSim
 
             Solver CreateSolver_LOCAL()
             {
-                if (true)
-                {
-                    Tactic tactic = this._ctx.MkTactic("qfbv");
-                    return this._ctx.MkSolver(tactic);
-                }
-                else
-                {
-                    return this._ctx.MkSolver("QF_ABV");
-                }
+                return this._ctx.MkSolver(this._ctx.MkTactic("qfbv"));
+                //return this._ctx.MkSolver("QF_ABV");
+                //return this._ctx.MkSolver();
+                //return this._ctx.MkSolver("QF_BV");
             }
         }
 
@@ -98,7 +93,7 @@ namespace AsmSim
         /// <summary>Copy constructor</summary>
         public State(State other) : this(other.Tools)
         {
-            lock (this._ctxLock) this.Copy(other);
+            lock (this._ctxLock) other.Copy(this);
         }
 
         /// <summary>Copy this state to the provided other State</summary>
@@ -109,7 +104,7 @@ namespace AsmSim
             {
                 other.TailKey = this.TailKey;
                 other.HeadKey = this.HeadKey;
-                other.UndefGrounding = false;
+                this.UndefGrounding = false;
 
                 Context ctx = other.Ctx;
                 {

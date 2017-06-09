@@ -26,14 +26,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 using AsmDude.OptionsPage;
 using System.Text;
 using AsmDude.Tools;
-using EnvDTE;
 
-namespace AsmDude {
-
+namespace AsmDude
+{
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#110", "#112", Vsix.Version, IconResourceID = 400)] // Info on this package for Help/About
     //[ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
