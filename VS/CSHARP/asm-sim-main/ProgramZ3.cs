@@ -1029,8 +1029,8 @@ namespace AsmSim
             else 
             {
                 //ProgramSyntesizer ps = new ProgramSyntesizer(3, new Rn[] { Rn.RAX, Rn.RBX, Rn.RCX, Rn.RDX });
-                ProgramSyntesizer ps = new ProgramSyntesizer(2, new Rn[] { Rn.RAX });
-                ps.Run();
+                //ProgramSyntesizer ps = new ProgramSyntesizer(2, new Rn[] { Rn.RAX });
+                //ps.Run();
             }
         }
 
