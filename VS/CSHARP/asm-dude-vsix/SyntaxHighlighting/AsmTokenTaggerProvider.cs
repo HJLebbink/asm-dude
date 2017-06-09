@@ -34,9 +34,8 @@ namespace AsmDude
 {
     [Export(typeof(ITaggerProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
-    //[ContentType("code")]
     [TagType(typeof(AsmTokenTag))]
-    [Name("Assembly Token Tag Provider")]
+    [Name("AsmDude Assembly Token Tag Provider")]
     [Order(Before = "default")]
     internal sealed class AsmTokenTagProvider : ITaggerProvider
     {
@@ -45,25 +44,26 @@ namespace AsmDude
             //AsmDudeToolsStatic.Output_INFO("AsmTokenTagProvider:CreateTagger");
             Func<ITagger<T>> sc = delegate ()
             {
-                //string filename = AsmDudeToolsStatic.GetFileName(buffer);
-                //if ((filename == null) || (filename.Length == 0))
-                //{
-                //    AsmDudeToolsStatic.Output_INFO("AsmTokenTagProvider:CreateTagger: found a buffer without a filename");
-                //    return new DebugTokenTagger(buffer) as ITagger<T>;
-                //} else {
-                if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.MASM))
-                {
-                    return new MasmTokenTagger(buffer) as ITagger<T>;
-                }
-                else if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.NASM))
-                {
-                    return new NasmTokenTagger(buffer) as ITagger<T>;
-                }
-                else
-                {
-                    return new MasmTokenTagger(buffer) as ITagger<T>;
-                }
-                //}
+                if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.MASM)) return new MasmTokenTagger(buffer) as ITagger<T>;
+                if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.NASM)) return new NasmTokenTagger(buffer) as ITagger<T>;
+                return new MasmTokenTagger(buffer) as ITagger<T>;
+            };
+            return buffer.Properties.GetOrCreateSingletonProperty(sc);
+        }
+    }
+
+    [Export(typeof(ITaggerProvider))]
+    [ContentType(AsmDudePackage.DisassemblyContentType)]
+    [TagType(typeof(AsmTokenTag))]
+    [Name("AsmDude Disassembly Token Tag Provider")]
+    internal sealed class AsmDisassemblyTokenTagProvider : ITaggerProvider
+    {
+        public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
+        {
+            AsmDudeToolsStatic.Output_INFO("AsmDisassemblyTokenTagProvider:CreateTagger");
+            Func<ITagger<T>> sc = delegate ()
+            {
+                return new DebugTokenTagger(buffer) as ITagger<T>;
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
