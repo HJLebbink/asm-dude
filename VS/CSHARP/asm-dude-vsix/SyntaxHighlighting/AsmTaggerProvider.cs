@@ -96,7 +96,6 @@ namespace AsmDude.SyntaxHighlighting
 {
     [Export(typeof(ITaggerProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
-    //[ContentType("code")]
     [TagType(typeof(ClassificationTag))]
     [Name("AsmDude-AsmTaggerProvider")]
     [Order(After = Priority.High)]
@@ -110,7 +109,6 @@ namespace AsmDude.SyntaxHighlighting
         [Export]
         [FileExtension(".asm")]
         [ContentType(AsmDudePackage.AsmDudeContentType)]
-        [Order(After = "default")]
         internal static FileExtensionToContentTypeDefinition AsmFileType = null;
 
         [Export]
@@ -134,11 +132,34 @@ namespace AsmDude.SyntaxHighlighting
         [Import]
         private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
 
-        //[Import]
-        //private IContentTypeRegistryService _contentTypeRegistryService = null;
+        public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
+        {
+            Func<ITagger<T>> sc = delegate ()
+            {
+                var aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, this._aggregatorFactory);
+                return new AsmClassifier(buffer, aggregator, this._classificationTypeRegistry) as ITagger<T>;
+            };
+            return buffer.Properties.GetOrCreateSingletonProperty(sc);
+        }
+    }
+
+    [Export(typeof(ITaggerProvider))]
+    [ContentType(AsmDudePackage.DisassemblyContentType)]
+    [TagType(typeof(ClassificationTag))]
+    [Name("AsmDude-DisassemblyAsmTaggerProvider")]
+    [Order(After = Priority.High)]
+    internal sealed class AsmDisassemblyTaggerProvider : ITaggerProvider
+    {
+        [Import]
+        private IClassificationTypeRegistryService _classificationTypeRegistry = null;
+
+        [Import]
+        private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
 
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
+            AsmDudeToolsStatic.Output_INFO("AsmDisassemblyTaggerProvider: Creating a TaggerProvider for buffer " + buffer.CurrentSnapshot.GetText());
+
             Func<ITagger<T>> sc = delegate ()
             {
                 var aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, this._aggregatorFactory);

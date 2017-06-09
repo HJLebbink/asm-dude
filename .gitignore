@@ -32,3 +32,5 @@ VS/CSHARP/asm-dude-vsix-2/packages/*
 *.dropbox.attr
 VS/CSHARP/asm-sim-lib/libs/*
 VS/CSHARP/asm-dude-vsix/Resources/Performance/instruction_tables.ods
+*.ipch
+*.VC.db

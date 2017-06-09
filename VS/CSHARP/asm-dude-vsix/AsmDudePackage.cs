@@ -46,6 +46,7 @@ namespace AsmDude
         public const string PackageGuidString = "27e0e7ef-ecaf-4b87-a574-6a909383f99f";
 
         internal const string AsmDudeContentType = "asm!";
+        internal const string DisassemblyContentType = "Disassembly";
         internal const double slowWarningThresholdSec = 0.4; // threshold to warn that actions are considered slow
         internal const double slowShutdownThresholdSec = 4.0; // threshold to switch of components
         internal const int maxNumberOfCharsInToolTips = 150;
