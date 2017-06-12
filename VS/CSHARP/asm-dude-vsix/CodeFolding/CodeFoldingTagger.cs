@@ -91,7 +91,7 @@ namespace AsmDude.CodeFolding
                 {
                     this._thread_Result.Cancel();
                 }
-                AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Parse);
+                this._thread_Result = AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Parse);
             };
 
             this._delay.Reset();
@@ -128,13 +128,14 @@ namespace AsmDude.CodeFolding
                             ITextSnapshotLine endLine = this._snapshot.GetLineFromLineNumber(region.EndLine);
 
                             var replacement = Get_Region_Description(startLine.GetText(), region.StartOffsetHoverText);
-
                             object hover = null;
-                            try
+                            if (true)
                             {
-                                hover = Get_Hover_Text_TextBlock(region.StartLine, region.EndLine, this._snapshot);
-                            } catch (Exception e)
+                                hover = Get_Hover_Text_String(region.StartLine, region.EndLine, this._snapshot);
+                            }
+                            else
                             {
+                                // the following line gives an STA error
                                 /*
                                     System.InvalidOperationException: The calling thread must be STA, because many UI components require this.&#x000D;&#x000A;   
                                     at System.Windows.Input.InputManager..ctor()&#x000D;&#x000A;
@@ -147,10 +148,8 @@ namespace AsmDude.CodeFolding
                                     at AsmDude.CodeFolding.CodeFoldingTagger.&lt;GetTags&gt;d__13.MoveNext() in C:\Cloud\Dropbox\sc\GitHub\asm-dude\VS\CSHARP\asm-dude-vsix\CodeFolding\CodeFoldingTagger.cs:line 122&#x000D;&#x000A;
                                     at Microsoft.VisualStudio.Text.Tagging.Implementation.TagAggregator`1.&lt;GetTagsForBuffer&gt;d__38.MoveNext()
                                  */
-                                AsmDudeToolsStatic.Output_WARNING("CodeFoldingTagger: GetTags: exception=" + e.ToString());
-                                hover = Get_Hover_Text_String(region.StartLine, region.EndLine, this._snapshot);
+                                hover = Get_Hover_Text_TextBlock(region.StartLine, region.EndLine, this._snapshot); // this 
                             }
-
                             yield return new TagSpan<IOutliningRegionTag>(
                                 new SnapshotSpan(startLine.Start + region.StartOffset, endLine.End),
                                 new OutliningRegionTag(Settings.Default.CodeFolding_IsDefaultCollapsed, true, replacement, hover));
