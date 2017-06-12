@@ -34,3 +34,4 @@ VS/CSHARP/asm-sim-lib/libs/*
 VS/CSHARP/asm-dude-vsix/Resources/Performance/instruction_tables.ods
 *.ipch
 *.VC.db
+*.tmp_proj
