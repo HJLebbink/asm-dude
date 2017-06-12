@@ -513,8 +513,7 @@ namespace AsmSim
                 }
                 catch (Exception e)
                 {
-                   // Conso
-                    throw new Exception();
+                    Console.WriteLine("WARNING: AsmSimulator: "+e.ToString());
                     return new Tv[RegisterTools.NBits(regName)];
                 }
             }

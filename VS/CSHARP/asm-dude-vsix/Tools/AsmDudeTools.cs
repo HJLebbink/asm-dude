@@ -49,7 +49,6 @@ namespace AsmDude
         private readonly MnemonicStore _mnemonicStore;
         private readonly PerformanceStore _performanceStore;
         private readonly SmartThreadPool _threadPool;
-        private IWorkItemResult _current;
 
         #region Singleton Stuff
         private static readonly Lazy<AsmDudeTools> lazy = new Lazy<AsmDudeTools>(() => new AsmDudeTools());

@@ -33,7 +33,7 @@ using Amib.Threading;
 
 namespace AsmDude.Tools
 {
-    public class AsmSimulator
+    public class AsmSimulator : IDisposable
     {
         #region Fields
         private readonly ITextBuffer _buffer;
@@ -169,6 +169,11 @@ namespace AsmDude.Tools
 
         public event EventHandler<LineUpdatedEventArgs> Line_Updated_Event;
         public event EventHandler<EventArgs> Reset_Done_Event;
+
+        public void Dispose()
+        {
+            this._threadPool2.Dispose();
+        }
 
         #region Reset
         public void Reset(int delay = -1)
@@ -688,6 +693,7 @@ namespace AsmDude.Tools
             }
             #endregion
         }
+
         #endregion
     }
 }

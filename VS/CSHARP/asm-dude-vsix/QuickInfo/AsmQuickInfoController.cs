@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using System;
 using AsmDude.Tools;
 
 namespace AsmDude.QuickInfo
@@ -35,7 +36,10 @@ namespace AsmDude.QuickInfo
         private IQuickInfoSession _session;
         private ITextView _textView;
 
-        internal AsmQuickInfoController(ITextView textView, IList<ITextBuffer> subjectBuffers, IQuickInfoBroker quickInfoBroker)
+        internal AsmQuickInfoController(
+            ITextView textView,
+            IList<ITextBuffer> subjectBuffers,
+            IQuickInfoBroker quickInfoBroker)
         {
             //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:constructor: file=" + AsmDudeToolsStatic.GetFileName(textView.TextBuffer));
             this._textView = textView;
@@ -44,15 +48,9 @@ namespace AsmDude.QuickInfo
             this._textView.MouseHover += this.OnTextViewMouseHover;
         }
 
-        public void ConnectSubjectBuffer(ITextBuffer subjectBuffer)
-        {
-            //empty
-        }
+        public void ConnectSubjectBuffer(ITextBuffer subjectBuffer) { }
 
-        public void DisconnectSubjectBuffer(ITextBuffer subjectBuffer)
-        {
-            //empty
-        }
+        public void DisconnectSubjectBuffer(ITextBuffer subjectBuffer) { }
 
         public void Detach(ITextView textView)
         {
@@ -74,16 +72,27 @@ namespace AsmDude.QuickInfo
             {
                 ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(point.Value.Position, PointTrackingMode.Positive);
                 // Find the broker for this buffer
-                if (!this._quickInfoBroker.IsQuickInfoActive(this._textView))
+
+                string contentType = this._textView.TextBuffer.ContentType.DisplayName;
+                if (contentType.Equals(AsmDudePackage.AsmDudeContentType, StringComparison.Ordinal))
                 {
-                    //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: CreateQuickInfoSession for triggerPoint "+triggerPoint.TextBuffer+"; file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
-                    this._session = this._quickInfoBroker.CreateQuickInfoSession(this._textView, triggerPoint, false);
-                    this._session.Start();
-                } else
-                {
-                    //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: quickInfoBroker is already active; file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
+                    if (!this._quickInfoBroker.IsQuickInfoActive(this._textView))
+                    {
+                        //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: CreateQuickInfoSession for triggerPoint "+triggerPoint.TextBuffer+"; file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
+                        this._session = this._quickInfoBroker.CreateQuickInfoSession(this._textView, triggerPoint, false);
+                        this._session.Start();
+                    }
+                    else
+                    {
+                        //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: quickInfoBroker is already active; file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
+                    }
                 }
-            } else
+                else
+                {
+                    AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:OnTextViewMouseHover; does not have have AsmDudeContentType: but has type {1}", ToString(), contentType));
+                }
+            }
+            else
             {
                 //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: point is null; file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
             }

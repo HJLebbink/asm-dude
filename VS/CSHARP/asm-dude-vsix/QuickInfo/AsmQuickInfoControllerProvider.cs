@@ -26,30 +26,15 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-using AsmDude.Tools;
 
 namespace AsmDude.QuickInfo
 {
     [Export(typeof(IIntellisenseControllerProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
+    //[ContentType(AsmDudePackage.DisassemblyContentType)]
     [Name("QuickInfo AsmDude Controller")]
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]
     internal sealed class AsmQuickInfoControllerProvider : IIntellisenseControllerProvider
-    {
-        [Import]
-        private IQuickInfoBroker _quickInfoBroker = null;
-
-        public IIntellisenseController TryCreateIntellisenseController(ITextView textView, IList<ITextBuffer> subjectBuffers)
-        {
-            return new AsmQuickInfoController(textView, subjectBuffers, this._quickInfoBroker);
-        }
-    }
-
-    [Export(typeof(IIntellisenseControllerProvider))]
-    [ContentType(AsmDudePackage.DisassemblyContentType)]
-    [Name("QuickInfo AsmDude Disassembly Controller")]
-    [TextViewRole(PredefinedTextViewRoles.Debuggable)]
-    internal sealed class AsmDisassemblyQuickInfoControllerProvider : IIntellisenseControllerProvider
     {
         [Import]
         private IQuickInfoBroker _quickInfoBroker = null;
