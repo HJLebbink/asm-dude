@@ -3194,5 +3194,505 @@ namespace unit_tests_asm_z3
 
         #endregion
 
+        #region Decimal Arithmetic Instructions
+
+        #region DAA
+        [TestMethod]
+        public void Test_MnemonicZ3_Daa_1()
+        {
+            // no overflow
+
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.AF = true;
+            tools.StateConfig.CF = true;
+            tools.StateConfig.RAX = true;
+
+            int byteA_1 = 4;
+            int byteA_2 = 3;
+            int byteB_1 = 2;
+            int byteB_2 = 1;
+            int result = (((byteA_2+byteB_2) << 4) | ((byteA_1 + byteB_1) << 0));
+
+            string line1 = "mov eax, " + ((byteA_2 << 4) | (byteA_1 << 0));
+            string line2 = "add eax, " + ((byteB_2 << 4) | (byteB_1 << 0));
+            string line3 = "daa";
+
+            State state = CreateState(tools);
+            state = Runner.SimpleStep_Forward(line1, state);
+            state = Runner.SimpleStep_Forward(line2, state);
+            state = Runner.SimpleStep_Forward(line3, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Rn.AL, result, state);
+        }
+        [TestMethod]
+        public void Test_MnemonicZ3_Daa_2()
+        {
+            // with overflow
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.AF = true;
+            tools.StateConfig.CF = true;
+            tools.StateConfig.RAX = true;
+
+            int byteA_1 = 8;
+            int byteA_2 = 3;
+            int byteB_1 = 3;
+            int byteB_2 = 1;
+            int result = (((byteA_2 + byteB_2 + 1) << 4) | (1 << 0));
+
+            string line1 = "mov eax, " + ((byteA_2 << 4) | (byteA_1 << 0));
+            string line2 = "add eax, " + ((byteB_2 << 4) | (byteB_1 << 0));
+            string line3 = "daa";
+
+            State state = CreateState(tools);
+            state = Runner.SimpleStep_Forward(line1, state);
+            state = Runner.SimpleStep_Forward(line2, state);
+            state = Runner.SimpleStep_Forward(line3, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Rn.AL, result, state);
+        }
+
+
+        #endregion
+        #region DAS
+        [TestMethod]
+        public void Test_MnemonicZ3_Das_1()
+        {
+            // no overflow
+
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.AF = true;
+            tools.StateConfig.CF = true;
+            tools.StateConfig.RAX = true;
+
+            //34 - 12 = 22
+            int byteA_1 = 4;
+            int byteA_2 = 3;
+            int byteB_1 = 2;
+            int byteB_2 = 1;
+            int result = (((byteA_2 - byteB_2) << 4) | ((byteA_1 - byteB_1) << 0));
+
+            string line1 = "mov eax, " + ((byteA_2 << 4) | (byteA_1 << 0));
+            string line2 = "sub eax, " + ((byteB_2 << 4) | (byteB_1 << 0));
+            string line3 = "das";
+
+            State state = CreateState(tools);
+            state = Runner.SimpleStep_Forward(line1, state);
+            state = Runner.SimpleStep_Forward(line2, state);
+            state = Runner.SimpleStep_Forward(line3, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Rn.AL, result, state);
+        }
+        [TestMethod]
+        public void Test_MnemonicZ3_Das_2()
+        {
+            // with overflow
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.AF = true;
+            tools.StateConfig.CF = true;
+            tools.StateConfig.RAX = true;
+
+            //32 - 14 = 18
+            int byteA_1 = 2;
+            int byteA_2 = 3;
+            int byteB_1 = 4;
+            int byteB_2 = 1;
+            int result = (1 << 4) | (8 << 0);
+
+            string line1 = "mov eax, " + ((byteA_2 << 4) | (byteA_1 << 0));
+            string line2 = "sub eax, " + ((byteB_2 << 4) | (byteB_1 << 0));
+            string line3 = "das";
+
+            State state = CreateState(tools);
+            state = Runner.SimpleStep_Forward(line1, state);
+            state = Runner.SimpleStep_Forward(line2, state);
+            state = Runner.SimpleStep_Forward(line3, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Rn.AL, result, state);
+        }
+
+
+        #endregion
+        #region AAA
+        [TestMethod]
+        public void Test_MnemonicZ3_Aaa_1()
+        {
+            // no overflow
+
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.AF = true;
+            tools.StateConfig.CF = true;
+            tools.StateConfig.RAX = true;
+
+            //4 + 2 = 6
+            int byteA_1 = 4;
+            int byteB_1 = 2;
+            int result = byteA_1 + byteB_1;
+
+            string line1 = "mov ax, " + byteA_1;
+            string line2 = "add al, " + byteB_1;
+            string line3 = "aaa";
+
+            State state = CreateState(tools);
+            state = Runner.SimpleStep_Forward(line1, state);
+            state = Runner.SimpleStep_Forward(line2, state);
+            state = Runner.SimpleStep_Forward(line3, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Rn.AL, result, state);
+            TestTools.AreEqual(Flags.AF, false, state);
+            TestTools.AreEqual(Flags.CF, false, state);
+        }
+        [TestMethod]
+        public void Test_MnemonicZ3_Aaa_2()
+        {
+            // with overflow
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.AF = true;
+            tools.StateConfig.CF = true;
+            tools.StateConfig.RAX = true;
+
+            //4 + 8 = 12
+            int byteA_1 = 4;
+            int byteB_1 = 8;
+            int al_result = 2;
+            int ah_result = 1;
+
+            string line1 = "mov ax, " + byteA_1;
+            string line2 = "add al, " + byteB_1;
+            string line3 = "aaa";
+
+            State state = CreateState(tools);
+            state = Runner.SimpleStep_Forward(line1, state);
+            state = Runner.SimpleStep_Forward(line2, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            state = Runner.SimpleStep_Forward(line3, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Rn.AL, al_result, state);
+            TestTools.AreEqual(Rn.AH, ah_result, state);
+            TestTools.AreEqual(Flags.AF, true, state);
+            TestTools.AreEqual(Flags.CF, true, state);
+        }
+
+
+        #endregion
+        #region AAS
+        [TestMethod]
+        public void Test_MnemonicZ3_Aas_1()
+        {
+            // no overflow
+
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.AF = true;
+            tools.StateConfig.CF = true;
+            tools.StateConfig.RAX = true;
+
+            //4 - 2 = 2
+            int byteA_1 = 4;
+            int byteB_1 = 2;
+            int result = byteA_1 - byteB_1;
+
+            string line1 = "mov ax, " + byteA_1;
+            string line2 = "sub al, " + byteB_1;
+            string line3 = "aas";
+
+            State state = CreateState(tools);
+            state = Runner.SimpleStep_Forward(line1, state);
+            state = Runner.SimpleStep_Forward(line2, state);
+            state = Runner.SimpleStep_Forward(line3, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Rn.AL, result, state);
+            TestTools.AreEqual(Flags.AF, false, state);
+            TestTools.AreEqual(Flags.CF, false, state);
+
+        }
+        [TestMethod]
+        public void Test_MnemonicZ3_Aas_2()
+        {
+            // with overflow
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.AF = true;
+            tools.StateConfig.CF = true;
+            tools.StateConfig.RAX = true;
+
+            //24 - 8 = 16
+            int byteA_1 = 4;
+            int byteA_2 = 2;
+            int byteB_1 = 8;
+            int al_result = 6;
+            int ah_result = 1;
+
+            string line0 = "mov ah, " + byteA_2;
+            string line1 = "mov al, " + byteA_1;
+            string line2 = "sub al, " + byteB_1;
+            string line3 = "aas";
+
+            State state = CreateState(tools);
+            state = Runner.SimpleStep_Forward(line0, state);
+            state = Runner.SimpleStep_Forward(line1, state);
+            state = Runner.SimpleStep_Forward(line2, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            state = Runner.SimpleStep_Forward(line3, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Rn.AL, al_result, state);
+            TestTools.AreEqual(Rn.AH, ah_result, state);
+            TestTools.AreEqual(Flags.AF, true, state);
+            TestTools.AreEqual(Flags.CF, true, state);
+        }
+        #endregion
+        #region AAM
+        [TestMethod]
+        public void Test_MnemonicZ3_Aam_Base10_1()
+        {
+            // no overflow
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.AF = true;
+            tools.StateConfig.CF = true;
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RDX = true;
+
+            int imm8 = 10;
+
+            //4 * 2 = 8
+            int byteA_1 = 4;
+            int byteD_1 = 2;
+            int result = byteA_1 * byteD_1;
+            int al_result = result % imm8;
+            int ah_result = result / imm8;
+
+            string line0 = "mov al, " + byteA_1;
+            string line1 = "mov dl, " + byteD_1;
+            string line2 = "mul dl";
+            string line3 = "aam";
+
+            State state = CreateState(tools);
+            state = Runner.SimpleStep_Forward(line0, state);
+            state = Runner.SimpleStep_Forward(line1, state);
+            state = Runner.SimpleStep_Forward(line2, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            state = Runner.SimpleStep_Forward(line3, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Rn.AL, al_result, state);
+            TestTools.AreEqual(Rn.AH, ah_result, state);
+            TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
+            TestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
+
+        }
+        [TestMethod]
+        public void Test_MnemonicZ3_Aam_Base10_2()
+        {
+            // with overflow
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.AF = true;
+            tools.StateConfig.CF = true;
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RDX = true;
+
+            int imm8 = 10;
+
+            //8 * 2 = 16
+            int byteA_1 = 8;
+            int byteD_1 = 2;
+            int result = byteA_1 * byteD_1;
+            int al_result = result % imm8;
+            int ah_result = result / imm8;
+
+            string line0 = "mov al, " + byteA_1;
+            string line1 = "mov dl, " + byteD_1;
+            string line2 = "mul dl";
+            string line3 = "aam";
+
+            State state = CreateState(tools);
+            state = Runner.SimpleStep_Forward(line0, state);
+            state = Runner.SimpleStep_Forward(line1, state);
+            state = Runner.SimpleStep_Forward(line2, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            state = Runner.SimpleStep_Forward(line3, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Rn.AL, al_result, state);
+            TestTools.AreEqual(Rn.AH, ah_result, state);
+            TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
+            TestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
+        }
+        [TestMethod]
+        public void Test_MnemonicZ3_Aam_Base11_1()
+        {
+            // no overflow
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.AF = true;
+            tools.StateConfig.CF = true;
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RDX = true;
+
+            int imm8 = 11;
+
+            //4 * 2 = 8
+            int byteA_1 = 4;
+            int byteD_1 = 2;
+            int result = byteA_1 * byteD_1;
+            int al_result = result % imm8;
+            int ah_result = result / imm8;
+
+            string line0 = "mov al, " + byteA_1;
+            string line1 = "mov dl, " + byteD_1;
+            string line2 = "mul dl";
+            string line3 = "aam " + imm8;
+
+            State state = CreateState(tools);
+            state = Runner.SimpleStep_Forward(line0, state);
+            state = Runner.SimpleStep_Forward(line1, state);
+            state = Runner.SimpleStep_Forward(line2, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            state = Runner.SimpleStep_Forward(line3, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Rn.AL, al_result, state);
+            TestTools.AreEqual(Rn.AH, ah_result, state);
+            TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
+            TestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
+
+        }
+        [TestMethod]
+        public void Test_MnemonicZ3_Aam_Base11_2()
+        {
+            // with overflow
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.AF = true;
+            tools.StateConfig.CF = true;
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RDX = true;
+
+            int imm8 = 11;
+
+            //8 * 2 = 16
+            int byteA_1 = 8;
+            int byteD_1 = 2;
+            int result = byteA_1 * byteD_1;
+            int al_result = result % imm8;
+            int ah_result = result / imm8;
+
+            string line0 = "mov al, " + byteA_1;
+            string line1 = "mov dl, " + byteD_1;
+            string line2 = "mul dl";
+            string line3 = "aam " + imm8;
+
+            State state = CreateState(tools);
+            state = Runner.SimpleStep_Forward(line0, state);
+            state = Runner.SimpleStep_Forward(line1, state);
+            state = Runner.SimpleStep_Forward(line2, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            state = Runner.SimpleStep_Forward(line3, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Rn.AL, al_result, state);
+            TestTools.AreEqual(Rn.AH, ah_result, state);
+            TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
+            TestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
+        }
+        #endregion
+        #region AAD
+        [TestMethod]
+        public void Test_MnemonicZ3_Aad_Base10_1()
+        {
+            // no overflow
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.AF = true;
+            tools.StateConfig.CF = true;
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RDX = true;
+
+            int imm8 = 10;
+
+            //8 / 2 = 4
+            int byteA_1 = 8;
+            int byteD_1 = 2;
+            int result = byteA_1 / byteD_1;
+            int al_result = result % imm8;
+            
+            string line0 = "mov ax, " + byteA_1;
+            string line1 = "mov dl, " + byteD_1;
+            string line2 = "aad"; // adjust AX BEFORE Division
+            string line3 = "div dl";
+
+            State state = CreateState(tools);
+            state = Runner.SimpleStep_Forward(line0, state);
+            state = Runner.SimpleStep_Forward(line1, state);
+            state = Runner.SimpleStep_Forward(line2, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            state = Runner.SimpleStep_Forward(line3, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Rn.AL, al_result, state);
+            TestTools.AreEqual(Rn.AH, 0, state);
+            TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
+            TestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
+
+        }
+        [TestMethod]
+        public void Test_MnemonicZ3_Aad_Base10_2()
+        {
+            // with overflow
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.AF = true;
+            tools.StateConfig.CF = true;
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RDX = true;
+
+            int imm8 = 10;
+
+            //32 / 2 = 16
+            int byteA_2 = 3;
+            int byteA_1 = 2;
+            int decimalA = ((byteA_2 * 10) + byteA_1);
+            int byteD_1 = 2;
+
+            int result = decimalA / byteD_1;
+            int al_result = result % imm8;
+
+            string line0 = "mov ax, " + ((byteA_2 << 8) | (byteA_1 << 0));
+            string line1 = "mov dl, " + byteD_1;
+            string line2 = "aad"; // adjust AX BEFORE Division
+            string line3 = "div dl";
+
+            State state = CreateState(tools);
+            state = Runner.SimpleStep_Forward(line0, state);
+            state = Runner.SimpleStep_Forward(line1, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+            state = Runner.SimpleStep_Forward(line2, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            TestTools.AreEqual(Rn.AX, decimalA, state);
+
+            state = Runner.SimpleStep_Forward(line3, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Rn.AL, result, state);
+            TestTools.AreEqual(Rn.AH, 0, state);
+            TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
+            TestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
+        }
+        #endregion
+        #endregion
     }
 }

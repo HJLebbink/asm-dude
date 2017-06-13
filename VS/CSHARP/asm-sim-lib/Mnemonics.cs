@@ -362,7 +362,9 @@ namespace AsmSim
             {
                 if (this.NOperands != 0)
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Expected 0 operands. Found {1} operand(s) with value \"{2}\".", this.ToString(), this.NOperands, string.Join(", ", args));
+                    this.SyntaxError = (this.NOperands == 1) 
+                        ? string.Format("\"{0}\": Expected no operands. Found 1 operand with value \"{1}\".", this.ToString(), args[0])
+                        : string.Format("\"{0}\": Expected no operands. Found {1} operands with values \"{2}\".", this.ToString(), this.NOperands, string.Join(", ", args));
                 }
             }
         }
@@ -493,7 +495,7 @@ namespace AsmSim
             {
                 if (args.Length > maxNArgs)
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Only " + maxNArgs + " operands are allowed, and received " + args.Length + " operands.");
+                    this.SyntaxError = string.Format("\"{0}\": Only " + maxNArgs + " operand(s) are allowed, and received " + args.Length + " operand(s).");
                 }
                 if (this.NOperands >= 1)
                 {
@@ -1806,12 +1808,208 @@ namespace AsmSim
         #endregion Binary Arithmetic Instructions
 
         #region Decimal Arithmetic Instructions
-        //DAA,// Decimal adjust after addition
-        //DAS,// Decimal adjust after subtraction
-        //AAA,// ASCII adjust after addition
-        //AAS,// ASCII adjust after subtraction
-        //AAM,// ASCII adjust after multiplication
-        //AAD,// ASCII adjust before division
+        ///<summary> DAA - Decimal adjust after addition</summary>
+        public sealed class Daa : Opcode0Base
+        {
+            public Daa(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.DAA, args, keys, t) {}
+            public override void Execute()
+            {
+                Context ctx = this.Ctx;
+
+                BitVecExpr al = this.Get(Rn.AL);
+                BoolExpr af = this.Get(Flags.AF);
+                BoolExpr cf = this.Get(Flags.CF);
+
+                BoolExpr condition1 = ctx.MkOr(ctx.MkBVUGT(ctx.MkExtract(3, 0, al), ctx.MkBV(9, 4)), af);
+                BoolExpr condition2 = ctx.MkOr(ctx.MkBVUGT(al, ctx.MkBV(0x99, 8)), cf);
+                BoolExpr carry_x = ToolsFlags.Create_CF_Add(al, ctx.MkBV(6, 8), 8, ctx);
+
+                BitVecExpr al_new = ctx.MkITE(condition1, ctx.MkBVAdd(al, ctx.MkBV(6, 8)), ctx.MkITE(condition2, ctx.MkBVAdd(al, ctx.MkBV(0x60, 8)), al)) as BitVecExpr;
+                BoolExpr cf_new = ctx.MkITE(condition1, ctx.MkOr(cf, carry_x), condition2) as BoolExpr;
+                BoolExpr af_new = condition1;
+
+                this.RegularUpdate.Set(Rn.AL, al_new);
+                this.RegularUpdate.Set(Flags.CF, cf_new);
+                this.RegularUpdate.Set(Flags.OF, Tv.UNDEFINED);
+                this.RegularUpdate.Set(Flags.AF, af_new);
+                this.RegularUpdate.Set_SF_ZF_PF(al_new);
+            }
+            public override Flags FlagsReadStatic { get { return Flags.CF | Flags.AF; } }
+            public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
+            public override IEnumerable<Rn> RegsReadStatic { get { yield return Rn.AL; } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { yield return Rn.AL; } }
+        }
+        ///<summary> DAS - Decimal adjust after subtraction</summary>
+        public sealed class Das : Opcode0Base
+        {
+            public Das(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.DAS, args, keys, t) { }
+            public override void Execute()
+            {
+                Context ctx = this.Ctx;
+
+                BitVecExpr al = this.Get(Rn.AL);
+                BoolExpr af = this.Get(Flags.AF);
+                BoolExpr cf = this.Get(Flags.CF);
+
+                BoolExpr condition1 = ctx.MkOr(ctx.MkBVUGT(ctx.MkExtract(3, 0, al), ctx.MkBV(9, 4)), af);
+                BoolExpr condition2 = ctx.MkOr(ctx.MkBVUGT(al, ctx.MkBV(0x99, 8)), cf);
+                BoolExpr carry_x = ToolsFlags.Create_CF_Sub(al, ctx.MkBV(6, 8), 8, ctx);
+
+                BitVecExpr al_new = ctx.MkITE(condition1, ctx.MkBVSub(al, ctx.MkBV(6, 8)), ctx.MkITE(condition2, ctx.MkBVSub(al, ctx.MkBV(0x60, 8)), al)) as BitVecExpr;
+                BoolExpr cf_new = ctx.MkITE(condition1, ctx.MkOr(cf, carry_x), condition2) as BoolExpr;
+                BoolExpr af_new = condition1;
+
+                this.RegularUpdate.Set(Rn.AL, al_new);
+                this.RegularUpdate.Set(Flags.CF, cf_new);
+                this.RegularUpdate.Set(Flags.OF, Tv.UNDEFINED);
+                this.RegularUpdate.Set(Flags.AF, af_new);
+                this.RegularUpdate.Set_SF_ZF_PF(al_new);
+            }
+            public override Flags FlagsReadStatic { get { return Flags.CF | Flags.AF; } }
+            public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
+            public override IEnumerable<Rn> RegsReadStatic { get { yield return Rn.AL; } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { yield return Rn.AL; } }
+        }
+        /// <summary>AAA - ASCII adjust after addition</summary>
+        public sealed class Aaa : Opcode0Base
+        {
+            public Aaa(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.AAA, args, keys, t) { }
+            public override void Execute()
+            {
+                Context ctx = this.Ctx;
+
+                BitVecExpr ax = this.Get(Rn.AX);
+                BoolExpr af = this.Get(Flags.AF);
+                BoolExpr cf = this.Get(Flags.CF);
+
+                BoolExpr condition1 = ctx.MkOr(ctx.MkBVUGT(ctx.MkExtract(3, 0, ax), ctx.MkBV(9, 4)), af);
+
+                BitVecExpr ax_new = ctx.MkBVAND(ctx.MkITE(condition1, ctx.MkBVAdd(ax, ctx.MkBV(0x106, 16)), ax) as BitVecExpr, ctx.MkBV(0xFF0F, 16));
+                BoolExpr cf_new = condition1;
+                BoolExpr af_new = condition1;
+
+                this.RegularUpdate.Set(Rn.AX, ax_new);
+                this.RegularUpdate.Set(Flags.CF, cf_new);
+                this.RegularUpdate.Set(Flags.OF, Tv.UNDEFINED);
+                this.RegularUpdate.Set(Flags.AF, af_new);
+                this.RegularUpdate.Set(Flags.SF, Tv.UNDEFINED);
+                this.RegularUpdate.Set(Flags.ZF, Tv.UNDEFINED);
+                this.RegularUpdate.Set(Flags.PF, Tv.UNDEFINED);
+            }
+            public override Flags FlagsReadStatic { get { return Flags.CF | Flags.AF; } }
+            public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
+            public override IEnumerable<Rn> RegsReadStatic { get { yield return Rn.AX; } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { yield return Rn.AX; } }
+        }
+        /// <summary>AAS - ASCII adjust after subtraction</summary>
+        public sealed class Aas : Opcode0Base
+        {
+            public Aas(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.AAS, args, keys, t) { }
+            public override void Execute()
+            {
+                Context ctx = this.Ctx;
+
+                BitVecExpr ax = this.Get(Rn.AX);
+                BoolExpr af = this.Get(Flags.AF);
+                BoolExpr cf = this.Get(Flags.CF);
+
+                BoolExpr condition1 = ctx.MkOr(ctx.MkBVUGT(ctx.MkExtract(3, 0, ax), ctx.MkBV(9, 4)), af);
+
+                //TODO bug next line: see documentation
+                BitVecExpr ax_new = ctx.MkBVAND(ctx.MkITE(condition1, ctx.MkBVSub(ax, ctx.MkBV(0x106, 16)), ax) as BitVecExpr, ctx.MkBV(0xFF0F, 16));
+                BoolExpr cf_new = condition1;
+                BoolExpr af_new = condition1;
+
+                this.RegularUpdate.Set(Rn.AX, ax_new);
+                this.RegularUpdate.Set(Flags.CF, cf_new);
+                this.RegularUpdate.Set(Flags.OF, Tv.UNDEFINED);
+                this.RegularUpdate.Set(Flags.AF, af_new);
+                this.RegularUpdate.Set(Flags.SF, Tv.UNDEFINED);
+                this.RegularUpdate.Set(Flags.ZF, Tv.UNDEFINED);
+                this.RegularUpdate.Set(Flags.PF, Tv.UNDEFINED);
+            }
+            public override Flags FlagsReadStatic { get { return Flags.CF | Flags.AF; } }
+            public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
+            public override IEnumerable<Rn> RegsReadStatic { get { yield return Rn.AX; } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { yield return Rn.AX; } }
+        }
+        /// <summary>AAM - ASCII adjust after multiplication</summary>
+        public sealed class Aam : OpcodeNBase
+        {
+            private int imm;
+            public Aam(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.AAM, args, 1, keys, t) {
+                if(this.IsHalted) return;
+                if (args.Length == 0)
+                {
+                    this.imm = 10;
+                }
+                else if (this.op1.IsImm && (this.op1.NBits == 8))
+                {
+                    this.imm = (byte)this.op1.Imm;
+                }
+                else
+                {
+                    this.SyntaxError = string.Format("\"{0}\": Operand 1 should be an 8-bits imm. Operand1={1} ({2}, bits={3}))", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                }
+            }
+            public override void Execute()
+            {
+                Context ctx = this.Ctx;
+                BitVecNum bv_imm = ctx.MkBV(this.imm, 8);
+                BitVecExpr al = this.Get(Rn.AL);
+                BitVecExpr al_new = ctx.MkBVSDiv(al, bv_imm);
+                BitVecExpr ah_new = ctx.MkBVSMod(al, bv_imm);
+                BitVecExpr ax_new = ctx.MkConcat(al_new, ah_new);
+
+                this.RegularUpdate.Set(Rn.AX, ax_new);
+                this.RegularUpdate.Set(Flags.CF, Tv.UNDEFINED);
+                this.RegularUpdate.Set(Flags.OF, Tv.UNDEFINED);
+                this.RegularUpdate.Set(Flags.AF, Tv.UNDEFINED);
+                this.RegularUpdate.Set_SF_ZF_PF(al_new);
+            }
+            public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
+            public override IEnumerable<Rn> RegsReadStatic { get { yield return Rn.AL; } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { yield return Rn.AX; } }
+        }
+        /// <summary>AAD - ASCII adjust after division</summary>
+        public sealed class Aad : OpcodeNBase
+        {
+            private int imm;
+            public Aad(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.AAD, args, 1, keys, t) {
+                if (this.IsHalted) return;
+                if (args.Length == 0)
+                {
+                    this.imm = 10;
+                }
+                else if (this.op1.IsImm && (this.op1.NBits == 8))
+                {
+                    this.imm = (byte)this.op1.Imm;
+                }
+                else
+                {
+                    this.SyntaxError = string.Format("\"{0}\": Operand 1 should be an 8-bits imm. Operand1={1} ({2}, bits={3}))", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                }
+            }
+            public override void Execute()
+            {
+                Context ctx = this.Ctx;
+                BitVecNum bv_imm_16 = ctx.MkBV(this.imm, 16);
+                BitVecExpr al_16 = ctx.MkZeroExt(8, this.Get(Rn.AL));
+                BitVecExpr ah_16 = ctx.MkZeroExt(8, this.Get(Rn.AH));
+
+                BitVecExpr al_new = ctx.MkExtract(7, 0, ctx.MkBVAdd(al_16, ctx.MkBVMul(ah_16, bv_imm_16)));
+                BitVecExpr ax_new = ctx.MkZeroExt(8, al_new);
+
+                this.RegularUpdate.Set(Rn.AX, ax_new);
+                this.RegularUpdate.Set(Flags.CF, Tv.UNDEFINED);
+                this.RegularUpdate.Set(Flags.OF, Tv.UNDEFINED);
+                this.RegularUpdate.Set(Flags.AF, Tv.UNDEFINED);
+                this.RegularUpdate.Set_SF_ZF_PF(al_new);
+            }
+            public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
+            public override IEnumerable<Rn> RegsReadStatic { get { yield return Rn.AX; } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { yield return Rn.AX; } }
+        }
         #endregion Decimal Arithmetic Instructions
 
         #region Logical Instructions

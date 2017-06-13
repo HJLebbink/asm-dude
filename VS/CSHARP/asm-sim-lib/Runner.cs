@@ -268,12 +268,12 @@ namespace AsmSim
                 case Mnemonic.NEG: return new Neg(args, keys, t);
                 case Mnemonic.CMP: return new Cmp(args, keys, t);
 
-                case Mnemonic.DAA: break;
-                case Mnemonic.DAS: break;
-                case Mnemonic.AAA: break;
-                case Mnemonic.AAS: break;
-                case Mnemonic.AAM: break;
-                case Mnemonic.AAD: break;
+                case Mnemonic.DAA: return new Daa(args, keys, t);
+                case Mnemonic.DAS: return new Das(args, keys, t);
+                case Mnemonic.AAA: return new Aaa(args, keys, t);
+                case Mnemonic.AAS: return new Aas(args, keys, t);
+                case Mnemonic.AAM: return new Aam(args, keys, t);
+                case Mnemonic.AAD: return new Aad(args, keys, t);
 
                 case Mnemonic.AND: return new And(args, keys, t);
                 case Mnemonic.OR: return new Or(args, keys, t);
