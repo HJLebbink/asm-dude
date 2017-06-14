@@ -190,7 +190,7 @@ namespace AsmDude.Tools
                 {
                     //AsmDudeToolsStatic.Output_INFO("AsmSimulation:Reset_Private: updating dFlow");
 
-                    this.Tools.StateConfig = Runner.GetUsage_StateConfig(this._sFlow, 0, this._sFlow.LastLineNumber, this.Tools);
+                    this.Tools.StateConfig = this._sFlow.Get_StateConfig();
                     this._dFlow.Reset(this._sFlow, true);
                     this._cached_States_After.Clear();
                     this._cached_States_Before.Clear();
@@ -455,7 +455,7 @@ namespace AsmDude.Tools
 
             lock (this._updateLock)
             {
-                StateConfig stateConfig = Runner.GetUsage_StateConfig(this._sFlow, lineNumber, lineNumber, this.Tools);
+                StateConfig stateConfig = this._sFlow.Get_StateConfig(lineNumber, lineNumber);
 
                 foreach (Flags flag in stateConfig.GetFlagOn())
                 {

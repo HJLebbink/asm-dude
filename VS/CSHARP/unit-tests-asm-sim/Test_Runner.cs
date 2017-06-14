@@ -217,21 +217,17 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_Jmp_1()
         {
-            Tools tools = CreateTools();
-            tools.StateConfig.Set_All_Off();
-            tools.StateConfig.RAX = true;
-            tools.StateConfig.ZF = true;
-
             string programStr =
                 "           cmp     rax,        0               " + Environment.NewLine +
                 "           jz      label1                      " + Environment.NewLine +
                 "           mov     rax,        0               " + Environment.NewLine +
                 "label1:                                        ";
 
-            StaticFlow sFlow = new StaticFlow(programStr, tools);
-            if (logToDisplay) Console.WriteLine(sFlow);
-            
+            Tools tools = CreateTools();
+            var sFlow = new StaticFlow(programStr, tools);
+            tools.StateConfig = sFlow.Get_StateConfig();
             var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+
             var state = dFlow.EndState;
             //if (logToDisplay) Console.WriteLine("DynamicFlow:\n" + dFlow.ToString(staticFlow));
             if (logToDisplay) Console.WriteLine(state);
@@ -243,12 +239,6 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_Jmp_2()
         {
-            Tools tools = CreateTools();
-            tools.StateConfig.Set_All_Off();
-            tools.StateConfig.RAX = true;
-            tools.StateConfig.RBX = true;
-            tools.StateConfig.ZF = true;
-
             string programStr =
                 "           cmp     rax,        0               " + Environment.NewLine +
                 "           je      label1                      " + Environment.NewLine +
@@ -257,8 +247,11 @@ namespace unit_tests_asm_z3
                 "           mov     rbx,        10              " + Environment.NewLine +
                 "label2:                                        ";
 
-            StaticFlow sFlow = new StaticFlow(programStr, tools);
-            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            Tools tools = CreateTools();
+            var sFlow = new StaticFlow(programStr, tools);
+            tools.StateConfig = sFlow.Get_StateConfig();
+            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+
             State state = dFlow.EndState;
             if (logToDisplay) Console.WriteLine(state);
 
@@ -269,11 +262,6 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_Jmp_3()
         {
-            Tools tools = CreateTools();
-            tools.StateConfig.Set_All_Off();
-            tools.StateConfig.RAX = true;
-            tools.StateConfig.ZF = true;
-
             string programStr =
                 "           jz      label1                      " + Environment.NewLine +
                 "           mov     rax,        10              " + Environment.NewLine +
@@ -282,8 +270,11 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        10              " + Environment.NewLine +
                 "label2:                                        ";
 
-            StaticFlow sFlow = new StaticFlow(programStr, tools);
-            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            Tools tools = CreateTools();
+            var sFlow = new StaticFlow(programStr, tools);
+            tools.StateConfig = sFlow.Get_StateConfig();
+            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+
             State state = dFlow.EndState;
             if (logToDisplay) Console.WriteLine(state);
 
@@ -294,11 +285,6 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_Jmp_4()
         {
-            Tools tools = CreateTools();
-            tools.StateConfig.Set_All_Off();
-            tools.StateConfig.RAX = true;
-            tools.StateConfig.ZF = true;
-
             string programStr =
                 "           jz      label1                      " + Environment.NewLine +
                 "           mov     rax,        10              " + Environment.NewLine +
@@ -308,8 +294,11 @@ namespace unit_tests_asm_z3
                 "label2:                                        " + Environment.NewLine +
                 "           mov     rax,        20              ";
 
-            StaticFlow sFlow = new StaticFlow(programStr, tools);
-            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            Tools tools = CreateTools();
+            var sFlow = new StaticFlow(programStr, tools);
+            tools.StateConfig = sFlow.Get_StateConfig();
+            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+
             State state = dFlow.EndState;
             if (logToDisplay) Console.WriteLine(state);
 
@@ -320,15 +309,6 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_Jmp_5()
         {
-            Tools tools = CreateTools();
-            tools.StateConfig.Set_All_Off();
-            tools.StateConfig.RAX = true;
-            tools.StateConfig.ZF = true;
-            tools.ShowUndefConstraints = false;
-
-            bool logToDisplay2 = true;
-            tools.Quiet = true;// !logToDisplay2;
-
             string programStr =
                 "           jz      label1                      " + Environment.NewLine +
                 "           mov     rax,        10              " + Environment.NewLine +
@@ -336,9 +316,13 @@ namespace unit_tests_asm_z3
                 "label1:                                        " + Environment.NewLine +
                 "           mov     rax,        20              " + Environment.NewLine +
                 "label2:                                        ";
- 
-            StaticFlow sFlow = new StaticFlow(programStr, tools);
-            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+
+            Tools tools = CreateTools();
+            var sFlow = new StaticFlow(programStr, tools);
+            tools.StateConfig = sFlow.Get_StateConfig();
+            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            bool logToDisplay2 = true;
+            tools.Quiet = true;// !logToDisplay2;
 
             State state = dFlow.EndState;
             Assert.IsNotNull(state);
@@ -369,12 +353,6 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_Jmp_5a()
         {
-            Tools tools = CreateTools();
-            tools.StateConfig.Set_All_Off();
-            tools.StateConfig.RAX = true;
-            tools.StateConfig.ZF = true;
-            tools.Quiet = true;// !logToDisplay2;
-
             string programStr =
                 "           mov     rax,        1               " + Environment.NewLine +
                 "           cmp     rax,        0               " + Environment.NewLine +
@@ -385,8 +363,10 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        20              " + Environment.NewLine +
                 "label2:                                        ";
 
-            StaticFlow sFlow = new StaticFlow(programStr, tools);
-            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            Tools tools = CreateTools();
+            var sFlow = new StaticFlow(programStr, tools);
+            tools.StateConfig = sFlow.Get_StateConfig();
+            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
             State state0 = dFlow.States_Before(0, 0);
             Assert.IsNotNull(state0);
@@ -401,12 +381,6 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_Jmp_5b()
         {
-            Tools tools = CreateTools();
-            tools.StateConfig.Set_All_Off();
-            tools.StateConfig.RAX = true;
-            tools.StateConfig.ZF = true;
-            tools.Quiet = true;// !logToDisplay2;
-
             string programStr =
                 "           mov     rax,        0               " + Environment.NewLine +
                 "           cmp     rax,        0               " + Environment.NewLine +
@@ -417,8 +391,10 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        20              " + Environment.NewLine +
                 "label2:                                        ";
 
-            StaticFlow sFlow = new StaticFlow(programStr, tools);
-            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            Tools tools = CreateTools();
+            var sFlow = new StaticFlow(programStr, tools);
+            tools.StateConfig = sFlow.Get_StateConfig();
+            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
             State state0 = dFlow.States_Before(0, 0);
             Assert.IsNotNull(state0);
@@ -433,41 +409,34 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_Jmp_6()
         {
-            Tools tools = CreateTools();
-            tools.StateConfig.Set_All_Off();
-            tools.StateConfig.ZF = true;
-            tools.ShowUndefConstraints = false;
-
-            bool logToDisplay2 = true;
-            tools.Quiet = true;// !logToDisplay2;
-
             string programStr =
                 "           jz      label1                      " + Environment.NewLine +
                 "label1:                                        ";
 
-            StaticFlow sFlow = new StaticFlow(programStr, tools);
-            if (logToDisplay2) Console.WriteLine(sFlow);
+            Tools tools = CreateTools();
+            var sFlow = new StaticFlow(programStr, tools);
+            tools.StateConfig = sFlow.Get_StateConfig();
+            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
-            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             State state = dFlow.EndState;
             Assert.IsNotNull(state);
 
             //DotVisualizer.SaveToDot(sFlow, dFlow, "test1.dot");
 
-            if (logToDisplay2) Console.WriteLine("state:\n" + state);
+            if (logToDisplay) Console.WriteLine("state:\n" + state);
             TestTools.AreEqual(Tv.ONE, state.IsConsistent);
             var branch_Condition = dFlow.Get_Branch_Condition(0);
 
             {
                 State state2a = new State(state);
                 state2a.Add(new BranchInfo(branch_Condition, true));
-                if (logToDisplay2) Console.WriteLine("state with ZF = true:\n" + state2a);
+                if (logToDisplay) Console.WriteLine("state with ZF = true:\n" + state2a);
                 TestTools.AreEqual(Tv.ONE, state2a.IsConsistent);
             }
             {
                 State state2b = new State(state);
                 state2b.Add(new BranchInfo(branch_Condition, false));
-                if (logToDisplay2) Console.WriteLine("state with ZF = false:\n" + state2b);
+                if (logToDisplay) Console.WriteLine("state with ZF = false:\n" + state2b);
                 TestTools.AreEqual(Tv.ONE, state2b.IsConsistent);
             }
         }
@@ -475,16 +444,6 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_Runner_Jmp_7()
         {
-            Tools tools = CreateTools();
-            tools.StateConfig.Set_All_Off();
-            tools.StateConfig.RAX = true;
-            tools.StateConfig.RBX = true;
-            tools.StateConfig.ZF = true;
-            tools.ShowUndefConstraints = false;
-
-            bool logToDisplay2 = true;
-            tools.Quiet = true;// !logToDisplay2;
-
             string programStr =
                 "           jz      label1                      " + Environment.NewLine +
                 "           mov     rax,        10              " + Environment.NewLine +
@@ -496,14 +455,16 @@ namespace unit_tests_asm_z3
                 "           jz      label3                      " + Environment.NewLine +
                 "label3:                                        ";
 
-            StaticFlow sFlow = new StaticFlow(programStr, tools);
-            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            Tools tools = CreateTools();
+            var sFlow = new StaticFlow(programStr, tools);
+            tools.StateConfig = sFlow.Get_StateConfig();
+            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             //DotVisualizer.SaveToDot(sFlow, dFlow, "test1.dot");
 
             State state = dFlow.EndState;
             Assert.IsNotNull(state);
 
-            if (logToDisplay2) Console.WriteLine("state:\n" + state);
+            if (logToDisplay) Console.WriteLine("state:\n" + state);
             TestTools.AreEqual(Tv.ONE, state.IsConsistent);
             TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_000????0", state);
 
@@ -511,17 +472,58 @@ namespace unit_tests_asm_z3
             {
                 State state2a = new State(state);
                 state2a.Add(new BranchInfo(branch_Condition, true));
-                if (logToDisplay2) Console.WriteLine("state with ZF = true:\n" + state2a);
+                if (logToDisplay) Console.WriteLine("state with ZF = true:\n" + state2a);
                 TestTools.AreEqual(Tv.ONE, state2a.IsConsistent);
                 TestTools.AreEqual(Rn.RAX, 10, state2a);
             }
             {
                 State state2b = new State(state);
                 state2b.Add(new BranchInfo(branch_Condition, false));
-                if (logToDisplay2) Console.WriteLine("state with ZF = false:\n" + state2b);
+                if (logToDisplay) Console.WriteLine("state with ZF = false:\n" + state2b);
                 TestTools.AreEqual(Tv.ONE, state2b.IsConsistent);
                 TestTools.AreEqual(Rn.RAX, 20, state2b);
             }
+        }
+
+        [TestMethod]
+        public void Test_Runner_Jmp_8()
+        {
+            string programStr =
+                "           jz      label1                      " + Environment.NewLine +
+                "           mov     rax,        1               " + Environment.NewLine +
+                "           jc      label1                      " + Environment.NewLine +
+                "           mov     rbx,        1               " + Environment.NewLine +
+                "label1:                                        " + Environment.NewLine +
+                "           mov     rcx,        1               ";
+
+            Tools tools = CreateTools();
+            var sFlow = new StaticFlow(programStr, tools);
+            tools.StateConfig = sFlow.Get_StateConfig();
+            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+
+            State state = dFlow.EndState;
+            Assert.IsNotNull(state);
+
+            if (logToDisplay) Console.WriteLine("state:\n" + state);
+            TestTools.AreEqual(Tv.ONE, state.IsConsistent);
+            TestTools.AreEqual(Rn.RCX, 1, state);
+            /*
+            var branch_Condition = dFlow.Get_Branch_Condition(0);
+            {
+                State state2a = new State(state);
+                state2a.Add(new BranchInfo(branch_Condition, true));
+                if (logToDisplay) Console.WriteLine("state with ZF = true:\n" + state2a);
+                TestTools.AreEqual(Tv.ONE, state2a.IsConsistent);
+                TestTools.AreEqual(Rn.RAX, 10, state2a);
+            }
+            {
+                State state2b = new State(state);
+                state2b.Add(new BranchInfo(branch_Condition, false));
+                if (logToDisplay) Console.WriteLine("state with ZF = false:\n" + state2b);
+                TestTools.AreEqual(Tv.ONE, state2b.IsConsistent);
+                TestTools.AreEqual(Rn.RAX, 20, state2b);
+            }
+            */
         }
 
         [TestMethod]

@@ -150,46 +150,6 @@ namespace AsmSim
             throw new NotImplementedException();
         }
 
-        public static StateConfig GetUsage_StateConfig(
-            StaticFlow flow,
-            int lineNumberBegin,
-            int lineNumberEnd,
-            Tools tools)
-        {
-            StateConfig config = new StateConfig();
-            config.Set_All_Off();
-            var usage = GetUsage(flow, 0, flow.LastLineNumber, tools);
-            config.Set_Flags_On(usage.Flags);
-            foreach (Rn reg in usage.Regs) config.Set_Reg_On(reg);
-            config.mem = usage.Mem;
-            return config;
-        }
-
-        public static (ISet<Rn> Regs, Flags Flags, bool Mem) GetUsage(
-            StaticFlow flow,
-            int lineNumberBegin,
-            int lineNumberEnd,
-            Tools tools)
-        {
-            ISet<Rn> regs = new HashSet<Rn>();
-            Flags flags = Flags.NONE;
-            bool mem = false;
-            var dummyKeys = ("", "", "");
-            for (int lineNumber = lineNumberBegin; lineNumber <= lineNumberEnd; lineNumber++)
-            {
-                var content = flow.Get_Line(lineNumber);
-                var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, tools);
-                if (opcodeBase != null)
-                {
-                    flags |= (opcodeBase.FlagsReadStatic | opcodeBase.FlagsWriteStatic);
-                    foreach (Rn r in opcodeBase.RegsReadStatic) regs.Add(RegisterTools.Get64BitsRegister(r));
-                    foreach (Rn r in opcodeBase.RegsWriteStatic) regs.Add(RegisterTools.Get64BitsRegister(r));
-                    mem |= opcodeBase.MemReadWriteStatic;
-                }
-            }
-            return (Regs: regs, Flags: flags, Mem: mem);
-        }
-
         public static OpcodeBase InstantiateOpcode(
             Mnemonic mnemonic,
             string[] args,

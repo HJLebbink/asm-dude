@@ -43,8 +43,8 @@ namespace AsmSim
 
             //TestGraph();
             //TestMnemonic();
-            TestMemorySpeed();
-            //TestDynamicFlow();
+            //TestMemorySpeed();
+            TestDynamicFlow();
             //EmptyMemoryTest();
             //ProgramSynthesis1();
             
@@ -625,20 +625,6 @@ namespace AsmSim
 
         static void TestDynamicFlow()
         {
-            Dictionary<string, string> settings = new Dictionary<string, string>
-            {
-                { "unsat-core", "false" },    // enable generation of unsat cores
-                { "model", "false" },         // enable model generation
-                { "proof", "false" },         // enable proof generation
-                { "timeout", "1000" }
-            };
-            Tools tools = new Tools(settings);
-            tools.StateConfig.Set_All_Off();
-            tools.StateConfig.RAX = true;
-            tools.StateConfig.RBX = true;
-            tools.StateConfig.ZF = true;
-            tools.ShowUndefConstraints = true;
-
             string programStr1 =
                 "           cmp     rax,        0               " + Environment.NewLine +
                 "           jz      label1                      " + Environment.NewLine +
@@ -668,9 +654,28 @@ namespace AsmSim
                 "           dec        rax                      " + Environment.NewLine +
                 "           jnz        label1                   ";
 
+            string programStr5 =
+                "           jz      label1                      " + Environment.NewLine +
+                "           mov     rax,        1               " + Environment.NewLine +
+                "           jc      label1                      " + Environment.NewLine +
+                "           mov     rbx,        1               " + Environment.NewLine +
+                "label1:                                        " + Environment.NewLine +
+                "           mov     rcx,        1               ";
 
-            StaticFlow sFlow = new StaticFlow(programStr2, tools);
-            Console.WriteLine(sFlow);
+            Dictionary<string, string> settings = new Dictionary<string, string>
+            {
+                { "unsat-core", "false" },    // enable generation of unsat cores
+                { "model", "false" },         // enable model generation
+                { "proof", "false" },         // enable proof generation
+                { "timeout", "1000" }
+            };
+
+            Tools tools = new Tools(settings)
+            {
+                ShowUndefConstraints = true
+            };
+            var sFlow = new StaticFlow(programStr5, tools);
+            tools.StateConfig = sFlow.Get_StateConfig();
 
             if (true)
             {

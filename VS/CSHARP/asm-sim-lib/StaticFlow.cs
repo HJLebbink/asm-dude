@@ -53,6 +53,40 @@ namespace AsmSim
 
         #region Getters
 
+        public StateConfig Get_StateConfig()
+        {
+            return this.Get_StateConfig(0, this.LastLineNumber-1);
+        }
+
+        public StateConfig Get_StateConfig(
+            int lineNumberBegin,
+            int lineNumberEnd)
+        {
+            ISet<Rn> regs = new HashSet<Rn>();
+            Flags flags = Flags.NONE;
+            bool mem = false;
+            var dummyKeys = ("", "", "");
+            for (int lineNumber = lineNumberBegin; lineNumber <= lineNumberEnd; lineNumber++)
+            {
+                var content = this.Get_Line(lineNumber);
+                var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, this._tools);
+                if (opcodeBase != null)
+                {
+                    flags |= (opcodeBase.FlagsReadStatic | opcodeBase.FlagsWriteStatic);
+                    foreach (Rn r in opcodeBase.RegsReadStatic) regs.Add(RegisterTools.Get64BitsRegister(r));
+                    foreach (Rn r in opcodeBase.RegsWriteStatic) regs.Add(RegisterTools.Get64BitsRegister(r));
+                    mem |= opcodeBase.MemReadWriteStatic;
+                }
+            }
+
+            StateConfig config = new StateConfig();
+            config.Set_All_Off();
+            config.Set_Flags_On(flags);
+            foreach (Rn reg in regs) config.Set_Reg_On(reg);
+            config.mem = mem;
+            return config;
+        }
+
         public string Get_Key(int lineNumber)
         {
             if (false)

@@ -493,11 +493,10 @@ namespace AsmSim
 
         private State Construct_State_Private(string key, bool after)
         {
-            Tools tools = new Tools(this._tools);
             var visisted = new List<string>();
             lock (this._updateLock)
             {
-                return Construct_State_Private_LOCAL(key, after, visisted) ?? new State(tools, key, key);
+                return Construct_State_Private_LOCAL(key, after, visisted) ?? new State(this._tools, key, key);
             }
 
             #region Local Methods
@@ -513,7 +512,7 @@ namespace AsmSim
                 if (!this.Has_Vertex(key_LOCAL))
                 {
                     Console.WriteLine("WARNING: DynamicFlow: Construct_State_Private: key " + key_LOCAL + " not found.");
-                    return new State(tools, key_LOCAL, key_LOCAL);
+                    return new State(this._tools, key_LOCAL, key_LOCAL);
                 }
 
                 State result;
@@ -522,31 +521,49 @@ namespace AsmSim
                 switch (this._graph.InDegree(key_LOCAL))
                 {
                     case 0:
-                        result = new State(tools, key_LOCAL, key_LOCAL);
-                        break;
-                    case 1:
-                        var edge = this._graph.InEdge(key_LOCAL, 0);
-                        if (edge.Tag.StateUpdate.Reset)
                         {
-                            result = new State(tools, key_LOCAL, key_LOCAL);
-                        } 
-                        else
-                        {
-                            result = Construct_State_Private_LOCAL(edge.Source, false, visited_LOCAL); // recursive call
-                            if (result == null) return null;
-                            result.Update_Forward(edge.Tag.StateUpdate);
+                            result = new State(this._tools, key_LOCAL, key_LOCAL);
+                            break;
                         }
-                        break;
+                    case 1:
+                        {
+                            var edge = this._graph.InEdge(key_LOCAL, 0);
+                            if (edge.Tag.StateUpdate.Reset)
+                            {
+                                result = new State(this._tools, key_LOCAL, key_LOCAL);
+                            }
+                            else
+                            {
+                                result = Construct_State_Private_LOCAL(edge.Source, false, visited_LOCAL); // recursive call
+                                if (result == null) return null;
+                                result.Update_Forward(edge.Tag.StateUpdate);
+                            }
+                            break;
+                        }
                     case 2:
-                        var edge1 = this._graph.InEdge(key_LOCAL, 0);
-                        var edge2 = this._graph.InEdge(key_LOCAL, 1);
-                        result = Merge_State_Update_LOCAL(key_LOCAL, edge1.Source, edge1.Tag.StateUpdate, edge2.Source, edge2.Tag.StateUpdate, visited_LOCAL);
-                        if (result == null) return null;
-                        break;
-                    default:
-                        Console.WriteLine("WARNING: DynamicFlow:Construct_State_Private: inDegree = " + this._graph.InDegree(key_LOCAL) + " is not implemented yet");
-                        result = new State(tools, key_LOCAL, key_LOCAL);
-                        break;
+                        {
+                            var edge1 = this._graph.InEdge(key_LOCAL, 0);
+                            var edge2 = this._graph.InEdge(key_LOCAL, 1);
+                            result = Merge_State_Update_LOCAL(key_LOCAL, edge1.Source, edge1.Tag.StateUpdate, edge2.Source, edge2.Tag.StateUpdate, visited_LOCAL);
+                            if (result == null) return null;
+                            break;
+                        }
+                    case 3:
+/*                        {
+                            var edge1 = this._graph.InEdge(key_LOCAL, 0);
+                            var edge2 = this._graph.InEdge(key_LOCAL, 1);
+                            var edge3 = this._graph.InEdge(key_LOCAL, 2);
+                            result = Merge_State_Update_LOCAL(key_LOCAL, edge1.Source, edge1.Tag.StateUpdate, edge2.Source, edge2.Tag.StateUpdate, visited_LOCAL);
+                            xxx
+                            result = Merge_State_Update_LOCAL(key_LOCAL, edge1.Source, edge1.Tag.StateUpdate, edge2.Source, edge2.Tag.StateUpdate, visited_LOCAL);
+                            break;
+                        }
+*/                    default:
+                        {
+                            Console.WriteLine("WARNING: DynamicFlow:Construct_State_Private: inDegree = " + this._graph.InDegree(key_LOCAL) + " is not implemented yet");
+                            result = new State(this._tools, key_LOCAL, key_LOCAL);
+                            break;
+                        }
                 }
                 if (after_LOCAL)
                 {
