@@ -44,7 +44,8 @@ namespace AsmSim
             //TestGraph();
             //TestMnemonic();
             //TestMemorySpeed();
-            TestDynamicFlow();
+            //TestDynamicFlow();
+            TestSIMD();
             //EmptyMemoryTest();
             //ProgramSynthesis1();
             
@@ -55,6 +56,36 @@ namespace AsmSim
             Console.WriteLine(string.Format("Elapsed time " + elapsedSec + " sec"));
             Console.WriteLine(string.Format("Press any key to continue."));
             Console.ReadKey();
+        }
+
+        static void TestSIMD()
+        {
+            Dictionary<string, string> settings = new Dictionary<string, string>
+            {
+                { "unsat-core", "false" },    // enable generation of unsat cores
+                { "model", "false" },         // enable model generation
+                { "proof", "false" },         // enable proof generation
+                { "timeout", "1000" }
+            };
+            Tools tools = new Tools(settings);
+            Context ctx = new Context(settings);
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.SIMD = true;
+            tools.ShowUndefConstraints = true;
+
+
+            string line1 = "xorpd xmm1, xmm1";
+            string line2 = "addpd xmm1, xmm1";
+
+            {   // forward
+                string rootKey = "!0";
+                State state = new State(tools, rootKey, rootKey);
+
+                state = Runner.SimpleStep_Forward(line1, state);
+                Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                state = Runner.SimpleStep_Forward(line2, state);
+                Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            }
         }
 
         static void TestMemorySpeed()
@@ -322,7 +353,6 @@ namespace AsmSim
 
         static void TestGraph()
         {
-
             var graph = new BidirectionalGraph<long, TaggedEdge<long, bool>>(false);
             int rootVertex = 1;
 

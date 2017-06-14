@@ -58,7 +58,7 @@ namespace AsmSim
         public static State SimpleStep_Forward(string line, State state)
         {
             string nextKey = Tools.CreateKey(state.Tools.Rand);
-            string nextKeyBranch = nextKey;// + "!B";
+            string nextKeyBranch = "DUMMY_NOT_USED";
             var content = AsmSourceTools.ParseLine(line);
             var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, (state.HeadKey, nextKey, nextKeyBranch), state.Tools);
             if (opcodeBase == null) return null;
@@ -76,7 +76,6 @@ namespace AsmSim
         public static State SimpleStep_Backward(string line, State state)
         {
             string prevKey = Tools.CreateKey(state.Tools.Rand);
-            string prevKeyBranch = prevKey;// + "!B";
             var content = AsmSourceTools.ParseLine(line);
             var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, (prevKey, state.TailKey, state.TailKey), state.Tools);
             if (opcodeBase == null) return null;
@@ -430,7 +429,8 @@ namespace AsmSim
                 #endregion NonSse
 
                 #region SSE
-                //case Mnemonic.ADDPD: return new AddPD(args, keys, t); 
+                case Mnemonic.ADDPD: return new AddPD(args, keys, t);
+                case Mnemonic.XORPD: return new XorPD(args, keys, t);
                 case Mnemonic.POPCNT: return new Popcnt(args, keys, t);
 
                 #endregion SSE

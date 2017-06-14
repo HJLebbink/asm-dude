@@ -467,7 +467,7 @@ namespace AsmDude.Tools
                 }
                 if (stateConfig.mem)
                 {
-                    if (!state.Is_Redundant_Mem(key1, key2)) return "";
+                    if (state.Is_Redundant_Mem(key1, key2) != Tv.ONE) return "";
                 }
             }
             string message = "\"" + this._sFlow.Get_Line_Str(lineNumber) + "\" is redundant.";

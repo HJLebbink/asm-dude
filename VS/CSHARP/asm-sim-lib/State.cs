@@ -368,7 +368,7 @@ namespace AsmSim
                 return (result == Tv.ONE);
             }
         }
-        public bool Is_Redundant_Mem(string key1, string key2)
+        public Tv Is_Redundant_Mem(string key1, string key2)
         {
             lock (this._ctxLock)
             {
@@ -393,15 +393,8 @@ namespace AsmSim
                     this.Solver.Pop();
                     this.Solver_U.Pop();
                 }
-                return (result == Tv.ONE);
+                return result;
             }
-
-            //            BoolExpr value = 
-            //           Tv tv = ToolsZ3.GetTv(value, diffState.Solver, ctx);
-            //AsmDudeToolsStatic.Output_INFO("AsmSimulator: Get_Redundant_Instruction_Warnings: line " + lineNumber + ":tv=" + tv + "; value=" + value);
-            //         if (tv != Tv.ONE) return "";
-            return false;
-
         }
 
         public Tv GetTv_Cached(Flags flagName)
@@ -464,10 +457,6 @@ namespace AsmSim
                 {
                     return value;
                 }
-
-                Rn reg64 = RegisterTools.Get64BitsRegister(regName);
-                if (reg64 == Rn.NOREG) return new Tv[RegisterTools.NBits(regName)];
-
                 try
                 {
                     this.UndefGrounding = true; // needed!
@@ -481,12 +470,7 @@ namespace AsmSim
                         popNeeded = true;
                     }
 
-                    BitVecExpr regExpr = this.Get(reg64);
-                    if (RegisterTools.Is8BitHigh(regName))
-                    {
-                        regExpr = this.Ctx.MkExtract(15, 8, regExpr);
-                    }
-
+                    BitVecExpr regExpr = this.Get(regName);
                     Tv[] result = ToolsZ3.GetTvArray(regExpr, RegisterTools.NBits(regName), this.Solver, this.Solver_U, this.Ctx);
 
                     if (popNeeded)
@@ -497,6 +481,7 @@ namespace AsmSim
 
                     if (this.Frozen)
                     {
+                        /*
                         if (ADD_COMPUTED_VALUES && RegisterTools.NBits(regName) == 64)
                         {
                             ulong? value2 = ToolsZ3.GetUlong(result);
@@ -506,14 +491,15 @@ namespace AsmSim
                                 this.Solver_Dirty = true;
                             }
                         }
-
+                        */
                         this._cached_Reg_Values[regName] = result;
                     }
+
                     return result;
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("WARNING: AsmSimulator: "+e.ToString());
+                    Console.WriteLine("WARNING: AsmSimulator: " + e.ToString());
                     return new Tv[RegisterTools.NBits(regName)];
                 }
             }
@@ -599,11 +585,6 @@ namespace AsmSim
 
                     if (value)
                     {
-                     //   this._undefStore = new BoolExpr[this.Solver_U.NumAssertions];
-                    //    for (int i = 0; i<this.Solver_U.NumAssertions; ++i)
-                     //   {
-                      //      this._undefStore[i] = this.Solver_U.Assertions[i];
-                     // }
                         this._undefStore = this.Solver_U.Assertions;
 
                         string key = this.TailKey;
@@ -617,10 +598,12 @@ namespace AsmSim
                         {
                             this.Solver_U.Assert(ctx.MkEq(Tools.Reg_Key(reg, key, ctx), regValue));
                         }
-
-                        ArrayExpr memKey = Tools.Mem_Key(key, ctx);
-                        ArrayExpr initialMem = ctx.MkConstArray(ctx.MkBitVecSort(64), ctx.MkBV(0xFF, 8));
-                        this.Solver_U.Assert(ctx.MkEq(memKey, initialMem));
+                        if (this.Tools.StateConfig.mem)
+                        {
+                            ArrayExpr memKey = Tools.Mem_Key(key, ctx);
+                            ArrayExpr initialMem = ctx.MkConstArray(ctx.MkBitVecSort(64), ctx.MkBV(0xFF, 8));
+                            this.Solver_U.Assert(ctx.MkEq(memKey, initialMem));
+                        }
                     }
                     else
                     {
@@ -675,6 +658,7 @@ namespace AsmSim
             {
                 sb.Append(ToStringFlags(identStr));
                 sb.Append(ToStringRegs(identStr));
+                //sb.Append(ToStringSIMD(identStr));
             }
             //sb.AppendLine(ToStringWarning(identStr));
             return sb.ToString();
@@ -706,6 +690,20 @@ namespace AsmSim
             }
             return sb.ToString();
         }
+        public string ToStringSIMD(string identStr)
+        {
+            StringBuilder sb = new StringBuilder();
+//            foreach (Rn reg in this.Tools.StateConfig.GetRegOn())
+            {
+                Rn reg = Rn.XMM1;
+                Tv[] regContent = this.GetTvArray(reg);
+                var t = ToolsZ3.HasOneValue(regContent);
+                bool showReg = (!(t.hasOneValue && t.value == Tv.UNKNOWN));
+                if (showReg) sb.Append("\n" + identStr + string.Format(reg + " = {0} = {1}", ToolsZ3.ToStringBin(regContent), ToolsZ3.ToStringHex(regContent)));
+            }
+            return sb.ToString();
+        }
+
         public string ToStringConstraints(string identStr)
         {
             StringBuilder sb = new StringBuilder();

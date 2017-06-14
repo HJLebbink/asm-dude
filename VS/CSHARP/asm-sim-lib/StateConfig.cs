@@ -56,6 +56,8 @@ namespace AsmSim
 
         public bool mem = false;
 
+        public bool SIMD = false;
+
         #region Setters
         public void Set_All_On()
         {
@@ -93,6 +95,8 @@ namespace AsmSim
             this.R13 = true;
             this.R14 = true;
             this.R15 = true;
+
+            this.SIMD = true;
         }
         public void Set_All_Flags_Off()
         {
@@ -124,6 +128,8 @@ namespace AsmSim
             this.R13 = false;
             this.R14 = false;
             this.R15 = false;
+
+            this.SIMD = false;
         }
         public void Set_All_Off()
         {

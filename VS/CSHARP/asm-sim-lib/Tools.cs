@@ -68,6 +68,7 @@ namespace AsmSim
         }
         public static string Reg_Name(Rn reg, string key)
         {
+            if (RegisterTools.Is_SIMD_Register(reg)) return "SIMD" + key;
             return reg.ToString() + key;
         }
         public static string Reg_Name_Fresh(Rn reg, Random rand)
@@ -86,11 +87,121 @@ namespace AsmSim
         {
             return "MEM" + key;
         }
+        public static (uint High, uint Low) SIMD_Extract_Range(Rn rn)
+        {
+            switch (rn)
+            {
+                case Rn.XMM0: return (128 * ((4 * 0) + 1) - 1, 128 * 4 * 0);
+                case Rn.XMM1: return (128 * ((4 * 1) + 1) - 1, 128 * 4 * 1);
+                case Rn.XMM2: return (128 * ((4 * 2) + 1) - 1, 128 * 4 * 2);
+                case Rn.XMM3: return (128 * ((4 * 3) + 1) - 1, 128 * 4 * 3);
+                case Rn.XMM4: return (128 * ((4 * 4) + 1) - 1, 128 * 4 * 4);
+                case Rn.XMM5: return (128 * ((4 * 5) + 1) - 1, 128 * 4 * 5);
+                case Rn.XMM6: return (128 * ((4 * 6) + 1) - 1, 128 * 4 * 6);
+                case Rn.XMM7: return (128 * ((4 * 7) + 1) - 1, 128 * 4 * 7);
+                case Rn.XMM8: return (128 * ((4 * 8) + 1) - 1, 128 * 4 * 8);
+                case Rn.XMM9: return (128 * ((4 * 9) + 1) - 1, 128 * 4 * 9);
+                case Rn.XMM10: return (128 * ((4 * 10) + 1) - 1, 128 * 4 * 10);
+                case Rn.XMM11: return (128 * ((4 * 11) + 1) - 1, 128 * 4 * 11);
+                case Rn.XMM12: return (128 * ((4 * 12) + 1) - 1, 128 * 4 * 12);
+                case Rn.XMM13: return (128 * ((4 * 13) + 1) - 1, 128 * 4 * 13);
+                case Rn.XMM14: return (128 * ((4 * 14) + 1) - 1, 128 * 4 * 14);
+                case Rn.XMM15: return (128 * ((4 * 15) + 1) - 1, 128 * 4 * 15);
+                case Rn.XMM16: return (128 * ((4 * 16) + 1) - 1, 128 * 4 * 16);
+                case Rn.XMM17: return (128 * ((4 * 17) + 1) - 1, 128 * 4 * 17);
+                case Rn.XMM18: return (128 * ((4 * 18) + 1) - 1, 128 * 4 * 18);
+                case Rn.XMM19: return (128 * ((4 * 19) + 1) - 1, 128 * 4 * 19);
+                case Rn.XMM20: return (128 * ((4 * 20) + 1) - 1, 128 * 4 * 20);
+                case Rn.XMM21: return (128 * ((4 * 21) + 1) - 1, 128 * 4 * 21);
+                case Rn.XMM22: return (128 * ((4 * 22) + 1) - 1, 128 * 4 * 22);
+                case Rn.XMM23: return (128 * ((4 * 23) + 1) - 1, 128 * 4 * 23);
+                case Rn.XMM24: return (128 * ((4 * 24) + 1) - 1, 128 * 4 * 24);
+                case Rn.XMM25: return (128 * ((4 * 25) + 1) - 1, 128 * 4 * 25);
+                case Rn.XMM26: return (128 * ((4 * 26) + 1) - 1, 128 * 4 * 26);
+                case Rn.XMM27: return (128 * ((4 * 27) + 1) - 1, 128 * 4 * 27);
+                case Rn.XMM28: return (128 * ((4 * 28) + 1) - 1, 128 * 4 * 28);
+                case Rn.XMM29: return (128 * ((4 * 29) + 1) - 1, 128 * 4 * 29);
+                case Rn.XMM30: return (128 * ((4 * 30) + 1) - 1, 128 * 4 * 30);
+                case Rn.XMM31: return (128 * ((4 * 31) + 1) - 1, 128 * 4 * 31);
+
+                case Rn.YMM0: return (128 * ((4 * 0) + 2) - 1, 128 * 4 * 0);
+                case Rn.YMM1: return (128 * ((4 * 1) + 2) - 1, 128 * 4 * 1);
+                case Rn.YMM2: return (128 * ((4 * 2) + 2) - 1, 128 * 4 * 2);
+                case Rn.YMM3: return (128 * ((4 * 3) + 2) - 1, 128 * 4 * 3);
+                case Rn.YMM4: return (128 * ((4 * 4) + 2) - 1, 128 * 4 * 4);
+                case Rn.YMM5: return (128 * ((4 * 5) + 2) - 1, 128 * 4 * 5);
+                case Rn.YMM6: return (128 * ((4 * 6) + 2) - 1, 128 * 4 * 6);
+                case Rn.YMM7: return (128 * ((4 * 7) + 2) - 1, 128 * 4 * 7);
+                case Rn.YMM8: return (128 * ((4 * 8) + 2) - 1, 128 * 4 * 8);
+                case Rn.YMM9: return (128 * ((4 * 9) + 2) - 1, 128 * 4 * 9);
+                case Rn.YMM10: return (128 * ((4 * 10) + 2) - 1, 128 * 4 * 10);
+                case Rn.YMM11: return (128 * ((4 * 11) + 2) - 1, 128 * 4 * 11);
+                case Rn.YMM12: return (128 * ((4 * 12) + 2) - 1, 128 * 4 * 12);
+                case Rn.YMM13: return (128 * ((4 * 13) + 2) - 1, 128 * 4 * 13);
+                case Rn.YMM14: return (128 * ((4 * 14) + 2) - 1, 128 * 4 * 14);
+                case Rn.YMM15: return (128 * ((4 * 15) + 2) - 1, 128 * 4 * 15);
+                case Rn.YMM16: return (128 * ((4 * 16) + 2) - 1, 128 * 4 * 16);
+                case Rn.YMM17: return (128 * ((4 * 17) + 2) - 1, 128 * 4 * 17);
+                case Rn.YMM18: return (128 * ((4 * 18) + 2) - 1, 128 * 4 * 18);
+                case Rn.YMM19: return (128 * ((4 * 19) + 2) - 1, 128 * 4 * 19);
+                case Rn.YMM20: return (128 * ((4 * 20) + 2) - 1, 128 * 4 * 20);
+                case Rn.YMM21: return (128 * ((4 * 21) + 2) - 1, 128 * 4 * 21);
+                case Rn.YMM22: return (128 * ((4 * 22) + 2) - 1, 128 * 4 * 22);
+                case Rn.YMM23: return (128 * ((4 * 23) + 2) - 1, 128 * 4 * 23);
+                case Rn.YMM24: return (128 * ((4 * 24) + 2) - 1, 128 * 4 * 24);
+                case Rn.YMM25: return (128 * ((4 * 25) + 2) - 1, 128 * 4 * 25);
+                case Rn.YMM26: return (128 * ((4 * 26) + 2) - 1, 128 * 4 * 26);
+                case Rn.YMM27: return (128 * ((4 * 27) + 2) - 1, 128 * 4 * 27);
+                case Rn.YMM28: return (128 * ((4 * 28) + 2) - 1, 128 * 4 * 28);
+                case Rn.YMM29: return (128 * ((4 * 29) + 2) - 1, 128 * 4 * 29);
+                case Rn.YMM30: return (128 * ((4 * 30) + 2) - 1, 128 * 4 * 30);
+                case Rn.YMM31: return (128 * ((4 * 31) + 2) - 1, 128 * 4 * 31);
+
+                case Rn.ZMM0: return (128 * ((4 * 0) + 4) - 1, 128 * 4 * 0);
+                case Rn.ZMM1: return (128 * ((4 * 1) + 4) - 1, 128 * 4 * 1);
+                case Rn.ZMM2: return (128 * ((4 * 2) + 4) - 1, 128 * 4 * 2);
+                case Rn.ZMM3: return (128 * ((4 * 3) + 4) - 1, 128 * 4 * 3);
+                case Rn.ZMM4: return (128 * ((4 * 4) + 4) - 1, 128 * 4 * 4);
+                case Rn.ZMM5: return (128 * ((4 * 5) + 4) - 1, 128 * 4 * 5);
+                case Rn.ZMM6: return (128 * ((4 * 6) + 4) - 1, 128 * 4 * 6);
+                case Rn.ZMM7: return (128 * ((4 * 7) + 4) - 1, 128 * 4 * 7);
+                case Rn.ZMM8: return (128 * ((4 * 8) + 4) - 1, 128 * 4 * 8);
+                case Rn.ZMM9: return (128 * ((4 * 9) + 4) - 1, 128 * 4 * 9);
+                case Rn.ZMM10: return (128 * ((4 * 10) + 4) - 1, 128 * 4 * 10);
+                case Rn.ZMM11: return (128 * ((4 * 11) + 4) - 1, 128 * 4 * 11);
+                case Rn.ZMM12: return (128 * ((4 * 12) + 4) - 1, 128 * 4 * 12);
+                case Rn.ZMM13: return (128 * ((4 * 13) + 4) - 1, 128 * 4 * 13);
+                case Rn.ZMM14: return (128 * ((4 * 14) + 4) - 1, 128 * 4 * 14);
+                case Rn.ZMM15: return (128 * ((4 * 15) + 4) - 1, 128 * 4 * 15);
+                case Rn.ZMM16: return (128 * ((4 * 16) + 4) - 1, 128 * 4 * 16);
+                case Rn.ZMM17: return (128 * ((4 * 17) + 4) - 1, 128 * 4 * 17);
+                case Rn.ZMM18: return (128 * ((4 * 18) + 4) - 1, 128 * 4 * 18);
+                case Rn.ZMM19: return (128 * ((4 * 19) + 4) - 1, 128 * 4 * 19);
+                case Rn.ZMM20: return (128 * ((4 * 20) + 4) - 1, 128 * 4 * 20);
+                case Rn.ZMM21: return (128 * ((4 * 21) + 4) - 1, 128 * 4 * 21);
+                case Rn.ZMM22: return (128 * ((4 * 22) + 4) - 1, 128 * 4 * 22);
+                case Rn.ZMM23: return (128 * ((4 * 23) + 4) - 1, 128 * 4 * 23);
+                case Rn.ZMM24: return (128 * ((4 * 24) + 4) - 1, 128 * 4 * 24);
+                case Rn.ZMM25: return (128 * ((4 * 25) + 4) - 1, 128 * 4 * 25);
+                case Rn.ZMM26: return (128 * ((4 * 26) + 4) - 1, 128 * 4 * 26);
+                case Rn.ZMM27: return (128 * ((4 * 27) + 4) - 1, 128 * 4 * 27);
+                case Rn.ZMM28: return (128 * ((4 * 28) + 4) - 1, 128 * 4 * 28);
+                case Rn.ZMM29: return (128 * ((4 * 29) + 4) - 1, 128 * 4 * 29);
+                case Rn.ZMM30: return (128 * ((4 * 30) + 4) - 1, 128 * 4 * 30);
+                case Rn.ZMM31: return (128 * ((4 * 31) + 4) - 1, 128 * 4 * 31);
+                default: return (0, 0);
+            }
+        }
 
         public static BitVecExpr Reg_Key(Rn reg, String key, Context ctx)
         {
             uint nBits = (uint)RegisterTools.NBits(reg);
-            if (RegisterTools.IsGeneralPurposeRegister(reg))
+            if (RegisterTools.Is_SIMD_Register(reg))
+            {
+                var range = SIMD_Extract_Range(reg);
+                return ctx.MkExtract(range.High, range.Low, ctx.MkBVConst(Tools.Reg_Name(reg, key), 32 * 512));
+            }
+            else if (RegisterTools.IsGeneralPurposeRegister(reg))
             {
                 if (nBits == 64)
                 {

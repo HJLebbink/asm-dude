@@ -47,5 +47,10 @@
 	mov rbx, rax
 	#endregion
 
+	#region Redundant instruction warning in memory
+	mov qword [rcx], rax  
+	mov qword [rcx], rbx
+	#endregion
+
 
 .att_syntax

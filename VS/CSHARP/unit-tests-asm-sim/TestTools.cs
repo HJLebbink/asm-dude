@@ -10,7 +10,7 @@ namespace unit_tests_asm_z3
     public class TestTools
     {
 #if DEBUG
-        public const bool LOG_TO_DISPLAY = false;
+        public const bool LOG_TO_DISPLAY = true;
 #else
         public const bool LOG_TO_DISPLAY = true;
 #endif
@@ -128,6 +128,47 @@ namespace unit_tests_asm_z3
         public static bool Calc_CF_Mul(int nBits, ulong a, ulong b)
         {
             return (new BigInteger(a) * new BigInteger(b)) >= BigInteger.Pow(new BigInteger(2), nBits);
+        }
+        #endregion
+
+        #region IsTrue IsFalse
+        public static void IsTrue(Tv tv)
+        {
+            switch (tv)
+            {
+                case Tv.ONE:
+                    break;
+                case Tv.UNKNOWN: 
+                case Tv.UNDEFINED:
+                case Tv.ZERO:
+                case Tv.INCONSISTENT:
+                    Assert.Fail("Expected True");
+                    break;
+                case Tv.UNDETERMINED:
+                    Assert.Inconclusive("Expected True");
+                    break;
+                default:
+                    break;
+            }
+        }
+        public static void IsFalse(Tv tv)
+        {
+            switch (tv)
+            {
+                case Tv.ZERO:
+                    break;
+                case Tv.UNKNOWN:
+                case Tv.UNDEFINED:
+                case Tv.INCONSISTENT:
+                case Tv.ONE:
+                    Assert.Fail("Expected True");
+                    break;
+                case Tv.UNDETERMINED:
+                    Assert.Inconclusive("Expected True");
+                    break;
+                default:
+                    break;
+            }
         }
         #endregion
 

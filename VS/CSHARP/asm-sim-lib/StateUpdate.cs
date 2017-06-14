@@ -39,6 +39,8 @@ namespace AsmSim
         private readonly string _prevKey_Branch;
         private readonly BoolExpr _branch_Condition;
         public bool Empty { get; private set; }
+
+        /// <summary>True if this stateUpdate is an update in which the state is reset.</summary>
         public bool Reset { get; set; }
         private BranchInfo _branchInfo;
 
@@ -83,6 +85,8 @@ namespace AsmSim
         private BoolExpr _r14 = null;
         private BoolExpr _r15 = null;
 
+        private BoolExpr _simd = null;
+
         private BoolExpr _rax_U = null;
         private BoolExpr _rbx_U = null;
         private BoolExpr _rcx_U = null;
@@ -102,6 +106,8 @@ namespace AsmSim
         private BoolExpr _r13_U = null;
         private BoolExpr _r14_U = null;
         private BoolExpr _r15_U = null;
+
+        private BoolExpr _simd_U = null;
         #endregion
 
         #region Memory
@@ -144,8 +150,14 @@ namespace AsmSim
             lock (this._ctxLock)
             {
                 Context ctx = state.Ctx;
-                if (!this.Reset) foreach (BoolExpr expr in this.Value) state.Solver.Assert(expr.Translate(ctx) as BoolExpr);
+                if (!this.Reset)
+                {
+                    foreach (BoolExpr expr in this.Value) state.Solver.Assert(expr.Translate(ctx) as BoolExpr);
+                    if (this._simd != null) state.Solver.Assert(this._simd.Simplify().Translate(ctx) as BoolExpr);
+                }
                 foreach (BoolExpr expr in this.Undef) state.Solver_U.Assert(expr.Translate(ctx) as BoolExpr);
+                if (this._simd_U != null) state.Solver_U.Assert(this._simd_U.Simplify().Translate(ctx) as BoolExpr);
+
                 state.BranchInfoStore.Add(this.BranchInfo?.Translate(ctx));
             }
         }
@@ -486,65 +498,97 @@ namespace AsmSim
         }
         public void Set(Rn reg, BitVecExpr value, BitVecExpr undef)
         {
-            this.Empty = false;
-
-            //            if (value == null) return;
-            //            if (undef == null) return;
             Debug.Assert(value != null);
             Debug.Assert(undef != null);
 
+            this.Empty = false;
             Context ctx = this._ctx;
-            Rn reg64 = RegisterTools.Get64BitsRegister(reg);
 
-            uint nBits = value.SortSize;
-            switch (nBits)
+            if (RegisterTools.IsGeneralPurposeRegister(reg))
             {
-                case 64: break;
-                case 32:
-                    {
-                        value = ctx.MkZeroExt(32, value);
-                        undef = ctx.MkZeroExt(32, undef);
-                        break;
-                    }
-                case 16:
-                    {
-                        BitVecExpr prefix = ctx.MkExtract(63, 16, Tools.Reg_Key(reg64, this._prevKey_Regular, ctx));
-                        value = ctx.MkConcat(prefix, value);
-                        undef = ctx.MkConcat(prefix, undef);
-                        break;
-                    }
-                case 8:
-                    {
-                        BitVecExpr reg64Expr = Tools.Reg_Key(reg64, this._prevKey_Regular, ctx);
-                        if (RegisterTools.Is8BitHigh(reg))
+                Rn reg64 = RegisterTools.Get64BitsRegister(reg);
+                uint nBits = value.SortSize;
+                switch (nBits)
+                {
+                    case 64: break;
+                    case 32:
                         {
-                            BitVecExpr postFix = ctx.MkExtract(7, 0, reg64Expr);
-                            BitVecExpr prefix = ctx.MkExtract(63, 16, reg64Expr);
-                            value = ctx.MkConcat(ctx.MkConcat(prefix, value), postFix);
-                            undef = ctx.MkConcat(ctx.MkConcat(prefix, undef), postFix);
+                            value = ctx.MkZeroExt(32, value);
+                            undef = ctx.MkZeroExt(32, undef);
+                            break;
                         }
-                        else
+                    case 16:
                         {
-                            BitVecExpr prefix = ctx.MkExtract(63, 8, reg64Expr);
+                            BitVecExpr reg64Expr = Tools.Reg_Key(reg64, this._prevKey_Regular, ctx);
+                            BitVecExpr prefix = ctx.MkExtract(63, 16, reg64Expr);
                             value = ctx.MkConcat(prefix, value);
                             undef = ctx.MkConcat(prefix, undef);
+                            break;
                         }
-                        break;
-                    }
-                default:
-                    {
-                        Console.WriteLine("ERROR: Set: bits=" + nBits + "; value=" + value + "; undef=" + undef);
-                        throw new Exception();
-                    }
-            }
-            {
-                BitVecExpr key = Tools.Reg_Key(reg64, this.NextKey, ctx);
-                BoolExpr value_Constraint = ctx.MkEq(key, value) as BoolExpr;
-                BoolExpr undef_Constraint = ctx.MkEq(key, undef) as BoolExpr;
+                    case 8:
+                        {
+                            BitVecExpr reg64Expr = Tools.Reg_Key(reg64, this._prevKey_Regular, ctx);
+                            if (RegisterTools.Is8BitHigh(reg))
+                            {
+                                BitVecExpr postFix = ctx.MkExtract(7, 0, reg64Expr);
+                                BitVecExpr prefix = ctx.MkExtract(63, 16, reg64Expr);
+                                value = ctx.MkConcat(ctx.MkConcat(prefix, value), postFix);
+                                undef = ctx.MkConcat(ctx.MkConcat(prefix, undef), postFix);
+                            }
+                            else
+                            {
+                                BitVecExpr prefix = ctx.MkExtract(63, 8, reg64Expr);
+                                value = ctx.MkConcat(prefix, value);
+                                undef = ctx.MkConcat(prefix, undef);
+                            }
+                            break;
+                        }
+                    default:
+                        {
+                            Console.WriteLine("ERROR: Set: bits=" + nBits + "; value=" + value + "; undef=" + undef);
+                            throw new Exception();
+                        }
+                }
+                {
+                    BitVecExpr key = Tools.Reg_Key(reg64, this.NextKey, ctx);
+                    BoolExpr value_Constraint = ctx.MkEq(key, value) as BoolExpr;
+                    BoolExpr undef_Constraint = ctx.MkEq(key, undef) as BoolExpr;
 
-                if (this.Get_Raw_Private(reg64, false) != null) throw new Exception("Multiple assignments to register " + reg64);
-                this.Set_Private(reg64, value_Constraint, false);
-                this.Set_Private(reg64, undef_Constraint, true);
+                    if (this.Get_Raw_Private(reg64, false) != null) throw new Exception("Multiple assignments to register " + reg64);
+                    this.Set_Private(reg64, value_Constraint, false);
+                    this.Set_Private(reg64, undef_Constraint, true);
+                }
+            }
+            else if (RegisterTools.Is_SIMD_Register(reg))
+            {
+                uint max = (512 * 32);
+
+                BitVecExpr prevKey = ctx.MkBVConst(Tools.Reg_Name(reg, this._prevKey_Regular), max);
+                var range = Tools.SIMD_Extract_Range(reg);
+
+
+                BitVecExpr top = null;
+                BitVecExpr bottom = null;
+                if (range.High < (max - 1)) top = ctx.MkExtract(max-1, range.High+1, prevKey);
+                if (range.Low > 0) bottom = ctx.MkExtract(range.Low - 1, 0, prevKey);
+
+                Console.WriteLine(top.SortSize + "+" + value.SortSize + "+" + bottom.SortSize+"="+ prevKey.SortSize);
+
+
+                BitVecExpr newValue = (top == null) ? value : ctx.MkConcat(top, value) as BitVecExpr;
+                newValue = (bottom == null) ? newValue : ctx.MkConcat(newValue, bottom);
+                BitVecExpr newUndef = (top == null) ? value : ctx.MkConcat(top, value) as BitVecExpr;
+                newUndef = (bottom == null) ? newUndef : ctx.MkConcat(newUndef, bottom);
+
+                BitVecExpr nextKey = ctx.MkBVConst(Tools.Reg_Name(reg, this.NextKey), 512 * 32);
+                //Debug.Assert(newValue.SortSize == nextKey.SortSize);
+
+                this._simd = ctx.MkEq(nextKey, newValue);
+                this._simd_U = ctx.MkEq(nextKey, newUndef);
+            }
+            else
+            {
+                // do nothing;
             }
         }
         private void Set_Private(Rn reg, BoolExpr value, bool undef)

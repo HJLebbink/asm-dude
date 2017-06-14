@@ -83,7 +83,7 @@ namespace AsmSim
                 this._args = args;
                 this.Tools = t;
                 this.keys = keys;
-                this.Ctx = new Context(new Dictionary<string, string>(t.Settings));
+                this.Ctx = new Context(t.Settings);
             }
 
             public abstract void Execute();
@@ -205,30 +205,19 @@ namespace AsmSim
             {
                 try
                 {
-                if (operand == null)
-                {
-                    return null;
-                }
-                if (nBits == -1)
-                {
-                    nBits = operand.NBits;
-                }
+                    if (operand == null)
+                    {
+                        return null;
+                    }
+                    if (nBits == -1)
+                    {
+                        nBits = operand.NBits;
+                    }
                     switch (operand.Type)
                     {
                         case Ot1.reg:
                             {
-                                Rn reg = operand.Rn;
-                                if (nBits == 64)
-                                {
-                                    return ctx.MkBVConst(Tools.Reg_Name(reg, key), 64);
-                                }
-                                else
-                                {
-                                    BitVecExpr regExpr = ctx.MkBVConst(Tools.Reg_Name(RegisterTools.Get64BitsRegister(reg), key), 64);
-                                    return (RegisterTools.Is8BitHigh(reg))
-                                        ? ctx.MkExtract(16, 8, regExpr)
-                                        : ctx.MkExtract((uint)nBits - 1, 0, regExpr);
-                                }
+                                return Tools.Reg_Key(operand.Rn, key, ctx);
                             }
                         case Ot1.mem:
                             {
@@ -247,7 +236,8 @@ namespace AsmSim
                                 return null;
                             }
                     }
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     Console.WriteLine("ERROR: OpcodeBase:OpValue: op=" + operand.ToString() + ": exception " + e.ToString());
                     return null;
@@ -3351,7 +3341,6 @@ namespace AsmSim
                 {
                     this.SyntaxError = string.Format("\"{0}\": Operands should have equal sizes. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                 }
-
             }
             public override void Execute()
             {
@@ -3371,7 +3360,24 @@ namespace AsmSim
                 BitVecExpr result = ToolsFloatingPoint.FP_2_BV(a_FP, ctx);
                 this.RegularUpdate.Set(this.op1, result);
             }
-            public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, this.op2); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1); } }
+        }
+        /// <summary>Xor Parallel Double FP</summary>
+        public sealed class XorPD : Opcode2Base
+        {
+            public XorPD(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.XORPD, args, Ot2.reg_reg | Ot2.reg_mem, keys, t)
+            {
+                if (this.IsHalted) return;
+                if (this.op1.NBits != this.op2.NBits)
+                {
+                    this.SyntaxError = string.Format("\"{0}\": Operands should have equal sizes. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                }
+            }
+            public override void Execute()
+            {
+                this.RegularUpdate.Set(this.op1, this.Ctx.MkBVXOR(this.Op1Value, this.Op2Value));
+            }
             public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, this.op2); } }
             public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1); } }
         }
