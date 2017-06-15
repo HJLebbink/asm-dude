@@ -1486,5 +1486,17 @@ namespace AsmDude {
                 this["SyntaxHighlighting_Userdefined3_Italic"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IntelliSense_Label_Analysis_On {
+            get {
+                return ((bool)(this["IntelliSense_Label_Analysis_On"]));
+            }
+            set {
+                this["IntelliSense_Label_Analysis_On"] = value;
+            }
+        }
     }
 }

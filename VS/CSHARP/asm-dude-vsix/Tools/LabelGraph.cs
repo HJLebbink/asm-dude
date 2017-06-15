@@ -98,24 +98,26 @@ namespace AsmDude.Tools
             this._hasLabel = new HashSet<uint>();
             this._hasDef = new HashSet<uint>();
             this._undefined_includes = new List<(string Include_Filename, string Path, string Source_Filename, int LineNumber)>();
-
             this._thisFilename = AsmDudeToolsStatic.GetFileName(this._buffer);
-            this.Enabled = true;
-
             this._delay = new Delay(AsmDudePackage.msSleepBeforeAsyncExecution, 100, AsmDudeTools.Instance.Thread_Pool);
-            this._delay.Done_Event += (o, i) => {
-                if (this._bussy)
-                {
-                    this._delay.Reset();
-                }
-                else
-                {
-                    AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Reset_Private);
-                }
-            };
 
-            this.Reset();
-            this._buffer.ChangedLowPriority += this.Buffer_Changed;
+            this.Enabled = Settings.Default.IntelliSense_Label_Analysis_On;
+            if (this.Enabled)
+            {
+                this._delay.Done_Event += (o, i) =>
+                {
+                    if (this._bussy)
+                    {
+                        this._delay.Reset();
+                    }
+                    else
+                    {
+                        AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Reset_Private);
+                    }
+                };
+                this.Reset();
+                this._buffer.ChangedLowPriority += this.Buffer_Changed;
+            }
         }
         #endregion
 

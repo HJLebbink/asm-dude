@@ -144,8 +144,9 @@
                 <GroupBox Header="Intellisense" BorderBrush="DarkGray">
                     <Grid>
                         <StackPanel>
-                            <CheckBox x:Name="useCodeCompletion_UI" Content="Enable code completion" ToolTip="Code completion eabled" Margin="0,4,0,2" HorizontalAlignment="Left" Width="Auto" />
-                            <CheckBox x:Name="useSignatureHelp_UI" Content="Enable signature help" ToolTip="Signature help enabled" Margin="0,2,0,2" HorizontalAlignment="Left" Width="Auto" />
+                            <CheckBox x:Name="Intellisense_Code_Completion_On_UI" Content="Enable code completion" ToolTip="Code completion enabled" Margin="0,4,0,2" HorizontalAlignment="Left" Width="Auto" />
+                            <CheckBox x:Name="Intellisense_Signature_Help_On_UI" Content="Enable signature help" ToolTip="Signature help enabled" Margin="0,2,0,2" HorizontalAlignment="Left" Width="Auto" />
+                            <CheckBox x:Name="Intellisense_Label_Analysis_On_UI" Content="Enable label analysis" ToolTip="Label analysis enabled. Needed for code completions of labels, tooltip info of labels, missing label warnings, clashing label warnings." Margin="0,2,0,4" HorizontalAlignment="Left" Width="Auto" />
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="180"/>
@@ -176,7 +177,6 @@
                                 <CheckBox x:Name="Intellisense_Show_Undefined_Includes_UI" Content="Show in error list" ToolTip="Show undefined includes in error list" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left" Width="Auto" />
                                 <CheckBox x:Name="Intellisense_Decorate_Undefined_Includes_UI" Content="Decorate with Squiggle" ToolTip="Decorate undefined includes with error squiggle" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Left" Width="Auto" />
                             </Grid>
-
                         </StackPanel>
                     </Grid>
                 </GroupBox>

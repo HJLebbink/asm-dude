@@ -368,5 +368,8 @@
     <Setting Name="SyntaxHighlighting_Userdefined3_Italic" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="IntelliSense_Label_Analysis_On" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -248,6 +248,7 @@ namespace AsmDude.OptionsPage
             #endregion
 
             #region Intellisense
+            this._asmDudeOptionsPageUI.Intellisense_UseLabelAnalysis = Settings.Default.IntelliSense_Label_Analysis_On;
             this._asmDudeOptionsPageUI.IntelliSense_Show_Undefined_Labels = Settings.Default.IntelliSense_Show_UndefinedLabels;
             this._asmDudeOptionsPageUI.IntelliSense_Decorate_Undefined_Labels = Settings.Default.IntelliSense_Decorate_UndefinedLabels;
             this._asmDudeOptionsPageUI.IntelliSense_Show_Clashing_Labels = Settings.Default.IntelliSense_Show_ClashingLabels;
@@ -857,6 +858,11 @@ namespace AsmDude.OptionsPage
             #endregion
 
             #region Intellisense
+            if (Settings.Default.IntelliSense_Label_Analysis_On != this._asmDudeOptionsPageUI.Intellisense_UseLabelAnalysis)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: Intellisense_UseLabelAnalysis=" + this._asmDudeOptionsPageUI.Intellisense_UseLabelAnalysis);
+                changed = true;
+            }
             if (Settings.Default.IntelliSense_Show_UndefinedLabels != this._asmDudeOptionsPageUI.IntelliSense_Show_Undefined_Labels)
             {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: IntelliSense_Show_UndefinedLabels=" + this._asmDudeOptionsPageUI.IntelliSense_Show_Undefined_Labels);
@@ -1564,6 +1570,12 @@ namespace AsmDude.OptionsPage
             #endregion
 
             #region Intellisense
+            if (Settings.Default.IntelliSense_Label_Analysis_On != this._asmDudeOptionsPageUI.Intellisense_UseLabelAnalysis)
+            {
+                Settings.Default.IntelliSense_Label_Analysis_On = this._asmDudeOptionsPageUI.Intellisense_UseLabelAnalysis;
+                changed = true;
+                restartNeeded = true;
+            }
             if (Settings.Default.IntelliSense_Show_UndefinedLabels != this._asmDudeOptionsPageUI.IntelliSense_Show_Undefined_Labels)
             {
                 Settings.Default.IntelliSense_Show_UndefinedLabels = this._asmDudeOptionsPageUI.IntelliSense_Show_Undefined_Labels;

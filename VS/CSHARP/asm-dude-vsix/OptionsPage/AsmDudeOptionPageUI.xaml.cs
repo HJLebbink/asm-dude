@@ -361,13 +361,13 @@ namespace AsmDude.OptionsPage
         #region Code Completion
         public bool UseCodeCompletion
         {
-            get { return this.useCodeCompletion_UI.IsChecked ?? false; }
-            set { this.useCodeCompletion_UI.IsChecked = value; }
+            get { return this.Intellisense_Code_Completion_On_UI.IsChecked ?? false; }
+            set { this.Intellisense_Code_Completion_On_UI.IsChecked = value; }
         }
         public bool UseSignatureHelp
         {
-            get { return this.useSignatureHelp_UI.IsChecked ?? false; }
-            set { this.useSignatureHelp_UI.IsChecked = value; }
+            get { return this.Intellisense_Signature_Help_On_UI.IsChecked ?? false; }
+            set { this.Intellisense_Signature_Help_On_UI.IsChecked = value; }
         }
 
         public bool UseArch_8086
@@ -674,6 +674,11 @@ namespace AsmDude.OptionsPage
         #endregion
 
         #region Intellisense
+        public bool Intellisense_UseLabelAnalysis
+        {
+            get { return this.Intellisense_Label_Analysis_On_UI.IsChecked ?? false; }
+            set { this.Intellisense_Label_Analysis_On_UI.IsChecked = value; }
+        }
         public bool IntelliSense_Show_Undefined_Labels
         {
             get { return this.Intellisense_Show_Undefined_Labels_UI.IsChecked ?? false; }
