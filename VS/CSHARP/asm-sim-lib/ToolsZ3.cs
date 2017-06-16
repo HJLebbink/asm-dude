@@ -616,69 +616,13 @@ namespace AsmSim
             return results;
         }
 
-        public static Tv GetTv(BoolExpr value, BoolExpr undef, Solver solver, Solver solver_U, Context ctx)
+        public static Tv GetTv(BoolExpr value, BoolExpr undef, Solver solver, Solver solver_U, Context ctx, bool freshSolver = false)
         {
             try
             {
-                bool tvTrue;
-                {
-                    Status status = solver.Check(value);
-                    if (status == Status.UNKNOWN)
-                    {
-                        //Console.WriteLine("ToolsZ3:getTv5: A: value=" + value + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
-                        return Tv.UNDETERMINED;
-                    }
-                    tvTrue = (status == Status.SATISFIABLE);
-                }
-
-                //if (!tvTrue) return Tv5.ZERO;
-
-                bool tvFalse;
-                {
-                    Status status = solver.Check(ctx.MkNot(value));
-                    if (status == Status.UNKNOWN)
-                    {
-                        //Console.WriteLine("ToolsZ3:getTv5: B: value=" + ctx.MkNot(value) + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
-                        return Tv.UNDETERMINED;
-                    }
-                    tvFalse = (status == Status.SATISFIABLE);
-                }
-                // if it consistent to assert that the provided bit is true, 
-                // and seperately that it is consistent to be false, the model in the solver 
-                // is indifferent about the truth-value of bit.
-
-                if (!tvTrue && !tvFalse) return Tv.INCONSISTENT; // TODO: if inconsistent does not occur and !tvTrue is observed we can directly return Tv5.ZERO 
-                if (!tvTrue && tvFalse) return Tv.ZERO;
-                if (tvTrue && !tvFalse) return Tv.ONE;
-                if (tvTrue && tvFalse) // truth value of bit cannot be determined is not known: it is either UNKNOWN or UNDEFINED
-                {
-                    if (solver_U == null) return Tv.UNKNOWN;
-                    bool tvFalseU;
-                    {
-                        Status status = solver_U.Check(ctx.MkNot(undef));
-                        if (status == Status.UNKNOWN)
-                        {
-                            //Console.WriteLine("ToolsZ3:getTv5: C: undef=" + ctx.MkNot(undef) + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
-                            return Tv.UNDETERMINED;
-                        }
-                        tvFalseU = (status == Status.SATISFIABLE);
-                    }
-                    // if (!tvFalseU) return Tv5.UNKNOWN;
-
-                    bool tvTrueU;
-                    {
-                        Status status = solver_U.Check(undef);
-                        if (status == Status.UNKNOWN)
-                        {
-                            //Console.WriteLine("ToolsZ3:getTv5: D: undef=" + undef + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
-                            return Tv.UNDETERMINED;
-                        }
-                        tvTrueU = (status == Status.SATISFIABLE);
-                    }
-                    return (tvTrueU && tvFalseU) ? Tv.UNDEFINED : Tv.UNKNOWN;
-                }
-                // unreachable
-                throw new Exception();
+                return (freshSolver)
+                    ? GetTv_Method1(value, undef, solver, solver_U, ctx)
+                    : GetTv_Method2(value, undef, solver, solver_U, ctx);
             }
             catch (Exception e)
             {
@@ -686,6 +630,145 @@ namespace AsmSim
                 return Tv.UNDETERMINED;
             }
         }
+        private static Tv GetTv_Method1(BoolExpr value, BoolExpr undef, Solver solver, Solver solver_U, Context ctx)
+        {
+            bool tvTrue;
+            {
+                Status status = solver.Check(value);
+                if (status == Status.UNKNOWN)
+                {
+                    //Console.WriteLine("ToolsZ3:getTv5: A: value=" + value + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
+                    return Tv.UNDETERMINED;
+                }
+                tvTrue = (status == Status.SATISFIABLE);
+            }
+
+            //if (!tvTrue) return Tv5.ZERO;
+
+            bool tvFalse;
+            {
+                Status status = solver.Check(ctx.MkNot(value));
+                if (status == Status.UNKNOWN)
+                {
+                    //Console.WriteLine("ToolsZ3:getTv5: B: value=" + ctx.MkNot(value) + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
+                    return Tv.UNDETERMINED;
+                }
+                tvFalse = (status == Status.SATISFIABLE);
+            }
+            // if it consistent to assert that the provided bit is true, 
+            // and seperately that it is consistent to be false, the model in the solver 
+            // is indifferent about the truth-value of bit.
+
+            if (!tvTrue && !tvFalse) return Tv.INCONSISTENT; // TODO: if inconsistent does not occur and !tvTrue is observed we can directly return Tv5.ZERO 
+            if (!tvTrue && tvFalse) return Tv.ZERO;
+            if (tvTrue && !tvFalse) return Tv.ONE;
+            if (tvTrue && tvFalse) // truth value of bit cannot be determined is not known: it is either UNKNOWN or UNDEFINED
+            {
+                if (solver_U == null) return Tv.UNKNOWN;
+                bool tvFalseU;
+                {
+                    Status status = solver_U.Check(ctx.MkNot(undef));
+                    if (status == Status.UNKNOWN)
+                    {
+                        //Console.WriteLine("ToolsZ3:getTv5: C: undef=" + ctx.MkNot(undef) + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
+                        return Tv.UNDETERMINED;
+                    }
+                    tvFalseU = (status == Status.SATISFIABLE);
+                }
+                // if (!tvFalseU) return Tv5.UNKNOWN;
+
+                bool tvTrueU;
+                {
+                    Status status = solver_U.Check(undef);
+                    if (status == Status.UNKNOWN)
+                    {
+                        //Console.WriteLine("ToolsZ3:getTv5: D: undef=" + undef + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
+                        return Tv.UNDETERMINED;
+                    }
+                    tvTrueU = (status == Status.SATISFIABLE);
+                }
+                return (tvTrueU && tvFalseU) ? Tv.UNDEFINED : Tv.UNKNOWN;
+            }
+            // unreachable
+            throw new Exception();
+        }
+        private static Tv GetTv_Method2(BoolExpr value, BoolExpr undef, Solver solver, Solver solver_U, Context ctx)
+        {
+            Dictionary<string, string> settings = new Dictionary<string, string>();
+
+            bool tvTrue;
+            {
+                Solver s = State.MakeSolver(ctx);
+                s.Assert(solver.Assertions);
+                s.Assert(value);
+                Status status = s.Check();
+                if (status == Status.UNKNOWN)
+                {
+                    //Console.WriteLine("ToolsZ3:getTv5: A: value=" + value + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
+                    return Tv.UNDETERMINED;
+                }
+                tvTrue = (status == Status.SATISFIABLE);
+            }
+
+            //if (!tvTrue) return Tv5.ZERO;
+
+            bool tvFalse;
+            {
+                Solver s = State.MakeSolver(ctx);
+                s.Assert(solver.Assertions);
+                s.Assert(ctx.MkNot(value));
+                Status status = s.Check();
+                if (status == Status.UNKNOWN)
+                {
+                    //Console.WriteLine("ToolsZ3:getTv5: B: value=" + ctx.MkNot(value) + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
+                    return Tv.UNDETERMINED;
+                }
+                tvFalse = (status == Status.SATISFIABLE);
+            }
+            // if it consistent to assert that the provided bit is true, 
+            // and seperately that it is consistent to be false, the model in the solver 
+            // is indifferent about the truth-value of bit.
+
+            if (!tvTrue && !tvFalse) return Tv.INCONSISTENT; // TODO: if inconsistent does not occur and !tvTrue is observed we can directly return Tv5.ZERO 
+            if (!tvTrue && tvFalse) return Tv.ZERO;
+            if (tvTrue && !tvFalse) return Tv.ONE;
+            if (tvTrue && tvFalse) // truth value of bit cannot be determined is not known: it is either UNKNOWN or UNDEFINED
+            {
+                if (solver_U == null) return Tv.UNKNOWN;
+                bool tvFalseU;
+                {
+                    Solver s = State.MakeSolver(ctx);
+                    s.Assert(solver_U.Assertions);
+                    s.Assert(ctx.MkNot(undef));
+                    Status status = s.Check();
+                    if (status == Status.UNKNOWN)
+                    {
+                        //Console.WriteLine("ToolsZ3:getTv5: C: undef=" + ctx.MkNot(undef) + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
+                        return Tv.UNDETERMINED;
+                    }
+                    tvFalseU = (status == Status.SATISFIABLE);
+                }
+                // if (!tvFalseU) return Tv5.UNKNOWN;
+
+                bool tvTrueU;
+                {
+                    Solver s = State.MakeSolver(ctx);
+                    s.Assert(solver_U.Assertions);
+                    s.Assert(value);
+                    Status status = s.Check();
+                    if (status == Status.UNKNOWN)
+                    {
+                        //Console.WriteLine("ToolsZ3:getTv5: D: undef=" + undef + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
+                        return Tv.UNDETERMINED;
+                    }
+                    tvTrueU = (status == Status.SATISFIABLE);
+                }
+                return (tvTrueU && tvFalseU) ? Tv.UNDEFINED : Tv.UNKNOWN;
+            }
+            // unreachable
+            throw new Exception();
+        }
+
         public static Tv GetTv(BoolExpr value, Solver solver, Context ctx)
         {
             try

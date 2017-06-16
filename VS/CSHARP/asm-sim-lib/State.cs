@@ -68,19 +68,16 @@ namespace AsmSim
         {
             this._tools = new Tools(tools);
             this._ctx = new Context(this._tools.Settings);
-            this.Solver = CreateSolver_LOCAL();
-            this.Solver_U = CreateSolver_LOCAL();
+            this.Solver = State.MakeSolver(this._ctx);
+            this.Solver_U = State.MakeSolver(this._ctx);
             this._branchInfoStore = new BranchInfoStore(this._ctx);
             this._cached_Reg_Values = new Dictionary<Rn, Tv[]>();
             this._cached_Flag_Values = new Dictionary<Flags, Tv>();
+        }
 
-            Solver CreateSolver_LOCAL()
-            {
-                return this._ctx.MkSolver(this._ctx.MkTactic("qfbv"));
-                //return this._ctx.MkSolver("QF_ABV");
-                //return this._ctx.MkSolver();
-                //return this._ctx.MkSolver("QF_BV");
-            }
+        public static Solver MakeSolver(Context ctx)
+        {
+            return ctx.MkSolver(ctx.MkTactic("qfbv"));
         }
 
         /// <summary>Regular constructor</summary>
@@ -386,7 +383,7 @@ namespace AsmSim
                 Expr e1 = Tools.Mem_Key(key1, this._ctx);
                 Expr e2 = Tools.Mem_Key(key2, this._ctx);
                 BoolExpr e = this._ctx.MkEq(e1, e2);
-                Tv result = ToolsZ3.GetTv(e, e, this.Solver, this.Solver_U, this._ctx);
+                Tv result = ToolsZ3.GetTv(e, e, this.Solver, this.Solver_U, this._ctx, true);
 
                 if (popNeeded)
                 {

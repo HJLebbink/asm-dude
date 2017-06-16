@@ -82,7 +82,7 @@ namespace AsmDude.Squiggles
             {
                 this._asmSimulator.Line_Updated_Event += (o, e) =>
                 {
-                    AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handling _asmSimulator.Line_Updated_Event: event from " + o + ". Line " + e.LineNumber + ": "+e.Message);
+                    //AsmDudeToolsStatic.Output_INFO("SquigglesTagger:Handling _asmSimulator.Line_Updated_Event: event from " + o + ". Line " + e.LineNumber + ": "+e.Message);
                     this.Update_Squiggles_Tasks(e.LineNumber);
                     this.Update_Error_Task_AsmSim(e.LineNumber, e.Message);
                 };

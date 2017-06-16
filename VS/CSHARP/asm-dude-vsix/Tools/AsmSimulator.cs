@@ -82,10 +82,10 @@ namespace AsmDude.Tools
             this._buffer = buffer;
             this._aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, aggregatorFactory);
 
-            if (Settings.Default.AsmSim_On)
+            this.Enabled = Settings.Default.AsmSim_On;
+            if (this.Enabled)
             {
                 AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: swithed on");
-                this.Enabled = true;
 
                 this._cached_States_After = new Dictionary<int, State>();
                 this._cached_States_Before = new Dictionary<int, State>();
@@ -139,11 +139,12 @@ namespace AsmDude.Tools
 
                 this._delay = new Delay(AsmDudePackage.msSleepBeforeAsyncExecution, 100, this._threadPool);
                 this._delay.Done_Event += (o, i) => {
-
                     if ((this._thread_Result != null) && !this._thread_Result.IsCanceled)
                     {
+                        AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: cancaling a reset thread.");
                         this._thread_Result.Cancel();
                     }
+                    AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: delay_done event: going to start a reset event in a new thread.");
                     this._thread_Result = this._threadPool.QueueWorkItem(this.Reset_Private);
                 };
 
@@ -161,7 +162,6 @@ namespace AsmDude.Tools
             else
             {
                 AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: switched off");
-                this.Enabled = false;
             }
         }
 

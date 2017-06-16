@@ -7,7 +7,7 @@
 	inc rax
 	#endregion
 
-	vaddpd xmm1, xmm2, xmm3 ; inimplemented instruction to stop the simulator
+	vaddpd xmm1, xmm2, xmm3 ; unimplemented instruction to stop the simulator
 	
 
 	#region Semantic Error: usage of undefined carry 
@@ -16,14 +16,14 @@
 	add eax, 1
 	#endregion
 
-	vaddpd xmm1, xmm2, xmm3 ; inimplemented instruction to stop the simulator
+	vaddpd xmm1, xmm2, xmm3 ; unimplemented instruction to stop the simulator
 	
 	#region move value to memory
 	mov ptr qword [rax], 10
 	mov rax, ptr qword [rax]
 	#endregion
 
-	vaddpd xmm1, xmm2, xmm3 ; inimplemented instruction to stop the simulator
+	vaddpd xmm1, xmm2, xmm3 ; unimplemented instruction to stop the simulator
 
 	#region slow (expensive) instruction
 	mov ptr qword [rax], 10
@@ -31,7 +31,7 @@
 	popcnt rbx, rax
 	#endregion
 
-	vaddpd xmm1, xmm2, xmm3 ; inimplemented instruction to stop the simulator
+	vaddpd xmm1, xmm2, xmm3 ; unimplemented instruction to stop the simulator
 
 	#region moving undefined values to memory and retrieving it.
 	mov cx, 0
@@ -40,14 +40,14 @@
 	mov rcx, ptr qword [rbx]
 	#endregion
 
-	;vaddpd xmm1, xmm2, xmm3 ; inimplemented instruction to stop the simulator
+	;vaddpd xmm1, xmm2, xmm3 ; unimplemented instruction to stop the simulator
 
 	#region Redundant instruction warning
 	mov rax, rbx
 	mov rbx, rax
 	#endregion
 
-	#region Redundant instruction warning in memory
+	#region Redundant instruction warning in memory (but AsmSim does not find it simply because it times out)
 	mov qword [rcx], rax  
 	mov qword [rcx], rbx
 	#endregion
