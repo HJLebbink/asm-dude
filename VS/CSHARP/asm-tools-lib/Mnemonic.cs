@@ -2294,6 +2294,32 @@ namespace AsmTools {
             }
         }
 
+        public static Mnemonic ParseMnemonic_Att(string str, bool strIsCapitals = false)
+        {
+            string str2 = (strIsCapitals) ? str : str.ToUpper();
+
+            Mnemonic r = ParseMnemonic(str2, true);
+            if (r != Mnemonic.UNKNOWN) return r;
+            int length = str2.Length;
+
+            bool suffix;
+            switch (str[length - 1])
+            {
+                case 'B':
+                case 'S':
+                case 'W':
+                case 'L':
+                case 'Q':
+                case 'T': suffix = true; break;
+                default: suffix = false; break;
+            }
+            if (suffix)
+            {
+                string keyword2 = str.Substring(0, length - 1);
+                return AsmSourceTools.ParseMnemonic(keyword2, true);
+            }
+            return Mnemonic.UNKNOWN;
+        }
         public static Mnemonic ParseMnemonic(string str, bool strIsCapitals = false) {
             #if DEBUG
                 if (strIsCapitals && (str != str.ToUpper())) throw new Exception();

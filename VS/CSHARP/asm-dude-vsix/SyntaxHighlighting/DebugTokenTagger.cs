@@ -73,7 +73,7 @@ namespace AsmDude
                 foreach (var keywordInfo in AsmSourceTools.SplitIntoKeywordPos(line))
                 {
                     string asmToken = Keyword(keywordInfo, line);
-                    AsmTokenType keywordType = this._asmDudeTools.Get_Token_Type(asmToken);
+                    AsmTokenType keywordType = this._asmDudeTools.Get_Token_Type_Intel(asmToken);
                     if ((keywordType == AsmTokenType.Mnemonic) ||
                         (keywordType == AsmTokenType.Jump))
                     {

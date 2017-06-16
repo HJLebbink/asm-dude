@@ -64,6 +64,8 @@ namespace AsmDude.OptionsPage
         {
             base.OnActivate(e);
 
+            this._asmDudeOptionsPageUI.UsedAssembler = AsmDudeToolsStatic.Used_Assembler;
+
             #region AsmDoc
             this._asmDudeOptionsPageUI.AsmDoc_On = Settings.Default.AsmDoc_On;
             this._asmDudeOptionsPageUI.AsmDoc_Url = Settings.Default.AsmDoc_url;
@@ -78,8 +80,6 @@ namespace AsmDude.OptionsPage
 
             #region Syntax Highlighting
             this._asmDudeOptionsPageUI.SyntaxHighlighting_On = Settings.Default.SyntaxHighlighting_On;
-            this._asmDudeOptionsPageUI.UsedAssembler = AsmDudeToolsStatic.Used_Assembler;
-
             this._asmDudeOptionsPageUI.ColorMnemonic = Settings.Default.SyntaxHighlighting_Opcode;
             this._asmDudeOptionsPageUI.ColorMnemonic_Italic = Settings.Default.SyntaxHighlighting_Opcode_Italic;
             this._asmDudeOptionsPageUI.ColorRegister = Settings.Default.SyntaxHighlighting_Register;
@@ -330,6 +330,12 @@ namespace AsmDude.OptionsPage
         {
             bool changed = false;
 
+            if (AsmDudeToolsStatic.Used_Assembler != this._asmDudeOptionsPageUI.UsedAssembler)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: usedAssembler=" + this._asmDudeOptionsPageUI.UsedAssembler);
+                changed = true;
+            }
+
             #region AsmDoc
             if (Settings.Default.AsmDoc_On != this._asmDudeOptionsPageUI.AsmDoc_On)
             {
@@ -370,11 +376,6 @@ namespace AsmDude.OptionsPage
             if (Settings.Default.SyntaxHighlighting_On != this._asmDudeOptionsPageUI.SyntaxHighlighting_On)
             {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useSyntaxHighlighting=" + this._asmDudeOptionsPageUI.SyntaxHighlighting_On);
-                changed = true;
-            }
-            if (AsmDudeToolsStatic.Used_Assembler != this._asmDudeOptionsPageUI.UsedAssembler)
-            {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: usedAssembler=" + this._asmDudeOptionsPageUI.UsedAssembler);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Opcode.ToArgb() != this._asmDudeOptionsPageUI.ColorMnemonic.ToArgb())
@@ -904,8 +905,8 @@ namespace AsmDude.OptionsPage
                 if (!this._asmDudeOptionsPageUI.AsmSim_On)
                 {
                     string title = null;
-                    string message = "I'm sorry "+ Environment.UserName + ", I'm afraid I can't do that";
-                    int result = VsShellUtilities.ShowMessageBox(this.Site, message, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                    string message = "I'm sorry "+ Environment.UserName + ", I'm afraid I can't do that.";
+                    int result = VsShellUtilities.ShowMessageBox(this.Site, message, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_ABORTRETRYIGNORE, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                 }
             }
             if (Settings.Default.AsmSim_Number_Of_Steps != this._asmDudeOptionsPageUI.AsmSim_Number_Of_Steps)
@@ -1004,6 +1005,14 @@ namespace AsmDude.OptionsPage
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:save", this.ToString()));
             bool changed = false;
             bool restartNeeded = false;
+
+            if (AsmDudeToolsStatic.Used_Assembler != this._asmDudeOptionsPageUI.UsedAssembler)
+            {
+                AsmDudeToolsStatic.Used_Assembler = this._asmDudeOptionsPageUI.UsedAssembler;
+                changed = true;
+                restartNeeded = true;
+            }
+
             #region AsmDoc
             if (Settings.Default.AsmDoc_On != this._asmDudeOptionsPageUI.AsmDoc_On)
             {
@@ -1049,12 +1058,6 @@ namespace AsmDude.OptionsPage
             if (Settings.Default.SyntaxHighlighting_On != this._asmDudeOptionsPageUI.SyntaxHighlighting_On)
             {
                 Settings.Default.SyntaxHighlighting_On = this._asmDudeOptionsPageUI.SyntaxHighlighting_On;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (AsmDudeToolsStatic.Used_Assembler != this._asmDudeOptionsPageUI.UsedAssembler)
-            {
-                AsmDudeToolsStatic.Used_Assembler = this._asmDudeOptionsPageUI.UsedAssembler;
                 changed = true;
                 restartNeeded = true;
             }
@@ -1685,7 +1688,7 @@ namespace AsmDude.OptionsPage
             if (restartNeeded)
             {
                 string title = null;
-                string message = "You may need to restart visual studio for the changes to take effect.";
+                string message = "You may need to close and open assembly files, or \nrestart visual studio for the changes to take effect.";
                 int result = VsShellUtilities.ShowMessageBox(this.Site, message, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
             }
         }

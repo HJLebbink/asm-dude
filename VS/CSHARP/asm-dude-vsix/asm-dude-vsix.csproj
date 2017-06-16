@@ -193,6 +193,7 @@
     <Compile Include="AsmDoc\AsmDocUnderlineTagger.cs" />
     <Compile Include="AsmDoc\AsmDocUnderlineTaggerProvider.cs" />
     <Compile Include="AsmDudePackage.cs" />
+    <Compile Include="SyntaxHighlighting\NasmAttTokenTagger.cs" />
     <Compile Include="Tools\AsmSimulator.cs" />
     <Compile Include="BraceMatching\BraceMatchingTagger.cs" />
     <Compile Include="BraceMatching\BraceMatchingTaggerProvider.cs" />
@@ -244,7 +245,7 @@
     <Compile Include="SyntaxHighlighting\AsmClassificationFormat.cs" />
     <Compile Include="SyntaxHighlighting\DebugTokenTagger.cs" />
     <Compile Include="SyntaxHighlighting\MasmTokenTagger.cs" />
-    <Compile Include="SyntaxHighlighting\NasmTokenTagger.cs" />
+    <Compile Include="SyntaxHighlighting\NasmIntelTokenTagger.cs" />
     <Compile Include="Tools\ApplicationInformation.cs" />
     <Compile Include="Tools\AsmDudeTools.cs" />
     <Compile Include="Tools\AsmDudeToolsStatic.cs" />

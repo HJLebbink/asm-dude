@@ -269,7 +269,7 @@ namespace AsmDude
             SortedSet<Completion> completions = new SortedSet<Completion>(new CompletionComparer());
             foreach (string keyword in this._asmDudeTools.Get_Keywords())
             {
-                AsmTokenType type = this._asmDudeTools.Get_Token_Type(keyword);
+                AsmTokenType type = this._asmDudeTools.Get_Token_Type_Intel(keyword);
 
                 Arch arch = this._asmDudeTools.Get_Architecture(keyword);
                 bool selected = Is_Register_Switched_On(arch);
@@ -431,7 +431,7 @@ namespace AsmDude
             //Add the completions that are defined in the xml file
             foreach (string keyword in this._asmDudeTools.Get_Keywords())
             {
-                AsmTokenType type = this._asmDudeTools.Get_Token_Type(keyword);
+                AsmTokenType type = this._asmDudeTools.Get_Token_Type_Intel(keyword);
                 if (selectedTypes.Contains(type))
                 {
                     Arch arch = Arch.NONE;
@@ -444,9 +444,9 @@ namespace AsmDude
                         {
                             if (!usedAssember.HasFlag(AssemblerEnum.MASM)) selected = false;
                         }
-                        else if (assembler.HasFlag(AssemblerEnum.NASM))
+                        else if (assembler.HasFlag(AssemblerEnum.NASM_INTEL) || assembler.HasFlag(AssemblerEnum.NASM_ATT))
                         {
-                            if (!usedAssember.HasFlag(AssemblerEnum.NASM)) selected = false;
+                            if (!usedAssember.HasFlag(AssemblerEnum.NASM_INTEL)) selected = false;
                         }
                     }
                     else

@@ -272,7 +272,42 @@ namespace AsmDude
             return this._type.Keys;
         }
 
-        public AsmTokenType Get_Token_Type(string keyword)
+        public AsmTokenType Get_Token_Type_Att(string keyword)
+        {
+            Debug.Assert(keyword == keyword.ToUpper());
+            int length = keyword.Length;
+            Debug.Assert(length > 0);
+
+            char firstChar = keyword[0];
+
+            #region Test if keyword is a register
+            if (firstChar == '%')
+            {
+                string keyword2 = keyword.Substring(1);
+                Rn reg = RegisterTools.ParseRn(keyword2, true);
+                return (reg != Rn.NOREG) ? AsmTokenType.Register : AsmTokenType.UNKNOWN;
+            }
+            #endregion
+            #region Test if keyword is an imm
+            if (firstChar == '$')
+            {
+                return AsmTokenType.Constant;
+            }
+            #endregion
+            #region Test if keyword is an instruction
+            {
+                Mnemonic mnemonic = AsmSourceTools.ParseMnemonic_Att(keyword, true);
+                if (mnemonic != Mnemonic.UNKNOWN)
+                {
+                    return (AsmSourceTools.IsJump(mnemonic)) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
+                }
+            }
+            #endregion
+
+            return (this._type.TryGetValue(keyword, out var tokenType)) ? tokenType : AsmTokenType.UNKNOWN;
+        }
+
+        public AsmTokenType Get_Token_Type_Intel(string keyword)
         {
             Debug.Assert(keyword == keyword.ToUpper());
 

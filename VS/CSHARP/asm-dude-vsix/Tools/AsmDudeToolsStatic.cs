@@ -86,14 +86,9 @@ namespace AsmDude.Tools
         {
             get
             {
-                if (Settings.Default.useAssemblerMasm)
-                {
-                    return AssemblerEnum.MASM;
-                }
-                if (Settings.Default.useAssemblerNasm)
-                {
-                    return AssemblerEnum.NASM;
-                }
+                if (Settings.Default.useAssemblerMasm) return AssemblerEnum.MASM;
+                if (Settings.Default.useAssemblerNasm) return AssemblerEnum.NASM_INTEL;
+                if (Settings.Default.useAssemblerNasm_Att) return AssemblerEnum.NASM_ATT;
                 Output("WARNING: AsmDudeToolsStatic.usedAssebler: no assembler specified, assuming MASM");
                 return AssemblerEnum.MASM;
             }
@@ -101,14 +96,19 @@ namespace AsmDude.Tools
             {
                 Settings.Default.useAssemblerMasm = false;
                 Settings.Default.useAssemblerNasm = false;
+                Settings.Default.useAssemblerNasm_Att = false;
 
                 if (value.HasFlag(AssemblerEnum.MASM))
                 {
                     Settings.Default.useAssemblerMasm = true;
                 }
-                else if (value.HasFlag(AssemblerEnum.NASM))
+                else if (value.HasFlag(AssemblerEnum.NASM_INTEL))
                 {
                     Settings.Default.useAssemblerNasm = true;
+                }
+                else if (value.HasFlag(AssemblerEnum.NASM_ATT))
+                {
+                    Settings.Default.useAssemblerNasm_Att = true;
                 }
                 else
                 {
@@ -638,7 +638,7 @@ namespace AsmDude.Tools
                     return label2;
                 }
             }
-            else if (assembler.HasFlag(AssemblerEnum.NASM))
+            else if (assembler.HasFlag(AssemblerEnum.NASM_INTEL))
             {
                 if ((prefix != null) && (prefix.Length > 0))
                 {
@@ -668,7 +668,7 @@ namespace AsmDude.Tools
                     }
                 }
             }
-            else if (assembler.HasFlag(AssemblerEnum.NASM))
+            else if (assembler.HasFlag(AssemblerEnum.NASM_INTEL))
             {
                 for (int i = 0; i < label.Length; ++i)
                 {

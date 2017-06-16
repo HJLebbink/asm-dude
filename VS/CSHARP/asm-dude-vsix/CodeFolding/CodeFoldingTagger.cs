@@ -225,7 +225,7 @@ namespace AsmDude.CodeFolding
                 {
                     return Is_Start_Masm_Keyword(lineContent, lineNumber);
                 }
-                else if (usedAssember.HasFlag(AssemblerEnum.NASM))
+                else if (usedAssember.HasFlag(AssemblerEnum.NASM_INTEL) || usedAssember.HasFlag(AssemblerEnum.NASM_ATT))
                 {
                     return Is_Start_Nasm_Keyword(lineContent, lineNumber);
                 }
@@ -330,7 +330,7 @@ namespace AsmDude.CodeFolding
                 {
                     return Is_End_Masm_Keyword(lineContent, lineNumber);
                 }
-                else if (usedAssember.HasFlag(AssemblerEnum.NASM))
+                else if (usedAssember.HasFlag(AssemblerEnum.NASM_INTEL) || usedAssember.HasFlag(AssemblerEnum.NASM_ATT))
                 {
                     return Is_End_Nasm_Keyword(lineContent, lineNumber);
                 }

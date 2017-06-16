@@ -1498,5 +1498,17 @@ namespace AsmDude {
                 this["IntelliSense_Label_Analysis_On"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool useAssemblerNasm_Att {
+            get {
+                return ((bool)(this["useAssemblerNasm_Att"]));
+            }
+            set {
+                this["useAssemblerNasm_Att"] = value;
+            }
+        }
     }
 }

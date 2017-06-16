@@ -50,7 +50,6 @@ namespace AsmDude.OptionsPage
         }
 
         #region Event Handlers to disable options
-
         private void SyntaxHighlighting_Update(bool value)
         {
             this.ColorMnemonic_UI.IsEnabled = value;
@@ -76,8 +75,7 @@ namespace AsmDude.OptionsPage
             this.ColorUserDefined3_UI.IsEnabled = value;
             this.ColorUserDefined3_Italic_UI.IsEnabled = value;
         }
-
-    private void AsmDoc_Update(bool value)
+        private void AsmDoc_Update(bool value)
         {
             this.AsmDoc_Url_UI.IsEnabled = value;
         }
@@ -118,25 +116,54 @@ namespace AsmDude.OptionsPage
         }
         #endregion Asm Documentation
 
+        public AssemblerEnum UsedAssembler
+        {
+            get
+            {
+                if (this.usedAssemblerMasm_UI.IsChecked.HasValue && this.usedAssemblerMasm_UI.IsChecked.Value) return AssemblerEnum.MASM;
+                if (this.usedAssemblerNasm_UI.IsChecked.HasValue && this.usedAssemblerNasm_UI.IsChecked.Value) return AssemblerEnum.NASM_INTEL;
+                if (this.usedAssemblerAtt_UI.IsChecked.HasValue && this.usedAssemblerAtt_UI.IsChecked.Value) return AssemblerEnum.NASM_ATT;
+                return AssemblerEnum.MASM; // if nothing is checked somehow return MASM
+            }
+            set
+            {
+                if (value.HasFlag(AssemblerEnum.MASM))
+                {
+                    this.usedAssemblerMasm_UI.IsChecked = true;
+                    this.usedAssemblerNasm_UI.IsChecked = false;
+                    this.usedAssemblerAtt_UI.IsChecked = false;
+                }
+                else if (value.HasFlag(AssemblerEnum.NASM_INTEL))
+                {
+                    this.usedAssemblerMasm_UI.IsChecked = false;
+                    this.usedAssemblerNasm_UI.IsChecked = true;
+                    this.usedAssemblerAtt_UI.IsChecked = false;
+                }
+                else if (value.HasFlag(AssemblerEnum.NASM_ATT))
+                {
+                    this.usedAssemblerMasm_UI.IsChecked = false;
+                    this.usedAssemblerNasm_UI.IsChecked = false;
+                    this.usedAssemblerAtt_UI.IsChecked = true;
+                }
+            }
+        }
+
         #region Code Folding
         public bool CodeFolding_On
         {
             get { return this.CodeFolding_On_UI.IsChecked ?? false; }
             set { this.CodeFolding_On_UI.IsChecked = value; }
         }
-
         public bool CodeFolding_IsDefaultCollaped
         {
             get { return this.CodeFolding_IsDefaultCollaped_UI.IsChecked ?? false; }
             set { this.CodeFolding_IsDefaultCollaped_UI.IsChecked = value; }
         }
-
         public string CodeFolding_BeginTag
         {
             get { return this.CodeFolding_BeginTag_UI.Text; }
             set { this.CodeFolding_BeginTag_UI.Text = value; }
         }
-
         public string CodeFolding_EndTag
         {
             get { return this.CodeFolding_EndTag_UI.Text; }
@@ -150,29 +177,6 @@ namespace AsmDude.OptionsPage
         {
             get { return this.SyntaxHighlighting_On_UI.IsChecked ?? false; }
             set { this.SyntaxHighlighting_On_UI.IsChecked = value; }
-        }
-
-        public AssemblerEnum UsedAssembler
-        {
-            get
-            {
-                if (this.usedAssemblerMasm_UI.IsChecked.HasValue && this.usedAssemblerMasm_UI.IsChecked.Value) return AssemblerEnum.MASM;
-                if (this.usedAssemblerNasm_UI.IsChecked.HasValue && this.usedAssemblerNasm_UI.IsChecked.Value) return AssemblerEnum.NASM;
-                return AssemblerEnum.MASM;
-            }
-            set
-            {
-                if (value.HasFlag(AssemblerEnum.MASM))
-                {
-                    this.usedAssemblerMasm_UI.IsChecked = true;
-                    this.usedAssemblerNasm_UI.IsChecked = false;
-                }
-                else if (value.HasFlag(AssemblerEnum.NASM))
-                {
-                    this.usedAssemblerMasm_UI.IsChecked = false;
-                    this.usedAssemblerNasm_UI.IsChecked = true;
-                }
-            }
         }
 
         public System.Drawing.Color ColorMnemonic

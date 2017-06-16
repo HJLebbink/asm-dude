@@ -9,15 +9,16 @@
         <ScrollViewer>
             <StackPanel>
                 <Label x:Name="version_UI" Content="AsmDude version" />
+                <Grid>
+                    <Label Content="Flavor:" HorizontalAlignment="Left"/>
+                    <RadioButton x:Name="usedAssemblerMasm_UI" GroupName="usedAssembler_UI" ToolTip="Configure AsmDude for Intel syntax MASM" Content="Intel Masm" Margin="140,5,0,0" HorizontalAlignment="Left" Width="Auto" />
+                    <RadioButton x:Name="usedAssemblerNasm_UI" GroupName="usedAssembler_UI" ToolTip="Configure AsmDude for Intel syntax NASM" Content="Intel Nasm" Margin="240,5,0,0" HorizontalAlignment="Left" Width="Auto" />
+                    <RadioButton x:Name="usedAssemblerAtt_UI" GroupName="usedAssembler_UI" ToolTip="Configure AsmDude for AT&amp;T syntax NASM" Content="AT&amp;T Nasm" Margin="340,5,0,0" HorizontalAlignment="Left" Width="Auto" />
+                </Grid>
                 <GroupBox Header="Syntax Highlighting" BorderBrush="DarkGray">
                     <Grid>
                         <StackPanel>
                             <CheckBox x:Name="SyntaxHighlighting_On_UI" ToolTip="Syntax highlighting enabled" Content="Enable syntax highlighting" Margin="0,4,0,4" HorizontalAlignment="Left" Width="Auto" />
-                            <Grid>
-                                <Label Content="Compiler:" HorizontalAlignment="Left"/>
-                                <RadioButton x:Name="usedAssemblerMasm_UI" GroupName="usedAssembler_UI" ToolTip="Enable syntax highlighting for MASM" Content="Masm" Margin="140,5,0,0" HorizontalAlignment="Left" Width="Auto" />
-                                <RadioButton x:Name="usedAssemblerNasm_UI" GroupName="usedAssembler_UI" ToolTip="Enable syntax highlighting for NASM" Content="Nasm" Margin="240,5,0,0" HorizontalAlignment="Left" Width="Auto" />
-                            </Grid>
                             <Grid>
                                 <Label Content="Mnemonic:" HorizontalAlignment="Left"/>
                                 <CheckBox x:Name="ColorMnemonic_Italic_UI" Content="Italic" Margin="130,6,0,2" HorizontalAlignment="Left" Width="Auto" />

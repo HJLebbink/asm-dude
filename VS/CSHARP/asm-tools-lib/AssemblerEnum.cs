@@ -27,9 +27,10 @@ namespace AsmTools {
     [Flags]
     public enum AssemblerEnum : byte {
         UNKNOWN = 0,
-        NASM    = 1 << 0,
-        MASM    = 1 << 1,
-        ALL     = NASM | MASM
+        MASM = 1 << 0,
+        NASM_INTEL = 1 << 1,
+        NASM_ATT = 1 << 2,
+        ALL = NASM_INTEL | NASM_ATT | MASM
     }
 
     public static partial class AsmSourceTools {
@@ -44,7 +45,7 @@ namespace AsmTools {
                 switch (str2.Trim())
                 {
                     case "MASM": result |= AssemblerEnum.MASM; break;
-                    case "NASM": result |= AssemblerEnum.NASM; break;
+                    case "NASM": result |= AssemblerEnum.NASM_INTEL; break;
                 }
             }
             return result;

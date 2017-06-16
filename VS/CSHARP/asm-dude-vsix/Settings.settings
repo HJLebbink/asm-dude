@@ -371,5 +371,8 @@
     <Setting Name="IntelliSense_Label_Analysis_On" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="useAssemblerNasm_Att" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -45,7 +45,8 @@ namespace AsmDude
             Func<ITagger<T>> sc = delegate ()
             {
                 if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.MASM)) return new MasmTokenTagger(buffer) as ITagger<T>;
-                if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.NASM)) return new NasmTokenTagger(buffer) as ITagger<T>;
+                if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.NASM_INTEL)) return new NasmIntelTokenTagger(buffer) as ITagger<T>;
+                if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.NASM_ATT)) return new NasmAttTokenTagger(buffer) as ITagger<T>;
                 return new MasmTokenTagger(buffer) as ITagger<T>;
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);

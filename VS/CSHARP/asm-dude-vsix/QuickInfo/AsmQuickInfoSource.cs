@@ -176,9 +176,12 @@ namespace AsmDude.QuickInfo
                             }
                         case AsmTokenType.Register:
                             {
+                                if (keywordUpper.StartsWith("%")) keywordUpper = keywordUpper.Substring(1); // remove the preceding % in AT&T syntax 
+                                Rn reg = RegisterTools.ParseRn(keywordUpper, true);
+
                                 description = new TextBlock();
                                 description.Inlines.Add(Make_Run1("Register ", this._foreground));
-                                description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Register))));
+                                description.Inlines.Add(Make_Run2(reg.ToString(), new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Register))));
 
                                 string descr = this._asmDudeTools.Get_Description(keywordUpper);
                                 if (descr.Length > 0)
@@ -192,7 +195,6 @@ namespace AsmDude.QuickInfo
 
                                 if (this._asmSimulator.Enabled & Settings.Default.AsmSim_Decorate_Registers)
                                 {
-                                    Rn reg = RegisterTools.ParseRn(keywordUpper, true);
                                     string reg_Content_Before = this._asmSimulator.Get_Register_Value(reg, lineNumber, true, false, false).Value;
                                     string reg_Content_After = this._asmSimulator.Get_Register_Value(reg, lineNumber, false, false, false).Value;
                                     string msg = "\n" + reg + " before: " + reg_Content_Before + "\n" + reg + " after:  " + reg_Content_After;
@@ -206,14 +208,15 @@ namespace AsmDude.QuickInfo
                         case AsmTokenType.Mnemonic:
                         case AsmTokenType.Jump:
                             {
+                                Mnemonic mnemonic = AsmSourceTools.ParseMnemonic_Att(keywordUpper, true);
+
                                 description = new TextBlock();
                                 description.Inlines.Add(Make_Run1("Mnemonic ", this._foreground));
-                                description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor((type == AsmTokenType.Mnemonic) ? Settings.Default.SyntaxHighlighting_Opcode : Settings.Default.SyntaxHighlighting_Jump))));
+                                description.Inlines.Add(Make_Run2(mnemonic.ToString(), new SolidColorBrush(AsmDudeToolsStatic.ConvertColor((type == AsmTokenType.Mnemonic) ? Settings.Default.SyntaxHighlighting_Opcode : Settings.Default.SyntaxHighlighting_Jump))));
 
-                                Mnemonic mmemonic = AsmSourceTools.ParseMnemonic(keywordUpper, true);
                                 {
-                                    string archStr = ":" + ArchTools.ToString(this._asmDudeTools.Mnemonic_Store.GetArch(mmemonic)) + " ";
-                                    string descr = this._asmDudeTools.Mnemonic_Store.GetDescription(mmemonic);
+                                    string archStr = ":" + ArchTools.ToString(this._asmDudeTools.Mnemonic_Store.GetArch(mnemonic)) + " ";
+                                    string descr = this._asmDudeTools.Mnemonic_Store.GetDescription(mnemonic);
                                     if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
                                     description.Inlines.Add(new Run(AsmSourceTools.Linewrap(archStr + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
                                     {
@@ -221,7 +224,7 @@ namespace AsmDude.QuickInfo
                                     });
                                 }
                                 // add performance information
-                                this.Add_Performance_Description(description, mmemonic);
+                                this.Add_Performance_Description(description, mnemonic);
                                 break;
                             }
                         case AsmTokenType.Label:
