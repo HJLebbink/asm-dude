@@ -1,5 +1,5 @@
 # Asm-Dude
-Assembly syntax highlighting, code completion and folding for Visual Studio 2015 and 2017. This extension can be found in the [visual studio extensions gallery](https://visualstudiogallery.msdn.microsoft.com/ff839577-2b68-416a-b761-72f9b1ca7c8e) or download latest installer [AsmDude.vsix (v1.8.1.4)](https://github.com/HJLebbink/asm-dude/releases/download/1.8.1.4/AsmDude.vsix). If assembly is too much of a hassle but you still want access to specific machine instructions, consider [Intrinsics-Dude](https://github.com/HJLebbink/intrinsics-dude).
+Assembly syntax highlighting, code completion and folding for Visual Studio 2015 and 2017. This extension can be found in the [visual studio extensions gallery](https://visualstudiogallery.msdn.microsoft.com/ff839577-2b68-416a-b761-72f9b1ca7c8e) or download latest installer [AsmDude.vsix (v1.8.2.0)](https://github.com/HJLebbink/asm-dude/releases/download/1.8.2.0/AsmDude.vsix). If assembly is too much of a hassle but you still want access to specific machine instructions, consider [Intrinsics-Dude](https://github.com/HJLebbink/intrinsics-dude).
 
 ### Features
 
@@ -120,9 +120,9 @@ Visual Studio will launch under the experimental hive.
 * ~~Code folding for documentation blocks, folding for Masm procedure blocks and and Masm segments definitions.~~ 
 * ~~Code completion restrictions. E.g. opcode movss can only be followed by an xmm register and not by a GPR such as rax.~~
 * ~~Signature Help. Provide help which operands (type of registers, mem etc) are allowed for a given mnemonic).~~
+* ~~Add syntax highlighting for AT&T syntax.~~
 * Label rename assistance.
 * Create new file item with .asm extension.
-* Add syntax highlighting for AT&T syntax.
 * Syntax highlighting in quickinfo tooltips, code folding block previews.
 * Code formatting.
 * Syntax highlighting for the Debug/Windows/Disassembly view.
@@ -150,3 +150,4 @@ Visual Studio will launch under the experimental hive.
 * 8 May 2016: Added Label analysis [v1.5.0.0]
 * 22 July 2016: Added Signature Help [v1.6.1.1]
 * 13 Feb 2017: Added Performance Data for Skylake & Broadwell (Data from Agner Fog) [v1.7.4.0] 
+* 16 June 2017: Added AT&T syntax support [v1.8.2.0]
