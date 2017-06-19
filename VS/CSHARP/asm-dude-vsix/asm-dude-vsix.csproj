@@ -243,7 +243,7 @@
     <Compile Include="SyntaxHighlighting\AsmTokenTaggerProvider.cs" />
     <Compile Include="SyntaxHighlighting\AsmTokenTypes.cs" />
     <Compile Include="SyntaxHighlighting\AsmClassificationFormat.cs" />
-    <Compile Include="SyntaxHighlighting\DebugTokenTagger.cs" />
+    <Compile Include="SyntaxHighlighting\DisassemblyTokenTagger.cs" />
     <Compile Include="SyntaxHighlighting\MasmTokenTagger.cs" />
     <Compile Include="SyntaxHighlighting\NasmIntelTokenTagger.cs" />
     <Compile Include="Tools\ApplicationInformation.cs" />

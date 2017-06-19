@@ -64,7 +64,7 @@ namespace AsmDude
             AsmDudeToolsStatic.Output_INFO("AsmDisassemblyTokenTagProvider:CreateTagger");
             Func<ITagger<T>> sc = delegate ()
             {
-                return new DebugTokenTagger(buffer) as ITagger<T>;
+                return new DisassemblyTokenTagger(buffer) as ITagger<T>;
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
