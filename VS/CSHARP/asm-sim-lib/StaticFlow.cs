@@ -32,10 +32,10 @@ namespace AsmSim
     public class StaticFlow
     {
         public static readonly char LINENUMBER_SEPARATOR = '!';
+        public static int MAX_LINES = 200;
 
         private readonly Tools _tools;
 
-        private string _programStr = "";
         private readonly IList<(string label, Mnemonic mnemonic, string[] args)> _sourceCode;
         private readonly BidirectionalGraph<int, TaggedEdge<int, bool>> _graph;
 
@@ -278,12 +278,6 @@ namespace AsmSim
         {
             //Console.WriteLine("INFO: CFlow:Update");
             //TODO make intelligent code: return true if something has changed.
-            //if (this._programStr.Equals(programStr,StringComparison.OrdinalIgnoreCase))
-            //{
-            //    Console.WriteLine("INFO: CFlow:Update: superfluous update. Doing nothing");
-            //    return false;
-            //}
-            this._programStr = programStr;
             this.Update_Lines(programStr);
             return true;
         }
@@ -342,9 +336,16 @@ namespace AsmSim
         private void Update_Lines(string programStr)
         {
             //Console.WriteLine("INFO: CFlow:Update_Lines");
+            string[] lines = programStr.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+
+            #region Restrict input to max number of lines
+            if (lines.Length > MAX_LINES) {
+                Array.Resize(ref lines, MAX_LINES);
+            }
+            #endregion
 
             #region parse to find all labels
-            IDictionary<string, int> labels = this.GetLabels(programStr);
+            IDictionary<string, int> labels = this.GetLabels(lines);
             // replace all labels by annotated label
             foreach (KeyValuePair<string, int> entry in labels)
             {
@@ -357,9 +358,8 @@ namespace AsmSim
                 programStr = programStr.Replace(entry.Key, newLabel);
             }
             #endregion
-            #region Populate IncomingLines
-            string[] lines = programStr.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
 
+            #region Populate IncomingLines
             this._sourceCode.Clear();
 
             for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
@@ -470,10 +470,9 @@ namespace AsmSim
         }
 
         /// <summary>Get all labels with the line number on which it is defined</summary>
-        private IDictionary<string, int> GetLabels(string text)
+        private IDictionary<string, int> GetLabels(string[] lines)
         {
             IDictionary<string, int> result = new Dictionary<string, int>();
-            string[] lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
             {
                 string line = lines[lineNumber];
