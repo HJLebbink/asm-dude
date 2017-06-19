@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using AsmDude.Tools;
 using AsmTools;
 using System;
 using System.Collections.Generic;
@@ -29,19 +30,24 @@ namespace AsmDude.SignatureHelp
 {
     public class AsmSignatureElement
     {
+        #region Fields
         private readonly Mnemonic _mnemonic;
         private readonly IList<IList<AsmSignatureEnum>> _operands;
         private readonly IList<Arch> _arch;
+        private readonly bool _reversed_Signature;
+
 
         private string[] _operandStr;
         private readonly string[] _operandDoc;
         private string _doc;
+        #endregion
 
         public AsmSignatureElement(Mnemonic mnem, string operandStr2, string archStr, string operandDoc, string doc)
         {
             this._mnemonic = mnem;
             this._operands = new List<IList<AsmSignatureEnum>>();
             this._arch = new List<Arch>();
+            this._reversed_Signature = (AsmDudeToolsStatic.Used_Assembler == AssemblerEnum.NASM_ATT);
 
             {
                 string[] x = operandDoc.Split(' ');
@@ -52,6 +58,10 @@ namespace AsmDude.SignatureHelp
                 else
                 {
                     this._operandDoc = new string[0];
+                }
+                if (this._reversed_Signature)
+                {
+                    Array.Reverse(this._operandDoc);
                 }
             }
             this._doc = doc;
@@ -71,15 +81,16 @@ namespace AsmDude.SignatureHelp
             return sb.ToString();
         }
 
+        #region Getters
         /// <summary>Return true if this Signature Element is allowed with the constraints of the provided operand</summary>
         public bool Is_Allowed(Operand op, int operandIndex)
         {
             if (op == null) { return true; }
-            if (operandIndex >= this.Operands.Count)
+            if (operandIndex >= this._operands.Count)
             {
                 return false;
             }
-            foreach (AsmSignatureEnum operandType in this.Operands[operandIndex])
+            foreach (AsmSignatureEnum operandType in this._operands[operandIndex])
             {
                 if (AsmSignatureTools.Is_Allowed_Operand(op, operandType))
                 {
@@ -143,7 +154,11 @@ namespace AsmDude.SignatureHelp
             set
             {
                 this._operands.Clear();
+
                 this._operandStr = value.Split(',');
+                if (this._reversed_Signature) {
+                    Array.Reverse(this._operandStr);
+                }
 
                 for (int i = 0; i < this._operandStr.Length; ++i)
                 {
@@ -202,6 +217,8 @@ namespace AsmDude.SignatureHelp
             }
             return "";
         }
+
+        #endregion
 
         public override String ToString()
         {
