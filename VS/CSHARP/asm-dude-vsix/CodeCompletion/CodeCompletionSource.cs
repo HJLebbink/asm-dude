@@ -265,13 +265,16 @@ namespace AsmDude
         private IEnumerable<Completion> Mnemonic_Operand_Completions(bool useCapitals, ISet<AsmSignatureEnum> allowedOperands, int lineNumber)
         {
             bool asmSimulator_Enabled = this._asmSimulator.Enabled;
+            bool att_Syntax = AsmDudeToolsStatic.Used_Assembler == AssemblerEnum.NASM_ATT;
+
 
             SortedSet<Completion> completions = new SortedSet<Completion>(new CompletionComparer());
             foreach (string keyword in this._asmDudeTools.Get_Keywords())
             {
                 AsmTokenType type = this._asmDudeTools.Get_Token_Type_Intel(keyword);
-
                 Arch arch = this._asmDudeTools.Get_Architecture(keyword);
+
+                string keyword2 = keyword;
                 bool selected = Is_Register_Switched_On(arch);
 
                 //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:Mnemonic_Operand_Completions; keyword=" + keyword +"; selected="+selected +"; arch="+arch);
@@ -296,6 +299,10 @@ namespace AsmDude
                                             AsmDudeToolsStatic.Output_INFO("AsmCompletionSource:Mnemonic_Operand_Completions; register " + keyword + " is selected and has value " + additionalInfo);
                                         }
                                     }
+                                    if (att_Syntax)
+                                    {
+                                        keyword2 = "%" + keyword;
+                                    }
                                 }
                                 else
                                 {
@@ -305,11 +312,7 @@ namespace AsmDude
                             }
                         case AsmTokenType.Misc:
                             {
-                                if (AsmSignatureTools.Is_Allowed_Misc(keyword, allowedOperands))
-                                {
-                                    //AsmDudeToolsStatic.Output_INFO(string.Format("AsmCompletionSource:mnemonicOperandCompletions; rn="+ keyword + " is selected"));
-                                }
-                                else
+                                if (!AsmSignatureTools.Is_Allowed_Misc(keyword, allowedOperands))
                                 {
                                     selected = false;
                                 }
@@ -327,11 +330,11 @@ namespace AsmDude
                     //AsmDudeToolsStatic.Output_INFO("AsmCompletionSource:AugmentCompletionSession: keyword \"" + keyword + "\" is added to the completions list");
 
                     // by default, the entry.Key is with capitals
-                    string insertionText = (useCapitals) ? keyword : keyword.ToLower();
+                    string insertionText = (useCapitals) ? keyword2 : keyword2.ToLower();
                     string archStr = (arch == Arch.NONE) ? "" : " [" + ArchTools.ToString(arch) + "]";
                     string descriptionStr = this._asmDudeTools.Get_Description(keyword);
                     descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
-                    String displayText = Truncat(keyword + archStr + descriptionStr);
+                    String displayText = Truncat(keyword2 + archStr + descriptionStr);
                     this._icons.TryGetValue(type, out var imageSource);
                     completions.Add(new Completion(displayText, insertionText, additionalInfo, imageSource, ""));
                 }
