@@ -16,7 +16,7 @@
                     <RadioButton x:Name="usedAssemblerAtt_UI" GroupName="usedAssembler_UI" ToolTip="Configure AsmDude for AT&amp;T syntax NASM" Content="AT&amp;T Nasm" Margin="340,5,0,0" HorizontalAlignment="Left" Width="Auto" />
                 </Grid>
                 <GroupBox Header="Syntax Highlighting" BorderBrush="DarkGray">
-                    <Grid>
+                    <Grid Margin="0,2,0,0">
                         <StackPanel>
                             <CheckBox x:Name="SyntaxHighlighting_On_UI" ToolTip="Syntax highlighting enabled" Content="Enable syntax highlighting" Margin="0,4,0,4" HorizontalAlignment="Left" Width="Auto" />
                             <Grid>
@@ -83,7 +83,7 @@
                     </Grid>
                 </GroupBox>
                 <GroupBox Header="Documentation" BorderBrush="DarkGray">
-                    <Grid>
+                    <Grid Margin="0,2,0,0">
                         <StackPanel>
                             <CheckBox x:Name="AsmDoc_On_UI" ToolTip="Assembly documentation enabled" Content="Enable documentation" Margin="0,4,0,4" HorizontalAlignment="Left" Width="Auto" />
                             <Grid>
@@ -94,7 +94,7 @@
                     </Grid>
                 </GroupBox>
                 <GroupBox Header="Folding" BorderBrush="DarkGray">
-                    <Grid>
+                    <Grid Margin="0,2,0,0">
                         <StackPanel>
                             <Grid>
                                 <CheckBox x:Name="CodeFolding_On_UI" ToolTip="Code folding enabled" Content="Enable code folding" Margin="0,4,0,4" HorizontalAlignment="Left" Width="Auto" />
@@ -115,7 +115,7 @@
                     </Grid>
                 </GroupBox>
                 <GroupBox Header="Keyword Highlighting" BorderBrush="DarkGray">
-                    <Grid>
+                    <Grid Margin="0,2,0,0">
                         <StackPanel>
                             <Grid>
                                 <CheckBox x:Name="KeywordHighlighting_BackgroundColor_On_UI" ToolTip="Background color for highlighting enabled" Content="Use background color" Margin="0,4,0,4" HorizontalAlignment="Left" Width="Auto" />
@@ -129,7 +129,7 @@
                     </Grid>
                 </GroupBox>
                 <GroupBox Header="Latency and Throughput Information" BorderBrush="DarkGray">
-                    <Grid>
+                    <Grid Margin="0,2,0,0">
                         <StackPanel>
                             <!--<CheckBox x:Name="PerformanceInfo_SandyBridge_UI" ToolTip="Show performance information for Sandy Bridge in instruction QuickInfo tooltips" Content="Sandy Bridge (Intel 2nd gen Core)" Margin="0,4,0,2" HorizontalAlignment="Left" Width="Auto" />
                             -->
@@ -143,7 +143,7 @@
                     </Grid>
                 </GroupBox>
                 <GroupBox Header="Intellisense" BorderBrush="DarkGray">
-                    <Grid>
+                    <Grid Margin="0,2,0,0">
                         <StackPanel>
                             <CheckBox x:Name="Intellisense_Code_Completion_On_UI" Content="Enable code completion" ToolTip="Code completion enabled" Margin="0,4,0,2" HorizontalAlignment="Left" Width="Auto" />
                             <CheckBox x:Name="Intellisense_Signature_Help_On_UI" Content="Enable signature help" ToolTip="Signature help enabled" Margin="0,2,0,2" HorizontalAlignment="Left" Width="Auto" />
@@ -182,7 +182,7 @@
                     </Grid>
                 </GroupBox>
                 <GroupBox Header="Assembly Simulator (Warning: Experimental, only supported in AsmDude 2.0)" BorderBrush="DarkGray">
-                    <Grid>
+                    <Grid Margin="0,2,0,0">
                         <StackPanel>
                             <GroupBox>
                                 <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" Width="auto" Margin="5,4,0,0" ><Run Text="Note: the simulator does not understand MASM or NASM command, or arithmetic in operands, thus no 'MOV VAR, 10' or 'XOR RAX, 2*3'. Jumping based on register content is also not supported, thus no 'JMP RAX'."/></TextBlock>
@@ -191,6 +191,10 @@
                             <Grid>
                                 <xctk:IntegerUpDown x:Name="AsmSim_Z3_Timeout_MS_UI" DefaultValue="100" HorizontalAlignment="Left" Width="60"/>
                                 <Label Content="Timeout for Z3 in milliseconds" ToolTip="The number of milliseconds the Z3 theorem prover may spend on determining one single bit of a register. 200 is sensible: it would need (worst case) 12.8 sec to determine a 64-bit register. 0 means no timeout (not recommended!)" Margin="60,0,0,0" HorizontalAlignment="Left" Width="Auto" />
+                            </Grid>
+                            <Grid>
+                                <xctk:IntegerUpDown x:Name="AsmSim_Number_Of_Threads_UI" DefaultValue="4" HorizontalAlignment="Left" Width="60"/>
+                                <Label Content="Number of worker threads" ToolTip="The number of worker threads AsmSim may use to crunch on your assembly." Margin="60,0,0,0" HorizontalAlignment="Left" Width="Auto" />
                             </Grid>
                             <Grid>
                                 <xctk:IntegerUpDown x:Name="AsmSim_Number_Of_Steps_UI" DefaultValue="6" HorizontalAlignment="Left" Width="60" />

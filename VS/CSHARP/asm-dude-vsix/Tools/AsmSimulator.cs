@@ -97,7 +97,7 @@ namespace AsmDude.Tools
                 this._isNotImplemented = new HashSet<int>();
 
                 this._threadPool = AsmDudeTools.Instance.Thread_Pool;
-                this._threadPool2 = new SmartThreadPool(60000, 3, 3);
+                this._threadPool2 = new SmartThreadPool(60000, Settings.Default.AsmSim_Number_Of_Threads, 1);
                 Dictionary <string, string> settings = new Dictionary<string, string> {
                     /*
                     Legal parameters are:
@@ -137,15 +137,17 @@ namespace AsmDude.Tools
                 this._sFlow = new StaticFlow(this._buffer.CurrentSnapshot.GetText(), this.Tools);
                 this._dFlow = new DynamicFlow(this.Tools);
 
-                this._delay = new Delay(AsmDudePackage.msSleepBeforeAsyncExecution, 100, this._threadPool);
+                this._delay = new Delay(AsmDudePackage.msSleepBeforeAsyncExecution, 1000, this._threadPool);
                 this._delay.Done_Event += (o, i) => {
                     if ((this._thread_Result != null) && !this._thread_Result.IsCanceled)
                     {
                         AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: cancaling a reset thread.");
                         this._thread_Result.Cancel();
                     }
+                    this._threadPool2.Cancel(true);
+
                     AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: delay_done event: going to start a reset event in a new thread.");
-                    this._thread_Result = this._threadPool.QueueWorkItem(this.Reset_Private);
+                    this._thread_Result = this._threadPool2.QueueWorkItem(this.Reset_Private);
                 };
 
                 this.Reset(); // wait to give the system some breathing time

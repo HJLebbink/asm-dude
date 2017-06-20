@@ -1510,5 +1510,17 @@ namespace AsmDude {
                 this["useAssemblerNasm_Att"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3")]
+        public int AsmSim_Number_Of_Threads {
+            get {
+                return ((int)(this["AsmSim_Number_Of_Threads"]));
+            }
+            set {
+                this["AsmSim_Number_Of_Threads"] = value;
+            }
+        }
     }
 }

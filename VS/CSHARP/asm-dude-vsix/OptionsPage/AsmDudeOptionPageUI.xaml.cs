@@ -87,6 +87,9 @@ namespace AsmDude.OptionsPage
         }
         private void AsmSim_Update(bool value)
         {
+            this.AsmSim_Number_Of_Steps_UI.IsEnabled = value;
+            this.AsmSim_Number_Of_Threads_UI.IsEnabled = value;
+            this.AsmSim_Z3_Timeout_MS_UI.IsEnabled = value;
             this.AsmSim_Shown_Syntax_Errors_UI.IsEnabled = value;
             this.AsmSim_Decorate_Syntax_Errors_UI.IsEnabled = value;
             this.AsmSim_Show_Usage_Of_Undefined_UI.IsEnabled = value;
@@ -97,8 +100,6 @@ namespace AsmDude.OptionsPage
             this.AsmSim_Use_In_Code_Completion_UI.IsEnabled = value;
             this.AsmSim_Decorate_Unimplemented_UI.IsEnabled = value;
             this.AsmSim_64_Bits_UI.IsEnabled = value;
-            this.AsmSim_Number_Of_Steps_UI.IsEnabled = value;
-            this.AsmSim_Z3_Timeout_MS_UI.IsEnabled = value;
         }
         #endregion
 
@@ -721,15 +722,20 @@ namespace AsmDude.OptionsPage
             get { return this.AsmSim_On_UI.IsChecked ?? false; }
             set { this.AsmSim_On_UI.IsChecked = value; }
         }
-        public int AsmSim_Number_Of_Steps
-        {
-            get { return this.AsmSim_Number_Of_Steps_UI.Value ?? 1; }
-            set { this.AsmSim_Number_Of_Steps_UI.Value = value; }
-        }
         public int AsmSim_Z3_Timeout_MS
         {
             get { return this.AsmSim_Z3_Timeout_MS_UI.Value ?? 100; }
             set { this.AsmSim_Z3_Timeout_MS_UI.Value = value; }
+        }
+        public int AsmSim_Number_Of_Threads
+        {
+            get { return this.AsmSim_Number_Of_Threads_UI.Value ?? 4; }
+            set { this.AsmSim_Number_Of_Threads_UI.Value = value; }
+        }
+        public int AsmSim_Number_Of_Steps
+        {
+            get { return this.AsmSim_Number_Of_Steps_UI.Value ?? 1; }
+            set { this.AsmSim_Number_Of_Steps_UI.Value = value; }
         }
         public bool AsmSim_64_Bits
         {
