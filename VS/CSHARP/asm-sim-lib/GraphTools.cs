@@ -29,20 +29,13 @@ namespace AsmSim
 {
     public static class GraphTools<ITag>
     {
-        /// <summary>traverse the provided vertex backwards and return the first 
-        /// 
-        /// </summary>
-        /// <param name="vertex"></param>
-        /// <param name="graph"></param>
-        /// <returns></returns>
-
-        public static IEnumerable<(string Vertex, int Step)> Get_First_Branch_Point_Backwards(string vertex, BidirectionalGraph<string, TaggedEdge<string, ITag>> graph)
+        public static IEnumerable<string> Get_Branch_Points_Backwards(string vertex, BidirectionalGraph<string, TaggedEdge<string, ITag>> graph)
         {
             var visited = new HashSet<string>();
-            return Get_Branch_Point_Backwards_LOCAL(vertex, 0);
+            return Get_Branch_Points_Backwards_LOCAL(vertex);
 
             #region Local Method
-            IEnumerable<(string Vertex, int Step)> Get_Branch_Point_Backwards_LOCAL(string v1, int step)
+            IEnumerable<string> Get_Branch_Points_Backwards_LOCAL(string v1)
             {
                 if (visited.Contains(v1)) yield break;
                 if (!graph.ContainsVertex(v1)) yield break;
@@ -50,19 +43,46 @@ namespace AsmSim
                 if (graph.OutDegree(v1) > 1)
                 {
                     visited.Add(v1);
-                    yield return (v1, step + 1);
+                    yield return v1;
+                }
+
+                foreach (var edge in graph.InEdges(v1))
+                {
+                    foreach (var v in Get_Branch_Points_Backwards_LOCAL(edge.Source)) yield return v;
+                }
+            }
+            #endregion
+        }
+
+        /// <summary>traverse the provided vertex backwards and return the first</summary>
+        public static IEnumerable<string> Get_First_Branch_Point_Backwards(string vertex, BidirectionalGraph<string, TaggedEdge<string, ITag>> graph)
+        {
+            var visited = new HashSet<string>();
+            return Get_Branch_Point_Backwards_LOCAL(vertex);
+
+            #region Local Method
+            IEnumerable<string> Get_Branch_Point_Backwards_LOCAL(string v1)
+            {
+                if (visited.Contains(v1)) yield break;
+                if (!graph.ContainsVertex(v1)) yield break;
+
+                if (graph.OutDegree(v1) > 1)
+                {
+                    visited.Add(v1);
+                    yield return v1;
                 }
                 else
                 {
                     foreach (var edge in graph.InEdges(v1))
                     {
-                        foreach (var v in Get_Branch_Point_Backwards_LOCAL(edge.Source, step + 1)) yield return v;
+                        foreach (var v in Get_Branch_Point_Backwards_LOCAL(edge.Source)) yield return v;
                     }
                 }
             }
             #endregion
         }
-        public static IEnumerable<(string Vertex, int Step)> Get_First_Mutual_Branch_Point_Backwards(string vertex, BidirectionalGraph<string, TaggedEdge<string, ITag>> graph)
+
+        public static IEnumerable<string> Get_First_Mutual_Branch_Point_Backwards(string vertex, BidirectionalGraph<string, TaggedEdge<string, ITag>> graph)
         {
             if (!graph.ContainsVertex(vertex)) yield break;
 
@@ -76,19 +96,15 @@ namespace AsmSim
 
                 if (s1 != s2)
                 {
-                    var branchPoints1 = new Dictionary<string, int>();
-                    var branchPoints2 = new Dictionary<string, int>();
+                    var branchPoints1 = new HashSet<string>();
+                    var branchPoints2 = new HashSet<string>();
 
-                    foreach (var v in Get_First_Branch_Point_Backwards(s1, graph)) branchPoints1.Add(v.Vertex, v.Step);
-                    foreach (var v in Get_First_Branch_Point_Backwards(s2, graph)) branchPoints2.Add(v.Vertex, v.Step);
+                    foreach (var v in Get_First_Branch_Point_Backwards(s1, graph)) branchPoints1.Add(v);
+                    foreach (var v in Get_First_Branch_Point_Backwards(s2, graph)) branchPoints2.Add(v);
 
-                    var v1 = branchPoints1.Keys;
-                    var v2 = branchPoints2.Keys;
-
-                    foreach (string mutual in v1.Intersect<string>(v2))
+                    foreach (string mutual in branchPoints1.Intersect<string>(branchPoints2))
                     {
-                        int step = Math.Max(branchPoints1[mutual], branchPoints2[mutual]);
-                        yield return (mutual, step);
+                        yield return mutual;
                     }
                 }
             }
@@ -109,8 +125,8 @@ namespace AsmSim
             var branchPoints1 = new HashSet<string>();
             var branchPoints2 = new HashSet<string>();
 
-            foreach (var v in Get_First_Branch_Point_Backwards(vertex1, graph)) branchPoints1.Add(v.Vertex);
-            foreach (var v in Get_First_Branch_Point_Backwards(vertex2, graph)) branchPoints2.Add(v.Vertex);
+            foreach (var v in Get_Branch_Points_Backwards(vertex1, graph)) branchPoints1.Add(v);
+            foreach (var v in Get_Branch_Points_Backwards(vertex2, graph)) branchPoints2.Add(v);
 
             var m = new List<string>(branchPoints1.Intersect<string>(branchPoints2));
             switch (m.Count)

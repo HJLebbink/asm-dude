@@ -140,7 +140,7 @@ namespace AsmSim
             this._nextKey = nextKey;
             this._tools = tools;
             this._ctx = ctx;
-            this.Empty = true;
+            this.Empty = false;
         }
         #endregion
 
@@ -709,7 +709,7 @@ namespace AsmSim
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder("StateUpdate: PrevKey=" + this._prevKey_Regular + "; NextKey=" + this.NextKey + "\n");
+            StringBuilder sb = new StringBuilder("StateUpdate: PrevKey=" + this._prevKey_Regular + "; NextKey=" + this.NextKey + " ");
             if (this.Empty) sb.AppendLine("Empty UpdateState");
             if (this.Reset) sb.AppendLine("Reset UpdateState");
 

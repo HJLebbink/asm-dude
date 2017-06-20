@@ -41,14 +41,14 @@ namespace AsmSim
             System.Version ver = thisAssemName.Version;
             Console.WriteLine(string.Format("Loaded AsmSim version {0}.", ver));
 
+            //TestExecutionTree();
             //TestGraph();
             //TestMnemonic();
             //TestMemorySpeed();
-            //TestDynamicFlow();
-            TestSIMD();
+            TestDynamicFlow();
+            //TestSIMD();
             //EmptyMemoryTest();
-            //ProgramSynthesis1();
-            
+            //ProgramSynthesis1();            
             //TestFunctions();
             //TacticTest();
                         
@@ -56,6 +56,35 @@ namespace AsmSim
             Console.WriteLine(string.Format("Elapsed time " + elapsedSec + " sec"));
             Console.WriteLine(string.Format("Press any key to continue."));
             Console.ReadKey();
+        }
+
+        static void TestExecutionTree()
+        {
+            string programStr =
+                "           mov     rax,        3               " + Environment.NewLine +
+                "label1:                                        " + Environment.NewLine +
+                "           dec     rax                         " + Environment.NewLine +
+                "           jnz     label1                      " + Environment.NewLine +
+                "           mov     rbx,        10              ";
+
+            Dictionary<string, string> settings = new Dictionary<string, string>
+            {
+                { "unsat-core", "false" },    // enable generation of unsat cores
+                { "model", "false" },         // enable model generation
+                { "proof", "false" },         // enable proof generation
+                { "timeout", "1000" }
+            };
+            Tools tools = new Tools(settings)
+            {
+                Quiet = false
+            };
+            var sFlow = new StaticFlow(programStr, tools);
+            Console.WriteLine("sFlow="+sFlow.ToString());
+
+            tools.StateConfig = sFlow.Get_StateConfig();
+            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+
+            Console.WriteLine("dFlow="+dFlow.ToString(sFlow));
         }
 
         static void TestSIMD()
@@ -655,11 +684,17 @@ namespace AsmSim
 
         static void TestDynamicFlow()
         {
-            string programStr1 =
+            string programStr1a =
                 "           cmp     rax,        0               " + Environment.NewLine +
                 "           jz      label1                      " + Environment.NewLine +
                 "           mov     rax,        0               " + Environment.NewLine +
                 "label1:                                        ";
+
+            string programStr1b =
+                "           jz      label1                      " + Environment.NewLine +
+                "           mov     rax,        0               " + Environment.NewLine +
+                "label1:                                        " + Environment.NewLine +
+                "           mov     rbx,        0               ";
 
             string programStr2 =
                 "           mov     rax,        0               " + Environment.NewLine +
@@ -676,6 +711,13 @@ namespace AsmSim
                 "           mov     rax,        1               " + Environment.NewLine +
                 "label2:";
 
+            string programStr3b =
+                 "           cmp     rax,        0               " + Environment.NewLine +
+                 "           jz      label1                      " + Environment.NewLine +
+                 "           mov     rax,        10              " + Environment.NewLine +
+                 "label1:                                        " + Environment.NewLine +
+                 "           mov     rax,        10              ";
+
             string programStr4 =
                 "           mov        rbx,     0               " + Environment.NewLine +
                 "           mov        rax,     0x3             " + Environment.NewLine +
@@ -691,6 +733,13 @@ namespace AsmSim
                 "           mov     rbx,        1               " + Environment.NewLine +
                 "label1:                                        " + Environment.NewLine +
                 "           mov     rcx,        1               ";
+            string programStr6 =
+                "           jz      label1                      " + Environment.NewLine +
+                "           mov     rax,        1               " + Environment.NewLine +
+                "           jc      label1                      " + Environment.NewLine +
+                "           mov     rbx,        2               " + Environment.NewLine +
+                "label1:                                        " + Environment.NewLine +
+                "           mov     rcx,        3               ";
 
             Dictionary<string, string> settings = new Dictionary<string, string>
             {
@@ -702,9 +751,10 @@ namespace AsmSim
 
             Tools tools = new Tools(settings)
             {
-                ShowUndefConstraints = true
+                ShowUndefConstraints = false
             };
-            var sFlow = new StaticFlow(programStr5, tools);
+            var sFlow = new StaticFlow(programStr6, tools);
+            Console.WriteLine(sFlow.ToString());
             tools.StateConfig = sFlow.Get_StateConfig();
 
             if (true)
@@ -716,15 +766,16 @@ namespace AsmSim
                 Console.WriteLine(dFlow.ToString(sFlow));
                 //DotVisualizer.SaveToDot(sFlow, dFlow, "test1.dot");
 
-                int lineNumber = 1;
                 if (false)
                 {
+                    int lineNumber = 1;
                     IList<State> states_Before = new List<State>(dFlow.States_Before(lineNumber));
                     State state_Before = states_Before[0];
                     Console.WriteLine("Before lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
                 }
                 if (true)
                 {
+                    int lineNumber = 5;
                     IList<State> states_After = new List<State>(dFlow.States_After(lineNumber));
                     State state_After = states_After[0];
                     Console.WriteLine("After lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);

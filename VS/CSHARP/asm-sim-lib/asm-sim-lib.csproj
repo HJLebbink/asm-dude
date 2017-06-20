@@ -98,6 +98,7 @@
     <Compile Include="BranchInfoStore.cs" />
     <Compile Include="ConditionalElement.cs" />
     <Compile Include="BitOperations.cs" />
+    <Compile Include="ExecutionTree.cs" />
     <Compile Include="GraphTools.cs" />
     <Compile Include="StaticFlow.cs" />
     <Compile Include="DynamicFlow.cs" />

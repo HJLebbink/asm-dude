@@ -232,7 +232,7 @@ namespace unit_tests_asm_z3
             //if (logToDisplay) Console.WriteLine("DynamicFlow:\n" + dFlow.ToString(staticFlow));
             if (logToDisplay) Console.WriteLine(state);
 
-            TestTools.AreEqual(Tv.ONE, state.IsConsistent);
+            TestTools.IsTrue(state.IsConsistent);
             TestTools.AreEqual(Rn.RAX, 0, state);
         }
 
@@ -255,7 +255,7 @@ namespace unit_tests_asm_z3
             State state = dFlow.EndState;
             if (logToDisplay) Console.WriteLine(state);
 
-            TestTools.AreEqual(Tv.ONE, state.IsConsistent);
+            TestTools.IsTrue(state.IsConsistent);
             TestTools.AreEqual(Rn.RBX, 10, state);
         }
 
@@ -273,12 +273,13 @@ namespace unit_tests_asm_z3
             Tools tools = CreateTools();
             var sFlow = new StaticFlow(programStr, tools);
             tools.StateConfig = sFlow.Get_StateConfig();
-            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            //var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            var dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
 
             State state = dFlow.EndState;
             if (logToDisplay) Console.WriteLine(state);
 
-            TestTools.AreEqual(Tv.ONE, state.IsConsistent);
+            TestTools.IsTrue(state.IsConsistent);
             TestTools.AreEqual(Rn.RAX, 10, state);
         }
 
@@ -297,12 +298,14 @@ namespace unit_tests_asm_z3
             Tools tools = CreateTools();
             var sFlow = new StaticFlow(programStr, tools);
             tools.StateConfig = sFlow.Get_StateConfig();
-            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            //var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            var dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
+            //if (logToDisplay) Console.WriteLine(dFlow.ToString(sFlow));
 
             State state = dFlow.EndState;
-            if (logToDisplay) Console.WriteLine(state);
+            //if (logToDisplay) Console.WriteLine(state);
 
-            TestTools.AreEqual(Tv.ONE, state.IsConsistent);
+            TestTools.IsTrue(state.IsConsistent);
             TestTools.AreEqual(Rn.RAX, 20, state);
         }
 
@@ -320,7 +323,8 @@ namespace unit_tests_asm_z3
             Tools tools = CreateTools();
             var sFlow = new StaticFlow(programStr, tools);
             tools.StateConfig = sFlow.Get_StateConfig();
-            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            //var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            var dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
             bool logToDisplay2 = true;
             tools.Quiet = true;// !logToDisplay2;
 
@@ -338,14 +342,14 @@ namespace unit_tests_asm_z3
                 State state2a = new State(state);
                 state2a.Add(new BranchInfo(branch_Condition, true));
                 if (logToDisplay2) Console.WriteLine("state with ZF = true:\n" + state2a);
-                TestTools.AreEqual(Tv.ONE, state2a.IsConsistent);
+                TestTools.IsTrue(state2a.IsConsistent);
                 TestTools.AreEqual(Rn.RAX, 10, state2a); // TODO why is 10 / 20 reversed?
             }
             {
                 State state2b = new State(state);
                 state2b.Add(new BranchInfo(branch_Condition, false));
                 if (logToDisplay2) Console.WriteLine("state with ZF = false:\n" + state2b);
-                TestTools.AreEqual(Tv.ONE, state2b.IsConsistent);
+                TestTools.IsTrue(state2b.IsConsistent);
                 TestTools.AreEqual(Rn.RAX, 20, state2b);
             }
         }
@@ -366,7 +370,8 @@ namespace unit_tests_asm_z3
             Tools tools = CreateTools();
             var sFlow = new StaticFlow(programStr, tools);
             tools.StateConfig = sFlow.Get_StateConfig();
-            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            //var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            var dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
 
             State state0 = dFlow.States_Before(0, 0);
             Assert.IsNotNull(state0);
@@ -374,7 +379,7 @@ namespace unit_tests_asm_z3
             Assert.IsNotNull(state);
 
             if (logToDisplay) Console.WriteLine("state:\n" + state);
-            TestTools.AreEqual(Tv.ONE, state.IsConsistent);
+            TestTools.IsTrue(state.IsConsistent);
             TestTools.AreEqual(Rn.RAX, 20, state);
         }
 
@@ -394,7 +399,8 @@ namespace unit_tests_asm_z3
             Tools tools = CreateTools();
             var sFlow = new StaticFlow(programStr, tools);
             tools.StateConfig = sFlow.Get_StateConfig();
-            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            //var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            var dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
 
             State state0 = dFlow.States_Before(0, 0);
             Assert.IsNotNull(state0);
@@ -402,7 +408,7 @@ namespace unit_tests_asm_z3
             Assert.IsNotNull(state);
 
             if (logToDisplay) Console.WriteLine("state:\n" + state);
-            TestTools.AreEqual(Tv.ONE, state.IsConsistent);
+            TestTools.IsTrue(state.IsConsistent);
             TestTools.AreEqual(Rn.RAX, 10, state);
         }
 
@@ -424,7 +430,7 @@ namespace unit_tests_asm_z3
             //DotVisualizer.SaveToDot(sFlow, dFlow, "test1.dot");
 
             if (logToDisplay) Console.WriteLine("state:\n" + state);
-            TestTools.AreEqual(Tv.ONE, state.IsConsistent);
+            TestTools.IsTrue(state.IsConsistent);
             var branch_Condition = dFlow.Get_Branch_Condition(0);
 
             {
@@ -458,14 +464,15 @@ namespace unit_tests_asm_z3
             Tools tools = CreateTools();
             var sFlow = new StaticFlow(programStr, tools);
             tools.StateConfig = sFlow.Get_StateConfig();
-            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            //var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            var dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
             //DotVisualizer.SaveToDot(sFlow, dFlow, "test1.dot");
 
             State state = dFlow.EndState;
             Assert.IsNotNull(state);
 
             if (logToDisplay) Console.WriteLine("state:\n" + state);
-            TestTools.AreEqual(Tv.ONE, state.IsConsistent);
+            TestTools.IsTrue(state.IsConsistent);
             TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_000????0", state);
 
             var branch_Condition = dFlow.Get_Branch_Condition(0);
@@ -473,14 +480,14 @@ namespace unit_tests_asm_z3
                 State state2a = new State(state);
                 state2a.Add(new BranchInfo(branch_Condition, true));
                 if (logToDisplay) Console.WriteLine("state with ZF = true:\n" + state2a);
-                TestTools.AreEqual(Tv.ONE, state2a.IsConsistent);
+                TestTools.IsTrue(state2a.IsConsistent);
                 TestTools.AreEqual(Rn.RAX, 10, state2a);
             }
             {
                 State state2b = new State(state);
                 state2b.Add(new BranchInfo(branch_Condition, false));
                 if (logToDisplay) Console.WriteLine("state with ZF = false:\n" + state2b);
-                TestTools.AreEqual(Tv.ONE, state2b.IsConsistent);
+                TestTools.IsTrue(state2b.IsConsistent);
                 TestTools.AreEqual(Rn.RAX, 20, state2b);
             }
         }
@@ -492,12 +499,13 @@ namespace unit_tests_asm_z3
                 "           jz      label1                      " + Environment.NewLine +
                 "           mov     rax,        1               " + Environment.NewLine +
                 "           jc      label1                      " + Environment.NewLine +
-                "           mov     rbx,        1               " + Environment.NewLine +
+                "           mov     rbx,        2               " + Environment.NewLine +
                 "label1:                                        " + Environment.NewLine +
-                "           mov     rcx,        1               ";
+                "           mov     rcx,        3               ";
 
             Tools tools = CreateTools();
             var sFlow = new StaticFlow(programStr, tools);
+            if (logToDisplay) Console.WriteLine(sFlow.ToString());
             tools.StateConfig = sFlow.Get_StateConfig();
             var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
@@ -505,25 +513,184 @@ namespace unit_tests_asm_z3
             Assert.IsNotNull(state);
 
             if (logToDisplay) Console.WriteLine("state:\n" + state);
-            TestTools.AreEqual(Tv.ONE, state.IsConsistent);
-            TestTools.AreEqual(Rn.RCX, 1, state);
-            /*
-            var branch_Condition = dFlow.Get_Branch_Condition(0);
+            TestTools.IsTrue(state.IsConsistent);
+
+            var branch_Condition_jz = dFlow.Get_Branch_Condition(0);
+            var branch_Condition_jc = dFlow.Get_Branch_Condition(2);
+
+            if (true)
             {
-                State state2a = new State(state);
-                state2a.Add(new BranchInfo(branch_Condition, true));
-                if (logToDisplay) Console.WriteLine("state with ZF = true:\n" + state2a);
-                TestTools.AreEqual(Tv.ONE, state2a.IsConsistent);
-                TestTools.AreEqual(Rn.RAX, 10, state2a);
+                if (true)
+                {
+                    State state2 = new State(state);
+                    state2.Add(new BranchInfo(branch_Condition_jz, true));
+                    TestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    TestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    TestTools.AreEqual(Rn.RCX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
+                }
+                if (true)
+                {
+                    State state2 = new State(state);
+                    state2.Add(new BranchInfo(branch_Condition_jz, false));
+                    TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001", state2);
+                    TestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    TestTools.AreEqual(Rn.RCX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
+                }
             }
+            if (true)
             {
-                State state2b = new State(state);
-                state2b.Add(new BranchInfo(branch_Condition, false));
-                if (logToDisplay) Console.WriteLine("state with ZF = false:\n" + state2b);
-                TestTools.AreEqual(Tv.ONE, state2b.IsConsistent);
-                TestTools.AreEqual(Rn.RAX, 20, state2b);
+                if (true)
+                {
+                    State state2 = new State(state);
+                    state2.Add(new BranchInfo(branch_Condition_jc, true));
+                    TestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    TestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    TestTools.AreEqual(Rn.RCX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
+                }
+                if (true)
+                {
+                    State state2 = new State(state);
+                    state2.Add(new BranchInfo(branch_Condition_jc, false));
+                    TestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    TestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    TestTools.AreEqual(Rn.RCX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
+                }
             }
-            */
+            if (true)
+            {
+                if (true)
+                {
+                    State state2 = new State(state);
+                    state2.Add(new BranchInfo(branch_Condition_jz, true));
+                    state2.Add(new BranchInfo(branch_Condition_jc, true));
+                    TestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    TestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    TestTools.AreEqual(Rn.RCX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
+                }
+                if (true)
+                {
+                    State state2 = new State(state);
+                    state2.Add(new BranchInfo(branch_Condition_jz, true));
+                    state2.Add(new BranchInfo(branch_Condition_jc, false));
+                    TestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    TestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    TestTools.AreEqual(Rn.RCX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
+                }
+                if (true)
+                {
+                    State state2 = new State(state);
+                    state2.Add(new BranchInfo(branch_Condition_jz, false));
+                    state2.Add(new BranchInfo(branch_Condition_jc, true));
+                    TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001", state2);
+                    TestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    TestTools.AreEqual(Rn.RCX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
+                }
+                if (true)
+                {
+                    State state2 = new State(state);
+                    state2.Add(new BranchInfo(branch_Condition_jz, false));
+                    state2.Add(new BranchInfo(branch_Condition_jc, false));
+                    TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001", state2);
+                    TestTools.AreEqual(Rn.RBX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000010", state2);
+                    TestTools.AreEqual(Rn.RCX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void Test_Runner_Jmp_9()
+        {
+            string programStr =
+                "           jz      label1                      " + Environment.NewLine +
+                "           mov     rax,        1               " + Environment.NewLine +
+                "           jc      label1                      " + Environment.NewLine +
+                "           mov     rax,        2               " + Environment.NewLine +
+                "           jp      label1                      " + Environment.NewLine +
+                "           mov     rax,        3               " + Environment.NewLine +
+                "label1:                                        ";
+
+            Tools tools = CreateTools();
+            var sFlow = new StaticFlow(programStr, tools);
+            if (logToDisplay) Console.WriteLine(sFlow.ToString());
+            tools.StateConfig = sFlow.Get_StateConfig();
+            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+
+            State state = dFlow.EndState;
+            Assert.IsNotNull(state);
+
+            if (logToDisplay) Console.WriteLine("state:\n" + state);
+            TestTools.IsTrue(state.IsConsistent);
+
+            var branch_Condition_jz = dFlow.Get_Branch_Condition(0);
+            var branch_Condition_jc = dFlow.Get_Branch_Condition(2);
+            var branch_Condition_jp = dFlow.Get_Branch_Condition(4);
+
+            if (true) {
+                if (true)
+                {
+                    State state2 = new State(state);
+                    state2.Add(new BranchInfo(branch_Condition_jz, true));
+                    state2.Add(new BranchInfo(branch_Condition_jc, true));
+                    state2.Add(new BranchInfo(branch_Condition_jp, true));
+                    TestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                }
+                if (true)
+                {
+                    State state2 = new State(state);
+                    state2.Add(new BranchInfo(branch_Condition_jz, true));
+                    state2.Add(new BranchInfo(branch_Condition_jc, true));
+                    state2.Add(new BranchInfo(branch_Condition_jp, false));
+                    TestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                }
+                if (true)
+                {
+                    State state2 = new State(state);
+                    state2.Add(new BranchInfo(branch_Condition_jz, true));
+                    state2.Add(new BranchInfo(branch_Condition_jc, false));
+                    state2.Add(new BranchInfo(branch_Condition_jp, true));
+                    TestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                }
+                if (true)
+                {
+                    State state2 = new State(state);
+                    state2.Add(new BranchInfo(branch_Condition_jz, true));
+                    state2.Add(new BranchInfo(branch_Condition_jc, false));
+                    state2.Add(new BranchInfo(branch_Condition_jp, false));
+                    TestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                }
+                if (true)
+                {
+                    State state2 = new State(state);
+                    state2.Add(new BranchInfo(branch_Condition_jz, false));
+                    state2.Add(new BranchInfo(branch_Condition_jc, true));
+                    state2.Add(new BranchInfo(branch_Condition_jp, true));
+                    TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001", state2);
+                }
+                if (true)
+                {
+                    State state2 = new State(state);
+                    state2.Add(new BranchInfo(branch_Condition_jz, false));
+                    state2.Add(new BranchInfo(branch_Condition_jc, true));
+                    state2.Add(new BranchInfo(branch_Condition_jp, false));
+                    TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001", state2);
+                }
+                if (true)
+                {
+                    State state2 = new State(state);
+                    state2.Add(new BranchInfo(branch_Condition_jz, false));
+                    state2.Add(new BranchInfo(branch_Condition_jc, false));
+                    state2.Add(new BranchInfo(branch_Condition_jp, true));
+                    TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000010", state2);
+                }
+                if (true)
+                {
+                    State state2 = new State(state);
+                    state2.Add(new BranchInfo(branch_Condition_jz, false));
+                    state2.Add(new BranchInfo(branch_Condition_jc, false));
+                    state2.Add(new BranchInfo(branch_Condition_jp, false));
+                    TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
+                }
+            }
         }
 
         [TestMethod]
