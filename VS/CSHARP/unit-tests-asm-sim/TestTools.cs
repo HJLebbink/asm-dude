@@ -247,21 +247,22 @@ namespace unit_tests_asm_z3
         }
         public static void AreEqual(Rn reg1, Rn reg2, State state)
         {
-            BoolExpr eq = state.Ctx.MkEq(state.Get(reg1), state.Get(reg2));
-            Tv tv = ToolsZ3.GetTv(eq, state.Solver, state.Ctx);
-
-            if (tv == Tv.UNDETERMINED)
+            using (BoolExpr eq = state.Ctx.MkEq(state.Get(reg1), state.Get(reg2)))
             {
-                Assert.Inconclusive("Could not determine whether " + reg1 + " and " + reg2 + " are equal");
-            }
-            else
-            {
-                if (tv != Tv.ONE)
+                Tv tv = ToolsZ3.GetTv(eq, state.Solver, state.Ctx);
+                if (tv == Tv.UNDETERMINED)
                 {
-                    Console.WriteLine("TestTools:AreEqual: state:");
-                    Console.WriteLine(state);
+                    Assert.Inconclusive("Could not determine whether " + reg1 + " and " + reg2 + " are equal");
                 }
-                Assert.AreEqual(Tv.ONE, tv);
+                else
+                {
+                    if (tv != Tv.ONE)
+                    {
+                        Console.WriteLine("TestTools:AreEqual: state:");
+                        Console.WriteLine(state);
+                    }
+                    Assert.AreEqual(Tv.ONE, tv);
+                }
             }
         }
         #endregion

@@ -655,8 +655,14 @@ namespace AsmDude.Squiggles
         {
             try
             {
-                this.TagsChanged(this, new SnapshotSpanEventArgs(this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent));
-            } catch (Exception e)
+                var snapShot = this._sourceBuffer.CurrentSnapshot;
+                if (lineNumber < snapShot.LineCount)
+                {
+                    var line = snapShot.GetLineFromLineNumber(lineNumber);
+                    if (line != null) this.TagsChanged(this, new SnapshotSpanEventArgs(line.Extent));
+                }
+            }
+            catch (Exception e)
             {
                 AsmDudeToolsStatic.Output_ERROR("SquiggleTagger: Update_Squiggles_Tasks: e=" + e.ToString());
             }

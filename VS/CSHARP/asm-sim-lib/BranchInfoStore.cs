@@ -122,7 +122,7 @@ namespace AsmSim
                 {
                     foreach (KeyValuePair<string, BranchInfo> element in store1._branchInfo)
                     {
-                        mergeBranchStore.Add(element.Value.Translate(ctx));
+                        mergeBranchStore.Add(element.Value, true);
                     }
                 }
                 if (store2._branchInfo != null)
@@ -131,7 +131,7 @@ namespace AsmSim
                     {
                         if (!mergeBranchStore.ContainsKey(element.Key))
                         {
-                            mergeBranchStore.Add(element.Value.Translate(ctx));
+                            mergeBranchStore.Add(element.Value, true);
                         }
                     }
                 }
@@ -146,7 +146,7 @@ namespace AsmSim
                 {
                     if (!element.Key.Equals(key))
                     {
-                        mergeBranchStore.Add(element.Value.Translate(ctx));
+                        mergeBranchStore.Add(element.Value, true);
                     }
                 }
                 foreach (KeyValuePair<string, BranchInfo> element in store2._branchInfo)
@@ -155,7 +155,7 @@ namespace AsmSim
                     {
                         if (!mergeBranchStore.ContainsKey(element.Key))
                         {
-                            mergeBranchStore.Add(element.Value.Translate(ctx));
+                            mergeBranchStore.Add(element.Value, true);
                         }
                     }
                 }
@@ -178,7 +178,7 @@ namespace AsmSim
             this._branchInfo.Remove(branchInfo.Key);
         }
 
-        public void Add(BranchInfo branchInfo)
+        public void Add(BranchInfo branchInfo, bool translate)
         {
             if (branchInfo == null) return;
             if (this._branchInfo == null)
@@ -189,16 +189,20 @@ namespace AsmSim
             if (!this._branchInfo.ContainsKey(branchInfo.Key))
             {
                 //Console.WriteLine("INFO: AddBranchInfo: key=" + branchInfo.key);
-                this._branchInfo.Add(branchInfo.Key, branchInfo);
+                if (translate)
+                {
+                    this._branchInfo.Add(branchInfo.Key, branchInfo.Translate(this._ctx));
+                }
+                else
+                {
+                    this._branchInfo.Add(branchInfo.Key, branchInfo);
+                }
             }
         }
-        public void Add(IDictionary<string, BranchInfo> branchInfo)
+        public void Add(IDictionary<string, BranchInfo> branchInfo, bool translate)
         {
             if (branchInfo == null) return;
-            foreach (KeyValuePair<string, BranchInfo> b in branchInfo)
-            {
-                this.Add(b.Value);
-            }
+            foreach (KeyValuePair<string, BranchInfo> b in branchInfo) this.Add(b.Value, translate);
         }
 
         public override string ToString()

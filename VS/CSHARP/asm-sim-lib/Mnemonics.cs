@@ -33,13 +33,13 @@ namespace AsmSim
     {
         #region Instructions
         #region Abstract OpcodeBases
-        public abstract class OpcodeBase
+        public abstract class OpcodeBase : IDisposable
         {
             #region Fields
             protected readonly Mnemonic _mnemonic;
             private readonly string[] _args;
             public readonly Tools Tools;
-            public readonly Context Ctx;
+            protected readonly Context _ctx;
 
             protected (string PrevKey, string NextKey, string NextKeyBranch) keys;
 
@@ -53,18 +53,18 @@ namespace AsmSim
 
             protected void CreateRegularUpdate()
             {
-                if (this._regularUpdate == null) this._regularUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKey, this.Tools, this.Ctx);
+                if (this._regularUpdate == null) this._regularUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKey, this.Tools);
             }
             protected void CreateBranchUpdate()
             {
-                if (this._branchUpdate == null) this._branchUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKeyBranch, this.Tools, this.Ctx);
+                if (this._branchUpdate == null) this._branchUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKeyBranch, this.Tools);
             }
 
             protected StateUpdate RegularUpdate
             {
                 get
                 {
-                    if (this._regularUpdate == null) this._regularUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKey, this.Tools, this.Ctx);
+                    if (this._regularUpdate == null) this._regularUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKey, this.Tools);
                     return this._regularUpdate;
                 }
             }
@@ -72,7 +72,7 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this._branchUpdate == null) this._branchUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKeyBranch, this.Tools, this.Ctx);
+                    if (this._branchUpdate == null) this._branchUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKeyBranch, this.Tools);
                     return this._branchUpdate;
                 }
             }
@@ -83,7 +83,7 @@ namespace AsmSim
                 this._args = args;
                 this.Tools = t;
                 this.keys = keys;
-                this.Ctx = new Context(t.Settings);
+                this._ctx = new Context(t.Settings);
             }
 
             public abstract void Execute();
@@ -92,7 +92,7 @@ namespace AsmSim
             /// <summary>Get the current value of the provided register</summary>
             public BitVecExpr Get(Rn regName)
             {
-                var result = Tools.Reg_Key(regName, this.keys.PrevKey, this.Ctx); //TODO: check prevKey
+                var result = Tools.Reg_Key(regName, this.keys.PrevKey, this._ctx); //TODO: check prevKey
                 return result;
             }
             public static BitVecExpr Get(Rn regName, string prevKey, Context ctx)
@@ -102,7 +102,7 @@ namespace AsmSim
 
             public BitVecExpr Undef(Rn regName)
             {
-                return Tools.Reg_Key_Fresh(regName, this.Tools.Rand, this.Ctx);
+                return Tools.Reg_Key_Fresh(regName, this.Tools.Rand, this._ctx);
             }
             public static BitVecExpr Undef(Rn regName, Random rand, Context ctx)
             {
@@ -111,7 +111,7 @@ namespace AsmSim
             /// <summary>Get the current value of the provided flag</summary>
             public BoolExpr Get(Flags flagName)
             {
-                return Tools.Flag_Key(flagName, this.keys.PrevKey, this.Ctx);
+                return Tools.Flag_Key(flagName, this.keys.PrevKey, this._ctx);
             }
             public static BoolExpr Get(Flags flagName, string prevKey, Context ctx)
             {
@@ -120,7 +120,7 @@ namespace AsmSim
 
             public BoolExpr Undef(Flags flagName)
             {
-                return Tools.Flag_Key_Fresh(flagName, this.Tools.Rand, this.Ctx);
+                return Tools.Flag_Key_Fresh(flagName, this.Tools.Rand, this._ctx);
             }
             public static BoolExpr Undef(Flags flagName, Random rand, Context ctx)
             {
@@ -129,7 +129,7 @@ namespace AsmSim
 
             public BitVecExpr GetMem(BitVecExpr address, int nBytes)
             {
-                return Tools.Get_Value_From_Mem(address, nBytes, this.keys.PrevKey, this.Ctx);
+                return Tools.Get_Value_From_Mem(address, nBytes, this.keys.PrevKey, this._ctx);
             }
             #endregion
 
@@ -345,6 +345,15 @@ namespace AsmSim
                 }
             }
             #endregion
+
+            #region IDisposable Support
+            public void Dispose()
+            {
+                this._ctx.Dispose();
+                this._branchUpdate?.Dispose();
+                this._regularUpdate?.Dispose();
+            }
+            #endregion
         }
         public abstract class Opcode0Base : OpcodeBase
         {
@@ -390,7 +399,7 @@ namespace AsmSim
                     this.SyntaxError = string.Format("\"{0}\": First operand ({1}) cannot be of type {2}. Allowed types: {3}.", this.ToString(), this.op1, this.op1.Type, AsmSourceTools.ToString(allowedOperands1));
                 }
             }
-            public BitVecExpr Op1Value { get { return OpcodeBase.OpValue(this.op1, this.keys.PrevKey, this.Ctx); } }
+            public BitVecExpr Op1Value { get { return OpcodeBase.OpValue(this.op1, this.keys.PrevKey, this._ctx); } }
             public override bool MemReadWriteStatic { get { return ToMemReadWrite(this.op1); } }
         }
         public abstract class Opcode2Base : OpcodeBase
@@ -429,8 +438,8 @@ namespace AsmSim
                         this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, AsmSourceTools.ToString(allowedOperands2));
                 }
             }
-            public BitVecExpr Op1Value { get { return OpcodeBase.OpValue(this.op1, this.keys.PrevKey, this.Ctx); } }
-            public BitVecExpr Op2Value { get { return OpcodeBase.OpValue(this.op2, this.keys.PrevKey, this.Ctx); } }
+            public BitVecExpr Op1Value { get { return OpcodeBase.OpValue(this.op1, this.keys.PrevKey, this._ctx); } }
+            public BitVecExpr Op2Value { get { return OpcodeBase.OpValue(this.op2, this.keys.PrevKey, this._ctx); } }
             public override bool MemReadWriteStatic { get { return ToMemReadWrite(this.op1, this.op2); } }
         }
         public abstract class Opcode3Base : OpcodeBase
@@ -471,9 +480,9 @@ namespace AsmSim
                     this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6}); op3={6} ({7}, bits={8}) Allowed types: {9}.", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits, AsmSourceTools.ToString(allowedOperands3));
                 }
             }
-            public BitVecExpr Op1Value { get { return OpcodeBase.OpValue(this.op1, this.keys.PrevKey, this.Ctx); } }
-            public BitVecExpr Op2Value { get { return OpcodeBase.OpValue(this.op2, this.keys.PrevKey, this.Ctx); } }
-            public BitVecExpr Op3Value { get { return OpcodeBase.OpValue(this.op3, this.keys.PrevKey, this.Ctx); } }
+            public BitVecExpr Op1Value { get { return OpcodeBase.OpValue(this.op1, this.keys.PrevKey, this._ctx); } }
+            public BitVecExpr Op2Value { get { return OpcodeBase.OpValue(this.op2, this.keys.PrevKey, this._ctx); } }
+            public BitVecExpr Op3Value { get { return OpcodeBase.OpValue(this.op3, this.keys.PrevKey, this._ctx); } }
             public override bool MemReadWriteStatic { get { return ToMemReadWrite(this.op1, this.op2, this.op3); } }
         }
         public abstract class OpcodeNBase : OpcodeBase
@@ -512,9 +521,9 @@ namespace AsmSim
                     }
                 }
             }
-            public BitVecExpr Op1Value { get { return OpcodeBase.OpValue(this.op1, this.keys.PrevKey, this.Ctx); } }
-            public BitVecExpr Op2Value { get { return OpcodeBase.OpValue(this.op2, this.keys.PrevKey, this.Ctx); } }
-            public BitVecExpr Op3Value { get { return OpcodeBase.OpValue(this.op3, this.keys.PrevKey, this.Ctx); } }
+            public BitVecExpr Op1Value { get { return OpcodeBase.OpValue(this.op1, this.keys.PrevKey, this._ctx); } }
+            public BitVecExpr Op2Value { get { return OpcodeBase.OpValue(this.op2, this.keys.PrevKey, this._ctx); } }
+            public BitVecExpr Op3Value { get { return OpcodeBase.OpValue(this.op3, this.keys.PrevKey, this._ctx); } }
             public override bool MemReadWriteStatic { get { return ToMemReadWrite(this.op1, this.op2, this.op3); } }
         }
         public abstract class Opcode2Type1 : Opcode2Base
@@ -593,12 +602,12 @@ namespace AsmSim
             }
             public override void Execute()
             {
-                BoolExpr conditional = ToolsAsmSim.ConditionalTaken(this._ce, this.keys.PrevKey, this.Ctx);
+                BoolExpr conditional = ToolsAsmSim.ConditionalTaken(this._ce, this.keys.PrevKey, this._ctx);
                 BitVecExpr op1 = this.Op1Value;
                 BitVecExpr op2 = this.Op2Value;
                 //Console.WriteLine("Cmovcc ce="+this._ce+"; conditional=" + conditional);
-                BitVecExpr value = this.Ctx.MkITE(conditional, op2, op1) as BitVecExpr;
-                BitVecExpr undef = this.Ctx.MkBVXOR(op1, op2);
+                BitVecExpr value = this._ctx.MkITE(conditional, op2, op1) as BitVecExpr;
+                BitVecExpr undef = this._ctx.MkBVXOR(op1, op2);
 
                 this.RegularUpdate.Set(this.op1, value, undef);
             }
@@ -630,7 +639,7 @@ namespace AsmSim
                 BitVecExpr a = this.Op1Value;
                 BitVecExpr b = this.Op2Value;
 
-                var tup = BitOperations.Addition(a, b, this.Ctx);
+                var tup = BitOperations.Addition(a, b, this._ctx);
                 this.RegularUpdate.Set(this.op1, tup.result);
                 this.RegularUpdate.Set(this.op2, a);// swap op1 and op2
                 this.RegularUpdate.Set(Flags.CF, tup.cf);
@@ -681,14 +690,14 @@ namespace AsmSim
                     BitVecExpr value = this.Op1Value;
                     if (this.op1.IsImm)
                     {
-                        if (value.SortSize < 64) value = this.Ctx.MkSignExt(64 - value.SortSize, value);
+                        if (value.SortSize < 64) value = this._ctx.MkSignExt(64 - value.SortSize, value);
                     }
                     else if (this.op1.IsReg && RegisterTools.IsSegmentRegister(this.op1.Rn))
                     {
-                        value = this.Ctx.MkZeroExt(64 - value.SortSize, value);
+                        value = this._ctx.MkZeroExt(64 - value.SortSize, value);
                     }
                     BitVecExpr rspExpr = this.Get(Rn.RSP);
-                    this.RegularUpdate.Set(Rn.RSP, this.Ctx.MkBVSub(rspExpr, this.Ctx.MkBV(8, 64)));
+                    this.RegularUpdate.Set(Rn.RSP, this._ctx.MkBVSub(rspExpr, this._ctx.MkBV(8, 64)));
                     this.RegularUpdate.SetMem(rspExpr, value);
                 }
                 else if (this.Tools.Parameters.mode_32bit)
@@ -696,21 +705,21 @@ namespace AsmSim
                     BitVecExpr value = this.Op1Value;
                     if (this.op1.IsImm)
                     {
-                        if (value.SortSize < 32) value = this.Ctx.MkSignExt(32 - value.SortSize, value);
+                        if (value.SortSize < 32) value = this._ctx.MkSignExt(32 - value.SortSize, value);
                     }
                     else if (this.op1.IsReg && RegisterTools.IsSegmentRegister(this.op1.Rn))
                     {
-                        value = this.Ctx.MkZeroExt(32 - value.SortSize, value);
+                        value = this._ctx.MkZeroExt(32 - value.SortSize, value);
                     }
                     BitVecExpr espExpr = this.Get(Rn.ESP);
-                    this.RegularUpdate.Set(Rn.ESP, this.Ctx.MkBVSub(espExpr, this.Ctx.MkBV(4, 32)));
+                    this.RegularUpdate.Set(Rn.ESP, this._ctx.MkBVSub(espExpr, this._ctx.MkBV(4, 32)));
                     this.RegularUpdate.SetMem(espExpr, value);
                 }
                 else if (this.Tools.Parameters.mode_16bit)
                 {
                     BitVecExpr value = this.Op1Value;
                     BitVecExpr spExpr = this.Get(Rn.SP);
-                    this.RegularUpdate.Set(Rn.SP, this.Ctx.MkBVSub(spExpr, this.Ctx.MkBV(2, 16)));
+                    this.RegularUpdate.Set(Rn.SP, this._ctx.MkBVSub(spExpr, this._ctx.MkBV(2, 16)));
                     this.RegularUpdate.SetMem(spExpr, value);
                 }
                 else
@@ -768,12 +777,12 @@ namespace AsmSim
                     BitVecExpr newRspExpr;
                     if (operand_Size == 64)
                     {
-                        newRspExpr = this.Ctx.MkBVAdd(rspExpr, this.Ctx.MkBV(8, 64));
+                        newRspExpr = this._ctx.MkBVAdd(rspExpr, this._ctx.MkBV(8, 64));
                         this.RegularUpdate.Set(this.op1, this.GetMem(newRspExpr, 8));
                     }
                     else if (operand_Size == 16)
                     {
-                        newRspExpr = this.Ctx.MkBVAdd(rspExpr, this.Ctx.MkBV(2, 64));
+                        newRspExpr = this._ctx.MkBVAdd(rspExpr, this._ctx.MkBV(2, 64));
                         this.RegularUpdate.Set(this.op1, this.GetMem(newRspExpr, 2));
                     }
                     else
@@ -789,12 +798,12 @@ namespace AsmSim
                     BitVecExpr newEspExpr;
                     if (operand_Size == 32)
                     {
-                        newEspExpr = this.Ctx.MkBVAdd(espExpr, this.Ctx.MkBV(4, 32));
+                        newEspExpr = this._ctx.MkBVAdd(espExpr, this._ctx.MkBV(4, 32));
                         this.RegularUpdate.Set(this.op1, this.GetMem(newEspExpr, 4));
                     }
                     else if (operand_Size == 16)
                     {
-                        newEspExpr = this.Ctx.MkBVAdd(espExpr, this.Ctx.MkBV(2, 32));
+                        newEspExpr = this._ctx.MkBVAdd(espExpr, this._ctx.MkBV(2, 32));
                         this.RegularUpdate.Set(this.op1, this.GetMem(newEspExpr, 2));
                     }
                     else
@@ -810,12 +819,12 @@ namespace AsmSim
                     BitVecExpr newSpExpr;
                     if (operand_Size == 32)
                     {
-                        newSpExpr = this.Ctx.MkBVAdd(spExpr, this.Ctx.MkBV(4, 16));
+                        newSpExpr = this._ctx.MkBVAdd(spExpr, this._ctx.MkBV(4, 16));
                         this.RegularUpdate.Set(this.op1, this.GetMem(newSpExpr, 4));
                     }
                     else if (operand_Size == 16)
                     {
-                        newSpExpr = this.Ctx.MkBVAdd(spExpr, this.Ctx.MkBV(2, 16));
+                        newSpExpr = this._ctx.MkBVAdd(spExpr, this._ctx.MkBV(2, 16));
                         this.RegularUpdate.Set(this.op1, this.GetMem(newSpExpr, 2));
                     }
                     else
@@ -864,7 +873,7 @@ namespace AsmSim
             public Cwd(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.CWD, args, keys, t) { }
             public override void Execute()
             {
-                this.RegularUpdate.Set(Rn.DX, this.Ctx.MkExtract(32, 16, this.Ctx.MkSignExt(16, this.Get(Rn.AX))));
+                this.RegularUpdate.Set(Rn.DX, this._ctx.MkExtract(32, 16, this._ctx.MkSignExt(16, this.Get(Rn.AX))));
             }
             public override IEnumerable<Rn> RegsReadStatic { get { yield return Rn.AX; } }
             public override IEnumerable<Rn> RegsWriteStatic { get { yield return Rn.DX; } }
@@ -875,7 +884,7 @@ namespace AsmSim
             public Cdq(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.CDQ, args, keys, t) { }
             public override void Execute()
             {
-                this.RegularUpdate.Set(Rn.EDX, this.Ctx.MkExtract(64, 32, this.Ctx.MkSignExt(32, this.Get(Rn.EAX))));
+                this.RegularUpdate.Set(Rn.EDX, this._ctx.MkExtract(64, 32, this._ctx.MkSignExt(32, this.Get(Rn.EAX))));
             }
             public override IEnumerable<Rn> RegsReadStatic { get { yield return Rn.EAX; } }
             public override IEnumerable<Rn> RegsWriteStatic { get { yield return Rn.EDX; } }
@@ -886,7 +895,7 @@ namespace AsmSim
             public Cqo(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.CQO, args, keys, t) { }
             public override void Execute()
             {
-                this.RegularUpdate.Set(Rn.RDX, this.Ctx.MkExtract(128, 64, this.Ctx.MkSignExt(64, this.Get(Rn.RAX))));
+                this.RegularUpdate.Set(Rn.RDX, this._ctx.MkExtract(128, 64, this._ctx.MkSignExt(64, this.Get(Rn.RAX))));
             }
             public override IEnumerable<Rn> RegsReadStatic { get { yield return Rn.RAX; } }
             public override IEnumerable<Rn> RegsWriteStatic { get { yield return Rn.RDX; } }
@@ -897,7 +906,7 @@ namespace AsmSim
             public Cbw(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.CBW, args, keys, t) { }
             public override void Execute()
             {
-                this.RegularUpdate.Set(Rn.AX, this.Ctx.MkSignExt(8, this.Get(Rn.AL)));
+                this.RegularUpdate.Set(Rn.AX, this._ctx.MkSignExt(8, this.Get(Rn.AL)));
             }
             public override IEnumerable<Rn> RegsReadStatic { get { yield return Rn.AL; } }
             public override IEnumerable<Rn> RegsWriteStatic { get { yield return Rn.AH; } }
@@ -908,7 +917,7 @@ namespace AsmSim
             public Cwde(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.CWDE, args, keys, t) { }
             public override void Execute()
             {
-                this.RegularUpdate.Set(Rn.EAX, this.Ctx.MkSignExt(16, this.Get(Rn.AX)));
+                this.RegularUpdate.Set(Rn.EAX, this._ctx.MkSignExt(16, this.Get(Rn.AX)));
             }
             public override IEnumerable<Rn> RegsReadStatic { get { yield return Rn.AX; } }
             public override IEnumerable<Rn> RegsWriteStatic { get { yield return Rn.EAX; } }
@@ -919,7 +928,7 @@ namespace AsmSim
             public Cdqe(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.CDQE, args, keys, t) { }
             public override void Execute()
             {
-                this.RegularUpdate.Set(Rn.RAX, this.Ctx.MkSignExt(32, this.Get(Rn.EAX)));
+                this.RegularUpdate.Set(Rn.RAX, this._ctx.MkSignExt(32, this.Get(Rn.EAX)));
             }
             public override IEnumerable<Rn> RegsReadStatic { get { yield return Rn.EAX; } }
             public override IEnumerable<Rn> RegsWriteStatic { get { yield return Rn.RAX; } }
@@ -958,7 +967,7 @@ namespace AsmSim
             public override void Execute()
             {
                 uint nBitsAdded = (uint)(this.op1.NBits - this.op2.NBits);
-                this.RegularUpdate.Set(this.op1, this.Ctx.MkSignExt(nBitsAdded, this.Op2Value));
+                this.RegularUpdate.Set(this.op1, this._ctx.MkSignExt(nBitsAdded, this.Op2Value));
             }
             public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op2); } }
             public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1); } }
@@ -978,7 +987,7 @@ namespace AsmSim
             public override void Execute()
             {
                 uint nBitsAdded = (uint)(this.op1.NBits - this.op2.NBits);
-                this.RegularUpdate.Set(this.op1, this.Ctx.MkSignExt(nBitsAdded, this.Op2Value));
+                this.RegularUpdate.Set(this.op1, this._ctx.MkSignExt(nBitsAdded, this.Op2Value));
             }
             public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op2); } }
             public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1); } }
@@ -1016,7 +1025,7 @@ namespace AsmSim
             public override void Execute()
             {
                 uint nBitsAdded = (uint)(this.op1.NBits - this.op2.NBits);
-                this.RegularUpdate.Set(this.op1, this.Ctx.MkZeroExt(nBitsAdded, this.Op2Value));
+                this.RegularUpdate.Set(this.op1, this._ctx.MkZeroExt(nBitsAdded, this.Op2Value));
             }
             public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op2); } }
             public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1); } }
@@ -1049,7 +1058,7 @@ namespace AsmSim
             public Add(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.ADD, args, keys, t) { }
             public override void Execute()
             {
-                var tup = BitOperations.Addition(this.Op1Value, this.Op2Value, this.Ctx);
+                var tup = BitOperations.Addition(this.Op1Value, this.Op2Value, this._ctx);
                 this.RegularUpdate.Set(this.op1, tup.result);
                 this.RegularUpdate.Set(Flags.CF, tup.cf);
                 this.RegularUpdate.Set(Flags.OF, tup.of);
@@ -1066,7 +1075,7 @@ namespace AsmSim
             public Adc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.ADC, args, keys, t) { }
             public override void Execute()
             {
-                var tup = BitOperations.Addition(this.Op1Value, this.Op2Value, this.Get(Flags.CF), this.Ctx);
+                var tup = BitOperations.Addition(this.Op1Value, this.Op2Value, this.Get(Flags.CF), this._ctx);
                 this.RegularUpdate.Set(this.op1, tup.result);
                 this.RegularUpdate.Set(Flags.CF, tup.cf);
                 this.RegularUpdate.Set(Flags.OF, tup.of);
@@ -1090,7 +1099,7 @@ namespace AsmSim
             public Sub(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.SUB, args, keys, t) { }
             public override void Execute()
             {
-                var tup = BitOperations.Substract(this.Op1Value, this.Op2Value, this.Ctx);
+                var tup = BitOperations.Substract(this.Op1Value, this.Op2Value, this._ctx);
                 this.RegularUpdate.Set(this.op1, tup.result);
                 this.RegularUpdate.Set(Flags.CF, tup.cf);
                 this.RegularUpdate.Set(Flags.OF, tup.of);
@@ -1107,7 +1116,7 @@ namespace AsmSim
             public Sbb(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.SBB, args, keys, t) { }
             public override void Execute()
             {
-                var tup = BitOperations.Substract(this.Op1Value, this.Op2Value, this.Get(Flags.CF), this.Ctx);
+                var tup = BitOperations.Substract(this.Op1Value, this.Op2Value, this.Get(Flags.CF), this._ctx);
                 this.RegularUpdate.Set(this.op1, tup.result);
                 this.RegularUpdate.Set(Flags.CF, tup.cf);
                 this.RegularUpdate.Set(Flags.OF, tup.of);
@@ -1219,7 +1228,7 @@ namespace AsmSim
                 IMUL r32, r/m32, imm32          doubleword register ← r/m32 ∗ immediate doubleword. 
                 IMUL r64, r/m64, imm32          Quadword register ← r/m64 ∗ immediate doubleword. 
                 */
-                Context ctx = this.Ctx;
+                Context ctx = this._ctx;
                 BoolExpr cf;
 
                 uint nBits = (uint)this.op1.NBits;
@@ -1374,7 +1383,7 @@ namespace AsmSim
             public Mul(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.MUL, args, Ot1.reg | Ot1.mem, keys, t) { }
             public override void Execute()
             {
-                Context ctx = this.Ctx;
+                Context ctx = this._ctx;
                 BoolExpr cf;
                 uint nBits = (uint)this.op1.NBits;
 
@@ -1487,7 +1496,7 @@ namespace AsmSim
             public Idiv(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.DIV, args, Ot1.reg | Ot1.mem, keys, t) { }
             public override void Execute()
             {
-                Context ctx = this.Ctx;
+                Context ctx = this._ctx;
                 uint nBits = (uint)this.op1.NBits;
                 BitVecExpr term1;
                 BitVecExpr maxValue;
@@ -1611,7 +1620,7 @@ namespace AsmSim
             public Div(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.DIV, args, Ot1.reg | Ot1.mem, keys, t) { }
             public override void Execute()
             {
-                Context ctx = this.Ctx;
+                Context ctx = this._ctx;
                 uint nBits = (uint)this.op1.NBits;
                 BitVecExpr term1;
                 BitVecExpr maxValue;
@@ -1735,7 +1744,7 @@ namespace AsmSim
             public Inc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.INC, args, Ot1.reg | Ot1.mem, keys, t) { }
             public override void Execute()
             {
-                var tup = BitOperations.Addition(this.Op1Value, this.Ctx.MkBV(1, (uint)this.op1.NBits), this.Ctx);
+                var tup = BitOperations.Addition(this.Op1Value, this._ctx.MkBV(1, (uint)this.op1.NBits), this._ctx);
                 this.RegularUpdate.Set(this.op1, tup.result);
                 //CF is not updated!
                 this.RegularUpdate.Set(Flags.OF, tup.of);
@@ -1752,7 +1761,7 @@ namespace AsmSim
             public Dec(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.DEC, args, Ot1.reg | Ot1.mem, keys, t) { }
             public override void Execute()
             {
-                var tup = BitOperations.Substract(this.Op1Value, this.Ctx.MkBV(1, (uint)this.op1.NBits), this.Ctx);
+                var tup = BitOperations.Substract(this.Op1Value, this._ctx.MkBV(1, (uint)this.op1.NBits), this._ctx);
                 this.RegularUpdate.Set(this.op1, tup.result);
                 //CF is not updated!
                 this.RegularUpdate.Set(Flags.OF, tup.of);
@@ -1769,7 +1778,7 @@ namespace AsmSim
             public Neg(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.NEG, args, Ot1.reg | Ot1.mem, keys, t) { }
             public override void Execute()
             {
-                var tup = BitOperations.Neg(this.Op1Value, this.Ctx);
+                var tup = BitOperations.Neg(this.Op1Value, this._ctx);
                 this.RegularUpdate.Set(this.op1, tup.result);
                 this.RegularUpdate.Set(Flags.CF, tup.cf);
                 this.RegularUpdate.Set(Flags.OF, tup.of);
@@ -1786,7 +1795,7 @@ namespace AsmSim
             public Cmp(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.CMP, args, keys, t) { }
             public override void Execute()
             {
-                var tup = BitOperations.Substract(this.Op1Value, this.Op2Value, this.Ctx);
+                var tup = BitOperations.Substract(this.Op1Value, this.Op2Value, this._ctx);
                 this.RegularUpdate.Set(Flags.CF, tup.cf);
                 this.RegularUpdate.Set(Flags.OF, tup.of);
                 this.RegularUpdate.Set(Flags.AF, tup.af);
@@ -1804,7 +1813,7 @@ namespace AsmSim
             public Daa(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.DAA, args, keys, t) {}
             public override void Execute()
             {
-                Context ctx = this.Ctx;
+                Context ctx = this._ctx;
 
                 BitVecExpr al = this.Get(Rn.AL);
                 BoolExpr af = this.Get(Flags.AF);
@@ -1835,7 +1844,7 @@ namespace AsmSim
             public Das(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.DAS, args, keys, t) { }
             public override void Execute()
             {
-                Context ctx = this.Ctx;
+                Context ctx = this._ctx;
 
                 BitVecExpr al = this.Get(Rn.AL);
                 BoolExpr af = this.Get(Flags.AF);
@@ -1866,7 +1875,7 @@ namespace AsmSim
             public Aaa(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.AAA, args, keys, t) { }
             public override void Execute()
             {
-                Context ctx = this.Ctx;
+                Context ctx = this._ctx;
 
                 BitVecExpr ax = this.Get(Rn.AX);
                 BoolExpr af = this.Get(Flags.AF);
@@ -1897,7 +1906,7 @@ namespace AsmSim
             public Aas(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.AAS, args, keys, t) { }
             public override void Execute()
             {
-                Context ctx = this.Ctx;
+                Context ctx = this._ctx;
 
                 BitVecExpr ax = this.Get(Rn.AX);
                 BoolExpr af = this.Get(Flags.AF);
@@ -1944,7 +1953,7 @@ namespace AsmSim
             }
             public override void Execute()
             {
-                Context ctx = this.Ctx;
+                Context ctx = this._ctx;
                 BitVecNum bv_imm = ctx.MkBV(this.imm, 8);
                 BitVecExpr al = this.Get(Rn.AL);
                 BitVecExpr al_new = ctx.MkBVSDiv(al, bv_imm);
@@ -1982,7 +1991,7 @@ namespace AsmSim
             }
             public override void Execute()
             {
-                Context ctx = this.Ctx;
+                Context ctx = this._ctx;
                 BitVecNum bv_imm_16 = ctx.MkBV(this.imm, 16);
                 BitVecExpr al_16 = ctx.MkZeroExt(8, this.Get(Rn.AL));
                 BitVecExpr ah_16 = ctx.MkZeroExt(8, this.Get(Rn.AH));
@@ -2039,9 +2048,9 @@ namespace AsmSim
                 BitVecExpr value;
                 switch (this._mnemonic)
                 {
-                    case Mnemonic.XOR: value = this.Ctx.MkBVXOR(this.Op1Value, this.Op2Value); break;
-                    case Mnemonic.AND: value = this.Ctx.MkBVAND(this.Op1Value, this.Op2Value); break;
-                    case Mnemonic.OR: value = this.Ctx.MkBVOR(this.Op1Value, this.Op2Value); break;
+                    case Mnemonic.XOR: value = this._ctx.MkBVXOR(this.Op1Value, this.Op2Value); break;
+                    case Mnemonic.AND: value = this._ctx.MkBVAND(this.Op1Value, this.Op2Value); break;
+                    case Mnemonic.OR: value = this._ctx.MkBVOR(this.Op1Value, this.Op2Value); break;
                     default: return;
                 }
                 this.RegularUpdate.Set(this.op1, value);
@@ -2071,7 +2080,7 @@ namespace AsmSim
             public Not(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.NOT, args, keys, t) { }
             public override void Execute()
             {
-                this.RegularUpdate.Set(this.op1, this.Ctx.MkBVNot(this.Op1Value));
+                this.RegularUpdate.Set(this.op1, this._ctx.MkBVNot(this.Op1Value));
                 // Flags are unaffected
             }
             public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1); } }
@@ -2100,7 +2109,7 @@ namespace AsmSim
             }
             public override void Execute()
             {
-                BitVecExpr value = this.Ctx.MkBVAND(this.Op1Value, this.Op2Value);
+                BitVecExpr value = this._ctx.MkBVAND(this.Op1Value, this.Op2Value);
                 this.RegularUpdate.Set(Flags.CF, Tv.ZERO);
                 this.RegularUpdate.Set(Flags.OF, Tv.ZERO);
                 this.RegularUpdate.Set(Flags.AF, Tv.UNDEFINED);
@@ -2138,7 +2147,7 @@ namespace AsmSim
             }
             public void UpdateFlagsShift(BitVecExpr value, BoolExpr cfIn, BitVecExpr shiftCount, BoolExpr shiftTooLarge, bool left)
             {
-                ShiftRotateBase.UpdateFlagsShift(value, cfIn, shiftCount, shiftTooLarge, left, this.keys.PrevKey, this.RegularUpdate, this.Tools.Rand, this.Ctx);
+                ShiftRotateBase.UpdateFlagsShift(value, cfIn, shiftCount, shiftTooLarge, left, this.keys.PrevKey, this.RegularUpdate, this.Tools.Rand, this._ctx);
             }
             public static void UpdateFlagsShift(BitVecExpr value, BoolExpr cfIn, BitVecExpr shiftCount, BoolExpr shiftTooLarge, bool left, string prevKey, StateUpdate stateUpdate, Random rand, Context ctx)
             {
@@ -2186,7 +2195,7 @@ namespace AsmSim
                  * bits of the result.
                  */
 
-                Context ctx = this.Ctx;
+                Context ctx = this._ctx;
 
                 uint nBits = shiftCount.SortSize;
                 BoolExpr isZero = ctx.MkEq(shiftCount, ctx.MkBV(0, nBits));
@@ -2223,8 +2232,8 @@ namespace AsmSim
             public Sar(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.SAR, args, keys, t) { }
             public override void Execute()
             {
-                var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this.Ctx);
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SAR, this.Op1Value, shiftCount.shiftCount, this.Ctx, this.Tools.Rand);
+                var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
+                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SAR, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
                 this.UpdateFlagsShift(shiftValue.result, shiftValue.cf, shiftCount.shiftCount, shiftCount.tooLarge, false);
                 this.RegularUpdate.Set(this.op1, shiftValue.result);
             }
@@ -2236,8 +2245,8 @@ namespace AsmSim
             public Sal(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.SAL, args, keys, t) { }
             public override void Execute()
             {
-                var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this.Ctx);
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SAL, this.Op1Value, shiftCount.shiftCount, this.Ctx, this.Tools.Rand);
+                var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
+                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SAL, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
                 this.UpdateFlagsShift(shiftValue.result, shiftValue.cf, shiftCount.shiftCount, shiftCount.tooLarge, true);
                 this.RegularUpdate.Set(this.op1, shiftValue.result);
             }
@@ -2249,8 +2258,8 @@ namespace AsmSim
             public Shr(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.SHR, args, keys, t) { }
             public override void Execute()
             {
-                var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this.Ctx);
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SHR, this.Op1Value, shiftCount.shiftCount, this.Ctx, this.Tools.Rand);
+                var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
+                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SHR, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
                 this.UpdateFlagsShift(shiftValue.result, shiftValue.cf, shiftCount.shiftCount, shiftCount.tooLarge, false);
                 this.RegularUpdate.Set(this.op1, shiftValue.result);
             }
@@ -2262,8 +2271,8 @@ namespace AsmSim
             public Shl(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.SHL, args, keys, t) { }
             public override void Execute()
             {
-                var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this.Ctx);
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SHL, this.Op1Value, shiftCount.shiftCount, this.Ctx, this.Tools.Rand);
+                var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
+                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SHL, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
                 this.UpdateFlagsShift(shiftValue.result, shiftValue.cf, shiftCount.shiftCount, shiftCount.tooLarge, true);
                 this.RegularUpdate.Set(this.op1, shiftValue.result);
             }
@@ -2278,8 +2287,8 @@ namespace AsmSim
             public Ror(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.ROR, args, keys, t) { }
             public override void Execute()
             {
-                var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this.Ctx);
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.ROR, this.Op1Value, shiftCount.shiftCount, this.Ctx, this.Tools.Rand);
+                var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
+                var shiftValue = BitOperations.ShiftOperations(Mnemonic.ROR, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
                 this.UpdateFlagsRotate(shiftValue.result, shiftValue.cf, shiftCount.shiftCount, false);
                 this.RegularUpdate.Set(this.op1, shiftValue.result);
             }
@@ -2291,8 +2300,8 @@ namespace AsmSim
             public Rcr(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.RCR, args, keys, t) { }
             public override void Execute()
             {
-                var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this.Ctx);
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.RCR, this.Op1Value, shiftCount.shiftCount, this.Get(Flags.CF), this.keys.PrevKey, this.Ctx);
+                var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
+                var shiftValue = BitOperations.ShiftOperations(Mnemonic.RCR, this.Op1Value, shiftCount.shiftCount, this.Get(Flags.CF), this.keys.PrevKey, this._ctx);
                 this.UpdateFlagsRotate(shiftValue.result, shiftValue.cf, shiftCount.shiftCount, false);
                 this.RegularUpdate.Set(this.op1, shiftValue.result);
             }
@@ -2305,8 +2314,8 @@ namespace AsmSim
             public Rcl(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.RCL, args, keys, t) { }
             public override void Execute()
             {
-                var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this.Ctx);
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.RCL, this.Op1Value, shiftCount.shiftCount, this.Get(Flags.CF), this.keys.PrevKey, this.Ctx);
+                var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
+                var shiftValue = BitOperations.ShiftOperations(Mnemonic.RCL, this.Op1Value, shiftCount.shiftCount, this.Get(Flags.CF), this.keys.PrevKey, this._ctx);
                 this.UpdateFlagsRotate(shiftValue.result, shiftValue.cf, shiftCount.shiftCount, true);
                 this.RegularUpdate.Set(this.op1, shiftValue.result);
             }
@@ -2319,8 +2328,8 @@ namespace AsmSim
             public Rol(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.ROL, args, keys, t) { }
             public override void Execute()
             {
-                var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this.Ctx);
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.ROL, this.Op1Value, shiftCount.shiftCount, this.Ctx, this.Tools.Rand);
+                var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
+                var shiftValue = BitOperations.ShiftOperations(Mnemonic.ROL, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
                 this.UpdateFlagsRotate(shiftValue.result, shiftValue.cf, shiftCount.shiftCount, true);
                 this.RegularUpdate.Set(this.op1, shiftValue.result);
             }
@@ -2351,8 +2360,8 @@ namespace AsmSim
             public Rorx(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.RORX, args, keys, t) { }
             public override void Execute()
             {
-                BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this.Ctx).shiftCount;
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.ROR, this.Op1Value, shiftCount, this.Ctx, this.Tools.Rand);
+                BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx).shiftCount;
+                var shiftValue = BitOperations.ShiftOperations(Mnemonic.ROR, this.Op1Value, shiftCount, this._ctx, this.Tools.Rand);
                 this.RegularUpdate.Set(this.op1, shiftValue.result);
             }
         }
@@ -2361,8 +2370,8 @@ namespace AsmSim
             public Sarx(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.SARX, args, keys, t) { }
             public override void Execute()
             {
-                BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this.Ctx).shiftCount;
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SAR, this.Op1Value, shiftCount, this.Ctx, this.Tools.Rand);
+                BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx).shiftCount;
+                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SAR, this.Op1Value, shiftCount, this._ctx, this.Tools.Rand);
                 this.RegularUpdate.Set(this.op1, shiftValue.result);
             }
         }
@@ -2371,8 +2380,8 @@ namespace AsmSim
             public Shlx(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.SHLX, args, keys, t) { }
             public override void Execute()
             {
-                BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this.Ctx).shiftCount;
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SHL, this.Op1Value, shiftCount, this.Ctx, this.Tools.Rand);
+                BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx).shiftCount;
+                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SHL, this.Op1Value, shiftCount, this._ctx, this.Tools.Rand);
                 this.RegularUpdate.Set(this.op1, shiftValue.result);
             }
         }
@@ -2381,8 +2390,8 @@ namespace AsmSim
             public Shrx(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.SHRX, args, keys, t) { }
             public override void Execute()
             {
-                BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this.Ctx).shiftCount;
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SHR, this.Op1Value, shiftCount, this.Ctx, this.Tools.Rand);
+                BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx).shiftCount;
+                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SHR, this.Op1Value, shiftCount, this._ctx, this.Tools.Rand);
                 this.RegularUpdate.Set(this.op1, shiftValue.result);
             }
         }
@@ -2423,7 +2432,7 @@ namespace AsmSim
             public Shrd(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.SHRD, args, keys, t) { }
             public override void Execute()
             {
-                Context ctx = this.Ctx;
+                Context ctx = this._ctx;
                 uint nBits = (uint)this.op1.NBits;
                 var shiftCount = ShiftRotateBase.GetShiftCount(this.Op3Value, (int)nBits, ctx);
                 BitVecExpr nShifts = shiftCount.shiftCount;
@@ -2441,7 +2450,7 @@ namespace AsmSim
                 BoolExpr bitValue = ToolsZ3.GetBit(value_in, bitPos64, ctx);
                 BoolExpr cf = ctx.MkITE(ctx.MkEq(nShifts, ctx.MkBV(0, 8)), this.Undef(Flags.CF), bitValue) as BoolExpr;
 
-                ShiftRotateBase.UpdateFlagsShift(value_out, cf, shiftCount.shiftCount, shiftCount.tooLarge, false, this.keys.PrevKey, this.RegularUpdate, this.Tools.Rand, this.Ctx);
+                ShiftRotateBase.UpdateFlagsShift(value_out, cf, shiftCount.shiftCount, shiftCount.tooLarge, false, this.keys.PrevKey, this.RegularUpdate, this.Tools.Rand, this._ctx);
                 this.RegularUpdate.Set(this.op1, value_out);
             }
         }
@@ -2451,7 +2460,7 @@ namespace AsmSim
             public Shld(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.SHLD, args, keys, t) { }
             public override void Execute()
             {
-                Context ctx = this.Ctx;
+                Context ctx = this._ctx;
                 uint nBits = (uint)this.op1.NBits;
                 var shiftTup = ShiftRotateBase.GetShiftCount(this.Op3Value, (int)nBits, ctx);
                 BitVecExpr nShifts = shiftTup.shiftCount;
@@ -2469,7 +2478,7 @@ namespace AsmSim
                 BoolExpr bitValue = ToolsZ3.GetBit(value_in, bitPos64, ctx);
                 BoolExpr cf = ctx.MkITE(ctx.MkEq(nShifts, ctx.MkBV(0, 8)), this.Undef(Flags.CF), bitValue) as BoolExpr;
 
-                ShiftRotateBase.UpdateFlagsShift(value_out, cf, shiftTup.shiftCount, shiftTup.tooLarge, true, this.keys.PrevKey, this.RegularUpdate, this.Tools.Rand, this.Ctx);
+                ShiftRotateBase.UpdateFlagsShift(value_out, cf, shiftTup.shiftCount, shiftTup.tooLarge, true, this.keys.PrevKey, this.RegularUpdate, this.Tools.Rand, this._ctx);
                 this.RegularUpdate.Set(this.op1, value_out);
             }
         }
@@ -2493,8 +2502,8 @@ namespace AsmSim
             }
             public override void Execute()
             {
-                BoolExpr conditional = ToolsAsmSim.ConditionalTaken(this._ce, this.keys.PrevKey, this.Ctx);
-                BitVecExpr result = this.Ctx.MkITE(conditional, this.Ctx.MkBV(0, 8), this.Ctx.MkBV(1, 8)) as BitVecExpr;
+                BoolExpr conditional = ToolsAsmSim.ConditionalTaken(this._ce, this.keys.PrevKey, this._ctx);
+                BitVecExpr result = this._ctx.MkITE(conditional, this._ctx.MkBV(0, 8), this._ctx.MkBV(1, 8)) as BitVecExpr;
                 this.RegularUpdate.Set(this.op1, result);
             }
             public override Flags FlagsReadStatic { get { return ToolsAsmSim.FlagsUsed(this._ce); } }
@@ -2523,8 +2532,8 @@ namespace AsmSim
             }
             private BitVecExpr GetBitPos(BitVecExpr value, uint nBits)
             {
-                BitVecNum mask = this.Ctx.MkBV((nBits == 64) ? 0x3F : 0x1F, nBits);
-                return this.Ctx.MkBVAND(value, mask);
+                BitVecNum mask = this._ctx.MkBV((nBits == 64) ? 0x3F : 0x1F, nBits);
+                return this._ctx.MkBVAND(value, mask);
             }
             protected void SetBitValue(Mnemonic opcode)
             {
@@ -2532,30 +2541,30 @@ namespace AsmSim
 
                 uint nBits = (uint)this.op1.NBits;
                 BitVecExpr bitPos = this.GetBitPos(this.Op2Value, nBits);
-                BitVecExpr mask = this.Ctx.MkBVSHL(this.Ctx.MkBV(1, nBits), bitPos);
-                BitVecExpr mask_INV = this.Ctx.MkBVNeg(mask);
+                BitVecExpr mask = this._ctx.MkBVSHL(this._ctx.MkBV(1, nBits), bitPos);
+                BitVecExpr mask_INV = this._ctx.MkBVNeg(mask);
                 BitVecExpr v1 = this.Op1Value;
 
                 switch (opcode)
                 {
                     case Mnemonic.BTC:
                         {
-                            BitVecExpr bitSet = this.Ctx.MkBVOR(v1, mask);
-                            BitVecExpr bitCleared = this.Ctx.MkBVAND(v1, mask_INV);
-                            BoolExpr bitSetAtPos = ToolsZ3.GetBit(v1, bitPos, this.Ctx);
-                            BitVecExpr value = this.Ctx.MkITE(bitSetAtPos, bitCleared, bitSet) as BitVecExpr;
+                            BitVecExpr bitSet = this._ctx.MkBVOR(v1, mask);
+                            BitVecExpr bitCleared = this._ctx.MkBVAND(v1, mask_INV);
+                            BoolExpr bitSetAtPos = ToolsZ3.GetBit(v1, bitPos, this._ctx);
+                            BitVecExpr value = this._ctx.MkITE(bitSetAtPos, bitCleared, bitSet) as BitVecExpr;
                             this.RegularUpdate.Set(this.op1, value);
                         }
                         break;
                     case Mnemonic.BTS:
                         {
-                            BitVecExpr bitSet = this.Ctx.MkBVOR(v1, mask);
+                            BitVecExpr bitSet = this._ctx.MkBVOR(v1, mask);
                             this.RegularUpdate.Set(this.op1, bitSet);
                         }
                         break;
                     case Mnemonic.BTR:
                         {
-                            BitVecExpr bitCleared = this.Ctx.MkBVAND(v1, mask_INV);
+                            BitVecExpr bitCleared = this._ctx.MkBVAND(v1, mask_INV);
                             this.RegularUpdate.Set(this.op1, bitCleared);
                         }
                         break;
@@ -2569,7 +2578,7 @@ namespace AsmSim
                 this.RegularUpdate.Set(Flags.SF, Tv.UNDEFINED);
                 this.RegularUpdate.Set(Flags.AF, Tv.UNDEFINED);
                 this.RegularUpdate.Set(Flags.PF, Tv.UNDEFINED);
-                this.RegularUpdate.Set(Flags.CF, ToolsZ3.GetBit(v1, bitPos, this.Ctx));
+                this.RegularUpdate.Set(Flags.CF, ToolsZ3.GetBit(v1, bitPos, this._ctx));
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_SF_OF; } }
             public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, this.op2); } }
@@ -2614,18 +2623,18 @@ namespace AsmSim
                 BitVecExpr result;
                 if (pos == nBits - 1)
                 {
-                    result = this.Ctx.MkBV(pos, 6);
+                    result = this._ctx.MkBV(pos, 6);
                 }
                 else
                 {
                     BitVecExpr expr1 = this.MakeBsfExpr(nBits, pos + 1, sourceOperand, one);
-                    result = this.Ctx.MkITE(ToolsZ3.GetBit(sourceOperand, pos, one, this.Ctx), this.Ctx.MkBV(pos, 6), expr1) as BitVecExpr;
+                    result = this._ctx.MkITE(ToolsZ3.GetBit(sourceOperand, pos, one, this._ctx), this._ctx.MkBV(pos, 6), expr1) as BitVecExpr;
                 }
                 return result;
             }
             public override void Execute()
             {
-                Context ctx = this.Ctx;
+                Context ctx = this._ctx;
                 uint nBits = (uint)this.op1.NBits;
                 {
                     BitVecNum one = ctx.MkBV(1, 1);
@@ -2663,18 +2672,18 @@ namespace AsmSim
                 BitVecExpr result;
                 if (pos == 1)
                 {
-                    result = this.Ctx.MkBV(0, 6);
+                    result = this._ctx.MkBV(0, 6);
                 }
                 else
                 {
                     BitVecExpr expr1 = this.MakeBsrExpr(nBits, pos - 1, sourceOperand, one);
-                    result = this.Ctx.MkITE(ToolsZ3.GetBit(sourceOperand, pos - 1, one, this.Ctx), this.Ctx.MkBV(pos - 1, 6), expr1) as BitVecExpr;
+                    result = this._ctx.MkITE(ToolsZ3.GetBit(sourceOperand, pos - 1, one, this._ctx), this._ctx.MkBV(pos - 1, 6), expr1) as BitVecExpr;
                 }
                 return result;
             }
             public override void Execute()
             {
-                Context ctx = this.Ctx;
+                Context ctx = this._ctx;
                 uint nBits = (uint)this.op1.NBits;
                 {
                     BitVecNum one = ctx.MkBV(1, 1);
@@ -2763,7 +2772,7 @@ namespace AsmSim
             public Jmp(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.JMP, args, Ot1.imm | Ot1.mem | Ot1.reg | Ot1.UNKNOWN, keys, t) { }
             protected sealed override BoolExpr Jump
             {
-                get { return this.Ctx.MkTrue(); }
+                get { return this._ctx.MkTrue(); }
             }
         }
         public sealed class Jmpcc : OpcodeJumpBase
@@ -2773,7 +2782,7 @@ namespace AsmSim
             {
                 this._ce = ce;
             }
-            protected sealed override BoolExpr Jump { get { return ToolsAsmSim.ConditionalTaken(this._ce, this.keys.PrevKey, this.Ctx); } }
+            protected sealed override BoolExpr Jump { get { return ToolsAsmSim.ConditionalTaken(this._ce, this.keys.PrevKey, this._ctx); } }
             public override Flags FlagsReadStatic { get { return ToolsAsmSim.FlagsUsed(this._ce); } }
         }
 
@@ -2797,30 +2806,30 @@ namespace AsmSim
         public sealed class Loop : OpcodeLoopBase
         {
             public Loop(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.LOOP, args, keys, t) { }
-            protected sealed override BoolExpr Jump { get { return this.Ctx.MkEq(this.Get(Rn.ECX), this.Ctx.MkBV(0, 32)); } }
+            protected sealed override BoolExpr Jump { get { return this._ctx.MkEq(this.Get(Rn.ECX), this._ctx.MkBV(0, 32)); } }
         }
         public sealed class Loopz : OpcodeLoopBase
         {
             public Loopz(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.LOOPZ, args, keys, t) { }
-            protected sealed override BoolExpr Jump { get { return this.Ctx.MkAnd(this.Ctx.MkEq(this.Get(Rn.ECX), this.Ctx.MkBV(0, 32)), this.Get(Flags.ZF)); } }
+            protected sealed override BoolExpr Jump { get { return this._ctx.MkAnd(this._ctx.MkEq(this.Get(Rn.ECX), this._ctx.MkBV(0, 32)), this.Get(Flags.ZF)); } }
             public override Flags FlagsReadStatic { get { return Flags.ZF; } }
         }
         public sealed class Loope : OpcodeLoopBase
         {
             public Loope(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.LOOPE, args, keys, t) { }
-            protected sealed override BoolExpr Jump { get { return this.Ctx.MkAnd(this.Ctx.MkEq(this.Get(Rn.ECX), this.Ctx.MkBV(0, 32)), this.Get(Flags.ZF)); } }
+            protected sealed override BoolExpr Jump { get { return this._ctx.MkAnd(this._ctx.MkEq(this.Get(Rn.ECX), this._ctx.MkBV(0, 32)), this.Get(Flags.ZF)); } }
             public override Flags FlagsReadStatic { get { return Flags.ZF; } }
         }
         public sealed class Loopnz : OpcodeLoopBase
         {
             public Loopnz(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.LOOPNZ, args, keys, t) { }
-            protected sealed override BoolExpr Jump { get { return this.Ctx.MkAnd(this.Ctx.MkEq(this.Get(Rn.ECX), this.Ctx.MkBV(0, 32)), this.Ctx.MkNot(this.Get(Flags.ZF))); } }
+            protected sealed override BoolExpr Jump { get { return this._ctx.MkAnd(this._ctx.MkEq(this.Get(Rn.ECX), this._ctx.MkBV(0, 32)), this._ctx.MkNot(this.Get(Flags.ZF))); } }
             public override Flags FlagsReadStatic { get { return Flags.ZF; } }
         }
         public sealed class Loopne : OpcodeLoopBase
         {
             public Loopne(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.LOOPNE, args, keys, t) { }
-            protected sealed override BoolExpr Jump { get { return this.Ctx.MkAnd(this.Ctx.MkEq(this.Get(Rn.ECX), this.Ctx.MkBV(0, 32)), this.Ctx.MkNot(this.Get(Flags.ZF))); } }
+            protected sealed override BoolExpr Jump { get { return this._ctx.MkAnd(this._ctx.MkEq(this.Get(Rn.ECX), this._ctx.MkBV(0, 32)), this._ctx.MkNot(this.Get(Flags.ZF))); } }
             public override Flags FlagsReadStatic { get { return Flags.ZF; } }
         }
         #endregion Loop
@@ -2945,19 +2954,19 @@ namespace AsmSim
 
                 if (this.Tools.Parameters.mode_64bit)
                 {
-                    BitVecExpr newRspExpr = this.Ctx.MkBVSub(this.Get(Rn.RSP), this.Ctx.MkBV(8, 64));
+                    BitVecExpr newRspExpr = this._ctx.MkBVSub(this.Get(Rn.RSP), this._ctx.MkBV(8, 64));
                     nextLineNumberExpr = this.GetMem(newRspExpr, 8);
                     this.RegularUpdate.Set(Rn.RSP, newRspExpr);
                 }
                 else if (this.Tools.Parameters.mode_32bit)
                 {
-                    BitVecExpr newEspExpr = this.Ctx.MkBVSub(this.Get(Rn.ESP), this.Ctx.MkBV(4, 32));
+                    BitVecExpr newEspExpr = this._ctx.MkBVSub(this.Get(Rn.ESP), this._ctx.MkBV(4, 32));
                     nextLineNumberExpr = this.GetMem(newEspExpr, 4);
                     this.RegularUpdate.Set(Rn.ESP, newEspExpr);
                 }
                 else if (this.Tools.Parameters.mode_16bit)
                 {
-                    BitVecExpr newSpExpr = this.Ctx.MkBVSub(this.Get(Rn.SP), this.Ctx.MkBV(2, 16));
+                    BitVecExpr newSpExpr = this._ctx.MkBVSub(this.Get(Rn.SP), this._ctx.MkBV(2, 16));
                     nextLineNumberExpr = this.GetMem(newSpExpr, 2);
                     this.RegularUpdate.Set(Rn.SP, newSpExpr);
                 }
@@ -3055,8 +3064,8 @@ namespace AsmSim
             {
                 // special case: set the truth value to known
                 Rn reg = this.op1.Rn;
-                BitVecExpr unknown = Tools.Reg_Key_Fresh(reg, this.Tools.Rand, this.Ctx);
-                this.RegularUpdate.Set(reg, unknown, this.Ctx.MkBV(0, (uint)this.op1.NBits));
+                BitVecExpr unknown = Tools.Reg_Key_Fresh(reg, this.Tools.Rand, this._ctx);
+                this.RegularUpdate.Set(reg, unknown, this._ctx.MkBV(0, (uint)this.op1.NBits));
             }
             public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op2); } }
             public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1); } }
@@ -3145,7 +3154,7 @@ namespace AsmSim
             public Cmc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.CMC, args, keys, t) { }
             public override void Execute()
             {
-                this.RegularUpdate.Set(Flags.CF, this.Ctx.MkNot(this.Get(Flags.CF)));
+                this.RegularUpdate.Set(Flags.CF, this._ctx.MkNot(this.Get(Flags.CF)));
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF; } }
         }
@@ -3155,17 +3164,17 @@ namespace AsmSim
             public Lahf(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.LAHF, args, keys, t) { }
             public override void Execute()
             {
-                BitVecNum ZERO = this.Ctx.MkBV(0, 1);
-                BitVecNum ONE = this.Ctx.MkBV(1, 1);
+                BitVecNum ZERO = this._ctx.MkBV(0, 1);
+                BitVecNum ONE = this._ctx.MkBV(1, 1);
 
-                BitVecExpr ahExpr = this.Ctx.MkITE(this.Get(Flags.SF), ONE, ZERO) as BitVecExpr;
-                ahExpr = this.Ctx.MkConcat(ahExpr, this.Ctx.MkITE(this.Get(Flags.ZF), ONE, ZERO) as BitVecExpr);
-                ahExpr = this.Ctx.MkConcat(ahExpr, ZERO);
-                ahExpr = this.Ctx.MkConcat(ahExpr, this.Ctx.MkITE(this.Get(Flags.AF), ONE, ZERO) as BitVecExpr);
-                ahExpr = this.Ctx.MkConcat(ahExpr, ZERO);
-                ahExpr = this.Ctx.MkConcat(ahExpr, this.Ctx.MkITE(this.Get(Flags.PF), ONE, ZERO) as BitVecExpr);
-                ahExpr = this.Ctx.MkConcat(ahExpr, ONE);
-                ahExpr = this.Ctx.MkConcat(ahExpr, this.Ctx.MkITE(this.Get(Flags.CF), ONE, ZERO) as BitVecExpr);
+                BitVecExpr ahExpr = this._ctx.MkITE(this.Get(Flags.SF), ONE, ZERO) as BitVecExpr;
+                ahExpr = this._ctx.MkConcat(ahExpr, this._ctx.MkITE(this.Get(Flags.ZF), ONE, ZERO) as BitVecExpr);
+                ahExpr = this._ctx.MkConcat(ahExpr, ZERO);
+                ahExpr = this._ctx.MkConcat(ahExpr, this._ctx.MkITE(this.Get(Flags.AF), ONE, ZERO) as BitVecExpr);
+                ahExpr = this._ctx.MkConcat(ahExpr, ZERO);
+                ahExpr = this._ctx.MkConcat(ahExpr, this._ctx.MkITE(this.Get(Flags.PF), ONE, ZERO) as BitVecExpr);
+                ahExpr = this._ctx.MkConcat(ahExpr, ONE);
+                ahExpr = this._ctx.MkConcat(ahExpr, this._ctx.MkITE(this.Get(Flags.CF), ONE, ZERO) as BitVecExpr);
 
                 this.RegularUpdate.Set(Rn.AH, ahExpr);
             }
@@ -3177,14 +3186,14 @@ namespace AsmSim
             public Sahf(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.SAHF, args, keys, t) { }
             public override void Execute()
             {
-                BitVecNum ONE = this.Ctx.MkBV(1, 1);
+                BitVecNum ONE = this._ctx.MkBV(1, 1);
                 BitVecExpr ahExpr = this.Get(Rn.AH);
 
-                this.RegularUpdate.Set(Flags.SF, ToolsZ3.GetBit(ahExpr, 7, ONE, this.Ctx));
-                this.RegularUpdate.Set(Flags.ZF, ToolsZ3.GetBit(ahExpr, 6, ONE, this.Ctx));
-                this.RegularUpdate.Set(Flags.AF, ToolsZ3.GetBit(ahExpr, 4, ONE, this.Ctx));
-                this.RegularUpdate.Set(Flags.PF, ToolsZ3.GetBit(ahExpr, 2, ONE, this.Ctx));
-                this.RegularUpdate.Set(Flags.CF, ToolsZ3.GetBit(ahExpr, 0, ONE, this.Ctx));
+                this.RegularUpdate.Set(Flags.SF, ToolsZ3.GetBit(ahExpr, 7, ONE, this._ctx));
+                this.RegularUpdate.Set(Flags.ZF, ToolsZ3.GetBit(ahExpr, 6, ONE, this._ctx));
+                this.RegularUpdate.Set(Flags.AF, ToolsZ3.GetBit(ahExpr, 4, ONE, this._ctx));
+                this.RegularUpdate.Set(Flags.PF, ToolsZ3.GetBit(ahExpr, 2, ONE, this._ctx));
+                this.RegularUpdate.Set(Flags.CF, ToolsZ3.GetBit(ahExpr, 0, ONE, this._ctx));
             }
             public override Flags FlagsWriteStatic { get { return Flags.SF | Flags.ZF | Flags.AF | Flags.PF | Flags.CF; } }
             public override IEnumerable<Rn> RegsReadStatic { get { return new List<Rn>(1) { Rn.AH }; } } // defaults
@@ -3218,7 +3227,7 @@ namespace AsmSim
             }
             public override void Execute()
             {
-                BitVecExpr address = Tools.Calc_Effective_Address(this.op2, this.keys.PrevKey, this.Ctx);
+                BitVecExpr address = Tools.Calc_Effective_Address(this.op2, this.keys.PrevKey, this._ctx);
                 uint addressSize = address.SortSize;
                 uint operandSize = (uint)this.op1.NBits;
 
@@ -3228,19 +3237,19 @@ namespace AsmSim
                 }
                 else if ((operandSize == 16) && (addressSize == 32))
                 {
-                    this.RegularUpdate.Set(this.op1, this.Ctx.MkExtract(16 - 1, 0, address));
+                    this.RegularUpdate.Set(this.op1, this._ctx.MkExtract(16 - 1, 0, address));
                 }
                 else if ((operandSize == 16) && (addressSize == 64))
                 {
-                    this.RegularUpdate.Set(this.op1, this.Ctx.MkExtract(16 - 1, 0, address));
+                    this.RegularUpdate.Set(this.op1, this._ctx.MkExtract(16 - 1, 0, address));
                 }
                 else if ((operandSize == 32) && (addressSize == 64))
                 {
-                    this.RegularUpdate.Set(this.op1, this.Ctx.MkExtract(32 - 1, 0, address));
+                    this.RegularUpdate.Set(this.op1, this._ctx.MkExtract(32 - 1, 0, address));
                 }
                 else if ((operandSize == 64) && (addressSize == 32))
                 {
-                    this.RegularUpdate.Set(this.op1, this.Ctx.MkZeroExt(32, address));
+                    this.RegularUpdate.Set(this.op1, this._ctx.MkZeroExt(32, address));
                 }
             }
             public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1); } }
@@ -3344,7 +3353,7 @@ namespace AsmSim
             }
             public override void Execute()
             {
-                Context ctx = this.Ctx;
+                Context ctx = this._ctx;
                 FPRMExpr roundingMode = ctx.MkFPRoundTowardZero();
 
                 BitVecExpr a = this.Op1Value;
@@ -3376,7 +3385,7 @@ namespace AsmSim
             }
             public override void Execute()
             {
-                this.RegularUpdate.Set(this.op1, this.Ctx.MkBVXOR(this.Op1Value, this.Op2Value));
+                this.RegularUpdate.Set(this.op1, this._ctx.MkBVXOR(this.Op1Value, this.Op2Value));
             }
             public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, this.op2); } }
             public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1); } }
@@ -3398,7 +3407,7 @@ namespace AsmSim
             }
             public override void Execute()
             {
-                Context ctx = this.Ctx;
+                Context ctx = this._ctx;
                 uint nBits = (uint)this.op1.NBits;
                 BitVecExpr b = this.Op2Value;
 

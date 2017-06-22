@@ -1,5 +1,30 @@
 .intel_syntax noprefix
 
+
+	#region Unreachable code
+	cmp al, 0
+	jz label2
+	mov al, 1
+	jz label2
+	mov al, 2
+label2:
+	mov rbx, rax
+	#endregion
+
+	vaddpd xmm1, xmm2, xmm3 ; unimplemented instruction to stop the simulator
+
+	#region Jump test
+	cmp al, 0
+	jp label1
+	mov al, 1
+	jc label1
+	mov al, 3
+	jnz label1
+	mov al, 2
+label1:
+	mov rbx, rax
+	#endregion
+
 	#region Semantic Error: usage of undefined register ax
 	mov cl, bl
 	xor cx, bx
@@ -9,7 +34,6 @@
 
 	vaddpd xmm1, xmm2, xmm3 ; unimplemented instruction to stop the simulator
 	
-
 	#region Semantic Error: usage of undefined carry 
 	mov cl, 0
 	bsf ax, cx

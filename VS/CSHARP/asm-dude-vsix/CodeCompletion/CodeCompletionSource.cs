@@ -53,7 +53,6 @@ namespace AsmDude
         private readonly IDictionary<AsmTokenType, ImageSource> _icons;
         private readonly AsmDudeTools _asmDudeTools;
         private readonly AsmSimulator _asmSimulator;
-        private bool _disposed = false;
 
         public CodeCompletionSource(ITextBuffer buffer, LabelGraph labelGraph, AsmSimulator asmSimulator)
         {
@@ -69,7 +68,6 @@ namespace AsmDude
         {
             //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:AugmentCompletionSession", this.ToString()));
 
-            if (this._disposed) return;
             if (!Settings.Default.CodeCompletion_On) return;
 
             try
@@ -206,14 +204,6 @@ namespace AsmDude
             }
         }
 
-        public void Dispose()
-        {
-            if (!this._disposed)
-            {
-                GC.SuppressFinalize(this);
-                this._disposed = true;
-            }
-        }
 
         /// <summary> check if the architecture of a register is switched on</summary>
         public static bool Is_Register_Switched_On(Arch arch)
@@ -525,6 +515,8 @@ namespace AsmDude
                 //MessageBox.Show("ERROR: AsmCompletionSource: could not find file \"" + uri.AbsolutePath + "\".");
             }
         }
+
+        public void Dispose() { }
         #endregion
     }
 }

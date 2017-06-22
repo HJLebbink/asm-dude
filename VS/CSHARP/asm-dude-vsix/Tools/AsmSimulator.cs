@@ -142,9 +142,9 @@ namespace AsmDude.Tools
                     if ((this._thread_Result != null) && !this._thread_Result.IsCanceled)
                     {
                         AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: cancaling a reset thread.");
-                        this._thread_Result.Cancel();
+                        this._thread_Result.Cancel(false);
                     }
-                    this._threadPool2.Cancel(true);
+                    this._threadPool2.Cancel(false);
 
                     AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: delay_done event: going to start a reset event in a new thread.");
                     this._thread_Result = this._threadPool2.QueueWorkItem(this.Reset_Private);
@@ -175,6 +175,7 @@ namespace AsmDude.Tools
         public void Dispose()
         {
             this._threadPool2.Dispose();
+            this._dFlow.Dispose();
         }
 
         #region Reset
@@ -182,6 +183,22 @@ namespace AsmDude.Tools
         {
             this._delay.Reset(delay);
         }
+
+        private void Clear()
+        {
+            foreach (var v in this._cached_States_After) v.Value.Dispose();
+            this._cached_States_After.Clear();
+            foreach (var v in this._cached_States_Before) v.Value.Dispose();
+            this._cached_States_Before.Clear();
+
+            this._bussy_States_After.Clear();
+            this._bussy_States_Before.Clear();
+            this._redundant_Instruction.Clear();
+            this._usage_Undefined.Clear();
+            this._syntax_Errors.Clear();
+            this._isNotImplemented.Clear();
+        }
+
 
         private void Reset_Private()
         {
@@ -194,14 +211,8 @@ namespace AsmDude.Tools
 
                     this.Tools.StateConfig = this._sFlow.Get_StateConfig();
                     this._dFlow.Reset(this._sFlow, true);
-                    this._cached_States_After.Clear();
-                    this._cached_States_Before.Clear();
-                    this._bussy_States_After.Clear();
-                    this._bussy_States_Before.Clear();
-                    this._redundant_Instruction.Clear();
-                    this._usage_Undefined.Clear();
-                    this._syntax_Errors.Clear();
-                    this._isNotImplemented.Clear();                  
+
+                    this.Clear();
                     PreCalculate_LOCAL();
                     this.Reset_Done_Event?.Invoke(this, new EventArgs());
                 }
@@ -522,7 +533,7 @@ namespace AsmDude.Tools
                 void Update_State_And_TvArray_LOCAL()
                 {
                     var state2 = (before) ? this.Get_State_Before(lineNumber, false, true) : this.Get_State_After(lineNumber, false, true);
-                    Update_TvArray_LOCAL(state2.State);
+                    if (state2.State != null) Update_TvArray_LOCAL(state2.State);
                 }
 
                 void Update_TvArray_LOCAL(State state2)
@@ -637,7 +648,11 @@ namespace AsmDude.Tools
 
                 lock (this._updateLock)
                 {
-                    this._cached_States_After.Remove(lineNumber);
+                    if (this._cached_States_After.ContainsKey(lineNumber))
+                    {
+                        this._cached_States_After[lineNumber].Dispose();
+                        this._cached_States_After.Remove(lineNumber);
+                    }
                     this._cached_States_After.Add(lineNumber, state);
                     this._bussy_States_After.Remove(lineNumber);
                 }
@@ -688,7 +703,11 @@ namespace AsmDude.Tools
 
                 lock (this._updateLock)
                 {
-                    this._cached_States_Before.Remove(lineNumber);
+                    if (this._cached_States_Before.ContainsKey(lineNumber))
+                    {
+                        this._cached_States_Before[lineNumber].Dispose();
+                        this._cached_States_Before.Remove(lineNumber);
+                    }
                     this._cached_States_Before.Add(lineNumber, state);
                     this._bussy_States_Before.Remove(lineNumber);
                 }

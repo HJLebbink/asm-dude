@@ -30,7 +30,7 @@ using AsmTools;
 
 namespace AsmSim
 {
-    public class DynamicFlow
+    public class DynamicFlow : IDisposable
     {
         #region Fields
         private readonly Tools _tools;
@@ -259,14 +259,21 @@ namespace AsmSim
 
         #region Setters
 
+        public void Clear()
+        {
+            foreach (var v in this._graph.Edges) v.Tag.StateUpdate.Dispose();
+            this._graph.Clear();
+            this._lineNumber_2_Key.Clear();
+            this._key_2_LineNumber.Clear();
+        }
+
+
         public void Reset(StaticFlow sFlow, bool forward)
         {
             lock (this._updateLock)
             {
                 this._rootKey = "!" + sFlow.FirstLineNumber;
-                this._graph.Clear();
-                this._lineNumber_2_Key.Clear();
-                this._key_2_LineNumber.Clear();
+                this.Clear();
 
                 if (forward)
                 {
@@ -578,17 +585,17 @@ namespace AsmSim
                             result.Update_Forward(edge.Tag.StateUpdate);
                             break;
                         case 2:
-                            State state1 = new State(result);
+                            using (State state1 = new State(result))
+                            using (State state2 = new State(result))
                             {
                                 var edge1 = this._graph.OutEdge(key_LOCAL, 0);
                                 state1.Update_Forward(edge1.Tag.StateUpdate);
-                            }
-                            State state2 = new State(result);
-                            {
+
                                 var edge2 = this._graph.OutEdge(key_LOCAL, 1);
                                 state2.Update_Forward(edge2.Tag.StateUpdate);
+
+                                result = new State(state1, state2, true);
                             }
-                            result = new State(state1, state2, true);
                             break;
                         default:
                             // unreachable: 
@@ -613,86 +620,97 @@ namespace AsmSim
                 ICollection<string> visited2)
             {
                 string source1 = incoming_Regular.Source;
-                State state1 = Construct_State_Private_LOCAL(source1, false, new List<string>(visited2));
-                if (state1 == null) return null;
-
-                string nextKey1 = target + "A0";
+                using (State state1 = Construct_State_Private_LOCAL(source1, false, new List<string>(visited2)))
                 {
-                    StateUpdate update1 = incoming_Regular.StateUpdate;
-                    update1.NextKey = nextKey1;
-                    state1.Update_Forward(update1);
-                }
-                State result_State = new State(this._tools, state1.TailKey, state1.HeadKey);
+                    if (state1 == null) return null;
 
-                IList<StateUpdate> mergeStateUpdates = new List<StateUpdate>();
-                var tempSet1 = new HashSet<BoolExpr>();
-                var tempSet2 = new HashSet<BoolExpr>();
-                var sharedBranchConditions = new HashSet<string>();
-                var allBranchConditions = new List<BranchInfo>();
-
-                foreach (var v1 in state1.Solver.Assertions) tempSet1.Add(v1.Translate(result_State.Ctx) as BoolExpr);
-                foreach (var v1 in state1.Solver_U.Assertions) tempSet2.Add(v1.Translate(result_State.Ctx) as BoolExpr);
-                foreach (var v1 in state1.BranchInfoStore.Values) allBranchConditions.Add(v1);
-
-                int counter = 0;
-                var incoming_Branches_list = new List<(string Source, StateUpdate StateUpdate)>(incoming_Branches);
-                incoming_Branches_list.Reverse(); //TODO does this always works??
-                int nBranches = incoming_Branches_list.Count;
-                foreach (var incoming_Branch in incoming_Branches_list)
-                {
-                    string source2 = incoming_Branch.Source;
-                    State state2 = Construct_State_Private_LOCAL(source2, false, new List<string>(visited2)); // recursive call
-                    if (state2 == null) return null;
-
-                    string nextKey2 = target + "B" + counter;
-                    counter++;
+                    string nextKey1 = target + "A0";
                     {
-                        StateUpdate update2 = incoming_Branch.StateUpdate;
-                        update2.NextKey = nextKey2;
-                        state2.Update_Forward(update2);
+                        StateUpdate update1 = incoming_Regular.StateUpdate;
+                        update1.NextKey = nextKey1;
+                        state1.Update_Forward(update1);
                     }
-                    BoolExpr bc = null;
-                    Context ctx = new Context(this._tools.Settings);
+                    State result_State = new State(this._tools, state1.TailKey, state1.HeadKey);
+
+                    IList<StateUpdate> mergeStateUpdates = new List<StateUpdate>();
+                    var tempSet1 = new HashSet<BoolExpr>();
+                    var tempSet2 = new HashSet<BoolExpr>();
+                    var sharedBranchConditions = new HashSet<string>();
+                    var allBranchConditions = new List<BranchInfo>();
+
+                    foreach (var v1 in state1.Solver.Assertions) tempSet1.Add(v1);
+                    foreach (var v1 in state1.Solver_U.Assertions) tempSet2.Add(v1);
+                    foreach (var v1 in state1.BranchInfoStore.Values) allBranchConditions.Add(v1);
+
+                    int counter = 0;
+                    var incoming_Branches_list = new List<(string Source, StateUpdate StateUpdate)>(incoming_Branches);
+                    incoming_Branches_list.Reverse(); //TODO does this always works??
+                    int nBranches = incoming_Branches_list.Count;
+                    foreach (var incoming_Branch in incoming_Branches_list)
                     {
-                        string branchKey = GraphTools<(bool, StateUpdate)>.Get_Branch_Point(source1, source2, this._graph);
-                        BranchInfo branchInfo = Get_Branch_Condition_LOCAL(branchKey);
-                        if (branchInfo == null)
-                        {
-                            Console.WriteLine("WARNING: DynamicFlow:Construct_State_Private:GetStates_LOCAL: branchInfo is null. source1=" + source1 + "; source2=" + source2);
-                            bc = ctx.MkBoolConst("BC" + target);
+                        string source2 = incoming_Branch.Source;
+                        using (State state2 = Construct_State_Private_LOCAL(source2, false, new List<string>(visited2)))
+                        { // recursive call
+                            if (state2 == null) return null;
+
+                            string nextKey2 = target + "B" + counter;
+                            counter++;
+                            {
+                                StateUpdate update2 = incoming_Branch.StateUpdate;
+                                update2.NextKey = nextKey2; //TODO BUG here, is the reference updated???
+                                state2.Update_Forward(update2);
+                            }
+
+                            BoolExpr bc = null;
+                            {
+                                using (Context ctx = new Context(this._tools.Settings))
+                                {
+                                    string branchKey = GraphTools<(bool, StateUpdate)>.Get_Branch_Point(source1, source2, this._graph);
+                                    BranchInfo branchInfo = Get_Branch_Condition_LOCAL(branchKey);
+                                    if (branchInfo == null)
+                                    {
+                                        Console.WriteLine("WARNING: DynamicFlow:Construct_State_Private:GetStates_LOCAL: branchInfo is null. source1=" + source1 + "; source2=" + source2);
+                                        bc = ctx.MkBoolConst("BC" + target);
+                                    }
+                                    else
+                                    {
+                                        bc = branchInfo.BranchCondition;
+                                        sharedBranchConditions.Add(bc.ToString());
+                                    }
+                                }
+                                string nextKey3 = (counter == nBranches) ? target : target + "A" + counter;
+
+                                using (StateUpdate stateUpdate = new StateUpdate(bc, nextKey2, nextKey1, nextKey3, this._tools))
+                                {
+                                    nextKey1 = nextKey3;
+                                    mergeStateUpdates.Add(stateUpdate);
+                                }
+                            }
+                            if (state1.TailKey != state2.TailKey)
+                            {
+                                Console.WriteLine("WARNING: DynamicFlow: Merge_State_Update_LOCAL: tails are unequal: tail1=" + state1.TailKey + "; tail2=" + state2.TailKey);
+                            }
+                            {   // merge the states state1 and state2 into state3 
+                                foreach (var v1 in state2.Solver.Assertions) tempSet1.Add(v1);
+                                foreach (var v1 in state2.Solver_U.Assertions) tempSet2.Add(v1);
+                                foreach (var v1 in state2.BranchInfoStore.Values) allBranchConditions.Add(v1);
+                            }
                         }
-                        else
-                        {
-                            bc = branchInfo.BranchCondition;
-                            sharedBranchConditions.Add(bc.ToString());
-                        }
                     }
+                    result_State.Assert(tempSet1, false, true);
+                    result_State.Assert(tempSet2, true, true);
 
-                    string nextKey3 = (counter == nBranches) ? target : target + "A" + counter;
-
-                    var stateUpdate = new StateUpdate(bc, nextKey2, nextKey1, nextKey3, ctx, this._tools);
-                    nextKey1 = nextKey3;
-                    mergeStateUpdates.Add(stateUpdate);
-
-                    if (state1.TailKey != state2.TailKey)
+                    foreach (BranchInfo v1 in allBranchConditions)
                     {
-                        Console.WriteLine("WARNING: DynamicFlow: Merge_State_Update_LOCAL: tails are unequal: tail1=" + state1.TailKey + "; tail2=" + state2.TailKey);
+                        if (!sharedBranchConditions.Contains(v1.BranchCondition.ToString())) result_State.Add(v1);
                     }
-                    {   // merge the states state1 and state2 into state3 
-                        foreach (var v1 in state2.Solver.Assertions) tempSet1.Add(v1.Translate(result_State.Ctx) as BoolExpr);
-                        foreach (var v1 in state2.Solver_U.Assertions) tempSet2.Add(v1.Translate(result_State.Ctx) as BoolExpr);
-                        foreach (var v1 in state2.BranchInfoStore.Values) allBranchConditions.Add(v1);
+                    foreach (StateUpdate v1 in mergeStateUpdates)
+                    {
+                        result_State.Update_Forward(v1);
+                        v1.Dispose();
                     }
+                    return result_State;
                 }
-
-                foreach (var v1 in tempSet1) result_State.Solver.Assert(v1);
-                foreach (var v1 in tempSet2) result_State.Solver_U.Assert(v1);
-                foreach (var v1 in allBranchConditions)
-                {
-                    if (!sharedBranchConditions.Contains(v1.BranchCondition.ToString())) result_State.Add(v1);
-                }
-                foreach (var v1 in mergeStateUpdates) result_State.Update_Forward(v1);
-                return result_State;
             }
 
             BranchInfo Get_Branch_Condition_LOCAL(string branchKey)
@@ -735,7 +753,13 @@ namespace AsmSim
         {
             foreach (var v in inEdges) if (v.Tag.Branch) yield return (v.Source, v.Tag.StateUpdate);
         }
+        #endregion
 
+        #region IDisposable Support
+        public void Dispose()
+        {
+            this.Clear();
+        }
         #endregion
     }
 }

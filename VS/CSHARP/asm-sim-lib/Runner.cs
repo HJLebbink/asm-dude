@@ -67,6 +67,8 @@ namespace AsmSim
             opcodeBase.Execute();
             State stateOut = new State(state);
             stateOut.Update_Forward(opcodeBase.Updates.Regular);
+            opcodeBase.Dispose();
+
             if (!state.Tools.Quiet) Console.WriteLine("INFO: Runner:SimpleStep_Forward: after \"" + line + "\" we know:");
             if (!state.Tools.Quiet) Console.WriteLine(stateOut);
             return stateOut;
@@ -84,6 +86,8 @@ namespace AsmSim
             opcodeBase.Execute();
             State stateOut = new State(state);
             stateOut.Update_Backward(opcodeBase.Updates.Regular, prevKey);
+            opcodeBase.Dispose();
+
             if (!state.Tools.Quiet) Console.WriteLine("INFO: Runner:SimpleStep_Backward: after \"" + line + "\" we know:");
             if (!state.Tools.Quiet) Console.WriteLine(stateOut);
             return stateOut;
@@ -93,7 +97,7 @@ namespace AsmSim
         public static (State Regular, State Branch) Step_Forward(string line, State state)
         {
             string nextKey = Tools.CreateKey(state.Tools.Rand);
-            string nextKeyBranch = nextKey;// + "!B";
+            string nextKeyBranch = nextKey + "!BRANCH";
             var content = AsmSourceTools.ParseLine(line);
             var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, (state.HeadKey, nextKey, nextKeyBranch), state.Tools);
             if (opcodeBase == null) return (Regular: null, Branch: null);
@@ -112,6 +116,8 @@ namespace AsmSim
                 stateBranch = new State(state);
                 stateBranch.Update_Forward(opcodeBase.Updates.Branch);
             }
+            opcodeBase.Dispose();
+
             return (Regular: stateRegular, Branch: stateBranch);
         }
 
@@ -125,28 +131,16 @@ namespace AsmSim
             var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, keys, tools);
             if ((opcodeBase == null) || opcodeBase.IsHalted)
             {
-                StateUpdate resetState = new StateUpdate(keys.PrevKey, keys.NextKey, tools, new Context(new Dictionary<string, string>(tools.Settings)))
+                StateUpdate resetState = new StateUpdate(keys.PrevKey, keys.NextKey, tools)
                 {
                     Reset = true
                 };
                 return (Regular: resetState, Branch: null);
             }
             opcodeBase.Execute();
-            return opcodeBase.Updates;
-        }
-
-        /// <summary>Get the branch condition for the provided lineNumber</summary>
-        public static (BoolExpr Regular, BoolExpr Branch) GetBranchCondition(
-            StaticFlow flow,
-            int lineNumber,
-            (string prevKey, string nextKey, string nextKeyBranch) keys,
-            Tools tools)
-        {
-            var content = flow.Get_Line(lineNumber);
-            var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, keys, tools);
-            if (opcodeBase == null) return (Regular: null, Branch: null);
-
-            throw new NotImplementedException();
+            var updates = opcodeBase.Updates;
+            opcodeBase.Dispose();
+            return updates;
         }
 
         public static OpcodeBase InstantiateOpcode(

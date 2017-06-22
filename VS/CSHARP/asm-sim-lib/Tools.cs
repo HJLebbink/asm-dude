@@ -366,6 +366,8 @@ namespace AsmSim
         }
         public static State Collapse(IEnumerable<State> previousStates)
         {
+            //TODO: MEMORY LEAKS here!
+
             State result = null;
             bool first = true;
             foreach (State prev in previousStates)

@@ -29,7 +29,7 @@ using System.Text;
 
 namespace AsmSim
 {
-    public class StateUpdate
+    public class StateUpdate : IDisposable
     {
         #region Fields
         private readonly Tools _tools;
@@ -119,27 +119,27 @@ namespace AsmSim
         #region Constructor
 
         /// <summary> Constructor </summary>
-        public StateUpdate(string prevKey, string nextKey, Tools tools, Context ctx)
+        public StateUpdate(string prevKey, string nextKey, Tools tools)
         {
             this._branch_Condition = null;
             this._prevKey_Regular = prevKey;
             this._prevKey_Branch = null;
             this._nextKey = nextKey;
             this._tools = tools;
-            this._ctx = ctx;
+            this._ctx = new Context(tools.Settings); // housekeeping in Dispose();
             this.Empty = true;
         }
 
         //TODO consider creating a special StateUpdateMerge class
         /// <summary>Constructor for merging. prevKey_Regular is the key for the regular continue for the provided branchCondition</summary>
-        public StateUpdate(BoolExpr branchCondition, string prevKey_Regular, string prevKey_Branch, string nextKey, Context ctx, Tools tools)
+        public StateUpdate(BoolExpr branchCondition, string prevKey_Regular, string prevKey_Branch, string nextKey, Tools tools)
         {
-            this._branch_Condition = branchCondition.Translate(ctx) as BoolExpr;
+            this._ctx = new Context(tools.Settings); // housekeeping in Dispose();
+            this._branch_Condition = branchCondition.Translate(this._ctx) as BoolExpr;
             this._prevKey_Regular = prevKey_Regular;
             this._prevKey_Branch = prevKey_Branch;
             this._nextKey = nextKey;
             this._tools = tools;
-            this._ctx = ctx;
             this.Empty = false;
         }
         #endregion
@@ -149,16 +149,15 @@ namespace AsmSim
         {
             lock (this._ctxLock)
             {
-                Context ctx = state.Ctx;
                 if (!this.Reset)
                 {
-                    foreach (BoolExpr expr in this.Value) state.Solver.Assert(expr.Translate(ctx) as BoolExpr);
-                    if (this._simd != null) state.Solver.Assert(this._simd.Simplify().Translate(ctx) as BoolExpr);
+                    state.Assert(this.Value, false, true);
+                    state.Assert(this._simd, false, true);
                 }
-                foreach (BoolExpr expr in this.Undef) state.Solver_U.Assert(expr.Translate(ctx) as BoolExpr);
-                if (this._simd_U != null) state.Solver_U.Assert(this._simd_U.Simplify().Translate(ctx) as BoolExpr);
+                state.Assert(this.Undef, true, true);
+                state.Assert(this._simd_U, true, true);
 
-                state.BranchInfoStore.Add(this.BranchInfo?.Translate(ctx));
+                state.Add(this.BranchInfo);
             }
         }
 
@@ -166,7 +165,7 @@ namespace AsmSim
         public BitVecExpr NextLineNumberExpr { get; set; }
 
         #region Getters
-        public IEnumerable<BoolExpr> Value
+        private IEnumerable<BoolExpr> Value
         {
             get
             {
@@ -200,7 +199,7 @@ namespace AsmSim
                 }
             }
         }
-        public IEnumerable<BoolExpr> Undef
+        private IEnumerable<BoolExpr> Undef
         {
             get
             {
@@ -404,9 +403,14 @@ namespace AsmSim
         public void Set(Flags flag, BoolExpr value, BoolExpr undef)
         {
             this.Empty = false;
+
             lock (this._ctxLock)
             {
                 Context ctx = this._ctx;
+
+                value = value?.Translate(ctx) as BoolExpr;
+                undef = undef?.Translate(ctx) as BoolExpr;
+
                 BoolExpr key = Tools.Flag_Key(flag, this.NextKey, ctx);
                 BoolExpr value_Constraint;
                 {
@@ -453,9 +457,13 @@ namespace AsmSim
         }
         public void Set_SF_ZF_PF(BitVecExpr value)
         {
+            Debug.Assert(value != null);
+            this.Empty = false;
+
             lock (this._ctxLock)
             {
                 Context ctx = this._ctx;
+                value = value.Translate(ctx) as BitVecExpr;
                 this.Set(Flags.SF, ToolsFlags.Create_SF(value, value.SortSize, ctx));
                 this.Set(Flags.ZF, ToolsFlags.Create_ZF(value, ctx));
                 this.Set(Flags.PF, ToolsFlags.Create_PF(value, ctx));
@@ -502,93 +510,101 @@ namespace AsmSim
             Debug.Assert(undef != null);
 
             this.Empty = false;
-            Context ctx = this._ctx;
 
-            if (RegisterTools.IsGeneralPurposeRegister(reg))
+            lock (this._ctxLock)
             {
-                Rn reg64 = RegisterTools.Get64BitsRegister(reg);
-                uint nBits = value.SortSize;
-                switch (nBits)
+                Context ctx = this._ctx;
+
+                value = value.Translate(ctx) as BitVecExpr;
+                undef = undef.Translate(ctx) as BitVecExpr;
+
+
+                if (RegisterTools.IsGeneralPurposeRegister(reg))
                 {
-                    case 64: break;
-                    case 32:
-                        {
-                            value = ctx.MkZeroExt(32, value);
-                            undef = ctx.MkZeroExt(32, undef);
-                            break;
-                        }
-                    case 16:
-                        {
-                            BitVecExpr reg64Expr = Tools.Reg_Key(reg64, this._prevKey_Regular, ctx);
-                            BitVecExpr prefix = ctx.MkExtract(63, 16, reg64Expr);
-                            value = ctx.MkConcat(prefix, value);
-                            undef = ctx.MkConcat(prefix, undef);
-                            break;
-                        }
-                    case 8:
-                        {
-                            BitVecExpr reg64Expr = Tools.Reg_Key(reg64, this._prevKey_Regular, ctx);
-                            if (RegisterTools.Is8BitHigh(reg))
+                    Rn reg64 = RegisterTools.Get64BitsRegister(reg);
+                    uint nBits = value.SortSize;
+                    switch (nBits)
+                    {
+                        case 64: break;
+                        case 32:
                             {
-                                BitVecExpr postFix = ctx.MkExtract(7, 0, reg64Expr);
-                                BitVecExpr prefix = ctx.MkExtract(63, 16, reg64Expr);
-                                value = ctx.MkConcat(ctx.MkConcat(prefix, value), postFix);
-                                undef = ctx.MkConcat(ctx.MkConcat(prefix, undef), postFix);
+                                value = ctx.MkZeroExt(32, value);
+                                undef = ctx.MkZeroExt(32, undef);
+                                break;
                             }
-                            else
+                        case 16:
                             {
-                                BitVecExpr prefix = ctx.MkExtract(63, 8, reg64Expr);
+                                BitVecExpr reg64Expr = Tools.Reg_Key(reg64, this._prevKey_Regular, ctx);
+                                BitVecExpr prefix = ctx.MkExtract(63, 16, reg64Expr);
                                 value = ctx.MkConcat(prefix, value);
                                 undef = ctx.MkConcat(prefix, undef);
+                                break;
                             }
-                            break;
-                        }
-                    default:
-                        {
-                            Console.WriteLine("ERROR: Set: bits=" + nBits + "; value=" + value + "; undef=" + undef);
-                            throw new Exception();
-                        }
+                        case 8:
+                            {
+                                BitVecExpr reg64Expr = Tools.Reg_Key(reg64, this._prevKey_Regular, ctx);
+                                if (RegisterTools.Is8BitHigh(reg))
+                                {
+                                    BitVecExpr postFix = ctx.MkExtract(7, 0, reg64Expr);
+                                    BitVecExpr prefix = ctx.MkExtract(63, 16, reg64Expr);
+                                    value = ctx.MkConcat(ctx.MkConcat(prefix, value), postFix);
+                                    undef = ctx.MkConcat(ctx.MkConcat(prefix, undef), postFix);
+                                }
+                                else
+                                {
+                                    BitVecExpr prefix = ctx.MkExtract(63, 8, reg64Expr);
+                                    value = ctx.MkConcat(prefix, value);
+                                    undef = ctx.MkConcat(prefix, undef);
+                                }
+                                break;
+                            }
+                        default:
+                            {
+                                Console.WriteLine("ERROR: Set: bits=" + nBits + "; value=" + value + "; undef=" + undef);
+                                throw new Exception();
+                            }
+                    }
+                    {
+                        BitVecExpr key = Tools.Reg_Key(reg64, this.NextKey, ctx);
+                        BoolExpr value_Constraint = ctx.MkEq(key, value) as BoolExpr;
+                        BoolExpr undef_Constraint = ctx.MkEq(key, undef) as BoolExpr;
+
+                        if (this.Get_Raw_Private(reg64, false) != null) throw new Exception("Multiple assignments to register " + reg64);
+                        this.Set_Private(reg64, value_Constraint, false);
+                        this.Set_Private(reg64, undef_Constraint, true);
+                    }
                 }
+                else if (RegisterTools.Is_SIMD_Register(reg))
                 {
-                    BitVecExpr key = Tools.Reg_Key(reg64, this.NextKey, ctx);
-                    BoolExpr value_Constraint = ctx.MkEq(key, value) as BoolExpr;
-                    BoolExpr undef_Constraint = ctx.MkEq(key, undef) as BoolExpr;
+                    uint max = (512 * 32);
 
-                    if (this.Get_Raw_Private(reg64, false) != null) throw new Exception("Multiple assignments to register " + reg64);
-                    this.Set_Private(reg64, value_Constraint, false);
-                    this.Set_Private(reg64, undef_Constraint, true);
+                    BitVecExpr prevKey = ctx.MkBVConst(Tools.Reg_Name(reg, this._prevKey_Regular), max);
+                    var range = Tools.SIMD_Extract_Range(reg);
+
+
+                    BitVecExpr top = null;
+                    BitVecExpr bottom = null;
+                    if (range.High < (max - 1)) top = ctx.MkExtract(max - 1, range.High + 1, prevKey);
+                    if (range.Low > 0) bottom = ctx.MkExtract(range.Low - 1, 0, prevKey);
+
+                    Console.WriteLine(top.SortSize + "+" + value.SortSize + "+" + bottom.SortSize + "=" + prevKey.SortSize);
+
+
+                    BitVecExpr newValue = (top == null) ? value : ctx.MkConcat(top, value) as BitVecExpr;
+                    newValue = (bottom == null) ? newValue : ctx.MkConcat(newValue, bottom);
+                    BitVecExpr newUndef = (top == null) ? value : ctx.MkConcat(top, value) as BitVecExpr;
+                    newUndef = (bottom == null) ? newUndef : ctx.MkConcat(newUndef, bottom);
+
+                    BitVecExpr nextKey = ctx.MkBVConst(Tools.Reg_Name(reg, this.NextKey), 512 * 32);
+                    //Debug.Assert(newValue.SortSize == nextKey.SortSize);
+
+                    this._simd = ctx.MkEq(nextKey, newValue);
+                    this._simd_U = ctx.MkEq(nextKey, newUndef);
                 }
-            }
-            else if (RegisterTools.Is_SIMD_Register(reg))
-            {
-                uint max = (512 * 32);
-
-                BitVecExpr prevKey = ctx.MkBVConst(Tools.Reg_Name(reg, this._prevKey_Regular), max);
-                var range = Tools.SIMD_Extract_Range(reg);
-
-
-                BitVecExpr top = null;
-                BitVecExpr bottom = null;
-                if (range.High < (max - 1)) top = ctx.MkExtract(max-1, range.High+1, prevKey);
-                if (range.Low > 0) bottom = ctx.MkExtract(range.Low - 1, 0, prevKey);
-
-                Console.WriteLine(top.SortSize + "+" + value.SortSize + "+" + bottom.SortSize+"="+ prevKey.SortSize);
-
-
-                BitVecExpr newValue = (top == null) ? value : ctx.MkConcat(top, value) as BitVecExpr;
-                newValue = (bottom == null) ? newValue : ctx.MkConcat(newValue, bottom);
-                BitVecExpr newUndef = (top == null) ? value : ctx.MkConcat(top, value) as BitVecExpr;
-                newUndef = (bottom == null) ? newUndef : ctx.MkConcat(newUndef, bottom);
-
-                BitVecExpr nextKey = ctx.MkBVConst(Tools.Reg_Name(reg, this.NextKey), 512 * 32);
-                //Debug.Assert(newValue.SortSize == nextKey.SortSize);
-
-                this._simd = ctx.MkEq(nextKey, newValue);
-                this._simd_U = ctx.MkEq(nextKey, newUndef);
-            }
-            else
-            {
-                // do nothing;
+                else
+                {
+                    // do nothing;
+                }
             }
         }
         private void Set_Private(Rn reg, BoolExpr value, bool undef)
@@ -643,15 +659,23 @@ namespace AsmSim
         {
             this.Empty = false;
 
-            ArrayExpr newMemContent = Tools.Set_Value_To_Mem(value, address, this._prevKey_Regular, this._ctx);
-            ArrayExpr newMemContent_U = Tools.Set_Value_To_Mem(undef, address, this._prevKey_Regular, this._ctx);
-            ArrayExpr memKey = Tools.Mem_Key(this.NextKey, this._ctx);
+            lock (this._ctxLock)
+            {
+                Context ctx = this._ctx;
+                address = address.Translate(ctx) as BitVecExpr;
+                value = value.Translate(ctx) as BitVecExpr;
+                undef = undef.Translate(ctx) as BitVecExpr;
 
-            //Console.WriteLine("SetMem: memKey=" + memKey + "; new Value=" + newMemContent);
-            if (this._mem_Update != null) throw new Exception("Multiple memory updates are not allowed");
+                ArrayExpr newMemContent = Tools.Set_Value_To_Mem(value, address, this._prevKey_Regular, ctx);
+                ArrayExpr newMemContent_U = Tools.Set_Value_To_Mem(undef, address, this._prevKey_Regular, ctx);
+                ArrayExpr memKey = Tools.Mem_Key(this.NextKey, ctx);
 
-            this._mem_Update = this._ctx.MkEq(memKey, newMemContent);
-            this._mem_Update_U = this._ctx.MkEq(memKey, newMemContent_U);
+                //Console.WriteLine("SetMem: memKey=" + memKey + "; new Value=" + newMemContent);
+                if (this._mem_Update != null) throw new Exception("Multiple memory updates are not allowed");
+
+                this._mem_Update = ctx.MkEq(memKey, newMemContent);
+                this._mem_Update_U = ctx.MkEq(memKey, newMemContent_U);
+            }
         }
         public void SetMem(ArrayExpr memContent)
         {
@@ -728,6 +752,14 @@ namespace AsmSim
                 sb.AppendLine(this._branchInfo.ToString());
             }
             return sb.ToString();
+        }
+
+        public void Dispose()
+        {
+            //lock (this._ctxLock)
+            {
+                this._ctx.Dispose();
+            }
         }
 
         #endregion

@@ -28,7 +28,7 @@ using System.Text;
 
 namespace AsmSim
 {
-    public class State
+    public class State : IDisposable
     {
         #region Fields
         public static readonly bool SIMPLIFY_ON = false;
@@ -67,7 +67,7 @@ namespace AsmSim
         private State(Tools tools)
         {
             this._tools = new Tools(tools);
-            this._ctx = new Context(this._tools.Settings);
+            this._ctx = new Context(this._tools.Settings); // housekeeping in Dispose();
             this.Solver = State.MakeSolver(this._ctx);
             this.Solver_U = State.MakeSolver(this._ctx);
             this._branchInfoStore = new BranchInfoStore(this._ctx);
@@ -103,20 +103,20 @@ namespace AsmSim
                 other.HeadKey = this.HeadKey;
                 this.UndefGrounding = false;
 
-                Context ctx = other.Ctx;
+                Context ctx = other._ctx;
                 {
                     other.Solver.Reset();
-                    foreach (var v in this.Solver.Assertions) other.Solver.Assert(v.Translate(ctx) as BoolExpr);
+                    other.Assert(this.Solver.Assertions, false, true);
                     other.Solver_Dirty = true;
                 }
                 {
                     other.Solver_U.Reset();
-                    foreach (var v in this.Solver_U.Assertions) other.Solver_U.Assert(v.Translate(ctx) as BoolExpr);
+                    other.Assert(this.Solver_U.Assertions, true, true);
                     other.Solver_U_Dirty = true;
                 }
                 {
                     other.BranchInfoStore.Clear();
-                    foreach (var v in this.BranchInfoStore.Values) other.BranchInfoStore.Add(v.Translate(ctx));
+                    foreach (var v in this.BranchInfoStore.Values) other.BranchInfoStore.Add(v, true);
                 }
             }
         }
@@ -197,19 +197,21 @@ namespace AsmSim
                         string head1 = state1.HeadKey;
                         string head2 = state2.HeadKey;
 
-                        StateUpdate stateUpdateForward = new StateUpdate("!ERROR_1", this.HeadKey, this.Tools, ctx);
-                        BoolExpr dummyBranchCondttion = ctx.MkBoolConst("DymmyBC" + this.HeadKey);
-                        foreach (Rn reg in this.Tools.StateConfig.GetRegOn())
+                        using (StateUpdate stateUpdateForward = new StateUpdate("!ERROR_1", this.HeadKey, this.Tools))
                         {
-                            stateUpdateForward.Set(reg, ctx.MkITE(dummyBranchCondttion, Tools.Reg_Key(reg, head1, ctx), Tools.Reg_Key(reg, head2, ctx)) as BitVecExpr);
-                        }
-                        foreach (Flags flag in this.Tools.StateConfig.GetFlagOn())
-                        {
-                            stateUpdateForward.Set(flag, ctx.MkITE(dummyBranchCondttion, Tools.Flag_Key(flag, head1, ctx), Tools.Flag_Key(flag, head2, ctx)) as BoolExpr);
-                        }
-                        stateUpdateForward.SetMem(ctx.MkITE(dummyBranchCondttion, Tools.Mem_Key(head1, ctx), Tools.Mem_Key(head2, ctx)) as ArrayExpr);
+                            BoolExpr dummyBranchCondttion = ctx.MkBoolConst("DymmyBC" + this.HeadKey);
+                            foreach (Rn reg in this.Tools.StateConfig.GetRegOn())
+                            {
+                                stateUpdateForward.Set(reg, ctx.MkITE(dummyBranchCondttion, Tools.Reg_Key(reg, head1, ctx), Tools.Reg_Key(reg, head2, ctx)) as BitVecExpr);
+                            }
+                            foreach (Flags flag in this.Tools.StateConfig.GetFlagOn())
+                            {
+                                stateUpdateForward.Set(flag, ctx.MkITE(dummyBranchCondttion, Tools.Flag_Key(flag, head1, ctx), Tools.Flag_Key(flag, head2, ctx)) as BoolExpr);
+                            }
+                            stateUpdateForward.SetMem(ctx.MkITE(dummyBranchCondttion, Tools.Mem_Key(head1, ctx), Tools.Mem_Key(head2, ctx)) as ArrayExpr);
 
-                        this.Update_Forward(stateUpdateForward);
+                            this.Update_Forward(stateUpdateForward);
+                        }
                     }
                     if (state1.TailKey == state2.TailKey)
                     {
@@ -228,9 +230,35 @@ namespace AsmSim
         {
             //TODO
         }
+
         #endregion
 
         #region Setters
+
+        public void Assert(BoolExpr expr, bool undef, bool translate)
+        {
+            if (expr == null) return;
+
+            if (translate)
+            {
+                BoolExpr t = expr.Translate(this._ctx) as BoolExpr;
+                if (undef) this.Solver_U.Assert(t);
+                else this.Solver.Assert(t);
+            }
+            else
+            {
+                if (undef) this.Solver_U.Assert(expr);
+                else this.Solver.Assert(expr);
+            }
+
+            if (undef) this.Solver_U_Dirty = true;
+            else this.Solver_Dirty = true;
+        }
+
+        public void Assert(IEnumerable<BoolExpr> exprs, bool undef, bool translate)
+        {
+            foreach (var v in exprs) this.Assert(v, undef, translate);
+        }
 
         public bool Frozen
         {
@@ -289,7 +317,7 @@ namespace AsmSim
         {
             lock (this._ctxLock)
             {
-                this.BranchInfoStore.Add(branchInfo.Translate(this._ctx));
+                this.BranchInfoStore.Add(branchInfo, true);
             }
         }
         #endregion
@@ -420,7 +448,7 @@ namespace AsmSim
                 }
 
                 BoolExpr flagExpr = this.Get(flagName);
-                Tv result = ToolsZ3.GetTv(flagExpr, flagExpr, this.Solver, this.Solver_U, this.Ctx);
+                Tv result = ToolsZ3.GetTv(flagExpr, flagExpr, this.Solver, this.Solver_U, this._ctx);
 
                 if (popNeeded)
                 {
@@ -468,7 +496,7 @@ namespace AsmSim
                     }
 
                     BitVecExpr regExpr = this.Get(regName);
-                    Tv[] result = ToolsZ3.GetTvArray(regExpr, RegisterTools.NBits(regName), this.Solver, this.Solver_U, this.Ctx);
+                    Tv[] result = ToolsZ3.GetTvArray(regExpr, RegisterTools.NBits(regName), this.Solver, this.Solver_U, this._ctx);
 
                     if (popNeeded)
                     {
@@ -518,7 +546,7 @@ namespace AsmSim
             }
 
             BitVecExpr valueExpr = this.GetMem(address, nBytes);
-            Tv[] result = ToolsZ3.GetTvArray(valueExpr, nBytes << 3, this.Solver, this.Solver_U, this.Ctx);
+            Tv[] result = ToolsZ3.GetTvArray(valueExpr, nBytes << 3, this.Solver, this.Solver_U, this._ctx);
 
             if (popNeeded)
             {
@@ -532,14 +560,14 @@ namespace AsmSim
         {
             lock (this._ctxLock)
             {
-                return Tools.Reg_Key(regName, this.HeadKey, this.Ctx);
+                return Tools.Reg_Key(regName, this.HeadKey, this._ctx);
             }
         }
         public BoolExpr Get(Flags flagName)
         {
             lock (this._ctxLock)
             {
-                return Tools.Flag_Key(flagName, this.HeadKey, this.Ctx);
+                return Tools.Flag_Key(flagName, this.HeadKey, this._ctx);
             }
         }
 
@@ -547,14 +575,14 @@ namespace AsmSim
         {
             lock (this._ctxLock)
             {
-                return Tools.Reg_Key(regName, this.TailKey, this.Ctx);
+                return Tools.Reg_Key(regName, this.TailKey, this._ctx);
             }
         }
         public BoolExpr GetTail(Flags flagName)
         {
             lock (this._ctxLock)
             {
-                return Tools.Flag_Key(flagName, this.TailKey, this.Ctx);
+                return Tools.Flag_Key(flagName, this.TailKey, this._ctx);
             }
         }
 
@@ -562,7 +590,7 @@ namespace AsmSim
         {
             lock (this._ctxLock)
             {
-                return Tools.Get_Value_From_Mem(address, nBytes, this.HeadKey, this.Ctx);
+                return Tools.Get_Value_From_Mem(address, nBytes, this.HeadKey, this._ctx);
             }
         }
 
@@ -578,7 +606,7 @@ namespace AsmSim
                 if (value != this._hasUndefGrounding)
                 {
                     this._hasUndefGrounding = value;
-                    Context ctx = this.Ctx;
+                    Context ctx = this._ctx;
 
                     if (value)
                     {
@@ -745,7 +773,7 @@ namespace AsmSim
                     this.Solver.Reset();
                     foreach (BoolExpr e in content)
                     {
-                        this.Solver.Assert(ToolsZ3.UpdateConstName(e, postfix, this.Ctx) as BoolExpr);
+                        this.Solver.Assert(ToolsZ3.UpdateConstName(e, postfix, this._ctx) as BoolExpr);
                     }
                 }
                 {
@@ -753,7 +781,7 @@ namespace AsmSim
                     this.Solver_U.Reset();
                     foreach (BoolExpr e in content)
                     {
-                        this.Solver_U.Assert(ToolsZ3.UpdateConstName(e, postfix, this.Ctx) as BoolExpr);
+                        this.Solver_U.Assert(ToolsZ3.UpdateConstName(e, postfix, this._ctx) as BoolExpr);
                     }
                 }
             }
@@ -798,7 +826,7 @@ namespace AsmSim
                 this.AssertBranchInfoToSolver(false);
                 {
                     Status status;
-                    BoolExpr tmp1 = this.Ctx.MkEq(value1, value2);
+                    BoolExpr tmp1 = this._ctx.MkEq(value1, value2);
                     if (method1)
                     {
                         this.Solver.Push();
@@ -830,7 +858,7 @@ namespace AsmSim
                 {
                     Status status;
                     //BoolExpr tmp1 = _ctx.MkDistinct(value1, value2);
-                    BoolExpr tmp1 = this.Ctx.MkNot(this.Ctx.MkEq(value1, value2));
+                    BoolExpr tmp1 = this._ctx.MkNot(this._ctx.MkEq(value1, value2));
                     if (method1)
                     {
                         this.Solver.Assert(tmp1);
@@ -883,12 +911,12 @@ namespace AsmSim
                 {
                     if (this.Solver_Dirty)
                     {
-                        ToolsZ3.Consolidate(false, this.Solver, this.Solver_U, this.Ctx);
+                        ToolsZ3.Consolidate(false, this.Solver, this.Solver_U, this._ctx);
                         this.Solver_Dirty = false;
                     }
                     if (this.Solver_U_Dirty)
                     {
-                        ToolsZ3.Consolidate(true, this.Solver, this.Solver_U, this.Ctx);
+                        ToolsZ3.Consolidate(true, this.Solver, this.Solver_U, this._ctx);
                         this.Solver_U_Dirty = false;
                     }
                 }
@@ -944,6 +972,18 @@ namespace AsmSim
                     this.Solver_U.Assert(expr);
                 }
             }
+        }
+        #endregion
+
+        #region IDisposable Support
+
+        public void Dispose()
+        {
+            //lock (this._ctxLock)
+            {
+                this._ctx.Dispose();
+            }
+            System.GC.Collect();
         }
         #endregion
     }

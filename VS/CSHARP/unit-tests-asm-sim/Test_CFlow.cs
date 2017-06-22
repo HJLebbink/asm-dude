@@ -27,7 +27,7 @@ namespace unit_tests_asm_z3
             StaticFlow flow = new StaticFlow(programStr, new Tools());
             if (logToDisplay) Console.WriteLine(flow);
 
-            Assert.AreEqual(9, flow.NLines);
+            Assert.AreEqual(10, flow.NLines);
             Assert.AreEqual((1, 3), flow.Get_Next_LineNumber(0));
             Assert.AreEqual((2, -1), flow.Get_Next_LineNumber(1));
             Assert.AreEqual((-1, 5), flow.Get_Next_LineNumber(2));

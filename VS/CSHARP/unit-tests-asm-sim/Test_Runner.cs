@@ -694,6 +694,124 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
+        public void Test_Runner_Jmp_10()
+        {
+            string programStr =
+                "           cmp     rax,        0               " + Environment.NewLine +
+                "           jz      label1                      " + Environment.NewLine +
+                "           mov     rax,        1               " + Environment.NewLine +
+                "           jz      label1                      " + Environment.NewLine +
+                "           mov     rax,        2               " + Environment.NewLine +
+                "label1:                                        ";
+
+            Tools tools = CreateTools();
+            var sFlow = new StaticFlow(programStr, tools);
+            if (logToDisplay) Console.WriteLine(sFlow.ToString());
+            tools.StateConfig = sFlow.Get_StateConfig();
+            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+
+            State state = dFlow.EndState;
+            Assert.IsNotNull(state);
+
+            if (logToDisplay) Console.WriteLine("state:\n" + state);
+            TestTools.IsTrue(state.IsConsistent);
+
+            var branch_Condition_jz1 = dFlow.Get_Branch_Condition(1);
+            var branch_Condition_jz2 = dFlow.Get_Branch_Condition(3);
+
+            if (true)
+            {
+                if (true)
+                {
+                    State state2 = new State(state);
+                    state2.Add(new BranchInfo(branch_Condition_jz1, true));
+                    state2.Add(new BranchInfo(branch_Condition_jz2, true));
+                    TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000", state2);
+                }
+                if (true)
+                {
+                    State state2 = new State(state);
+                    state2.Add(new BranchInfo(branch_Condition_jz1, true));
+                    state2.Add(new BranchInfo(branch_Condition_jz2, false));
+                    TestTools.AreEqual(Rn.RAX, "XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX", state2);
+                }
+                if (true)
+                {
+                    State state2 = new State(state);
+                    state2.Add(new BranchInfo(branch_Condition_jz1, false));
+                    state2.Add(new BranchInfo(branch_Condition_jz2, true));
+                    TestTools.AreEqual(Rn.RAX, "XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX", state2);
+                }
+                if (true)
+                {
+                    State state2 = new State(state);
+                    state2.Add(new BranchInfo(branch_Condition_jz1, false));
+                    state2.Add(new BranchInfo(branch_Condition_jz2, false));
+                    TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000010", state2);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void Test_Runner_Jmp_11()
+        {
+            string programStr =
+                "           cmp     al,         0               " + Environment.NewLine +
+                "           jp      label1                      " + Environment.NewLine +
+                "           mov     al,         1               " + Environment.NewLine +
+                "           jz      label1                      " + Environment.NewLine +
+                "           mov     al,         2               " + Environment.NewLine +
+                "label1:                                        ";
+
+            Tools tools = CreateTools();
+            var sFlow = new StaticFlow(programStr, tools);
+            if (logToDisplay) Console.WriteLine(sFlow.ToString());
+            tools.StateConfig = sFlow.Get_StateConfig();
+            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+
+            State state = dFlow.EndState;
+            Assert.IsNotNull(state);
+
+            if (logToDisplay) Console.WriteLine("state:\n" + state);
+            TestTools.IsTrue(state.IsConsistent);
+
+            var branch_Condition_jp = dFlow.Get_Branch_Condition(1);
+            var branch_Condition_jz = dFlow.Get_Branch_Condition(3);
+
+            if (true)
+            {
+                if (true)
+                {
+                    State state2 = new State(state);
+                    state2.Add(new BranchInfo(branch_Condition_jp, true));
+                    state2.Add(new BranchInfo(branch_Condition_jz, true));
+                    TestTools.AreEqual(Rn.AL, "00000000", state2);
+                }
+                if (true)
+                {
+                    State state2 = new State(state);
+                    state2.Add(new BranchInfo(branch_Condition_jp, true));
+                    state2.Add(new BranchInfo(branch_Condition_jz, false));
+                    TestTools.AreEqual(Rn.AL, "????????", state2);
+                }
+                if (true)
+                {
+                    State state2 = new State(state);
+                    state2.Add(new BranchInfo(branch_Condition_jp, false));
+                    state2.Add(new BranchInfo(branch_Condition_jz, true));
+                    TestTools.AreEqual(Rn.AL, "XXXXXXXX", state2);
+                }
+                if (true)
+                {
+                    State state2 = new State(state);
+                    state2.Add(new BranchInfo(branch_Condition_jp, false));
+                    state2.Add(new BranchInfo(branch_Condition_jz, false));
+                    TestTools.AreEqual(Rn.AL, "00000010", state2);
+                }
+            }
+        }
+
+        [TestMethod]
         public void Test_Runner_Mem_1()
         {
             Tools tools = CreateTools();

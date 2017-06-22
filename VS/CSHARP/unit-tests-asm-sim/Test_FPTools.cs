@@ -12,7 +12,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_FPTools_BV_2_Doubles()
         {
-            Context ctx = new Context();
+            Context ctx = new Context(); // housekeeping OK!
             Solver solver = ctx.MkSolver();
             FPSort fpSort64 = ctx.MkFPSort64();
 
@@ -29,6 +29,7 @@ namespace unit_tests_asm_z3
                 string actual = ToolsZ3.ToStringBin(ToolsZ3.GetTvArray(ctx.MkFPToIEEEBV(results_FP[i]), 64, solver, ctx));
                 Assert.AreEqual(expected, actual);
             }
+            ctx.Dispose();
         }
     }
 }

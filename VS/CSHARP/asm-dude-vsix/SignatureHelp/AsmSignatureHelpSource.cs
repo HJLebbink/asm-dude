@@ -192,14 +192,6 @@ namespace AsmDude.SignatureHelp
             return sig;
         }
 
-        private bool _isDisposed;
-        public void Dispose()
-        {
-            if (!this._isDisposed)
-            {
-                GC.SuppressFinalize(this);
-                this._isDisposed = true;
-            }
-        }
+        public void Dispose() {}
     }
 }
