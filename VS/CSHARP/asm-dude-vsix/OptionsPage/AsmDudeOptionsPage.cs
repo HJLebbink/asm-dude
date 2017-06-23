@@ -269,6 +269,8 @@ namespace AsmDude.OptionsPage
             this._asmDudeOptionsPageUI.AsmSim_Decorate_Usage_Of_Undefined = Settings.Default.AsmSim_Decorate_Usage_Of_Undefined;
             this._asmDudeOptionsPageUI.AsmSim_Show_Redundant_Instructions = Settings.Default.AsmSim_Show_Redundant_Instructions;
             this._asmDudeOptionsPageUI.AsmSim_Decorate_Redundant_Instructions = Settings.Default.AsmSim_Decorate_Redundant_Instructions;
+            this._asmDudeOptionsPageUI.AsmSim_Show_Unreachable_Instructions = Settings.Default.AsmSim_Show_Unreachable_Instructions;
+            this._asmDudeOptionsPageUI.AsmSim_Decorate_Unreachable_Instructions = Settings.Default.AsmSim_Decorate_Unreachable_Instructions;
             this._asmDudeOptionsPageUI.AsmSim_Decorate_Registers = Settings.Default.AsmSim_Decorate_Registers;
             this._asmDudeOptionsPageUI.AsmSim_Use_In_Code_Completion = Settings.Default.AsmSim_Use_In_Code_Completion;
             this._asmDudeOptionsPageUI.AsmSim_Decorate_Unimplemented = Settings.Default.AsmSim_Decorate_Unimplemented;
@@ -958,6 +960,16 @@ namespace AsmDude.OptionsPage
             if (Settings.Default.AsmSim_Decorate_Redundant_Instructions != this._asmDudeOptionsPageUI.AsmSim_Decorate_Redundant_Instructions)
             {
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_Decorate_Redundant_Instructions=" + this._asmDudeOptionsPageUI.AsmSim_Decorate_Redundant_Instructions);
+                changed = true;
+            }
+            if (Settings.Default.AsmSim_Show_Unreachable_Instructions != this._asmDudeOptionsPageUI.AsmSim_Show_Unreachable_Instructions)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_Show_Unreachable_Instructions=" + this._asmDudeOptionsPageUI.AsmSim_Show_Unreachable_Instructions);
+                changed = true;
+            }
+            if (Settings.Default.AsmSim_Decorate_Unreachable_Instructions != this._asmDudeOptionsPageUI.AsmSim_Decorate_Unreachable_Instructions)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_Decorate_Unreachable_Instructions=" + this._asmDudeOptionsPageUI.AsmSim_Decorate_Unreachable_Instructions);
                 changed = true;
             }
             if (Settings.Default.AsmSim_Decorate_Registers != this._asmDudeOptionsPageUI.AsmSim_Decorate_Registers)
@@ -1673,6 +1685,16 @@ namespace AsmDude.OptionsPage
             if (Settings.Default.AsmSim_Decorate_Redundant_Instructions != this._asmDudeOptionsPageUI.AsmSim_Decorate_Redundant_Instructions)
             {
                 Settings.Default.AsmSim_Decorate_Redundant_Instructions = this._asmDudeOptionsPageUI.AsmSim_Decorate_Redundant_Instructions;
+                changed = true;
+            }
+            if (Settings.Default.AsmSim_Show_Unreachable_Instructions != this._asmDudeOptionsPageUI.AsmSim_Show_Unreachable_Instructions)
+            {
+                Settings.Default.AsmSim_Show_Unreachable_Instructions = this._asmDudeOptionsPageUI.AsmSim_Show_Unreachable_Instructions;
+                changed = true;
+            }
+            if (Settings.Default.AsmSim_Decorate_Unreachable_Instructions != this._asmDudeOptionsPageUI.AsmSim_Decorate_Unreachable_Instructions)
+            {
+                Settings.Default.AsmSim_Decorate_Unreachable_Instructions = this._asmDudeOptionsPageUI.AsmSim_Decorate_Unreachable_Instructions;
                 changed = true;
             }
             if (Settings.Default.AsmSim_Decorate_Registers != this._asmDudeOptionsPageUI.AsmSim_Decorate_Registers)

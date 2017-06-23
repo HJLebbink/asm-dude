@@ -104,17 +104,17 @@ namespace AsmSim
             }
             return "NOKEY";
         }
-
-        public IEnumerable<StateUpdate> Get_Incomming_StateUpdate(string key)
+        
+        private IEnumerable<StateUpdate> Get_Incomming_StateUpdate(string key)
         {
             foreach (var v in this._graph.InEdges(key)) yield return v.Tag.StateUpdate;
         }
 
-        public IEnumerable<StateUpdate> Get_Outgoing_StateUpdate(string key)
+        private IEnumerable<StateUpdate> Get_Outgoing_StateUpdate(string key)
         {
             foreach (var v in this._graph.OutEdges(key)) yield return v.Tag.StateUpdate;
         }
-
+        
         public string Key_Next(int lineNumber)
         {
             string key = this.Key(lineNumber);
@@ -159,54 +159,54 @@ namespace AsmSim
             return (this._key_2_LineNumber.TryGetValue(key, out var v)) ? v : -1;
         }
 
-        public IEnumerable<State> States_Before(int lineNumber)
+        public IEnumerable<State> Create_States_Before(int lineNumber)
         {
             if (this._lineNumber_2_Key.TryGetValue(lineNumber, out string key))
             {
-                yield return Construct_State_Private(key, false);
+                yield return this.Create_State_Private(key, false);
             }
         }
 
-        public State States_Before(int lineNumber, int index)
+        public State Create_States_Before(int lineNumber, int index)
         {
             int counter = 0;
-            foreach (State state in States_Before(lineNumber))
+            if (this._lineNumber_2_Key.TryGetValue(lineNumber, out string key))
             {
-                if (index == counter) return state;
+                if (index == counter) return this.Create_State_Private(key, false);
                 counter++;
             }
             return null;
         }
 
-        public IEnumerable<State> States_After(int lineNumber)
+        public IEnumerable<State> Create_States_After(int lineNumber)
         {
             if (this._lineNumber_2_Key.TryGetValue(lineNumber, out string key))
             {
-                yield return Construct_State_Private(key, true);
+                yield return this.Create_State_Private(key, true);
             }
         }
 
-        public State States_After(int lineNumber, int index)
+        public State Create_States_After(int lineNumber, int index)
         {
             int counter = 0;
-            foreach (State state in States_After(lineNumber))
+            if (this._lineNumber_2_Key.TryGetValue(lineNumber, out string key))
             {
-                if (index == counter) return state;
+                if (index == counter) return this.Create_State_Private(key, true);
                 counter++;
             }
             return null;
         }
 
-        public State State_After(string key)
+        public State Create_State_After(string key)
         {
             if (!this._graph.ContainsVertex(key)) return null;
-            return Construct_State_Private(key, true);
+            return this.Create_State_Private(key, true);
         }
 
-        public State State_Before(string key)
+        public State Create_State_Before(string key)
         {
             if (!this._graph.ContainsVertex(key)) return null;
-            return Construct_State_Private(key, false);
+            return this.Create_State_Private(key, false);
         }
 
         private bool Has_Branch(int lineNumber)
@@ -221,6 +221,8 @@ namespace AsmSim
             return this._graph.OutEdge(key, 0).Tag.StateUpdate.BranchInfo.BranchCondition;
         }
 
+
+        /// <summary> Create leafs of this DynamicFlow</summary>
         public IEnumerable<State> Leafs
         {
             get
@@ -228,7 +230,7 @@ namespace AsmSim
                 var alreadyVisisted = new HashSet<string>();
                 foreach (string key in Get_Leafs_LOCAL(this._rootKey))
                 {
-                    yield return this.Construct_State_Private(key, true);
+                    yield return this.Create_State_Private(key, true);
                 }
 
                 #region Local Methods
@@ -253,7 +255,14 @@ namespace AsmSim
             }
         }
     
-        public State EndState { get { return Tools.Collapse(this.Leafs); } }
+        public State EndState {
+            get {
+                var leafs = this.Leafs;
+                var result = Tools.Collapse(leafs);
+                foreach (var v in leafs) v.Dispose();
+                return result;
+            }
+        }
 
         #endregion
 
@@ -414,7 +423,16 @@ namespace AsmSim
                         if (!this.Has_Edge(prevKey, nextKey, prev.IsBranch))
                         {
                             var updates = Runner.Execute(sFlow, prev.LineNumber, (prevKey, nextKey, nextKey), this._tools);
-                            var update = (prev.IsBranch) ? updates.Branch : updates.Regular;
+                            StateUpdate update = null;
+                            if (prev.IsBranch)
+                            {
+                                update = updates.Branch;
+                                updates.Regular?.Dispose();
+                            } else
+                            {
+                                update = updates.Regular;
+                                updates.Branch?.Dispose();
+                            }
 
                             this.Add_Vertex(prevKey, prev.LineNumber);
                             this.Add_Edge(prev.IsBranch, update, prevKey, nextKey);
@@ -496,8 +514,9 @@ namespace AsmSim
             string codeLine = (sFlow == null) ? "" : sFlow.Get_Line_Str(lineNumber);
 
             sb.AppendLine("==========================================");
-            sb.AppendLine("State " + key + ": " + Construct_State_Private(key, true)?.ToString());
-
+            using (var v = Create_State_Private(key, true)) {
+                sb.AppendLine("State " + key + ": " + v?.ToString());
+            }
             foreach (var v in this._graph.OutEdges(key))
             {
                 Debug.Assert(v.Source == key);
@@ -516,7 +535,7 @@ namespace AsmSim
 
         #region Private Methods
 
-        private State Construct_State_Private(string key, bool after)
+        private State Create_State_Private(string key, bool after)
         {
             var visisted = new List<string>();
             lock (this._updateLock)

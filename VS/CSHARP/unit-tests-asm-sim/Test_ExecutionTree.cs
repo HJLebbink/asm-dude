@@ -53,11 +53,11 @@ namespace unit_tests_asm_z3
 
                 {
                     int lineNumber = 0;
-                    IList<State> states_Before = new List<State>(dFlow.States_Before(lineNumber));
+                    IList<State> states_Before = new List<State>(dFlow.Create_States_Before(lineNumber));
                     Assert.AreEqual(1, states_Before.Count);
                     State state_Before = states_Before[0];
 
-                    IList<State> states_After = new List<State>(dFlow.States_After(lineNumber));
+                    IList<State> states_After = new List<State>(dFlow.Create_States_After(lineNumber));
                     Assert.AreEqual(1, states_After.Count);
                     State state_After = states_After[0];
 
@@ -71,11 +71,11 @@ namespace unit_tests_asm_z3
                 }
                 {
                     int lineNumber = 1;
-                    IList<State> states_Before = new List<State>(dFlow.States_Before(lineNumber));
+                    IList<State> states_Before = new List<State>(dFlow.Create_States_Before(lineNumber));
                     Assert.AreEqual(1, states_Before.Count);
                     State state_Before = states_Before[0];
 
-                    IList<State> states_After = new List<State>(dFlow.States_After(lineNumber));
+                    IList<State> states_After = new List<State>(dFlow.Create_States_After(lineNumber));
                     Assert.AreEqual(1, states_After.Count);
                     State state_After = states_After[0];
 
@@ -89,11 +89,11 @@ namespace unit_tests_asm_z3
                 }
                 {
                     int lineNumber = 2;
-                    IList<State> states_Before = new List<State>(dFlow.States_Before(lineNumber));
+                    IList<State> states_Before = new List<State>(dFlow.Create_States_Before(lineNumber));
                     Assert.AreEqual(1, states_Before.Count);
                     State state_Before = states_Before[0];
 
-                    IList<State> states_After = new List<State>(dFlow.States_After(lineNumber));
+                    IList<State> states_After = new List<State>(dFlow.Create_States_After(lineNumber));
                     Assert.AreEqual(1, states_After.Count);
                     State state_After = states_After[0];
 
@@ -129,10 +129,10 @@ namespace unit_tests_asm_z3
                 //if (logToDisplay) Console.WriteLine(dFlow.ToString(sFlow));
                 {
                     int lineNumber = 0;
-                    IList<State> states_Before = new List<State>(dFlow.States_Before(lineNumber));
+                    IList<State> states_Before = new List<State>(dFlow.Create_States_Before(lineNumber));
                     Assert.AreEqual(1, states_Before.Count);
                     State state_Before = states_Before[0];
-                    IList<State> states_After = new List<State>(dFlow.States_After(lineNumber));
+                    IList<State> states_After = new List<State>(dFlow.Create_States_After(lineNumber));
                     Assert.AreEqual(1, states_After.Count);
                     State state_After = states_After[0];
 
@@ -146,11 +146,11 @@ namespace unit_tests_asm_z3
                 }
                 {
                     int lineNumber = 1;
-                    IList<State> states_Before = new List<State>(dFlow.States_Before(lineNumber));
+                    IList<State> states_Before = new List<State>(dFlow.Create_States_Before(lineNumber));
                     Assert.AreEqual(1, states_Before.Count);
                     State state_Before = states_Before[0];
 
-                    IList<State> states_After = new List<State>(dFlow.States_After(lineNumber));
+                    IList<State> states_After = new List<State>(dFlow.Create_States_After(lineNumber));
                     Assert.AreEqual(1, states_After.Count);
                     State state_After = states_After[0];
 
@@ -164,11 +164,11 @@ namespace unit_tests_asm_z3
                 }
                 {
                     int lineNumber = 2;
-                    IList<State> states_Before = new List<State>(dFlow.States_Before(lineNumber));
+                    IList<State> states_Before = new List<State>(dFlow.Create_States_Before(lineNumber));
                     Assert.AreEqual(1, states_Before.Count);
                     State state_Before = states_Before[0];
 
-                    IList<State> states_After = new List<State>(dFlow.States_After(lineNumber));
+                    IList<State> states_After = new List<State>(dFlow.Create_States_After(lineNumber));
                     Assert.AreEqual(1, states_After.Count);
                     State state_After = states_After[0];
 

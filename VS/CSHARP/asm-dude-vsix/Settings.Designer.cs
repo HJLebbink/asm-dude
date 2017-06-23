@@ -1522,5 +1522,29 @@ namespace AsmDude {
                 this["AsmSim_Number_Of_Threads"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AsmSim_Show_Unreachable_Instructions {
+            get {
+                return ((bool)(this["AsmSim_Show_Unreachable_Instructions"]));
+            }
+            set {
+                this["AsmSim_Show_Unreachable_Instructions"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AsmSim_Decorate_Unreachable_Instructions {
+            get {
+                return ((bool)(this["AsmSim_Decorate_Unreachable_Instructions"]));
+            }
+            set {
+                this["AsmSim_Decorate_Unreachable_Instructions"] = value;
+            }
+        }
     }
 }

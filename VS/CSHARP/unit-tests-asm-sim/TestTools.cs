@@ -247,7 +247,7 @@ namespace unit_tests_asm_z3
         }
         public static void AreEqual(Rn reg1, Rn reg2, State state)
         {
-            using (BoolExpr eq = state.Ctx.MkEq(state.Get(reg1), state.Get(reg2)))
+            using (BoolExpr eq = state.Ctx.MkEq(state.Create(reg1), state.Create(reg2)))
             {
                 Tv tv = ToolsZ3.GetTv(eq, state.Solver, state.Ctx);
                 if (tv == Tv.UNDETERMINED)

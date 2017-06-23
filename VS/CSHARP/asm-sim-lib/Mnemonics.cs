@@ -36,7 +36,7 @@ namespace AsmSim
         public abstract class OpcodeBase : IDisposable
         {
             #region Fields
-            protected readonly Mnemonic _mnemonic;
+            public readonly Mnemonic Mnemonic;
             private readonly string[] _args;
             public readonly Tools Tools;
             protected readonly Context _ctx;
@@ -51,11 +51,11 @@ namespace AsmSim
             private StateUpdate _branchUpdate;
             #endregion
 
-            protected void CreateRegularUpdate()
+            protected void Create_RegularUpdate()
             {
                 if (this._regularUpdate == null) this._regularUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKey, this.Tools);
             }
-            protected void CreateBranchUpdate()
+            protected void Create_BranchUpdate()
             {
                 if (this._branchUpdate == null) this._branchUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKeyBranch, this.Tools);
             }
@@ -79,7 +79,7 @@ namespace AsmSim
 
             public OpcodeBase(Mnemonic m, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
             {
-                this._mnemonic = m;
+                this.Mnemonic = m;
                 this._args = args;
                 this.Tools = t;
                 this.keys = keys;
@@ -92,44 +92,44 @@ namespace AsmSim
             /// <summary>Get the current value of the provided register</summary>
             public BitVecExpr Get(Rn regName)
             {
-                var result = Tools.Reg_Key(regName, this.keys.PrevKey, this._ctx); //TODO: check prevKey
+                var result = Tools.Create_Key(regName, this.keys.PrevKey, this._ctx); //TODO: check prevKey
                 return result;
             }
             public static BitVecExpr Get(Rn regName, string prevKey, Context ctx)
             {
-                return Tools.Reg_Key(regName, prevKey, ctx);
+                return Tools.Create_Key(regName, prevKey, ctx);
             }
 
             public BitVecExpr Undef(Rn regName)
             {
-                return Tools.Reg_Key_Fresh(regName, this.Tools.Rand, this._ctx);
+                return Tools.Create_Reg_Key_Fresh(regName, this.Tools.Rand, this._ctx);
             }
             public static BitVecExpr Undef(Rn regName, Random rand, Context ctx)
             {
-                return Tools.Reg_Key_Fresh(regName, rand, ctx);
+                return Tools.Create_Reg_Key_Fresh(regName, rand, ctx);
             }
             /// <summary>Get the current value of the provided flag</summary>
             public BoolExpr Get(Flags flagName)
             {
-                return Tools.Flag_Key(flagName, this.keys.PrevKey, this._ctx);
+                return Tools.Create_Key(flagName, this.keys.PrevKey, this._ctx);
             }
             public static BoolExpr Get(Flags flagName, string prevKey, Context ctx)
             {
-                return Tools.Flag_Key(flagName, prevKey, ctx);
+                return Tools.Create_Key(flagName, prevKey, ctx);
             }
 
             public BoolExpr Undef(Flags flagName)
             {
-                return Tools.Flag_Key_Fresh(flagName, this.Tools.Rand, this._ctx);
+                return Tools.Create_Flag_Key_Fresh(flagName, this.Tools.Rand, this._ctx);
             }
             public static BoolExpr Undef(Flags flagName, Random rand, Context ctx)
             {
-                return Tools.Flag_Key_Fresh(flagName, rand, ctx);
+                return Tools.Create_Flag_Key_Fresh(flagName, rand, ctx);
             }
 
             public BitVecExpr GetMem(BitVecExpr address, int nBytes)
             {
-                return Tools.Get_Value_From_Mem(address, nBytes, this.keys.PrevKey, this._ctx);
+                return Tools.Create_Value_From_Mem(address, nBytes, this.keys.PrevKey, this._ctx);
             }
             #endregion
 
@@ -190,7 +190,7 @@ namespace AsmSim
             }
             public override string ToString()
             {
-                return this._mnemonic + " " + string.Join(", ", this._args);
+                return this.Mnemonic + " " + string.Join(", ", this._args);
             }
 
             #region Protected stuff
@@ -217,13 +217,13 @@ namespace AsmSim
                     {
                         case Ot1.reg:
                             {
-                                return Tools.Reg_Key(operand.Rn, key, ctx);
+                                return Tools.Create_Key(operand.Rn, key, ctx);
                             }
                         case Ot1.mem:
                             {
                                 BitVecExpr address = Tools.Calc_Effective_Address(operand, key, ctx);
                                 int nBytes = nBits >> 3;
-                                return Tools.Get_Value_From_Mem(address, nBytes, key, ctx);
+                                return Tools.Create_Value_From_Mem(address, nBytes, key, ctx);
                             }
                         case Ot1.imm:
                             {
@@ -350,8 +350,8 @@ namespace AsmSim
             public void Dispose()
             {
                 this._ctx.Dispose();
-                this._branchUpdate?.Dispose();
-                this._regularUpdate?.Dispose();
+                //this._branchUpdate?.Dispose();
+                //this._regularUpdate?.Dispose();
             }
             #endregion
         }
@@ -570,7 +570,7 @@ namespace AsmSim
             public Ignore(Mnemonic mnemnonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.NOP, args, keys, t) { }
             public override void Execute()
             {
-                this.CreateRegularUpdate(); // do nothing, only create an empty update
+                this.Create_RegularUpdate(); // do nothing, only create an empty update
             }
         }
 
@@ -2046,7 +2046,7 @@ namespace AsmSim
             public override void Execute()
             {
                 BitVecExpr value;
-                switch (this._mnemonic)
+                switch (this.Mnemonic)
                 {
                     case Mnemonic.XOR: value = this._ctx.MkBVXOR(this.Op1Value, this.Op2Value); break;
                     case Mnemonic.AND: value = this._ctx.MkBVAND(this.Op1Value, this.Op2Value); break;
@@ -2751,14 +2751,14 @@ namespace AsmSim
                 if (jumpConditional.IsTrue)
                 {
                     //this.RegularUpdate is not updated
-                    this.CreateBranchUpdate();
+                    this.Create_BranchUpdate();
                     //this.BranchUpdate.Add(new BranchInfo(jumpConditional, true));
                 }
                 else if (jumpConditional.IsFalse)
                 {
                     //this.RegularUpdate.Add(new BranchInfo(jumpConditional, false));
                     //this.BranchUpdate is not updated
-                    this.CreateRegularUpdate();
+                    this.Create_RegularUpdate();
                 }
                 else
                 {
@@ -3064,7 +3064,7 @@ namespace AsmSim
             {
                 // special case: set the truth value to known
                 Rn reg = this.op1.Rn;
-                BitVecExpr unknown = Tools.Reg_Key_Fresh(reg, this.Tools.Rand, this._ctx);
+                BitVecExpr unknown = Tools.Create_Reg_Key_Fresh(reg, this.Tools.Rand, this._ctx);
                 this.RegularUpdate.Set(reg, unknown, this._ctx.MkBV(0, (uint)this.op1.NBits));
             }
             public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op2); } }
@@ -3260,7 +3260,7 @@ namespace AsmSim
             public Nop(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.NOP, args, keys, t) { }
             public override void Execute()
             {
-                this.CreateRegularUpdate(); // do nothing, only create an empty update
+                this.Create_RegularUpdate(); // do nothing, only create an empty update
             }
         }
 

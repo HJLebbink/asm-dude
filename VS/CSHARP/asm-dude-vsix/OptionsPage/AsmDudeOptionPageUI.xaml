@@ -230,9 +230,19 @@
                                     <ColumnDefinition Width="180"/>
                                     <ColumnDefinition Width="180"/>
                                 </Grid.ColumnDefinitions>
-                                <Label Content="Redundant Instruction:" Grid.Column="0" />
+                                <Label Content="Redundant Instructions:" Grid.Column="0" />
                                 <CheckBox x:Name="AsmSim_Show_Redundant_Instructions_UI" Content="Show in error list" ToolTip="Show redundant instructions in error list" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left" Width="Auto" />
                                 <CheckBox x:Name="AsmSim_Decorate_Redundant_Instructions_UI" Content="Decorate with Squiggle" ToolTip="Decorate redundant instructions" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Left" Width="Auto" />
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="180"/>
+                                    <ColumnDefinition Width="180"/>
+                                    <ColumnDefinition Width="180"/>
+                                </Grid.ColumnDefinitions>
+                                <Label Content="Unreachable Instructions:" Grid.Column="0" />
+                                <CheckBox x:Name="AsmSim_Show_Unreachable_Instructions_UI" Content="Show in error list" ToolTip="Show unreachable instructions in error list" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left" Width="Auto" />
+                                <CheckBox x:Name="AsmSim_Decorate_Unreachable_Instructions_UI" Content="Decorate with Squiggle" ToolTip="Decorate unreachable instructions" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Left" Width="Auto" />
                             </Grid>
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -249,7 +259,7 @@
                                     <ColumnDefinition Width="180"/>
                                     <ColumnDefinition Width="180"/>
                                 </Grid.ColumnDefinitions>
-                                <Label Content="Unimplemented Instruction:" Grid.Column="0" />
+                                <Label Content="Unimplemented Instructions:" Grid.Column="0" />
                                 <CheckBox x:Name="AsmSim_Decorate_Unimplemented_UI" Content="Decorate with Squiggle" ToolTip="Decorate instructions that are not (yet) implemented" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Left" Width="Auto" />
                             </Grid>
                         </StackPanel>

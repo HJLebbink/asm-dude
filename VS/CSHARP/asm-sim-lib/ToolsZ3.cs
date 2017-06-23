@@ -112,8 +112,6 @@ namespace AsmSim
         {
             Debug.Assert(tv5.Length > 0);
 
-            BitVecNum one = ctx.MkBV(1, 1);
-            BitVecNum zero = ctx.MkBV(0, 1);
             Random random = new Random();
 
             BitVecExpr value = null;
@@ -132,15 +130,15 @@ namespace AsmSim
                         break;
                     case Tv.UNKNOWN:
                         next_value = ctx.MkBVConst("?" + random.Next(), 1);
-                        next_undef = zero; // could also use one, 
+                        next_undef = ctx.MkBV(0, 1); // could also use one, 
                         break;
                     case Tv.ONE:
-                        next_value = one;
-                        next_undef = one;
+                        next_value = ctx.MkBV(1, 1);
+                        next_undef = next_value;
                         break;
                     case Tv.ZERO:
-                        next_value = zero;
-                        next_undef = zero;
+                        next_value = ctx.MkBV(0, 1);
+                        next_undef = next_value;
                         break;
                     case Tv.INCONSISTENT: throw new Exception();
 
@@ -289,36 +287,46 @@ namespace AsmSim
                 */
                 #endregion
                 {
-                    Tactic taY = ctx.MkTactic("default"); // does not work: all constraitns are lost
-                    Tactic taX = ctx.MkTactic("skip");
-                    Tactic ta0 = ctx.MkTactic("ctx-solver-simplify"); //VERY SLOW
+                    //Tactic taY = ctx.MkTactic("default"); // does not work: all constraitns are lost
+                    //Tactic taX = ctx.MkTactic("skip");
+                    //Tactic ta0 = ctx.MkTactic("ctx-solver-simplify"); //VERY SLOW
                     Tactic ta1 = ctx.MkTactic("simplify"); // some minor rewrites
                     Tactic ta2 = ctx.MkTactic("ctx-simplify"); // no differences compared with SKIP
-                    Tactic ta3 = ctx.MkTactic("qfbv"); // does not work: all constraitns are lost
-                    Tactic ta3b = ctx.MkTactic("qfbv-sls");// does not work: all constraitns are lost
-                    Tactic ta4 = ctx.MkTactic("solve-eqs");// does not work: all constraitns are lost
-                    Tactic ta5 = ctx.MkTactic("propagate-values"); // no differences compared with SKIP
-                    Tactic ta6 = ctx.MkTactic("sat"); // make much more constrains such that Flatten takes VERY LONG
-                    Tactic ta6b = ctx.MkTactic("sat-preprocess"); // does not work: some constrains are lost
-                    Tactic ta7 = ctx.MkTactic("smt"); // does not work: all constraitns are lost
+                    //Tactic ta3 = ctx.MkTactic("qfbv"); // does not work: all constraitns are lost
+                    //Tactic ta3b = ctx.MkTactic("qfbv-sls");// does not work: all constraitns are lost
+                    //Tactic ta4 = ctx.MkTactic("solve-eqs");// does not work: all constraitns are lost
+                    //Tactic ta5 = ctx.MkTactic("propagate-values"); // no differences compared with SKIP
+                    //Tactic ta6 = ctx.MkTactic("sat"); // make much more constrains such that Flatten takes VERY LONG
+                    //Tactic ta6b = ctx.MkTactic("sat-preprocess"); // does not work: some constrains are lost
+                    //Tactic ta7 = ctx.MkTactic("smt"); // does not work: all constraitns are lost
 
 
-                    Tactic tactic = ctx.AndThen(ta2, ta1);
-                    if (!undef)
+                    using (Tactic tactic = ctx.AndThen(ta2, ta1))
                     {
-                        Goal goal1 = ctx.MkGoal();
-                        goal1.Assert(solver.Assertions);
-                        ApplyResult ar = tactic.Apply(goal1);
-                        solver.Reset();
-                        solver.Assert(ar.Subgoals[0].Formulas);
-                    }
-                    else
-                    {
-                        Goal goal1 = ctx.MkGoal();
-                        goal1.Assert(solver_U.Assertions);
-                        ApplyResult ar = tactic.Apply(goal1);
-                        solver_U.Reset();
-                        solver_U.Assert(ar.Subgoals[0].Formulas);
+                        if (!undef)
+                        {
+                            using (Goal goal1 = ctx.MkGoal())
+                            {
+                                goal1.Assert(solver.Assertions);
+                                using (ApplyResult ar = tactic.Apply(goal1))
+                                {
+                                    solver.Reset();
+                                    solver.Assert(ar.Subgoals[0].Formulas);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            using (Goal goal1 = ctx.MkGoal())
+                            {
+                                goal1.Assert(solver_U.Assertions);
+                                using (ApplyResult ar = tactic.Apply(goal1))
+                                {
+                                    solver_U.Reset();
+                                    solver_U.Assert(ar.Subgoals[0].Formulas);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -327,14 +335,18 @@ namespace AsmSim
         /// <summary>Returns true if the provided valueExpr and undef yield the same tv5 array as the provided valueTv </summary>
         public static bool Equals(BitVecExpr valueExpr, BitVecExpr undef, Tv[] valueTv, int nBits, Solver solver, Solver solver_U, Context ctx)
         {
-            BitVecNum bv1_1bit = ctx.MkBV(1, 1);
-            for (uint bit = 0; bit < nBits; ++bit)
+            using (BitVecNum bv1_1bit = ctx.MkBV(1, 1))
             {
-                BoolExpr b = ToolsZ3.GetBit(valueExpr, bit, bv1_1bit, ctx);
-                BoolExpr b_undef = ToolsZ3.GetBit(undef, bit, bv1_1bit, ctx);
-                // this can be done faster
-                Tv tv = ToolsZ3.GetTv(b, b_undef, solver, solver_U, ctx);
-                if (tv != valueTv[bit]) return false;
+                for (uint bit = 0; bit < nBits; ++bit)
+                {
+                    using (BoolExpr b = ToolsZ3.GetBit(valueExpr, bit, bv1_1bit, ctx))
+                    using (BoolExpr b_undef = ToolsZ3.GetBit(undef, bit, bv1_1bit, ctx))
+                    {
+                        // this can be done faster
+                        Tv tv = ToolsZ3.GetTv(b, b_undef, solver, solver_U, ctx);
+                        if (tv != valueTv[bit]) return false;
+                    }
+                }
             }
             return true;
         }
@@ -487,21 +499,24 @@ namespace AsmSim
             }
 
             Tv[] results = new Tv[nBits];
-            BitVecNum ONE = ctx.MkBV(1, 1);
-
-            for (uint bit = 0; bit < nBits; ++bit)
+            using (BitVecNum ONE = ctx.MkBV(1, 1))
             {
-                BoolExpr b = ToolsZ3.GetBit(value, bit, ONE, ctx);
-                switch (ToolsZ3.GetTv(b, solver, ctx))
+                for (uint bit = 0; bit < nBits; ++bit)
                 {
-                    case Tv.ONE:
-                        results[bit] = Tv.ONE;
-                        break;
-                    case Tv.ZERO:
-                        results[bit] = Tv.ZERO;
-                        break;
-                    default:
-                        return null;
+                    using (BoolExpr b = ToolsZ3.GetBit(value, bit, ONE, ctx))
+                    {
+                        switch (ToolsZ3.GetTv(b, solver, ctx))
+                        {
+                            case Tv.ONE:
+                                results[bit] = Tv.ONE;
+                                break;
+                            case Tv.ZERO:
+                                results[bit] = Tv.ZERO;
+                                break;
+                            default:
+                                return null;
+                        }
+                    }
                 }
             }
             return ToolsZ3.GetUlong(results);
@@ -582,12 +597,16 @@ namespace AsmSim
                 Console.WriteLine("WARNING: ToolsZ3:GetTv5Array: value is null, assuming UNKNOWN");
                 return results;
             }
-            BitVecNum bv1_1bit = ctx.MkBV(1, 1);
-            for (uint bit = 0; bit < nBits; ++bit)
+            using (BitVecNum bv1_1bit = ctx.MkBV(1, 1))
             {
-                BoolExpr b = ToolsZ3.GetBit(value, bit, bv1_1bit, ctx);
-                BoolExpr b_undef = ToolsZ3.GetBit(undef, bit, bv1_1bit, ctx);
-                results[bit] = ToolsZ3.GetTv(b, b_undef, solver, solver_U, ctx);
+                for (uint bit = 0; bit < nBits; ++bit)
+                {
+                    using (BoolExpr b = ToolsZ3.GetBit(value, bit, bv1_1bit, ctx))
+                    using (BoolExpr b_undef = ToolsZ3.GetBit(undef, bit, bv1_1bit, ctx))
+                    {
+                        results[bit] = ToolsZ3.GetTv(b, b_undef, solver, solver_U, ctx);
+                    }
+                }
             }
             return results;
         }
@@ -599,11 +618,15 @@ namespace AsmSim
                 Console.WriteLine("WARNING: ToolsZ3:GetTv5Array: value is null, assuming UNKNOWN");
                 return results;
             }
-            BitVecNum bv1_1bit = ctx.MkBV(1, 1);
-            for (uint bit = 0; bit < nBits; ++bit)
+            using (BitVecNum bv1_1bit = ctx.MkBV(1, 1))
             {
-                BoolExpr b = ToolsZ3.GetBit(value, bit, bv1_1bit, ctx);
-                results[bit] = ToolsZ3.GetTv(b, solver, ctx);
+                for (uint bit = 0; bit < nBits; ++bit)
+                {
+                    using (BoolExpr b = ToolsZ3.GetBit(value, bit, bv1_1bit, ctx))
+                    {
+                        results[bit] = ToolsZ3.GetTv(b, solver, ctx);
+                    }
+                }
             }
             return results;
         }

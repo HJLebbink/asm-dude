@@ -193,7 +193,7 @@ namespace AsmSim
             }
         }
 
-        public static BitVecExpr Reg_Key(Rn reg, String key, Context ctx)
+        public static BitVecExpr Create_Key(Rn reg, String key, Context ctx)
         {
             uint nBits = (uint)RegisterTools.NBits(reg);
             if (RegisterTools.Is_SIMD_Register(reg))
@@ -220,19 +220,19 @@ namespace AsmSim
                 return ctx.MkBVConst(Reg_Name(reg, key), nBits);
             }
         }
-        public static BoolExpr Flag_Key(Flags flag, string key, Context ctx)
+        public static BoolExpr Create_Key(Flags flag, string key, Context ctx)
         {
             return ctx.MkBoolConst(Flag_Name(flag, key));
         }
-        public static ArrayExpr Mem_Key(string key, Context ctx)
+        public static ArrayExpr Create_Mem_Key(string key, Context ctx)
         {
             return ctx.MkArrayConst(Mem_Name(key), ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
         }
-        public static BitVecExpr Reg_Key_Fresh(Rn reg, Random rand, Context ctx)
+        public static BitVecExpr Create_Reg_Key_Fresh(Rn reg, Random rand, Context ctx)
         {
             return ctx.MkBVConst(Reg_Name_Fresh(reg, rand), (uint)RegisterTools.NBits(reg));
         }
-        public static BoolExpr Flag_Key_Fresh(Flags flag, Random rand, Context ctx)
+        public static BoolExpr Create_Flag_Key_Fresh(Flags flag, Random rand, Context ctx)
         {
             return ctx.MkBoolConst(Flag_Name_Fresh(flag, rand));
         }
@@ -248,7 +248,7 @@ namespace AsmSim
 
             if (op.IsReg)
             {
-                return Tools.Reg_Key(op.Rn, key, ctx);
+                return Tools.Create_Key(op.Rn, key, ctx);
             }
             else if (op.IsMem)
             {
@@ -274,9 +274,9 @@ namespace AsmSim
                     BitVecExpr baseRegister;
                     switch (RegisterTools.NBits(t.BaseReg))
                     {
-                        case 64: baseRegister = Tools.Reg_Key(t.BaseReg, key, ctx); break;
-                        case 32: baseRegister = ctx.MkZeroExt(32, Tools.Reg_Key(t.BaseReg, key, ctx)); break;
-                        case 16: baseRegister = ctx.MkZeroExt(48, Tools.Reg_Key(t.BaseReg, key, ctx)); break;
+                        case 64: baseRegister = Tools.Create_Key(t.BaseReg, key, ctx); break;
+                        case 32: baseRegister = ctx.MkZeroExt(32, Tools.Create_Key(t.BaseReg, key, ctx)); break;
+                        case 16: baseRegister = ctx.MkZeroExt(48, Tools.Create_Key(t.BaseReg, key, ctx)); break;
                         default: throw new Exception();
                     }
                     //Console.WriteLine("baseRegister.NBits = " + baseRegister.SortSize + "; address.NBits = " + address.SortSize);
@@ -289,7 +289,7 @@ namespace AsmSim
                 {
                     if (t.Scale > 0)
                     {
-                        BitVecExpr indexRegister = Tools.Reg_Key(t.IndexReg, key, ctx);
+                        BitVecExpr indexRegister = Tools.Create_Key(t.IndexReg, key, ctx);
                         switch (t.Scale)
                         {
                             case 0:
@@ -331,11 +331,11 @@ namespace AsmSim
                 throw new Exception();
             }
         }
-        public static BitVecExpr Get_Value_From_Mem(BitVecExpr address, int nBytes, string key, Context ctx)
+        public static BitVecExpr Create_Value_From_Mem(BitVecExpr address, int nBytes, string key, Context ctx)
         {
             Debug.Assert(nBytes > 0, "Number of bytes has to larger than zero. nBytes=" + nBytes);
 
-            ArrayExpr mem = Tools.Mem_Key(key, ctx);
+            ArrayExpr mem = Tools.Create_Mem_Key(key, ctx);
             BitVecExpr result = ctx.MkSelect(mem, address) as BitVecExpr;
 
             for (uint i = 1; i < nBytes; ++i)
@@ -355,7 +355,7 @@ namespace AsmSim
             Debug.Assert(address.SortSize == 64);
 
             uint nBytes = value.SortSize >> 3;
-            ArrayExpr mem = Mem_Key(key, ctx);
+            ArrayExpr mem = Create_Mem_Key(key, ctx);
 
             for (uint i = 0; i < nBytes; ++i)
             {
@@ -366,24 +366,24 @@ namespace AsmSim
         }
         public static State Collapse(IEnumerable<State> previousStates)
         {
-            //TODO: MEMORY LEAKS here!
-
             State result = null;
-            bool first = true;
+            int counter = 0;
             foreach (State prev in previousStates)
             {
-                if (first)
+                if (counter == 0)
                 {
                     result = prev;
-                    first = false;
                 }
                 else
                 {
                     Console.WriteLine("INFO: Tools:Collapse: state1:\n" + result);
                     Console.WriteLine("INFO: Tools:Collapse: state2:\n" + prev);
-                    result = new State(result, prev, true);
+                    State result2 = new State(result, prev, true);
+                    if (counter > 2) result.Dispose();
+                    result = result2;
                     Console.WriteLine("INFO: Tools:Collapse: merged state:\n" + result);
                 }
+                counter++;
             }
             return result;
         }

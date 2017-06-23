@@ -70,14 +70,14 @@ namespace unit_tests_asm_z3
             Tools tools = state.Tools;
 
             BitVecExpr address1 = Tools.Calc_Effective_Address("qword ptr[rax]", state.HeadKey, tools, ctx);
-            BitVecExpr value1 = state.Get(Rn.RBX);
+            BitVecExpr value1 = state.Create(Rn.RBX);
 
             using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
                 updateState.SetMem(address1, value1);
                 state.Update_Forward(updateState);
             }
-            BitVecExpr value2 = state.GetMem(address1, 8);
+            BitVecExpr value2 = state.Create_Mem(address1, 8);
 
             if (logToDisplay)
             {
@@ -103,21 +103,21 @@ namespace unit_tests_asm_z3
             Tools tools = state.Tools;
 
             BitVecExpr address1 = Tools.Calc_Effective_Address("qword ptr[rax]", state.HeadKey, tools, ctx);
-            BitVecExpr value1a = state.Get(Rn.R8);
-            BitVecExpr value2a = state.Get(Rn.R9);
+            BitVecExpr value1a = state.Create(Rn.R8);
+            BitVecExpr value2a = state.Create(Rn.R9);
 
             using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
                 updateState.SetMem(address1, value1a);
                 state.Update_Forward(updateState);
             }
-            BitVecExpr value1b = state.GetMem(address1, 8);
+            BitVecExpr value1b = state.Create_Mem(address1, 8);
             using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
                 updateState.SetMem(address1, value2a);
                 state.Update_Forward(updateState);
             }
-            BitVecExpr value2b = state.GetMem(address1, 8);
+            BitVecExpr value2b = state.Create_Mem(address1, 8);
 
             if (logToDisplay)
             {
@@ -169,14 +169,14 @@ namespace unit_tests_asm_z3
             }
             TestTools.AreEqual(Tv.ONE, equalAddresses);
 
-            BitVecExpr value1 = state.Get(Rn.R8);
+            BitVecExpr value1 = state.Create(Rn.R8);
 
             using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
                 updateState.SetMem(address1, value1);
                 state.Update_Forward(updateState);
             }
-            BitVecExpr value2 = state.GetMem(address2, 8);
+            BitVecExpr value2 = state.Create_Mem(address2, 8);
 
             if (logToDisplay)
             {
@@ -221,14 +221,14 @@ namespace unit_tests_asm_z3
             }
             TestTools.AreEqual(Tv.ZERO, equalAddresses);
 
-            BitVecExpr value1 = state.Get(Rn.R8);
+            BitVecExpr value1 = state.Create(Rn.R8);
             using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
                 updateState.SetMem(address1, value1);
                 state.Update_Forward(updateState);
             }
 
-            BitVecExpr value2 = state.GetMem(address2, 8);
+            BitVecExpr value2 = state.Create_Mem(address2, 8);
 
             Tv equalValues = state.EqualValues(value1, value2);
             if (logToDisplay)
@@ -265,19 +265,19 @@ namespace unit_tests_asm_z3
             BitVecExpr address1 = Tools.Calc_Effective_Address("qword ptr[rax + 2 * rbx + 10]", state.HeadKey, tools, ctx);
             {
                 StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
-                updateState.Set(Rn.RAX, state.Ctx.MkBVAdd(state.Get(Rn.RAX), state.Ctx.MkBV(0, 64)));
+                updateState.Set(Rn.RAX, state.Ctx.MkBVAdd(state.Create(Rn.RAX), state.Ctx.MkBV(0, 64)));
                 state.Update_Forward(updateState);
             }            
             BitVecExpr address2 = Tools.Calc_Effective_Address("qword ptr[rax + 4 * rcx + 10]", state.HeadKey, tools, ctx);
 
-            BitVecExpr value1 = state.Get(Rn.R8B);
+            BitVecExpr value1 = state.Create(Rn.R8B);
             int nBytes = (int)value1.SortSize >> 3;
             using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
                 updateState.SetMem(address1, value1);
                 state.Update_Forward(updateState);
             }
-            BitVecExpr value2 = state.GetMem(address2, nBytes);
+            BitVecExpr value2 = state.Create_Mem(address2, nBytes);
 
             if (logToDisplay)
             {
@@ -305,23 +305,23 @@ namespace unit_tests_asm_z3
 
             using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
-                updateState.Set(Rn.RAX, state.Get(Rn.RBX));
+                updateState.Set(Rn.RAX, state.Create(Rn.RBX));
                 state.Update_Forward(updateState);
             }
             BitVecExpr address1 = Tools.Calc_Effective_Address("qword ptr[rax]", state.HeadKey, tools, ctx);
             BitVecExpr address2 = Tools.Calc_Effective_Address("qword ptr[rbx]", state.HeadKey, tools, ctx);
             using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
-                updateState.SetMem(address1, state.Get(Rn.RCX));
+                updateState.SetMem(address1, state.Create(Rn.RCX));
                 state.Update_Forward(updateState);
             }
             using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
-                updateState.SetMem(address2, state.Get(Rn.RDX));
+                updateState.SetMem(address2, state.Create(Rn.RDX));
                 state.Update_Forward(updateState);
             }
-            BitVecExpr value1 = state.GetMem(address1, 1);
-            BitVecExpr value2 = state.GetMem(address2, 1);
+            BitVecExpr value1 = state.Create_Mem(address1, 1);
+            BitVecExpr value2 = state.Create_Mem(address2, 1);
 
             if (logToDisplay)
             {
@@ -349,13 +349,13 @@ namespace unit_tests_asm_z3
 
             {
                 StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
-                updateState.Set(Rn.RAX, state.Get(Rn.RBX));
+                updateState.Set(Rn.RAX, state.Create(Rn.RBX));
                 state.Update_Forward(updateState);
             }
             BitVecExpr address1 = Tools.Calc_Effective_Address("byte ptr[rax]", state.HeadKey, tools, ctx);
             BitVecExpr address2 = Tools.Calc_Effective_Address("byte ptr[rbx]", state.HeadKey, tools, ctx);
-            BitVecExpr value1a = state.Get(Rn.CL);
-            BitVecExpr value2a = state.Get(Rn.DL);
+            BitVecExpr value1a = state.Create(Rn.CL);
+            BitVecExpr value2a = state.Create(Rn.DL);
 
             Debug.Assert(value1a.SortSize == value2a.SortSize);
             int nBytes = (int)value1a.SortSize >> 3;
@@ -364,13 +364,13 @@ namespace unit_tests_asm_z3
                 updateState.SetMem(address1, value1a);
                 state.Update_Forward(updateState);
             }
-            BitVecExpr value1b = state.GetMem(address1, nBytes);
+            BitVecExpr value1b = state.Create_Mem(address1, nBytes);
             using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
                 updateState.SetMem(address2, value2a);
                 state.Update_Forward(updateState);
             }
-            BitVecExpr value2b = state.GetMem(address2, nBytes);
+            BitVecExpr value2b = state.Create_Mem(address2, nBytes);
 
             if (logToDisplay)
             {
@@ -407,11 +407,11 @@ namespace unit_tests_asm_z3
             BitVecExpr address1 = Tools.Calc_Effective_Address("qword ptr[rax]", state.HeadKey, tools, ctx);
             BitVecExpr address2 = Tools.Calc_Effective_Address("qword ptr[rbx]", state.HeadKey, tools, ctx);
 
-            BitVecExpr value1 = state.GetMem(address1, nBytes);
-            BitVecExpr value2 = state.GetMem(address2, nBytes);
+            BitVecExpr value1 = state.Create_Mem(address1, nBytes);
+            BitVecExpr value2 = state.Create_Mem(address2, nBytes);
             Assert.AreNotEqual(value1, value2); //value1 is not equal to value2 simply because rax and rbx are not related yet
 
-            state.Add(new BranchInfo(state.Ctx.MkEq(state.Get(Rn.RAX), state.Get(Rn.RBX)), true));
+            state.Add(new BranchInfo(state.Ctx.MkEq(state.Create(Rn.RAX), state.Create(Rn.RBX)), true));
             // value1 and value2 are now (intuitively) equal; however, the retrieved memory values have not been updated yet to reflect this.
 
             using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
@@ -424,8 +424,8 @@ namespace unit_tests_asm_z3
             {
                 Console.WriteLine("value1 = " + value1);
                 Console.WriteLine("value2 = " + value2);
-                Console.WriteLine(reg1 + " = " + state.Get(reg1));
-                Console.WriteLine(reg2 + " = " + state.Get(reg2));
+                Console.WriteLine(reg1 + " = " + state.Create(reg1));
+                Console.WriteLine(reg2 + " = " + state.Create(reg2));
                 Console.WriteLine(state);
             }
             TestTools.AreEqual(Tv.ONE, state.EqualValues(reg1, reg2));

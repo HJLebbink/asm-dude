@@ -82,7 +82,7 @@ namespace AsmSim
             var sFlow = new StaticFlow(programStr, tools);
             Console.WriteLine("sFlow=" + sFlow.ToString());
 
-            tools.StateConfig = sFlow.Get_StateConfig();
+            tools.StateConfig = sFlow.Create_StateConfig();
             var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
             Console.WriteLine("dFlow=" + dFlow.ToString(sFlow));
@@ -603,8 +603,8 @@ namespace AsmSim
                         var tree0 = Runner.Construct_DynamicFlow_Forward(flow1, tools);
 
                         int lineNumber_JZ = 0;
-                        State state_FirstLine = tree0.States_Before(lineNumber_JZ, 0);
-                        var branchInfo = new BranchInfo(state_FirstLine.Get(Flags.ZF), true);
+                        State state_FirstLine = tree0.Create_States_Before(lineNumber_JZ, 0);
+                        var branchInfo = new BranchInfo(state_FirstLine.Create(Flags.ZF), true);
 
                         State state0 = tree0.EndState;
                         state0.BranchInfoStore.Add(branchInfo, true);
@@ -616,8 +616,8 @@ namespace AsmSim
                         var tree1 = Runner.Construct_DynamicFlow_Backward(flow1, tools);
 
                         int lineNumber_JZ = 0;
-                        State state_FirstLine = tree1.States_Before(lineNumber_JZ, 0);
-                        var branchInfo = new BranchInfo(state_FirstLine.Get(Flags.ZF), false);
+                        State state_FirstLine = tree1.Create_States_Before(lineNumber_JZ, 0);
+                        var branchInfo = new BranchInfo(state_FirstLine.Create(Flags.ZF), false);
 
                         State state1 = tree1.EndState;
                         state1.BranchInfoStore.Add(branchInfo, true);
@@ -772,7 +772,7 @@ namespace AsmSim
             };
             var sFlow = new StaticFlow(programStr1a, tools);
             Console.WriteLine(sFlow.ToString());
-            tools.StateConfig = sFlow.Get_StateConfig();
+            tools.StateConfig = sFlow.Create_StateConfig();
 
             if (true)
             {
@@ -786,14 +786,14 @@ namespace AsmSim
                 if (false)
                 {
                     int lineNumber = 1;
-                    IList<State> states_Before = new List<State>(dFlow.States_Before(lineNumber));
+                    IList<State> states_Before = new List<State>(dFlow.Create_States_Before(lineNumber));
                     State state_Before = states_Before[0];
                     Console.WriteLine("Before lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
                 }
                 if (true)
                 {
                     int lineNumber = 5;
-                    IList<State> states_After = new List<State>(dFlow.States_After(lineNumber));
+                    IList<State> states_After = new List<State>(dFlow.Create_States_After(lineNumber));
                     State state_After = states_After[0];
                     Console.WriteLine("After lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
                 }

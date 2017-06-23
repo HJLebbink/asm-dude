@@ -31,6 +31,7 @@ using Microsoft.VisualStudio.Utilities;
 
 using AsmTools;
 using AsmDude.SyntaxHighlighting;
+using Amib.Threading;
 
 namespace AsmDude.Tools
 {
@@ -71,6 +72,7 @@ namespace AsmDude.Tools
 
         private readonly Delay _delay;
         private bool _bussy = false;
+        private IWorkItemResult _thread_Result;
         private object _updateLock = new object();
         #endregion Private Fields
 
@@ -112,7 +114,11 @@ namespace AsmDude.Tools
                     }
                     else
                     {
-                        AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Reset_Private);
+                        if ((this._thread_Result != null) && !this._thread_Result.IsCompleted && !this._thread_Result.IsCanceled)
+                        {
+                            this._thread_Result.Cancel();
+                        }
+                        this._thread_Result = AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Reset_Private);
                     }
                 };
                 this.Reset();

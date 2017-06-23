@@ -36,7 +36,6 @@ namespace AsmSim
 
         private readonly Tools _tools;
 
-        private string _programStr = "";
         private readonly IList<(string label, Mnemonic mnemonic, string[] args)> _sourceCode;
         private readonly BidirectionalGraph<int, TaggedEdge<int, bool>> _graph;
 
@@ -54,12 +53,12 @@ namespace AsmSim
 
         #region Getters
 
-        public StateConfig Get_StateConfig()
+        public StateConfig Create_StateConfig()
         {
-            return this.Get_StateConfig(0, this.LastLineNumber-1);
+            return this.Create_StateConfig(0, this.LastLineNumber-1);
         }
 
-        public StateConfig Get_StateConfig(
+        public StateConfig Create_StateConfig(
             int lineNumberBegin,
             int lineNumberEnd)
         {
@@ -70,13 +69,15 @@ namespace AsmSim
             for (int lineNumber = lineNumberBegin; lineNumber <= lineNumberEnd; lineNumber++)
             {
                 var content = this.Get_Line(lineNumber);
-                var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, this._tools);
-                if (opcodeBase != null)
+                using (var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, this._tools))
                 {
-                    flags |= (opcodeBase.FlagsReadStatic | opcodeBase.FlagsWriteStatic);
-                    foreach (Rn r in opcodeBase.RegsReadStatic) regs.Add(RegisterTools.Get64BitsRegister(r));
-                    foreach (Rn r in opcodeBase.RegsWriteStatic) regs.Add(RegisterTools.Get64BitsRegister(r));
-                    mem |= opcodeBase.MemReadWriteStatic;
+                    if (opcodeBase != null)
+                    {
+                        flags |= (opcodeBase.FlagsReadStatic | opcodeBase.FlagsWriteStatic);
+                        foreach (Rn r in opcodeBase.RegsReadStatic) regs.Add(RegisterTools.Get64BitsRegister(r));
+                        foreach (Rn r in opcodeBase.RegsWriteStatic) regs.Add(RegisterTools.Get64BitsRegister(r));
+                        mem |= opcodeBase.MemReadWriteStatic;
+                    }
                 }
             }
 
@@ -284,7 +285,6 @@ namespace AsmSim
             //    Console.WriteLine("INFO: CFlow:Update: superfluous update. Doing nothing");
             //    return false;
             //}
-            this._programStr = programStr;
             this.Update_Lines(programStr);
             return true;
         }
@@ -355,7 +355,7 @@ namespace AsmSim
                 programStr = sb.ToString();
             }
             #endregion
-            #region parse to find all labels
+            #region Parse to find all labels
             IDictionary<string, int> labels = this.GetLabels(programStr);
             // replace all labels by annotated label
             foreach (KeyValuePair<string, int> entry in labels)
@@ -369,10 +369,13 @@ namespace AsmSim
                 programStr = programStr.Replace(entry.Key, newLabel);
             }
             #endregion
+
+            this._sourceCode.Clear();
+            this._graph.Clear();
+
             #region Populate IncomingLines
             {
                 string[] lines = programStr.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-                this._sourceCode.Clear();
 
                 for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
                 {
@@ -509,6 +512,7 @@ namespace AsmSim
             }
             return result;
         }
+
         #endregion Private Methods
     }
 }

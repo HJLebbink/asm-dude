@@ -344,19 +344,19 @@ namespace AsmSim
                 case ConditionalElement.L:
                 case ConditionalElement.NGE: return ctx.MkXor(SF(), OF());
 
-                case ConditionalElement.CXZ: return ctx.MkEq(Tools.Reg_Key(Rn.CX, key, ctx), ctx.MkBV(0, 16));
-                case ConditionalElement.ECXZ: return ctx.MkEq(Tools.Reg_Key(Rn.ECX, key, ctx), ctx.MkBV(0, 32));
-                case ConditionalElement.RCXZ: return ctx.MkEq(Tools.Reg_Key(Rn.RCX, key, ctx), ctx.MkBV(0, 64));
+                case ConditionalElement.CXZ: return ctx.MkEq(Tools.Create_Key(Rn.CX, key, ctx), ctx.MkBV(0, 16));
+                case ConditionalElement.ECXZ: return ctx.MkEq(Tools.Create_Key(Rn.ECX, key, ctx), ctx.MkBV(0, 32));
+                case ConditionalElement.RCXZ: return ctx.MkEq(Tools.Create_Key(Rn.RCX, key, ctx), ctx.MkBV(0, 64));
                 default:
                     // unreachable
                     throw new Exception();
             }
 
-            BoolExpr CF() { return Tools.Flag_Key(Flags.CF, key, ctx); };
-            BoolExpr ZF() { return Tools.Flag_Key(Flags.ZF, key, ctx); };
-            BoolExpr SF() { return Tools.Flag_Key(Flags.SF, key, ctx); };
-            BoolExpr OF() { return Tools.Flag_Key(Flags.OF, key, ctx); };
-            BoolExpr PF() { return Tools.Flag_Key(Flags.PF, key, ctx); };
+            BoolExpr CF() { return Tools.Create_Key(Flags.CF, key, ctx); };
+            BoolExpr ZF() { return Tools.Create_Key(Flags.ZF, key, ctx); };
+            BoolExpr SF() { return Tools.Create_Key(Flags.SF, key, ctx); };
+            BoolExpr OF() { return Tools.Create_Key(Flags.OF, key, ctx); };
+            BoolExpr PF() { return Tools.Create_Key(Flags.PF, key, ctx); };
             //BoolExpr AF() { return Mnemonics_ng.Tools.Flag_Key(Flags.AF, key, ctx); };
         }
     }

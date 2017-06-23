@@ -30,6 +30,7 @@ using AsmDude.SyntaxHighlighting;
 using AsmSim;
 using AsmTools;
 using Amib.Threading;
+using AsmSim.Mnemonics;
 
 namespace AsmDude.Tools
 {
@@ -43,9 +44,10 @@ namespace AsmDude.Tools
 
         private readonly IDictionary<int, State> _cached_States_Before;
         private readonly IDictionary<int, State> _cached_States_After;
-        private readonly IDictionary<int, string> _usage_Undefined;
-        private readonly IDictionary<int, string> _redundant_Instruction;
-        private readonly IDictionary<int, (Mnemonic Mnemonic, string Message)> _syntax_Errors;
+        private readonly IDictionary<int, (string Message, Mnemonic Mnemonic)> _usage_Undefined;
+        private readonly IDictionary<int, (string Message, Mnemonic Mnemonic)> _redundant_Instruction;
+        private readonly IDictionary<int, (string Message, Mnemonic Mnemonic)> _unreachable_Instruction;
+        private readonly IDictionary<int, (string Message, Mnemonic Mnemonic)> _syntax_Errors;
         private readonly ISet<int> _isNotImplemented;
 
         private readonly ISet<int> _bussy_States_Before;
@@ -85,19 +87,20 @@ namespace AsmDude.Tools
             this.Enabled = Settings.Default.AsmSim_On;
             if (this.Enabled)
             {
-                AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: swithed on");
+                AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: switched on");
 
                 this._cached_States_After = new Dictionary<int, State>();
                 this._cached_States_Before = new Dictionary<int, State>();
                 this._bussy_States_After = new HashSet<int>();
                 this._bussy_States_Before = new HashSet<int>();
-                this._usage_Undefined = new Dictionary<int, string>();
-                this._redundant_Instruction = new Dictionary<int, string>();
-                this._syntax_Errors = new Dictionary<int, (Mnemonic Mnemonic, string Message)>();
+                this._usage_Undefined = new Dictionary<int, (string Message, Mnemonic Mnemonic)>();
+                this._redundant_Instruction = new Dictionary<int, (string Message, Mnemonic Mnemonic)>();
+                this._unreachable_Instruction = new Dictionary<int, (string Message, Mnemonic Mnemonic)>();
+                this._syntax_Errors = new Dictionary<int, (string Message, Mnemonic Mnemonic)>();
                 this._isNotImplemented = new HashSet<int>();
 
                 this._threadPool = AsmDudeTools.Instance.Thread_Pool;
-                this._threadPool2 = new SmartThreadPool(60000, Settings.Default.AsmSim_Number_Of_Threads, 1);
+                this._threadPool2 = new SmartThreadPool(60000, Settings.Default.AsmSim_Number_Of_Threads, Settings.Default.AsmSim_Number_Of_Threads);
                 Dictionary <string, string> settings = new Dictionary<string, string> {
                     /*
                     Legal parameters are:
@@ -139,15 +142,15 @@ namespace AsmDude.Tools
 
                 this._delay = new Delay(AsmDudePackage.msSleepBeforeAsyncExecution, 1000, this._threadPool);
                 this._delay.Done_Event += (o, i) => {
-                    if ((this._thread_Result != null) && !this._thread_Result.IsCanceled)
+                    if ((this._thread_Result != null) && !this._thread_Result.IsCompleted && !this._thread_Result.IsCanceled)
                     {
-                        AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: cancaling a reset thread.");
-                        this._thread_Result.Cancel(false);
+                        AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: cancaling an active reset thread.");
+                        this._thread_Result.Cancel();
                     }
                     this._threadPool2.Cancel(false);
 
-                    AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: delay_done event: going to start a reset event in a new thread.");
-                    this._thread_Result = this._threadPool2.QueueWorkItem(this.Reset_Private);
+                    AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: going to start an new reset thread.");
+                    this._thread_Result = this._threadPool2.QueueWorkItem(this.Reset_Private, WorkItemPriority.Lowest);
                 };
 
                 this.Reset(); // wait to give the system some breathing time
@@ -174,6 +177,7 @@ namespace AsmDude.Tools
 
         public void Dispose()
         {
+            this.Clear();
             this._threadPool2.Dispose();
             this._dFlow.Dispose();
         }
@@ -194,6 +198,7 @@ namespace AsmDude.Tools
             this._bussy_States_After.Clear();
             this._bussy_States_Before.Clear();
             this._redundant_Instruction.Clear();
+            this._unreachable_Instruction.Clear();
             this._usage_Undefined.Clear();
             this._syntax_Errors.Clear();
             this._isNotImplemented.Clear();
@@ -207,13 +212,21 @@ namespace AsmDude.Tools
                 string sourceCode = this._buffer.CurrentSnapshot.GetText();
                 if (this._sFlow.Update(sourceCode))
                 {
-                    //AsmDudeToolsStatic.Output_INFO("AsmSimulation:Reset_Private: updating dFlow");
+                    AsmDudeToolsStatic.Output_INFO("AsmSimulator:Reset_Private: Create_StateConfig");
+                    this.Tools.StateConfig = this._sFlow.Create_StateConfig();
 
-                    this.Tools.StateConfig = this._sFlow.Get_StateConfig();
+                    AsmDudeToolsStatic.Output_INFO("AsmSimulator:Reset_Private: dFlow Reset");
                     this._dFlow.Reset(this._sFlow, true);
 
+                    AsmDudeToolsStatic.Output_INFO("AsmSimulator:Reset_Private: AsmSimulator Clear");
                     this.Clear();
+
+                    //AsmDudeToolsStatic.Output_INFO("AsmSimulator:Reset_Private: GC");
+                    //System.GC.Collect();
+
+                    AsmDudeToolsStatic.Output_INFO("AsmSimulator:Reset_Private: PreCalculate_LOCAL");
                     PreCalculate_LOCAL();
+
                     this.Reset_Done_Event?.Invoke(this, new EventArgs());
                 }
             }
@@ -253,6 +266,7 @@ namespace AsmDude.Tools
 
                 bool update_Usage_Undefined = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Show_Usage_Of_Undefined || Settings.Default.AsmSim_Decorate_Usage_Of_Undefined);
                 bool update_Redundant_Instruction = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Show_Redundant_Instructions || Settings.Default.AsmSim_Decorate_Redundant_Instructions);
+                bool update_Unreachable_Instruction = Settings.Default.AsmSim_On && Settings.Default.AsmSim_Decorate_Unreachable_Instructions;
                 bool update_Known_Register = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Decorate_Registers);
 
                 foreach (int lineNumber in LineNumber_Centered_LOCAL(this._sFlow.FirstLineNumber, this._last_Changed_LineNumber, this._sFlow.LastLineNumber))
@@ -261,7 +275,7 @@ namespace AsmDude.Tools
                 }
                 foreach (int lineNumber in LineNumber_Centered_LOCAL(this._sFlow.FirstLineNumber, this._last_Changed_LineNumber, this._sFlow.LastLineNumber))
                 {
-                    try
+                   // try
                     {
                         var syntaxInfo = this.Calculate_Syntax_Errors(lineNumber);
                         if (!syntaxInfo.IsImplemented) // the operation is not implemented
@@ -278,7 +292,7 @@ namespace AsmDude.Tools
                             {
                                 if (update_Syntax_Error)
                                 {
-                                    this._syntax_Errors.Add(lineNumber, (syntaxInfo.Mnemonic, syntaxInfo.Message));
+                                    this._syntax_Errors.Add(lineNumber, (syntaxInfo.Message, syntaxInfo.Mnemonic));
                                     this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.SYNTAX_ERROR));
                                 }
                             }
@@ -300,30 +314,38 @@ namespace AsmDude.Tools
                                 }
                                 if (update_Usage_Undefined)
                                 {
-                                    string message = this.Calculate_Usage_Undefined_Warnings(lineNumber);
-                                    if (message.Length > 0)
+                                    var info = this.Calculate_Usage_Undefined_Warnings(lineNumber);
+                                    if (info.Message.Length > 0)
                                     {
-                                        this._usage_Undefined.Add(lineNumber, message);
+                                        this._usage_Undefined.Add(lineNumber, info);
                                         this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.USAGE_OF_UNDEFINED));
                                     }
                                 }
                                 if (update_Redundant_Instruction)
                                 {
-                                    string message = this.Calculate_Redundant_Instruction_Warnings(lineNumber);
-                                    if (message.Length > 0)
+                                    var info = this.Calculate_Redundant_Instruction_Warnings(lineNumber);
+                                    if (info.Message.Length > 0)
                                     {
-
-                                        this._redundant_Instruction.Add(lineNumber, message);
+                                        this._redundant_Instruction.Add(lineNumber, info);
                                         this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.REDUNDANT));
+                                    }
+                                }
+                                if (update_Unreachable_Instruction)
+                                {
+                                    var info = this.Calculate_Unreachable_Instruction_Warnings(lineNumber);
+                                    if (info.Message.Length > 0)
+                                    {
+                                        this._unreachable_Instruction.Add(lineNumber, info);
+                                        this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.UNREACHABLE));
                                     }
                                 }
                             }
                         }
                     }
-                    catch (Exception e)
-                    {
-                        AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:PreCalculate_LOCAL; e={1}", ToString(), e.ToString()));
-                    }
+                    //catch (Exception e)
+                   // {
+                    //    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:PreCalculate_LOCAL; e={1}", ToString(), e.ToString()));
+                   // }
                 }
             }
             #endregion
@@ -331,15 +353,9 @@ namespace AsmDude.Tools
         #endregion
 
         #region Syntax Errors
-        public IEnumerable<(int LineNumber, Mnemonic Mnemonic, string Message)> Syntax_Errors
+        public IEnumerable<(int LineNumber, (string Message, Mnemonic Mnemonic) info)> Syntax_Errors
         {
-            get
-            {
-                foreach (var x in this._syntax_Errors)
-                {
-                    yield return (x.Key, x.Value.Mnemonic, x.Value.Message);
-                }
-            }
+            get { foreach (var x in this._syntax_Errors) yield return (x.Key, x.Value); }
         }
         public bool Is_Implemented(int lineNumber)
         {
@@ -349,9 +365,9 @@ namespace AsmDude.Tools
         {
             return this._syntax_Errors.ContainsKey(lineNumber);
         }
-        public (Mnemonic Mnemonic, string Message) Get_Syntax_Error(int lineNumber)
+        public (string Message, Mnemonic Mnemonic) Get_Syntax_Error(int lineNumber)
         {
-            return this._syntax_Errors.TryGetValue(lineNumber, out (Mnemonic Mnemonic, string Message) error) ? error : (Mnemonic.NONE, "");
+            return this._syntax_Errors.TryGetValue(lineNumber, out var info) ? info : ("", Mnemonic.NONE);
         }
         private (bool IsImplemented, Mnemonic Mnemonic, string Message) Calculate_Syntax_Errors(int lineNumber)
         {
@@ -374,7 +390,7 @@ namespace AsmDude.Tools
         #endregion
 
         #region Usage Undefined
-        public IEnumerable<(int LineNumber, string Message)> Usage_Undefined
+        public IEnumerable<(int LineNumber, (string Message, Mnemonic Mnemonic) info)> Usage_Undefined
         {
             get { foreach (var x in this._usage_Undefined) yield return (x.Key, x.Value); }
         }
@@ -382,63 +398,69 @@ namespace AsmDude.Tools
         {
             return this._usage_Undefined.ContainsKey(lineNumber);
         }
-        public string Get_Usage_Undefined_Warning(int lineNumber)
+        public (string Message, Mnemonic Mnemonic) Get_Usage_Undefined_Warning(int lineNumber)
         {
-            return this._usage_Undefined.TryGetValue(lineNumber, out string message) ? message : "";
+            return this._usage_Undefined.TryGetValue(lineNumber, out var message) ? message : ("", Mnemonic.NONE);
         }
-        private string Calculate_Usage_Undefined_Warnings(int lineNumber)
+        private (string Message, Mnemonic Mnemonic) Calculate_Usage_Undefined_Warnings(int lineNumber)
         {
-            lock (this._updateLock)
+            //lock (this._updateLock)
             {
                 State state = this.Get_State_Before(lineNumber, false, false).State;
-                if (state == null) return "";
+                if (state == null) return ("", Mnemonic.NONE);
 
                 var dummyKeys = ("", "", "");
                 var content = this._sFlow.Get_Line(lineNumber);
-                var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, this.Tools);
-
-                string message = "";
-                if (opcodeBase != null)
+                using (OpcodeBase opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, this.Tools))
                 {
-                    StateConfig stateConfig = this.Tools.StateConfig;
-                    foreach (Flags flag in FlagTools.GetFlags(opcodeBase.FlagsReadStatic))
+                    string message = "";
+                    Mnemonic mnemonic = Mnemonic.NONE;
+                    if (opcodeBase != null)
                     {
-                        if (stateConfig.IsFlagOn(flag))
+                        StateConfig stateConfig = this.Tools.StateConfig;
+                        foreach (Flags flag in FlagTools.GetFlags(opcodeBase.FlagsReadStatic))
                         {
-                            if (state.Is_Undefined(flag))
+                            if (stateConfig.IsFlagOn(flag))
                             {
-                                message = message + flag + " is undefined; ";
-                            }
-                        }
-                    }
-                    foreach (Rn reg in opcodeBase.RegsReadStatic)
-                    {
-                        if (stateConfig.IsRegOn(RegisterTools.Get64BitsRegister(reg)))
-                        {
-                            Tv[] regContent = state.GetTvArray(reg);
-                            bool isUndefined = false;
-                            foreach (var tv in regContent)
-                            {
-                                if (tv == Tv.UNDEFINED)
+                                if (state.Is_Undefined(flag))
                                 {
-                                    isUndefined = true;
-                                    break;
+                                    message = message + flag + " is undefined; ";
                                 }
                             }
-                            if (isUndefined)
+                        }
+                        foreach (Rn reg in opcodeBase.RegsReadStatic)
+                        {
+                            if (stateConfig.IsRegOn(RegisterTools.Get64BitsRegister(reg)))
                             {
-                                message = message + reg + " has undefined content: " + ToolsZ3.ToStringHex(regContent) + " = " + ToolsZ3.ToStringBin(regContent) + "; ";
+                                Tv[] regContent = state.GetTvArray(reg);
+                                bool isUndefined = false;
+                                foreach (var tv in regContent)
+                                {
+                                    if (tv == Tv.UNDEFINED)
+                                    {
+                                        isUndefined = true;
+                                        break;
+                                    }
+                                }
+                                if (isUndefined)
+                                {
+                                    message = message + reg + " has undefined content: " + ToolsZ3.ToStringHex(regContent) + " = " + ToolsZ3.ToStringBin(regContent) + "; ";
+                                }
                             }
                         }
+                        mnemonic = opcodeBase.Mnemonic;
+                        // cleanup
+                        opcodeBase.Updates.Regular?.Dispose();
+                        opcodeBase.Updates.Branch?.Dispose();
                     }
+                    return (Message: message, Mnemonic: mnemonic);
                 }
-                return message;
             }
         }
         #endregion
 
         #region Redundant Instruction
-        public IEnumerable<(int LineNumber, string Message)> Redundant_Instruction
+        public IEnumerable<(int LineNumber, (string Message, Mnemonic Mnemonic) info)> Redundant_Instruction
         {
             get { foreach (var x in this._redundant_Instruction) yield return (x.Key, x.Value); }
         }
@@ -446,46 +468,74 @@ namespace AsmDude.Tools
         {
             return this._redundant_Instruction.ContainsKey(lineNumber);
         }
-        public string Get_Redundant_Instruction_Warning(int lineNumber)
+        public (string Message, Mnemonic Mnemonic) Get_Redundant_Instruction_Warning(int lineNumber)
         {
-            return this._redundant_Instruction.TryGetValue(lineNumber, out string message) ? message : "";
+            return this._redundant_Instruction.TryGetValue(lineNumber, out var info) ? info : ("", Mnemonic.NONE);
         }
-        private string Calculate_Redundant_Instruction_Warnings(int lineNumber)
+        private (string Message, Mnemonic Mnemonic) Calculate_Redundant_Instruction_Warnings(int lineNumber)
         {
             var content = this._sFlow.Get_Line(lineNumber);
-            if (content.Mnemonic == Mnemonic.NONE) return "";
-            if (content.Mnemonic == Mnemonic.NOP) return "";
-            if (content.Mnemonic == Mnemonic.UNKNOWN) return "";
+            if (content.Mnemonic == Mnemonic.NONE) return ("", Mnemonic.NONE);
+            if (content.Mnemonic == Mnemonic.NOP) return ("", Mnemonic.NONE);
+            if (content.Mnemonic == Mnemonic.UNKNOWN) return ("", Mnemonic.NONE);
 
-            if (this._dFlow.Is_Branch_Point(lineNumber)) return "";
-            if (this._dFlow.Is_Merge_Point(lineNumber)) return "";
+            if (this._dFlow.Is_Branch_Point(lineNumber)) return ("", Mnemonic.NONE);
+            if (this._dFlow.Is_Merge_Point(lineNumber)) return ("", Mnemonic.NONE);
 
             State state = this.Get_State_After(lineNumber, false, true).State;
-            if (state == null) return "";
+            if (state == null) return ("", Mnemonic.NONE);
 
             string key1 = this._dFlow.Key(lineNumber);
             string key2 = this._dFlow.Key_Next(lineNumber);
 
             lock (this._updateLock)
             {
-                StateConfig stateConfig = this._sFlow.Get_StateConfig(lineNumber, lineNumber);
-
+                StateConfig stateConfig = this._sFlow.Create_StateConfig(lineNumber, lineNumber);
                 foreach (Flags flag in stateConfig.GetFlagOn())
                 {
-                    if (!state.Is_Redundant(flag, key1, key2)) return "";
+                    if (!state.Is_Redundant(flag, key1, key2)) return ("", Mnemonic.NONE);
                 }
                 foreach (Rn reg in stateConfig.GetRegOn())
                 {
-                    if (!state.Is_Redundant(reg, key1, key2)) return "";
+                    if (!state.Is_Redundant(reg, key1, key2)) return ("", Mnemonic.NONE);
                 }
                 if (stateConfig.mem)
                 {
-                    if (state.Is_Redundant_Mem(key1, key2) != Tv.ONE) return "";
+                    if (state.Is_Redundant_Mem(key1, key2) != Tv.ONE) return ("", Mnemonic.NONE);
                 }
             }
             string message = "\"" + this._sFlow.Get_Line_Str(lineNumber) + "\" is redundant.";
-            AsmDudeToolsStatic.Output_INFO("AsmSimulator: Has_Redundant_Instruction_Warnings: lineNumber " + lineNumber + ": " + message);
-            return message;
+            //AsmDudeToolsStatic.Output_INFO("AsmSimulator: Has_Redundant_Instruction_Warnings: lineNumber " + lineNumber + ": " + message);
+            return (Message: message, content.Mnemonic);
+        }
+        #endregion
+
+        #region Unreachable Instruction
+        public IEnumerable<(int LineNumber, (string Message, Mnemonic Mnemonic) info)> Unreachable_Instruction
+        {
+            get { foreach (var x in this._unreachable_Instruction) yield return (x.Key, x.Value); }
+        }
+        public bool Has_Unreachable_Instruction_Warning(int lineNumber)
+        {
+            return this._unreachable_Instruction.ContainsKey(lineNumber);
+        }
+        public (string Message, Mnemonic Mnemonic) Get_Unreachable_Instruction_Warning(int lineNumber)
+        {
+            return this._unreachable_Instruction.TryGetValue(lineNumber, out var info) ? info : ("", Mnemonic.NONE);
+        }
+        private (string Message, Mnemonic Mnemonic) Calculate_Unreachable_Instruction_Warnings(int lineNumber)
+        {
+            State state = this.Get_State_Before(lineNumber, false, true).State;
+            if (state == null) return ("", Mnemonic.NONE);
+
+            if (state.IsConsistent == Tv.ZERO)
+            {
+                return (Message: "\"" + this._sFlow.Get_Line_Str(lineNumber) + "\" is unreachable.", Mnemonic: this._sFlow.Get_Line(lineNumber).Mnemonic);
+            }
+            else
+            {
+                return ("", Mnemonic.NONE);
+            }
         }
         #endregion
 
@@ -498,8 +548,8 @@ namespace AsmDude.Tools
 
         public (string Value, bool Bussy) Get_Register_Value(Rn name, int lineNumber, bool before, bool async, bool create)
         {
-            try
-            {
+            //try
+            //{
                 if (!this.Enabled) return ("", false);
 
                 var state = (before) ? this.Get_State_Before(lineNumber, async, create) : this.Get_State_After(lineNumber, async, create);
@@ -554,12 +604,12 @@ namespace AsmDude.Tools
                     }
                 }
                 #endregion
-            }
-            catch (Exception e)
-            {
-                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Get_Register_Value; e={1}", ToString(), e.ToString()));
-                return ("Exception in AsmSimulator:Get_Register_Value", false);
-            }
+            //}
+           // catch (Exception e)
+           // {
+           //     AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Get_Register_Value; e={1}", ToString(), e.ToString()));
+           //     return ("Exception in AsmSimulator:Get_Register_Value", false);
+           // }
         }
 
         public (bool HasValue, bool Bussy) Has_Register_Value(Rn name, int lineNumber, bool before, bool create = false)
@@ -638,15 +688,25 @@ namespace AsmDude.Tools
             {
                 this._bussy_States_After.Add(lineNumber);
 
-                State state = AsmSim.Tools.Collapse(this._dFlow.States_After(lineNumber));
-                if (state == null)
+                State state = null;
+                var statesBefore = new List<State>(this._dFlow.Create_States_After(lineNumber));
+                switch (statesBefore.Count)
                 {
-                    string key = this._dFlow.Key(lineNumber);
-                    state = new State(this.Tools, key, key);
+                    case 0:
+                        string key = this._dFlow.Key(lineNumber);
+                        state = new State(this.Tools, key, key);
+                        break;
+                    case 1:
+                        state = statesBefore[0];
+                        break;
+                    default:
+                        state = AsmSim.Tools.Collapse(statesBefore);
+                        foreach (var v in statesBefore) v.Dispose();
+                        break;
                 }
                 state.Frozen = true;
 
-                lock (this._updateLock)
+                //lock (this._updateLock)
                 {
                     if (this._cached_States_After.ContainsKey(lineNumber))
                     {
@@ -676,12 +736,12 @@ namespace AsmDude.Tools
                 if (async)
                 {
                     //AsmDudeToolsStatic.Output_INFO("AsmSimulator:Get_State_Before: going to execute this in a different thread.");
-                    this._threadPool2.QueueWorkItem(Calculate_State_Before_LOCAL, WorkItemPriority.Lowest);
+                    this._threadPool2.QueueWorkItem(Create_State_Before_LOCAL, WorkItemPriority.Lowest);
                     return (State: null, Bussy: true);
                 }
                 else
                 {
-                    Calculate_State_Before_LOCAL();
+                    Create_State_Before_LOCAL();
                     this._cached_States_Before.TryGetValue(lineNumber, out State result2);
                     return (State: result2, Bussy: false);
                 }
@@ -689,19 +749,29 @@ namespace AsmDude.Tools
             return (State: null, Bussy: false);
 
             #region Local Methods
-            void Calculate_State_Before_LOCAL()
+            void Create_State_Before_LOCAL()
             {
                 this._bussy_States_Before.Add(lineNumber);
 
-                State state = AsmSim.Tools.Collapse(this._dFlow.States_Before(lineNumber));
-                if (state == null)
+                State state = null;
+                var statesBefore = new List<State>(this._dFlow.Create_States_Before(lineNumber));
+                switch (statesBefore.Count)
                 {
-                    string key = this._dFlow.Key(lineNumber);
-                    state = new State(this.Tools, key, key);
+                    case 0:
+                        string key = this._dFlow.Key(lineNumber);
+                        state = new State(this.Tools, key, key);
+                        break;
+                    case 1:
+                        state = statesBefore[0];
+                        break;
+                    default: 
+                        state = AsmSim.Tools.Collapse(statesBefore);
+                        foreach (var v in statesBefore) v.Dispose();
+                        break;
                 }
                 state.Frozen = true;
 
-                lock (this._updateLock)
+                //lock (this._updateLock)
                 {
                     if (this._cached_States_Before.ContainsKey(lineNumber))
                     {

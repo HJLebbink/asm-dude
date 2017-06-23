@@ -254,7 +254,7 @@ namespace AsmDude
         #region Private Methods
         private IEnumerable<Completion> Mnemonic_Operand_Completions(bool useCapitals, ISet<AsmSignatureEnum> allowedOperands, int lineNumber)
         {
-            bool asmSimulator_Enabled = this._asmSimulator.Enabled;
+            bool use_AsmSim_In_Code_Completion = this._asmSimulator.Enabled && Settings.Default.AsmSim_Use_In_Code_Completion;
             bool att_Syntax = AsmDudeToolsStatic.Used_Assembler == AssemblerEnum.NASM_ATT;
 
 
@@ -280,7 +280,7 @@ namespace AsmDude
                                 Rn regName = RegisterTools.ParseRn(keyword, true);
                                 if (AsmSignatureTools.Is_Allowed_Reg(regName, allowedOperands))
                                 {
-                                    if (asmSimulator_Enabled && this._asmSimulator.Tools.StateConfig.IsRegOn(RegisterTools.Get64BitsRegister(regName)))
+                                    if (use_AsmSim_In_Code_Completion && this._asmSimulator.Tools.StateConfig.IsRegOn(RegisterTools.Get64BitsRegister(regName)))
                                     {
                                         var v = this._asmSimulator.Get_Register_Value(regName, lineNumber, true, false, false);
                                         if (!v.Bussy)

@@ -183,7 +183,7 @@ namespace unit_tests_asm_z3
 
 
                 Context ctx = state.Ctx;
-                BoolExpr t = ctx.MkEq(state.Get(Rn.RCX), state.Get(Rn.RDX));
+                BoolExpr t = ctx.MkEq(state.Create(Rn.RCX), state.Create(Rn.RDX));
 
                 if (false)
                 {// this test does not seem to terminate
@@ -233,8 +233,8 @@ namespace unit_tests_asm_z3
             {   // forward
                 State state = CreateState(tools);
 
-                BitVecExpr rax0 = state.Get(Rn.RAX);
-                BitVecExpr rbx0 = state.Get(Rn.RBX);
+                BitVecExpr rax0 = state.Create(Rn.RAX);
+                BitVecExpr rbx0 = state.Create(Rn.RBX);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
@@ -250,7 +250,7 @@ namespace unit_tests_asm_z3
 
                 // ebx is minimum of ebx and eax
                 Context ctx = state.Ctx;
-                BitVecExpr rbx1 = state.Get(Rn.RBX);
+                BitVecExpr rbx1 = state.Create(Rn.RBX);
                 rax0 = rax0.Translate(ctx) as BitVecExpr;
                 rbx0 = rbx0.Translate(ctx) as BitVecExpr;
                 BoolExpr t = ctx.MkEq(rbx1, ctx.MkITE(ctx.MkBVUGT(rax0, rbx0), rbx0, rax0));
@@ -314,8 +314,8 @@ namespace unit_tests_asm_z3
                     if (logToDisplay) Console.WriteLine("Initially, we know:\n" + state);
                 }
 
-                BitVecExpr rax0 = state.Get(Rn.RAX);
-                BitVecExpr rbx0 = state.Get(Rn.RBX);
+                BitVecExpr rax0 = state.Create(Rn.RAX);
+                BitVecExpr rbx0 = state.Create(Rn.RBX);
 
                 {
                     state.Solver.Assert(state.Ctx.MkNot(ToolsFlags.Create_OF_Sub(rax0, rbx0, rax0.SortSize, ctx))); // this code only works when there is no overflow in line1
@@ -323,14 +323,14 @@ namespace unit_tests_asm_z3
                 {   // line 1
                     state = Runner.SimpleStep_Forward(line1, state);
                     // retrieve the overflow after line 1, OF has to be zero for the code to work
-                    state.Solver.AssertAndTrack(ctx.MkNot(state.Get(Flags.OF)), ctx.MkBoolConst("OF-ZERO"));
+                    state.Solver.AssertAndTrack(ctx.MkNot(state.Create(Flags.OF)), ctx.MkBoolConst("OF-ZERO"));
                     Assert.AreEqual(Status.SATISFIABLE, state.Solver.Check());
                     if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
                 {   // line 2
                     state = Runner.SimpleStep_Forward(line2, state);
                     //if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
-                    BoolExpr t2 = ctx.MkEq(state.Get(Rn.RDX), ctx.MkITE(ctx.MkBVSGT(rax0, rbx0), ctx.MkBV(0xFFFF_FFFF_FFFF_FFFF, 64), ctx.MkBV(0, 64)));
+                    BoolExpr t2 = ctx.MkEq(state.Create(Rn.RDX), ctx.MkITE(ctx.MkBVSGT(rax0, rbx0), ctx.MkBV(0xFFFF_FFFF_FFFF_FFFF, 64), ctx.MkBV(0, 64)));
                     //Assert.AreEqual(Tv5.ONE, ToolsZ3.GetTv5(t2, state.Solver, state.Ctx));
                 }
                 {
@@ -346,7 +346,7 @@ namespace unit_tests_asm_z3
 
 
                 // ebx is minimum of ebx and eax
-                BitVecExpr rbx1 = state.Get(Rn.RBX);
+                BitVecExpr rbx1 = state.Create(Rn.RBX);
                 BoolExpr t = ctx.MkEq(rbx1, ctx.MkITE(ctx.MkBVSGT(rax0, rbx0), rbx0, rax0));
 
                 if (false)
@@ -402,7 +402,7 @@ namespace unit_tests_asm_z3
 
             {   // forward
                 State state = CreateState(tools);
-                BitVecExpr bytes = state.Get(Rn.EBX);
+                BitVecExpr bytes = state.Create(Rn.EBX);
 
                 if (false)
                 {   // line 1
@@ -438,7 +438,7 @@ namespace unit_tests_asm_z3
                             ctx.MkEq(byte3, zero),
                             ctx.MkEq(byte4, zero)
                         ),
-                        ctx.MkNot(ctx.MkEq(state.Get(Rn.ECX), ctx.MkBV(0, 32)))
+                        ctx.MkNot(ctx.MkEq(state.Create(Rn.ECX), ctx.MkBV(0, 32)))
                     );
                     TestTools.AreEqual(Tv.ONE, ToolsZ3.GetTv(property, state.Solver, state.Ctx));
                 }
@@ -486,7 +486,7 @@ namespace unit_tests_asm_z3
 
             {   // forward
                 State state = CreateState(tools);
-                BitVecExpr bytes = state.Get(Rn.RBX);
+                BitVecExpr bytes = state.Create(Rn.RBX);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
@@ -533,7 +533,7 @@ namespace unit_tests_asm_z3
                             ctx.MkEq(byte7, zero8),
                             ctx.MkEq(byte8, zero8)
                         ),
-                        ctx.MkNot(ctx.MkEq(state.Get(Rn.RCX), ctx.MkBV(0, 64)))
+                        ctx.MkNot(ctx.MkEq(state.Create(Rn.RCX), ctx.MkBV(0, 64)))
                     );
                     TestTools.AreEqual(Tv.ONE, ToolsZ3.GetTv(property, state.Solver, ctx));
                 }

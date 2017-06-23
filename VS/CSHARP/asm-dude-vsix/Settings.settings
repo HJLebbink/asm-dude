@@ -377,5 +377,11 @@
     <Setting Name="AsmSim_Number_Of_Threads" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">3</Value>
     </Setting>
+    <Setting Name="AsmSim_Show_Unreachable_Instructions" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AsmSim_Decorate_Unreachable_Instructions" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -60,18 +60,22 @@ namespace AsmSim
             string nextKey = Tools.CreateKey(state.Tools.Rand);
             string nextKeyBranch = "DUMMY_NOT_USED";
             var content = AsmSourceTools.ParseLine(line);
-            var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, (state.HeadKey, nextKey, nextKeyBranch), state.Tools);
-            if (opcodeBase == null) return null;
-            if (opcodeBase.IsHalted) return null;
+            using (var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, (state.HeadKey, nextKey, nextKeyBranch), state.Tools))
+            {
+                if (opcodeBase == null) return null;
+                if (opcodeBase.IsHalted) return null;
 
-            opcodeBase.Execute();
-            State stateOut = new State(state);
-            stateOut.Update_Forward(opcodeBase.Updates.Regular);
-            opcodeBase.Dispose();
+                opcodeBase.Execute();
+                State stateOut = new State(state);
+                stateOut.Update_Forward(opcodeBase.Updates.Regular);
 
-            if (!state.Tools.Quiet) Console.WriteLine("INFO: Runner:SimpleStep_Forward: after \"" + line + "\" we know:");
-            if (!state.Tools.Quiet) Console.WriteLine(stateOut);
-            return stateOut;
+                opcodeBase.Updates.Regular?.Dispose();
+                opcodeBase.Updates.Branch?.Dispose();
+
+                if (!state.Tools.Quiet) Console.WriteLine("INFO: Runner:SimpleStep_Forward: after \"" + line + "\" we know:");
+                if (!state.Tools.Quiet) Console.WriteLine(stateOut);
+                return stateOut;
+            }
         }
 
         /// <summary>Perform onestep forward and return the state of the regular branch</summary>
@@ -79,18 +83,22 @@ namespace AsmSim
         {
             string prevKey = Tools.CreateKey(state.Tools.Rand);
             var content = AsmSourceTools.ParseLine(line);
-            var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, (prevKey, state.TailKey, state.TailKey), state.Tools);
-            if (opcodeBase == null) return null;
-            if (opcodeBase.IsHalted) return null;
+            using (var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, (prevKey, state.TailKey, state.TailKey), state.Tools))
+            {
+                if (opcodeBase == null) return null;
+                if (opcodeBase.IsHalted) return null;
 
-            opcodeBase.Execute();
-            State stateOut = new State(state);
-            stateOut.Update_Backward(opcodeBase.Updates.Regular, prevKey);
-            opcodeBase.Dispose();
+                opcodeBase.Execute();
+                State stateOut = new State(state);
+                stateOut.Update_Backward(opcodeBase.Updates.Regular, prevKey);
 
-            if (!state.Tools.Quiet) Console.WriteLine("INFO: Runner:SimpleStep_Backward: after \"" + line + "\" we know:");
-            if (!state.Tools.Quiet) Console.WriteLine(stateOut);
-            return stateOut;
+                opcodeBase.Updates.Regular?.Dispose();
+                opcodeBase.Updates.Branch?.Dispose();
+
+                if (!state.Tools.Quiet) Console.WriteLine("INFO: Runner:SimpleStep_Backward: after \"" + line + "\" we know:");
+                if (!state.Tools.Quiet) Console.WriteLine(stateOut);
+                return stateOut;
+            }
         }
 
         /// <summary>Perform one step forward and return states for both branches</summary>
@@ -99,26 +107,29 @@ namespace AsmSim
             string nextKey = Tools.CreateKey(state.Tools.Rand);
             string nextKeyBranch = nextKey + "!BRANCH";
             var content = AsmSourceTools.ParseLine(line);
-            var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, (state.HeadKey, nextKey, nextKeyBranch), state.Tools);
-            if (opcodeBase == null) return (Regular: null, Branch: null);
-            if (opcodeBase.IsHalted) return (Regular: null, Branch: null);
-
-            opcodeBase.Execute();
-            State stateRegular = null;
-            if (opcodeBase.Updates.Regular != null)
+            using (var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, (state.HeadKey, nextKey, nextKeyBranch), state.Tools))
             {
-                stateRegular = new State(state);
-                stateRegular.Update_Forward(opcodeBase.Updates.Regular);
-            }
-            State stateBranch = null;
-            if (opcodeBase.Updates.Branch != null)
-            {
-                stateBranch = new State(state);
-                stateBranch.Update_Forward(opcodeBase.Updates.Branch);
-            }
-            opcodeBase.Dispose();
+                if (opcodeBase == null) return (Regular: null, Branch: null);
+                if (opcodeBase.IsHalted) return (Regular: null, Branch: null);
 
-            return (Regular: stateRegular, Branch: stateBranch);
+                opcodeBase.Execute();
+                State stateRegular = null;
+                if (opcodeBase.Updates.Regular != null)
+                {
+                    stateRegular = new State(state);
+                    stateRegular.Update_Forward(opcodeBase.Updates.Regular);
+                    opcodeBase.Updates.Regular.Dispose();
+                }
+                State stateBranch = null;
+                if (opcodeBase.Updates.Branch != null)
+                {
+                    stateBranch = new State(state);
+                    stateBranch.Update_Forward(opcodeBase.Updates.Branch);
+                    opcodeBase.Updates.Branch.Dispose();
+                }
+
+                return (Regular: stateRegular, Branch: stateBranch);
+            }
         }
 
         public static (StateUpdate Regular, StateUpdate Branch) Execute(
@@ -128,19 +139,19 @@ namespace AsmSim
             Tools tools)
         {
             var content = sFlow.Get_Line(lineNumber);
-            var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, keys, tools);
-            if ((opcodeBase == null) || opcodeBase.IsHalted)
+            using (var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, keys, tools))
             {
-                StateUpdate resetState = new StateUpdate(keys.PrevKey, keys.NextKey, tools)
+                if ((opcodeBase == null) || opcodeBase.IsHalted)
                 {
-                    Reset = true
-                };
-                return (Regular: resetState, Branch: null);
+                    StateUpdate resetState = new StateUpdate(keys.PrevKey, keys.NextKey, tools)
+                    {
+                        Reset = true
+                    };
+                    return (Regular: resetState, Branch: null);
+                }
+                opcodeBase.Execute();
+                return opcodeBase.Updates;
             }
-            opcodeBase.Execute();
-            var updates = opcodeBase.Updates;
-            opcodeBase.Dispose();
-            return updates;
         }
 
         public static OpcodeBase InstantiateOpcode(

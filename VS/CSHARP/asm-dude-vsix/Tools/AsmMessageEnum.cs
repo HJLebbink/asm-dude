@@ -36,8 +36,9 @@ namespace AsmDude.Tools
         USAGE_OF_UNDEFINED = 1 << 5,
         NOT_IMPLEMENTED    = 1 << 6,
         REDUNDANT          = 1 << 7,
+        UNREACHABLE        = 1 << 8,
 
-        DECORATE_REG       = 1 << 8,
-        OTHER              = 1 << 9
+        DECORATE_REG       = 1 << 9,
+        OTHER              = 1 << 10
     }
 }

@@ -46,7 +46,7 @@ namespace AsmSim
         public void Init(DynamicFlow dFlow, int startLineNumber)
         {
             // Unroll the provided dFlow in depth first until either the maximum depth is reached or the state is inconsistent.
-
+            /*
             if (!dFlow.Has_LineNumber(startLineNumber))
             {
                 Console.WriteLine("WARNING: ExecutionTree: provided startLineNumber " + startLineNumber + " does not exist in the provided dFlow");
@@ -57,7 +57,7 @@ namespace AsmSim
 
             }
             //TODO
-
+            */
         }
 
         #region IDisposable Support

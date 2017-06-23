@@ -225,7 +225,7 @@ namespace unit_tests_asm_z3
 
             Tools tools = CreateTools();
             var sFlow = new StaticFlow(programStr, tools);
-            tools.StateConfig = sFlow.Get_StateConfig();
+            tools.StateConfig = sFlow.Create_StateConfig();
             var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
             var state = dFlow.EndState;
@@ -249,7 +249,7 @@ namespace unit_tests_asm_z3
 
             Tools tools = CreateTools();
             var sFlow = new StaticFlow(programStr, tools);
-            tools.StateConfig = sFlow.Get_StateConfig();
+            tools.StateConfig = sFlow.Create_StateConfig();
             var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
             State state = dFlow.EndState;
@@ -272,7 +272,7 @@ namespace unit_tests_asm_z3
 
             Tools tools = CreateTools();
             var sFlow = new StaticFlow(programStr, tools);
-            tools.StateConfig = sFlow.Get_StateConfig();
+            tools.StateConfig = sFlow.Create_StateConfig();
             //var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             var dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
 
@@ -297,7 +297,7 @@ namespace unit_tests_asm_z3
 
             Tools tools = CreateTools();
             var sFlow = new StaticFlow(programStr, tools);
-            tools.StateConfig = sFlow.Get_StateConfig();
+            tools.StateConfig = sFlow.Create_StateConfig();
             //var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             var dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
             //if (logToDisplay) Console.WriteLine(dFlow.ToString(sFlow));
@@ -322,7 +322,7 @@ namespace unit_tests_asm_z3
 
             Tools tools = CreateTools();
             var sFlow = new StaticFlow(programStr, tools);
-            tools.StateConfig = sFlow.Get_StateConfig();
+            tools.StateConfig = sFlow.Create_StateConfig();
             //var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             var dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
             bool logToDisplay2 = true;
@@ -369,11 +369,11 @@ namespace unit_tests_asm_z3
 
             Tools tools = CreateTools();
             var sFlow = new StaticFlow(programStr, tools);
-            tools.StateConfig = sFlow.Get_StateConfig();
+            tools.StateConfig = sFlow.Create_StateConfig();
             //var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             var dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
 
-            State state0 = dFlow.States_Before(0, 0);
+            State state0 = dFlow.Create_States_Before(0, 0);
             Assert.IsNotNull(state0);
             State state = dFlow.EndState;
             Assert.IsNotNull(state);
@@ -398,11 +398,11 @@ namespace unit_tests_asm_z3
 
             Tools tools = CreateTools();
             var sFlow = new StaticFlow(programStr, tools);
-            tools.StateConfig = sFlow.Get_StateConfig();
+            tools.StateConfig = sFlow.Create_StateConfig();
             //var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             var dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
 
-            State state0 = dFlow.States_Before(0, 0);
+            State state0 = dFlow.Create_States_Before(0, 0);
             Assert.IsNotNull(state0);
             State state = dFlow.EndState;
             Assert.IsNotNull(state);
@@ -421,7 +421,7 @@ namespace unit_tests_asm_z3
 
             Tools tools = CreateTools();
             var sFlow = new StaticFlow(programStr, tools);
-            tools.StateConfig = sFlow.Get_StateConfig();
+            tools.StateConfig = sFlow.Create_StateConfig();
             var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
             State state = dFlow.EndState;
@@ -463,7 +463,7 @@ namespace unit_tests_asm_z3
 
             Tools tools = CreateTools();
             var sFlow = new StaticFlow(programStr, tools);
-            tools.StateConfig = sFlow.Get_StateConfig();
+            tools.StateConfig = sFlow.Create_StateConfig();
             //var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             var dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
             //DotVisualizer.SaveToDot(sFlow, dFlow, "test1.dot");
@@ -506,7 +506,7 @@ namespace unit_tests_asm_z3
             Tools tools = CreateTools();
             var sFlow = new StaticFlow(programStr, tools);
             if (logToDisplay) Console.WriteLine(sFlow.ToString());
-            tools.StateConfig = sFlow.Get_StateConfig();
+            tools.StateConfig = sFlow.Create_StateConfig();
             var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
             State state = dFlow.EndState;
@@ -612,7 +612,7 @@ namespace unit_tests_asm_z3
             Tools tools = CreateTools();
             var sFlow = new StaticFlow(programStr, tools);
             if (logToDisplay) Console.WriteLine(sFlow.ToString());
-            tools.StateConfig = sFlow.Get_StateConfig();
+            tools.StateConfig = sFlow.Create_StateConfig();
             var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
             State state = dFlow.EndState;
@@ -707,7 +707,7 @@ namespace unit_tests_asm_z3
             Tools tools = CreateTools();
             var sFlow = new StaticFlow(programStr, tools);
             if (logToDisplay) Console.WriteLine(sFlow.ToString());
-            tools.StateConfig = sFlow.Get_StateConfig();
+            tools.StateConfig = sFlow.Create_StateConfig();
             var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
             State state = dFlow.EndState;
@@ -766,7 +766,7 @@ namespace unit_tests_asm_z3
             Tools tools = CreateTools();
             var sFlow = new StaticFlow(programStr, tools);
             if (logToDisplay) Console.WriteLine(sFlow.ToString());
-            tools.StateConfig = sFlow.Get_StateConfig();
+            tools.StateConfig = sFlow.Create_StateConfig();
             var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
             State state = dFlow.EndState;
@@ -881,10 +881,10 @@ namespace unit_tests_asm_z3
 
             var sFlow = new StaticFlow(programStr, tools);
             var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
-            State state0 = dFlow.States_Before(0, 0);
+            State state0 = dFlow.Create_States_Before(0, 0);
             State state = dFlow.EndState;
 
-            var rax = state0.Get(Rn.RAX).Translate(state.Ctx);
+            var rax = state0.Create(Rn.RAX).Translate(state.Ctx);
 
             state.Add(new BranchInfo(state.Ctx.MkEq(rax, state.Ctx.MkBV(0, 64)), true));
             if (logToDisplay2) Console.WriteLine("Forward:\n" + state);

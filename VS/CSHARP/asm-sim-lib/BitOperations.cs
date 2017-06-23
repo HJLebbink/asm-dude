@@ -165,7 +165,7 @@ namespace AsmSim
             bitPos = ctx.MkZeroExt(value.SortSize - 8, bitPos);
             BoolExpr bitValue = ToolsZ3.GetBit(value, bitPos, ctx);
 
-            BoolExpr CF_undef = Tools.Flag_Key_Fresh(Flags.CF, rand, ctx);
+            BoolExpr CF_undef = Tools.Create_Flag_Key_Fresh(Flags.CF, rand, ctx);
             BoolExpr cf = ctx.MkITE(ctx.MkEq(nShifts, ctx.MkBV(0, 8)), CF_undef, bitValue) as BoolExpr;
             return (result: value_out, cf: cf);
         }
@@ -209,7 +209,7 @@ namespace AsmSim
                     throw new Exception();
             }
 
-            BoolExpr cf_current = Tools.Flag_Key(Flags.CF, prevKey, ctx);
+            BoolExpr cf_current = Tools.Create_Key(Flags.CF, prevKey, ctx);
 
             BoolExpr cf = ctx.MkITE(ctx.MkEq(nShifts, ctx.MkBV(0, 8)), cf_current, bitValue) as BoolExpr;
             //Console.WriteLine("ShiftOperations:cf=" + cf);

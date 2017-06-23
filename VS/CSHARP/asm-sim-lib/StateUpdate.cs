@@ -183,17 +183,17 @@ namespace AsmSim
                 {
                     if (this._mem_Full != null)
                     {
-                        yield return this._mem_Update ?? ctx.MkEq(Tools.Mem_Key(this.NextKey, ctx), this._mem_Full);
+                        yield return this._mem_Update ?? ctx.MkEq(Tools.Create_Mem_Key(this.NextKey, ctx), this._mem_Full);
                     }
                     else
                     {
                         if (this._branch_Condition == null)
                         {
-                            yield return this._mem_Update ?? ctx.MkEq(Tools.Mem_Key(this.NextKey, ctx), Tools.Mem_Key(this._prevKey_Regular, ctx));
+                            yield return this._mem_Update ?? ctx.MkEq(Tools.Create_Mem_Key(this.NextKey, ctx), Tools.Create_Mem_Key(this._prevKey_Regular, ctx));
                         }
                         else
                         {
-                            yield return ctx.MkEq(Tools.Mem_Key(this.NextKey, ctx), ctx.MkITE(this._branch_Condition, Tools.Mem_Key(this._prevKey_Regular, ctx), Tools.Mem_Key(this._prevKey_Branch, ctx)));
+                            yield return ctx.MkEq(Tools.Create_Mem_Key(this.NextKey, ctx), ctx.MkITE(this._branch_Condition, Tools.Create_Mem_Key(this._prevKey_Regular, ctx), Tools.Create_Mem_Key(this._prevKey_Branch, ctx)));
                         }
                     }
                 }
@@ -217,17 +217,17 @@ namespace AsmSim
                 {
                     if (this._mem_Full != null)
                     {
-                        yield return this._mem_Update_U ?? ctx.MkEq(Tools.Mem_Key(this.NextKey, ctx), this._mem_Full);
+                        yield return this._mem_Update_U ?? ctx.MkEq(Tools.Create_Mem_Key(this.NextKey, ctx), this._mem_Full);
                     }
                     else
                     {
                         if (this._branch_Condition == null)
                         {
-                            yield return this._mem_Update_U ?? ctx.MkEq(Tools.Mem_Key(this.NextKey, ctx), Tools.Mem_Key(this._prevKey_Regular, ctx));
+                            yield return this._mem_Update_U ?? ctx.MkEq(Tools.Create_Mem_Key(this.NextKey, ctx), Tools.Create_Mem_Key(this._prevKey_Regular, ctx));
                         }
                         else
                         {
-                            yield return ctx.MkEq(Tools.Mem_Key(this.NextKey, ctx), ctx.MkITE(this._branch_Condition, Tools.Mem_Key(this._prevKey_Regular, ctx), Tools.Mem_Key(this._prevKey_Branch, ctx)));
+                            yield return ctx.MkEq(Tools.Create_Mem_Key(this.NextKey, ctx), ctx.MkITE(this._branch_Condition, Tools.Create_Mem_Key(this._prevKey_Regular, ctx), Tools.Create_Mem_Key(this._prevKey_Branch, ctx)));
                         }
                     }
                 }
@@ -250,13 +250,13 @@ namespace AsmSim
                 Context ctx = this._ctx;
                 if (this._branch_Condition == null)
                 {
-                    return Get_Raw_Private(reg, undef) ?? ctx.MkEq(Tools.Reg_Key(reg, this.NextKey, ctx), Tools.Reg_Key(reg, this._prevKey_Regular, ctx));
+                    return Get_Raw_Private(reg, undef) ?? ctx.MkEq(Tools.Create_Key(reg, this.NextKey, ctx), Tools.Create_Key(reg, this._prevKey_Regular, ctx));
                 }
                 else
                 {
                     return ctx.MkEq(
-                        Tools.Reg_Key(reg, this.NextKey, ctx),
-                        ctx.MkITE(this._branch_Condition, Tools.Reg_Key(reg, this._prevKey_Regular, ctx), Tools.Reg_Key(reg, this._prevKey_Branch, ctx)));
+                        Tools.Create_Key(reg, this.NextKey, ctx),
+                        ctx.MkITE(this._branch_Condition, Tools.Create_Key(reg, this._prevKey_Regular, ctx), Tools.Create_Key(reg, this._prevKey_Branch, ctx)));
                 }
             }
         }
@@ -295,15 +295,15 @@ namespace AsmSim
                 Context ctx = this._ctx;
                 if (this._branch_Condition == null)
                 {
-                    BoolExpr f1 = Tools.Flag_Key(flag, this.NextKey, ctx);
-                    BoolExpr f2 = Tools.Flag_Key(flag, this._prevKey_Regular, ctx);
+                    BoolExpr f1 = Tools.Create_Key(flag, this.NextKey, ctx);
+                    BoolExpr f2 = Tools.Create_Key(flag, this._prevKey_Regular, ctx);
                     return Get_Raw_Private(flag, undef) ?? ctx.MkEq(f1, f2);
                 }
                 else
                 {
-                    BoolExpr f1 = Tools.Flag_Key(flag, this.NextKey, ctx);
-                    BoolExpr f2 = Tools.Flag_Key(flag, this._prevKey_Regular, ctx);
-                    BoolExpr f3 = Tools.Flag_Key(flag, this._prevKey_Branch, ctx);
+                    BoolExpr f1 = Tools.Create_Key(flag, this.NextKey, ctx);
+                    BoolExpr f2 = Tools.Create_Key(flag, this._prevKey_Regular, ctx);
+                    BoolExpr f3 = Tools.Create_Key(flag, this._prevKey_Branch, ctx);
                     return ctx.MkEq(f1, ctx.MkITE(this._branch_Condition, f2, f3));
                 }
             }
@@ -343,33 +343,33 @@ namespace AsmSim
                     {
                         {
                             var expr = this.Get_Raw_Private(flag, false);
-                            if (expr != null) this.Set_Private(flag, expr.Substitute(Tools.Flag_Key(flag, this._nextKey, ctx), Tools.Flag_Key(flag, value, ctx)) as BoolExpr, false);
+                            if (expr != null) this.Set_Private(flag, expr.Substitute(Tools.Create_Key(flag, this._nextKey, ctx), Tools.Create_Key(flag, value, ctx)) as BoolExpr, false);
                         }
                         {
                             var expr = this.Get_Raw_Private(flag, true);
-                            if (expr != null) this.Set_Private(flag, expr.Substitute(Tools.Flag_Key(flag, this._nextKey, ctx), Tools.Flag_Key(flag, value, ctx)) as BoolExpr, true);
+                            if (expr != null) this.Set_Private(flag, expr.Substitute(Tools.Create_Key(flag, this._nextKey, ctx), Tools.Create_Key(flag, value, ctx)) as BoolExpr, true);
                         }
                     }
                     foreach (Rn reg in this._tools.StateConfig.GetRegOn())
                     {
                         {
                             var expr = this.Get_Raw_Private(reg, false);
-                            if (expr != null) this.Set_Private(reg, expr.Substitute(Tools.Reg_Key(reg, this._nextKey, ctx), Tools.Reg_Key(reg, value, ctx)) as BoolExpr, false);
+                            if (expr != null) this.Set_Private(reg, expr.Substitute(Tools.Create_Key(reg, this._nextKey, ctx), Tools.Create_Key(reg, value, ctx)) as BoolExpr, false);
                         }
                         {
                             var expr = this.Get_Raw_Private(reg, true);
-                            if (expr != null) this.Set_Private(reg, expr.Substitute(Tools.Reg_Key(reg, this._nextKey, ctx), Tools.Reg_Key(reg, value, ctx)) as BoolExpr, true);
+                            if (expr != null) this.Set_Private(reg, expr.Substitute(Tools.Create_Key(reg, this._nextKey, ctx), Tools.Create_Key(reg, value, ctx)) as BoolExpr, true);
                         }
                     }
                     if (this._tools.StateConfig.mem)
                     {
                         if (this._mem_Update != null)
                         {
-                            this._mem_Update = this._mem_Update.Substitute(Tools.Mem_Key(this._nextKey, ctx), Tools.Mem_Key(value, ctx)) as BoolExpr;
+                            this._mem_Update = this._mem_Update.Substitute(Tools.Create_Mem_Key(this._nextKey, ctx), Tools.Create_Mem_Key(value, ctx)) as BoolExpr;
                         }
                         if (this._mem_Update_U != null)
                         {
-                            this._mem_Update_U = this._mem_Update_U.Substitute(Tools.Mem_Key(this._nextKey, ctx), Tools.Mem_Key(value, ctx)) as BoolExpr;
+                            this._mem_Update_U = this._mem_Update_U.Substitute(Tools.Create_Mem_Key(this._nextKey, ctx), Tools.Create_Mem_Key(value, ctx)) as BoolExpr;
                         }
                     }
                     this._nextKey = value;
@@ -411,12 +411,12 @@ namespace AsmSim
                 value = value?.Translate(ctx) as BoolExpr;
                 undef = undef?.Translate(ctx) as BoolExpr;
 
-                BoolExpr key = Tools.Flag_Key(flag, this.NextKey, ctx);
+                BoolExpr key = Tools.Create_Key(flag, this.NextKey, ctx);
                 BoolExpr value_Constraint;
                 {
                     if (value == null)
                     {
-                        value_Constraint = ctx.MkEq(key, Tools.Flag_Key_Fresh(flag, this._tools.Rand, ctx));
+                        value_Constraint = ctx.MkEq(key, Tools.Create_Flag_Key_Fresh(flag, this._tools.Rand, ctx));
                     }
                     else if (value.IsTrue)
                     {
@@ -435,7 +435,7 @@ namespace AsmSim
                 {
                     if (undef == null)
                     {
-                        undef_Constraint = ctx.MkEq(key, Tools.Flag_Key_Fresh(flag, this._tools.Rand, ctx));
+                        undef_Constraint = ctx.MkEq(key, Tools.Create_Flag_Key_Fresh(flag, this._tools.Rand, ctx));
                     }
                     else if (undef.IsTrue)
                     {
@@ -534,7 +534,7 @@ namespace AsmSim
                             }
                         case 16:
                             {
-                                BitVecExpr reg64Expr = Tools.Reg_Key(reg64, this._prevKey_Regular, ctx);
+                                BitVecExpr reg64Expr = Tools.Create_Key(reg64, this._prevKey_Regular, ctx);
                                 BitVecExpr prefix = ctx.MkExtract(63, 16, reg64Expr);
                                 value = ctx.MkConcat(prefix, value);
                                 undef = ctx.MkConcat(prefix, undef);
@@ -542,7 +542,7 @@ namespace AsmSim
                             }
                         case 8:
                             {
-                                BitVecExpr reg64Expr = Tools.Reg_Key(reg64, this._prevKey_Regular, ctx);
+                                BitVecExpr reg64Expr = Tools.Create_Key(reg64, this._prevKey_Regular, ctx);
                                 if (RegisterTools.Is8BitHigh(reg))
                                 {
                                     BitVecExpr postFix = ctx.MkExtract(7, 0, reg64Expr);
@@ -565,7 +565,7 @@ namespace AsmSim
                             }
                     }
                     {
-                        BitVecExpr key = Tools.Reg_Key(reg64, this.NextKey, ctx);
+                        BitVecExpr key = Tools.Create_Key(reg64, this.NextKey, ctx);
                         BoolExpr value_Constraint = ctx.MkEq(key, value) as BoolExpr;
                         BoolExpr undef_Constraint = ctx.MkEq(key, undef) as BoolExpr;
 
@@ -668,7 +668,7 @@ namespace AsmSim
 
                 ArrayExpr newMemContent = Tools.Set_Value_To_Mem(value, address, this._prevKey_Regular, ctx);
                 ArrayExpr newMemContent_U = Tools.Set_Value_To_Mem(undef, address, this._prevKey_Regular, ctx);
-                ArrayExpr memKey = Tools.Mem_Key(this.NextKey, ctx);
+                ArrayExpr memKey = Tools.Create_Mem_Key(this.NextKey, ctx);
 
                 //Console.WriteLine("SetMem: memKey=" + memKey + "; new Value=" + newMemContent);
                 if (this._mem_Update != null) throw new Exception("Multiple memory updates are not allowed");
@@ -754,14 +754,76 @@ namespace AsmSim
             return sb.ToString();
         }
 
+        #endregion
+        public bool Disposed = false;
         public void Dispose()
         {
-            //lock (this._ctxLock)
+            this.Disposed = true;
+            lock (this._ctxLock)
             {
+                this._cf?.Dispose();
+                this._pf?.Dispose();
+                this._af?.Dispose();
+                this._zf?.Dispose();
+                this._sf?.Dispose();
+                this._of?.Dispose();
+
+                this._cf_U?.Dispose();
+                this._pf_U?.Dispose();
+                this._af_U?.Dispose();
+                this._zf_U?.Dispose();
+                this._sf_U?.Dispose();
+                this._of_U?.Dispose();
+
+                this._rax?.Dispose();
+                this._rbx?.Dispose();
+                this._rcx?.Dispose();
+                this._rdx?.Dispose();
+
+                this._rsi?.Dispose();
+                this._rdi?.Dispose();
+                this._rbp?.Dispose();
+                this._rsp?.Dispose();
+
+                this._r8?.Dispose();
+                this._r9?.Dispose();
+                this._r10?.Dispose();
+                this._r11?.Dispose();
+
+                this._r12?.Dispose();
+                this._r13?.Dispose();
+                this._r14?.Dispose();
+                this._r15?.Dispose();
+
+                this._simd?.Dispose();
+
+                this._rax_U?.Dispose();
+                this._rbx_U?.Dispose();
+                this._rcx_U?.Dispose();
+                this._rdx_U?.Dispose();
+
+                this._rsi_U?.Dispose();
+                this._rdi_U?.Dispose();
+                this._rbp_U?.Dispose();
+                this._rsp_U?.Dispose();
+
+                this._r8_U?.Dispose();
+                this._r9_U?.Dispose();
+                this._r10_U?.Dispose();
+                this._r11_U?.Dispose();
+
+                this._r12_U?.Dispose();
+                this._r13_U?.Dispose();
+                this._r14_U?.Dispose();
+                this._r15_U?.Dispose();
+
+                this._simd_U?.Dispose();
+                this._mem_Update?.Dispose();
+                this._mem_Update_U?.Dispose();
+                this._mem_Full?.Dispose();
+        
                 this._ctx.Dispose();
             }
         }
-
-        #endregion
     }
 }

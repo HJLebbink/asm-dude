@@ -96,6 +96,8 @@ namespace AsmDude.OptionsPage
             this.AsmSim_Decorate_Usage_Of_Undefined_UI.IsEnabled = value;
             this.AsmSim_Show_Redundant_Instructions_UI.IsEnabled = value;
             this.AsmSim_Decorate_Redundant_Instructions_UI.IsEnabled = value;
+            this.AsmSim_Show_Unreachable_Instructions_UI.IsEnabled = value;
+            this.AsmSim_Decorate_Unreachable_Instructions_UI.IsEnabled = value;
             this.AsmSim_Decorate_Registers_UI.IsEnabled = value;
             this.AsmSim_Use_In_Code_Completion_UI.IsEnabled = value;
             this.AsmSim_Decorate_Unimplemented_UI.IsEnabled = value;
@@ -771,6 +773,16 @@ namespace AsmDude.OptionsPage
         {
             get { return this.AsmSim_Decorate_Redundant_Instructions_UI.IsChecked ?? false; }
             set { this.AsmSim_Decorate_Redundant_Instructions_UI.IsChecked = value; }
+        }
+        public bool AsmSim_Show_Unreachable_Instructions
+        {
+            get { return this.AsmSim_Show_Unreachable_Instructions_UI.IsChecked ?? false; }
+            set { this.AsmSim_Show_Unreachable_Instructions_UI.IsChecked = value; }
+        }
+        public bool AsmSim_Decorate_Unreachable_Instructions
+        {
+            get { return this.AsmSim_Decorate_Unreachable_Instructions_UI.IsChecked ?? false; }
+            set { this.AsmSim_Decorate_Unreachable_Instructions_UI.IsChecked = value; }
         }
         public bool AsmSim_Decorate_Registers
         {
