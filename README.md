@@ -67,7 +67,7 @@ which the bit is set, or one in which the bit is cleared. You may conclude that 
 
 3. Yet another type of ignorance is introduced by the bounded capacities of the reasoner. The theorem prover Z3 is used to establish the truth-value of bits. After a certain timeout the theorem prover gives up. In such a situation we say that the bit has the truth-value UNDETERMINED, denoted by a hyphen '-'.
 
-4. The last truth-value indicates an inconsistent state (of the reasoner) when the reasoner establishes that a bit is set and at the same time it has information to conclude that the bit is cleared. This signals an implementation bug and is most likely introduced by the translation of instructions to logical constraints that the theorem prover can understand. You will not observe this truth-value under normal operation. We say that a bit can have the truth-value INCONSISTENT, denoted by the letter 'X'.
+4. The last truth-value indicates an inconsistent state (of the reasoner) when the reasoner establishes that a bit is set and at the same time it has information to conclude that the bit is cleared. This signals a state that cannot be reached. We say that a bit can have the truth-value INCONSISTENT, denoted by the letter 'X'.
 
 #### Show Register Content
 The register content before and after the current line is shown in QuickInfo tooltips when hovering over registers. "RCL EAX, 1" shifts the carry flag into position 0. The carry flag is undefined due to the previous BSF.
@@ -83,6 +83,12 @@ Using undefined flags or registers in instruction most often signals a bug. Alth
 When an instruction does not change the state of the registers and flags it writes to, give a redundancy warning. 
 
 ![redundant-instruction](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude-redundant-instruction.png?raw=true "Redundant Instructions")
+
+#### Semantic warning for Unreachable Instructions
+Instructions can be unreachable due to conditional jumps that are never taken. If you were to request the truth-values of a register 
+in an unreachable instruction the reasoner would conclude that you need an inconsistent state to reach the instruction. Something that cannot happen.
+
+[TODO: picture]
 
 #### Syntax Errors (found by the assembly simulator)
 The Simulator was not build to find syntax errors, yet it does find some when traversing the file. Would be a waste not to feedback these errors.
