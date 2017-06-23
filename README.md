@@ -88,7 +88,7 @@ When an instruction does not change the state of the registers and flags it writ
 Instructions can be unreachable due to conditional jumps that are never taken. If you were to request the truth-values of a register 
 in an unreachable instruction the reasoner would conclude that you need an inconsistent state to reach the instruction. Something that cannot happen.
 
-[TODO: picture]
+![unreachable-instruction](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude-unreachable-instruction.png?raw=true "Unreachable Instructions")
 
 #### Syntax Errors (found by the assembly simulator)
 The Simulator was not build to find syntax errors, yet it does find some when traversing the file. Would be a waste not to feedback these errors.
