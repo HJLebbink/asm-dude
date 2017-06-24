@@ -20,12 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmTools;
-using QuickGraph;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+
+using AsmTools;
+using QuickGraph;
+using System.Linq;
 
 namespace AsmSim
 {
@@ -33,10 +35,14 @@ namespace AsmSim
     {
         public static readonly char LINENUMBER_SEPARATOR = '!';
         public static readonly int MAX_LINES = 200;
+        public static readonly bool REMOVE_EMPTY_LINES = true;
 
         private readonly Tools _tools;
 
-        private readonly IList<(string label, Mnemonic mnemonic, string[] args)> _sourceCode;
+        private readonly IList<(string Label, Mnemonic Mnemonic, string[] Args)> _parsed_Code_A;
+        private readonly IList<(string Label, Mnemonic Mnemonic, string[] Args)> _parsed_Code_B;
+        private bool _use_Parsed_Code_A;
+
         private readonly BidirectionalGraph<int, TaggedEdge<int, bool>> _graph;
 
         /// <summary>Constructor that creates an empty CFlow</summary>
@@ -46,8 +52,10 @@ namespace AsmSim
         {
             //Console.WriteLine("INFO: CFlow: constructor");
             this._tools = tools;
-            this._sourceCode = new List<(string label, Mnemonic mnemonic, string[] args)>(programStr.Length);
-            this._graph = new BidirectionalGraph<int, TaggedEdge<int, bool>>(true); // true because of conditional jump to the next line
+            this._use_Parsed_Code_A = true;
+            this._parsed_Code_A = new List<(string Label, Mnemonic Mnemonic, string[] Args)>();
+            this._parsed_Code_B = new List<(string Label, Mnemonic Mnemonic, string[] Args)>();
+            this._graph = new BidirectionalGraph<int, TaggedEdge<int, bool>>(true); // allowParallesEdges is true because of conditional jumps to the next line
             this.Update(programStr);
         }
 
@@ -115,25 +123,25 @@ namespace AsmSim
             }
         }
 
-        public int NLines { get { return this._sourceCode.Count; } }
+        public int NLines { get { return this.Current.Count; } }
 
         public int FirstLineNumber { get { return 0; } }
-        public int LastLineNumber { get { return this._sourceCode.Count; } }
+        public int LastLineNumber { get { return this.Current.Count; } }
 
         public bool HasLine(int lineNumber)
         {
-            return (lineNumber >= 0) && (lineNumber < this._sourceCode.Count);
+            return (lineNumber >= 0) && (lineNumber < this.Current.Count);
         }
 
         public (string Label, Mnemonic Mnemonic, string[] Args) Get_Line(int lineNumber)
         {
             Debug.Assert(lineNumber >= 0);
-            if (lineNumber >= this._sourceCode.Count)
+            if (lineNumber >= this.Current.Count)
             {
                 Console.WriteLine("WARING: CFlow:geLine: lineNumber " + lineNumber + " does not exist");
                 return ("", Mnemonic.NONE, null);
             }
-            return this._sourceCode[lineNumber];
+            return this.Current[lineNumber];
         }
 
         public string Get_Line_Str(int lineNumber)
@@ -278,15 +286,91 @@ namespace AsmSim
         /// <summary>Update this CFlow with the provided programStr: return true if this CFlow has changed.</summary>
         public bool Update(string programStr)
         {
-            //Console.WriteLine("INFO: CFlow:Update");
-            //TODO make intelligent code: return true if something has changed.
-            //if (this._programStr.Equals(programStr,StringComparison.OrdinalIgnoreCase))
-            //{
-            //    Console.WriteLine("INFO: CFlow:Update: superfluous update. Doing nothing");
-            //    return false;
-            //}
-            this.Update_Lines(programStr);
-            return true;
+            //Console.WriteLine("INFO: CFlow:Update_Lines");
+            this._use_Parsed_Code_A = !this._use_Parsed_Code_A;
+
+            #region Restrict input to max number of lines
+            {
+                string[] lines = programStr.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+                if (lines.Length > MAX_LINES)
+                {
+                    Array.Resize(ref lines, MAX_LINES);
+                }
+                StringBuilder sb = new StringBuilder();
+                foreach (string v in lines) sb.AppendLine(v);
+                programStr = sb.ToString();
+            }
+            #endregion
+            #region Parse to find all labels
+            IDictionary<string, int> labels = this.GetLabels(programStr);
+            // replace all labels by annotated label
+            foreach (KeyValuePair<string, int> entry in labels)
+            {
+                if (entry.Key.Contains(LINENUMBER_SEPARATOR.ToString()))
+                {
+                    Console.WriteLine("WARNING: CFLOW:GetLines: label " + entry.Key + " has an " + LINENUMBER_SEPARATOR);
+                }
+                string newLabel = entry.Key + LINENUMBER_SEPARATOR + entry.Value;
+                //Console.WriteLine("INFO: ControlFlow:getLines: Replacing label " + entry.Key + " with " + newLabel);
+                programStr = programStr.Replace(entry.Key, newLabel);
+            }
+            #endregion
+
+            var previous = this.Previous;
+            var current = this.Current;
+
+            current.Clear();
+            this._graph.Clear();
+
+            #region Populate IncomingLines
+            {
+                string[] lines = programStr.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+
+                for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
+                {
+                    var line = AsmSourceTools.ParseLine(lines[lineNumber]);
+                    current.Add((line.Label, line.Mnemonic, line.Args));
+
+                    this.Static_Jump(line.Mnemonic, line.Args, lineNumber, out int jumpTo1, out int jumpTo2);
+                    if (jumpTo1 != -1)
+                    {
+                        this.Add_Edge(lineNumber, jumpTo1, false);
+                    }
+                    if (jumpTo2 != -1)
+                    {
+                        this.Add_Edge(lineNumber, jumpTo2, true);
+                    }
+                }
+            }
+            #endregion
+
+            #region Test if different from previous version
+            bool equal = true;
+
+            if (current.Count != previous.Count) {
+                equal = false;
+            } else
+            {
+                for (int lineNumber = 0; lineNumber < current.Count; ++lineNumber)
+                {
+                    var previous_line = previous[lineNumber];
+                    var current_line = current[lineNumber];
+                    if (previous_line.Label != current_line.Label)
+                    {
+                        equal = false;
+                        break;
+                    } else if (previous_line.Mnemonic != current_line.Mnemonic)
+                    {
+                        equal = false;
+                        break;
+                    } else if (!Enumerable.SequenceEqual(previous_line.Args, current_line.Args)) {
+                        equal = false;
+                        break;
+                    }
+                }
+            }
+            return !equal;
+            #endregion
         }
         #endregion
 
@@ -318,7 +402,8 @@ namespace AsmSim
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < this._sourceCode.Count; ++i)
+
+            for (int i = 0; i < this.Current.Count; ++i)
             {
                 sb.Append("Line " + i + ": ");
                 sb.Append(this.Get_Line_Str(i));
@@ -340,60 +425,12 @@ namespace AsmSim
 
         #region Private Methods
 
-        private void Update_Lines(string programStr)
+        private IList<(string Label, Mnemonic Mnemonic, string[] Args)> Current {
+            get { return (this._use_Parsed_Code_A) ? this._parsed_Code_A : this._parsed_Code_B; }
+        }
+        private IList<(string Label, Mnemonic Mnemonic, string[] Args)> Previous
         {
-            //Console.WriteLine("INFO: CFlow:Update_Lines");
-            #region Restrict input to max number of lines
-            {
-                string[] lines = programStr.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-                if (lines.Length > MAX_LINES)
-                {
-                    Array.Resize(ref lines, MAX_LINES);
-                }
-                StringBuilder sb = new StringBuilder();
-                foreach (string v in lines) sb.AppendLine(v);
-                programStr = sb.ToString();
-            }
-            #endregion
-            #region Parse to find all labels
-            IDictionary<string, int> labels = this.GetLabels(programStr);
-            // replace all labels by annotated label
-            foreach (KeyValuePair<string, int> entry in labels)
-            {
-                if (entry.Key.Contains(LINENUMBER_SEPARATOR.ToString()))
-                {
-                    Console.WriteLine("WARNING: CFLOW:GetLines: label " + entry.Key + " has an "+ LINENUMBER_SEPARATOR);
-                }
-                string newLabel = entry.Key + LINENUMBER_SEPARATOR + entry.Value;
-                //Console.WriteLine("INFO: ControlFlow:getLines: Replacing label " + entry.Key + " with " + newLabel);
-                programStr = programStr.Replace(entry.Key, newLabel);
-            }
-            #endregion
-
-            this._sourceCode.Clear();
-            this._graph.Clear();
-
-            #region Populate IncomingLines
-            {
-                string[] lines = programStr.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-
-                for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
-                {
-                    var line = AsmSourceTools.ParseLine(lines[lineNumber]);
-                    this._sourceCode.Add((line.Label, line.Mnemonic, line.Args));
-
-                    this.Static_Jump(line.Mnemonic, line.Args, lineNumber, out int jumpTo1, out int jumpTo2);
-                    if (jumpTo1 != -1)
-                    {
-                        this.Add_Edge(lineNumber, jumpTo1, false);
-                    }
-                    if (jumpTo2 != -1)
-                    {
-                        this.Add_Edge(lineNumber, jumpTo2, true);
-                    }
-                }
-            }
-            #endregion
+            get { return (this._use_Parsed_Code_A) ? this._parsed_Code_B : this._parsed_Code_A; }
         }
 
         private void Add_Edge(int jumpFrom, int jumpTo, bool isBranch)
@@ -493,11 +530,11 @@ namespace AsmSim
             for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
             {
                 string line = lines[lineNumber];
-                (bool, int, int) labelPos = AsmTools.AsmSourceTools.GetLabelDefPos(line);
-                if (labelPos.Item1)
+                var labelPos = AsmTools.AsmSourceTools.GetLabelDefPos(line);
+                if (labelPos.Valid)
                 {
-                    int labelBeginPos = labelPos.Item2;
-                    int labelEndPos = labelPos.Item3;
+                    int labelBeginPos = labelPos.BeginPos;
+                    int labelEndPos = labelPos.EndPos;
                     string label = line.Substring(labelBeginPos, labelEndPos - labelBeginPos);
                     if (result.ContainsKey(label))
                     {
@@ -512,7 +549,6 @@ namespace AsmSim
             }
             return result;
         }
-
         #endregion Private Methods
     }
 }

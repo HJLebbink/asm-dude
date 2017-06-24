@@ -100,7 +100,7 @@ namespace AsmDude.Tools
                 this._isNotImplemented = new HashSet<int>();
 
                 this._threadPool = AsmDudeTools.Instance.Thread_Pool;
-                this._threadPool2 = new SmartThreadPool(60000, Settings.Default.AsmSim_Number_Of_Threads, Settings.Default.AsmSim_Number_Of_Threads);
+                this._threadPool2 = new SmartThreadPool(60000, Settings.Default.AsmSim_Number_Of_Threads, 1);
                 Dictionary <string, string> settings = new Dictionary<string, string> {
                     /*
                     Legal parameters are:
@@ -137,21 +137,11 @@ namespace AsmDude.Tools
                     this.Tools.Parameters.mode_32bit = true;
                     this.Tools.Parameters.mode_16bit = false;
                 }
-                this._sFlow = new StaticFlow(this._buffer.CurrentSnapshot.GetText(), this.Tools);
+                this._sFlow = new StaticFlow(this.Tools);
                 this._dFlow = new DynamicFlow(this.Tools);
 
                 this._delay = new Delay(AsmDudePackage.msSleepBeforeAsyncExecution, 1000, this._threadPool);
-                this._delay.Done_Event += (o, i) => {
-                    if ((this._thread_Result != null) && !this._thread_Result.IsCompleted && !this._thread_Result.IsCanceled)
-                    {
-                        AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: cancaling an active reset thread.");
-                        this._thread_Result.Cancel();
-                    }
-                    this._threadPool2.Cancel(false);
-
-                    AsmDudeToolsStatic.Output_INFO("AsmSimulator:AsmSimulator: going to start an new reset thread.");
-                    this._thread_Result = this._threadPool2.QueueWorkItem(this.Reset_Private, WorkItemPriority.Lowest);
-                };
+                this._delay.Done_Event += (o, i) => { this.Schedule_Reset_Async(); };
 
                 this.Reset(); // wait to give the system some breathing time
                 this._buffer.ChangedLowPriority += (o, i) => {
@@ -175,7 +165,7 @@ namespace AsmDude.Tools
         public event EventHandler<LineUpdatedEventArgs> Line_Updated_Event;
         public event EventHandler<EventArgs> Reset_Done_Event;
 
-        public void Dispose()
+        void IDisposable.Dispose()
         {
             this.Clear();
             this._threadPool2.Dispose();
@@ -183,6 +173,9 @@ namespace AsmDude.Tools
         }
 
         #region Reset
+
+
+
         public void Reset(int delay = -1)
         {
             this._delay.Reset(delay);
@@ -204,13 +197,35 @@ namespace AsmDude.Tools
             this._isNotImplemented.Clear();
         }
 
-
-        private void Reset_Private()
+        private async void Schedule_Reset_Async()
         {
-            lock (this._resetLock)
+            await System.Threading.Tasks.Task.Run(() =>
             {
-                string sourceCode = this._buffer.CurrentSnapshot.GetText();
-                if (this._sFlow.Update(sourceCode))
+                bool changed;
+                lock (this._resetLock)
+                {
+                    changed = this._sFlow.Update(this._buffer.CurrentSnapshot.GetText());
+                }
+                if (changed) {
+                    if ((this._thread_Result != null) && !this._thread_Result.IsCompleted && !this._thread_Result.IsCanceled)
+                    {
+                        AsmDudeToolsStatic.Output_INFO("AsmSimulator:Schedule_Reset_Async: cancaling an active reset thread.");
+                        this._thread_Result.Cancel();
+                    }
+                    this._threadPool2.Cancel(false);
+
+                    AsmDudeToolsStatic.Output_INFO("AsmSimulator:Schedule_Reset_Async: going to start an new reset thread.");
+                    this._thread_Result = this._threadPool2.QueueWorkItem(Reset_Private, WorkItemPriority.Lowest);
+                }
+                else
+                {
+                    AsmDudeToolsStatic.Output_INFO("AsmSimulator:Schedule_Reset_Async: but static flow update did not result in a different static flow.");
+                }
+            });
+
+            void Reset_Private()
+            {
+                lock (this._resetLock)
                 {
                     AsmDudeToolsStatic.Output_INFO("AsmSimulator:Reset_Private: Create_StateConfig");
                     this.Tools.StateConfig = this._sFlow.Create_StateConfig();
@@ -224,131 +239,132 @@ namespace AsmDude.Tools
                     //AsmDudeToolsStatic.Output_INFO("AsmSimulator:Reset_Private: GC");
                     //System.GC.Collect();
 
-                    AsmDudeToolsStatic.Output_INFO("AsmSimulator:Reset_Private: PreCalculate_LOCAL");
+                    AsmDudeToolsStatic.Output_INFO("AsmSimulator:Reset_Private: Staring PreCalculate_LOCAL");
                     PreCalculate_LOCAL();
+                    AsmDudeToolsStatic.Output_INFO("AsmSimulator:Reset_Private: Done with PreCalculate_LOCAL");
 
                     this.Reset_Done_Event?.Invoke(this, new EventArgs());
                 }
-            }
 
-            #region Local Methods
+                #region Local Methods
 
-            IEnumerable<int> LineNumber_Centered_LOCAL(int first, int center, int last)
-            {
-                bool continue1 = true;
-                bool continue2 = true;
-
-                yield return center;
-                for (int i = 1; i < last; ++i)
+                IEnumerable<int> LineNumber_Centered_LOCAL(int first, int center, int last)
                 {
-                    int x1 = center - i;
-                    if (x1 >= first)
+                    bool continue1 = true;
+                    bool continue2 = true;
+
+                    yield return center;
+                    for (int i = 1; i < last; ++i)
                     {
-                        yield return x1;
-                    }
-                    else continue1 = false;
-
-                    int x2 = center + i;
-                    if (x2 < last)
-                    {
-                        yield return x2;
-                    }
-                    else continue2 = false;
-
-                    if (!continue1 && !continue2) yield break;
-                }
-            }
-
-            void PreCalculate_LOCAL()
-            {
-                bool update_Syntax_Error = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Show_Syntax_Errors || Settings.Default.AsmSim_Decorate_Syntax_Errors);
-                bool decorate_Not_Implemented = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Decorate_Unimplemented);
-
-                bool update_Usage_Undefined = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Show_Usage_Of_Undefined || Settings.Default.AsmSim_Decorate_Usage_Of_Undefined);
-                bool update_Redundant_Instruction = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Show_Redundant_Instructions || Settings.Default.AsmSim_Decorate_Redundant_Instructions);
-                bool update_Unreachable_Instruction = Settings.Default.AsmSim_On && Settings.Default.AsmSim_Decorate_Unreachable_Instructions;
-                bool update_Known_Register = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Decorate_Registers);
-
-                foreach (int lineNumber in LineNumber_Centered_LOCAL(this._sFlow.FirstLineNumber, this._last_Changed_LineNumber, this._sFlow.LastLineNumber))
-                {
-                    this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.USAGE_OF_UNDEFINED));
-                }
-                foreach (int lineNumber in LineNumber_Centered_LOCAL(this._sFlow.FirstLineNumber, this._last_Changed_LineNumber, this._sFlow.LastLineNumber))
-                {
-                   // try
-                    {
-                        var syntaxInfo = this.Calculate_Syntax_Errors(lineNumber);
-                        if (!syntaxInfo.IsImplemented) // the operation is not implemented
+                        int x1 = center - i;
+                        if (x1 >= first)
                         {
-                            if (decorate_Not_Implemented)
-                            {
-                                this._isNotImplemented.Add(lineNumber);
-                                this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.NOT_IMPLEMENTED));
-                            }
+                            yield return x1;
                         }
-                        else
+                        else continue1 = false;
+
+                        int x2 = center + i;
+                        if (x2 < last)
                         {
-                            if (syntaxInfo.Message != null) // found a syntax error
+                            yield return x2;
+                        }
+                        else continue2 = false;
+
+                        if (!continue1 && !continue2) yield break;
+                    }
+                }
+
+                void PreCalculate_LOCAL()
+                {
+                    bool update_Syntax_Error = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Show_Syntax_Errors || Settings.Default.AsmSim_Decorate_Syntax_Errors);
+                    bool decorate_Not_Implemented = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Decorate_Unimplemented);
+
+                    bool update_Usage_Undefined = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Show_Usage_Of_Undefined || Settings.Default.AsmSim_Decorate_Usage_Of_Undefined);
+                    bool update_Redundant_Instruction = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Show_Redundant_Instructions || Settings.Default.AsmSim_Decorate_Redundant_Instructions);
+                    bool update_Unreachable_Instruction = Settings.Default.AsmSim_On && Settings.Default.AsmSim_Decorate_Unreachable_Instructions;
+                    bool update_Known_Register = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Decorate_Registers);
+
+                    foreach (int lineNumber in LineNumber_Centered_LOCAL(this._sFlow.FirstLineNumber, this._last_Changed_LineNumber, this._sFlow.LastLineNumber))
+                    {
+                        this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.USAGE_OF_UNDEFINED));
+                    }
+                    foreach (int lineNumber in LineNumber_Centered_LOCAL(this._sFlow.FirstLineNumber, this._last_Changed_LineNumber, this._sFlow.LastLineNumber))
+                    {
+                        // try
+                        {
+                            var syntaxInfo = this.Calculate_Syntax_Errors(lineNumber);
+                            if (!syntaxInfo.IsImplemented) // the operation is not implemented
                             {
-                                if (update_Syntax_Error)
+                                if (decorate_Not_Implemented)
                                 {
-                                    this._syntax_Errors.Add(lineNumber, (syntaxInfo.Message, syntaxInfo.Mnemonic));
-                                    this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.SYNTAX_ERROR));
+                                    this._isNotImplemented.Add(lineNumber);
+                                    this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.NOT_IMPLEMENTED));
                                 }
                             }
-                            else // operation is implemented and no syntax error
+                            else
                             {
-                                if (update_Known_Register)
+                                if (syntaxInfo.Message != null) // found a syntax error
                                 {
-                                    var content = this._sFlow.Get_Line(lineNumber);
-                                    foreach (var v in content.Args)
+                                    if (update_Syntax_Error)
                                     {
-                                        Rn regName = RegisterTools.ParseRn(v, true);
-                                        if (regName != Rn.NOREG)
+                                        this._syntax_Errors.Add(lineNumber, (syntaxInfo.Message, syntaxInfo.Mnemonic));
+                                        this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.SYNTAX_ERROR));
+                                    }
+                                }
+                                else // operation is implemented and no syntax error
+                                {
+                                    if (update_Known_Register)
+                                    {
+                                        var content = this._sFlow.Get_Line(lineNumber);
+                                        foreach (var v in content.Args)
                                         {
-                                            this.PreCompute_Register_Value(regName, lineNumber, true);
-                                            this.PreCompute_Register_Value(regName, lineNumber, false);
-                                            this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
+                                            Rn regName = RegisterTools.ParseRn(v, true);
+                                            if (regName != Rn.NOREG)
+                                            {
+                                                this.PreCompute_Register_Value(regName, lineNumber, true);
+                                                this.PreCompute_Register_Value(regName, lineNumber, false);
+                                                this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
+                                            }
+                                        }
+                                    }
+                                    if (update_Usage_Undefined)
+                                    {
+                                        var info = this.Calculate_Usage_Undefined_Warnings(lineNumber);
+                                        if (info.Message.Length > 0)
+                                        {
+                                            this._usage_Undefined.Add(lineNumber, info);
+                                            this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.USAGE_OF_UNDEFINED));
+                                        }
+                                    }
+                                    if (update_Redundant_Instruction)
+                                    {
+                                        var info = this.Calculate_Redundant_Instruction_Warnings(lineNumber);
+                                        if (info.Message.Length > 0)
+                                        {
+                                            this._redundant_Instruction.Add(lineNumber, info);
+                                            this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.REDUNDANT));
+                                        }
+                                    }
+                                    if (update_Unreachable_Instruction)
+                                    {
+                                        var info = this.Calculate_Unreachable_Instruction_Warnings(lineNumber);
+                                        if (info.Message.Length > 0)
+                                        {
+                                            this._unreachable_Instruction.Add(lineNumber, info);
+                                            this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.UNREACHABLE));
                                         }
                                     }
                                 }
-                                if (update_Usage_Undefined)
-                                {
-                                    var info = this.Calculate_Usage_Undefined_Warnings(lineNumber);
-                                    if (info.Message.Length > 0)
-                                    {
-                                        this._usage_Undefined.Add(lineNumber, info);
-                                        this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.USAGE_OF_UNDEFINED));
-                                    }
-                                }
-                                if (update_Redundant_Instruction)
-                                {
-                                    var info = this.Calculate_Redundant_Instruction_Warnings(lineNumber);
-                                    if (info.Message.Length > 0)
-                                    {
-                                        this._redundant_Instruction.Add(lineNumber, info);
-                                        this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.REDUNDANT));
-                                    }
-                                }
-                                if (update_Unreachable_Instruction)
-                                {
-                                    var info = this.Calculate_Unreachable_Instruction_Warnings(lineNumber);
-                                    if (info.Message.Length > 0)
-                                    {
-                                        this._unreachable_Instruction.Add(lineNumber, info);
-                                        this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.UNREACHABLE));
-                                    }
-                                }
                             }
                         }
+                        //catch (Exception e)
+                        // {
+                        //    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:PreCalculate_LOCAL; e={1}", ToString(), e.ToString()));
+                        // }
                     }
-                    //catch (Exception e)
-                   // {
-                    //    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:PreCalculate_LOCAL; e={1}", ToString(), e.ToString()));
-                   // }
                 }
+                #endregion
             }
-            #endregion
         }
         #endregion
 
