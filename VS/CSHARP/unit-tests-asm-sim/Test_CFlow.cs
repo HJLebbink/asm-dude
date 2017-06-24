@@ -6,12 +6,12 @@ using System.Collections.Generic;
 namespace unit_tests_asm_z3
 {
 	[TestClass]
-	public class Test_CFlow
+	public class Test_StaticFlow
 	{
         const bool logToDisplay = TestTools.LOG_TO_DISPLAY;
 
         [TestMethod]
-		public void Test_CFlow_Forward_1() {
+		public void Test_StaticFlow_Forward_1() {
 
             string programStr =
                 "           jz      label1                      " + Environment.NewLine +
@@ -71,7 +71,7 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
-        public void Test_CFlow_IsBranchPoint_1()
+        public void Test_StaticFlow_IsBranchPoint_1()
         {
             string programStr =
                 "           mov     rax,        10     ;line 0         " + Environment.NewLine +
@@ -92,7 +92,7 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
-        public void Test_CFlow_IsMergePoint_1()
+        public void Test_StaticFlow_IsMergePoint_1()
         {
             string programStr =
                "           mov     rax,        10     ;line 0         " + Environment.NewLine +
@@ -113,7 +113,7 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
-        public void Test_CFlow_FutureLineNumbers_1()
+        public void Test_StaticFlow_FutureLineNumbers_1()
         {
             string programStr =
                 "           mov     rax,        10     ;line 0         " + Environment.NewLine +
@@ -138,7 +138,7 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
-        public void Test_CFlow_HasCodePath_1()
+        public void Test_StaticFlow_HasCodePath_1()
         {
             string programStr =
                 "           mov     rax,        10     ;line 0         " + Environment.NewLine +
@@ -158,7 +158,7 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
-        public void Test_CFlow_IsLoopBranchPoint_1()
+        public void Test_StaticFlow_IsLoopBranchPoint_1()
         {
             string programStr =
                 "           mov     rax,        10     ;line 0         " + Environment.NewLine +
@@ -199,7 +199,7 @@ namespace unit_tests_asm_z3
         }
 
         [TestMethod]
-        public void Test_CFlow_IsLoopMergePoint_1()
+        public void Test_StaticFlow_IsLoopMergePoint_1()
         {
             string programStr =
                 "           mov     rax,        10     ;line 0         " + Environment.NewLine +

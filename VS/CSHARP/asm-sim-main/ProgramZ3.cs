@@ -748,12 +748,19 @@ namespace AsmSim
 
             string programStr7 =
                 "           mov     rax,        0               " + Environment.NewLine +
+                "                                               " + Environment.NewLine +
                 "           cmp     rax,        0               " + Environment.NewLine +
+                "                                               " + Environment.NewLine +
                 "           jz      label1                      " + Environment.NewLine +
+                "                                               " + Environment.NewLine +
                 "           mov     rax,        1               " + Environment.NewLine +
+                "                                               " + Environment.NewLine +
                 "           jp      label1                      " + Environment.NewLine +
+                "                                               " + Environment.NewLine +
                 "           mov     rax,        2               " + Environment.NewLine +
+                "                                               " + Environment.NewLine +
                 "label1:                                        " + Environment.NewLine +
+                "                                               " + Environment.NewLine +
                 "           mov     rbx,        rax               ";
 
 
@@ -770,17 +777,17 @@ namespace AsmSim
             {
                 ShowUndefConstraints = false
             };
-            var sFlow = new StaticFlow(programStr1a, tools);
+            var sFlow = new StaticFlow(programStr7, tools);
             Console.WriteLine(sFlow.ToString());
             tools.StateConfig = sFlow.Create_StateConfig();
 
             if (true)
             {
-                tools.Quiet = false;
+                tools.Quiet = true;
                 DynamicFlow dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
                 //DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
-                Console.WriteLine(dFlow.ToString(sFlow));
+                //Console.WriteLine(dFlow.ToString(sFlow));
                 //DotVisualizer.SaveToDot(sFlow, dFlow, "test1.dot");
 
                 if (false)
@@ -790,14 +797,14 @@ namespace AsmSim
                     State state_Before = states_Before[0];
                     Console.WriteLine("Before lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
                 }
-                if (true)
+                if (false)
                 {
                     int lineNumber = 5;
                     IList<State> states_After = new List<State>(dFlow.Create_States_After(lineNumber));
                     State state_After = states_After[0];
                     Console.WriteLine("After lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
                 }
-                if (false)
+                if (true)
                 {
                     State endState = dFlow.EndState;
                     Console.WriteLine("in endState we know:\n" + endState);

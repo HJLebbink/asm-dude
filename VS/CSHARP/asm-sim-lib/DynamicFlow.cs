@@ -46,7 +46,7 @@ namespace AsmSim
         public DynamicFlow(Tools tools)
         {
             this._tools = tools;
-            this._graph = new BidirectionalGraph<string, TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)>>(true);
+            this._graph = new BidirectionalGraph<string, TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)>>(true); // allowParallelEdges because of conditional branches to the next line of code
             this._lineNumber_2_Key = new Dictionary<int, string>();
             this._key_2_LineNumber = new Dictionary<string, int>();
         }
@@ -275,7 +275,6 @@ namespace AsmSim
             this._lineNumber_2_Key.Clear();
             this._key_2_LineNumber.Clear();
         }
-
 
         public void Reset(StaticFlow sFlow, bool forward)
         {
