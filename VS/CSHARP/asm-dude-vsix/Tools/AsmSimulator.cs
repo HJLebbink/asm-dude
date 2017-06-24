@@ -34,13 +34,13 @@ using AsmSim.Mnemonics;
 
 namespace AsmDude.Tools
 {
-    public class AsmSimulator : IDisposable
+    public sealed class AsmSimulator : IDisposable
     {
         #region Fields
         private readonly ITextBuffer _buffer;
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
         private readonly StaticFlow _sFlow;
-        private readonly DynamicFlow _dFlow;
+        private DynamicFlow _dFlow;
 
         private readonly IDictionary<int, State> _cached_States_Before;
         private readonly IDictionary<int, State> _cached_States_After;
@@ -56,7 +56,7 @@ namespace AsmDude.Tools
         public bool Enabled { get; set; }
 
         private readonly SmartThreadPool _threadPool;
-        private readonly SmartThreadPool _threadPool2;
+        private SmartThreadPool _threadPool2;
         private IWorkItemResult _thread_Result;
         public readonly AsmSim.Tools Tools;
 
@@ -165,16 +165,45 @@ namespace AsmDude.Tools
         public event EventHandler<LineUpdatedEventArgs> Line_Updated_Event;
         public event EventHandler<EventArgs> Reset_Done_Event;
 
-        void IDisposable.Dispose()
+        public void Dispose()
         {
-            this.Clear();
-            this._threadPool2.Dispose();
-            this._dFlow.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
+        ~AsmSimulator()
+        {
+            Dispose(false);
+        }
+        void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // free managed resources
 
+                if (this._cached_States_After != null)
+                {
+                    foreach (var v in this._cached_States_After) v.Value.Dispose();
+                    this._cached_States_After.Clear();
+                }
+                if (this._cached_States_Before != null)
+                {
+                    foreach (var v in this._cached_States_Before) v.Value.Dispose();
+                    this._cached_States_Before.Clear();
+                }
+                if (this._threadPool2 != null)
+                {
+                    this._threadPool2.Dispose();
+                    this._threadPool2 = null;
+                }
+                if (this._dFlow != null)
+                {
+                    this._dFlow.Dispose();
+                    this._dFlow = null;
+                }
+            }
+            // free native resources if there are any.  
+        }
         #region Reset
-
-
 
         public void Reset(int delay = -1)
         {
