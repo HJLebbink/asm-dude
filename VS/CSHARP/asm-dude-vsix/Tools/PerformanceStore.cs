@@ -95,7 +95,7 @@ namespace AsmDude.Tools
                                     foreach (string mnemonicStr in mnemonicKey.Split(' '))
                                     {
                                         Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(mnemonicStr);
-                                        if (mnemonic == Mnemonic.UNKNOWN)
+                                        if (mnemonic == Mnemonic.NONE)
                                         {
                                             AsmDudeToolsStatic.Output_WARNING("PerformanceStore:LoadData: microArch=" + microArch + ": unknown mnemonic " + mnemonicStr + " in line: " + line);
                                         }
@@ -160,7 +160,7 @@ namespace AsmDude.Tools
                             foreach (string mnemonicStr in columns[1].Trim().Split(' '))
                             {
                                 Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(mnemonicStr);
-                                if (mnemonic == Mnemonic.UNKNOWN)
+                                if (mnemonic == Mnemonic.NONE)
                                 {
                                     AsmDudeToolsStatic.Output_WARNING("PerformanceStore:LoadData: key=" + columns[0] + ": unknown mnemonic " + mnemonicStr + " in line: " + line);
                                 }

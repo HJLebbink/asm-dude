@@ -37,15 +37,11 @@ namespace AsmTools
         public static (string Label, Mnemonic Mnemonic, string[] Args, string Remark) ParseLine(string line)
         {
             string label = "";
-            Mnemonic mnemonic = Mnemonic.UNKNOWN;
+            Mnemonic mnemonic = Mnemonic.NONE;
             string[] args = new string[0] { };
             string remark = "";
 
-            if (line.Length == 0)
-            {
-                mnemonic = Mnemonic.NONE;
-            }
-            else
+            if (line.Length > 0)
             {
                 (bool, int, int) labelPos = AsmTools.AsmSourceTools.GetLabelDefPos(line);
                 int codeBeginPos = 0;
@@ -79,7 +75,7 @@ namespace AsmTools
                     if (firstKeyword.Length > 0)
                     {
                         mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(firstKeyword);
-                        if (mnemonic == Mnemonic.UNKNOWN)
+                        if (mnemonic == Mnemonic.NONE)
                         {
                             //Console.WriteLine("INFO: ToolsZ3:parseLine: found unknown first Keyword \"" + firstKeyword + "\". Ignoring this line.");
                         }

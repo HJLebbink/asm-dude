@@ -383,7 +383,7 @@ namespace AsmDude
                 if ((pos.Count > 0) && !pos[0].Item3)
                 {
                     string keywordString = NasmIntelTokenTagger.Keyword(pos[0], line).ToUpper();
-                    if (AsmSourceTools.ParseMnemonic(keywordString) != Mnemonic.UNKNOWN)
+                    if (AsmSourceTools.ParseMnemonic(keywordString) != Mnemonic.NONE)
                     {
                         return true;
                     }
@@ -396,7 +396,7 @@ namespace AsmDude
                 if ((pos.Count > 1) && !pos[1].Item3)
                 {
                     string keywordString = NasmIntelTokenTagger.Keyword(pos[1], line).ToUpper();
-                    if (AsmSourceTools.ParseMnemonic(keywordString) != Mnemonic.UNKNOWN)
+                    if (AsmSourceTools.ParseMnemonic(keywordString) != Mnemonic.NONE)
                     {
                         return true;
                     }

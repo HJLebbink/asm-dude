@@ -163,8 +163,7 @@ namespace AsmSim
             switch (mnemonic)
             {
                 #region NonSse
-                case Mnemonic.NONE:
-                case Mnemonic.UNKNOWN: return new Ignore(mnemonic, args, keys, t);
+                case Mnemonic.NONE: return new Ignore(mnemonic, args, keys, t);
                 case Mnemonic.MOV: return new Mov(args, keys, t);
                 case Mnemonic.CMOVE:
                 case Mnemonic.CMOVZ:

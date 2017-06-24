@@ -27,7 +27,7 @@ namespace AsmTools {
     public enum Mnemonic
     {
         NONE,
-        UNKNOWN,
+        //UNKNOWN,
         #region Data Transfer Instructions
         //The data transfer instructions move data between memory and the general-purpose and segment registers. They
         //also perform specific operations such as conditional moves, stack access, and data conversion.
@@ -2299,7 +2299,7 @@ namespace AsmTools {
             string str2 = (strIsCapitals) ? str : str.ToUpper();
 
             Mnemonic r = ParseMnemonic(str2, true);
-            if (r != Mnemonic.UNKNOWN) return r;
+            if (r != Mnemonic.NONE) return r;
             int length = str2.Length;
 
             bool suffix;
@@ -2318,7 +2318,7 @@ namespace AsmTools {
                 string keyword2 = str.Substring(0, length - 1);
                 return AsmSourceTools.ParseMnemonic(keyword2, true);
             }
-            return Mnemonic.UNKNOWN;
+            return Mnemonic.NONE;
         }
         public static Mnemonic ParseMnemonic(string str, bool strIsCapitals = false) {
             #if DEBUG
@@ -2326,7 +2326,6 @@ namespace AsmTools {
             #endif
             switch ((strIsCapitals) ? str : str.ToUpper()) {
                 case "NONE": return Mnemonic.NONE;
-                case "UNKNOWN": return Mnemonic.UNKNOWN;
                 case "MOV": return Mnemonic.MOV;
                 case "CMOVE": return Mnemonic.CMOVE;
                 case "CMOVZ": return Mnemonic.CMOVZ;
@@ -4205,7 +4204,7 @@ namespace AsmTools {
                 case "VPOPCNTQ": return Mnemonic.VPOPCNTQ;
                 default:
                     Console.WriteLine("WARNING;parseMnemonic. unknown str=\"" + str + "\".");
-                    return Mnemonic.UNKNOWN;
+                    return Mnemonic.NONE;
             }
         }
     }

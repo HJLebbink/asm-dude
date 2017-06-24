@@ -297,7 +297,7 @@ namespace AsmDude
             #region Test if keyword is an instruction
             {
                 Mnemonic mnemonic = AsmSourceTools.ParseMnemonic_Att(keyword, true);
-                if (mnemonic != Mnemonic.UNKNOWN)
+                if (mnemonic != Mnemonic.NONE)
                 {
                     return (AsmSourceTools.IsJump(mnemonic)) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
                 }
@@ -312,7 +312,7 @@ namespace AsmDude
             Debug.Assert(keyword == keyword.ToUpper());
 
             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword, true);
-            if (mnemonic != Mnemonic.UNKNOWN)
+            if (mnemonic != Mnemonic.NONE)
             {
                 return (AsmSourceTools.IsJump(mnemonic)) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
             }

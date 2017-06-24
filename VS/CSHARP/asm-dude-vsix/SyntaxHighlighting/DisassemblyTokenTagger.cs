@@ -110,7 +110,7 @@ namespace AsmDude
                         for (int k = 0; k < nKeywords; k++)
                         {
                             string asmToken = NasmIntelTokenTagger.Keyword(pos[k], line);
-                            if (AsmSourceTools.ParseMnemonic(asmToken, true) != Mnemonic.UNKNOWN)
+                            if (AsmSourceTools.ParseMnemonic(asmToken, true) != Mnemonic.NONE)
                             {
                                 isAsmCode = true;
                                 break;

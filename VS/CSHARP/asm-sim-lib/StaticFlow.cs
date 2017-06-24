@@ -331,7 +331,7 @@ namespace AsmSim
                     var line = AsmSourceTools.ParseLine(lines[lineNumber]);
                     current.Add((line.Label, line.Mnemonic, line.Args));
 
-                    this.Static_Jump(line.Mnemonic, line.Args, lineNumber, out int jumpTo1, out int jumpTo2);
+                    (int jumpTo1, int jumpTo2) = this.Static_Jump(line.Mnemonic, line.Args, lineNumber);
                     if (jumpTo1 != -1)
                     {
                         this.Add_Edge(lineNumber, jumpTo1, false);
@@ -372,6 +372,17 @@ namespace AsmSim
             return !equal;
             #endregion
         }
+        
+        private void Compress()
+        {
+            var current = this.Current;
+            for (int lineNumber = 0; lineNumber < current.Count; ++lineNumber)
+            {
+                var c = current[lineNumber];
+               // if (c.Mnemonic == Mnemonic.NONE) || (c.Mnemonic)
+            }
+        }
+        
         #endregion
 
         #region ToString Methods
@@ -388,7 +399,7 @@ namespace AsmSim
                 case 3: arguments = t.args[0] + ", " + t.args[1] + ", " + t.args[2]; break;
                 default: break;
             }
-            if ((t.mnemonic == Mnemonic.UNKNOWN) && (t.label.Length > 0))
+            if ((t.mnemonic == Mnemonic.NONE) && (t.label.Length > 0))
             {
                 // line with only a label and no opcode
                 return string.Format("{0}:", t.label);
@@ -446,14 +457,14 @@ namespace AsmSim
             this._graph.AddEdge(new TaggedEdge<int, bool>(jumpFrom, jumpTo, isBranch));
         }
 
-        private void Static_Jump(Mnemonic mnemonic, string[] args, int lineNumber, out int jumpTo1, out int jumpTo2)
+        private (int RegularLineNumber, int BranchLineNumber) Static_Jump(Mnemonic mnemonic, string[] args, int lineNumber)
         {
-            jumpTo1 = -1;
-            jumpTo2 = -1;
+            int jumpTo1 = -1;
+            int jumpTo2 = -1;
 
             switch (mnemonic)
             {
-                case Mnemonic.UNKNOWN:
+                case Mnemonic.NONE:
                     jumpTo1 = lineNumber + 1;
                     break;
                 case Mnemonic.JMP:
@@ -507,11 +518,11 @@ namespace AsmSim
                         jumpTo2 = ToolsZ3.GetLineNumberFromLabel(args[0], LINENUMBER_SEPARATOR);
                     }
                     break;
-                case Mnemonic.UD2: return;
+                case Mnemonic.UD2: break;
                 case Mnemonic.RET:
                 case Mnemonic.IRET:
                 case Mnemonic.INT:
-                case Mnemonic.INTO: return;
+                case Mnemonic.INTO: break;
                    //throw new NotImplementedException();
                 default:
                     jumpTo1 = lineNumber + 1;
@@ -519,7 +530,7 @@ namespace AsmSim
 
             }
             //Console.WriteLine("INFO: StaticControlFlow: "+StaticControlFlow.ToString(tup)+"; jumpTo1=" + jumpTo1 + "; jumpTo2=" + jumpTo2);
-            return;
+            return (jumpTo1, jumpTo2);
         }
 
         /// <summary>Get all labels with the line number on which it is defined</summary>

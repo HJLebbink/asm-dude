@@ -445,7 +445,7 @@ namespace AsmDude.Tools
         }
         public (string Message, Mnemonic Mnemonic) Get_Usage_Undefined_Warning(int lineNumber)
         {
-            return this._usage_Undefined.TryGetValue(lineNumber, out var message) ? message : ("", Mnemonic.NONE);
+            return this._usage_Undefined.TryGetValue(lineNumber, out var info) ? info : ("", Mnemonic.NONE);
         }
         private (string Message, Mnemonic Mnemonic) Calculate_Usage_Undefined_Warnings(int lineNumber)
         {
@@ -521,9 +521,9 @@ namespace AsmDude.Tools
         {
             var content = this._sFlow.Get_Line(lineNumber);
             if (content.Mnemonic == Mnemonic.NONE) return ("", Mnemonic.NONE);
-            if (content.Mnemonic == Mnemonic.NOP) return ("", Mnemonic.NONE);
-            if (content.Mnemonic == Mnemonic.UNKNOWN) return ("", Mnemonic.NONE);
+            if (content.Mnemonic == Mnemonic.NOP) return ("", Mnemonic.NONE); // do not give a warning for NOP instruction 
 
+            //TODO allow redundant branch points (related to unreachable code)
             if (this._dFlow.Is_Branch_Point(lineNumber)) return ("", Mnemonic.NONE);
             if (this._dFlow.Is_Merge_Point(lineNumber)) return ("", Mnemonic.NONE);
 

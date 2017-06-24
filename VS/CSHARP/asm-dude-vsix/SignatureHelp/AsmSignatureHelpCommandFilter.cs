@@ -79,7 +79,7 @@ namespace AsmDude.SignatureHelp
                                 {
                                     var t = AsmSourceTools.ParseLine(lineStr);
                                     if (this._session != null) this._session.Dismiss(); // cleanup previous session
-                                    if (t.Mnemonic != Mnemonic.UNKNOWN)
+                                    if (t.Mnemonic != Mnemonic.NONE)
                                     {
                                         this._session = this._broker.TriggerSignatureHelp(this._textView);
                                     }

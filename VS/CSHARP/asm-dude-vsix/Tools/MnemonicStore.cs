@@ -156,7 +156,7 @@ namespace AsmDude.Tools
                         { // general description
                             #region
                             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(columns[1]);
-                            if (mnemonic == Mnemonic.UNKNOWN)
+                            if (mnemonic == Mnemonic.NONE)
                             {
                                 // ignore the unknown mnemonic
                                 //AsmDudeToolsStatic.Output_WARNING("MnemonicStore:loadRegularData: unknown mnemonic in line: " + line);
@@ -188,7 +188,7 @@ namespace AsmDude.Tools
                         { // signature description, ignore an old sixth column
                             #region
                             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(columns[0]);
-                            if (mnemonic == Mnemonic.UNKNOWN)
+                            if (mnemonic == Mnemonic.NONE)
                             {
                                 AsmDudeToolsStatic.Output_WARNING("MnemonicStore:loadRegularData: unknown mnemonic in line: " + line);
                             }
@@ -256,7 +256,7 @@ namespace AsmDude.Tools
                         { // general description
                             #region
                             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(columns[1]);
-                            if (mnemonic == Mnemonic.UNKNOWN)
+                            if (mnemonic == Mnemonic.NONE)
                             {
                                 AsmDudeToolsStatic.Output_WARNING("MnemonicStore:loadHandcraftedData: unknown mnemonic in line" + line);
                             }
@@ -280,7 +280,7 @@ namespace AsmDude.Tools
                         { // signature description, ignore an old sixth column
                             #region
                             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(columns[0]);
-                            if (mnemonic == Mnemonic.UNKNOWN)
+                            if (mnemonic == Mnemonic.NONE)
                             {
                                 AsmDudeToolsStatic.Output_WARNING("MnemonicStore:loadHandcraftedData: unknown mnemonic in line" + line);
                             }

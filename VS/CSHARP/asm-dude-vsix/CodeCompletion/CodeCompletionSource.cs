@@ -126,7 +126,7 @@ namespace AsmDude
 
                 string previousKeyword = AsmDudeToolsStatic.Get_Previous_Keyword(line.Start, start).ToUpper();
 
-                if (mnemonic == Mnemonic.UNKNOWN)
+                if (mnemonic == Mnemonic.NONE)
                 {
                     //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:AugmentCompletionSession; lineStr=" + lineStr + "; previousKeyword=" + previousKeyword);
 
