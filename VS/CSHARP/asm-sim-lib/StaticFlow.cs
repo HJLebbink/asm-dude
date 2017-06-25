@@ -24,10 +24,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Linq;
 
 using AsmTools;
 using QuickGraph;
-using System.Linq;
 
 namespace AsmSim
 {
@@ -35,7 +35,6 @@ namespace AsmSim
     {
         public static readonly char LINENUMBER_SEPARATOR = '!';
         public static readonly int MAX_LINES = 200;
-        public static readonly bool REMOVE_EMPTY_LINES = true;
 
         private readonly Tools _tools;
 
@@ -46,9 +45,7 @@ namespace AsmSim
         private readonly BidirectionalGraph<int, TaggedEdge<int, bool>> _graph;
 
         /// <summary>Constructor that creates an empty CFlow</summary>
-        public StaticFlow(Tools tools) : this("", tools) {}
-
-        public StaticFlow(string programStr, Tools tools)
+        public StaticFlow(Tools tools)
         {
             //Console.WriteLine("INFO: CFlow: constructor");
             this._tools = tools;
@@ -56,7 +53,6 @@ namespace AsmSim
             this._parsed_Code_A = new List<(string Label, Mnemonic Mnemonic, string[] Args)>();
             this._parsed_Code_B = new List<(string Label, Mnemonic Mnemonic, string[] Args)>();
             this._graph = new BidirectionalGraph<int, TaggedEdge<int, bool>>(true); // allowParallesEdges is true because of conditional jumps to the next line
-            this.Update(programStr);
         }
 
         #region Getters
@@ -284,7 +280,7 @@ namespace AsmSim
 
         #region Setters
         /// <summary>Update this CFlow with the provided programStr: return true if this CFlow has changed.</summary>
-        public bool Update(string programStr)
+        public bool Update(string programStr, bool removeEmptyLines = false)
         {
             //Console.WriteLine("INFO: CFlow:Update_Lines");
             this._use_Parsed_Code_A = !this._use_Parsed_Code_A;
@@ -344,6 +340,11 @@ namespace AsmSim
             }
             #endregion
 
+            if (removeEmptyLines)
+            {
+                this.Compress();
+            }
+
             #region Test if different from previous version
             bool equal = true;
 
@@ -379,7 +380,30 @@ namespace AsmSim
             for (int lineNumber = 0; lineNumber < current.Count; ++lineNumber)
             {
                 var c = current[lineNumber];
-               // if (c.Mnemonic == Mnemonic.NONE) || (c.Mnemonic)
+                if (c.Mnemonic == Mnemonic.NONE)
+                {
+                    int outDegree = this._graph.OutDegree(lineNumber);
+                    if (outDegree == 0)
+                    {
+                        this._graph.RemoveVertex(lineNumber);
+                    }
+                    else if (outDegree == 1)
+                    {
+                        int next = this._graph.OutEdge(lineNumber, 0).Target;
+
+                        //Remove this empty line
+                        var inEdges = new List<TaggedEdge<int, bool>>(this._graph.InEdges(lineNumber));
+                        foreach (var e in inEdges)
+                        {
+                            this._graph.AddEdge(new TaggedEdge<int, bool>(e.Source, next, e.Tag));
+                            this._graph.RemoveEdge(e);
+                        }
+                    }
+                    else
+                    {
+                        // error
+                    }
+                }
             }
         }
         

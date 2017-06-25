@@ -98,7 +98,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Test_BitTricks.cs" />
-    <Compile Include="Test_CFlow.cs" />
+    <Compile Include="Test_StaticFlow.cs" />
     <Compile Include="Test_ExecutionTree.cs" />
     <Compile Include="Test_FlagTools.cs" />
     <Compile Include="Test_FPTools.cs" />

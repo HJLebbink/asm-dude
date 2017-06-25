@@ -44,7 +44,8 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        0       ; line 0        " + Environment.NewLine +
                 "           mov     rbx,        10      ; line 1        " + Environment.NewLine +
                 "           mov     rbx,        rax     ; line 2        ";
-            StaticFlow sFlow = new StaticFlow(programStr, tools);
+            var sFlow = new StaticFlow(tools);
+            sFlow.Update(programStr);
             if (logToDisplay) Console.WriteLine(sFlow);
 
             if (true) {
@@ -120,7 +121,8 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        0       ; line 0        " + Environment.NewLine +
                 "           mov     rbx,        10      ; line 1        " + Environment.NewLine +
                 "           mov     rbx,        rax     ; line 2        ";
-            StaticFlow sFlow = new StaticFlow(programStr, tools);
+            var sFlow = new StaticFlow(tools);
+            sFlow.Update(programStr);
             if (logToDisplay) Console.WriteLine(sFlow);
 
             if (true)

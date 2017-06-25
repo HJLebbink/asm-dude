@@ -79,7 +79,8 @@ namespace AsmSim
             {
                 Quiet = false
             };
-            var sFlow = new StaticFlow(programStr, tools);
+            var sFlow = new StaticFlow(tools);
+            sFlow.Update(programStr);
             Console.WriteLine("sFlow=" + sFlow.ToString());
 
             tools.StateConfig = sFlow.Create_StateConfig();
@@ -569,7 +570,8 @@ namespace AsmSim
                         "label2:                                        " + Environment.NewLine +
                         "           mov     rbx,        0               ";
 
-                    StaticFlow sFlow1 = new StaticFlow(programStr, tools);
+                    var sFlow1 = new StaticFlow(tools);
+                    sFlow1.Update(programStr);
                     Console.WriteLine(sFlow1);
 
                     tools.Quiet = false;
@@ -594,13 +596,14 @@ namespace AsmSim
                     "label2:                                        " + Environment.NewLine +
                     "           mov     bl, byte ptr[rax]         ";
 
-                    StaticFlow flow1 = new StaticFlow(programStr0, tools);
-                    Console.WriteLine(flow1);
+                    var sFlow = new StaticFlow(tools);
+                    sFlow.Update(programStr0);
+                    Console.WriteLine(sFlow);
 
                     if (false)
                     {
                         tools.Quiet = false;
-                        var tree0 = Runner.Construct_DynamicFlow_Forward(flow1, tools);
+                        var tree0 = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
 
                         int lineNumber_JZ = 0;
                         State state_FirstLine = tree0.Create_States_Before(lineNumber_JZ, 0);
@@ -613,7 +616,7 @@ namespace AsmSim
                     if (true)
                     {
                         tools.Quiet = false;
-                        var tree1 = Runner.Construct_DynamicFlow_Backward(flow1, tools);
+                        var tree1 = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
                         int lineNumber_JZ = 0;
                         State state_FirstLine = tree1.Create_States_Before(lineNumber_JZ, 0);
@@ -634,8 +637,10 @@ namespace AsmSim
                         "mov rbx, 1" + Environment.NewLine +
                         "mov ptr qword[rbx], 3";
 
-                    StaticFlow flow1 = new StaticFlow(programStr1, tools);
-                    StaticFlow flow2 = new StaticFlow(programStr2, tools);
+                    var sFlow1 = new StaticFlow(tools);
+                    sFlow1.Update(programStr1);
+                    var sFlow2 = new StaticFlow(tools);
+                    sFlow2.Update(programStr2);
 
                     tools.Quiet = true;
                     tools.StateConfig.Set_All_Off();
@@ -643,8 +648,8 @@ namespace AsmSim
                     tools.StateConfig.RBX = true;
                     tools.StateConfig.mem = true;
 
-                    var tree1 = Runner.Construct_DynamicFlow_Forward(flow1, tools);
-                    var tree2 = Runner.Construct_DynamicFlow_Forward(flow2, tools);
+                    var tree1 = Runner.Construct_DynamicFlow_Forward(sFlow1, tools);
+                    var tree2 = Runner.Construct_DynamicFlow_Forward(sFlow2, tools);
 
                     //Console.WriteLine(tree1.ToString(flow1));
                     State state1 = tree1.EndState;
@@ -665,13 +670,15 @@ namespace AsmSim
                         "mov rax, 1" + Environment.NewLine +
                         "mov rbx, 1";
 
-                    StaticFlow flow1 = new StaticFlow(programStr1, tools);
-                    StaticFlow flow2 = new StaticFlow(programStr2, tools);
+                    var sFlow1 = new StaticFlow(tools);
+                    sFlow1.Update(programStr1);
+                    var sFlow2 = new StaticFlow(tools);
+                    sFlow2.Update(programStr2);
 
                     tools.Quiet = true;
 
-                    var tree1 = Runner.Construct_DynamicFlow_Forward(flow1, tools);
-                    var tree2 = Runner.Construct_DynamicFlow_Forward(flow2, tools);
+                    var tree1 = Runner.Construct_DynamicFlow_Forward(sFlow1, tools);
+                    var tree2 = Runner.Construct_DynamicFlow_Forward(sFlow2, tools);
 
                     //Console.WriteLine(tree1.ToString(flow1));
 
@@ -777,7 +784,9 @@ namespace AsmSim
             {
                 ShowUndefConstraints = false
             };
-            var sFlow = new StaticFlow(programStr7, tools);
+
+            var sFlow = new StaticFlow(tools);
+            sFlow.Update(programStr7);
             Console.WriteLine(sFlow.ToString());
             tools.StateConfig = sFlow.Create_StateConfig();
 

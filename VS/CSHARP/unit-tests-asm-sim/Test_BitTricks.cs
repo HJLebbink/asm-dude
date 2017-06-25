@@ -83,7 +83,8 @@ namespace unit_tests_asm_z3
                 "           ror al, 1                           " + Environment.NewLine +
                 "           jnc ZCOEF                           ";
 
-            StaticFlow sFlow = new StaticFlow(programStr, tools);
+            var sFlow = new StaticFlow(tools);
+            sFlow.Update(programStr);
             if (logToDisplay) Console.WriteLine(sFlow);
 
             var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
