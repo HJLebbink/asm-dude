@@ -121,7 +121,17 @@ namespace AsmSim
 
         public int NLines { get { return this.Current.Count; } }
 
-        public int FirstLineNumber { get { return 0; } }
+        public int FirstLineNumber {
+            get {
+                int lineNumber = 0;
+                var current = this.Current;
+                while (current[lineNumber].Mnemonic == Mnemonic.NONE)
+                {
+                    lineNumber++;
+                }
+                return lineNumber;
+            }
+        }
         public int LastLineNumber { get { return this.Current.Count; } }
 
         public bool HasLine(int lineNumber)
@@ -129,20 +139,22 @@ namespace AsmSim
             return (lineNumber >= 0) && (lineNumber < this.Current.Count);
         }
 
-        public (string Label, Mnemonic Mnemonic, string[] Args) Get_Line(int lineNumber)
+        public (Mnemonic Mnemonic, string[] Args) Get_Line(int lineNumber)
         {
             Debug.Assert(lineNumber >= 0);
             if (lineNumber >= this.Current.Count)
             {
                 Console.WriteLine("WARING: CFlow:geLine: lineNumber " + lineNumber + " does not exist");
-                return ("", Mnemonic.NONE, null);
+                return (Mnemonic.NONE, null);
             }
-            return this.Current[lineNumber];
+            var v = this.Current[lineNumber];
+
+            return (v.Mnemonic, v.Args);
         }
 
         public string Get_Line_Str(int lineNumber)
         {
-            return (this.HasLine(lineNumber)) ? StaticFlow.ToString(this.Get_Line(lineNumber)) : "";
+            return (this.HasLine(lineNumber)) ? StaticFlow.ToString(this.Current[lineNumber]) : "";
         }
         
         public bool Has_Prev_LineNumber(int lineNumber)
@@ -280,7 +292,7 @@ namespace AsmSim
 
         #region Setters
         /// <summary>Update this CFlow with the provided programStr: return true if this CFlow has changed.</summary>
-        public bool Update(string programStr, bool removeEmptyLines = false)
+        public bool Update(string programStr, bool removeEmptyLines = true)
         {
             //Console.WriteLine("INFO: CFlow:Update_Lines");
             this._use_Parsed_Code_A = !this._use_Parsed_Code_A;
@@ -374,13 +386,15 @@ namespace AsmSim
             #endregion
         }
         
+        /// <summary>Compress this static flow by removing empty lines</summary>
         private void Compress()
         {
             var current = this.Current;
             for (int lineNumber = 0; lineNumber < current.Count; ++lineNumber)
             {
                 var c = current[lineNumber];
-                if (c.Mnemonic == Mnemonic.NONE)
+
+                if (c.Mnemonic == Mnemonic.NONE) // found an empty line
                 {
                     int outDegree = this._graph.OutDegree(lineNumber);
                     if (outDegree == 0)
@@ -389,7 +403,9 @@ namespace AsmSim
                     }
                     else if (outDegree == 1)
                     {
-                        int next = this._graph.OutEdge(lineNumber, 0).Target;
+                        var outEdge = this._graph.OutEdge(lineNumber, 0);
+                        this._graph.RemoveEdge(outEdge);
+                        int next = outEdge.Target;
 
                         //Remove this empty line
                         var inEdges = new List<TaggedEdge<int, bool>>(this._graph.InEdges(lineNumber));
@@ -401,7 +417,7 @@ namespace AsmSim
                     }
                     else
                     {
-                        // error
+                        // error: it is not possible for an empty line to be an branching point
                     }
                 }
             }
