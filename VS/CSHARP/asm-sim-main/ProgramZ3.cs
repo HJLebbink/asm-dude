@@ -762,17 +762,19 @@ namespace AsmSim
                 "                                               " + Environment.NewLine +
                 "           mov     rax,        1               " + Environment.NewLine +
                 "                                               " + Environment.NewLine +
+                "                                               " + Environment.NewLine +
                 "           jp      label1                      " + Environment.NewLine +
                 "                                               " + Environment.NewLine +
                 "           mov     rax,        2               " + Environment.NewLine +
                 "                                               " + Environment.NewLine +
                 "label1:                                        " + Environment.NewLine +
                 "                                               " + Environment.NewLine +
-                "           mov     rbx,        rax               ";
+                "           mov     rbx,        rax             " + Environment.NewLine +
+                "                                               ";
 
 
 
-            Dictionary<string, string> settings = new Dictionary<string, string>
+        Dictionary < string, string> settings = new Dictionary<string, string>
             {
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
@@ -816,7 +818,7 @@ namespace AsmSim
                 if (true)
                 {
                     State endState = dFlow.EndState;
-                    Console.WriteLine("in endState we know:\n" + endState);
+                    //Console.WriteLine("in endState we know:\n" + endState);
                 }
             }
         }
