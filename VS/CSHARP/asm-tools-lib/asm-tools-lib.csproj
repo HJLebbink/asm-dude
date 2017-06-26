@@ -87,6 +87,7 @@
     <Compile Include="Arch.cs" />
     <Compile Include="AsmSourceTools.cs" />
     <Compile Include="AssemblerEnum.cs" />
+    <Compile Include="ExpressionEvaluator.cs" />
     <Compile Include="Flags.cs" />
     <Compile Include="MicroArch.cs" />
     <Compile Include="Mnemonic.cs" />

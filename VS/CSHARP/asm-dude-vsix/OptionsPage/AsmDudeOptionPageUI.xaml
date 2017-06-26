@@ -185,7 +185,7 @@
                     <Grid Margin="0,2,0,0">
                         <StackPanel>
                             <GroupBox>
-                                <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" Width="auto" Margin="5,4,0,0" ><Run Text="Note: the simulator does not understand MASM or NASM command, or arithmetic in operands, thus no 'MOV VAR, 10' or 'XOR RAX, 2*3'. Jumping based on register content is also not supported, thus no 'JMP RAX'."/></TextBlock>
+                                <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" Width="auto" Margin="5,4,0,0" Text="Note: the simulator does not understand MASM or NASM, thus no 'MOV VAR, 10'. Jumping based on register content is also not supported, thus no 'JMP RAX'." />
                             </GroupBox>
                             <CheckBox x:Name="AsmSim_On_UI" Content="Enable assembly simulator" ToolTip="Enamble the assembly simulator" Margin="0,2,0,2" VerticalAlignment="Center" HorizontalAlignment="Left" Width="Auto" />
                             <Grid>

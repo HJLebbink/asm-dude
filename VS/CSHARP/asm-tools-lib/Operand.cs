@@ -69,7 +69,7 @@ namespace AsmTools
             {
                 this._rn = Rn.NOREG;
 
-                var t1 = AsmSourceTools.ToConstant(token2);
+                var t1 = ExpressionEvaluator.ToConstant(token2);
                 if (t1.Valid)
                 {
                     this._type = Ot1.imm;

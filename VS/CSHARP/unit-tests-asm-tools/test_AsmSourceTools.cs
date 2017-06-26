@@ -138,121 +138,175 @@ namespace unit_tests {
 
 
         [TestMethod]
-        public void Test_AsmSourceTools_toConstant() {
+        public void Test_AsmSourceTools_Evaluate_1() {
             {
                 ulong i = 0ul;
                 string s = i + "";
-                (bool, ulong, int) t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1, "could not parse: s=" + s);
-                Assert.AreEqual(i, t.Item2, s);
-                Assert.AreEqual(8, t.Item3, s);
+                var t = ExpressionEvaluator.Evaluate(s);
+                Assert.IsTrue(t.Valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, t.Value, s);
+                Assert.AreEqual(8, t.NBits, s);
             }
             {
                 ulong i = 0ul;
                 string s = "0x" + i.ToString("X");
-                (bool, ulong, int) t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1, "could not parse: s=" + s);
-                Assert.AreEqual(i, t.Item2, s);
-                Assert.AreEqual(8, t.Item3, s);
+                var t = ExpressionEvaluator.Evaluate(s);
+                Assert.IsTrue(t.Valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, t.Value, s);
+                Assert.AreEqual(8, t.NBits, s);
             }
             {
                 ulong i = 0ul;
                 string s = i.ToString("X") + "h";
-                (bool, ulong, int) t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1, "could not parse: s="+s);
-                Assert.AreEqual(i, t.Item2, s);
-                Assert.AreEqual(8, t.Item3, s);
+                var t = ExpressionEvaluator.Evaluate(s);
+                Assert.IsTrue(t.Valid, "could not parse: s="+s);
+                Assert.AreEqual(i, t.Value, s);
+                Assert.AreEqual(8, t.NBits, s);
             }
             {
                 ulong i = 1ul;
                 string s = i.ToString("X") + "h";
-                (bool, ulong, int) t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1, "could not parse: s=" + s);
-                Assert.AreEqual(i, t.Item2, s);
-                Assert.AreEqual(8, t.Item3, s);
+                var t = ExpressionEvaluator.Evaluate(s);
+                Assert.IsTrue(t.Valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, t.Value, s);
+                Assert.AreEqual(8, t.NBits, s);
             }
             {
                 ulong i = 1ul;
                 string s = "0x" + i.ToString("X"); ;
-                (bool, ulong, int) t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1, "could not parse: s=" + s);
-                Assert.AreEqual(i, t.Item2, s);
-                Assert.AreEqual(8, t.Item3, s);
+                var t = ExpressionEvaluator.Evaluate(s);
+                Assert.IsTrue(t.Valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, t.Value, s);
+                Assert.AreEqual(8, t.NBits, s);
             }
             {
                 ulong i = 1ul;
                 string s = i.ToString("X") + "h";
-                (bool, ulong, int) t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1, "could not parse: s=" + s);
-                Assert.AreEqual(i, t.Item2, s);
-                Assert.AreEqual(8, t.Item3, s);
+                var t = ExpressionEvaluator.Evaluate(s);
+                Assert.IsTrue(t.Valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, t.Value, s);
+                Assert.AreEqual(8, t.NBits, s);
             }
 
             {
                 ulong i = 0xFFul;
                 string s = "0x" + i.ToString("X"); ;
-                (bool, ulong, int) t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1, "could not parse: s=" + s);
-                Assert.AreEqual(i, t.Item2, s);
-                Assert.AreEqual(8, t.Item3, s);
+                var t = ExpressionEvaluator.Evaluate(s);
+                Assert.IsTrue(t.Valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, t.Value, s);
+                Assert.AreEqual(8, t.NBits, s);
             }
             {
                 ulong i = 0xFFul;
                 string s = i.ToString("X") + "h";
-                (bool, ulong, int) t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1, "could not parse: s=" + s);
-                Assert.AreEqual(i, t.Item2, s);
-                Assert.AreEqual(8, t.Item3, s);
+                var t = ExpressionEvaluator.Evaluate(s);
+                Assert.IsTrue(t.Valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, t.Value, s);
+                Assert.AreEqual(8, t.NBits, s);
             }
             {
                 ulong i = 0x100ul;
                 string s = "0x" + i.ToString("X");
-                (bool, ulong, int) t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1, "could not parse: s=" + s);
-                Assert.AreEqual(i, t.Item2, s);
-                Assert.AreEqual(16, t.Item3, s);
+                var t = ExpressionEvaluator.Evaluate(s);
+                Assert.IsTrue(t.Valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, t.Value, s);
+                Assert.AreEqual(16, t.NBits, s);
             }
             {
                 ulong i = 0xFFFFul;
                 string s = "0x" + i.ToString("X");
-                (bool, ulong, int) t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1, "could not parse: s=" + s);
-                Assert.AreEqual(i, t.Item2, s);
-                Assert.AreEqual(16, t.Item3, s);
+                var t = ExpressionEvaluator.Evaluate(s);
+                Assert.IsTrue(t.Valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, t.Value, s);
+                Assert.AreEqual(16, t.NBits, s);
             }
             {
                 ulong i = 0x10000ul;
                 string s = "0x" + i.ToString("X");
-                (bool, ulong, int) t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1, "could not parse: s=" + s);
-                Assert.AreEqual(i, t.Item2, s);
-                Assert.AreEqual(32, t.Item3, s);
+                var t = ExpressionEvaluator.Evaluate(s);
+                Assert.IsTrue(t.Valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, t.Value, s);
+                Assert.AreEqual(32, t.NBits, s);
             }
             {
                 ulong i = 0xFFFFFFFFul;
                 string s = "0x" + i.ToString("X");
-                (bool, ulong, int) t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1);
-                Assert.AreEqual(i, t.Item2, s);
-                Assert.AreEqual(32, t.Item3, s);
+                var t = ExpressionEvaluator.Evaluate(s);
+                Assert.IsTrue(t.Valid);
+                Assert.AreEqual(i, t.Value, s);
+                Assert.AreEqual(32, t.NBits, s);
             }
             {
                 ulong i = 0x100000000ul;
                 string s = "0x" + i.ToString("X");
-                (bool, ulong, int) t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1, "could not parse: s=" + s);
-                Assert.AreEqual(i, t.Item2, s);
-                Assert.AreEqual(64, t.Item3, s);
+                var t = ExpressionEvaluator.Evaluate(s);
+                Assert.IsTrue(t.Valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, t.Value, s);
+                Assert.AreEqual(64, t.NBits, s);
             }
             {
                 ulong i = 0xFFFFFFFFFFFFFFFFul;
                 string s = "0x" + i.ToString("X");
-                (bool, ulong, int) t = AsmTools.AsmSourceTools.ToConstant(s);
-                Assert.IsTrue(t.Item1);
-                Assert.AreEqual(i, t.Item2, s);
-                Assert.AreEqual(64, t.Item3, s);
+                var t = ExpressionEvaluator.Evaluate(s);
+                Assert.IsTrue(t.Valid);
+                Assert.AreEqual(i, t.Value, s);
+                Assert.AreEqual(64, t.NBits, s);
             }
         }
+
+        [TestMethod]
+        public void Test_AsmSourceTools_Evaluate_2()
+        {
+            {
+                string s = "1<<2";
+                ulong i = 1 << 2;
+                var t = ExpressionEvaluator.Evaluate(s);
+                Assert.IsTrue(t.Valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, t.Value, s);
+                Assert.AreEqual(8, t.NBits, s);
+            }
+            {
+                string s = "1 << 2";
+                ulong i = 1 << 2;
+                var t = ExpressionEvaluator.Evaluate(s);
+                Assert.IsTrue(t.Valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, t.Value, s);
+                Assert.AreEqual(8, t.NBits, s);
+            }
+            {
+                string s = "(1 << 2)";
+                ulong i = 1 << 2;
+                var t = ExpressionEvaluator.Evaluate(s);
+                Assert.IsTrue(t.Valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, t.Value, s);
+                Assert.AreEqual(8, t.NBits, s);
+            }
+            {
+                string s = " (1<<2) ";
+                ulong i = 1 << 2;
+                var t = ExpressionEvaluator.Evaluate(s);
+                Assert.IsTrue(t.Valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, t.Value, s);
+                Assert.AreEqual(8, t.NBits, s);
+            }
+            {
+                string s = "(1<<(1+1))";
+                ulong i = 1 << (1+1);
+                var t = ExpressionEvaluator.Evaluate(s);
+                Assert.IsTrue(t.Valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, t.Value, s);
+                Assert.AreEqual(8, t.NBits, s);
+            }
+            {
+                string s = " ( 1 << ( 1 + 1 ) ) ";
+                ulong i = 1 << (1 + 1);
+                var t = ExpressionEvaluator.Evaluate(s);
+                Assert.IsTrue(t.Valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, t.Value, s);
+                Assert.AreEqual(8, t.NBits, s);
+            }
+        }
+
         [TestMethod]
         public void Test_AsmSourceTools_parseMnemonic() {
             foreach (Mnemonic x in Enum.GetValues(typeof(Mnemonic))) {

@@ -288,7 +288,7 @@ namespace AsmDude.QuickInfo
                                 description = new TextBlock();
                                 description.Inlines.Add(Make_Run1("Constant ", this._foreground));
 
-                                var constant = AsmSourceTools.ToConstant(keyword);
+                                var constant = ExpressionEvaluator.Evaluate(keyword);
                                 string constantStr = (constant.Valid)
                                     ? constant.Value + "d = " + constant.Value.ToString("X") + "h = " + AsmSourceTools.ToStringBin(constant.Value, constant.NBits) + "b"
                                     : keyword;

@@ -337,6 +337,7 @@ namespace AsmSim
                 for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
                 {
                     var line = AsmSourceTools.ParseLine(lines[lineNumber]);
+                    this.EvalArgs(ref line.Args);
                     current.Add((line.Label, line.Mnemonic, line.Args));
 
                     (int jumpTo1, int jumpTo2) = this.Static_Jump(line.Mnemonic, line.Args, lineNumber);
@@ -386,6 +387,18 @@ namespace AsmSim
             #endregion
         }
         
+        private void EvalArgs(ref string[] args)
+        {
+            for (int i=0; i<args.Length; ++i)
+            {
+                var v = ExpressionEvaluator.Evaluate(args[i]);
+                if (v.Valid)
+                {
+                    args[i] = v.Value.ToString();
+                }
+            }
+        }
+
         /// <summary>Compress this static flow by removing empty lines</summary>
         private void Compress()
         {
