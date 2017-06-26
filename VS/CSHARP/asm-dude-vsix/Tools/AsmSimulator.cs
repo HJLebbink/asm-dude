@@ -661,6 +661,9 @@ namespace AsmDude.Tools
         {
             try
             {
+                if (this._syntax_Errors.ContainsKey(lineNumber)) return (HasValue: false, Bussy: false);
+                if (this._isNotImplemented.Contains(lineNumber)) return (HasValue: false, Bussy: false);
+
                 var state = (before)
                     ? this.Get_State_Before(lineNumber, false, false)
                     : this.Get_State_After(lineNumber, false, false);
@@ -683,7 +686,7 @@ namespace AsmDude.Tools
                     }
                     foreach (Tv tv in content)
                     {
-                        if ((tv == Tv.ONE) || (tv == Tv.ZERO) || (tv == Tv.UNDEFINED)) return (true, false);
+                        if ((tv == Tv.ONE) || (tv == Tv.ZERO) || (tv == Tv.UNDEFINED) || (tv == Tv.INCONSISTENT)) return (true, false);
                     }
                     return (false, false);
                 }

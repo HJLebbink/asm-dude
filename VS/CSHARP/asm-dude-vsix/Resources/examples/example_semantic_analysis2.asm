@@ -17,7 +17,7 @@ labelx:
 	jnz labelx
 	mov rax, rcx
 
-	aaa 
+	vaddpd 
 
 	mov rcx, 10
 	mov r10, rcx ; store the parameter rcx in r10 

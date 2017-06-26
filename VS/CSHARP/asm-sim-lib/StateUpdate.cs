@@ -671,16 +671,23 @@ namespace AsmSim
                 ArrayExpr memKey = Tools.Create_Mem_Key(this.NextKey, ctx);
 
                 //Console.WriteLine("SetMem: memKey=" + memKey + "; new Value=" + newMemContent);
-                if (this._mem_Update != null) throw new Exception("Multiple memory updates are not allowed");
-
+                if (this._mem_Update != null)
+                {
+                    Console.WriteLine("WARNING: StateUpdate:SetMem: multiple memory updates are not allowed");
+                    //throw new Exception("Multiple memory updates are not allowed");
+                }
                 this._mem_Update = ctx.MkEq(memKey, newMemContent);
                 this._mem_Update_U = ctx.MkEq(memKey, newMemContent_U);
             }
         }
         public void SetMem(ArrayExpr memContent)
         {
-            if (this._mem_Full != null) throw new Exception();
-            this._mem_Full = memContent;
+            if (this._mem_Full != null)
+            {
+                Console.WriteLine("WARNING: StateUpdate:SetMem: multiple memory updates are not allowed");
+                //throw new Exception("Multiple memory updates are not allowed");
+            }
+            this._mem_Full = memContent.Translate(this._ctx) as ArrayExpr;
         }
         #endregion
 
