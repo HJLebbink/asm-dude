@@ -1546,5 +1546,17 @@ namespace AsmDude {
                 this["AsmSim_Decorate_Unreachable_Instructions"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#pragma assume")]
+        public string AsmSim_Pragma_Assume {
+            get {
+                return ((string)(this["AsmSim_Pragma_Assume"]));
+            }
+            set {
+                this["AsmSim_Pragma_Assume"] = value;
+            }
+        }
     }
 }

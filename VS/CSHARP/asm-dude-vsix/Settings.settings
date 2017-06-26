@@ -383,5 +383,8 @@
     <Setting Name="AsmSim_Decorate_Unreachable_Instructions" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="AsmSim_Pragma_Assume" Type="System.String" Scope="User">
+      <Value Profile="(Default)">#pragma assume</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

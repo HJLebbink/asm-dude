@@ -1,7 +1,9 @@
 .intel_syntax noprefix
 
 
+
 	#region Unreachable code
+	#pragma assume mov al, 0
 	cmp al, 0
 	jz label2
 	mov al, 1

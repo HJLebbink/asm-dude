@@ -233,7 +233,9 @@ namespace AsmDude.Tools
                 bool changed;
                 lock (this._resetLock)
                 {
-                    changed = this._sFlow.Update(this._buffer.CurrentSnapshot.GetText());
+                    string text = this._buffer.CurrentSnapshot.GetText().ToUpper();
+                    text = text.Replace(Settings.Default.AsmSim_Pragma_Assume.ToUpper(), "");
+                    changed = this._sFlow.Update(text);
                 }
                 if (changed) {
                     if ((this._thread_Result != null) && !this._thread_Result.IsCompleted && !this._thread_Result.IsCanceled)

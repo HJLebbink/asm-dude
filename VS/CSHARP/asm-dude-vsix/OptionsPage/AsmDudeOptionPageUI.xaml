@@ -212,7 +212,7 @@
                                 </Grid.ColumnDefinitions>
                                 <Label Content="Syntax Errors:" Grid.Column="0" />
                                 <CheckBox x:Name="AsmSim_Shown_Syntax_Errors_UI" Content="Show in error list" ToolTip="Show syntax errors found while parsing in error list" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left" Width="Auto" />
-                                <CheckBox x:Name="AsmSim_Decorate_Syntax_Errors_UI" Content="Decorate with Squiggle" ToolTip="Decorate syntax errors found while parsing" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Left" Width="Auto" />
+                                <CheckBox x:Name="AsmSim_Decorate_Syntax_Errors_UI" Content="Decorate with squiggles" ToolTip="Decorate syntax errors found while parsing with squiggles" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Left" Width="Auto" />
                             </Grid>
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -222,7 +222,7 @@
                                 </Grid.ColumnDefinitions>
                                 <Label Content="Usage of Undefined:" Grid.Column="0" />
                                 <CheckBox x:Name="AsmSim_Show_Usage_Of_Undefined_UI" Content="Show in error list" ToolTip="Show usage of undefined values in error list" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left" Width="Auto" />
-                                <CheckBox x:Name="AsmSim_Decorate_Usage_Of_Undefined_UI" Content="Decorate with Squiggle" ToolTip="Decorate usage of undefined values" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Left" Width="Auto" />
+                                <CheckBox x:Name="AsmSim_Decorate_Usage_Of_Undefined_UI" Content="Decorate with squiggles" ToolTip="Decorate usage of undefined values with squiggles" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Left" Width="Auto" />
                             </Grid>
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -232,7 +232,7 @@
                                 </Grid.ColumnDefinitions>
                                 <Label Content="Redundant Instructions:" Grid.Column="0" />
                                 <CheckBox x:Name="AsmSim_Show_Redundant_Instructions_UI" Content="Show in error list" ToolTip="Show redundant instructions in error list" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left" Width="Auto" />
-                                <CheckBox x:Name="AsmSim_Decorate_Redundant_Instructions_UI" Content="Decorate with Squiggle" ToolTip="Decorate redundant instructions" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Left" Width="Auto" />
+                                <CheckBox x:Name="AsmSim_Decorate_Redundant_Instructions_UI" Content="Decorate with squiggles" ToolTip="Decorate redundant instructions with squiggles" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Left" Width="Auto" />
                             </Grid>
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -242,7 +242,7 @@
                                 </Grid.ColumnDefinitions>
                                 <Label Content="Unreachable Instructions:" Grid.Column="0" />
                                 <CheckBox x:Name="AsmSim_Show_Unreachable_Instructions_UI" Content="Show in error list" ToolTip="Show unreachable instructions in error list" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left" Width="Auto" />
-                                <CheckBox x:Name="AsmSim_Decorate_Unreachable_Instructions_UI" Content="Decorate with Squiggle" ToolTip="Decorate unreachable instructions" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Left" Width="Auto" />
+                                <CheckBox x:Name="AsmSim_Decorate_Unreachable_Instructions_UI" Content="Decorate with squiggles" ToolTip="Decorate unreachable instructions with squiggles" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Left" Width="Auto" />
                             </Grid>
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -251,7 +251,7 @@
                                     <ColumnDefinition Width="180"/>
                                 </Grid.ColumnDefinitions>
                                 <Label Content="Known Registers:" Grid.Column="0" />
-                                <CheckBox x:Name="AsmSim_Decorate_Registers_UI" Content="Decorate with Squiggle" ToolTip="Decorate registers with known values" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Left" Width="Auto" />
+                                <CheckBox x:Name="AsmSim_Decorate_Registers_UI" Content="Decorate with squiggles" ToolTip="Decorate registers with known values with squiggles" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Left" Width="Auto" />
                             </Grid>
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -260,7 +260,11 @@
                                     <ColumnDefinition Width="180"/>
                                 </Grid.ColumnDefinitions>
                                 <Label Content="Unimplemented Instructions:" Grid.Column="0" />
-                                <CheckBox x:Name="AsmSim_Decorate_Unimplemented_UI" Content="Decorate with Squiggle" ToolTip="Decorate instructions that are not (yet) implemented" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Left" Width="Auto" />
+                                <CheckBox x:Name="AsmSim_Decorate_Unimplemented_UI" Content="Decorate with squiggles" ToolTip="Decorate instructions that are not (yet) implemented with squiggles" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Left" Width="Auto" />
+                            </Grid>
+                            <Grid>
+                                <Label Content="Assume Pragma:" HorizontalAlignment="Left"/>
+                                <TextBox x:Name="AsmSim_Pragma_Assume_UI" ToolTip="The characters used to instruct the asm simulator to execute instructions. E.g. '#pragma assume mov al, 0001_0001b' to set al the value 00010001b." Margin="180,3,0,2" />
                             </Grid>
                         </StackPanel>
                     </Grid>

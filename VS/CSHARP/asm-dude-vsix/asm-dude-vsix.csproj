@@ -105,12 +105,16 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Resources\examples\all_mnemonics.asm" />
+    <Content Include="Resources\examples\example_att.s" />
     <Content Include="Resources\examples\example_semantic_analysis.asm" />
     <Content Include="Resources\examples\example.asm" />
     <Content Include="Resources\examples\example_masm.asm" />
     <Content Include="Resources\examples\example_masm2.asm" />
     <Content Include="Resources\examples\example_nasm.asm" />
+    <Content Include="Resources\examples\example_semantic_analysis2.asm" />
     <Content Include="Resources\examples\inc\example.inc" />
+    <Content Include="Resources\examples\nn.asm" />
     <Content Include="Resources\images\asm.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
