@@ -42,7 +42,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="AsmDoc_url" Type="System.String" Scope="User">
-      <Value Profile="(Default)">https://hjlebbink.github.io/x86doc/html/</Value>
+      <Value Profile="(Default)">https://asmdude.github.io/x86doc/html/</Value>
     </Setting>
     <Setting Name="AsmDoc_On" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>

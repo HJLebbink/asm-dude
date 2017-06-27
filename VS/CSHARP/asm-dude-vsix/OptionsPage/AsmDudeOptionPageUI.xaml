@@ -88,7 +88,7 @@
                             <CheckBox x:Name="AsmDoc_On_UI" ToolTip="Assembly documentation enabled" Content="Enable documentation" Margin="0,4,0,4" HorizontalAlignment="Left" Width="Auto" />
                             <Grid>
                                 <Label Content="Documentation URL:" HorizontalAlignment="Left"/>
-                                <TextBox x:Name="AsmDoc_Url_UI" ToolTip="URL to the documentation. E.g. https://hjlebbink.github.io/x86doc/html/" TextWrapping="Wrap" Text="https://hjlebbink.github.io/x86doc/html/" Margin="140,3,0,2" Width="auto"/>
+                                <TextBox x:Name="AsmDoc_Url_UI" ToolTip="URL to the documentation. E.g. https://asmdude.github.io/x86doc/html/" TextWrapping="Wrap" Text="https://asmdude.github.io/x86doc/html/" Margin="140,3,0,2" Width="auto"/>
                             </Grid>
                         </StackPanel>
                     </Grid>
