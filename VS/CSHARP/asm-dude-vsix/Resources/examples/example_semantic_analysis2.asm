@@ -1,4 +1,7 @@
 	;mov rax, 10
+
+
+	#pragma assume mov al, 0000_0001
 	cmp rax, 0
 	jz label1
 	xor rax, rax

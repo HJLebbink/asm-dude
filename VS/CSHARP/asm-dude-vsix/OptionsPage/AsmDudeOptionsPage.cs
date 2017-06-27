@@ -274,6 +274,7 @@ namespace AsmDude.OptionsPage
             this._asmDudeOptionsPageUI.AsmSim_Decorate_Registers = Settings.Default.AsmSim_Decorate_Registers;
             this._asmDudeOptionsPageUI.AsmSim_Use_In_Code_Completion = Settings.Default.AsmSim_Use_In_Code_Completion;
             this._asmDudeOptionsPageUI.AsmSim_Decorate_Unimplemented = Settings.Default.AsmSim_Decorate_Unimplemented;
+            this._asmDudeOptionsPageUI.AsmSim_Pragma_Assume = Settings.Default.AsmSim_Pragma_Assume;
             #endregion
         }
 
@@ -987,6 +988,12 @@ namespace AsmDude.OptionsPage
                 if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_Decorate_Unimplemented=" + this._asmDudeOptionsPageUI.AsmSim_Decorate_Unimplemented);
                 changed = true;
             }
+            if (Settings.Default.AsmSim_Pragma_Assume != this._asmDudeOptionsPageUI.AsmSim_Pragma_Assume)
+            {
+                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_Pragma_Assume=" + this._asmDudeOptionsPageUI.AsmSim_Pragma_Assume);
+                changed = true;
+            }
+
             #endregion
 
             if (changed)
@@ -1710,6 +1717,11 @@ namespace AsmDude.OptionsPage
             if (Settings.Default.AsmSim_Decorate_Unimplemented != this._asmDudeOptionsPageUI.AsmSim_Decorate_Unimplemented)
             {
                 Settings.Default.AsmSim_Decorate_Unimplemented = this._asmDudeOptionsPageUI.AsmSim_Decorate_Unimplemented;
+                changed = true;
+            }
+            if (Settings.Default.AsmSim_Pragma_Assume != this._asmDudeOptionsPageUI.AsmSim_Pragma_Assume)
+            {
+                Settings.Default.AsmSim_Pragma_Assume = this._asmDudeOptionsPageUI.AsmSim_Pragma_Assume;
                 changed = true;
             }
             #endregion

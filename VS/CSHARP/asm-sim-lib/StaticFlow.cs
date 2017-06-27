@@ -34,7 +34,6 @@ namespace AsmSim
     public class StaticFlow
     {
         public static readonly char LINENUMBER_SEPARATOR = '!';
-        public static readonly int MAX_LINES = 200;
 
         private readonly Tools _tools;
 
@@ -297,18 +296,6 @@ namespace AsmSim
             //Console.WriteLine("INFO: CFlow:Update_Lines");
             this._use_Parsed_Code_A = !this._use_Parsed_Code_A;
 
-            #region Restrict input to max number of lines
-            {
-                string[] lines = programStr.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-                if (lines.Length > MAX_LINES)
-                {
-                    Array.Resize(ref lines, MAX_LINES);
-                }
-                StringBuilder sb = new StringBuilder();
-                foreach (string v in lines) sb.AppendLine(v);
-                programStr = sb.ToString();
-            }
-            #endregion
             #region Parse to find all labels
             IDictionary<string, int> labels = this.GetLabels(programStr);
             // replace all labels by annotated label

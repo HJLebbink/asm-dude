@@ -31,11 +31,15 @@ using AsmSim;
 using AsmTools;
 using Amib.Threading;
 using AsmSim.Mnemonics;
+using System.Text;
 
 namespace AsmDude.Tools
 {
     public sealed class AsmSimulator : IDisposable
     {
+        public static readonly int MAX_LINES = 200;
+
+
         #region Fields
         private readonly ITextBuffer _buffer;
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
@@ -165,6 +169,7 @@ namespace AsmDude.Tools
         public event EventHandler<LineUpdatedEventArgs> Line_Updated_Event;
         public event EventHandler<EventArgs> Reset_Done_Event;
 
+        #region Disposing
         public void Dispose()
         {
             Dispose(true);
@@ -203,6 +208,8 @@ namespace AsmDude.Tools
             }
             // free native resources if there are any.  
         }
+        #endregion
+
         #region Reset
 
         public void Reset(int delay = -1)
@@ -233,9 +240,34 @@ namespace AsmDude.Tools
                 bool changed;
                 lock (this._resetLock)
                 {
-                    string text = this._buffer.CurrentSnapshot.GetText().ToUpper();
-                    text = text.Replace(Settings.Default.AsmSim_Pragma_Assume.ToUpper(), "");
-                    changed = this._sFlow.Update(text);
+                    string programStr = this._buffer.CurrentSnapshot.GetText().ToUpper();
+                    string[] lines = programStr.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+
+                    #region Restrict input to max number of lines
+                    if (lines.Length > MAX_LINES)
+                    {
+                        Array.Resize(ref lines, MAX_LINES);
+                    }
+                    #endregion
+
+                    StringBuilder sb = new StringBuilder();
+                    string pragmaKeyword = Settings.Default.AsmSim_Pragma_Assume.ToUpper();
+                    int pragmaKeywordLength = pragmaKeyword.Length;
+
+                    for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
+                    {
+                        #region Handle Pragma Assume
+                        string line = lines[lineNumber];
+                        int startPos = line.IndexOf(pragmaKeyword);
+                        if (startPos != -1)
+                        {
+                            line = line.Substring(startPos + pragmaKeywordLength);
+                        }
+                        #endregion
+
+                        sb.AppendLine(line);
+                    }
+                    changed = this._sFlow.Update(sb.ToString());
                 }
                 if (changed) {
                     if ((this._thread_Result != null) && !this._thread_Result.IsCompleted && !this._thread_Result.IsCanceled)

@@ -101,6 +101,7 @@ namespace AsmDude.OptionsPage
             this.AsmSim_Decorate_Registers_UI.IsEnabled = value;
             this.AsmSim_Use_In_Code_Completion_UI.IsEnabled = value;
             this.AsmSim_Decorate_Unimplemented_UI.IsEnabled = value;
+            this.AsmSim_Pragma_Assume_UI.IsEnabled = value;
             this.AsmSim_64_Bits_UI.IsEnabled = value;
         }
         #endregion
@@ -798,6 +799,11 @@ namespace AsmDude.OptionsPage
         {
             get { return this.AsmSim_Decorate_Unimplemented_UI.IsChecked ?? false; }
             set { this.AsmSim_Decorate_Unimplemented_UI.IsChecked = value; }
+        }
+        public string AsmSim_Pragma_Assume
+        {
+            get { return this.AsmSim_Pragma_Assume_UI.Text; }
+            set { this.AsmSim_Pragma_Assume_UI.Text = value; }
         }
         #endregion
     }
