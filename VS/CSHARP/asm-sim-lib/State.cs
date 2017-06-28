@@ -31,7 +31,6 @@ namespace AsmSim
     public class State : IDisposable
     {
         #region Fields
-        public static readonly bool SIMPLIFY_ON = false;
         public static readonly bool ADD_COMPUTED_VALUES = false;
 
         private readonly Tools _tools;
@@ -175,6 +174,7 @@ namespace AsmSim
                 // merge the contents of both solvers
                 {
                     ISet<BoolExpr> mergedContent = new HashSet<BoolExpr>();
+#pragma warning disable DisposableFixer // Undisposed ressource.
                     foreach (BoolExpr b in state1.Solver.Assertions) mergedContent.Add(b.Translate(ctx) as BoolExpr);
                     foreach (BoolExpr b in state2.Solver.Assertions) mergedContent.Add(b.Translate(ctx) as BoolExpr);
                     foreach (BoolExpr b in mergedContent) this.Solver.Assert(b);
@@ -183,6 +183,7 @@ namespace AsmSim
                     foreach (BoolExpr b in state1.Solver_U.Assertions) mergedContent_U.Add(b.Translate(ctx) as BoolExpr);
                     foreach (BoolExpr b in state2.Solver_U.Assertions) mergedContent_U.Add(b.Translate(ctx) as BoolExpr);
                     foreach (BoolExpr b in mergedContent_U) this.Solver_U.Assert(b);
+#pragma warning restore DisposableFixer // Undisposed resource.
                 }
 
                 // merge the head and tail
@@ -269,6 +270,8 @@ namespace AsmSim
                 {
                     if (!this._frozen)
                     {
+                        this.Simplify();
+                        this.Remove_History();
                         this._frozen = true;
                     }
                 }
@@ -276,6 +279,8 @@ namespace AsmSim
                 {
                     if (this._frozen)
                     {
+                        Console.WriteLine("WARNING: State:Frozen: unfreezing a state");
+
                         this._frozen = false;
                         this._cached_Reg_Values.Clear();
                         this._cached_Flag_Values.Clear();
@@ -772,6 +777,76 @@ namespace AsmSim
         #endregion
 
         #region Misc
+        public void Remove_History()
+        {
+            ISet<string> keep = new HashSet<string>();
+            foreach (var v in this._tools.StateConfig.GetFlagOn())
+            {
+                using (BoolExpr expr = this.Create(v))
+                {
+                    keep.Add(expr.ToString());
+                }
+            }
+            foreach (var v in this._tools.StateConfig.GetRegOn())
+            {
+                using (BitVecExpr expr = this.Create(v))
+                {
+                    keep.Add(expr.ToString());
+                }
+            }
+            if (this._tools.StateConfig.mem)
+            {
+                using (ArrayExpr expr = Tools.Create_Mem_Key(this.HeadKey, this._ctx))
+                {
+                    keep.Add(expr.ToString());
+                }
+            }
+            this.Compress(keep);
+        }
+        public void Compress(string keep)
+        {
+            this.Compress(new HashSet<string>() { keep });
+        }
+        public void Compress(ISet<string> keep)
+        {
+            ISet<string> used = new HashSet<string>(keep);
+            BoolExpr[] s = this.Solver.Assertions;
+            int nAssertions = s.Length;
+            bool[] added = new bool[nAssertions];
+
+            bool changed = true;
+            while (changed)
+            {
+                changed = false;
+                for (int i = 0; i < nAssertions; ++i)
+                {
+                    if (!added[i])
+                    {
+                        foreach (string constant in ToolsZ3.Get_Constants(s[i]))
+                        {
+                            if (used.Contains(constant))
+                            {
+                                foreach (string constant2 in ToolsZ3.Get_Constants(s[i]))
+                                {
+                                    used.Add(constant2);
+                                }
+                                added[i] = true;
+                                changed = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            this.Solver.Reset();
+            for (int i = 0; i < nAssertions; ++i)
+            {
+                if (added[i])
+                {
+                    this.Solver.Assert(s[i]);
+                }
+            }
+        }
 
         public void UpdateConstName(string postfix)
         {
@@ -916,20 +991,17 @@ namespace AsmSim
 
         public void Simplify()
         {
-            if (SIMPLIFY_ON)
+            lock (this._ctxLock)
             {
-                lock (this._ctxLock)
+                if (this.Solver_Dirty)
                 {
-                    if (this.Solver_Dirty)
-                    {
-                        ToolsZ3.Consolidate(false, this.Solver, this.Solver_U, this._ctx);
-                        this.Solver_Dirty = false;
-                    }
-                    if (this.Solver_U_Dirty)
-                    {
-                        ToolsZ3.Consolidate(true, this.Solver, this.Solver_U, this._ctx);
-                        this.Solver_U_Dirty = false;
-                    }
+                    ToolsZ3.Consolidate(false, this.Solver, this.Solver_U, this._ctx);
+                    this.Solver_Dirty = false;
+                }
+                if (this.Solver_U_Dirty)
+                {
+                    ToolsZ3.Consolidate(true, this.Solver, this.Solver_U, this._ctx);
+                    this.Solver_U_Dirty = false;
                 }
             }
         }
@@ -987,7 +1059,6 @@ namespace AsmSim
         #endregion
 
         #region IDisposable Support
-
         public void Dispose()
         {
             lock (this._ctxLock)

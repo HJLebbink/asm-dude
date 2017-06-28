@@ -105,7 +105,7 @@ namespace AsmSim
             return "NOKEY";
         }
         
-        private IEnumerable<StateUpdate> Get_Incomming_StateUpdate(string key)
+        private IEnumerable<StateUpdate> Get_Incoming_StateUpdate(string key)
         {
             foreach (var v in this._graph.InEdges(key)) yield return v.Tag.StateUpdate;
         }
@@ -539,7 +539,9 @@ namespace AsmSim
             var visisted = new List<string>();
             lock (this._updateLock)
             {
-                return Construct_State_Private_LOCAL(key, after, visisted) ?? new State(this._tools, key, key);
+                State result = Construct_State_Private_LOCAL(key, after, visisted) ?? new State(this._tools, key, key);
+                result.Frozen = true;
+                return result;
             }
 
             #region Local Methods

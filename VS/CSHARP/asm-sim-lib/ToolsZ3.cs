@@ -859,12 +859,12 @@ namespace AsmSim
         {
             var tup = GetConstants(expr);
 
-            foreach (Symbol s in tup.Item1)
+            foreach (Symbol s in tup.BoolConstants)
             {
                 expr = expr.Substitute(ctx.MkBoolConst(s), ctx.MkBoolConst(s + postfix));
                 //Console.WriteLine("UpdateConstName: s=" + s + "; expr=" + expr);
             }
-            foreach (Symbol s in tup.Item2)
+            foreach (Symbol s in tup.BvConstants)
             {
                 expr = expr.Substitute(ctx.MkBVConst(s, 64), ctx.MkBVConst(s + postfix, 64));
                 //Console.WriteLine("UpdateConstName: s=" + s + "; expr=" + expr);
@@ -872,12 +872,12 @@ namespace AsmSim
             return expr;
         }
 
-        private static (IList<Symbol>, IList<Symbol>) GetConstants(Expr expr)
+        private static (IList<Symbol> BoolConstants, IList<Symbol> BvConstants) GetConstants(Expr expr)
         {
             IList<Symbol> boolResults = new List<Symbol>();
             IList<Symbol> bvResults = new List<Symbol>();
             ToolsZ3.GetConstants(expr, ref boolResults, ref bvResults);
-            return (boolResults, bvResults);
+            return (BoolConstants: boolResults, BvConstants: bvResults);
         }
 
         /// <summary> check whethe provided array of truth-values only contains a single value, return this single value</summary>
@@ -927,6 +927,21 @@ namespace AsmSim
                 foreach (Expr expr2 in expr.Args)
                 {
                     GetConstants(expr2, ref boolResults, ref bvResults);
+                }
+            }
+        }
+
+        public static IEnumerable<string> Get_Constants(Expr expr)
+        {
+            if (expr.IsConst)
+            {
+                yield return expr.FuncDecl.Name.ToString();
+            }
+            else
+            {
+                foreach (Expr expr2 in expr.Args) foreach (string str in Get_Constants(expr2))
+                {
+                    yield return str;
                 }
             }
         }
