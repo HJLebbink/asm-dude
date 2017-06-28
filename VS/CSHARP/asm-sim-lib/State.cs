@@ -31,7 +31,7 @@ namespace AsmSim
     public class State : IDisposable
     {
         #region Fields
-        public static readonly bool ADD_COMPUTED_VALUES = false;
+        public static readonly bool ADD_COMPUTED_VALUES = true;
 
         private readonly Tools _tools;
         public Tools Tools { get { return this._tools; } }
@@ -519,8 +519,7 @@ namespace AsmSim
 
                         if (this.Frozen)
                         {
-                            /*
-                            if (ADD_COMPUTED_VALUES && RegisterTools.NBits(regName) == 64)
+                            if (ADD_COMPUTED_VALUES && (RegisterTools.NBits(regName) == 64))
                             {
                                 ulong? value2 = ToolsZ3.GetUlong(result);
                                 if (value2 != null)
@@ -529,10 +528,8 @@ namespace AsmSim
                                     this.Solver_Dirty = true;
                                 }
                             }
-                            */
                             this._cached_Reg_Values[regName] = result;
                         }
-
                         return result;
                     }
                 }

@@ -709,10 +709,11 @@ namespace AsmSim
                 "           mov     rbx,        0               ";
 
             string programStr2 =
+                "           xor     rbx,        rbx               " + Environment.NewLine +
                 "           mov     rax,        0               " + Environment.NewLine +
-                "           aaa                                 " + Environment.NewLine +
-                "           mov     rbx,        10              " + Environment.NewLine +
-                "           mov     rbx,        rax             ";
+                "           add     rax,        1               " + Environment.NewLine +
+                "           add     rbx,        10              " + Environment.NewLine +
+                "           xor     rax,        rax             ";
 
             string programStr3 =
                 "           cmp     rax,        0               " + Environment.NewLine +
@@ -818,7 +819,7 @@ namespace AsmSim
                 if (true)
                 {
                     State endState = dFlow.EndState;
-                    //Console.WriteLine("in endState we know:\n" + endState);
+                    Console.WriteLine("in endState we know:\n" + endState);
                 }
             }
         }

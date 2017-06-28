@@ -295,13 +295,14 @@ namespace AsmSim
                     //Tactic ta3 = ctx.MkTactic("qfbv"); // does not work: all constraitns are lost
                     //Tactic ta3b = ctx.MkTactic("qfbv-sls");// does not work: all constraitns are lost
                     //Tactic ta4 = ctx.MkTactic("solve-eqs");// does not work: all constraitns are lost
-                    //Tactic ta5 = ctx.MkTactic("propagate-values"); // no differences compared with SKIP
+                    Tactic ta5 = ctx.MkTactic("propagate-values"); // no differences compared with SKIP
                     //Tactic ta6 = ctx.MkTactic("sat"); // make much more constrains such that Flatten takes VERY LONG
                     //Tactic ta6b = ctx.MkTactic("sat-preprocess"); // does not work: some constrains are lost
                     //Tactic ta7 = ctx.MkTactic("smt"); // does not work: all constraitns are lost
 
 
-                    using (Tactic tactic = ctx.AndThen(ta2, ta1))
+                    using (Tactic tactic = ctx.AndThen(ta2, ctx.AndThen(ta1, ta5)))
+//                    using (Tactic tactic = ctx.AndThen(ta2, ta1))
                     {
                         if (!undef)
                         {
