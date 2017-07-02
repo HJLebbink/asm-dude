@@ -3138,7 +3138,7 @@ namespace AsmSim
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF; } }
         }
-        /// <summary>Clear the carry flag</summary>
+        /// <summary>Clear carry flag</summary>
         public sealed class Clc : Opcode0Base
         {
             public Clc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.CLC, args, keys, t) { }
@@ -3148,7 +3148,7 @@ namespace AsmSim
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF; } }
         }
-        /// <summary>Complement the carry flag</summary>
+        /// <summary>Complement carry flag</summary>
         public sealed class Cmc : Opcode0Base
         {
             public Cmc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.CMC, args, keys, t) { }
@@ -3157,6 +3157,27 @@ namespace AsmSim
                 this.RegularUpdate.Set(Flags.CF, this._ctx.MkNot(this.Get(Flags.CF)));
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF; } }
+        }
+
+        /// <summary>Set direction flag</summary>
+        public sealed class Std : Opcode0Base
+        {
+            public Std(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.STD, args, keys, t) { }
+            public override void Execute()
+            {
+                this.RegularUpdate.Set(Flags.DF, Tv.ONE);
+            }
+            public override Flags FlagsWriteStatic { get { return Flags.DF; } }
+        }
+        /// <summary>Clear direction flag</summary>
+        public sealed class Cld : Opcode0Base
+        {
+            public Cld(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.CLD, args, keys, t) { }
+            public override void Execute()
+            {
+                this.RegularUpdate.Set(Flags.DF, Tv.ZERO);
+            }
+            public override Flags FlagsWriteStatic { get { return Flags.DF; } }
         }
 
         public sealed class Lahf : Opcode0Base
