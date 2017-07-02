@@ -1,5 +1,11 @@
 ;hand crafted ====================================================================
 ;
+GENERAL	REP	Repeat. Repeat string instruction the number of times specified in the count register.	REP_REPE_REPZ_REPNE_REPNZ.html
+GENERAL	REPE	Repeat while equal. Repeat string instruction the number of times specified in the count register, and terminate if ZF=0. (REPE=REPZ)	REP_REPE_REPZ_REPNE_REPNZ.html
+GENERAL	REPZ	Repeat while equal. Repeat string instruction the number of times specified in the count register, and terminate if ZF=0. (REPE=REPZ)	REP_REPE_REPZ_REPNE_REPNZ.html
+GENERAL	REPNE	Repeat while not equal. Repeat string instruction the number of times specified in the count register, and terminate or if ZF=1. (REPNE=REPNZ)	REP_REPE_REPZ_REPNE_REPNZ.html
+GENERAL	REPNZ	Repeat while not equal. Repeat string instruction the number of times specified in the count register, and terminate or if ZF=1. (REPNE=REPNZ)	REP_REPE_REPZ_REPNE_REPNZ.html
+
 GENERAL	MOV	Move	MOV.html
 
 GENERAL	CMOVA	Move if above (CF=0 and ZF=0) (CMOVA=CMOVNBE)	CMOVcc.html
