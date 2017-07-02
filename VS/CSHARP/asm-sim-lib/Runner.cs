@@ -30,6 +30,13 @@ namespace AsmSim
 {
     public static class Runner
     {
+        public static ExecutionTree Construct_ExeuctionTree(StaticFlow sFlow, Tools tools)
+        {
+            ExecutionTree tree = new ExecutionTree(tools);
+            tree.Reset(sFlow);
+            return tree;
+        }
+
         public static DynamicFlow Construct_DynamicFlow_Backward(StaticFlow sFlow, Tools tools)
         {
             return Construct_DynamicFlow_Backward(sFlow, sFlow.LastLineNumber, sFlow.NLines * 2, tools);

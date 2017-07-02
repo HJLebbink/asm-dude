@@ -564,8 +564,8 @@ namespace AsmDude.Tools
             State state = this.Get_State_After(lineNumber, false, true).State;
             if (state == null) return ("", Mnemonic.NONE);
 
-            string key1 = this._dFlow.Key(lineNumber);
-            string key2 = this._dFlow.Key_Next(lineNumber);
+            string key1 = this._dFlow.Get_Key(lineNumber);
+            string key2 = this._dFlow.Get_Key_Next(lineNumber);
 
             lock (this._updateLock)
             {
@@ -775,7 +775,7 @@ namespace AsmDude.Tools
                 switch (statesBefore.Count)
                 {
                     case 0:
-                        string key = this._dFlow.Key(lineNumber);
+                        string key = this._dFlow.Get_Key(lineNumber);
                         state = new State(this.Tools, key, key);
                         break;
                     case 1:
@@ -840,7 +840,7 @@ namespace AsmDude.Tools
                 switch (statesBefore.Count)
                 {
                     case 0:
-                        string key = this._dFlow.Key(lineNumber);
+                        string key = this._dFlow.Get_Key(lineNumber);
                         state = new State(this.Tools, key, key);
                         break;
                     case 1:

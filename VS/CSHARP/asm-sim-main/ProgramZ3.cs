@@ -41,11 +41,11 @@ namespace AsmSim
             System.Version ver = thisAssemName.Version;
             Console.WriteLine(string.Format("Loaded AsmSim version {0}.", ver));
 
-            //TestExecutionTree();
+            TestExecutionTree();
             //TestGraph();
             //TestMnemonic();
             //TestMemorySpeed();
-            TestDynamicFlow();
+            //TestDynamicFlow();
             //TestSIMD();
             //EmptyMemoryTest();
             //ProgramSynthesis1();            
@@ -62,11 +62,13 @@ namespace AsmSim
         static void TestExecutionTree()
         {
             string programStr =
-                "           mov     rax,        3               " + Environment.NewLine +
+                "           mov     rax,        0               " + Environment.NewLine +
+                "           mov     rcx,        2               " + Environment.NewLine +
                 "label1:                                        " + Environment.NewLine +
-                "           dec     rax                         " + Environment.NewLine +
+                "           add     rax,        rcx             " + Environment.NewLine +
+                "           dec     rcx                         " + Environment.NewLine +
                 "           jnz     label1                      " + Environment.NewLine +
-                "           mov     rbx,        10              ";
+                "           mov     rcx,        rax             ";
 
             Dictionary<string, string> settings = new Dictionary<string, string>
             {
@@ -75,18 +77,24 @@ namespace AsmSim
                 { "proof", "false" },         // enable proof generation
                 { "timeout", "1000" }
             };
-            Tools tools = new Tools(settings)
-            {
-                Quiet = false
-            };
+            Tools tools = new Tools(settings);
             var sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
-            Console.WriteLine("sFlow=" + sFlow.ToString());
+            //Console.WriteLine("sFlow=" + sFlow.ToString());
 
-            tools.StateConfig = sFlow.Create_StateConfig();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RCX = true;
+            tools.StateConfig.ZF = true;
+
+
             var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            //DotVisualizer.SaveToDot(sFlow, dFlow, "loop.dot");
 
-            Console.WriteLine("dFlow=" + dFlow.ToString(sFlow));
+            tools.Quiet = false;
+            var executionTree = Runner.Construct_ExeuctionTree(sFlow, tools);
+
+            //Console.WriteLine("dFlow=" + dFlow.ToString(sFlow));
         }
 
         static void TestSIMD()
@@ -382,41 +390,6 @@ namespace AsmSim
                     }
                 }
             }
-        }
-
-        static void TestGraph()
-        {
-            var graph = new BidirectionalGraph<long, TaggedEdge<long, bool>>(false);
-            int rootVertex = 1;
-
-            graph.AddVertex(1);
-            graph.AddVertex(2);
-            graph.AddVertex(3);
-            graph.AddVertex(4);
-
-            graph.AddEdge(new TaggedEdge<long, bool>(1L, 2L, true));
-            graph.AddEdge(new TaggedEdge<long, bool>(1L, 4L, false));
-            graph.AddEdge(new TaggedEdge<long, bool>(2L, 3L, false));
-
-            string ToString(long vertex, int depth)
-            {
-                string result = "";
-                for (int i = 0; i < depth; ++i) result += "  ";
-
-                result += vertex.ToString() + "\n";
-
-                foreach (var v in graph.OutEdges(vertex))
-                {
-                    result += v.Tag + "\n";
-                    result += ToString(v.Target, depth + 2);
-                }
-                return result;
-            }
-
-            Console.WriteLine(ToString(rootVertex, 0));
-
-            //            graph.
-
         }
 
         static void TestMnemonic()
@@ -1168,12 +1141,6 @@ namespace AsmSim
                 //ps.Run();
             }
         }
-
-        private static BoolExpr IsKnownTest(BitVecExpr reg, Context ctx)
-        {
-            return ctx.MkImplies(ctx.MkNot(ctx.MkEq(reg, ctx.MkBV(0xFFFF_FFFF_FFFF_FFFF, 64))), ctx.MkEq(ctx.MkTrue(), ctx.MkFalse()));
-        }
-
         static void TestFunctions()
         {
             using (Context ctx = new Context())
@@ -1352,43 +1319,6 @@ namespace AsmSim
                 }
                 Console.WriteLine(solver.ToString());
             }
-        }
-
-        static void TestMemoryLeak()
-        {
-            Dictionary<string, string> settings = new Dictionary<string, string>
-            {
-                { "unsat-core", "false" },    // enable generation of unsat cores
-                { "model", "false" },         // enable model generation
-                { "proof", "false" },         // enable proof generation
-                { "timeout", "1000" }
-            };
-            int nContexts = 4000;
-
-            Context[] ctxArray = new Context[nContexts];
-
-            for (int i = 0; i < nContexts; ++i)
-            {
-                using (Context ctx = new Context(settings))
-                using (Solver s = ctx.MkSolver())
-                {
-                    //ctxArray[i] = ctx;
-
-                    using (BitVecExpr rax = ctx.MkBVConst("RAX!0", 64))
-                    using (BitVecExpr rbx = ctx.MkBVConst("RBX!0", 64))
-                    using (BitVecExpr rcx = ctx.MkBVConst("RCX!0", 64))
-                    {
-                        using (var t = ctx.MkEq(rax, rbx)) s.Assert(t);
-                        using (var t = ctx.MkEq(rbx, rcx)) s.Assert(t);
-                        using (var t = ctx.MkEq(rax, rcx)) Console.WriteLine("i=" + i + ":" + ToolsZ3.GetTv(t, s, ctx));
-                    }
-                }
-                //System.GC.Collect();
-            }
-
-            Console.WriteLine(string.Format("When a key is pressed ctxArray goes out of scope and may be garbage collected."));
-            Console.ReadKey();
-            System.GC.Collect();
         }
     }
 }

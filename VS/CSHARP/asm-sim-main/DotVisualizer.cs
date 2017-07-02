@@ -84,8 +84,10 @@ namespace AsmSim
 
         static void MyEdgeFormatter(object sender, FormatEdgeEventArgs<string, TaggedEdge<string, string>> e)
         {
-            var label = new GraphvizEdgeLabel();
-            label.Value = e.Edge.Tag;
+            var label = new GraphvizEdgeLabel()
+            {
+                Value = e.Edge.Tag
+            };
             e.EdgeFormatter.Label = label;
         }
 
