@@ -633,7 +633,6 @@ namespace AsmSim
                     this.SyntaxError = string.Format("\"{0}\": Operand 1 and 2 should have equal size. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                 }
             }
-
             public override void Execute()
             {
                 BitVecExpr a = this.Op1Value;
@@ -651,15 +650,102 @@ namespace AsmSim
             public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, this.op2); } }
         }
 
-        /*    
         /// <summary>Compare and exchange and Add</summary>
-        CMPXCHG,
+        public sealed class Cmpxchg : Opcode2Base
+        {
+            public Cmpxchg(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.CMPXCHG, args, Ot2.mem_reg | Ot2.reg_reg, keys, t)
+            {
+                if (this.IsHalted) return;
+                if (this.op1.NBits != this.op2.NBits)
+                {
+                    this.SyntaxError = string.Format("\"{0}\": Operand 1 and 2 should have equal size. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                }
+            }
+            public override void Execute()
+            {
+                /* Compare AL with r/m8 (op1). If equal, ZF is set and r8 (op2) is loaded into r/m8 (op1). Else, clear ZF and load r/m8 (op1) into AL.
+                 * 
+                 * if (AL==op1) {
+                 *      ZF  = 1
+                 *      op1 = op2
+                 *      op2 = op2
+                 *      AL  = AL
+                 * } else {
+                 *      ZF  = 0
+                 *      op1 = op1
+                 *      op2 = op2
+                 *      AL  = op1
+                 * }
+                 */
+
+                Rn regA = Rn.NOREG;
+                switch (this.op1.NBits)
+                {
+                    case 8: regA = Rn.AL; break;
+                    case 16: regA = Rn.AX; break;
+                    case 32: regA = Rn.EAX; break;
+                    case 64: regA = Rn.RAX; break;
+                }
+                BitVecExpr regA_Expr_Curr = this.Get(regA);
+                BoolExpr zf = this._ctx.MkEq(regA_Expr_Curr, this.Op1Value);
+                BitVecExpr op1 = this.Op1Value;
+                this.RegularUpdate.Set(this.op1, this._ctx.MkITE(zf, this.Op2Value, op1) as BitVecExpr);
+                this.RegularUpdate.Set(regA, this._ctx.MkITE(zf, regA_Expr_Curr, op1) as BitVecExpr);
+
+                var tup = BitOperations.Substract(this.Op1Value, this.Op2Value, this._ctx);
+                this.RegularUpdate.Set(Flags.CF, tup.cf);
+                this.RegularUpdate.Set(Flags.OF, tup.of);
+                this.RegularUpdate.Set(Flags.AF, tup.af);
+                this.RegularUpdate.Set(Flags.SF, ToolsFlags.Create_SF(tup.result, tup.result.SortSize, this._ctx));
+                this.RegularUpdate.Set(Flags.ZF, zf);
+                this.RegularUpdate.Set(Flags.PF, ToolsFlags.Create_PF(tup.result, this._ctx));
+            }
+            public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
+            public override IEnumerable<Rn> RegsReadStatic
+            {
+                get
+                {
+                    if (this.op1 != null)
+                    {
+                        switch (this.op1.NBits)
+                        {
+                            case 8: yield return Rn.AL; break;
+                            case 16: yield return Rn.AX; break;
+                            case 32: yield return Rn.EAX; break;
+                            case 64: yield return Rn.RAX; break;
+                            default: break;
+                        }
+                    }
+                    foreach (Rn r in ToRegEnumerable(this.op1)) yield return r;
+                    foreach (Rn r in ToRegEnumerable(this.op2)) yield return r;
+                }
+            }
+            public override IEnumerable<Rn> RegsWriteStatic
+            {
+                get
+                {
+                    if (this.op1 != null)
+                    {
+                        switch (this.op1.NBits)
+                        {
+                            case 8: yield return Rn.AL; break;
+                            case 16: yield return Rn.AX; break;
+                            case 32: yield return Rn.EAX; break;
+                            case 64: yield return Rn.RAX; break;
+                            default: break;
+                        }
+                    }
+                    foreach (Rn r in ToRegEnumerable(this.op1)) yield return r;
+                }
+            }
+        }
+        /*
         /// <summary>Compare and exchange 8 bytes</summary>
         CMPXCHG8B,
         */
 
-        /// <summary>Push onto stack</summary>
-        public sealed class Push : Opcode1Base
+                        /// <summary>Push onto stack</summary>
+            public sealed class Push : Opcode1Base
         {
             public Push(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.PUSH, args, Ot1.reg | Ot1.mem | Ot1.imm, keys, t)
             {

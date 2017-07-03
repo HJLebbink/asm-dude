@@ -57,10 +57,11 @@ namespace AsmSim
         /// <summary>Perform one step forward and return the regular branch</summary>
         public static State SimpleStep_Forward(string line, State state)
         {
-            string nextKey = Tools.CreateKey(state.Tools.Rand);
+            Tools tools = state.Tools;
+            string nextKey = Tools.CreateKey(tools.Rand);
             string nextKeyBranch = "DUMMY_NOT_USED";
             var content = AsmSourceTools.ParseLine(line);
-            using (var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, (state.HeadKey, nextKey, nextKeyBranch), state.Tools))
+            using (var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, (state.HeadKey, nextKey, nextKeyBranch), tools))
             {
                 if (opcodeBase == null) return null;
                 if (opcodeBase.IsHalted) return null;
@@ -68,12 +69,13 @@ namespace AsmSim
                 opcodeBase.Execute();
                 State stateOut = new State(state);
                 stateOut.Update_Forward(opcodeBase.Updates.Regular);
+                stateOut.Frozen = true;
 
                 opcodeBase.Updates.Regular?.Dispose();
                 opcodeBase.Updates.Branch?.Dispose();
 
-                if (!state.Tools.Quiet) Console.WriteLine("INFO: Runner:SimpleStep_Forward: after \"" + line + "\" we know:");
-                if (!state.Tools.Quiet) Console.WriteLine(stateOut);
+                if (!tools.Quiet) Console.WriteLine("INFO: Runner:SimpleStep_Forward: after \"" + line + "\" we know:");
+                if (!tools.Quiet) Console.WriteLine(stateOut);
                 return stateOut;
             }
         }
@@ -199,7 +201,7 @@ namespace AsmSim
                 case Mnemonic.XCHG: break;
                 case Mnemonic.BSWAP: break;
                 case Mnemonic.XADD: return new Xadd(args, keys, t);
-                case Mnemonic.CMPXCHG: break;
+                case Mnemonic.CMPXCHG: return new Cmpxchg(args, keys, t);
                 case Mnemonic.CMPXCHG8B: break;
                 case Mnemonic.PUSH: return new Push(args, keys, t);
                 case Mnemonic.POP: return new Pop(args, keys, t);

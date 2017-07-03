@@ -406,13 +406,14 @@ namespace unit_tests_asm_z3
                 if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 state = Runner.SimpleStep_Forward(line3, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                state.Frozen = false;
                 state.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.NZ, state.HeadKey, state.Ctx), false));
                 if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
 
                 TestTools.AreEqual(Rn.RAX, value, state);
                 TestTools.AreEqual(Rn.RBX, address, state);
             }
-            {   // backward
+            if (true) {   // backward
                 State state = CreateState(tools);
                 state.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.NZ, state.HeadKey, state.Ctx), false));
                 if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
@@ -505,6 +506,7 @@ namespace unit_tests_asm_z3
                 //if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
                 state = Runner.SimpleStep_Forward(line5, state);
                 //if (logToDisplay) Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+                state.Frozen = false;
                 state.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.NZ, state.HeadKey, state.Ctx), false));
                 //if (logToDisplay) Console.WriteLine("After \"" + line6 + "\", we know:\n" + state);
 
@@ -3647,8 +3649,8 @@ namespace unit_tests_asm_z3
             TestTools.AreEqual(Rn.AH, 0, state);
             TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
             TestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
-
         }
+
         [TestMethod]
         public void Test_MnemonicZ3_Aad_Base10_2()
         {
@@ -3693,6 +3695,135 @@ namespace unit_tests_asm_z3
             TestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
         }
         #endregion
+        #endregion
+
+        #region Cmpxchg
+        [TestMethod]
+        public void Test_MnemonicZ3_Cmpxchg_1()
+        {
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.ZF = true;
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RBX = true;
+            tools.StateConfig.RCX = true;
+
+            string line0 = "mov rax, 1";
+            string line1 = "mov rbx, 1";
+            string line2 = "mov rcx, 3";
+            string line3 = "cmpxchg rbx, rcx";
+
+            State state = CreateState(tools);
+            state = Runner.SimpleStep_Forward(line0, state);
+            state = Runner.SimpleStep_Forward(line1, state);
+            state = Runner.SimpleStep_Forward(line2, state);
+
+            if (logToDisplay) Console.WriteLine("Before \"" + line3 + "\", we know:\n" + state);
+            state = Runner.SimpleStep_Forward(line3, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Flags.ZF, true, state); // thus rax and rbx are equal
+            TestTools.AreEqual(Rn.RAX, 1, state);
+            TestTools.AreEqual(Rn.RBX, 3, state);
+            TestTools.AreEqual(Rn.RCX, 3, state); // operand 2 is never changed.
+        }
+
+        [TestMethod]
+        public void Test_MnemonicZ3_Cmpxchg_2()
+        {
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.ZF = true;
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RBX = true;
+            tools.StateConfig.RCX = true;
+
+            string line0 = "mov rax, 1";
+            string line1 = "mov rbx, 2";
+            string line2 = "mov rcx, 3";
+            string line3 = "cmpxchg rbx, rcx";
+
+            State state = CreateState(tools);
+            state = Runner.SimpleStep_Forward(line0, state);
+            state = Runner.SimpleStep_Forward(line1, state);
+            state = Runner.SimpleStep_Forward(line2, state);
+
+            if (logToDisplay) Console.WriteLine("Before \"" + line3 + "\", we know:\n" + state);
+            state = Runner.SimpleStep_Forward(line3, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Flags.ZF, false, state); // thus rax and rbx are not equal
+            TestTools.AreEqual(Rn.RAX, 2, state);
+            TestTools.AreEqual(Rn.RBX, 2, state);
+            TestTools.AreEqual(Rn.RCX, 3, state); // operand 2 is never changed.
+        }
+
+        [TestMethod]
+        public void Test_MnemonicZ3_Cmpxchg_3()
+        {
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.ZF = true;
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RBX = true;
+            tools.StateConfig.RCX = true;
+            tools.StateConfig.mem = true;
+
+            string line0 = "mov al, 1";
+            string line1 = "mov byte ptr [rbx], 1";
+            string line2 = "mov cl, 3";
+            string line3 = "cmpxchg byte ptr [rbx], cl";
+            string line4 = "mov bl, byte ptr [rbx]";
+
+            State state = CreateState(tools);
+            state = Runner.SimpleStep_Forward(line0, state);
+            state = Runner.SimpleStep_Forward(line1, state);
+            state = Runner.SimpleStep_Forward(line2, state);
+
+            if (logToDisplay) Console.WriteLine("Before \"" + line3 + "\", we know:\n" + state);
+            state = Runner.SimpleStep_Forward(line3, state);
+            state = Runner.SimpleStep_Forward(line4, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Flags.ZF, true, state); // thus rax and rbx are equal
+            TestTools.AreEqual(Rn.AL, 1, state);
+            TestTools.AreEqual(Rn.BL, 3, state);
+            TestTools.AreEqual(Rn.CL, 3, state); // operand 2 is never changed.
+        }
+
+        [TestMethod]
+        public void Test_MnemonicZ3_Cmpxchg_4()
+        {
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.ZF = true;
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RBX = true;
+            tools.StateConfig.RCX = true;
+            tools.StateConfig.mem = true;
+
+            string line0 = "mov al, 1";
+            string line1 = "mov byte ptr [rbx], 2";
+            string line2 = "mov cl, 3";
+            string line3 = "cmpxchg byte ptr [rbx], cl";
+            string line4 = "mov bl, byte ptr [rbx]";
+
+            State state = CreateState(tools);
+            state = Runner.SimpleStep_Forward(line0, state);
+            state = Runner.SimpleStep_Forward(line1, state);
+            state = Runner.SimpleStep_Forward(line2, state);
+
+            if (logToDisplay) Console.WriteLine("Before \"" + line3 + "\", we know:\n" + state);
+            state = Runner.SimpleStep_Forward(line3, state);
+            state = Runner.SimpleStep_Forward(line4, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Flags.ZF, false, state); // thus rax and rbx are not equal
+            TestTools.AreEqual(Rn.AL, 2, state);
+            TestTools.AreEqual(Rn.BL, 2, state);
+            TestTools.AreEqual(Rn.CL, 3, state); // operand 2 is never changed.
+        }
+        
         #endregion
     }
 }
