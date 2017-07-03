@@ -650,7 +650,7 @@ namespace AsmSim
             public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, this.op2); } }
         }
 
-        /// <summary>Compare and exchange and Add</summary>
+        /// <summary>Compare and exchange</summary>
         public sealed class Cmpxchg : Opcode2Base
         {
             public Cmpxchg(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.CMPXCHG, args, Ot2.mem_reg | Ot2.reg_reg, keys, t)
@@ -739,13 +739,105 @@ namespace AsmSim
                 }
             }
         }
-        /*
-        /// <summary>Compare and exchange 8 bytes</summary>
-        CMPXCHG8B,
-        */
 
-                        /// <summary>Push onto stack</summary>
-            public sealed class Push : Opcode1Base
+        /// <summary>Compare and exchange 8 bytes</summary>
+        public sealed class Cmpxchg8b : Opcode1Base
+        {
+            public Cmpxchg8b(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.CMPXCHG8B, args, Ot1.mem, keys, t)
+            {
+                if (this.IsHalted) return;
+                if (this.op1.NBits != 64)
+                {
+                    this.SyntaxError = string.Format("\"{0}\": Operand 1 should be a 64-bit memory operand. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                }
+            }
+            public override void Execute()
+            {
+                //Compare EDX:EAX with m64. If equal, set ZF and load ECX:EBX into m64. Else, clear ZF and load m64 into EDX:EAX.
+
+                BitVecExpr op1 = this.Op1Value;
+                BoolExpr zf = this._ctx.MkEq(this._ctx.MkConcat(this.Get(Rn.EDX), this.Get(Rn.EAX)), op1);
+
+                this.RegularUpdate.Set(this.op1, this._ctx.MkConcat(this.Get(Rn.ECX), this.Get(Rn.EBX)));
+                this.RegularUpdate.Set(Rn.ECX, this._ctx.MkITE(zf, this._ctx.MkExtract(64 - 1, 32, op1), this.Get(Rn.ECX)) as BitVecExpr);
+                this.RegularUpdate.Set(Rn.EBX, this._ctx.MkITE(zf, this._ctx.MkExtract(32 - 1, 0, op1), this.Get(Rn.EBX)) as BitVecExpr);
+                this.RegularUpdate.Set(Rn.EDX, this._ctx.MkITE(zf, this.Get(Rn.EDX), this._ctx.MkExtract(64 - 1, 32, op1)) as BitVecExpr);
+                this.RegularUpdate.Set(Rn.EAX, this._ctx.MkITE(zf, this.Get(Rn.EAX), this._ctx.MkExtract(32 - 1, 0, op1)) as BitVecExpr);
+                this.RegularUpdate.Set(Flags.ZF, zf);
+            }
+            public override Flags FlagsWriteStatic { get { return Flags.ZF; } }
+            public override IEnumerable<Rn> RegsReadStatic
+            {
+                get
+                {
+                    yield return Rn.EAX;
+                    yield return Rn.EBX;
+                    yield return Rn.ECX;
+                    yield return Rn.EDX;
+                }
+            }
+            public override IEnumerable<Rn> RegsWriteStatic
+            {
+                get
+                {
+                    yield return Rn.EAX;
+                    yield return Rn.EBX;
+                    yield return Rn.ECX;
+                    yield return Rn.EDX;
+                }
+            }
+        }
+
+        /// <summary>Compare and exchange 8 bytes</summary>
+        public sealed class Cmpxchg16b : Opcode1Base
+        {
+            public Cmpxchg16b(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.CMPXCHG16B, args, Ot1.mem, keys, t)
+            {
+                if (this.IsHalted) return;
+                if (this.op1.NBits != 128)
+                {
+                    this.SyntaxError = string.Format("\"{0}\": Operand 1 should be a 128-bit memory operand. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                }
+            }
+            public override void Execute()
+            {
+                //Compare RDX:RAX with m128. If equal, set ZF and load RCX:RBX into m128. Else, clear ZF and load m128 into RDX:RAX.
+
+                BitVecExpr op1 = this.Op1Value;
+                BoolExpr zf = this._ctx.MkEq(this._ctx.MkConcat(this.Get(Rn.RDX), this.Get(Rn.RAX)), op1);
+
+                this.RegularUpdate.Set(this.op1, this._ctx.MkConcat(this.Get(Rn.RCX), this.Get(Rn.RBX)));
+                this.RegularUpdate.Set(Rn.RCX, this._ctx.MkITE(zf, this._ctx.MkExtract(128 - 1, 64, op1), this.Get(Rn.RCX)) as BitVecExpr);
+                this.RegularUpdate.Set(Rn.RBX, this._ctx.MkITE(zf, this._ctx.MkExtract(64 - 1, 0, op1), this.Get(Rn.RBX)) as BitVecExpr);
+                this.RegularUpdate.Set(Rn.RDX, this._ctx.MkITE(zf, this.Get(Rn.RDX), this._ctx.MkExtract(128 - 1, 64, op1)) as BitVecExpr);
+                this.RegularUpdate.Set(Rn.RAX, this._ctx.MkITE(zf, this.Get(Rn.RAX), this._ctx.MkExtract(64 - 1, 0, op1)) as BitVecExpr);
+                this.RegularUpdate.Set(Flags.ZF, zf);
+            }
+            public override Flags FlagsWriteStatic { get { return Flags.ZF; } }
+            public override IEnumerable<Rn> RegsReadStatic
+            {
+                get
+                {
+                    yield return Rn.RAX;
+                    yield return Rn.RBX;
+                    yield return Rn.RCX;
+                    yield return Rn.RDX;
+                }
+            }
+            public override IEnumerable<Rn> RegsWriteStatic
+            {
+                get
+                {
+                    yield return Rn.RAX;
+                    yield return Rn.RBX;
+                    yield return Rn.RCX;
+                    yield return Rn.RDX;
+                }
+            }
+        }
+
+        /// <summary>Push onto stack</summary>
+        public sealed class Push : Opcode1Base
         {
             public Push(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.PUSH, args, Ot1.reg | Ot1.mem | Ot1.imm, keys, t)
             {

@@ -202,7 +202,8 @@ namespace AsmSim
                 case Mnemonic.BSWAP: break;
                 case Mnemonic.XADD: return new Xadd(args, keys, t);
                 case Mnemonic.CMPXCHG: return new Cmpxchg(args, keys, t);
-                case Mnemonic.CMPXCHG8B: break;
+                case Mnemonic.CMPXCHG8B: return new Cmpxchg8b(args, keys, t);
+                case Mnemonic.CMPXCHG16B: return new Cmpxchg16b(args, keys, t);
                 case Mnemonic.PUSH: return new Push(args, keys, t);
                 case Mnemonic.POP: return new Pop(args, keys, t);
                 case Mnemonic.PUSHA: break;
