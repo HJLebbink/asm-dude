@@ -294,6 +294,11 @@ namespace AsmSim
             if (stateUpdate == null) return;
             //if (stateUpdate.Empty) return;
 
+            if (this._frozen)
+            {
+                Console.WriteLine("WARNING: State:Update: state is frozen, nothing added.");
+                return;
+            }
             lock (this._ctxLock)
             {
                 this.UndefGrounding = false;
@@ -320,6 +325,11 @@ namespace AsmSim
 
         public void Add(BranchInfo branchInfo)
         {
+            if (this._frozen)
+            {
+                Console.WriteLine("WARNING: State:Add: state is frozen, nothing added.");
+                return;
+            }
             lock (this._ctxLock)
             {
                 this.BranchInfoStore.Add(branchInfo, true);

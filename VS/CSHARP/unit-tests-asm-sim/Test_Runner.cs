@@ -902,7 +902,7 @@ namespace unit_tests_asm_z3
             State state = dFlow.EndState;
 
             var rax = state0.Create(Rn.RAX).Translate(state.Ctx);
-
+            state.Frozen = false;
             state.Add(new BranchInfo(state.Ctx.MkEq(rax, state.Ctx.MkBV(0, 64)), true));
             if (logToDisplay2) Console.WriteLine("Forward:\n" + state);
             TestTools.AreEqual(Rn.RAX, 0, state);
