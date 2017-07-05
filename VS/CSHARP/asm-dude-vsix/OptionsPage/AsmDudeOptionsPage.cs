@@ -333,22 +333,23 @@ namespace AsmDude.OptionsPage
         protected override void OnDeactivate(CancelEventArgs e)
         {
             bool changed = false;
+            StringBuilder sb = new StringBuilder();
 
             if (AsmDudeToolsStatic.Used_Assembler != this._asmDudeOptionsPageUI.UsedAssembler)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: usedAssembler=" + this._asmDudeOptionsPageUI.UsedAssembler);
+                sb.AppendLine("UsedAssembler=" + this._asmDudeOptionsPageUI.UsedAssembler);
                 changed = true;
             }
 
             #region AsmDoc
             if (Settings.Default.AsmDoc_On != this._asmDudeOptionsPageUI.AsmDoc_On)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useAsmDoc=" + this._asmDudeOptionsPageUI.AsmDoc_On);
+                sb.AppendLine("AsmDoc_On=" + this._asmDudeOptionsPageUI.AsmDoc_On);
                 changed = true;
             }
             if (Settings.Default.AsmDoc_url != this._asmDudeOptionsPageUI.AsmDoc_Url)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: asmDocUrl=" + this._asmDudeOptionsPageUI.AsmDoc_Url);
+                sb.AppendLine("AsmDoc_Url=" + this._asmDudeOptionsPageUI.AsmDoc_Url);
                 changed = true;
             }
             #endregion
@@ -356,22 +357,22 @@ namespace AsmDude.OptionsPage
             #region CodeFolding
             if (Settings.Default.CodeFolding_On != this._asmDudeOptionsPageUI.CodeFolding_On)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useCodeFolding=" + this._asmDudeOptionsPageUI.CodeFolding_On);
+                sb.AppendLine("CodeFolding_On=" + this._asmDudeOptionsPageUI.CodeFolding_On);
                 changed = true;
             }
             if (Settings.Default.CodeFolding_IsDefaultCollapsed != this._asmDudeOptionsPageUI.CodeFolding_IsDefaultCollaped)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: isDefaultCollaped=" + this._asmDudeOptionsPageUI.CodeFolding_IsDefaultCollaped);
+                sb.AppendLine("CodeFolding_IsDefaultCollaped=" + this._asmDudeOptionsPageUI.CodeFolding_IsDefaultCollaped);
                 changed = true;
             }
             if (Settings.Default.CodeFolding_BeginTag != this._asmDudeOptionsPageUI.CodeFolding_BeginTag)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: beginTag=" + this._asmDudeOptionsPageUI.CodeFolding_BeginTag);
+                sb.AppendLine("CodeFolding_BeginTag=" + this._asmDudeOptionsPageUI.CodeFolding_BeginTag);
                 changed = true;
             }
             if (Settings.Default.CodeFolding_EndTag != this._asmDudeOptionsPageUI.CodeFolding_EndTag)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: endTag=" + this._asmDudeOptionsPageUI.CodeFolding_EndTag);
+                sb.AppendLine("CodeFolding_EndTag=" + this._asmDudeOptionsPageUI.CodeFolding_EndTag);
                 changed = true;
             }
             #endregion
@@ -379,117 +380,117 @@ namespace AsmDude.OptionsPage
             #region Syntax Highlighting
             if (Settings.Default.SyntaxHighlighting_On != this._asmDudeOptionsPageUI.SyntaxHighlighting_On)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useSyntaxHighlighting=" + this._asmDudeOptionsPageUI.SyntaxHighlighting_On);
+                sb.AppendLine("SyntaxHighlighting_On=" + this._asmDudeOptionsPageUI.SyntaxHighlighting_On);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Opcode.ToArgb() != this._asmDudeOptionsPageUI.ColorMnemonic.ToArgb())
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: stored=" + Settings.Default.SyntaxHighlighting_Opcode + "; new colorMnemonic=" + this._asmDudeOptionsPageUI.ColorMnemonic);
+                sb.AppendLine("ColorMnemonic: old=" + Settings.Default.SyntaxHighlighting_Opcode.Name + "; new=" + this._asmDudeOptionsPageUI.ColorMnemonic.Name);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Opcode_Italic != this._asmDudeOptionsPageUI.ColorMnemonic_Italic)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: stored=" + Settings.Default.SyntaxHighlighting_Opcode_Italic + "; new ColorMnemonic_Italic=" + this._asmDudeOptionsPageUI.ColorMnemonic_Italic);
+                sb.AppendLine("ColorMnemonic_Italic: old=" + Settings.Default.SyntaxHighlighting_Opcode_Italic + "; new=" + this._asmDudeOptionsPageUI.ColorMnemonic_Italic);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Register.ToArgb() != this._asmDudeOptionsPageUI.ColorRegister.ToArgb())
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: colorRegister=" + this._asmDudeOptionsPageUI.ColorRegister);
+                sb.AppendLine("ColorRegister: old=" + Settings.Default.SyntaxHighlighting_Register.Name + "; new=" + this._asmDudeOptionsPageUI.ColorRegister.Name);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Register_Italic != this._asmDudeOptionsPageUI.ColorRegister_Italic)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: stored=" + Settings.Default.SyntaxHighlighting_Register_Italic + "; new ColorMnemonic_Italic=" + this._asmDudeOptionsPageUI.ColorRegister);
+                sb.AppendLine("ColorRegister_Italic: old=" + Settings.Default.SyntaxHighlighting_Register_Italic + "; new =" + this._asmDudeOptionsPageUI.ColorRegister_Italic);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Remark.ToArgb() != this._asmDudeOptionsPageUI.ColorRemark.ToArgb())
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: colorRemark=" + this._asmDudeOptionsPageUI.ColorRemark);
+                sb.AppendLine("ColorRemark: old=" + Settings.Default.SyntaxHighlighting_Remark.Name + "; new=" + this._asmDudeOptionsPageUI.ColorRemark.Name);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Remark_Italic != this._asmDudeOptionsPageUI.ColorRemark_Italic)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: stored=" + Settings.Default.SyntaxHighlighting_Remark_Italic + "; new ColorRemark_Italic=" + this._asmDudeOptionsPageUI.ColorRemark_Italic);
+                sb.AppendLine("ColorRemark_Italic: old=" + Settings.Default.SyntaxHighlighting_Remark_Italic + "; new="+ this._asmDudeOptionsPageUI.ColorRemark_Italic);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Directive.ToArgb() != this._asmDudeOptionsPageUI.ColorDirective.ToArgb())
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: colorDirective=" + this._asmDudeOptionsPageUI.ColorDirective);
+                sb.AppendLine("colorDirective: old=" + Settings.Default.SyntaxHighlighting_Directive.Name + "; new=" + this._asmDudeOptionsPageUI.ColorDirective.Name);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Directive_Italic != this._asmDudeOptionsPageUI.ColorDirective_Italic)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: stored=" + Settings.Default.SyntaxHighlighting_Directive_Italic + "; new ColorDirective_Italic=" + this._asmDudeOptionsPageUI.ColorDirective_Italic);
+                sb.AppendLine("ColorDirective_Italic: old=" + Settings.Default.SyntaxHighlighting_Directive_Italic + "; new=" + this._asmDudeOptionsPageUI.ColorDirective_Italic);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Constant.ToArgb() != this._asmDudeOptionsPageUI.ColorConstant.ToArgb())
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: colorConstant=" + this._asmDudeOptionsPageUI.ColorConstant);
+                sb.AppendLine("colorConstant: old=" + Settings.Default.SyntaxHighlighting_Constant.Name + "; new=" + this._asmDudeOptionsPageUI.ColorConstant.Name);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Constant_Italic != this._asmDudeOptionsPageUI.ColorConstant_Italic)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: stored=" + Settings.Default.SyntaxHighlighting_Constant_Italic + "; new ColorConstant_Italic=" + this._asmDudeOptionsPageUI.ColorConstant_Italic);
+                sb.AppendLine("ColorConstant_Italic: old=" + Settings.Default.SyntaxHighlighting_Constant_Italic + "; new=" + this._asmDudeOptionsPageUI.ColorConstant_Italic);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Jump.ToArgb() != this._asmDudeOptionsPageUI.ColorJump.ToArgb())
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: colorJump=" + this._asmDudeOptionsPageUI.ColorJump);
+                sb.AppendLine("colorJump: old=" + Settings.Default.SyntaxHighlighting_Jump.Name + "; new=" + this._asmDudeOptionsPageUI.ColorJump.Name);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Jump_Italic != this._asmDudeOptionsPageUI.ColorJump_Italic)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: stored=" + Settings.Default.SyntaxHighlighting_Jump_Italic + "; new ColorJump_Italic=" + this._asmDudeOptionsPageUI.ColorJump_Italic);
+                sb.AppendLine("ColorJump_Italic: old=" + Settings.Default.SyntaxHighlighting_Jump_Italic + "; new=" + this._asmDudeOptionsPageUI.ColorJump_Italic);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Label.ToArgb() != this._asmDudeOptionsPageUI.ColorLabel.ToArgb())
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: colorLabel=" + this._asmDudeOptionsPageUI.ColorLabel);
+                sb.AppendLine("colorLabel: old=" + Settings.Default.SyntaxHighlighting_Label.ToKnownColor() + "; new=" + this._asmDudeOptionsPageUI.ColorLabel.ToKnownColor());
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Label_Italic != this._asmDudeOptionsPageUI.ColorLabel_Italic)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: stored=" + Settings.Default.SyntaxHighlighting_Label_Italic + "; new ColorLabel_Italic=" + this._asmDudeOptionsPageUI.ColorLabel_Italic);
+                sb.AppendLine("ColorLabel_Italic: old=" + Settings.Default.SyntaxHighlighting_Label_Italic + "; new=" + this._asmDudeOptionsPageUI.ColorLabel_Italic);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Misc.ToArgb() != this._asmDudeOptionsPageUI.ColorMisc.ToArgb())
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: colorMisc=" + this._asmDudeOptionsPageUI.ColorMisc);
+                sb.AppendLine("colorMisc: old=" + Settings.Default.SyntaxHighlighting_Misc.Name + "; new=" + this._asmDudeOptionsPageUI.ColorMisc.Name);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Misc_Italic != this._asmDudeOptionsPageUI.ColorMisc_Italic)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: stored=" + Settings.Default.SyntaxHighlighting_Misc_Italic + "; new ColorMisc_Italic=" + this._asmDudeOptionsPageUI.ColorMisc_Italic);
+                sb.AppendLine("ColorMisc_Italic: old=" + Settings.Default.SyntaxHighlighting_Misc_Italic + "; new=" + this._asmDudeOptionsPageUI.ColorMisc_Italic);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Userdefined1.ToArgb() != this._asmDudeOptionsPageUI.ColorUserDefined1.ToArgb())
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: ColorUserDefined1=" + this._asmDudeOptionsPageUI.ColorUserDefined1);
+                sb.AppendLine("ColorUserDefined1: old=" + Settings.Default.SyntaxHighlighting_Userdefined1.Name + "; old=" + this._asmDudeOptionsPageUI.ColorUserDefined1.Name);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Userdefined1_Italic != this._asmDudeOptionsPageUI.ColorUserDefined1_Italic)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: stored=" + Settings.Default.SyntaxHighlighting_Userdefined1_Italic + "; new ColorUserDefined1_Italic=" + this._asmDudeOptionsPageUI.ColorUserDefined1_Italic);
+                sb.AppendLine("ColorUserDefined1_Italic: old=" + Settings.Default.SyntaxHighlighting_Userdefined1_Italic + "; new=" + this._asmDudeOptionsPageUI.ColorUserDefined1_Italic);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Userdefined2.ToArgb() != this._asmDudeOptionsPageUI.ColorUserDefined2.ToArgb())
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: ColorUserDefined2=" + this._asmDudeOptionsPageUI.ColorUserDefined2);
+                sb.AppendLine("ColorUserDefined2: old=" + Settings.Default.SyntaxHighlighting_Userdefined2.Name + "; new=" + this._asmDudeOptionsPageUI.ColorUserDefined2.Name);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Userdefined2_Italic != this._asmDudeOptionsPageUI.ColorUserDefined2_Italic)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: stored=" + Settings.Default.SyntaxHighlighting_Userdefined2_Italic + "; new ColorUserDefined2_Italic=" + this._asmDudeOptionsPageUI.ColorUserDefined2_Italic);
+                sb.AppendLine("ColorUserDefined2_Italic: old=" + Settings.Default.SyntaxHighlighting_Userdefined2_Italic + "; new=" + this._asmDudeOptionsPageUI.ColorUserDefined2_Italic);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Userdefined3.ToArgb() != this._asmDudeOptionsPageUI.ColorUserDefined3.ToArgb())
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: ColorUserDefined3=" + this._asmDudeOptionsPageUI.ColorUserDefined3);
+                sb.AppendLine("ColorUserDefined3: old=" + Settings.Default.SyntaxHighlighting_Userdefined3.Name + "; new=" + this._asmDudeOptionsPageUI.ColorUserDefined3.Name);
                 changed = true;
             }
             if (Settings.Default.SyntaxHighlighting_Userdefined3_Italic != this._asmDudeOptionsPageUI.ColorUserDefined3_Italic)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: stored=" + Settings.Default.SyntaxHighlighting_Userdefined3_Italic + "; new ColorUserDefined3_Italic=" + this._asmDudeOptionsPageUI.ColorUserDefined3_Italic);
+                sb.AppendLine("ColorUserDefined3_Italic: old=" + Settings.Default.SyntaxHighlighting_Userdefined3_Italic + "; new=" + this._asmDudeOptionsPageUI.ColorUserDefined3_Italic);
                 changed = true;
             }
             #endregion
@@ -497,22 +498,22 @@ namespace AsmDude.OptionsPage
             #region Keyword Highlighting
             if (Settings.Default.KeywordHighlighting_BackgroundColor_On != this._asmDudeOptionsPageUI.KeywordHighlighting_BackgroundColor_On)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: KeywordHighlighting_BackgroundColor_On=" + this._asmDudeOptionsPageUI.KeywordHighlighting_BackgroundColor_On);
+                sb.AppendLine("KeywordHighlighting_BackgroundColor_On=" + this._asmDudeOptionsPageUI.KeywordHighlighting_BackgroundColor_On);
                 changed = true;
             }
             if (Settings.Default.KeywordHighlighting_BackgroundColor.ToArgb() != this._asmDudeOptionsPageUI.KeywordHighlighting_BackgroundColor.ToArgb())
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: KeywordHighlighting_BackgroundColor=" + this._asmDudeOptionsPageUI.KeywordHighlighting_BackgroundColor);
+                sb.AppendLine("KeywordHighlighting_BackgroundColor=" + this._asmDudeOptionsPageUI.KeywordHighlighting_BackgroundColor);
                 changed = true;
             }
             if (Settings.Default.KeywordHighlighting_BorderColor_On != this._asmDudeOptionsPageUI.KeywordHighlighting_BorderColor_On)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: KeywordHighlighting_BorderColor_On=" + this._asmDudeOptionsPageUI.KeywordHighlighting_BackgroundColor_On);
+                sb.AppendLine("KeywordHighlighting_BorderColor_On=" + this._asmDudeOptionsPageUI.KeywordHighlighting_BackgroundColor_On);
                 changed = true;
             }
             if (Settings.Default.KeywordHighlighting_BorderColor.ToArgb() != this._asmDudeOptionsPageUI.KeywordHighlighting_BorderColor.ToArgb())
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: KeywordHighlighting_BorderColor=" + this._asmDudeOptionsPageUI.KeywordHighlighting_BorderColor);
+                sb.AppendLine("KeywordHighlighting_BorderColor=" + this._asmDudeOptionsPageUI.KeywordHighlighting_BorderColor);
                 changed = true;
             }
             #endregion
@@ -520,32 +521,32 @@ namespace AsmDude.OptionsPage
             #region Latency and Throughput Information (Performance Info)
             if (Settings.Default.PerformanceInfo_SandyBridge_On != this._asmDudeOptionsPageUI.PerformanceInfo_SandyBridge_On)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: PerformanceInfo_SandyBridge_On=" + this._asmDudeOptionsPageUI.PerformanceInfo_SandyBridge_On);
+                sb.AppendLine("PerformanceInfo_SandyBridge_On=" + this._asmDudeOptionsPageUI.PerformanceInfo_SandyBridge_On);
                 changed = true;
             }
             if (Settings.Default.PerformanceInfo_IvyBridge_On != this._asmDudeOptionsPageUI.PerformanceInfo_IvyBridge_On)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: PerformanceInfo_IvyBridge_On=" + this._asmDudeOptionsPageUI.PerformanceInfo_IvyBridge_On);
+                sb.AppendLine("PerformanceInfo_IvyBridge_On=" + this._asmDudeOptionsPageUI.PerformanceInfo_IvyBridge_On);
                 changed = true;
             }
             if (Settings.Default.PerformanceInfo_Haswell_On != this._asmDudeOptionsPageUI.PerformanceInfo_Haswell_On)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: PerformanceInfo_Haswell_On=" + this._asmDudeOptionsPageUI.PerformanceInfo_Haswell_On);
+                sb.AppendLine("PerformanceInfo_Haswell_On=" + this._asmDudeOptionsPageUI.PerformanceInfo_Haswell_On);
                 changed = true;
             }
             if (Settings.Default.PerformanceInfo_Broadwell_On != this._asmDudeOptionsPageUI.PerformanceInfo_Broadwell_On)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: PerformanceInfo_Broadwell_On=" + this._asmDudeOptionsPageUI.PerformanceInfo_Broadwell_On);
+                sb.AppendLine("PerformanceInfo_Broadwell_On=" + this._asmDudeOptionsPageUI.PerformanceInfo_Broadwell_On);
                 changed = true;
             }
             if (Settings.Default.PerformanceInfo_Skylake_On != this._asmDudeOptionsPageUI.PerformanceInfo_Skylake_On)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: PerformanceInfo_Skylake_On=" + this._asmDudeOptionsPageUI.PerformanceInfo_Skylake_On);
+                sb.AppendLine("PerformanceInfo_Skylake_On=" + this._asmDudeOptionsPageUI.PerformanceInfo_Skylake_On);
                 changed = true;
             }
             if (Settings.Default.PerformanceInfo_KnightsLanding_On != this._asmDudeOptionsPageUI.PerformanceInfo_KnightsLanding_On)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: PerformanceInfo_KnightsLanding_On=" + this._asmDudeOptionsPageUI.PerformanceInfo_KnightsLanding_On);
+                sb.AppendLine("PerformanceInfo_KnightsLanding_On=" + this._asmDudeOptionsPageUI.PerformanceInfo_KnightsLanding_On);
                 changed = true;
             }
             #endregion
@@ -553,311 +554,311 @@ namespace AsmDude.OptionsPage
             #region Code Completion
             if (Settings.Default.CodeCompletion_On != this._asmDudeOptionsPageUI.UseCodeCompletion)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useCodeCompletion=" + this._asmDudeOptionsPageUI.UseCodeCompletion);
+                sb.AppendLine("UseCodeCompletion=" + this._asmDudeOptionsPageUI.UseCodeCompletion);
                 changed = true;
             }
             if (Settings.Default.SignatureHelp_On != this._asmDudeOptionsPageUI.UseSignatureHelp)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useSignatureHelp=" + this._asmDudeOptionsPageUI.UseSignatureHelp);
+                sb.AppendLine("UseSignatureHelp=" + this._asmDudeOptionsPageUI.UseSignatureHelp);
                 changed = true;
             }
 
             if (Settings.Default.ARCH_8086 != this._asmDudeOptionsPageUI.UseArch_8086)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_8086=" + this._asmDudeOptionsPageUI.UseArch_8086);
+                sb.AppendLine("UseArch_8086=" + this._asmDudeOptionsPageUI.UseArch_8086);
                 changed = true;
             }
             if (Settings.Default.ARCH_186 != this._asmDudeOptionsPageUI.UseArch_186)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_186=" + this._asmDudeOptionsPageUI.UseArch_186);
+                sb.AppendLine("UseArch_186=" + this._asmDudeOptionsPageUI.UseArch_186);
                 changed = true;
             }
             if (Settings.Default.ARCH_286 != this._asmDudeOptionsPageUI.UseArch_286)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_286=" + this._asmDudeOptionsPageUI.UseArch_286);
+                sb.AppendLine("UseArch_286=" + this._asmDudeOptionsPageUI.UseArch_286);
                 changed = true;
             }
             if (Settings.Default.ARCH_386 != this._asmDudeOptionsPageUI.UseArch_386)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_386=" + this._asmDudeOptionsPageUI.UseArch_386);
+                sb.AppendLine("UseArch_386=" + this._asmDudeOptionsPageUI.UseArch_386);
                 changed = true;
             }
             if (Settings.Default.ARCH_486 != this._asmDudeOptionsPageUI.UseArch_486)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_486=" + this._asmDudeOptionsPageUI.UseArch_486);
+                sb.AppendLine("UseArch_486=" + this._asmDudeOptionsPageUI.UseArch_486);
                 changed = true;
             }
             if (Settings.Default.ARCH_MMX != this._asmDudeOptionsPageUI.UseArch_MMX)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_MMX=" + this._asmDudeOptionsPageUI.UseArch_MMX);
+                sb.AppendLine("UseArch_MMX=" + this._asmDudeOptionsPageUI.UseArch_MMX);
                 changed = true;
             }
             if (Settings.Default.ARCH_SSE != this._asmDudeOptionsPageUI.UseArch_SSE)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_SSE=" + this._asmDudeOptionsPageUI.UseArch_SSE);
+                sb.AppendLine("UseArch_SSE=" + this._asmDudeOptionsPageUI.UseArch_SSE);
                 changed = true;
             }
             if (Settings.Default.ARCH_SSE2 != this._asmDudeOptionsPageUI.UseArch_SSE2)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_SSE2=" + this._asmDudeOptionsPageUI.UseArch_SSE2);
+                sb.AppendLine("UseArch_SSE2=" + this._asmDudeOptionsPageUI.UseArch_SSE2);
                 changed = true;
             }
             if (Settings.Default.ARCH_SSE3 != this._asmDudeOptionsPageUI.UseArch_SSE3)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_SSE3=" + this._asmDudeOptionsPageUI.UseArch_SSE3);
+                sb.AppendLine("UseArch_SSE3=" + this._asmDudeOptionsPageUI.UseArch_SSE3);
                 changed = true;
             }
             if (Settings.Default.ARCH_SSSE3 != this._asmDudeOptionsPageUI.UseArch_SSSE3)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_SSSE3=" + this._asmDudeOptionsPageUI.UseArch_SSSE3);
+                sb.AppendLine("UseArch_SSSE3=" + this._asmDudeOptionsPageUI.UseArch_SSSE3);
                 changed = true;
             }
             if (Settings.Default.ARCH_SSE41 != this._asmDudeOptionsPageUI.UseArch_SSE41)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_SSE41=" + this._asmDudeOptionsPageUI.UseArch_SSE41);
+                sb.AppendLine("UseArch_SSE41=" + this._asmDudeOptionsPageUI.UseArch_SSE41);
                 changed = true;
             }
             if (Settings.Default.ARCH_SSE42 != this._asmDudeOptionsPageUI.UseArch_SSE42)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_SSE42=" + this._asmDudeOptionsPageUI.UseArch_SSE42);
+                sb.AppendLine("UseArch_SSE42=" + this._asmDudeOptionsPageUI.UseArch_SSE42);
                 changed = true;
             }
             if (Settings.Default.ARCH_SSE4A != this._asmDudeOptionsPageUI.UseArch_SSE4A)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_SSE4A=" + this._asmDudeOptionsPageUI.UseArch_SSE4A);
+                sb.AppendLine("UseArch_SSE4A=" + this._asmDudeOptionsPageUI.UseArch_SSE4A);
                 changed = true;
             }
             if (Settings.Default.ARCH_SSE5 != this._asmDudeOptionsPageUI.UseArch_SSE5)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_SSE5=" + this._asmDudeOptionsPageUI.UseArch_SSE5);
+                sb.AppendLine("UseArch_SSE5=" + this._asmDudeOptionsPageUI.UseArch_SSE5);
                 changed = true;
             }
             if (Settings.Default.ARCH_AVX != this._asmDudeOptionsPageUI.UseArch_AVX)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX=" + this._asmDudeOptionsPageUI.UseArch_AVX);
+                sb.AppendLine("UseArch_AVX=" + this._asmDudeOptionsPageUI.UseArch_AVX);
                 changed = true;
             }
             if (Settings.Default.ARCH_AVX2 != this._asmDudeOptionsPageUI.UseArch_AVX2)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX2=" + this._asmDudeOptionsPageUI.UseArch_AVX2);
+                sb.AppendLine("UseArch_AVX2=" + this._asmDudeOptionsPageUI.UseArch_AVX2);
                 changed = true;
             }
             if (Settings.Default.ARCH_AVX512PF != this._asmDudeOptionsPageUI.UseArch_AVX512_PF)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX512_PF=" + this._asmDudeOptionsPageUI.UseArch_AVX512_PF);
+                sb.AppendLine("UseArch_AVX512_PF=" + this._asmDudeOptionsPageUI.UseArch_AVX512_PF);
                 changed = true;
             }
             if (Settings.Default.ARCH_AVX512VL != this._asmDudeOptionsPageUI.UseArch_AVX512_VL)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX512_VL=" + this._asmDudeOptionsPageUI.UseArch_AVX512_VL);
+                sb.AppendLine("UseArch_AVX512_VL=" + this._asmDudeOptionsPageUI.UseArch_AVX512_VL);
                 changed = true;
             }
             if (Settings.Default.ARCH_AVX512DQ != this._asmDudeOptionsPageUI.UseArch_AVX512_DQ)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX512_DQ=" + this._asmDudeOptionsPageUI.UseArch_AVX512_DQ);
+                sb.AppendLine("UseArch_AVX512_DQ=" + this._asmDudeOptionsPageUI.UseArch_AVX512_DQ);
                 changed = true;
             }
             if (Settings.Default.ARCH_AVX512BW != this._asmDudeOptionsPageUI.UseArch_AVX512_BW)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX512_BW=" + this._asmDudeOptionsPageUI.UseArch_AVX512_BW);
+                sb.AppendLine("UseArch_AVX512_BW=" + this._asmDudeOptionsPageUI.UseArch_AVX512_BW);
                 changed = true;
             }
             if (Settings.Default.ARCH_AVX512ER != this._asmDudeOptionsPageUI.UseArch_AVX512_ER)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX512_ER=" + this._asmDudeOptionsPageUI.UseArch_AVX512_ER);
+                sb.AppendLine("UseArch_AVX512_ER=" + this._asmDudeOptionsPageUI.UseArch_AVX512_ER);
                 changed = true;
             }
             if (Settings.Default.ARCH_AVX512F != this._asmDudeOptionsPageUI.UseArch_AVX512_F)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX512_F=" + this._asmDudeOptionsPageUI.UseArch_AVX512_F);
+                sb.AppendLine("UseArch_AVX512_F=" + this._asmDudeOptionsPageUI.UseArch_AVX512_F);
                 changed = true;
             }
             if (Settings.Default.ARCH_AVX512CD != this._asmDudeOptionsPageUI.UseArch_AVX512_CD)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX512_CD=" + this._asmDudeOptionsPageUI.UseArch_AVX512_CD);
+                sb.AppendLine("UseArch_AVX512_CD=" + this._asmDudeOptionsPageUI.UseArch_AVX512_CD);
                 changed = true;
             }
 
             if (Settings.Default.ARCH_AVX512_IFMA != this._asmDudeOptionsPageUI.UseArch_AVX512_IFMA)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX512_IFMA=" + this._asmDudeOptionsPageUI.UseArch_AVX512_IFMA);
+                sb.AppendLine("UseArch_AVX512_IFMA=" + this._asmDudeOptionsPageUI.UseArch_AVX512_IFMA);
                 changed = true;
             }
             if (Settings.Default.ARCH_AVX512_VBMI != this._asmDudeOptionsPageUI.UseArch_AVX512_VBMI)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX512_VBMI=" + this._asmDudeOptionsPageUI.UseArch_AVX512_VBMI);
+                sb.AppendLine("UseArch_AVX512_VBMI=" + this._asmDudeOptionsPageUI.UseArch_AVX512_VBMI);
                 changed = true;
             }
             if (Settings.Default.ARCH_AVX512_VPOPCNTDQ != this._asmDudeOptionsPageUI.UseArch_AVX512_VPOPCNTDQ)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX512_VPOPCNTDQ=" + this._asmDudeOptionsPageUI.UseArch_AVX512_VPOPCNTDQ);
+                sb.AppendLine("UseArch_AVX512_VPOPCNTDQ=" + this._asmDudeOptionsPageUI.UseArch_AVX512_VPOPCNTDQ);
                 changed = true;
             }
             if (Settings.Default.ARCH_AVX512_4VNNIW != this._asmDudeOptionsPageUI.UseArch_AVX512_4VNNIW)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX512_4VNNIW=" + this._asmDudeOptionsPageUI.UseArch_AVX512_4VNNIW);
+                sb.AppendLine("UseArch_AVX512_4VNNIW=" + this._asmDudeOptionsPageUI.UseArch_AVX512_4VNNIW);
                 changed = true;
             }
             if (Settings.Default.ARCH_AVX512_4FMAPS != this._asmDudeOptionsPageUI.UseArch_AVX512_4FMAPS)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: UseArch_AVX512_4FMAPS=" + this._asmDudeOptionsPageUI.UseArch_AVX512_4FMAPS);
+                sb.AppendLine("UseArch_AVX512_4FMAPS=" + this._asmDudeOptionsPageUI.UseArch_AVX512_4FMAPS);
                 changed = true;
             }
 
             if (Settings.Default.ARCH_X64 != this._asmDudeOptionsPageUI.UseArch_X64)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_X64=" + this._asmDudeOptionsPageUI.UseArch_X64);
+                sb.AppendLine("UseArch_X64=" + this._asmDudeOptionsPageUI.UseArch_X64);
                 changed = true;
             }
             if (Settings.Default.ARCH_BMI1 != this._asmDudeOptionsPageUI.UseArch_BMI1)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_BMI1=" + this._asmDudeOptionsPageUI.UseArch_BMI1);
+                sb.AppendLine("UseArch_BMI1=" + this._asmDudeOptionsPageUI.UseArch_BMI1);
                 changed = true;
             }
             if (Settings.Default.ARCH_BMI2 != this._asmDudeOptionsPageUI.UseArch_BMI2)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_BMI2=" + this._asmDudeOptionsPageUI.UseArch_BMI2);
+                sb.AppendLine("UseArch_BMI2=" + this._asmDudeOptionsPageUI.UseArch_BMI2);
                 changed = true;
             }
             if (Settings.Default.ARCH_P6 != this._asmDudeOptionsPageUI.UseArch_P6)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_P6=" + this._asmDudeOptionsPageUI.UseArch_P6);
+                sb.AppendLine("UseArch_P6=" + this._asmDudeOptionsPageUI.UseArch_P6);
                 changed = true;
             }
             if (Settings.Default.ARCH_IA64 != this._asmDudeOptionsPageUI.UseArch_IA64)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_IA64=" + this._asmDudeOptionsPageUI.UseArch_IA64);
+                sb.AppendLine("UseArch_IA64=" + this._asmDudeOptionsPageUI.UseArch_IA64);
                 changed = true;
             }
             if (Settings.Default.ARCH_FMA != this._asmDudeOptionsPageUI.UseArch_FMA)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_FMA=" + this._asmDudeOptionsPageUI.UseArch_FMA);
+                sb.AppendLine("UseArch_FMA=" + this._asmDudeOptionsPageUI.UseArch_FMA);
                 changed = true;
             }
             if (Settings.Default.ARCH_TBM != this._asmDudeOptionsPageUI.UseArch_TBM)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_TBM=" + this._asmDudeOptionsPageUI.UseArch_TBM);
+                sb.AppendLine("UseArch_TBM=" + this._asmDudeOptionsPageUI.UseArch_TBM);
                 changed = true;
             }
             if (Settings.Default.ARCH_AMD != this._asmDudeOptionsPageUI.UseArch_AMD)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_AMD=" + this._asmDudeOptionsPageUI.UseArch_AMD);
+                sb.AppendLine("UseArch_AMD=" + this._asmDudeOptionsPageUI.UseArch_AMD);
                 changed = true;
             }
             if (Settings.Default.ARCH_PENT != this._asmDudeOptionsPageUI.UseArch_PENT)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_PENT=" + this._asmDudeOptionsPageUI.UseArch_PENT);
+                sb.AppendLine("useArch_PENT=" + this._asmDudeOptionsPageUI.UseArch_PENT);
                 changed = true;
             }
             if (Settings.Default.ARCH_3DNOW != this._asmDudeOptionsPageUI.UseArch_3DNOW)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_3DNOW=" + this._asmDudeOptionsPageUI.UseArch_3DNOW);
+                sb.AppendLine("UseArch_3DNOW=" + this._asmDudeOptionsPageUI.UseArch_3DNOW);
                 changed = true;
             }
             if (Settings.Default.ARCH_CYRIX != this._asmDudeOptionsPageUI.UseArch_CYRIX)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_CYRIX=" + this._asmDudeOptionsPageUI.UseArch_CYRIX);
+                sb.AppendLine("UseArch_CYRIX=" + this._asmDudeOptionsPageUI.UseArch_CYRIX);
                 changed = true;
             }
             if (Settings.Default.ARCH_CYRIXM != this._asmDudeOptionsPageUI.UseArch_CYRIXM)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_CYRIXM=" + this._asmDudeOptionsPageUI.UseArch_CYRIXM);
+                sb.AppendLine("UseArch_CYRIXM=" + this._asmDudeOptionsPageUI.UseArch_CYRIXM);
                 changed = true;
             }
             if (Settings.Default.ARCH_VMX != this._asmDudeOptionsPageUI.UseArch_VMX)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_VMX=" + this._asmDudeOptionsPageUI.UseArch_VMX);
+                sb.AppendLine("UseArch_VMX=" + this._asmDudeOptionsPageUI.UseArch_VMX);
                 changed = true;
             }
             if (Settings.Default.ARCH_RTM != this._asmDudeOptionsPageUI.UseArch_RTM)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_RTM=" + this._asmDudeOptionsPageUI.UseArch_RTM);
+                sb.AppendLine("UseArch_RTM=" + this._asmDudeOptionsPageUI.UseArch_RTM);
                 changed = true;
             }
             if (Settings.Default.ARCH_MPX != this._asmDudeOptionsPageUI.UseArch_MPX)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_MPX=" + this._asmDudeOptionsPageUI.UseArch_MPX);
+                sb.AppendLine("UseArch_MPX=" + this._asmDudeOptionsPageUI.UseArch_MPX);
                 changed = true;
             }
             if (Settings.Default.ARCH_SHA != this._asmDudeOptionsPageUI.UseArch_SHA)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_SHA=" + this._asmDudeOptionsPageUI.UseArch_SHA);
+                sb.AppendLine("UseArch_SHA=" + this._asmDudeOptionsPageUI.UseArch_SHA);
                 changed = true;
             }
 
             if (Settings.Default.ARCH_ADX != this._asmDudeOptionsPageUI.UseArch_ADX)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_ADX=" + this._asmDudeOptionsPageUI.UseArch_ADX);
+                sb.AppendLine("UseArch_ADX=" + this._asmDudeOptionsPageUI.UseArch_ADX);
                 changed = true;
             }
             if (Settings.Default.ARCH_F16C != this._asmDudeOptionsPageUI.UseArch_F16C)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_F16C=" + this._asmDudeOptionsPageUI.UseArch_F16C);
+                sb.AppendLine("UseArch_F16C=" + this._asmDudeOptionsPageUI.UseArch_F16C);
                 changed = true;
             }
             if (Settings.Default.ARCH_FSGSBASE != this._asmDudeOptionsPageUI.UseArch_FSGSBASE)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_FSGSBASE=" + this._asmDudeOptionsPageUI.UseArch_FSGSBASE);
+                sb.AppendLine("UseArch_FSGSBASE=" + this._asmDudeOptionsPageUI.UseArch_FSGSBASE);
                 changed = true;
             }
             if (Settings.Default.ARCH_HLE != this._asmDudeOptionsPageUI.UseArch_HLE)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_HLE=" + this._asmDudeOptionsPageUI.UseArch_HLE);
+                sb.AppendLine("UseArch_HLE=" + this._asmDudeOptionsPageUI.UseArch_HLE);
                 changed = true;
             }
             if (Settings.Default.ARCH_INVPCID != this._asmDudeOptionsPageUI.UseArch_INVPCID)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_INVPCID=" + this._asmDudeOptionsPageUI.UseArch_INVPCID);
+                sb.AppendLine("UseArch_INVPCID=" + this._asmDudeOptionsPageUI.UseArch_INVPCID);
                 changed = true;
             }
             if (Settings.Default.ARCH_PCLMULQDQ != this._asmDudeOptionsPageUI.UseArch_PCLMULQDQ)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_PCLMULQDQ=" + this._asmDudeOptionsPageUI.UseArch_PCLMULQDQ);
+                sb.AppendLine("UseArch_PCLMULQDQ=" + this._asmDudeOptionsPageUI.UseArch_PCLMULQDQ);
                 changed = true;
             }
             if (Settings.Default.ARCH_LZCNT != this._asmDudeOptionsPageUI.UseArch_LZCNT)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_LZCNT=" + this._asmDudeOptionsPageUI.UseArch_LZCNT);
+                sb.AppendLine("UseArch_LZCNT=" + this._asmDudeOptionsPageUI.UseArch_LZCNT);
                 changed = true;
             }
             if (Settings.Default.ARCH_PREFETCHWT1 != this._asmDudeOptionsPageUI.UseArch_PREFETCHWT1)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_PREFETCHWT1=" + this._asmDudeOptionsPageUI.UseArch_PREFETCHWT1);
+                sb.AppendLine("UseArch_PREFETCHWT1=" + this._asmDudeOptionsPageUI.UseArch_PREFETCHWT1);
                 changed = true;
             }
             if (Settings.Default.ARCH_PRFCHW != this._asmDudeOptionsPageUI.UseArch_PREFETCHW)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_PREFETCHW=" + this._asmDudeOptionsPageUI.UseArch_PREFETCHW);
+                sb.AppendLine("UseArch_PREFETCHW=" + this._asmDudeOptionsPageUI.UseArch_PREFETCHW);
                 changed = true;
             }
             if (Settings.Default.ARCH_RDPID != this._asmDudeOptionsPageUI.UseArch_RDPID)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_RDPID=" + this._asmDudeOptionsPageUI.UseArch_RDPID);
+                sb.AppendLine("UseArch_RDPID=" + this._asmDudeOptionsPageUI.UseArch_RDPID);
                 changed = true;
             }
             if (Settings.Default.ARCH_RDRAND != this._asmDudeOptionsPageUI.UseArch_RDRAND)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_RDRAND=" + this._asmDudeOptionsPageUI.UseArch_RDRAND);
+                sb.AppendLine("UseArch_RDRAND=" + this._asmDudeOptionsPageUI.UseArch_RDRAND);
                 changed = true;
             }
             if (Settings.Default.ARCH_RDSEED != this._asmDudeOptionsPageUI.UseArch_RDSEED)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_RDSEED=" + this._asmDudeOptionsPageUI.UseArch_RDSEED);
+                sb.AppendLine("UseArch_RDSEED=" + this._asmDudeOptionsPageUI.UseArch_RDSEED);
                 changed = true;
             }
             if (Settings.Default.ARCH_XSAVEOPT != this._asmDudeOptionsPageUI.UseArch_XSAVEOPT)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_XSAVEOPT=" + this._asmDudeOptionsPageUI.UseArch_XSAVEOPT);
+                sb.AppendLine("UseArch_XSAVEOPT=" + this._asmDudeOptionsPageUI.UseArch_XSAVEOPT);
                 changed = true;
             }
             if (Settings.Default.ARCH_UNDOC != this._asmDudeOptionsPageUI.UseArch_UNDOC)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_UNDOC=" + this._asmDudeOptionsPageUI.UseArch_UNDOC);
+                sb.AppendLine("UseArch_UNDOC=" + this._asmDudeOptionsPageUI.UseArch_UNDOC);
                 changed = true;
             }
             if (Settings.Default.ARCH_AES != this._asmDudeOptionsPageUI.UseArch_AES)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: useArch_AES=" + this._asmDudeOptionsPageUI.UseArch_AES);
+                sb.AppendLine("UseArch_AES=" + this._asmDudeOptionsPageUI.UseArch_AES);
                 changed = true;
             }
             #endregion
@@ -865,37 +866,37 @@ namespace AsmDude.OptionsPage
             #region Intellisense
             if (Settings.Default.IntelliSense_Label_Analysis_On != this._asmDudeOptionsPageUI.Intellisense_UseLabelAnalysis)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: Intellisense_UseLabelAnalysis=" + this._asmDudeOptionsPageUI.Intellisense_UseLabelAnalysis);
+                sb.AppendLine("Intellisense_UseLabelAnalysis=" + this._asmDudeOptionsPageUI.Intellisense_UseLabelAnalysis);
                 changed = true;
             }
             if (Settings.Default.IntelliSense_Show_UndefinedLabels != this._asmDudeOptionsPageUI.IntelliSense_Show_Undefined_Labels)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: IntelliSense_Show_UndefinedLabels=" + this._asmDudeOptionsPageUI.IntelliSense_Show_Undefined_Labels);
+                sb.AppendLine("IntelliSense_Show_Undefined_Labels=" + this._asmDudeOptionsPageUI.IntelliSense_Show_Undefined_Labels);
                 changed = true;
             }
             if (Settings.Default.IntelliSense_Show_ClashingLabels != this._asmDudeOptionsPageUI.IntelliSense_Show_Clashing_Labels)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: IntelliSense_Show_ClashingLabels=" + this._asmDudeOptionsPageUI.IntelliSense_Show_Clashing_Labels);
+                sb.AppendLine("IntelliSense_Show_Clashing_Labels=" + this._asmDudeOptionsPageUI.IntelliSense_Show_Clashing_Labels);
                 changed = true;
             }
             if (Settings.Default.IntelliSense_Decorate_UndefinedLabels != this._asmDudeOptionsPageUI.IntelliSense_Decorate_Undefined_Labels)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: IntelliSense_Decorate_UndefinedLabels=" + this._asmDudeOptionsPageUI.IntelliSense_Decorate_Undefined_Labels);
+                sb.AppendLine("IntelliSense_Decorate_Undefined_Labels=" + this._asmDudeOptionsPageUI.IntelliSense_Decorate_Undefined_Labels);
                 changed = true;
             }
             if (Settings.Default.IntelliSense_Decorate_ClashingLabels != this._asmDudeOptionsPageUI.IntelliSense_Decorate_Clashing_Labels)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: IntelliSense_Decorate_ClashingLabels=" + this._asmDudeOptionsPageUI.IntelliSense_Decorate_Clashing_Labels);
+                sb.AppendLine("IntelliSense_Decorate_Clashing_Labels=" + this._asmDudeOptionsPageUI.IntelliSense_Decorate_Clashing_Labels);
                 changed = true;
             }
             if (Settings.Default.IntelliSense_Show_Undefined_Includes != this._asmDudeOptionsPageUI.IntelliSense_Show_Undefined_Includes)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: IntelliSense_Show_Undefined_Includes=" + this._asmDudeOptionsPageUI.IntelliSense_Show_Undefined_Includes);
+                sb.AppendLine("IntelliSense_Show_Undefined_Includes=" + this._asmDudeOptionsPageUI.IntelliSense_Show_Undefined_Includes);
                 changed = true;
             }
             if (Settings.Default.IntelliSense_Decorate_Undefined_Includes != this._asmDudeOptionsPageUI.IntelliSense_Decorate_Undefined_Includes)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: IntelliSense_Decorate_Undefined_Includes=" + this._asmDudeOptionsPageUI.IntelliSense_Decorate_Undefined_Includes);
+                sb.AppendLine("IntelliSense_Decorate_Undefined_Includes=" + this._asmDudeOptionsPageUI.IntelliSense_Decorate_Undefined_Includes);
                 changed = true;
             }
             #endregion
@@ -903,7 +904,7 @@ namespace AsmDude.OptionsPage
             #region AsmSim
             if (Settings.Default.AsmSim_On != this._asmDudeOptionsPageUI.AsmSim_On)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_On=" + this._asmDudeOptionsPageUI.AsmSim_On);
+                sb.AppendLine("AsmSim_On=" + this._asmDudeOptionsPageUI.AsmSim_On);
                 changed = true;
 
                 if (!this._asmDudeOptionsPageUI.AsmSim_On)
@@ -915,82 +916,82 @@ namespace AsmDude.OptionsPage
             }
             if (Settings.Default.AsmSim_Z3_Timeout_MS != this._asmDudeOptionsPageUI.AsmSim_Z3_Timeout_MS)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_Z3_Timeout_MS=" + this._asmDudeOptionsPageUI.AsmSim_Z3_Timeout_MS);
+                sb.AppendLine("AsmSim_Z3_Timeout_MS=" + this._asmDudeOptionsPageUI.AsmSim_Z3_Timeout_MS);
                 changed = true;
             }
             if (Settings.Default.AsmSim_Number_Of_Threads != this._asmDudeOptionsPageUI.AsmSim_Number_Of_Threads)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_Number_Of_Threads=" + this._asmDudeOptionsPageUI.AsmSim_Number_Of_Threads);
+                sb.AppendLine("AsmSim_Number_Of_Threads=" + this._asmDudeOptionsPageUI.AsmSim_Number_Of_Threads);
                 changed = true;
             }
             if (Settings.Default.AsmSim_Number_Of_Steps != this._asmDudeOptionsPageUI.AsmSim_Number_Of_Steps)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_Number_Of_Steps=" + this._asmDudeOptionsPageUI.AsmSim_Number_Of_Steps);
+                sb.AppendLine("AsmSim_Number_Of_Steps=" + this._asmDudeOptionsPageUI.AsmSim_Number_Of_Steps);
                 changed = true;
             }
             if (Settings.Default.AsmSim_64_Bits != this._asmDudeOptionsPageUI.AsmSim_64_Bits)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_64_Bits=" + this._asmDudeOptionsPageUI.AsmSim_64_Bits);
+                sb.AppendLine("AsmSim_64_Bits=" + this._asmDudeOptionsPageUI.AsmSim_64_Bits);
                 changed = true;
             }
             if (Settings.Default.AsmSim_Show_Syntax_Errors != this._asmDudeOptionsPageUI.AsmSim_Show_Syntax_Errors)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_Show_Syntax_Errors=" + this._asmDudeOptionsPageUI.AsmSim_Show_Syntax_Errors);
+                sb.AppendLine("AsmSim_Show_Syntax_Errors=" + this._asmDudeOptionsPageUI.AsmSim_Show_Syntax_Errors);
                 changed = true;
             }
             if (Settings.Default.AsmSim_Decorate_Syntax_Errors != this._asmDudeOptionsPageUI.AsmSim_Decorate_Syntax_Errors)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_Decorate_Syntax_Errors=" + this._asmDudeOptionsPageUI.AsmSim_Decorate_Syntax_Errors);
+                sb.AppendLine("AsmSim_Decorate_Syntax_Errors=" + this._asmDudeOptionsPageUI.AsmSim_Decorate_Syntax_Errors);
                 changed = true;
             }
             if (Settings.Default.AsmSim_Show_Usage_Of_Undefined != this._asmDudeOptionsPageUI.AsmSim_Show_Usage_Of_Undefined)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_Show_Usage_Of_Undefined=" + this._asmDudeOptionsPageUI.AsmSim_Show_Usage_Of_Undefined);
+                sb.AppendLine("AsmSim_Show_Usage_Of_Undefined=" + this._asmDudeOptionsPageUI.AsmSim_Show_Usage_Of_Undefined);
                 changed = true;
             }
             if (Settings.Default.AsmSim_Decorate_Usage_Of_Undefined != this._asmDudeOptionsPageUI.AsmSim_Decorate_Usage_Of_Undefined)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_Decorate_Usage_Of_Undefined=" + this._asmDudeOptionsPageUI.AsmSim_Decorate_Usage_Of_Undefined);
+                sb.AppendLine("AsmSim_Decorate_Usage_Of_Undefined=" + this._asmDudeOptionsPageUI.AsmSim_Decorate_Usage_Of_Undefined);
                 changed = true;
             }
             if (Settings.Default.AsmSim_Show_Redundant_Instructions != this._asmDudeOptionsPageUI.AsmSim_Show_Redundant_Instructions)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_Show_Redundant_Instructions=" + this._asmDudeOptionsPageUI.AsmSim_Show_Redundant_Instructions);
+                sb.AppendLine("AsmSim_Show_Redundant_Instructions=" + this._asmDudeOptionsPageUI.AsmSim_Show_Redundant_Instructions);
                 changed = true;
             }
             if (Settings.Default.AsmSim_Decorate_Redundant_Instructions != this._asmDudeOptionsPageUI.AsmSim_Decorate_Redundant_Instructions)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_Decorate_Redundant_Instructions=" + this._asmDudeOptionsPageUI.AsmSim_Decorate_Redundant_Instructions);
+                sb.AppendLine("AsmSim_Decorate_Redundant_Instructions=" + this._asmDudeOptionsPageUI.AsmSim_Decorate_Redundant_Instructions);
                 changed = true;
             }
             if (Settings.Default.AsmSim_Show_Unreachable_Instructions != this._asmDudeOptionsPageUI.AsmSim_Show_Unreachable_Instructions)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_Show_Unreachable_Instructions=" + this._asmDudeOptionsPageUI.AsmSim_Show_Unreachable_Instructions);
+                sb.AppendLine("AsmSim_Show_Unreachable_Instructions=" + this._asmDudeOptionsPageUI.AsmSim_Show_Unreachable_Instructions);
                 changed = true;
             }
             if (Settings.Default.AsmSim_Decorate_Unreachable_Instructions != this._asmDudeOptionsPageUI.AsmSim_Decorate_Unreachable_Instructions)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_Decorate_Unreachable_Instructions=" + this._asmDudeOptionsPageUI.AsmSim_Decorate_Unreachable_Instructions);
+                sb.AppendLine("AsmSim_Decorate_Unreachable_Instructions=" + this._asmDudeOptionsPageUI.AsmSim_Decorate_Unreachable_Instructions);
                 changed = true;
             }
             if (Settings.Default.AsmSim_Decorate_Registers != this._asmDudeOptionsPageUI.AsmSim_Decorate_Registers)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_Decorate_Registers=" + this._asmDudeOptionsPageUI.AsmSim_Decorate_Registers);
+                sb.AppendLine("AsmSim_Decorate_Registers=" + this._asmDudeOptionsPageUI.AsmSim_Decorate_Registers);
                 changed = true;
             }
             if (Settings.Default.AsmSim_Use_In_Code_Completion != this._asmDudeOptionsPageUI.AsmSim_Use_In_Code_Completion)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_Use_In_Code_Completion=" + this._asmDudeOptionsPageUI.AsmSim_Use_In_Code_Completion);
+                sb.AppendLine("AsmSim_Use_In_Code_Completion=" + this._asmDudeOptionsPageUI.AsmSim_Use_In_Code_Completion);
                 changed = true;
             }
             if (Settings.Default.AsmSim_Decorate_Unimplemented != this._asmDudeOptionsPageUI.AsmSim_Decorate_Unimplemented)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_Decorate_Unimplemented=" + this._asmDudeOptionsPageUI.AsmSim_Decorate_Unimplemented);
+                sb.AppendLine("AsmSim_Decorate_Unimplemented=" + this._asmDudeOptionsPageUI.AsmSim_Decorate_Unimplemented);
                 changed = true;
             }
             if (Settings.Default.AsmSim_Pragma_Assume != this._asmDudeOptionsPageUI.AsmSim_Pragma_Assume)
             {
-                if (logInfo) AsmDudeToolsStatic.Output("INFO: AsmDudeOptionsPage: OnDeactivate: change detected: AsmSim_Pragma_Assume=" + this._asmDudeOptionsPageUI.AsmSim_Pragma_Assume);
+                sb.AppendLine("AsmSim_Pragma_Assume=" + this._asmDudeOptionsPageUI.AsmSim_Pragma_Assume);
                 changed = true;
             }
 
@@ -999,7 +1000,8 @@ namespace AsmDude.OptionsPage
             if (changed)
             {
                 string title = null;
-                string message = "Unsaved changes exist. Would you like to save.";
+
+                string message = "Unsaved changes exist.\n\n"+ sb.ToString() + "\nWould you like to save?";
                 int result = VsShellUtilities.ShowMessageBox(this.Site, message, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
                 if (result == (int)VSConstants.MessageBoxResult.IDOK)
                 {
