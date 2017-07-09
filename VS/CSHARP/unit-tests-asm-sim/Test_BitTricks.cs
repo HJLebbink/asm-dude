@@ -399,7 +399,7 @@ namespace unit_tests_asm_z3
             string line2 = "lea ecx, [ebx-0x01_01_01_01]";  // substract 1 from each byte
             string line3 = "not ebx";                       // invert all bytes
             string line4 = "and ecx, ebx";                  // and these two
-            string line5 = "and ecx, 0x80_80_80_80";
+            string line5 = "and ecx, 80808080h";
 
             {   // forward
                 State state = CreateState(tools);

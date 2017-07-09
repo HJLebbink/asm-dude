@@ -44,7 +44,7 @@ namespace AsmTools
         }
 
         /// <summary> Check if the provided string is a constant. Does not evaluate arithmetic in the string </summary>
-        public static (bool Valid, ulong Value, int NBits) Parse_Constant(string str, bool IsCapitals=false)
+        public static (bool Valid, ulong Value, int NBits) Parse_Constant(string str, bool isCapitals=false)
         {
             string token2;
             bool isHex = false;
@@ -55,6 +55,10 @@ namespace AsmTools
 
             //Console.WriteLine("AsmSourceTools:ToConstant token=" + token);
 
+            if (!isCapitals)
+            {
+                str = str.ToUpper();
+            }
             str = str.Trim();
 
             if (str.StartsWith("-"))
@@ -63,33 +67,35 @@ namespace AsmTools
                 isDecimal = true;
                 isNegative = true;
             }
+
+
             // note the special case of token 0h (zero hex) should not be confused with the prefix 0h;
-            else if (str.EndsWith("h", StringComparison.OrdinalIgnoreCase))
+            else if (str.EndsWith("H", StringComparison.OrdinalIgnoreCase))
             {
                 token2 = str.Substring(0, str.Length - 1);
                 isHex = true;
             }
-            else if (str.StartsWith("0h", StringComparison.OrdinalIgnoreCase) || str.StartsWith("0x", StringComparison.OrdinalIgnoreCase) || str.StartsWith("$0"))
+            else if (str.StartsWith("0H", StringComparison.OrdinalIgnoreCase) || str.StartsWith("0X", StringComparison.OrdinalIgnoreCase) || str.StartsWith("$0"))
             {
                 token2 = str.Substring(2);
                 isHex = true;
             }
-            else if (str.StartsWith("0b", StringComparison.OrdinalIgnoreCase) || str.StartsWith("0y", StringComparison.OrdinalIgnoreCase))
+            else if (str.StartsWith("0B", StringComparison.OrdinalIgnoreCase) || str.StartsWith("0Y", StringComparison.OrdinalIgnoreCase))
             {
                 token2 = str.Substring(2);
                 isBinary = true;
             }
-            else if (str.EndsWith("b", StringComparison.OrdinalIgnoreCase) || str.EndsWith("y", StringComparison.OrdinalIgnoreCase))
+            else if (str.EndsWith("B", StringComparison.OrdinalIgnoreCase) || str.EndsWith("Y", StringComparison.OrdinalIgnoreCase))
             {
                 token2 = str.Substring(0, str.Length - 1);
                 isBinary = true;
             }
-            else if (str.StartsWith("0o", StringComparison.OrdinalIgnoreCase) || str.StartsWith("0q", StringComparison.OrdinalIgnoreCase))
+            else if (str.StartsWith("0O", StringComparison.OrdinalIgnoreCase) || str.StartsWith("0Q", StringComparison.OrdinalIgnoreCase))
             {
                 token2 = str.Substring(2);
                 isOctal = true;
             }
-            else if (str.EndsWith("q", StringComparison.OrdinalIgnoreCase) || str.EndsWith("o", StringComparison.OrdinalIgnoreCase))
+            else if (str.EndsWith("Q", StringComparison.OrdinalIgnoreCase) || str.EndsWith("O", StringComparison.OrdinalIgnoreCase))
             {
                 token2 = str.Substring(0, str.Length - 1);
                 isOctal = true;
@@ -99,7 +105,7 @@ namespace AsmTools
                 token2 = str.Substring(2);
                 isDecimal = true;
             }
-            else if (str.EndsWith("d", StringComparison.OrdinalIgnoreCase))
+            else if (str.EndsWith("D", StringComparison.OrdinalIgnoreCase))
             {
                 token2 = str;
                 isDecimal = true;
@@ -109,8 +115,6 @@ namespace AsmTools
                 token2 = str;
                 isDecimal = true;
             }
-
-            token2 = token2.Replace("_", string.Empty).Replace(".", string.Empty);
 
             ulong value = 0;
             bool parsedSuccessfully;

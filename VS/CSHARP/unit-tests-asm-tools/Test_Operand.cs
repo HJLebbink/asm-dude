@@ -49,6 +49,34 @@ namespace unit_tests_asm_tools
         }
 
         [TestMethod]
+        public void Test_Operand_Constant_hex_1()
+        {
+            Operand op = new Operand("0x80_80_80_80_80_80_80_80", false);
+            Assert.IsTrue(op.IsImm);
+            Assert.AreEqual(0x8080808080808080ul, op.Imm);
+            Assert.AreEqual(64, op.NBits);
+        }
+
+        [TestMethod]
+        public void Test_Operand_Constant_hex_2()
+        {
+            Operand op = new Operand("0x80_80_80_80", false);
+            Assert.IsTrue(op.IsImm);
+            Assert.AreEqual(0x80808080ul, op.Imm);
+            Assert.AreEqual(32, op.NBits);
+        }
+
+        [TestMethod]
+        public void Test_Operand_Constant_hex_3()
+        {
+            Operand op = new Operand("0x80808080", false);
+            Assert.IsTrue(op.IsImm);
+            Assert.AreEqual(0x80808080ul, op.Imm);
+            Assert.AreEqual(32, op.NBits);
+        }
+
+
+        [TestMethod]
         public void Test_Operand_Constant_SignExtend_1()
         {   // sign extend 8-bits zero
             ulong value = 0;

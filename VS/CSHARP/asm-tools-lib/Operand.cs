@@ -37,36 +37,6 @@ namespace AsmTools
         /// <summary>constructor</summary>
         public Operand(string token, bool isCapitals, AsmParameters p = null)
         {
-            // do a quick scan:
-            {
-                bool quickScan = false;
-                if (token.Length == 1)
-                {
-                    switch (token[0])
-                    {
-                        case '0':
-                            this._imm = 0;
-                            quickScan = true;
-                            break;
-                        case '1':
-                            this._imm = 1;
-                            quickScan = true;
-                            break;
-                        case '2':
-                            this._imm = 2;
-                            quickScan = true;
-                            break;
-                    }
-                    if (quickScan)
-                    {
-                        this._str = token;
-                        this._type = Ot1.imm;
-                        this.NBits = 8;
-                        return;
-                    }
-                }
-            }
-
             if (!isCapitals) token = token.ToUpper();
             this._str = token;
 

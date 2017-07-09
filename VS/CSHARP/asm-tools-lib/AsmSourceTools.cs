@@ -71,8 +71,7 @@ namespace AsmTools
                 //Console.WriteLine("code string \"" + codeStr + "\".");
                 if (codeStr.Length > 0)
                 {
-                    Console.WriteLine(codeStr + ":" + codeStr.Length);
-
+                    //Console.WriteLine(codeStr + ":" + codeStr.Length);
 
                     // get the first keyword, check if it is a mnemonic
                     (int beginPos, int endPos) = AsmTools.AsmSourceTools.GetKeywordPos(0, codeStr);
@@ -356,7 +355,8 @@ namespace AsmTools
         /// <summary> Check if the provided string is a constant by evaluating it.</summary>
         public static (bool Valid, ulong Value, int NBits) Evaluate_Constant(string token, bool isCapitals = false)
         {
-            return ExpressionEvaluator.Evaluate_Constant(token, isCapitals);
+            var token2 = token.Replace("_", string.Empty).Replace(".", string.Empty);
+            return ExpressionEvaluator.Evaluate_Constant(token2, isCapitals);
         }
 
         /// <summary> Check if the provided string is a constant by parsing it. Does not evaluate arithmetic in the string.</summary>

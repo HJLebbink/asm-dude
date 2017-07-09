@@ -71,7 +71,7 @@ namespace AsmSim
                 opcodeBase.Execute();
                 State stateOut = new State(state);
                 stateOut.Update_Forward(opcodeBase.Updates.Regular);
-                //stateOut.Frozen = true;
+                stateOut.Frozen = true;
 
                 opcodeBase.Updates.Regular?.Dispose();
                 opcodeBase.Updates.Branch?.Dispose();
