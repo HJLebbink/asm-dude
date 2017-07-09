@@ -64,12 +64,14 @@ namespace AsmSim
             using (var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, (state.HeadKey, nextKey, nextKeyBranch), tools))
             {
                 if (opcodeBase == null) return null;
-                if (opcodeBase.IsHalted) return null;
-
+                if (opcodeBase.IsHalted) {
+                    Console.WriteLine("WARNING: Runner:SimpleStep_Forward: line: " + line + " is halted. Message: " + opcodeBase.SyntaxError);
+                    return null;
+                }
                 opcodeBase.Execute();
                 State stateOut = new State(state);
                 stateOut.Update_Forward(opcodeBase.Updates.Regular);
-                stateOut.Frozen = true;
+                //stateOut.Frozen = true;
 
                 opcodeBase.Updates.Regular?.Dispose();
                 opcodeBase.Updates.Branch?.Dispose();
@@ -405,7 +407,7 @@ namespace AsmSim
                 case Mnemonic.XLAT: break;
                 case Mnemonic.XLATB: break;
                 case Mnemonic.CPUID: break;
-                case Mnemonic.MOVBE: break;
+                case Mnemonic.MOVBE: return new Movbe(args, keys, t);
                 case Mnemonic.PREFETCHW: return new Nop(args, keys, t);
                 case Mnemonic.PREFETCHWT1: return new Nop(args, keys, t);
                 case Mnemonic.CLFLUSH: return new Nop(args, keys, t);

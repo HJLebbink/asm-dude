@@ -378,7 +378,7 @@ namespace AsmSim
         {
             for (int i=0; i<args.Length; ++i)
             {
-                var v = ExpressionEvaluator.Evaluate(args[i]);
+                var v = ExpressionEvaluator.Evaluate_Constant(args[i]);
                 if (v.Valid)
                 {
                     args[i] = v.Value.ToString();

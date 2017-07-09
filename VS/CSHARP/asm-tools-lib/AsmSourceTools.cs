@@ -32,10 +32,12 @@ namespace AsmTools
     public static partial class AsmSourceTools
     {
         /// <summary>
-        /// Parse the provided line. Returns label, mnemonic, args, remarks
+        /// Parse the provided line. Returns label, mnemonic, args, remarks. Args are in capitals
         /// </summary>
         public static (string Label, Mnemonic Mnemonic, string[] Args, string Remark) ParseLine(string line)
         {
+            //Console.WriteLine("INFO: AsmSourceTools:ParseLine: line=" + line + "; length=" + line.Length);
+
             string label = "";
             Mnemonic mnemonic = Mnemonic.NONE;
             string[] args = new string[0] { };
@@ -43,12 +45,12 @@ namespace AsmTools
 
             if (line.Length > 0)
             {
-                (bool, int, int) labelPos = AsmTools.AsmSourceTools.GetLabelDefPos(line);
+                var labelPos = AsmTools.AsmSourceTools.GetLabelDefPos(line);
                 int codeBeginPos = 0;
-                if (labelPos.Item1)
+                if (labelPos.Valid)
                 {
-                    label = line.Substring(labelPos.Item2, labelPos.Item3 - labelPos.Item2);
-                    codeBeginPos = labelPos.Item3 + 1; // plus one to get rid of the colon 
+                    label = line.Substring(labelPos.BeginPos, labelPos.EndPos - labelPos.BeginPos);
+                    codeBeginPos = labelPos.EndPos + 1; // plus one to get rid of the colon 
                     if (line.Length > codeBeginPos)
                     {
                         if (line[codeBeginPos] == ':') codeBeginPos++; // remove a second colon
@@ -56,12 +58,12 @@ namespace AsmTools
                     //Console.WriteLine("found label " + label);
                 }
 
-                (bool, int, int) remarkPos = AsmTools.AsmSourceTools.GetRemarkPos(line);
+                var remarkPos = AsmTools.AsmSourceTools.GetRemarkPos(line);
                 int codeEndPos = line.Length;
-                if (remarkPos.Item1)
+                if (remarkPos.Valid)
                 {
-                    remark = line.Substring(remarkPos.Item2, remarkPos.Item3 - remarkPos.Item2);
-                    codeEndPos = remarkPos.Item2;
+                    remark = line.Substring(remarkPos.BeginPos, remarkPos.EndPos - remarkPos.BeginPos);
+                    codeEndPos = remarkPos.BeginPos;
                     //Console.WriteLine("found remark " + remark);
                 }
 
@@ -69,12 +71,15 @@ namespace AsmTools
                 //Console.WriteLine("code string \"" + codeStr + "\".");
                 if (codeStr.Length > 0)
                 {
+                    Console.WriteLine(codeStr + ":" + codeStr.Length);
+
+
                     // get the first keyword, check if it is a mnemonic
                     (int beginPos, int endPos) = AsmTools.AsmSourceTools.GetKeywordPos(0, codeStr);
                     string firstKeyword = codeStr.Substring(beginPos, endPos - beginPos);
                     if (firstKeyword.Length > 0)
                     {
-                        mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(firstKeyword);
+                        mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(firstKeyword, true);
                         if (mnemonic == Mnemonic.NONE)
                         {
                             //Console.WriteLine("INFO: ToolsZ3:parseLine: found unknown first Keyword \"" + firstKeyword + "\". Ignoring this line.");
@@ -98,6 +103,7 @@ namespace AsmTools
                     }
                 }
             }
+            //Console.WriteLine(args[1] + ":" + args[1].Length);
             return (Label: label, Mnemonic: mnemonic, Args: args, Remark: remark);
         }
 
@@ -121,7 +127,7 @@ namespace AsmTools
                     }
                     else
                     {
-                        operands.Add(new Operand(opStr));
+                        operands.Add(new Operand(opStr, false));
                     }
                 }
                 return operands;
@@ -328,26 +334,6 @@ namespace AsmTools
 
         #endregion Remark Methods
 
-        public static bool IsConstant(string token)
-        { // todo merge this with toConstant
-            string token2;
-            if (token.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
-            {
-                token2 = token.Substring(2);
-            }
-            else if (token.EndsWith("h", StringComparison.OrdinalIgnoreCase))
-            {
-                token2 = token.Substring(0, token.Length - 1);
-            }
-            else
-            {
-                token2 = token;
-            }
-
-            bool parsedSuccessfully = ulong.TryParse(token2, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out ulong dummy);
-            return parsedSuccessfully;
-        }
-
         public static int NBitsStorageNeeded(ulong v, bool isNegative)
         {
             if (isNegative)
@@ -366,50 +352,32 @@ namespace AsmTools
             }
         }
 
-        /// <summary>
-        /// Return the number of bits of the provided operand (assumes 64-bits)
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static int GetNbitsMemOperand(string token)
+
+        /// <summary> Check if the provided string is a constant by evaluating it.</summary>
+        public static (bool Valid, ulong Value, int NBits) Evaluate_Constant(string token, bool isCapitals = false)
         {
-            string s = token.TrimStart().ToUpper();
-            if (s.StartsWith("PTR")) s = s.Substring(3, token.Length - 3).TrimStart();
+            return ExpressionEvaluator.Evaluate_Constant(token, isCapitals);
+        }
 
-            if (s.StartsWith("BYTE")) return 8; //nasm
-            if (s.StartsWith("SBYTE")) return 8;
-            if (s.StartsWith("WORD")) return 16; //nasm
-            if (s.StartsWith("SWORD")) return 16;
-
-            if (s.StartsWith("DWORD")) return 32; //nasm
-            if (s.StartsWith("SDWORD")) return 32;
-            if (s.StartsWith("QWORD")) return 64; //nasm
-            if (s.StartsWith("TWORD")) return 80; //nasm
-
-            if (s.StartsWith("DQWORD")) return 128;
-            if (s.StartsWith("OWORD")) return 128; //nasm
-            if (s.StartsWith("XMMWORD")) return 128;
-            if (s.StartsWith("XWORD")) return 128;
-            if (s.StartsWith("YMMWORD")) return 256;
-            if (s.StartsWith("YWORD")) return 256; //nasm
-            if (s.StartsWith("ZMMWORD")) return 512;
-            if (s.StartsWith("ZWORD")) return 512; //nasm
-
-            //Console.WriteLine("AsmSourceTools:GetNbitsMemOperand: could not determine nBits in token " + token + " assuming 32 bits");
-
-            return 32;
+        /// <summary> Check if the provided string is a constant by parsing it. Does not evaluate arithmetic in the string.</summary>
+        public static (bool Valid, ulong Value, int NBits) Parse_Constant(string token, bool isCapitals = false)
+        {
+            return ExpressionEvaluator.Parse_Constant(token, isCapitals);
         }
 
         /// <summary>
         /// return Offset = Base + (Index * Scale) + Displacement
         /// </summary>
-        public static (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits, string ErrorMessage) ParseMemOperand(string token)
+        public static (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits, string ErrorMessage) 
+            Parse_Mem_Operand(string token, bool isCapitals = false)
         {
             int length = token.Length;
             if (length < 3)
             {
                 return (Valid: false, BaseReg: Rn.NOREG, IndexReg: Rn.NOREG, Scale: 0, Displacement: 0, NBits: 0, ErrorMessage: null); // do not return a error message because the provided token can be a label
             }
+
+            if (!isCapitals) token = token.ToUpper();
 
             // 1] select everything between []
             int beginPos = length;
@@ -419,13 +387,13 @@ namespace AsmTools
                 if (token[i] == '[') beginPos = i + 1;
             }
 
-            int nBits = GetNbitsMemOperand(token);
-
             int endPos = length;
             for (int i = beginPos; i < length; ++i)
             {
                 if (token[i] == ']') endPos = i;
             }
+
+            int nBits = Get_Nbits_Mem_Operand(token);
 
             token = token.Substring(beginPos, endPos - beginPos).Trim();
             length = token.Length;
@@ -461,7 +429,7 @@ namespace AsmTools
             {
                 string y = x[i].Trim();
 
-                var t2 = ExpressionEvaluator.ToConstant(y);
+                var t2 = ExpressionEvaluator.Parse_Constant(y, true);
                 if (t2.Valid)
                 {
                     if (foundDisplacement)
@@ -477,7 +445,7 @@ namespace AsmTools
                 }
                 else
                 {
-                    Rn t1 = RegisterTools.ParseRn(y);
+                    Rn t1 = RegisterTools.ParseRn(y, true);
                     if (t1 != Rn.NOREG)
                     {
                         if (baseRn == Rn.NOREG)
@@ -497,7 +465,7 @@ namespace AsmTools
                         string z0 = z[0].Trim();
                         string z1 = z[1].Trim();
                         string scaleRaw = null;
-                        Rn z0r = RegisterTools.ParseRn(z0);
+                        Rn z0r = RegisterTools.ParseRn(z0, true);
                         if (z0r != Rn.NOREG)
                         {
                             indexRn = z0r;
@@ -506,7 +474,7 @@ namespace AsmTools
                         }
                         else
                         {
-                            Rn z1r = RegisterTools.ParseRn(z1);
+                            Rn z1r = RegisterTools.ParseRn(z1, true);
                             if (z1r != Rn.NOREG)
                             {
                                 indexRn = z1r;
@@ -530,18 +498,50 @@ namespace AsmTools
                 }
             }
             return (Valid: true, BaseReg: baseRn, IndexReg: indexRn, Scale: scale, Displacement: displacement, NBits: nBits, ErrorMessage: null);
-        }
 
-        private static int ParseScale(string str)
-        {
-            switch (str)
+            #region Local Methods
+            int ParseScale(string str)
             {
-                case "1": return 1;
-                case "2": return 2;
-                case "4": return 4;
-                case "8": return 8;
-                default: return -1;
+                switch (str)
+                {
+                    case "1": return 1;
+                    case "2": return 2;
+                    case "4": return 4;
+                    case "8": return 8;
+                    default: return -1;
+                }
             }
+
+            /// <summary> Return the number of bits of the provided operand (assumes 64-bits) </summary>
+            int Get_Nbits_Mem_Operand(string token2)
+            {
+                string s = token2.TrimStart();
+                if (s.StartsWith("PTR")) s = s.Substring(3, token.Length - 3).TrimStart();
+
+                if (s.StartsWith("BYTE")) return 8; //nasm
+                if (s.StartsWith("SBYTE")) return 8;
+                if (s.StartsWith("WORD")) return 16; //nasm
+                if (s.StartsWith("SWORD")) return 16;
+
+                if (s.StartsWith("DWORD")) return 32; //nasm
+                if (s.StartsWith("SDWORD")) return 32;
+                if (s.StartsWith("QWORD")) return 64; //nasm
+                if (s.StartsWith("TWORD")) return 80; //nasm
+
+                if (s.StartsWith("DQWORD")) return 128;
+                if (s.StartsWith("OWORD")) return 128; //nasm
+                if (s.StartsWith("XMMWORD")) return 128;
+                if (s.StartsWith("XWORD")) return 128;
+                if (s.StartsWith("YMMWORD")) return 256;
+                if (s.StartsWith("YWORD")) return 256; //nasm
+                if (s.StartsWith("ZMMWORD")) return 512;
+                if (s.StartsWith("ZWORD")) return 512; //nasm
+
+                //Console.WriteLine("AsmSourceTools:GetNbitsMemOperand: could not determine nBits in token " + token + " assuming 32 bits");
+
+                return 32;
+            }
+            #endregion
         }
 
         private static int FindEndNextWord(string str, int begin)

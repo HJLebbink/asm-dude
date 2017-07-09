@@ -35,21 +35,21 @@ namespace AsmTools
 
     public static class RegisterTools
     {
-        public static (bool Valid, Rn Reg, int NBits) ToRn(string str, bool strIsCapitals = false)
+        public static (bool Valid, Rn Reg, int NBits) ToRn(string str, bool isCapitals = false)
         {
-            Rn rn = RegisterTools.ParseRn(str, strIsCapitals);
+            Rn rn = RegisterTools.ParseRn(str, isCapitals);
             return (rn == Rn.NOREG)
                 ? (Valid: false, Reg: Rn.NOREG, NBits: 0)
                 : (Valid: true, Reg: rn, NBits: RegisterTools.NBits(rn));
         }
 
-        public static Rn ParseRn(string str, bool strIsCapitals = false)
+        public static Rn ParseRn(string str, bool isCapitals = false)
         {
             #if DEBUG
-            if (strIsCapitals && (str != str.ToUpper())) throw new Exception();
+            if (isCapitals && (str != str.ToUpper())) throw new Exception();
             #endif
 
-            switch ((strIsCapitals) ? str : str.ToUpper())
+            switch ((isCapitals) ? str : str.ToUpper())
             {
                 case "RAX": return Rn.RAX;
                 case "EAX": return Rn.EAX;

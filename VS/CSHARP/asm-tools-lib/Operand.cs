@@ -28,15 +28,46 @@ namespace AsmTools
     {
         private readonly string _str;
         private readonly Ot1 _type;
-        private readonly Rn _rn;
-        private ulong _imm;
+        private readonly Rn _rn = Rn.NOREG;
+        private ulong _imm = 0;
         public int NBits { get; set; }
         private readonly (Rn BaseReg, Rn IndexReg, int Scale, long Displacement) _mem;
         public readonly string ErrorMessage;
 
         /// <summary>constructor</summary>
-        public Operand(string token, AsmParameters p = null)
+        public Operand(string token, bool isCapitals, AsmParameters p = null)
         {
+            // do a quick scan:
+            {
+                bool quickScan = false;
+                if (token.Length == 1)
+                {
+                    switch (token[0])
+                    {
+                        case '0':
+                            this._imm = 0;
+                            quickScan = true;
+                            break;
+                        case '1':
+                            this._imm = 1;
+                            quickScan = true;
+                            break;
+                        case '2':
+                            this._imm = 2;
+                            quickScan = true;
+                            break;
+                    }
+                    if (quickScan)
+                    {
+                        this._str = token;
+                        this._type = Ot1.imm;
+                        this.NBits = 8;
+                        return;
+                    }
+                }
+            }
+
+            if (!isCapitals) token = token.ToUpper();
             this._str = token;
 
             //TODO: properly handle optional elements {K}{Z} {AES}{ER}
@@ -58,7 +89,7 @@ namespace AsmTools
                     Replace("{1TO16}", "")
                 : token2 = token;
 
-            var t0 = RegisterTools.ToRn(token2);
+            var t0 = RegisterTools.ToRn(token2, true);
             if (t0.Valid)
             {
                 this._type = Ot1.reg;
@@ -69,7 +100,7 @@ namespace AsmTools
             {
                 this._rn = Rn.NOREG;
 
-                var t1 = ExpressionEvaluator.ToConstant(token2);
+                var t1 = AsmSourceTools.Evaluate_Constant(token2, true);
                 if (t1.Valid)
                 {
                     this._type = Ot1.imm;
@@ -78,7 +109,7 @@ namespace AsmTools
                 }
                 else
                 {
-                    var t2 = AsmSourceTools.ParseMemOperand(token2);
+                    var t2 = AsmSourceTools.Parse_Mem_Operand(token2, true);
                     if (t2.Valid)
                     {
                         this._type = Ot1.mem;

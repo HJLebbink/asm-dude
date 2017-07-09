@@ -3871,7 +3871,85 @@ namespace unit_tests_asm_z3
             TestTools.AreEqual(Flags.ZF, true, state); // thus rax and rbx are equal
             TestTools.AreEqual(Rn.R10, (1UL<<32) | (9UL), state);
         }
+        #endregion
+
+
+        #region Cmpxchg16b
+        [TestMethod]
+        public void Test_MnemonicZ3_Cmpxchg16b_1()
+        {
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.ZF = true;
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RBX = true;
+            tools.StateConfig.RCX = true;
+            tools.StateConfig.RDX = true;
+            tools.StateConfig.R8 = true;
+            tools.StateConfig.R9 = true;
+            tools.StateConfig.R10 = true;
+            tools.StateConfig.mem = true;
+
+            //Compare EDX:EAX with m64. If equal, set ZF and load ECX:EBX into m64. Else, clear ZF and load m64 into EDX:EAX.
+
+            string line0 = "mov edx, 0";
+            string line1 = "mov eax, 10";
+            string line2 = "mov ecx, 1";
+            string line3 = "mov ebx, 9";
+            string line4 = "mov r9, 0"; // fix the address to make the solver faster
+            string line5 = "mov r8, 10";
+            string line6 = "mov qword ptr [r9], r8";
+            string line7 = "cmpxchg8b qword ptr [r9]"; // compare edx:eax with qword ptr [r9] (which is r8 = 10)
+            string line8 = "mov r10, qword ptr [r9]";
+
+            State state = CreateState(tools);
+
+            state = Runner.SimpleStep_Forward(line0, state);
+            state = Runner.SimpleStep_Forward(line1, state);
+            state = Runner.SimpleStep_Forward(line2, state);
+            state = Runner.SimpleStep_Forward(line3, state);
+            state = Runner.SimpleStep_Forward(line4, state);
+            state = Runner.SimpleStep_Forward(line5, state);
+            state = Runner.SimpleStep_Forward(line6, state);
+            if (logToDisplay) Console.WriteLine("Before \"" + line7 + "\", we know:\n" + state);
+            state = Runner.SimpleStep_Forward(line7, state);
+            state = Runner.SimpleStep_Forward(line8, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line8 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Flags.ZF, true, state); // thus rax and rbx are equal
+            TestTools.AreEqual(Rn.R10, (1UL << 32) | (9UL), state);
+        }
+        #endregion
+
+        #region Movbe
+        [TestMethod]
+        public void Test_MnemonicZ3_Movbe_1()
+        {
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RBX = true;
+            tools.StateConfig.mem = true;
+
+            string line0 = "mov rbx, 0";
+            string line1 = "mov eax, 0x08040201";
+            string line2 = "movbe dword ptr [rbx], eax";
+            string line3 = "mov eax, dword ptr [rbx]";
+
+            State state = CreateState(tools);
+            state = Runner.SimpleStep_Forward(line0, state);
+            //if (logToDisplay) Console.WriteLine("After \"" + line0 + "\", we know:\n" + state);
+            state = Runner.SimpleStep_Forward(line1, state);
+            //if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+            state = Runner.SimpleStep_Forward(line2, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            state = Runner.SimpleStep_Forward(line3, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Rn.EAX, 0x1020408, state);
+        }
 
         #endregion
+
     }
 }

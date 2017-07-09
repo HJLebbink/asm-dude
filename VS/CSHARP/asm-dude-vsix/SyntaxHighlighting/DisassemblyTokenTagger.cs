@@ -199,7 +199,7 @@ namespace AsmDude
                                     if (k == nKeywords) break;
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._label);
                                 }
-                                else if (AsmTools.AsmSourceTools.IsConstant(asmToken))
+                                else if (AsmTools.AsmSourceTools.Evaluate_Constant(asmToken, true).Valid)
                                 {
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
                                 }

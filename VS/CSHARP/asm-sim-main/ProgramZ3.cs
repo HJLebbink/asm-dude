@@ -27,6 +27,7 @@ using System.Reflection;
 using System.Linq;
 using Microsoft.Z3;
 using QuickGraph;
+using System.Globalization;
 
 namespace AsmSim
 {
@@ -41,11 +42,12 @@ namespace AsmSim
             System.Version ver = thisAssemName.Version;
             Console.WriteLine(string.Format("Loaded AsmSim version {0}.", ver));
 
+            TestX();
             //TestExecutionTree();
             //TestGraph();
             //TestMnemonic();
             //TestMemorySpeed();
-            TestDynamicFlow();
+            //TestDynamicFlow();
             //TestSIMD();
             //EmptyMemoryTest();
             //ProgramSynthesis1();            
@@ -419,6 +421,41 @@ namespace AsmSim
 
         }
 
+        static void TestX()
+        {
+            //Console.WriteLine(AsmSourceTools.Parse_Constant("0"));
+            //Console.WriteLine(AsmSourceTools.Parse_Constant("‭0"));
+            
+
+            Dictionary<string, string> settings = new Dictionary<string, string>
+            {
+                { "unsat-core", "false" },    // enable generation of unsat cores
+                { "model", "false" },         // enable model generation
+                { "proof", "false" },         // enable proof generation
+                { "timeout", "1000" }
+            };
+            Tools tools = new Tools(settings);
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RBX = true;
+            tools.StateConfig.mem = true;
+
+            string line0 = "mov rbx, 0";
+            string line1 = "mov eax, 0x08040201";
+            string line2 = "movbe dword ptr [rbx], eax";
+            string line3 = "mov eax, dword ptr [rbx]";
+
+            string rootKey = "!INIT";
+            State state = new State(tools, rootKey, rootKey);
+            state = Runner.SimpleStep_Forward(line0, state);
+            state = Runner.SimpleStep_Forward(line1, state);
+            state = Runner.SimpleStep_Forward(line2, state);
+            state = Runner.SimpleStep_Forward(line3, state);
+
+            Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+
+        }
+
         static void TestMnemonic()
         {
             Dictionary<string, string> settings = new Dictionary<string, string>
@@ -773,9 +810,12 @@ namespace AsmSim
                 "           mov     rbx,        rax             " + Environment.NewLine +
                 "                                               ";
 
+            string programStr8 =
+                "           mov     eax,        0x8040201       " + Environment.NewLine +
+                "           movbe   dword ptr [rbx], eax        " + Environment.NewLine +
+                "           mov     eax,        dword ptr [rbx] ";
 
-
-        Dictionary < string, string> settings = new Dictionary<string, string>
+            Dictionary< string, string> settings = new Dictionary<string, string>
             {
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
@@ -785,11 +825,11 @@ namespace AsmSim
 
             Tools tools = new Tools(settings)
             {
-                ShowUndefConstraints = false
+                ShowUndefConstraints = false 
             };
 
             var sFlow = new StaticFlow(tools);
-            sFlow.Update(programStr7);
+            sFlow.Update(programStr8);
             Console.WriteLine(sFlow.ToString());
             tools.StateConfig = sFlow.Create_StateConfig();
 

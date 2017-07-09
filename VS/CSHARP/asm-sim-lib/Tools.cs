@@ -239,7 +239,7 @@ namespace AsmSim
 
         public static BitVecExpr Calc_Effective_Address(string op, string key, Tools tools, Context ctx)
         {
-            return Calc_Effective_Address(new Operand(op, tools.Parameters), key, ctx);
+            return Calc_Effective_Address(new Operand(op, false, tools.Parameters), key, ctx);
         }
         public static BitVecExpr Calc_Effective_Address(Operand op, string key, Context ctx)
         {

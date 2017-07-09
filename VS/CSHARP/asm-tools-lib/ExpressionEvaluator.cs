@@ -43,12 +43,8 @@ namespace AsmTools
             OPENING
         }
 
-        /// <summary>
-        /// Check if the provided string is a constant, return (bool Exists, ulong value, int nBits)
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public static (bool Valid, ulong Value, int NBits) ToConstant(string token)
+        /// <summary> Check if the provided string is a constant. Does not evaluate arithmetic in the string </summary>
+        public static (bool Valid, ulong Value, int NBits) Parse_Constant(string str, bool IsCapitals=false)
         {
             string token2;
             bool isHex = false;
@@ -59,58 +55,58 @@ namespace AsmTools
 
             //Console.WriteLine("AsmSourceTools:ToConstant token=" + token);
 
-            token = token.Trim();
+            str = str.Trim();
 
-            if (token.StartsWith("-"))
+            if (str.StartsWith("-"))
             {
-                token2 = token;
+                token2 = str;
                 isDecimal = true;
                 isNegative = true;
             }
             // note the special case of token 0h (zero hex) should not be confused with the prefix 0h;
-            else if (token.EndsWith("h", StringComparison.OrdinalIgnoreCase))
+            else if (str.EndsWith("h", StringComparison.OrdinalIgnoreCase))
             {
-                token2 = token.Substring(0, token.Length - 1);
+                token2 = str.Substring(0, str.Length - 1);
                 isHex = true;
             }
-            else if (token.StartsWith("0h", StringComparison.OrdinalIgnoreCase) || token.StartsWith("0x", StringComparison.OrdinalIgnoreCase) || token.StartsWith("$0"))
+            else if (str.StartsWith("0h", StringComparison.OrdinalIgnoreCase) || str.StartsWith("0x", StringComparison.OrdinalIgnoreCase) || str.StartsWith("$0"))
             {
-                token2 = token.Substring(2);
+                token2 = str.Substring(2);
                 isHex = true;
             }
-            else if (token.StartsWith("0b", StringComparison.OrdinalIgnoreCase) || token.StartsWith("0y", StringComparison.OrdinalIgnoreCase))
+            else if (str.StartsWith("0b", StringComparison.OrdinalIgnoreCase) || str.StartsWith("0y", StringComparison.OrdinalIgnoreCase))
             {
-                token2 = token.Substring(2);
+                token2 = str.Substring(2);
                 isBinary = true;
             }
-            else if (token.EndsWith("b", StringComparison.OrdinalIgnoreCase) || token.EndsWith("y", StringComparison.OrdinalIgnoreCase))
+            else if (str.EndsWith("b", StringComparison.OrdinalIgnoreCase) || str.EndsWith("y", StringComparison.OrdinalIgnoreCase))
             {
-                token2 = token.Substring(0, token.Length - 1);
+                token2 = str.Substring(0, str.Length - 1);
                 isBinary = true;
             }
-            else if (token.StartsWith("0o", StringComparison.OrdinalIgnoreCase) || token.StartsWith("0q", StringComparison.OrdinalIgnoreCase))
+            else if (str.StartsWith("0o", StringComparison.OrdinalIgnoreCase) || str.StartsWith("0q", StringComparison.OrdinalIgnoreCase))
             {
-                token2 = token.Substring(2);
+                token2 = str.Substring(2);
                 isOctal = true;
             }
-            else if (token.EndsWith("q", StringComparison.OrdinalIgnoreCase) || token.EndsWith("o", StringComparison.OrdinalIgnoreCase))
+            else if (str.EndsWith("q", StringComparison.OrdinalIgnoreCase) || str.EndsWith("o", StringComparison.OrdinalIgnoreCase))
             {
-                token2 = token.Substring(0, token.Length - 1);
+                token2 = str.Substring(0, str.Length - 1);
                 isOctal = true;
             }
-            else if (token.StartsWith("0d", StringComparison.OrdinalIgnoreCase))
+            else if (str.StartsWith("0d", StringComparison.OrdinalIgnoreCase))
             {
-                token2 = token.Substring(2);
+                token2 = str.Substring(2);
                 isDecimal = true;
             }
-            else if (token.EndsWith("d", StringComparison.OrdinalIgnoreCase))
+            else if (str.EndsWith("d", StringComparison.OrdinalIgnoreCase))
             {
-                token2 = token;
+                token2 = str;
                 isDecimal = true;
             }
             else
             {   // assume decimal
-                token2 = token;
+                token2 = str;
                 isDecimal = true;
             }
 
@@ -156,7 +152,7 @@ namespace AsmTools
                 }
                 else
                 {
-                    parsedSuccessfully = ulong.TryParse(token2, NumberStyles.Integer, CultureInfo.CurrentCulture, out value);
+                    parsedSuccessfully = ulong.TryParse(token2, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out value);
                 }
             }
             else
@@ -169,27 +165,30 @@ namespace AsmTools
             return (Valid: parsedSuccessfully, Value: value, NBits: nBits);
         }
 
-        public static (bool Valid, ulong Value, int NBits) Evaluate(string exp)
+        public static (bool Valid, ulong Value, int NBits) Evaluate_Constant(string str, bool IsCapitals = false)
         {
-            exp = exp.ToUpper();
+            //Console.WriteLine("INFO: Evaluate_Constant: str=" + str + ": length=" + str.Length);
+
+            if (!IsCapitals) str = str.ToUpper();
+
             Stack<ulong> vStack = new Stack<ulong>();
             Stack<Op> opStack = new Stack<Op>();
 
             opStack.Push(Op.OPENING); // Implicit opening parenthesis
 
             int pos = 0;
-            int exprLength = exp.Length;
+            int exprLength = str.Length;
 
             while (pos <= exprLength)
             {
                 if (pos == exprLength)
                 {
-                    ProcessClosingParenthesis(vStack, opStack);
+                    Process_Closing_Parenthesis(vStack, opStack);
                     pos++;
                 }
                 else
                 {
-                    char c = exp[pos];
+                    char c = str[pos];
                     if (Char.IsWhiteSpace(c))
                     {
                         pos++;
@@ -199,55 +198,55 @@ namespace AsmTools
                         switch (c)
                         {
                             case ')':
-                                ProcessClosingParenthesis(vStack, opStack);
+                                Process_Closing_Parenthesis(vStack, opStack);
                                 pos++;
                                 break;
                             case '(':
-                                ProcessOpeningParenthesis(vStack, opStack);
+                                Process_Opening_Parenthesis(vStack, opStack);
                                 pos++;
                                 break;
                             case '+':
-                                if (!ProcessInputOperator(Op.PLUS, vStack, opStack)) return (false, 0, -1);
+                                if (!Process_Input_Operator(Op.PLUS, vStack, opStack)) return (false, 0, -1);
                                 pos++;
                                 break;
                             case '-':
-                                if (!ProcessInputOperator(Op.MINUS, vStack, opStack)) return (false, 0, -1);
+                                if (!Process_Input_Operator(Op.MINUS, vStack, opStack)) return (false, 0, -1);
                                 pos++;
                                 break;
                             case '*':
-                                if (!ProcessInputOperator(Op.TIMES, vStack, opStack)) return (false, 0, -1);
+                                if (!Process_Input_Operator(Op.TIMES, vStack, opStack)) return (false, 0, -1);
                                 pos++;
                                 break;
                             case '/':
-                                if (!ProcessInputOperator(Op.DIV, vStack, opStack)) return (false, 0, -1);
+                                if (!Process_Input_Operator(Op.DIV, vStack, opStack)) return (false, 0, -1);
                                 pos++;
                                 break;
                             case '|':
-                                if (!ProcessInputOperator(Op.OR, vStack, opStack)) return (false, 0, -1);
+                                if (!Process_Input_Operator(Op.OR, vStack, opStack)) return (false, 0, -1);
                                 pos++;
                                 break;
                             case '&':
-                                if (!ProcessInputOperator(Op.AND, vStack, opStack)) return (false, 0, -1);
+                                if (!Process_Input_Operator(Op.AND, vStack, opStack)) return (false, 0, -1);
                                 pos++;
                                 break;
                             case '<':
-                                if ((pos + 1 <= exprLength) && (exp[pos + 1] == '<'))
+                                if ((pos + 1 <= exprLength) && (str[pos + 1] == '<'))
                                 {
                                     pos++;
-                                    if (!ProcessInputOperator(Op.SHL, vStack, opStack)) return (false, 0, -1);
+                                    if (!Process_Input_Operator(Op.SHL, vStack, opStack)) return (false, 0, -1);
                                     pos++;
                                 }
                                 break;
                             case '>':
-                                if ((pos + 1 <= exprLength) && (exp[pos + 1] == '>'))
+                                if ((pos + 1 <= exprLength) && (str[pos + 1] == '>'))
                                 {
                                     pos++;
-                                    if (!ProcessInputOperator(Op.SHR, vStack, opStack)) return (false, 0, -1);
+                                    if (!Process_Input_Operator(Op.SHR, vStack, opStack)) return (false, 0, -1);
                                     pos++;
                                 }
                                 break;
                             default:
-                                var v = ProcessInputNumber(exp, pos, vStack);
+                                var v = Process_Input_Number(str, pos, vStack);
                                 if (!v.Valid) return (false, 0, -1);
                                 pos = v.Pos;
                                 break;
@@ -268,21 +267,21 @@ namespace AsmTools
             }
         }
 
-        private static void ProcessClosingParenthesis(Stack<ulong> vStack, Stack<Op> opStack)
+        private static void Process_Closing_Parenthesis(Stack<ulong> vStack, Stack<Op> opStack)
         {
             while (opStack.Peek() != Op.OPENING)
             {
-                ExecuteOperation(vStack, opStack);
+                Execute_Operation(vStack, opStack);
             }
             opStack.Pop(); // Remove the opening parenthesis
         }
 
-        private static void ProcessOpeningParenthesis(Stack<ulong> vStack, Stack<Op> opStack)
+        private static void Process_Opening_Parenthesis(Stack<ulong> vStack, Stack<Op> opStack)
         {
             opStack.Push(Op.OPENING);
         }
 
-        private static (bool Valid, int Pos) ProcessInputNumber(string exp, int pos, Stack<ulong> vStack)
+        private static (bool Valid, int Pos) Process_Input_Number(string exp, int pos, Stack<ulong> vStack)
         {
             int beginPos = pos;
             bool proceed = pos < exp.Length;
@@ -340,7 +339,7 @@ namespace AsmTools
             if (endPos > beginPos)
             {
                 int length = (endPos - beginPos);
-                var v = ToConstant(exp.Substring(beginPos, length));
+                var v = Parse_Constant(exp.Substring(beginPos, length));
                 if (v.Valid)
                 {
                     vStack.Push(v.Value);
@@ -349,11 +348,11 @@ namespace AsmTools
             return (true, pos);
         }
 
-        private static bool ProcessInputOperator(Op op, Stack<ulong> vStack, Stack<Op> opStack)
+        private static bool Process_Input_Operator(Op op, Stack<ulong> vStack, Stack<Op> opStack)
         {
-            while ((opStack.Count > 0) && OperatorCausesEvaluation(op, opStack.Peek()))
+            while ((opStack.Count > 0) && Operator_Causes_Evaluation(op, opStack.Peek()))
             {
-                if (!ExecuteOperation(vStack, opStack))
+                if (!Execute_Operation(vStack, opStack))
                 {
                     return false;
                 }
@@ -362,7 +361,7 @@ namespace AsmTools
             return true;
         }
 
-        private static bool OperatorCausesEvaluation(Op op, Op prevOp)
+        private static bool Operator_Causes_Evaluation(Op op, Op prevOp)
         {
             bool evaluate = false;
             switch (op)
@@ -386,7 +385,7 @@ namespace AsmTools
             return evaluate;
         }
 
-        private static bool ExecuteOperation(Stack<ulong> vStack, Stack<Op> opStack)
+        private static bool Execute_Operation(Stack<ulong> vStack, Stack<Op> opStack)
         {
             if (vStack.Count > 1)
             {

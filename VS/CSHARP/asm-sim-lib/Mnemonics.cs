@@ -375,7 +375,7 @@ namespace AsmSim
             {
                 if (this.NOperands == 1)
                 {
-                    this.op1 = new Operand(args[0]);
+                    this.op1 = new Operand(args[0], true);
                     if (this.op1.ErrorMessage != null) this.SyntaxError = string.Format("\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
                 }
                 else
@@ -411,8 +411,8 @@ namespace AsmSim
             {
                 if (this.NOperands == 2)
                 {
-                    this.op1 = new Operand(args[0]);
-                    this.op2 = new Operand(args[1]);
+                    this.op1 = new Operand(args[0], true);
+                    this.op2 = new Operand(args[1], true);
                     if (this.op1.ErrorMessage != null) this.SyntaxError = string.Format("\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
                     if (this.op2.ErrorMessage != null) this.SyntaxError = string.Format("\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2.ErrorMessage);
                 }
@@ -452,9 +452,9 @@ namespace AsmSim
             {
                 if (this.NOperands == 3)
                 {
-                    this.op1 = new Operand(args[0]);
-                    this.op2 = new Operand(args[1]);
-                    this.op3 = new Operand(args[2]);
+                    this.op1 = new Operand(args[0], true);
+                    this.op2 = new Operand(args[1], true);
+                    this.op3 = new Operand(args[2], true);
 
                     if (this.op1.ErrorMessage != null) this.SyntaxError = string.Format("\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
                     if (this.op1.ErrorMessage != null) this.SyntaxError = string.Format("\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2.ErrorMessage);
@@ -498,7 +498,7 @@ namespace AsmSim
                 }
                 if (this.NOperands >= 1)
                 {
-                    this.op1 = new Operand(args[0]);
+                    this.op1 = new Operand(args[0], true);
                     if (this.op1.ErrorMessage != null)
                     {
                         this.SyntaxError = string.Format("\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
@@ -506,7 +506,7 @@ namespace AsmSim
                 }
                 if (this.NOperands >= 2)
                 {
-                    this.op2 = new Operand(args[1]);
+                    this.op2 = new Operand(args[1], true);
                     if (this.op2.ErrorMessage != null)
                     {
                         this.SyntaxError = string.Format("\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2.ErrorMessage);
@@ -514,7 +514,7 @@ namespace AsmSim
                 }
                 if (this.NOperands >= 3)
                 {
-                    this.op3 = new Operand(args[2]);
+                    this.op3 = new Operand(args[2], true);
                     if (this.op3.ErrorMessage != null)
                     {
                         this.SyntaxError = string.Format("\"{0}\": Operand 3 is malformed: {1}", this.ToString(), this.op3.ErrorMessage);
@@ -3471,8 +3471,57 @@ namespace AsmSim
         //XLATB, 
         /// <summary>Processor identification</summary>
         //CPUID,
+
         /// <summary>Move data after swapping data bytes</summary>
-        //MOVBE,
+        public sealed class Movbe : Opcode2Base
+        {
+            public Movbe(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.MOVBE, args, Ot2.mem_reg | Ot2.reg_mem, keys, t)
+            {
+                if (this.IsHalted) return;
+                if (this.op1.NBits == 8)
+                {
+                    this.SyntaxError = string.Format("\"{0}\": Operand 1 cannot be 8 bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                }
+                if (this.op1.NBits != this.op2.NBits)
+                {
+                    this.SyntaxError = string.Format("\"{0}\": Operand 1 and 2 should have equal size. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                }
+            }
+            public override void Execute()
+            {
+                Context ctx = this._ctx;
+                BitVecExpr src = this.Op2Value;
+                BitVecExpr swapped = null;
+                switch (this.op1.NBits)
+                {
+                    case 16:
+                        {
+                            swapped = ctx.MkConcat(ctx.MkExtract(7, 0, src), ctx.MkExtract(15, 8, src));
+                            break;
+                        }
+                    case 32:
+                        {
+                            var swapped1 = ctx.MkConcat(ctx.MkExtract(7, 0, src), ctx.MkExtract(15, 8, src));
+                            var swapped2 = ctx.MkConcat(ctx.MkExtract(23, 16, src), ctx.MkExtract(31, 24, src));
+                            swapped = ctx.MkConcat(swapped1, swapped2);
+                            break;
+                        }
+                    case 64:
+                        {
+                            var swapped1 = ctx.MkConcat(ctx.MkExtract(7, 0, src), ctx.MkExtract(15, 8, src));
+                            var swapped2 = ctx.MkConcat(ctx.MkExtract(23, 16, src), ctx.MkExtract(31, 24, src));
+                            var swapped3 = ctx.MkConcat(ctx.MkExtract(39, 32, src), ctx.MkExtract(47, 40, src));
+                            var swapped4 = ctx.MkConcat(ctx.MkExtract(55, 48, src), ctx.MkExtract(63, 56, src));
+                            swapped = ctx.MkConcat(ctx.MkConcat(swapped1, swapped2), ctx.MkConcat(swapped3, swapped4));
+                            break;
+                        }
+                    default: throw new Exception();
+                }
+                this.RegularUpdate.Set(this.op1, swapped);
+            }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op2); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1); } }
+        }
         /// <summary>Prefetch data into cache in anticipation of write</summary>
         //PREFETCHW,
         /// <summary>Prefetch hint T1 with intent to write</summary>

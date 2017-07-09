@@ -89,7 +89,7 @@ namespace unit_tests {
         }
 
         [TestMethod]
-        public void Test_AsmSourceTools_getPreviousKeyword() {
+        public void Test_AsmSourceTools_GetPreviousKeyword() {
 
             const string line = "    mov rax, rbx;bla";
             {
@@ -136,13 +136,12 @@ namespace unit_tests {
             }
         }
 
-
         [TestMethod]
         public void Test_AsmSourceTools_Evaluate_1() {
             {
                 ulong i = 0ul;
                 string s = i + "";
-                var t = ExpressionEvaluator.Evaluate(s);
+                var t = ExpressionEvaluator.Evaluate_Constant(s);
                 Assert.IsTrue(t.Valid, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Value, s);
                 Assert.AreEqual(8, t.NBits, s);
@@ -150,7 +149,7 @@ namespace unit_tests {
             {
                 ulong i = 0ul;
                 string s = "0x" + i.ToString("X");
-                var t = ExpressionEvaluator.Evaluate(s);
+                var t = ExpressionEvaluator.Evaluate_Constant(s);
                 Assert.IsTrue(t.Valid, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Value, s);
                 Assert.AreEqual(8, t.NBits, s);
@@ -158,7 +157,7 @@ namespace unit_tests {
             {
                 ulong i = 0ul;
                 string s = i.ToString("X") + "h";
-                var t = ExpressionEvaluator.Evaluate(s);
+                var t = ExpressionEvaluator.Evaluate_Constant(s);
                 Assert.IsTrue(t.Valid, "could not parse: s="+s);
                 Assert.AreEqual(i, t.Value, s);
                 Assert.AreEqual(8, t.NBits, s);
@@ -166,7 +165,7 @@ namespace unit_tests {
             {
                 ulong i = 1ul;
                 string s = i.ToString("X") + "h";
-                var t = ExpressionEvaluator.Evaluate(s);
+                var t = ExpressionEvaluator.Evaluate_Constant(s);
                 Assert.IsTrue(t.Valid, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Value, s);
                 Assert.AreEqual(8, t.NBits, s);
@@ -174,7 +173,7 @@ namespace unit_tests {
             {
                 ulong i = 1ul;
                 string s = "0x" + i.ToString("X"); ;
-                var t = ExpressionEvaluator.Evaluate(s);
+                var t = ExpressionEvaluator.Evaluate_Constant(s);
                 Assert.IsTrue(t.Valid, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Value, s);
                 Assert.AreEqual(8, t.NBits, s);
@@ -182,7 +181,7 @@ namespace unit_tests {
             {
                 ulong i = 1ul;
                 string s = i.ToString("X") + "h";
-                var t = ExpressionEvaluator.Evaluate(s);
+                var t = ExpressionEvaluator.Evaluate_Constant(s);
                 Assert.IsTrue(t.Valid, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Value, s);
                 Assert.AreEqual(8, t.NBits, s);
@@ -191,7 +190,7 @@ namespace unit_tests {
             {
                 ulong i = 0xFFul;
                 string s = "0x" + i.ToString("X"); ;
-                var t = ExpressionEvaluator.Evaluate(s);
+                var t = ExpressionEvaluator.Evaluate_Constant(s);
                 Assert.IsTrue(t.Valid, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Value, s);
                 Assert.AreEqual(8, t.NBits, s);
@@ -199,7 +198,7 @@ namespace unit_tests {
             {
                 ulong i = 0xFFul;
                 string s = i.ToString("X") + "h";
-                var t = ExpressionEvaluator.Evaluate(s);
+                var t = ExpressionEvaluator.Evaluate_Constant(s);
                 Assert.IsTrue(t.Valid, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Value, s);
                 Assert.AreEqual(8, t.NBits, s);
@@ -207,7 +206,7 @@ namespace unit_tests {
             {
                 ulong i = 0x100ul;
                 string s = "0x" + i.ToString("X");
-                var t = ExpressionEvaluator.Evaluate(s);
+                var t = ExpressionEvaluator.Evaluate_Constant(s);
                 Assert.IsTrue(t.Valid, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Value, s);
                 Assert.AreEqual(16, t.NBits, s);
@@ -215,7 +214,7 @@ namespace unit_tests {
             {
                 ulong i = 0xFFFFul;
                 string s = "0x" + i.ToString("X");
-                var t = ExpressionEvaluator.Evaluate(s);
+                var t = ExpressionEvaluator.Evaluate_Constant(s);
                 Assert.IsTrue(t.Valid, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Value, s);
                 Assert.AreEqual(16, t.NBits, s);
@@ -223,7 +222,7 @@ namespace unit_tests {
             {
                 ulong i = 0x10000ul;
                 string s = "0x" + i.ToString("X");
-                var t = ExpressionEvaluator.Evaluate(s);
+                var t = ExpressionEvaluator.Evaluate_Constant(s);
                 Assert.IsTrue(t.Valid, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Value, s);
                 Assert.AreEqual(32, t.NBits, s);
@@ -231,7 +230,7 @@ namespace unit_tests {
             {
                 ulong i = 0xFFFFFFFFul;
                 string s = "0x" + i.ToString("X");
-                var t = ExpressionEvaluator.Evaluate(s);
+                var t = ExpressionEvaluator.Evaluate_Constant(s);
                 Assert.IsTrue(t.Valid);
                 Assert.AreEqual(i, t.Value, s);
                 Assert.AreEqual(32, t.NBits, s);
@@ -239,7 +238,7 @@ namespace unit_tests {
             {
                 ulong i = 0x100000000ul;
                 string s = "0x" + i.ToString("X");
-                var t = ExpressionEvaluator.Evaluate(s);
+                var t = ExpressionEvaluator.Evaluate_Constant(s);
                 Assert.IsTrue(t.Valid, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Value, s);
                 Assert.AreEqual(64, t.NBits, s);
@@ -247,7 +246,7 @@ namespace unit_tests {
             {
                 ulong i = 0xFFFFFFFFFFFFFFFFul;
                 string s = "0x" + i.ToString("X");
-                var t = ExpressionEvaluator.Evaluate(s);
+                var t = ExpressionEvaluator.Evaluate_Constant(s);
                 Assert.IsTrue(t.Valid);
                 Assert.AreEqual(i, t.Value, s);
                 Assert.AreEqual(64, t.NBits, s);
@@ -260,7 +259,7 @@ namespace unit_tests {
             {
                 string s = "1<<2";
                 ulong i = 1 << 2;
-                var t = ExpressionEvaluator.Evaluate(s);
+                var t = ExpressionEvaluator.Evaluate_Constant(s);
                 Assert.IsTrue(t.Valid, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Value, s);
                 Assert.AreEqual(8, t.NBits, s);
@@ -268,7 +267,7 @@ namespace unit_tests {
             {
                 string s = "1 << 2";
                 ulong i = 1 << 2;
-                var t = ExpressionEvaluator.Evaluate(s);
+                var t = ExpressionEvaluator.Evaluate_Constant(s);
                 Assert.IsTrue(t.Valid, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Value, s);
                 Assert.AreEqual(8, t.NBits, s);
@@ -276,7 +275,7 @@ namespace unit_tests {
             {
                 string s = "(1 << 2)";
                 ulong i = 1 << 2;
-                var t = ExpressionEvaluator.Evaluate(s);
+                var t = ExpressionEvaluator.Evaluate_Constant(s);
                 Assert.IsTrue(t.Valid, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Value, s);
                 Assert.AreEqual(8, t.NBits, s);
@@ -284,7 +283,7 @@ namespace unit_tests {
             {
                 string s = " (1<<2) ";
                 ulong i = 1 << 2;
-                var t = ExpressionEvaluator.Evaluate(s);
+                var t = ExpressionEvaluator.Evaluate_Constant(s);
                 Assert.IsTrue(t.Valid, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Value, s);
                 Assert.AreEqual(8, t.NBits, s);
@@ -292,7 +291,7 @@ namespace unit_tests {
             {
                 string s = "(1<<(1+1))";
                 ulong i = 1 << (1+1);
-                var t = ExpressionEvaluator.Evaluate(s);
+                var t = ExpressionEvaluator.Evaluate_Constant(s);
                 Assert.IsTrue(t.Valid, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Value, s);
                 Assert.AreEqual(8, t.NBits, s);
@@ -300,7 +299,7 @@ namespace unit_tests {
             {
                 string s = " ( 1 << ( 1 + 1 ) ) ";
                 ulong i = 1 << (1 + 1);
-                var t = ExpressionEvaluator.Evaluate(s);
+                var t = ExpressionEvaluator.Evaluate_Constant(s);
                 Assert.IsTrue(t.Valid, "could not parse: s=" + s);
                 Assert.AreEqual(i, t.Value, s);
                 Assert.AreEqual(8, t.NBits, s);
@@ -364,7 +363,7 @@ namespace unit_tests {
 
                 {
                     string str = "[" + b + "]";
-                    var t = AsmSourceTools.ParseMemOperand(str);
+                    var t = AsmSourceTools.Parse_Mem_Operand(str);
                     Assert.AreEqual(true, t.Valid, str);
                     Assert.AreEqual(b, t.BaseReg, "base: " + str);
                     Assert.AreEqual(Rn.NOREG, t.IndexReg, "index: " + str);
@@ -377,7 +376,7 @@ namespace unit_tests {
 
                     {
                         string str = "[" + b + "+" + idx + "]";
-                        var t = AsmSourceTools.ParseMemOperand(str);
+                        var t = AsmSourceTools.Parse_Mem_Operand(str);
                         Assert.AreEqual(true, t.Valid, str);
                         Assert.AreEqual(b, t.BaseReg, "base: " + str);
                         Assert.AreEqual(idx, t.IndexReg, "index: " + str);
@@ -386,7 +385,7 @@ namespace unit_tests {
                     }
                     {
                         string str = "[" + idx + "+" + b + "]";
-                        var t = AsmSourceTools.ParseMemOperand(str);
+                        var t = AsmSourceTools.Parse_Mem_Operand(str);
                         Assert.AreEqual(true, t.Valid, str);
                         //idx and base can be interchanged
                         //Assert.AreEqual(b, t.Item2, "base: " + str); 
@@ -401,7 +400,7 @@ namespace unit_tests {
                         //Offset = Base + (Index * Scale) + Displacement
                         {
                             string str = "[" + b + "+" + idx + " * " + s + "]";
-                            var t = AsmSourceTools.ParseMemOperand(str);
+                            var t = AsmSourceTools.Parse_Mem_Operand(str);
                             Assert.AreEqual(true, t.Valid, str);
                             Assert.AreEqual(b, t.BaseReg, "base: " + str);
                             Assert.AreEqual(idx, t.IndexReg, "index: " + str);
@@ -410,7 +409,7 @@ namespace unit_tests {
                         }
                         {
                             string str = "[" + b + "+" + s + " * " + idx + "]";
-                            var t = AsmSourceTools.ParseMemOperand(str);
+                            var t = AsmSourceTools.Parse_Mem_Operand(str);
                             Assert.AreEqual(true, t.Valid, str);
                             Assert.AreEqual(b, t.BaseReg, "base: " + str);
                             Assert.AreEqual(idx, t.IndexReg, "index: " + str);
@@ -419,7 +418,7 @@ namespace unit_tests {
                         }
                         {
                             string str = "[" + s + " * " + idx + "+" + b + "]";
-                            var t = AsmSourceTools.ParseMemOperand(str);
+                            var t = AsmSourceTools.Parse_Mem_Operand(str);
                             Assert.AreEqual(true, t.Valid, str);
                             Assert.AreEqual(b, t.BaseReg, "base: " + str);
                             Assert.AreEqual(idx, t.IndexReg, "index: " + str);
@@ -428,7 +427,7 @@ namespace unit_tests {
                         }
                         {
                             string str = "[" + idx + " * " + s + "+" + b + "]";
-                            var t = AsmSourceTools.ParseMemOperand(str);
+                            var t = AsmSourceTools.Parse_Mem_Operand(str);
                             Assert.AreEqual(true, t.Valid, str);
                             Assert.AreEqual(b, t.BaseReg, "base: " + str);
                             Assert.AreEqual(idx, t.IndexReg, "index: " + str);
@@ -441,7 +440,7 @@ namespace unit_tests {
                             {
                                 {
                                     string str = "[" + b + "+" + idx + " * " + s + "+" + disp + "]";
-                                    var t = AsmSourceTools.ParseMemOperand(str);
+                                    var t = AsmSourceTools.Parse_Mem_Operand(str);
                                     Assert.AreEqual(true, t.Valid, str);
                                     Assert.AreEqual(b, t.BaseReg, "base: " + str);
                                     Assert.AreEqual(idx, t.IndexReg, "index: " + str);
@@ -450,7 +449,7 @@ namespace unit_tests {
                                 }
                                 {
                                     string str = "[" + b + "+" + s + " * " + idx + "+" + disp + "]";
-                                    var t = AsmSourceTools.ParseMemOperand(str);
+                                    var t = AsmSourceTools.Parse_Mem_Operand(str);
                                     Assert.AreEqual(true, t.Valid, str);
                                     Assert.AreEqual(b, t.BaseReg, "base: " + str);
                                     Assert.AreEqual(idx, t.IndexReg, "index: " + str);
@@ -459,7 +458,7 @@ namespace unit_tests {
                                 }
                                 {
                                     string str = "[" + s + " * " + idx + "+" + b + "+" + disp + "]";
-                                    var t = AsmSourceTools.ParseMemOperand(str);
+                                    var t = AsmSourceTools.Parse_Mem_Operand(str);
                                     Assert.AreEqual(true, t.Valid, str);
                                     Assert.AreEqual(b, t.BaseReg, "base: " + str);
                                     Assert.AreEqual(idx, t.IndexReg, "index: " + str);
@@ -468,7 +467,7 @@ namespace unit_tests {
                                 }
                                 {
                                     string str = "[" + idx + " * " + s + "+" + b + "+" + disp + "]";
-                                    var t = AsmSourceTools.ParseMemOperand(str);
+                                    var t = AsmSourceTools.Parse_Mem_Operand(str);
                                     Assert.AreEqual(true, t.Valid, str);
                                     Assert.AreEqual(b, t.BaseReg, "base: " + str);
                                     Assert.AreEqual(idx, t.IndexReg, "index: " + str);
@@ -479,7 +478,7 @@ namespace unit_tests {
                             {
                                 {
                                     string str = "[" + disp + "+" + b + "+" + idx + " * " + s + "]";
-                                    var t = AsmSourceTools.ParseMemOperand(str);
+                                    var t = AsmSourceTools.Parse_Mem_Operand(str);
                                     Assert.AreEqual(true, t.Valid, str);
                                     Assert.AreEqual(b, t.BaseReg, "base: " + str);
                                     Assert.AreEqual(idx, t.IndexReg, "index: " + str);
@@ -488,7 +487,7 @@ namespace unit_tests {
                                 }
                                 {
                                     string str = "[" + b + "+" + disp + "+" + idx + " * " + s + "]";
-                                    var t = AsmSourceTools.ParseMemOperand(str);
+                                    var t = AsmSourceTools.Parse_Mem_Operand(str);
                                     Assert.AreEqual(true, t.Valid, str);
                                     Assert.AreEqual(b, t.BaseReg, "base: " + str);
                                     Assert.AreEqual(idx, t.IndexReg, "index: " + str);
@@ -497,7 +496,7 @@ namespace unit_tests {
                                 }
                                 {
                                     string str = "[" + b + "+" + disp + "+" + s + " * " + idx + "]";
-                                    var t = AsmSourceTools.ParseMemOperand(str);
+                                    var t = AsmSourceTools.Parse_Mem_Operand(str);
                                     Assert.AreEqual(true, t.Valid, str);
                                     Assert.AreEqual(b, t.BaseReg, "base: " + str);
                                     Assert.AreEqual(idx, t.IndexReg, "index: " + str);
@@ -506,7 +505,7 @@ namespace unit_tests {
                                 }
                                 {
                                     string str = "[" + s + " * " + idx + "+" + disp + "+" + b + "]";
-                                    var t = AsmSourceTools.ParseMemOperand(str);
+                                    var t = AsmSourceTools.Parse_Mem_Operand(str);
                                     Assert.AreEqual(true, t.Valid, str);
                                     Assert.AreEqual(b, t.BaseReg, "base: " + str);
                                     Assert.AreEqual(idx, t.IndexReg, "index: " + str);
@@ -515,7 +514,7 @@ namespace unit_tests {
                                 }
                                 {
                                     string str = "[" + idx + " * " + s + "+" + disp +"+" + b + "]";
-                                    var t = AsmSourceTools.ParseMemOperand(str);
+                                    var t = AsmSourceTools.Parse_Mem_Operand(str);
                                     Assert.AreEqual(true, t.Valid, str);
                                     Assert.AreEqual(b, t.BaseReg, "base: " + str);
                                     Assert.AreEqual(idx, t.IndexReg, "index: " + str);
