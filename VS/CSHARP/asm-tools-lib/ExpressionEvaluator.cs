@@ -152,7 +152,7 @@ namespace AsmTools
                 }
                 else
                 {
-                    parsedSuccessfully = ulong.TryParse(token2, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out value);
+                    parsedSuccessfully = ulong.TryParse(token2, NumberStyles.Integer, CultureInfo.CurrentCulture, out value);
                 }
             }
             else
