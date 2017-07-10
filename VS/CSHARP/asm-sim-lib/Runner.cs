@@ -200,8 +200,8 @@ namespace AsmSim
                 case Mnemonic.CMOVNP:
                 case Mnemonic.CMOVPO: return new Cmovcc(mnemonic, args, ToolsAsmSim.GetCe(mnemonic), keys, t);
 
-                case Mnemonic.XCHG: break;
-                case Mnemonic.BSWAP: break;
+                case Mnemonic.XCHG: return new Xchg(args, keys, t);
+                case Mnemonic.BSWAP: return new Bswap(args, keys, t);
                 case Mnemonic.XADD: return new Xadd(args, keys, t);
                 case Mnemonic.CMPXCHG: return new Cmpxchg(args, keys, t);
                 case Mnemonic.CMPXCHG8B: return new Cmpxchg8b(args, keys, t);

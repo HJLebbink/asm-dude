@@ -344,6 +344,12 @@ namespace AsmSim
                     }
                 }
             }
+            /// <summary>Create Syntax Error that op1 and op2 should have been equal size</summary>
+            protected void CreateSyntaxError1(Operand op1, Operand op2)
+            {
+                this.SyntaxError = string.Format("\"{0}\": Operand 1 and 2 should have same number of bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), op1, op1.Type, op1.NBits, op2, op2.Type, op2.NBits);
+            }
+
             #endregion
 
             #region IDisposable Support
@@ -457,8 +463,8 @@ namespace AsmSim
                     this.op3 = new Operand(args[2], true);
 
                     if (this.op1.ErrorMessage != null) this.SyntaxError = string.Format("\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
-                    if (this.op1.ErrorMessage != null) this.SyntaxError = string.Format("\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2.ErrorMessage);
-                    if (this.op1.ErrorMessage != null) this.SyntaxError = string.Format("\"{0}\": Operand 3 is malformed: {1}", this.ToString(), this.op3.ErrorMessage);
+                    if (this.op2.ErrorMessage != null) this.SyntaxError = string.Format("\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2.ErrorMessage);
+                    if (this.op3.ErrorMessage != null) this.SyntaxError = string.Format("\"{0}\": Operand 3 is malformed: {1}", this.ToString(), this.op3.ErrorMessage);
                 }
                 else
                 {
@@ -608,19 +614,70 @@ namespace AsmSim
                 //Console.WriteLine("Cmovcc ce="+this._ce+"; conditional=" + conditional);
                 BitVecExpr value = this._ctx.MkITE(conditional, op2, op1) as BitVecExpr;
                 BitVecExpr undef = this._ctx.MkBVXOR(op1, op2);
-
                 this.RegularUpdate.Set(this.op1, value, undef);
             }
             public override Flags FlagsReadStatic { get { return ToolsAsmSim.FlagsUsed(this._ce); } }
             public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op2); } }
             public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1); } }
         }
-
-        /*
-        XCHG,
+        
+        /// <summary>Exchange Register/Memory with Register</summary>
+        public sealed class Xchg : Opcode2Base
+        {
+            public Xchg(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.XCHG, args, Ot2.reg_reg | Ot2.reg_mem | Ot2.mem_reg, keys, t)
+            {
+                if (this.IsHalted) return;
+                if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
+            }
+            public override void Execute()
+            {
+                this.RegularUpdate.Set(this.op1, this.Op2Value);
+                this.RegularUpdate.Set(this.op2, this.Op1Value);
+            }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, this.op2); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, this.op2); } }
+        }
         /// <summary>Byte swap</summary>
-        BSWAP,
-        */
+        public sealed class Bswap : Opcode1Base
+        {
+            public Bswap(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.BSWAP, args, Ot1.reg, keys, t)
+            {
+                if (this.IsHalted) return;
+                if (!((this.op1.NBits == 32) || (this.op1.NBits == 64))) 
+                {
+                    this.SyntaxError = string.Format("\"{0}\": Operand 1 should be 32-bits or 64-bits. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                }
+            }
+            public override void Execute()
+            {
+                Context ctx = this._ctx;
+                var s = this.Op1Value;
+                BitVecExpr dest;
+                if (this.op1.NBits == 32)
+                {
+                    var b0 = ctx.MkExtract((1 * 8) - 1, 0 * 8, s);
+                    var b1 = ctx.MkExtract((2 * 8) - 1, 1 * 8, s);
+                    var b2 = ctx.MkExtract((3 * 8) - 1, 2 * 8, s);
+                    var b3 = ctx.MkExtract((4 * 8) - 1, 3 * 8, s);
+                    dest = ctx.MkConcat(ctx.MkConcat(b0, b1), ctx.MkConcat(b2, b3));
+                }
+                else
+                {
+                    var b0 = ctx.MkExtract((1 * 8) - 1, 0 * 8, s);
+                    var b1 = ctx.MkExtract((2 * 8) - 1, 1 * 8, s);
+                    var b2 = ctx.MkExtract((3 * 8) - 1, 2 * 8, s);
+                    var b3 = ctx.MkExtract((4 * 8) - 1, 3 * 8, s);
+                    var b4 = ctx.MkExtract((5 * 8) - 1, 4 * 8, s);
+                    var b5 = ctx.MkExtract((6 * 8) - 1, 5 * 8, s);
+                    var b6 = ctx.MkExtract((7 * 8) - 1, 6 * 8, s);
+                    var b7 = ctx.MkExtract((8 * 8) - 1, 7 * 8, s);
+                    dest = ctx.MkConcat(ctx.MkConcat(ctx.MkConcat(b0, b1), ctx.MkConcat(b2, b3)), ctx.MkConcat(ctx.MkConcat(b4, b5), ctx.MkConcat(b6, b7)));
+                }
+                this.RegularUpdate.Set(this.op1, dest);
+            }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1); } }
+        }
 
         /// <summary>Exchange and add</summary>
         public sealed class Xadd : Opcode2Base
@@ -628,10 +685,7 @@ namespace AsmSim
             public Xadd(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.XADD, args, Ot2.mem_reg | Ot2.reg_reg, keys, t)
             {
                 if (this.IsHalted) return;
-                if (this.op1.NBits != this.op2.NBits)
-                {
-                    this.SyntaxError = string.Format("\"{0}\": Operand 1 and 2 should have equal size. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
-                }
+                if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
             }
             public override void Execute()
             {
@@ -656,10 +710,7 @@ namespace AsmSim
             public Cmpxchg(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.CMPXCHG, args, Ot2.mem_reg | Ot2.reg_reg, keys, t)
             {
                 if (this.IsHalted) return;
-                if (this.op1.NBits != this.op2.NBits)
-                {
-                    this.SyntaxError = string.Format("\"{0}\": Operand 1 and 2 should have equal size. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
-                }
+                if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
             }
             public override void Execute()
             {
@@ -1337,11 +1388,7 @@ namespace AsmSim
                                 this.SyntaxError = string.Format("\"{0}\": Operand 1 cannot be 8-bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6}).",
                                     this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                             }
-                            if (this.op1.NBits != this.op2.NBits)
-                            {
-                                this.SyntaxError = string.Format("\"{0}\": Operand 1 and 2 cannot have different number of bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6}).",
-                                    this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
-                            }
+                            if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
                             break;
                         }
                     case 3:
@@ -1357,11 +1404,7 @@ namespace AsmSim
                                 this.SyntaxError = string.Format("\"{0}\": Operand 1 cannot be 8-bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6}); op3={7} ({8}, bits={9}).",
                                     this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits);
                             }
-                            if (this.op1.NBits != this.op2.NBits)
-                            {
-                                this.SyntaxError = string.Format("\"{0}\": Operand 1 and 2 cannot have different number of bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6}); op3={7} ({8}, bits={9}).",
-                                    this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits);
-                            }
+                            if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
 
                             if (this.op3.NBits < this.op1.NBits)
                             {
@@ -2521,10 +2564,7 @@ namespace AsmSim
             public ShiftBaseX(Mnemonic mnemonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(mnemonic, args, Ot3.reg_reg_imm | Ot3.reg_mem_imm, keys, t)
             {
                 if (this.IsHalted) return;
-                if (this.op1.NBits != this.op2.NBits)
-                {
-                    this.SyntaxError = string.Format("\"{0}\": Operand 1 and 2 should have equal size. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
-                }
+                if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
                 if (this.Op3Value.SortSize != 8)
                 {
                     this.Warning = string.Format("\"{0}\": value of operand 3 does not fit in 8-bit field. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
@@ -2586,10 +2626,7 @@ namespace AsmSim
                 {
                     this.SyntaxError = string.Format("\"{0}\": Operand 1 and 2 cannot be 8-bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6};  op3={7} ({8}, bits={9})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits);
                 }
-                if (this.op1.NBits != this.op2.NBits)
-                {
-                    this.SyntaxError = string.Format("\"{0}\": Number of bits of operand 1 and 2 should be equal. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6};  op3={7} ({8}, bits={9})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits);
-                }
+                if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
                 if (this.op3.IsReg && (this.op3.Rn != Rn.CL))
                 {
                     this.SyntaxError = string.Format("\"{0}\": If operand 3 is a registers, only GPR cl is allowed. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6};  op3={7} ({8}, bits={9})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits);
@@ -2702,10 +2739,7 @@ namespace AsmSim
                 }
                 else
                 {
-                    if (this.op1.NBits != this.op2.NBits)
-                    {
-                        this.SyntaxError = string.Format("\"{0}\": Operand 1 and 2 should have same number of bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
-                    }
+                    if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
                 }
             }
             private BitVecExpr GetBitPos(BitVecExpr value, uint nBits)
@@ -2791,8 +2825,7 @@ namespace AsmSim
             public Bsf(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.BSF, args, Ot2.reg_reg | Ot2.reg_mem, keys, t)
             {
                 if (this.IsHalted) return;
-                if (this.op1.NBits != this.op2.NBits)
-                    this.SyntaxError = string.Format("\"{0}\": Operand 1 should be equal to operand 2. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
                 if (this.op1.NBits == 8)
                     this.SyntaxError = string.Format("\"{0}\": Operands cannot be 8-bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
             }
@@ -2840,8 +2873,7 @@ namespace AsmSim
             public Bsr(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.BSR, args, Ot2.reg_reg | Ot2.reg_mem, keys, t)
             {
                 if (this.IsHalted) return;
-                if (this.op1.NBits != this.op2.NBits)
-                    this.SyntaxError = string.Format("\"{0}\": Operand 1 should be equal to operand 2. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
                 if (this.op1.NBits == 8)
                     this.SyntaxError = string.Format("\"{0}\": Operands cannot be 8-bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
             }
@@ -3482,10 +3514,7 @@ namespace AsmSim
                 {
                     this.SyntaxError = string.Format("\"{0}\": Operand 1 cannot be 8 bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                 }
-                if (this.op1.NBits != this.op2.NBits)
-                {
-                    this.SyntaxError = string.Format("\"{0}\": Operand 1 and 2 should have equal size. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
-                }
+                if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
             }
             public override void Execute()
             {
@@ -3594,10 +3623,7 @@ namespace AsmSim
             public AddPD(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.ADDPD, args, Ot2.reg_reg | Ot2.reg_mem, keys, t)
             {
                 if (this.IsHalted) return;
-                if (this.op1.NBits != this.op2.NBits)
-                {
-                    this.SyntaxError = string.Format("\"{0}\": Operands should have equal sizes. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
-                }
+                if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
             }
             public override void Execute()
             {
@@ -3626,10 +3652,7 @@ namespace AsmSim
             public XorPD(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.XORPD, args, Ot2.reg_reg | Ot2.reg_mem, keys, t)
             {
                 if (this.IsHalted) return;
-                if (this.op1.NBits != this.op2.NBits)
-                {
-                    this.SyntaxError = string.Format("\"{0}\": Operands should have equal sizes. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
-                }
+                if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
             }
             public override void Execute()
             {
@@ -3644,10 +3667,7 @@ namespace AsmSim
             public Popcnt(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.POPCNT, args, Ot2.reg_reg | Ot2.reg_mem, keys, t)
             {
                 if (this.IsHalted) return;
-                if (this.op1.NBits != this.op2.NBits)
-                {
-                    this.SyntaxError = string.Format("\"{0}\": Operands should have equal sizes. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
-                }
+                if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
                 if (this.op1.NBits == 8)
                 {
                     this.SyntaxError = string.Format("\"{0}\": 8 bits operands are not allowed. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
