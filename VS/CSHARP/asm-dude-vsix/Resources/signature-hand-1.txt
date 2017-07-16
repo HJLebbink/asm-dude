@@ -42,6 +42,11 @@ GENERAL	CMOVZ	Move if zero (ZF=1) (CMOVE=CMOVZ)	CMOVcc.html
 GENERAL	CQO	Convert Qword to OWord	CWD_CDQ_CQO.html
 GENERAL	CWD	Convert Word to Dword	CWD_CDQ_CQO.html
 GENERAL	CDQ	Convert Dword to Qword	CWD_CDQ_CQO.html
+
+GENERAL	CBW	Convert Byte to Word	CBW_CWDE_CDQE.html
+GENERAL	CWDE	Convert Word to Dword	CBW_CWDE_CDQE.html
+GENERAL	CDQE	Convert Dword to Qword	CBW_CWDE_CDQE.html
+
 ;====================================================================
 GENERAL	JA	Jump if above (CF=0 and ZF=0) (JA=JNBE)	Jcc.html
 GENERAL	JAE	Jump if above or equal (CF=0) (JAE=JNB)	Jcc.html
@@ -154,6 +159,12 @@ GENERAL	VPMADD52HUQ	Packed Multiply of Unsigned 52-bit Unsigned Integers and Add
 GENERAL	VPMULTISHIFTQB	Select Packed Unaligned Bytes from Qword Sources	
 GENERAL	VPOPCNTD	Return the Count of Number of Bits Set to 1 in DWORD	
 GENERAL	VPOPCNTQ	Return the Count of Number of Bits Set to 1 in QWORD	
+
+GENERAL	MOVS	Move Data from String to String	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ.html
+GENERAL	MOVSB	Move byte from address DS:(E)SI to ES:(E)DI. For 64-bit mode move byte from address (R|E)SI to (R|E)DI.	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ.html
+GENERAL	MOVSW	Move word from address DS:(E)SI to ES:(E)DI. For 64-bit mode move word at address (R|E)SI to (R|E)DI.	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ.html
+GENERAL	MOVSD	Move Dword from address DS:(E)SI to ES:(E)DI. For 64-bit mode move Dword from address (R|E)SI to (R|E)DI.	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ.html
+GENERAL	MOVSQ	Move Qword from address (R|E)SI to (R|E)DI.	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ.html
 
 V4FMADDPS	ZMM{K}{Z},ZMM,M128	AVX512_4FMAPS	V4FMADDPS ZMM1{K}{Z},ZMM2+3,M128	Multiply packed Single-Precision FP values from source register block indicated by zmm2 by values from m128 and accumulate the result in zmm1.
 V4FNMADDPS	ZMM{K}{Z},ZMM,M128	AVX512_4FMAPS	V4FNMADDPS ZMM1{K}{Z},ZMM2+3,M128	Multiply and negate packed Single-Precision FP values from source register block indicated by zmm2 by values from m128 and accumulate the result in zmm1.
@@ -876,8 +887,8 @@ CBW		8086	CBW	AX ← sign-extend of AL.
 CDQ		386	CDQ	EDX:EAX ← sign-extend of EAX.
 CDQE		X64	CDQE	RAX ← sign-extend of EAX.
 CLAC		486	CLAC	Clear the Alignment Check (AC) flag in the EFLAGS register.
-CLC		8086	CLC	Clear CF flag.
-CLD		8086	CLD	Clear DF flag.
+CLC		8086	CLC	Clear carry (CF) flag.
+CLD		8086	CLD	Clear direction (DF) flag.
 
 CLFLUSH	M8	SSE2	CLFLUSH M8	Flushes cache line containing m8.
 CLFLUSHOPT	M8	X64	CLFLUSHOPT M8	Flushes cache line containing m8.
@@ -1273,8 +1284,9 @@ MOVS	M64,M64	X64	MOVS M64,M64	Move Qword from address (R|E)SI to (R|E)DI.
 
 MOVSB		8086	MOVSB	For legacy mode, Move byte from address DS:(E)SI to ES:(E)DI. For 64-bit mode move byte from address (R|E)SI to (R|E)DI.
 MOVSD		386	MOVSD	For legacy mode, move Dword from address DS:(E)SI to ES:(E)DI. For 64-bit mode move Dword from address (R|E)SI to (R|E)DI.
-MOVSQ		X64	MOVSQ	Move Qword from address (R|E)SI to (R|E)DI.
 MOVSW		8086	MOVSW	For legacy mode, move word from address DS:(E)SI to ES:(E)DI. For 64-bit mode move word at address (R|E)SI to (R|E)DI.
+MOVSQ		X64	MOVSQ	Move Qword from address (R|E)SI to (R|E)DI.
+
 MOVSX	R16,R/M8	386	MOVSX R16,R/M8	Move byte to word with sign-extension.
 MOVSX	R32,R/M16	386	MOVSX R32,R/M16	Move word to Dword, with sign-extension.
 MOVSX	R32,R/M8	386	MOVSX R32,R/M8	Move byte to Dword with sign-extension.

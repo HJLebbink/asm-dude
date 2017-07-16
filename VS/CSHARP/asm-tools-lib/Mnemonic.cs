@@ -104,6 +104,8 @@ namespace AsmTools {
         CMPXCHG,
         /// <summary>Compare and exchange 8 bytes</summary>
         CMPXCHG8B,
+        /// <summary>Compare and exchange 16 bytes</summary>
+        CMPXCHG16B,
         /// <summary> Push onto stack</summary>
         PUSH,
         /// <summary>Pop off of stack</summary>
@@ -120,10 +122,14 @@ namespace AsmTools {
         CWD,
         /// <summary>Convert doubleword to quadword</summary>
         CDQ,
+        /// <summary>Convert quadword to octoword</summary>
+        CQO, 
         /// <summary>Convert byte to word</summary>
         CBW,
-        /// <summary>Convert word to doubleword in EAX register</summary>
+        /// <summary>Convert Word to Doubleword</summary>
         CWDE,
+        /// <summary>Convert Doubleword to Quadword </smmary>
+        CDQE,
         /// <summary>Move and sign extend</summary>
         MOVSX,
         /// <summary>Move and sign extend</summary>
@@ -168,30 +174,30 @@ namespace AsmTools {
         #region Decimal Arithmetic Instructions
         //The decimal arithmetic instructions perform decimal arithmetic on binary coded decimal (BCD) data.
 
-        /// <summary>XXX</summary>
-        DAA,// Decimal adjust after addition
-        /// <summary>XXX</summary>
-        DAS,// Decimal adjust after subtraction
-        /// <summary>XXX</summary>
-        AAA,// ASCII adjust after addition
-        /// <summary>XXX</summary>
-        AAS,// ASCII adjust after subtraction
-        /// <summary>XXX</summary>
-        AAM,// ASCII adjust after multiplication
-        /// <summary>XXX</summary>
-        AAD,// ASCII adjust before division
+        /// <summary>Decimal adjust after addition</summary>
+        DAA,
+        /// <summary>Decimal adjust after subtraction</summary>
+        DAS,
+        /// <summary>ASCII adjust after addition</summary>
+        AAA,
+        /// <summary>ASCII adjust after subtraction</summary>
+        AAS,
+        /// <summary>ASCII adjust after multiplication</summary>
+        AAM,
+        /// <summary>ASCII adjust before division</summary>
+        AAD,
         #endregion
         #region Logical Instructions
         //The logical instructions perform basic AND, OR, XOR, and NOT logical operations on byte, word, and doubleword
         //values.
-        /// <summary>XXX</summary>
-        AND,// Perform bitwise logical AND
-        /// <summary>XXX</summary>
-        OR,// Perform bitwise logical OR
-        /// <summary>XXX</summary>
-        XOR,// Perform bitwise logical exclusive OR
-        /// <summary>XXX</summary>
-        NOT,// Perform bitwise logical NOT
+        /// <summary>Perform bitwise logical AND</summary>
+        AND,
+        /// <summary> Perform bitwise logical OR</summary>
+        OR,
+        /// <summary>Perform bitwise logical exclusive OR</summary>
+        XOR,
+        /// <summary>Perform bitwise logical NOT</summary>
+        NOT,
         #endregion
         #region Shift and Rotate Instructions
         //The shift and rotate instructions shift and rotate the bits in word and doubleword operands.
@@ -291,12 +297,12 @@ namespace AsmTools {
         SETPO,
         /// <summary>Set byte if not parity (PF=0) (SETNP=SETPO)</summary>
         SETNP,
-        /// <summary>XXX</summary>
-        TEST,// Logical compare
-        /// <summary>XXX</summary>
-        CRC32,// Provides hardware acceleration to calculate cyclic redundancy checks for fast and efficient implementation of data integrity protocols.
-        /// <summary>XXX</summary>
-        POPCNT,// This instruction calculates of number of bits set to 1 in the second operand (source) and returns the count in the first operand (a destination register)
+        /// <summary>Logical compare</summary>
+        TEST,
+        /// <summary>Provides hardware acceleration to calculate cyclic redundancy checks for fast and efficient implementation of data integrity protocols.</summary>
+        CRC32,
+        /// <summary>This instruction calculates of number of bits set to 1 in the second operand (source) and returns the count in the first operand (a destination register)</summary>
+        POPCNT,
         #endregion
         #region Control Transfer Instructions
         // The control transfer instructions provide jump, conditional jump, loop, and call and return operations to control
@@ -396,80 +402,166 @@ namespace AsmTools {
         /// <summary> High-level procedure exit</summary>
         LEAVE,
         #endregion
-        #region string Instructions
-        //The string instructions operate on strings of bytes, allowing them to be moved to and from memory.
-        /// <summary>XXX</summary>
+        #region String Instructions
+        /// <summary>The string instructions operate on strings of bytes, allowing them to be moved to and from memory.</summary>
         MOVS,
-        /// <summary>XXX</summary>
-        MOVSB,// Move string/Move byte string
-        /// <summary>XXX</summary>
-        MOVSW,// Move string/Move word string
-        /// <summary>XXX</summary>
-        MOVSD,// Move string/Move doubleword string
-        /// <summary>XXX</summary>
+        /// <summary>Move string</summary>
+        MOVSB,
+        /// <summary>Move word string</summary>
+        MOVSW,
+        /// <summary>Move doubleword string</summary>
+        MOVSD,
+        /// <summary>Move quadword string</summary>
+        MOVSQ,
+        /// <summary>Compare string</summary>
         CMPS,
-        /// <summary>XXX</summary>
-        CMPSB,// Compare string/Compare byte string
-        /// <summary>XXX</summary>
-        CMPSW,// Compare string/Compare word string
-        /// <summary>XXX</summary>
-        CMPSD,// Compare string/Compare doubleword string
-        /// <summary>XXX</summary>
+        /// <summary>Compare byte </summary>
+        CMPSB,
+        /// <summary>Compare word string</summary>
+        CMPSW,
+        /// <summary>Compare doubleword string</summary>
+        CMPSD,
+        /// <summary>Scan string</summary>
         SCAS,
-        /// <summary>XXX</summary>
-        SCASB,// Scan string/Scan byte string
-        /// <summary>XXX</summary>
-        SCASW,// Scan string/Scan word string
-        /// <summary>XXX</summary>
-        SCASD,// Scan string/Scan doubleword string
-        /// <summary>XXX</summary>
+        /// <summary>Scan byte string</summary>
+        SCASB,
+        /// <summary>Scan word string</summary>
+        SCASW,
+        /// <summary>Scan doubleword string</summary>
+        SCASD,
+        /// <summary>Load string</summary>
         LODS,
-        /// <summary>XXX</summary>
-        LODSB,// Load string/Load byte string
-        /// <summary>XXX</summary>
-        LODSW,// Load string/Load word string
-        /// <summary>XXX</summary>
-        LODSD,// Load string/Load doubleword string
-        /// <summary>XXX</summary>
+        /// <summary>Load byte string</summary>
+        LODSB,
+        /// <summary>Load word string</summary>
+        LODSW,
+        /// <summary>Load doubleword string</summary>
+        LODSD,
+        /// <summary>Load quadword string</summary>
+        LODSQ,
+
+        /// <summary>Store string</summary>
         STOS,
-        /// <summary>XXX</summary>
-        STOSB,// Store string/Store byte string
-        /// <summary>XXX</summary>
-        STOSW,// Store string/Store word string
-        /// <summary>XXX</summary>
-        STOSD,// Store string/Store doubleword string
-        /// <summary>XXX</summary>
-        REP,// Repeat while ECX not zero
-        /// <summary>XXX</summary>
+        /// <summary>Store byte string</summary>
+        STOSB,
+        /// <summary>Store word string</summary>
+        STOSW,
+        /// <summary>Store doubleword string</summary>
+        STOSD,
+        /// <summary>Store quadword string</summary>
+        STOSQ,
+
+        #region REP prefix versions
+        /// <summary>Repeat while equal (termination condition: RCX or (E)CX = 0)</summary>
+        REP,
+        /// <summary>Repeat while zero [REPE=REPZ] (termination condition: RCX or (E)CX = 0; or ZF=0)</summary>
         REPE,
-        /// <summary>XXX</summary>
-        REPZ,// Repeat while equal/Repeat while zero
-        /// <summary>XXX</summary>
+        /// <summary>Repeat while zero [REPE=REPZ] (termination condition: RCX or (E)CX = 0; or ZF=0)</summary>
+        REPZ,
+        /// <summary>Repeat while not equal [REPNE=REPNZ] (termination condition: RCX or (E)CX = 0; or ZF=1)</summary>
         REPNE,
-        /// <summary>XXX</summary>
-        REPNZ,// Repeat while not equal/Repeat while not zero
+        /// <summary>Repeat while not equal [REPNE=REPNZ] (termination condition: RCX or (E)CX = 0; or ZF=1)</summary>
+        REPNZ,
+        
+        REP_MOVS,
+        REP_MOVSB,
+        REP_MOVSW,
+        REP_MOVSD,
+        REP_MOVSQ,
+
+        REP_LODS,
+        REP_LODSB,
+        REP_LODSW,
+        REP_LODSD,
+        REP_LODSQ,
+
+        REP_STOS,
+        REP_STOSB,
+        REP_STOSW,
+        REP_STOSD,
+        REP_STOSQ,
+
+        REPE_CMPS,
+        REPE_CMPSB,
+        REPE_CMPSW,
+        REPE_CMPSD,
+        REPE_CMPSQ,
+
+        REPE_SCAS,
+        REPE_SCASB,
+        REPE_SCASW,
+        REPE_SCASD,
+        REPE_SCASQ,
+
+        REPZ_CMPS,
+        REPZ_CMPSB,
+        REPZ_CMPSW,
+        REPZ_CMPSD,
+        REPZ_CMPSQ,
+
+        REPZ_SCAS,
+        REPZ_SCASB,
+        REPZ_SCASW,
+        REPZ_SCASD,
+        REPZ_SCASQ,
+
+        REPNE_CMPS,
+        REPNE_CMPSB,
+        REPNE_CMPSW,
+        REPNE_CMPSD,
+        REPNE_CMPSQ,
+
+        REPNE_SCAS,
+        REPNE_SCASB,
+        REPNE_SCASW,
+        REPNE_SCASD,
+        REPNE_SCASQ,
+
+        REPNZ_CMPS,
+        REPNZ_CMPSB,
+        REPNZ_CMPSW,
+        REPNZ_CMPSD,
+        REPNZ_CMPSQ,
+
+        REPNZ_SCAS,
+        REPNZ_SCASB,
+        REPNZ_SCASW,
+        REPNZ_SCASD,
+        REPNZ_SCASQ,
+        #endregion
         #endregion
         #region I/O Instructions
         //These instructions move data between the processor’s I/O ports and a register or memory.
-        //IN Read from a port
-        /// <summary>XXX</summary>
-        OUT,// Write to a port
-        /// <summary>XXX</summary>
+        /// <summary>Read from a port</summary>
+        IN,
+        /// <summary>Write to a port</summary>
+        OUT,
+        /// <summary>Input string from port</summary>
         INS,
-        /// <summary>XXX</summary>
-        INSB,// Input string from port/Input byte string from port
-        /// <summary>XXX</summary>
-        INSW,// Input string from port/Input word string from port
-        /// <summary>XXX</summary>
-        INSD,// Input string from port/Input doubleword string from port
-        /// <summary>XXX</summary>
+        /// <summary>Input byte string from port</summary>
+        INSB,
+        /// <summary>Input string from port</summary>
+        INSW,
+        /// <summary>Input doubleword string from port</summary>
+        INSD,
+        /// <summary>Output string to port</summary>
         OUTS,
-        /// <summary>XXX</summary>
-        OUTSB,// Output string to port/Output byte string to port
-        /// <summary>XXX</summary>
-        OUTSW,// Output string to port/Output word string to port
-        /// <summary>XXX</summary>
-        OUTSD,// Output string to port/Output doubleword string to port
+        /// <summary>Output byte string to port</summary>
+        OUTSB,
+        /// <summary>Output word string to port</summary>
+        OUTSW,
+        /// <summary>Output doubleword string to port</summary>
+        OUTSD,
+
+        REP_INS,
+        REP_INSB,
+        REP_INSW,
+        REP_INSD,
+
+        REP_OUTS,
+        REP_OUTSB,
+        REP_OUTSW,
+        REP_OUTSD,
         #endregion
         #region Flag Control (EFLAG) Instructions
         //The flag control instructions operate on the flags in the EFLAGS register.
@@ -502,23 +594,23 @@ namespace AsmTools {
         #endregion
         #region Segment Register Instructions
         //The segment register instructions allow far pointers (segment addresses) to be loaded into the segment registers.
-        /// <summary>XXX</summary>
-        LDS,// Load far pointer using DS
-        /// <summary>XXX</summary>
-        LES,// Load far pointer using ES
-        /// <summary>XXX</summary>
-        LFS,// Load far pointer using FS
-        /// <summary>XXX</summary>
-        LGS,// Load far pointer using GS
-        /// <summary>XXX</summary>
-        LSS,// Load far pointer using SS
+        /// <summary>Load far pointer using DS</summary>
+        LDS,
+        /// <summary> Load far pointer using ES</summary>
+        LES,
+        /// <summary>Load far pointer using FS</summary>
+        LFS,
+        /// <summary>Load far pointer using GS</summary>
+        LGS,
+        /// <summary>Load far pointer using SS</summary>
+        LSS,
         #endregion
         #region Miscellaneous Instructions
         //The miscellaneous instructions provide such functions as loading an effective address, executing a “no-operation,”
         //and retrieving processor identification information.
         /// <summary>Load effective address</summary>
         LEA,
-        /// <summary> No operation</summary>
+        /// <summary>No operation</summary>
         NOP,
         /// <summary>Generates an invalid opcode. This instruction is provided for software testing to explicitly generate an invalid opcode. The opcode for this instruction is reserved for this purpose. Other than raising the invalid opcode exception, this instruction is the same as the NOP instruction.</summary>
         UD2,
@@ -540,36 +632,36 @@ namespace AsmTools {
         CLFLUSHOPT,
         #endregion
         #region User Mode Extended Sate Save/Restore Instructions
-        /// <summary>XXX</summary>
-        XSAVE,// Save processor extended states to memory
-        /// <summary>XXX</summary>
-        XSAVEC,// Save processor extended states with compaction to memory
-        /// <summary>XXX</summary>
-        XSAVEOPT,// Save processor extended states to memory, optimized
-        /// <summary>XXX</summary>
-        XRSTOR,// Restore processor extended states from memory
-        /// <summary>XXX</summary>
-        XGETBV,// Reads the state of an extended control register
+        /// <summary>Save processor extended states to memory</summary>
+        XSAVE,
+        /// <summary>Save processor extended states with compaction to memory</summary>
+        XSAVEC,
+        /// <summary>Save processor extended states to memory, optimized</summary>
+        XSAVEOPT,
+        /// <summary>Restore processor extended states from memory</summary>
+        XRSTOR,
+        /// <summary>Reads the state of an extended control register</summary>
+        XGETBV,
         #endregion
         #region Random Number Generator Instructions
-        /// <summary>XXX</summary>
-        RDRAND,// Retrieves a random number generated from hardware
-        /// <summary>XXX</summary>
-        RDSEED,// Retrieves a random number generated from hardware
+        /// <summary>Retrieves a random number generated from hardware</summary>
+        RDRAND,
+        /// <summary>Retrieves a random number generated from hardware</summary>
+        RDSEED,
         #endregion
         #region BMI1, BMI2
-        /// <summary>XXX</summary>
-        ANDN,// Bitwise AND of first source with inverted 2nd source operands.
-        /// <summary>XXX</summary>
-        BEXTR,// Contiguous bitwise extract
-        /// <summary>XXX</summary>
-        BLSI,// Extract lowest set bit
-        /// <summary>XXX</summary>
-        BLSMSK,// Set all lower bits below first set bit to 1
-        /// <summary>XXX</summary>
-        BLSR,// Reset lowest set bit
-        /// <summary>XXX</summary>
-        BZHI,// Zero high bits starting from specified bit position
+        /// <summary>Bitwise AND of first source with inverted 2nd source operands.</summary>
+        ANDN,
+        /// <summary>Contiguous bitwise extract</summary>
+        BEXTR,
+        /// <summary>Extract lowest set </summary>
+        BLSI,
+        /// <summary>Set all lower bits below first set bit to </summary>
+        BLSMSK,
+        /// <summary>Reset lowest set bit</summary>
+        BLSR,
+        /// <summary>Zero high bits starting from specified bit position</summary>
+        BZHI,
 
         /// <summary>Count the number leading zero bits</summary>
         LZCNT,
@@ -595,14 +687,12 @@ namespace AsmTools {
         ARPL,
         BB0_RESET,
         BB1_RESET,
-        CDQE,
+        /// <summary>Clear Task-Switched Flag in CR0</summary>
         CLTS,
         CMPSQ,
         CMPXCHG486,
-        CMPXCHG16B,
         CPU_READ,
         CPU_WRITE,
-        CQO,
         DMINT,
         EMMS,
         F2XM1,
@@ -707,7 +797,6 @@ namespace AsmTools {
         HLT,
         IBTS,
         ICEBP,
-        IN,
         INCBIN,
         INT01,
         INT1,
@@ -729,7 +818,6 @@ namespace AsmTools {
         LMSW,
         LOADALL,
         LOADALL286,
-        LODSQ,
         LSL,
         LTR,
         #endregion
@@ -740,7 +828,6 @@ namespace AsmTools {
         MONITORX,
         MOVD,
         MOVQ,
-        MOVSQ,
         MWAIT,
         MWAITX,
         PACKSSDW,
@@ -837,7 +924,6 @@ namespace AsmTools {
         SMINT,
         SMINTOLD,
         SMSW,
-        STOSQ,
         STR,
         SVDC,
         SVLDT,
@@ -2372,6 +2458,7 @@ namespace AsmTools {
                 case "CDQ": return Mnemonic.CDQ;
                 case "CBW": return Mnemonic.CBW;
                 case "CWDE": return Mnemonic.CWDE;
+                case "CDQE": return Mnemonic.CDQE;
                 case "MOVSX": return Mnemonic.MOVSX;
                 case "MOVSXD": return Mnemonic.MOVSXD;
                 case "MOVZX": return Mnemonic.MOVZX;
@@ -2496,36 +2583,125 @@ namespace AsmTools {
                 case "BOUND": return Mnemonic.BOUND;
                 case "ENTER": return Mnemonic.ENTER;
                 case "LEAVE": return Mnemonic.LEAVE;
+
                 case "MOVS": return Mnemonic.MOVS;
                 case "MOVSB": return Mnemonic.MOVSB;
                 case "MOVSW": return Mnemonic.MOVSW;
                 case "MOVSD": return Mnemonic.MOVSD;
+                case "MOVSQ": return Mnemonic.MOVSQ;
+
                 case "CMPS": return Mnemonic.CMPS;
                 case "CMPSB": return Mnemonic.CMPSB;
                 case "CMPSW": return Mnemonic.CMPSW;
                 case "CMPSD": return Mnemonic.CMPSD;
+                case "CMPSQ": return Mnemonic.CMPSQ;
+
                 case "SCAS": return Mnemonic.SCAS;
                 case "SCASB": return Mnemonic.SCASB;
                 case "SCASW": return Mnemonic.SCASW;
                 case "SCASD": return Mnemonic.SCASD;
+                case "SCASQ": return Mnemonic.SCASQ;
+
                 case "LODS": return Mnemonic.LODS;
                 case "LODSB": return Mnemonic.LODSB;
                 case "LODSW": return Mnemonic.LODSW;
                 case "LODSD": return Mnemonic.LODSD;
+                case "LODSQ": return Mnemonic.LODSQ;
+
                 case "STOS": return Mnemonic.STOS;
                 case "STOSB": return Mnemonic.STOSB;
                 case "STOSW": return Mnemonic.STOSW;
                 case "STOSD": return Mnemonic.STOSD;
+                case "STOSQ": return Mnemonic.STOSQ;
+
                 case "REP": return Mnemonic.REP;
                 case "REPE": return Mnemonic.REPE;
                 case "REPZ": return Mnemonic.REPZ;
                 case "REPNE": return Mnemonic.REPNE;
                 case "REPNZ": return Mnemonic.REPNZ;
-                case "OUT": return Mnemonic.OUT;
+
+                case "REP_INS": return Mnemonic.REP_INS;
+                case "REP_INSB": return Mnemonic.REP_INSB;
+                case "REP_INSW": return Mnemonic.REP_INSW;
+                case "REP_INSD": return Mnemonic.REP_INSD;
+
+                case "REP_OUTS": return Mnemonic.REP_OUTS;
+                case "REP_OUTSB": return Mnemonic.REP_OUTSB;
+                case "REP_OUTSW": return Mnemonic.REP_OUTSW;
+                case "REP_OUTSD": return Mnemonic.REP_OUTSD;
+
+                case "REP_MOVS": return Mnemonic.REP_MOVS;
+                case "REP_MOVSB": return Mnemonic.REP_MOVSB;
+                case "REP_MOVSW": return Mnemonic.REP_MOVSW;
+                case "REP_MOVSD": return Mnemonic.REP_MOVSD;
+                case "REP_MOVSQ": return Mnemonic.REP_MOVSQ;
+
+                case "REP_LODS": return Mnemonic.REP_LODS;
+                case "REP_LODSB": return Mnemonic.REP_LODSB;
+                case "REP_LODSW": return Mnemonic.REP_LODSW;
+                case "REP_LODSD": return Mnemonic.REP_LODSD;
+                case "REP_LODSQ": return Mnemonic.REP_LODSQ;
+
+                case "REP_STOS": return Mnemonic.REP_STOS;
+                case "REP_STOSB": return Mnemonic.REP_STOSB;
+                case "REP_STOSW": return Mnemonic.REP_STOSW;
+                case "REP_STOSD": return Mnemonic.REP_STOSD;
+                case "REP_STOSQ": return Mnemonic.REP_STOSQ;
+
+                case "REPE_CMPS": return Mnemonic.REPE_CMPS;
+                case "REPE_CMPSB": return Mnemonic.REPE_CMPSB;
+                case "REPE_CMPSW": return Mnemonic.REPE_CMPSW;
+                case "REPE_CMPSD": return Mnemonic.REPE_CMPSD;
+                case "REPE_CMPSQ": return Mnemonic.REPE_CMPSQ;
+
+                case "REPE_SCAS": return Mnemonic.REPE_SCAS;
+                case "REPE_SCASB": return Mnemonic.REPE_SCASB;
+                case "REPE_SCASW": return Mnemonic.REPE_SCASW;
+                case "REPE_SCASD": return Mnemonic.REPE_SCASD;
+                case "REPE_SCASQ": return Mnemonic.REPE_SCASQ;
+
+                case "REPZ_CMPS": return Mnemonic.REPZ_CMPS;
+                case "REPZ_CMPSB": return Mnemonic.REPZ_CMPSB;
+                case "REPZ_CMPSW": return Mnemonic.REPZ_CMPSW;
+                case "REPZ_CMPSD": return Mnemonic.REPZ_CMPSD;
+                case "REPZ_CMPSQ": return Mnemonic.REPZ_CMPSQ;
+
+                case "REPZ_SCAS": return Mnemonic.REPZ_SCAS;
+                case "REPZ_SCASB": return Mnemonic.REPZ_SCASB;
+                case "REPZ_SCASW": return Mnemonic.REPZ_SCASW;
+                case "REPZ_SCASD": return Mnemonic.REPZ_SCASD;
+                case "REPZ_SCASQ": return Mnemonic.REPZ_SCASQ;
+
+                case "REPNE_CMPS": return Mnemonic.REPNE_CMPS;
+                case "REPNE_CMPSB": return Mnemonic.REPNE_CMPSB;
+                case "REPNE_CMPSW": return Mnemonic.REPNE_CMPSW;
+                case "REPNE_CMPSD": return Mnemonic.REPNE_CMPSD;
+                case "REPNE_CMPSQ": return Mnemonic.REPNE_CMPSQ;
+
+                case "REPNE_SCAS": return Mnemonic.REPNE_SCAS;
+                case "REPNE_SCASB": return Mnemonic.REPNE_SCASB;
+                case "REPNE_SCASW": return Mnemonic.REPNE_SCASW;
+                case "REPNE_SCASD": return Mnemonic.REPNE_SCASD;
+                case "REPNE_SCASQ": return Mnemonic.REPNE_SCASQ;
+
+                case "REPNZ_CMPS": return Mnemonic.REPNZ_CMPS;
+                case "REPNZ_CMPSB": return Mnemonic.REPNZ_CMPSB;
+                case "REPNZ_CMPSW": return Mnemonic.REPNZ_CMPSW;
+                case "REPNZ_CMPSD": return Mnemonic.REPNZ_CMPSD;
+                case "REPNZ_CMPSQ": return Mnemonic.REPNZ_CMPSQ;
+
+                case "REPNZ_SCAS": return Mnemonic.REPNZ_SCAS;
+                case "REPNZ_SCASB": return Mnemonic.REPNZ_SCASB;
+                case "REPNZ_SCASW": return Mnemonic.REPNZ_SCASW;
+                case "REPNZ_SCASD": return Mnemonic.REPNZ_SCASD;
+                case "REPNZ_SCASQ": return Mnemonic.REPNZ_SCASQ;
+
                 case "INS": return Mnemonic.INS;
                 case "INSB": return Mnemonic.INSB;
                 case "INSW": return Mnemonic.INSW;
                 case "INSD": return Mnemonic.INSD;
+
+                case "OUT": return Mnemonic.OUT;
                 case "OUTS": return Mnemonic.OUTS;
                 case "OUTSB": return Mnemonic.OUTSB;
                 case "OUTSW": return Mnemonic.OUTSW;
@@ -2585,9 +2761,7 @@ namespace AsmTools {
                 case "ARPL": return Mnemonic.ARPL;
                 case "BB0_RESET": return Mnemonic.BB0_RESET;
                 case "BB1_RESET": return Mnemonic.BB1_RESET;
-                case "CDQE": return Mnemonic.CDQE;
                 case "CLTS": return Mnemonic.CLTS;
-                case "CMPSQ": return Mnemonic.CMPSQ;
                 case "CMPXCHG486": return Mnemonic.CMPXCHG486;
                 case "CMPXCHG16B": return Mnemonic.CMPXCHG16B;
                 case "CPU_READ": return Mnemonic.CPU_READ;
@@ -2719,7 +2893,7 @@ namespace AsmTools {
                 case "LMSW": return Mnemonic.LMSW;
                 case "LOADALL": return Mnemonic.LOADALL;
                 case "LOADALL286": return Mnemonic.LOADALL286;
-                case "LODSQ": return Mnemonic.LODSQ;
+
                 case "LSL": return Mnemonic.LSL;
                 case "LTR": return Mnemonic.LTR;
                 case "MFENCE": return Mnemonic.MFENCE;
@@ -2727,7 +2901,6 @@ namespace AsmTools {
                 case "MONITORX": return Mnemonic.MONITORX;
                 case "MOVD": return Mnemonic.MOVD;
                 case "MOVQ": return Mnemonic.MOVQ;
-                case "MOVSQ": return Mnemonic.MOVSQ;
                 case "MWAIT": return Mnemonic.MWAIT;
                 case "MWAITX": return Mnemonic.MWAITX;
                 case "PACKSSDW": return Mnemonic.PACKSSDW;
@@ -2825,7 +2998,6 @@ namespace AsmTools {
                 case "RSM": return Mnemonic.RSM;
                 case "RSTS": return Mnemonic.RSTS;
                 case "SALC": return Mnemonic.SALC;
-                case "SCASQ": return Mnemonic.SCASQ;
                 case "SFENCE": return Mnemonic.SFENCE;
                 case "SGDT": return Mnemonic.SGDT;
                 case "SIDT": return Mnemonic.SIDT;
@@ -2835,7 +3007,6 @@ namespace AsmTools {
                 case "SMINT": return Mnemonic.SMINT;
                 case "SMINTOLD": return Mnemonic.SMINTOLD;
                 case "SMSW": return Mnemonic.SMSW;
-                case "STOSQ": return Mnemonic.STOSQ;
                 case "STR": return Mnemonic.STR;
                 case "SVDC": return Mnemonic.SVDC;
                 case "SVLDT": return Mnemonic.SVLDT;

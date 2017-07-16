@@ -212,11 +212,15 @@ namespace AsmSim
                 case Mnemonic.PUSHAD: break;
                 case Mnemonic.POPA: break;
                 case Mnemonic.POPAD: break;
+
                 case Mnemonic.CWD: return new Cwd(args, keys, t);
                 case Mnemonic.CDQ: return new Cdq(args, keys, t);
+                case Mnemonic.CQO: return new Cqo(args, keys, t);
+
                 case Mnemonic.CBW: return new Cbw(args, keys, t);
                 case Mnemonic.CWDE: return new Cwde(args, keys, t);
-                case Mnemonic.CQO: return new Cqo(args, keys, t);
+                case Mnemonic.CDQE: return new Cdqe(args, keys, t);
+
                 case Mnemonic.MOVSX: return new Movsx(args, keys, t);
                 case Mnemonic.MOVSXD: return new Movsxd(args, keys, t);
                 case Mnemonic.MOVZX: return new Movzx(args, keys, t);
@@ -348,41 +352,129 @@ namespace AsmSim
                 case Mnemonic.BOUND: break;
                 case Mnemonic.ENTER: break;
                 case Mnemonic.LEAVE: break;
-                case Mnemonic.MOVS: break;
-                case Mnemonic.MOVSB: break;
-                case Mnemonic.MOVSW: break;
-                case Mnemonic.MOVSD: break;
+
+                case Mnemonic.MOVS: return new Movs(Mnemonic.MOVS, args, keys, t);
+                case Mnemonic.MOVSB: return new Movs(Mnemonic.MOVSB, args, keys, t);
+                case Mnemonic.MOVSW: return new Movs(Mnemonic.MOVSW, args, keys, t);
+                case Mnemonic.MOVSD: return new Movs(Mnemonic.MOVSD, args, keys, t);
+                case Mnemonic.MOVSQ: return new Movs(Mnemonic.MOVSQ, args, keys, t);
+
                 case Mnemonic.CMPS: break;
                 case Mnemonic.CMPSB: break;
                 case Mnemonic.CMPSW: break;
                 case Mnemonic.CMPSD: break;
+                case Mnemonic.CMPSQ: break;
+
                 case Mnemonic.SCAS: break;
                 case Mnemonic.SCASB: break;
                 case Mnemonic.SCASW: break;
                 case Mnemonic.SCASD: break;
+                case Mnemonic.SCASQ: break;
+
                 case Mnemonic.LODS: break;
                 case Mnemonic.LODSB: break;
                 case Mnemonic.LODSW: break;
                 case Mnemonic.LODSD: break;
+                case Mnemonic.LODSQ: break;
+
                 case Mnemonic.STOS: break;
                 case Mnemonic.STOSB: break;
                 case Mnemonic.STOSW: break;
                 case Mnemonic.STOSD: break;
-                case Mnemonic.REP: break;
-                case Mnemonic.REPE: break;
-                case Mnemonic.REPZ: break;
-                case Mnemonic.REPNE: break;
-                case Mnemonic.REPNZ: break;
+                case Mnemonic.STOSQ: break;
+
+                #region REP Prefix
+                case Mnemonic.REP_MOVS: break;
+                case Mnemonic.REP_MOVSB: break;
+                case Mnemonic.REP_MOVSW: break;
+                case Mnemonic.REP_MOVSD: break;
+                case Mnemonic.REP_MOVSQ: break;
+
+                case Mnemonic.REP_LODS: break;
+                case Mnemonic.REP_LODSB: break;
+                case Mnemonic.REP_LODSW: break;
+                case Mnemonic.REP_LODSD: break;
+                case Mnemonic.REP_LODSQ: break;
+
+                case Mnemonic.REP_STOS: break;
+                case Mnemonic.REP_STOSB: break;
+                case Mnemonic.REP_STOSW: break;
+                case Mnemonic.REP_STOSD: break;
+                case Mnemonic.REP_STOSQ: break;
+
+                case Mnemonic.REPE_CMPS: break;
+                case Mnemonic.REPE_CMPSB: break;
+                case Mnemonic.REPE_CMPSW: break;
+                case Mnemonic.REPE_CMPSD: break;
+                case Mnemonic.REPE_CMPSQ: break;
+
+                case Mnemonic.REPE_SCAS: break;
+                case Mnemonic.REPE_SCASB: break;
+                case Mnemonic.REPE_SCASW: break;
+                case Mnemonic.REPE_SCASD: break;
+                case Mnemonic.REPE_SCASQ: break;
+
+                case Mnemonic.REPZ_CMPS: break;
+                case Mnemonic.REPZ_CMPSB: break;
+                case Mnemonic.REPZ_CMPSW: break;
+                case Mnemonic.REPZ_CMPSD: break;
+                case Mnemonic.REPZ_CMPSQ: break;
+
+                case Mnemonic.REPZ_SCAS: break;
+                case Mnemonic.REPZ_SCASB: break;
+                case Mnemonic.REPZ_SCASW: break;
+                case Mnemonic.REPZ_SCASD: break;
+                case Mnemonic.REPZ_SCASQ: break;
+
+                case Mnemonic.REPNE_CMPS: break;
+                case Mnemonic.REPNE_CMPSB: break;
+                case Mnemonic.REPNE_CMPSW: break;
+                case Mnemonic.REPNE_CMPSD: break;
+                case Mnemonic.REPNE_CMPSQ: break;
+
+                case Mnemonic.REPNE_SCAS: break;
+                case Mnemonic.REPNE_SCASB: break;
+                case Mnemonic.REPNE_SCASW: break;
+                case Mnemonic.REPNE_SCASD: break;
+                case Mnemonic.REPNE_SCASQ: break;
+
+                case Mnemonic.REPNZ_CMPS: break;
+                case Mnemonic.REPNZ_CMPSB: break;
+                case Mnemonic.REPNZ_CMPSW: break;
+                case Mnemonic.REPNZ_CMPSD: break;
+                case Mnemonic.REPNZ_CMPSQ: break;
+
+                case Mnemonic.REPNZ_SCAS: break;
+                case Mnemonic.REPNZ_SCASB: break;
+                case Mnemonic.REPNZ_SCASW: break;
+                case Mnemonic.REPNZ_SCASD: break;
+                case Mnemonic.REPNZ_SCASQ: break;
+                #endregion
+
                 case Mnemonic.IN: return new In(args, keys, t);
-                case Mnemonic.OUT: return new Out(args, keys, t);
                 case Mnemonic.INS: break;
                 case Mnemonic.INSB: break;
                 case Mnemonic.INSW: break;
                 case Mnemonic.INSD: break;
+
+                case Mnemonic.OUT: return new Out(args, keys, t);
                 case Mnemonic.OUTS: break;
                 case Mnemonic.OUTSB: break;
                 case Mnemonic.OUTSW: break;
                 case Mnemonic.OUTSD: break;
+
+                #region REP Prefix
+                case Mnemonic.REP_INS: break;
+                case Mnemonic.REP_INSB: break;
+                case Mnemonic.REP_INSW: break;
+                case Mnemonic.REP_INSD: break;
+
+                case Mnemonic.REP_OUTS: break;
+                case Mnemonic.REP_OUTSB: break;
+                case Mnemonic.REP_OUTSW: break;
+                case Mnemonic.REP_OUTSD: break;
+                #endregion
+
                 case Mnemonic.STC: return new Stc(args, keys, t);
                 case Mnemonic.CLC: return new Clc(args, keys, t);
                 case Mnemonic.CMC: return new Cmc(args, keys, t);
