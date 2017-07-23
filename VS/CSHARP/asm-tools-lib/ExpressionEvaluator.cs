@@ -234,7 +234,7 @@ namespace AsmTools
                                 pos++;
                                 break;
                             case '<':
-                                if ((pos + 1 <= exprLength) && (str[pos + 1] == '<'))
+                                if ((pos + 1 < exprLength) && (str[pos + 1] == '<'))
                                 {
                                     pos++;
                                     if (!Process_Input_Operator(Op.SHL, vStack, opStack)) return (false, 0, -1);
@@ -242,7 +242,7 @@ namespace AsmTools
                                 }
                                 break;
                             case '>':
-                                if ((pos + 1 <= exprLength) && (str[pos + 1] == '>'))
+                                if ((pos + 1 < exprLength) && (str[pos + 1] == '>'))
                                 {
                                     pos++;
                                     if (!Process_Input_Operator(Op.SHR, vStack, opStack)) return (false, 0, -1);
