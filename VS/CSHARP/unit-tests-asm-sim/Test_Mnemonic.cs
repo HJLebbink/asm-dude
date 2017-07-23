@@ -51,7 +51,7 @@ namespace unit_tests_asm_z3
 
         private State CreateState(Tools tools)
         {
-            string tailKey = "!ROOT";// Tools.CreateKey(tools.Rand);
+            string tailKey = "!0";// Tools.CreateKey(tools.Rand);
             string headKey = tailKey;
             return new State(tools, tailKey, headKey);
         }

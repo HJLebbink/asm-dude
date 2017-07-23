@@ -353,17 +353,17 @@ namespace AsmSim
                 case Mnemonic.ENTER: break;
                 case Mnemonic.LEAVE: break;
 
-                case Mnemonic.MOVS: return new Movs(Mnemonic.MOVS, args, keys, t);
-                case Mnemonic.MOVSB: return new Movs(Mnemonic.MOVSB, args, keys, t);
-                case Mnemonic.MOVSW: return new Movs(Mnemonic.MOVSW, args, keys, t);
-                case Mnemonic.MOVSD: return new Movs(Mnemonic.MOVSD, args, keys, t);
-                case Mnemonic.MOVSQ: return new Movs(Mnemonic.MOVSQ, args, keys, t);
+                case Mnemonic.MOVS: return new Movs(Mnemonic.MOVS, false, args, keys, t);
+                case Mnemonic.MOVSB: return new Movs(Mnemonic.MOVSB, false, args, keys, t);
+                case Mnemonic.MOVSW: return new Movs(Mnemonic.MOVSW, false, args, keys, t);
+                case Mnemonic.MOVSD: return new Movs(Mnemonic.MOVSD, false, args, keys, t);
+                case Mnemonic.MOVSQ: return new Movs(Mnemonic.MOVSQ, false, args, keys, t);
 
-                case Mnemonic.CMPS: break;
-                case Mnemonic.CMPSB: break;
-                case Mnemonic.CMPSW: break;
-                case Mnemonic.CMPSD: break;
-                case Mnemonic.CMPSQ: break;
+                case Mnemonic.CMPS: return new Cmps(Mnemonic.CMPS, false, args, keys, t);
+                case Mnemonic.CMPSB: return new Cmps(Mnemonic.CMPSB, false, args, keys, t);
+                case Mnemonic.CMPSW: return new Cmps(Mnemonic.CMPSW, false, args, keys, t);
+                case Mnemonic.CMPSD: return new Cmps(Mnemonic.CMPSD, false, args, keys, t);
+                case Mnemonic.CMPSQ: return new Cmps(Mnemonic.CMPSQ, false, args, keys, t);
 
                 case Mnemonic.SCAS: break;
                 case Mnemonic.SCASB: break;
@@ -384,11 +384,11 @@ namespace AsmSim
                 case Mnemonic.STOSQ: break;
 
                 #region REP Prefix
-                case Mnemonic.REP_MOVS: break;
-                case Mnemonic.REP_MOVSB: break;
-                case Mnemonic.REP_MOVSW: break;
-                case Mnemonic.REP_MOVSD: break;
-                case Mnemonic.REP_MOVSQ: break;
+                case Mnemonic.REP_MOVS: return new Movs(Mnemonic.MOVS, true, args, keys, t);
+                case Mnemonic.REP_MOVSB: return new Movs(Mnemonic.MOVSB, true, args, keys, t);
+                case Mnemonic.REP_MOVSW: return new Movs(Mnemonic.MOVSW, true, args, keys, t);
+                case Mnemonic.REP_MOVSD: return new Movs(Mnemonic.MOVSD, true, args, keys, t);
+                case Mnemonic.REP_MOVSQ: return new Movs(Mnemonic.MOVSQ, true, args, keys, t);
 
                 case Mnemonic.REP_LODS: break;
                 case Mnemonic.REP_LODSB: break;
@@ -402,11 +402,11 @@ namespace AsmSim
                 case Mnemonic.REP_STOSD: break;
                 case Mnemonic.REP_STOSQ: break;
 
-                case Mnemonic.REPE_CMPS: break;
-                case Mnemonic.REPE_CMPSB: break;
-                case Mnemonic.REPE_CMPSW: break;
-                case Mnemonic.REPE_CMPSD: break;
-                case Mnemonic.REPE_CMPSQ: break;
+                case Mnemonic.REPE_CMPS: return new Cmps(Mnemonic.CMPS, true, args, keys, t);
+                case Mnemonic.REPE_CMPSB: return new Cmps(Mnemonic.CMPSB, true, args, keys, t);
+                case Mnemonic.REPE_CMPSW: return new Cmps(Mnemonic.CMPSW, true, args, keys, t);
+                case Mnemonic.REPE_CMPSD: return new Cmps(Mnemonic.CMPSD, true, args, keys, t);
+                case Mnemonic.REPE_CMPSQ: return new Cmps(Mnemonic.CMPSQ, true, args, keys, t);
 
                 case Mnemonic.REPE_SCAS: break;
                 case Mnemonic.REPE_SCASB: break;

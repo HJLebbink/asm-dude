@@ -126,6 +126,10 @@ namespace AsmSim
                 return Tools.Create_Flag_Key_Fresh(flagName, rand, ctx);
             }
 
+            public BitVecExpr GetMem(Rn regName, int nBytes)
+            {
+                return this.GetMem(this.Get(regName), nBytes);
+            }
             public BitVecExpr GetMem(BitVecExpr address, int nBytes)
             {
                 return Tools.Create_Value_From_Mem(address, nBytes, this.keys.PrevKey, this._ctx);
@@ -3194,62 +3198,56 @@ namespace AsmSim
 
         #region String Instructions
         //The string instructions operate on strings of bytes, allowing them to be moved to and from memory.
-        public sealed class Movs : OpcodeNBase
+        public abstract class StringOperationAbstract : OpcodeNBase
         {
             private readonly int _nBytes = 0;
-            public Movs(Mnemonic mnemonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(mnemonic, args, 2, keys, t)
+            private readonly bool _repPrefix;
+            public StringOperationAbstract(Mnemonic mnemonic, bool repPrefix, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(mnemonic, args, 2, keys, t)
             {
+                this._repPrefix = repPrefix;
                 if (this.IsHalted) return;
                 if (this.NOperands == 2)
                 {
                     if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
-                    this._nBytes = this.op1.NBits >> 3;
-                }
-                else 
-                {
-                    switch (mnemonic)
-                    {
-                        case Mnemonic.MOVSB: this._nBytes = 1; break;
-                        case Mnemonic.MOVSW: this._nBytes = 2; break;
-                        case Mnemonic.MOVSD: this._nBytes = 4; break;
-                        case Mnemonic.MOVSQ: this._nBytes = 8; break;
-                        default: break;
-                    }
                 }
             }
-            public override void Execute()
+            protected (Rn Src, Rn Dst, BitVecNum nBytes) GetRegs()
             {
-                Context ctx = this._ctx;
-                BoolExpr df = this.Get(Flags.DF);
+                Rn src;
+                Rn dst;
+                BitVecNum nB = null;
 
                 if (this.Tools.Parameters.mode_64bit)
                 {
-                    BitVecExpr rdi = this.Get(Rn.RDI);
-                    BitVecExpr rsi = this.Get(Rn.RSI);
-                    BitVecNum nB = ctx.MkBV(64, (uint)this._nBytes);
-                    this.RegularUpdate.SetMem(rdi, this.GetMem(rsi, this._nBytes));
-                    this.RegularUpdate.Set(Rn.RDI, ctx.MkITE(df, ctx.MkBVSub(rdi, nB), ctx.MkBVAdd(rdi, nB)) as BitVecExpr);
-                    this.RegularUpdate.Set(Rn.RSI, ctx.MkITE(df, ctx.MkBVSub(rsi, nB), ctx.MkBVAdd(rsi, nB)) as BitVecExpr);
+                    src = Rn.RDI;
+                    dst = Rn.RSI;
+                    nB = this._ctx.MkBV(64, (uint)this._nBytes);
                 }
                 else if (this.Tools.Parameters.mode_32bit)
                 {
-                    BitVecExpr edi = this.Get(Rn.EDI);
-                    BitVecExpr esi = this.Get(Rn.ESI);
-                    BitVecNum nB = ctx.MkBV(32, (uint)this._nBytes);
-                    this.RegularUpdate.SetMem(edi, this.GetMem(esi, this._nBytes));
-                    this.RegularUpdate.Set(Rn.EDI, ctx.MkITE(df, ctx.MkBVSub(edi, nB), ctx.MkBVAdd(edi, nB)) as BitVecExpr);
-                    this.RegularUpdate.Set(Rn.ESI, ctx.MkITE(df, ctx.MkBVSub(esi, nB), ctx.MkBVAdd(esi, nB)) as BitVecExpr);
+                    src = Rn.EDI;
+                    dst = Rn.ESI;
+                    nB = this._ctx.MkBV(32, (uint)this._nBytes);
                 }
                 else // legacy mode
                 {
-                    BitVecExpr di = this.Get(Rn.DI);
-                    BitVecExpr si = this.Get(Rn.SI);
-                    BitVecNum nB = ctx.MkBV(16, (uint)this._nBytes);
-                    this.RegularUpdate.SetMem(di, this.GetMem(si, this._nBytes));
-                    this.RegularUpdate.Set(Rn.DI, ctx.MkITE(df, ctx.MkBVSub(di, nB), ctx.MkBVAdd(di, nB)) as BitVecExpr);
-                    this.RegularUpdate.Set(Rn.SI, ctx.MkITE(df, ctx.MkBVSub(si, nB), ctx.MkBVAdd(si, nB)) as BitVecExpr);
+                    src = Rn.DI;
+                    dst = Rn.SI;
+                    nB = this._ctx.MkBV(16, (uint)this._nBytes);
                 }
+                return (Src: src, Dst: dst, nBytes: nB);
             }
+            protected void Update_SI_DI()
+            {
+                Context ctx = this._ctx;
+                (Rn src, Rn dst, BitVecNum nB) = this.GetRegs();
+                BitVecExpr srcBV = this.Get(src);
+                BitVecExpr dstBV = this.Get(dst);
+                BoolExpr df = this.Get(Flags.DF);
+                this.RegularUpdate.Set(src, ctx.MkITE(df, ctx.MkBVSub(srcBV, nB), ctx.MkBVAdd(srcBV, nB)) as BitVecExpr);
+                this.RegularUpdate.Set(dst, ctx.MkITE(df, ctx.MkBVSub(dstBV, nB), ctx.MkBVAdd(dstBV, nB)) as BitVecExpr);
+            }
+            public override Flags FlagsReadStatic { get { return Flags.DF; } }
             public override IEnumerable<Rn> RegsReadStatic
             {
                 get
@@ -3293,38 +3291,99 @@ namespace AsmSim
                 }
             }
         }
+        public sealed class Movs : StringOperationAbstract
+        {
+            private readonly int _nBytes = 0;
+            public Movs(Mnemonic mnemonic, bool repPrefix, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) 
+                : base(mnemonic, repPrefix, args, keys, t)
+            {
+                if (this.IsHalted) return;
+                if (this.NOperands == 2)
+                {
+                    this._nBytes = this.op1.NBits >> 3;
+                }
+                else 
+                {
+                    switch (mnemonic)
+                    {
+                        case Mnemonic.MOVSB: this._nBytes = 1; break;
+                        case Mnemonic.MOVSW: this._nBytes = 2; break;
+                        case Mnemonic.MOVSD: this._nBytes = 4; break;
+                        case Mnemonic.MOVSQ: this._nBytes = 8; break;
+                        default: break;
+                    }
+                }
+            }
+            public override void Execute()
+            {
+                var regs = this.GetRegs();
+                BitVecExpr srcBV = this.Get(regs.Src);
+                BitVecExpr dstBV = this.Get(regs.Dst);
+                this.RegularUpdate.SetMem(srcBV, this.GetMem(dstBV, this._nBytes));
+                this.Update_SI_DI();
+            }
+        }
 
-    //MOVSB,// Move string/Move byte string
-    //MOVSW,// Move string/Move word string
-    //MOVSD,// Move string/Move doubleword string
-    //CMPS,
-    //CMPSB,// Compare string/Compare byte string
-    //CMPSW,// Compare string/Compare word string
-    //CMPSD,// Compare string/Compare doubleword string
-    //SCAS,
-    //SCASB,// Scan string/Scan byte string
-    //SCASW,// Scan string/Scan word string
-    //SCASD,// Scan string/Scan doubleword string
-    //LODS,
-    //LODSB,// Load string/Load byte string
-    //LODSW,// Load string/Load word string
-    //LODSD,// Load string/Load doubleword string
-    //STOS,
-    //STOSB,// Store string/Store byte string
-    //STOSW,// Store string/Store word string
-    //STOSD,// Store string/Store doubleword string
-    //REP,// Repeat while ECX not zero
-    //REPE,
-    //REPZ,// Repeat while equal/Repeat while zero
-    //REPNE,
-    //REPNZ,// Repeat while not equal/Repeat while not zero
-    #endregion String Instructions
+        public sealed class Cmps : StringOperationAbstract
+        {
+            private readonly int _nBytes = 0;
+            public Cmps(Mnemonic mnemonic, bool repPrefix, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) 
+                : base(mnemonic, repPrefix, args, keys, t)
+            {
+                if (this.IsHalted) return;
+                if (this.NOperands == 2)
+                {
+                    this._nBytes = this.op1.NBits >> 3;
+                }
+                else
+                {
+                    switch (mnemonic)
+                    {
+                        case Mnemonic.CMPSB: this._nBytes = 1; break;
+                        case Mnemonic.CMPSW: this._nBytes = 2; break;
+                        case Mnemonic.CMPSD: this._nBytes = 4; break;
+                        case Mnemonic.CMPSQ: this._nBytes = 8; break;
+                        default: break;
+                    }
+                }
+            }
+            public override void Execute()
+            {
+                var regs = this.GetRegs();
+                var tup = BitOperations.Substract(this.GetMem(this.Get(regs.Src), this._nBytes), this.GetMem(this.Get(regs.Dst), this._nBytes), this._ctx);
+                this.RegularUpdate.Set(Flags.CF, tup.cf);
+                this.RegularUpdate.Set(Flags.OF, tup.of);
+                this.RegularUpdate.Set(Flags.AF, tup.af);
+                this.RegularUpdate.Set_SF_ZF_PF(tup.result);
+                this.Update_SI_DI();
+            }
+            public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
+        }
 
-    #region I/O Instructions
-    //These instructions move data between the processor’s I/O ports and a register or memory.
+        //SCAS,
+        //SCASB,// Scan string/Scan byte string
+        //SCASW,// Scan string/Scan word string
+        //SCASD,// Scan string/Scan doubleword string
+        //LODS,
+        //LODSB,// Load string/Load byte string
+        //LODSW,// Load string/Load word string
+        //LODSD,// Load string/Load doubleword string
+        //STOS,
+        //STOSB,// Store string/Store byte string
+        //STOSW,// Store string/Store word string
+        //STOSD,// Store string/Store doubleword string
+        //REP,// Repeat while ECX not zero
+        //REPE,
+        //REPZ,// Repeat while equal/Repeat while zero
+        //REPNE,
+        //REPNZ,// Repeat while not equal/Repeat while not zero
+        #endregion String Instructions
 
-    /// <summary>Read from a port</summary>
-    public sealed class In : Opcode2Base
+        #region I/O Instructions
+        //These instructions move data between the processor’s I/O ports and a register or memory.
+
+        /// <summary>Read from a port</summary>
+        public sealed class In : Opcode2Base
         {
             public In(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.IN, args, Ot2.reg_imm | Ot2.reg_reg, keys, t)
             {
