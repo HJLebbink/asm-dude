@@ -3,8 +3,8 @@
 
 
 	#region Unreachable code
-	#pragma assume mov al, 0
-	cmp al, 0
+	#pragma assume mov al, 1 << 3
+	cmp al, 1<<3
 	jz label2
 	mov al, 1
 	jz label2

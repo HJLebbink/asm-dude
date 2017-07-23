@@ -76,7 +76,11 @@ namespace AsmSim
 
         public static Solver MakeSolver(Context ctx)
         {
-            return ctx.MkSolver(ctx.MkTactic("qfbv"));
+            Solver s = ctx.MkSolver(ctx.MkTactic("qfbv"));
+            //Params p = ctx.MkParams();
+            //p.Add("mbqi", false); // use Model-based Quantifier Instantiation
+            //s.Parameters = p;
+            return s;
         }
 
         /// <summary>Regular constructor</summary>

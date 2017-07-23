@@ -42,7 +42,7 @@ namespace AsmSim
             System.Version ver = thisAssemName.Version;
             Console.WriteLine(string.Format("Loaded AsmSim version {0}.", ver));
 
-            TestX();
+            TestMem2();
             //TestExecutionTree();
             //TestGraph();
             //TestMnemonic();
@@ -421,39 +421,55 @@ namespace AsmSim
 
         }
 
-        static void TestX()
+        static void TestMem2()
         {
-            //Console.WriteLine(AsmSourceTools.Parse_Constant("0"));
-            //Console.WriteLine(AsmSourceTools.Parse_Constant("‭0"));
-            
-
             Dictionary<string, string> settings = new Dictionary<string, string>
             {
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" },         // enable proof generation
-                { "timeout", "1000" }
+                { "timeout", "10000" }
             };
-            Tools tools = new Tools(settings);
-            tools.StateConfig.Set_All_Off();
-            tools.StateConfig.RAX = true;
-            tools.StateConfig.RBX = true;
-            tools.StateConfig.mem = true;
 
-            string line0 = "mov rbx, 0";
-            string line1 = "mov eax, 0x08040201";
-            string line2 = "movbe dword ptr [rbx], eax";
-            string line3 = "mov eax, dword ptr [rbx]";
+            using (Context ctx = new Context(settings))
+            {
+                Tactic tactic = ctx.MkTactic("qfbv");
+                Solver solver = ctx.MkSolver(tactic);
+                Params p = ctx.MkParams();
+                p.Add("mbqi", true); // use Model-based Quantifier Instantiation
+                solver.Parameters = p;
 
-            string rootKey = "!INIT";
-            State state = new State(tools, rootKey, rootKey);
-            state = Runner.SimpleStep_Forward(line0, state);
-            state = Runner.SimpleStep_Forward(line1, state);
-            state = Runner.SimpleStep_Forward(line2, state);
-            state = Runner.SimpleStep_Forward(line3, state);
+                Sort domain = ctx.MkBitVecSort(64);
+                Sort range = ctx.MkBitVecSort(8);
 
-            Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                ArrayExpr mem0 = ctx.MkArrayConst("MEM!0", domain, range);
+                ArrayExpr mem1 = ctx.MkArrayConst("MEM!1", domain, range);
+                BitVecExpr rax1 = ctx.MkBVConst("RAX!1", 64);
+                BitVecExpr rbx1 = ctx.MkBVConst("RBX!1", 64);
 
+                Expr address1 = ctx.MkBV(10, 64);
+                Expr address2 = ctx.MkBV(7, 64);
+                Expr value1 = ctx.MkBV(0x1, 8);
+                Expr value2 = ctx.MkBV(0x2, 8);
+
+                if (false)
+                {
+                    solver.Assert(ctx.MkEq(mem1, ctx.MkStore(ctx.MkStore(mem0, address2, value2), address1, value1)));
+                    solver.Assert(ctx.MkEq(rax1, ctx.MkZeroExt(64 - 8, ctx.MkSelect(mem1, address1) as BitVecExpr)));
+                    solver.Assert(ctx.MkEq(rbx1, ctx.MkZeroExt(64 - 8, ctx.MkSelect(mem1, address2) as BitVecExpr)));
+                } 
+                else
+                {
+                    BitVecExpr address = ctx.MkBVConst("address", 64);
+                    //solver.Assert(ctx.MkForall(new Expr[] { address, mem0, mem1, rax1, rbx1 }, ctx.MkImplies(ctx.MkAnd(ctx.MkBVULE(ctx.MkBV(10, 64), address), ctx.MkBVULE(address, ctx.MkBV(5, 64))), ctx.MkEq(mem1, ctx.MkStore(mem0, address, value2)))));
+                    solver.Assert(ctx.MkForall(new Expr[] { address, mem0, mem1, rax1, rbx1 }, ctx.MkImplies(ctx.MkOr(ctx.MkEq(ctx.MkBV(10, 64), address), ctx.MkEq(address, ctx.MkBV(5, 64))), ctx.MkEq(mem1, ctx.MkStore(mem0, address, value2)))));
+                    solver.Assert(ctx.MkEq(rax1, ctx.MkZeroExt(64 - 8, ctx.MkSelect(mem1, address1) as BitVecExpr)));
+                    solver.Assert(ctx.MkEq(rbx1, ctx.MkZeroExt(64 - 8, ctx.MkSelect(mem1, address2) as BitVecExpr)));
+                }
+                Console.WriteLine("solver " + solver);
+                Console.WriteLine("rax="+ToolsZ3.ToStringBin(ToolsZ3.GetTvArray(rax1, 64, solver, ctx)));
+                Console.WriteLine("rbx="+ToolsZ3.ToStringBin(ToolsZ3.GetTvArray(rbx1, 64, solver, ctx)));
+            }
         }
 
         static void TestMnemonic()
