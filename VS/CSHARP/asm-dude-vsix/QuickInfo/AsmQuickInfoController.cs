@@ -26,6 +26,10 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using System;
 using AsmDude.Tools;
+using Microsoft.VisualStudio.TextManager.Interop;
+using Microsoft.VisualStudio.Text.Adornments;
+using AsmTools;
+using System.Windows.Controls;
 
 namespace AsmDude.QuickInfo
 {
@@ -33,18 +37,21 @@ namespace AsmDude.QuickInfo
     {
         private readonly IList<ITextBuffer> _subjectBuffers;
         private readonly IQuickInfoBroker _quickInfoBroker;
+        private readonly IToolTipProvider _toolTipProvider;
         private IQuickInfoSession _session;
         private ITextView _textView;
 
         internal AsmQuickInfoController(
             ITextView textView,
             IList<ITextBuffer> subjectBuffers,
-            IQuickInfoBroker quickInfoBroker)
+            IQuickInfoBroker quickInfoBroker,
+            IToolTipProvider toolTipProvider)
         {
             //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:constructor: file=" + AsmDudeToolsStatic.GetFileName(textView.TextBuffer));
             this._textView = textView;
             this._subjectBuffers = subjectBuffers;
             this._quickInfoBroker = quickInfoBroker;
+            this._toolTipProvider = toolTipProvider;
             this._textView.MouseHover += this.OnTextViewMouseHover;
         }
 
@@ -62,7 +69,7 @@ namespace AsmDude.QuickInfo
         }
 
         /// <summary>
-        /// Determine if the mouse is hovering over a token. If so, highlight the token and display QuickInfo
+        /// Determine if the mouse is hovering over a token. If so, display QuickInfo
         /// </summary>
         private void OnTextViewMouseHover(object sender, MouseHoverEventArgs e)
         {
@@ -87,9 +94,14 @@ namespace AsmDude.QuickInfo
                         //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: quickInfoBroker is already active; file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
                     }
                 }
+                else if (contentType.Equals(AsmDudePackage.DisassemblyContentType, StringComparison.Ordinal))
+                {
+                    //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:OnTextViewMouseHover: Quickinfo for disassembly view", ToString()));
+                    this.ToolTipLegacy(point.Value);
+                }
                 else
                 {
-                    AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:OnTextViewMouseHover; does not have have AsmDudeContentType: but has type {1}", ToString(), contentType));
+                    AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:OnTextViewMouseHover: does not have have AsmDudeContentType: but has type {1}", ToString(), contentType));
                 }
             }
             else
@@ -111,6 +123,61 @@ namespace AsmDude.QuickInfo
                 snapshot => this._subjectBuffers.Contains(snapshot.TextBuffer),
                 PositionAffinity.Predecessor
             );
+        }
+
+        private void ToolTipLegacy(SnapshotPoint triggerPoint)
+        {
+            ITextSnapshotLine line = triggerPoint.GetContainingLine();
+
+            #region Find Keyword under the Mouse
+            //1] find the start of the current keyword
+            SnapshotPoint start = triggerPoint;
+            while ((start > line.Start) && !AsmTools.AsmSourceTools.IsSeparatorChar((start - 1).GetChar()))
+            {
+                start -= 1;
+            }
+            //2] find the end of the current keyword
+            SnapshotPoint end = triggerPoint;
+            while ((end < line.End) && !AsmTools.AsmSourceTools.IsSeparatorChar((end + 1).GetChar()))
+            {
+                end += 1;
+            }
+            //3] get the word under the mouse
+            ITextSnapshot snapshot = this._textView.TextSnapshot;
+            Span span = new SnapshotSpan(start, end + 1);
+            ITrackingSpan applicableTo = snapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeInclusive);
+            string keyword = applicableTo.GetText(snapshot);
+            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:OnTextViewMouseHover: keyword={1}", ToString(), keyword));
+            #endregion
+
+            Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword, false);
+            if (mnemonic != Mnemonic.NONE)
+            {
+                var trackingSpan = this._textView.TextSnapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeInclusive);
+
+                if (false)
+                {   // use string 
+                    string message = AsmQuickInfoSource.Render_Mnemonic_ToolTip(mnemonic, AsmDudeTools.Instance);
+                    this._toolTipProvider.ShowToolTip(trackingSpan, message, PopupStyles.DismissOnMouseLeaveTextOrContent);
+                }
+                else
+                {   // create a WPF view
+                    var foreground = AsmDudeToolsStatic.GetFontColor();
+
+                    if (false)
+                    {
+                        var description = new TextBlock();
+                        AsmQuickInfoSource.Render_Mnemonic_ToolTip(description, mnemonic, foreground, AsmDudeTools.Instance);
+                        this._toolTipProvider.ShowToolTip(trackingSpan, description, PopupStyles.DismissOnMouseLeaveTextOrContent);
+                    }
+                    else
+                    {
+                        DisassemblyMnemonicTooltip wpfView = new DisassemblyMnemonicTooltip();
+                        AsmQuickInfoSource.Render_Mnemonic_ToolTip(wpfView.content, mnemonic, foreground, AsmDudeTools.Instance);
+                        this._toolTipProvider.ShowToolTip(trackingSpan, wpfView, PopupStyles.DismissOnMouseLeaveTextOrContent);
+                    }
+                }
+            }
         }
     }
 }

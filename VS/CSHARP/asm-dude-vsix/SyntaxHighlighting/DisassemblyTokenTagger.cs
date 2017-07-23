@@ -29,6 +29,7 @@ using Microsoft.VisualStudio.Text.Tagging;
 using AsmDude.SyntaxHighlighting;
 using AsmDude.Tools;
 using AsmTools;
+using System.Globalization;
 
 namespace AsmDude
 {
@@ -199,7 +200,7 @@ namespace AsmDude
                                     if (k == nKeywords) break;
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._label);
                                 }
-                                else if (AsmTools.AsmSourceTools.Evaluate_Constant(asmToken, true).Valid)
+                                else if (IsConstant(asmToken))
                                 {
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
                                 }
@@ -240,8 +241,27 @@ namespace AsmDude
                     
                 }
             }
-            AsmDudeToolsStatic.Print_Speed_Warning(time1, "DebugTokenTagger");
+            AsmDudeToolsStatic.Print_Speed_Warning(time1, "DisassemblyTokenTagger");
         }
+
+        private static bool IsConstant(string token)
+        {
+            if (long.TryParse(token, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out var dummy1))
+            {
+                return true;
+            }
+            //if (long.TryParse(token, NumberStyles.Integer, CultureInfo.CurrentCulture, out var dummy2))
+            //{
+            //    return true;
+            //}
+            if (token.EndsWith("H"))
+            {
+                return true;
+            }
+            return false;
+        }
+
+
 
         #region Public Static Methods
 

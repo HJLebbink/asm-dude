@@ -2380,6 +2380,7 @@ namespace AsmTools {
             }
         }
 
+        /// <summary>Parse the provided string that contains a AT&T syntax mnemonic</summary>
         public static Mnemonic ParseMnemonic_Att(string str, bool strIsCapitals = false)
         {
             string str2 = (strIsCapitals) ? str : str.ToUpper();
@@ -2406,6 +2407,8 @@ namespace AsmTools {
             }
             return Mnemonic.NONE;
         }
+
+        /// <summary>Parse the provided string that contains a Intel syntax mnemonic</summary>
         public static Mnemonic ParseMnemonic(string str, bool strIsCapitals = false) {
             #if DEBUG
                 if (strIsCapitals && (str != str.ToUpper())) throw new Exception();
