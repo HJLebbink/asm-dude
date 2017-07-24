@@ -20,7 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude.Tools;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
@@ -31,9 +30,9 @@ using System.ComponentModel.Composition;
 namespace AsmDude.AsmDoc
 {
     [Export(typeof(IViewTaggerProvider))]
-    [Name("AsmDude-AsmDocUnderlineTaggerProvider")]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
-    //[ContentType("code")]
+    [ContentType(AsmDudePackage.DisassemblyContentType)]
+    [Name("AsmDocUnderlineTaggerProvider")]
     [TagType(typeof(ClassificationTag))]
     internal sealed class AsmDocUnderlineTaggerProvider : IViewTaggerProvider
     {
@@ -53,8 +52,6 @@ namespace AsmDude.AsmDoc
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
-            if (!AsmDudeToolsStatic.Proper_File(buffer)) return null;
-
             //AsmDudeToolsStatic.Output_INFO("AsmDocUnderlineTaggerProvider:CreateTagger: file=" + AsmDudeToolsStatic.GetFileName(buffer));
             if (UnderlineClassification == null)
             {

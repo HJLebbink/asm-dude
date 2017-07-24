@@ -193,9 +193,13 @@
   <ItemGroup>
     <Compile Include="AsmDoc\AsmDocClassificationFormat.cs" />
     <Compile Include="AsmDoc\AsmDocClassificationDefinition.cs" />
+    <Compile Include="AsmDoc\AsmDocKeyProcessor.cs" />
+    <Compile Include="AsmDoc\AsmDocKeyProcessorProvider.cs" />
     <Compile Include="AsmDoc\AsmDocMouseHandler.cs" />
+    <Compile Include="AsmDoc\AsmDocMouseHandlerProvider.cs" />
     <Compile Include="AsmDoc\AsmDocUnderlineTagger.cs" />
     <Compile Include="AsmDoc\AsmDocUnderlineTaggerProvider.cs" />
+    <Compile Include="AsmDoc\CtrlKeyState.cs" />
     <Compile Include="AsmDudePackage.cs" />
     <Compile Include="QuickInfo\DisassemblyMnemonicTooltip.xaml.cs">
       <DependentUpon>DisassemblyMnemonicTooltip.xaml</DependentUpon>

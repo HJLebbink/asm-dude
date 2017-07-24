@@ -21,7 +21,6 @@
 // SOFTWARE.
 
 using System;
-using System.ComponentModel.Composition;
 using System.Windows;
 using System.Windows.Input;
 using Microsoft.VisualStudio;
@@ -31,7 +30,6 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
-using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Shell;
 using EnvDTE80;
 using Microsoft.VisualStudio.Text.Formatting;
@@ -39,139 +37,6 @@ using AsmDude.Tools;
 
 namespace AsmDude.AsmDoc
 {
-    [Export(typeof(IKeyProcessorProvider))]
-    [ContentType(AsmDudePackage.AsmDudeContentType)]
-    //[ContentType("code")]
-    [Name("AsmDoc")]
-    [Order(Before = "VisualStudioKeyboardProcessor")]
-    internal sealed class AsmDocKeyProcessorProvider : IKeyProcessorProvider
-    {
-        public KeyProcessor GetAssociatedProcessor(IWpfTextView view)
-        {
-            //AsmDudeToolsStatic.Output_INFO("AsmDocKeyProcessorProvider:GetAssociatedProcessor: file=" + AsmDudeToolsStatic.GetFileName(view.TextBuffer));
-            return view.Properties.GetOrCreateSingletonProperty(typeof(AsmDocKeyProcessor), () => new AsmDocKeyProcessor(CtrlKeyState.GetStateForView(view)));
-        }
-    }
-
-    /// <summary>
-    /// The state of the control key for a given view, which is kept up-to-date by a combination of the
-    /// key processor and the mouse process
-    /// </summary>
-    internal sealed class CtrlKeyState
-    {
-        internal static CtrlKeyState GetStateForView(ITextView view)
-        {
-            return view.Properties.GetOrCreateSingletonProperty(typeof(CtrlKeyState), () => new CtrlKeyState());
-        }
-
-        bool _enabled = false;
-
-        internal bool Enabled {
-            get {
-                // Check and see if ctrl is down but we missed it somehow.
-                bool ctrlDown = (Keyboard.Modifiers & ModifierKeys.Control) != 0 &&
-                                (Keyboard.Modifiers & ModifierKeys.Shift) == 0;
-                if (ctrlDown != this._enabled)
-                {
-                    this.Enabled = ctrlDown;
-                }
-                return this._enabled;
-            }
-            set {
-                bool oldVal = this._enabled;
-                this._enabled = value;
-                if (oldVal != this._enabled)
-                {
-                    CtrlKeyStateChanged?.Invoke(this, new EventArgs());
-                }
-            }
-        }
-
-        internal event EventHandler<EventArgs> CtrlKeyStateChanged;
-    }
-
-    /// <summary>
-    /// Listen for the control key being pressed or released to update the CtrlKeyStateChanged for a view.
-    /// </summary>
-    internal sealed class AsmDocKeyProcessor : KeyProcessor
-    {
-        private readonly CtrlKeyState _state;
-
-        public AsmDocKeyProcessor(CtrlKeyState state)
-        {
-            this._state = state;
-        }
-
-        private void UpdateState(KeyEventArgs args)
-        {
-            this._state.Enabled = 
-                ((args.KeyboardDevice.Modifiers & ModifierKeys.Control) != 0) &&
-                ((args.KeyboardDevice.Modifiers & ModifierKeys.Shift) == 0);
-        }
-
-        public override void PreviewKeyDown(KeyEventArgs args)
-        {
-            UpdateState(args);
-        }
-
-        public override void PreviewKeyUp(KeyEventArgs args)
-        {
-            UpdateState(args);
-        }
-    }
-
-    [Export(typeof(IMouseProcessorProvider))]
-    [ContentType(AsmDudePackage.AsmDudeContentType)]
-    //[ContentType("code")]
-    [Name("AsmDoc")]
-    [TextViewRole(PredefinedTextViewRoles.Debuggable)]
-    [Order(Before = "WordSelection")]
-    internal sealed class AsmDocMouseHandlerProvider : IMouseProcessorProvider
-    {
-        [Import]
-        private IClassifierAggregatorService AggregatorFactory = null;
-
-        [Import]
-        private ITextStructureNavigatorSelectorService NavigatorService = null;
-
-        [Import]
-        private SVsServiceProvider GlobalServiceProvider = null;
-
-        public IMouseProcessor GetAssociatedProcessor(IWpfTextView view)
-        {
-            //AsmDudeToolsStatic.Output_INFO("AsmDocMouseHandlerProvider:GetAssociatedProcessor: file=" + AsmDudeToolsStatic.GetFileName(view.TextBuffer));
-
-            var buffer = view.TextBuffer;
-
-            IOleCommandTarget shellCommandDispatcher = GetShellCommandDispatcher(view);
-
-            if (shellCommandDispatcher == null)
-            {
-                return null;
-            }
-
-            return new AsmDocMouseHandler(
-                view,
-                shellCommandDispatcher,
-                this.AggregatorFactory.GetClassifier(buffer),
-                this.NavigatorService.GetTextStructureNavigator(buffer),
-                CtrlKeyState.GetStateForView(view),
-                AsmDudeTools.Instance);
-        }
-
-        #region Private helpers
-
-        /// <summary>
-        /// Get the SUIHostCommandDispatcher from the global service provider.
-        /// </summary>
-        private IOleCommandTarget GetShellCommandDispatcher(ITextView view)
-        {
-            return this.GlobalServiceProvider.GetService(typeof(SUIHostCommandDispatcher)) as IOleCommandTarget;
-        }
-
-        #endregion
-    }
-
     /// <summary>
     /// Handle ctrl+click on valid elements to send GoToDefinition to the shell.  Also handle mouse moves
     /// (when control is pressed) to highlight references for which GoToDefinition will (likely) be valid.
@@ -257,7 +122,6 @@ namespace AsmDude.AsmDoc
         {
             this._mouseDownAnchorPoint = null;
         }
-
 
         public override void PreprocessMouseUp(MouseButtonEventArgs e)
         {
