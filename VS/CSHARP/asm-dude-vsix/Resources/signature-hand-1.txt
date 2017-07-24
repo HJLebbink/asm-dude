@@ -1,5 +1,7 @@
 ;hand crafted ====================================================================
 ;
+GENERAL	BND	Prefix to instruct that the next instruction is MPX-instrumented code.	
+
 GENERAL	REP	Repeat. Repeat string instruction the number of times specified in the count register.	REP_REPE_REPZ_REPNE_REPNZ.html
 GENERAL	REPE	Repeat while equal. Repeat string instruction the number of times specified in the count register, and terminate if ZF=0. (REPE=REPZ)	REP_REPE_REPZ_REPNE_REPNZ.html
 GENERAL	REPZ	Repeat while equal. Repeat string instruction the number of times specified in the count register, and terminate if ZF=0. (REPE=REPZ)	REP_REPE_REPZ_REPNE_REPNZ.html
@@ -165,6 +167,8 @@ GENERAL	MOVSB	Move byte from address DS:(E)SI to ES:(E)DI. For 64-bit mode move 
 GENERAL	MOVSW	Move word from address DS:(E)SI to ES:(E)DI. For 64-bit mode move word at address (R|E)SI to (R|E)DI.	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ.html
 GENERAL	MOVSD	Move Dword from address DS:(E)SI to ES:(E)DI. For 64-bit mode move Dword from address (R|E)SI to (R|E)DI.	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ.html
 GENERAL	MOVSQ	Move Qword from address (R|E)SI to (R|E)DI.	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ.html
+
+BND		MPX	BND	Prefix to instruct that the next instruction is MPX-instrumented code.
 
 V4FMADDPS	ZMM{K}{Z},ZMM,M128	AVX512_4FMAPS	V4FMADDPS ZMM1{K}{Z},ZMM2+3,M128	Multiply packed Single-Precision FP values from source register block indicated by zmm2 by values from m128 and accumulate the result in zmm1.
 V4FNMADDPS	ZMM{K}{Z},ZMM,M128	AVX512_4FMAPS	V4FNMADDPS ZMM1{K}{Z},ZMM2+3,M128	Multiply and negate packed Single-Precision FP values from source register block indicated by zmm2 by values from m128 and accumulate the result in zmm1.

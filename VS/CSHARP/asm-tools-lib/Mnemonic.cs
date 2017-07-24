@@ -1940,13 +1940,24 @@ namespace AsmTools {
         BLCS,
         TZMSK,
         T1MSKC,
+
+        /// <summary>MPX:</summary>
         BNDMK,
+        /// <summary>MPX:</summary>
         BNDCL,
+        /// <summary>MPX:</summary>
         BNDCU,
+        /// <summary>MPX:</summary>
         BNDCN,
+        /// <summary>MPX:</summary>
         BNDMOV,
+        /// <summary>MPX:</summary>
         BNDLDX,
+        /// <summary>MPX:</summary>
         BNDSTX,
+        /// <summary>MPX: prefix to instruct that the next instruction is MPX-instrumented code</summary>
+        BND,
+
         KADDB,
         KADDD,
         KADDQ,
@@ -4033,6 +4044,7 @@ namespace AsmTools {
                 case "BNDMOV": return Mnemonic.BNDMOV;
                 case "BNDLDX": return Mnemonic.BNDLDX;
                 case "BNDSTX": return Mnemonic.BNDSTX;
+                case "BND": return Mnemonic.BND;
                 case "KADDB": return Mnemonic.KADDB;
                 case "KADDD": return Mnemonic.KADDD;
                 case "KADDQ": return Mnemonic.KADDQ;
