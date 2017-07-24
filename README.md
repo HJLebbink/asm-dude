@@ -53,6 +53,11 @@ clashing label definitions. Red error squiggles appear and entries in the error 
 
 ![label-analysis](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude-label-clash.png?raw=true "Label Clashes")
 
+## Disassembly Window in VS
+QuickInfo tooltips, documentation links and syntax highlighting is available for the disassembly window.
+
+![label-analysis](https://github.com/HJLebbink/asm-dude/blob/master/Images/AsmDude-disassembly-popup.png?raw=true "Disassembly Window Support")
+
 ## Assembly Simulator (Available in version 2.0)
 
 The assembly simulator interprets assembly code and allows to reason about assembly programs.
@@ -157,3 +162,4 @@ Visual Studio will launch under the experimental hive.
 * 22 July 2016: Added Signature Help [v1.6.1.1]
 * 13 Feb 2017: Added Performance Data for Skylake & Broadwell (Data from Agner Fog) [v1.7.4.0] 
 * 16 June 2017: Added AT&T syntax support [v1.8.2.0]
+* 25 Juli 2017: Added suport for the VS Disassembly Window [v1.9.0.0]
