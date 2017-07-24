@@ -33,7 +33,7 @@ namespace AsmDude.QuickInfo
     [Export(typeof(IIntellisenseControllerProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [ContentType(AsmDudePackage.DisassemblyContentType)]
-    [Name("QuickInfo AsmDude Controller")]
+    [Name("AsmQuickInfoControllerProvider")]
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]
     internal sealed class AsmQuickInfoControllerProvider : IIntellisenseControllerProvider
     {
@@ -41,7 +41,7 @@ namespace AsmDude.QuickInfo
         private IQuickInfoBroker _quickInfoBroker = null;
 
         [Import]
-        internal IToolTipProviderFactory _toolTipProviderFactory = null;
+        private IToolTipProviderFactory _toolTipProviderFactory = null;
 
         public IIntellisenseController TryCreateIntellisenseController(ITextView textView, IList<ITextBuffer> subjectBuffers)
         {

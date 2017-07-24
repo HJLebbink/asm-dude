@@ -27,27 +27,21 @@ using Microsoft.VisualStudio.Utilities;
 
 using AsmDude.SyntaxHighlighting;
 using System;
-using AsmDude.Tools;
-using AsmTools;
 
 namespace AsmDude
 {
     [Export(typeof(ITaggerProvider))]
-    [ContentType(AsmDudePackage.AsmDudeContentType)]
+    [ContentType(AsmDudePackage.DisassemblyContentType)]
     [TagType(typeof(AsmTokenTag))]
-    [Name("AsmDude Assembly Token Tag Provider")]
-    [Order(Before = "default")]
-    internal sealed class AsmTokenTagProvider : ITaggerProvider
+    [Name("AsmDude Disassembly Token Tag Provider")]
+    internal sealed class AsmDisassemblyTokenTagProvider : ITaggerProvider
     {
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
-            //AsmDudeToolsStatic.Output_INFO("AsmTokenTagProvider:CreateTagger");
+            //AsmDudeToolsStatic.Output_INFO("AsmDisassemblyTokenTagProvider:CreateTagger");
             Func<ITagger<T>> sc = delegate ()
             {
-                if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.MASM)) return new MasmTokenTagger(buffer) as ITagger<T>;
-                if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.NASM_INTEL)) return new NasmIntelTokenTagger(buffer) as ITagger<T>;
-                if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.NASM_ATT)) return new NasmAttTokenTagger(buffer) as ITagger<T>;
-                return new MasmTokenTagger(buffer) as ITagger<T>;
+                return new DisassemblyTokenTagger(buffer) as ITagger<T>;
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }

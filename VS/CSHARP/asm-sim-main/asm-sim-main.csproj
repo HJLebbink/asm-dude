@@ -110,7 +110,7 @@
       <Version>3.6.61119.7</Version>
     </PackageReference>
     <PackageReference Include="System.ValueTuple">
-      <Version>4.4.0-preview1-25305-02</Version>
+      <Version>4.4.0-preview2-25405-01</Version>
     </PackageReference>
     <PackageReference Include="z3x64win">
       <Version>4.5.0.1</Version>

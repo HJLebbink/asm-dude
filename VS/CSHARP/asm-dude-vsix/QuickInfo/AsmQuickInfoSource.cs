@@ -208,6 +208,7 @@ namespace AsmDude.QuickInfo
                         case AsmTokenType.Mnemonic:
                         case AsmTokenType.Jump:
                             {
+                                description = new TextBlock();
                                 Mnemonic mnemonic = AsmSourceTools.ParseMnemonic_Att(keywordUpper, true);
                                 Render_Mnemonic_ToolTip(description, mnemonic, this._foreground, this._asmDudeTools);
                                 break;

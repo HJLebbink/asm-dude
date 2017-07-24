@@ -75,7 +75,7 @@ namespace AsmDude.Tools
         #region Private Methods
         private void AddData(MicroArch microArch, string filename, IDictionary<string, IList<Mnemonic>> translations)
         {
-            AsmDudeToolsStatic.Output_INFO("PerformanceStore:AddData_New: microArch=" + microArch + "; filename=" + filename);
+            //AsmDudeToolsStatic.Output_INFO("PerformanceStore:AddData_New: microArch=" + microArch + "; filename=" + filename);
             try
             {
                 System.IO.StreamReader file = new System.IO.StreamReader(filename);

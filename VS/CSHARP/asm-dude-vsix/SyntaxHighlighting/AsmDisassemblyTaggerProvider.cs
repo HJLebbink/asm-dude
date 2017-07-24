@@ -95,37 +95,12 @@ INFO: AsmTaggerProvider:CreateTagger: contentType=DebugOutput
 namespace AsmDude.SyntaxHighlighting
 {
     [Export(typeof(ITaggerProvider))]
-    [ContentType(AsmDudePackage.AsmDudeContentType)]
+    [ContentType(AsmDudePackage.DisassemblyContentType)]
     [TagType(typeof(ClassificationTag))]
-    [Name("AsmDude-AsmTaggerProvider")]
+    [Name("AsmDisassemblyTaggerProvider")]
     [Order(After = Priority.High)]
-    internal sealed class AsmTaggerProvider : ITaggerProvider
+    internal sealed class AsmDisassemblyTaggerProvider : ITaggerProvider
     {
-        [Export]
-        [Name("asm!")]
-        [BaseDefinition("code")]
-        internal static ContentTypeDefinition AsmContentType = null;
-
-        [Export]
-        [FileExtension(".asm")]
-        [ContentType(AsmDudePackage.AsmDudeContentType)]
-        internal static FileExtensionToContentTypeDefinition AsmFileType = null;
-
-        [Export]
-        [FileExtension(".cod")]
-        [ContentType(AsmDudePackage.AsmDudeContentType)]
-        internal static FileExtensionToContentTypeDefinition AsmFileType_cod = null;
-
-        [Export]
-        [FileExtension(".inc")]
-        [ContentType(AsmDudePackage.AsmDudeContentType)]
-        internal static FileExtensionToContentTypeDefinition AsmFileType_inc = null;
-
-        [Export]
-        [FileExtension(".s")]
-        [ContentType(AsmDudePackage.AsmDudeContentType)]
-        internal static FileExtensionToContentTypeDefinition AsmFileType_s = null;
-
         [Import]
         private IClassificationTypeRegistryService _classificationTypeRegistry = null;
 
@@ -134,6 +109,8 @@ namespace AsmDude.SyntaxHighlighting
 
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
+            //AsmDudeToolsStatic.Output_INFO("AsmDisassemblyTaggerProvider: Creating a TaggerProvider for buffer " + buffer.CurrentSnapshot.GetText());
+
             Func<ITagger<T>> sc = delegate ()
             {
                 var aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, this._aggregatorFactory);

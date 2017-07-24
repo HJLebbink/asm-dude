@@ -138,7 +138,7 @@ namespace AsmDude.QuickInfo
             }
             //2] find the end of the current keyword
             SnapshotPoint end = triggerPoint;
-            while ((end < line.End) && !AsmTools.AsmSourceTools.IsSeparatorChar((end + 1).GetChar()))
+            while (((end + 1) < line.End) && !AsmTools.AsmSourceTools.IsSeparatorChar((end + 1).GetChar()))
             {
                 end += 1;
             }
@@ -147,7 +147,7 @@ namespace AsmDude.QuickInfo
             Span span = new SnapshotSpan(start, end + 1);
             ITrackingSpan applicableTo = snapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeInclusive);
             string keyword = applicableTo.GetText(snapshot);
-            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:OnTextViewMouseHover: keyword={1}", ToString(), keyword));
+            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:OnTextViewMouseHover: keyword={1}", ToString(), keyword));
             #endregion
 
             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword, false);
@@ -170,11 +170,15 @@ namespace AsmDude.QuickInfo
                         AsmQuickInfoSource.Render_Mnemonic_ToolTip(description, mnemonic, foreground, AsmDudeTools.Instance);
                         this._toolTipProvider.ShowToolTip(trackingSpan, description, PopupStyles.DismissOnMouseLeaveTextOrContent);
                     }
-                    else
+                    else if (false)
                     {
                         DisassemblyMnemonicTooltip wpfView = new DisassemblyMnemonicTooltip();
                         AsmQuickInfoSource.Render_Mnemonic_ToolTip(wpfView.content, mnemonic, foreground, AsmDudeTools.Instance);
                         this._toolTipProvider.ShowToolTip(trackingSpan, wpfView, PopupStyles.DismissOnMouseLeaveTextOrContent);
+                    }
+                    else
+                    {
+                        this._toolTipProvider.ShowToolTip(trackingSpan, new TextBlock() { Text = "Bla" }, PopupStyles.DismissOnMouseLeaveTextOrContent);
                     }
                 }
             }

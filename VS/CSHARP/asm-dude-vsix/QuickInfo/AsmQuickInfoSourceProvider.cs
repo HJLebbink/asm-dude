@@ -37,9 +37,8 @@ namespace AsmDude.QuickInfo
     /// </summary>
     [Export(typeof(IQuickInfoSourceProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
-    //[ContentType("code")] // use contenttype "code" to use quickinfo controller in disassembly window
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]
-    [Name("asmQuickInfo")]
+    [Name("AsmQuickInfoSourceProvider")]
     internal sealed class AsmQuickInfoSourceProvider : IQuickInfoSourceProvider
     {
         [Import]
