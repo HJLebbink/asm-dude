@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="c729d6b2-f412-49ed-893d-a8f61f25db98" Version="1.8.2.1" Language="en-US" Publisher="Henk-Jan Lebbink" />
+    <Identity Id="c729d6b2-f412-49ed-893d-a8f61f25db98" Version="1.9.0.0" Language="en-US" Publisher="Henk-Jan Lebbink" />
     <DisplayName>AsmDude</DisplayName>
-    <Description xml:space="preserve">Syntax highlighting, code completion and code folding for assembly (.asm, .cod, .inc, .s) source code.</Description>
+    <Description xml:space="preserve">Syntax highlighting and code assistance for assembly source code (.asm, .cod, .inc, .s) and the Disassembly Window </Description>
     <MoreInfo>https://github.com/HJLebbink/asm-dude</MoreInfo>
     <License>LICENSE.txt</License>
     <GettingStartedGuide>https://github.com/HJLebbink/asm-dude</GettingStartedGuide>
     <Icon>Resources\images\asm.png</Icon>
     <PreviewImage>Resources\images\AsmDude.bmp</PreviewImage>
-    <Tags>Assembly, Assembler, ASM, Syntax Highlighting, Code Completion, Folding, Label Analysis, x86_64, SSE, AVX, AVX2, AVX512</Tags>
+    <Tags>Assembly, Assembler, ASM, Syntax Highlighting, Code Completion, Disassembly Window, x86_64, SSE, AVX, AVX2, AVX512</Tags>
   </Metadata>
   <Installation>
     <InstallationTarget Version="[14.0,16.0]" Id="Microsoft.VisualStudio.Enterprise" />
