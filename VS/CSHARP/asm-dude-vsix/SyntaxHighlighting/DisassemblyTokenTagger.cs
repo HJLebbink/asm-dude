@@ -245,7 +245,7 @@ namespace AsmDude
                 if (line2.StartsWith("{")) return true;
                 if (line2.StartsWith("}")) return true;
                 if (line2.StartsWith("/")) return true;
-                if (line2.Contains("__cdecl")) return true;
+                if (line2.Contains("__CDECL")) return true;
             }
 
             if (pos[0].IsLabel) return false;
