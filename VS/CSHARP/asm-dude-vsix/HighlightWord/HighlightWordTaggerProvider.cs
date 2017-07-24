@@ -32,6 +32,7 @@ namespace AsmDude.HighlightWord
 {
     [Export(typeof(IViewTaggerProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
+    [ContentType(AsmDudePackage.DisassemblyContentType)]
     [TagType(typeof(HighlightWordTag))]
     public class HighlightWordTaggerProvider : IViewTaggerProvider
     {

@@ -98,31 +98,10 @@ namespace AsmDude
 
                 // if the line does not contain a Mnemonic, assume it is a source code line and make it a remark
                 #region Check source code line
-                if (nKeywords > 0)
+                if (IsSourceCode(line, pos))
                 {
-                    bool isAsmCode = true;
-                    if (line.Contains(";"))
-                    {
-                        isAsmCode = false;
-                    }
-                    else
-                    {
-                        isAsmCode = false;
-                        for (int k = 0; k < nKeywords; k++)
-                        {
-                            string asmToken = NasmIntelTokenTagger.Keyword(pos[k], line);
-                            if (AsmSourceTools.ParseMnemonic(asmToken, true) != Mnemonic.NONE)
-                            {
-                                isAsmCode = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (!isAsmCode)
-                    {
-                        yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span((0, line.Length, false), offset, curSpan), this._remark);
-                        continue; // go to the next line
-                    }
+                    yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span((0, line.Length, false), offset, curSpan), this._remark);
+                    continue; // go to the next line
                 }
                 #endregion
 
@@ -133,7 +112,7 @@ namespace AsmDude
                     // keyword k is a label definition
                     if (pos[k].IsLabel)
                     {
-                        yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._jump);
+                        yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._labelDef);
                         continue;
                     }
 
@@ -222,13 +201,6 @@ namespace AsmDude
                         case AsmTokenType.Mnemonic:
                             {
                                 yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._mnemonic);
-
-                                if (asmToken.Equals("CALL")) {
-
-                                }
-
-
-
                                 break;
                             }
                         case AsmTokenType.Register:
@@ -261,6 +233,33 @@ namespace AsmDude
             return false;
         }
 
+        private static bool IsSourceCode(string line, List<(int BeginPos, int Length, bool IsLabel)> pos)
+        {
+            if (pos.Count == 0) return true;
+
+            // just some rules of thumb
+            if (line.Contains(";")) return true;
+            {
+                string line2 = line.Trim();
+                if (line2.StartsWith("---")) return true;
+                if (line2.StartsWith("{")) return true;
+                if (line2.StartsWith("}")) return true;
+                if (line2.StartsWith("/")) return true;
+                if (line2.Contains("__cdecl")) return true;
+            }
+
+            if (pos[0].IsLabel) return false;
+
+            foreach (var v in pos)
+            {
+                string asmToken = NasmIntelTokenTagger.Keyword(v, line);
+                if (AsmSourceTools.ParseMnemonic(asmToken, true) != Mnemonic.NONE)
+                {
+                    return false; // found an assebly instruction, think this is assembly code
+                }
+            }
+            return true;
+        }
 
 
         #region Public Static Methods
