@@ -65,7 +65,7 @@ namespace AsmDude.QuickInfo
             this._labelGraph = labelGraph;
             this._asmSimulator = asmSimulator;
             this._asmDudeTools = AsmDudeTools.Instance;
-            this._foreground = AsmDudeToolsStatic.GetFontColor();
+            this._foreground = AsmDudeToolsStatic.Get_Font_Color();
         }
 
         /// <summary>Determine which pieces of Quickinfo content should be displayed</summary>
@@ -508,7 +508,7 @@ namespace AsmDude.QuickInfo
                 if (first)
                 {
                     first = false;
-                    description.Inlines.Add(new Run(string.Format("\n\n"+ format + "\n",
+                    description.Inlines.Add(new Run(string.Format("\n\n" + format,
                         "", "", "µOps", "µOps", "µOps", "", "", ""))
                     {
                         FontFamily = family,
@@ -516,7 +516,7 @@ namespace AsmDude.QuickInfo
                         FontWeight = FontWeights.Bold,
                         Foreground = foreground
                     });
-                    description.Inlines.Add(new Run(string.Format(format + "\n", 
+                    description.Inlines.Add(new Run(string.Format("\n" + format, 
                         "Architecture", "Instruction", "Fused", "Unfused", "Port", "Latency", "Throughput", ""))
                     {
                         FontFamily = family,
@@ -525,7 +525,7 @@ namespace AsmDude.QuickInfo
                         Foreground = foreground
                     });
                 }
-                description.Inlines.Add(new Run(string.Format(format + "\n",
+                description.Inlines.Add(new Run(string.Format("\n" + format,
                     item._microArch, 
                     item._instr + " " + item._args, 
                     item._mu_Ops_Fused,

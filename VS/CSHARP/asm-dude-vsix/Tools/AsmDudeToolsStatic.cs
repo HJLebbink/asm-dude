@@ -187,7 +187,7 @@ namespace AsmDude.Tools
             return new FontFamily(font);
         }
 
-        public static Brush GetFontColor()
+        public static Brush Get_Font_Color()
         {
             try
             {
@@ -208,9 +208,36 @@ namespace AsmDude.Tools
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output_ERROR("AsmDudeToolsStatic:GetFontColor " + e.Message);
+                AsmDudeToolsStatic.Output_ERROR("AsmDudeToolsStatic:Get_Font_Color " + e.Message);
             }
-            AsmDudeToolsStatic.Output_WARNING("AsmDudeToolsStatic:GetFontColor: could not retrieve text color");
+            AsmDudeToolsStatic.Output_WARNING("AsmDudeToolsStatic:Get_Font_Color: could not retrieve text color");
+            return new SolidColorBrush(Colors.Gray);
+        }
+
+        public static Brush Get_Background_Color()
+        {
+            try
+            {
+                DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
+                EnvDTE.Properties propertiesList = dte.get_Properties("FontsAndColors", "TextEditor");
+                Property prop = propertiesList.Item("FontsAndColorsItems");
+
+                FontsAndColorsItems fci = (FontsAndColorsItems)prop.Object;
+
+                for (int i = 1; i < fci.Count; ++i)
+                {
+                    ColorableItems ci = fci.Item(i);
+                    if (ci.Name.Equals("PLAIN TEXT", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return new SolidColorBrush(ConvertColor(System.Drawing.ColorTranslator.FromOle((int)ci.Background)));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                AsmDudeToolsStatic.Output_ERROR("AsmDudeToolsStatic:Get_Background_Color " + e.Message);
+            }
+            AsmDudeToolsStatic.Output_WARNING("AsmDudeToolsStatic:Get_Background_Color: could not retrieve text color");
             return new SolidColorBrush(Colors.Gray);
         }
 
