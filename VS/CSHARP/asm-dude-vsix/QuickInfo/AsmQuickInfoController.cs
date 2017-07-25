@@ -26,10 +26,8 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using System;
 using AsmDude.Tools;
-using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Text.Adornments;
 using AsmTools;
-using System.Windows.Controls;
 
 namespace AsmDude.QuickInfo
 {
@@ -75,17 +73,15 @@ namespace AsmDude.QuickInfo
         {
             //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
             SnapshotPoint? point = GetMousePosition(new SnapshotPoint(this._textView.TextSnapshot, e.Position));
-            if (point != null)
+            if (point.HasValue)
             {
-                ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(point.Value.Position, PointTrackingMode.Positive);
-                // Find the broker for this buffer
-
                 string contentType = this._textView.TextBuffer.ContentType.DisplayName;
                 if (contentType.Equals(AsmDudePackage.AsmDudeContentType, StringComparison.Ordinal))
                 {
                     if (!this._quickInfoBroker.IsQuickInfoActive(this._textView))
                     {
                         //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: CreateQuickInfoSession for triggerPoint "+triggerPoint.TextBuffer+"; file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
+                        ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(point.Value.Position, PointTrackingMode.Positive);
                         this._session = this._quickInfoBroker.CreateQuickInfoSession(this._textView, triggerPoint, false);
                         this._session.Start();
                     }
