@@ -1,5 +1,5 @@
 # Asm-Dude
-Assembly syntax highlighting, code completion and folding for Visual Studio 2015 and 2017. This extension can be found in the [visual studio extensions gallery](https://visualstudiogallery.msdn.microsoft.com/ff839577-2b68-416a-b761-72f9b1ca7c8e) or download latest installer [AsmDude.vsix (v1.8.2.1)](https://github.com/HJLebbink/asm-dude/releases/download/1.8.2.1/AsmDude.vsix). If assembly is too much of a hassle but you still want access to specific machine instructions, consider [Intrinsics-Dude](https://github.com/HJLebbink/intrinsics-dude).
+Assembly syntax highlighting and code assistance for assembly source files and the disassembly window for Visual Studio 2015 and 2017. This extension can be found in the [visual studio extensions gallery](https://visualstudiogallery.msdn.microsoft.com/ff839577-2b68-416a-b761-72f9b1ca7c8e) or download latest installer [AsmDude.vsix (v1.9.0.0)](https://github.com/HJLebbink/asm-dude/releases/download/1.9.0.0/AsmDude.vsix). If assembly is too much of a hassle but you still want access to specific machine instructions, consider [Intrinsics-Dude](https://github.com/HJLebbink/intrinsics-dude).
 
 ### Features
 
@@ -132,11 +132,11 @@ Visual Studio will launch under the experimental hive.
 * ~~Code completion restrictions. E.g. opcode movss can only be followed by an xmm register and not by a GPR such as rax.~~
 * ~~Signature Help. Provide help which operands (type of registers, mem etc) are allowed for a given mnemonic).~~
 * ~~Add syntax highlighting for AT&T syntax.~~
+* ~~Syntax highlighting for the Debug/Windows/Disassembly view.~~
 * Label rename assistance.
 * Create new file item with .asm extension.
 * Syntax highlighting in quickinfo tooltips, code folding block previews.
 * Code formatting.
-* Syntax highlighting for the Debug/Windows/Disassembly view.
 * Track flag influence. Select an opcode that uses a flag (as input), find the opcodes that produce this flag (as output). E.g.  select opcode cmovc or setc , highlight all opcodes such as btr, sal, sar, shl, shr, etc.
 * Register rename assistance. Highly desirable but very challenging. E.g. rename GPR rdx to rbx, find which rdx, edx, dx, dl and dh will need to be renamed, check if renames will clash with existing occurances of rbx, ebx, bx, bl and bh.
 * Arm support.
