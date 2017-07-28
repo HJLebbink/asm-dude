@@ -48,15 +48,9 @@ namespace AsmDude.HighlightWord
         /// <returns> Returns a HighlightWordTagger instance</returns>
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
-            if (textView == null)
-            {
-                return null;
-            }
+            if (textView == null) return null;
             // Only provide highlighting on the top-level buffer
-            if (textView.TextBuffer != buffer)
-            {
-                return null;
-            }
+            if (textView.TextBuffer != buffer) return null;
 
             Func<ITagger<T>> sc = delegate ()
             {

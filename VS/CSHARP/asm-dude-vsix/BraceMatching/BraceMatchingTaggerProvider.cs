@@ -27,23 +27,24 @@ using Microsoft.VisualStudio.Utilities;
 using System;
 using System.ComponentModel.Composition;
 
-namespace AsmDude.BraceMatching {
+namespace AsmDude.BraceMatching
+{
 
     [Export(typeof(IViewTaggerProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [TagType(typeof(TextMarkerTag))]
     [TextViewRole(PredefinedTextViewRoles.Document)]
 
-    internal sealed class BraceMatchingTaggerProvider : IViewTaggerProvider {
-        public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag {
-            if (textView == null) {
-                return null;
-            }
+    internal sealed class BraceMatchingTaggerProvider : IViewTaggerProvider
+    {
+        public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
+        {
+            if (textView == null) return null;
             //provide highlighting only on the top-level buffer
-            if (textView.TextBuffer != buffer) {
-                return null;
-            }
-            Func<ITagger<T>> sc = delegate () {
+            if (textView.TextBuffer != buffer) return null;
+
+            Func<ITagger<T>> sc = delegate ()
+            {
                 return new BraceMatchingTagger(textView, buffer) as ITagger<T>;
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);

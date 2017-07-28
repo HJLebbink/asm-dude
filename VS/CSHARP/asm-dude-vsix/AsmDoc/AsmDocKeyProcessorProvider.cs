@@ -23,6 +23,7 @@
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
+using System;
 
 namespace AsmDude.AsmDoc
 {
@@ -36,7 +37,11 @@ namespace AsmDude.AsmDoc
         public KeyProcessor GetAssociatedProcessor(IWpfTextView view)
         {
             //AsmDudeToolsStatic.Output_INFO("AsmDocKeyProcessorProvider:GetAssociatedProcessor: file=" + AsmDudeToolsStatic.GetFileName(view.TextBuffer));
-            return view.Properties.GetOrCreateSingletonProperty(typeof(AsmDocKeyProcessor), () => new AsmDocKeyProcessor(CtrlKeyState.GetStateForView(view)));
+            Func<AsmDocKeyProcessor> sc = delegate ()
+            {
+                return new AsmDocKeyProcessor(CtrlKeyState.GetStateForView(view));
+            };
+            return view.Properties.GetOrCreateSingletonProperty(typeof(AsmDocKeyProcessor), sc);
         }
     }
 }

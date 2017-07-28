@@ -43,23 +43,18 @@ namespace AsmDude.AsmDoc
 
         public static AsmDocUnderlineTagger GetClassifierForView(ITextView view)
         {
-            if (UnderlineClassification == null)
-            {
-                return null;
-            }
-            return view.Properties.GetOrCreateSingletonProperty(() => new AsmDocUnderlineTagger(view, UnderlineClassification));
+            return (UnderlineClassification == null) ? null : view.Properties.GetOrCreateSingletonProperty(() => new AsmDocUnderlineTagger(view, UnderlineClassification));
         }
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
+            if (textView == null) return null;
+            if (textView.TextBuffer != buffer) return null;
+
             //AsmDudeToolsStatic.Output_INFO("AsmDocUnderlineTaggerProvider:CreateTagger: file=" + AsmDudeToolsStatic.GetFileName(buffer));
             if (UnderlineClassification == null)
             {
                 UnderlineClassification = this._classificationTypeRegistry.GetClassificationType(AsmDocClassificationDefinition.ClassificationTypeNames.Underline);
-            }
-            if (textView.TextBuffer != buffer)
-            {
-                return null;
             }
             return GetClassifierForView(textView) as ITagger<T>;
         }

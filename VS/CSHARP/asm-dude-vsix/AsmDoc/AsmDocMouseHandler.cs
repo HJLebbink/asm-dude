@@ -68,12 +68,16 @@ namespace AsmDude.AsmDoc
 
             this._state.CtrlKeyStateChanged += (sender, args) =>
             {
-                if (this._state.Enabled)
+                if (Settings.Default.AsmDoc_On)
                 {
-                    TryHighlightItemUnderMouse(RelativeToView(Mouse.PrimaryDevice.GetPosition(this._view.VisualElement)));
-                } else
-                {
-                    Set_Highlight_Span(null);
+                    if (this._state.Enabled)
+                    {
+                        TryHighlightItemUnderMouse(RelativeToView(Mouse.PrimaryDevice.GetPosition(this._view.VisualElement)));
+                    }
+                    else
+                    {
+                        Set_Highlight_Span(null);
+                    }
                 }
             };
 
@@ -96,10 +100,13 @@ namespace AsmDude.AsmDoc
 
         public override void PreprocessMouseMove(MouseEventArgs e)
         {
-            if (!this._mouseDownAnchorPoint.HasValue && this._state.Enabled && e.LeftButton == MouseButtonState.Released)
+            if (!Settings.Default.AsmDoc_On) return;
+
+            if (!this._mouseDownAnchorPoint.HasValue && this._state.Enabled && (e.LeftButton == MouseButtonState.Released))
             {
                 TryHighlightItemUnderMouse(RelativeToView(e.GetPosition(this._view.VisualElement)));
-            } else if (this._mouseDownAnchorPoint.HasValue)
+            }
+            else if (this._mouseDownAnchorPoint.HasValue)
             {
                 // Check and see if this is a drag; if so, clear out the highlight.
                 var currentMousePosition = RelativeToView(e.GetPosition(this._view.VisualElement));
@@ -125,6 +132,8 @@ namespace AsmDude.AsmDoc
 
         public override void PreprocessMouseUp(MouseButtonEventArgs e)
         {
+            if (!Settings.Default.AsmDoc_On) return;
+
             try
             {
                 if (this._mouseDownAnchorPoint.HasValue && this._state.Enabled)
@@ -140,7 +149,7 @@ namespace AsmDude.AsmDoc
                         string keyword = AsmDudeToolsStatic.Get_Keyword_Str(bufferPosition);
                         if (keyword != null)
                         {
-                            Dispatch_Goto_Doc(keyword);
+                            this.Dispatch_Goto_Doc(keyword);
                         }
                         Set_Highlight_Span(null);
                         this._view.Selection.Clear();
@@ -148,7 +157,8 @@ namespace AsmDude.AsmDoc
                     }
                 }
                 this._mouseDownAnchorPoint = null;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 AsmDudeToolsStatic.Output_ERROR(string.Format("{0} PreprocessMouseUp; e={1}", ToString(), ex.ToString()));
             }
@@ -166,10 +176,9 @@ namespace AsmDude.AsmDoc
         private bool TryHighlightItemUnderMouse(Point position)
         {
             //AsmDudeToolsStatic.Output_INFO("AsmDocMouseHandler:TryHighlightItemUnderMouse: position=" + position);
-
-            bool updated = false;
             if (!Settings.Default.AsmDoc_On) return false;
 
+            bool updated = false;
             try
             {
                 var line = this._view.TextViewLines.GetTextViewLineContainingYCoordinate(position.Y);
@@ -203,7 +212,7 @@ namespace AsmDude.AsmDoc
                     //TODO check if classification is a mnemonic only then check for an url
                     string keyword = classification.Span.GetText();
                     //string type = classification.ClassificationType.Classification.ToLower();
-                    string url = Get_Url(keyword);
+                    string url = this.Get_Url(keyword);
                     //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:TryHighlightItemUnderMouse: keyword={1}; type={2}; url={3}", this.ToString(), keyword, type, url));
                     if ((url != null) && Set_Highlight_Span(classification.Span))
                     {
@@ -211,10 +220,10 @@ namespace AsmDude.AsmDoc
                         return true;
                     }
                 }
-
                 // No update occurred, so return false
                 return false;
-            } finally
+            }
+            finally
             {
                 if (!updated)
                 {
@@ -223,13 +232,16 @@ namespace AsmDude.AsmDoc
             }
         }
 
-        private SnapshotSpan? CurrentUnderlineSpan {
-            get {
+        private SnapshotSpan? CurrentUnderlineSpan
+        {
+            get
+            {
                 var classifier = AsmDocUnderlineTaggerProvider.GetClassifierForView(this._view);
                 if (classifier != null && classifier.CurrentUnderlineSpan.HasValue)
                 {
                     return classifier.CurrentUnderlineSpan.Value.TranslateTo(this._view.TextSnapshot, SpanTrackingMode.EdgeExclusive);
-                } else
+                }
+                else
                 {
                     return null;
                 }
@@ -274,7 +286,7 @@ namespace AsmDude.AsmDoc
 
         private int Open_File(string keyword)
         {
-            string url = Get_Url(keyword);
+            string url = this.Get_Url(keyword);
             if (url == null)
             { // this situation happens for all keywords that do not have an url specified (such as registers).
                 //AsmDudeToolsStatic.Output_INFO(string.Format("INFO: {0}:openFile; url for keyword \"{1}\" is null.", this.ToString(), keyword));
@@ -287,13 +299,15 @@ namespace AsmDude.AsmDoc
             {
                 AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:openFile; dte2 is null.", ToString()));
                 return 1;
-            } else
+            }
+            else
             {
                 try
                 {
                     //dte2.ItemOperations.OpenFile(url, EnvDTE.Constants.vsDocumentKindHTML);
                     dte2.ItemOperations.Navigate(url, EnvDTE.vsNavigateOptions.vsNavigateOptionsNewWindow);
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:openFile; exception={1}", ToString(), e));
                     return 2;

@@ -52,34 +52,22 @@ namespace AsmDude.AsmDoc
         {
             //AsmDudeToolsStatic.Output_INFO("AsmDocMouseHandlerProvider:GetAssociatedProcessor: file=" + AsmDudeToolsStatic.GetFileName(view.TextBuffer));
 
-            var buffer = view.TextBuffer;
-
-            IOleCommandTarget shellCommandDispatcher = GetShellCommandDispatcher(view);
-
+            IOleCommandTarget shellCommandDispatcher = this._globalServiceProvider.GetService(typeof(SUIHostCommandDispatcher)) as IOleCommandTarget;
             if (shellCommandDispatcher == null)
             {
                 return null;
             }
-
-            return new AsmDocMouseHandler(
-                view,
-                shellCommandDispatcher,
-                this._aggregatorFactory.GetClassifier(buffer),
-                this._navigatorService.GetTextStructureNavigator(buffer),
-                CtrlKeyState.GetStateForView(view),
-                AsmDudeTools.Instance);
+            else
+            {
+                var buffer = view.TextBuffer;
+                return new AsmDocMouseHandler(
+                    view,
+                    shellCommandDispatcher,
+                    this._aggregatorFactory.GetClassifier(buffer),
+                    this._navigatorService.GetTextStructureNavigator(buffer),
+                    CtrlKeyState.GetStateForView(view),
+                    AsmDudeTools.Instance);
+            }
         }
-
-        #region Private helpers
-
-        /// <summary>
-        /// Get the SUIHostCommandDispatcher from the global service provider.
-        /// </summary>
-        private IOleCommandTarget GetShellCommandDispatcher(ITextView view)
-        {
-            return this._globalServiceProvider.GetService(typeof(SUIHostCommandDispatcher)) as IOleCommandTarget;
-        }
-
-        #endregion
     }
 }
