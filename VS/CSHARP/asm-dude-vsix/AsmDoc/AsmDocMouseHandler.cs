@@ -34,6 +34,7 @@ using Microsoft.VisualStudio.Shell;
 using EnvDTE80;
 using Microsoft.VisualStudio.Text.Formatting;
 using AsmDude.Tools;
+using System.Collections.Generic;
 
 namespace AsmDude.AsmDoc
 {
@@ -263,7 +264,7 @@ namespace AsmDude.AsmDoc
         private bool Dispatch_Goto_Doc(string keyword)
         {
             //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:DispatchGoToDoc; keyword=\"{1}\".", this.ToString(), keyword));
-            int hr = Open_File(keyword);
+            int hr = this.Open_File(keyword);
             return ErrorHandler.Succeeded(hr);
         }
 
@@ -300,22 +301,98 @@ namespace AsmDude.AsmDoc
                 AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:openFile; dte2 is null.", ToString()));
                 return 1;
             }
-            else
+
+            try
             {
-                try
+                bool alreadyOpen = false;
+
+                var enumerator = dte2.Windows.GetEnumerator();
+                while (enumerator.MoveNext())
                 {
-                    //dte2.ItemOperations.OpenFile(url, EnvDTE.Constants.vsDocumentKindHTML);
+                    var window = enumerator.Current as EnvDTE.Window;
+                    if (window.ObjectKind.Equals(EnvDTE.Constants.vsWindowKindWebBrowser))
+                    {
+                        var url2 = VisualStudioWebBrowser.GetWebBrowserWindowUrl(window).ToString();
+                        //AsmDudeToolsStatic.Output_INFO("Documentation " + window.Caption + " is open. url=" + url2.ToString());
+                        if (url2.Equals(url, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            alreadyOpen = true;
+                            window.Activate();
+                            break;
+                        }
+                    }
+                }
+                if (!alreadyOpen)
+                {
+                    // vsNavigateOptionsDefault    0   The Web page opens in the currently open browser window. (Default)
+                    // vsNavigateOptionsNewWindow  1   The Web page opens in a new browser window.
                     dte2.ItemOperations.Navigate(url, EnvDTE.vsNavigateOptions.vsNavigateOptionsNewWindow);
                 }
-                catch (Exception e)
-                {
-                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:openFile; exception={1}", ToString(), e));
-                    return 2;
-                }
                 return 0;
+            }
+            catch (Exception e)
+            {
+                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:openFile; exception={1}", ToString(), e));
+                return 2;
             }
         }
 
         #endregion
+    }
+
+    public class VisualStudioWebBrowser : System.Windows.Forms.WebBrowser
+    {
+        protected VisualStudioWebBrowser(object IWebBrowser2Object)
+        {
+            this.IWebBrowser2Object = IWebBrowser2Object;
+        }
+
+        protected object IWebBrowser2Object { get; set; }
+
+        private static void Evaluate(EnvDTE.Window WindowReference, Action<System.Windows.Forms.WebBrowser> OnEvaluate)
+        {
+            //Note: Window of EnvDTE.Constants.vsWindowKindWebBrowser type contains an IWebBrowser2 object
+            using (System.Threading.ManualResetEvent evt = new System.Threading.ManualResetEvent(false))
+            {
+                System.Threading.Thread STAThread = new System.Threading.Thread(new System.Threading.ParameterizedThreadStart((o) =>
+                {
+                    try
+                    {
+                        using (VisualStudioWebBrowser Browser = new VisualStudioWebBrowser(o))
+                        {
+                            try
+                            {
+                                OnEvaluate.Invoke((System.Windows.Forms.WebBrowser)Browser);
+                            }
+                            catch { }
+                        }
+                    }
+                    catch { }
+                    evt.Set();
+                }));
+                STAThread.SetApartmentState(System.Threading.ApartmentState.STA);
+                STAThread.Start(WindowReference.Object);
+                evt.WaitOne();
+            }
+        }
+        public static Uri GetWebBrowserWindowUrl(EnvDTE.Window WindowReference)
+        {
+            Uri BrowserUrl = new Uri("", UriKind.RelativeOrAbsolute);
+            VisualStudioWebBrowser.Evaluate(WindowReference, new Action<System.Windows.Forms.WebBrowser>((wb) =>
+            {
+                BrowserUrl = wb.Url;
+            }));
+            return BrowserUrl;
+        }
+
+        protected override void AttachInterfaces(object nativeActiveXObject)
+        {
+            base.AttachInterfaces(this.IWebBrowser2Object);
+        }
+        protected override void DetachInterfaces()
+        {
+            base.DetachInterfaces();
+            this.IWebBrowser2Object = null;
+        }
     }
 }
