@@ -271,25 +271,12 @@ namespace AsmDude.AsmDoc
         private string Get_Url(string keyword)
         {
             string reference = this._asmDudeTools.Get_Url(keyword);
-            if (reference.Length == 0)
-            {
-                return null;
-            }
-            if (reference.StartsWith("http", StringComparison.OrdinalIgnoreCase))
-            {
-                return reference;
-            }
-            else
-            {
-                if (true)
-                {
-                    return "https://github.com/HJLebbink/asm-dude/wiki/" + reference + "#description";
-                }
-                else
-                {
-                    return Settings.Default.AsmDoc_url + reference;
-                }
-            }
+            if (reference == null) return null;
+            if (reference.Length == 0) return null;
+
+            return (reference.StartsWith("http", StringComparison.OrdinalIgnoreCase)) 
+                ? reference
+                : Settings.Default.AsmDoc_url + reference;
         }
 
         private EnvDTE.Window GetWindow(DTE2 dte2, string url)

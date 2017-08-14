@@ -181,7 +181,7 @@ namespace AsmDude {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://asmdude.github.io/x86doc/html/")]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://github.com/HJLebbink/asm-dude/wiki/")]
         public string AsmDoc_url {
             get {
                 return ((string)(this["AsmDoc_url"]));
