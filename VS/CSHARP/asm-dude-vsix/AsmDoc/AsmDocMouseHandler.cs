@@ -281,8 +281,34 @@ namespace AsmDude.AsmDoc
             }
             else
             {
-                return Settings.Default.AsmDoc_url + reference;
+                if (true)
+                {
+                    return "https://github.com/HJLebbink/asm-dude/wiki/" + reference + "#description";
+                }
+                else
+                {
+                    return Settings.Default.AsmDoc_url + reference;
+                }
             }
+        }
+
+        private EnvDTE.Window GetWindow(DTE2 dte2, string url)
+        {
+            var enumerator = dte2.Windows.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                var window = enumerator.Current as EnvDTE.Window;
+                if (window.ObjectKind.Equals(EnvDTE.Constants.vsWindowKindWebBrowser))
+                {
+                    var url2 = VisualStudioWebBrowser.GetWebBrowserWindowUrl(window).ToString();
+                    //AsmDudeToolsStatic.Output_INFO("Documentation " + window.Caption + " is open. url=" + url2.ToString());
+                    if (url2.Equals(url, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return window;
+                    }
+                }
+            }
+            return null;
         }
 
         private int Open_File(string keyword)
@@ -304,29 +330,19 @@ namespace AsmDude.AsmDoc
 
             try
             {
-                bool alreadyOpen = false;
-
-                var enumerator = dte2.Windows.GetEnumerator();
-                while (enumerator.MoveNext())
-                {
-                    var window = enumerator.Current as EnvDTE.Window;
-                    if (window.ObjectKind.Equals(EnvDTE.Constants.vsWindowKindWebBrowser))
-                    {
-                        var url2 = VisualStudioWebBrowser.GetWebBrowserWindowUrl(window).ToString();
-                        //AsmDudeToolsStatic.Output_INFO("Documentation " + window.Caption + " is open. url=" + url2.ToString());
-                        if (url2.Equals(url, StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            alreadyOpen = true;
-                            window.Activate();
-                            break;
-                        }
-                    }
-                }
-                if (!alreadyOpen)
+                var window = this.GetWindow(dte2, url);
+                if (window == null)
                 {
                     // vsNavigateOptionsDefault    0   The Web page opens in the currently open browser window. (Default)
                     // vsNavigateOptionsNewWindow  1   The Web page opens in a new browser window.
-                    dte2.ItemOperations.Navigate(url, EnvDTE.vsNavigateOptions.vsNavigateOptionsNewWindow);
+                    AsmDudeToolsStatic.Output_INFO(string.Format("{0}:openFile; going to open url {1}.", ToString(), url));
+                    window = dte2.ItemOperations.Navigate(url, EnvDTE.vsNavigateOptions.vsNavigateOptionsNewWindow);
+                    window.Caption = keyword;
+//                    VisualStudioWebBrowser.SetTitle(window, keyword);
+                }
+                else
+                {
+                    window.Activate();
                 }
                 return 0;
             }
@@ -336,7 +352,6 @@ namespace AsmDude.AsmDoc
                 return 2;
             }
         }
-
         #endregion
     }
 
@@ -384,7 +399,15 @@ namespace AsmDude.AsmDoc
             }));
             return BrowserUrl;
         }
-
+        public static System.Windows.Forms.WebBrowser GetWebBrowser(EnvDTE.Window WindowReference)
+        {
+            System.Windows.Forms.WebBrowser wb = null;
+            VisualStudioWebBrowser.Evaluate(WindowReference, new Action<System.Windows.Forms.WebBrowser>((wb2) =>
+            {
+                wb = wb2;
+            }));
+            return wb;
+        }
         protected override void AttachInterfaces(object nativeActiveXObject)
         {
             base.AttachInterfaces(this.IWebBrowser2Object);
