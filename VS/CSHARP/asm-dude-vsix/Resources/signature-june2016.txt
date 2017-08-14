@@ -1,1347 +1,1347 @@
 ; This file is machine generated at 2016/07/21 16:50:52
 ;
-GENERAL	AAA	ASCII Adjust After Addition	AAA.html
-GENERAL	AAD	ASCII Adjust AX Before Division	AAD.html
-GENERAL	AAM	ASCII Adjust AX After Multiply	AAM.html
-GENERAL	AAS	ASCII Adjust AL After Subtraction	AAS.html
-GENERAL	ADC	Add with Carry	ADC.html
-GENERAL	ADCX	Unsigned Integer Addition of Two Operands with Carry Flag	ADCX.html
-GENERAL	ADD	Add	ADD.html
-GENERAL	ADDPD	Add Packed Double-Precision FP Values	ADDPD.html
-GENERAL	VADDPD	Add Packed Double-Precision FP Values	ADDPD.html
-GENERAL	ADDPS	Add Packed Single-Precision FP Values	ADDPS.html
-GENERAL	VADDPS	Add Packed Single-Precision FP Values	ADDPS.html
-GENERAL	ADDSD	Add Scalar Double-Precision FP Values	ADDSD.html
-GENERAL	VADDSD	Add Scalar Double-Precision FP Values	ADDSD.html
-GENERAL	ADDSS	Add Scalar Single-Precision FP Values	ADDSS.html
-GENERAL	VADDSS	Add Scalar Single-Precision FP Values	ADDSS.html
-GENERAL	ADDSUBPD	Packed Double-FP Add/Subtract	ADDSUBPD.html
-GENERAL	VADDSUBPD	Packed Double-FP Add/Subtract	ADDSUBPD.html
-GENERAL	ADDSUBPS	Packed Single-FP Add/Subtract	ADDSUBPS.html
-GENERAL	VADDSUBPS	Packed Single-FP Add/Subtract	ADDSUBPS.html
-GENERAL	ADOX	Unsigned Integer Addition of Two Operands with Overflow Flag	ADOX.html
-GENERAL	AESDEC	Perform One Round of an AES Decryption Flow	AESDEC.html
-GENERAL	VAESDEC	Perform One Round of an AES Decryption Flow	AESDEC.html
-GENERAL	VAESDECLAST	Perform Last Round of an AES Decryption Flow	AESDECLAST.html
-GENERAL	AESDECLAST	Perform Last Round of an AES Decryption Flow	AESDECLAST.html
-GENERAL	AESENC	Perform One Round of an AES Encryption Flow	AESENC.html
-GENERAL	VAESENC	Perform One Round of an AES Encryption Flow	AESENC.html
-GENERAL	AESENCLAST	Perform Last Round of an AES Encryption Flow	AESENCLAST.html
-GENERAL	VAESENCLAST	Perform Last Round of an AES Encryption Flow	AESENCLAST.html
-GENERAL	VAESIMC	Perform the AES InvMixColumn Transformation	AESIMC.html
-GENERAL	AESIMC	Perform the AES InvMixColumn Transformation	AESIMC.html
-GENERAL	VAESKEYGENASSIST	AES Round Key Generation Assist	AESKEYGENASSIST.html
-GENERAL	AESKEYGENASSIST	AES Round Key Generation Assist	AESKEYGENASSIST.html
-GENERAL	AND	Logical AND	AND.html
-GENERAL	ANDN	Logical AND NOT	ANDN.html
-GENERAL	ANDNPD	Bitwise Logical AND NOT of Packed Double-Precision FP Values	ANDNPD.html
-GENERAL	VANDNPD	Bitwise Logical AND NOT of Packed Double-Precision FP Values	ANDNPD.html
-GENERAL	ANDNPS	Bitwise Logical AND NOT of Packed Single-Precision FP Values	ANDNPS.html
-GENERAL	VANDNPS	Bitwise Logical AND NOT of Packed Single-Precision FP Values	ANDNPS.html
-GENERAL	ANDPD	Bitwise Logical AND of Packed Double-Precision FP Values	ANDPD.html
-GENERAL	VANDPD	Bitwise Logical AND of Packed Double-Precision FP Values	ANDPD.html
-GENERAL	ANDPS	Bitwise Logical AND of Packed Single-Precision FP Values	ANDPS.html
-GENERAL	VANDPS	Bitwise Logical AND of Packed Single-Precision FP Values	ANDPS.html
-GENERAL	ARPL	Adjust RPL Field of Segment Selector	ARPL.html
-GENERAL	BEXTR	Bit Field Extract	BEXTR.html
-GENERAL	BLENDPD	Blend Packed Double-Precision FP Values	BLENDPD.html
-GENERAL	VBLENDPD	Blend Packed Double-Precision FP Values	BLENDPD.html
-GENERAL	BLENDPS	Blend Packed Single-Precision FP Values	BLENDPS.html
-GENERAL	VBLENDPS	Blend Packed Single-Precision FP Values	BLENDPS.html
-GENERAL	VBLENDVPD	Variable Blend Packed Double-Precision FP Values	BLENDVPD.html
-GENERAL	BLENDVPD	Variable Blend Packed Double-Precision FP Values	BLENDVPD.html
-GENERAL	VBLENDVPS	Variable Blend Packed Single-Precision FP Values	BLENDVPS.html
-GENERAL	BLENDVPS	Variable Blend Packed Single-Precision FP Values	BLENDVPS.html
-GENERAL	BLSI	Extract Lowest Set Isolated Bit	BLSI.html
-GENERAL	BLSMSK	Get Mask Up to Lowest Set Bit	BLSMSK.html
-GENERAL	BLSR	Reset Lowest Set Bit	BLSR.html
-GENERAL	BNDCL	Check Lower Bound	BNDCL.html
-GENERAL	BNDCN	Check Upper Bound	BNDCU_BNDCN.html
-GENERAL	BNDCU	Check Upper Bound	BNDCU_BNDCN.html
-GENERAL	BNDLDX	Load Extended Bounds Using Address Translation	BNDLDX.html
-GENERAL	BNDMK	Make Bounds	BNDMK.html
-GENERAL	BNDMOV	Move Bounds	BNDMOV.html
-GENERAL	BNDSTX	Store Extended Bounds Using Address Translation	BNDSTX.html
-GENERAL	BOUND	Check Array Index Against Bounds	BOUND.html
-GENERAL	BSF	Bit Scan Forward	BSF.html
-GENERAL	BSR	Bit Scan Reverse	BSR.html
-GENERAL	BSWAP	Byte Swap	BSWAP.html
-GENERAL	BT	Bit Test	BT.html
-GENERAL	BTC	Bit Test and Complement	BTC.html
-GENERAL	BTR	Bit Test and Reset	BTR.html
-GENERAL	BTS	Bit Test and Set	BTS.html
-GENERAL	BZHI	Zero High Bits Starting with Specified Bit Position	BZHI.html
-GENERAL	CALL	Call Procedure	CALL.html
-GENERAL	CBW	Convert Byte to Word/Convert Word to Dword/Convert Dword to Qword	CBW_CWDE_CDQE.html
-GENERAL	CWDE	Convert Byte to Word/Convert Word to Dword/Convert Dword to Qword	CBW_CWDE_CDQE.html
-GENERAL	CDQE	Convert Byte to Word/Convert Word to Dword/Convert Dword to Qword	CBW_CWDE_CDQE.html
-GENERAL	CLAC	Clear AC Flag in EFLAGS Register	CLAC.html
-GENERAL	CLC	Clear Carry Flag	CLC.html
-GENERAL	CLD	Clear Direction Flag	CLD.html
-GENERAL	CLFLUSH	Flush Cache Line	CLFLUSH.html
-GENERAL	CLFLUSHOPT	Flush Cache Line Optimized	CLFLUSHOPT.html
-GENERAL	CLI	Clear Interrupt Flag	CLI.html
-GENERAL	CLTS	Clear Task-Switched Flag in CR0	CLTS.html
-GENERAL	CMC	Complement Carry Flag	CMC.html
-GENERAL	CMOVE	Conditional Move	CMOVcc.html
-GENERAL	CMOVBE	Conditional Move	CMOVcc.html
-GENERAL	CMOVG	Conditional Move	CMOVcc.html
-GENERAL	CMOVAE	Conditional Move	CMOVcc.html
-GENERAL	CMOVA	Conditional Move	CMOVcc.html
-GENERAL	CMOVB	Conditional Move	CMOVcc.html
-GENERAL	CMOVC	Conditional Move	CMOVcc.html
-GENERAL	CMOVNAE	Conditional Move	CMOVcc.html
-GENERAL	CMOVL	Conditional Move	CMOVcc.html
-GENERAL	CMOVNA	Conditional Move	CMOVcc.html
-GENERAL	CMOVNB	Conditional Move	CMOVcc.html
-GENERAL	CMOVGE	Conditional Move	CMOVcc.html
-GENERAL	CMOVLE	Conditional Move	CMOVcc.html
-GENERAL	CMP	Compare Two Operands	CMP.html
-GENERAL	VCMPPD	Compare Packed Double-Precision FP Values	CMPPD.html
-GENERAL	CMPPD	Compare Packed Double-Precision FP Values	CMPPD.html
-GENERAL	VCMPPS	Compare Packed Single-Precision FP Values	CMPPS.html
-GENERAL	CMPPS	Compare Packed Single-Precision FP Values	CMPPS.html
-GENERAL	CMPSD	Compare Scalar Double-Precision FP Value	CMPSD.html
-GENERAL	VCMPSD	Compare Scalar Double-Precision FP Value	CMPSD.html
-GENERAL	CMPSS	Compare Scalar Single-Precision FP Value	CMPSS.html
-GENERAL	VCMPSS	Compare Scalar Single-Precision FP Value	CMPSS.html
-GENERAL	CMPSQ	Compare String Operands	CMPS_CMPSB_CMPSW_CMPSD_CMPSQ.html
-GENERAL	CMPSB	Compare String Operands	CMPS_CMPSB_CMPSW_CMPSD_CMPSQ.html
-GENERAL	CMPS	Compare String Operands	CMPS_CMPSB_CMPSW_CMPSD_CMPSQ.html
-GENERAL	CMPSD	Compare String Operands	CMPS_CMPSB_CMPSW_CMPSD_CMPSQ.html
-GENERAL	CMPSW	Compare String Operands	CMPS_CMPSB_CMPSW_CMPSD_CMPSQ.html
-GENERAL	CMPXCHG	Compare and Exchange	CMPXCHG.html
-GENERAL	CMPXCHG16B	Compare and Exchange Bytes	CMPXCHG8B_CMPXCHG16B.html
-GENERAL	CMPXCHG8B	Compare and Exchange Bytes	CMPXCHG8B_CMPXCHG16B.html
-GENERAL	VCOMISD	Compare Scalar Ordered Double-Precision FP Values and Set EFLAGS	COMISD.html
-GENERAL	COMISD	Compare Scalar Ordered Double-Precision FP Values and Set EFLAGS	COMISD.html
-GENERAL	VCOMISS	Compare Scalar Ordered Single-Precision FP Values and Set EFLAGS	COMISS.html
-GENERAL	COMISS	Compare Scalar Ordered Single-Precision FP Values and Set EFLAGS	COMISS.html
-GENERAL	CPUID	CPU Identification	CPUID.html
-GENERAL	CRC32	Accumulate CRC32 Value	CRC32.html
-GENERAL	VCVTDQ2PD	Convert Packed Dword Integers to Packed Double-Precision FP Values	CVTDQ2PD.html
-GENERAL	CVTDQ2PD	Convert Packed Dword Integers to Packed Double-Precision FP Values	CVTDQ2PD.html
-GENERAL	VCVTDQ2PS	Convert Packed Dword Integers to Packed Single-Precision FP Values	CVTDQ2PS.html
-GENERAL	CVTDQ2PS	Convert Packed Dword Integers to Packed Single-Precision FP Values	CVTDQ2PS.html
-GENERAL	VCVTPD2DQ	Convert Packed Double-Precision FP Values to Packed Dword Integers	CVTPD2DQ.html
-GENERAL	CVTPD2DQ	Convert Packed Double-Precision FP Values to Packed Dword Integers	CVTPD2DQ.html
-GENERAL	CVTPD2PI	Convert Packed Double-Precision FP Values to Packed Dword Integers	CVTPD2PI.html
-GENERAL	CVTPD2PS	Convert Packed Double-Precision FP Values to Packed Single-Precision FP Values	CVTPD2PS.html
-GENERAL	VCVTPD2PS	Convert Packed Double-Precision FP Values to Packed Single-Precision FP Values	CVTPD2PS.html
-GENERAL	CVTPI2PD	Convert Packed Dword Integers to Packed Double-Precision FP Values	CVTPI2PD.html
-GENERAL	CVTPI2PS	Convert Packed Dword Integers to Packed Single-Precision FP Values	CVTPI2PS.html
-GENERAL	CVTPS2DQ	Convert Packed Single-Precision FP Values to Packed Signed Dword Integer Values	CVTPS2DQ.html
-GENERAL	VCVTPS2DQ	Convert Packed Single-Precision FP Values to Packed Signed Dword Integer Values	CVTPS2DQ.html
-GENERAL	VCVTPS2PD	Convert Packed Single-Precision FP Values to Packed Double-Precision FP Values	CVTPS2PD.html
-GENERAL	CVTPS2PD	Convert Packed Single-Precision FP Values to Packed Double-Precision FP Values	CVTPS2PD.html
-GENERAL	CVTPS2PI	Convert Packed Single-Precision FP Values to Packed Dword Integers	CVTPS2PI.html
-GENERAL	VCVTSD2SI	Convert Scalar Double-Precision FP Value to Dword Integer	CVTSD2SI.html
-GENERAL	CVTSD2SI	Convert Scalar Double-Precision FP Value to Dword Integer	CVTSD2SI.html
-GENERAL	VCVTSD2SS	Convert Scalar Double-Precision FP Value to Scalar Single-Precision FP Value	CVTSD2SS.html
-GENERAL	CVTSD2SS	Convert Scalar Double-Precision FP Value to Scalar Single-Precision FP Value	CVTSD2SS.html
-GENERAL	VCVTSI2SD	Convert Dword Integer to Scalar Double-Precision FP Value	CVTSI2SD.html
-GENERAL	CVTSI2SD	Convert Dword Integer to Scalar Double-Precision FP Value	CVTSI2SD.html
-GENERAL	CVTSI2SS	Convert Dword Integer to Scalar Single-Precision FP Value	CVTSI2SS.html
-GENERAL	VCVTSI2SS	Convert Dword Integer to Scalar Single-Precision FP Value	CVTSI2SS.html
-GENERAL	CVTSS2SD	Convert Scalar Single-Precision FP Value to Scalar Double-Precision FP Value	CVTSS2SD.html
-GENERAL	VCVTSS2SD	Convert Scalar Single-Precision FP Value to Scalar Double-Precision FP Value	CVTSS2SD.html
-GENERAL	CVTSS2SI	Convert Scalar Single-Precision FP Value to Dword Integer	CVTSS2SI.html
-GENERAL	VCVTSS2SI	Convert Scalar Single-Precision FP Value to Dword Integer	CVTSS2SI.html
-GENERAL	VCVTTPD2DQ	Convert with Truncation Packed Double-Precision FP Values to Packed Dword Integers	CVTTPD2DQ.html
-GENERAL	CVTTPD2DQ	Convert with Truncation Packed Double-Precision FP Values to Packed Dword Integers	CVTTPD2DQ.html
-GENERAL	CVTTPD2PI	Convert with Truncation Packed Double-Precision FP Values to Packed Dword Integers	CVTTPD2PI.html
-GENERAL	CVTTPS2DQ	Convert with Truncation Packed Single-Precision FP Values to Packed Signed Dword Integer Values	CVTTPS2DQ.html
-GENERAL	VCVTTPS2DQ	Convert with Truncation Packed Single-Precision FP Values to Packed Signed Dword Integer Values	CVTTPS2DQ.html
-GENERAL	CVTTPS2PI	Convert with Truncation Packed Single-Precision FP Values to Packed Dword Integers	CVTTPS2PI.html
-GENERAL	VCVTTSD2SI	Convert with Truncation Scalar Double-Precision FP Value to Signed Integer	CVTTSD2SI.html
-GENERAL	CVTTSD2SI	Convert with Truncation Scalar Double-Precision FP Value to Signed Integer	CVTTSD2SI.html
-GENERAL	VCVTTSS2SI	Convert with Truncation Scalar Single-Precision FP Value to Integer	CVTTSS2SI.html
-GENERAL	CVTTSS2SI	Convert with Truncation Scalar Single-Precision FP Value to Integer	CVTTSS2SI.html
-GENERAL	CQO	Convert Word to Dword/Convert Dword to Qword	CWD_CDQ_CQO.html
-GENERAL	CWD	Convert Word to Dword/Convert Dword to Qword	CWD_CDQ_CQO.html
-GENERAL	CDQ	Convert Word to Dword/Convert Dword to Qword	CWD_CDQ_CQO.html
-GENERAL	DAA	Decimal Adjust AL after Addition	DAA.html
-GENERAL	DAS	Decimal Adjust AL after Subtraction	DAS.html
-GENERAL	DEC	Decrement by 1	DEC.html
-GENERAL	DIV	Unsigned Divide	DIV.html
-GENERAL	DIVPD	Divide Packed Double-Precision FP Values	DIVPD.html
-GENERAL	VDIVPD	Divide Packed Double-Precision FP Values	DIVPD.html
-GENERAL	DIVPS	Divide Packed Single-Precision FP Values	DIVPS.html
-GENERAL	VDIVPS	Divide Packed Single-Precision FP Values	DIVPS.html
-GENERAL	DIVSD	Divide Scalar Double-Precision FP Value	DIVSD.html
-GENERAL	VDIVSD	Divide Scalar Double-Precision FP Value	DIVSD.html
-GENERAL	DIVSS	Divide Scalar Single-Precision FP Values	DIVSS.html
-GENERAL	VDIVSS	Divide Scalar Single-Precision FP Values	DIVSS.html
-GENERAL	DPPD	Dot Product of Packed Double-Precision FP Values	DPPD.html
-GENERAL	VDPPD	Dot Product of Packed Double-Precision FP Values	DPPD.html
-GENERAL	VDPPS	Dot Product of Packed Single-Precision FP Values	DPPS.html
-GENERAL	DPPS	Dot Product of Packed Single-Precision FP Values	DPPS.html
-GENERAL	EMMS	Empty MMX Technology State	EMMS.html
-GENERAL	ENTER	Make Stack Frame for Procedure Parameters	ENTER.html
-GENERAL	EXTRACTPS	Extract Packed FP Values	EXTRACTPS.html
-GENERAL	VEXTRACTPS	Extract Packed FP Values	EXTRACTPS.html
-GENERAL	F2XM1	Compute 2x–1	F2XM1.html
-GENERAL	FABS	Absolute Value	FABS.html
-GENERAL	FIADD	Add	FADD_FADDP_FIADD.html
-GENERAL	FADD	Add	FADD_FADDP_FIADD.html
-GENERAL	FADDP	Add	FADD_FADDP_FIADD.html
-GENERAL	FBLD	Load Binary Coded Decimal	FBLD.html
-GENERAL	FBSTP	Store BCD Integer and Pop	FBSTP.html
-GENERAL	FCHS	Change Sign	FCHS.html
-GENERAL	FCLEX	Clear Exceptions	FCLEX_FNCLEX.html
-GENERAL	FNCLEX	Clear Exceptions	FCLEX_FNCLEX.html
-GENERAL	FCMOVNB	FP Conditional Move	FCMOVcc.html
-GENERAL	FCMOVNBE	FP Conditional Move	FCMOVcc.html
-GENERAL	FCMOVBE	FP Conditional Move	FCMOVcc.html
-GENERAL	FCMOVNE	FP Conditional Move	FCMOVcc.html
-GENERAL	FCMOVE	FP Conditional Move	FCMOVcc.html
-GENERAL	FCMOVU	FP Conditional Move	FCMOVcc.html
-GENERAL	FCMOVB	FP Conditional Move	FCMOVcc.html
-GENERAL	FCOMI	Compare FP Values and Set EFLAGS	FCOMI_FCOMIP_FUCOMI_FUCOMIP.html
-GENERAL	FUCOMI	Compare FP Values and Set EFLAGS	FCOMI_FCOMIP_FUCOMI_FUCOMIP.html
-GENERAL	FCOMIP	Compare FP Values and Set EFLAGS	FCOMI_FCOMIP_FUCOMI_FUCOMIP.html
-GENERAL	FUCOMIP	Compare FP Values and Set EFLAGS	FCOMI_FCOMIP_FUCOMI_FUCOMIP.html
-GENERAL	FCOMPP	Compare FP Values	FCOM_FCOMP_FCOMPP.html
-GENERAL	FCOM	Compare FP Values	FCOM_FCOMP_FCOMPP.html
-GENERAL	FCOMP	Compare FP Values	FCOM_FCOMP_FCOMPP.html
-GENERAL	FCOS	Cosine	FCOS.html
-GENERAL	FDECSTP	Decrement Stack-Top Pointer	FDECSTP.html
-GENERAL	FIDIVR	Reverse Divide	FDIVR_FDIVRP_FIDIVR.html
-GENERAL	FDIVRP	Reverse Divide	FDIVR_FDIVRP_FIDIVR.html
-GENERAL	FDIVR	Reverse Divide	FDIVR_FDIVRP_FIDIVR.html
-GENERAL	FIDIV	Divide	FDIV_FDIVP_FIDIV.html
-GENERAL	FDIV	Divide	FDIV_FDIVP_FIDIV.html
-GENERAL	FDIVP	Divide	FDIV_FDIVP_FIDIV.html
-GENERAL	FFREE	Free FP Register	FFREE.html
-GENERAL	FICOM	Compare Integer	FICOM_FICOMP.html
-GENERAL	FICOMP	Compare Integer	FICOM_FICOMP.html
-GENERAL	FILD	Load Integer	FILD.html
-GENERAL	FINCSTP	Increment Stack-Top Pointer	FINCSTP.html
-GENERAL	FNINIT	Initialize FP Unit	FINIT_FNINIT.html
-GENERAL	FINIT	Initialize FP Unit	FINIT_FNINIT.html
-GENERAL	FISTTP	Store Integer with Truncation	FISTTP.html
-GENERAL	FISTP	Store Integer	FIST_FISTP.html
-GENERAL	FIST	Store Integer	FIST_FISTP.html
-GENERAL	FLD	Load FP Value	FLD.html
-GENERAL	FLDLN2	Load Constant	FLD1_FLDL2T_FLDL2E_FLDPI_FLDLG2_FLDLN2_FLDZ.html
-GENERAL	FLDL2T	Load Constant	FLD1_FLDL2T_FLDL2E_FLDPI_FLDLG2_FLDLN2_FLDZ.html
-GENERAL	FLD1	Load Constant	FLD1_FLDL2T_FLDL2E_FLDPI_FLDLG2_FLDLN2_FLDZ.html
-GENERAL	FLDL2E	Load Constant	FLD1_FLDL2T_FLDL2E_FLDPI_FLDLG2_FLDLN2_FLDZ.html
-GENERAL	FLDPI	Load Constant	FLD1_FLDL2T_FLDL2E_FLDPI_FLDLG2_FLDLN2_FLDZ.html
-GENERAL	FLDLG2	Load Constant	FLD1_FLDL2T_FLDL2E_FLDPI_FLDLG2_FLDLN2_FLDZ.html
-GENERAL	FLDZ	Load Constant	FLD1_FLDL2T_FLDL2E_FLDPI_FLDLG2_FLDLN2_FLDZ.html
-GENERAL	FLDCW	Load x87 FPU Control Word	FLDCW.html
-GENERAL	FLDENV	Load x87 FPU Environment	FLDENV.html
-GENERAL	FMULP	Multiply	FMUL_FMULP_FIMUL.html
-GENERAL	FIMUL	Multiply	FMUL_FMULP_FIMUL.html
-GENERAL	FMUL	Multiply	FMUL_FMULP_FIMUL.html
-GENERAL	FNOP	No Operation	FNOP.html
-GENERAL	FPATAN	Partial Arctangent	FPATAN.html
-GENERAL	FPREM	Partial Remainder	FPREM.html
-GENERAL	FPREM1	Partial Remainder	FPREM1.html
-GENERAL	FPTAN	Partial Tangent	FPTAN.html
-GENERAL	FRNDINT	Round to Integer	FRNDINT.html
-GENERAL	FRSTOR	Restore x87 FPU State	FRSTOR.html
-GENERAL	FNSAVE	Store x87 FPU State	FSAVE_FNSAVE.html
-GENERAL	FSAVE	Store x87 FPU State	FSAVE_FNSAVE.html
-GENERAL	FSCALE	Scale	FSCALE.html
-GENERAL	FSIN	Sine	FSIN.html
-GENERAL	FSINCOS	Sine and Cosine	FSINCOS.html
-GENERAL	FSQRT	Square Root	FSQRT.html
-GENERAL	FNSTCW	Store x87 FPU Control Word	FSTCW_FNSTCW.html
-GENERAL	FSTCW	Store x87 FPU Control Word	FSTCW_FNSTCW.html
-GENERAL	FNSTENV	Store x87 FPU Environment	FSTENV_FNSTENV.html
-GENERAL	FSTENV	Store x87 FPU Environment	FSTENV_FNSTENV.html
-GENERAL	FNSTSW	Store x87 FPU Status Word	FSTSW_FNSTSW.html
-GENERAL	FSTSW	Store x87 FPU Status Word	FSTSW_FNSTSW.html
-GENERAL	FST	Store FP Value	FST_FSTP.html
-GENERAL	FSTP	Store FP Value	FST_FSTP.html
-GENERAL	FSUBRP	Reverse Subtract	FSUBR_FSUBRP_FISUBR.html
-GENERAL	FSUBR	Reverse Subtract	FSUBR_FSUBRP_FISUBR.html
-GENERAL	FISUBR	Reverse Subtract	FSUBR_FSUBRP_FISUBR.html
-GENERAL	FISUB	Subtract	FSUB_FSUBP_FISUB.html
-GENERAL	FSUBP	Subtract	FSUB_FSUBP_FISUB.html
-GENERAL	FSUB	Subtract	FSUB_FSUBP_FISUB.html
-GENERAL	FTST	TEST	FTST.html
-GENERAL	FUCOM	Unordered Compare FP Values	FUCOM_FUCOMP_FUCOMPP.html
-GENERAL	FUCOMPP	Unordered Compare FP Values	FUCOM_FUCOMP_FUCOMPP.html
-GENERAL	FUCOMP	Unordered Compare FP Values	FUCOM_FUCOMP_FUCOMPP.html
-GENERAL	FXAM	Examine FP	FXAM.html
-GENERAL	FXCH	Exchange Register Contents	FXCH.html
-GENERAL	FXRSTOR	Restore x87 FPU, MMX, XMM, and MXCSR State	FXRSTOR.html
-GENERAL	FXSAVE	Save x87 FPU, MMX Technology, and SSE State	FXSAVE.html
-GENERAL	FXTRACT	Extract Exponent and Significand	FXTRACT.html
-GENERAL	FYL2X	Compute y ∗ log2x	FYL2X.html
-GENERAL	FYL2XP1	Compute y ∗ log2(x +1)	FYL2XP1.html
-GENERAL	VHADDPD	Packed Double-FP Horizontal Add	HADDPD.html
-GENERAL	HADDPD	Packed Double-FP Horizontal Add	HADDPD.html
-GENERAL	VHADDPS	Packed Single-FP Horizontal Add	HADDPS.html
-GENERAL	HADDPS	Packed Single-FP Horizontal Add	HADDPS.html
-GENERAL	HLT	Halt	HLT.html
-GENERAL	HSUBPD	Packed Double-FP Horizontal Subtract	HSUBPD.html
-GENERAL	VHSUBPD	Packed Double-FP Horizontal Subtract	HSUBPD.html
-GENERAL	HSUBPS	Packed Single-FP Horizontal Subtract	HSUBPS.html
-GENERAL	VHSUBPS	Packed Single-FP Horizontal Subtract	HSUBPS.html
-GENERAL	IDIV	Signed Divide	IDIV.html
-GENERAL	IMUL	Signed Multiply	IMUL.html
-GENERAL	IN	Input from Port	IN.html
-GENERAL	INC	Increment by 1	INC.html
-GENERAL	INSERTPS	Insert Scalar Single-Precision FP Value	INSERTPS.html
-GENERAL	VINSERTPS	Insert Scalar Single-Precision FP Value	INSERTPS.html
-GENERAL	INSD	Input from Port to String	INS_INSB_INSW_INSD.html
-GENERAL	INSB	Input from Port to String	INS_INSB_INSW_INSD.html
-GENERAL	INSW	Input from Port to String	INS_INSB_INSW_INSD.html
-GENERAL	INS	Input from Port to String	INS_INSB_INSW_INSD.html
-GENERAL	INTO	Call to Interrupt Procedure	INT n_INTO_INT 3.html
-GENERAL	INT n	Call to Interrupt Procedure	INT n_INTO_INT 3.html
-GENERAL	INT 3	Call to Interrupt Procedure	INT n_INTO_INT 3.html
-GENERAL	INVD	Invalidate Internal Caches	INVD.html
-GENERAL	INVLPG	Invalidate TLB Entries	INVLPG.html
-GENERAL	INVPCID	Invalidate Process-Context Identifier	INVPCID.html
-GENERAL	IRETD	Interrupt Return	IRET_IRETD.html
-GENERAL	IRET	Interrupt Return	IRET_IRETD.html
-GENERAL	JNE	Jump if Condition Is Met	Jcc.html
-GENERAL	JNGE	Jump if Condition Is Met	Jcc.html
-GENERAL	JL	Jump if Condition Is Met	Jcc.html
-GENERAL	JLE	Jump if Condition Is Met	Jcc.html
-GENERAL	JNG	Jump if Condition Is Met	Jcc.html
-GENERAL	JRCXZ	Jump if Condition Is Met	Jcc.html
-GENERAL	JO	Jump if Condition Is Met	Jcc.html
-GENERAL	JP	Jump if Condition Is Met	Jcc.html
-GENERAL	JPO	Jump if Condition Is Met	Jcc.html
-GENERAL	JNL	Jump if Condition Is Met	Jcc.html
-GENERAL	JS	Jump if Condition Is Met	Jcc.html
-GENERAL	JNAE	Jump if Condition Is Met	Jcc.html
-GENERAL	JNO	Jump if Condition Is Met	Jcc.html
-GENERAL	JBE	Jump if Condition Is Met	Jcc.html
-GENERAL	JNP	Jump if Condition Is Met	Jcc.html
-GENERAL	JNS	Jump if Condition Is Met	Jcc.html
-GENERAL	JZ	Jump if Condition Is Met	Jcc.html
-GENERAL	JNZ	Jump if Condition Is Met	Jcc.html
-GENERAL	JCXZ	Jump if Condition Is Met	Jcc.html
-GENERAL	JECXZ	Jump if Condition Is Met	Jcc.html
-GENERAL	JNLE	Jump if Condition Is Met	Jcc.html
-GENERAL	JNBE	Jump if Condition Is Met	Jcc.html
-GENERAL	JGE	Jump if Condition Is Met	Jcc.html
-GENERAL	JAE	Jump if Condition Is Met	Jcc.html
-GENERAL	JA	Jump if Condition Is Met	Jcc.html
-GENERAL	JB	Jump if Condition Is Met	Jcc.html
-GENERAL	JC	Jump if Condition Is Met	Jcc.html
-GENERAL	JE	Jump if Condition Is Met	Jcc.html
-GENERAL	JNA	Jump if Condition Is Met	Jcc.html
-GENERAL	JG	Jump if Condition Is Met	Jcc.html
-GENERAL	JNC	Jump if Condition Is Met	Jcc.html
-GENERAL	JPE	Jump if Condition Is Met	Jcc.html
-GENERAL	JNB	Jump if Condition Is Met	Jcc.html
-GENERAL	JMP	Jump	JMP.html
-GENERAL	KADDD	ADD Two Masks	KADDW_KADDB_KADDQ_KADDD.html
-GENERAL	KADDB	ADD Two Masks	KADDW_KADDB_KADDQ_KADDD.html
-GENERAL	KADDQ	ADD Two Masks	KADDW_KADDB_KADDQ_KADDD.html
-GENERAL	KADDW	ADD Two Masks	KADDW_KADDB_KADDQ_KADDD.html
-GENERAL	KANDND	Bitwise Logical AND NOT Masks	KANDNW_KANDNB_KANDNQ_KANDND.html
-GENERAL	KANDNB	Bitwise Logical AND NOT Masks	KANDNW_KANDNB_KANDNQ_KANDND.html
-GENERAL	KANDNW	Bitwise Logical AND NOT Masks	KANDNW_KANDNB_KANDNQ_KANDND.html
-GENERAL	KANDNQ	Bitwise Logical AND NOT Masks	KANDNW_KANDNB_KANDNQ_KANDND.html
-GENERAL	KANDW	Bitwise Logical AND Masks	KANDW_KANDB_KANDQ_KANDD.html
-GENERAL	KANDD	Bitwise Logical AND Masks	KANDW_KANDB_KANDQ_KANDD.html
-GENERAL	KANDB	Bitwise Logical AND Masks	KANDW_KANDB_KANDQ_KANDD.html
-GENERAL	KANDQ	Bitwise Logical AND Masks	KANDW_KANDB_KANDQ_KANDD.html
-GENERAL	KMOVW	Move from and to Mask Registers	KMOVW_KMOVB_KMOVQ_KMOVD.html
-GENERAL	KMOVB	Move from and to Mask Registers	KMOVW_KMOVB_KMOVQ_KMOVD.html
-GENERAL	KMOVQ	Move from and to Mask Registers	KMOVW_KMOVB_KMOVQ_KMOVD.html
-GENERAL	KMOVD	Move from and to Mask Registers	KMOVW_KMOVB_KMOVQ_KMOVD.html
-GENERAL	KNOTD	NOT Mask Register	KNOTW_KNOTB_KNOTQ_KNOTD.html
-GENERAL	KNOTW	NOT Mask Register	KNOTW_KNOTB_KNOTQ_KNOTD.html
-GENERAL	KNOTQ	NOT Mask Register	KNOTW_KNOTB_KNOTQ_KNOTD.html
-GENERAL	KNOTB	NOT Mask Register	KNOTW_KNOTB_KNOTQ_KNOTD.html
-GENERAL	KORTESTB	OR Masks And Set Flags	KORTESTW_KORTESTB_KORTESTQ_KORTESTD.html
-GENERAL	KORTESTQ	OR Masks And Set Flags	KORTESTW_KORTESTB_KORTESTQ_KORTESTD.html
-GENERAL	KORTESTW	OR Masks And Set Flags	KORTESTW_KORTESTB_KORTESTQ_KORTESTD.html
-GENERAL	KORTESTD	OR Masks And Set Flags	KORTESTW_KORTESTB_KORTESTQ_KORTESTD.html
-GENERAL	KORQ	Bitwise Logical OR Masks	KORW_KORB_KORQ_KORD.html
-GENERAL	KORD	Bitwise Logical OR Masks	KORW_KORB_KORQ_KORD.html
-GENERAL	KORB	Bitwise Logical OR Masks	KORW_KORB_KORQ_KORD.html
-GENERAL	KORW	Bitwise Logical OR Masks	KORW_KORB_KORQ_KORD.html
-GENERAL	KSHIFTLW	Shift Left Mask Registers	KSHIFTLW_KSHIFTLB_KSHIFTLQ_KSHIFTLD.html
-GENERAL	KSHIFTLQ	Shift Left Mask Registers	KSHIFTLW_KSHIFTLB_KSHIFTLQ_KSHIFTLD.html
-GENERAL	KSHIFTLB	Shift Left Mask Registers	KSHIFTLW_KSHIFTLB_KSHIFTLQ_KSHIFTLD.html
-GENERAL	KSHIFTLD	Shift Left Mask Registers	KSHIFTLW_KSHIFTLB_KSHIFTLQ_KSHIFTLD.html
-GENERAL	KSHIFTRQ	Shift Right Mask Registers	KSHIFTRW_KSHIFTRB_KSHIFTRQ_KSHIFTRD.html
-GENERAL	KSHIFTRB	Shift Right Mask Registers	KSHIFTRW_KSHIFTRB_KSHIFTRQ_KSHIFTRD.html
-GENERAL	KSHIFTRD	Shift Right Mask Registers	KSHIFTRW_KSHIFTRB_KSHIFTRQ_KSHIFTRD.html
-GENERAL	KSHIFTRW	Shift Right Mask Registers	KSHIFTRW_KSHIFTRB_KSHIFTRQ_KSHIFTRD.html
-GENERAL	KTESTW	Packed Bit Test Masks and Set Flags	KTESTW_KTESTB_KTESTQ_KTESTD.html
-GENERAL	KTESTD	Packed Bit Test Masks and Set Flags	KTESTW_KTESTB_KTESTQ_KTESTD.html
-GENERAL	KTESTB	Packed Bit Test Masks and Set Flags	KTESTW_KTESTB_KTESTQ_KTESTD.html
-GENERAL	KTESTQ	Packed Bit Test Masks and Set Flags	KTESTW_KTESTB_KTESTQ_KTESTD.html
-GENERAL	KUNPCKBW	Unpack for Mask Registers	KUNPCKBW_KUNPCKWD_KUNPCKDQ.html
-GENERAL	KUNPCKWD	Unpack for Mask Registers	KUNPCKBW_KUNPCKWD_KUNPCKDQ.html
-GENERAL	KUNPCKDQ	Unpack for Mask Registers	KUNPCKBW_KUNPCKWD_KUNPCKDQ.html
-GENERAL	KXNORQ	Bitwise Logical XNOR Masks	KXNORW_KXNORB_KXNORQ_KXNORD.html
-GENERAL	KXNORB	Bitwise Logical XNOR Masks	KXNORW_KXNORB_KXNORQ_KXNORD.html
-GENERAL	KXNORD	Bitwise Logical XNOR Masks	KXNORW_KXNORB_KXNORQ_KXNORD.html
-GENERAL	KXNORW	Bitwise Logical XNOR Masks	KXNORW_KXNORB_KXNORQ_KXNORD.html
-GENERAL	KXORB	Bitwise Logical XOR Masks	KXORW_KXORB_KXORQ_KXORD.html
-GENERAL	KXORQ	Bitwise Logical XOR Masks	KXORW_KXORB_KXORQ_KXORD.html
-GENERAL	KXORW	Bitwise Logical XOR Masks	KXORW_KXORB_KXORQ_KXORD.html
-GENERAL	KXORD	Bitwise Logical XOR Masks	KXORW_KXORB_KXORQ_KXORD.html
-GENERAL	LAHF	Load Status Flags into AH Register	LAHF.html
-GENERAL	LAR	Load Access Rights Byte	LAR.html
-GENERAL	VLDDQU	Load Unaligned Integer 128 Bits	LDDQU.html
-GENERAL	LDDQU	Load Unaligned Integer 128 Bits	LDDQU.html
-GENERAL	LDMXCSR	Load MXCSR Register	LDMXCSR.html
-GENERAL	VLDMXCSR	Load MXCSR Register	LDMXCSR.html
-GENERAL	LFS	Load Far Pointer	LDS_LES_LFS_LGS_LSS.html
-GENERAL	LGS	Load Far Pointer	LDS_LES_LFS_LGS_LSS.html
-GENERAL	LDS	Load Far Pointer	LDS_LES_LFS_LGS_LSS.html
-GENERAL	LES	Load Far Pointer	LDS_LES_LFS_LGS_LSS.html
-GENERAL	LSS	Load Far Pointer	LDS_LES_LFS_LGS_LSS.html
-GENERAL	LEA	Load Effective Address	LEA.html
-GENERAL	LEAVE	High Level Procedure Exit	LEAVE.html
-GENERAL	LFENCE	Load Fence	LFENCE.html
-GENERAL	LGDT	Load Global/Interrupt Descriptor Table Register	LGDT_LIDT.html
-GENERAL	LIDT	Load Global/Interrupt Descriptor Table Register	LGDT_LIDT.html
-GENERAL	LLDT	Load Local Descriptor Table Register	LLDT.html
-GENERAL	LMSW	Load Machine Status Word	LMSW.html
-GENERAL	LOCK	Assert LOCK# Signal Prefix	LOCK.html
-GENERAL	LODS	Load String	LODS_LODSB_LODSW_LODSD_LODSQ.html
-GENERAL	LODSD	Load String	LODS_LODSB_LODSW_LODSD_LODSQ.html
-GENERAL	LODSB	Load String	LODS_LODSB_LODSW_LODSD_LODSQ.html
-GENERAL	LODSW	Load String	LODS_LODSB_LODSW_LODSD_LODSQ.html
-GENERAL	LODSQ	Load String	LODS_LODSB_LODSW_LODSD_LODSQ.html
-GENERAL	LOOPZ	Loop According to ECX Counter	LOOP_LOOPcc.html
-GENERAL	LOOPE	Loop According to ECX Counter	LOOP_LOOPcc.html
-GENERAL	LOOPNE	Loop According to ECX Counter	LOOP_LOOPcc.html
-GENERAL	LOOP	Loop According to ECX Counter	LOOP_LOOPcc.html
-GENERAL	LOOPNZ	Loop According to ECX Counter	LOOP_LOOPcc.html
-GENERAL	LSL	Load Segment Limit	LSL.html
-GENERAL	LTR	Load Task Register	LTR.html
-GENERAL	LZCNT	Count the Number of Leading Zero Bits	LZCNT.html
-GENERAL	VMASKMOVDQU	Store Selected Bytes of Double Qword	MASKMOVDQU.html
-GENERAL	MASKMOVDQU	Store Selected Bytes of Double Qword	MASKMOVDQU.html
-GENERAL	MASKMOVQ	Store Selected Bytes of Qword	MASKMOVQ.html
-GENERAL	MAXPD	Maximum of Packed Double-Precision FP Values	MAXPD.html
-GENERAL	VMAXPD	Maximum of Packed Double-Precision FP Values	MAXPD.html
-GENERAL	MAXPS	Maximum of Packed Single-Precision FP Values	MAXPS.html
-GENERAL	VMAXPS	Maximum of Packed Single-Precision FP Values	MAXPS.html
-GENERAL	VMAXSD	Return Maximum Scalar Double-Precision FP Value	MAXSD.html
-GENERAL	MAXSD	Return Maximum Scalar Double-Precision FP Value	MAXSD.html
-GENERAL	VMAXSS	Return Maximum Scalar Single-Precision FP Value	MAXSS.html
-GENERAL	MAXSS	Return Maximum Scalar Single-Precision FP Value	MAXSS.html
-GENERAL	MFENCE	Memory Fence	MFENCE.html
-GENERAL	VMINPD	Minimum of Packed Double-Precision FP Values	MINPD.html
-GENERAL	MINPD	Minimum of Packed Double-Precision FP Values	MINPD.html
-GENERAL	MINPS	Minimum of Packed Single-Precision FP Values	MINPS.html
-GENERAL	VMINPS	Minimum of Packed Single-Precision FP Values	MINPS.html
-GENERAL	MINSD	Return Minimum Scalar Double-Precision FP Value	MINSD.html
-GENERAL	VMINSD	Return Minimum Scalar Double-Precision FP Value	MINSD.html
-GENERAL	VMINSS	Return Minimum Scalar Single-Precision FP Value	MINSS.html
-GENERAL	MINSS	Return Minimum Scalar Single-Precision FP Value	MINSS.html
-GENERAL	MONITOR	Set Up Monitor Address	MONITOR.html
-GENERAL	MOV	Move to/from Control Registers	MOV-1.html
-GENERAL	MOV	Move to/from Debug Registers	MOV-2.html
-GENERAL	MOV	Move	MOV.html
-GENERAL	MOVAPD	Move Aligned Packed Double-Precision FP Values	MOVAPD.html
-GENERAL	VMOVAPD	Move Aligned Packed Double-Precision FP Values	MOVAPD.html
-GENERAL	MOVAPS	Move Aligned Packed Single-Precision FP Values	MOVAPS.html
-GENERAL	VMOVAPS	Move Aligned Packed Single-Precision FP Values	MOVAPS.html
-GENERAL	MOVBE	Move Data After Swapping Bytes	MOVBE.html
-GENERAL	MOVDDUP	Replicate Double FP Values	MOVDDUP.html
-GENERAL	VMOVDDUP	Replicate Double FP Values	MOVDDUP.html
-GENERAL	MOVDQ2Q	Move Qword from XMM to MMX Technology Register	MOVDQ2Q.html
-GENERAL	MOVDQA	Move Aligned Packed Integer Values	MOVDQA,VMOVDQA32_64.html
-GENERAL	VMOVDQA	Move Aligned Packed Integer Values	MOVDQA,VMOVDQA32_64.html
-GENERAL	VMOVDQA64	Move Aligned Packed Integer Values	MOVDQA,VMOVDQA32_64.html
-GENERAL	VMOVDQA32	Move Aligned Packed Integer Values	MOVDQA,VMOVDQA32_64.html
-GENERAL	VMOVDQU32	Move Unaligned Packed Integer Values	MOVDQU,VMOVDQU8_16_32_64.html
-GENERAL	VMOVDQU8	Move Unaligned Packed Integer Values	MOVDQU,VMOVDQU8_16_32_64.html
-GENERAL	VMOVDQU64	Move Unaligned Packed Integer Values	MOVDQU,VMOVDQU8_16_32_64.html
-GENERAL	MOVDQU	Move Unaligned Packed Integer Values	MOVDQU,VMOVDQU8_16_32_64.html
-GENERAL	VMOVDQU	Move Unaligned Packed Integer Values	MOVDQU,VMOVDQU8_16_32_64.html
-GENERAL	VMOVDQU16	Move Unaligned Packed Integer Values	MOVDQU,VMOVDQU8_16_32_64.html
-GENERAL	VMOVQ	Move Dword/Move Qword	MOVD_MOVQ.html
-GENERAL	MOVD	Move Dword/Move Qword	MOVD_MOVQ.html
-GENERAL	VMOVD	Move Dword/Move Qword	MOVD_MOVQ.html
-GENERAL	MOVQ	Move Dword/Move Qword	MOVD_MOVQ.html
-GENERAL	VMOVHLPS	Move Packed Single-Precision FP Values High to Low	MOVHLPS.html
-GENERAL	MOVHLPS	Move Packed Single-Precision FP Values High to Low	MOVHLPS.html
-GENERAL	VMOVHPD	Move High Packed Double-Precision FP Value	MOVHPD.html
-GENERAL	MOVHPD	Move High Packed Double-Precision FP Value	MOVHPD.html
-GENERAL	MOVHPS	Move High Packed Single-Precision FP Values	MOVHPS.html
-GENERAL	VMOVHPS	Move High Packed Single-Precision FP Values	MOVHPS.html
-GENERAL	MOVLHPS	Move Packed Single-Precision FP Values Low to High	MOVLHPS.html
-GENERAL	VMOVLHPS	Move Packed Single-Precision FP Values Low to High	MOVLHPS.html
-GENERAL	MOVLPD	Move Low Packed Double-Precision FP Value	MOVLPD.html
-GENERAL	VMOVLPD	Move Low Packed Double-Precision FP Value	MOVLPD.html
-GENERAL	MOVLPS	Move Low Packed Single-Precision FP Values	MOVLPS.html
-GENERAL	VMOVLPS	Move Low Packed Single-Precision FP Values	MOVLPS.html
-GENERAL	VMOVMSKPD	Extract Packed Double-Precision FP Sign Mask	MOVMSKPD.html
-GENERAL	MOVMSKPD	Extract Packed Double-Precision FP Sign Mask	MOVMSKPD.html
-GENERAL	VMOVMSKPS	Extract Packed Single-Precision FP Sign Mask	MOVMSKPS.html
-GENERAL	MOVMSKPS	Extract Packed Single-Precision FP Sign Mask	MOVMSKPS.html
-GENERAL	VMOVNTDQ	Store Packed Integers Using Non-Temporal Hint	MOVNTDQ.html
-GENERAL	MOVNTDQ	Store Packed Integers Using Non-Temporal Hint	MOVNTDQ.html
-GENERAL	MOVNTDQA	Load Double Qword Non-Temporal Aligned Hint	MOVNTDQA.html
-GENERAL	VMOVNTDQA	Load Double Qword Non-Temporal Aligned Hint	MOVNTDQA.html
-GENERAL	MOVNTI	Store Dword Using Non-Temporal Hint	MOVNTI.html
-GENERAL	MOVNTPD	Store Packed Double-Precision FP Values Using Non-Temporal Hint	MOVNTPD.html
-GENERAL	VMOVNTPD	Store Packed Double-Precision FP Values Using Non-Temporal Hint	MOVNTPD.html
-GENERAL	MOVNTPS	Store Packed Single-Precision FP Values Using Non-Temporal Hint	MOVNTPS.html
-GENERAL	VMOVNTPS	Store Packed Single-Precision FP Values Using Non-Temporal Hint	MOVNTPS.html
-GENERAL	MOVNTQ	Store of Qword Using Non-Temporal Hint	MOVNTQ.html
-GENERAL	VMOVQ	Move Qword	MOVQ.html
-GENERAL	MOVQ	Move Qword	MOVQ.html
-GENERAL	MOVQ2DQ	Move Qword from MMX Technology to XMM Register	MOVQ2DQ.html
-GENERAL	MOVSD	Move or Merge Scalar Double-Precision FP Value	MOVSD.html
-GENERAL	VMOVSD	Move or Merge Scalar Double-Precision FP Value	MOVSD.html
-GENERAL	VMOVSHDUP	Replicate Single FP Values	MOVSHDUP.html
-GENERAL	MOVSHDUP	Replicate Single FP Values	MOVSHDUP.html
-GENERAL	VMOVSLDUP	Replicate Single FP Values	MOVSLDUP.html
-GENERAL	MOVSLDUP	Replicate Single FP Values	MOVSLDUP.html
-GENERAL	MOVSS	Move or Merge Scalar Single-Precision FP Value	MOVSS.html
-GENERAL	VMOVSS	Move or Merge Scalar Single-Precision FP Value	MOVSS.html
-GENERAL	MOVSX	Move with Sign-Extension	MOVSX_MOVSXD.html
-GENERAL	MOVSXD	Move with Sign-Extension	MOVSX_MOVSXD.html
-GENERAL	MOVSQ	Move Data from String to String	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ.html
-GENERAL	MOVSB	Move Data from String to String	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ.html
-GENERAL	MOVSD	Move Data from String to String	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ.html
-GENERAL	MOVSW	Move Data from String to String	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ.html
-GENERAL	MOVS	Move Data from String to String	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ.html
-GENERAL	MOVUPD	Move Unaligned Packed Double-Precision FP Values	MOVUPD.html
-GENERAL	VMOVUPD	Move Unaligned Packed Double-Precision FP Values	MOVUPD.html
-GENERAL	MOVUPS	Move Unaligned Packed Single-Precision FP Values	MOVUPS.html
-GENERAL	VMOVUPS	Move Unaligned Packed Single-Precision FP Values	MOVUPS.html
-GENERAL	MOVZX	Move with Zero-Extend	MOVZX.html
-GENERAL	VMPSADBW	Compute Multiple Packed Sums of Absolute Difference	MPSADBW.html
-GENERAL	MPSADBW	Compute Multiple Packed Sums of Absolute Difference	MPSADBW.html
-GENERAL	MUL	Unsigned Multiply	MUL.html
-GENERAL	VMULPD	Multiply Packed Double-Precision FP Values	MULPD.html
-GENERAL	MULPD	Multiply Packed Double-Precision FP Values	MULPD.html
-GENERAL	MULPS	Multiply Packed Single-Precision FP Values	MULPS.html
-GENERAL	VMULPS	Multiply Packed Single-Precision FP Values	MULPS.html
-GENERAL	MULSD	Multiply Scalar Double-Precision FP Value	MULSD.html
-GENERAL	VMULSD	Multiply Scalar Double-Precision FP Value	MULSD.html
-GENERAL	MULSS	Multiply Scalar Single-Precision FP Values	MULSS.html
-GENERAL	VMULSS	Multiply Scalar Single-Precision FP Values	MULSS.html
-GENERAL	MULX	Unsigned Multiply Without Affecting Flags	MULX.html
-GENERAL	MWAIT	Monitor Wait	MWAIT.html
-GENERAL	NEG	Two's Complement Negation	NEG.html
-GENERAL	NOP	No Operation	NOP.html
-GENERAL	NOT	One's Complement Negation	NOT.html
-GENERAL	OR	Logical Inclusive OR	OR.html
-GENERAL	ORPD	Bitwise Logical OR of Packed Double-Precision FP Values	ORPD.html
-GENERAL	VORPD	Bitwise Logical OR of Packed Double-Precision FP Values	ORPD.html
-GENERAL	ORPS	Bitwise Logical OR of Packed Single-Precision FP Values	ORPS.html
-GENERAL	VORPS	Bitwise Logical OR of Packed Single-Precision FP Values	ORPS.html
-GENERAL	OUT	Output to Port	OUT.html
-GENERAL	OUTS	Output String to Port	OUTS_OUTSB_OUTSW_OUTSD.html
-GENERAL	OUTSW	Output String to Port	OUTS_OUTSB_OUTSW_OUTSD.html
-GENERAL	OUTSB	Output String to Port	OUTS_OUTSB_OUTSW_OUTSD.html
-GENERAL	OUTSD	Output String to Port	OUTS_OUTSB_OUTSW_OUTSD.html
-GENERAL	PABSW	Packed Absolute Value	PABSB_PABSW_PABSD_PABSQ.html
-GENERAL	PABSB	Packed Absolute Value	PABSB_PABSW_PABSD_PABSQ.html
-GENERAL	PABSD	Packed Absolute Value	PABSB_PABSW_PABSD_PABSQ.html
-GENERAL	VPABSW	Packed Absolute Value	PABSB_PABSW_PABSD_PABSQ.html
-GENERAL	PABSQ	Packed Absolute Value	PABSB_PABSW_PABSD_PABSQ.html
-GENERAL	VPABSD	Packed Absolute Value	PABSB_PABSW_PABSD_PABSQ.html
-GENERAL	VPABSB	Packed Absolute Value	PABSB_PABSW_PABSD_PABSQ.html
-GENERAL	VPABSQ	Packed Absolute Value	PABSB_PABSW_PABSD_PABSQ.html
-GENERAL	PACKSSDW	Pack with Signed Saturation	PACKSSWB_PACKSSDW.html
-GENERAL	VPACKSSWB	Pack with Signed Saturation	PACKSSWB_PACKSSDW.html
-GENERAL	PACKSSWB	Pack with Signed Saturation	PACKSSWB_PACKSSDW.html
-GENERAL	VPACKSSDW	Pack with Signed Saturation	PACKSSWB_PACKSSDW.html
-GENERAL	PACKUSDW	Pack with Unsigned Saturation	PACKUSDW.html
-GENERAL	VPACKUSDW	Pack with Unsigned Saturation	PACKUSDW.html
-GENERAL	PACKUSWB	Pack with Unsigned Saturation	PACKUSWB.html
-GENERAL	VPACKUSWB	Pack with Unsigned Saturation	PACKUSWB.html
-GENERAL	PADDW	Add Packed Integers	PADDB_PADDW_PADDD_PADDQ.html
-GENERAL	PADDB	Add Packed Integers	PADDB_PADDW_PADDD_PADDQ.html
-GENERAL	PADDQ	Add Packed Integers	PADDB_PADDW_PADDD_PADDQ.html
-GENERAL	PADDD	Add Packed Integers	PADDB_PADDW_PADDD_PADDQ.html
-GENERAL	VPADDW	Add Packed Integers	PADDB_PADDW_PADDD_PADDQ.html
-GENERAL	VPADDD	Add Packed Integers	PADDB_PADDW_PADDD_PADDQ.html
-GENERAL	VPADDQ	Add Packed Integers	PADDB_PADDW_PADDD_PADDQ.html
-GENERAL	VPADDB	Add Packed Integers	PADDB_PADDW_PADDD_PADDQ.html
-GENERAL	PADDSW	Add Packed Signed Integers with Signed Saturation	PADDSB_PADDSW.html
-GENERAL	VPADDSW	Add Packed Signed Integers with Signed Saturation	PADDSB_PADDSW.html
-GENERAL	PADDSB	Add Packed Signed Integers with Signed Saturation	PADDSB_PADDSW.html
-GENERAL	VPADDSB	Add Packed Signed Integers with Signed Saturation	PADDSB_PADDSW.html
-GENERAL	PADDUSW	Add Packed Unsigned Integers with Unsigned Saturation	PADDUSB_PADDUSW.html
-GENERAL	VPADDUSW	Add Packed Unsigned Integers with Unsigned Saturation	PADDUSB_PADDUSW.html
-GENERAL	PADDUSB	Add Packed Unsigned Integers with Unsigned Saturation	PADDUSB_PADDUSW.html
-GENERAL	VPADDUSB	Add Packed Unsigned Integers with Unsigned Saturation	PADDUSB_PADDUSW.html
-GENERAL	PALIGNR	Packed Align Right	PALIGNR.html
-GENERAL	VPALIGNR	Packed Align Right	PALIGNR.html
-GENERAL	VPANDD	Logical AND	PAND.html
-GENERAL	PAND	Logical AND	PAND.html
-GENERAL	VPANDQ	Logical AND	PAND.html
-GENERAL	VPAND	Logical AND	PAND.html
-GENERAL	PANDN	Logical AND NOT	PANDN.html
-GENERAL	VPANDNQ	Logical AND NOT	PANDN.html
-GENERAL	VPANDN	Logical AND NOT	PANDN.html
-GENERAL	VPANDND	Logical AND NOT	PANDN.html
-GENERAL	PAUSE	Spin Loop Hint	PAUSE.html
-GENERAL	PAVGW	Average Packed Integers	PAVGB_PAVGW.html
-GENERAL	PAVGB	Average Packed Integers	PAVGB_PAVGW.html
-GENERAL	VPAVGW	Average Packed Integers	PAVGB_PAVGW.html
-GENERAL	VPAVGB	Average Packed Integers	PAVGB_PAVGW.html
-GENERAL	VPBLENDVB	Variable Blend Packed Bytes	PBLENDVB.html
-GENERAL	PBLENDVB	Variable Blend Packed Bytes	PBLENDVB.html
-GENERAL	VPBLENDW	Blend Packed Words	PBLENDW.html
-GENERAL	PBLENDW	Blend Packed Words	PBLENDW.html
-GENERAL	VPCLMULQDQ	PCLMULQDQ - Carry-Less Multiplication Qword 	PCLMULQDQ.html
-GENERAL	PCLMULQDQ	PCLMULQDQ - Carry-Less Multiplication Qword 	PCLMULQDQ.html
-GENERAL	VPCMPEQW	Compare Packed Data for Equal	PCMPEQB_PCMPEQW_PCMPEQD.html
-GENERAL	VPCMPEQD	Compare Packed Data for Equal	PCMPEQB_PCMPEQW_PCMPEQD.html
-GENERAL	VPCMPEQB	Compare Packed Data for Equal	PCMPEQB_PCMPEQW_PCMPEQD.html
-GENERAL	PCMPEQB	Compare Packed Data for Equal	PCMPEQB_PCMPEQW_PCMPEQD.html
-GENERAL	PCMPEQD	Compare Packed Data for Equal	PCMPEQB_PCMPEQW_PCMPEQD.html
-GENERAL	PCMPEQW	Compare Packed Data for Equal	PCMPEQB_PCMPEQW_PCMPEQD.html
-GENERAL	PCMPEQQ	Compare Packed Qword Data for Equal	PCMPEQQ.html
-GENERAL	VPCMPEQQ	Compare Packed Qword Data for Equal	PCMPEQQ.html
-GENERAL	VPCMPESTRI	Packed Compare Explicit Length Strings, Return Index	PCMPESTRI.html
-GENERAL	PCMPESTRI	Packed Compare Explicit Length Strings, Return Index	PCMPESTRI.html
-GENERAL	VPCMPESTRM	Packed Compare Explicit Length Strings, Return Mask	PCMPESTRM.html
-GENERAL	PCMPESTRM	Packed Compare Explicit Length Strings, Return Mask	PCMPESTRM.html
-GENERAL	VPCMPGTW	Compare Packed Signed Integers for Greater Than	PCMPGTB_PCMPGTW_PCMPGTD.html
-GENERAL	VPCMPGTD	Compare Packed Signed Integers for Greater Than	PCMPGTB_PCMPGTW_PCMPGTD.html
-GENERAL	PCMPGTB	Compare Packed Signed Integers for Greater Than	PCMPGTB_PCMPGTW_PCMPGTD.html
-GENERAL	VPCMPGTB	Compare Packed Signed Integers for Greater Than	PCMPGTB_PCMPGTW_PCMPGTD.html
-GENERAL	PCMPGTD	Compare Packed Signed Integers for Greater Than	PCMPGTB_PCMPGTW_PCMPGTD.html
-GENERAL	PCMPGTW	Compare Packed Signed Integers for Greater Than	PCMPGTB_PCMPGTW_PCMPGTD.html
-GENERAL	VPCMPGTQ	Compare Packed Data for Greater Than	PCMPGTQ.html
-GENERAL	PCMPGTQ	Compare Packed Data for Greater Than	PCMPGTQ.html
-GENERAL	VPCMPISTRI	Packed Compare Implicit Length Strings, Return Index	PCMPISTRI.html
-GENERAL	PCMPISTRI	Packed Compare Implicit Length Strings, Return Index	PCMPISTRI.html
-GENERAL	VPCMPISTRM	Packed Compare Implicit Length Strings, Return Mask	PCMPISTRM.html
-GENERAL	PCMPISTRM	Packed Compare Implicit Length Strings, Return Mask	PCMPISTRM.html
-GENERAL	PDEP	Parallel Bits Deposit	PDEP.html
-GENERAL	PEXT	Parallel Bits Extract	PEXT.html
-GENERAL	VPEXTRB	Extract Byte/Dword/Qword	PEXTRB_PEXTRD_PEXTRQ.html
-GENERAL	VPEXTRQ	Extract Byte/Dword/Qword	PEXTRB_PEXTRD_PEXTRQ.html
-GENERAL	PEXTRB	Extract Byte/Dword/Qword	PEXTRB_PEXTRD_PEXTRQ.html
-GENERAL	VPEXTRD	Extract Byte/Dword/Qword	PEXTRB_PEXTRD_PEXTRQ.html
-GENERAL	PEXTRQ	Extract Byte/Dword/Qword	PEXTRB_PEXTRD_PEXTRQ.html
-GENERAL	PEXTRD	Extract Byte/Dword/Qword	PEXTRB_PEXTRD_PEXTRQ.html
-GENERAL	VPEXTRW	Extract Word	PEXTRW.html
-GENERAL	PEXTRW	Extract Word	PEXTRW.html
-GENERAL	PHADDSW	Packed Horizontal Add and Saturate	PHADDSW.html
-GENERAL	VPHADDSW	Packed Horizontal Add and Saturate	PHADDSW.html
-GENERAL	VPHADDD	Packed Horizontal Add	PHADDW_PHADDD.html
-GENERAL	PHADDD	Packed Horizontal Add	PHADDW_PHADDD.html
-GENERAL	VPHADDW	Packed Horizontal Add	PHADDW_PHADDD.html
-GENERAL	PHADDW	Packed Horizontal Add	PHADDW_PHADDD.html
-GENERAL	PHMINPOSUW	Packed Horizontal Word Minimum	PHMINPOSUW.html
-GENERAL	VPHMINPOSUW	Packed Horizontal Word Minimum	PHMINPOSUW.html
-GENERAL	PHSUBSW	Packed Horizontal Subtract and Saturate	PHSUBSW.html
-GENERAL	VPHSUBSW	Packed Horizontal Subtract and Saturate	PHSUBSW.html
-GENERAL	VPHSUBD	Packed Horizontal Subtract	PHSUBW_PHSUBD.html
-GENERAL	VPHSUBW	Packed Horizontal Subtract	PHSUBW_PHSUBD.html
-GENERAL	PHSUBD	Packed Horizontal Subtract	PHSUBW_PHSUBD.html
-GENERAL	PHSUBW	Packed Horizontal Subtract	PHSUBW_PHSUBD.html
-GENERAL	PINSRQ	Insert Byte/Dword/Qword	PINSRB_PINSRD_PINSRQ.html
-GENERAL	VPINSRB	Insert Byte/Dword/Qword	PINSRB_PINSRD_PINSRQ.html
-GENERAL	PINSRB	Insert Byte/Dword/Qword	PINSRB_PINSRD_PINSRQ.html
-GENERAL	VPINSRD	Insert Byte/Dword/Qword	PINSRB_PINSRD_PINSRQ.html
-GENERAL	VPINSRQ	Insert Byte/Dword/Qword	PINSRB_PINSRD_PINSRQ.html
-GENERAL	PINSRD	Insert Byte/Dword/Qword	PINSRB_PINSRD_PINSRQ.html
-GENERAL	VPINSRW	Insert Word	PINSRW.html
-GENERAL	PINSRW	Insert Word	PINSRW.html
-GENERAL	VPMADDUBSW	Multiply and Add Packed Signed and Unsigned Bytes	PMADDUBSW.html
-GENERAL	PMADDUBSW	Multiply and Add Packed Signed and Unsigned Bytes	PMADDUBSW.html
-GENERAL	PMADDWD	Multiply and Add Packed Integers	PMADDWD.html
-GENERAL	VPMADDWD	Multiply and Add Packed Integers	PMADDWD.html
-GENERAL	PMAXSW	Maximum of Packed Signed Integers	PMAXSB_PMAXSW_PMAXSD_PMAXSQ.html
-GENERAL	VPMAXSW	Maximum of Packed Signed Integers	PMAXSB_PMAXSW_PMAXSD_PMAXSQ.html
-GENERAL	PMAXSD	Maximum of Packed Signed Integers	PMAXSB_PMAXSW_PMAXSD_PMAXSQ.html
-GENERAL	PMAXSB	Maximum of Packed Signed Integers	PMAXSB_PMAXSW_PMAXSD_PMAXSQ.html
-GENERAL	VPMAXSD	Maximum of Packed Signed Integers	PMAXSB_PMAXSW_PMAXSD_PMAXSQ.html
-GENERAL	PMAXSQ	Maximum of Packed Signed Integers	PMAXSB_PMAXSW_PMAXSD_PMAXSQ.html
-GENERAL	VPMAXSB	Maximum of Packed Signed Integers	PMAXSB_PMAXSW_PMAXSD_PMAXSQ.html
-GENERAL	VPMAXSQ	Maximum of Packed Signed Integers	PMAXSB_PMAXSW_PMAXSD_PMAXSQ.html
-GENERAL	VPMAXUB	Maximum of Packed Unsigned Integers	PMAXUB_PMAXUW.html
-GENERAL	PMAXUW	Maximum of Packed Unsigned Integers	PMAXUB_PMAXUW.html
-GENERAL	VPMAXUW	Maximum of Packed Unsigned Integers	PMAXUB_PMAXUW.html
-GENERAL	PMAXUB	Maximum of Packed Unsigned Integers	PMAXUB_PMAXUW.html
-GENERAL	VPMAXUQ	Maximum of Packed Unsigned Integers	PMAXUD_PMAXUQ.html
-GENERAL	PMAXUD	Maximum of Packed Unsigned Integers	PMAXUD_PMAXUQ.html
-GENERAL	VPMAXUD	Maximum of Packed Unsigned Integers	PMAXUD_PMAXUQ.html
-GENERAL	PMAXUQ	Maximum of Packed Unsigned Integers	PMAXUD_PMAXUQ.html
-GENERAL	PMINSB	Minimum of Packed Signed Integers	PMINSB_PMINSW.html
-GENERAL	PMINSW	Minimum of Packed Signed Integers	PMINSB_PMINSW.html
-GENERAL	VPMINSW	Minimum of Packed Signed Integers	PMINSB_PMINSW.html
-GENERAL	VPMINSB	Minimum of Packed Signed Integers	PMINSB_PMINSW.html
-GENERAL	PMINSD	Minimum of Packed Signed Integers	PMINSD_PMINSQ.html
-GENERAL	VPMINSD	Minimum of Packed Signed Integers	PMINSD_PMINSQ.html
-GENERAL	PMINSQ	Minimum of Packed Signed Integers	PMINSD_PMINSQ.html
-GENERAL	VPMINSQ	Minimum of Packed Signed Integers	PMINSD_PMINSQ.html
-GENERAL	VPMINUW	Minimum of Packed Unsigned Integers	PMINUB_PMINUW.html
-GENERAL	PMINUW	Minimum of Packed Unsigned Integers	PMINUB_PMINUW.html
-GENERAL	PMINUB	Minimum of Packed Unsigned Integers	PMINUB_PMINUW.html
-GENERAL	VPMINUB	Minimum of Packed Unsigned Integers	PMINUB_PMINUW.html
-GENERAL	PMINUD	Minimum of Packed Unsigned Integers	PMINUD_PMINUQ.html
-GENERAL	VPMINUD	Minimum of Packed Unsigned Integers	PMINUD_PMINUQ.html
-GENERAL	PMINUQ	Minimum of Packed Unsigned Integers	PMINUD_PMINUQ.html
-GENERAL	VPMINUQ	Minimum of Packed Unsigned Integers	PMINUD_PMINUQ.html
-GENERAL	PMOVMSKB	Move Byte Mask	PMOVMSKB.html
-GENERAL	VPMOVMSKB	Move Byte Mask	PMOVMSKB.html
-GENERAL	VPMOVSXWD	Packed Move with Sign Extend	PMOVSX.html
-GENERAL	VPMOVSXDQ	Packed Move with Sign Extend	PMOVSX.html
-GENERAL	PMOVSXBW	Packed Move with Sign Extend	PMOVSX.html
-GENERAL	VPMOVSXBQ	Packed Move with Sign Extend	PMOVSX.html
-GENERAL	PMOVSXBD	Packed Move with Sign Extend	PMOVSX.html
-GENERAL	VPMOVSXWQ	Packed Move with Sign Extend	PMOVSX.html
-GENERAL	PMOVSXBQ	Packed Move with Sign Extend	PMOVSX.html
-GENERAL	VPMOVSXBW	Packed Move with Sign Extend	PMOVSX.html
-GENERAL	PMOVSXWD	Packed Move with Sign Extend	PMOVSX.html
-GENERAL	PMOVSXDQ	Packed Move with Sign Extend	PMOVSX.html
-GENERAL	PMOVSXWQ	Packed Move with Sign Extend	PMOVSX.html
-GENERAL	VPMOVSXBD	Packed Move with Sign Extend	PMOVSX.html
-GENERAL	VPMOVZXWQ	Packed Move with Zero Extend	PMOVZX.html
-GENERAL	PMOVZXBQ	Packed Move with Zero Extend	PMOVZX.html
-GENERAL	PMOVZXBW	Packed Move with Zero Extend	PMOVZX.html
-GENERAL	VPMOVZXWD	Packed Move with Zero Extend	PMOVZX.html
-GENERAL	VPMOVZXDQ	Packed Move with Zero Extend	PMOVZX.html
-GENERAL	PMOVZXBD	Packed Move with Zero Extend	PMOVZX.html
-GENERAL	VPMOVZXBQ	Packed Move with Zero Extend	PMOVZX.html
-GENERAL	VPMOVZXBD	Packed Move with Zero Extend	PMOVZX.html
-GENERAL	PMOVZXWD	Packed Move with Zero Extend	PMOVZX.html
-GENERAL	PMOVZXDQ	Packed Move with Zero Extend	PMOVZX.html
-GENERAL	VPMOVZXBW	Packed Move with Zero Extend	PMOVZX.html
-GENERAL	PMOVZXWQ	Packed Move with Zero Extend	PMOVZX.html
-GENERAL	VPMULDQ	Multiply Packed Dword Integers	PMULDQ.html
-GENERAL	PMULDQ	Multiply Packed Dword Integers	PMULDQ.html
-GENERAL	VPMULHRSW	Packed Multiply High with Round and Scale	PMULHRSW.html
-GENERAL	PMULHRSW	Packed Multiply High with Round and Scale	PMULHRSW.html
-GENERAL	VPMULHUW	Multiply Packed Unsigned Integers and Store High Result	PMULHUW.html
-GENERAL	PMULHUW	Multiply Packed Unsigned Integers and Store High Result	PMULHUW.html
-GENERAL	VPMULHW	Multiply Packed Signed Integers and Store High Result	PMULHW.html
-GENERAL	PMULHW	Multiply Packed Signed Integers and Store High Result	PMULHW.html
-GENERAL	PMULLQ	Multiply Packed Integers and Store Low Result	PMULLD_PMULLQ.html
-GENERAL	VPMULLD	Multiply Packed Integers and Store Low Result	PMULLD_PMULLQ.html
-GENERAL	PMULLD	Multiply Packed Integers and Store Low Result	PMULLD_PMULLQ.html
-GENERAL	VPMULLQ	Multiply Packed Integers and Store Low Result	PMULLD_PMULLQ.html
-GENERAL	VPMULLW	Multiply Packed Signed Integers and Store Low Result	PMULLW.html
-GENERAL	PMULLW	Multiply Packed Signed Integers and Store Low Result	PMULLW.html
-GENERAL	VPMULUDQ	Multiply Packed Unsigned Dword Integers	PMULUDQ.html
-GENERAL	PMULUDQ	Multiply Packed Unsigned Dword Integers	PMULUDQ.html
-GENERAL	POP	Pop a Value from the Stack	POP.html
-GENERAL	POPA	Pop All General-Purpose Registers	POPA_POPAD.html
-GENERAL	POPAD	Pop All General-Purpose Registers	POPA_POPAD.html
-GENERAL	POPCNT	Return the Count of Number of Bits Set to 1	POPCNT.html
-GENERAL	POPF	Pop Stack into EFLAGS Register	POPF_POPFD_POPFQ.html
-GENERAL	POPFQ	Pop Stack into EFLAGS Register	POPF_POPFD_POPFQ.html
-GENERAL	POPFD	Pop Stack into EFLAGS Register	POPF_POPFD_POPFQ.html
-GENERAL	POR	Bitwise Logical OR	POR.html
-GENERAL	VPORQ	Bitwise Logical OR	POR.html
-GENERAL	VPOR	Bitwise Logical OR	POR.html
-GENERAL	VPORD	Bitwise Logical OR	POR.html
-GENERAL	PREFETCHT0	Prefetch Data Into Caches	PREFETCHh.html
-GENERAL	PREFETCHT2	Prefetch Data Into Caches	PREFETCHh.html
-GENERAL	PREFETCHT1	Prefetch Data Into Caches	PREFETCHh.html
-GENERAL	PREFETCHNTA	Prefetch Data Into Caches	PREFETCHh.html
-GENERAL	PREFETCHW	Prefetch Data into Caches in Anticipation of a Write	PREFETCHW.html
-GENERAL	PREFETCHWT1	Prefetch Vector Data Into Caches with Intent to Write and T1 Hint	PREFETCHWT1.html
-GENERAL	PROLVD	Bit Rotate Left	PROLD_PROLVD_PROLQ_PROLVQ.html
-GENERAL	VPROLD	Bit Rotate Left	PROLD_PROLVD_PROLQ_PROLVQ.html
-GENERAL	VPROLQ	Bit Rotate Left	PROLD_PROLVD_PROLQ_PROLVQ.html
-GENERAL	VPROLVQ	Bit Rotate Left	PROLD_PROLVD_PROLQ_PROLVQ.html
-GENERAL	PROLVQ	Bit Rotate Left	PROLD_PROLVD_PROLQ_PROLVQ.html
-GENERAL	VPROLVD	Bit Rotate Left	PROLD_PROLVD_PROLQ_PROLVQ.html
-GENERAL	PROLD	Bit Rotate Left	PROLD_PROLVD_PROLQ_PROLVQ.html
-GENERAL	PROLQ	Bit Rotate Left	PROLD_PROLVD_PROLQ_PROLVQ.html
-GENERAL	PRORQ	Bit Rotate Right	PRORD_PRORVD_PRORQ_PRORVQ.html
-GENERAL	PRORD	Bit Rotate Right	PRORD_PRORVD_PRORQ_PRORVQ.html
-GENERAL	VPRORVQ	Bit Rotate Right	PRORD_PRORVD_PRORQ_PRORVQ.html
-GENERAL	VPRORD	Bit Rotate Right	PRORD_PRORVD_PRORQ_PRORVQ.html
-GENERAL	VPRORQ	Bit Rotate Right	PRORD_PRORVD_PRORQ_PRORVQ.html
-GENERAL	PRORVQ	Bit Rotate Right	PRORD_PRORVD_PRORQ_PRORVQ.html
-GENERAL	VPRORVD	Bit Rotate Right	PRORD_PRORVD_PRORQ_PRORVQ.html
-GENERAL	PRORVD	Bit Rotate Right	PRORD_PRORVD_PRORQ_PRORVQ.html
-GENERAL	PSADBW	Compute Sum of Absolute Differences	PSADBW.html
-GENERAL	VPSADBW	Compute Sum of Absolute Differences	PSADBW.html
-GENERAL	PSHUFB	Packed Shuffle Bytes	PSHUFB.html
-GENERAL	VPSHUFB	Packed Shuffle Bytes	PSHUFB.html
-GENERAL	PSHUFD	Shuffle Packed Doublewords	PSHUFD.html
-GENERAL	VPSHUFD	Shuffle Packed Doublewords	PSHUFD.html
-GENERAL	PSHUFHW	Shuffle Packed High Words	PSHUFHW.html
-GENERAL	VPSHUFHW	Shuffle Packed High Words	PSHUFHW.html
-GENERAL	PSHUFLW	Shuffle Packed Low Words	PSHUFLW.html
-GENERAL	VPSHUFLW	Shuffle Packed Low Words	PSHUFLW.html
-GENERAL	PSHUFW	Shuffle Packed Words	PSHUFW.html
-GENERAL	PSIGND	Packed SIGN	PSIGNB_PSIGNW_PSIGND.html
-GENERAL	PSIGNB	Packed SIGN	PSIGNB_PSIGNW_PSIGND.html
-GENERAL	VPSIGND	Packed SIGN	PSIGNB_PSIGNW_PSIGND.html
-GENERAL	VPSIGNB	Packed SIGN	PSIGNB_PSIGNW_PSIGND.html
-GENERAL	PSIGNW	Packed SIGN	PSIGNB_PSIGNW_PSIGND.html
-GENERAL	VPSIGNW	Packed SIGN	PSIGNB_PSIGNW_PSIGND.html
-GENERAL	VPSLLDQ	Shift Double Qword Left Logical	PSLLDQ.html
-GENERAL	PSLLDQ	Shift Double Qword Left Logical	PSLLDQ.html
-GENERAL	PSLLQ	Shift Packed Data Left Logical	PSLLW_PSLLD_PSLLQ.html
-GENERAL	VPSLLW	Shift Packed Data Left Logical	PSLLW_PSLLD_PSLLQ.html
-GENERAL	VPSLLD	Shift Packed Data Left Logical	PSLLW_PSLLD_PSLLQ.html
-GENERAL	VPSLLQ	Shift Packed Data Left Logical	PSLLW_PSLLD_PSLLQ.html
-GENERAL	PSLLW	Shift Packed Data Left Logical	PSLLW_PSLLD_PSLLQ.html
-GENERAL	PSLLD	Shift Packed Data Left Logical	PSLLW_PSLLD_PSLLQ.html
-GENERAL	VPSRAW	Shift Packed Data Right Arithmetic	PSRAW_PSRAD_PSRAQ.html
-GENERAL	PSRAQ	Shift Packed Data Right Arithmetic	PSRAW_PSRAD_PSRAQ.html
-GENERAL	VPSRAD	Shift Packed Data Right Arithmetic	PSRAW_PSRAD_PSRAQ.html
-GENERAL	VPSRAQ	Shift Packed Data Right Arithmetic	PSRAW_PSRAD_PSRAQ.html
-GENERAL	PSRAW	Shift Packed Data Right Arithmetic	PSRAW_PSRAD_PSRAQ.html
-GENERAL	PSRAD	Shift Packed Data Right Arithmetic	PSRAW_PSRAD_PSRAQ.html
-GENERAL	PSRLDQ	Shift Double Qword Right Logical	PSRLDQ.html
-GENERAL	VPSRLDQ	Shift Double Qword Right Logical	PSRLDQ.html
-GENERAL	VPSRLQ	Shift Packed Data Right Logical	PSRLW_PSRLD_PSRLQ.html
-GENERAL	PSRLW	Shift Packed Data Right Logical	PSRLW_PSRLD_PSRLQ.html
-GENERAL	PSRLD	Shift Packed Data Right Logical	PSRLW_PSRLD_PSRLQ.html
-GENERAL	PSRLQ	Shift Packed Data Right Logical	PSRLW_PSRLD_PSRLQ.html
-GENERAL	VPSRLW	Shift Packed Data Right Logical	PSRLW_PSRLD_PSRLQ.html
-GENERAL	VPSRLD	Shift Packed Data Right Logical	PSRLW_PSRLD_PSRLQ.html
-GENERAL	VPSUBD	Subtract Packed Integers	PSUBB_PSUBW_PSUBD.html
-GENERAL	VPSUBB	Subtract Packed Integers	PSUBB_PSUBW_PSUBD.html
-GENERAL	PSUBW	Subtract Packed Integers	PSUBB_PSUBW_PSUBD.html
-GENERAL	PSUBD	Subtract Packed Integers	PSUBB_PSUBW_PSUBD.html
-GENERAL	PSUBB	Subtract Packed Integers	PSUBB_PSUBW_PSUBD.html
-GENERAL	VPSUBW	Subtract Packed Integers	PSUBB_PSUBW_PSUBD.html
-GENERAL	VPSUBQ	Subtract Packed Qword Integers	PSUBQ.html
-GENERAL	PSUBQ	Subtract Packed Qword Integers	PSUBQ.html
-GENERAL	VPSUBSB	Subtract Packed Signed Integers with Signed Saturation	PSUBSB_PSUBSW.html
-GENERAL	PSUBSB	Subtract Packed Signed Integers with Signed Saturation	PSUBSB_PSUBSW.html
-GENERAL	PSUBSW	Subtract Packed Signed Integers with Signed Saturation	PSUBSB_PSUBSW.html
-GENERAL	VPSUBSW	Subtract Packed Signed Integers with Signed Saturation	PSUBSB_PSUBSW.html
-GENERAL	PSUBUSB	Subtract Packed Unsigned Integers with Unsigned Saturation	PSUBUSB_PSUBUSW.html
-GENERAL	VPSUBUSW	Subtract Packed Unsigned Integers with Unsigned Saturation	PSUBUSB_PSUBUSW.html
-GENERAL	PSUBUSW	Subtract Packed Unsigned Integers with Unsigned Saturation	PSUBUSB_PSUBUSW.html
-GENERAL	VPSUBUSB	Subtract Packed Unsigned Integers with Unsigned Saturation	PSUBUSB_PSUBUSW.html
-GENERAL	VPTEST	PTEST- Logical Compare 	PTEST.html
-GENERAL	PTEST	PTEST- Logical Compare 	PTEST.html
-GENERAL	PTWRITE	PTWRITE - Write Data to a Processor Trace Packet 	PTWRITE.html
-GENERAL	PUNPCKHQDQ	Unpack High Data	PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ.html
-GENERAL	PUNPCKHWD	Unpack High Data	PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ.html
-GENERAL	PUNPCKHDQ	Unpack High Data	PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ.html
-GENERAL	VPUNPCKHBW	Unpack High Data	PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ.html
-GENERAL	PUNPCKHBW	Unpack High Data	PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ.html
-GENERAL	VPUNPCKHQDQ	Unpack High Data	PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ.html
-GENERAL	VPUNPCKHWD	Unpack High Data	PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ.html
-GENERAL	VPUNPCKHDQ	Unpack High Data	PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ.html
-GENERAL	VPUNPCKLQDQ	Unpack Low Data	PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ.html
-GENERAL	PUNPCKLBW	Unpack Low Data	PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ.html
-GENERAL	PUNPCKLQDQ	Unpack Low Data	PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ.html
-GENERAL	VPUNPCKLBW	Unpack Low Data	PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ.html
-GENERAL	PUNPCKLWD	Unpack Low Data	PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ.html
-GENERAL	PUNPCKLDQ	Unpack Low Data	PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ.html
-GENERAL	VPUNPCKLWD	Unpack Low Data	PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ.html
-GENERAL	VPUNPCKLDQ	Unpack Low Data	PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ.html
-GENERAL	PUSH	Push Word, Dword or Qword Onto the Stack	PUSH.html
-GENERAL	PUSHAD	Push All General-Purpose Registers	PUSHA_PUSHAD.html
-GENERAL	PUSHA	Push All General-Purpose Registers	PUSHA_PUSHAD.html
-GENERAL	PUSHFD	Push EFLAGS Register onto the Stack	PUSHF_PUSHFD.html
-GENERAL	PUSHF	Push EFLAGS Register onto the Stack	PUSHF_PUSHFD.html
-GENERAL	VPXOR	Logical Exclusive OR	PXOR.html
-GENERAL	VPXORQ	Logical Exclusive OR	PXOR.html
-GENERAL	VPXORD	Logical Exclusive OR	PXOR.html
-GENERAL	PXOR	Logical Exclusive OR	PXOR.html
-GENERAL	RCR	Rotate	RCL_RCR_ROL_ROR.html
-GENERAL	ROR	Rotate	RCL_RCR_ROL_ROR.html
-GENERAL	RCL	Rotate	RCL_RCR_ROL_ROR.html
-GENERAL	ROL	Rotate	RCL_RCR_ROL_ROR.html
-GENERAL	RCPPS	Compute Reciprocals of Packed Single-Precision FP Values	RCPPS.html
-GENERAL	VRCPPS	Compute Reciprocals of Packed Single-Precision FP Values	RCPPS.html
-GENERAL	VRCPSS	Compute Reciprocal of Scalar Single-Precision FP Values	RCPSS.html
-GENERAL	RCPSS	Compute Reciprocal of Scalar Single-Precision FP Values	RCPSS.html
-GENERAL	RDFSBASE	Read FS/GS Segment Base	RDFSBASE_RDGSBASE.html
-GENERAL	RDGSBASE	Read FS/GS Segment Base	RDFSBASE_RDGSBASE.html
-GENERAL	RDMSR	Read from Model Specific Register	RDMSR.html
-GENERAL	RDPID	Read Processor ID	RDPID.html
-GENERAL	RDPKRU	Read Protection Key Rights for User Pages	RDPKRU.html
-GENERAL	RDPMC	Read Performance-Monitoring Counters	RDPMC.html
-GENERAL	RDRAND	Read Random Number	RDRAND.html
-GENERAL	RDSEED	Read Random SEED	RDSEED.html
-GENERAL	RDTSC	Read Time-Stamp Counter	RDTSC.html
-GENERAL	RDTSCP	Read Time-Stamp Counter and Processor ID	RDTSCP.html
-GENERAL	REP OUTS	Repeat String Operation Prefix	REP_REPE_REPZ_REPNE_REPNZ.html
-GENERAL	REP STOS	Repeat String Operation Prefix	REP_REPE_REPZ_REPNE_REPNZ.html
-GENERAL	REPNE CMPS	Repeat String Operation Prefix	REP_REPE_REPZ_REPNE_REPNZ.html
-GENERAL	REPE CMPS	Repeat String Operation Prefix	REP_REPE_REPZ_REPNE_REPNZ.html
-GENERAL	REPNE SCAS	Repeat String Operation Prefix	REP_REPE_REPZ_REPNE_REPNZ.html
-GENERAL	REP MOVS	Repeat String Operation Prefix	REP_REPE_REPZ_REPNE_REPNZ.html
-GENERAL	REP LODS	Repeat String Operation Prefix	REP_REPE_REPZ_REPNE_REPNZ.html
-GENERAL	REPE SCAS	Repeat String Operation Prefix	REP_REPE_REPZ_REPNE_REPNZ.html
-GENERAL	REP INS	Repeat String Operation Prefix	REP_REPE_REPZ_REPNE_REPNZ.html
-GENERAL	RET	Return from Procedure	RET.html
-GENERAL	RORX	Rotate Right Logical Without Affecting Flags	RORX.html
-GENERAL	ROUNDPD	Round Packed Double-Precision FP Values	ROUNDPD.html
-GENERAL	VROUNDPD	Round Packed Double-Precision FP Values	ROUNDPD.html
-GENERAL	ROUNDPS	Round Packed Single-Precision FP Values	ROUNDPS.html
-GENERAL	VROUNDPS	Round Packed Single-Precision FP Values	ROUNDPS.html
-GENERAL	VROUNDSD	Round Scalar Double-Precision FP Values	ROUNDSD.html
-GENERAL	ROUNDSD	Round Scalar Double-Precision FP Values	ROUNDSD.html
-GENERAL	VROUNDSS	Round Scalar Single-Precision FP Values	ROUNDSS.html
-GENERAL	ROUNDSS	Round Scalar Single-Precision FP Values	ROUNDSS.html
-GENERAL	RSM	Resume from System Management Mode	RSM.html
-GENERAL	RSQRTPS	Compute Reciprocals of Square Roots of Packed Single-Precision FP Values	RSQRTPS.html
-GENERAL	VRSQRTPS	Compute Reciprocals of Square Roots of Packed Single-Precision FP Values	RSQRTPS.html
-GENERAL	VRSQRTSS	Compute Reciprocal of Square Root of Scalar Single-Precision FP Value	RSQRTSS.html
-GENERAL	RSQRTSS	Compute Reciprocal of Square Root of Scalar Single-Precision FP Value	RSQRTSS.html
-GENERAL	SAHF	Store AH into Flags	SAHF.html
-GENERAL	SAR	Shift	SAL_SAR_SHL_SHR.html
-GENERAL	SHL	Shift	SAL_SAR_SHL_SHR.html
-GENERAL	SHR	Shift	SAL_SAR_SHL_SHR.html
-GENERAL	SAL	Shift	SAL_SAR_SHL_SHR.html
-GENERAL	SARX	Shift Without Affecting Flags	SARX_SHLX_SHRX.html
-GENERAL	SHLX	Shift Without Affecting Flags	SARX_SHLX_SHRX.html
-GENERAL	SHRX	Shift Without Affecting Flags	SARX_SHLX_SHRX.html
-GENERAL	SBB	Integer Subtraction with Borrow	SBB.html
-GENERAL	SCASB	Scan String	SCAS_SCASB_SCASW_SCASD.html
-GENERAL	SCASD	Scan String	SCAS_SCASB_SCASW_SCASD.html
-GENERAL	SCAS	Scan String	SCAS_SCASB_SCASW_SCASD.html
-GENERAL	SCASW	Scan String	SCAS_SCASB_SCASW_SCASD.html
-GENERAL	SETNB	Set Byte on Condition	SETcc.html
-GENERAL	SETNC	Set Byte on Condition	SETcc.html
-GENERAL	SETPE	Set Byte on Condition	SETcc.html
-GENERAL	SETNA	Set Byte on Condition	SETcc.html
-GENERAL	SETLE	Set Byte on Condition	SETcc.html
-GENERAL	SETNG	Set Byte on Condition	SETcc.html
-GENERAL	SETNE	Set Byte on Condition	SETcc.html
-GENERAL	SETGE	Set Byte on Condition	SETcc.html
-GENERAL	SETAE	Set Byte on Condition	SETcc.html
-GENERAL	SETA	Set Byte on Condition	SETcc.html
-GENERAL	SETNBE	Set Byte on Condition	SETcc.html
-GENERAL	SETG	Set Byte on Condition	SETcc.html
-GENERAL	SETE	Set Byte on Condition	SETcc.html
-GENERAL	SETNAE	Set Byte on Condition	SETcc.html
-GENERAL	SETB	Set Byte on Condition	SETcc.html
-GENERAL	SETC	Set Byte on Condition	SETcc.html
-GENERAL	SETP	Set Byte on Condition	SETcc.html
-GENERAL	SETO	Set Byte on Condition	SETcc.html
-GENERAL	SETL	Set Byte on Condition	SETcc.html
-GENERAL	SETNO	Set Byte on Condition	SETcc.html
-GENERAL	SETNL	Set Byte on Condition	SETcc.html
-GENERAL	SETPO	Set Byte on Condition	SETcc.html
-GENERAL	SETNS	Set Byte on Condition	SETcc.html
-GENERAL	SETNP	Set Byte on Condition	SETcc.html
-GENERAL	SETBE	Set Byte on Condition	SETcc.html
-GENERAL	SETS	Set Byte on Condition	SETcc.html
-GENERAL	SETNZ	Set Byte on Condition	SETcc.html
-GENERAL	SETZ	Set Byte on Condition	SETcc.html
-GENERAL	SETNGE	Set Byte on Condition	SETcc.html
-GENERAL	SFENCE	Store Fence	SFENCE.html
-GENERAL	SGDT	Store Global Descriptor Table Register	SGDT.html
-GENERAL	SHA1MSG1	Perform an Intermediate Calculation for the Next Four SHA1 Message Dwords	SHA1MSG1.html
-GENERAL	SHA1MSG2	Perform a Final Calculation for the Next Four SHA1 Message Dwords	SHA1MSG2.html
-GENERAL	SHA1NEXTE	Calculate SHA1 State Variable E after Four Rounds	SHA1NEXTE.html
-GENERAL	SHA1RNDS4	Perform Four Rounds of SHA1 Operation	SHA1RNDS4.html
-GENERAL	SHA256MSG1	Perform an Intermediate Calculation for the Next Four SHA256 Message Dwords	SHA256MSG1.html
-GENERAL	SHA256MSG2	Perform a Final Calculation for the Next Four SHA256 Message Dwords	SHA256MSG2.html
-GENERAL	SHA256RNDS2	Perform Two Rounds of SHA256 Operation	SHA256RNDS2.html
-GENERAL	SHLD	Double-Precision Shift Left	SHLD.html
-GENERAL	SHRD	Double-Precision Shift Right	SHRD.html
-GENERAL	VSHUFPD	Packed Interleave Shuffle of Pairs of Double-Precision FP Values	SHUFPD.html
-GENERAL	SHUFPD	Packed Interleave Shuffle of Pairs of Double-Precision FP Values	SHUFPD.html
-GENERAL	VSHUFPS	Packed Interleave Shuffle of Quadruplets of Single-Precision FP Values	SHUFPS.html
-GENERAL	SHUFPS	Packed Interleave Shuffle of Quadruplets of Single-Precision FP Values	SHUFPS.html
-GENERAL	SIDT	Store Interrupt Descriptor Table Register	SIDT.html
-GENERAL	SLDT	Store Local Descriptor Table Register	SLDT.html
-GENERAL	SMSW	Store Machine Status Word	SMSW.html
-GENERAL	SQRTPD	Square Root of Double-Precision FP Values	SQRTPD.html
-GENERAL	VSQRTPD	Square Root of Double-Precision FP Values	SQRTPD.html
-GENERAL	SQRTPS	Square Root of Single-Precision FP Values	SQRTPS.html
-GENERAL	VSQRTPS	Square Root of Single-Precision FP Values	SQRTPS.html
-GENERAL	VSQRTSD	Compute Square Root of Scalar Double-Precision FP Value	SQRTSD.html
-GENERAL	SQRTSD	Compute Square Root of Scalar Double-Precision FP Value	SQRTSD.html
-GENERAL	VSQRTSS	Compute Square Root of Scalar Single-Precision Value	SQRTSS.html
-GENERAL	SQRTSS	Compute Square Root of Scalar Single-Precision Value	SQRTSS.html
-GENERAL	STAC	Set AC Flag in EFLAGS Register	STAC.html
-GENERAL	STC	Set Carry Flag	STC.html
-GENERAL	STD	Set Direction Flag	STD.html
-GENERAL	STI	Set Interrupt Flag	STI.html
-GENERAL	STMXCSR	Store MXCSR Register State	STMXCSR.html
-GENERAL	VSTMXCSR	Store MXCSR Register State	STMXCSR.html
-GENERAL	STOS	Store String	STOS_STOSB_STOSW_STOSD_STOSQ.html
-GENERAL	STOSB	Store String	STOS_STOSB_STOSW_STOSD_STOSQ.html
-GENERAL	STOSQ	Store String	STOS_STOSB_STOSW_STOSD_STOSQ.html
-GENERAL	STOSD	Store String	STOS_STOSB_STOSW_STOSD_STOSQ.html
-GENERAL	STOSW	Store String	STOS_STOSB_STOSW_STOSD_STOSQ.html
-GENERAL	STR	Store Task Register	STR.html
-GENERAL	SUB	Subtract	SUB.html
-GENERAL	VSUBPD	Subtract Packed Double-Precision FP Values	SUBPD.html
-GENERAL	SUBPD	Subtract Packed Double-Precision FP Values	SUBPD.html
-GENERAL	VSUBPS	Subtract Packed Single-Precision FP Values	SUBPS.html
-GENERAL	SUBPS	Subtract Packed Single-Precision FP Values	SUBPS.html
-GENERAL	VSUBSD	Subtract Scalar Double-Precision FP Value	SUBSD.html
-GENERAL	SUBSD	Subtract Scalar Double-Precision FP Value	SUBSD.html
-GENERAL	VSUBSS	Subtract Scalar Single-Precision FP Value	SUBSS.html
-GENERAL	SUBSS	Subtract Scalar Single-Precision FP Value	SUBSS.html
-GENERAL	SWAPGS	Swap GS Base Register	SWAPGS.html
-GENERAL	SYSCALL	Fast System Call	SYSCALL.html
-GENERAL	SYSENTER	Fast System Call	SYSENTER.html
-GENERAL	SYSEXIT	Fast Return from Fast System Call	SYSEXIT.html
-GENERAL	SYSRET	Return From Fast System Call	SYSRET.html
-GENERAL	TEST	Logical Compare	TEST.html
-GENERAL	TZCNT	Count the Number of Trailing Zero Bits	TZCNT.html
-GENERAL	VUCOMISD	Unordered Compare Scalar Double-Precision FP Values and Set EFLAGS	UCOMISD.html
-GENERAL	UCOMISD	Unordered Compare Scalar Double-Precision FP Values and Set EFLAGS	UCOMISD.html
-GENERAL	UCOMISS	Unordered Compare Scalar Single-Precision FP Values and Set EFLAGS	UCOMISS.html
-GENERAL	VUCOMISS	Unordered Compare Scalar Single-Precision FP Values and Set EFLAGS	UCOMISS.html
-GENERAL	UD2	Undefined Instruction	UD2.html
-GENERAL	UNPCKHPD	Unpack and Interleave High Packed Double-Precision FP Values	UNPCKHPD.html
-GENERAL	VUNPCKHPD	Unpack and Interleave High Packed Double-Precision FP Values	UNPCKHPD.html
-GENERAL	UNPCKHPS	Unpack and Interleave High Packed Single-Precision FP Values	UNPCKHPS.html
-GENERAL	VUNPCKHPS	Unpack and Interleave High Packed Single-Precision FP Values	UNPCKHPS.html
-GENERAL	UNPCKLPD	Unpack and Interleave Low Packed Double-Precision FP Values	UNPCKLPD.html
-GENERAL	VUNPCKLPD	Unpack and Interleave Low Packed Double-Precision FP Values	UNPCKLPD.html
-GENERAL	UNPCKLPS	Unpack and Interleave Low Packed Single-Precision FP Values	UNPCKLPS.html
-GENERAL	VUNPCKLPS	Unpack and Interleave Low Packed Single-Precision FP Values	UNPCKLPS.html
-GENERAL	VALIGND	Align Dword/Qword Vectors	VALIGND_VALIGNQ.html
-GENERAL	VALIGNQ	Align Dword/Qword Vectors	VALIGND_VALIGNQ.html
-GENERAL	VBLENDMPD	Blend Float64/Float32 Vectors Using an OpMask Control	VBLENDMPD_VBLENDMPS.html
-GENERAL	VBLENDMPS	Blend Float64/Float32 Vectors Using an OpMask Control	VBLENDMPD_VBLENDMPS.html
-GENERAL	VBROADCASTSS	Load with Broadcast FP Data	VBROADCAST.html
-GENERAL	VBROADCASTF128	Load with Broadcast FP Data	VBROADCAST.html
-GENERAL	VBROADCASTF32X2	Load with Broadcast FP Data	VBROADCAST.html
-GENERAL	VBROADCASTF32X4	Load with Broadcast FP Data	VBROADCAST.html
-GENERAL	VBROADCASTF64X4	Load with Broadcast FP Data	VBROADCAST.html
-GENERAL	VBROADCASTF64X2	Load with Broadcast FP Data	VBROADCAST.html
-GENERAL	VBROADCASTSD	Load with Broadcast FP Data	VBROADCAST.html
-GENERAL	VBROADCASTF32X8	Load with Broadcast FP Data	VBROADCAST.html
-GENERAL	VCOMPRESSPD	Store Sparse Packed Double-Precision FP Values into Dense Memory	VCOMPRESSPD.html
-GENERAL	VCOMPRESSPS	Store Sparse Packed Single-Precision FP Values into Dense Memory	VCOMPRESSPS.html
-GENERAL	VCVTPD2QQ	Convert Packed Double-Precision FP Values to Packed Qword Integers	VCVTPD2QQ.html
-GENERAL	VCVTPD2UDQ	Convert Packed Double-Precision FP Values to Packed Unsigned Dword Integers	VCVTPD2UDQ.html
-GENERAL	VCVTPD2UQQ	Convert Packed Double-Precision FP Values to Packed Unsigned Qword Integers	VCVTPD2UQQ.html
-GENERAL	VCVTPH2PS	Convert 16-bit FP values to Single-Precision FP values	VCVTPH2PS.html
-GENERAL	VCVTPS2PH	Convert Single-Precision FP value to 16-bit FP value	VCVTPS2PH.html
-GENERAL	VCVTPS2QQ	Convert Packed Single-Precision FP Values to Packed Signed Qword Integer Values	VCVTPS2QQ.html
-GENERAL	VCVTPS2UDQ	Convert Packed Single-Precision FP Values to Packed Unsigned Dword Integer Values	VCVTPS2UDQ.html
-GENERAL	VCVTPS2UQQ	Convert Packed Single-Precision FP Values to Packed Unsigned Qword Integer Values	VCVTPS2UQQ.html
-GENERAL	VCVTQQ2PD	Convert Packed Qword Integers to Packed Double-Precision FP Values	VCVTQQ2PD.html
-GENERAL	VCVTQQ2PS	Convert Packed Qword Integers to Packed Single-Precision FP Values	VCVTQQ2PS.html
-GENERAL	VCVTSD2USI	Convert Scalar Double-Precision FP Value to Unsigned Dword Integer	VCVTSD2USI.html
-GENERAL	VCVTSS2USI	Convert Scalar Single-Precision FP Value to Unsigned Dword Integer	VCVTSS2USI.html
-GENERAL	VCVTTPD2QQ	Convert with Truncation Packed Double-Precision FP Values to Packed Qword Integers	VCVTTPD2QQ.html
-GENERAL	VCVTTPD2UDQ	Convert with Truncation Packed Double-Precision FP Values to Packed Unsigned Dword Integers	VCVTTPD2UDQ.html
-GENERAL	VCVTTPD2UQQ	Convert with Truncation Packed Double-Precision FP Values to Packed Unsigned Qword Integers	VCVTTPD2UQQ.html
-GENERAL	VCVTTPS2QQ	Convert with Truncation Packed Single-Precision FP Values to Packed Signed Qword Integer Values	VCVTTPS2QQ.html
-GENERAL	VCVTTPS2UDQ	Convert with Truncation Packed Single-Precision FP Values to Packed Unsigned Dword Integer Values	VCVTTPS2UDQ.html
-GENERAL	VCVTTPS2UQQ	Convert with Truncation Packed Single-Precision FP Values to Packed Unsigned Qword Integer Values	VCVTTPS2UQQ.html
-GENERAL	VCVTTSD2USI	Convert with Truncation Scalar Double-Precision FP Value to Unsigned Integer	VCVTTSD2USI.html
-GENERAL	VCVTTSS2USI	Convert with Truncation Scalar Single-Precision FP Value to Unsigned Integer	VCVTTSS2USI.html
-GENERAL	VCVTUDQ2PD	Convert Packed Unsigned Dword Integers to Packed Double-Precision FP Values	VCVTUDQ2PD.html
-GENERAL	VCVTUDQ2PS	Convert Packed Unsigned Dword Integers to Packed Single-Precision FP Values	VCVTUDQ2PS.html
-GENERAL	VCVTUQQ2PD	Convert Packed Unsigned Qword Integers to Packed Double-Precision FP Values	VCVTUQQ2PD.html
-GENERAL	VCVTUQQ2PS	Convert Packed Unsigned Qword Integers to Packed Single-Precision FP Values	VCVTUQQ2PS.html
-GENERAL	VCVTUSI2SD	Convert Unsigned Integer to Scalar Double-Precision FP Value	VCVTUSI2SD.html
-GENERAL	VCVTUSI2SS	Convert Unsigned Integer to Scalar Single-Precision FP Value	VCVTUSI2SS.html
-GENERAL	VDBPSADBW	Double Block Packed Sum-Absolute-Differences (SAD) on Unsigned Bytes	VDBPSADBW.html
-GENERAL	VERR	Verify a Segment for Reading or Writing	VERR_VERW.html
-GENERAL	VERW	Verify a Segment for Reading or Writing	VERR_VERW.html
-GENERAL	VEXP2PD	Approximation to the Exponential 2^x of Packed Double-Precision FP Values with Less Than 2^-23 Relative Error	VEXP2PD.html
-GENERAL	VEXP2PS	Approximation to the Exponential 2^x of Packed Single-Precision FP Values with Less Than 2^-23 Relative Error	VEXP2PS.html
-GENERAL	VEXPANDPD	Load Sparse Packed Double-Precision FP Values from Dense Memory	VEXPANDPD.html
-GENERAL	VEXPANDPS	Load Sparse Packed Single-Precision FP Values from Dense Memory	VEXPANDPS.html
-GENERAL	VEXTRACTF128	extract Packed FP Values	VEXTRACTF128_VEXTRACTF32x4_VEXTRACTF64x2_VEXTRACTF32x8_VEXTRACTF64x4.html
-GENERAL	VEXTRACTF64x2	extract Packed FP Values	VEXTRACTF128_VEXTRACTF32x4_VEXTRACTF64x2_VEXTRACTF32x8_VEXTRACTF64x4.html
-GENERAL	VEXTRACTF32x8	extract Packed FP Values	VEXTRACTF128_VEXTRACTF32x4_VEXTRACTF64x2_VEXTRACTF32x8_VEXTRACTF64x4.html
-GENERAL	VEXTRACTF64x4	extract Packed FP Values	VEXTRACTF128_VEXTRACTF32x4_VEXTRACTF64x2_VEXTRACTF32x8_VEXTRACTF64x4.html
-GENERAL	VEXTRACTF32x4	extract Packed FP Values	VEXTRACTF128_VEXTRACTF32x4_VEXTRACTF64x2_VEXTRACTF32x8_VEXTRACTF64x4.html
-GENERAL	VEXTRACTI32x4	Extract packed Integer Values	VEXTRACTI128_VEXTRACTI32x4_VEXTRACTI64x2_VEXTRACTI32x8_VEXTRACTI64x4.html
-GENERAL	VEXTRACTI64x4	Extract packed Integer Values	VEXTRACTI128_VEXTRACTI32x4_VEXTRACTI64x2_VEXTRACTI32x8_VEXTRACTI64x4.html
-GENERAL	VEXTRACTI32x8	Extract packed Integer Values	VEXTRACTI128_VEXTRACTI32x4_VEXTRACTI64x2_VEXTRACTI32x8_VEXTRACTI64x4.html
-GENERAL	VEXTRACTI128	Extract packed Integer Values	VEXTRACTI128_VEXTRACTI32x4_VEXTRACTI64x2_VEXTRACTI32x8_VEXTRACTI64x4.html
-GENERAL	VEXTRACTI64x2	Extract packed Integer Values	VEXTRACTI128_VEXTRACTI32x4_VEXTRACTI64x2_VEXTRACTI32x8_VEXTRACTI64x4.html
-GENERAL	VFIXUPIMMPD	Fix Up Special Packed Float64 Values	VFIXUPIMMPD.html
-GENERAL	VFIXUPIMMPS	Fix Up Special Packed Float32 Values	VFIXUPIMMPS.html
-GENERAL	VFIXUPIMMSD	Fix Up Special Scalar Float64 Value	VFIXUPIMMSD.html
-GENERAL	VFIXUPIMMSS	Fix Up Special Scalar Float32 Value	VFIXUPIMMSS.html
-GENERAL	VFMADD231PD	Fused Multiply-Add of Packed Double-Precision FP Values	VFMADD132PD_VFMADD213PD_VFMADD231PD.html
-GENERAL	VFMADD132PD	Fused Multiply-Add of Packed Double-Precision FP Values	VFMADD132PD_VFMADD213PD_VFMADD231PD.html
-GENERAL	VFMADD213PD	Fused Multiply-Add of Packed Double-Precision FP Values	VFMADD132PD_VFMADD213PD_VFMADD231PD.html
-GENERAL	VFMADD213PS	Fused Multiply-Add of Packed Single-Precision FP Values	VFMADD132PS_VFMADD213PS_VFMADD231PS.html
-GENERAL	VFMADD132PS	Fused Multiply-Add of Packed Single-Precision FP Values	VFMADD132PS_VFMADD213PS_VFMADD231PS.html
-GENERAL	VFMADD231PS	Fused Multiply-Add of Packed Single-Precision FP Values	VFMADD132PS_VFMADD213PS_VFMADD231PS.html
-GENERAL	VFMADD213SD	Fused Multiply-Add of Scalar Double-Precision FP Values	VFMADD132SD_VFMADD213SD_VFMADD231SD.html
-GENERAL	VFMADD231SD	Fused Multiply-Add of Scalar Double-Precision FP Values	VFMADD132SD_VFMADD213SD_VFMADD231SD.html
-GENERAL	VFMADD132SD	Fused Multiply-Add of Scalar Double-Precision FP Values	VFMADD132SD_VFMADD213SD_VFMADD231SD.html
-GENERAL	VFMADD213SS	Fused Multiply-Add of Scalar Single-Precision FP Values	VFMADD132SS_VFMADD213SS_VFMADD231SS.html
-GENERAL	VFMADD231SS	Fused Multiply-Add of Scalar Single-Precision FP Values	VFMADD132SS_VFMADD213SS_VFMADD231SS.html
-GENERAL	VFMADD132SS	Fused Multiply-Add of Scalar Single-Precision FP Values	VFMADD132SS_VFMADD213SS_VFMADD231SS.html
-GENERAL	VFMADDSUB213PD	Fused Multiply-Alternating Add/Subtract of Packed Double-Precision FP Values	VFMADDSUB132PD_VFMADDSUB213PD_VFMADDSUB231PD.html
-GENERAL	VFMADDSUB231PD	Fused Multiply-Alternating Add/Subtract of Packed Double-Precision FP Values	VFMADDSUB132PD_VFMADDSUB213PD_VFMADDSUB231PD.html
-GENERAL	VFMADDSUB132PD	Fused Multiply-Alternating Add/Subtract of Packed Double-Precision FP Values	VFMADDSUB132PD_VFMADDSUB213PD_VFMADDSUB231PD.html
-GENERAL	VFMADDSUB213PS	Fused Multiply-Alternating Add/Subtract of Packed Single-Precision FP Values	VFMADDSUB132PS_VFMADDSUB213PS_VFMADDSUB231PS.html
-GENERAL	VFMADDSUB132PS	Fused Multiply-Alternating Add/Subtract of Packed Single-Precision FP Values	VFMADDSUB132PS_VFMADDSUB213PS_VFMADDSUB231PS.html
-GENERAL	VFMADDSUB231PS	Fused Multiply-Alternating Add/Subtract of Packed Single-Precision FP Values	VFMADDSUB132PS_VFMADDSUB213PS_VFMADDSUB231PS.html
-GENERAL	VFMSUB231PD	Fused Multiply-Subtract of Packed Double-Precision FP Values	VFMSUB132PD_VFMSUB213PD_VFMSUB231PD.html
-GENERAL	VFMSUB132PD	Fused Multiply-Subtract of Packed Double-Precision FP Values	VFMSUB132PD_VFMSUB213PD_VFMSUB231PD.html
-GENERAL	VFMSUB213PD	Fused Multiply-Subtract of Packed Double-Precision FP Values	VFMSUB132PD_VFMSUB213PD_VFMSUB231PD.html
-GENERAL	VFMSUB231PS	Fused Multiply-Subtract of Packed Single-Precision FP Values	VFMSUB132PS_VFMSUB213PS_VFMSUB231PS.html
-GENERAL	VFMSUB132PS	Fused Multiply-Subtract of Packed Single-Precision FP Values	VFMSUB132PS_VFMSUB213PS_VFMSUB231PS.html
-GENERAL	VFMSUB213PS	Fused Multiply-Subtract of Packed Single-Precision FP Values	VFMSUB132PS_VFMSUB213PS_VFMSUB231PS.html
-GENERAL	VFMSUB132SD	Fused Multiply-Subtract of Scalar Double-Precision FP Values	VFMSUB132SD_VFMSUB213SD_VFMSUB231SD.html
-GENERAL	VFMSUB231SD	Fused Multiply-Subtract of Scalar Double-Precision FP Values	VFMSUB132SD_VFMSUB213SD_VFMSUB231SD.html
-GENERAL	VFMSUB213SD	Fused Multiply-Subtract of Scalar Double-Precision FP Values	VFMSUB132SD_VFMSUB213SD_VFMSUB231SD.html
-GENERAL	VFMSUB231SS	Fused Multiply-Subtract of Scalar Single-Precision FP Values	VFMSUB132SS_VFMSUB213SS_VFMSUB231SS.html
-GENERAL	VFMSUB132SS	Fused Multiply-Subtract of Scalar Single-Precision FP Values	VFMSUB132SS_VFMSUB213SS_VFMSUB231SS.html
-GENERAL	VFMSUB213SS	Fused Multiply-Subtract of Scalar Single-Precision FP Values	VFMSUB132SS_VFMSUB213SS_VFMSUB231SS.html
-GENERAL	VFMSUBADD231PD	Fused Multiply-Alternating Subtract/Add of Packed Double-Precision FP Values	VFMSUBADD132PD_VFMSUBADD213PD_VFMSUBADD231PD.html
-GENERAL	VFMSUBADD213PD	Fused Multiply-Alternating Subtract/Add of Packed Double-Precision FP Values	VFMSUBADD132PD_VFMSUBADD213PD_VFMSUBADD231PD.html
-GENERAL	VFMSUBADD132PD	Fused Multiply-Alternating Subtract/Add of Packed Double-Precision FP Values	VFMSUBADD132PD_VFMSUBADD213PD_VFMSUBADD231PD.html
-GENERAL	VFMSUBADD231PS	Fused Multiply-Alternating Subtract/Add of Packed Single-Precision FP Values	VFMSUBADD132PS_VFMSUBADD213PS_VFMSUBADD231PS.html
-GENERAL	VFMSUBADD132PS	Fused Multiply-Alternating Subtract/Add of Packed Single-Precision FP Values	VFMSUBADD132PS_VFMSUBADD213PS_VFMSUBADD231PS.html
-GENERAL	VFMSUBADD213PS	Fused Multiply-Alternating Subtract/Add of Packed Single-Precision FP Values	VFMSUBADD132PS_VFMSUBADD213PS_VFMSUBADD231PS.html
-GENERAL	VFNMADD231PD	Fused Negative Multiply-Add of Packed Double-Precision FP Values	VFNMADD132PD_VFNMADD213PD_VFNMADD231PD.html
-GENERAL	VFNMADD132PD	Fused Negative Multiply-Add of Packed Double-Precision FP Values	VFNMADD132PD_VFNMADD213PD_VFNMADD231PD.html
-GENERAL	VFNMADD213PD	Fused Negative Multiply-Add of Packed Double-Precision FP Values	VFNMADD132PD_VFNMADD213PD_VFNMADD231PD.html
-GENERAL	VFNMADD231PS	Fused Negative Multiply-Add of Packed Single-Precision FP Values	VFNMADD132PS_VFNMADD213PS_VFNMADD231PS.html
-GENERAL	VFNMADD213PS	Fused Negative Multiply-Add of Packed Single-Precision FP Values	VFNMADD132PS_VFNMADD213PS_VFNMADD231PS.html
-GENERAL	VFNMADD132PS	Fused Negative Multiply-Add of Packed Single-Precision FP Values	VFNMADD132PS_VFNMADD213PS_VFNMADD231PS.html
-GENERAL	VFNMADD213SD	Fused Negative Multiply-Add of Scalar Double-Precision FP Values	VFNMADD132SD_VFNMADD213SD_VFNMADD231SD.html
-GENERAL	VFNMADD132SD	Fused Negative Multiply-Add of Scalar Double-Precision FP Values	VFNMADD132SD_VFNMADD213SD_VFNMADD231SD.html
-GENERAL	VFNMADD231SD	Fused Negative Multiply-Add of Scalar Double-Precision FP Values	VFNMADD132SD_VFNMADD213SD_VFNMADD231SD.html
-GENERAL	VFNMADD213SS	Fused Negative Multiply-Add of Scalar Single-Precision FP Values	VFNMADD132SS_VFNMADD213SS_VFNMADD231SS.html
-GENERAL	VFNMADD132SS	Fused Negative Multiply-Add of Scalar Single-Precision FP Values	VFNMADD132SS_VFNMADD213SS_VFNMADD231SS.html
-GENERAL	VFNMADD231SS	Fused Negative Multiply-Add of Scalar Single-Precision FP Values	VFNMADD132SS_VFNMADD213SS_VFNMADD231SS.html
-GENERAL	VFNMSUB213PD	Fused Negative Multiply-Subtract of Packed Double-Precision FP Values	VFNMSUB132PD_VFNMSUB213PD_VFNMSUB231PD.html
-GENERAL	VFNMSUB231PD	Fused Negative Multiply-Subtract of Packed Double-Precision FP Values	VFNMSUB132PD_VFNMSUB213PD_VFNMSUB231PD.html
-GENERAL	VFNMSUB132PD	Fused Negative Multiply-Subtract of Packed Double-Precision FP Values	VFNMSUB132PD_VFNMSUB213PD_VFNMSUB231PD.html
-GENERAL	VFNMSUB213PS	Fused Negative Multiply-Subtract of Packed Single-Precision FP Values	VFNMSUB132PS_VFNMSUB213PS_VFNMSUB231PS.html
-GENERAL	VFNMSUB231PS	Fused Negative Multiply-Subtract of Packed Single-Precision FP Values	VFNMSUB132PS_VFNMSUB213PS_VFNMSUB231PS.html
-GENERAL	VFNMSUB132PS	Fused Negative Multiply-Subtract of Packed Single-Precision FP Values	VFNMSUB132PS_VFNMSUB213PS_VFNMSUB231PS.html
-GENERAL	VFNMSUB213SD	Fused Negative Multiply-Subtract of Scalar Double-Precision FP Values	VFNMSUB132SD_VFNMSUB213SD_VFNMSUB231SD.html
-GENERAL	VFNMSUB231SD	Fused Negative Multiply-Subtract of Scalar Double-Precision FP Values	VFNMSUB132SD_VFNMSUB213SD_VFNMSUB231SD.html
-GENERAL	VFNMSUB132SD	Fused Negative Multiply-Subtract of Scalar Double-Precision FP Values	VFNMSUB132SD_VFNMSUB213SD_VFNMSUB231SD.html
-GENERAL	VFNMSUB213SS	Fused Negative Multiply-Subtract of Scalar Single-Precision FP Values	VFNMSUB132SS_VFNMSUB213SS_VFNMSUB231SS.html
-GENERAL	VFNMSUB132SS	Fused Negative Multiply-Subtract of Scalar Single-Precision FP Values	VFNMSUB132SS_VFNMSUB213SS_VFNMSUB231SS.html
-GENERAL	VFNMSUB231SS	Fused Negative Multiply-Subtract of Scalar Single-Precision FP Values	VFNMSUB132SS_VFNMSUB213SS_VFNMSUB231SS.html
-GENERAL	VFPCLASSPD	Tests Types Of a Packed Float64 Values	VFPCLASSPD.html
-GENERAL	VFPCLASSPS	Tests Types Of a Packed Float32 Values	VFPCLASSPS.html
-GENERAL	VFPCLASSSD	Tests Types Of a Scalar Float64 Values	VFPCLASSSD.html
-GENERAL	VFPCLASSSS	Tests Types Of a Scalar Float32 Values	VFPCLASSSS.html
-GENERAL	VGATHERDPD	Gather Packed Double-Precision FP Values Using Signed Dword Indices	VGATHERDPD_VGATHERQPD.html
-GENERAL	VGATHERQPD	Gather Packed Double-Precision FP Values Using Signed Qword Indices	VGATHERDPD_VGATHERQPD.html
-GENERAL	VGATHERDPS	Gather Packed Single, Packed Double with Signed Dword	VGATHERDPS_VGATHERDPD.html
-GENERAL	VGATHERDPD	Gather Packed Single, Packed Double with Signed Dword	VGATHERDPS_VGATHERDPD.html
-GENERAL	VGATHERDPS	Gather Packed Single-Precision FP values Using Signed Dword Indices	VGATHERDPS_VGATHERQPS.html
-GENERAL	VGATHERQPS	Gather Packed Single-Precision FP values Using Signed Qword Indices	VGATHERDPS_VGATHERQPS.html
-GENERAL	VGATHERPF0QPS	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint	VGATHERPF0DPS_VGATHERPF0QPS_VGATHERPF0DPD_VGATHERPF0QPD.html
-GENERAL	VGATHERPF0QPD	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint	VGATHERPF0DPS_VGATHERPF0QPS_VGATHERPF0DPD_VGATHERPF0QPD.html
-GENERAL	VGATHERPF0DPD	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint	VGATHERPF0DPS_VGATHERPF0QPS_VGATHERPF0DPD_VGATHERPF0QPD.html
-GENERAL	VGATHERPF0DPS	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint	VGATHERPF0DPS_VGATHERPF0QPS_VGATHERPF0DPD_VGATHERPF0QPD.html
-GENERAL	VGATHERPF1QPS	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint	VGATHERPF1DPS_VGATHERPF1QPS_VGATHERPF1DPD_VGATHERPF1QPD.html
-GENERAL	VGATHERPF1QPD	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint	VGATHERPF1DPS_VGATHERPF1QPS_VGATHERPF1DPD_VGATHERPF1QPD.html
-GENERAL	VGATHERPF1DPS	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint	VGATHERPF1DPS_VGATHERPF1QPS_VGATHERPF1DPD_VGATHERPF1QPD.html
-GENERAL	VGATHERPF1DPD	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint	VGATHERPF1DPS_VGATHERPF1QPS_VGATHERPF1DPD_VGATHERPF1QPD.html
-GENERAL	VGATHERQPD	Gather Packed Single, Packed Double with Signed Qword Indices	VGATHERQPS_VGATHERQPD.html
-GENERAL	VGATHERQPS	Gather Packed Single, Packed Double with Signed Qword Indices	VGATHERQPS_VGATHERQPD.html
-GENERAL	VGETEXPPD	Convert Exponents of Packed Double-Precision FP Values to Double-Precision FP Values	VGETEXPPD.html
-GENERAL	VGETEXPPS	Convert Exponents of Packed Single-Precision FP Values to Single-Precision FP Values	VGETEXPPS.html
-GENERAL	VGETEXPSD	Convert Exponents of Scalar Double-Precision FP Values to Double-Precision FP Value	VGETEXPSD.html
-GENERAL	VGETEXPSS	Convert Exponents of Scalar Single-Precision FP Values to Single-Precision FP Value	VGETEXPSS.html
-GENERAL	VGETMANTPD	Extract Float64 Vector of Normalized Mantissas from Float64 Vector	VGETMANTPD.html
-GENERAL	VGETMANTPS	Extract Float32 Vector of Normalized Mantissas from Float32 Vector	VGETMANTPS.html
-GENERAL	VGETMANTSD	Extract Float64 of Normalized Mantissas from Float64 Scalar	VGETMANTSD.html
-GENERAL	VGETMANTSS	Extract Float32 Vector of Normalized Mantissa from Float32 Vector	VGETMANTSS.html
-GENERAL	VINSERTF64x2	Insert Packed FP Values	VINSERTF128_VINSERTF32x4_VINSERTF64x2_VINSERTF32x8_VINSERTF64x4.html
-GENERAL	VINSERTF32x8	Insert Packed FP Values	VINSERTF128_VINSERTF32x4_VINSERTF64x2_VINSERTF32x8_VINSERTF64x4.html
-GENERAL	VINSERTF128	Insert Packed FP Values	VINSERTF128_VINSERTF32x4_VINSERTF64x2_VINSERTF32x8_VINSERTF64x4.html
-GENERAL	VINSERTF32x4	Insert Packed FP Values	VINSERTF128_VINSERTF32x4_VINSERTF64x2_VINSERTF32x8_VINSERTF64x4.html
-GENERAL	VINSERTF64x4	Insert Packed FP Values	VINSERTF128_VINSERTF32x4_VINSERTF64x2_VINSERTF32x8_VINSERTF64x4.html
-GENERAL	VINSERTI128	Insert Packed Integer Values	VINSERTI128_VINSERTI32x4_VINSERTI64x2_VINSERTI32x8_VINSERTI64x4.html
-GENERAL	VINSERTI32x8	Insert Packed Integer Values	VINSERTI128_VINSERTI32x4_VINSERTI64x2_VINSERTI32x8_VINSERTI64x4.html
-GENERAL	VINSERTI64x2	Insert Packed Integer Values	VINSERTI128_VINSERTI32x4_VINSERTI64x2_VINSERTI32x8_VINSERTI64x4.html
-GENERAL	VINSERTI32x4	Insert Packed Integer Values	VINSERTI128_VINSERTI32x4_VINSERTI64x2_VINSERTI32x8_VINSERTI64x4.html
-GENERAL	VINSERTI64x4	Insert Packed Integer Values	VINSERTI128_VINSERTI32x4_VINSERTI64x2_VINSERTI32x8_VINSERTI64x4.html
-GENERAL	VMASKMOVPS	Conditional SIMD Packed Loads and Stores	VMASKMOV.html
-GENERAL	VMASKMOVPD	Conditional SIMD Packed Loads and Stores	VMASKMOV.html
-GENERAL	VPBLENDD	Blend Packed Dwords	VPBLENDD.html
-GENERAL	VPBLENDMW	Blend Word Vectors Using an Opmask Control	VPBLENDMB_VPBLENDMW.html
-GENERAL	VPBLENDMB	Blend Byte Vectors Using an Opmask Control	VPBLENDMB_VPBLENDMW.html
-GENERAL	VPBLENDMD	Blend Int32 Vectors Using an OpMask Control	VPBLENDMD_VPBLENDMQ.html
-GENERAL	VPBLENDMQ	Blend Int64 Vectors Using an OpMask Control	VPBLENDMD_VPBLENDMQ.html
-GENERAL	VPBROADCASTQ	Load Integer and Broadcast	VPBROADCAST.html
-GENERAL	VPBROADCASTB	Load Integer and Broadcast	VPBROADCAST.html
-GENERAL	VBROADCASTI32X8	Load Integer and Broadcast	VPBROADCAST.html
-GENERAL	VPBROADCASTD	Load Integer and Broadcast	VPBROADCAST.html
-GENERAL	VBROADCASTI32x2	Load Integer and Broadcast	VPBROADCAST.html
-GENERAL	VBROADCASTI64X4	Load Integer and Broadcast	VPBROADCAST.html
-GENERAL	VPBROADCASTW	Load Integer and Broadcast	VPBROADCAST.html
-GENERAL	VPBROADCASTQ	Load with Broadcast Integer Data from General Purpose Register	VPBROADCASTB_W_D_Q.html
-GENERAL	VPBROADCASTB	Load with Broadcast Integer Data from General Purpose Register	VPBROADCASTB_W_D_Q.html
-GENERAL	VPBROADCASTD	Load with Broadcast Integer Data from General Purpose Register	VPBROADCASTB_W_D_Q.html
-GENERAL	VPBROADCASTW	Load with Broadcast Integer Data from General Purpose Register	VPBROADCASTB_W_D_Q.html
-GENERAL	VPBROADCASTMW2D	Broadcast Mask to Vector Register	VPBROADCASTM.html
-GENERAL	VPBROADCASTMB2Q	Broadcast Mask to Vector Register	VPBROADCASTM.html
-GENERAL	VPCMPB	Compare Packed Byte Values Into Mask	VPCMPB_VPCMPUB.html
-GENERAL	VPCMPUB	Compare Packed Byte Values Into Mask	VPCMPB_VPCMPUB.html
-GENERAL	VPCMPUD	Compare Packed Integer Values into Mask	VPCMPD_VPCMPUD.html
-GENERAL	VPCMPD	Compare Packed Integer Values into Mask	VPCMPD_VPCMPUD.html
-GENERAL	VPCMPQ	Compare Packed Integer Values into Mask	VPCMPQ_VPCMPUQ.html
-GENERAL	VPCMPUQ	Compare Packed Integer Values into Mask	VPCMPQ_VPCMPUQ.html
-GENERAL	VPCMPUW	Compare Packed Word Values Into Mask	VPCMPW_VPCMPUW.html
-GENERAL	VPCMPW	Compare Packed Word Values Into Mask	VPCMPW_VPCMPUW.html
-GENERAL	VPCOMPRESSD	Store Sparse Packed Dword Integer Values into Dense Memory/Register	VPCOMPRESSD.html
-GENERAL	VPCOMPRESSQ	Store Sparse Packed Qword Integer Values into Dense Memory/Register	VPCOMPRESSQ.html
-GENERAL	VPCONFLICTQ	Detect Conflicts Within a Vector of Packed Dword/Qword Values into Dense Memory/ Register	VPCONFLICTD_Q.html
-GENERAL	VPCONFLICTD	Detect Conflicts Within a Vector of Packed Dword/Qword Values into Dense Memory/ Register	VPCONFLICTD_Q.html
-GENERAL	VPERM2F128	Permute FP Values	VPERM2F128.html
-GENERAL	VPERM2I128	Permute Integer Values	VPERM2I128.html
-GENERAL	VPERMD	Permute Packed Doublewords/Words Elements	VPERMD_VPERMW.html
-GENERAL	VPERMW	Permute Packed Doublewords/Words Elements	VPERMD_VPERMW.html
-GENERAL	VPERMI2W	Full Permute From Two Tables Overwriting the Index	VPERMI2W_D_Q_PS_PD.html
-GENERAL	VPERMI2PD	Full Permute From Two Tables Overwriting the Index	VPERMI2W_D_Q_PS_PD.html
-GENERAL	VPERMI2PS	Full Permute From Two Tables Overwriting the Index	VPERMI2W_D_Q_PS_PD.html
-GENERAL	VPERMI2D	Full Permute From Two Tables Overwriting the Index	VPERMI2W_D_Q_PS_PD.html
-GENERAL	VPERMI2Q	Full Permute From Two Tables Overwriting the Index	VPERMI2W_D_Q_PS_PD.html
-GENERAL	VPERMILPD	Permute In-Lane of Pairs of Double-Precision FP Values	VPERMILPD.html
-GENERAL	VPERMILPS	Permute In-Lane of Quadruples of Single-Precision FP Values	VPERMILPS.html
-GENERAL	VPERMPD	Permute Double-Precision FP Elements	VPERMPD.html
-GENERAL	VPERMPS	Permute Single-Precision FP Elements	VPERMPS.html
-GENERAL	VPERMQ	Qwords Element Permutation	VPERMQ.html
-GENERAL	VPEXPANDD	Load Sparse Packed Dword Integer Values from Dense Memory / Register	VPEXPANDD.html
-GENERAL	VPEXPANDQ	Load Sparse Packed Qword Integer Values from Dense Memory / Register	VPEXPANDQ.html
-GENERAL	VPGATHERDD	Gather Packed Dword, Packed Qword with Signed Dword Indices	VPGATHERDD_VPGATHERDQ.html
-GENERAL	VPGATHERDQ	Gather Packed Dword, Packed Qword with Signed Dword Indices	VPGATHERDD_VPGATHERDQ.html
-GENERAL	VPGATHERDD	Gather Packed Dword Values Using Signed Dword/Qword Indices	VPGATHERDD_VPGATHERQD.html
-GENERAL	VPGATHERQD	Gather Packed Dword Values Using Signed Dword/Qword Indices	VPGATHERDD_VPGATHERQD.html
-GENERAL	VPGATHERQQ	Gather Packed Qword Values Using Signed Dword/Qword Indices	VPGATHERDQ_VPGATHERQQ.html
-GENERAL	VPGATHERDQ	Gather Packed Qword Values Using Signed Dword/Qword Indices	VPGATHERDQ_VPGATHERQQ.html
-GENERAL	VPGATHERQQ	Gather Packed Dword, Packed Qword with Signed Qword Indices	VPGATHERQD_VPGATHERQQ.html
-GENERAL	VPGATHERQD	Gather Packed Dword, Packed Qword with Signed Qword Indices	VPGATHERQD_VPGATHERQQ.html
-GENERAL	VPLZCNTD	Count the Number of Leading Zero Bits for Packed Dword, Packed Qword Values	VPLZCNTD_Q.html
-GENERAL	VPLZCNTQ	Count the Number of Leading Zero Bits for Packed Dword, Packed Qword Values	VPLZCNTD_Q.html
-GENERAL	VPMASKMOVD	Conditional SIMD Integer Packed Loads and Stores	VPMASKMOV.html
-GENERAL	VPMASKMOVQ	Conditional SIMD Integer Packed Loads and Stores	VPMASKMOV.html
-GENERAL	VPMOVW2M	Convert a Vector Register to a Mask	VPMOVB2M_VPMOVW2M_VPMOVD2M_VPMOVQ2M.html
-GENERAL	VPMOVD2M	Convert a Vector Register to a Mask	VPMOVB2M_VPMOVW2M_VPMOVD2M_VPMOVQ2M.html
-GENERAL	VPMOVQ2M	Convert a Vector Register to a Mask	VPMOVB2M_VPMOVW2M_VPMOVD2M_VPMOVQ2M.html
-GENERAL	VPMOVB2M	Convert a Vector Register to a Mask	VPMOVB2M_VPMOVW2M_VPMOVD2M_VPMOVQ2M.html
-GENERAL	VPMOVDB	Down Convert Dword to Byte	VPMOVDB_VPMOVSDB_VPMOVUSDB.html
-GENERAL	VPMOVSDB	Down Convert Dword to Byte	VPMOVDB_VPMOVSDB_VPMOVUSDB.html
-GENERAL	VPMOVUSDB	Down Convert Dword to Byte	VPMOVDB_VPMOVSDB_VPMOVUSDB.html
-GENERAL	VPMOVDW	Down Convert Dword to Word	VPMOVDW_VPMOVSDW_VPMOVUSDW.html
-GENERAL	VPMOVSDW	Down Convert Dword to Word	VPMOVDW_VPMOVSDW_VPMOVUSDW.html
-GENERAL	VPMOVUSDW	Down Convert Dword to Word	VPMOVDW_VPMOVSDW_VPMOVUSDW.html
-GENERAL	VPMOVM2W	Convert a Mask Register to a Vector Register	VPMOVM2B_VPMOVM2W_VPMOVM2D_VPMOVM2Q.html
-GENERAL	VPMOVM2D	Convert a Mask Register to a Vector Register	VPMOVM2B_VPMOVM2W_VPMOVM2D_VPMOVM2Q.html
-GENERAL	VPMOVM2Q	Convert a Mask Register to a Vector Register	VPMOVM2B_VPMOVM2W_VPMOVM2D_VPMOVM2Q.html
-GENERAL	VPMOVM2B	Convert a Mask Register to a Vector Register	VPMOVM2B_VPMOVM2W_VPMOVM2D_VPMOVM2Q.html
-GENERAL	VPMOVSQB	Down Convert Qword to Byte	VPMOVQB_VPMOVSQB_VPMOVUSQB.html
-GENERAL	VPMOVUSQB	Down Convert Qword to Byte	VPMOVQB_VPMOVSQB_VPMOVUSQB.html
-GENERAL	VPMOVQB	Down Convert Qword to Byte	VPMOVQB_VPMOVSQB_VPMOVUSQB.html
-GENERAL	VPMOVQD	Down Convert Qword to Dword	VPMOVQD_VPMOVSQD_VPMOVUSQD.html
-GENERAL	VPMOVSQD	Down Convert Qword to Dword	VPMOVQD_VPMOVSQD_VPMOVUSQD.html
-GENERAL	VPMOVUSQD	Down Convert Qword to Dword	VPMOVQD_VPMOVSQD_VPMOVUSQD.html
-GENERAL	VPMOVSQW	Down Convert Qword to Word	VPMOVQW_VPMOVSQW_VPMOVUSQW.html
-GENERAL	VPMOVUSQW	Down Convert Qword to Word	VPMOVQW_VPMOVSQW_VPMOVUSQW.html
-GENERAL	VPMOVQW	Down Convert Qword to Word	VPMOVQW_VPMOVSQW_VPMOVUSQW.html
-GENERAL	VPMOVWB	Down Convert Word to Byte	VPMOVWB_VPMOVSWB_VPMOVUSWB.html
-GENERAL	VPMOVSWB	Down Convert Word to Byte	VPMOVWB_VPMOVSWB_VPMOVUSWB.html
-GENERAL	VPMOVUSWB	Down Convert Word to Byte	VPMOVWB_VPMOVSWB_VPMOVUSWB.html
-GENERAL	VPSCATTERDQ	Scatter Packed Dword, Packed Qword with Signed Dword, Signed Qword Indices	VPSCATTERDD_VPSCATTERDQ_VPSCATTERQD_VPSCATTERQQ.html
-GENERAL	VPSCATTERQD	Scatter Packed Dword, Packed Qword with Signed Dword, Signed Qword Indices	VPSCATTERDD_VPSCATTERDQ_VPSCATTERQD_VPSCATTERQQ.html
-GENERAL	VPSCATTERDD	Scatter Packed Dword, Packed Qword with Signed Dword, Signed Qword Indices	VPSCATTERDD_VPSCATTERDQ_VPSCATTERQD_VPSCATTERQQ.html
-GENERAL	VPSCATTERQQ	Scatter Packed Dword, Packed Qword with Signed Dword, Signed Qword Indices	VPSCATTERDD_VPSCATTERDQ_VPSCATTERQD_VPSCATTERQQ.html
-GENERAL	VPSLLVQ	Variable Bit Shift Left Logical	VPSLLVW_VPSLLVD_VPSLLVQ.html
-GENERAL	VPSLLVD	Variable Bit Shift Left Logical	VPSLLVW_VPSLLVD_VPSLLVQ.html
-GENERAL	VPSLLVW	Variable Bit Shift Left Logical	VPSLLVW_VPSLLVD_VPSLLVQ.html
-GENERAL	VPSRAVQ	Variable Bit Shift Right Arithmetic	VPSRAVW_VPSRAVD_VPSRAVQ.html
-GENERAL	VPSRAVD	Variable Bit Shift Right Arithmetic	VPSRAVW_VPSRAVD_VPSRAVQ.html
-GENERAL	VPSRAVW	Variable Bit Shift Right Arithmetic	VPSRAVW_VPSRAVD_VPSRAVQ.html
-GENERAL	VPSRLVD	Variable Bit Shift Right Logical	VPSRLVW_VPSRLVD_VPSRLVQ.html
-GENERAL	VPSRLVW	Variable Bit Shift Right Logical	VPSRLVW_VPSRLVD_VPSRLVQ.html
-GENERAL	VPSRLVQ	Variable Bit Shift Right Logical	VPSRLVW_VPSRLVD_VPSRLVQ.html
-GENERAL	VPTERNLOGD	Bitwise Ternary Logic	VPTERNLOGD_VPTERNLOGQ.html
-GENERAL	VPTERNLOGQ	Bitwise Ternary Logic	VPTERNLOGD_VPTERNLOGQ.html
-GENERAL	VPTESTMD	Logical AND and Set Mask	VPTESTMB_VPTESTMW_VPTESTMD_VPTESTMQ.html
-GENERAL	VPTESTMQ	Logical AND and Set Mask	VPTESTMB_VPTESTMW_VPTESTMD_VPTESTMQ.html
-GENERAL	VPTESTMB	Logical AND and Set Mask	VPTESTMB_VPTESTMW_VPTESTMD_VPTESTMQ.html
-GENERAL	VPTESTMW	Logical AND and Set Mask	VPTESTMB_VPTESTMW_VPTESTMD_VPTESTMQ.html
-GENERAL	VPTESTNMW	Logical NAND and Set	VPTESTNMB_W_D_Q.html
-GENERAL	VPTESTNMD	Logical NAND and Set	VPTESTNMB_W_D_Q.html
-GENERAL	VPTESTNMQ	Logical NAND and Set	VPTESTNMB_W_D_Q.html
-GENERAL	VPTESTNMB	Logical NAND and Set	VPTESTNMB_W_D_Q.html
-GENERAL	VRANGEPD	Range Restriction Calculation For Packed Pairs of Float64 Values	VRANGEPD.html
-GENERAL	VRANGEPS	Range Restriction Calculation For Packed Pairs of Float32 Values	VRANGEPS.html
-GENERAL	VRANGESD	Range Restriction Calculation From a pair of Scalar Float64 Values	VRANGESD.html
-GENERAL	VRANGESS	Range Restriction Calculation From a Pair of Scalar Float32 Values	VRANGESS.html
-GENERAL	VRCP14PD	Compute Approximate Reciprocals of Packed Float64 Values	VRCP14PD.html
-GENERAL	VRCP14PS	Compute Approximate Reciprocals of Packed Float32 Values	VRCP14PS.html
-GENERAL	VRCP14SD	Compute Approximate Reciprocal of Scalar Float64 Value	VRCP14SD.html
-GENERAL	VRCP14SS	Compute Approximate Reciprocal of Scalar Float32 Value	VRCP14SS.html
-GENERAL	VRCP28PD	Approximation to the Reciprocal of Packed Double-Precision FP Values with Less Than 2^-28 Relative Error	VRCP28PD.html
-GENERAL	VRCP28PS	Approximation to the Reciprocal of Packed Single-Precision FP Values with Less Than 2^-28 Relative Error	VRCP28PS.html
-GENERAL	VRCP28SD	Approximation to the Reciprocal of Scalar Double-Precision FP Value with Less Than 2^-28 Relative Error	VRCP28SD.html
-GENERAL	VRCP28SS	Approximation to the Reciprocal of Scalar Single-Precision FP Value with Less Than 2^-28 Relative Error	VRCP28SS.html
-GENERAL	VREDUCEPD	Perform Reduction Transformation on Packed Float64 Values	VREDUCEPD.html
-GENERAL	VREDUCEPS	Perform Reduction Transformation on Packed Float32 Values	VREDUCEPS.html
-GENERAL	VREDUCESD	Perform a Reduction Transformation on a Scalar Float64 Value	VREDUCESD.html
-GENERAL	VREDUCESS	Perform a Reduction Transformation on a Scalar Float32 Value	VREDUCESS.html
-GENERAL	VRNDSCALEPD	Round Packed Float64 Values To Include A Given Number Of Fraction Bits	VRNDSCALEPD.html
-GENERAL	VRNDSCALEPS	Round Packed Float32 Values To Include A Given Number Of Fraction Bits	VRNDSCALEPS.html
-GENERAL	VRNDSCALESD	Round Scalar Float64 Value To Include A Given Number Of Fraction Bits	VRNDSCALESD.html
-GENERAL	VRNDSCALESS	Round Scalar Float32 Value To Include A Given Number Of Fraction Bits	VRNDSCALESS.html
-GENERAL	VRSQRT14PD	Compute Approximate Reciprocals of Square Roots of Packed Float64 Values	VRSQRT14PD.html
-GENERAL	VRSQRT14PS	Compute Approximate Reciprocals of Square Roots of Packed Float32 Values	VRSQRT14PS.html
-GENERAL	VRSQRT14SD	Compute Approximate Reciprocal of Square Root of Scalar Float64 Value	VRSQRT14SD.html
-GENERAL	VRSQRT14SS	Compute Approximate Reciprocal of Square Root of Scalar Float32 Value	VRSQRT14SS.html
-GENERAL	VRSQRT28PD	Approximation to the Reciprocal Square Root of Packed Double-Precision FP Values with Less Than 2^-28 Relative Error	VRSQRT28PD.html
-GENERAL	VRSQRT28PS	Approximation to the Reciprocal Square Root of Packed Single-Precision FP Values with Less Than 2^-28 Relative Error	VRSQRT28PS.html
-GENERAL	VRSQRT28SD	Approximation to the Reciprocal Square Root of Scalar Double-Precision FP Value with Less Than 2^-28 Relative Error	VRSQRT28SD.html
-GENERAL	VRSQRT28SS	Approximation to the Reciprocal Square Root of Scalar Single-Precision FP Value with Less Than 2^-28 Relative Error	VRSQRT28SS.html
-GENERAL	VSCALEFPD	Scale Packed Float64 Values With Float64 Values	VSCALEFPD.html
-GENERAL	VSCALEFPS	Scale Packed Float32 Values With Float32 Values	VSCALEFPS.html
-GENERAL	VSCALEFSD	Scale Scalar Float64 Values With Float64 Values	VSCALEFSD.html
-GENERAL	VSCALEFSS	Scale Scalar Float32 Value With Float32 Value	VSCALEFSS.html
-GENERAL	VSCATTERDPS	Scatter Packed Single, Packed Double with Signed Dword and Qword Indices	VSCATTERDPS_VSCATTERDPD_VSCATTERQPS_VSCATTERQPD.html
-GENERAL	VSCATTERQPS	Scatter Packed Single, Packed Double with Signed Dword and Qword Indices	VSCATTERDPS_VSCATTERDPD_VSCATTERQPS_VSCATTERQPD.html
-GENERAL	VSCATTERQPD	Scatter Packed Single, Packed Double with Signed Dword and Qword Indices	VSCATTERDPS_VSCATTERDPD_VSCATTERQPS_VSCATTERQPD.html
-GENERAL	VSCATTERDPD	Scatter Packed Single, Packed Double with Signed Dword and Qword Indices	VSCATTERDPS_VSCATTERDPD_VSCATTERQPS_VSCATTERQPD.html
-GENERAL	VSCATTERPF0DPD	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint with Intent to Write	VSCATTERPF0DPS_VSCATTERPF0QPS_VSCATTERPF0DPD_VSCATTERPF0QPD.html
-GENERAL	VSCATTERPF0DPS	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint with Intent to Write	VSCATTERPF0DPS_VSCATTERPF0QPS_VSCATTERPF0DPD_VSCATTERPF0QPD.html
-GENERAL	VSCATTERPF0QPD	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint with Intent to Write	VSCATTERPF0DPS_VSCATTERPF0QPS_VSCATTERPF0DPD_VSCATTERPF0QPD.html
-GENERAL	VSCATTERPF0QPS	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint with Intent to Write	VSCATTERPF0DPS_VSCATTERPF0QPS_VSCATTERPF0DPD_VSCATTERPF0QPD.html
-GENERAL	VSCATTERPF1DPD	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint with Intent to Write	VSCATTERPF1DPS_VSCATTERPF1QPS_VSCATTERPF1DPD_VSCATTERPF1QPD.html
-GENERAL	VSCATTERPF1DPS	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint with Intent to Write	VSCATTERPF1DPS_VSCATTERPF1QPS_VSCATTERPF1DPD_VSCATTERPF1QPD.html
-GENERAL	VSCATTERPF1QPD	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint with Intent to Write	VSCATTERPF1DPS_VSCATTERPF1QPS_VSCATTERPF1DPD_VSCATTERPF1QPD.html
-GENERAL	VSCATTERPF1QPS	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint with Intent to Write	VSCATTERPF1DPS_VSCATTERPF1QPS_VSCATTERPF1DPD_VSCATTERPF1QPD.html
-GENERAL	VSHUFF32x4	Shuffle Packed Values at 128-bit Granularity	VSHUFF32x4_VSHUFF64x2_VSHUFI32x4_VSHUFI64x2.html
-GENERAL	VSHUFI64x2	Shuffle Packed Values at 128-bit Granularity	VSHUFF32x4_VSHUFF64x2_VSHUFI32x4_VSHUFI64x2.html
-GENERAL	VSHUFI32x4	Shuffle Packed Values at 128-bit Granularity	VSHUFF32x4_VSHUFF64x2_VSHUFI32x4_VSHUFI64x2.html
-GENERAL	VSHUFF64x2	Shuffle Packed Values at 128-bit Granularity	VSHUFF32x4_VSHUFF64x2_VSHUFI32x4_VSHUFI64x2.html
-GENERAL	VTESTPS	Packed Bit Test	VTESTPD_VTESTPS.html
-GENERAL	VTESTPD	Packed Bit Test	VTESTPD_VTESTPS.html
-GENERAL	VZEROALL	Zero All YMM Registers	VZEROALL.html
-GENERAL	VZEROUPPER	Zero Upper Bits of YMM Registers	VZEROUPPER.html
-GENERAL	FWAIT	Wait	WAIT_FWAIT.html
-GENERAL	WAIT	Wait	WAIT_FWAIT.html
-GENERAL	WBINVD	Write Back and Invalidate Cache	WBINVD.html
-GENERAL	WRFSBASE	Write FS/GS Segment Base	WRFSBASE_WRGSBASE.html
-GENERAL	WRGSBASE	Write FS/GS Segment Base	WRFSBASE_WRGSBASE.html
-GENERAL	WRMSR	Write to Model Specific Register	WRMSR.html
-GENERAL	WRPKRU	Write Data to User Page Key Register	WRPKRU.html
-GENERAL	XABORT	Transactional Abort	XABORT.html
-GENERAL	XACQUIRE	Hardware Lock Elision Prefix Hints	XACQUIRE_XRELEASE.html
-GENERAL	XRELEASE	Hardware Lock Elision Prefix Hints	XACQUIRE_XRELEASE.html
-GENERAL	XADD	Exchange and Add	XADD.html
-GENERAL	XBEGIN	Transactional Begin	XBEGIN.html
-GENERAL	XCHG	Exchange Register/Memory with Register	XCHG.html
-GENERAL	XEND	Transactional End	XEND.html
-GENERAL	XGETBV	Get Value of Extended Control Register	XGETBV.html
-GENERAL	XLATB	Table Look-up Translation	XLAT_XLATB.html
-GENERAL	XLAT	Table Look-up Translation	XLAT_XLATB.html
-GENERAL	XOR	Logical Exclusive OR	XOR.html
-GENERAL	XORPD	Bitwise Logical XOR of Packed Double-Precision FP Values	XORPD.html
-GENERAL	VXORPD	Bitwise Logical XOR of Packed Double-Precision FP Values	XORPD.html
-GENERAL	XORPS	Bitwise Logical XOR of Packed Single-Precision FP Values	XORPS.html
-GENERAL	VXORPS	Bitwise Logical XOR of Packed Single-Precision FP Values	XORPS.html
-GENERAL	XRSTOR	Restore Processor Extended States	XRSTOR.html
-GENERAL	XRSTORS	Restore Processor Extended States Supervisor	XRSTORS.html
-GENERAL	XSAVE	Save Processor Extended States	XSAVE.html
-GENERAL	XSAVEC	Save Processor Extended States with Compaction	XSAVEC.html
-GENERAL	XSAVEOPT	Save Processor Extended States Optimized	XSAVEOPT.html
-GENERAL	XSAVES	Save Processor Extended States Supervisor	XSAVES.html
-GENERAL	XSETBV	Set Extended Control Register	XSETBV.html
-GENERAL	XTEST	Test If In Transactional Execution	XTEST.html
+GENERAL	AAA	ASCII Adjust After Addition	AAA
+GENERAL	AAD	ASCII Adjust AX Before Division	AAD
+GENERAL	AAM	ASCII Adjust AX After Multiply	AAM
+GENERAL	AAS	ASCII Adjust AL After Subtraction	AAS
+GENERAL	ADC	Add with Carry	ADC
+GENERAL	ADCX	Unsigned Integer Addition of Two Operands with Carry Flag	ADCX
+GENERAL	ADD	Add	ADD
+GENERAL	ADDPD	Add Packed Double-Precision FP Values	ADDPD
+GENERAL	VADDPD	Add Packed Double-Precision FP Values	ADDPD
+GENERAL	ADDPS	Add Packed Single-Precision FP Values	ADDPS
+GENERAL	VADDPS	Add Packed Single-Precision FP Values	ADDPS
+GENERAL	ADDSD	Add Scalar Double-Precision FP Values	ADDSD
+GENERAL	VADDSD	Add Scalar Double-Precision FP Values	ADDSD
+GENERAL	ADDSS	Add Scalar Single-Precision FP Values	ADDSS
+GENERAL	VADDSS	Add Scalar Single-Precision FP Values	ADDSS
+GENERAL	ADDSUBPD	Packed Double-FP Add/Subtract	ADDSUBPD
+GENERAL	VADDSUBPD	Packed Double-FP Add/Subtract	ADDSUBPD
+GENERAL	ADDSUBPS	Packed Single-FP Add/Subtract	ADDSUBPS
+GENERAL	VADDSUBPS	Packed Single-FP Add/Subtract	ADDSUBPS
+GENERAL	ADOX	Unsigned Integer Addition of Two Operands with Overflow Flag	ADOX
+GENERAL	AESDEC	Perform One Round of an AES Decryption Flow	AESDEC
+GENERAL	VAESDEC	Perform One Round of an AES Decryption Flow	AESDEC
+GENERAL	VAESDECLAST	Perform Last Round of an AES Decryption Flow	AESDECLAST
+GENERAL	AESDECLAST	Perform Last Round of an AES Decryption Flow	AESDECLAST
+GENERAL	AESENC	Perform One Round of an AES Encryption Flow	AESENC
+GENERAL	VAESENC	Perform One Round of an AES Encryption Flow	AESENC
+GENERAL	AESENCLAST	Perform Last Round of an AES Encryption Flow	AESENCLAST
+GENERAL	VAESENCLAST	Perform Last Round of an AES Encryption Flow	AESENCLAST
+GENERAL	VAESIMC	Perform the AES InvMixColumn Transformation	AESIMC
+GENERAL	AESIMC	Perform the AES InvMixColumn Transformation	AESIMC
+GENERAL	VAESKEYGENASSIST	AES Round Key Generation Assist	AESKEYGENASSIST
+GENERAL	AESKEYGENASSIST	AES Round Key Generation Assist	AESKEYGENASSIST
+GENERAL	AND	Logical AND	AND
+GENERAL	ANDN	Logical AND NOT	ANDN
+GENERAL	ANDNPD	Bitwise Logical AND NOT of Packed Double-Precision FP Values	ANDNPD
+GENERAL	VANDNPD	Bitwise Logical AND NOT of Packed Double-Precision FP Values	ANDNPD
+GENERAL	ANDNPS	Bitwise Logical AND NOT of Packed Single-Precision FP Values	ANDNPS
+GENERAL	VANDNPS	Bitwise Logical AND NOT of Packed Single-Precision FP Values	ANDNPS
+GENERAL	ANDPD	Bitwise Logical AND of Packed Double-Precision FP Values	ANDPD
+GENERAL	VANDPD	Bitwise Logical AND of Packed Double-Precision FP Values	ANDPD
+GENERAL	ANDPS	Bitwise Logical AND of Packed Single-Precision FP Values	ANDPS
+GENERAL	VANDPS	Bitwise Logical AND of Packed Single-Precision FP Values	ANDPS
+GENERAL	ARPL	Adjust RPL Field of Segment Selector	ARPL
+GENERAL	BEXTR	Bit Field Extract	BEXTR
+GENERAL	BLENDPD	Blend Packed Double-Precision FP Values	BLENDPD
+GENERAL	VBLENDPD	Blend Packed Double-Precision FP Values	BLENDPD
+GENERAL	BLENDPS	Blend Packed Single-Precision FP Values	BLENDPS
+GENERAL	VBLENDPS	Blend Packed Single-Precision FP Values	BLENDPS
+GENERAL	VBLENDVPD	Variable Blend Packed Double-Precision FP Values	BLENDVPD
+GENERAL	BLENDVPD	Variable Blend Packed Double-Precision FP Values	BLENDVPD
+GENERAL	VBLENDVPS	Variable Blend Packed Single-Precision FP Values	BLENDVPS
+GENERAL	BLENDVPS	Variable Blend Packed Single-Precision FP Values	BLENDVPS
+GENERAL	BLSI	Extract Lowest Set Isolated Bit	BLSI
+GENERAL	BLSMSK	Get Mask Up to Lowest Set Bit	BLSMSK
+GENERAL	BLSR	Reset Lowest Set Bit	BLSR
+GENERAL	BNDCL	Check Lower Bound	BNDCL
+GENERAL	BNDCN	Check Upper Bound	BNDCU_BNDCN
+GENERAL	BNDCU	Check Upper Bound	BNDCU_BNDCN
+GENERAL	BNDLDX	Load Extended Bounds Using Address Translation	BNDLDX
+GENERAL	BNDMK	Make Bounds	BNDMK
+GENERAL	BNDMOV	Move Bounds	BNDMOV
+GENERAL	BNDSTX	Store Extended Bounds Using Address Translation	BNDSTX
+GENERAL	BOUND	Check Array Index Against Bounds	BOUND
+GENERAL	BSF	Bit Scan Forward	BSF
+GENERAL	BSR	Bit Scan Reverse	BSR
+GENERAL	BSWAP	Byte Swap	BSWAP
+GENERAL	BT	Bit Test	BT
+GENERAL	BTC	Bit Test and Complement	BTC
+GENERAL	BTR	Bit Test and Reset	BTR
+GENERAL	BTS	Bit Test and Set	BTS
+GENERAL	BZHI	Zero High Bits Starting with Specified Bit Position	BZHI
+GENERAL	CALL	Call Procedure	CALL
+GENERAL	CBW	Convert Byte to Word/Convert Word to Dword/Convert Dword to Qword	CBW_CWDE_CDQE
+GENERAL	CWDE	Convert Byte to Word/Convert Word to Dword/Convert Dword to Qword	CBW_CWDE_CDQE
+GENERAL	CDQE	Convert Byte to Word/Convert Word to Dword/Convert Dword to Qword	CBW_CWDE_CDQE
+GENERAL	CLAC	Clear AC Flag in EFLAGS Register	CLAC
+GENERAL	CLC	Clear Carry Flag	CLC
+GENERAL	CLD	Clear Direction Flag	CLD
+GENERAL	CLFLUSH	Flush Cache Line	CLFLUSH
+GENERAL	CLFLUSHOPT	Flush Cache Line Optimized	CLFLUSHOPT
+GENERAL	CLI	Clear Interrupt Flag	CLI
+GENERAL	CLTS	Clear Task-Switched Flag in CR0	CLTS
+GENERAL	CMC	Complement Carry Flag	CMC
+GENERAL	CMOVE	Conditional Move	CMOVcc
+GENERAL	CMOVBE	Conditional Move	CMOVcc
+GENERAL	CMOVG	Conditional Move	CMOVcc
+GENERAL	CMOVAE	Conditional Move	CMOVcc
+GENERAL	CMOVA	Conditional Move	CMOVcc
+GENERAL	CMOVB	Conditional Move	CMOVcc
+GENERAL	CMOVC	Conditional Move	CMOVcc
+GENERAL	CMOVNAE	Conditional Move	CMOVcc
+GENERAL	CMOVL	Conditional Move	CMOVcc
+GENERAL	CMOVNA	Conditional Move	CMOVcc
+GENERAL	CMOVNB	Conditional Move	CMOVcc
+GENERAL	CMOVGE	Conditional Move	CMOVcc
+GENERAL	CMOVLE	Conditional Move	CMOVcc
+GENERAL	CMP	Compare Two Operands	CMP
+GENERAL	VCMPPD	Compare Packed Double-Precision FP Values	CMPPD
+GENERAL	CMPPD	Compare Packed Double-Precision FP Values	CMPPD
+GENERAL	VCMPPS	Compare Packed Single-Precision FP Values	CMPPS
+GENERAL	CMPPS	Compare Packed Single-Precision FP Values	CMPPS
+GENERAL	CMPSD	Compare Scalar Double-Precision FP Value	CMPSD
+GENERAL	VCMPSD	Compare Scalar Double-Precision FP Value	CMPSD
+GENERAL	CMPSS	Compare Scalar Single-Precision FP Value	CMPSS
+GENERAL	VCMPSS	Compare Scalar Single-Precision FP Value	CMPSS
+GENERAL	CMPSQ	Compare String Operands	CMPS_CMPSB_CMPSW_CMPSD_CMPSQ
+GENERAL	CMPSB	Compare String Operands	CMPS_CMPSB_CMPSW_CMPSD_CMPSQ
+GENERAL	CMPS	Compare String Operands	CMPS_CMPSB_CMPSW_CMPSD_CMPSQ
+GENERAL	CMPSD	Compare String Operands	CMPS_CMPSB_CMPSW_CMPSD_CMPSQ
+GENERAL	CMPSW	Compare String Operands	CMPS_CMPSB_CMPSW_CMPSD_CMPSQ
+GENERAL	CMPXCHG	Compare and Exchange	CMPXCHG
+GENERAL	CMPXCHG16B	Compare and Exchange Bytes	CMPXCHG8B_CMPXCHG16B
+GENERAL	CMPXCHG8B	Compare and Exchange Bytes	CMPXCHG8B_CMPXCHG16B
+GENERAL	VCOMISD	Compare Scalar Ordered Double-Precision FP Values and Set EFLAGS	COMISD
+GENERAL	COMISD	Compare Scalar Ordered Double-Precision FP Values and Set EFLAGS	COMISD
+GENERAL	VCOMISS	Compare Scalar Ordered Single-Precision FP Values and Set EFLAGS	COMISS
+GENERAL	COMISS	Compare Scalar Ordered Single-Precision FP Values and Set EFLAGS	COMISS
+GENERAL	CPUID	CPU Identification	CPUID
+GENERAL	CRC32	Accumulate CRC32 Value	CRC32
+GENERAL	VCVTDQ2PD	Convert Packed Dword Integers to Packed Double-Precision FP Values	CVTDQ2PD
+GENERAL	CVTDQ2PD	Convert Packed Dword Integers to Packed Double-Precision FP Values	CVTDQ2PD
+GENERAL	VCVTDQ2PS	Convert Packed Dword Integers to Packed Single-Precision FP Values	CVTDQ2PS
+GENERAL	CVTDQ2PS	Convert Packed Dword Integers to Packed Single-Precision FP Values	CVTDQ2PS
+GENERAL	VCVTPD2DQ	Convert Packed Double-Precision FP Values to Packed Dword Integers	CVTPD2DQ
+GENERAL	CVTPD2DQ	Convert Packed Double-Precision FP Values to Packed Dword Integers	CVTPD2DQ
+GENERAL	CVTPD2PI	Convert Packed Double-Precision FP Values to Packed Dword Integers	CVTPD2PI
+GENERAL	CVTPD2PS	Convert Packed Double-Precision FP Values to Packed Single-Precision FP Values	CVTPD2PS
+GENERAL	VCVTPD2PS	Convert Packed Double-Precision FP Values to Packed Single-Precision FP Values	CVTPD2PS
+GENERAL	CVTPI2PD	Convert Packed Dword Integers to Packed Double-Precision FP Values	CVTPI2PD
+GENERAL	CVTPI2PS	Convert Packed Dword Integers to Packed Single-Precision FP Values	CVTPI2PS
+GENERAL	CVTPS2DQ	Convert Packed Single-Precision FP Values to Packed Signed Dword Integer Values	CVTPS2DQ
+GENERAL	VCVTPS2DQ	Convert Packed Single-Precision FP Values to Packed Signed Dword Integer Values	CVTPS2DQ
+GENERAL	VCVTPS2PD	Convert Packed Single-Precision FP Values to Packed Double-Precision FP Values	CVTPS2PD
+GENERAL	CVTPS2PD	Convert Packed Single-Precision FP Values to Packed Double-Precision FP Values	CVTPS2PD
+GENERAL	CVTPS2PI	Convert Packed Single-Precision FP Values to Packed Dword Integers	CVTPS2PI
+GENERAL	VCVTSD2SI	Convert Scalar Double-Precision FP Value to Dword Integer	CVTSD2SI
+GENERAL	CVTSD2SI	Convert Scalar Double-Precision FP Value to Dword Integer	CVTSD2SI
+GENERAL	VCVTSD2SS	Convert Scalar Double-Precision FP Value to Scalar Single-Precision FP Value	CVTSD2SS
+GENERAL	CVTSD2SS	Convert Scalar Double-Precision FP Value to Scalar Single-Precision FP Value	CVTSD2SS
+GENERAL	VCVTSI2SD	Convert Dword Integer to Scalar Double-Precision FP Value	CVTSI2SD
+GENERAL	CVTSI2SD	Convert Dword Integer to Scalar Double-Precision FP Value	CVTSI2SD
+GENERAL	CVTSI2SS	Convert Dword Integer to Scalar Single-Precision FP Value	CVTSI2SS
+GENERAL	VCVTSI2SS	Convert Dword Integer to Scalar Single-Precision FP Value	CVTSI2SS
+GENERAL	CVTSS2SD	Convert Scalar Single-Precision FP Value to Scalar Double-Precision FP Value	CVTSS2SD
+GENERAL	VCVTSS2SD	Convert Scalar Single-Precision FP Value to Scalar Double-Precision FP Value	CVTSS2SD
+GENERAL	CVTSS2SI	Convert Scalar Single-Precision FP Value to Dword Integer	CVTSS2SI
+GENERAL	VCVTSS2SI	Convert Scalar Single-Precision FP Value to Dword Integer	CVTSS2SI
+GENERAL	VCVTTPD2DQ	Convert with Truncation Packed Double-Precision FP Values to Packed Dword Integers	CVTTPD2DQ
+GENERAL	CVTTPD2DQ	Convert with Truncation Packed Double-Precision FP Values to Packed Dword Integers	CVTTPD2DQ
+GENERAL	CVTTPD2PI	Convert with Truncation Packed Double-Precision FP Values to Packed Dword Integers	CVTTPD2PI
+GENERAL	CVTTPS2DQ	Convert with Truncation Packed Single-Precision FP Values to Packed Signed Dword Integer Values	CVTTPS2DQ
+GENERAL	VCVTTPS2DQ	Convert with Truncation Packed Single-Precision FP Values to Packed Signed Dword Integer Values	CVTTPS2DQ
+GENERAL	CVTTPS2PI	Convert with Truncation Packed Single-Precision FP Values to Packed Dword Integers	CVTTPS2PI
+GENERAL	VCVTTSD2SI	Convert with Truncation Scalar Double-Precision FP Value to Signed Integer	CVTTSD2SI
+GENERAL	CVTTSD2SI	Convert with Truncation Scalar Double-Precision FP Value to Signed Integer	CVTTSD2SI
+GENERAL	VCVTTSS2SI	Convert with Truncation Scalar Single-Precision FP Value to Integer	CVTTSS2SI
+GENERAL	CVTTSS2SI	Convert with Truncation Scalar Single-Precision FP Value to Integer	CVTTSS2SI
+GENERAL	CQO	Convert Word to Dword/Convert Dword to Qword	CWD_CDQ_CQO
+GENERAL	CWD	Convert Word to Dword/Convert Dword to Qword	CWD_CDQ_CQO
+GENERAL	CDQ	Convert Word to Dword/Convert Dword to Qword	CWD_CDQ_CQO
+GENERAL	DAA	Decimal Adjust AL after Addition	DAA
+GENERAL	DAS	Decimal Adjust AL after Subtraction	DAS
+GENERAL	DEC	Decrement by 1	DEC
+GENERAL	DIV	Unsigned Divide	DIV
+GENERAL	DIVPD	Divide Packed Double-Precision FP Values	DIVPD
+GENERAL	VDIVPD	Divide Packed Double-Precision FP Values	DIVPD
+GENERAL	DIVPS	Divide Packed Single-Precision FP Values	DIVPS
+GENERAL	VDIVPS	Divide Packed Single-Precision FP Values	DIVPS
+GENERAL	DIVSD	Divide Scalar Double-Precision FP Value	DIVSD
+GENERAL	VDIVSD	Divide Scalar Double-Precision FP Value	DIVSD
+GENERAL	DIVSS	Divide Scalar Single-Precision FP Values	DIVSS
+GENERAL	VDIVSS	Divide Scalar Single-Precision FP Values	DIVSS
+GENERAL	DPPD	Dot Product of Packed Double-Precision FP Values	DPPD
+GENERAL	VDPPD	Dot Product of Packed Double-Precision FP Values	DPPD
+GENERAL	VDPPS	Dot Product of Packed Single-Precision FP Values	DPPS
+GENERAL	DPPS	Dot Product of Packed Single-Precision FP Values	DPPS
+GENERAL	EMMS	Empty MMX Technology State	EMMS
+GENERAL	ENTER	Make Stack Frame for Procedure Parameters	ENTER
+GENERAL	EXTRACTPS	Extract Packed FP Values	EXTRACTPS
+GENERAL	VEXTRACTPS	Extract Packed FP Values	EXTRACTPS
+GENERAL	F2XM1	Compute 2x–1	F2XM1
+GENERAL	FABS	Absolute Value	FABS
+GENERAL	FIADD	Add	FADD_FADDP_FIADD
+GENERAL	FADD	Add	FADD_FADDP_FIADD
+GENERAL	FADDP	Add	FADD_FADDP_FIADD
+GENERAL	FBLD	Load Binary Coded Decimal	FBLD
+GENERAL	FBSTP	Store BCD Integer and Pop	FBSTP
+GENERAL	FCHS	Change Sign	FCHS
+GENERAL	FCLEX	Clear Exceptions	FCLEX_FNCLEX
+GENERAL	FNCLEX	Clear Exceptions	FCLEX_FNCLEX
+GENERAL	FCMOVNB	FP Conditional Move	FCMOVcc
+GENERAL	FCMOVNBE	FP Conditional Move	FCMOVcc
+GENERAL	FCMOVBE	FP Conditional Move	FCMOVcc
+GENERAL	FCMOVNE	FP Conditional Move	FCMOVcc
+GENERAL	FCMOVE	FP Conditional Move	FCMOVcc
+GENERAL	FCMOVU	FP Conditional Move	FCMOVcc
+GENERAL	FCMOVB	FP Conditional Move	FCMOVcc
+GENERAL	FCOMI	Compare FP Values and Set EFLAGS	FCOMI_FCOMIP_FUCOMI_FUCOMIP
+GENERAL	FUCOMI	Compare FP Values and Set EFLAGS	FCOMI_FCOMIP_FUCOMI_FUCOMIP
+GENERAL	FCOMIP	Compare FP Values and Set EFLAGS	FCOMI_FCOMIP_FUCOMI_FUCOMIP
+GENERAL	FUCOMIP	Compare FP Values and Set EFLAGS	FCOMI_FCOMIP_FUCOMI_FUCOMIP
+GENERAL	FCOMPP	Compare FP Values	FCOM_FCOMP_FCOMPP
+GENERAL	FCOM	Compare FP Values	FCOM_FCOMP_FCOMPP
+GENERAL	FCOMP	Compare FP Values	FCOM_FCOMP_FCOMPP
+GENERAL	FCOS	Cosine	FCOS
+GENERAL	FDECSTP	Decrement Stack-Top Pointer	FDECSTP
+GENERAL	FIDIVR	Reverse Divide	FDIVR_FDIVRP_FIDIVR
+GENERAL	FDIVRP	Reverse Divide	FDIVR_FDIVRP_FIDIVR
+GENERAL	FDIVR	Reverse Divide	FDIVR_FDIVRP_FIDIVR
+GENERAL	FIDIV	Divide	FDIV_FDIVP_FIDIV
+GENERAL	FDIV	Divide	FDIV_FDIVP_FIDIV
+GENERAL	FDIVP	Divide	FDIV_FDIVP_FIDIV
+GENERAL	FFREE	Free FP Register	FFREE
+GENERAL	FICOM	Compare Integer	FICOM_FICOMP
+GENERAL	FICOMP	Compare Integer	FICOM_FICOMP
+GENERAL	FILD	Load Integer	FILD
+GENERAL	FINCSTP	Increment Stack-Top Pointer	FINCSTP
+GENERAL	FNINIT	Initialize FP Unit	FINIT_FNINIT
+GENERAL	FINIT	Initialize FP Unit	FINIT_FNINIT
+GENERAL	FISTTP	Store Integer with Truncation	FISTTP
+GENERAL	FISTP	Store Integer	FIST_FISTP
+GENERAL	FIST	Store Integer	FIST_FISTP
+GENERAL	FLD	Load FP Value	FLD
+GENERAL	FLDLN2	Load Constant	FLD1_FLDL2T_FLDL2E_FLDPI_FLDLG2_FLDLN2_FLDZ
+GENERAL	FLDL2T	Load Constant	FLD1_FLDL2T_FLDL2E_FLDPI_FLDLG2_FLDLN2_FLDZ
+GENERAL	FLD1	Load Constant	FLD1_FLDL2T_FLDL2E_FLDPI_FLDLG2_FLDLN2_FLDZ
+GENERAL	FLDL2E	Load Constant	FLD1_FLDL2T_FLDL2E_FLDPI_FLDLG2_FLDLN2_FLDZ
+GENERAL	FLDPI	Load Constant	FLD1_FLDL2T_FLDL2E_FLDPI_FLDLG2_FLDLN2_FLDZ
+GENERAL	FLDLG2	Load Constant	FLD1_FLDL2T_FLDL2E_FLDPI_FLDLG2_FLDLN2_FLDZ
+GENERAL	FLDZ	Load Constant	FLD1_FLDL2T_FLDL2E_FLDPI_FLDLG2_FLDLN2_FLDZ
+GENERAL	FLDCW	Load x87 FPU Control Word	FLDCW
+GENERAL	FLDENV	Load x87 FPU Environment	FLDENV
+GENERAL	FMULP	Multiply	FMUL_FMULP_FIMUL
+GENERAL	FIMUL	Multiply	FMUL_FMULP_FIMUL
+GENERAL	FMUL	Multiply	FMUL_FMULP_FIMUL
+GENERAL	FNOP	No Operation	FNOP
+GENERAL	FPATAN	Partial Arctangent	FPATAN
+GENERAL	FPREM	Partial Remainder	FPREM
+GENERAL	FPREM1	Partial Remainder	FPREM1
+GENERAL	FPTAN	Partial Tangent	FPTAN
+GENERAL	FRNDINT	Round to Integer	FRNDINT
+GENERAL	FRSTOR	Restore x87 FPU State	FRSTOR
+GENERAL	FNSAVE	Store x87 FPU State	FSAVE_FNSAVE
+GENERAL	FSAVE	Store x87 FPU State	FSAVE_FNSAVE
+GENERAL	FSCALE	Scale	FSCALE
+GENERAL	FSIN	Sine	FSIN
+GENERAL	FSINCOS	Sine and Cosine	FSINCOS
+GENERAL	FSQRT	Square Root	FSQRT
+GENERAL	FNSTCW	Store x87 FPU Control Word	FSTCW_FNSTCW
+GENERAL	FSTCW	Store x87 FPU Control Word	FSTCW_FNSTCW
+GENERAL	FNSTENV	Store x87 FPU Environment	FSTENV_FNSTENV
+GENERAL	FSTENV	Store x87 FPU Environment	FSTENV_FNSTENV
+GENERAL	FNSTSW	Store x87 FPU Status Word	FSTSW_FNSTSW
+GENERAL	FSTSW	Store x87 FPU Status Word	FSTSW_FNSTSW
+GENERAL	FST	Store FP Value	FST_FSTP
+GENERAL	FSTP	Store FP Value	FST_FSTP
+GENERAL	FSUBRP	Reverse Subtract	FSUBR_FSUBRP_FISUBR
+GENERAL	FSUBR	Reverse Subtract	FSUBR_FSUBRP_FISUBR
+GENERAL	FISUBR	Reverse Subtract	FSUBR_FSUBRP_FISUBR
+GENERAL	FISUB	Subtract	FSUB_FSUBP_FISUB
+GENERAL	FSUBP	Subtract	FSUB_FSUBP_FISUB
+GENERAL	FSUB	Subtract	FSUB_FSUBP_FISUB
+GENERAL	FTST	TEST	FTST
+GENERAL	FUCOM	Unordered Compare FP Values	FUCOM_FUCOMP_FUCOMPP
+GENERAL	FUCOMPP	Unordered Compare FP Values	FUCOM_FUCOMP_FUCOMPP
+GENERAL	FUCOMP	Unordered Compare FP Values	FUCOM_FUCOMP_FUCOMPP
+GENERAL	FXAM	Examine FP	FXAM
+GENERAL	FXCH	Exchange Register Contents	FXCH
+GENERAL	FXRSTOR	Restore x87 FPU, MMX, XMM, and MXCSR State	FXRSTOR
+GENERAL	FXSAVE	Save x87 FPU, MMX Technology, and SSE State	FXSAVE
+GENERAL	FXTRACT	Extract Exponent and Significand	FXTRACT
+GENERAL	FYL2X	Compute y ∗ log2x	FYL2X
+GENERAL	FYL2XP1	Compute y ∗ log2(x +1)	FYL2XP1
+GENERAL	VHADDPD	Packed Double-FP Horizontal Add	HADDPD
+GENERAL	HADDPD	Packed Double-FP Horizontal Add	HADDPD
+GENERAL	VHADDPS	Packed Single-FP Horizontal Add	HADDPS
+GENERAL	HADDPS	Packed Single-FP Horizontal Add	HADDPS
+GENERAL	HLT	Halt	HLT
+GENERAL	HSUBPD	Packed Double-FP Horizontal Subtract	HSUBPD
+GENERAL	VHSUBPD	Packed Double-FP Horizontal Subtract	HSUBPD
+GENERAL	HSUBPS	Packed Single-FP Horizontal Subtract	HSUBPS
+GENERAL	VHSUBPS	Packed Single-FP Horizontal Subtract	HSUBPS
+GENERAL	IDIV	Signed Divide	IDIV
+GENERAL	IMUL	Signed Multiply	IMUL
+GENERAL	IN	Input from Port	IN
+GENERAL	INC	Increment by 1	INC
+GENERAL	INSERTPS	Insert Scalar Single-Precision FP Value	INSERTPS
+GENERAL	VINSERTPS	Insert Scalar Single-Precision FP Value	INSERTPS
+GENERAL	INSD	Input from Port to String	INS_INSB_INSW_INSD
+GENERAL	INSB	Input from Port to String	INS_INSB_INSW_INSD
+GENERAL	INSW	Input from Port to String	INS_INSB_INSW_INSD
+GENERAL	INS	Input from Port to String	INS_INSB_INSW_INSD
+GENERAL	INTO	Call to Interrupt Procedure	INT n_INTO_INT 3
+GENERAL	INT n	Call to Interrupt Procedure	INT n_INTO_INT 3
+GENERAL	INT 3	Call to Interrupt Procedure	INT n_INTO_INT 3
+GENERAL	INVD	Invalidate Internal Caches	INVD
+GENERAL	INVLPG	Invalidate TLB Entries	INVLPG
+GENERAL	INVPCID	Invalidate Process-Context Identifier	INVPCID
+GENERAL	IRETD	Interrupt Return	IRET_IRETD
+GENERAL	IRET	Interrupt Return	IRET_IRETD
+GENERAL	JNE	Jump if Condition Is Met	Jcc
+GENERAL	JNGE	Jump if Condition Is Met	Jcc
+GENERAL	JL	Jump if Condition Is Met	Jcc
+GENERAL	JLE	Jump if Condition Is Met	Jcc
+GENERAL	JNG	Jump if Condition Is Met	Jcc
+GENERAL	JRCXZ	Jump if Condition Is Met	Jcc
+GENERAL	JO	Jump if Condition Is Met	Jcc
+GENERAL	JP	Jump if Condition Is Met	Jcc
+GENERAL	JPO	Jump if Condition Is Met	Jcc
+GENERAL	JNL	Jump if Condition Is Met	Jcc
+GENERAL	JS	Jump if Condition Is Met	Jcc
+GENERAL	JNAE	Jump if Condition Is Met	Jcc
+GENERAL	JNO	Jump if Condition Is Met	Jcc
+GENERAL	JBE	Jump if Condition Is Met	Jcc
+GENERAL	JNP	Jump if Condition Is Met	Jcc
+GENERAL	JNS	Jump if Condition Is Met	Jcc
+GENERAL	JZ	Jump if Condition Is Met	Jcc
+GENERAL	JNZ	Jump if Condition Is Met	Jcc
+GENERAL	JCXZ	Jump if Condition Is Met	Jcc
+GENERAL	JECXZ	Jump if Condition Is Met	Jcc
+GENERAL	JNLE	Jump if Condition Is Met	Jcc
+GENERAL	JNBE	Jump if Condition Is Met	Jcc
+GENERAL	JGE	Jump if Condition Is Met	Jcc
+GENERAL	JAE	Jump if Condition Is Met	Jcc
+GENERAL	JA	Jump if Condition Is Met	Jcc
+GENERAL	JB	Jump if Condition Is Met	Jcc
+GENERAL	JC	Jump if Condition Is Met	Jcc
+GENERAL	JE	Jump if Condition Is Met	Jcc
+GENERAL	JNA	Jump if Condition Is Met	Jcc
+GENERAL	JG	Jump if Condition Is Met	Jcc
+GENERAL	JNC	Jump if Condition Is Met	Jcc
+GENERAL	JPE	Jump if Condition Is Met	Jcc
+GENERAL	JNB	Jump if Condition Is Met	Jcc
+GENERAL	JMP	Jump	JMP
+GENERAL	KADDD	ADD Two Masks	KADDW_KADDB_KADDQ_KADDD
+GENERAL	KADDB	ADD Two Masks	KADDW_KADDB_KADDQ_KADDD
+GENERAL	KADDQ	ADD Two Masks	KADDW_KADDB_KADDQ_KADDD
+GENERAL	KADDW	ADD Two Masks	KADDW_KADDB_KADDQ_KADDD
+GENERAL	KANDND	Bitwise Logical AND NOT Masks	KANDNW_KANDNB_KANDNQ_KANDND
+GENERAL	KANDNB	Bitwise Logical AND NOT Masks	KANDNW_KANDNB_KANDNQ_KANDND
+GENERAL	KANDNW	Bitwise Logical AND NOT Masks	KANDNW_KANDNB_KANDNQ_KANDND
+GENERAL	KANDNQ	Bitwise Logical AND NOT Masks	KANDNW_KANDNB_KANDNQ_KANDND
+GENERAL	KANDW	Bitwise Logical AND Masks	KANDW_KANDB_KANDQ_KANDD
+GENERAL	KANDD	Bitwise Logical AND Masks	KANDW_KANDB_KANDQ_KANDD
+GENERAL	KANDB	Bitwise Logical AND Masks	KANDW_KANDB_KANDQ_KANDD
+GENERAL	KANDQ	Bitwise Logical AND Masks	KANDW_KANDB_KANDQ_KANDD
+GENERAL	KMOVW	Move from and to Mask Registers	KMOVW_KMOVB_KMOVQ_KMOVD
+GENERAL	KMOVB	Move from and to Mask Registers	KMOVW_KMOVB_KMOVQ_KMOVD
+GENERAL	KMOVQ	Move from and to Mask Registers	KMOVW_KMOVB_KMOVQ_KMOVD
+GENERAL	KMOVD	Move from and to Mask Registers	KMOVW_KMOVB_KMOVQ_KMOVD
+GENERAL	KNOTD	NOT Mask Register	KNOTW_KNOTB_KNOTQ_KNOTD
+GENERAL	KNOTW	NOT Mask Register	KNOTW_KNOTB_KNOTQ_KNOTD
+GENERAL	KNOTQ	NOT Mask Register	KNOTW_KNOTB_KNOTQ_KNOTD
+GENERAL	KNOTB	NOT Mask Register	KNOTW_KNOTB_KNOTQ_KNOTD
+GENERAL	KORTESTB	OR Masks And Set Flags	KORTESTW_KORTESTB_KORTESTQ_KORTESTD
+GENERAL	KORTESTQ	OR Masks And Set Flags	KORTESTW_KORTESTB_KORTESTQ_KORTESTD
+GENERAL	KORTESTW	OR Masks And Set Flags	KORTESTW_KORTESTB_KORTESTQ_KORTESTD
+GENERAL	KORTESTD	OR Masks And Set Flags	KORTESTW_KORTESTB_KORTESTQ_KORTESTD
+GENERAL	KORQ	Bitwise Logical OR Masks	KORW_KORB_KORQ_KORD
+GENERAL	KORD	Bitwise Logical OR Masks	KORW_KORB_KORQ_KORD
+GENERAL	KORB	Bitwise Logical OR Masks	KORW_KORB_KORQ_KORD
+GENERAL	KORW	Bitwise Logical OR Masks	KORW_KORB_KORQ_KORD
+GENERAL	KSHIFTLW	Shift Left Mask Registers	KSHIFTLW_KSHIFTLB_KSHIFTLQ_KSHIFTLD
+GENERAL	KSHIFTLQ	Shift Left Mask Registers	KSHIFTLW_KSHIFTLB_KSHIFTLQ_KSHIFTLD
+GENERAL	KSHIFTLB	Shift Left Mask Registers	KSHIFTLW_KSHIFTLB_KSHIFTLQ_KSHIFTLD
+GENERAL	KSHIFTLD	Shift Left Mask Registers	KSHIFTLW_KSHIFTLB_KSHIFTLQ_KSHIFTLD
+GENERAL	KSHIFTRQ	Shift Right Mask Registers	KSHIFTRW_KSHIFTRB_KSHIFTRQ_KSHIFTRD
+GENERAL	KSHIFTRB	Shift Right Mask Registers	KSHIFTRW_KSHIFTRB_KSHIFTRQ_KSHIFTRD
+GENERAL	KSHIFTRD	Shift Right Mask Registers	KSHIFTRW_KSHIFTRB_KSHIFTRQ_KSHIFTRD
+GENERAL	KSHIFTRW	Shift Right Mask Registers	KSHIFTRW_KSHIFTRB_KSHIFTRQ_KSHIFTRD
+GENERAL	KTESTW	Packed Bit Test Masks and Set Flags	KTESTW_KTESTB_KTESTQ_KTESTD
+GENERAL	KTESTD	Packed Bit Test Masks and Set Flags	KTESTW_KTESTB_KTESTQ_KTESTD
+GENERAL	KTESTB	Packed Bit Test Masks and Set Flags	KTESTW_KTESTB_KTESTQ_KTESTD
+GENERAL	KTESTQ	Packed Bit Test Masks and Set Flags	KTESTW_KTESTB_KTESTQ_KTESTD
+GENERAL	KUNPCKBW	Unpack for Mask Registers	KUNPCKBW_KUNPCKWD_KUNPCKDQ
+GENERAL	KUNPCKWD	Unpack for Mask Registers	KUNPCKBW_KUNPCKWD_KUNPCKDQ
+GENERAL	KUNPCKDQ	Unpack for Mask Registers	KUNPCKBW_KUNPCKWD_KUNPCKDQ
+GENERAL	KXNORQ	Bitwise Logical XNOR Masks	KXNORW_KXNORB_KXNORQ_KXNORD
+GENERAL	KXNORB	Bitwise Logical XNOR Masks	KXNORW_KXNORB_KXNORQ_KXNORD
+GENERAL	KXNORD	Bitwise Logical XNOR Masks	KXNORW_KXNORB_KXNORQ_KXNORD
+GENERAL	KXNORW	Bitwise Logical XNOR Masks	KXNORW_KXNORB_KXNORQ_KXNORD
+GENERAL	KXORB	Bitwise Logical XOR Masks	KXORW_KXORB_KXORQ_KXORD
+GENERAL	KXORQ	Bitwise Logical XOR Masks	KXORW_KXORB_KXORQ_KXORD
+GENERAL	KXORW	Bitwise Logical XOR Masks	KXORW_KXORB_KXORQ_KXORD
+GENERAL	KXORD	Bitwise Logical XOR Masks	KXORW_KXORB_KXORQ_KXORD
+GENERAL	LAHF	Load Status Flags into AH Register	LAHF
+GENERAL	LAR	Load Access Rights Byte	LAR
+GENERAL	VLDDQU	Load Unaligned Integer 128 Bits	LDDQU
+GENERAL	LDDQU	Load Unaligned Integer 128 Bits	LDDQU
+GENERAL	LDMXCSR	Load MXCSR Register	LDMXCSR
+GENERAL	VLDMXCSR	Load MXCSR Register	LDMXCSR
+GENERAL	LFS	Load Far Pointer	LDS_LES_LFS_LGS_LSS
+GENERAL	LGS	Load Far Pointer	LDS_LES_LFS_LGS_LSS
+GENERAL	LDS	Load Far Pointer	LDS_LES_LFS_LGS_LSS
+GENERAL	LES	Load Far Pointer	LDS_LES_LFS_LGS_LSS
+GENERAL	LSS	Load Far Pointer	LDS_LES_LFS_LGS_LSS
+GENERAL	LEA	Load Effective Address	LEA
+GENERAL	LEAVE	High Level Procedure Exit	LEAVE
+GENERAL	LFENCE	Load Fence	LFENCE
+GENERAL	LGDT	Load Global/Interrupt Descriptor Table Register	LGDT_LIDT
+GENERAL	LIDT	Load Global/Interrupt Descriptor Table Register	LGDT_LIDT
+GENERAL	LLDT	Load Local Descriptor Table Register	LLDT
+GENERAL	LMSW	Load Machine Status Word	LMSW
+GENERAL	LOCK	Assert LOCK# Signal Prefix	LOCK
+GENERAL	LODS	Load String	LODS_LODSB_LODSW_LODSD_LODSQ
+GENERAL	LODSD	Load String	LODS_LODSB_LODSW_LODSD_LODSQ
+GENERAL	LODSB	Load String	LODS_LODSB_LODSW_LODSD_LODSQ
+GENERAL	LODSW	Load String	LODS_LODSB_LODSW_LODSD_LODSQ
+GENERAL	LODSQ	Load String	LODS_LODSB_LODSW_LODSD_LODSQ
+GENERAL	LOOPZ	Loop According to ECX Counter	LOOP_LOOPcc
+GENERAL	LOOPE	Loop According to ECX Counter	LOOP_LOOPcc
+GENERAL	LOOPNE	Loop According to ECX Counter	LOOP_LOOPcc
+GENERAL	LOOP	Loop According to ECX Counter	LOOP_LOOPcc
+GENERAL	LOOPNZ	Loop According to ECX Counter	LOOP_LOOPcc
+GENERAL	LSL	Load Segment Limit	LSL
+GENERAL	LTR	Load Task Register	LTR
+GENERAL	LZCNT	Count the Number of Leading Zero Bits	LZCNT
+GENERAL	VMASKMOVDQU	Store Selected Bytes of Double Qword	MASKMOVDQU
+GENERAL	MASKMOVDQU	Store Selected Bytes of Double Qword	MASKMOVDQU
+GENERAL	MASKMOVQ	Store Selected Bytes of Qword	MASKMOVQ
+GENERAL	MAXPD	Maximum of Packed Double-Precision FP Values	MAXPD
+GENERAL	VMAXPD	Maximum of Packed Double-Precision FP Values	MAXPD
+GENERAL	MAXPS	Maximum of Packed Single-Precision FP Values	MAXPS
+GENERAL	VMAXPS	Maximum of Packed Single-Precision FP Values	MAXPS
+GENERAL	VMAXSD	Return Maximum Scalar Double-Precision FP Value	MAXSD
+GENERAL	MAXSD	Return Maximum Scalar Double-Precision FP Value	MAXSD
+GENERAL	VMAXSS	Return Maximum Scalar Single-Precision FP Value	MAXSS
+GENERAL	MAXSS	Return Maximum Scalar Single-Precision FP Value	MAXSS
+GENERAL	MFENCE	Memory Fence	MFENCE
+GENERAL	VMINPD	Minimum of Packed Double-Precision FP Values	MINPD
+GENERAL	MINPD	Minimum of Packed Double-Precision FP Values	MINPD
+GENERAL	MINPS	Minimum of Packed Single-Precision FP Values	MINPS
+GENERAL	VMINPS	Minimum of Packed Single-Precision FP Values	MINPS
+GENERAL	MINSD	Return Minimum Scalar Double-Precision FP Value	MINSD
+GENERAL	VMINSD	Return Minimum Scalar Double-Precision FP Value	MINSD
+GENERAL	VMINSS	Return Minimum Scalar Single-Precision FP Value	MINSS
+GENERAL	MINSS	Return Minimum Scalar Single-Precision FP Value	MINSS
+GENERAL	MONITOR	Set Up Monitor Address	MONITOR
+GENERAL	MOV	Move to/from Control Registers	MOV-1
+GENERAL	MOV	Move to/from Debug Registers	MOV-2
+GENERAL	MOV	Move	MOV
+GENERAL	MOVAPD	Move Aligned Packed Double-Precision FP Values	MOVAPD
+GENERAL	VMOVAPD	Move Aligned Packed Double-Precision FP Values	MOVAPD
+GENERAL	MOVAPS	Move Aligned Packed Single-Precision FP Values	MOVAPS
+GENERAL	VMOVAPS	Move Aligned Packed Single-Precision FP Values	MOVAPS
+GENERAL	MOVBE	Move Data After Swapping Bytes	MOVBE
+GENERAL	MOVDDUP	Replicate Double FP Values	MOVDDUP
+GENERAL	VMOVDDUP	Replicate Double FP Values	MOVDDUP
+GENERAL	MOVDQ2Q	Move Qword from XMM to MMX Technology Register	MOVDQ2Q
+GENERAL	MOVDQA	Move Aligned Packed Integer Values	MOVDQA,VMOVDQA32_64
+GENERAL	VMOVDQA	Move Aligned Packed Integer Values	MOVDQA,VMOVDQA32_64
+GENERAL	VMOVDQA64	Move Aligned Packed Integer Values	MOVDQA,VMOVDQA32_64
+GENERAL	VMOVDQA32	Move Aligned Packed Integer Values	MOVDQA,VMOVDQA32_64
+GENERAL	VMOVDQU32	Move Unaligned Packed Integer Values	MOVDQU,VMOVDQU8_16_32_64
+GENERAL	VMOVDQU8	Move Unaligned Packed Integer Values	MOVDQU,VMOVDQU8_16_32_64
+GENERAL	VMOVDQU64	Move Unaligned Packed Integer Values	MOVDQU,VMOVDQU8_16_32_64
+GENERAL	MOVDQU	Move Unaligned Packed Integer Values	MOVDQU,VMOVDQU8_16_32_64
+GENERAL	VMOVDQU	Move Unaligned Packed Integer Values	MOVDQU,VMOVDQU8_16_32_64
+GENERAL	VMOVDQU16	Move Unaligned Packed Integer Values	MOVDQU,VMOVDQU8_16_32_64
+GENERAL	VMOVQ	Move Dword/Move Qword	MOVD_MOVQ
+GENERAL	MOVD	Move Dword/Move Qword	MOVD_MOVQ
+GENERAL	VMOVD	Move Dword/Move Qword	MOVD_MOVQ
+GENERAL	MOVQ	Move Dword/Move Qword	MOVD_MOVQ
+GENERAL	VMOVHLPS	Move Packed Single-Precision FP Values High to Low	MOVHLPS
+GENERAL	MOVHLPS	Move Packed Single-Precision FP Values High to Low	MOVHLPS
+GENERAL	VMOVHPD	Move High Packed Double-Precision FP Value	MOVHPD
+GENERAL	MOVHPD	Move High Packed Double-Precision FP Value	MOVHPD
+GENERAL	MOVHPS	Move High Packed Single-Precision FP Values	MOVHPS
+GENERAL	VMOVHPS	Move High Packed Single-Precision FP Values	MOVHPS
+GENERAL	MOVLHPS	Move Packed Single-Precision FP Values Low to High	MOVLHPS
+GENERAL	VMOVLHPS	Move Packed Single-Precision FP Values Low to High	MOVLHPS
+GENERAL	MOVLPD	Move Low Packed Double-Precision FP Value	MOVLPD
+GENERAL	VMOVLPD	Move Low Packed Double-Precision FP Value	MOVLPD
+GENERAL	MOVLPS	Move Low Packed Single-Precision FP Values	MOVLPS
+GENERAL	VMOVLPS	Move Low Packed Single-Precision FP Values	MOVLPS
+GENERAL	VMOVMSKPD	Extract Packed Double-Precision FP Sign Mask	MOVMSKPD
+GENERAL	MOVMSKPD	Extract Packed Double-Precision FP Sign Mask	MOVMSKPD
+GENERAL	VMOVMSKPS	Extract Packed Single-Precision FP Sign Mask	MOVMSKPS
+GENERAL	MOVMSKPS	Extract Packed Single-Precision FP Sign Mask	MOVMSKPS
+GENERAL	VMOVNTDQ	Store Packed Integers Using Non-Temporal Hint	MOVNTDQ
+GENERAL	MOVNTDQ	Store Packed Integers Using Non-Temporal Hint	MOVNTDQ
+GENERAL	MOVNTDQA	Load Double Qword Non-Temporal Aligned Hint	MOVNTDQA
+GENERAL	VMOVNTDQA	Load Double Qword Non-Temporal Aligned Hint	MOVNTDQA
+GENERAL	MOVNTI	Store Dword Using Non-Temporal Hint	MOVNTI
+GENERAL	MOVNTPD	Store Packed Double-Precision FP Values Using Non-Temporal Hint	MOVNTPD
+GENERAL	VMOVNTPD	Store Packed Double-Precision FP Values Using Non-Temporal Hint	MOVNTPD
+GENERAL	MOVNTPS	Store Packed Single-Precision FP Values Using Non-Temporal Hint	MOVNTPS
+GENERAL	VMOVNTPS	Store Packed Single-Precision FP Values Using Non-Temporal Hint	MOVNTPS
+GENERAL	MOVNTQ	Store of Qword Using Non-Temporal Hint	MOVNTQ
+GENERAL	VMOVQ	Move Qword	MOVQ
+GENERAL	MOVQ	Move Qword	MOVQ
+GENERAL	MOVQ2DQ	Move Qword from MMX Technology to XMM Register	MOVQ2DQ
+GENERAL	MOVSD	Move or Merge Scalar Double-Precision FP Value	MOVSD
+GENERAL	VMOVSD	Move or Merge Scalar Double-Precision FP Value	MOVSD
+GENERAL	VMOVSHDUP	Replicate Single FP Values	MOVSHDUP
+GENERAL	MOVSHDUP	Replicate Single FP Values	MOVSHDUP
+GENERAL	VMOVSLDUP	Replicate Single FP Values	MOVSLDUP
+GENERAL	MOVSLDUP	Replicate Single FP Values	MOVSLDUP
+GENERAL	MOVSS	Move or Merge Scalar Single-Precision FP Value	MOVSS
+GENERAL	VMOVSS	Move or Merge Scalar Single-Precision FP Value	MOVSS
+GENERAL	MOVSX	Move with Sign-Extension	MOVSX_MOVSXD
+GENERAL	MOVSXD	Move with Sign-Extension	MOVSX_MOVSXD
+GENERAL	MOVSQ	Move Data from String to String	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ
+GENERAL	MOVSB	Move Data from String to String	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ
+GENERAL	MOVSD	Move Data from String to String	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ
+GENERAL	MOVSW	Move Data from String to String	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ
+GENERAL	MOVS	Move Data from String to String	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ
+GENERAL	MOVUPD	Move Unaligned Packed Double-Precision FP Values	MOVUPD
+GENERAL	VMOVUPD	Move Unaligned Packed Double-Precision FP Values	MOVUPD
+GENERAL	MOVUPS	Move Unaligned Packed Single-Precision FP Values	MOVUPS
+GENERAL	VMOVUPS	Move Unaligned Packed Single-Precision FP Values	MOVUPS
+GENERAL	MOVZX	Move with Zero-Extend	MOVZX
+GENERAL	VMPSADBW	Compute Multiple Packed Sums of Absolute Difference	MPSADBW
+GENERAL	MPSADBW	Compute Multiple Packed Sums of Absolute Difference	MPSADBW
+GENERAL	MUL	Unsigned Multiply	MUL
+GENERAL	VMULPD	Multiply Packed Double-Precision FP Values	MULPD
+GENERAL	MULPD	Multiply Packed Double-Precision FP Values	MULPD
+GENERAL	MULPS	Multiply Packed Single-Precision FP Values	MULPS
+GENERAL	VMULPS	Multiply Packed Single-Precision FP Values	MULPS
+GENERAL	MULSD	Multiply Scalar Double-Precision FP Value	MULSD
+GENERAL	VMULSD	Multiply Scalar Double-Precision FP Value	MULSD
+GENERAL	MULSS	Multiply Scalar Single-Precision FP Values	MULSS
+GENERAL	VMULSS	Multiply Scalar Single-Precision FP Values	MULSS
+GENERAL	MULX	Unsigned Multiply Without Affecting Flags	MULX
+GENERAL	MWAIT	Monitor Wait	MWAIT
+GENERAL	NEG	Two's Complement Negation	NEG
+GENERAL	NOP	No Operation	NOP
+GENERAL	NOT	One's Complement Negation	NOT
+GENERAL	OR	Logical Inclusive OR	OR
+GENERAL	ORPD	Bitwise Logical OR of Packed Double-Precision FP Values	ORPD
+GENERAL	VORPD	Bitwise Logical OR of Packed Double-Precision FP Values	ORPD
+GENERAL	ORPS	Bitwise Logical OR of Packed Single-Precision FP Values	ORPS
+GENERAL	VORPS	Bitwise Logical OR of Packed Single-Precision FP Values	ORPS
+GENERAL	OUT	Output to Port	OUT
+GENERAL	OUTS	Output String to Port	OUTS_OUTSB_OUTSW_OUTSD
+GENERAL	OUTSW	Output String to Port	OUTS_OUTSB_OUTSW_OUTSD
+GENERAL	OUTSB	Output String to Port	OUTS_OUTSB_OUTSW_OUTSD
+GENERAL	OUTSD	Output String to Port	OUTS_OUTSB_OUTSW_OUTSD
+GENERAL	PABSW	Packed Absolute Value	PABSB_PABSW_PABSD_PABSQ
+GENERAL	PABSB	Packed Absolute Value	PABSB_PABSW_PABSD_PABSQ
+GENERAL	PABSD	Packed Absolute Value	PABSB_PABSW_PABSD_PABSQ
+GENERAL	VPABSW	Packed Absolute Value	PABSB_PABSW_PABSD_PABSQ
+GENERAL	PABSQ	Packed Absolute Value	PABSB_PABSW_PABSD_PABSQ
+GENERAL	VPABSD	Packed Absolute Value	PABSB_PABSW_PABSD_PABSQ
+GENERAL	VPABSB	Packed Absolute Value	PABSB_PABSW_PABSD_PABSQ
+GENERAL	VPABSQ	Packed Absolute Value	PABSB_PABSW_PABSD_PABSQ
+GENERAL	PACKSSDW	Pack with Signed Saturation	PACKSSWB_PACKSSDW
+GENERAL	VPACKSSWB	Pack with Signed Saturation	PACKSSWB_PACKSSDW
+GENERAL	PACKSSWB	Pack with Signed Saturation	PACKSSWB_PACKSSDW
+GENERAL	VPACKSSDW	Pack with Signed Saturation	PACKSSWB_PACKSSDW
+GENERAL	PACKUSDW	Pack with Unsigned Saturation	PACKUSDW
+GENERAL	VPACKUSDW	Pack with Unsigned Saturation	PACKUSDW
+GENERAL	PACKUSWB	Pack with Unsigned Saturation	PACKUSWB
+GENERAL	VPACKUSWB	Pack with Unsigned Saturation	PACKUSWB
+GENERAL	PADDW	Add Packed Integers	PADDB_PADDW_PADDD_PADDQ
+GENERAL	PADDB	Add Packed Integers	PADDB_PADDW_PADDD_PADDQ
+GENERAL	PADDQ	Add Packed Integers	PADDB_PADDW_PADDD_PADDQ
+GENERAL	PADDD	Add Packed Integers	PADDB_PADDW_PADDD_PADDQ
+GENERAL	VPADDW	Add Packed Integers	PADDB_PADDW_PADDD_PADDQ
+GENERAL	VPADDD	Add Packed Integers	PADDB_PADDW_PADDD_PADDQ
+GENERAL	VPADDQ	Add Packed Integers	PADDB_PADDW_PADDD_PADDQ
+GENERAL	VPADDB	Add Packed Integers	PADDB_PADDW_PADDD_PADDQ
+GENERAL	PADDSW	Add Packed Signed Integers with Signed Saturation	PADDSB_PADDSW
+GENERAL	VPADDSW	Add Packed Signed Integers with Signed Saturation	PADDSB_PADDSW
+GENERAL	PADDSB	Add Packed Signed Integers with Signed Saturation	PADDSB_PADDSW
+GENERAL	VPADDSB	Add Packed Signed Integers with Signed Saturation	PADDSB_PADDSW
+GENERAL	PADDUSW	Add Packed Unsigned Integers with Unsigned Saturation	PADDUSB_PADDUSW
+GENERAL	VPADDUSW	Add Packed Unsigned Integers with Unsigned Saturation	PADDUSB_PADDUSW
+GENERAL	PADDUSB	Add Packed Unsigned Integers with Unsigned Saturation	PADDUSB_PADDUSW
+GENERAL	VPADDUSB	Add Packed Unsigned Integers with Unsigned Saturation	PADDUSB_PADDUSW
+GENERAL	PALIGNR	Packed Align Right	PALIGNR
+GENERAL	VPALIGNR	Packed Align Right	PALIGNR
+GENERAL	VPANDD	Logical AND	PAND
+GENERAL	PAND	Logical AND	PAND
+GENERAL	VPANDQ	Logical AND	PAND
+GENERAL	VPAND	Logical AND	PAND
+GENERAL	PANDN	Logical AND NOT	PANDN
+GENERAL	VPANDNQ	Logical AND NOT	PANDN
+GENERAL	VPANDN	Logical AND NOT	PANDN
+GENERAL	VPANDND	Logical AND NOT	PANDN
+GENERAL	PAUSE	Spin Loop Hint	PAUSE
+GENERAL	PAVGW	Average Packed Integers	PAVGB_PAVGW
+GENERAL	PAVGB	Average Packed Integers	PAVGB_PAVGW
+GENERAL	VPAVGW	Average Packed Integers	PAVGB_PAVGW
+GENERAL	VPAVGB	Average Packed Integers	PAVGB_PAVGW
+GENERAL	VPBLENDVB	Variable Blend Packed Bytes	PBLENDVB
+GENERAL	PBLENDVB	Variable Blend Packed Bytes	PBLENDVB
+GENERAL	VPBLENDW	Blend Packed Words	PBLENDW
+GENERAL	PBLENDW	Blend Packed Words	PBLENDW
+GENERAL	VPCLMULQDQ	PCLMULQDQ - Carry-Less Multiplication Qword 	PCLMULQDQ
+GENERAL	PCLMULQDQ	PCLMULQDQ - Carry-Less Multiplication Qword 	PCLMULQDQ
+GENERAL	VPCMPEQW	Compare Packed Data for Equal	PCMPEQB_PCMPEQW_PCMPEQD
+GENERAL	VPCMPEQD	Compare Packed Data for Equal	PCMPEQB_PCMPEQW_PCMPEQD
+GENERAL	VPCMPEQB	Compare Packed Data for Equal	PCMPEQB_PCMPEQW_PCMPEQD
+GENERAL	PCMPEQB	Compare Packed Data for Equal	PCMPEQB_PCMPEQW_PCMPEQD
+GENERAL	PCMPEQD	Compare Packed Data for Equal	PCMPEQB_PCMPEQW_PCMPEQD
+GENERAL	PCMPEQW	Compare Packed Data for Equal	PCMPEQB_PCMPEQW_PCMPEQD
+GENERAL	PCMPEQQ	Compare Packed Qword Data for Equal	PCMPEQQ
+GENERAL	VPCMPEQQ	Compare Packed Qword Data for Equal	PCMPEQQ
+GENERAL	VPCMPESTRI	Packed Compare Explicit Length Strings, Return Index	PCMPESTRI
+GENERAL	PCMPESTRI	Packed Compare Explicit Length Strings, Return Index	PCMPESTRI
+GENERAL	VPCMPESTRM	Packed Compare Explicit Length Strings, Return Mask	PCMPESTRM
+GENERAL	PCMPESTRM	Packed Compare Explicit Length Strings, Return Mask	PCMPESTRM
+GENERAL	VPCMPGTW	Compare Packed Signed Integers for Greater Than	PCMPGTB_PCMPGTW_PCMPGTD
+GENERAL	VPCMPGTD	Compare Packed Signed Integers for Greater Than	PCMPGTB_PCMPGTW_PCMPGTD
+GENERAL	PCMPGTB	Compare Packed Signed Integers for Greater Than	PCMPGTB_PCMPGTW_PCMPGTD
+GENERAL	VPCMPGTB	Compare Packed Signed Integers for Greater Than	PCMPGTB_PCMPGTW_PCMPGTD
+GENERAL	PCMPGTD	Compare Packed Signed Integers for Greater Than	PCMPGTB_PCMPGTW_PCMPGTD
+GENERAL	PCMPGTW	Compare Packed Signed Integers for Greater Than	PCMPGTB_PCMPGTW_PCMPGTD
+GENERAL	VPCMPGTQ	Compare Packed Data for Greater Than	PCMPGTQ
+GENERAL	PCMPGTQ	Compare Packed Data for Greater Than	PCMPGTQ
+GENERAL	VPCMPISTRI	Packed Compare Implicit Length Strings, Return Index	PCMPISTRI
+GENERAL	PCMPISTRI	Packed Compare Implicit Length Strings, Return Index	PCMPISTRI
+GENERAL	VPCMPISTRM	Packed Compare Implicit Length Strings, Return Mask	PCMPISTRM
+GENERAL	PCMPISTRM	Packed Compare Implicit Length Strings, Return Mask	PCMPISTRM
+GENERAL	PDEP	Parallel Bits Deposit	PDEP
+GENERAL	PEXT	Parallel Bits Extract	PEXT
+GENERAL	VPEXTRB	Extract Byte/Dword/Qword	PEXTRB_PEXTRD_PEXTRQ
+GENERAL	VPEXTRQ	Extract Byte/Dword/Qword	PEXTRB_PEXTRD_PEXTRQ
+GENERAL	PEXTRB	Extract Byte/Dword/Qword	PEXTRB_PEXTRD_PEXTRQ
+GENERAL	VPEXTRD	Extract Byte/Dword/Qword	PEXTRB_PEXTRD_PEXTRQ
+GENERAL	PEXTRQ	Extract Byte/Dword/Qword	PEXTRB_PEXTRD_PEXTRQ
+GENERAL	PEXTRD	Extract Byte/Dword/Qword	PEXTRB_PEXTRD_PEXTRQ
+GENERAL	VPEXTRW	Extract Word	PEXTRW
+GENERAL	PEXTRW	Extract Word	PEXTRW
+GENERAL	PHADDSW	Packed Horizontal Add and Saturate	PHADDSW
+GENERAL	VPHADDSW	Packed Horizontal Add and Saturate	PHADDSW
+GENERAL	VPHADDD	Packed Horizontal Add	PHADDW_PHADDD
+GENERAL	PHADDD	Packed Horizontal Add	PHADDW_PHADDD
+GENERAL	VPHADDW	Packed Horizontal Add	PHADDW_PHADDD
+GENERAL	PHADDW	Packed Horizontal Add	PHADDW_PHADDD
+GENERAL	PHMINPOSUW	Packed Horizontal Word Minimum	PHMINPOSUW
+GENERAL	VPHMINPOSUW	Packed Horizontal Word Minimum	PHMINPOSUW
+GENERAL	PHSUBSW	Packed Horizontal Subtract and Saturate	PHSUBSW
+GENERAL	VPHSUBSW	Packed Horizontal Subtract and Saturate	PHSUBSW
+GENERAL	VPHSUBD	Packed Horizontal Subtract	PHSUBW_PHSUBD
+GENERAL	VPHSUBW	Packed Horizontal Subtract	PHSUBW_PHSUBD
+GENERAL	PHSUBD	Packed Horizontal Subtract	PHSUBW_PHSUBD
+GENERAL	PHSUBW	Packed Horizontal Subtract	PHSUBW_PHSUBD
+GENERAL	PINSRQ	Insert Byte/Dword/Qword	PINSRB_PINSRD_PINSRQ
+GENERAL	VPINSRB	Insert Byte/Dword/Qword	PINSRB_PINSRD_PINSRQ
+GENERAL	PINSRB	Insert Byte/Dword/Qword	PINSRB_PINSRD_PINSRQ
+GENERAL	VPINSRD	Insert Byte/Dword/Qword	PINSRB_PINSRD_PINSRQ
+GENERAL	VPINSRQ	Insert Byte/Dword/Qword	PINSRB_PINSRD_PINSRQ
+GENERAL	PINSRD	Insert Byte/Dword/Qword	PINSRB_PINSRD_PINSRQ
+GENERAL	VPINSRW	Insert Word	PINSRW
+GENERAL	PINSRW	Insert Word	PINSRW
+GENERAL	VPMADDUBSW	Multiply and Add Packed Signed and Unsigned Bytes	PMADDUBSW
+GENERAL	PMADDUBSW	Multiply and Add Packed Signed and Unsigned Bytes	PMADDUBSW
+GENERAL	PMADDWD	Multiply and Add Packed Integers	PMADDWD
+GENERAL	VPMADDWD	Multiply and Add Packed Integers	PMADDWD
+GENERAL	PMAXSW	Maximum of Packed Signed Integers	PMAXSB_PMAXSW_PMAXSD_PMAXSQ
+GENERAL	VPMAXSW	Maximum of Packed Signed Integers	PMAXSB_PMAXSW_PMAXSD_PMAXSQ
+GENERAL	PMAXSD	Maximum of Packed Signed Integers	PMAXSB_PMAXSW_PMAXSD_PMAXSQ
+GENERAL	PMAXSB	Maximum of Packed Signed Integers	PMAXSB_PMAXSW_PMAXSD_PMAXSQ
+GENERAL	VPMAXSD	Maximum of Packed Signed Integers	PMAXSB_PMAXSW_PMAXSD_PMAXSQ
+GENERAL	PMAXSQ	Maximum of Packed Signed Integers	PMAXSB_PMAXSW_PMAXSD_PMAXSQ
+GENERAL	VPMAXSB	Maximum of Packed Signed Integers	PMAXSB_PMAXSW_PMAXSD_PMAXSQ
+GENERAL	VPMAXSQ	Maximum of Packed Signed Integers	PMAXSB_PMAXSW_PMAXSD_PMAXSQ
+GENERAL	VPMAXUB	Maximum of Packed Unsigned Integers	PMAXUB_PMAXUW
+GENERAL	PMAXUW	Maximum of Packed Unsigned Integers	PMAXUB_PMAXUW
+GENERAL	VPMAXUW	Maximum of Packed Unsigned Integers	PMAXUB_PMAXUW
+GENERAL	PMAXUB	Maximum of Packed Unsigned Integers	PMAXUB_PMAXUW
+GENERAL	VPMAXUQ	Maximum of Packed Unsigned Integers	PMAXUD_PMAXUQ
+GENERAL	PMAXUD	Maximum of Packed Unsigned Integers	PMAXUD_PMAXUQ
+GENERAL	VPMAXUD	Maximum of Packed Unsigned Integers	PMAXUD_PMAXUQ
+GENERAL	PMAXUQ	Maximum of Packed Unsigned Integers	PMAXUD_PMAXUQ
+GENERAL	PMINSB	Minimum of Packed Signed Integers	PMINSB_PMINSW
+GENERAL	PMINSW	Minimum of Packed Signed Integers	PMINSB_PMINSW
+GENERAL	VPMINSW	Minimum of Packed Signed Integers	PMINSB_PMINSW
+GENERAL	VPMINSB	Minimum of Packed Signed Integers	PMINSB_PMINSW
+GENERAL	PMINSD	Minimum of Packed Signed Integers	PMINSD_PMINSQ
+GENERAL	VPMINSD	Minimum of Packed Signed Integers	PMINSD_PMINSQ
+GENERAL	PMINSQ	Minimum of Packed Signed Integers	PMINSD_PMINSQ
+GENERAL	VPMINSQ	Minimum of Packed Signed Integers	PMINSD_PMINSQ
+GENERAL	VPMINUW	Minimum of Packed Unsigned Integers	PMINUB_PMINUW
+GENERAL	PMINUW	Minimum of Packed Unsigned Integers	PMINUB_PMINUW
+GENERAL	PMINUB	Minimum of Packed Unsigned Integers	PMINUB_PMINUW
+GENERAL	VPMINUB	Minimum of Packed Unsigned Integers	PMINUB_PMINUW
+GENERAL	PMINUD	Minimum of Packed Unsigned Integers	PMINUD_PMINUQ
+GENERAL	VPMINUD	Minimum of Packed Unsigned Integers	PMINUD_PMINUQ
+GENERAL	PMINUQ	Minimum of Packed Unsigned Integers	PMINUD_PMINUQ
+GENERAL	VPMINUQ	Minimum of Packed Unsigned Integers	PMINUD_PMINUQ
+GENERAL	PMOVMSKB	Move Byte Mask	PMOVMSKB
+GENERAL	VPMOVMSKB	Move Byte Mask	PMOVMSKB
+GENERAL	VPMOVSXWD	Packed Move with Sign Extend	PMOVSX
+GENERAL	VPMOVSXDQ	Packed Move with Sign Extend	PMOVSX
+GENERAL	PMOVSXBW	Packed Move with Sign Extend	PMOVSX
+GENERAL	VPMOVSXBQ	Packed Move with Sign Extend	PMOVSX
+GENERAL	PMOVSXBD	Packed Move with Sign Extend	PMOVSX
+GENERAL	VPMOVSXWQ	Packed Move with Sign Extend	PMOVSX
+GENERAL	PMOVSXBQ	Packed Move with Sign Extend	PMOVSX
+GENERAL	VPMOVSXBW	Packed Move with Sign Extend	PMOVSX
+GENERAL	PMOVSXWD	Packed Move with Sign Extend	PMOVSX
+GENERAL	PMOVSXDQ	Packed Move with Sign Extend	PMOVSX
+GENERAL	PMOVSXWQ	Packed Move with Sign Extend	PMOVSX
+GENERAL	VPMOVSXBD	Packed Move with Sign Extend	PMOVSX
+GENERAL	VPMOVZXWQ	Packed Move with Zero Extend	PMOVZX
+GENERAL	PMOVZXBQ	Packed Move with Zero Extend	PMOVZX
+GENERAL	PMOVZXBW	Packed Move with Zero Extend	PMOVZX
+GENERAL	VPMOVZXWD	Packed Move with Zero Extend	PMOVZX
+GENERAL	VPMOVZXDQ	Packed Move with Zero Extend	PMOVZX
+GENERAL	PMOVZXBD	Packed Move with Zero Extend	PMOVZX
+GENERAL	VPMOVZXBQ	Packed Move with Zero Extend	PMOVZX
+GENERAL	VPMOVZXBD	Packed Move with Zero Extend	PMOVZX
+GENERAL	PMOVZXWD	Packed Move with Zero Extend	PMOVZX
+GENERAL	PMOVZXDQ	Packed Move with Zero Extend	PMOVZX
+GENERAL	VPMOVZXBW	Packed Move with Zero Extend	PMOVZX
+GENERAL	PMOVZXWQ	Packed Move with Zero Extend	PMOVZX
+GENERAL	VPMULDQ	Multiply Packed Dword Integers	PMULDQ
+GENERAL	PMULDQ	Multiply Packed Dword Integers	PMULDQ
+GENERAL	VPMULHRSW	Packed Multiply High with Round and Scale	PMULHRSW
+GENERAL	PMULHRSW	Packed Multiply High with Round and Scale	PMULHRSW
+GENERAL	VPMULHUW	Multiply Packed Unsigned Integers and Store High Result	PMULHUW
+GENERAL	PMULHUW	Multiply Packed Unsigned Integers and Store High Result	PMULHUW
+GENERAL	VPMULHW	Multiply Packed Signed Integers and Store High Result	PMULHW
+GENERAL	PMULHW	Multiply Packed Signed Integers and Store High Result	PMULHW
+GENERAL	PMULLQ	Multiply Packed Integers and Store Low Result	PMULLD_PMULLQ
+GENERAL	VPMULLD	Multiply Packed Integers and Store Low Result	PMULLD_PMULLQ
+GENERAL	PMULLD	Multiply Packed Integers and Store Low Result	PMULLD_PMULLQ
+GENERAL	VPMULLQ	Multiply Packed Integers and Store Low Result	PMULLD_PMULLQ
+GENERAL	VPMULLW	Multiply Packed Signed Integers and Store Low Result	PMULLW
+GENERAL	PMULLW	Multiply Packed Signed Integers and Store Low Result	PMULLW
+GENERAL	VPMULUDQ	Multiply Packed Unsigned Dword Integers	PMULUDQ
+GENERAL	PMULUDQ	Multiply Packed Unsigned Dword Integers	PMULUDQ
+GENERAL	POP	Pop a Value from the Stack	POP
+GENERAL	POPA	Pop All General-Purpose Registers	POPA_POPAD
+GENERAL	POPAD	Pop All General-Purpose Registers	POPA_POPAD
+GENERAL	POPCNT	Return the Count of Number of Bits Set to 1	POPCNT
+GENERAL	POPF	Pop Stack into EFLAGS Register	POPF_POPFD_POPFQ
+GENERAL	POPFQ	Pop Stack into EFLAGS Register	POPF_POPFD_POPFQ
+GENERAL	POPFD	Pop Stack into EFLAGS Register	POPF_POPFD_POPFQ
+GENERAL	POR	Bitwise Logical OR	POR
+GENERAL	VPORQ	Bitwise Logical OR	POR
+GENERAL	VPOR	Bitwise Logical OR	POR
+GENERAL	VPORD	Bitwise Logical OR	POR
+GENERAL	PREFETCHT0	Prefetch Data Into Caches	PREFETCHh
+GENERAL	PREFETCHT2	Prefetch Data Into Caches	PREFETCHh
+GENERAL	PREFETCHT1	Prefetch Data Into Caches	PREFETCHh
+GENERAL	PREFETCHNTA	Prefetch Data Into Caches	PREFETCHh
+GENERAL	PREFETCHW	Prefetch Data into Caches in Anticipation of a Write	PREFETCHW
+GENERAL	PREFETCHWT1	Prefetch Vector Data Into Caches with Intent to Write and T1 Hint	PREFETCHWT1
+GENERAL	PROLVD	Bit Rotate Left	PROLD_PROLVD_PROLQ_PROLVQ
+GENERAL	VPROLD	Bit Rotate Left	PROLD_PROLVD_PROLQ_PROLVQ
+GENERAL	VPROLQ	Bit Rotate Left	PROLD_PROLVD_PROLQ_PROLVQ
+GENERAL	VPROLVQ	Bit Rotate Left	PROLD_PROLVD_PROLQ_PROLVQ
+GENERAL	PROLVQ	Bit Rotate Left	PROLD_PROLVD_PROLQ_PROLVQ
+GENERAL	VPROLVD	Bit Rotate Left	PROLD_PROLVD_PROLQ_PROLVQ
+GENERAL	PROLD	Bit Rotate Left	PROLD_PROLVD_PROLQ_PROLVQ
+GENERAL	PROLQ	Bit Rotate Left	PROLD_PROLVD_PROLQ_PROLVQ
+GENERAL	PRORQ	Bit Rotate Right	PRORD_PRORVD_PRORQ_PRORVQ
+GENERAL	PRORD	Bit Rotate Right	PRORD_PRORVD_PRORQ_PRORVQ
+GENERAL	VPRORVQ	Bit Rotate Right	PRORD_PRORVD_PRORQ_PRORVQ
+GENERAL	VPRORD	Bit Rotate Right	PRORD_PRORVD_PRORQ_PRORVQ
+GENERAL	VPRORQ	Bit Rotate Right	PRORD_PRORVD_PRORQ_PRORVQ
+GENERAL	PRORVQ	Bit Rotate Right	PRORD_PRORVD_PRORQ_PRORVQ
+GENERAL	VPRORVD	Bit Rotate Right	PRORD_PRORVD_PRORQ_PRORVQ
+GENERAL	PRORVD	Bit Rotate Right	PRORD_PRORVD_PRORQ_PRORVQ
+GENERAL	PSADBW	Compute Sum of Absolute Differences	PSADBW
+GENERAL	VPSADBW	Compute Sum of Absolute Differences	PSADBW
+GENERAL	PSHUFB	Packed Shuffle Bytes	PSHUFB
+GENERAL	VPSHUFB	Packed Shuffle Bytes	PSHUFB
+GENERAL	PSHUFD	Shuffle Packed Doublewords	PSHUFD
+GENERAL	VPSHUFD	Shuffle Packed Doublewords	PSHUFD
+GENERAL	PSHUFHW	Shuffle Packed High Words	PSHUFHW
+GENERAL	VPSHUFHW	Shuffle Packed High Words	PSHUFHW
+GENERAL	PSHUFLW	Shuffle Packed Low Words	PSHUFLW
+GENERAL	VPSHUFLW	Shuffle Packed Low Words	PSHUFLW
+GENERAL	PSHUFW	Shuffle Packed Words	PSHUFW
+GENERAL	PSIGND	Packed SIGN	PSIGNB_PSIGNW_PSIGND
+GENERAL	PSIGNB	Packed SIGN	PSIGNB_PSIGNW_PSIGND
+GENERAL	VPSIGND	Packed SIGN	PSIGNB_PSIGNW_PSIGND
+GENERAL	VPSIGNB	Packed SIGN	PSIGNB_PSIGNW_PSIGND
+GENERAL	PSIGNW	Packed SIGN	PSIGNB_PSIGNW_PSIGND
+GENERAL	VPSIGNW	Packed SIGN	PSIGNB_PSIGNW_PSIGND
+GENERAL	VPSLLDQ	Shift Double Qword Left Logical	PSLLDQ
+GENERAL	PSLLDQ	Shift Double Qword Left Logical	PSLLDQ
+GENERAL	PSLLQ	Shift Packed Data Left Logical	PSLLW_PSLLD_PSLLQ
+GENERAL	VPSLLW	Shift Packed Data Left Logical	PSLLW_PSLLD_PSLLQ
+GENERAL	VPSLLD	Shift Packed Data Left Logical	PSLLW_PSLLD_PSLLQ
+GENERAL	VPSLLQ	Shift Packed Data Left Logical	PSLLW_PSLLD_PSLLQ
+GENERAL	PSLLW	Shift Packed Data Left Logical	PSLLW_PSLLD_PSLLQ
+GENERAL	PSLLD	Shift Packed Data Left Logical	PSLLW_PSLLD_PSLLQ
+GENERAL	VPSRAW	Shift Packed Data Right Arithmetic	PSRAW_PSRAD_PSRAQ
+GENERAL	PSRAQ	Shift Packed Data Right Arithmetic	PSRAW_PSRAD_PSRAQ
+GENERAL	VPSRAD	Shift Packed Data Right Arithmetic	PSRAW_PSRAD_PSRAQ
+GENERAL	VPSRAQ	Shift Packed Data Right Arithmetic	PSRAW_PSRAD_PSRAQ
+GENERAL	PSRAW	Shift Packed Data Right Arithmetic	PSRAW_PSRAD_PSRAQ
+GENERAL	PSRAD	Shift Packed Data Right Arithmetic	PSRAW_PSRAD_PSRAQ
+GENERAL	PSRLDQ	Shift Double Qword Right Logical	PSRLDQ
+GENERAL	VPSRLDQ	Shift Double Qword Right Logical	PSRLDQ
+GENERAL	VPSRLQ	Shift Packed Data Right Logical	PSRLW_PSRLD_PSRLQ
+GENERAL	PSRLW	Shift Packed Data Right Logical	PSRLW_PSRLD_PSRLQ
+GENERAL	PSRLD	Shift Packed Data Right Logical	PSRLW_PSRLD_PSRLQ
+GENERAL	PSRLQ	Shift Packed Data Right Logical	PSRLW_PSRLD_PSRLQ
+GENERAL	VPSRLW	Shift Packed Data Right Logical	PSRLW_PSRLD_PSRLQ
+GENERAL	VPSRLD	Shift Packed Data Right Logical	PSRLW_PSRLD_PSRLQ
+GENERAL	VPSUBD	Subtract Packed Integers	PSUBB_PSUBW_PSUBD
+GENERAL	VPSUBB	Subtract Packed Integers	PSUBB_PSUBW_PSUBD
+GENERAL	PSUBW	Subtract Packed Integers	PSUBB_PSUBW_PSUBD
+GENERAL	PSUBD	Subtract Packed Integers	PSUBB_PSUBW_PSUBD
+GENERAL	PSUBB	Subtract Packed Integers	PSUBB_PSUBW_PSUBD
+GENERAL	VPSUBW	Subtract Packed Integers	PSUBB_PSUBW_PSUBD
+GENERAL	VPSUBQ	Subtract Packed Qword Integers	PSUBQ
+GENERAL	PSUBQ	Subtract Packed Qword Integers	PSUBQ
+GENERAL	VPSUBSB	Subtract Packed Signed Integers with Signed Saturation	PSUBSB_PSUBSW
+GENERAL	PSUBSB	Subtract Packed Signed Integers with Signed Saturation	PSUBSB_PSUBSW
+GENERAL	PSUBSW	Subtract Packed Signed Integers with Signed Saturation	PSUBSB_PSUBSW
+GENERAL	VPSUBSW	Subtract Packed Signed Integers with Signed Saturation	PSUBSB_PSUBSW
+GENERAL	PSUBUSB	Subtract Packed Unsigned Integers with Unsigned Saturation	PSUBUSB_PSUBUSW
+GENERAL	VPSUBUSW	Subtract Packed Unsigned Integers with Unsigned Saturation	PSUBUSB_PSUBUSW
+GENERAL	PSUBUSW	Subtract Packed Unsigned Integers with Unsigned Saturation	PSUBUSB_PSUBUSW
+GENERAL	VPSUBUSB	Subtract Packed Unsigned Integers with Unsigned Saturation	PSUBUSB_PSUBUSW
+GENERAL	VPTEST	PTEST- Logical Compare 	PTEST
+GENERAL	PTEST	PTEST- Logical Compare 	PTEST
+GENERAL	PTWRITE	PTWRITE - Write Data to a Processor Trace Packet 	PTWRITE
+GENERAL	PUNPCKHQDQ	Unpack High Data	PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ
+GENERAL	PUNPCKHWD	Unpack High Data	PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ
+GENERAL	PUNPCKHDQ	Unpack High Data	PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ
+GENERAL	VPUNPCKHBW	Unpack High Data	PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ
+GENERAL	PUNPCKHBW	Unpack High Data	PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ
+GENERAL	VPUNPCKHQDQ	Unpack High Data	PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ
+GENERAL	VPUNPCKHWD	Unpack High Data	PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ
+GENERAL	VPUNPCKHDQ	Unpack High Data	PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ
+GENERAL	VPUNPCKLQDQ	Unpack Low Data	PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ
+GENERAL	PUNPCKLBW	Unpack Low Data	PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ
+GENERAL	PUNPCKLQDQ	Unpack Low Data	PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ
+GENERAL	VPUNPCKLBW	Unpack Low Data	PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ
+GENERAL	PUNPCKLWD	Unpack Low Data	PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ
+GENERAL	PUNPCKLDQ	Unpack Low Data	PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ
+GENERAL	VPUNPCKLWD	Unpack Low Data	PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ
+GENERAL	VPUNPCKLDQ	Unpack Low Data	PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ
+GENERAL	PUSH	Push Word, Dword or Qword Onto the Stack	PUSH
+GENERAL	PUSHAD	Push All General-Purpose Registers	PUSHA_PUSHAD
+GENERAL	PUSHA	Push All General-Purpose Registers	PUSHA_PUSHAD
+GENERAL	PUSHFD	Push EFLAGS Register onto the Stack	PUSHF_PUSHFD
+GENERAL	PUSHF	Push EFLAGS Register onto the Stack	PUSHF_PUSHFD
+GENERAL	VPXOR	Logical Exclusive OR	PXOR
+GENERAL	VPXORQ	Logical Exclusive OR	PXOR
+GENERAL	VPXORD	Logical Exclusive OR	PXOR
+GENERAL	PXOR	Logical Exclusive OR	PXOR
+GENERAL	RCR	Rotate	RCL_RCR_ROL_ROR
+GENERAL	ROR	Rotate	RCL_RCR_ROL_ROR
+GENERAL	RCL	Rotate	RCL_RCR_ROL_ROR
+GENERAL	ROL	Rotate	RCL_RCR_ROL_ROR
+GENERAL	RCPPS	Compute Reciprocals of Packed Single-Precision FP Values	RCPPS
+GENERAL	VRCPPS	Compute Reciprocals of Packed Single-Precision FP Values	RCPPS
+GENERAL	VRCPSS	Compute Reciprocal of Scalar Single-Precision FP Values	RCPSS
+GENERAL	RCPSS	Compute Reciprocal of Scalar Single-Precision FP Values	RCPSS
+GENERAL	RDFSBASE	Read FS/GS Segment Base	RDFSBASE_RDGSBASE
+GENERAL	RDGSBASE	Read FS/GS Segment Base	RDFSBASE_RDGSBASE
+GENERAL	RDMSR	Read from Model Specific Register	RDMSR
+GENERAL	RDPID	Read Processor ID	RDPID
+GENERAL	RDPKRU	Read Protection Key Rights for User Pages	RDPKRU
+GENERAL	RDPMC	Read Performance-Monitoring Counters	RDPMC
+GENERAL	RDRAND	Read Random Number	RDRAND
+GENERAL	RDSEED	Read Random SEED	RDSEED
+GENERAL	RDTSC	Read Time-Stamp Counter	RDTSC
+GENERAL	RDTSCP	Read Time-Stamp Counter and Processor ID	RDTSCP
+GENERAL	REP OUTS	Repeat String Operation Prefix	REP_REPE_REPZ_REPNE_REPNZ
+GENERAL	REP STOS	Repeat String Operation Prefix	REP_REPE_REPZ_REPNE_REPNZ
+GENERAL	REPNE CMPS	Repeat String Operation Prefix	REP_REPE_REPZ_REPNE_REPNZ
+GENERAL	REPE CMPS	Repeat String Operation Prefix	REP_REPE_REPZ_REPNE_REPNZ
+GENERAL	REPNE SCAS	Repeat String Operation Prefix	REP_REPE_REPZ_REPNE_REPNZ
+GENERAL	REP MOVS	Repeat String Operation Prefix	REP_REPE_REPZ_REPNE_REPNZ
+GENERAL	REP LODS	Repeat String Operation Prefix	REP_REPE_REPZ_REPNE_REPNZ
+GENERAL	REPE SCAS	Repeat String Operation Prefix	REP_REPE_REPZ_REPNE_REPNZ
+GENERAL	REP INS	Repeat String Operation Prefix	REP_REPE_REPZ_REPNE_REPNZ
+GENERAL	RET	Return from Procedure	RET
+GENERAL	RORX	Rotate Right Logical Without Affecting Flags	RORX
+GENERAL	ROUNDPD	Round Packed Double-Precision FP Values	ROUNDPD
+GENERAL	VROUNDPD	Round Packed Double-Precision FP Values	ROUNDPD
+GENERAL	ROUNDPS	Round Packed Single-Precision FP Values	ROUNDPS
+GENERAL	VROUNDPS	Round Packed Single-Precision FP Values	ROUNDPS
+GENERAL	VROUNDSD	Round Scalar Double-Precision FP Values	ROUNDSD
+GENERAL	ROUNDSD	Round Scalar Double-Precision FP Values	ROUNDSD
+GENERAL	VROUNDSS	Round Scalar Single-Precision FP Values	ROUNDSS
+GENERAL	ROUNDSS	Round Scalar Single-Precision FP Values	ROUNDSS
+GENERAL	RSM	Resume from System Management Mode	RSM
+GENERAL	RSQRTPS	Compute Reciprocals of Square Roots of Packed Single-Precision FP Values	RSQRTPS
+GENERAL	VRSQRTPS	Compute Reciprocals of Square Roots of Packed Single-Precision FP Values	RSQRTPS
+GENERAL	VRSQRTSS	Compute Reciprocal of Square Root of Scalar Single-Precision FP Value	RSQRTSS
+GENERAL	RSQRTSS	Compute Reciprocal of Square Root of Scalar Single-Precision FP Value	RSQRTSS
+GENERAL	SAHF	Store AH into Flags	SAHF
+GENERAL	SAR	Shift	SAL_SAR_SHL_SHR
+GENERAL	SHL	Shift	SAL_SAR_SHL_SHR
+GENERAL	SHR	Shift	SAL_SAR_SHL_SHR
+GENERAL	SAL	Shift	SAL_SAR_SHL_SHR
+GENERAL	SARX	Shift Without Affecting Flags	SARX_SHLX_SHRX
+GENERAL	SHLX	Shift Without Affecting Flags	SARX_SHLX_SHRX
+GENERAL	SHRX	Shift Without Affecting Flags	SARX_SHLX_SHRX
+GENERAL	SBB	Integer Subtraction with Borrow	SBB
+GENERAL	SCASB	Scan String	SCAS_SCASB_SCASW_SCASD
+GENERAL	SCASD	Scan String	SCAS_SCASB_SCASW_SCASD
+GENERAL	SCAS	Scan String	SCAS_SCASB_SCASW_SCASD
+GENERAL	SCASW	Scan String	SCAS_SCASB_SCASW_SCASD
+GENERAL	SETNB	Set Byte on Condition	SETcc
+GENERAL	SETNC	Set Byte on Condition	SETcc
+GENERAL	SETPE	Set Byte on Condition	SETcc
+GENERAL	SETNA	Set Byte on Condition	SETcc
+GENERAL	SETLE	Set Byte on Condition	SETcc
+GENERAL	SETNG	Set Byte on Condition	SETcc
+GENERAL	SETNE	Set Byte on Condition	SETcc
+GENERAL	SETGE	Set Byte on Condition	SETcc
+GENERAL	SETAE	Set Byte on Condition	SETcc
+GENERAL	SETA	Set Byte on Condition	SETcc
+GENERAL	SETNBE	Set Byte on Condition	SETcc
+GENERAL	SETG	Set Byte on Condition	SETcc
+GENERAL	SETE	Set Byte on Condition	SETcc
+GENERAL	SETNAE	Set Byte on Condition	SETcc
+GENERAL	SETB	Set Byte on Condition	SETcc
+GENERAL	SETC	Set Byte on Condition	SETcc
+GENERAL	SETP	Set Byte on Condition	SETcc
+GENERAL	SETO	Set Byte on Condition	SETcc
+GENERAL	SETL	Set Byte on Condition	SETcc
+GENERAL	SETNO	Set Byte on Condition	SETcc
+GENERAL	SETNL	Set Byte on Condition	SETcc
+GENERAL	SETPO	Set Byte on Condition	SETcc
+GENERAL	SETNS	Set Byte on Condition	SETcc
+GENERAL	SETNP	Set Byte on Condition	SETcc
+GENERAL	SETBE	Set Byte on Condition	SETcc
+GENERAL	SETS	Set Byte on Condition	SETcc
+GENERAL	SETNZ	Set Byte on Condition	SETcc
+GENERAL	SETZ	Set Byte on Condition	SETcc
+GENERAL	SETNGE	Set Byte on Condition	SETcc
+GENERAL	SFENCE	Store Fence	SFENCE
+GENERAL	SGDT	Store Global Descriptor Table Register	SGDT
+GENERAL	SHA1MSG1	Perform an Intermediate Calculation for the Next Four SHA1 Message Dwords	SHA1MSG1
+GENERAL	SHA1MSG2	Perform a Final Calculation for the Next Four SHA1 Message Dwords	SHA1MSG2
+GENERAL	SHA1NEXTE	Calculate SHA1 State Variable E after Four Rounds	SHA1NEXTE
+GENERAL	SHA1RNDS4	Perform Four Rounds of SHA1 Operation	SHA1RNDS4
+GENERAL	SHA256MSG1	Perform an Intermediate Calculation for the Next Four SHA256 Message Dwords	SHA256MSG1
+GENERAL	SHA256MSG2	Perform a Final Calculation for the Next Four SHA256 Message Dwords	SHA256MSG2
+GENERAL	SHA256RNDS2	Perform Two Rounds of SHA256 Operation	SHA256RNDS2
+GENERAL	SHLD	Double-Precision Shift Left	SHLD
+GENERAL	SHRD	Double-Precision Shift Right	SHRD
+GENERAL	VSHUFPD	Packed Interleave Shuffle of Pairs of Double-Precision FP Values	SHUFPD
+GENERAL	SHUFPD	Packed Interleave Shuffle of Pairs of Double-Precision FP Values	SHUFPD
+GENERAL	VSHUFPS	Packed Interleave Shuffle of Quadruplets of Single-Precision FP Values	SHUFPS
+GENERAL	SHUFPS	Packed Interleave Shuffle of Quadruplets of Single-Precision FP Values	SHUFPS
+GENERAL	SIDT	Store Interrupt Descriptor Table Register	SIDT
+GENERAL	SLDT	Store Local Descriptor Table Register	SLDT
+GENERAL	SMSW	Store Machine Status Word	SMSW
+GENERAL	SQRTPD	Square Root of Double-Precision FP Values	SQRTPD
+GENERAL	VSQRTPD	Square Root of Double-Precision FP Values	SQRTPD
+GENERAL	SQRTPS	Square Root of Single-Precision FP Values	SQRTPS
+GENERAL	VSQRTPS	Square Root of Single-Precision FP Values	SQRTPS
+GENERAL	VSQRTSD	Compute Square Root of Scalar Double-Precision FP Value	SQRTSD
+GENERAL	SQRTSD	Compute Square Root of Scalar Double-Precision FP Value	SQRTSD
+GENERAL	VSQRTSS	Compute Square Root of Scalar Single-Precision Value	SQRTSS
+GENERAL	SQRTSS	Compute Square Root of Scalar Single-Precision Value	SQRTSS
+GENERAL	STAC	Set AC Flag in EFLAGS Register	STAC
+GENERAL	STC	Set Carry Flag	STC
+GENERAL	STD	Set Direction Flag	STD
+GENERAL	STI	Set Interrupt Flag	STI
+GENERAL	STMXCSR	Store MXCSR Register State	STMXCSR
+GENERAL	VSTMXCSR	Store MXCSR Register State	STMXCSR
+GENERAL	STOS	Store String	STOS_STOSB_STOSW_STOSD_STOSQ
+GENERAL	STOSB	Store String	STOS_STOSB_STOSW_STOSD_STOSQ
+GENERAL	STOSQ	Store String	STOS_STOSB_STOSW_STOSD_STOSQ
+GENERAL	STOSD	Store String	STOS_STOSB_STOSW_STOSD_STOSQ
+GENERAL	STOSW	Store String	STOS_STOSB_STOSW_STOSD_STOSQ
+GENERAL	STR	Store Task Register	STR
+GENERAL	SUB	Subtract	SUB
+GENERAL	VSUBPD	Subtract Packed Double-Precision FP Values	SUBPD
+GENERAL	SUBPD	Subtract Packed Double-Precision FP Values	SUBPD
+GENERAL	VSUBPS	Subtract Packed Single-Precision FP Values	SUBPS
+GENERAL	SUBPS	Subtract Packed Single-Precision FP Values	SUBPS
+GENERAL	VSUBSD	Subtract Scalar Double-Precision FP Value	SUBSD
+GENERAL	SUBSD	Subtract Scalar Double-Precision FP Value	SUBSD
+GENERAL	VSUBSS	Subtract Scalar Single-Precision FP Value	SUBSS
+GENERAL	SUBSS	Subtract Scalar Single-Precision FP Value	SUBSS
+GENERAL	SWAPGS	Swap GS Base Register	SWAPGS
+GENERAL	SYSCALL	Fast System Call	SYSCALL
+GENERAL	SYSENTER	Fast System Call	SYSENTER
+GENERAL	SYSEXIT	Fast Return from Fast System Call	SYSEXIT
+GENERAL	SYSRET	Return From Fast System Call	SYSRET
+GENERAL	TEST	Logical Compare	TEST
+GENERAL	TZCNT	Count the Number of Trailing Zero Bits	TZCNT
+GENERAL	VUCOMISD	Unordered Compare Scalar Double-Precision FP Values and Set EFLAGS	UCOMISD
+GENERAL	UCOMISD	Unordered Compare Scalar Double-Precision FP Values and Set EFLAGS	UCOMISD
+GENERAL	UCOMISS	Unordered Compare Scalar Single-Precision FP Values and Set EFLAGS	UCOMISS
+GENERAL	VUCOMISS	Unordered Compare Scalar Single-Precision FP Values and Set EFLAGS	UCOMISS
+GENERAL	UD2	Undefined Instruction	UD2
+GENERAL	UNPCKHPD	Unpack and Interleave High Packed Double-Precision FP Values	UNPCKHPD
+GENERAL	VUNPCKHPD	Unpack and Interleave High Packed Double-Precision FP Values	UNPCKHPD
+GENERAL	UNPCKHPS	Unpack and Interleave High Packed Single-Precision FP Values	UNPCKHPS
+GENERAL	VUNPCKHPS	Unpack and Interleave High Packed Single-Precision FP Values	UNPCKHPS
+GENERAL	UNPCKLPD	Unpack and Interleave Low Packed Double-Precision FP Values	UNPCKLPD
+GENERAL	VUNPCKLPD	Unpack and Interleave Low Packed Double-Precision FP Values	UNPCKLPD
+GENERAL	UNPCKLPS	Unpack and Interleave Low Packed Single-Precision FP Values	UNPCKLPS
+GENERAL	VUNPCKLPS	Unpack and Interleave Low Packed Single-Precision FP Values	UNPCKLPS
+GENERAL	VALIGND	Align Dword/Qword Vectors	VALIGND_VALIGNQ
+GENERAL	VALIGNQ	Align Dword/Qword Vectors	VALIGND_VALIGNQ
+GENERAL	VBLENDMPD	Blend Float64/Float32 Vectors Using an OpMask Control	VBLENDMPD_VBLENDMPS
+GENERAL	VBLENDMPS	Blend Float64/Float32 Vectors Using an OpMask Control	VBLENDMPD_VBLENDMPS
+GENERAL	VBROADCASTSS	Load with Broadcast FP Data	VBROADCAST
+GENERAL	VBROADCASTF128	Load with Broadcast FP Data	VBROADCAST
+GENERAL	VBROADCASTF32X2	Load with Broadcast FP Data	VBROADCAST
+GENERAL	VBROADCASTF32X4	Load with Broadcast FP Data	VBROADCAST
+GENERAL	VBROADCASTF64X4	Load with Broadcast FP Data	VBROADCAST
+GENERAL	VBROADCASTF64X2	Load with Broadcast FP Data	VBROADCAST
+GENERAL	VBROADCASTSD	Load with Broadcast FP Data	VBROADCAST
+GENERAL	VBROADCASTF32X8	Load with Broadcast FP Data	VBROADCAST
+GENERAL	VCOMPRESSPD	Store Sparse Packed Double-Precision FP Values into Dense Memory	VCOMPRESSPD
+GENERAL	VCOMPRESSPS	Store Sparse Packed Single-Precision FP Values into Dense Memory	VCOMPRESSPS
+GENERAL	VCVTPD2QQ	Convert Packed Double-Precision FP Values to Packed Qword Integers	VCVTPD2QQ
+GENERAL	VCVTPD2UDQ	Convert Packed Double-Precision FP Values to Packed Unsigned Dword Integers	VCVTPD2UDQ
+GENERAL	VCVTPD2UQQ	Convert Packed Double-Precision FP Values to Packed Unsigned Qword Integers	VCVTPD2UQQ
+GENERAL	VCVTPH2PS	Convert 16-bit FP values to Single-Precision FP values	VCVTPH2PS
+GENERAL	VCVTPS2PH	Convert Single-Precision FP value to 16-bit FP value	VCVTPS2PH
+GENERAL	VCVTPS2QQ	Convert Packed Single-Precision FP Values to Packed Signed Qword Integer Values	VCVTPS2QQ
+GENERAL	VCVTPS2UDQ	Convert Packed Single-Precision FP Values to Packed Unsigned Dword Integer Values	VCVTPS2UDQ
+GENERAL	VCVTPS2UQQ	Convert Packed Single-Precision FP Values to Packed Unsigned Qword Integer Values	VCVTPS2UQQ
+GENERAL	VCVTQQ2PD	Convert Packed Qword Integers to Packed Double-Precision FP Values	VCVTQQ2PD
+GENERAL	VCVTQQ2PS	Convert Packed Qword Integers to Packed Single-Precision FP Values	VCVTQQ2PS
+GENERAL	VCVTSD2USI	Convert Scalar Double-Precision FP Value to Unsigned Dword Integer	VCVTSD2USI
+GENERAL	VCVTSS2USI	Convert Scalar Single-Precision FP Value to Unsigned Dword Integer	VCVTSS2USI
+GENERAL	VCVTTPD2QQ	Convert with Truncation Packed Double-Precision FP Values to Packed Qword Integers	VCVTTPD2QQ
+GENERAL	VCVTTPD2UDQ	Convert with Truncation Packed Double-Precision FP Values to Packed Unsigned Dword Integers	VCVTTPD2UDQ
+GENERAL	VCVTTPD2UQQ	Convert with Truncation Packed Double-Precision FP Values to Packed Unsigned Qword Integers	VCVTTPD2UQQ
+GENERAL	VCVTTPS2QQ	Convert with Truncation Packed Single-Precision FP Values to Packed Signed Qword Integer Values	VCVTTPS2QQ
+GENERAL	VCVTTPS2UDQ	Convert with Truncation Packed Single-Precision FP Values to Packed Unsigned Dword Integer Values	VCVTTPS2UDQ
+GENERAL	VCVTTPS2UQQ	Convert with Truncation Packed Single-Precision FP Values to Packed Unsigned Qword Integer Values	VCVTTPS2UQQ
+GENERAL	VCVTTSD2USI	Convert with Truncation Scalar Double-Precision FP Value to Unsigned Integer	VCVTTSD2USI
+GENERAL	VCVTTSS2USI	Convert with Truncation Scalar Single-Precision FP Value to Unsigned Integer	VCVTTSS2USI
+GENERAL	VCVTUDQ2PD	Convert Packed Unsigned Dword Integers to Packed Double-Precision FP Values	VCVTUDQ2PD
+GENERAL	VCVTUDQ2PS	Convert Packed Unsigned Dword Integers to Packed Single-Precision FP Values	VCVTUDQ2PS
+GENERAL	VCVTUQQ2PD	Convert Packed Unsigned Qword Integers to Packed Double-Precision FP Values	VCVTUQQ2PD
+GENERAL	VCVTUQQ2PS	Convert Packed Unsigned Qword Integers to Packed Single-Precision FP Values	VCVTUQQ2PS
+GENERAL	VCVTUSI2SD	Convert Unsigned Integer to Scalar Double-Precision FP Value	VCVTUSI2SD
+GENERAL	VCVTUSI2SS	Convert Unsigned Integer to Scalar Single-Precision FP Value	VCVTUSI2SS
+GENERAL	VDBPSADBW	Double Block Packed Sum-Absolute-Differences (SAD) on Unsigned Bytes	VDBPSADBW
+GENERAL	VERR	Verify a Segment for Reading or Writing	VERR_VERW
+GENERAL	VERW	Verify a Segment for Reading or Writing	VERR_VERW
+GENERAL	VEXP2PD	Approximation to the Exponential 2^x of Packed Double-Precision FP Values with Less Than 2^-23 Relative Error	VEXP2PD
+GENERAL	VEXP2PS	Approximation to the Exponential 2^x of Packed Single-Precision FP Values with Less Than 2^-23 Relative Error	VEXP2PS
+GENERAL	VEXPANDPD	Load Sparse Packed Double-Precision FP Values from Dense Memory	VEXPANDPD
+GENERAL	VEXPANDPS	Load Sparse Packed Single-Precision FP Values from Dense Memory	VEXPANDPS
+GENERAL	VEXTRACTF128	extract Packed FP Values	VEXTRACTF128_VEXTRACTF32x4_VEXTRACTF64x2_VEXTRACTF32x8_VEXTRACTF64x4
+GENERAL	VEXTRACTF64x2	extract Packed FP Values	VEXTRACTF128_VEXTRACTF32x4_VEXTRACTF64x2_VEXTRACTF32x8_VEXTRACTF64x4
+GENERAL	VEXTRACTF32x8	extract Packed FP Values	VEXTRACTF128_VEXTRACTF32x4_VEXTRACTF64x2_VEXTRACTF32x8_VEXTRACTF64x4
+GENERAL	VEXTRACTF64x4	extract Packed FP Values	VEXTRACTF128_VEXTRACTF32x4_VEXTRACTF64x2_VEXTRACTF32x8_VEXTRACTF64x4
+GENERAL	VEXTRACTF32x4	extract Packed FP Values	VEXTRACTF128_VEXTRACTF32x4_VEXTRACTF64x2_VEXTRACTF32x8_VEXTRACTF64x4
+GENERAL	VEXTRACTI32x4	Extract packed Integer Values	VEXTRACTI128_VEXTRACTI32x4_VEXTRACTI64x2_VEXTRACTI32x8_VEXTRACTI64x4
+GENERAL	VEXTRACTI64x4	Extract packed Integer Values	VEXTRACTI128_VEXTRACTI32x4_VEXTRACTI64x2_VEXTRACTI32x8_VEXTRACTI64x4
+GENERAL	VEXTRACTI32x8	Extract packed Integer Values	VEXTRACTI128_VEXTRACTI32x4_VEXTRACTI64x2_VEXTRACTI32x8_VEXTRACTI64x4
+GENERAL	VEXTRACTI128	Extract packed Integer Values	VEXTRACTI128_VEXTRACTI32x4_VEXTRACTI64x2_VEXTRACTI32x8_VEXTRACTI64x4
+GENERAL	VEXTRACTI64x2	Extract packed Integer Values	VEXTRACTI128_VEXTRACTI32x4_VEXTRACTI64x2_VEXTRACTI32x8_VEXTRACTI64x4
+GENERAL	VFIXUPIMMPD	Fix Up Special Packed Float64 Values	VFIXUPIMMPD
+GENERAL	VFIXUPIMMPS	Fix Up Special Packed Float32 Values	VFIXUPIMMPS
+GENERAL	VFIXUPIMMSD	Fix Up Special Scalar Float64 Value	VFIXUPIMMSD
+GENERAL	VFIXUPIMMSS	Fix Up Special Scalar Float32 Value	VFIXUPIMMSS
+GENERAL	VFMADD231PD	Fused Multiply-Add of Packed Double-Precision FP Values	VFMADD132PD_VFMADD213PD_VFMADD231PD
+GENERAL	VFMADD132PD	Fused Multiply-Add of Packed Double-Precision FP Values	VFMADD132PD_VFMADD213PD_VFMADD231PD
+GENERAL	VFMADD213PD	Fused Multiply-Add of Packed Double-Precision FP Values	VFMADD132PD_VFMADD213PD_VFMADD231PD
+GENERAL	VFMADD213PS	Fused Multiply-Add of Packed Single-Precision FP Values	VFMADD132PS_VFMADD213PS_VFMADD231PS
+GENERAL	VFMADD132PS	Fused Multiply-Add of Packed Single-Precision FP Values	VFMADD132PS_VFMADD213PS_VFMADD231PS
+GENERAL	VFMADD231PS	Fused Multiply-Add of Packed Single-Precision FP Values	VFMADD132PS_VFMADD213PS_VFMADD231PS
+GENERAL	VFMADD213SD	Fused Multiply-Add of Scalar Double-Precision FP Values	VFMADD132SD_VFMADD213SD_VFMADD231SD
+GENERAL	VFMADD231SD	Fused Multiply-Add of Scalar Double-Precision FP Values	VFMADD132SD_VFMADD213SD_VFMADD231SD
+GENERAL	VFMADD132SD	Fused Multiply-Add of Scalar Double-Precision FP Values	VFMADD132SD_VFMADD213SD_VFMADD231SD
+GENERAL	VFMADD213SS	Fused Multiply-Add of Scalar Single-Precision FP Values	VFMADD132SS_VFMADD213SS_VFMADD231SS
+GENERAL	VFMADD231SS	Fused Multiply-Add of Scalar Single-Precision FP Values	VFMADD132SS_VFMADD213SS_VFMADD231SS
+GENERAL	VFMADD132SS	Fused Multiply-Add of Scalar Single-Precision FP Values	VFMADD132SS_VFMADD213SS_VFMADD231SS
+GENERAL	VFMADDSUB213PD	Fused Multiply-Alternating Add/Subtract of Packed Double-Precision FP Values	VFMADDSUB132PD_VFMADDSUB213PD_VFMADDSUB231PD
+GENERAL	VFMADDSUB231PD	Fused Multiply-Alternating Add/Subtract of Packed Double-Precision FP Values	VFMADDSUB132PD_VFMADDSUB213PD_VFMADDSUB231PD
+GENERAL	VFMADDSUB132PD	Fused Multiply-Alternating Add/Subtract of Packed Double-Precision FP Values	VFMADDSUB132PD_VFMADDSUB213PD_VFMADDSUB231PD
+GENERAL	VFMADDSUB213PS	Fused Multiply-Alternating Add/Subtract of Packed Single-Precision FP Values	VFMADDSUB132PS_VFMADDSUB213PS_VFMADDSUB231PS
+GENERAL	VFMADDSUB132PS	Fused Multiply-Alternating Add/Subtract of Packed Single-Precision FP Values	VFMADDSUB132PS_VFMADDSUB213PS_VFMADDSUB231PS
+GENERAL	VFMADDSUB231PS	Fused Multiply-Alternating Add/Subtract of Packed Single-Precision FP Values	VFMADDSUB132PS_VFMADDSUB213PS_VFMADDSUB231PS
+GENERAL	VFMSUB231PD	Fused Multiply-Subtract of Packed Double-Precision FP Values	VFMSUB132PD_VFMSUB213PD_VFMSUB231PD
+GENERAL	VFMSUB132PD	Fused Multiply-Subtract of Packed Double-Precision FP Values	VFMSUB132PD_VFMSUB213PD_VFMSUB231PD
+GENERAL	VFMSUB213PD	Fused Multiply-Subtract of Packed Double-Precision FP Values	VFMSUB132PD_VFMSUB213PD_VFMSUB231PD
+GENERAL	VFMSUB231PS	Fused Multiply-Subtract of Packed Single-Precision FP Values	VFMSUB132PS_VFMSUB213PS_VFMSUB231PS
+GENERAL	VFMSUB132PS	Fused Multiply-Subtract of Packed Single-Precision FP Values	VFMSUB132PS_VFMSUB213PS_VFMSUB231PS
+GENERAL	VFMSUB213PS	Fused Multiply-Subtract of Packed Single-Precision FP Values	VFMSUB132PS_VFMSUB213PS_VFMSUB231PS
+GENERAL	VFMSUB132SD	Fused Multiply-Subtract of Scalar Double-Precision FP Values	VFMSUB132SD_VFMSUB213SD_VFMSUB231SD
+GENERAL	VFMSUB231SD	Fused Multiply-Subtract of Scalar Double-Precision FP Values	VFMSUB132SD_VFMSUB213SD_VFMSUB231SD
+GENERAL	VFMSUB213SD	Fused Multiply-Subtract of Scalar Double-Precision FP Values	VFMSUB132SD_VFMSUB213SD_VFMSUB231SD
+GENERAL	VFMSUB231SS	Fused Multiply-Subtract of Scalar Single-Precision FP Values	VFMSUB132SS_VFMSUB213SS_VFMSUB231SS
+GENERAL	VFMSUB132SS	Fused Multiply-Subtract of Scalar Single-Precision FP Values	VFMSUB132SS_VFMSUB213SS_VFMSUB231SS
+GENERAL	VFMSUB213SS	Fused Multiply-Subtract of Scalar Single-Precision FP Values	VFMSUB132SS_VFMSUB213SS_VFMSUB231SS
+GENERAL	VFMSUBADD231PD	Fused Multiply-Alternating Subtract/Add of Packed Double-Precision FP Values	VFMSUBADD132PD_VFMSUBADD213PD_VFMSUBADD231PD
+GENERAL	VFMSUBADD213PD	Fused Multiply-Alternating Subtract/Add of Packed Double-Precision FP Values	VFMSUBADD132PD_VFMSUBADD213PD_VFMSUBADD231PD
+GENERAL	VFMSUBADD132PD	Fused Multiply-Alternating Subtract/Add of Packed Double-Precision FP Values	VFMSUBADD132PD_VFMSUBADD213PD_VFMSUBADD231PD
+GENERAL	VFMSUBADD231PS	Fused Multiply-Alternating Subtract/Add of Packed Single-Precision FP Values	VFMSUBADD132PS_VFMSUBADD213PS_VFMSUBADD231PS
+GENERAL	VFMSUBADD132PS	Fused Multiply-Alternating Subtract/Add of Packed Single-Precision FP Values	VFMSUBADD132PS_VFMSUBADD213PS_VFMSUBADD231PS
+GENERAL	VFMSUBADD213PS	Fused Multiply-Alternating Subtract/Add of Packed Single-Precision FP Values	VFMSUBADD132PS_VFMSUBADD213PS_VFMSUBADD231PS
+GENERAL	VFNMADD231PD	Fused Negative Multiply-Add of Packed Double-Precision FP Values	VFNMADD132PD_VFNMADD213PD_VFNMADD231PD
+GENERAL	VFNMADD132PD	Fused Negative Multiply-Add of Packed Double-Precision FP Values	VFNMADD132PD_VFNMADD213PD_VFNMADD231PD
+GENERAL	VFNMADD213PD	Fused Negative Multiply-Add of Packed Double-Precision FP Values	VFNMADD132PD_VFNMADD213PD_VFNMADD231PD
+GENERAL	VFNMADD231PS	Fused Negative Multiply-Add of Packed Single-Precision FP Values	VFNMADD132PS_VFNMADD213PS_VFNMADD231PS
+GENERAL	VFNMADD213PS	Fused Negative Multiply-Add of Packed Single-Precision FP Values	VFNMADD132PS_VFNMADD213PS_VFNMADD231PS
+GENERAL	VFNMADD132PS	Fused Negative Multiply-Add of Packed Single-Precision FP Values	VFNMADD132PS_VFNMADD213PS_VFNMADD231PS
+GENERAL	VFNMADD213SD	Fused Negative Multiply-Add of Scalar Double-Precision FP Values	VFNMADD132SD_VFNMADD213SD_VFNMADD231SD
+GENERAL	VFNMADD132SD	Fused Negative Multiply-Add of Scalar Double-Precision FP Values	VFNMADD132SD_VFNMADD213SD_VFNMADD231SD
+GENERAL	VFNMADD231SD	Fused Negative Multiply-Add of Scalar Double-Precision FP Values	VFNMADD132SD_VFNMADD213SD_VFNMADD231SD
+GENERAL	VFNMADD213SS	Fused Negative Multiply-Add of Scalar Single-Precision FP Values	VFNMADD132SS_VFNMADD213SS_VFNMADD231SS
+GENERAL	VFNMADD132SS	Fused Negative Multiply-Add of Scalar Single-Precision FP Values	VFNMADD132SS_VFNMADD213SS_VFNMADD231SS
+GENERAL	VFNMADD231SS	Fused Negative Multiply-Add of Scalar Single-Precision FP Values	VFNMADD132SS_VFNMADD213SS_VFNMADD231SS
+GENERAL	VFNMSUB213PD	Fused Negative Multiply-Subtract of Packed Double-Precision FP Values	VFNMSUB132PD_VFNMSUB213PD_VFNMSUB231PD
+GENERAL	VFNMSUB231PD	Fused Negative Multiply-Subtract of Packed Double-Precision FP Values	VFNMSUB132PD_VFNMSUB213PD_VFNMSUB231PD
+GENERAL	VFNMSUB132PD	Fused Negative Multiply-Subtract of Packed Double-Precision FP Values	VFNMSUB132PD_VFNMSUB213PD_VFNMSUB231PD
+GENERAL	VFNMSUB213PS	Fused Negative Multiply-Subtract of Packed Single-Precision FP Values	VFNMSUB132PS_VFNMSUB213PS_VFNMSUB231PS
+GENERAL	VFNMSUB231PS	Fused Negative Multiply-Subtract of Packed Single-Precision FP Values	VFNMSUB132PS_VFNMSUB213PS_VFNMSUB231PS
+GENERAL	VFNMSUB132PS	Fused Negative Multiply-Subtract of Packed Single-Precision FP Values	VFNMSUB132PS_VFNMSUB213PS_VFNMSUB231PS
+GENERAL	VFNMSUB213SD	Fused Negative Multiply-Subtract of Scalar Double-Precision FP Values	VFNMSUB132SD_VFNMSUB213SD_VFNMSUB231SD
+GENERAL	VFNMSUB231SD	Fused Negative Multiply-Subtract of Scalar Double-Precision FP Values	VFNMSUB132SD_VFNMSUB213SD_VFNMSUB231SD
+GENERAL	VFNMSUB132SD	Fused Negative Multiply-Subtract of Scalar Double-Precision FP Values	VFNMSUB132SD_VFNMSUB213SD_VFNMSUB231SD
+GENERAL	VFNMSUB213SS	Fused Negative Multiply-Subtract of Scalar Single-Precision FP Values	VFNMSUB132SS_VFNMSUB213SS_VFNMSUB231SS
+GENERAL	VFNMSUB132SS	Fused Negative Multiply-Subtract of Scalar Single-Precision FP Values	VFNMSUB132SS_VFNMSUB213SS_VFNMSUB231SS
+GENERAL	VFNMSUB231SS	Fused Negative Multiply-Subtract of Scalar Single-Precision FP Values	VFNMSUB132SS_VFNMSUB213SS_VFNMSUB231SS
+GENERAL	VFPCLASSPD	Tests Types Of a Packed Float64 Values	VFPCLASSPD
+GENERAL	VFPCLASSPS	Tests Types Of a Packed Float32 Values	VFPCLASSPS
+GENERAL	VFPCLASSSD	Tests Types Of a Scalar Float64 Values	VFPCLASSSD
+GENERAL	VFPCLASSSS	Tests Types Of a Scalar Float32 Values	VFPCLASSSS
+GENERAL	VGATHERDPD	Gather Packed Double-Precision FP Values Using Signed Dword Indices	VGATHERDPD_VGATHERQPD
+GENERAL	VGATHERQPD	Gather Packed Double-Precision FP Values Using Signed Qword Indices	VGATHERDPD_VGATHERQPD
+GENERAL	VGATHERDPS	Gather Packed Single, Packed Double with Signed Dword	VGATHERDPS_VGATHERDPD
+GENERAL	VGATHERDPD	Gather Packed Single, Packed Double with Signed Dword	VGATHERDPS_VGATHERDPD
+GENERAL	VGATHERDPS	Gather Packed Single-Precision FP values Using Signed Dword Indices	VGATHERDPS_VGATHERQPS
+GENERAL	VGATHERQPS	Gather Packed Single-Precision FP values Using Signed Qword Indices	VGATHERDPS_VGATHERQPS
+GENERAL	VGATHERPF0QPS	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint	VGATHERPF0DPS_VGATHERPF0QPS_VGATHERPF0DPD_VGATHERPF0QPD
+GENERAL	VGATHERPF0QPD	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint	VGATHERPF0DPS_VGATHERPF0QPS_VGATHERPF0DPD_VGATHERPF0QPD
+GENERAL	VGATHERPF0DPD	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint	VGATHERPF0DPS_VGATHERPF0QPS_VGATHERPF0DPD_VGATHERPF0QPD
+GENERAL	VGATHERPF0DPS	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint	VGATHERPF0DPS_VGATHERPF0QPS_VGATHERPF0DPD_VGATHERPF0QPD
+GENERAL	VGATHERPF1QPS	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint	VGATHERPF1DPS_VGATHERPF1QPS_VGATHERPF1DPD_VGATHERPF1QPD
+GENERAL	VGATHERPF1QPD	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint	VGATHERPF1DPS_VGATHERPF1QPS_VGATHERPF1DPD_VGATHERPF1QPD
+GENERAL	VGATHERPF1DPS	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint	VGATHERPF1DPS_VGATHERPF1QPS_VGATHERPF1DPD_VGATHERPF1QPD
+GENERAL	VGATHERPF1DPD	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint	VGATHERPF1DPS_VGATHERPF1QPS_VGATHERPF1DPD_VGATHERPF1QPD
+GENERAL	VGATHERQPD	Gather Packed Single, Packed Double with Signed Qword Indices	VGATHERQPS_VGATHERQPD
+GENERAL	VGATHERQPS	Gather Packed Single, Packed Double with Signed Qword Indices	VGATHERQPS_VGATHERQPD
+GENERAL	VGETEXPPD	Convert Exponents of Packed Double-Precision FP Values to Double-Precision FP Values	VGETEXPPD
+GENERAL	VGETEXPPS	Convert Exponents of Packed Single-Precision FP Values to Single-Precision FP Values	VGETEXPPS
+GENERAL	VGETEXPSD	Convert Exponents of Scalar Double-Precision FP Values to Double-Precision FP Value	VGETEXPSD
+GENERAL	VGETEXPSS	Convert Exponents of Scalar Single-Precision FP Values to Single-Precision FP Value	VGETEXPSS
+GENERAL	VGETMANTPD	Extract Float64 Vector of Normalized Mantissas from Float64 Vector	VGETMANTPD
+GENERAL	VGETMANTPS	Extract Float32 Vector of Normalized Mantissas from Float32 Vector	VGETMANTPS
+GENERAL	VGETMANTSD	Extract Float64 of Normalized Mantissas from Float64 Scalar	VGETMANTSD
+GENERAL	VGETMANTSS	Extract Float32 Vector of Normalized Mantissa from Float32 Vector	VGETMANTSS
+GENERAL	VINSERTF64x2	Insert Packed FP Values	VINSERTF128_VINSERTF32x4_VINSERTF64x2_VINSERTF32x8_VINSERTF64x4
+GENERAL	VINSERTF32x8	Insert Packed FP Values	VINSERTF128_VINSERTF32x4_VINSERTF64x2_VINSERTF32x8_VINSERTF64x4
+GENERAL	VINSERTF128	Insert Packed FP Values	VINSERTF128_VINSERTF32x4_VINSERTF64x2_VINSERTF32x8_VINSERTF64x4
+GENERAL	VINSERTF32x4	Insert Packed FP Values	VINSERTF128_VINSERTF32x4_VINSERTF64x2_VINSERTF32x8_VINSERTF64x4
+GENERAL	VINSERTF64x4	Insert Packed FP Values	VINSERTF128_VINSERTF32x4_VINSERTF64x2_VINSERTF32x8_VINSERTF64x4
+GENERAL	VINSERTI128	Insert Packed Integer Values	VINSERTI128_VINSERTI32x4_VINSERTI64x2_VINSERTI32x8_VINSERTI64x4
+GENERAL	VINSERTI32x8	Insert Packed Integer Values	VINSERTI128_VINSERTI32x4_VINSERTI64x2_VINSERTI32x8_VINSERTI64x4
+GENERAL	VINSERTI64x2	Insert Packed Integer Values	VINSERTI128_VINSERTI32x4_VINSERTI64x2_VINSERTI32x8_VINSERTI64x4
+GENERAL	VINSERTI32x4	Insert Packed Integer Values	VINSERTI128_VINSERTI32x4_VINSERTI64x2_VINSERTI32x8_VINSERTI64x4
+GENERAL	VINSERTI64x4	Insert Packed Integer Values	VINSERTI128_VINSERTI32x4_VINSERTI64x2_VINSERTI32x8_VINSERTI64x4
+GENERAL	VMASKMOVPS	Conditional SIMD Packed Loads and Stores	VMASKMOV
+GENERAL	VMASKMOVPD	Conditional SIMD Packed Loads and Stores	VMASKMOV
+GENERAL	VPBLENDD	Blend Packed Dwords	VPBLENDD
+GENERAL	VPBLENDMW	Blend Word Vectors Using an Opmask Control	VPBLENDMB_VPBLENDMW
+GENERAL	VPBLENDMB	Blend Byte Vectors Using an Opmask Control	VPBLENDMB_VPBLENDMW
+GENERAL	VPBLENDMD	Blend Int32 Vectors Using an OpMask Control	VPBLENDMD_VPBLENDMQ
+GENERAL	VPBLENDMQ	Blend Int64 Vectors Using an OpMask Control	VPBLENDMD_VPBLENDMQ
+GENERAL	VPBROADCASTQ	Load Integer and Broadcast	VPBROADCAST
+GENERAL	VPBROADCASTB	Load Integer and Broadcast	VPBROADCAST
+GENERAL	VBROADCASTI32X8	Load Integer and Broadcast	VPBROADCAST
+GENERAL	VPBROADCASTD	Load Integer and Broadcast	VPBROADCAST
+GENERAL	VBROADCASTI32x2	Load Integer and Broadcast	VPBROADCAST
+GENERAL	VBROADCASTI64X4	Load Integer and Broadcast	VPBROADCAST
+GENERAL	VPBROADCASTW	Load Integer and Broadcast	VPBROADCAST
+GENERAL	VPBROADCASTQ	Load with Broadcast Integer Data from General Purpose Register	VPBROADCASTB_W_D_Q
+GENERAL	VPBROADCASTB	Load with Broadcast Integer Data from General Purpose Register	VPBROADCASTB_W_D_Q
+GENERAL	VPBROADCASTD	Load with Broadcast Integer Data from General Purpose Register	VPBROADCASTB_W_D_Q
+GENERAL	VPBROADCASTW	Load with Broadcast Integer Data from General Purpose Register	VPBROADCASTB_W_D_Q
+GENERAL	VPBROADCASTMW2D	Broadcast Mask to Vector Register	VPBROADCASTM
+GENERAL	VPBROADCASTMB2Q	Broadcast Mask to Vector Register	VPBROADCASTM
+GENERAL	VPCMPB	Compare Packed Byte Values Into Mask	VPCMPB_VPCMPUB
+GENERAL	VPCMPUB	Compare Packed Byte Values Into Mask	VPCMPB_VPCMPUB
+GENERAL	VPCMPUD	Compare Packed Integer Values into Mask	VPCMPD_VPCMPUD
+GENERAL	VPCMPD	Compare Packed Integer Values into Mask	VPCMPD_VPCMPUD
+GENERAL	VPCMPQ	Compare Packed Integer Values into Mask	VPCMPQ_VPCMPUQ
+GENERAL	VPCMPUQ	Compare Packed Integer Values into Mask	VPCMPQ_VPCMPUQ
+GENERAL	VPCMPUW	Compare Packed Word Values Into Mask	VPCMPW_VPCMPUW
+GENERAL	VPCMPW	Compare Packed Word Values Into Mask	VPCMPW_VPCMPUW
+GENERAL	VPCOMPRESSD	Store Sparse Packed Dword Integer Values into Dense Memory/Register	VPCOMPRESSD
+GENERAL	VPCOMPRESSQ	Store Sparse Packed Qword Integer Values into Dense Memory/Register	VPCOMPRESSQ
+GENERAL	VPCONFLICTQ	Detect Conflicts Within a Vector of Packed Dword/Qword Values into Dense Memory/ Register	VPCONFLICTD_Q
+GENERAL	VPCONFLICTD	Detect Conflicts Within a Vector of Packed Dword/Qword Values into Dense Memory/ Register	VPCONFLICTD_Q
+GENERAL	VPERM2F128	Permute FP Values	VPERM2F128
+GENERAL	VPERM2I128	Permute Integer Values	VPERM2I128
+GENERAL	VPERMD	Permute Packed Doublewords/Words Elements	VPERMD_VPERMW
+GENERAL	VPERMW	Permute Packed Doublewords/Words Elements	VPERMD_VPERMW
+GENERAL	VPERMI2W	Full Permute From Two Tables Overwriting the Index	VPERMI2W_D_Q_PS_PD
+GENERAL	VPERMI2PD	Full Permute From Two Tables Overwriting the Index	VPERMI2W_D_Q_PS_PD
+GENERAL	VPERMI2PS	Full Permute From Two Tables Overwriting the Index	VPERMI2W_D_Q_PS_PD
+GENERAL	VPERMI2D	Full Permute From Two Tables Overwriting the Index	VPERMI2W_D_Q_PS_PD
+GENERAL	VPERMI2Q	Full Permute From Two Tables Overwriting the Index	VPERMI2W_D_Q_PS_PD
+GENERAL	VPERMILPD	Permute In-Lane of Pairs of Double-Precision FP Values	VPERMILPD
+GENERAL	VPERMILPS	Permute In-Lane of Quadruples of Single-Precision FP Values	VPERMILPS
+GENERAL	VPERMPD	Permute Double-Precision FP Elements	VPERMPD
+GENERAL	VPERMPS	Permute Single-Precision FP Elements	VPERMPS
+GENERAL	VPERMQ	Qwords Element Permutation	VPERMQ
+GENERAL	VPEXPANDD	Load Sparse Packed Dword Integer Values from Dense Memory / Register	VPEXPANDD
+GENERAL	VPEXPANDQ	Load Sparse Packed Qword Integer Values from Dense Memory / Register	VPEXPANDQ
+GENERAL	VPGATHERDD	Gather Packed Dword, Packed Qword with Signed Dword Indices	VPGATHERDD_VPGATHERDQ
+GENERAL	VPGATHERDQ	Gather Packed Dword, Packed Qword with Signed Dword Indices	VPGATHERDD_VPGATHERDQ
+GENERAL	VPGATHERDD	Gather Packed Dword Values Using Signed Dword/Qword Indices	VPGATHERDD_VPGATHERQD
+GENERAL	VPGATHERQD	Gather Packed Dword Values Using Signed Dword/Qword Indices	VPGATHERDD_VPGATHERQD
+GENERAL	VPGATHERQQ	Gather Packed Qword Values Using Signed Dword/Qword Indices	VPGATHERDQ_VPGATHERQQ
+GENERAL	VPGATHERDQ	Gather Packed Qword Values Using Signed Dword/Qword Indices	VPGATHERDQ_VPGATHERQQ
+GENERAL	VPGATHERQQ	Gather Packed Dword, Packed Qword with Signed Qword Indices	VPGATHERQD_VPGATHERQQ
+GENERAL	VPGATHERQD	Gather Packed Dword, Packed Qword with Signed Qword Indices	VPGATHERQD_VPGATHERQQ
+GENERAL	VPLZCNTD	Count the Number of Leading Zero Bits for Packed Dword, Packed Qword Values	VPLZCNTD_Q
+GENERAL	VPLZCNTQ	Count the Number of Leading Zero Bits for Packed Dword, Packed Qword Values	VPLZCNTD_Q
+GENERAL	VPMASKMOVD	Conditional SIMD Integer Packed Loads and Stores	VPMASKMOV
+GENERAL	VPMASKMOVQ	Conditional SIMD Integer Packed Loads and Stores	VPMASKMOV
+GENERAL	VPMOVW2M	Convert a Vector Register to a Mask	VPMOVB2M_VPMOVW2M_VPMOVD2M_VPMOVQ2M
+GENERAL	VPMOVD2M	Convert a Vector Register to a Mask	VPMOVB2M_VPMOVW2M_VPMOVD2M_VPMOVQ2M
+GENERAL	VPMOVQ2M	Convert a Vector Register to a Mask	VPMOVB2M_VPMOVW2M_VPMOVD2M_VPMOVQ2M
+GENERAL	VPMOVB2M	Convert a Vector Register to a Mask	VPMOVB2M_VPMOVW2M_VPMOVD2M_VPMOVQ2M
+GENERAL	VPMOVDB	Down Convert Dword to Byte	VPMOVDB_VPMOVSDB_VPMOVUSDB
+GENERAL	VPMOVSDB	Down Convert Dword to Byte	VPMOVDB_VPMOVSDB_VPMOVUSDB
+GENERAL	VPMOVUSDB	Down Convert Dword to Byte	VPMOVDB_VPMOVSDB_VPMOVUSDB
+GENERAL	VPMOVDW	Down Convert Dword to Word	VPMOVDW_VPMOVSDW_VPMOVUSDW
+GENERAL	VPMOVSDW	Down Convert Dword to Word	VPMOVDW_VPMOVSDW_VPMOVUSDW
+GENERAL	VPMOVUSDW	Down Convert Dword to Word	VPMOVDW_VPMOVSDW_VPMOVUSDW
+GENERAL	VPMOVM2W	Convert a Mask Register to a Vector Register	VPMOVM2B_VPMOVM2W_VPMOVM2D_VPMOVM2Q
+GENERAL	VPMOVM2D	Convert a Mask Register to a Vector Register	VPMOVM2B_VPMOVM2W_VPMOVM2D_VPMOVM2Q
+GENERAL	VPMOVM2Q	Convert a Mask Register to a Vector Register	VPMOVM2B_VPMOVM2W_VPMOVM2D_VPMOVM2Q
+GENERAL	VPMOVM2B	Convert a Mask Register to a Vector Register	VPMOVM2B_VPMOVM2W_VPMOVM2D_VPMOVM2Q
+GENERAL	VPMOVSQB	Down Convert Qword to Byte	VPMOVQB_VPMOVSQB_VPMOVUSQB
+GENERAL	VPMOVUSQB	Down Convert Qword to Byte	VPMOVQB_VPMOVSQB_VPMOVUSQB
+GENERAL	VPMOVQB	Down Convert Qword to Byte	VPMOVQB_VPMOVSQB_VPMOVUSQB
+GENERAL	VPMOVQD	Down Convert Qword to Dword	VPMOVQD_VPMOVSQD_VPMOVUSQD
+GENERAL	VPMOVSQD	Down Convert Qword to Dword	VPMOVQD_VPMOVSQD_VPMOVUSQD
+GENERAL	VPMOVUSQD	Down Convert Qword to Dword	VPMOVQD_VPMOVSQD_VPMOVUSQD
+GENERAL	VPMOVSQW	Down Convert Qword to Word	VPMOVQW_VPMOVSQW_VPMOVUSQW
+GENERAL	VPMOVUSQW	Down Convert Qword to Word	VPMOVQW_VPMOVSQW_VPMOVUSQW
+GENERAL	VPMOVQW	Down Convert Qword to Word	VPMOVQW_VPMOVSQW_VPMOVUSQW
+GENERAL	VPMOVWB	Down Convert Word to Byte	VPMOVWB_VPMOVSWB_VPMOVUSWB
+GENERAL	VPMOVSWB	Down Convert Word to Byte	VPMOVWB_VPMOVSWB_VPMOVUSWB
+GENERAL	VPMOVUSWB	Down Convert Word to Byte	VPMOVWB_VPMOVSWB_VPMOVUSWB
+GENERAL	VPSCATTERDQ	Scatter Packed Dword, Packed Qword with Signed Dword, Signed Qword Indices	VPSCATTERDD_VPSCATTERDQ_VPSCATTERQD_VPSCATTERQQ
+GENERAL	VPSCATTERQD	Scatter Packed Dword, Packed Qword with Signed Dword, Signed Qword Indices	VPSCATTERDD_VPSCATTERDQ_VPSCATTERQD_VPSCATTERQQ
+GENERAL	VPSCATTERDD	Scatter Packed Dword, Packed Qword with Signed Dword, Signed Qword Indices	VPSCATTERDD_VPSCATTERDQ_VPSCATTERQD_VPSCATTERQQ
+GENERAL	VPSCATTERQQ	Scatter Packed Dword, Packed Qword with Signed Dword, Signed Qword Indices	VPSCATTERDD_VPSCATTERDQ_VPSCATTERQD_VPSCATTERQQ
+GENERAL	VPSLLVQ	Variable Bit Shift Left Logical	VPSLLVW_VPSLLVD_VPSLLVQ
+GENERAL	VPSLLVD	Variable Bit Shift Left Logical	VPSLLVW_VPSLLVD_VPSLLVQ
+GENERAL	VPSLLVW	Variable Bit Shift Left Logical	VPSLLVW_VPSLLVD_VPSLLVQ
+GENERAL	VPSRAVQ	Variable Bit Shift Right Arithmetic	VPSRAVW_VPSRAVD_VPSRAVQ
+GENERAL	VPSRAVD	Variable Bit Shift Right Arithmetic	VPSRAVW_VPSRAVD_VPSRAVQ
+GENERAL	VPSRAVW	Variable Bit Shift Right Arithmetic	VPSRAVW_VPSRAVD_VPSRAVQ
+GENERAL	VPSRLVD	Variable Bit Shift Right Logical	VPSRLVW_VPSRLVD_VPSRLVQ
+GENERAL	VPSRLVW	Variable Bit Shift Right Logical	VPSRLVW_VPSRLVD_VPSRLVQ
+GENERAL	VPSRLVQ	Variable Bit Shift Right Logical	VPSRLVW_VPSRLVD_VPSRLVQ
+GENERAL	VPTERNLOGD	Bitwise Ternary Logic	VPTERNLOGD_VPTERNLOGQ
+GENERAL	VPTERNLOGQ	Bitwise Ternary Logic	VPTERNLOGD_VPTERNLOGQ
+GENERAL	VPTESTMD	Logical AND and Set Mask	VPTESTMB_VPTESTMW_VPTESTMD_VPTESTMQ
+GENERAL	VPTESTMQ	Logical AND and Set Mask	VPTESTMB_VPTESTMW_VPTESTMD_VPTESTMQ
+GENERAL	VPTESTMB	Logical AND and Set Mask	VPTESTMB_VPTESTMW_VPTESTMD_VPTESTMQ
+GENERAL	VPTESTMW	Logical AND and Set Mask	VPTESTMB_VPTESTMW_VPTESTMD_VPTESTMQ
+GENERAL	VPTESTNMW	Logical NAND and Set	VPTESTNMB_W_D_Q
+GENERAL	VPTESTNMD	Logical NAND and Set	VPTESTNMB_W_D_Q
+GENERAL	VPTESTNMQ	Logical NAND and Set	VPTESTNMB_W_D_Q
+GENERAL	VPTESTNMB	Logical NAND and Set	VPTESTNMB_W_D_Q
+GENERAL	VRANGEPD	Range Restriction Calculation For Packed Pairs of Float64 Values	VRANGEPD
+GENERAL	VRANGEPS	Range Restriction Calculation For Packed Pairs of Float32 Values	VRANGEPS
+GENERAL	VRANGESD	Range Restriction Calculation From a pair of Scalar Float64 Values	VRANGESD
+GENERAL	VRANGESS	Range Restriction Calculation From a Pair of Scalar Float32 Values	VRANGESS
+GENERAL	VRCP14PD	Compute Approximate Reciprocals of Packed Float64 Values	VRCP14PD
+GENERAL	VRCP14PS	Compute Approximate Reciprocals of Packed Float32 Values	VRCP14PS
+GENERAL	VRCP14SD	Compute Approximate Reciprocal of Scalar Float64 Value	VRCP14SD
+GENERAL	VRCP14SS	Compute Approximate Reciprocal of Scalar Float32 Value	VRCP14SS
+GENERAL	VRCP28PD	Approximation to the Reciprocal of Packed Double-Precision FP Values with Less Than 2^-28 Relative Error	VRCP28PD
+GENERAL	VRCP28PS	Approximation to the Reciprocal of Packed Single-Precision FP Values with Less Than 2^-28 Relative Error	VRCP28PS
+GENERAL	VRCP28SD	Approximation to the Reciprocal of Scalar Double-Precision FP Value with Less Than 2^-28 Relative Error	VRCP28SD
+GENERAL	VRCP28SS	Approximation to the Reciprocal of Scalar Single-Precision FP Value with Less Than 2^-28 Relative Error	VRCP28SS
+GENERAL	VREDUCEPD	Perform Reduction Transformation on Packed Float64 Values	VREDUCEPD
+GENERAL	VREDUCEPS	Perform Reduction Transformation on Packed Float32 Values	VREDUCEPS
+GENERAL	VREDUCESD	Perform a Reduction Transformation on a Scalar Float64 Value	VREDUCESD
+GENERAL	VREDUCESS	Perform a Reduction Transformation on a Scalar Float32 Value	VREDUCESS
+GENERAL	VRNDSCALEPD	Round Packed Float64 Values To Include A Given Number Of Fraction Bits	VRNDSCALEPD
+GENERAL	VRNDSCALEPS	Round Packed Float32 Values To Include A Given Number Of Fraction Bits	VRNDSCALEPS
+GENERAL	VRNDSCALESD	Round Scalar Float64 Value To Include A Given Number Of Fraction Bits	VRNDSCALESD
+GENERAL	VRNDSCALESS	Round Scalar Float32 Value To Include A Given Number Of Fraction Bits	VRNDSCALESS
+GENERAL	VRSQRT14PD	Compute Approximate Reciprocals of Square Roots of Packed Float64 Values	VRSQRT14PD
+GENERAL	VRSQRT14PS	Compute Approximate Reciprocals of Square Roots of Packed Float32 Values	VRSQRT14PS
+GENERAL	VRSQRT14SD	Compute Approximate Reciprocal of Square Root of Scalar Float64 Value	VRSQRT14SD
+GENERAL	VRSQRT14SS	Compute Approximate Reciprocal of Square Root of Scalar Float32 Value	VRSQRT14SS
+GENERAL	VRSQRT28PD	Approximation to the Reciprocal Square Root of Packed Double-Precision FP Values with Less Than 2^-28 Relative Error	VRSQRT28PD
+GENERAL	VRSQRT28PS	Approximation to the Reciprocal Square Root of Packed Single-Precision FP Values with Less Than 2^-28 Relative Error	VRSQRT28PS
+GENERAL	VRSQRT28SD	Approximation to the Reciprocal Square Root of Scalar Double-Precision FP Value with Less Than 2^-28 Relative Error	VRSQRT28SD
+GENERAL	VRSQRT28SS	Approximation to the Reciprocal Square Root of Scalar Single-Precision FP Value with Less Than 2^-28 Relative Error	VRSQRT28SS
+GENERAL	VSCALEFPD	Scale Packed Float64 Values With Float64 Values	VSCALEFPD
+GENERAL	VSCALEFPS	Scale Packed Float32 Values With Float32 Values	VSCALEFPS
+GENERAL	VSCALEFSD	Scale Scalar Float64 Values With Float64 Values	VSCALEFSD
+GENERAL	VSCALEFSS	Scale Scalar Float32 Value With Float32 Value	VSCALEFSS
+GENERAL	VSCATTERDPS	Scatter Packed Single, Packed Double with Signed Dword and Qword Indices	VSCATTERDPS_VSCATTERDPD_VSCATTERQPS_VSCATTERQPD
+GENERAL	VSCATTERQPS	Scatter Packed Single, Packed Double with Signed Dword and Qword Indices	VSCATTERDPS_VSCATTERDPD_VSCATTERQPS_VSCATTERQPD
+GENERAL	VSCATTERQPD	Scatter Packed Single, Packed Double with Signed Dword and Qword Indices	VSCATTERDPS_VSCATTERDPD_VSCATTERQPS_VSCATTERQPD
+GENERAL	VSCATTERDPD	Scatter Packed Single, Packed Double with Signed Dword and Qword Indices	VSCATTERDPS_VSCATTERDPD_VSCATTERQPS_VSCATTERQPD
+GENERAL	VSCATTERPF0DPD	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint with Intent to Write	VSCATTERPF0DPS_VSCATTERPF0QPS_VSCATTERPF0DPD_VSCATTERPF0QPD
+GENERAL	VSCATTERPF0DPS	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint with Intent to Write	VSCATTERPF0DPS_VSCATTERPF0QPS_VSCATTERPF0DPD_VSCATTERPF0QPD
+GENERAL	VSCATTERPF0QPD	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint with Intent to Write	VSCATTERPF0DPS_VSCATTERPF0QPS_VSCATTERPF0DPD_VSCATTERPF0QPD
+GENERAL	VSCATTERPF0QPS	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint with Intent to Write	VSCATTERPF0DPS_VSCATTERPF0QPS_VSCATTERPF0DPD_VSCATTERPF0QPD
+GENERAL	VSCATTERPF1DPD	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint with Intent to Write	VSCATTERPF1DPS_VSCATTERPF1QPS_VSCATTERPF1DPD_VSCATTERPF1QPD
+GENERAL	VSCATTERPF1DPS	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint with Intent to Write	VSCATTERPF1DPS_VSCATTERPF1QPS_VSCATTERPF1DPD_VSCATTERPF1QPD
+GENERAL	VSCATTERPF1QPD	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint with Intent to Write	VSCATTERPF1DPS_VSCATTERPF1QPS_VSCATTERPF1DPD_VSCATTERPF1QPD
+GENERAL	VSCATTERPF1QPS	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint with Intent to Write	VSCATTERPF1DPS_VSCATTERPF1QPS_VSCATTERPF1DPD_VSCATTERPF1QPD
+GENERAL	VSHUFF32x4	Shuffle Packed Values at 128-bit Granularity	VSHUFF32x4_VSHUFF64x2_VSHUFI32x4_VSHUFI64x2
+GENERAL	VSHUFI64x2	Shuffle Packed Values at 128-bit Granularity	VSHUFF32x4_VSHUFF64x2_VSHUFI32x4_VSHUFI64x2
+GENERAL	VSHUFI32x4	Shuffle Packed Values at 128-bit Granularity	VSHUFF32x4_VSHUFF64x2_VSHUFI32x4_VSHUFI64x2
+GENERAL	VSHUFF64x2	Shuffle Packed Values at 128-bit Granularity	VSHUFF32x4_VSHUFF64x2_VSHUFI32x4_VSHUFI64x2
+GENERAL	VTESTPS	Packed Bit Test	VTESTPD_VTESTPS
+GENERAL	VTESTPD	Packed Bit Test	VTESTPD_VTESTPS
+GENERAL	VZEROALL	Zero All YMM Registers	VZEROALL
+GENERAL	VZEROUPPER	Zero Upper Bits of YMM Registers	VZEROUPPER
+GENERAL	FWAIT	Wait	WAIT_FWAIT
+GENERAL	WAIT	Wait	WAIT_FWAIT
+GENERAL	WBINVD	Write Back and Invalidate Cache	WBINVD
+GENERAL	WRFSBASE	Write FS/GS Segment Base	WRFSBASE_WRGSBASE
+GENERAL	WRGSBASE	Write FS/GS Segment Base	WRFSBASE_WRGSBASE
+GENERAL	WRMSR	Write to Model Specific Register	WRMSR
+GENERAL	WRPKRU	Write Data to User Page Key Register	WRPKRU
+GENERAL	XABORT	Transactional Abort	XABORT
+GENERAL	XACQUIRE	Hardware Lock Elision Prefix Hints	XACQUIRE_XRELEASE
+GENERAL	XRELEASE	Hardware Lock Elision Prefix Hints	XACQUIRE_XRELEASE
+GENERAL	XADD	Exchange and Add	XADD
+GENERAL	XBEGIN	Transactional Begin	XBEGIN
+GENERAL	XCHG	Exchange Register/Memory with Register	XCHG
+GENERAL	XEND	Transactional End	XEND
+GENERAL	XGETBV	Get Value of Extended Control Register	XGETBV
+GENERAL	XLATB	Table Look-up Translation	XLAT_XLATB
+GENERAL	XLAT	Table Look-up Translation	XLAT_XLATB
+GENERAL	XOR	Logical Exclusive OR	XOR
+GENERAL	XORPD	Bitwise Logical XOR of Packed Double-Precision FP Values	XORPD
+GENERAL	VXORPD	Bitwise Logical XOR of Packed Double-Precision FP Values	XORPD
+GENERAL	XORPS	Bitwise Logical XOR of Packed Single-Precision FP Values	XORPS
+GENERAL	VXORPS	Bitwise Logical XOR of Packed Single-Precision FP Values	XORPS
+GENERAL	XRSTOR	Restore Processor Extended States	XRSTOR
+GENERAL	XRSTORS	Restore Processor Extended States Supervisor	XRSTORS
+GENERAL	XSAVE	Save Processor Extended States	XSAVE
+GENERAL	XSAVEC	Save Processor Extended States with Compaction	XSAVEC
+GENERAL	XSAVEOPT	Save Processor Extended States Optimized	XSAVEOPT
+GENERAL	XSAVES	Save Processor Extended States Supervisor	XSAVES
+GENERAL	XSETBV	Set Extended Control Register	XSETBV
+GENERAL	XTEST	Test If In Transactional Execution	XTEST
 AAA			AAA 	ASCII adjust AL after addition.
 AAD			AAD 	ASCII adjust AX before division.
 AAD	IMM8		AAD IMM8	Adjust AX before division to number base imm8.

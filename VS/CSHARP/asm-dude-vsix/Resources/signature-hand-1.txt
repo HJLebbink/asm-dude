@@ -2,130 +2,130 @@
 ;
 GENERAL	BND	Prefix to instruct that the next instruction is MPX-instrumented code.	
 
-GENERAL	REP	Repeat. Repeat string instruction the number of times specified in the count register.	REP_REPE_REPZ_REPNE_REPNZ.html
-GENERAL	REPE	Repeat while equal. Repeat string instruction the number of times specified in the count register, and terminate if ZF=0. (REPE=REPZ)	REP_REPE_REPZ_REPNE_REPNZ.html
-GENERAL	REPZ	Repeat while equal. Repeat string instruction the number of times specified in the count register, and terminate if ZF=0. (REPE=REPZ)	REP_REPE_REPZ_REPNE_REPNZ.html
-GENERAL	REPNE	Repeat while not equal. Repeat string instruction the number of times specified in the count register, and terminate or if ZF=1. (REPNE=REPNZ)	REP_REPE_REPZ_REPNE_REPNZ.html
-GENERAL	REPNZ	Repeat while not equal. Repeat string instruction the number of times specified in the count register, and terminate or if ZF=1. (REPNE=REPNZ)	REP_REPE_REPZ_REPNE_REPNZ.html
+GENERAL	REP	Repeat. Repeat string instruction the number of times specified in the count register.	REP_REPE_REPZ_REPNE_REPNZ
+GENERAL	REPE	Repeat while equal. Repeat string instruction the number of times specified in the count register, and terminate if ZF=0. (REPE=REPZ)	REP_REPE_REPZ_REPNE_REPNZ
+GENERAL	REPZ	Repeat while equal. Repeat string instruction the number of times specified in the count register, and terminate if ZF=0. (REPE=REPZ)	REP_REPE_REPZ_REPNE_REPNZ
+GENERAL	REPNE	Repeat while not equal. Repeat string instruction the number of times specified in the count register, and terminate or if ZF=1. (REPNE=REPNZ)	REP_REPE_REPZ_REPNE_REPNZ
+GENERAL	REPNZ	Repeat while not equal. Repeat string instruction the number of times specified in the count register, and terminate or if ZF=1. (REPNE=REPNZ)	REP_REPE_REPZ_REPNE_REPNZ
 
-GENERAL	MOV	Move	MOV.html
+GENERAL	MOV	Move	MOV
 
-GENERAL	CMOVA	Move if above (CF=0 and ZF=0) (CMOVA=CMOVNBE)	CMOVcc.html
-GENERAL	CMOVAE	Move if above or equal (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc.html
-GENERAL	CMOVB	Move if below (CF=1) (CMOVB=CMOVC=CMOVNAE)	CMOVcc.html
-GENERAL	CMOVBE	Move if below or equal (CF=1 or ZF=1) (CMOVBE=CMOVNA)	CMOVcc.html
-GENERAL	CMOVC	Move if carry (CF=1) (CMOVB=CMOVC=CMOVNAE)	CMOVcc.html
-GENERAL	CMOVE	Move if equal (ZF=1) (CMOVE=CMOVZ)	CMOVcc.html
-GENERAL	CMOVG	Move if greater (ZF=0 and SF=OF) (CMOVG=CMOVNLE)	CMOVcc.html
-GENERAL	CMOVGE	Move if greater or equal (SF=OF) (CMOVGE=CMOVNL)	CMOVcc.html
-GENERAL	CMOVL	Move if less (SF!=OF) (CMOVL=CMOVNGE)	CMOVcc.html
-GENERAL	CMOVLE	Move if less or equal (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)	CMOVcc.html
-GENERAL	CMOVNA	Move if not above (CF=1 or ZF=1) (CMOVBE=CMOVNA)	CMOVcc.html
-GENERAL	CMOVNAE	Move if not above or equal (CF=1) (CMOVB=CMOVC=CMOVNAE)	CMOVcc.html
-GENERAL	CMOVNB	Move if not below (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc.html
-GENERAL	CMOVNBE	Move if not below or equal (CF=0 and ZF=0) (CMOVA=CMOVNBE)	CMOVcc.html
-GENERAL	CMOVNC	Move if not carry (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc.html
-GENERAL	CMOVNE	Move if not equal (ZF=0) (CMOVNE=CMOVNZ)	CMOVcc.html
-GENERAL	CMOVNG	Move if not greater (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)	CMOVcc.html
-GENERAL	CMOVNGE	Move if not greater or equal (SF!=OF) (CMOVL=CMOVNGE)	CMOVcc.html
-GENERAL	CMOVNL	Move if not less (SF=OF) (CMOVGE=CMOVNL)	CMOVcc.html
-GENERAL	CMOVNLE	Move if not less or equal (ZF=0 and SF=OF) (CMOVG=CMOVNLE)	CMOVcc.html
-GENERAL	CMOVNO	Move if not overflow (OF=0)	CMOVcc.html
-GENERAL	CMOVNP	Move if not parity (PF=0) (CMOVNP=CMOVPO)	CMOVcc.html
-GENERAL	CMOVNS	Move if not sign (SF=0)	CMOVcc.html
-GENERAL	CMOVNZ	Move if not zero (ZF=0 CMOVNE=CMOVNZ)	CMOVcc.html
-GENERAL	CMOVO	Move if overflow (OF=1)	CMOVcc.html
-GENERAL	CMOVP	Move if parity (PF=1) (CMOVP=CMOVPE)	CMOVcc.html
-GENERAL	CMOVPE	Move if parity even (PF=1) (CMOVP=CMOVPE)	CMOVcc.html
-GENERAL	CMOVPO	Move if parity odd (PF=0) (CMOVNP=CMOVPO)	CMOVcc.html
-GENERAL	CMOVS	Move if sign (SF=1)	CMOVcc.html
-GENERAL	CMOVZ	Move if zero (ZF=1) (CMOVE=CMOVZ)	CMOVcc.html
+GENERAL	CMOVA	Move if above (CF=0 and ZF=0) (CMOVA=CMOVNBE)	CMOVcc
+GENERAL	CMOVAE	Move if above or equal (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc
+GENERAL	CMOVB	Move if below (CF=1) (CMOVB=CMOVC=CMOVNAE)	CMOVcc
+GENERAL	CMOVBE	Move if below or equal (CF=1 or ZF=1) (CMOVBE=CMOVNA)	CMOVcc
+GENERAL	CMOVC	Move if carry (CF=1) (CMOVB=CMOVC=CMOVNAE)	CMOVcc
+GENERAL	CMOVE	Move if equal (ZF=1) (CMOVE=CMOVZ)	CMOVcc
+GENERAL	CMOVG	Move if greater (ZF=0 and SF=OF) (CMOVG=CMOVNLE)	CMOVcc
+GENERAL	CMOVGE	Move if greater or equal (SF=OF) (CMOVGE=CMOVNL)	CMOVcc
+GENERAL	CMOVL	Move if less (SF!=OF) (CMOVL=CMOVNGE)	CMOVcc
+GENERAL	CMOVLE	Move if less or equal (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)	CMOVcc
+GENERAL	CMOVNA	Move if not above (CF=1 or ZF=1) (CMOVBE=CMOVNA)	CMOVcc
+GENERAL	CMOVNAE	Move if not above or equal (CF=1) (CMOVB=CMOVC=CMOVNAE)	CMOVcc
+GENERAL	CMOVNB	Move if not below (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc
+GENERAL	CMOVNBE	Move if not below or equal (CF=0 and ZF=0) (CMOVA=CMOVNBE)	CMOVcc
+GENERAL	CMOVNC	Move if not carry (CF=0) (CMOVAE=CMOVNB=CMOVNC)	CMOVcc
+GENERAL	CMOVNE	Move if not equal (ZF=0) (CMOVNE=CMOVNZ)	CMOVcc
+GENERAL	CMOVNG	Move if not greater (ZF=1 or SF!=OF) (CMOVLE=CMOVNG)	CMOVcc
+GENERAL	CMOVNGE	Move if not greater or equal (SF!=OF) (CMOVL=CMOVNGE)	CMOVcc
+GENERAL	CMOVNL	Move if not less (SF=OF) (CMOVGE=CMOVNL)	CMOVcc
+GENERAL	CMOVNLE	Move if not less or equal (ZF=0 and SF=OF) (CMOVG=CMOVNLE)	CMOVcc
+GENERAL	CMOVNO	Move if not overflow (OF=0)	CMOVcc
+GENERAL	CMOVNP	Move if not parity (PF=0) (CMOVNP=CMOVPO)	CMOVcc
+GENERAL	CMOVNS	Move if not sign (SF=0)	CMOVcc
+GENERAL	CMOVNZ	Move if not zero (ZF=0 CMOVNE=CMOVNZ)	CMOVcc
+GENERAL	CMOVO	Move if overflow (OF=1)	CMOVcc
+GENERAL	CMOVP	Move if parity (PF=1) (CMOVP=CMOVPE)	CMOVcc
+GENERAL	CMOVPE	Move if parity even (PF=1) (CMOVP=CMOVPE)	CMOVcc
+GENERAL	CMOVPO	Move if parity odd (PF=0) (CMOVNP=CMOVPO)	CMOVcc
+GENERAL	CMOVS	Move if sign (SF=1)	CMOVcc
+GENERAL	CMOVZ	Move if zero (ZF=1) (CMOVE=CMOVZ)	CMOVcc
 ;====================================================================
-GENERAL	CQO	Convert Qword to OWord	CWD_CDQ_CQO.html
-GENERAL	CWD	Convert Word to Dword	CWD_CDQ_CQO.html
-GENERAL	CDQ	Convert Dword to Qword	CWD_CDQ_CQO.html
+GENERAL	CQO	Convert Qword to OWord	CWD_CDQ_CQO
+GENERAL	CWD	Convert Word to Dword	CWD_CDQ_CQO
+GENERAL	CDQ	Convert Dword to Qword	CWD_CDQ_CQO
 
-GENERAL	CBW	Convert Byte to Word	CBW_CWDE_CDQE.html
-GENERAL	CWDE	Convert Word to Dword	CBW_CWDE_CDQE.html
-GENERAL	CDQE	Convert Dword to Qword	CBW_CWDE_CDQE.html
+GENERAL	CBW	Convert Byte to Word	CBW_CWDE_CDQE
+GENERAL	CWDE	Convert Word to Dword	CBW_CWDE_CDQE
+GENERAL	CDQE	Convert Dword to Qword	CBW_CWDE_CDQE
 
 ;====================================================================
-GENERAL	JA	Jump if above (CF=0 and ZF=0) (JA=JNBE)	Jcc.html
-GENERAL	JAE	Jump if above or equal (CF=0) (JAE=JNB)	Jcc.html
-GENERAL	JB	Jump if below (CF=1) (JB=JNAE)	Jcc.html
-GENERAL	JBE	Jump if below or equal (CF=1 or ZF=1) (JBE=JNA)	Jcc.html
-GENERAL	JC	Jump if carry (CF=1)	Jcc.html
-GENERAL	JE	Jump if equal (ZF=1) (JE=JZ)	Jcc.html
-GENERAL	JG	Jump if greater (ZF=0 and SF=OF) (JG=JNLE)	Jcc.html
-GENERAL	JGE	Jump if greater or equal (SF=OF) (JGE=JNL)	Jcc.html
-GENERAL	JL	Jump if less (SF!=OF) (JL=JNGE)	Jcc.html
-GENERAL	JLE	Jump if less or equal (ZF=1 or SF!=OF) (JLE=JNG)	Jcc.html
-GENERAL	JNA	Jump if not above (CF=1 or ZF=1) (JBE=JNA)	Jcc.html
-GENERAL	JNAE	Jump if not above or equal (CF=1) (JB=JNAE)	Jcc.html
-GENERAL	JNB	Jump if not below (CF=0) (JAE=JNB)	Jcc.html
-GENERAL	JNBE	Jump if not below or equal (CF=0 and ZF=0) (JA=JNBE)	Jcc.html
-GENERAL	JNC	Jump if not carry (CF=0)	Jcc.html
-GENERAL	JNE	Jump if not equal (ZF=0) (JNE=JNZ)	Jcc.html
-GENERAL	JNG	Jump if not greater (ZF=1 or SF!=OF) (JLE=JNG)	Jcc.html
-GENERAL	JNGE	Jump if not greater or equal (SF!=OF) (JL=JNGE)	Jcc.html
-GENERAL	JNL	Jump if not less (SF=OF) (JGE=JNL)	Jcc.html
-GENERAL	JNLE	Jump if not less or equal (ZF=0 and SF=OF) (JG=JNLE)	Jcc.html
-GENERAL	JNO	Jump if not overflow (OF=0)	Jcc.html
-GENERAL	JNP	Jump if not parity (PF=0) (JNP=JPO)	Jcc.html
-GENERAL	JNS	Jump if not sign (SF=0)	Jcc.html
-GENERAL	JNZ	Jump if not zero (ZF=0) (JNE=JNZ)	Jcc.html
-GENERAL	JO	Jump if overflow (OF=1)	Jcc.html
-GENERAL	JP	Jump if parity (PF=1) (JP=JPE)	Jcc.html
-GENERAL	JPE	Jump if parity even (PF=1) (JP=JPE)	Jcc.html
-GENERAL	JPO	Jump if parity odd (PF=0) (JNP=JPO)	Jcc.html
-GENERAL	JS	Jump if sign (SF=1)	Jcc.html
-GENERAL	JZ	Jump if zero (ZF=1) (JE=JZ)	Jcc.html
+GENERAL	JA	Jump if above (CF=0 and ZF=0) (JA=JNBE)	Jcc
+GENERAL	JAE	Jump if above or equal (CF=0) (JAE=JNB)	Jcc
+GENERAL	JB	Jump if below (CF=1) (JB=JNAE)	Jcc
+GENERAL	JBE	Jump if below or equal (CF=1 or ZF=1) (JBE=JNA)	Jcc
+GENERAL	JC	Jump if carry (CF=1)	Jcc
+GENERAL	JE	Jump if equal (ZF=1) (JE=JZ)	Jcc
+GENERAL	JG	Jump if greater (ZF=0 and SF=OF) (JG=JNLE)	Jcc
+GENERAL	JGE	Jump if greater or equal (SF=OF) (JGE=JNL)	Jcc
+GENERAL	JL	Jump if less (SF!=OF) (JL=JNGE)	Jcc
+GENERAL	JLE	Jump if less or equal (ZF=1 or SF!=OF) (JLE=JNG)	Jcc
+GENERAL	JNA	Jump if not above (CF=1 or ZF=1) (JBE=JNA)	Jcc
+GENERAL	JNAE	Jump if not above or equal (CF=1) (JB=JNAE)	Jcc
+GENERAL	JNB	Jump if not below (CF=0) (JAE=JNB)	Jcc
+GENERAL	JNBE	Jump if not below or equal (CF=0 and ZF=0) (JA=JNBE)	Jcc
+GENERAL	JNC	Jump if not carry (CF=0)	Jcc
+GENERAL	JNE	Jump if not equal (ZF=0) (JNE=JNZ)	Jcc
+GENERAL	JNG	Jump if not greater (ZF=1 or SF!=OF) (JLE=JNG)	Jcc
+GENERAL	JNGE	Jump if not greater or equal (SF!=OF) (JL=JNGE)	Jcc
+GENERAL	JNL	Jump if not less (SF=OF) (JGE=JNL)	Jcc
+GENERAL	JNLE	Jump if not less or equal (ZF=0 and SF=OF) (JG=JNLE)	Jcc
+GENERAL	JNO	Jump if not overflow (OF=0)	Jcc
+GENERAL	JNP	Jump if not parity (PF=0) (JNP=JPO)	Jcc
+GENERAL	JNS	Jump if not sign (SF=0)	Jcc
+GENERAL	JNZ	Jump if not zero (ZF=0) (JNE=JNZ)	Jcc
+GENERAL	JO	Jump if overflow (OF=1)	Jcc
+GENERAL	JP	Jump if parity (PF=1) (JP=JPE)	Jcc
+GENERAL	JPE	Jump if parity even (PF=1) (JP=JPE)	Jcc
+GENERAL	JPO	Jump if parity odd (PF=0) (JNP=JPO)	Jcc
+GENERAL	JS	Jump if sign (SF=1)	Jcc
+GENERAL	JZ	Jump if zero (ZF=1) (JE=JZ)	Jcc
 
-GENERAL	JMP	Unconditional Jump	JMP.html
+GENERAL	JMP	Unconditional Jump	JMP
 ;====================================================================
 
-GENERAL	RCR	Rotate Carry Right. Rotate first operand carry right number of times as given by the second operand.	RCL_RCR_ROL_ROR.html
-GENERAL	RCL	Rotate Carry Left. Rotate first operand carry left number of times as given by the second operand.	RCL_RCR_ROL_ROR.html
-GENERAL	ROR	Rotate Right. Rotate first operand right number of times as given by the second operand.	RCL_RCR_ROL_ROR.html
-GENERAL	ROL	Rotate Left. Rotate first operand left number of times as given by the second operand.	RCL_RCR_ROL_ROR.html
-GENERAL	SAR	Shift Arithmetic Right. Shift first operand arithmethic right number of times as given by the second operand.	SAL_SAR_SHL_SHR.html
-GENERAL	SHL	Shift Logical Left. Shift first operand logical left number of times as given by the second operand.	SAL_SAR_SHL_SHR.html
-GENERAL	SHR	Shift Logical Right. Shift first operand logical right number of times as given by the second operand.	SAL_SAR_SHL_SHR.html
-GENERAL	SAL	Shift Arithmetic Left. Shift first operand arithmethic left number of times as given by the second operand.	SAL_SAR_SHL_SHR.html
-GENERAL	SARX	Shift Arithmetic Right Without Affecting Flags	SARX_SHLX_SHRX.html
-GENERAL	SHLX	Shift Logical Left Without Affecting Flags	SARX_SHLX_SHRX.html
-GENERAL	SHRX	Shift Logical Right Without Affecting Flags	SARX_SHLX_SHRX.html
+GENERAL	RCR	Rotate Carry Right. Rotate first operand carry right number of times as given by the second operand.	RCL_RCR_ROL_ROR
+GENERAL	RCL	Rotate Carry Left. Rotate first operand carry left number of times as given by the second operand.	RCL_RCR_ROL_ROR
+GENERAL	ROR	Rotate Right. Rotate first operand right number of times as given by the second operand.	RCL_RCR_ROL_ROR
+GENERAL	ROL	Rotate Left. Rotate first operand left number of times as given by the second operand.	RCL_RCR_ROL_ROR
+GENERAL	SAR	Shift Arithmetic Right. Shift first operand arithmethic right number of times as given by the second operand.	SAL_SAR_SHL_SHR
+GENERAL	SHL	Shift Logical Left. Shift first operand logical left number of times as given by the second operand.	SAL_SAR_SHL_SHR
+GENERAL	SHR	Shift Logical Right. Shift first operand logical right number of times as given by the second operand.	SAL_SAR_SHL_SHR
+GENERAL	SAL	Shift Arithmetic Left. Shift first operand arithmethic left number of times as given by the second operand.	SAL_SAR_SHL_SHR
+GENERAL	SARX	Shift Arithmetic Right Without Affecting Flags	SARX_SHLX_SHRX
+GENERAL	SHLX	Shift Logical Left Without Affecting Flags	SARX_SHLX_SHRX
+GENERAL	SHRX	Shift Logical Right Without Affecting Flags	SARX_SHLX_SHRX
 ;====================================================================
-GENERAL	SETA	Set byte if above (CF=0 and ZF=0) (SETA=SETNBE)	SETcc.html
-GENERAL	SETAE	Set byte if above or equal (CF=0) (SETAE=SETNC=SETNB)	SETcc.html
-GENERAL	SETB	Set byte if below (CF=1) (SETB=SETC=SETNAE)	SETcc.html
-GENERAL	SETBE	Set byte if below or equal (CF=1 or ZF=1) (SETBE=SETNA)	SETcc.html
-GENERAL	SETC	Set byte if carry (CF=1 SETB=SETC=SETNAE)	SETcc.html
-GENERAL	SETE	Set byte if equal (ZF=1) (SETE=SETZ)	SETcc.html
-GENERAL	SETG	Set byte if greater (ZF=0 and SF=OF) (SETG=SETNLE)	SETcc.html
-GENERAL	SETGE	Set byte if greater or equal (SF=OF) (SETGE=SETNL)	SETcc.html
-GENERAL	SETL	Set byte if less (SF!=OF) (SETL=SETNGE)	SETcc.html
-GENERAL	SETLE	Set byte if less or equal (ZF=1 or SF!=OF) (SETLE=SETNG)	SETcc.html
-GENERAL	SETNA	Set byte if not above (CF=1 or ZF=1) (SETBE=SETNA)	SETcc.html
-GENERAL	SETNAE	Set byte if not above or equal (CF=1) (SETB=SETC=SETNAE)	SETcc.html
-GENERAL	SETNB	Set byte if not below (CF=0) (SETAE=SETNC=SETNB)	SETcc.html
-GENERAL	SETNBE	Set byte if not below or equal (CF=0 and ZF=0) (SETA=SETNBE)	SETcc.html
-GENERAL	SETNC	Set byte if not carry (CF=0) (SETAE=SETNC=SETNB)	SETcc.html
-GENERAL	SETNE	Set byte if not equal (ZF=0) (SETNE=SETNZ)	SETcc.html
-GENERAL	SETNG	Set byte if not greater (ZF=1 or SF!=OF) (SETLE=SETNG)	SETcc.html
-GENERAL	SETNGE	Set byte if not greater or equal (SF!=OF) (SETL=SETNGE)	SETcc.html
-GENERAL	SETNL	Set byte if not less (SF=OF) (SETGE=SETNL)	SETcc.html
-GENERAL	SETNLE	Set byte if not less or equal (ZF=0 and SF=OF) (SETG=SETNLE)	SETcc.html
-GENERAL	SETNO	Set byte if not overflow (OF=0)	SETcc.html
-GENERAL	SETNP	Set byte if not parity (PF=0) (SETNP=SETPO)	SETcc.html
-GENERAL	SETNS	Set byte if not sign (SF=0)	SETcc.html
-GENERAL	SETNZ	Set byte if not zero (ZF=0) (SETNE=SETNZ)	SETcc.html
-GENERAL	SETO	Set byte if overflow (OF=1)	SETcc.html
-GENERAL	SETP	Set byte if parity (PF=1) (SETP=SETPE)	SETcc.html
-GENERAL	SETPE	Set byte if parity even (PF=1) (SETP=SETPE)	SETcc.html
-GENERAL	SETPO	Set byte if parity odd (PF=0) (SETNP=SETPO)	SETcc.html
-GENERAL	SETS	Set byte if sign (SF=1)	SETcc.html
-GENERAL	SETZ	Set byte if zero (ZF=1) (SETE=SETZ)	SETcc.html
+GENERAL	SETA	Set byte if above (CF=0 and ZF=0) (SETA=SETNBE)	SETcc
+GENERAL	SETAE	Set byte if above or equal (CF=0) (SETAE=SETNC=SETNB)	SETcc
+GENERAL	SETB	Set byte if below (CF=1) (SETB=SETC=SETNAE)	SETcc
+GENERAL	SETBE	Set byte if below or equal (CF=1 or ZF=1) (SETBE=SETNA)	SETcc
+GENERAL	SETC	Set byte if carry (CF=1 SETB=SETC=SETNAE)	SETcc
+GENERAL	SETE	Set byte if equal (ZF=1) (SETE=SETZ)	SETcc
+GENERAL	SETG	Set byte if greater (ZF=0 and SF=OF) (SETG=SETNLE)	SETcc
+GENERAL	SETGE	Set byte if greater or equal (SF=OF) (SETGE=SETNL)	SETcc
+GENERAL	SETL	Set byte if less (SF!=OF) (SETL=SETNGE)	SETcc
+GENERAL	SETLE	Set byte if less or equal (ZF=1 or SF!=OF) (SETLE=SETNG)	SETcc
+GENERAL	SETNA	Set byte if not above (CF=1 or ZF=1) (SETBE=SETNA)	SETcc
+GENERAL	SETNAE	Set byte if not above or equal (CF=1) (SETB=SETC=SETNAE)	SETcc
+GENERAL	SETNB	Set byte if not below (CF=0) (SETAE=SETNC=SETNB)	SETcc
+GENERAL	SETNBE	Set byte if not below or equal (CF=0 and ZF=0) (SETA=SETNBE)	SETcc
+GENERAL	SETNC	Set byte if not carry (CF=0) (SETAE=SETNC=SETNB)	SETcc
+GENERAL	SETNE	Set byte if not equal (ZF=0) (SETNE=SETNZ)	SETcc
+GENERAL	SETNG	Set byte if not greater (ZF=1 or SF!=OF) (SETLE=SETNG)	SETcc
+GENERAL	SETNGE	Set byte if not greater or equal (SF!=OF) (SETL=SETNGE)	SETcc
+GENERAL	SETNL	Set byte if not less (SF=OF) (SETGE=SETNL)	SETcc
+GENERAL	SETNLE	Set byte if not less or equal (ZF=0 and SF=OF) (SETG=SETNLE)	SETcc
+GENERAL	SETNO	Set byte if not overflow (OF=0)	SETcc
+GENERAL	SETNP	Set byte if not parity (PF=0) (SETNP=SETPO)	SETcc
+GENERAL	SETNS	Set byte if not sign (SF=0)	SETcc
+GENERAL	SETNZ	Set byte if not zero (ZF=0) (SETNE=SETNZ)	SETcc
+GENERAL	SETO	Set byte if overflow (OF=1)	SETcc
+GENERAL	SETP	Set byte if parity (PF=1) (SETP=SETPE)	SETcc
+GENERAL	SETPE	Set byte if parity even (PF=1) (SETP=SETPE)	SETcc
+GENERAL	SETPO	Set byte if parity odd (PF=0) (SETNP=SETPO)	SETcc
+GENERAL	SETS	Set byte if sign (SF=1)	SETcc
+GENERAL	SETZ	Set byte if zero (ZF=1) (SETE=SETZ)	SETcc
 ;CYRIX EMMX ====================================================================
 GENERAL	PADDSIW	Packed Add with Saturation	
 GENERAL	PSUBSIW	Packed Subtract with Saturation	
@@ -162,11 +162,11 @@ GENERAL	VPMULTISHIFTQB	Select Packed Unaligned Bytes from Qword Sources
 GENERAL	VPOPCNTD	Return the Count of Number of Bits Set to 1 in DWORD	
 GENERAL	VPOPCNTQ	Return the Count of Number of Bits Set to 1 in QWORD	
 
-GENERAL	MOVS	Move Data from String to String	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ.html
-GENERAL	MOVSB	Move byte from address DS:(E)SI to ES:(E)DI. For 64-bit mode move byte from address (R|E)SI to (R|E)DI.	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ.html
-GENERAL	MOVSW	Move word from address DS:(E)SI to ES:(E)DI. For 64-bit mode move word at address (R|E)SI to (R|E)DI.	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ.html
-GENERAL	MOVSD	Move Dword from address DS:(E)SI to ES:(E)DI. For 64-bit mode move Dword from address (R|E)SI to (R|E)DI.	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ.html
-GENERAL	MOVSQ	Move Qword from address (R|E)SI to (R|E)DI.	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ.html
+GENERAL	MOVS	Move Data from String to String	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ
+GENERAL	MOVSB	Move byte from address DS:(E)SI to ES:(E)DI. For 64-bit mode move byte from address (R|E)SI to (R|E)DI.	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ
+GENERAL	MOVSW	Move word from address DS:(E)SI to ES:(E)DI. For 64-bit mode move word at address (R|E)SI to (R|E)DI.	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ
+GENERAL	MOVSD	Move Dword from address DS:(E)SI to ES:(E)DI. For 64-bit mode move Dword from address (R|E)SI to (R|E)DI.	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ
+GENERAL	MOVSQ	Move Qword from address (R|E)SI to (R|E)DI.	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ
 
 BND		MPX	BND	Prefix to instruct that the next instruction is MPX-instrumented code.
 
