@@ -442,7 +442,6 @@ namespace AsmDude.Squiggles
                 {
                     try
                     {
-                        #region Update Error Tasks
                         if (Settings.Default.AsmSim_Show_Syntax_Errors ||
                             Settings.Default.AsmSim_Show_Usage_Of_Undefined)
                         {
@@ -504,7 +503,6 @@ namespace AsmDude.Squiggles
                                 //this._errorListProvider.Show(); // do not use BringToFront since that will select the error window.
                             }
                         }
-                        #endregion Update Error Tasks
                     }
                     catch (Exception e)
                     {
@@ -518,18 +516,25 @@ namespace AsmDude.Squiggles
         {
             await System.Threading.Tasks.Task.Run(() =>
             {
-                string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().ToUpper();
-                ErrorTask errorTask = new ErrorTask()
+                try
                 {
-                    SubcategoryIndex = (int)AsmMessageEnum.SYNTAX_ERROR,
-                    Line = lineNumber,
-                    Column = Get_Keyword_Begin_End(lineContent, keyword),
-                    Text = "Syntax Error: " + message,
-                    ErrorCategory = TaskErrorCategory.Error,
-                    Document = AsmDudeToolsStatic.GetFileName(this._sourceBuffer)
-                };
-                errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
-                this._errorListProvider.Tasks.Add(errorTask);
+                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().ToUpper();
+                    ErrorTask errorTask = new ErrorTask()
+                    {
+                        SubcategoryIndex = (int)AsmMessageEnum.SYNTAX_ERROR,
+                        Line = lineNumber,
+                        Column = Get_Keyword_Begin_End(lineContent, keyword),
+                        Text = "Syntax Error: " + message,
+                        ErrorCategory = TaskErrorCategory.Error,
+                        Document = AsmDudeToolsStatic.GetFileName(this._sourceBuffer)
+                    };
+                    errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
+                    this._errorListProvider.Tasks.Add(errorTask);
+                }
+                catch (Exception e)
+                {
+                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:AddErrorTask_Syntax_Error_Async; e={1}", ToString(), e.ToString()));
+                }
             });
         }
 
@@ -537,18 +542,25 @@ namespace AsmDude.Squiggles
         {
             await System.Threading.Tasks.Task.Run(() =>
             {
-                string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().ToUpper();
-                ErrorTask errorTask = new ErrorTask()
+                try
                 {
-                    SubcategoryIndex = (int)AsmMessageEnum.USAGE_OF_UNDEFINED,
-                    Line = lineNumber,
-                    Column = Get_Keyword_Begin_End(lineContent, keyword),
-                    Text = "Semantic Warning: " + message,
-                    ErrorCategory = TaskErrorCategory.Warning,
-                    Document = AsmDudeToolsStatic.GetFileName(this._sourceBuffer)
-                };
-                errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
-                this._errorListProvider.Tasks.Add(errorTask);
+                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().ToUpper();
+                    ErrorTask errorTask = new ErrorTask()
+                    {
+                        SubcategoryIndex = (int)AsmMessageEnum.USAGE_OF_UNDEFINED,
+                        Line = lineNumber,
+                        Column = Get_Keyword_Begin_End(lineContent, keyword),
+                        Text = "Semantic Warning: " + message,
+                        ErrorCategory = TaskErrorCategory.Warning,
+                        Document = AsmDudeToolsStatic.GetFileName(this._sourceBuffer)
+                    };
+                    errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
+                    this._errorListProvider.Tasks.Add(errorTask);
+                }
+                catch (Exception e)
+                {
+                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:AddErrorTask_Usage_Undefined_Async; e={1}", ToString(), e.ToString()));
+                }
             });
         }
 
@@ -556,18 +568,25 @@ namespace AsmDude.Squiggles
         {
             await System.Threading.Tasks.Task.Run(() =>
             {
-                string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().ToUpper();
-                ErrorTask errorTask = new ErrorTask()
+                try
                 {
-                    SubcategoryIndex = (int)AsmMessageEnum.REDUNDANT,
-                    Line = lineNumber,
-                    Column = Get_Keyword_Begin_End(lineContent, keyword),
-                    Text = "Semantic Warning: " + message,
-                    ErrorCategory = TaskErrorCategory.Warning,
-                    Document = AsmDudeToolsStatic.GetFileName(this._sourceBuffer)
-                };
-                errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
-                this._errorListProvider.Tasks.Add(errorTask);
+                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().ToUpper();
+                    ErrorTask errorTask = new ErrorTask()
+                    {
+                        SubcategoryIndex = (int)AsmMessageEnum.REDUNDANT,
+                        Line = lineNumber,
+                        Column = Get_Keyword_Begin_End(lineContent, keyword),
+                        Text = "Semantic Warning: " + message,
+                        ErrorCategory = TaskErrorCategory.Warning,
+                        Document = AsmDudeToolsStatic.GetFileName(this._sourceBuffer)
+                    };
+                    errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
+                    this._errorListProvider.Tasks.Add(errorTask);
+                }
+                catch (Exception e)
+                {
+                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:AddErrorTask_Redundant_Instruction_Async; e={1}", ToString(), e.ToString()));
+                }
             });
         }
 
@@ -575,25 +594,31 @@ namespace AsmDude.Squiggles
         {
             await System.Threading.Tasks.Task.Run(() =>
             {
-                string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().ToUpper();
-                ErrorTask errorTask = new ErrorTask()
+                try
                 {
-                    SubcategoryIndex = (int)AsmMessageEnum.UNREACHABLE,
-                    Line = lineNumber,
-                    Column = Get_Keyword_Begin_End(lineContent, keyword),
-                    Text = "Semantic Warning: " + message,
-                    ErrorCategory = TaskErrorCategory.Warning,
-                    Document = AsmDudeToolsStatic.GetFileName(this._sourceBuffer)
-                };
-                errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
-                this._errorListProvider.Tasks.Add(errorTask);
+                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().ToUpper();
+                    ErrorTask errorTask = new ErrorTask()
+                    {
+                        SubcategoryIndex = (int)AsmMessageEnum.UNREACHABLE,
+                        Line = lineNumber,
+                        Column = Get_Keyword_Begin_End(lineContent, keyword),
+                        Text = "Semantic Warning: " + message,
+                        ErrorCategory = TaskErrorCategory.Warning,
+                        Document = AsmDudeToolsStatic.GetFileName(this._sourceBuffer)
+                    };
+                    errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
+                    this._errorListProvider.Tasks.Add(errorTask);
+                }
+                catch (Exception e)
+                {
+                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:AddErrorTask_Unreachable_Instruction_Async; e={1}", ToString(), e.ToString()));
+                }
             });
         }
 
         private async void Update_Error_Tasks_Labels_Async()
         {
             if (!this._labelGraph.Enabled) return;
-
             await System.Threading.Tasks.Task.Run(() =>
             {
                 lock (this._updateLock)
