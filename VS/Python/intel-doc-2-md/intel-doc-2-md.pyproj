@@ -20,17 +20,21 @@
     <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="inteldoc2md\parser.py" />
+    <Compile Include="inteldoc2md\pile.py" />
+    <Compile Include="inteldoc2md\writer.py" />
+    <Compile Include="inteldoc2md\__init__.py" />
     <Compile Include="main.py" />
-    <Compile Include="pdf2md\parser.py" />
-    <Compile Include="pdf2md\pile.py" />
-    <Compile Include="pdf2md\writer.py" />
-    <Compile Include="pdf2md\__init__.py" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="pdf2md" />
+    <Folder Include="inteldoc2md\" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|PythonCore|2.7" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="readme.md" />
+    <Content Include="run.cmd" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
 </Project>

@@ -2,7 +2,7 @@
 
 import sys
 import os
-import pdf2md
+import inteldoc2md
 
 def main(argv):
 	if len(argv) == 2:
@@ -10,22 +10,19 @@ def main(argv):
 		title = os.path.splitext(os.path.basename(filename))[0]
 		print 'Parsing', filename
 	else:
-#		print 'usage:'
-#		print '    python main.py <pdf>'
-#		return
-#		filename = 'H:/Dropbox/sc/ScHJ/Python/pdf-to-markdown/examples/resources/selection__(p14-15).pdf'
-#		filename = 'H:/Dropbox/sc/ScHJ/Python/pdf-to-markdown/examples/resources/selection__(p250-253).pdf'
-		filename = 'H:/Dropbox/sc/ScHJ/Python/pdf-to-markdown/examples/resources/selection.pdf'
+#		filename = './resources/test/selection__(p14-15).pdf' # parse instruction ADD
+#		filename = './resources/test/selection__(p250-253).pdf' # parse instruction CVTTPD2DQ
+		filename = './resources/selection.pdf'
 		title = os.path.splitext(os.path.basename(filename))[0]
 		print 'Parsing', filename
 
 
-	parser = pdf2md.Parser(filename)
+	parser = inteldoc2md.Parser(filename)
 	parser.extract()
-#	parser.extract(345, 354)
+#	parser.extract(345, 354) # extract a selected range of pages
 	piles = parser.parse()
 
-	writer = pdf2md.Writer()
+	writer = inteldoc2md.Writer()
 	writer.write(piles)
 
 
