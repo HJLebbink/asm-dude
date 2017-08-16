@@ -141,27 +141,28 @@ GENERAL	PMVGEZB	Packed Conditional Move (greater than or equal to zero)
 GENERAL	PMULHRWC	Packed Multiply High with Rounding	
 GENERAL	RDSHR	Packed Multiply High with Rounding	
 
-GENERAL	V4FMADDPS	Packed Single-Precision FP Fused Multiply-Add (4-iterations)	https://github.com/HJLebbink/asm-dude/wiki/V4FMADDPS
-GENERAL	V4FNMADDPS	Packed Single-Precision FP Fused Multiply-Add (4-iterations)	
-GENERAL	V4FMADDSS	Scalar Single-Precision FP Fused Multiply-Add (4-iterations)	
-GENERAL	V4FNMADDSS	Scalar Single-Precision FP Fused Multiply-Add (4-iterations)	
-GENERAL	VP4DPWSSD	Dot Product of Signed Words with Dword Accumulation (4-iterations)	https://github.com/HJLebbink/asm-dude/wiki/VP4DPWSSD
-GENERAL	VP4DPWSSDS	Dot Product of Signed Words with Dword Accumulation and Saturation (4-iterations)	
-GENERAL	VPERMB	Permute Packed Bytes Elements	
-GENERAL	VPERMI2B	Full Permute of Bytes from Two Tables Overwriting the Index	
-GENERAL	VPERMT2B	Full Permute of Bytes from Two Tables Overwriting a Table	
-GENERAL	VPERMT2W	Full Permute from Two Tables Overwriting one Table	
-GENERAL	VPERMT2D	Full Permute from Two Tables Overwriting one Table	
-GENERAL	VPERMT2Q	Full Permute from Two Tables Overwriting one Table	
-GENERAL	VPERMT2PS	Full Permute from Two Tables Overwriting one Table	
-GENERAL	VPERMT2PD	Full Permute from Two Tables Overwriting one Table	
+;Intel® Architecture Instruction Set Extensions Programming Reference (APRIL 2017)====================================================================
+GENERAL	V4FMADDPS	Packed Single-Precision FP Fused Multiply-Add (4-iterations)	V4FMADDPS_V4FNMADDPS
+GENERAL	V4FNMADDPS	Packed Single-Precision FP Fused Multiply-Add (4-iterations)	V4FMADDPS_V4FNMADDPS
+GENERAL	V4FMADDSS	Scalar Single-Precision FP Fused Multiply-Add (4-iterations)	V4FMADDSS_V4FNMADDSS
+GENERAL	V4FNMADDSS	Scalar Single-Precision FP Fused Multiply-Add (4-iterations)	V4FMADDSS_V4FNMADDSS
+GENERAL	VP4DPWSSD	Dot Product of Signed Words with Dword Accumulation (4-iterations)	VP4DPWSSD
+GENERAL	VP4DPWSSDS	Dot Product of Signed Words with Dword Accumulation and Saturation (4-iterations)	VP4DPWSSDS
+GENERAL	VPERMB	Permute Packed Bytes Elements	VPERMB
+GENERAL	VPERMI2B	Full Permute of Bytes from Two Tables Overwriting the Index	VPERMI2B
+GENERAL	VPERMT2B	Full Permute of Bytes from Two Tables Overwriting a Table	VPERMT2B
+GENERAL	VPERMT2W	Full Permute from Two Tables Overwriting one Table	VPERMT2W_D_Q_PS_PD
+GENERAL	VPERMT2D	Full Permute from Two Tables Overwriting one Table	VPERMT2W_D_Q_PS_PD
+GENERAL	VPERMT2Q	Full Permute from Two Tables Overwriting one Table	VPERMT2W_D_Q_PS_PD
+GENERAL	VPERMT2PS	Full Permute from Two Tables Overwriting one Table	VPERMT2W_D_Q_PS_PD
+GENERAL	VPERMT2PD	Full Permute from Two Tables Overwriting one Table	VPERMT2W_D_Q_PS_PD
+GENERAL	VPMADD52LUQ	Packed Multiply of Unsigned 52-bit Integers and Add the Low 52-bit Products to Qword Accumulators	VPMADD52LUQ
+GENERAL	VPMADD52HUQ	Packed Multiply of Unsigned 52-bit Unsigned Integers and Add High 52-bit Products to 64-bit Accumulators	VPMADD52HUQ
+GENERAL	VPMULTISHIFTQB	Select Packed Unaligned Bytes from Qword Sources	VPMULTISHIFTQB
+GENERAL	VPOPCNTD	Return the Count of Number of Bits Set to 1 in DWORD	VPOPCNTD_VPOPCNTQ
+GENERAL	VPOPCNTQ	Return the Count of Number of Bits Set to 1 in QWORD	VPOPCNTD_VPOPCNTQ
 
-GENERAL	VPMADD52LUQ	Packed Multiply of Unsigned 52-bit Integers and Add the Low 52-bit Products to Qword Accumulators	
-GENERAL	VPMADD52HUQ	Packed Multiply of Unsigned 52-bit Unsigned Integers and Add High 52-bit Products to 64-bit Accumulators	
-GENERAL	VPMULTISHIFTQB	Select Packed Unaligned Bytes from Qword Sources	
-GENERAL	VPOPCNTD	Return the Count of Number of Bits Set to 1 in DWORD	
-GENERAL	VPOPCNTQ	Return the Count of Number of Bits Set to 1 in QWORD	
-
+;====================================================================
 GENERAL	MOVS	Move Data from String to String	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ
 GENERAL	MOVSB	Move byte from address DS:(E)SI to ES:(E)DI. For 64-bit mode move byte from address (R|E)SI to (R|E)DI.	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ
 GENERAL	MOVSW	Move word from address DS:(E)SI to ES:(E)DI. For 64-bit mode move word at address (R|E)SI to (R|E)DI.	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ

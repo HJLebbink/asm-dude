@@ -2193,13 +2193,14 @@
         #endregion
 
 
-         
+		#region Intel® Architecture Instruction Set Extensions Programming Reference (APRIL 2017)
+        
+		VPERMT2W
+		VPERMT2D
+		VPERMT2Q
+		VPERMT2PS
+		VPERMT2PD
 
-
-        ; <summary>Dot Product of Signed Words with Dword Accumulation (4-iterations)</summary>
-        VP4DPWSSD 
-        ; <summary>Dot Product of Signed Words with Dword Accumulation and Saturation (4-iterations)</summary>
-        VP4DPWSSDS 
         ; <summary>Packed Single-Precision Floating-Point Fused Multiply-Add (4-iterations)</summary>
         V4FMADDPS 
         ; <summary>Packed Single-Precision Floating-Point Fused Multiply-Add (4-iterations)</summary>
@@ -2209,5 +2210,22 @@
         ; <summary>Scalar Single-Precision Floating-Point Fused Multiply-Add (4-iterations)</summary>
         V4FNMADDSS 
 
+
+        ; <summary>Dot Product of Signed Words with Dword Accumulation (4-iterations)</summary>
+        VP4DPWSSD 
+        ; <summary>Dot Product of Signed Words with Dword Accumulation and Saturation (4-iterations)</summary>
+        VP4DPWSSDS 
+
+		VPERMB
+		VPERMI2B
+		VPERMT2B
+
+		VPMADD52HUQ
+		VPMADD52LUQ
+
+		VPMULTISHIFTQB
+
 		VPOPCNTD 
-		VPOPCNTQ 
+		VPOPCNTQ
+
+		#endregion
