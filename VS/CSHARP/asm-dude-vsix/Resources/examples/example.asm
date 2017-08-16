@@ -6,6 +6,8 @@ include "bla"
 	jmp			FOO		# FOO is defined in an included file
 	call procedure3
 
+	V4FMADDPS
+
 
 #region 1 bit full adder
 ; ymm0 = A
