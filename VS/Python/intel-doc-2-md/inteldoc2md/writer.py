@@ -10,16 +10,19 @@ class State(object):
 		self.code_mode = False;
 		self.type = None
 		self.type_next = None
-
-
+	
 class Writer(object):
+
+	def __init__(self):
+		self.source = 'Intel® Architecture Instruction Set Extensions Programming Reference (APRIL 2017)'
+		#self.source = 'Intel® Architecture Software Developer\'s Manual (JULY 2017)'
 
 	def close_file(self, instruction, markdown):
 		filename = './output/' + str(instruction).replace('/', '_').replace(' ', '_') + '.md'
 		print 'writing ' + filename
 		fwrite = open(filename, 'w')
 		markdown += '\n --- \n'
-		markdown += '<p align="right"><i>Source: Intel Architecture Software Developer\'s Manual (July 2017)<br>Generated at: '+time.strftime("%c")+'</i></p>\n'
+		markdown += '<p align="right"><i>Source: '+self.source+'<br>Generated at: '+time.strftime("%c")+'</i></p>\n'
 		fwrite.write(markdown)
 		fwrite.close()
 

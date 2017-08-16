@@ -35,3 +35,4 @@ VS/CSHARP/asm-dude-vsix/Resources/Performance/instruction_tables.ods
 *.ipch
 *.VC.db
 *.tmp_proj
+/VS/.vs/AsmDude/v15/sqlite3/storage.ide

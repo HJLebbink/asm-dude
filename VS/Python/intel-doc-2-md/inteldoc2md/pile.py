@@ -200,7 +200,7 @@ class Pile(object):
 
 
 	def _is_overlap(self, top, bottom, obj):
-		search_distance = 0.7
+		search_distance = 1.0
 		return (bottom - search_distance) <= obj.y0 <= (top + search_distance) or \
 			   (bottom - search_distance) <= obj.y1 <= (top + search_distance)
 
@@ -240,16 +240,28 @@ class Pile(object):
 			fontname = text._objs[0].fontname
 			#print '_get_instruction: fontname='+fontname +'; text.height='+str(text.height) +'; content='+text.get_text().encode('utf8').strip()
 				
-			if ((text.height > 14.5) and (fontname == 'AMLJIB+NeoSansIntelMedium')):
+			if ((text.height > 14.5) and (fontname.endswith('NeoSansIntelMedium'))):
 				content = text.get_text().encode('utf8').strip()
 				#print '_get_instruction: text.height='+str(text.height) +'; content='+content
 	
-				if re.search('\xe2\x80\x94', content):
-					tmp = content.split('\xe2\x80\x94')
+				searchChar = '—'
+				#searchChar = '\xe2\x80\x94'
+				if (re.search(searchChar, content)):
+					tmp = content.split(searchChar)
 					instruction = tmp[0].strip()
 					descr = tmp[1]
 					#print '_get_instruction: instruction='+instruction
 					return instruction, descr
+										
+				searchChar = '–'
+				if (re.search(searchChar, content)):
+					tmp = content.split(searchChar)
+					instruction = tmp[0].strip()
+					descr = tmp[1]
+					#print '_get_instruction: instruction='+instruction
+					return instruction, descr
+										
+				continue
 
 		return None, None
 
@@ -312,20 +324,27 @@ class Pile(object):
 		for text in sorted(self.texts, cmp=Pile.mycmp, reverse=True):
 
 			content2 = text.get_text().encode('utf8')
-			content = content2.strip().replace('#', '\#').replace('*', '\*')
+			#print 'content2='+content2
 			
-			#print 'content='+content
 			if (counter == 0):
-				if re.search('INSTRUCTION SET REFERENCE, ', content):
+				if re.search('INSTRUCTION SET REFERENCE, ', content2):
 					continue
-				if re.search('SAFER MODE EXTENSIONS REFERENCE', content):
+				if re.search('SAFER MODE EXTENSIONS REFERENCE', content2):
 					continue
-
-			if re.search('Vol. 2', content):
+				
+			if re.search('Vol. 2', content2):
 				continue
+			if re.search('Ref. ', content2):
+				continue
+			if content2.startswith('5-'):
+				#print 'Ignoring content2: '+content2
+				continue
+				
+			content = content2.strip().replace('#', '\#').replace('*', '\*')
+			#print 'content='+content
 
+				
 			if re.search('\xe2\x80\x94', content):
-
 				instruction, descr = self._get_instruction()
 				if (instruction != None): 
 					state.type_next = 'title'
@@ -384,7 +403,7 @@ class Pile(object):
 					fontname = text._objs[0].fontname
 					#print '_get_instruction: fontname='+fontname +'; text.height='+str(text.height) +'; content='+content
 				
-					if (fontname == 'AMLJIB+NeoSansIntelMedium'):
+					if (fontname.endswith('NeoSansIntelMedium')):
 						markdown += Pile._close_code(state) + '\n#### '+content+'\n' + Pile._start_code(state, 'java')
 					else:
 						markdown += Pile._start_code(state, 'java') + Pile._create_indent(text.x0) + content2.replace('', '←')
