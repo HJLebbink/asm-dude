@@ -51,6 +51,40 @@ namespace AsmDude.OptionsPage
             get { return this._asmDudeOptionsPageUI; }
         }
 
+        private string MakeToolTip(Arch arch)
+        {
+            MnemonicStore store = AsmDudeTools.Instance.Mnemonic_Store;
+            SortedSet<Mnemonic> usedMnemonics = new SortedSet<Mnemonic>();
+
+            foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)).Cast<Mnemonic>())
+            {
+                if (store.GetArch(mnemonic).Contains(arch))
+                {
+                    usedMnemonics.Add(mnemonic);
+                }
+            }
+            StringBuilder sb = new StringBuilder();
+            string docArch = ArchTools.ArchDocumentation(arch);
+            if (docArch.Length > 0)
+            {
+                sb.Append(docArch + ":\n");
+            }
+            if (usedMnemonics.Count > 0)
+            {
+                foreach (Mnemonic mnemonic in usedMnemonics)
+                {
+                    sb.Append(mnemonic.ToString());
+                    sb.Append(", ");
+                }
+                sb.Length -= 2; // get rid of last comma.
+            }
+            else
+            {
+                sb.Append("empty");
+            }
+            return AsmSourceTools.Linewrap(sb.ToString(), AsmDudePackage.maxNumberOfCharsInToolTips);
+        }
+
         #region Event Handlers
 
         /// <summary>
@@ -276,39 +310,6 @@ namespace AsmDude.OptionsPage
             this._asmDudeOptionsPageUI.AsmSim_Decorate_Unimplemented = Settings.Default.AsmSim_Decorate_Unimplemented;
             this._asmDudeOptionsPageUI.AsmSim_Pragma_Assume = Settings.Default.AsmSim_Pragma_Assume;
             #endregion
-        }
-
-        private string MakeToolTip(Arch arch)
-        {
-            MnemonicStore store = AsmDudeTools.Instance.Mnemonic_Store;
-            SortedSet<Mnemonic> usedMnemonics = new SortedSet<Mnemonic>();
-
-            foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)).Cast<Mnemonic>())
-            {
-                if (store.GetArch(mnemonic).Contains(arch))
-                {
-                    usedMnemonics.Add(mnemonic);
-                }
-            }
-            StringBuilder sb = new StringBuilder();
-            string docArch = ArchTools.ArchDocumentation(arch);
-            if (docArch.Length > 0)
-            {
-                sb.Append(docArch + ": ");
-            }
-            if (usedMnemonics.Count > 0)
-            {
-                foreach (Mnemonic mnemonic in usedMnemonics)
-                {
-                    sb.Append(mnemonic.ToString());
-                    sb.Append(", ");
-                }
-                sb.Length -= 2; // get rid of last comma.
-            } else
-            {
-                sb.Append("empty");
-            }
-            return AsmSourceTools.Linewrap(sb.ToString(), AsmDudePackage.maxNumberOfCharsInToolTips);
         }
 
         /// <summary>

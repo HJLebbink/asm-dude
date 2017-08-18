@@ -283,19 +283,18 @@ namespace AsmTools {
                 case Arch.SSE5: return "Instruction set SSE5, AMD";
                 case Arch.AVX: return "";
                 case Arch.AVX2: return "";
-                case Arch.AVX512_F: return "Instruction set AVX512 Foundation (Knights Landing, Intel Xeon)";
-                case Arch.AVX512_CD: return "Instruction set AVX512 Conflict Detection (Knights Landing, Intel Xeon)";
-                case Arch.AVX512_ER: return "Instruction set AVX512 Exponential and Reciprocal (Knights Landing)";
-                case Arch.AVX512_PF: return "Instruction set AVX512 Prefetch (Knights Landing)";
-                case Arch.AVX512_BW: return "Instruction set AVX512 Byte and Word (Intel Xeon)";
-                case Arch.AVX512_DQ: return "Instruction set AVX512 Doubleword and QuadWord (Intel Xeon)";
-                case Arch.AVX512_VL: return "Instruction set AVX512 Vector Length Extensions (Intel Xeon)";
-
-                case Arch.AVX512_IFMA: return "";
-                case Arch.AVX512_VBMI: return "";
-                case Arch.AVX512_VPOPCNTDQ: return "";
-                case Arch.AVX512_4VNNIW: return "";
-                case Arch.AVX512_4FMAPS: return "";
+                case Arch.AVX512_F: return "AVX512-F - Foundation";
+                case Arch.AVX512_CD: return "AVX512-CD - Conflict Detection";
+                case Arch.AVX512_ER: return "AVX512-ER - Exponential and Reciprocal";
+                case Arch.AVX512_PF: return "AVX512-PF - Prefetch";
+                case Arch.AVX512_BW: return "AVX512-BW - Byte and Word";
+                case Arch.AVX512_DQ: return "AVX512-DQ - Doubleword and QuadWord";
+                case Arch.AVX512_VL: return "AVX512-VL - Vector Length Extensions";
+                case Arch.AVX512_IFMA: return "AVX512-IFMA - Integer Fused Multiply Add";
+                case Arch.AVX512_VBMI: return "AVX512-VBMI - Vector Byte Manipulation Instructions";
+                case Arch.AVX512_VPOPCNTDQ: return "AVX512-VPOPCNTDQ - Vector Population Count instructions for Dwords and Qwords";
+                case Arch.AVX512_4VNNIW: return "AVX512-4VNNIW - Vector Neural Network Instructions Word variable precision";
+                case Arch.AVX512_4FMAPS: return "AVX512-4FMAPS - Fused Multiply Accumulation Packed Single precision";
 
                 case Arch.ADX: return "Multi-Precision Add-Carry Instruction Extension";
                 case Arch.AES: return "Advanced Encryption Standard Extension";
