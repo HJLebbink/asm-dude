@@ -1,30 +1,30 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
-  <Metadata>
-    <Identity Id="c729d6b2-f412-49ed-893d-a8f61f25db98" Version="1.9.0.1" Language="en-US" Publisher="Henk-Jan Lebbink" />
-    <DisplayName>AsmDude</DisplayName>
-    <Description xml:space="preserve">Syntax highlighting and code assistance for assembly source code (.asm, .cod, .inc, .s) and the Disassembly Window </Description>
-    <MoreInfo>https://github.com/HJLebbink/asm-dude</MoreInfo>
-    <License>LICENSE.txt</License>
-    <GettingStartedGuide>https://github.com/HJLebbink/asm-dude</GettingStartedGuide>
-    <Icon>Resources\images\asm.png</Icon>
-    <PreviewImage>Resources\images\AsmDude.bmp</PreviewImage>
-    <Tags>Assembly, Assembler, ASM, Syntax Highlighting, Code Completion, Disassembly Window, x86_64, SSE, AVX, AVX2, AVX512</Tags>
-  </Metadata>
-  <Installation>
-    <InstallationTarget Version="[14.0,16.0]" Id="Microsoft.VisualStudio.Enterprise" />
-    <InstallationTarget Version="[14.0,16.0]" Id="Microsoft.VisualStudio.Pro" />
-    <InstallationTarget Version="[14.0,16.0]" Id="Microsoft.VisualStudio.Community" />
-  </Installation>
-  <Dependencies>
-    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
-    <Dependency Id="Microsoft.VisualStudio.MPF.14.0" DisplayName="Visual Studio MPF 14.0" d:Source="Installed" Version="[14.0,15.0)" />
-  </Dependencies>
-  <Assets>
-    <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
-    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
-  </Assets>
-  <Prerequisites>
-    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0.26004.1,16.0)" DisplayName="Visual Studio core editor" />
-  </Prerequisites>
+    <Metadata>
+        <Identity Id="c729d6b2-f412-49ed-893d-a8f61f25db98" Version="1.9.1.0" Language="en-US" Publisher="Henk-Jan Lebbink" />
+        <DisplayName>AsmDude</DisplayName>
+        <Description xml:space="preserve">Syntax highlighting and code assistance for assembly source code (.asm, .cod, .inc, .s) and the Disassembly Window </Description>
+        <MoreInfo>https://github.com/HJLebbink/asm-dude</MoreInfo>
+        <License>LICENSE.txt</License>
+        <GettingStartedGuide>https://github.com/HJLebbink/asm-dude</GettingStartedGuide>
+        <Icon>Resources\images\asm.png</Icon>
+        <PreviewImage>Resources\images\AsmDude.bmp</PreviewImage>
+        <Tags>Assembly, Assembler, ASM, Syntax Highlighting, Code Completion, Disassembly Window, x86_64, SSE, AVX, AVX2, AVX512</Tags>
+    </Metadata>
+    <Installation>
+        <InstallationTarget Version="[14.0,16.0]" Id="Microsoft.VisualStudio.Enterprise" />
+        <InstallationTarget Version="[14.0,16.0]" Id="Microsoft.VisualStudio.Pro" />
+        <InstallationTarget Version="[14.0,16.0]" Id="Microsoft.VisualStudio.Community" />
+    </Installation>
+    <Dependencies>
+        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
+        <Dependency Id="Microsoft.VisualStudio.MPF.14.0" DisplayName="Visual Studio MPF 14.0" d:Source="Installed" Version="[14.0,15.0)" />
+    </Dependencies>
+    <Assets>
+        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+        <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
+    </Assets>
+    <Prerequisites>
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0.26004.1,16.0)" DisplayName="Visual Studio core editor" />
+    </Prerequisites>
 </PackageManifest>
