@@ -382,6 +382,7 @@ class Pile(object):
 				 (content == 'SIMD Floating-Point Exceptions') or \
 				 (content == 'Protected Mode Exceptions') or \
 				 (content == 'Exceptions') or \
+				 (content == 'Numeric Exceptions') or \
 				 (content == 'Real-Address Mode Exceptions'):
 				state.type_next = 'exceptions'
 				markdown += Pile._close_code(state) + Pile._header(content)
