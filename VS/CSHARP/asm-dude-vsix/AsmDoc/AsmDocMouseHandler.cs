@@ -34,7 +34,7 @@ using Microsoft.VisualStudio.Shell;
 using EnvDTE80;
 using Microsoft.VisualStudio.Text.Formatting;
 using AsmDude.Tools;
-using System.Collections.Generic;
+using System.Windows.Threading;
 
 namespace AsmDude.AsmDoc
 {
@@ -324,8 +324,19 @@ namespace AsmDude.AsmDoc
                     // vsNavigateOptionsNewWindow  1   The Web page opens in a new browser window.
                     AsmDudeToolsStatic.Output_INFO(string.Format("{0}:openFile; going to open url {1}.", ToString(), url));
                     window = dte2.ItemOperations.Navigate(url, EnvDTE.vsNavigateOptions.vsNavigateOptionsNewWindow);
-                    window.Caption = keyword;
-//                    VisualStudioWebBrowser.SetTitle(window, keyword);
+
+                    var parts = url.Split('/');
+                    var caption = parts[parts.Length - 1];
+                    caption = caption.Replace('_', '/');
+
+                    window.Caption = caption;
+
+                    var action = new Action(() => { if (!window.Caption.Equals(caption)) window.Caption = caption; });
+                    DelayAction(100, action);
+                    DelayAction(500, action);
+                    DelayAction(1000, action);
+                    DelayAction(1500, action);
+                    DelayAction(3000, action);
                 }
                 else
                 {
@@ -340,16 +351,28 @@ namespace AsmDude.AsmDoc
             }
         }
         #endregion
+
+        private static void DelayAction(int millisecond, Action action)
+        {
+            var timer = new DispatcherTimer();
+            timer.Tick += delegate
+            {
+                action.Invoke();
+                timer.Stop();
+            };
+            timer.Interval = TimeSpan.FromMilliseconds(millisecond);
+            timer.Start();
+        }
     }
 
     public class VisualStudioWebBrowser : System.Windows.Forms.WebBrowser
     {
-        protected VisualStudioWebBrowser(object IWebBrowser2Object)
+        private object IWebBrowser2Object;
+
+        public VisualStudioWebBrowser(object IWebBrowser2Object)
         {
             this.IWebBrowser2Object = IWebBrowser2Object;
         }
-
-        protected object IWebBrowser2Object { get; set; }
 
         private static void Evaluate(EnvDTE.Window WindowReference, Action<System.Windows.Forms.WebBrowser> OnEvaluate)
         {
@@ -385,15 +408,6 @@ namespace AsmDude.AsmDoc
                 BrowserUrl = wb.Url;
             }));
             return BrowserUrl;
-        }
-        public static System.Windows.Forms.WebBrowser GetWebBrowser(EnvDTE.Window WindowReference)
-        {
-            System.Windows.Forms.WebBrowser wb = null;
-            VisualStudioWebBrowser.Evaluate(WindowReference, new Action<System.Windows.Forms.WebBrowser>((wb2) =>
-            {
-                wb = wb2;
-            }));
-            return wb;
         }
         protected override void AttachInterfaces(object nativeActiveXObject)
         {
