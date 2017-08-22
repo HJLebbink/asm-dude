@@ -10,10 +10,10 @@ def main(argv):
 		title = os.path.splitext(os.path.basename(filename))[0]
 		print 'Parsing', filename
 	else:
-#		filename = './resources/test/selection__(p14-15).pdf' # parse instruction ADD
+		filename = './resources/test/selection__(p14-15).pdf' # parse instruction ADD
 #		filename = './resources/test/selection__(p250-253).pdf' # parse instruction CVTTPD2DQ
 #		filename = './resources/325462-sdm-vol-1-2abcd-3abcd-selection.pdf'
-		filename = './resources/architecture-instruction-set-extensions-programming-reference-selection.pdf'
+#		filename = './resources/architecture-instruction-set-extensions-programming-reference-selection.pdf'
 		title = os.path.splitext(os.path.basename(filename))[0]
 		print 'Parsing', filename
 

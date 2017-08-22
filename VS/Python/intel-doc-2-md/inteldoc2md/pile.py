@@ -200,7 +200,7 @@ class Pile(object):
 
 
 	def _is_overlap(self, top, bottom, obj):
-		search_distance = 1.0
+		search_distance = 0.7
 		return (bottom - search_distance) <= obj.y0 <= (top + search_distance) or \
 			   (bottom - search_distance) <= obj.y1 <= (top + search_distance)
 
@@ -252,7 +252,7 @@ class Pile(object):
 					descr = tmp[1]
 					#print '_get_instruction: instruction='+instruction
 					return instruction, descr
-										
+					
 				searchChar = '–'
 				if (re.search(searchChar, content)):
 					tmp = content.split(searchChar)
@@ -260,7 +260,7 @@ class Pile(object):
 					descr = tmp[1]
 					#print '_get_instruction: instruction='+instruction
 					return instruction, descr
-										
+					
 				continue
 
 		return None, None
@@ -333,10 +333,16 @@ class Pile(object):
 					continue
 				
 			if re.search('Vol. 2', content2):
+				#print('found "Vol. 2" with height '+str(text.y1))
+				#if (text.y1 < 55.5):
 				continue
 			if re.search('Ref. ', content2):
+				#print('found "Ref. " with height '+str(text.y1))
+				#if (text.y1 < 55.5):
 				continue
 			if content2.startswith('5-'):
+				#print('found "5-" with height '+str(text.y1))
+				#if (text.y1 < 55.5):
 				#print 'Ignoring content2: '+content2
 				continue
 				
@@ -345,14 +351,21 @@ class Pile(object):
 
 				
 			if re.search('\xe2\x80\x94', content):
+				#print('found "\xe2\x80\x94" with height '+str(text.height))
+
+				if (text.height < 10.0):
+					#found a footer
+					continue
+
 				instruction, descr = self._get_instruction()
 				if (instruction != None): 
 					state.type_next = 'title'
 					instruction = instruction.replace('/', ' / ')
 					#markdown += '\n\n#' + ' ' +  instruction +'\n\n'
 					markdown += '<b>'+instruction + '</b> \xe2\x80\x94 '  + descr + '\n'
+					continue
 
-			elif (content == 'Description') or (content=='IA-32 Architecture Compatibility'):
+			if (content == 'Description') or (content=='IA-32 Architecture Compatibility'):
 				state.type_next = 'description'
 				markdown += Pile._header(content)
 
@@ -402,7 +415,6 @@ class Pile(object):
 
 				elif state.type == 'operation': # code mode
 					fontname = text._objs[0].fontname
-					#print '_get_instruction: fontname='+fontname +'; text.height='+str(text.height) +'; content='+content
 				
 					if (fontname.endswith('NeoSansIntelMedium')):
 						markdown += Pile._close_code(state) + '\n#### '+content+'\n' + Pile._start_code(state, 'java')

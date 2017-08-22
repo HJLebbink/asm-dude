@@ -14,15 +14,34 @@ class State(object):
 class Writer(object):
 
 	def __init__(self):
-		self.source = 'Intel® Architecture Instruction Set Extensions Programming Reference (APRIL 2017)'
-		#self.source = 'Intel® Architecture Software Developer\'s Manual (JULY 2017)'
+		#self.source = 'Intel® Architecture Instruction Set Extensions Programming Reference (APRIL 2017)'
+		self.source = 'Intel® Architecture Software Developer\'s Manual (JULY 2017)'
+
+
+	@staticmethod
+	def _cleanup_hyphens(str):
+		str = str.replace('documenta-\ntion', 'documentation\n')
+		str = str.replace('compar-\nison)', 'comparison)\n')
+		str = str.replace('compar-\nisons', 'comparisons\n')
+		str = str.replace('regis-\nters', 'registers\n')
+		str = str.replace('regis-\nter ', 'register\n') # note: extra space
+		str = str.replace('combina-\ntion ', 'combination\n')
+		str = str.replace('addi-\ntional', 'additional\n')
+		str = str.replace('infor-\nmation', 'information\n')
+		str = str.replace('oper-\nands, ', 'operands\n')
+		return str
+
 
 	def close_file(self, instruction, markdown):
+
+		markdown = Writer._cleanup_hyphens(markdown)
+
 		filename = './output/' + str(instruction).replace('/', '_').replace(' ', '_') + '.md'
 		print 'writing ' + filename
 		fwrite = open(filename, 'w')
-		markdown += '\n --- \n'
-		markdown += '<p align="right"><i>Source: '+self.source+'<br>Generated at: '+time.strftime("%c")+'</i></p>\n'
+		#generatedTime = time.strftime("%c")
+		generatedTime = '22-aug-2017: 11:37:19'
+		markdown += '\n --- \n<p align="right"><i>Source: '+self.source+'<br>Generated: '+generatedTime+'</i></p>\n'
 		fwrite.write(markdown)
 		fwrite.close()
 

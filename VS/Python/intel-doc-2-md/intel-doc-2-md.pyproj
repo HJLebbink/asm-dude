@@ -28,12 +28,25 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="inteldoc2md\" />
+    <Folder Include="resources\" />
+    <Folder Include="resources\test\" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|PythonCore|2.7" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="copy.cmd" />
     <Content Include="readme.md" />
+    <Content Include="resources\325462-sdm-vol-1-2abcd-3abcd-selection.pdf" />
+    <Content Include="resources\325462-sdm-vol-1-2abcd-3abcd.pdf" />
+    <Content Include="resources\architecture-instruction-set-extensions-programming-reference-selection.PDF" />
+    <Content Include="resources\architecture-instruction-set-extensions-programming-reference.pdf" />
+    <Content Include="resources\make.sh" />
+    <Content Include="resources\test\selection__%28p1-4%29.PDF" />
+    <Content Include="resources\test\selection__%28p14-15%29.PDF" />
+    <Content Include="resources\test\selection__%28p250-253%29.PDF" />
+    <Content Include="resources\test\selection__%28p366-367%29.PDF" />
+    <Content Include="resources\test\selection__%28p376-377%29.PDF" />
     <Content Include="run.cmd" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
