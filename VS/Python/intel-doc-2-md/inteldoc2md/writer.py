@@ -20,15 +20,41 @@ class Writer(object):
 
 	@staticmethod
 	def _cleanup_hyphens(str):
-		str = str.replace('documenta-\ntion', 'documentation\n')
+
+		str = str.replace('•\n\n', '\n * ')
+		str = str.replace('•\n', '\n * ')
+		str = str.replace('•', '\n * ')
+
+		str = str.replace('addi-\ntional', 'additional\n')
+
+		str = str.replace('combina-\ntion ', 'combination\n')
 		str = str.replace('compar-\nison)', 'comparison)\n')
 		str = str.replace('compar-\nisons', 'comparisons\n')
-		str = str.replace('regis-\nters', 'registers\n')
-		str = str.replace('regis-\nter ', 'register\n') # note: extra space
-		str = str.replace('combina-\ntion ', 'combination\n')
-		str = str.replace('addi-\ntional', 'additional\n')
+		str = str.replace('corre-\nsponding', 'corresponding\n')
+
+		 
+		str = str.replace('documenta-\ntion', 'documentation\n')
+		str = str.replace('destina-\ntion', 'destination\n')
+		str = str.replace('desti-\nnation', 'destination\n')
 		str = str.replace('infor-\nmation', 'information\n')
-		str = str.replace('oper-\nands, ', 'operands\n')
+		str = str.replace('instruc-\ntions ', 'instructions\n')
+
+		str = str.replace('regis-\nters', 'registers\n')
+		str = str.replace('regis-\nter', 'register\n')
+		str = str.replace('oper-\nands', 'operands\n') 
+		str = str.replace('oper-\nations', 'operations\n')
+		
+		str = str.replace('preci-\nsion', 'precision\n')
+		str = str.replace('loca-\ntions', 'locations\n')
+		str = str.replace('loca-\ntion', 'location\n')
+		str = str.replace('speci-\nfied', 'specified\n')
+
+
+		str = str.replace('single- precision', 'single-precision')
+		str = str.replace('no- operand', 'no-operand')
+		str = str.replace('no- operands', 'no-operands')
+		str = str.replace('REP/REPE/REPZ /REPNE/REPNZ', 'REP/REPE/REPZ/REPNE/REPNZ')
+		str = str.replace('general- purpose', 'general-purpose')
 		return str
 
 

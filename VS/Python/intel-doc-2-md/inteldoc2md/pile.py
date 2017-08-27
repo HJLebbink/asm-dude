@@ -304,9 +304,9 @@ class Pile(object):
 
 	@staticmethod
 	def mycmp(x, y):
-		if (x.y0 < y.y0):
+		if (x.y1 < y.y1):
 			return -1
-		elif (x.y0 > y.y0):
+		elif (x.y1 > y.y1):
 			return 1
 		else:
 			if (x.x0 < y.x0):
@@ -334,18 +334,28 @@ class Pile(object):
 				
 			if re.search('Vol. 2', content2):
 				#print('found "Vol. 2" with height '+str(text.y1))
-				#if (text.y1 < 55.5):
-				continue
+				if (text.height < 10.0):
+					continue
+				else:
+					#print('found "Vol. 2" in main text '+content2)
+					pass
+
 			if re.search('Ref. ', content2):
 				#print('found "Ref. " with height '+str(text.y1))
-				#if (text.y1 < 55.5):
-				continue
+				if (text.height < 10.0):
+					continue
+				else:
+					#print('found "Ref. " in main text '+content2)
+					pass
+
 			if content2.startswith('5-'):
 				#print('found "5-" with height '+str(text.y1))
-				#if (text.y1 < 55.5):
-				#print 'Ignoring content2: '+content2
-				continue
-				
+				if (text.height < 10.0):
+					continue
+				else:
+					#print('found "5 -" in main text '+content2)
+					pass
+	
 			content = content2.strip().replace('#', '\#').replace('*', '\*')
 			#print 'content='+content
 
@@ -431,7 +441,12 @@ class Pile(object):
 
 				elif state.type == 'exceptions':
 					if re.search('\#', content):
-						content = content.replace('\#', '<p>#')
+						if re.search('\(\#', content): 
+							print 'Pile:_gen_paragraph_markdown: not changing "(#"'
+							#pass
+						else:
+							content = content.replace('\#', '<p>#')
+
 
 					myheight = previousHeight - text.y1;
 					previousHeight = text.y1
