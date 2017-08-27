@@ -87,6 +87,12 @@ namespace AsmSim
         {
             return "MEM" + key;
         }
+        public static string Mem_Name_Fresh(Random rand)
+        {
+            return "MEM" + CreateKey(rand) + "!U";
+        }
+
+
         public static (uint High, uint Low) SIMD_Extract_Range(Rn rn)
         {
             switch (rn)
@@ -227,6 +233,10 @@ namespace AsmSim
         public static ArrayExpr Create_Mem_Key(string key, Context ctx)
         {
             return ctx.MkArrayConst(Mem_Name(key), ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+        }
+        public static ArrayExpr Create_Mem_Key_Fresh(Random rand, Context ctx)
+        {
+            return ctx.MkArrayConst(Mem_Name_Fresh(rand), ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
         }
         public static BitVecExpr Create_Reg_Key_Fresh(Rn reg, Random rand, Context ctx)
         {

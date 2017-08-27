@@ -136,8 +136,7 @@ namespace AsmTools {
         MOVSXD,
         /// <summary>Move and zero extend</summary>
         MOVZX,
-        /// <summary>Move and zero extend</summary>
-        //MOVZXD, TODO: does this instruction realy exists? if it does it does it implements just a mov
+
         #endregion
         #region Binary Arithmetic Instructions
         // The binary arithmetic instructions perform basic binary integer computations on byte, word, and doubleword integers
@@ -209,9 +208,9 @@ namespace AsmTools {
         SAL,
         /// <summary>Shift logical left</summary>
         SHL,
-        /// <summary> Shift right double</summary>
+        /// <summary>Shift right double</summary>
         SHRD,
-        /// <summary>/Shift left double</summary>
+        /// <summary>Shift left double</summary>
         SHLD,
         /// <summary>Rotate right</summary>
         ROR,
@@ -2338,9 +2337,6 @@ namespace AsmTools {
 
         VPOPCNTD,
         VPOPCNTQ
-
-
-
     }
 
     public static partial class AsmSourceTools {
@@ -2424,7 +2420,9 @@ namespace AsmTools {
             #if DEBUG
                 if (strIsCapitals && (str != str.ToUpper())) throw new Exception();
             #endif
-            switch ((strIsCapitals) ? str : str.ToUpper()) {
+            if (!strIsCapitals) str = str.ToUpper();
+
+            switch (str) {
                 case "NONE": return Mnemonic.NONE;
                 case "MOV": return Mnemonic.MOV;
                 case "CMOVE": return Mnemonic.CMOVE;
@@ -2476,7 +2474,6 @@ namespace AsmTools {
                 case "MOVSX": return Mnemonic.MOVSX;
                 case "MOVSXD": return Mnemonic.MOVSXD;
                 case "MOVZX": return Mnemonic.MOVZX;
-                //case "MOVZXD": return Mnemonic.MOVZXD;
                 case "ADCX": return Mnemonic.ADCX;
                 case "ADOX": return Mnemonic.ADOX;
                 case "ADD": return Mnemonic.ADD;
@@ -2517,6 +2514,7 @@ namespace AsmTools {
                 case "BTC": return Mnemonic.BTC;
                 case "BSF": return Mnemonic.BSF;
                 case "BSR": return Mnemonic.BSR;
+
                 case "SETE": return Mnemonic.SETE;
                 case "SETZ": return Mnemonic.SETZ;
                 case "SETNE": return Mnemonic.SETNE;
@@ -2547,9 +2545,11 @@ namespace AsmTools {
                 case "SETP": return Mnemonic.SETP;
                 case "SETPO": return Mnemonic.SETPO;
                 case "SETNP": return Mnemonic.SETNP;
+
                 case "TEST": return Mnemonic.TEST;
                 case "CRC32": return Mnemonic.CRC32;
                 case "POPCNT": return Mnemonic.POPCNT;
+
                 case "JMP": return Mnemonic.JMP;
                 case "JE": return Mnemonic.JE;
                 case "JZ": return Mnemonic.JZ;
@@ -2589,6 +2589,7 @@ namespace AsmTools {
                 case "LOOPE": return Mnemonic.LOOPE;
                 case "LOOPNZ": return Mnemonic.LOOPNZ;
                 case "LOOPNE": return Mnemonic.LOOPNE;
+
                 case "CALL": return Mnemonic.CALL;
                 case "RET": return Mnemonic.RET;
                 case "IRET": return Mnemonic.IRET;
@@ -2597,6 +2598,9 @@ namespace AsmTools {
                 case "BOUND": return Mnemonic.BOUND;
                 case "ENTER": return Mnemonic.ENTER;
                 case "LEAVE": return Mnemonic.LEAVE;
+
+                case "IN": return Mnemonic.IN;
+                case "OUT": return Mnemonic.OUT;
 
                 case "MOVS": return Mnemonic.MOVS;
                 case "MOVSB": return Mnemonic.MOVSB;
@@ -2633,17 +2637,7 @@ namespace AsmTools {
                 case "REPZ": return Mnemonic.REPZ;
                 case "REPNE": return Mnemonic.REPNE;
                 case "REPNZ": return Mnemonic.REPNZ;
-
-                case "REP_INS": return Mnemonic.REP_INS;
-                case "REP_INSB": return Mnemonic.REP_INSB;
-                case "REP_INSW": return Mnemonic.REP_INSW;
-                case "REP_INSD": return Mnemonic.REP_INSD;
-
-                case "REP_OUTS": return Mnemonic.REP_OUTS;
-                case "REP_OUTSB": return Mnemonic.REP_OUTSB;
-                case "REP_OUTSW": return Mnemonic.REP_OUTSW;
-                case "REP_OUTSD": return Mnemonic.REP_OUTSD;
-
+               
                 case "REP_MOVS": return Mnemonic.REP_MOVS;
                 case "REP_MOVSB": return Mnemonic.REP_MOVSB;
                 case "REP_MOVSW": return Mnemonic.REP_MOVSW;
@@ -2710,16 +2704,26 @@ namespace AsmTools {
                 case "REPNZ_SCASD": return Mnemonic.REPNZ_SCASD;
                 case "REPNZ_SCASQ": return Mnemonic.REPNZ_SCASQ;
 
+                case "REP_INS": return Mnemonic.REP_INS;
+                case "REP_INSB": return Mnemonic.REP_INSB;
+                case "REP_INSW": return Mnemonic.REP_INSW;
+                case "REP_INSD": return Mnemonic.REP_INSD;
+
                 case "INS": return Mnemonic.INS;
                 case "INSB": return Mnemonic.INSB;
                 case "INSW": return Mnemonic.INSW;
                 case "INSD": return Mnemonic.INSD;
 
-                case "OUT": return Mnemonic.OUT;
                 case "OUTS": return Mnemonic.OUTS;
                 case "OUTSB": return Mnemonic.OUTSB;
                 case "OUTSW": return Mnemonic.OUTSW;
                 case "OUTSD": return Mnemonic.OUTSD;
+
+                case "REP_OUTS": return Mnemonic.REP_OUTS;
+                case "REP_OUTSB": return Mnemonic.REP_OUTSB;
+                case "REP_OUTSW": return Mnemonic.REP_OUTSW;
+                case "REP_OUTSD": return Mnemonic.REP_OUTSD;
+
                 case "STC": return Mnemonic.STC;
                 case "CLC": return Mnemonic.CLC;
                 case "CMC": return Mnemonic.CMC;
@@ -2885,7 +2889,6 @@ namespace AsmTools {
                 case "HLT": return Mnemonic.HLT;
                 case "IBTS": return Mnemonic.IBTS;
                 case "ICEBP": return Mnemonic.ICEBP;
-                case "IN": return Mnemonic.IN;
                 case "INCBIN": return Mnemonic.INCBIN;
                 case "INT01": return Mnemonic.INT01;
                 case "INT1": return Mnemonic.INT1;

@@ -49,7 +49,7 @@ namespace AsmSim {
         ZERO = 1 << 2,
 
         /// <summary>
-        /// Inconsistent bit value: the value of a bit is set to both 1 and 0. This happens when Z3 determines that 1] the bit value of 1 is inconsistent, and 2] the bit value 0 is inconsistent. this is due to bugs in AsmSim
+        /// Inconsistent bit value: the value of a bit is set to both 1 and 0. This happens when Z3 determines that 1] the bit value of 1 is inconsistent, and 2] the bit value 0 is inconsistent. This happens when unreachable code is evaluated
         /// </summary>
         INCONSISTENT = 1 << 3,
 

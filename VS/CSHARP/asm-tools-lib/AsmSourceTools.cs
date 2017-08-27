@@ -23,7 +23,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -74,28 +73,48 @@ namespace AsmTools
                     //Console.WriteLine(codeStr + ":" + codeStr.Length);
 
                     // get the first keyword, check if it is a mnemonic
-                    (int beginPos, int endPos) = AsmTools.AsmSourceTools.GetKeywordPos(0, codeStr);
-                    string firstKeyword = codeStr.Substring(beginPos, endPos - beginPos);
-                    if (firstKeyword.Length > 0)
+                    var keyword1Pos = AsmTools.AsmSourceTools.GetKeywordPos(0, codeStr); // find a keyword starting a position 0
+                    string keyword1 = codeStr.Substring(keyword1Pos.BeginPos, keyword1Pos.EndPos - keyword1Pos.BeginPos);
+                    if (keyword1.Length > 0)
                     {
-                        mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(firstKeyword, true);
-                        if (mnemonic == Mnemonic.NONE)
+                        int startArgPos = keyword1Pos.EndPos;
+                        mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(keyword1, true);
+                        switch (mnemonic)
                         {
-                            //Console.WriteLine("INFO: ToolsZ3:parseLine: found unknown first Keyword \"" + firstKeyword + "\". Ignoring this line.");
-                        }
-                        else
-                        {
-                            //Console.WriteLine("INFO: ToolsZ3:parseLine: found codeStr " + codeStr);
-                            if (codeStr.Length > 0)
-                            {
-                                string argsStr = codeStr.Substring(endPos, codeStr.Length - endPos);
-                                if (argsStr.Length > 0)
+                            case Mnemonic.NONE: break;
+                            case Mnemonic.REP:
+                            case Mnemonic.REPE:
+                            case Mnemonic.REPZ:
+                            case Mnemonic.REPNE:
+                            case Mnemonic.REPNZ:
                                 {
-                                    args = argsStr.Split(',');
-                                    for (int i = 0; i < args.Length; ++i)
+                                    // find a second keyword starting a postion keywordPos.EndPos
+                                    var keyword2Pos = AsmTools.AsmSourceTools.GetKeywordPos(keyword1Pos.EndPos+1, codeStr); // find a keyword starting a position 0
+                                    string keyword2 = codeStr.Substring(keyword2Pos.BeginPos, keyword2Pos.EndPos - keyword2Pos.BeginPos);
+                                    if (keyword2.Length > 0)
                                     {
-                                        args[i] = args[i].Trim();
+                                        Mnemonic mnemonic2 = AsmTools.AsmSourceTools.ParseMnemonic(keyword2, true);
+                                        if (mnemonic2 != Mnemonic.NONE)
+                                        {
+                                            startArgPos = keyword2Pos.EndPos;
+                                            mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(mnemonic.ToString() + "_" + mnemonic2.ToString(), true);
+                                        }
                                     }
+                                    break;
+                                }
+                            default: break;
+                        }
+
+                        // find arguments after the last mnemonic
+                        if (codeStr.Length > 0)
+                        {
+                            string argsStr = codeStr.Substring(startArgPos, codeStr.Length - startArgPos);
+                            if (argsStr.Length > 0)
+                            {
+                                args = argsStr.Split(',');
+                                for (int i = 0; i < args.Length; ++i)
+                                {
+                                    args[i] = args[i].Trim();
                                 }
                             }
                         }
@@ -769,7 +788,7 @@ namespace AsmTools
             var tup = GetLabelDefPos_Regular(line3);
             if (tup.Valid)
             {
-                return (Valid: true, BeginPos: tup.Item2 + displacement, EndPos: tup.Item3 + displacement);
+                return (Valid: true, BeginPos: tup.BeginPos + displacement, EndPos: tup.EndPos + displacement);
             }
             else
             {
@@ -777,6 +796,9 @@ namespace AsmTools
             }
         }
 
+
+        /// <summary>Get the first position of a remark character in the provided line; 
+        /// Valid is true if one such char is found.</summary>
         public static (bool Valid, int BeginPos, int EndPos) GetRemarkPos(string line)
         {
             int nChars = line.Length;

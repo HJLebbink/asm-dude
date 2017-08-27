@@ -33,6 +33,8 @@ namespace AsmSim
         public bool ZF = false;
         public bool SF = false;
         public bool OF = false;
+        public bool DF = false;
+
 
         public bool RAX = false;
         public bool RBX = false;
@@ -73,6 +75,7 @@ namespace AsmSim
             this.ZF = true;
             this.SF = true;
             this.OF = true;
+            this.DF = true;
         }
         public void Set_All_Reg_On()
         {
@@ -106,6 +109,7 @@ namespace AsmSim
             this.ZF = false;
             this.SF = false;
             this.OF = false;
+            this.DF = false;
         }
         public void Set_All_Reg_Off()
         {
@@ -145,6 +149,7 @@ namespace AsmSim
             if (flags.HasFlag(Flags.ZF)) this.ZF = true;
             if (flags.HasFlag(Flags.SF)) this.SF = true;
             if (flags.HasFlag(Flags.OF)) this.OF = true;
+            if (flags.HasFlag(Flags.DF)) this.DF = true;
         }
         public void Set_Reg_On(Rn reg)
         {
@@ -211,6 +216,7 @@ namespace AsmSim
                 case Flags.ZF: return this.ZF;
                 case Flags.SF: return this.SF;
                 case Flags.OF: return this.OF;
+                case Flags.DF: return this.DF;
                 default: return false;
             }
         }
@@ -244,6 +250,7 @@ namespace AsmSim
             if (this.ZF) yield return Flags.ZF;
             if (this.SF) yield return Flags.SF;
             if (this.OF) yield return Flags.OF;
+            if (this.DF) yield return Flags.DF;
         }
         #endregion
     }

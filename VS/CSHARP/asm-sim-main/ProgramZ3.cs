@@ -42,15 +42,16 @@ namespace AsmSim
             System.Version ver = thisAssemName.Version;
             Console.WriteLine(string.Format("Loaded AsmSim version {0}.", ver));
 
-            TestMem2();
+            //TestMem2();
             //TestExecutionTree();
             //TestGraph();
             //TestMnemonic();
+            Test_Rep();
             //TestMemorySpeed();
             //TestDynamicFlow();
             //TestSIMD();
             //EmptyMemoryTest();
-            //ProgramSynthesis1();            
+            //ProgramSynthesis1();
             //TestFunctions();
             //TacticTest();
             //TestMemoryLeak();
@@ -472,6 +473,53 @@ namespace AsmSim
             }
         }
 
+        static void Test_Rep()
+        {
+            Dictionary<string, string> settings = new Dictionary<string, string>
+            {
+                { "unsat-core", "false" },    // enable generation of unsat cores
+                { "model", "false" },         // enable model generation
+                { "proof", "false" },         // enable proof generation
+                { "timeout", "1000" }
+            };
+            Tools tools = new Tools(settings);
+            tools.StateConfig.Set_All_Off();
+            using (Context ctx = new Context(settings))
+            {
+                if (true)
+                {
+                    tools.StateConfig.Set_All_Off();
+                    tools.StateConfig.DF = true;
+                    tools.StateConfig.RCX = true;
+                    tools.StateConfig.RSI = true;
+                    tools.StateConfig.RDI = true;
+                    tools.StateConfig.mem = true;
+
+
+                    string line1 = "std"; //std = set direction flag
+                    string line2 = "mov rdi, 100";
+                    string line3 = "mov rsi, 200";
+                    string line4 = "mov rcx, 3";
+                    string line5 = "rep movs";
+
+                    {   // forward
+                        string rootKey = "!INIT";
+                        State state = new State(tools, rootKey, rootKey);
+
+                        state = Runner.SimpleStep_Forward(line1, state);
+                        state = Runner.SimpleStep_Forward(line2, state);
+                        state = Runner.SimpleStep_Forward(line3, state);
+                        state = Runner.SimpleStep_Forward(line4, state);
+
+                        Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                        state = Runner.SimpleStep_Forward(line5, state);
+                        Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+                    }
+                }
+            }
+        }
+
+
         static void TestMnemonic()
         {
             Dictionary<string, string> settings = new Dictionary<string, string>
@@ -508,7 +556,7 @@ namespace AsmSim
                         Console.WriteLine("IsConsistent=" + state.IsConsistent);
                     }
                 }
-                if (true)
+                if (false)
                 {
                     bool logToDisplay = true;
 

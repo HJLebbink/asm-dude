@@ -227,6 +227,8 @@ namespace unit_tests_asm_z3
         }
         public static void AreEqual(Rn name, Tv[] expectedTvArray, State state)
         {
+            Assert.IsNotNull(state);
+
             int nBits = RegisterTools.NBits(name);
 
             Assert.AreEqual(nBits, expectedTvArray.Length);

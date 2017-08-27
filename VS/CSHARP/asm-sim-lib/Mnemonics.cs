@@ -927,7 +927,7 @@ namespace AsmSim
                     }
                     BitVecExpr rspExpr = this.Get(Rn.RSP);
                     this.RegularUpdate.Set(Rn.RSP, this._ctx.MkBVSub(rspExpr, this._ctx.MkBV(8, 64)));
-                    this.RegularUpdate.SetMem(rspExpr, value);
+                    this.RegularUpdate.Set_Mem(rspExpr, value);
                 }
                 else if (this.Tools.Parameters.mode_32bit)
                 {
@@ -942,14 +942,14 @@ namespace AsmSim
                     }
                     BitVecExpr espExpr = this.Get(Rn.ESP);
                     this.RegularUpdate.Set(Rn.ESP, this._ctx.MkBVSub(espExpr, this._ctx.MkBV(4, 32)));
-                    this.RegularUpdate.SetMem(espExpr, value);
+                    this.RegularUpdate.Set_Mem(espExpr, value);
                 }
                 else if (this.Tools.Parameters.mode_16bit)
                 {
                     BitVecExpr value = this.Op1Value;
                     BitVecExpr spExpr = this.Get(Rn.SP);
                     this.RegularUpdate.Set(Rn.SP, this._ctx.MkBVSub(spExpr, this._ctx.MkBV(2, 16)));
-                    this.RegularUpdate.SetMem(spExpr, value);
+                    this.RegularUpdate.Set_Mem(spExpr, value);
                 }
                 else
                 {
@@ -3197,112 +3197,85 @@ namespace AsmSim
         #endregion Control Transfer Instructions
 
         #region String Instructions
-        //The string instructions operate on strings of bytes, allowing them to be moved to and from memory.
+
+        /// <summary>
+        /// The string instructions operate on strings of bytes, allowing them to be moved to and from memory.
+        /// </summary>
         public abstract class StringOperationAbstract : OpcodeNBase
         {
-            private readonly int _nBytes = 0;
-            private readonly bool _repPrefix;
-            public StringOperationAbstract(Mnemonic mnemonic, bool repPrefix, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(mnemonic, args, 2, keys, t)
+            protected readonly Mnemonic _prefix;
+            protected int _nBytes = 0;
+            public StringOperationAbstract(Mnemonic mnemonic, Mnemonic prefix, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(mnemonic, args, 2, keys, t)
             {
-                this._repPrefix = repPrefix;
+                this._prefix = prefix;
                 if (this.IsHalted) return;
                 if (this.NOperands == 2)
                 {
                     if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
                 }
             }
-            protected (Rn Src, Rn Dst, BitVecNum nBytes) GetRegs()
-            {
-                Rn src;
-                Rn dst;
-                BitVecNum nB = null;
 
-                if (this.Tools.Parameters.mode_64bit)
-                {
-                    src = Rn.RDI;
-                    dst = Rn.RSI;
-                    nB = this._ctx.MkBV(64, (uint)this._nBytes);
-                }
-                else if (this.Tools.Parameters.mode_32bit)
-                {
-                    src = Rn.EDI;
-                    dst = Rn.ESI;
-                    nB = this._ctx.MkBV(32, (uint)this._nBytes);
-                }
-                else // legacy mode
-                {
-                    src = Rn.DI;
-                    dst = Rn.SI;
-                    nB = this._ctx.MkBV(16, (uint)this._nBytes);
-                }
-                return (Src: src, Dst: dst, nBytes: nB);
-            }
-            protected void Update_SI_DI()
+            protected Rn SourceIndexReg { get { return (this.Tools.Parameters.mode_64bit) ? Rn.RSI : ((this.Tools.Parameters.mode_32bit) ? Rn.ESI : Rn.SI); } }
+            protected Rn DestinationIndexReg { get { return (this.Tools.Parameters.mode_64bit) ? Rn.RDI : ((this.Tools.Parameters.mode_32bit) ? Rn.EDI : Rn.DI); } }
+            protected Rn CounterReg { get { return (this.Tools.Parameters.mode_64bit) ? Rn.RCX : ((this.Tools.Parameters.mode_32bit) ? Rn.ECX : Rn.CX); } }
+            protected Rn AccumulatorReg
             {
-                Context ctx = this._ctx;
-                (Rn src, Rn dst, BitVecNum nB) = this.GetRegs();
-                BitVecExpr srcBV = this.Get(src);
-                BitVecExpr dstBV = this.Get(dst);
-                BoolExpr df = this.Get(Flags.DF);
-                this.RegularUpdate.Set(src, ctx.MkITE(df, ctx.MkBVSub(srcBV, nB), ctx.MkBVAdd(srcBV, nB)) as BitVecExpr);
-                this.RegularUpdate.Set(dst, ctx.MkITE(df, ctx.MkBVSub(dstBV, nB), ctx.MkBVAdd(dstBV, nB)) as BitVecExpr);
+                get
+                {
+                    switch (this._nBytes)
+                    {
+                        case 1: return Rn.AL;
+                        case 2: return Rn.AX;
+                        case 4: return Rn.EAX;
+                        case 8: return Rn.RAX;
+                        default: throw new Exception();
+                    }
+                }
             }
+            protected BitVecNum IncrementBV
+            {
+                get
+                {
+                    int nBits = (this.Tools.Parameters.mode_64bit) ? 64 : ((this.Tools.Parameters.mode_32bit) ? 32 : 16);
+                    return this._ctx.MkBV(this._nBytes, (uint)nBits);
+                }
+            }
+
             public override Flags FlagsReadStatic { get { return Flags.DF; } }
             public override IEnumerable<Rn> RegsReadStatic
             {
                 get
                 {
-                    if (this.Tools.Parameters.mode_64bit)
-                    {
-                        yield return Rn.RDI;
-                        yield return Rn.RSI;
-                    }
-                    else if (this.Tools.Parameters.mode_32bit)
-                    {
-                        yield return Rn.EDI;
-                        yield return Rn.ESI;
-                    }
-                    else // legacy mode
-                    {
-                        yield return Rn.DI;
-                        yield return Rn.SI;
-                    }
+                    yield return this.SourceIndexReg;
+                    yield return this.DestinationIndexReg;
+                    if (this._prefix != Mnemonic.NONE) yield return this.CounterReg;
                 }
             }
             public override IEnumerable<Rn> RegsWriteStatic
             {
                 get
                 {
-                    if (this.Tools.Parameters.mode_64bit)
-                    {
-                        yield return Rn.RDI;
-                        yield return Rn.RSI;
-                    }
-                    else if (this.Tools.Parameters.mode_32bit)
-                    {
-                        yield return Rn.EDI;
-                        yield return Rn.ESI;
-                    }
-                    else // legacy mode
-                    {
-                        yield return Rn.DI;
-                        yield return Rn.SI;
-                    }
+                    yield return this.SourceIndexReg;
+                    yield return this.DestinationIndexReg;
+                    if (this._prefix != Mnemonic.NONE) yield return this.CounterReg;
                 }
             }
         }
         public sealed class Movs : StringOperationAbstract
         {
-            private readonly int _nBytes = 0;
-            public Movs(Mnemonic mnemonic, bool repPrefix, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) 
-                : base(mnemonic, repPrefix, args, keys, t)
+            public Movs(Mnemonic mnemonic, Mnemonic prefix, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) 
+                : base(mnemonic, prefix, args, keys, t)
             {
                 if (this.IsHalted) return;
+                if (!((prefix == Mnemonic.NONE) || (prefix == Mnemonic.REP)))
+                {
+                    this.SyntaxError = string.Format("\"{0}\": Invalid prefix {1}. Only REP is allowed.", this.ToString(), prefix);
+                }
                 if (this.NOperands == 2)
                 {
                     this._nBytes = this.op1.NBits >> 3;
                 }
-                else 
+                else if (this.NOperands == 0)
                 {
                     switch (mnemonic)
                     {
@@ -3313,29 +3286,63 @@ namespace AsmSim
                         default: break;
                     }
                 }
+                else
+                {
+                    this.SyntaxError = string.Format("\"{0}\": Invalid number of operands. Expected 0 or 2 operands, found {1} operand(s)", this.ToString(), this.NOperands);
+                }
             }
             public override void Execute()
             {
-                var regs = this.GetRegs();
-                BitVecExpr srcBV = this.Get(regs.Src);
-                BitVecExpr dstBV = this.Get(regs.Dst);
-                this.RegularUpdate.SetMem(srcBV, this.GetMem(dstBV, this._nBytes));
-                this.Update_SI_DI();
+                Context ctx = this._ctx;
+                Rn src = this.SourceIndexReg;
+                Rn dst = this.DestinationIndexReg;
+                BitVecExpr srcBV = this.Get(src);
+                BitVecExpr dstBV = this.Get(dst);
+
+                BoolExpr df = this.Get(Flags.DF);
+
+                if (this._prefix == Mnemonic.NONE)
+                {
+                    BitVecExpr totalBytes = this.IncrementBV;
+                    this.RegularUpdate.Set(src, ctx.MkITE(df, ctx.MkBVSub(srcBV, totalBytes), ctx.MkBVAdd(srcBV, totalBytes)) as BitVecExpr);
+                    this.RegularUpdate.Set(dst, ctx.MkITE(df, ctx.MkBVSub(dstBV, totalBytes), ctx.MkBVAdd(dstBV, totalBytes)) as BitVecExpr);
+
+                    //Update memory: copy memory location
+                    this.RegularUpdate.Set_Mem(srcBV, this.GetMem(dstBV, this._nBytes));
+                }
+                else if (this._prefix == Mnemonic.REP)
+                {
+                    Rn counter = this.CounterReg;
+                    BitVecExpr counterBV = this.Get(counter);
+                    BitVecExpr totalBytes = ctx.MkBVMul(this.IncrementBV, counterBV);
+
+                    this.RegularUpdate.Set(counter, 0UL);
+                    this.RegularUpdate.Set(src, ctx.MkITE(df, ctx.MkBVSub(srcBV, totalBytes), ctx.MkBVAdd(srcBV, totalBytes)) as BitVecExpr);
+                    this.RegularUpdate.Set(dst, ctx.MkITE(df, ctx.MkBVSub(dstBV, totalBytes), ctx.MkBVAdd(dstBV, totalBytes)) as BitVecExpr);
+
+                    //Update memory: set all memory as unknown
+                    this.RegularUpdate.Set_Mem(Tools.Create_Mem_Key_Fresh(this.Tools.Rand, ctx));
+                }
             }
         }
 
         public sealed class Cmps : StringOperationAbstract
         {
-            private readonly int _nBytes = 0;
-            public Cmps(Mnemonic mnemonic, bool repPrefix, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) 
-                : base(mnemonic, repPrefix, args, keys, t)
+            public Cmps(Mnemonic mnemonic, Mnemonic prefix, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) 
+                : base(mnemonic, prefix, args, keys, t)
             {
+                Context ctx = this._ctx;
+
                 if (this.IsHalted) return;
+                if (!((prefix == Mnemonic.NONE) || (prefix == Mnemonic.REPE) || (prefix == Mnemonic.REPZ) || (prefix == Mnemonic.REPNE) || (prefix == Mnemonic.REPNZ)))
+                {
+                    this.SyntaxError = string.Format("\"{0}\": Invalid prefix {1}. Only REPE, REPZ, REPZE or REPNZ are allowed.", this.ToString(), prefix);
+                }
                 if (this.NOperands == 2)
                 {
                     this._nBytes = this.op1.NBits >> 3;
                 }
-                else
+                else if (this.NOperands == 0)
                 {
                     switch (mnemonic)
                     {
@@ -3346,37 +3353,321 @@ namespace AsmSim
                         default: break;
                     }
                 }
+                else
+                {
+                    this.SyntaxError = string.Format("\"{0}\": Invalid number of operands. Expected 0 or 2 operands, found {1} operand(s)", this.ToString(), this.NOperands);
+                }
             }
             public override void Execute()
             {
-                var regs = this.GetRegs();
-                var tup = BitOperations.Substract(this.GetMem(this.Get(regs.Src), this._nBytes), this.GetMem(this.Get(regs.Dst), this._nBytes), this._ctx);
-                this.RegularUpdate.Set(Flags.CF, tup.cf);
-                this.RegularUpdate.Set(Flags.OF, tup.of);
-                this.RegularUpdate.Set(Flags.AF, tup.af);
-                this.RegularUpdate.Set_SF_ZF_PF(tup.result);
-                this.Update_SI_DI();
+                Context ctx = this._ctx;
+                Rn src = this.SourceIndexReg;
+                Rn dst = this.DestinationIndexReg;
+                BitVecExpr srcBV = this.Get(src);
+                BitVecExpr dstBV = this.Get(dst);
+
+                BoolExpr df = this.Get(Flags.DF);
+
+                if (this._prefix == Mnemonic.NONE)
+                {
+                    var tup = BitOperations.Substract(this.GetMem(src, this._nBytes), this.GetMem(dst, this._nBytes), this._ctx);
+
+                    this.RegularUpdate.Set(Flags.CF, tup.cf);
+                    this.RegularUpdate.Set(Flags.OF, tup.of);
+                    this.RegularUpdate.Set(Flags.AF, tup.af);
+                    this.RegularUpdate.Set_SF_ZF_PF(tup.result);
+
+                    BitVecExpr totalBytes = this.IncrementBV;
+                    this.RegularUpdate.Set(src, ctx.MkITE(df, ctx.MkBVSub(srcBV, totalBytes), ctx.MkBVAdd(srcBV, totalBytes)) as BitVecExpr);
+                    this.RegularUpdate.Set(dst, ctx.MkITE(df, ctx.MkBVSub(dstBV, totalBytes), ctx.MkBVAdd(dstBV, totalBytes)) as BitVecExpr);
+                }
+                else if ((this._prefix == Mnemonic.REPE) || (this._prefix == Mnemonic.REPZ))
+                {
+                    this.RegularUpdate.Set(Flags.CF, Tv.UNKNOWN);
+                    this.RegularUpdate.Set(Flags.PF, Tv.UNKNOWN);
+                    this.RegularUpdate.Set(Flags.AF, Tv.UNKNOWN);
+                    this.RegularUpdate.Set(Flags.ZF, Tv.UNKNOWN);
+                    this.RegularUpdate.Set(Flags.SF, Tv.UNKNOWN);
+                    this.RegularUpdate.Set(Flags.OF, Tv.UNKNOWN);
+
+                    this.RegularUpdate.Set(this.CounterReg, Tv.UNKNOWN); // I know that counterreg is between zero and the old value... 
+                    this.RegularUpdate.Set(src, Tv.UNKNOWN);
+                    this.RegularUpdate.Set(dst, Tv.UNKNOWN);
+                }
+                else if ((this._prefix == Mnemonic.REPNE) || (this._prefix == Mnemonic.REPNZ))
+                {
+                    this.RegularUpdate.Set(Flags.CF, Tv.UNKNOWN);
+                    this.RegularUpdate.Set(Flags.PF, Tv.UNKNOWN);
+                    this.RegularUpdate.Set(Flags.AF, Tv.UNKNOWN);
+                    this.RegularUpdate.Set(Flags.ZF, Tv.UNKNOWN);
+                    this.RegularUpdate.Set(Flags.SF, Tv.UNKNOWN);
+                    this.RegularUpdate.Set(Flags.OF, Tv.UNKNOWN);
+
+                    this.RegularUpdate.Set(this.CounterReg, Tv.UNKNOWN);
+                    this.RegularUpdate.Set(src, Tv.UNKNOWN);
+                    this.RegularUpdate.Set(dst, Tv.UNKNOWN);
+                }
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
         }
 
-        //SCAS,
-        //SCASB,// Scan string/Scan byte string
-        //SCASW,// Scan string/Scan word string
-        //SCASD,// Scan string/Scan doubleword string
-        //LODS,
-        //LODSB,// Load string/Load byte string
-        //LODSW,// Load string/Load word string
-        //LODSD,// Load string/Load doubleword string
-        //STOS,
-        //STOSB,// Store string/Store byte string
-        //STOSW,// Store string/Store word string
-        //STOSD,// Store string/Store doubleword string
-        //REP,// Repeat while ECX not zero
-        //REPE,
-        //REPZ,// Repeat while equal/Repeat while zero
-        //REPNE,
-        //REPNZ,// Repeat while not equal/Repeat while not zero
+        public sealed class Stos : StringOperationAbstract
+        {
+            public Stos(Mnemonic mnemonic, Mnemonic prefix, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) 
+                : base(mnemonic, prefix, args, keys, t)
+            {
+                if (this.IsHalted) return;
+                if (!((prefix == Mnemonic.NONE) || (prefix == Mnemonic.REP)))
+                {
+                    this.SyntaxError = string.Format("\"{0}\": Invalid prefix {1}. Only REP is allowed.", this.ToString(), prefix);
+                }
+                if (this.NOperands == 2)
+                {
+                    this._nBytes = this.op1.NBits >> 3;
+                }
+                else if (this.NOperands == 0)
+                {
+                    switch (mnemonic)
+                    {
+                        case Mnemonic.STOSB: this._nBytes = 1; break;
+                        case Mnemonic.STOSW: this._nBytes = 2; break;
+                        case Mnemonic.STOSD: this._nBytes = 4; break;
+                        case Mnemonic.STOSQ: this._nBytes = 8; break;
+                        default: break;
+                    }
+                } 
+                else
+                {
+                    this.SyntaxError = string.Format("\"{0}\": Invalid number of operands. Expected 0 or 2 operands, found {1} operand(s)", this.ToString(), this.NOperands);
+                }
+            }
+            public override void Execute()
+            {
+                Context ctx = this._ctx;
+                Rn dst = this.DestinationIndexReg;
+                BitVecExpr dstBV = this.Get(dst);
+
+                BoolExpr df = this.Get(Flags.DF);
+                BitVecExpr value = this.Get(this.AccumulatorReg);
+
+                if (this._prefix == Mnemonic.NONE)
+                {
+                    BitVecExpr totalBytes = this.IncrementBV;
+                    this.RegularUpdate.Set(dst, ctx.MkITE(df, ctx.MkBVSub(dstBV, totalBytes), ctx.MkBVAdd(dstBV, totalBytes)) as BitVecExpr);
+
+                    //Update memory: copy memory location
+                    this.RegularUpdate.Set_Mem(dstBV, value);
+                }
+                else if (this._prefix == Mnemonic.REP)
+                {
+                    Rn counter = this.CounterReg;
+                    BitVecExpr counterBV = this.Get(counter);
+                    BitVecExpr totalBytes = ctx.MkBVMul(this.IncrementBV, counterBV);
+                    this.RegularUpdate.Set(dst, ctx.MkITE(df, ctx.MkBVSub(dstBV, totalBytes), ctx.MkBVAdd(dstBV, totalBytes)) as BitVecExpr);
+
+                    this.RegularUpdate.Set(counter, 0UL);
+
+                    //Update memory: set all memory as unknown
+                    this.RegularUpdate.Set_Mem(Tools.Create_Mem_Key_Fresh(this.Tools.Rand, ctx));
+                }
+            }
+            public override IEnumerable<Rn> RegsReadStatic
+            {
+                get
+                {
+                    yield return this.AccumulatorReg;
+                    yield return this.DestinationIndexReg;
+                    if (this._prefix != Mnemonic.NONE) yield return this.CounterReg;
+                }
+            }
+            public override IEnumerable<Rn> RegsWriteStatic
+            {
+                get
+                {
+                    yield return this.DestinationIndexReg;
+                    if (this._prefix != Mnemonic.NONE) yield return this.CounterReg;
+                }
+            }
+        }
+
+        /// <summary>
+        /// SCAS - Scan string for value of al, ax, eax or rax
+        /// SCASB - Scan string/Scan byte string
+        /// SCASW - Scan string/Scan word string
+        /// SCASD - Scan string/Scan doubleword string
+        /// </summary>
+        public sealed class Scas : StringOperationAbstract
+        {
+            public Scas(Mnemonic mnemonic, Mnemonic prefix, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
+                : base(mnemonic, prefix, args, keys, t)
+            {
+                if (this.IsHalted) return;
+                if (!((prefix == Mnemonic.NONE) || (prefix == Mnemonic.REPE) || (prefix == Mnemonic.REPZ) || (prefix == Mnemonic.REPNE) || (prefix == Mnemonic.REPNZ)))
+                {
+                    this.SyntaxError = string.Format("\"{0}\": Invalid prefix {1}. Only REPE, REPZ, REPZE or REPNZ are allowed.", this.ToString(), prefix);
+                }
+                if (this.NOperands == 1)
+                {
+                    this._nBytes = this.op1.NBits >> 3;
+                }
+                else if (this.NOperands == 0)
+                {
+                    switch (mnemonic)
+                    {
+                        case Mnemonic.SCASB: this._nBytes = 1; break;
+                        case Mnemonic.SCASW: this._nBytes = 2; break;
+                        case Mnemonic.SCASD: this._nBytes = 4; break;
+                        case Mnemonic.SCASQ: this._nBytes = 8; break;
+                        default: break;
+                    }
+                }
+                else
+                {
+                    this.SyntaxError = string.Format("\"{0}\": Invalid number of operands. Expected 0 or 1 operand, found {1} operand(s)", this.ToString(), this.NOperands);
+                }
+            }
+            public override void Execute()
+            {
+                Context ctx = this._ctx;
+                Rn dst = this.DestinationIndexReg;
+                BitVecExpr dstBV = this.Get(dst);
+
+                BoolExpr df = this.Get(Flags.DF);
+                BitVecExpr accumulator = this.Get(this.AccumulatorReg);
+
+                if (this._prefix == Mnemonic.NONE)
+                {
+                    var tup = BitOperations.Substract(accumulator, this.GetMem(dst, this._nBytes), this._ctx);
+
+                    this.RegularUpdate.Set(Flags.CF, tup.cf);
+                    this.RegularUpdate.Set(Flags.OF, tup.of);
+                    this.RegularUpdate.Set(Flags.AF, tup.af);
+                    this.RegularUpdate.Set_SF_ZF_PF(tup.result);
+
+                    BitVecExpr totalBytes = this.IncrementBV;
+                    this.RegularUpdate.Set(dst, ctx.MkITE(df, ctx.MkBVSub(dstBV, totalBytes), ctx.MkBVAdd(dstBV, totalBytes)) as BitVecExpr);
+                }
+                else if ((this._prefix == Mnemonic.REPE) || (this._prefix == Mnemonic.REPZ))
+                {
+                    this.RegularUpdate.Set(Flags.CF, Tv.UNKNOWN);
+                    this.RegularUpdate.Set(Flags.PF, Tv.UNKNOWN);
+                    this.RegularUpdate.Set(Flags.AF, Tv.UNKNOWN);
+                    this.RegularUpdate.Set(Flags.ZF, Tv.UNKNOWN);
+                    this.RegularUpdate.Set(Flags.SF, Tv.UNKNOWN);
+                    this.RegularUpdate.Set(Flags.OF, Tv.UNKNOWN);
+
+                    this.RegularUpdate.Set(this.CounterReg, Tv.UNKNOWN); // I know that counterreg is between zero and the old value... 
+                    this.RegularUpdate.Set(dst, Tv.UNKNOWN);
+                }
+                else if ((this._prefix == Mnemonic.REPNE) || (this._prefix == Mnemonic.REPNZ))
+                {
+                    this.RegularUpdate.Set(Flags.CF, Tv.UNKNOWN);
+                    this.RegularUpdate.Set(Flags.PF, Tv.UNKNOWN);
+                    this.RegularUpdate.Set(Flags.AF, Tv.UNKNOWN);
+                    this.RegularUpdate.Set(Flags.ZF, Tv.UNKNOWN);
+                    this.RegularUpdate.Set(Flags.SF, Tv.UNKNOWN);
+                    this.RegularUpdate.Set(Flags.OF, Tv.UNKNOWN);
+
+                    this.RegularUpdate.Set(this.CounterReg, Tv.UNKNOWN);
+                    this.RegularUpdate.Set(dst, Tv.UNKNOWN);
+                }
+            }
+            public override IEnumerable<Rn> RegsReadStatic
+            {
+                get
+                {
+                    yield return this.AccumulatorReg;
+                    yield return this.DestinationIndexReg;
+                    if (this._prefix != Mnemonic.NONE) yield return this.CounterReg;
+                }
+            }
+            public override IEnumerable<Rn> RegsWriteStatic
+            {
+                get
+                {
+                    yield return this.DestinationIndexReg;
+                    if (this._prefix != Mnemonic.NONE) yield return this.CounterReg;
+                }
+            }
+            public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
+        }
+
+        /// <summary>
+        /// LODS,
+        /// LODSB - Load string/Load byte string into al
+        /// LODSW - Load string/Load word string int ax
+        /// LODSD - Load string/Load doubleword string into eax
+        /// LODSQ - load string/load quadword string into rax
+        /// </summary>
+        public sealed class Lods : StringOperationAbstract
+        {
+            public Lods(Mnemonic mnemonic, Mnemonic prefix, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) 
+                : base(mnemonic, prefix, args, keys, t)
+            {
+                if (this.IsHalted) return;
+                if (!(prefix == Mnemonic.NONE))
+                {
+                    this.SyntaxError = string.Format("\"{0}\": Invalid prefix {1}. No Prefix is allowed.", this.ToString(), prefix);
+                }
+                if (this.NOperands == 1)
+                {
+                    this._nBytes = this.op1.NBits >> 3;
+                }
+                else if (this.NOperands == 0)
+                {
+                    switch (mnemonic)
+                    {
+                        case Mnemonic.LODSB: this._nBytes = 1; break;
+                        case Mnemonic.LODSW: this._nBytes = 2; break;
+                        case Mnemonic.LODSD: this._nBytes = 4; break;
+                        case Mnemonic.LODSQ: this._nBytes = 8; break;
+                        default: break;
+                    }
+                }
+                else
+                {
+                    this.SyntaxError = string.Format("\"{0}\": Invalid number of operands. Expected 0 or 1 operand, found {1} operand(s)", this.ToString(), this.NOperands);
+                }
+            }
+            public override void Execute()
+            {
+                Context ctx = this._ctx;
+                Rn src = this.SourceIndexReg;
+                BitVecExpr srcBV = this.Get(src);
+
+                BoolExpr df = this.Get(Flags.DF);
+
+                if (this._prefix == Mnemonic.NONE)
+                {
+                    BitVecExpr totalBytes = this.IncrementBV;
+                    this.RegularUpdate.Set(src, ctx.MkITE(df, ctx.MkBVSub(srcBV, totalBytes), ctx.MkBVAdd(srcBV, totalBytes)) as BitVecExpr);
+
+                    //Update accumulator: copy memory location
+                    this.RegularUpdate.Set(this.AccumulatorReg, this.GetMem(srcBV, this._nBytes));
+                }
+                else
+                {
+                    throw new Exception();
+                }
+            }
+            public override IEnumerable<Rn> RegsReadStatic
+            {
+                get
+                {
+                    yield return this.AccumulatorReg;
+                    yield return this.SourceIndexReg;
+                }
+            }
+            public override IEnumerable<Rn> RegsWriteStatic
+            {
+                get
+                {
+                    yield return this.AccumulatorReg;
+                    yield return this.SourceIndexReg;
+                }
+            }
+
+        }
         #endregion String Instructions
 
         #region I/O Instructions
@@ -3415,10 +3706,8 @@ namespace AsmSim
             }
             public override void Execute()
             {
-                // special case: set the truth value to known
-                Rn reg = this.op1.Rn;
-                BitVecExpr unknown = Tools.Create_Reg_Key_Fresh(reg, this.Tools.Rand, this._ctx);
-                this.RegularUpdate.Set(reg, unknown, this._ctx.MkBV(0, (uint)this.op1.NBits));
+                // special case: set the truth value to an defined but unknown value
+                this.RegularUpdate.Set(this.op1.Rn, Tv.UNKNOWN);
             }
             public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op2); } }
             public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1); } }

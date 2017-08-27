@@ -213,7 +213,7 @@ namespace AsmSim
                             {
                                 stateUpdateForward.Set(flag, ctx.MkITE(dummyBranchCondttion, Tools.Create_Key(flag, head1, ctx), Tools.Create_Key(flag, head2, ctx)) as BoolExpr);
                             }
-                            stateUpdateForward.SetMem(ctx.MkITE(dummyBranchCondttion, Tools.Create_Mem_Key(head1, ctx), Tools.Create_Mem_Key(head2, ctx)) as ArrayExpr);
+                            stateUpdateForward.Set_Mem(ctx.MkITE(dummyBranchCondttion, Tools.Create_Mem_Key(head1, ctx), Tools.Create_Mem_Key(head2, ctx)) as ArrayExpr);
 
                             this.Update_Forward(stateUpdateForward);
                         }
@@ -718,7 +718,7 @@ namespace AsmSim
         public string ToStringFlags(string identStr)
         {
             StringBuilder sb = new StringBuilder();
-            foreach (Flags flag in new Flags[] { Flags.CF, Flags.ZF, Flags.PF, Flags.OF, Flags.SF, Flags.AF })
+            foreach (Flags flag in new Flags[] { Flags.CF, Flags.ZF, Flags.PF, Flags.OF, Flags.SF, Flags.AF, Flags.DF })
             {
                 char c = ' ';
                 if (this.Tools.StateConfig.IsFlagOn(flag))

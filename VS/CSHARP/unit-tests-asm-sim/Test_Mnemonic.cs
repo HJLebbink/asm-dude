@@ -3882,7 +3882,6 @@ namespace unit_tests_asm_z3
         }
         #endregion
 
-
         #region Cmpxchg16b
         [TestMethod]
         public void Test_MnemonicZ3_Cmpxchg16b_1()
@@ -4007,7 +4006,6 @@ namespace unit_tests_asm_z3
         }
         #endregion
 
-
         #region Bswap
         [TestMethod]
         public void Test_MnemonicZ3_Bswap_1()
@@ -4045,6 +4043,185 @@ namespace unit_tests_asm_z3
 
             TestTools.AreEqual(Rn.RAX, 0x102040810203040, state);
         }
+        #endregion
+
+        #region Rep Movs
+        [TestMethod]
+        public void Test_MnemonicZ3_Rep_Movsb_1()
+        {
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.DF = true;
+            tools.StateConfig.RCX = true;
+            tools.StateConfig.RSI = true;
+            tools.StateConfig.RDI = true;
+            tools.StateConfig.mem = true;
+
+            ulong rdi = 100;
+            ulong rsi = 200;
+            ulong rcx = 3;
+
+            string line1 = "std"; //std = set direction flag
+            string line2 = "mov rdi, " + rdi;
+            string line3 = "mov rsi, " + rsi;
+            string line4 = "mov rcx, " + rcx;
+            string line5 = "rep movsb";
+
+            State state = CreateState(tools);
+            state = Runner.SimpleStep_Forward(line1, state);
+            state = Runner.SimpleStep_Forward(line2, state);
+            state = Runner.SimpleStep_Forward(line3, state);
+            state = Runner.SimpleStep_Forward(line4, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+            state = Runner.SimpleStep_Forward(line5, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Rn.RCX, 0, state);
+            TestTools.AreEqual(Rn.RDI, rdi - (1 * rcx), state);
+            TestTools.AreEqual(Rn.RSI, rsi - (1 * rcx), state);
+        }
+
+        [TestMethod]
+        public void Test_MnemonicZ3_Rep_Movsb_2()
+        {
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.DF = true;
+            tools.StateConfig.RCX = true;
+            tools.StateConfig.RSI = true;
+            tools.StateConfig.RDI = true;
+            tools.StateConfig.mem = true;
+
+            ulong rdi = 100;
+            ulong rsi = 200;
+            ulong rcx = 4;
+
+            string line1 = "cld"; //std = set direction flag
+            string line2 = "mov rdi, " + rdi;
+            string line3 = "mov rsi, " + rsi;
+            string line4 = "mov rcx, " + rcx;
+            string line5 = "rep movsb";
+
+            State state = CreateState(tools);
+            state = Runner.SimpleStep_Forward(line1, state);
+            state = Runner.SimpleStep_Forward(line2, state);
+            state = Runner.SimpleStep_Forward(line3, state);
+            state = Runner.SimpleStep_Forward(line4, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+            state = Runner.SimpleStep_Forward(line5, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Rn.RCX, 0, state);
+            TestTools.AreEqual(Rn.RDI, rdi + (1 * rcx), state);
+            TestTools.AreEqual(Rn.RSI, rsi + (1 * rcx), state);
+        }
+
+        [TestMethod]
+        public void Test_MnemonicZ3_Rep_Movsb_3()
+        {
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.DF = true;
+            tools.StateConfig.RCX = true;
+            tools.StateConfig.RSI = true;
+            tools.StateConfig.RDI = true;
+            tools.StateConfig.mem = true;
+
+            ulong rdi = 100;
+            ulong rsi = 200;
+            ulong rcx = 3;
+
+            string line1 = "std"; //std = set direction flag
+            string line2 = "mov rdi, " + rdi;
+            string line3 = "mov rsi, " + rsi;
+            string line4 = "mov rcx, " + rcx;
+            string line5 = "rep movs byte ptr[rax], byte ptr[rax]";
+
+            State state = CreateState(tools);
+            state = Runner.SimpleStep_Forward(line1, state);
+            state = Runner.SimpleStep_Forward(line2, state);
+            state = Runner.SimpleStep_Forward(line3, state);
+            state = Runner.SimpleStep_Forward(line4, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+            state = Runner.SimpleStep_Forward(line5, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Rn.RCX, 0, state);
+            TestTools.AreEqual(Rn.RDI, rdi - (1 * rcx), state);
+            TestTools.AreEqual(Rn.RSI, rsi - (1 * rcx), state);
+        }
+
+        [TestMethod]
+        public void Test_MnemonicZ3_Rep_Movsw_1()
+        {
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.DF = true;
+            tools.StateConfig.RCX = true;
+            tools.StateConfig.RSI = true;
+            tools.StateConfig.RDI = true;
+            tools.StateConfig.mem = true;
+
+            ulong rdi = 100;
+            ulong rsi = 200;
+            ulong rcx = 3;
+
+            string line1 = "std"; //std = set direction flag
+            string line2 = "mov rdi, " + rdi;
+            string line3 = "mov rsi, " + rsi;
+            string line4 = "mov rcx, " + rcx;
+            string line5 = "rep movsw";
+
+            State state = CreateState(tools);
+            state = Runner.SimpleStep_Forward(line1, state);
+            state = Runner.SimpleStep_Forward(line2, state);
+            state = Runner.SimpleStep_Forward(line3, state);
+            state = Runner.SimpleStep_Forward(line4, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+            state = Runner.SimpleStep_Forward(line5, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Rn.RCX, 0, state);
+            TestTools.AreEqual(Rn.RDI, rdi - (2 * rcx), state);
+            TestTools.AreEqual(Rn.RSI, rsi - (2 * rcx), state);
+        }
+
+        [TestMethod]
+        public void Test_MnemonicZ3_Rep_Movsd_1()
+        {
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.DF = true;
+            tools.StateConfig.RCX = true;
+            tools.StateConfig.RSI = true;
+            tools.StateConfig.RDI = true;
+            tools.StateConfig.mem = true;
+
+            ulong rdi = 100;
+            ulong rsi = 200;
+            ulong rcx = 3;
+
+            string line1 = "std"; //std = set direction flag
+            string line2 = "mov rdi, " + rdi;
+            string line3 = "mov rsi, " + rsi;
+            string line4 = "mov rcx, " + rcx;
+            string line5 = "rep movsd";
+
+            State state = CreateState(tools);
+            state = Runner.SimpleStep_Forward(line1, state);
+            state = Runner.SimpleStep_Forward(line2, state);
+            state = Runner.SimpleStep_Forward(line3, state);
+            state = Runner.SimpleStep_Forward(line4, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+            state = Runner.SimpleStep_Forward(line5, state);
+            if (logToDisplay) Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+
+            TestTools.AreEqual(Rn.RCX, 0, state);
+            TestTools.AreEqual(Rn.RDI, rdi - (4 * rcx), state);
+            TestTools.AreEqual(Rn.RSI, rsi - (4 * rcx), state);
+        }
+
+
         #endregion
 
     }

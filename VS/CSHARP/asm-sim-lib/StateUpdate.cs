@@ -55,6 +55,7 @@ namespace AsmSim
         private BoolExpr _zf = null;
         private BoolExpr _sf = null;
         private BoolExpr _of = null;
+        private BoolExpr _df = null;
 
         private BoolExpr _cf_U = null;
         private BoolExpr _pf_U = null;
@@ -62,6 +63,7 @@ namespace AsmSim
         private BoolExpr _zf_U = null;
         private BoolExpr _sf_U = null;
         private BoolExpr _of_U = null;
+        private BoolExpr _df_U = null;
         #endregion
 
         #region Registers
@@ -318,6 +320,7 @@ namespace AsmSim
                 case Flags.ZF: return (undef) ? this._zf_U : this._zf;
                 case Flags.SF: return (undef) ? this._sf_U : this._sf;
                 case Flags.OF: return (undef) ? this._of_U : this._of;
+                case Flags.DF: return (undef) ? this._df_U : this._df;
                 default: throw new Exception();
             }
         }
@@ -479,6 +482,7 @@ namespace AsmSim
                 case Flags.ZF: if (undef) this._zf_U = value; else this._zf = value; break;
                 case Flags.SF: if (undef) this._sf_U = value; else this._sf = value; break;
                 case Flags.OF: if (undef) this._of_U = value; else this._of = value; break;
+                case Flags.DF: if (undef) this._df_U = value; else this._df = value; break;
                 default: throw new Exception();
             }
         }
@@ -499,6 +503,24 @@ namespace AsmSim
         {
             var tup = ToolsZ3.MakeVecExpr(value, this._ctx);
             this.Set(reg, tup.value, tup.undef);
+        }
+        /// <summary> Fill all bits of the provided register with the provided truth-value</summary>
+        public void Set(Rn reg, Tv value)
+        {
+            switch (value)
+            {
+                case Tv.ZERO: this.Set(reg, 0UL); break;
+                case Tv.UNKNOWN:
+                    BitVecExpr unknown = Tools.Create_Reg_Key_Fresh(reg, this._tools.Rand, this._ctx);
+                    this.Set(reg, unknown, this._ctx.MkBV(0, (uint)RegisterTools.NBits(reg)));
+                    break;
+                case Tv.INCONSISTENT:
+                case Tv.UNDEFINED:
+                case Tv.ONE:
+                    throw new Exception("oOt implemented yet");
+                    break;
+                default: break;
+            }
         }
         public void Set(Rn reg, BitVecExpr value)
         {
@@ -607,6 +629,7 @@ namespace AsmSim
                 }
             }
         }
+
         private void Set_Private(Rn reg, BoolExpr value, bool undef)
         {
             switch (reg)
@@ -637,25 +660,25 @@ namespace AsmSim
         #endregion
 
         #region Set Memory
-        public void SetMem(BitVecExpr address, ulong value, int nBytes)
+        public void Set_Mem(BitVecExpr address, ulong value, int nBytes)
         {
             BitVecExpr valueExpr = this._ctx.MkBV(value, (uint)nBytes << 3);
-            this.SetMem(address, valueExpr);
+            this.Set_Mem(address, valueExpr);
         }
-        public void SetMem(BitVecExpr address, string value)
+        public void Set_Mem(BitVecExpr address, string value)
         {
-            this.SetMem(address, ToolsZ3.GetTvArray(value));
+            this.Set_Mem(address, ToolsZ3.GetTvArray(value));
         }
-        public void SetMem(BitVecExpr address, Tv[] value)
+        public void Set_Mem(BitVecExpr address, Tv[] value)
         {
             var tup = ToolsZ3.MakeVecExpr(value, this._ctx);
-            this.SetMem(address, tup.value, tup.undef);
+            this.Set_Mem(address, tup.value, tup.undef);
         }
-        public void SetMem(BitVecExpr address, BitVecExpr value)
+        public void Set_Mem(BitVecExpr address, BitVecExpr value)
         {
-            this.SetMem(address, value, value);
+            this.Set_Mem(address, value, value);
         }
-        public void SetMem(BitVecExpr address, BitVecExpr value, BitVecExpr undef)
+        public void Set_Mem(BitVecExpr address, BitVecExpr value, BitVecExpr undef)
         {
             this.Empty = false;
 
@@ -680,8 +703,11 @@ namespace AsmSim
                 this._mem_Update_U = ctx.MkEq(memKey, newMemContent_U);
             }
         }
-        public void SetMem(ArrayExpr memContent)
+
+        public void Set_Mem(ArrayExpr memContent)
         {
+            this.Empty = false;
+
             if (this._mem_Full != null)
             {
                 Console.WriteLine("WARNING: StateUpdate:SetMem: multiple memory updates are not allowed");
@@ -689,6 +715,7 @@ namespace AsmSim
             }
             this._mem_Full = memContent.Translate(this._ctx) as ArrayExpr;
         }
+
         #endregion
 
         #region Set Operand
@@ -705,7 +732,7 @@ namespace AsmSim
             else if (operand.IsMem)
             {
                 BitVecExpr address = Tools.Calc_Effective_Address(operand, this._prevKey_Regular, this._ctx);
-                this.SetMem(address, value, undef);
+                this.Set_Mem(address, value, undef);
             }
             else
             {
@@ -774,6 +801,7 @@ namespace AsmSim
                 this._zf?.Dispose();
                 this._sf?.Dispose();
                 this._of?.Dispose();
+                this._df?.Dispose();
 
                 this._cf_U?.Dispose();
                 this._pf_U?.Dispose();
@@ -781,6 +809,7 @@ namespace AsmSim
                 this._zf_U?.Dispose();
                 this._sf_U?.Dispose();
                 this._of_U?.Dispose();
+                this._df_U?.Dispose();
 
                 this._rax?.Dispose();
                 this._rbx?.Dispose();

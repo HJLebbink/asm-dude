@@ -74,7 +74,7 @@ namespace unit_tests_asm_z3
 
             using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
-                updateState.SetMem(address1, value1);
+                updateState.Set_Mem(address1, value1);
                 state.Update_Forward(updateState);
             }
             BitVecExpr value2 = state.Create_Mem(address1, 8);
@@ -108,13 +108,13 @@ namespace unit_tests_asm_z3
 
             using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
-                updateState.SetMem(address1, value1a);
+                updateState.Set_Mem(address1, value1a);
                 state.Update_Forward(updateState);
             }
             BitVecExpr value1b = state.Create_Mem(address1, 8);
             using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
-                updateState.SetMem(address1, value2a);
+                updateState.Set_Mem(address1, value2a);
                 state.Update_Forward(updateState);
             }
             BitVecExpr value2b = state.Create_Mem(address1, 8);
@@ -173,7 +173,7 @@ namespace unit_tests_asm_z3
 
             using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
-                updateState.SetMem(address1, value1);
+                updateState.Set_Mem(address1, value1);
                 state.Update_Forward(updateState);
             }
             BitVecExpr value2 = state.Create_Mem(address2, 8);
@@ -224,7 +224,7 @@ namespace unit_tests_asm_z3
             BitVecExpr value1 = state.Create(Rn.R8);
             using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
-                updateState.SetMem(address1, value1);
+                updateState.Set_Mem(address1, value1);
                 state.Update_Forward(updateState);
             }
 
@@ -274,7 +274,7 @@ namespace unit_tests_asm_z3
             int nBytes = (int)value1.SortSize >> 3;
             using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
-                updateState.SetMem(address1, value1);
+                updateState.Set_Mem(address1, value1);
                 state.Update_Forward(updateState);
             }
             BitVecExpr value2 = state.Create_Mem(address2, nBytes);
@@ -312,12 +312,12 @@ namespace unit_tests_asm_z3
             BitVecExpr address2 = Tools.Calc_Effective_Address("qword ptr[rbx]", state.HeadKey, tools, ctx);
             using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
-                updateState.SetMem(address1, state.Create(Rn.RCX));
+                updateState.Set_Mem(address1, state.Create(Rn.RCX));
                 state.Update_Forward(updateState);
             }
             using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
-                updateState.SetMem(address2, state.Create(Rn.RDX));
+                updateState.Set_Mem(address2, state.Create(Rn.RDX));
                 state.Update_Forward(updateState);
             }
             BitVecExpr value1 = state.Create_Mem(address1, 1);
@@ -361,13 +361,13 @@ namespace unit_tests_asm_z3
             int nBytes = (int)value1a.SortSize >> 3;
             using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
-                updateState.SetMem(address1, value1a);
+                updateState.Set_Mem(address1, value1a);
                 state.Update_Forward(updateState);
             }
             BitVecExpr value1b = state.Create_Mem(address1, nBytes);
             using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
             {
-                updateState.SetMem(address2, value2a);
+                updateState.Set_Mem(address2, value2a);
                 state.Update_Forward(updateState);
             }
             BitVecExpr value2b = state.Create_Mem(address2, nBytes);
