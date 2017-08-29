@@ -36,7 +36,6 @@ using Microsoft.VisualStudio.Text.Tagging;
 using AsmTools;
 using AsmDude.SyntaxHighlighting;
 using AsmDude.Tools;
-using AsmSim;
 
 namespace AsmDude.QuickInfo
 {
@@ -50,7 +49,6 @@ namespace AsmDude.QuickInfo
         private readonly LabelGraph _labelGraph;
         private readonly AsmSimulator _asmSimulator;
         private readonly AsmDudeTools _asmDudeTools;
-        private readonly Brush _foreground;
 
         public object CSharpEditorResources { get; private set; }
 
@@ -65,7 +63,6 @@ namespace AsmDude.QuickInfo
             this._labelGraph = labelGraph;
             this._asmSimulator = asmSimulator;
             this._asmDudeTools = AsmDudeTools.Instance;
-            this._foreground = AsmDudeToolsStatic.Get_Font_Color();
         }
 
         /// <summary>Determine which pieces of Quickinfo content should be displayed</summary>
@@ -105,6 +102,8 @@ namespace AsmDude.QuickInfo
                 return;
             }
 
+            Brush foreground = AsmDudeToolsStatic.Get_Font_Color();
+
             var enumerator = this._aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint)).GetEnumerator();
             if (enumerator.MoveNext())
             {
@@ -143,7 +142,7 @@ namespace AsmDude.QuickInfo
                         case AsmTokenType.Misc:
                             {
                                 description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("Keyword ", this._foreground));
+                                description.Inlines.Add(Make_Run1("Keyword ", foreground));
                                 description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Misc))));
 
                                 string descr = this._asmDudeTools.Get_Description(keywordUpper);
@@ -152,7 +151,7 @@ namespace AsmDude.QuickInfo
                                     if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
                                     description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
                                     {
-                                        Foreground = this._foreground
+                                        Foreground = foreground
                                     });
                                 }
                                 break;
@@ -160,7 +159,7 @@ namespace AsmDude.QuickInfo
                         case AsmTokenType.Directive:
                             {
                                 description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("Directive ", this._foreground));
+                                description.Inlines.Add(Make_Run1("Directive ", foreground));
                                 description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Directive))));
 
                                 string descr = this._asmDudeTools.Get_Description(keywordUpper);
@@ -169,7 +168,7 @@ namespace AsmDude.QuickInfo
                                     if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
                                     description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
                                     {
-                                        Foreground = this._foreground
+                                        Foreground = foreground
                                     });
                                 }
                                 break;
@@ -179,38 +178,83 @@ namespace AsmDude.QuickInfo
                                 if (keywordUpper.StartsWith("%")) keywordUpper = keywordUpper.Substring(1); // remove the preceding % in AT&T syntax 
                                 Rn reg = RegisterTools.ParseRn(keywordUpper, true);
 
-                                description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("Register ", this._foreground));
-                                description.Inlines.Add(Make_Run2(reg.ToString(), new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Register))));
-
-                                string descr = this._asmDudeTools.Get_Description(keywordUpper);
-                                if (descr.Length > 0)
+                                if (true)
                                 {
-                                    if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
-                                    description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                    var myWpfView = new TooltipWindow2();
+                                    myWpfView.myPopup.Inlines.Add(Make_Run1("Register ", foreground));
+                                    myWpfView.myPopup.Inlines.Add(Make_Run2(reg.ToString(), new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Register))));
+
+                                    string descr = this._asmDudeTools.Get_Description(keywordUpper);
+                                    if (descr.Length > 0)
                                     {
-                                        Foreground = this._foreground
-                                    });
+                                        if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
+                                        myWpfView.myPopup.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                        {
+                                            Foreground = foreground
+                                        });
+                                    }
+
+                                    if (this._asmSimulator.Enabled & Settings.Default.AsmSim_Decorate_Registers)
+                                    {
+                                        string reg_Content_Before = this._asmSimulator.Get_Register_Value(reg, lineNumber, true, false, false).Value;
+                                        string reg_Content_After = this._asmSimulator.Get_Register_Value(reg, lineNumber, false, false, false).Value;
+                                        string msg = "\n" + reg + " before: " + reg_Content_Before + "\n" + reg + " after:  " + reg_Content_After;
+                                        myWpfView.myPopup.Inlines.Add(new Run(AsmSourceTools.Linewrap(msg, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                        {
+                                            Foreground = foreground
+                                        });
+                                    }
+
+                                    quickInfoContent.Add(myWpfView);
                                 }
-
-                                if (this._asmSimulator.Enabled & Settings.Default.AsmSim_Decorate_Registers)
+                                else
                                 {
-                                    string reg_Content_Before = this._asmSimulator.Get_Register_Value(reg, lineNumber, true, false, false).Value;
-                                    string reg_Content_After = this._asmSimulator.Get_Register_Value(reg, lineNumber, false, false, false).Value;
-                                    string msg = "\n" + reg + " before: " + reg_Content_Before + "\n" + reg + " after:  " + reg_Content_After;
-                                    description.Inlines.Add(new Run(AsmSourceTools.Linewrap(msg, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                    description = new TextBlock();
+                                    description.Inlines.Add(Make_Run1("Register ", foreground));
+                                    description.Inlines.Add(Make_Run2(reg.ToString(), new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Register))));
+
+                                    string descr = this._asmDudeTools.Get_Description(keywordUpper);
+                                    if (descr.Length > 0)
                                     {
-                                        Foreground = this._foreground
-                                    });
+                                        if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
+                                        description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                        {
+                                            Foreground = foreground
+                                        });
+                                    }
+
+                                    if (this._asmSimulator.Enabled & Settings.Default.AsmSim_Decorate_Registers)
+                                    {
+                                        string reg_Content_Before = this._asmSimulator.Get_Register_Value(reg, lineNumber, true, false, false).Value;
+                                        string reg_Content_After = this._asmSimulator.Get_Register_Value(reg, lineNumber, false, false, false).Value;
+                                        string msg = "\n" + reg + " before: " + reg_Content_Before + "\n" + reg + " after:  " + reg_Content_After;
+                                        description.Inlines.Add(new Run(AsmSourceTools.Linewrap(msg, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                        {
+                                            Foreground = foreground
+                                        });
+                                    }
                                 }
                                 break;
                             }
                         case AsmTokenType.Mnemonic:
                         case AsmTokenType.Jump:
                             {
-                                description = new TextBlock();
                                 Mnemonic mnemonic = AsmSourceTools.ParseMnemonic_Att(keywordUpper, true);
-                                Render_Mnemonic_ToolTip(description, mnemonic, this._foreground, this._asmDudeTools);
+
+                                if (true)
+                                {
+                                    var myWpfView = new TooltipWindow2
+                                    {
+                                        //Background = AsmDudeToolsStatic.Get_Background_Color()
+                                    };
+                                    Render_Mnemonic_ToolTip(myWpfView.myPopup, mnemonic, foreground, this._asmDudeTools);
+                                    quickInfoContent.Add(myWpfView);
+                                }
+                                else
+                                {
+                                    description = new TextBlock();
+                                    Render_Mnemonic_ToolTip(description, mnemonic, foreground, this._asmDudeTools);
+                                }
                                 break;
                             }
                         case AsmTokenType.Label:
@@ -220,7 +264,7 @@ namespace AsmDude.QuickInfo
                                 string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(labelPrefix, label, AsmDudeToolsStatic.Used_Assembler);
 
                                 description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("Label ", this._foreground));
+                                description.Inlines.Add(Make_Run1("Label ", foreground));
                                 description.Inlines.Add(Make_Run2(full_Qualified_Label, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Label))));
 
                                 string descr = Get_Label_Description(full_Qualified_Label);
@@ -233,7 +277,7 @@ namespace AsmDude.QuickInfo
                                     if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
                                     description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
                                     {
-                                        Foreground = this._foreground
+                                        Foreground = foreground
                                     });
                                 }
                                 break;
@@ -255,7 +299,7 @@ namespace AsmDude.QuickInfo
                                 AsmDudeToolsStatic.Output_INFO("AsmQuickInfoSource:AugmentQuickInfoSession: found label def " + full_Qualified_Label);
 
                                 description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("Label ", this._foreground));
+                                description.Inlines.Add(Make_Run1("Label ", foreground));
                                 description.Inlines.Add(Make_Run2(full_Qualified_Label, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Label))));
 
                                 string descr = Get_Label_Def_Description(full_Qualified_Label, label);
@@ -264,7 +308,7 @@ namespace AsmDude.QuickInfo
                                     if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
                                     description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
                                     {
-                                        Foreground = this._foreground
+                                        Foreground = foreground
                                     });
                                 }
                                 break;
@@ -272,7 +316,7 @@ namespace AsmDude.QuickInfo
                         case AsmTokenType.Constant:
                             {
                                 description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("Constant ", this._foreground));
+                                description.Inlines.Add(Make_Run1("Constant ", foreground));
 
                                 var constant = AsmSourceTools.Evaluate_Constant(keyword);
                                 string constantStr = (constant.Valid)
@@ -285,7 +329,7 @@ namespace AsmDude.QuickInfo
                         case AsmTokenType.UserDefined1:
                             {
                                 description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("User defined 1: ", this._foreground));
+                                description.Inlines.Add(Make_Run1("User defined 1: ", foreground));
                                 description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Userdefined1))));
 
                                 string descr = this._asmDudeTools.Get_Description(keywordUpper);
@@ -294,7 +338,7 @@ namespace AsmDude.QuickInfo
                                     if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
                                     description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
                                     {
-                                        Foreground = this._foreground
+                                        Foreground = foreground
                                     });
                                 }
                                 break;
@@ -302,7 +346,7 @@ namespace AsmDude.QuickInfo
                         case AsmTokenType.UserDefined2:
                             {
                                 description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("User defined 2: ", this._foreground));
+                                description.Inlines.Add(Make_Run1("User defined 2: ", foreground));
                                 description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Userdefined2))));
 
                                 string descr = this._asmDudeTools.Get_Description(keywordUpper);
@@ -311,7 +355,7 @@ namespace AsmDude.QuickInfo
                                     if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
                                     description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
                                     {
-                                        Foreground = this._foreground
+                                        Foreground = foreground
                                     });
                                 }
                                 break;
@@ -319,7 +363,7 @@ namespace AsmDude.QuickInfo
                         case AsmTokenType.UserDefined3:
                             {
                                 description = new TextBlock();
-                                description.Inlines.Add(Make_Run1("User defined 3: ", this._foreground));
+                                description.Inlines.Add(Make_Run1("User defined 3: ", foreground));
                                 description.Inlines.Add(Make_Run2(keyword, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Userdefined3))));
 
                                 string descr = this._asmDudeTools.Get_Description(keywordUpper);
@@ -328,7 +372,7 @@ namespace AsmDude.QuickInfo
                                     if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
                                     description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
                                     {
-                                        Foreground = this._foreground
+                                        Foreground = foreground
                                     });
                                 }
                                 break;
@@ -343,7 +387,20 @@ namespace AsmDude.QuickInfo
                         description.FontSize = AsmDudeToolsStatic.Get_Font_Size() + 2;
                         description.FontFamily = AsmDudeToolsStatic.Get_Font_Type();
                         //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:AugmentQuickInfoSession; setting description fontSize={1}; fontFamily={2}", this.ToString(), description.FontSize, description.FontFamily));
-                        quickInfoContent.Add(description);
+
+                        if (false)
+                        {
+                            var wpfView = new TooltipWindow2
+                            {
+                                myPopup = description,
+                                Background = AsmDudeToolsStatic.Get_Background_Color()
+                            };
+                            quickInfoContent.Add(wpfView);
+                        }
+                        else
+                        {
+                            quickInfoContent.Add(description);
+                        }
                     }
                 }
             }

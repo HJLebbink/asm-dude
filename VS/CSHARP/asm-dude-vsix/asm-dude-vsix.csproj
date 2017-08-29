@@ -201,6 +201,9 @@
     <Compile Include="AsmDoc\AsmDocUnderlineTaggerProvider.cs" />
     <Compile Include="AsmDoc\CtrlKeyState.cs" />
     <Compile Include="AsmDudePackage.cs" />
+    <Compile Include="QuickInfo\TooltipWindow2.xaml.cs">
+      <DependentUpon>TooltipWindow2.xaml</DependentUpon>
+    </Compile>
     <Compile Include="QuickInfo\DisassemblyMnemonicTooltip.xaml.cs">
       <DependentUpon>DisassemblyMnemonicTooltip.xaml</DependentUpon>
     </Compile>
@@ -481,6 +484,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="OptionsPage\AsmDudeOptionPageUI.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="QuickInfo\TooltipWindow2.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

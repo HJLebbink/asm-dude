@@ -7,7 +7,10 @@ include "bla"
 	call procedure3
 
 	V4FMADDPS
-
+	rep movs #rep movs
+	repe cmps
+	rep stos
+	rep SCAS
 
 #region 1 bit full adder
 ; ymm0 = A
@@ -31,7 +34,7 @@ por ymm7, ymm6, ymm4
 pxor ymm2, ymm0, ymm1
 pand ymm3, ymm0, ymm1
 #endregion
-
+call
 
 #region Things TODO
 #######################################################
