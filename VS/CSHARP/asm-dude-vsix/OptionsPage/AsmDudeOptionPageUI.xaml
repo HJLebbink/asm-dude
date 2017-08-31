@@ -14,115 +14,135 @@
                 </Grid>
                 <GroupBox Header="Syntax Highlighting" >
                     <Grid Margin="0,2,0,0">
-                        <StackPanel>
-                            <CheckBox x:Name="SyntaxHighlighting_On_UI" ToolTip="Syntax highlighting enabled" Content="Enable syntax highlighting" Margin="0,4,0,4" HorizontalAlignment="Left" Width="Auto" />
-                            <Grid>
-                                <Label Content="Mnemonic:" HorizontalAlignment="Left"/>
-                                <CheckBox x:Name="ColorMnemonic_Italic_UI" Content="Italic" Margin="130,6,0,2" HorizontalAlignment="Left" Width="Auto" />
-                                <xctk:ColorPicker x:Name="ColorMnemonic_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for mnemonics." Margin="180,0,0,0"/>
-                            </Grid>
-                            <Grid>
-                                <Label Content="Register:" HorizontalAlignment="Left"/>
-                                <CheckBox x:Name="ColorRegister_Italic_UI" Content="Italic" Margin="130,6,0,2" HorizontalAlignment="Left" Width="Auto" />
-                                <xctk:ColorPicker x:Name="ColorRegister_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for registers" Margin="180,0,0,0"/>
-                            </Grid>
-                            <Grid>
-                                <Label Content="Remark:" HorizontalAlignment="Left"/>
-                                <CheckBox x:Name="ColorRemark_Italic_UI" Content="Italic" Margin="130,6,0,2" HorizontalAlignment="Left" Width="Auto" />
-                                <xctk:ColorPicker x:Name="ColorRemark_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for remarks" Margin="180,0,0,0"/>
-                            </Grid>
-                            <Grid>
-                                <Label Content="Directive:" HorizontalAlignment="Left"/>
-                                <CheckBox x:Name="ColorDirective_Italic_UI" Content="Italic" Margin="130,6,0,2" HorizontalAlignment="Left" Width="Auto" />
-                                <xctk:ColorPicker x:Name="ColorDirective_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for compiler directives" Margin="180,0,0,0"/>
-                            </Grid>
-                            <Grid>
-                                <Label Content="Constant:" HorizontalAlignment="Left"/>
-                                <CheckBox x:Name="ColorConstant_Italic_UI" Content="Italic" Margin="130,6,0,2" HorizontalAlignment="Left" Width="Auto" />
-                                <xctk:ColorPicker x:Name="ColorConstant_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for constants" Margin="180,0,0,0"/>
-                            </Grid>
-                            <Grid>
-                                <Label Content="Jump:" HorizontalAlignment="Left"/>
-                                <CheckBox x:Name="ColorJump_Italic_UI" Content="Italic" Margin="130,6,0,2" HorizontalAlignment="Left" Width="Auto" />
-                                <xctk:ColorPicker x:Name="ColorJump_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for jump mnemonics" Margin="180,0,0,0"/>
-                            </Grid>
-                            <Grid>
-                                <Label Content="Label:" HorizontalAlignment="Left"/>
-                                <CheckBox x:Name="ColorLabel_Italic_UI" Content="Italic" Margin="130,6,0,2" HorizontalAlignment="Left" Width="Auto" />
-                                <xctk:ColorPicker x:Name="ColorLabel_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for labels" Margin="180,0,0,0"/>
-                            </Grid>
-                            <Grid>
-                                <Label Content="Misc:" HorizontalAlignment="Left"/>
-                                <CheckBox x:Name="ColorMisc_Italic_UI" Content="Italic" Margin="130,6,0,2" HorizontalAlignment="Left" Width="Auto" />
-                                <xctk:ColorPicker x:Name="ColorMisc_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for misc" Margin="180,0,0,0"/>
-                            </Grid>
-                            <Grid>
-                                <Label Content="User defined 1:" HorizontalAlignment="Left"/>
-                                <CheckBox x:Name="ColorUserDefined1_Italic_UI" Content="Italic" Margin="130,6,0,2" HorizontalAlignment="Left" Width="Auto" />
-                                <xctk:ColorPicker x:Name="ColorUserDefined1_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for user defined 1. Locate AsmDudeData.xml and add your macro names." Margin="180,0,0,0"/>
-                            </Grid>
-                            <Grid>
-                                <Label Content="User defined 2:" HorizontalAlignment="Left"/>
-                                <CheckBox x:Name="ColorUserDefined2_Italic_UI" Content="Italic" Margin="130,6,0,2" HorizontalAlignment="Left" Width="Auto" />
-                                <xctk:ColorPicker x:Name="ColorUserDefined2_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for user defined 2. Locate AsmDudeData.xml and add your macro names." Margin="180,0,0,0"/>
-                            </Grid>
-                            <Grid>
-                                <Label Content="User defined 3:" HorizontalAlignment="Left"/>
-                                <CheckBox x:Name="ColorUserDefined3_Italic_UI" Content="Italic" Margin="130,6,0,2" HorizontalAlignment="Left" Width="Auto" />
-                                <xctk:ColorPicker x:Name="ColorUserDefined3_UI" DisplayColorAndName="True" ToolTip="Syntax highlighting color for user defined 3. Locate AsmDudeData.xml and add your macro names." Margin="180,0,0,0"/>
-                            </Grid>
-                            <GroupBox>
-                                <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" Margin="5,4,0,0" >
-                                    <Run Text="Note: go to Tools&gt;Options&gt;Environment&gt;Fonts and Colors&gt;Text Editor to edit other properties of these keywords such as font families. If you changed the color of these keywords in 'Fonts and Colors' remember to change them back to 'Default' otherwise the above color asignments may not work."/></TextBlock>
-                            </GroupBox>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="55"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
 
-                        </StackPanel>
+                        <CheckBox x:Name="SyntaxHighlighting_On_UI" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" ToolTip="Syntax highlighting enabled" Content="Enable syntax highlighting" VerticalAlignment="Center" Width="Auto" />
+
+                        <Label Content="Mnemonic:" Grid.Column="0" Grid.Row="1" />
+                        <CheckBox x:Name="ColorMnemonic_Italic_UI" Grid.Column="1" Grid.Row="1" Content="Italic" VerticalAlignment="Center" Width="Auto" />
+                        <xctk:ColorPicker x:Name="ColorMnemonic_UI" Grid.Column="2" Grid.Row="1" DisplayColorAndName="True" ToolTip="Syntax highlighting color for mnemonics."/>
+
+                        <Label Content="Register:" Grid.Column="0" Grid.Row="2" />
+                        <CheckBox x:Name="ColorRegister_Italic_UI" Grid.Column="1" Grid.Row="2" Content="Italic" VerticalAlignment="Center" Width="Auto" />
+                        <xctk:ColorPicker x:Name="ColorRegister_UI" Grid.Column="2" Grid.Row="2"  DisplayColorAndName="True" ToolTip="Syntax highlighting color for registers"/>
+
+                        <Label Content="Remark:" Grid.Column="0" Grid.Row="3" />
+                        <CheckBox x:Name="ColorRemark_Italic_UI" Grid.Column="1" Grid.Row="3" Content="Italic" VerticalAlignment="Center" Width="Auto" />
+                        <xctk:ColorPicker x:Name="ColorRemark_UI" Grid.Column="2" Grid.Row="3" DisplayColorAndName="True" ToolTip="Syntax highlighting color for remarks"/>
+
+                        <Label Content="Directive:" Grid.Column="0" Grid.Row="4" />
+                        <CheckBox x:Name="ColorDirective_Italic_UI" Grid.Column="1" Grid.Row="4" Content="Italic" VerticalAlignment="Center" Width="Auto" />
+                        <xctk:ColorPicker x:Name="ColorDirective_UI" Grid.Column="2" Grid.Row="4" DisplayColorAndName="True" ToolTip="Syntax highlighting color for compiler directives"/>
+
+                        <Label Content="Constant:" Grid.Column="0" Grid.Row="5" />
+                        <CheckBox x:Name="ColorConstant_Italic_UI" Grid.Column="1" Grid.Row="5" Content="Italic" VerticalAlignment="Center" Width="Auto" />
+                        <xctk:ColorPicker x:Name="ColorConstant_UI" Grid.Column="2" Grid.Row="5" DisplayColorAndName="True" ToolTip="Syntax highlighting color for constants"/>
+
+                        <Label Content="Jump:" Grid.Column="0" Grid.Row="6" />
+                        <CheckBox x:Name="ColorJump_Italic_UI" Grid.Column="1" Grid.Row="6" Content="Italic" VerticalAlignment="Center" Width="Auto" />
+                        <xctk:ColorPicker x:Name="ColorJump_UI" Grid.Column="2" Grid.Row="6" DisplayColorAndName="True" ToolTip="Syntax highlighting color for jump mnemonics"/>
+
+                        <Label Content="Label:" Grid.Column="0" Grid.Row="7" />
+                        <CheckBox x:Name="ColorLabel_Italic_UI" Grid.Column="1" Grid.Row="7" Content="Italic" VerticalAlignment="Center" Width="Auto" />
+                        <xctk:ColorPicker x:Name="ColorLabel_UI" Grid.Column="2" Grid.Row="7" DisplayColorAndName="True" ToolTip="Syntax highlighting color for labels"/>
+
+                        <Label Content="Misc:"  Grid.Column="0" Grid.Row="8" />
+                        <CheckBox x:Name="ColorMisc_Italic_UI" Grid.Column="1" Grid.Row="8" Content="Italic" VerticalAlignment="Center" Width="Auto" />
+                        <xctk:ColorPicker x:Name="ColorMisc_UI" Grid.Column="2" Grid.Row="8" DisplayColorAndName="True" ToolTip="Syntax highlighting color for misc"/>
+
+                        <Label Content="User defined 1:" Grid.Column="0" Grid.Row="9" />
+                        <CheckBox x:Name="ColorUserDefined1_Italic_UI" Grid.Column="1" Grid.Row="9" Content="Italic" VerticalAlignment="Center" Width="Auto" />
+                        <xctk:ColorPicker x:Name="ColorUserDefined1_UI" Grid.Column="2" Grid.Row="9" DisplayColorAndName="True" ToolTip="Syntax highlighting color for user defined 1. Locate AsmDudeData.xml and add your macro names."/>
+
+                        <Label Content="User defined 2:" Grid.Column="0" Grid.Row="10" />
+                        <CheckBox x:Name="ColorUserDefined2_Italic_UI" Grid.Column="1" Grid.Row="10" Content="Italic" VerticalAlignment="Center" Width="Auto" />
+                        <xctk:ColorPicker x:Name="ColorUserDefined2_UI" Grid.Column="2" Grid.Row="10" DisplayColorAndName="True" ToolTip="Syntax highlighting color for user defined 2. Locate AsmDudeData.xml and add your macro names."/>
+
+                        <Label Content="User defined 3:" Grid.Column="0" Grid.Row="11" />
+                        <CheckBox x:Name="ColorUserDefined3_Italic_UI" Grid.Column="1" Grid.Row="11" Content="Italic" VerticalAlignment="Center" Width="Auto" />
+                        <xctk:ColorPicker x:Name="ColorUserDefined3_UI" Grid.Column="2" Grid.Row="11" DisplayColorAndName="True" ToolTip="Syntax highlighting color for user defined 3. Locate AsmDudeData.xml and add your macro names."/>
+
+                        <TextBlock TextWrapping="WrapWithOverflow" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="12" >
+                        <Run Text="Note: go to Tools&gt;Options&gt;Environment&gt;Fonts and Colors&gt;Text Editor to edit other properties of these keywords such as font families. If you changed the color of these keywords in 'Fonts and Colors' remember to change them back to 'Default' otherwise the above color asignments may not work."/>
+                        </TextBlock>
                     </Grid>
                 </GroupBox>
                 <GroupBox Header="Documentation" >
                     <Grid Margin="0,2,0,0">
-                        <StackPanel>
-                            <CheckBox x:Name="AsmDoc_On_UI" ToolTip="Assembly documentation enabled" Content="Enable documentation" Margin="0,4,0,4" HorizontalAlignment="Left" Width="Auto" />
-                            <Grid>
-                                <Label Content="Documentation URL:" HorizontalAlignment="Left"/>
-                                <TextBox x:Name="AsmDoc_Url_UI" ToolTip="URL to the documentation. E.g. https://github.com/HJLebbink/asm-dude/wiki" TextWrapping="Wrap" Text="https://github.com/HJLebbink/asm-dude/wiki" Margin="140,3,0,2" Width="auto"/>
-                            </Grid>
-                        </StackPanel>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                        </Grid.RowDefinitions>
+
+                        <CheckBox x:Name="AsmDoc_On_UI" Grid.Column="0" Grid.Row="0" ToolTip="Assembly documentation enabled" Content="Enable documentation" VerticalAlignment="Center"/>
+                        <Label Content="Documentation URL:" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center"/>
+                        <TextBox x:Name="AsmDoc_Url_UI" Grid.Column="1" Grid.Row="1" ToolTip="URL to the documentation. E.g. https://github.com/HJLebbink/asm-dude/wiki" TextWrapping="Wrap" Text="https://github.com/HJLebbink/asm-dude/wiki" Height="26" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
                     </Grid>
                 </GroupBox>
                 <GroupBox Header="Folding" >
                     <Grid Margin="0,2,0,0">
-                        <StackPanel>
-                            <Grid>
-                                <CheckBox x:Name="CodeFolding_On_UI" ToolTip="Code folding enabled" Content="Enable code folding" Margin="0,4,0,4" HorizontalAlignment="Left" Width="Auto" />
-                                <CheckBox x:Name="CodeFolding_IsDefaultCollaped_UI" ToolTip="Whether folding regions are collapsed by default" Content="Default collapsed" Margin="140,4,0,4" HorizontalAlignment="Left" Width="Auto" />
-                            </Grid>
-                            <Grid>
-                                <Label Content="Start tag:" HorizontalAlignment="Left"/>
-                                <TextBox x:Name="CodeFolding_BeginTag_UI" ToolTip="The characters that start the outlining region. E.g. #region." Margin="180,3,0,2" />
-                            </Grid>
-                            <Grid>
-                                <Label Content="End tag:" HorizontalAlignment="Left"/>
-                                <TextBox x:Name="CodeFolding_EndTag_UI" ToolTip="The characters that end the outlining region. E.g. #endregion." Margin="180,3,0,2" />
-                            </Grid>
-                            <GroupBox>
-                                <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" Width="auto" Margin="4,4,0,0" Text="Note: place folding tags in a remark in order not to offend your assembler. For example, use: ;#region" />
-                            </GroupBox>
-                        </StackPanel>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                        </Grid.RowDefinitions>
+
+                        <CheckBox x:Name="CodeFolding_On_UI" Grid.Column="0" Grid.Row="0" ToolTip="Code folding enabled" Content="Enable code folding" VerticalAlignment="Center" />
+                        <CheckBox x:Name="CodeFolding_IsDefaultCollaped_UI" Grid.Column="1" Grid.Row="0" ToolTip="Whether folding regions are collapsed by default" Content="Default collapsed" VerticalAlignment="Center" />
+
+                        <Label Content="Start tag:" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" />
+                        <TextBox x:Name="CodeFolding_BeginTag_UI" Grid.Column="1" Grid.Row="1" ToolTip="The characters that start the outlining region. E.g. #region." Height="26" VerticalAlignment="Center" VerticalContentAlignment="Center" />
+
+                        <Label Content="End tag:" Grid.Column="0" Grid.Row="2" />
+                        <TextBox x:Name="CodeFolding_EndTag_UI" Grid.Column="1" Grid.Row="2" ToolTip="The characters that end the outlining region. E.g. #endregion." Height="26" VerticalAlignment="Center" VerticalContentAlignment="Center" />
+
+                        <TextBlock TextWrapping="WrapWithOverflow" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Text="Note: place folding tags in a remark in order not to offend your assembler. For example, use: ;#region" VerticalAlignment="Center" />
                     </Grid>
                 </GroupBox>
                 <GroupBox Header="Keyword Highlighting" >
                     <Grid Margin="0,2,0,0">
-                        <StackPanel>
-                            <Grid>
-                                <CheckBox x:Name="KeywordHighlighting_BackgroundColor_On_UI" ToolTip="Background color for highlighting enabled" Content="Use background color" Margin="0,4,0,4" HorizontalAlignment="Left" Width="Auto" />
-                                <xctk:ColorPicker x:Name="KeywordHighling_BackgroundColor_UI" IsEnabled="True" DisplayColorAndName="True" ToolTip="The background color for keyword highlighting" Margin="180,0,0,0" />
-                            </Grid>
-                            <Grid>
-                                <CheckBox x:Name="KeywordHighlighting_BorderColor_On_UI" ToolTip="Border color for highlighting enabled" Content="Use border color" Margin="0,4,0,4" HorizontalAlignment="Left" Width="Auto" />
-                                <xctk:ColorPicker x:Name="KeywordHighling_BorderColor_UI" IsEnabled="True" DisplayColorAndName="True" ToolTip="The font color for keyword highlighting" Margin="180,0,0,0" />
-                            </Grid>
-                        </StackPanel>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                        </Grid.RowDefinitions>
+
+                        <CheckBox x:Name="KeywordHighlighting_BackgroundColor_On_UI" Grid.Column="0" Grid.Row="0" ToolTip="Background color for highlighting enabled" Content="Use background color" Margin="0,4,0,4" HorizontalAlignment="Left" Width="Auto" />
+                        <xctk:ColorPicker x:Name="KeywordHighling_BackgroundColor_UI" Grid.Column="1" Grid.Row="0" IsEnabled="True" DisplayColorAndName="True" ToolTip="The background color for keyword highlighting" />
+
+                        <CheckBox x:Name="KeywordHighlighting_BorderColor_On_UI" Grid.Column="0" Grid.Row="1" ToolTip="Border color for highlighting enabled" Content="Use border color" Margin="0,4,0,4" HorizontalAlignment="Left" Width="Auto" />
+                        <xctk:ColorPicker x:Name="KeywordHighling_BorderColor_UI" Grid.Column="1" Grid.Row="1" IsEnabled="True" DisplayColorAndName="True" ToolTip="The font color for keyword highlighting"  />
                     </Grid>
                 </GroupBox>
                 <GroupBox Header="Latency and Throughput Information" >
@@ -141,108 +161,97 @@
                 </GroupBox>
                 <GroupBox Header="Intellisense" >
                     <Grid Margin="0,2,0,0">
-                        <StackPanel>
-                            <CheckBox x:Name="Intellisense_Code_Completion_On_UI" Content="Enable code completion" ToolTip="Code completion enabled" Margin="0,4,0,2" HorizontalAlignment="Left" Width="Auto" />
-                            <CheckBox x:Name="Intellisense_Signature_Help_On_UI" Content="Enable signature help" ToolTip="Signature help enabled" Margin="0,2,0,2" HorizontalAlignment="Left" Width="Auto" />
-                            <CheckBox x:Name="Intellisense_Label_Analysis_On_UI" Content="Enable label analysis" ToolTip="Label analysis enabled. Needed for code completions of labels, tooltip info of labels, missing label warnings, clashing label warnings." Margin="0,2,0,4" HorizontalAlignment="Left" Width="Auto" />
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="180"/>
-                                    <ColumnDefinition Width="180"/>
-                                    <ColumnDefinition Width="180"/>
-                                </Grid.ColumnDefinitions>
-                                <Label Content="Undefined Labels:" Grid.Column="0" />
-                                <CheckBox x:Name="Intellisense_Show_Undefined_Labels_UI" Content="Show in error list" ToolTip="Show undefined labels in error list" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left" Width="Auto" />
-                                <CheckBox x:Name="Intellisense_Decorate_Undefined_Labels_UI" Content="Decorate with Squiggle" ToolTip="Decorate undefined labels with error squiggles" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Left" Width="Auto" />
-                            </Grid>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="180"/>
-                                    <ColumnDefinition Width="180"/>
-                                    <ColumnDefinition Width="180"/>
-                                </Grid.ColumnDefinitions>
-                                <Label Content="Clashing Labels:" Grid.Column="0" />
-                                <CheckBox x:Name="Intellisense_Show_Clashing_Labels_UI" Content="Show in error list" ToolTip="Show clashing labels in error list"  VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left" Width="Auto" />
-                                <CheckBox x:Name="Intellisense_Decorate_Clashing_Labels_UI" Content="Decorate with Squiggle" ToolTip="Decorate clashing labels with error squiggle" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Left" Width="Auto" />
-                            </Grid>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="180"/>
-                                    <ColumnDefinition Width="180"/>
-                                    <ColumnDefinition Width="180"/>
-                                </Grid.ColumnDefinitions>
-                                <Label Content="Undefined Includes:" Grid.Column="0" />
-                                <CheckBox x:Name="Intellisense_Show_Undefined_Includes_UI" Content="Show in error list" ToolTip="Show undefined includes in error list" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left" Width="Auto" />
-                                <CheckBox x:Name="Intellisense_Decorate_Undefined_Includes_UI" Content="Decorate with Squiggle" ToolTip="Decorate undefined includes with error squiggle" VerticalAlignment="Center" Grid.Column="2" HorizontalAlignment="Left" Width="Auto" />
-                            </Grid>
-                        </StackPanel>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="130"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                        </Grid.RowDefinitions>
+
+                        <CheckBox x:Name="Intellisense_Code_Completion_On_UI" Grid.Column="0" Grid.Row="0" Content="Enable code completion" ToolTip="Code completion enabled" Margin="0,4,0,2" HorizontalAlignment="Left" Width="Auto" />
+                        <CheckBox x:Name="Intellisense_Signature_Help_On_UI" Grid.Column="0" Grid.Row="1" Content="Enable signature help" ToolTip="Signature help enabled" Margin="0,2,0,2" HorizontalAlignment="Left" Width="Auto" />
+                        <CheckBox x:Name="Intellisense_Label_Analysis_On_UI" Grid.Column="0" Grid.Row="2" Content="Enable label analysis" ToolTip="Label analysis enabled. Needed for code completions of labels, tooltip info of labels, missing label warnings, clashing label warnings." Margin="0,2,0,4" HorizontalAlignment="Left" Width="Auto" />
+
+                        <Label Content="Undefined Labels:" Grid.Column="0" Grid.Row="3"/>
+                        <CheckBox x:Name="Intellisense_Show_Undefined_Labels_UI"  Grid.Column="1" Grid.Row="3" Content="Show in error list" ToolTip="Show undefined labels in error list" VerticalAlignment="Center" HorizontalAlignment="Left" Width="Auto" />
+                        <CheckBox x:Name="Intellisense_Decorate_Undefined_Labels_UI"  Grid.Column="2" Grid.Row="3" Content="Decorate with Squiggle" ToolTip="Decorate undefined labels with error squiggles" VerticalAlignment="Center" HorizontalAlignment="Left" Width="Auto" />
+
+                        <Label Content="Clashing Labels:" Grid.Column="0" Grid.Row="4" />
+                        <CheckBox x:Name="Intellisense_Show_Clashing_Labels_UI"  Grid.Column="1" Grid.Row="4" Content="Show in error list" ToolTip="Show clashing labels in error list"  VerticalAlignment="Center" HorizontalAlignment="Left" Width="Auto" />
+                        <CheckBox x:Name="Intellisense_Decorate_Clashing_Labels_UI" Grid.Column="2" Grid.Row="4" Content="Decorate with Squiggle" ToolTip="Decorate clashing labels with error squiggle" VerticalAlignment="Center" HorizontalAlignment="Left" Width="Auto" />
+
+                        <Label Content="Undefined Includes:" Grid.Column="0" Grid.Row="5" />
+                        <CheckBox x:Name="Intellisense_Show_Undefined_Includes_UI" Grid.Column="1" Grid.Row="5" Content="Show in error list" ToolTip="Show undefined includes in error list" VerticalAlignment="Center" HorizontalAlignment="Left" Width="Auto" />
+                        <CheckBox x:Name="Intellisense_Decorate_Undefined_Includes_UI" Grid.Column="2" Grid.Row="5" Content="Decorate with Squiggle" ToolTip="Decorate undefined includes with error squiggle" VerticalAlignment="Center" HorizontalAlignment="Left" Width="Auto" />
                     </Grid>
                 </GroupBox>
                 <GroupBox Header="Assembly Simulator (Warning: Experimental, only supported in AsmDude 2.0)" >
                     <Grid Margin="0,2,0,0">
-                        <StackPanel>
-                            <GroupBox>
-                                <TextBlock TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" Width="auto" Margin="5,4,0,0" Text="Note: the simulator does not understand MASM or NASM, thus no 'MOV VAR, 10'. Jumping based on register content is also not supported, thus no 'JMP RAX'." />
-                            </GroupBox>
-                            <CheckBox x:Name="AsmSim_On_UI" Content="Enable assembly simulator" ToolTip="Enamble the assembly simulator" Margin="0,2,0,2" VerticalAlignment="Center" HorizontalAlignment="Left" Width="Auto" />
-                            <Grid>
-                                <xctk:IntegerUpDown x:Name="AsmSim_Z3_Timeout_MS_UI" DefaultValue="100" HorizontalAlignment="Left" Width="60"/>
-                                <Label Content="Timeout for Z3 in milliseconds" ToolTip="The number of milliseconds the Z3 theorem prover may spend on determining one single bit of a register. 200 is sensible: it would need (worst case) 12.8 sec to determine a 64-bit register. 0 means no timeout (not recommended!)" Margin="60,0,0,0" HorizontalAlignment="Left" Width="Auto" />
-                            </Grid>
-                            <Grid>
-                                <xctk:IntegerUpDown x:Name="AsmSim_Number_Of_Threads_UI" DefaultValue="4" HorizontalAlignment="Left" Width="60"/>
-                                <Label Content="Number of worker threads" ToolTip="The number of worker threads AsmSim may use to crunch on your assembly." Margin="60,0,0,0" HorizontalAlignment="Left" Width="Auto" />
-                            </Grid>
-                            <Grid>
-                                <xctk:IntegerUpDown x:Name="AsmSim_Number_Of_Steps_UI" DefaultValue="6" HorizontalAlignment="Left" Width="60" />
-                                <Label Content="Number of steps the simulator considers" ToolTip="The number of steps (lines) that the simulator looks in the past to determine register, flags and memory state." Margin="60,0,0,0" HorizontalAlignment="Left" Width="Auto" />
-                            </Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="130"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
+                        </Grid.RowDefinitions>
 
-                            <CheckBox x:Name="AsmSim_64_Bits_UI" Content="Use 64-bits mode (32-bits mode otherwise)" ToolTip="Use 64-bits mode (32-bits mode otherwise)" Margin="0,2,0,2" VerticalAlignment="Center" HorizontalAlignment="Left" Width="Auto" />
-                            <CheckBox x:Name="AsmSim_Use_In_Code_Completion_UI" Content="Use known register values in code completions" ToolTip="Use known register values in code completions" Margin="0,2,0,2" VerticalAlignment="Center" HorizontalAlignment="Left" Width="Auto" />
+                        <TextBlock          Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" TextWrapping="WrapWithOverflow" Text="Note: the simulator does not understand MASM or NASM, thus no 'MOV VAR, 10'. Jumping based on register content is also not supported, thus no 'JMP RAX'." VerticalAlignment="Center" Width="Auto"/>
+                        <CheckBox           Grid.Column="0" Grid.Row="1" x:Name="AsmSim_On_UI" Content="Enable assembly simulator" ToolTip="Enamble the assembly simulator" VerticalAlignment="Center" Width="Auto"/>
+                        <Label              Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" Content="Timeout for Z3 in milliseconds" ToolTip="The number of milliseconds the Z3 theorem prover may spend on determining one single bit of a register. 200 is sensible: it would need (worst case) 12.8 sec to determine a 64-bit register. 0 means no timeout (not recommended!)" VerticalAlignment="Center" Width="Auto"/>
+                        <xctk:IntegerUpDown Grid.Column="0" Grid.Row="2" x:Name="AsmSim_Z3_Timeout_MS_UI" DefaultValue="100" Height="26" VerticalAlignment="Center" VerticalContentAlignment="Center" Width="Auto"/>
+                        <Label              Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2" Content="Number of worker threads" ToolTip="The number of worker threads AsmSim may use to crunch on your assembly." VerticalAlignment="Center" Width="Auto"/>
+                        <xctk:IntegerUpDown Grid.Column="0" Grid.Row="3" x:Name="AsmSim_Number_Of_Threads_UI" DefaultValue="4" Height="26" VerticalAlignment="Center" VerticalContentAlignment="Center" Width="Auto"/>
+                        <Label              Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" Content="Number of steps the simulator considers" ToolTip="The number of steps (lines) that the simulator looks in the past to determine register, flags and memory state." VerticalAlignment="Center" Width="Auto"/>
+                        <xctk:IntegerUpDown Grid.Column="0" Grid.Row="4" x:Name="AsmSim_Number_Of_Steps_UI" DefaultValue="6" Height="26" VerticalAlignment="Center" VerticalContentAlignment="Center" Width="Auto"/>
 
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="180"/>
-                                    <ColumnDefinition Width="130"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="1*" />
-                                    <RowDefinition Height="1*" />
-                                    <RowDefinition Height="1*" />
-                                    <RowDefinition Height="1*" />
-                                    <RowDefinition Height="1*" />
-                                    <RowDefinition Height="1*" />
-                                    <RowDefinition Height="1*" />
-                                </Grid.RowDefinitions>
+                        <CheckBox Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="3" x:Name="AsmSim_64_Bits_UI" Content="Use 64-bits mode (32-bits mode otherwise)" ToolTip="Use 64-bits mode (32-bits mode otherwise)" VerticalAlignment="Center" Width="Auto"/>
+                        <CheckBox Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="3" x:Name="AsmSim_Use_In_Code_Completion_UI" Content="Use known register values in code completions" ToolTip="Use known register values in code completions" VerticalAlignment="Center" Width="Auto"/>
 
-                                <Label Content="Syntax Errors:" Grid.Column="0" Grid.Row="0" />
-                                <CheckBox x:Name="AsmSim_Shown_Syntax_Errors_UI" Content="Show in error list" ToolTip="Show syntax errors found while parsing in error list" VerticalAlignment="Center" Grid.Column="1" Grid.Row="0"  HorizontalAlignment="Left" Width="Auto" />
-                                <CheckBox x:Name="AsmSim_Decorate_Syntax_Errors_UI" Content="Decorate with squiggles" ToolTip="Decorate syntax errors found while parsing with squiggles" VerticalAlignment="Center" Grid.Column="2" Grid.Row="0"  HorizontalAlignment="Left" Width="Auto" />
+                        <Label    Grid.Column="0" Grid.Row="7" Content="Syntax Errors:" VerticalAlignment="Center" Width="Auto"/>
+                        <CheckBox Grid.Column="1" Grid.Row="7" x:Name="AsmSim_Shown_Syntax_Errors_UI" Content="Show in error list" ToolTip="Show syntax errors found while parsing in error list" VerticalAlignment="Center" Width="Auto"/>
+                        <CheckBox Grid.Column="2" Grid.Row="7" x:Name="AsmSim_Decorate_Syntax_Errors_UI" Content="Decorate with squiggles" ToolTip="Decorate syntax errors found while parsing with squiggles" VerticalAlignment="Center" Width="Auto"/>
 
-                                <Label Content="Usage of Undefined:" Grid.Column="0" Grid.Row="1"/>
-                                <CheckBox x:Name="AsmSim_Show_Usage_Of_Undefined_UI" Content="Show in error list" ToolTip="Show usage of undefined values in error list" VerticalAlignment="Center" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" Width="Auto" />
-                                <CheckBox x:Name="AsmSim_Decorate_Usage_Of_Undefined_UI" Content="Decorate with squiggles" ToolTip="Decorate usage of undefined values with squiggles" VerticalAlignment="Center" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Left" Width="Auto" />
+                        <Label    Grid.Column="0" Grid.Row="8" Content="Usage of Undefined:" Width="Auto"/>
+                        <CheckBox Grid.Column="1" Grid.Row="8" x:Name="AsmSim_Show_Usage_Of_Undefined_UI" Content="Show in error list" ToolTip="Show usage of undefined values in error list" VerticalAlignment="Center" Width="Auto"/>
+                        <CheckBox Grid.Column="2" Grid.Row="8" x:Name="AsmSim_Decorate_Usage_Of_Undefined_UI" Content="Decorate with squiggles" ToolTip="Decorate usage of undefined values with squiggles" VerticalAlignment="Center" Width="Auto"/>
 
-                                <Label Content="Redundant Instructions:" Grid.Column="0" Grid.Row="2"/>
-                                <CheckBox x:Name="AsmSim_Show_Redundant_Instructions_UI" Content="Show in error list" ToolTip="Show redundant instructions in error list" VerticalAlignment="Center" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" Width="Auto" />
-                                <CheckBox x:Name="AsmSim_Decorate_Redundant_Instructions_UI" Content="Decorate with squiggles" ToolTip="Decorate redundant instructions with squiggles" VerticalAlignment="Center" Grid.Column="2" Grid.Row="2" HorizontalAlignment="Left" Width="Auto" />
+                        <Label    Grid.Column="0" Grid.Row="9" Content="Redundant Instructions:" Width="Auto"/>
+                        <CheckBox Grid.Column="1" Grid.Row="9" x:Name="AsmSim_Show_Redundant_Instructions_UI" Content="Show in error list" ToolTip="Show redundant instructions in error list" VerticalAlignment="Center" Width="Auto"/>
+                        <CheckBox Grid.Column="2" Grid.Row="9" x:Name="AsmSim_Decorate_Redundant_Instructions_UI" Content="Decorate with squiggles" ToolTip="Decorate redundant instructions with squiggles" VerticalAlignment="Center" Width="Auto"/>
 
-                                <Label Content="Unreachable Instructions:" Grid.Column="0" Grid.Row="3"/>
-                                <CheckBox x:Name="AsmSim_Show_Unreachable_Instructions_UI" Content="Show in error list" ToolTip="Show unreachable instructions in error list" VerticalAlignment="Center" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Left" Width="Auto" />
-                                <CheckBox x:Name="AsmSim_Decorate_Unreachable_Instructions_UI" Content="Decorate with squiggles" ToolTip="Decorate unreachable instructions with squiggles" VerticalAlignment="Center" Grid.Column="2" Grid.Row="3" HorizontalAlignment="Left" Width="Auto" />
+                        <Label    Grid.Column="0" Grid.Row="10" Content="Unreachable Instructions:" Width="Auto"/>
+                        <CheckBox Grid.Column="1" Grid.Row="10" x:Name="AsmSim_Show_Unreachable_Instructions_UI" Content="Show in error list" ToolTip="Show unreachable instructions in error list" VerticalAlignment="Center" Width="Auto"/>
+                        <CheckBox Grid.Column="2" Grid.Row="10" x:Name="AsmSim_Decorate_Unreachable_Instructions_UI" Content="Decorate with squiggles" ToolTip="Decorate unreachable instructions with squiggles" VerticalAlignment="Center" Width="Auto"/>
 
-                                <Label Content="Known Registers:" Grid.Column="0" Grid.Row="4"/>
-                                <CheckBox x:Name="AsmSim_Decorate_Registers_UI" Content="Decorate with squiggles" ToolTip="Decorate registers with known values with squiggles" VerticalAlignment="Center" Grid.Column="2" Grid.Row="4" HorizontalAlignment="Left" Width="Auto" />
+                        <Label    Grid.Column="0" Grid.Row="11" Content="Known Registers:" Width="Auto"/>
+                        <CheckBox Grid.Column="2" Grid.Row="11" x:Name="AsmSim_Decorate_Registers_UI" Content="Decorate with squiggles" ToolTip="Decorate registers with known values with squiggles" VerticalAlignment="Center" Width="Auto"/>
 
-                                <Label Content="Unimplemented Instructions:" Grid.Column="0" Grid.Row="5"/>
-                                <CheckBox x:Name="AsmSim_Decorate_Unimplemented_UI" Content="Decorate with squiggles" ToolTip="Decorate instructions that are not (yet) implemented with squiggles" VerticalAlignment="Center" Grid.Column="2" Grid.Row="5" HorizontalAlignment="Left" Width="Auto" />
+                        <Label    Grid.Column="0" Grid.Row="12" Content="Unimplemented Instructions:" Width="Auto"/>
+                        <CheckBox Grid.Column="2" Grid.Row="12" x:Name="AsmSim_Decorate_Unimplemented_UI" Content="Decorate with squiggles" ToolTip="Decorate instructions that are not (yet) implemented with squiggles" VerticalAlignment="Center" Width="Auto"/>
 
-                                <Label Content="Assume Pragma:" HorizontalAlignment="Left" Grid.Column="0" Grid.Row="6"/>
-                                <TextBox x:Name="AsmSim_Pragma_Assume_UI" ToolTip="The characters used to instruct the asm simulator to execute instructions. E.g. '#pragma assume mov al, 0001_0001b' to set al the value 00010001b." Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="6" />
-                            </Grid>
-                        </StackPanel>
+                        <Label    Grid.Column="0" Grid.Row="13" Content="Assume Pragma:" HorizontalAlignment="Left" Width="Auto"/>
+                        <TextBox  Grid.Column="1" Grid.Row="13" Grid.ColumnSpan="2" x:Name="AsmSim_Pragma_Assume_UI" ToolTip="The characters used to instruct the asm simulator to execute instructions. E.g. '#pragma assume mov al, 0001_0001b' to set al the value 00010001b." Height="26" VerticalAlignment="Center" VerticalContentAlignment="Center" Width="Auto"/>
                     </Grid>
                 </GroupBox>
                 <GroupBox Header="Architectures (used for Code Completion and Signature Help)" >
