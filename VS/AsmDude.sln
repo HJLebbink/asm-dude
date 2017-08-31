@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.16
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asm-dude-vsix", "CSHARP\asm-dude-vsix\asm-dude-vsix.csproj", "{B5A25E78-81D0-454A-8C02-F8C17CB0BBF5}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -23,6 +23,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unit-tests-asm-sim", "CSHARP\unit-tests-asm-sim\unit-tests-asm-sim.csproj", "{E284515C-2F97-4D92-9815-16E96680DB07}"
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "intel-doc-2-md", "H:\Dropbox\sc\GitHub\asm-dude\VS\Python\intel-doc-2-md\intel-doc-2-md.pyproj", "{BF80AE23-E323-48FB-8B44-156B2524EFFF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoadingIndicators.WPF", "H:\Dropbox\sc\GitHub\LoadingIndicators.WPF\LoadingIndicators.WPF\LoadingIndicators.WPF.csproj", "{E49229CC-D702-478F-90E0-6E1A284272F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -136,8 +138,23 @@ Global
 		{BF80AE23-E323-48FB-8B44-156B2524EFFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF80AE23-E323-48FB-8B44-156B2524EFFF}.Release|x64.ActiveCfg = Release|Any CPU
 		{BF80AE23-E323-48FB-8B44-156B2524EFFF}.Release|x86.ActiveCfg = Release|Any CPU
+		{E49229CC-D702-478F-90E0-6E1A284272F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E49229CC-D702-478F-90E0-6E1A284272F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E49229CC-D702-478F-90E0-6E1A284272F6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E49229CC-D702-478F-90E0-6E1A284272F6}.Debug|x64.Build.0 = Debug|Any CPU
+		{E49229CC-D702-478F-90E0-6E1A284272F6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E49229CC-D702-478F-90E0-6E1A284272F6}.Debug|x86.Build.0 = Debug|Any CPU
+		{E49229CC-D702-478F-90E0-6E1A284272F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E49229CC-D702-478F-90E0-6E1A284272F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E49229CC-D702-478F-90E0-6E1A284272F6}.Release|x64.ActiveCfg = Release|Any CPU
+		{E49229CC-D702-478F-90E0-6E1A284272F6}.Release|x64.Build.0 = Release|Any CPU
+		{E49229CC-D702-478F-90E0-6E1A284272F6}.Release|x86.ActiveCfg = Release|Any CPU
+		{E49229CC-D702-478F-90E0-6E1A284272F6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {89D318BB-C529-4DDE-8EAF-DAEA3986256B}
 	EndGlobalSection
 EndGlobal

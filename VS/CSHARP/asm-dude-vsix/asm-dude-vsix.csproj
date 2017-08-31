@@ -201,8 +201,8 @@
     <Compile Include="AsmDoc\AsmDocUnderlineTaggerProvider.cs" />
     <Compile Include="AsmDoc\CtrlKeyState.cs" />
     <Compile Include="AsmDudePackage.cs" />
-    <Compile Include="QuickInfo\TooltipWindow2.xaml.cs">
-      <DependentUpon>TooltipWindow2.xaml</DependentUpon>
+    <Compile Include="QuickInfo\RegisterTooltipWindow.xaml.cs">
+      <DependentUpon>RegisterTooltipWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="QuickInfo\DisassemblyMnemonicTooltip.xaml.cs">
       <DependentUpon>DisassemblyMnemonicTooltip.xaml</DependentUpon>
@@ -407,6 +407,7 @@
     <Reference Include="Microsoft.Z3, Version=4.5.0.0, Culture=neutral, PublicKeyToken=9c8d792caae602a2, processorArchitecture=x86">
       <HintPath>..\..\packages\z3x86win.4.5.0.1\lib\Microsoft.Z3.dll</HintPath>
       <Private>True</Private>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -438,6 +439,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
@@ -487,7 +489,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="QuickInfo\TooltipWindow2.xaml">
+    <Page Include="QuickInfo\RegisterTooltipWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

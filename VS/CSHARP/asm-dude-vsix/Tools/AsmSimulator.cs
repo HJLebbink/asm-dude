@@ -145,7 +145,7 @@ namespace AsmDude.Tools
                 this._dFlow = new DynamicFlow(this.Tools);
 
                 this._delay = new Delay(AsmDudePackage.msSleepBeforeAsyncExecution, 1000, this._threadPool);
-                this._delay.Done_Event += (o, i) => { this.Schedule_Reset_Async(); };
+                //xxx this._delay.Done_Event += (o, i) => { this.Schedule_Reset_Async(); };
 
                 this.Reset(); // wait to give the system some breathing time
                 this._buffer.ChangedLowPriority += (o, i) => {
@@ -623,6 +623,28 @@ namespace AsmDude.Tools
         {
             // get the register value and discard the result, the value will be added to the cache
             this.Get_Register_Value(name, lineNumber, before, false, true);
+        }
+
+        public string Get_Register_Value_If_Already_Computed(Rn name, int lineNumber, bool before)
+        {
+            if (!this.Enabled) return "";
+            var state = (before) ? this.Get_State_Before(lineNumber, false, false) : this.Get_State_After(lineNumber, false, false);
+            if (state.Bussy) return null;
+            if (state.State == null) return null;
+            Tv[] reg = state.State.GetTvArray_Cached(name);
+            if (reg == null) return null;
+            return string.Format("{0} = {1}", ToolsZ3.ToStringHex(reg), ToolsZ3.ToStringBin(reg));
+        }
+
+        public string Get_Register_Value_and_Block(Rn name, int lineNumber, bool before)
+        {
+            if (!this.Enabled) return null;
+            var state = (before) ? this.Get_State_Before(lineNumber, false, true) : this.Get_State_After(lineNumber, false, true);
+            if (state.State == null) return null;
+            Tv[] reg = state.State.GetTvArray_Cached(name);
+            if (reg == null) reg = state.State.GetTvArray(name);
+            if (reg == null) return null;
+            return string.Format("{0} = {1}", ToolsZ3.ToStringHex(reg), ToolsZ3.ToStringBin(reg));
         }
 
         public (string Value, bool Bussy) Get_Register_Value(Rn name, int lineNumber, bool before, bool async, bool create)

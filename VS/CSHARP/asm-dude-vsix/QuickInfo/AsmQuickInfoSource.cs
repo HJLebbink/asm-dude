@@ -180,32 +180,9 @@ namespace AsmDude.QuickInfo
 
                                 if (true)
                                 {
-                                    var myWpfView = new TooltipWindow2();
-                                    myWpfView.myPopup.Inlines.Add(Make_Run1("Register ", foreground));
-                                    myWpfView.myPopup.Inlines.Add(Make_Run2(reg.ToString(), new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Register))));
-
-                                    string descr = this._asmDudeTools.Get_Description(keywordUpper);
-                                    if (descr.Length > 0)
-                                    {
-                                        if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
-                                        myWpfView.myPopup.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
-                                        {
-                                            Foreground = foreground
-                                        });
-                                    }
-
-                                    if (this._asmSimulator.Enabled & Settings.Default.AsmSim_Decorate_Registers)
-                                    {
-                                        string reg_Content_Before = this._asmSimulator.Get_Register_Value(reg, lineNumber, true, false, false).Value;
-                                        string reg_Content_After = this._asmSimulator.Get_Register_Value(reg, lineNumber, false, false, false).Value;
-                                        string msg = "\n" + reg + " before: " + reg_Content_Before + "\n" + reg + " after:  " + reg_Content_After;
-                                        myWpfView.myPopup.Inlines.Add(new Run(AsmSourceTools.Linewrap(msg, AsmDudePackage.maxNumberOfCharsInToolTips))
-                                        {
-                                            Foreground = foreground
-                                        });
-                                    }
-
-                                    quickInfoContent.Add(myWpfView);
+                                    var registerTooltipWindow = new RegisterTooltipWindow(this._asmSimulator, reg, lineNumber);
+                                    registerTooltipWindow.AddDescription(reg.ToString(), this._asmDudeTools.Get_Description(keywordUpper), foreground);
+                                    quickInfoContent.Add(registerTooltipWindow);
                                 }
                                 else
                                 {
@@ -240,21 +217,8 @@ namespace AsmDude.QuickInfo
                         case AsmTokenType.Jump:
                             {
                                 Mnemonic mnemonic = AsmSourceTools.ParseMnemonic_Att(keywordUpper, true);
-
-                                if (true)
-                                {
-                                    var myWpfView = new TooltipWindow2
-                                    {
-                                        //Background = AsmDudeToolsStatic.Get_Background_Color()
-                                    };
-                                    Render_Mnemonic_ToolTip(myWpfView.myPopup, mnemonic, foreground, this._asmDudeTools);
-                                    quickInfoContent.Add(myWpfView);
-                                }
-                                else
-                                {
-                                    description = new TextBlock();
-                                    Render_Mnemonic_ToolTip(description, mnemonic, foreground, this._asmDudeTools);
-                                }
+                                description = new TextBlock();
+                                Render_Mnemonic_ToolTip(description, mnemonic, foreground, this._asmDudeTools);
                                 break;
                             }
                         case AsmTokenType.Label:
@@ -387,20 +351,7 @@ namespace AsmDude.QuickInfo
                         description.FontSize = AsmDudeToolsStatic.Get_Font_Size() + 2;
                         description.FontFamily = AsmDudeToolsStatic.Get_Font_Type();
                         //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:AugmentQuickInfoSession; setting description fontSize={1}; fontFamily={2}", this.ToString(), description.FontSize, description.FontFamily));
-
-                        if (false)
-                        {
-                            var wpfView = new TooltipWindow2
-                            {
-                                myPopup = description,
-                                Background = AsmDudeToolsStatic.Get_Background_Color()
-                            };
-                            quickInfoContent.Add(wpfView);
-                        }
-                        else
-                        {
-                            quickInfoContent.Add(description);
-                        }
+                        quickInfoContent.Add(description);
                     }
                 }
             }
