@@ -287,7 +287,7 @@
     <Setting Name="AsmSim_Decorate_Registers" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="AsmSim_Use_In_Code_Completion" Type="System.Boolean" Scope="User">
+    <Setting Name="AsmSim_Show_Register_In_Code_Completion" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="AsmSim_Decorate_Unimplemented" Type="System.Boolean" Scope="User">
@@ -313,9 +313,6 @@
     </Setting>
     <Setting Name="AsmSim_64_Bits" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="AsmSim_Number_Of_Steps" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">5</Value>
     </Setting>
     <Setting Name="SyntaxHighlighting_Userdefined1" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">Silver</Value>
@@ -385,6 +382,21 @@
     </Setting>
     <Setting Name="AsmSim_Pragma_Assume" Type="System.String" Scope="User">
       <Value Profile="(Default)">#pragma assume</Value>
+    </Setting>
+    <Setting Name="AsmSim_Show_Register_In_Instruction_Tooltip" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AsmSim_Show_Register_In_Register_Tooltip" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AsmSim_Show_Register_In_Code_Completion_Numeration" Type="System.String" Scope="User">
+      <Value Profile="(Default)">HEX</Value>
+    </Setting>
+    <Setting Name="AsmSim_Show_Register_In_Instruction_Tooltip_Numeration" Type="System.String" Scope="User">
+      <Value Profile="(Default)">HEX</Value>
+    </Setting>
+    <Setting Name="AsmSim_Show_Register_In_Register_Tooltip_Numeration" Type="System.String" Scope="User">
+      <Value Profile="(Default)">HEX</Value>
     </Setting>
   </Settings>
 </SettingsFile>

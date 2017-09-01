@@ -9,52 +9,37 @@ using System.Windows.Documents;
 
 namespace AsmDude.QuickInfo
 {
-    public class ButtonInfo
-    {
-        public readonly Label text;
-        public readonly Rn reg;
-        public readonly bool before;
-
-        public ButtonInfo(Label labelText, Rn reg, bool before)
-        {
-            this.text = labelText;
-            this.reg = reg;
-            this.before = before;
-        }
-    }
-
 
     /// <summary>
     /// Interaction logic for TooltipWindow2.xaml
     /// </summary>
-    public partial class RegisterTooltipWindow: UserControl
+    public partial class InstructionTooltipWindow: UserControl
     {
         private readonly AsmSimulator _asmSimulator;
-        private readonly Rn _reg;
         private readonly int _lineNumber;
 
-        public RegisterTooltipWindow(AsmSimulator asmSimulator, Rn reg, int lineNumber)
+        public InstructionTooltipWindow(AsmSimulator asmSimulator, int lineNumber)
         {
             this._asmSimulator = asmSimulator;
-            this._reg = reg;
             this._lineNumber = lineNumber;
 
             InitializeComponent();
-            if (this._asmSimulator.Enabled & Settings.Default.AsmSim_Decorate_Registers)
+            if (this._asmSimulator.Enabled & Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip)
             {
                 this.Generate(true);
                 this.Generate(false);
             }
         }
 
-        public void AddDescription(string reg, string description, Brush foreground)
+        public void AddDescription(Mnemonic mnemonic, string description, Brush foreground)
         {
-            this.description.Inlines.Add(Make_Bold_Run("Register ", foreground));
-            this.description.Inlines.Add(Make_Bold_Run(reg, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Register))));
+            string mnemonicStr = mnemonic.ToString();
+            this.description.Inlines.Add(Make_Bold_Run("Mnemonic ", foreground));
+            this.description.Inlines.Add(Make_Bold_Run(mnemonicStr, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Register))));
 
             if (description.Length > 0)
             {
-                if (reg.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) description = "\n" + description;
+                if (mnemonicStr.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) description = "\n" + description;
                 this.description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + description, AsmDudePackage.maxNumberOfCharsInToolTips))
                 {
                     Foreground = foreground
@@ -92,18 +77,18 @@ namespace AsmDude.QuickInfo
                 Grid.SetRow(label, row);
                 Grid.SetColumn(label, 1);
 
-                var register_Content = this._asmSimulator.Get_Register_Value_If_Already_Computed(this._reg, this._lineNumber, isBefore);
+                string register_Content = null;// this._asmSimulator.Get_Register_Value_If_Already_Computed(this._reg, this._lineNumber, isBefore);
 
                 if (register_Content == null)
                 {
                     label.Visibility = Visibility.Collapsed;
                     var button = new Button()
                     {
-                        Content = "Determine " + this._reg.ToString(),
+                        Content = "Determine ",// + this._reg.ToString(),
                         VerticalAlignment = VerticalAlignment.Center,
                         VerticalContentAlignment = VerticalAlignment.Center,
                         Visibility = Visibility.Visible,
-                        Tag = new ButtonInfo(label, this._reg, true)
+                        Tag = new ButtonInfo(label,Rn.RAX, true)
                     };
                     this.ContentGrid.Children.Add(button);
                     Grid.SetRow(button, row);
@@ -128,7 +113,7 @@ namespace AsmDude.QuickInfo
                     this.Dispatcher.Invoke((Action)(() =>
                     {
                         ButtonInfo info = (ButtonInfo)button.Tag;
-                        info.text.Content = this._asmSimulator.Get_Register_Value_and_Block(this._reg, this._lineNumber, info.before);
+                        info.text.Content = this._asmSimulator.Get_Register_Value_and_Block(Rn.RAX, this._lineNumber, info.before);
                         info.text.Visibility = Visibility.Visible;
                         button.Visibility = Visibility.Collapsed;
                     }));

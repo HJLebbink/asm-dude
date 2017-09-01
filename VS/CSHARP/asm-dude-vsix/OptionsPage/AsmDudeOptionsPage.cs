@@ -295,7 +295,6 @@ namespace AsmDude.OptionsPage
             this._asmDudeOptionsPageUI.AsmSim_On = Settings.Default.AsmSim_On;
             this._asmDudeOptionsPageUI.AsmSim_Z3_Timeout_MS = Settings.Default.AsmSim_Z3_Timeout_MS;
             this._asmDudeOptionsPageUI.AsmSim_Number_Of_Threads = Settings.Default.AsmSim_Number_Of_Threads;
-            this._asmDudeOptionsPageUI.AsmSim_Number_Of_Steps = Settings.Default.AsmSim_Number_Of_Steps;
             this._asmDudeOptionsPageUI.AsmSim_64_Bits = Settings.Default.AsmSim_64_Bits;
             this._asmDudeOptionsPageUI.AsmSim_Show_Syntax_Errors = Settings.Default.AsmSim_Show_Syntax_Errors;
             this._asmDudeOptionsPageUI.AsmSim_Decorate_Syntax_Errors = Settings.Default.AsmSim_Decorate_Syntax_Errors;
@@ -306,7 +305,12 @@ namespace AsmDude.OptionsPage
             this._asmDudeOptionsPageUI.AsmSim_Show_Unreachable_Instructions = Settings.Default.AsmSim_Show_Unreachable_Instructions;
             this._asmDudeOptionsPageUI.AsmSim_Decorate_Unreachable_Instructions = Settings.Default.AsmSim_Decorate_Unreachable_Instructions;
             this._asmDudeOptionsPageUI.AsmSim_Decorate_Registers = Settings.Default.AsmSim_Decorate_Registers;
-            this._asmDudeOptionsPageUI.AsmSim_Use_In_Code_Completion = Settings.Default.AsmSim_Use_In_Code_Completion;
+            this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Code_Completion = Settings.Default.AsmSim_Show_Register_In_Code_Completion;
+            this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Code_Completion_Numeration = AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration);
+            this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Register_Tooltip = Settings.Default.AsmSim_Show_Register_In_Register_Tooltip;
+            this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Register_Tooltip_Numeration = AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Register_Tooltip_Numeration);
+            this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Instruction_Tooltip = Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip;
+            this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration = AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration);
             this._asmDudeOptionsPageUI.AsmSim_Decorate_Unimplemented = Settings.Default.AsmSim_Decorate_Unimplemented;
             this._asmDudeOptionsPageUI.AsmSim_Pragma_Assume = Settings.Default.AsmSim_Pragma_Assume;
             #endregion
@@ -925,11 +929,6 @@ namespace AsmDude.OptionsPage
                 sb.AppendLine("AsmSim_Number_Of_Threads=" + this._asmDudeOptionsPageUI.AsmSim_Number_Of_Threads);
                 changed = true;
             }
-            if (Settings.Default.AsmSim_Number_Of_Steps != this._asmDudeOptionsPageUI.AsmSim_Number_Of_Steps)
-            {
-                sb.AppendLine("AsmSim_Number_Of_Steps=" + this._asmDudeOptionsPageUI.AsmSim_Number_Of_Steps);
-                changed = true;
-            }
             if (Settings.Default.AsmSim_64_Bits != this._asmDudeOptionsPageUI.AsmSim_64_Bits)
             {
                 sb.AppendLine("AsmSim_64_Bits=" + this._asmDudeOptionsPageUI.AsmSim_64_Bits);
@@ -980,11 +979,42 @@ namespace AsmDude.OptionsPage
                 sb.AppendLine("AsmSim_Decorate_Registers=" + this._asmDudeOptionsPageUI.AsmSim_Decorate_Registers);
                 changed = true;
             }
-            if (Settings.Default.AsmSim_Use_In_Code_Completion != this._asmDudeOptionsPageUI.AsmSim_Use_In_Code_Completion)
+
+
+            if (Settings.Default.AsmSim_Show_Register_In_Code_Completion != this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Code_Completion)
             {
-                sb.AppendLine("AsmSim_Use_In_Code_Completion=" + this._asmDudeOptionsPageUI.AsmSim_Use_In_Code_Completion);
+                sb.AppendLine("AsmSim_Show_Register_In_Code_Completion=" + this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Code_Completion);
                 changed = true;
             }
+            if (Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration != this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Code_Completion_Numeration.ToString())
+            {
+                sb.AppendLine("AsmSim_Show_Register_In_Code_Completion_Numeration=" + this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Code_Completion_Numeration);
+                changed = true;
+            }
+
+            if (Settings.Default.AsmSim_Show_Register_In_Register_Tooltip != this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Register_Tooltip)
+            {
+                sb.AppendLine("AsmSim_Show_Register_In_Register_Tooltip=" + this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Register_Tooltip);
+                changed = true;
+            }
+            if (Settings.Default.AsmSim_Show_Register_In_Register_Tooltip_Numeration != this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Register_Tooltip_Numeration.ToString())
+            {
+                sb.AppendLine("AsmSim_Show_Register_In_Register_Tooltip_Numeration=" + this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Register_Tooltip_Numeration);
+                changed = true;
+            }
+
+            if (Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip != this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Instruction_Tooltip)
+            {
+                sb.AppendLine("AsmSim_Show_Register_In_Instruction_Tooltip=" + this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Instruction_Tooltip);
+                changed = true;
+            }
+            if (Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration != this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration.ToString())
+            {
+                sb.AppendLine("AsmSim_Show_Register_In_Instruction_Tooltip_Numeration=" + this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration);
+                changed = true;
+            }
+
+
             if (Settings.Default.AsmSim_Decorate_Unimplemented != this._asmDudeOptionsPageUI.AsmSim_Decorate_Unimplemented)
             {
                 sb.AppendLine("AsmSim_Decorate_Unimplemented=" + this._asmDudeOptionsPageUI.AsmSim_Decorate_Unimplemented);
@@ -1657,11 +1687,6 @@ namespace AsmDude.OptionsPage
                 Settings.Default.AsmSim_Number_Of_Threads = this._asmDudeOptionsPageUI.AsmSim_Number_Of_Threads;
                 changed = true;
             }
-            if (Settings.Default.AsmSim_Number_Of_Steps != this._asmDudeOptionsPageUI.AsmSim_Number_Of_Steps)
-            {
-                Settings.Default.AsmSim_Number_Of_Steps = this._asmDudeOptionsPageUI.AsmSim_Number_Of_Steps;
-                changed = true;
-            }
             if (Settings.Default.AsmSim_64_Bits != this._asmDudeOptionsPageUI.AsmSim_64_Bits)
             {
                 Settings.Default.AsmSim_64_Bits = this._asmDudeOptionsPageUI.AsmSim_64_Bits;
@@ -1712,9 +1737,34 @@ namespace AsmDude.OptionsPage
                 Settings.Default.AsmSim_Decorate_Registers = this._asmDudeOptionsPageUI.AsmSim_Decorate_Registers;
                 changed = true;
             }
-            if (Settings.Default.AsmSim_Use_In_Code_Completion != this._asmDudeOptionsPageUI.AsmSim_Use_In_Code_Completion)
+            if (Settings.Default.AsmSim_Show_Register_In_Code_Completion != this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Code_Completion)
             {
-                Settings.Default.AsmSim_Use_In_Code_Completion = this._asmDudeOptionsPageUI.AsmSim_Use_In_Code_Completion;
+                Settings.Default.AsmSim_Show_Register_In_Code_Completion = this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Code_Completion;
+                changed = true;
+            }
+            if (Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration != this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Code_Completion_Numeration.ToString())
+            {
+                Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration = this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Code_Completion_Numeration.ToString();
+                changed = true;
+            }
+            if (Settings.Default.AsmSim_Show_Register_In_Register_Tooltip != this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Register_Tooltip)
+            {
+                Settings.Default.AsmSim_Show_Register_In_Register_Tooltip = this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Register_Tooltip;
+                changed = true;
+            }
+            if (Settings.Default.AsmSim_Show_Register_In_Register_Tooltip_Numeration != this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Register_Tooltip_Numeration.ToString())
+            {
+                Settings.Default.AsmSim_Show_Register_In_Register_Tooltip_Numeration = this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Register_Tooltip_Numeration.ToString();
+                changed = true;
+            }
+            if (Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip != this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Instruction_Tooltip)
+            {
+                Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip = this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Instruction_Tooltip;
+                changed = true;
+            }
+            if (Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration != this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration.ToString())
+            {
+                Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration = this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration.ToString();
                 changed = true;
             }
             if (Settings.Default.AsmSim_Decorate_Unimplemented != this._asmDudeOptionsPageUI.AsmSim_Decorate_Unimplemented)

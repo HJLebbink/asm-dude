@@ -183,7 +183,7 @@ namespace AsmDude.Tools
             EnvDTE.Properties propertiesList = dte.get_Properties("FontsAndColors", "TextEditor");
             Property prop = propertiesList.Item("FontFamily");
             string font = (string)prop.Value;
-            //AsmDudeToolsStatic.Output_ERROR(string.Format("AsmDudeToolsStatic:getFontType {0}", font));
+            //AsmDudeToolsStatic.Output_INFO(string.Format("AsmDudeToolsStatic:Get_Font_Type {0}", font));
             return new FontFamily(font);
         }
 

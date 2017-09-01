@@ -56,7 +56,7 @@
     <StartArguments>/rootsuffix Exp</StartArguments>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -70,6 +70,7 @@
     <NoWarn>CS0162</NoWarn>
     <LangVersion>7</LangVersion>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <StartAction>Program</StartAction>
@@ -201,6 +202,9 @@
     <Compile Include="AsmDoc\AsmDocUnderlineTaggerProvider.cs" />
     <Compile Include="AsmDoc\CtrlKeyState.cs" />
     <Compile Include="AsmDudePackage.cs" />
+    <Compile Include="QuickInfo\InstructionTooltipWindow.xaml.cs">
+      <DependentUpon>InstructionTooltipWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="QuickInfo\RegisterTooltipWindow.xaml.cs">
       <DependentUpon>RegisterTooltipWindow.xaml</DependentUpon>
     </Compile>
@@ -486,6 +490,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="OptionsPage\AsmDudeOptionPageUI.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="QuickInfo\InstructionTooltipWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

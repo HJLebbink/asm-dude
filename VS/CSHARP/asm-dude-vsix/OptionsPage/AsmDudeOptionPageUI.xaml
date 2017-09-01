@@ -1,7 +1,7 @@
 ﻿<UserControl x:Class="AsmDude.OptionsPage.AsmDudeOptionsPageUI"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-			 xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit">
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit">
     <Grid RenderTransformOrigin="0.5,0.818" VerticalAlignment="Top">
         <ScrollViewer>
             <StackPanel>
@@ -214,44 +214,66 @@
                             <RowDefinition Height="26" />
                             <RowDefinition Height="26" />
                             <RowDefinition Height="26" />
+                            <RowDefinition Height="26" />
                         </Grid.RowDefinitions>
 
-                        <TextBlock          Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" TextWrapping="WrapWithOverflow" Text="Note: the simulator does not understand MASM or NASM, thus no 'MOV VAR, 10'. Jumping based on register content is also not supported, thus no 'JMP RAX'." VerticalAlignment="Center" Width="Auto"/>
-                        <CheckBox           Grid.Column="0" Grid.Row="1" x:Name="AsmSim_On_UI" Content="Enable assembly simulator" ToolTip="Enamble the assembly simulator" VerticalAlignment="Center" Width="Auto"/>
-                        <Label              Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="2" Content="Timeout for Z3 in milliseconds" ToolTip="The number of milliseconds the Z3 theorem prover may spend on determining one single bit of a register. 200 is sensible: it would need (worst case) 12.8 sec to determine a 64-bit register. 0 means no timeout (not recommended!)" VerticalAlignment="Center" Width="Auto"/>
-                        <xctk:IntegerUpDown Grid.Column="0" Grid.Row="2" x:Name="AsmSim_Z3_Timeout_MS_UI" DefaultValue="100" Height="26" VerticalAlignment="Center" VerticalContentAlignment="Center" Width="Auto"/>
-                        <Label              Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2" Content="Number of worker threads" ToolTip="The number of worker threads AsmSim may use to crunch on your assembly." VerticalAlignment="Center" Width="Auto"/>
-                        <xctk:IntegerUpDown Grid.Column="0" Grid.Row="3" x:Name="AsmSim_Number_Of_Threads_UI" DefaultValue="4" Height="26" VerticalAlignment="Center" VerticalContentAlignment="Center" Width="Auto"/>
-                        <Label              Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="2" Content="Number of steps the simulator considers" ToolTip="The number of steps (lines) that the simulator looks in the past to determine register, flags and memory state." VerticalAlignment="Center" Width="Auto"/>
-                        <xctk:IntegerUpDown Grid.Column="0" Grid.Row="4" x:Name="AsmSim_Number_Of_Steps_UI" DefaultValue="6" Height="26" VerticalAlignment="Center" VerticalContentAlignment="Center" Width="Auto"/>
+                        <TextBlock          Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" TextWrapping="WrapWithOverflow" Text="Note: the simulator does not understand MASM or NASM, thus no 'MOV VAR, 10'. Jumping based on register content is also not supported, thus no 'JMP RAX'." VerticalAlignment="Center" Width="Auto"/>
+                        <CheckBox           Grid.Row="1" Grid.Column="0" x:Name="AsmSim_On_UI" Content="Enable assembly simulator" ToolTip="Enamble the assembly simulator" VerticalAlignment="Center" Width="Auto"/>
+                        <Label              Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Content="Timeout for Z3 in milliseconds" ToolTip="The number of milliseconds the Z3 theorem prover may spend on determining one single bit of a register. 200 is sensible: it would need (worst case) 12.8 sec to determine a 64-bit register. 0 means no timeout (not recommended!)" VerticalAlignment="Center" Width="Auto"/>
+                        <xctk:IntegerUpDown Grid.Row="2" Grid.Column="0" x:Name="AsmSim_Z3_Timeout_MS_UI" DefaultValue="100" Height="26" VerticalAlignment="Center" VerticalContentAlignment="Center" Width="Auto"/>
+                        <Label              Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Content="Number of worker threads" ToolTip="The number of worker threads AsmSim may use to crunch on your assembly." VerticalAlignment="Center" Width="Auto"/>
+                        <xctk:IntegerUpDown Grid.Row="3" Grid.Column="0" x:Name="AsmSim_Number_Of_Threads_UI" DefaultValue="4" Height="26" VerticalAlignment="Center" VerticalContentAlignment="Center" Width="Auto"/>
 
-                        <CheckBox Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="3" x:Name="AsmSim_64_Bits_UI" Content="Use 64-bits mode (32-bits mode otherwise)" ToolTip="Use 64-bits mode (32-bits mode otherwise)" VerticalAlignment="Center" Width="Auto"/>
-                        <CheckBox Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="3" x:Name="AsmSim_Use_In_Code_Completion_UI" Content="Use known register values in code completions" ToolTip="Use known register values in code completions" VerticalAlignment="Center" Width="Auto"/>
+                        <CheckBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" x:Name="AsmSim_64_Bits_UI" Content="Use 64-bits mode (32-bits mode otherwise)" ToolTip="Use 64-bits mode (32-bits mode otherwise)" VerticalAlignment="Center" Width="Auto"/>
 
-                        <Label    Grid.Column="0" Grid.Row="7" Content="Syntax Errors:" VerticalAlignment="Center" Width="Auto"/>
-                        <CheckBox Grid.Column="1" Grid.Row="7" x:Name="AsmSim_Shown_Syntax_Errors_UI" Content="Show in error list" ToolTip="Show syntax errors found while parsing in error list" VerticalAlignment="Center" Width="Auto"/>
-                        <CheckBox Grid.Column="2" Grid.Row="7" x:Name="AsmSim_Decorate_Syntax_Errors_UI" Content="Decorate with squiggles" ToolTip="Decorate syntax errors found while parsing with squiggles" VerticalAlignment="Center" Width="Auto"/>
+                        <CheckBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" x:Name="AsmSim_Show_Register_In_Code_Completion_UI" Content="Show register content in code completions" ToolTip="Use known register values in code completions" VerticalAlignment="Center" Width="Auto"/>
+                        <ComboBox Grid.Row="5" Grid.Column="2" x:Name="AsmSim_Show_Register_In_Code_Completion_Numeration_UI" SelectedIndex="0" ToolTip="Register content display default" VerticalAlignment="Center" VerticalContentAlignment="Center">
+                            <ComboBoxItem Name="cbi_RC1">HEX</ComboBoxItem>
+                            <ComboBoxItem Name="cbi_RC2">BIN</ComboBoxItem>
+                            <ComboBoxItem Name="cbi_RC3">DEC</ComboBoxItem>
+                            <ComboBoxItem Name="cbi_RC4">OCT</ComboBoxItem>
+                        </ComboBox>
 
-                        <Label    Grid.Column="0" Grid.Row="8" Content="Usage of Undefined:" Width="Auto"/>
-                        <CheckBox Grid.Column="1" Grid.Row="8" x:Name="AsmSim_Show_Usage_Of_Undefined_UI" Content="Show in error list" ToolTip="Show usage of undefined values in error list" VerticalAlignment="Center" Width="Auto"/>
-                        <CheckBox Grid.Column="2" Grid.Row="8" x:Name="AsmSim_Decorate_Usage_Of_Undefined_UI" Content="Decorate with squiggles" ToolTip="Decorate usage of undefined values with squiggles" VerticalAlignment="Center" Width="Auto"/>
+                        <CheckBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" x:Name="AsmSim_Show_Register_In_Register_Tooltip_UI" Content="Show register content in register tooltips" ToolTip="Show register content in register QuickInfo tooltips" VerticalAlignment="Center" Width="Auto"/>
+                        <ComboBox Grid.Row="6" Grid.Column="2" x:Name="AsmSim_Show_Register_In_Register_Tooltip_Numeration_UI" SelectedIndex="0" ToolTip="Register content display default" VerticalAlignment="Center" VerticalContentAlignment="Center">
+                            <ComboBoxItem Name="cbi_RR1">HEX</ComboBoxItem>
+                            <ComboBoxItem Name="cbi_RR2">BIN</ComboBoxItem>
+                            <ComboBoxItem Name="cbi_RR3">DEC</ComboBoxItem>
+                            <ComboBoxItem Name="cbi_RR4">OCT</ComboBoxItem>
+                        </ComboBox>
 
-                        <Label    Grid.Column="0" Grid.Row="9" Content="Redundant Instructions:" Width="Auto"/>
-                        <CheckBox Grid.Column="1" Grid.Row="9" x:Name="AsmSim_Show_Redundant_Instructions_UI" Content="Show in error list" ToolTip="Show redundant instructions in error list" VerticalAlignment="Center" Width="Auto"/>
-                        <CheckBox Grid.Column="2" Grid.Row="9" x:Name="AsmSim_Decorate_Redundant_Instructions_UI" Content="Decorate with squiggles" ToolTip="Decorate redundant instructions with squiggles" VerticalAlignment="Center" Width="Auto"/>
+                        <CheckBox Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" x:Name="AsmSim_Show_Register_In_Instruction_Tooltip_UI" Content="Show register content in instruction tooltips" ToolTip="Show register content in register QuickInfo tooltips" VerticalAlignment="Center" Width="Auto"/>
+                        <ComboBox Grid.Row="7" Grid.Column="2" x:Name="AsmSim_Show_Register_In_Instruction_Tooltip_Numeration_UI" SelectedIndex="0" ToolTip="Register content display default" VerticalAlignment="Center" VerticalContentAlignment="Center"> 
+                            <ComboBoxItem Name="cbi_RI1" >HEX</ComboBoxItem>
+                            <ComboBoxItem Name="cbi_RI2">BIN</ComboBoxItem>
+                            <ComboBoxItem Name="cbi_RI3">DEC</ComboBoxItem>
+                            <ComboBoxItem Name="cbi_RI4">OCT</ComboBoxItem>
+                        </ComboBox>
 
-                        <Label    Grid.Column="0" Grid.Row="10" Content="Unreachable Instructions:" Width="Auto"/>
-                        <CheckBox Grid.Column="1" Grid.Row="10" x:Name="AsmSim_Show_Unreachable_Instructions_UI" Content="Show in error list" ToolTip="Show unreachable instructions in error list" VerticalAlignment="Center" Width="Auto"/>
-                        <CheckBox Grid.Column="2" Grid.Row="10" x:Name="AsmSim_Decorate_Unreachable_Instructions_UI" Content="Decorate with squiggles" ToolTip="Decorate unreachable instructions with squiggles" VerticalAlignment="Center" Width="Auto"/>
+                        <Label    Grid.Row="8" Grid.Column="0" Content="Syntax Errors:" VerticalAlignment="Center" Width="Auto"/>
+                        <CheckBox Grid.Row="8" Grid.Column="1" x:Name="AsmSim_Shown_Syntax_Errors_UI" Content="Show in error list" ToolTip="Show syntax errors found while parsing in error list" VerticalAlignment="Center" Width="Auto"/>
+                        <CheckBox Grid.Row="8" Grid.Column="2" x:Name="AsmSim_Decorate_Syntax_Errors_UI" Content="Decorate with squiggles" ToolTip="Decorate syntax errors found while parsing with squiggles" VerticalAlignment="Center" Width="Auto"/>
 
-                        <Label    Grid.Column="0" Grid.Row="11" Content="Known Registers:" Width="Auto"/>
-                        <CheckBox Grid.Column="2" Grid.Row="11" x:Name="AsmSim_Decorate_Registers_UI" Content="Decorate with squiggles" ToolTip="Decorate registers with known values with squiggles" VerticalAlignment="Center" Width="Auto"/>
+                        <Label    Grid.Row="9" Grid.Column="0" Content="Usage of Undefined:" Width="Auto"/>
+                        <CheckBox Grid.Row="9" Grid.Column="1" x:Name="AsmSim_Show_Usage_Of_Undefined_UI" Content="Show in error list" ToolTip="Show usage of undefined values in error list" VerticalAlignment="Center" Width="Auto"/>
+                        <CheckBox Grid.Row="9" Grid.Column="2" x:Name="AsmSim_Decorate_Usage_Of_Undefined_UI" Content="Decorate with squiggles" ToolTip="Decorate usage of undefined values with squiggles" VerticalAlignment="Center" Width="Auto"/>
 
-                        <Label    Grid.Column="0" Grid.Row="12" Content="Unimplemented Instructions:" Width="Auto"/>
-                        <CheckBox Grid.Column="2" Grid.Row="12" x:Name="AsmSim_Decorate_Unimplemented_UI" Content="Decorate with squiggles" ToolTip="Decorate instructions that are not (yet) implemented with squiggles" VerticalAlignment="Center" Width="Auto"/>
+                        <Label    Grid.Row="10" Grid.Column="0" Content="Redundant Instructions:" Width="Auto"/>
+                        <CheckBox Grid.Row="10" Grid.Column="1" x:Name="AsmSim_Show_Redundant_Instructions_UI" Content="Show in error list" ToolTip="Show redundant instructions in error list" VerticalAlignment="Center" Width="Auto"/>
+                        <CheckBox Grid.Row="10" Grid.Column="2" x:Name="AsmSim_Decorate_Redundant_Instructions_UI" Content="Decorate with squiggles" ToolTip="Decorate redundant instructions with squiggles" VerticalAlignment="Center" Width="Auto"/>
 
-                        <Label    Grid.Column="0" Grid.Row="13" Content="Assume Pragma:" HorizontalAlignment="Left" Width="Auto"/>
-                        <TextBox  Grid.Column="1" Grid.Row="13" Grid.ColumnSpan="2" x:Name="AsmSim_Pragma_Assume_UI" ToolTip="The characters used to instruct the asm simulator to execute instructions. E.g. '#pragma assume mov al, 0001_0001b' to set al the value 00010001b." Height="26" VerticalAlignment="Center" VerticalContentAlignment="Center" Width="Auto"/>
+                        <Label    Grid.Row="11" Grid.Column="0" Content="Unreachable Instructions:" Width="Auto"/>
+                        <CheckBox Grid.Row="11" Grid.Column="1" x:Name="AsmSim_Show_Unreachable_Instructions_UI" Content="Show in error list" ToolTip="Show unreachable instructions in error list" VerticalAlignment="Center" Width="Auto"/>
+                        <CheckBox Grid.Row="11" Grid.Column="2" x:Name="AsmSim_Decorate_Unreachable_Instructions_UI" Content="Decorate with squiggles" ToolTip="Decorate unreachable instructions with squiggles" VerticalAlignment="Center" Width="Auto"/>
+
+                        <Label    Grid.Row="12" Grid.Column="0" Content="Known Registers:" Width="Auto"/>
+                        <CheckBox Grid.Row="12" Grid.Column="2" x:Name="AsmSim_Decorate_Registers_UI" Content="Decorate with squiggles" ToolTip="Decorate registers with known values with squiggles" VerticalAlignment="Center" Width="Auto"/>
+
+                        <Label    Grid.Row="13" Grid.Column="0" Content="Unimplemented Instructions:" Width="Auto"/>
+                        <CheckBox Grid.Row="13" Grid.Column="2" x:Name="AsmSim_Decorate_Unimplemented_UI" Content="Decorate with squiggles" ToolTip="Decorate instructions that are not (yet) implemented with squiggles" VerticalAlignment="Center" Width="Auto"/>
+
+                        <Label    Grid.Row="14" Grid.Column="0" Content="Assume Pragma:" HorizontalAlignment="Left" Width="Auto"/>
+                        <TextBox  Grid.Row="14" Grid.Column="1" Grid.ColumnSpan="2" x:Name="AsmSim_Pragma_Assume_UI" ToolTip="The characters used to instruct the asm simulator to execute instructions. E.g. '#pragma assume mov al, 0001_0001b' to set al the value 00010001b." Height="26" VerticalAlignment="Center" VerticalContentAlignment="Center" Width="Auto"/>
                     </Grid>
                 </GroupBox>
                 <GroupBox Header="Architectures (used for Code Completion and Signature Help)" >

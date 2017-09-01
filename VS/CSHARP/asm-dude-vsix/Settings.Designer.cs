@@ -12,7 +12,7 @@ namespace AsmDude {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.1.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.3.0.0")]
     public sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -1166,12 +1166,12 @@ namespace AsmDude {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool AsmSim_Use_In_Code_Completion {
+        public bool AsmSim_Show_Register_In_Code_Completion {
             get {
-                return ((bool)(this["AsmSim_Use_In_Code_Completion"]));
+                return ((bool)(this["AsmSim_Show_Register_In_Code_Completion"]));
             }
             set {
-                this["AsmSim_Use_In_Code_Completion"] = value;
+                this["AsmSim_Show_Register_In_Code_Completion"] = value;
             }
         }
         
@@ -1268,18 +1268,6 @@ namespace AsmDude {
             }
             set {
                 this["AsmSim_64_Bits"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5")]
-        public int AsmSim_Number_Of_Steps {
-            get {
-                return ((int)(this["AsmSim_Number_Of_Steps"]));
-            }
-            set {
-                this["AsmSim_Number_Of_Steps"] = value;
             }
         }
         
@@ -1556,6 +1544,66 @@ namespace AsmDude {
             }
             set {
                 this["AsmSim_Pragma_Assume"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AsmSim_Show_Register_In_Instruction_Tooltip {
+            get {
+                return ((bool)(this["AsmSim_Show_Register_In_Instruction_Tooltip"]));
+            }
+            set {
+                this["AsmSim_Show_Register_In_Instruction_Tooltip"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AsmSim_Show_Register_In_Register_Tooltip {
+            get {
+                return ((bool)(this["AsmSim_Show_Register_In_Register_Tooltip"]));
+            }
+            set {
+                this["AsmSim_Show_Register_In_Register_Tooltip"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("HEX")]
+        public string AsmSim_Show_Register_In_Code_Completion_Numeration {
+            get {
+                return ((string)(this["AsmSim_Show_Register_In_Code_Completion_Numeration"]));
+            }
+            set {
+                this["AsmSim_Show_Register_In_Code_Completion_Numeration"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("HEX")]
+        public string AsmSim_Show_Register_In_Instruction_Tooltip_Numeration {
+            get {
+                return ((string)(this["AsmSim_Show_Register_In_Instruction_Tooltip_Numeration"]));
+            }
+            set {
+                this["AsmSim_Show_Register_In_Instruction_Tooltip_Numeration"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("HEX")]
+        public string AsmSim_Show_Register_In_Register_Tooltip_Numeration {
+            get {
+                return ((string)(this["AsmSim_Show_Register_In_Register_Tooltip_Numeration"]));
+            }
+            set {
+                this["AsmSim_Show_Register_In_Register_Tooltip_Numeration"] = value;
             }
         }
     }

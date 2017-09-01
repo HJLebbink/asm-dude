@@ -87,7 +87,6 @@ namespace AsmDude.OptionsPage
         }
         private void AsmSim_Update(bool value)
         {
-            this.AsmSim_Number_Of_Steps_UI.IsEnabled = value;
             this.AsmSim_Number_Of_Threads_UI.IsEnabled = value;
             this.AsmSim_Z3_Timeout_MS_UI.IsEnabled = value;
             this.AsmSim_Shown_Syntax_Errors_UI.IsEnabled = value;
@@ -99,7 +98,12 @@ namespace AsmDude.OptionsPage
             this.AsmSim_Show_Unreachable_Instructions_UI.IsEnabled = value;
             this.AsmSim_Decorate_Unreachable_Instructions_UI.IsEnabled = value;
             this.AsmSim_Decorate_Registers_UI.IsEnabled = value;
-            this.AsmSim_Use_In_Code_Completion_UI.IsEnabled = value;
+            this.AsmSim_Show_Register_In_Code_Completion_UI.IsEnabled = value;
+            this.AsmSim_Show_Register_In_Code_Completion_Numeration_UI.IsEnabled = value;
+            this.AsmSim_Show_Register_In_Register_Tooltip_UI.IsEnabled = value;
+            this.AsmSim_Show_Register_In_Register_Tooltip_Numeration_UI.IsEnabled = value;
+            this.AsmSim_Show_Register_In_Instruction_Tooltip_UI.IsEnabled = value;
+            this.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration_UI.IsEnabled = value;
             this.AsmSim_Decorate_Unimplemented_UI.IsEnabled = value;
             this.AsmSim_Pragma_Assume_UI.IsEnabled = value;
             this.AsmSim_64_Bits_UI.IsEnabled = value;
@@ -735,11 +739,6 @@ namespace AsmDude.OptionsPage
             get { return this.AsmSim_Number_Of_Threads_UI.Value ?? 4; }
             set { this.AsmSim_Number_Of_Threads_UI.Value = value; }
         }
-        public int AsmSim_Number_Of_Steps
-        {
-            get { return this.AsmSim_Number_Of_Steps_UI.Value ?? 1; }
-            set { this.AsmSim_Number_Of_Steps_UI.Value = value; }
-        }
         public bool AsmSim_64_Bits
         {
             get { return this.AsmSim_64_Bits_UI.IsChecked ?? false; }
@@ -790,10 +789,35 @@ namespace AsmDude.OptionsPage
             get { return this.AsmSim_Decorate_Registers_UI.IsChecked ?? false; }
             set { this.AsmSim_Decorate_Registers_UI.IsChecked = value; }
         }
-        public bool AsmSim_Use_In_Code_Completion
+        public bool AsmSim_Show_Register_In_Code_Completion
         {
-            get { return this.AsmSim_Use_In_Code_Completion_UI.IsChecked ?? false; }
-            set { this.AsmSim_Use_In_Code_Completion_UI.IsChecked = value; }
+            get { return this.AsmSim_Show_Register_In_Code_Completion_UI.IsChecked ?? false; }
+            set { this.AsmSim_Show_Register_In_Code_Completion_UI.IsChecked = value; }
+        }
+        public NumerationEnum AsmSim_Show_Register_In_Code_Completion_Numeration
+        {
+            get { return AsmSourceTools.ParseNumeration(this.AsmSim_Show_Register_In_Code_Completion_Numeration_UI.Text); }
+            set { this.AsmSim_Show_Register_In_Code_Completion_Numeration_UI.Text = value.ToString(); }
+        }
+        public bool AsmSim_Show_Register_In_Register_Tooltip
+        {
+            get { return this.AsmSim_Show_Register_In_Register_Tooltip_UI.IsChecked ?? false; }
+            set { this.AsmSim_Show_Register_In_Register_Tooltip_UI.IsChecked = value; }
+        }
+        public NumerationEnum AsmSim_Show_Register_In_Register_Tooltip_Numeration
+        {
+            get { return AsmSourceTools.ParseNumeration(this.AsmSim_Show_Register_In_Register_Tooltip_Numeration_UI.Text); }
+            set { this.AsmSim_Show_Register_In_Register_Tooltip_Numeration_UI.Text = value.ToString(); }
+        }
+        public bool AsmSim_Show_Register_In_Instruction_Tooltip
+        {
+            get { return this.AsmSim_Show_Register_In_Instruction_Tooltip_UI.IsChecked ?? false; }
+            set { this.AsmSim_Show_Register_In_Instruction_Tooltip_UI.IsChecked = value; }
+        }
+        public NumerationEnum AsmSim_Show_Register_In_Instruction_Tooltip_Numeration
+        {
+            get { return AsmSourceTools.ParseNumeration(this.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration_UI.Text); }
+            set { this.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration_UI.Text = value.ToString(); }
         }
         public bool AsmSim_Decorate_Unimplemented
         {

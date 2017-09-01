@@ -145,7 +145,9 @@ namespace AsmDude.Tools
                 this._dFlow = new DynamicFlow(this.Tools);
 
                 this._delay = new Delay(AsmDudePackage.msSleepBeforeAsyncExecution, 1000, this._threadPool);
-                //xxx this._delay.Done_Event += (o, i) => { this.Schedule_Reset_Async(); };
+
+                // after a delay, reset this AsmSimulator
+                this._delay.Done_Event += (o, i) => { this.Schedule_Reset_Async(); };
 
                 this.Reset(); // wait to give the system some breathing time
                 this._buffer.ChangedLowPriority += (o, i) => {

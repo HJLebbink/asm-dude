@@ -138,29 +138,29 @@
         #region Decimal Arithmetic Instructions
         ;The decimal arithmetic instructions perform decimal arithmetic on binary coded decimal (BCD) data.
 
-        ; <summary>XXX</summary>
+        
         DAA,; Decimal adjust after addition
-        ; <summary>XXX</summary>
+        
         DAS,; Decimal adjust after subtraction
-        ; <summary>XXX</summary>
+        
         AAA,; ASCII adjust after addition
-        ; <summary>XXX</summary>
+        
         AAS,; ASCII adjust after subtraction
-        ; <summary>XXX</summary>
+        
         AAM,; ASCII adjust after multiplication
-        ; <summary>XXX</summary>
+        
         AAD,; ASCII adjust before division
         #endregion
         #region Logical Instructions
         ;The logical instructions perform basic AND, OR, XOR, and NOT logical operations on byte, word, and doubleword
         ;values.
-        ; <summary>XXX</summary>
+        
         AND,; Perform bitwise logical AND
-        ; <summary>XXX</summary>
+        
         OR,; Perform bitwise logical OR
-        ; <summary>XXX</summary>
+        
         XOR,; Perform bitwise logical exclusive OR
-        ; <summary>XXX</summary>
+        
         NOT,; Perform bitwise logical NOT
         #endregion
         #region Shift and Rotate Instructions
@@ -261,11 +261,11 @@
         SETPO,
         ; <summary>Set byte if not parity (PF=0) (SETNP=SETPO)</summary>
         SETNP,
-        ; <summary>XXX</summary>
+        
         TEST,; Logical compare
-        ; <summary>XXX</summary>
+        
         CRC32,; Provides hardware acceleration to calculate cyclic redundancy checks for fast and efficient implementation of data integrity protocols.
-        ; <summary>XXX</summary>
+        
         POPCNT,; This instruction calculates of number of bits set to 1 in the second operand (source) and returns the count in the first operand (a destination register)
         #endregion
         #region Control Transfer Instructions
@@ -368,77 +368,77 @@
         #endregion
         #region string Instructions
         ;The string instructions operate on strings of bytes, allowing them to be moved to and from memory.
-        ; <summary>XXX</summary>
+        
         MOVS,
-        ; <summary>XXX</summary>
+        
         MOVSB,; Move string/Move byte string
-        ; <summary>XXX</summary>
+        
         MOVSW,; Move string/Move word string
-        ; <summary>XXX</summary>
+        
         MOVSD,; Move string/Move doubleword string
-        ; <summary>XXX</summary>
+        
         CMPS,
-        ; <summary>XXX</summary>
+        
         CMPSB,; Compare string/Compare byte string
-        ; <summary>XXX</summary>
+        
         CMPSW,; Compare string/Compare word string
-        ; <summary>XXX</summary>
+        
         CMPSD,; Compare string/Compare doubleword string
-        ; <summary>XXX</summary>
+        
         SCAS,
-        ; <summary>XXX</summary>
+        
         SCASB,; Scan string/Scan byte string
-        ; <summary>XXX</summary>
+        
         SCASW,; Scan string/Scan word string
-        ; <summary>XXX</summary>
+        
         SCASD,; Scan string/Scan doubleword string
-        ; <summary>XXX</summary>
+        
         LODS,
-        ; <summary>XXX</summary>
+        
         LODSB,; Load string/Load byte string
-        ; <summary>XXX</summary>
+        
         LODSW,; Load string/Load word string
-        ; <summary>XXX</summary>
+        
         LODSD,; Load string/Load doubleword string
-        ; <summary>XXX</summary>
+        
         STOS,
-        ; <summary>XXX</summary>
+        
         STOSB,; Store string/Store byte string
-        ; <summary>XXX</summary>
+        
         STOSW,; Store string/Store word string
-        ; <summary>XXX</summary>
+        
         STOSD,; Store string/Store doubleword string
-        ; <summary>XXX</summary>
+        
         REP,; Repeat while ECX not zero
-        ; <summary>XXX</summary>
+        
         REPE,
-        ; <summary>XXX</summary>
+        
         REPZ,; Repeat while equal/Repeat while zero
-        ; <summary>XXX</summary>
+        
         REPNE,
-        ; <summary>XXX</summary>
+        
         REPNZ,; Repeat while not equal/Repeat while not zero
         #endregion
         #region I/O Instructions
         ;These instructions move data between the processor’s I/O ports and a register or memory.
         ;IN Read from a port
-        ; <summary>XXX</summary>
+        
         OUT,; Write to a port
-        ; <summary>XXX</summary>
+        
         INS,
-        ; <summary>XXX</summary>
+        
         INSB,; Input string from port/Input byte string from port
-        ; <summary>XXX</summary>
+        
         INSW,; Input string from port/Input word string from port
-        ; <summary>XXX</summary>
+        
         INSD,; Input string from port/Input doubleword string from port
-        ; <summary>XXX</summary>
+        
         OUTS,
-        ; <summary>XXX</summary>
+        
         OUTSB,; Output string to port/Output byte string to port
-        ; <summary>XXX</summary>
+        
         OUTSW,; Output string to port/Output word string to port
-        ; <summary>XXX</summary>
+        
         OUTSD,; Output string to port/Output doubleword string to port
         #endregion
         #region Flag Control (EFLAG) Instructions
@@ -472,15 +472,15 @@
         #endregion
         #region Segment Register Instructions
         ;The segment register instructions allow far pointers (segment addresses) to be loaded into the segment registers.
-        ; <summary>XXX</summary>
+        
         LDS,; Load far pointer using DS
-        ; <summary>XXX</summary>
+        
         LES,; Load far pointer using ES
-        ; <summary>XXX</summary>
+        
         LFS,; Load far pointer using FS
-        ; <summary>XXX</summary>
+        
         LGS,; Load far pointer using GS
-        ; <summary>XXX</summary>
+        
         LSS,; Load far pointer using SS
         #endregion
         #region Miscellaneous Instructions
@@ -510,35 +510,35 @@
         CLFLUSHOPT,
         #endregion
         #region User Mode Extended Sate Save/Restore Instructions
-        ; <summary>XXX</summary>
+        
         XSAVE,; Save processor extended states to memory
-        ; <summary>XXX</summary>
+        
         XSAVEC,; Save processor extended states with compaction to memory
-        ; <summary>XXX</summary>
+        
         XSAVEOPT,; Save processor extended states to memory, optimized
-        ; <summary>XXX</summary>
+        
         XRSTOR,; Restore processor extended states from memory
-        ; <summary>XXX</summary>
+        
         XGETBV,; Reads the state of an extended control register
         #endregion
         #region Random Number Generator Instructions
-        ; <summary>XXX</summary>
+        
         RDRAND,; Retrieves a random number generated from hardware
-        ; <summary>XXX</summary>
+        
         RDSEED,; Retrieves a random number generated from hardware
         #endregion
         #region BMI1, BMI2
-        ; <summary>XXX</summary>
+        
         ANDN,; Bitwise AND of first source with inverted 2nd source operands.
-        ; <summary>XXX</summary>
+        
         BEXTR,; Contiguous bitwise extract
-        ; <summary>XXX</summary>
+        
         BLSI,; Extract lowest set bit
-        ; <summary>XXX</summary>
+        
         BLSMSK,; Set all lower bits below first set bit to 1
-        ; <summary>XXX</summary>
+        
         BLSR,; Reset lowest set bit
-        ; <summary>XXX</summary>
+        
         BZHI,; Zero high bits starting from specified bit position
 
         ; <summary>Count the number leading zero bits</summary>

@@ -91,6 +91,7 @@
     <Compile Include="Flags.cs" />
     <Compile Include="MicroArch.cs" />
     <Compile Include="Mnemonic.cs" />
+    <Compile Include="NumerationEnum.cs" />
     <Compile Include="Operand.cs" />
     <Compile Include="OperandType.cs" />
     <Compile Include="Parameter.cs" />
