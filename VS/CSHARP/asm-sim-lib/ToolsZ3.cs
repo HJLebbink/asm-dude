@@ -424,7 +424,7 @@ namespace AsmSim
                 for (int i = (nBits - 1); i >= 0; --i)
                 {
                     sb.Append(ToolsZ3.ToStringBin(a[i]));
-                    if ((i > 0) && (i != nBits - 1) && (i % 8 == 0)) sb.Append('.');
+                    if ((i > 0) && (i != nBits - 1) && (i % 8 == 0)) sb.Append('_');
                 }
             }
             return sb.ToString();
@@ -439,9 +439,58 @@ namespace AsmSim
                 int offset = (j << 2);
                 sb.Append(ToolsZ3.BitToCharHex(a[offset], a[offset + 1], a[offset + 2], a[offset + 3]));
 
-                if ((j > 0) && ((j % 8) == 0)) sb.Append('.');
+                if ((j > 0) && ((j % 4) == 0)) sb.Append('_');
             }
             return sb.ToString();
+        }
+
+        public static string ToStringDec(Tv[] a)
+        {
+            var r = ToUlong();
+            if (r.Value != null) return r.Value.ToString() + "d";
+            return r.Misc.ToString();
+
+            #region LocalMethod
+            (ulong? Value, Tv Misc) ToUlong()
+            {
+                ulong result = 0;
+                for (int i = 0; i < Math.Min(a.Length, 64); ++i)
+                {
+                    switch (a[i])
+                    {
+                        case Tv.ONE:
+                            result |= (1UL << i);
+                            break;
+                        case Tv.ZERO:
+                            break;
+                        default: return (Value:null, Misc:a[i]);
+                    }
+                }
+                return (Value: result, Misc: Tv.UNKNOWN);
+            }
+            #endregion
+        }
+
+
+        public static string ToStringOct(Tv[] a)
+        {
+            string str = "";
+            int offset = 0;
+            int counter = 0;
+            while (offset < a.Length)
+            {
+                str = ToolsZ3.BitToCharOct(GetTv(offset), GetTv(offset + 1), GetTv(offset + 2)) + str;
+                offset += 3;
+                if ((counter > 0) && ((counter % 3) == 0)) str = '_' + str;
+            }
+            return "0o" + str;
+
+            #region Local Methods
+            Tv GetTv(int pos)
+            {
+                return ((pos < a.Length) && (pos >= 0)) ? a[pos] : Tv.ZERO;
+            }
+            #endregion
         }
 
         public static char ToStringBin(Tv tv)
@@ -489,10 +538,31 @@ namespace AsmSim
             return 'Y';
         }
 
+        public static char BitToCharOct(Tv b0, Tv b1, Tv b2)
+        {
+            if ((b2 == Tv.UNDETERMINED) || (b1 == Tv.UNDETERMINED) || (b0 == Tv.UNDETERMINED)) return '-';
+            if ((b2 == Tv.UNDEFINED) || (b1 == Tv.UNDEFINED) || (b0 == Tv.UNDEFINED)) return 'U';
+            if ((b2 == Tv.UNKNOWN) || (b1 == Tv.UNKNOWN) || (b0 == Tv.UNKNOWN)) return '?';
+            if ((b2 == Tv.INCONSISTENT) || (b1 == Tv.INCONSISTENT) || (b0 == Tv.INCONSISTENT)) return 'X';
+
+            if ((b2 == Tv.ZERO) && (b1 == Tv.ZERO) && (b0 == Tv.ZERO)) return '0';
+            if ((b2 == Tv.ZERO) && (b1 == Tv.ZERO) && (b0 == Tv.ONE)) return '1';
+            if ((b2 == Tv.ZERO) && (b1 == Tv.ONE) && (b0 == Tv.ZERO)) return '2';
+            if ((b2 == Tv.ZERO) && (b1 == Tv.ONE) && (b0 == Tv.ONE)) return '3';
+
+            if ((b2 == Tv.ONE) && (b1 == Tv.ZERO) && (b0 == Tv.ZERO)) return '4';
+            if ((b2 == Tv.ONE) && (b1 == Tv.ZERO) && (b0 == Tv.ONE)) return '5';
+            if ((b2 == Tv.ONE) && (b1 == Tv.ONE) && (b0 == Tv.ZERO)) return '6';
+            if ((b2 == Tv.ONE) && (b1 == Tv.ONE) && (b0 == Tv.ONE)) return '7';
+
+            // unreachable
+            return 'Y';
+        }
+
         #endregion Print Methods
 
         #region Conversion 
-        public static ulong? GetUlong(BitVecExpr value, uint nBits, Solver solver, Context ctx)
+        public static ulong? ToUlong(BitVecExpr value, uint nBits, Solver solver, Context ctx)
         {
             if (value.IsBVNumeral)
             {
@@ -520,12 +590,12 @@ namespace AsmSim
                     }
                 }
             }
-            return ToolsZ3.GetUlong(results);
+            return ToolsZ3.ToUlong(results);
         }
-        public static ulong? GetUlong(Tv[] array)
+        public static ulong? ToUlong(Tv[] array)
         {
             ulong result = 0;
-            for (int i = 0; i < array.Length; ++i)
+            for (int i = 0; i < Math.Max(array.Length, 64); ++i)
             {
                 switch (array[i])
                 {
@@ -534,9 +604,6 @@ namespace AsmSim
                         break;
                     case Tv.ZERO:
                         break;
-                    case Tv.UNKNOWN:
-                    case Tv.INCONSISTENT:
-                    case Tv.UNDETERMINED:
                     default: return null;
                 }
             }

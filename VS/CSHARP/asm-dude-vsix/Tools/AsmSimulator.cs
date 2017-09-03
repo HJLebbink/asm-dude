@@ -32,6 +32,7 @@ using AsmTools;
 using Amib.Threading;
 using AsmSim.Mnemonics;
 using System.Text;
+using System.Linq;
 
 namespace AsmDude.Tools
 {
@@ -620,14 +621,14 @@ namespace AsmDude.Tools
         }
         #endregion
 
-        #region Getters
+        #region Getters for State and Registers
         private void PreCompute_Register_Value(Rn name, int lineNumber, bool before)
         {
             // get the register value and discard the result, the value will be added to the cache
             this.Get_Register_Value(name, lineNumber, before, false, true);
         }
 
-        public string Get_Register_Value_If_Already_Computed(Rn name, int lineNumber, bool before)
+        public string Get_Register_Value_If_Already_Computed(Rn name, int lineNumber, bool before, NumerationEnum numeration)
         {
             if (!this.Enabled) return "";
             var state = (before) ? this.Get_State_Before(lineNumber, false, false) : this.Get_State_After(lineNumber, false, false);
@@ -635,10 +636,28 @@ namespace AsmDude.Tools
             if (state.State == null) return null;
             Tv[] reg = state.State.GetTvArray_Cached(name);
             if (reg == null) return null;
-            return string.Format("{0} = {1}", ToolsZ3.ToStringHex(reg), ToolsZ3.ToStringBin(reg));
+            switch (numeration)
+            {
+                case NumerationEnum.HEX: return ToolsZ3.ToStringHex(reg);
+                case NumerationEnum.BIN: return ToolsZ3.ToStringBin(reg);
+                case NumerationEnum.DEC: return ToolsZ3.ToStringDec(reg);
+                case NumerationEnum.OCT: return ToolsZ3.ToStringOct(reg);
+                default: return ToolsZ3.ToStringHex(reg);
+            }
         }
 
-        public string Get_Register_Value_and_Block(Rn name, int lineNumber, bool before)
+        public string Get_Flag_Value_If_Already_Computed(Flags name, int lineNumber, bool before)
+        {
+            if (!this.Enabled) return "";
+            var state = (before) ? this.Get_State_Before(lineNumber, false, false) : this.Get_State_After(lineNumber, false, false);
+            if (state.Bussy) return null;
+            if (state.State == null) return null;
+            Tv? content = state.State.GetTv_Cached(name);
+            if (content == null) return null;
+            return content.Value.ToString();
+        }
+
+        public string Get_Register_Value_and_Block(Rn name, int lineNumber, bool before, NumerationEnum numeration)
         {
             if (!this.Enabled) return null;
             var state = (before) ? this.Get_State_Before(lineNumber, false, true) : this.Get_State_After(lineNumber, false, true);
@@ -646,73 +665,84 @@ namespace AsmDude.Tools
             Tv[] reg = state.State.GetTvArray_Cached(name);
             if (reg == null) reg = state.State.GetTvArray(name);
             if (reg == null) return null;
-            return string.Format("{0} = {1}", ToolsZ3.ToStringHex(reg), ToolsZ3.ToStringBin(reg));
+            switch (numeration)
+            {
+                case NumerationEnum.HEX: return ToolsZ3.ToStringHex(reg);
+                case NumerationEnum.BIN: return ToolsZ3.ToStringBin(reg);
+                case NumerationEnum.DEC: return ToolsZ3.ToStringDec(reg);
+                case NumerationEnum.OCT: return ToolsZ3.ToStringOct(reg);
+                default: return ToolsZ3.ToStringHex(reg);
+            }
         }
 
-        public (string Value, bool Bussy) Get_Register_Value(Rn name, int lineNumber, bool before, bool async, bool create)
+        public string Get_Flag_Value_and_Block(Flags name, int lineNumber, bool before)
         {
-            //try
-            //{
-                if (!this.Enabled) return ("", false);
+            if (!this.Enabled) return null;
+            var state = (before) ? this.Get_State_Before(lineNumber, false, true) : this.Get_State_After(lineNumber, false, true);
+            if (state.State == null) return null;
+            Tv? content = state.State.GetTv_Cached(name);
+            if (content == null) content = state.State.GetTv(name);
+            if (content == null) return null;
+            return content.Value.ToString();
+        }
 
-                var state = (before) ? this.Get_State_Before(lineNumber, async, create) : this.Get_State_After(lineNumber, async, create);
-                if (state.Bussy)
-                {
-                    this._threadPool2.QueueWorkItem(Update_State_And_TvArray_LOCAL);
-                    this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
-                    return ("[I'm bussy and haven't acquired the state of line " + (lineNumber + 1) + " yet.]", true); // plus 1 for the lineNumber because lineNumber 0 is shown as lineNumber 1
-                }
-                if (state.State == null)
-                {
-                    this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
-                    return ("[I'm confused, sorry about that.]", true);
-                }
 
-                Tv[] reg = state.State.GetTvArray_Cached(name);
-                if (reg == null)
-                {
-                    this._threadPool2.QueueWorkItem(Update_TvArray_LOCAL, state.State);
-                    this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
-                    return ("[I'm bussy determining the bits of " + name + ".]", true);
-                }
-                else
-                {
-                    this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
-                    return (ToString_LOCAL(reg), false);
-                }
+        public (string Value, bool Bussy) Get_Register_Value(Rn name, int lineNumber, bool before, bool async, bool create, NumerationEnum numeration = NumerationEnum.BIN)
+        {
+            if (!this.Enabled) return ("", false);
 
-                #region Local Methods
+            var state = (before) ? this.Get_State_Before(lineNumber, async, create) : this.Get_State_After(lineNumber, async, create);
+            if (state.Bussy)
+            {
+                this._threadPool2.QueueWorkItem(Update_State_And_TvArray_LOCAL);
+                this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
+                return ("[I'm bussy and haven't acquired the state of line " + (lineNumber + 1) + " yet.]", true); // plus 1 for the lineNumber because lineNumber 0 is shown as lineNumber 1
+            }
+            if (state.State == null)
+            {
+                this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
+                return ("[I'm confused, sorry about that.]", true);
+            }
 
-                void Update_State_And_TvArray_LOCAL()
-                {
-                    var state2 = (before) ? this.Get_State_Before(lineNumber, false, true) : this.Get_State_After(lineNumber, false, true);
-                    if (state2.State != null) Update_TvArray_LOCAL(state2.State);
-                }
+            Tv[] reg = state.State.GetTvArray_Cached(name);
+            if (reg == null)
+            {
+                this._threadPool2.QueueWorkItem(Update_TvArray_LOCAL, state.State);
+                this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
+                return ("[I'm bussy determining the bits of " + name + ".]", true);
+            }
+            else
+            {
+                this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
+                return (ToString_LOCAL(reg), false);
+            }
 
-                void Update_TvArray_LOCAL(State state2)
-                {
-                    state2.Update_TvArray_Cached(name);
-                    this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
-                }
+            #region Local Methods
 
-                string ToString_LOCAL(Tv[] array)
+            void Update_State_And_TvArray_LOCAL()
+            {
+                var state2 = (before) ? this.Get_State_Before(lineNumber, false, true) : this.Get_State_After(lineNumber, false, true);
+                if (state2.State != null) Update_TvArray_LOCAL(state2.State);
+            }
+
+            void Update_TvArray_LOCAL(State state2)
+            {
+                state2.Update_TvArray_Cached(name);
+                this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
+            }
+
+            string ToString_LOCAL(Tv[] array)
+            {
+                switch (numeration)
                 {
-                    if (false)
-                    {
-                        return string.Format("{0} = {1}\n{2}", ToolsZ3.ToStringHex(reg), ToolsZ3.ToStringBin(reg), state.State.ToStringConstraints("") + state.State.ToStringRegs("") + state.State.ToStringFlags(""));
-                    }
-                    else
-                    {
-                        return string.Format("{0} = {1}", ToolsZ3.ToStringHex(reg), ToolsZ3.ToStringBin(reg));
-                    }
+                    case NumerationEnum.HEX: return ToolsZ3.ToStringHex(reg);
+                    case NumerationEnum.BIN: return ToolsZ3.ToStringBin(reg);
+                    case NumerationEnum.DEC: return ToolsZ3.ToStringDec(reg);
+                    case NumerationEnum.OCT: return ToolsZ3.ToStringOct(reg);
+                    default: return ToolsZ3.ToStringHex(reg);
                 }
-                #endregion
-            //}
-           // catch (Exception e)
-           // {
-           //     AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Get_Register_Value; e={1}", ToString(), e.ToString()));
-           //     return ("Exception in AsmSimulator:Get_Register_Value", false);
-           // }
+            }
+            #endregion
         }
 
         public (bool HasValue, bool Bussy) Has_Register_Value(Rn name, int lineNumber, bool before, bool create = false)
@@ -891,6 +921,38 @@ namespace AsmDude.Tools
             #endregion
         }
 
+        #endregion
+
+        public (IEnumerable<Rn>ReadReg, IEnumerable<Rn> WriteReg, Flags ReadFlag, Flags WriteFlag, bool MemRead, bool MemWrite) Get_Usage(int lineNumber)
+        {
+            if (this._sFlow.HasLine(lineNumber))
+            {
+                var content = this._sFlow.Get_Line(lineNumber);
+                var dummyKeys = ("0", "1", "1B");
+                var opcode = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, this.Tools);
+                if (opcode != null)
+                {
+                    return (
+                        ReadReg: opcode.RegsReadStatic,
+                        WriteReg: opcode.RegsWriteStatic,
+                        ReadFlag: opcode.FlagsReadStatic,
+                        WriteFlag: opcode.FlagsWriteStatic,
+                        MemRead: opcode.MemReadStatic,
+                        MemWrite: opcode.MemWriteStatic
+                    );
+                }
+            }
+            return (
+                ReadReg: Enumerable.Empty<Rn>(),
+                WriteReg: Enumerable.Empty<Rn>(),
+                ReadFlag: Flags.NONE,
+                WriteFlag: Flags.NONE,
+                MemRead: false,
+                MemWrite:false
+            );
+        }
+
+        #region Getters for usage
         #endregion
     }
 }

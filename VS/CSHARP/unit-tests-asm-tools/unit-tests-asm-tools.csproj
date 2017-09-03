@@ -72,8 +72,13 @@
     <Compile Include="test_AsmSourceTools.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Test_Operand.cs" />
+    <Compile Include="Test_ToolsZ3.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\asm-sim-lib\asm-sim-lib.csproj">
+      <Project>{E0D833C8-652E-4026-BDC1-13568940B1A8}</Project>
+      <Name>asm-sim-lib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\asm-tools-lib\asm-tools-lib.csproj">
       <Project>{9F5C800F-83F8-4866-AE3C-97602B39C536}</Project>
       <Name>asm-tools-lib</Name>

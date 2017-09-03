@@ -446,10 +446,14 @@ namespace AsmSim
             }
         }
 
-        public Tv GetTv_Cached(Flags flagName)
+        public Tv? GetTv_Cached(Flags flagName)
         {
-            this._cached_Flag_Values.TryGetValue(flagName, out var value);
-            return value;
+            // NOTO: do not use tryGetValue since then a uninitialized TV value (=TV.UNKNOWN) will be returned instead of null value
+            if (this._cached_Flag_Values.ContainsKey(flagName))
+            {
+                return this._cached_Flag_Values[flagName];
+            }
+            return null; 
         }
 
         public Tv GetTv(Flags flagName)
@@ -535,7 +539,7 @@ namespace AsmSim
                         {
                             if (ADD_COMPUTED_VALUES && (RegisterTools.NBits(regName) == 64))
                             {
-                                ulong? value2 = ToolsZ3.GetUlong(result);
+                                ulong? value2 = ToolsZ3.ToUlong(result);
                                 if (value2 != null)
                                 {
                                     this.Solver.Assert(this.Ctx.MkEq(regExpr, this.Ctx.MkBV(value2.Value, 64)));

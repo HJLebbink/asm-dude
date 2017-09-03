@@ -235,8 +235,8 @@ namespace unit_tests_asm_z3
             Tv[] actualTvArray = state.GetTvArray(name);
             Assert.AreEqual(nBits, actualTvArray.Length);
 
-            ulong? actualLong = ToolsZ3.GetUlong(actualTvArray);
-            ulong? expectedLong = ToolsZ3.GetUlong(expectedTvArray);
+            ulong? actualLong = ToolsZ3.ToUlong(actualTvArray);
+            ulong? expectedLong = ToolsZ3.ToUlong(expectedTvArray);
 
             if (actualLong.HasValue && expectedLong.HasValue)
             {
@@ -290,8 +290,8 @@ namespace unit_tests_asm_z3
             Assert.AreEqual(actualTvArray.Length, nBits);
             Assert.AreEqual(expectedTvArray.Length, nBits);
 
-            ulong? actualLong = ToolsZ3.GetUlong(actualTvArray);
-            ulong? expectedLong = ToolsZ3.GetUlong(expectedTvArray);
+            ulong? actualLong = ToolsZ3.ToUlong(actualTvArray);
+            ulong? expectedLong = ToolsZ3.ToUlong(expectedTvArray);
 
             if (actualLong.HasValue && expectedLong.HasValue)
             {

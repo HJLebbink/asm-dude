@@ -56,7 +56,7 @@
     <StartArguments>/rootsuffix Exp</StartArguments>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -202,14 +202,12 @@
     <Compile Include="AsmDoc\AsmDocUnderlineTaggerProvider.cs" />
     <Compile Include="AsmDoc\CtrlKeyState.cs" />
     <Compile Include="AsmDudePackage.cs" />
+    <Compile Include="QuickInfo\ButtonInfo.cs" />
     <Compile Include="QuickInfo\InstructionTooltipWindow.xaml.cs">
       <DependentUpon>InstructionTooltipWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="QuickInfo\RegisterTooltipWindow.xaml.cs">
       <DependentUpon>RegisterTooltipWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="QuickInfo\DisassemblyMnemonicTooltip.xaml.cs">
-      <DependentUpon>DisassemblyMnemonicTooltip.xaml</DependentUpon>
     </Compile>
     <Compile Include="SyntaxHighlighting\AsmDisassemblyTaggerProvider.cs" />
     <Compile Include="SyntaxHighlighting\AsmDisassemblyTokenTagProvider.cs" />
@@ -500,10 +498,6 @@
     <Page Include="QuickInfo\RegisterTooltipWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="QuickInfo\DisassemblyMnemonicTooltip.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup />

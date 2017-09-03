@@ -282,7 +282,7 @@ namespace AsmDude
                                 {
                                     if (use_AsmSim_In_Code_Completion && this._asmSimulator.Tools.StateConfig.IsRegOn(RegisterTools.Get64BitsRegister(regName)))
                                     {
-                                        var v = this._asmSimulator.Get_Register_Value(regName, lineNumber, true, false, false);
+                                        var v = this._asmSimulator.Get_Register_Value(regName, lineNumber, true, false, false, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration));
                                         if (!v.Bussy)
                                         {
                                             additionalInfo = v.Value;

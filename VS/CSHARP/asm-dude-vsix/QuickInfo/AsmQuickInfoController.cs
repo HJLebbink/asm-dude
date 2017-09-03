@@ -20,14 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections.Generic;
+using System.Windows.Controls;
+
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using System;
-using AsmDude.Tools;
 using Microsoft.VisualStudio.Text.Adornments;
+
+using AsmDude.Tools;
 using AsmTools;
+using System.Windows;
 
 namespace AsmDude.QuickInfo
 {
@@ -146,17 +150,29 @@ namespace AsmDude.QuickInfo
             //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:OnTextViewMouseHover: keyword={1}", ToString(), keyword));
             #endregion
 
+            #region Create a window
             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword, false);
             if (mnemonic != Mnemonic.NONE)
             {
+                var instructionTooltipWindow = new InstructionTooltipWindow(AsmDudeToolsStatic.Get_Font_Color());
+                instructionTooltipWindow.SetDescription(mnemonic, AsmDudeTools.Instance);
+                instructionTooltipWindow.SetPerformanceInfo(mnemonic, AsmDudeTools.Instance, true);
+                instructionTooltipWindow.Margin = new Thickness(7.0);
+
+                var border = new Border()
+                {
+                    BorderBrush = System.Windows.Media.Brushes.LightGray,
+                    BorderThickness = new Thickness(1.0),
+                    CornerRadius = new CornerRadius(2.0),
+                    Background = AsmDudeToolsStatic.Get_Background_Color(),
+                    Child = instructionTooltipWindow
+                };
+
                 var trackingSpan = this._textView.TextSnapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeInclusive);
-                var foreground = AsmDudeToolsStatic.Get_Font_Color();
-                var background = AsmDudeToolsStatic.Get_Background_Color();
-                var wpfView = new DisassemblyMnemonicTooltip();
-                AsmQuickInfoSource.Render_Mnemonic_ToolTip(wpfView.myPopup, mnemonic, foreground, AsmDudeTools.Instance);
-                wpfView.Background = background;
-                this._toolTipProvider.ShowToolTip(trackingSpan, wpfView, PopupStyles.DismissOnMouseLeaveTextOrContent);
+                //this._toolTipProvider.ShowToolTip(trackingSpan, border, PopupStyles.DismissOnMouseLeaveTextOrContent);
+                this._toolTipProvider.ShowToolTip(trackingSpan, border, PopupStyles.PositionClosest);
             }
+            #endregion
         }
     }
 }

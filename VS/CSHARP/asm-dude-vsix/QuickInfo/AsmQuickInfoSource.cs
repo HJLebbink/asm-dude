@@ -177,48 +177,21 @@ namespace AsmDude.QuickInfo
                             {
                                 if (keywordUpper.StartsWith("%")) keywordUpper = keywordUpper.Substring(1); // remove the preceding % in AT&T syntax 
                                 Rn reg = RegisterTools.ParseRn(keywordUpper, true);
-
-                                if (true)
-                                {
-                                    var registerTooltipWindow = new RegisterTooltipWindow(this._asmSimulator, reg, lineNumber);
-                                    registerTooltipWindow.AddDescription(reg.ToString(), this._asmDudeTools.Get_Description(keywordUpper), foreground);
-                                    quickInfoContent.Add(registerTooltipWindow);
-                                }
-                                else
-                                {
-                                    description = new TextBlock();
-                                    description.Inlines.Add(Make_Run1("Register ", foreground));
-                                    description.Inlines.Add(Make_Run2(reg.ToString(), new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Register))));
-
-                                    string descr = this._asmDudeTools.Get_Description(keywordUpper);
-                                    if (descr.Length > 0)
-                                    {
-                                        if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
-                                        description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
-                                        {
-                                            Foreground = foreground
-                                        });
-                                    }
-
-                                    if (this._asmSimulator.Enabled & Settings.Default.AsmSim_Decorate_Registers)
-                                    {
-                                        string reg_Content_Before = this._asmSimulator.Get_Register_Value(reg, lineNumber, true, false, false).Value;
-                                        string reg_Content_After = this._asmSimulator.Get_Register_Value(reg, lineNumber, false, false, false).Value;
-                                        string msg = "\n" + reg + " before: " + reg_Content_Before + "\n" + reg + " after:  " + reg_Content_After;
-                                        description.Inlines.Add(new Run(AsmSourceTools.Linewrap(msg, AsmDudePackage.maxNumberOfCharsInToolTips))
-                                        {
-                                            Foreground = foreground
-                                        });
-                                    }
-                                }
+                                var registerTooltipWindow = new RegisterTooltipWindow(foreground);
+                                registerTooltipWindow.SetDescription(reg, this._asmDudeTools);
+                                registerTooltipWindow.SetAsmSim(this._asmSimulator, reg, lineNumber, true);
+                                quickInfoContent.Add(registerTooltipWindow);
                                 break;
                             }
                         case AsmTokenType.Mnemonic:
                         case AsmTokenType.Jump:
                             {
                                 Mnemonic mnemonic = AsmSourceTools.ParseMnemonic_Att(keywordUpper, true);
-                                description = new TextBlock();
-                                Render_Mnemonic_ToolTip(description, mnemonic, foreground, this._asmDudeTools);
+                                var instructionTooltipWindow = new InstructionTooltipWindow(foreground);
+                                instructionTooltipWindow.SetDescription(mnemonic, this._asmDudeTools);
+                                instructionTooltipWindow.SetPerformanceInfo(mnemonic, this._asmDudeTools, false);
+                                instructionTooltipWindow.SetAsmSim(this._asmSimulator, lineNumber, true);
+                                quickInfoContent.Add(instructionTooltipWindow);
                                 break;
                             }
                         case AsmTokenType.Label:
@@ -359,31 +332,6 @@ namespace AsmDude.QuickInfo
             AsmDudeToolsStatic.Print_Speed_Warning(time1, "QuickInfo");
         }
 
-        public static void Render_Mnemonic_ToolTip(TextBlock description, Mnemonic mnemonic, Brush foreground, AsmDudeTools asmDudeTools)
-        {
-            description.Inlines.Add(Make_Run1("Mnemonic ", foreground));
-            description.Inlines.Add(Make_Run2(mnemonic.ToString(), new SolidColorBrush(AsmDudeToolsStatic.ConvertColor((AsmSourceTools.IsJump(mnemonic) ? Settings.Default.SyntaxHighlighting_Jump : Settings.Default.SyntaxHighlighting_Opcode)))));
-            {
-                string archStr = ":" + ArchTools.ToString(asmDudeTools.Mnemonic_Store.GetArch(mnemonic)) + " ";
-                string descr = asmDudeTools.Mnemonic_Store.GetDescription(mnemonic);
-                description.Inlines.Add(new Run(AsmSourceTools.Linewrap(archStr + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
-                {
-                    Foreground = foreground
-                });
-            }
-            // add performance information
-            Add_Performance_Description(description, mnemonic, foreground, asmDudeTools);
-        }
-
-
-        public static string Render_Mnemonic_ToolTip(Mnemonic mnemonic, AsmDudeTools asmDudeTools)
-        {
-            string result = "Mnemonic " + mnemonic.ToString() + ": " + ArchTools.ToString(asmDudeTools.Mnemonic_Store.GetArch(mnemonic)) + " " + asmDudeTools.Mnemonic_Store.GetDescription(mnemonic);
-            result = AsmDudeToolsStatic.Cleanup(result);
-            return result + Performance_Description(mnemonic, asmDudeTools);
-        }
-
-
         private static Run Make_Run1(string str, Brush foreground)
         {
             return new Run(str)
@@ -469,83 +417,6 @@ namespace AsmDude.QuickInfo
             } else
             {
                 return "Not used";
-            }
-        }
-
-        private static string Performance_Description(Mnemonic mmemonic, AsmDudeTools asmDudeTools)
-        {
-            StringBuilder sb = new StringBuilder();
-            MicroArch selectedMicroarchitures = AsmDudeToolsStatic.Get_MicroArch_Switched_On();
-
-            bool first = true;
-            string format = "{0,-14}{1,-24}{2,-7}{3,-9}{4,-20}{5,-9}{6,-11}{7,-10}";
-
-            foreach (PerformanceItem item in asmDudeTools.Performance_Store.GetPerformance(mmemonic, selectedMicroarchitures))
-            {
-                if (first)
-                {
-                    first = false;
-                    sb.Append(string.Format("\n\n" + format + "\n", "", "", "µOps", "µOps", "µOps", "", "", ""));
-                    sb.Append(string.Format(format + "\n", "Architecture", "Instruction", "Fused", "Unfused", "Port", "Latency", "Throughput", ""));
-                }
-                sb.Append(string.Format(format + "\n",
-                    item._microArch,
-                    item._instr + " " + item._args,
-                    item._mu_Ops_Fused,
-                    item._mu_Ops_Merged,
-                    item._mu_Ops_Port,
-                    item._latency,
-                    item._throughput,
-                    item._remark));
-            }
-            return sb.ToString();
-        }
-
-        /// <summary> Add performance description of mnemonic to the provided description</summary>
-        private static void Add_Performance_Description(TextBlock description, Mnemonic mmemonic, Brush foreground, AsmDudeTools asmDudeTools)
-        {
-            MicroArch selectedMicroarchitures = AsmDudeToolsStatic.Get_MicroArch_Switched_On();
-
-            bool first = true;
-            FontFamily family = new FontFamily("Consolas");
-
-            string format = "{0,-14}{1,-24}{2,-7}{3,-9}{4,-20}{5,-9}{6,-11}{7,-10}";
-
-            foreach (PerformanceItem item in asmDudeTools.Performance_Store.GetPerformance(mmemonic, selectedMicroarchitures))
-            {
-                if (first)
-                {
-                    first = false;
-                    description.Inlines.Add(new Run(string.Format("\n\n" + format,
-                        "", "", "µOps", "µOps", "µOps", "", "", ""))
-                    {
-                        FontFamily = family,
-                        FontStyle = FontStyles.Italic,
-                        FontWeight = FontWeights.Bold,
-                        Foreground = foreground
-                    });
-                    description.Inlines.Add(new Run(string.Format("\n" + format, 
-                        "Architecture", "Instruction", "Fused", "Unfused", "Port", "Latency", "Throughput", ""))
-                    {
-                        FontFamily = family,
-                        FontStyle = FontStyles.Italic,
-                        FontWeight = FontWeights.Bold,
-                        Foreground = foreground
-                    });
-                }
-                description.Inlines.Add(new Run(string.Format("\n" + format,
-                    item._microArch, 
-                    item._instr + " " + item._args, 
-                    item._mu_Ops_Fused,
-                    item._mu_Ops_Merged,
-                    item._mu_Ops_Port,
-                    item._latency, 
-                    item._throughput, 
-                    item._remark))
-                {
-                    FontFamily = family,
-                    Foreground = foreground
-                });
             }
         }
 

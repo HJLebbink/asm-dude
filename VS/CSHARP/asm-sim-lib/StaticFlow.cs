@@ -79,7 +79,7 @@ namespace AsmSim
                         flags |= (opcodeBase.FlagsReadStatic | opcodeBase.FlagsWriteStatic);
                         foreach (Rn r in opcodeBase.RegsReadStatic) regs.Add(RegisterTools.Get64BitsRegister(r));
                         foreach (Rn r in opcodeBase.RegsWriteStatic) regs.Add(RegisterTools.Get64BitsRegister(r));
-                        mem |= opcodeBase.MemReadWriteStatic;
+                        mem |= opcodeBase.MemWriteStatic || opcodeBase.MemReadStatic;
                     }
                 }
             }
