@@ -432,16 +432,22 @@ namespace AsmSim
 
         public static string ToStringHex(Tv[] a)
         {
-            StringBuilder sb = new StringBuilder("0x");
-            int nChars = a.Length >> 2;
-            for (int j = (nChars - 1); j >= 0; --j)
+            string str = "";
+            int offset = 0;
+            while (offset < a.Length)
             {
-                int offset = (j << 2);
-                sb.Append(ToolsZ3.BitToCharHex(a[offset], a[offset + 1], a[offset + 2], a[offset + 3]));
-
-                if ((j > 0) && ((j % 4) == 0)) sb.Append('_');
+                str = ToolsZ3.BitToCharHex(GetTv(offset), GetTv(offset + 1), GetTv(offset + 2), GetTv(offset + 3)) + str;
+                offset += 4;
+                if ((offset > 0) && (offset < a.Length) && ((offset % 16) == 0)) str = '_' + str;
             }
-            return sb.ToString();
+            return "0x" + str;
+
+            #region Local Methods
+            Tv GetTv(int pos)
+            {
+                return ((pos < a.Length) && (pos >= 0)) ? a[pos] : Tv.ZERO;
+            }
+            #endregion
         }
 
         public static string ToStringDec(Tv[] a)
@@ -471,17 +477,15 @@ namespace AsmSim
             #endregion
         }
 
-
         public static string ToStringOct(Tv[] a)
         {
             string str = "";
             int offset = 0;
-            int counter = 0;
             while (offset < a.Length)
             {
                 str = ToolsZ3.BitToCharOct(GetTv(offset), GetTv(offset + 1), GetTv(offset + 2)) + str;
                 offset += 3;
-                if ((counter > 0) && ((counter % 3) == 0)) str = '_' + str;
+                if ((offset > 0) && (offset < a.Length) && ((offset % 9) == 0)) str = '_' + str;
             }
             return "0o" + str;
 

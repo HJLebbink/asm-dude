@@ -368,7 +368,8 @@ namespace AsmDude.QuickInfo
                     if (this._labelGraph.Is_From_Main_File(id))
                     {
                         lineContent = " :" + this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
-                    } else
+                    }
+                    else
                     {
                         lineContent = "";
                     }
@@ -376,7 +377,8 @@ namespace AsmDude.QuickInfo
                 }
                 string result = sb.ToString();
                 return result.TrimEnd(Environment.NewLine.ToCharArray());
-            } else
+            }
+            else
             {
                 return "Label analysis is disabled";
             }

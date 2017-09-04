@@ -37,23 +37,23 @@ namespace unit_tests_asm_tools
         {
             {
                 var str = ToolsZ3.ToStringHex(ToolsZ3.GetTvArray(10, 8));
-                Assert.AreEqual(str, "0x0A");
                 Console.WriteLine(str);
+                Assert.AreEqual("0x0A", str);
             }
             {
                 var str = ToolsZ3.ToStringHex(ToolsZ3.GetTvArray(10, 16));
-                Assert.AreEqual(str, "0x000A");
                 Console.WriteLine(str);
+                Assert.AreEqual("0x000A", str);
             }
             {
                 var str = ToolsZ3.ToStringHex(ToolsZ3.GetTvArray(10, 32));
-                Assert.AreEqual(str, "0x0000_000A");
                 Console.WriteLine(str);
+                Assert.AreEqual("0x0000_000A", str);
             }
             {
                 var str = ToolsZ3.ToStringHex(ToolsZ3.GetTvArray(10, 64));
-                Assert.AreEqual(str, "0x0000_0000_0000_000A");
                 Console.WriteLine(str);
+                Assert.AreEqual("0x0000_0000_0000_000A", str);
             }
         }
 
@@ -62,23 +62,23 @@ namespace unit_tests_asm_tools
         {
             {
                 var str = ToolsZ3.ToStringHex(ToolsZ3.GetTvArray(0xFF, 8));
-                Assert.AreEqual(str, "0xFF");
                 Console.WriteLine(str);
+                Assert.AreEqual("0xFF", str);
             }
             {
                 var str = ToolsZ3.ToStringHex(ToolsZ3.GetTvArray(0xFFFF, 16));
-                Assert.AreEqual(str, "0xFFFF");
                 Console.WriteLine(str);
+                Assert.AreEqual("0xFFFF", str);
             }
             {
                 var str = ToolsZ3.ToStringHex(ToolsZ3.GetTvArray(0xFFFF_FFFF, 32));
-                Assert.AreEqual(str, "0xFFFF_FFFF");
                 Console.WriteLine(str);
+                Assert.AreEqual("0xFFFF_FFFF", str);
             }
             {
                 var str = ToolsZ3.ToStringHex(ToolsZ3.GetTvArray(0xFFFF_FFFF_FFFF_FFFF, 64));
-                Assert.AreEqual(str, "0xFFFF_FFFF_FFFF_FFFF");
                 Console.WriteLine(str);
+                Assert.AreEqual("0xFFFF_FFFF_FFFF_FFFF", str);
             }
         }
 
@@ -87,23 +87,23 @@ namespace unit_tests_asm_tools
         {
             {
                 var str = ToolsZ3.ToStringOct(ToolsZ3.GetTvArray(10, 8));
-                Assert.AreEqual(str, "0o012");
                 Console.WriteLine(str);
+                Assert.AreEqual(str, "0o012");
             }
             {
                 var str = ToolsZ3.ToStringOct(ToolsZ3.GetTvArray(200, 8));
-                Assert.AreEqual(str, "0o310");
                 Console.WriteLine(str);
+                Assert.AreEqual(str, "0o310");
             }
             {
                 var str = ToolsZ3.ToStringOct(ToolsZ3.GetTvArray(511, 16));
-                Assert.AreEqual(str, "0o000777");
                 Console.WriteLine(str);
+                Assert.AreEqual(str, "0o000_777");
             }
             {
                 var str = ToolsZ3.ToStringOct(ToolsZ3.GetTvArray(512, 10));
-                Assert.AreEqual(str, "0o1000");
                 Console.WriteLine(str);
+                Assert.AreEqual(str, "0o1_000");
             }
         }
 

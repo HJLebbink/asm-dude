@@ -36,6 +36,9 @@ namespace AsmDude.QuickInfo
     {
         private readonly Brush _foreground;
 
+        private IList<TextBox> _itemsOnPage;
+
+
         private int _lineNumber;
         private AsmSimulator _asmSimulator;
 
@@ -43,20 +46,22 @@ namespace AsmDude.QuickInfo
         {
             this._foreground = foreground;
             InitializeComponent();
+
+            this.AsmSimGridExpander.Collapsed += (o, i) => { this.AsmSimGridExpanderNumeration.Visibility = Visibility.Collapsed; };
+            this.AsmSimGridExpander.Expanded += (o, i) => { this.AsmSimGridExpanderNumeration.Visibility = Visibility.Visible; };
         }
 
         public void SetDescription(Mnemonic mnemonic, AsmDudeTools asmDudeTools)
         {
-            this.Description.Inlines.Add(Make_Bold_Run("Mnemonic ", this._foreground));
-            this.Description.Inlines.Add(Make_Bold_Run(mnemonic.ToString(), new SolidColorBrush(AsmDudeToolsStatic.ConvertColor((AsmSourceTools.IsJump(mnemonic) ? Settings.Default.SyntaxHighlighting_Jump : Settings.Default.SyntaxHighlighting_Opcode)))));
-            {
-                string archStr = ":" + ArchTools.ToString(asmDudeTools.Mnemonic_Store.GetArch(mnemonic)) + " ";
-                string descr = asmDudeTools.Mnemonic_Store.GetDescription(mnemonic);
-                this.Description.Inlines.Add(new Run(AsmSourceTools.Linewrap(archStr + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
-                {
-                    Foreground = this._foreground
-                });
-            }
+            string mnemonicStr = mnemonic.ToString();
+
+            this.Description.Inlines.Add(new Run("Mnemonic ") { FontWeight = FontWeights.Bold, Foreground = this._foreground });
+            this.Description.Inlines.Add(new Run(mnemonicStr) { FontWeight = FontWeights.Bold, Foreground = new SolidColorBrush(AsmDudeToolsStatic.ConvertColor((AsmSourceTools.IsJump(mnemonic) ? Settings.Default.SyntaxHighlighting_Jump : Settings.Default.SyntaxHighlighting_Opcode))) });
+
+            string archStr = ":" + ArchTools.ToString(asmDudeTools.Mnemonic_Store.GetArch(mnemonic)) + " ";
+            string descr = asmDudeTools.Mnemonic_Store.GetDescription(mnemonic);
+            string full_Descr = AsmSourceTools.Linewrap(archStr + descr, AsmDudePackage.maxNumberOfCharsInToolTips);
+            this.Description.Inlines.Add(new Run(full_Descr) { Foreground = this._foreground });
         }
 
         public void SetPerformanceInfo(Mnemonic mnemonic, AsmDudeTools asmDudeTools, bool isExpanded)
@@ -120,6 +125,11 @@ namespace AsmDude.QuickInfo
 
             if (this._asmSimulator.Enabled & Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip)
             {
+                this._itemsOnPage = new List<TextBox>();
+
+                this.AsmSimGridExpander.IsExpanded = isExpanded;
+                this.AsmSimGridExpanderNumeration.Text = Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration;
+
                 var usage = this._asmSimulator.Get_Usage(lineNumber);
                 var readReg = new HashSet<Rn>(usage.ReadReg);
                 var writeReg = new HashSet<Rn>(usage.WriteReg);
@@ -156,8 +166,26 @@ namespace AsmDude.QuickInfo
             }
 
             this.AsmSimGridExpander.Visibility = (empty) ? Visibility.Collapsed : Visibility.Visible;
-            this.AsmSimGridExpander.IsExpanded = (empty) ? false : isExpanded;
             this.AsmSimGridBorder.Visibility = (empty) ? Visibility.Collapsed : Visibility.Visible;
+
+            this.AsmSimGridExpanderNumeration.SelectionChanged += (sender, i) =>
+            {
+                string numerationStr = ((sender as ComboBox).SelectedItem as ComboBoxItem).Content.ToString();
+                NumerationEnum numeration = AsmSourceTools.ParseNumeration(numerationStr);
+                if (numeration == NumerationEnum.UNKNOWN) AsmDudeToolsStatic.Output_WARNING("SetAsmSim:smSimGridExpanderNumeration.SelectionChanged: unknown numerationStr=" + numerationStr);
+                //AsmDudeToolsStatic.Output_INFO("AsmSimGridExpanderNumeration:SelectionChanged: numeration="+ numeration);
+
+                foreach (var textBox in this._itemsOnPage)
+                {
+                    var info = textBox.Tag as ButtonInfo;
+
+                    string content = (info.reg == Rn.NOREG)
+                        ? this._asmSimulator.Get_Flag_Value_If_Already_Computed(info.flag, this._lineNumber, info.before)
+                        : this._asmSimulator.Get_Register_Value_If_Already_Computed(info.reg, this._lineNumber, info.before, numeration);
+
+                    if (content != null) textBox.Text = info.reg.ToString() + " = " + content;
+                }
+            };
         }
 
         private void GenerateHeader()
@@ -165,30 +193,30 @@ namespace AsmDude.QuickInfo
             int row = 1;
             FontFamily f = new FontFamily("Consolas");
             {
-                var label = new Label()
+                var textBlock = new TextBlock()
                 {
-                    Content= "Read:",
+                    Text = "Read:",
                     FontFamily = f,
-                    Foreground = this._foreground,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    VerticalContentAlignment = VerticalAlignment.Center
+                    FontStyle = FontStyles.Italic,
+                    FontWeight = FontWeights.Bold,
+                    Foreground = this._foreground
                 };
-                this.AsmSimGrid.Children.Add(label);
-                Grid.SetRow(label, row);
-                Grid.SetColumn(label, 0);
+                this.AsmSimGrid.Children.Add(textBlock);
+                Grid.SetRow(textBlock, row);
+                Grid.SetColumn(textBlock, 0);
             }
             {
-                var label = new Label()
+                var textBlock = new TextBlock()
                 {
-                    Content = "Write:",
+                    Text = "Write:",
                     FontFamily = f,
+                    FontStyle = FontStyles.Italic,
+                    FontWeight = FontWeights.Bold,
                     Foreground = this._foreground,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    VerticalContentAlignment = VerticalAlignment.Center
                 };
-                this.AsmSimGrid.Children.Add(label);
-                Grid.SetRow(label, row);
-                Grid.SetColumn(label, 1);
+                this.AsmSimGrid.Children.Add(textBlock);
+                Grid.SetRow(textBlock, row);
+                Grid.SetColumn(textBlock, 1);
             }
         }
 
@@ -198,31 +226,31 @@ namespace AsmDude.QuickInfo
 
             int column = (isBefore) ? 0 : 1;
             {
-                var label = new Label()
+                var textBox = new TextBox()
                 {
                     FontFamily = f,
                     Foreground = this._foreground,
-                    Height = Double.NaN
-                    //VerticalAlignment = VerticalAlignment.Center,
-                    //VerticalContentAlignment = VerticalAlignment.Center
+                    Background = Brushes.Transparent,
+                    BorderThickness = new Thickness(0),
+                    IsReadOnly = true,
+                    TextWrapping = TextWrapping.Wrap,
+                    Tag = new ButtonInfo(null, reg, isBefore)
                 };
-                this.AsmSimGrid.Children.Add(label);
-                Grid.SetRow(label, row);
-                Grid.SetColumn(label, column);
+                this._itemsOnPage.Add(textBox);
+                this.AsmSimGrid.Children.Add(textBox);
+                Grid.SetRow(textBox, row);
+                Grid.SetColumn(textBox, column);
 
                 string register_Content = this._asmSimulator.Get_Register_Value_If_Already_Computed(reg, this._lineNumber, isBefore, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration));
-
                 if (register_Content == null)
                 {
-                    label.Visibility = Visibility.Collapsed;
+                    textBox.Visibility = Visibility.Collapsed;
                     var button = new Button()
                     {
                         Content = "Determine "+ reg.ToString(),
                         Foreground = this._foreground,
-                        //VerticalAlignment = VerticalAlignment.Center,
-                        //VerticalContentAlignment = VerticalAlignment.Center,
                         Visibility = Visibility.Visible,
-                        Tag = new ButtonInfo(label, reg, isBefore)
+                        Tag = new ButtonInfo(textBox, reg, isBefore)
                     };
                     this.AsmSimGrid.Children.Add(button);
                     Grid.SetRow(button, row);
@@ -231,8 +259,8 @@ namespace AsmDude.QuickInfo
                 }
                 else
                 {
-                    label.Content = reg.ToString() + " = " + register_Content;
-                    label.Visibility = Visibility.Visible;
+                    textBox.Text = reg.ToString() + " = " + register_Content;
+                    textBox.Visibility = Visibility.Visible;
                 }
             }
         }
@@ -243,30 +271,29 @@ namespace AsmDude.QuickInfo
 
             int column = (isBefore) ? 0 : 1;
             {
-                var label = new Label()
+                var textBlock = new TextBox()
                 {
                     FontFamily = f,
                     Foreground = this._foreground,
-                    Height = Double.NaN
-                    //VerticalAlignment = VerticalAlignment.Center,
-                    //VerticalContentAlignment = VerticalAlignment.Center
+                    Background = Brushes.Transparent,
+                    BorderThickness = new Thickness(0),
+                    IsReadOnly = true,
+                    TextWrapping = TextWrapping.Wrap
                 };
-                this.AsmSimGrid.Children.Add(label);
-                Grid.SetRow(label, row);
-                Grid.SetColumn(label, column);
+                this.AsmSimGrid.Children.Add(textBlock);
+                Grid.SetRow(textBlock, row);
+                Grid.SetColumn(textBlock, column);
 
                 string flag_Content = this._asmSimulator.Get_Flag_Value_If_Already_Computed(flag, this._lineNumber, isBefore);
                 if (flag_Content == null)
                 {
-                    label.Visibility = Visibility.Collapsed;
+                    textBlock.Visibility = Visibility.Collapsed;
                     var button = new Button()
                     {
                         Content = "Determine " + flag.ToString(),
                         Foreground = this._foreground,
-                        //VerticalAlignment = VerticalAlignment.Center,
-                        //VerticalContentAlignment = VerticalAlignment.Center,
                         Visibility = Visibility.Visible,
-                        Tag = new ButtonInfo(label, flag, isBefore)
+                        Tag = new ButtonInfo(textBlock, flag, isBefore)
                     };
                     this.AsmSimGrid.Children.Add(button);
                     Grid.SetRow(button, row);
@@ -275,8 +302,8 @@ namespace AsmDude.QuickInfo
                 }
                 else
                 {
-                    label.Content = flag.ToString() + " = " + flag_Content;
-                    label.Visibility = Visibility.Visible;
+                    textBlock.Text = flag.ToString() + " = " + flag_Content;
+                    textBlock.Visibility = Visibility.Visible;
                 }
             }
         }
@@ -294,11 +321,11 @@ namespace AsmDude.QuickInfo
                         ButtonInfo info = (ButtonInfo)button.Tag;
                         if (info.reg == Rn.NOREG)
                         {
-                            info.text.Content = info.flag.ToString() + " = " + this._asmSimulator.Get_Flag_Value_and_Block(info.flag, this._lineNumber, info.before);
+                            info.text.Text = info.flag.ToString() + " = " + this._asmSimulator.Get_Flag_Value_and_Block(info.flag, this._lineNumber, info.before);
                         }
                         else
                         {
-                            info.text.Content = info.reg.ToString() + " = " + this._asmSimulator.Get_Register_Value_and_Block(info.reg, this._lineNumber, info.before, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration));
+                            info.text.Text = info.reg.ToString() + " = " + this._asmSimulator.Get_Register_Value_and_Block(info.reg, this._lineNumber, info.before, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration));
                         }
                         info.text.Visibility = Visibility.Visible;
                         button.Visibility = Visibility.Collapsed;

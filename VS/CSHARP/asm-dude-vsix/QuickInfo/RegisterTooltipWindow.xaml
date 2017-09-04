@@ -2,9 +2,28 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <StackPanel>
-        <TextBlock x:Name="Description" TextWrapping="Wrap" Margin="0,0,0,1" />
-        <Border x:Name="AsmSimGridBorder" BorderBrush = "LightGray" CornerRadius="2" BorderThickness="1" Margin="0,2,0,0">
-            <Expander x:Name="AsmSimGridExpander" Header="Register Contents"  Visibility="Collapsed" IsExpanded="True">
+        <TextBlock x:Name="Description" TextWrapping="Wrap"/>
+        <Border x:Name="AsmSimGridBorder" BorderBrush = "LightGray" CornerRadius="2" BorderThickness="1" Margin="0,6,0,0" Visibility="Collapsed">
+            <Expander x:Name="AsmSimGridExpander" Visibility="Collapsed" IsExpanded="False">
+                <Expander.Header>
+                    <DockPanel LastChildFill="False">
+                        <Label DockPanel.Dock="Left">
+                            <Label.VerticalAlignment>Center</Label.VerticalAlignment>
+                            <Label.VerticalContentAlignment>Center</Label.VerticalContentAlignment>
+                            <Label.Content>Register Contents</Label.Content>
+                        </Label>
+                        <ComboBox x:Name="AsmSimGridExpanderNumeration" DockPanel.Dock="Right">
+                            <ComboBox.VerticalAlignment>Center</ComboBox.VerticalAlignment>
+                            <ComboBox.VerticalContentAlignment>Center</ComboBox.VerticalContentAlignment>
+                            <ComboBox.Items>
+                                <ComboBoxItem>HEX</ComboBoxItem>
+                                <ComboBoxItem>BIN</ComboBoxItem>
+                                <ComboBoxItem>DEC</ComboBoxItem>
+                                <ComboBoxItem>OCT</ComboBoxItem>
+                            </ComboBox.Items>
+                        </ComboBox>
+                    </DockPanel>
+                </Expander.Header>
                 <Grid x:Name="AsmSimGrid">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />

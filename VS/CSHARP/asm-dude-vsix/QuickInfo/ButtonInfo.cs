@@ -27,22 +27,22 @@ namespace AsmDude.QuickInfo
 {
     public class ButtonInfo
     {
-        public readonly Label text;
+        public readonly TextBox text;
         public readonly Rn reg;
         public readonly Flags flag;
         public readonly bool before;
 
-        public ButtonInfo(Label labelText, Rn reg, bool before)
+        public ButtonInfo(TextBox text, Rn reg, bool before)
         {
-            this.text = labelText;
+            this.text = text;
             this.reg = reg;
             this.flag = Flags.NONE;
             this.before = before;
         }
 
-        public ButtonInfo(Label labelText, Flags flag, bool before)
+        public ButtonInfo(TextBox text, Flags flag, bool before)
         {
-            this.text = labelText;
+            this.text = text;
             this.reg = Rn.NOREG;
             this.flag = flag;
             this.before = before;
