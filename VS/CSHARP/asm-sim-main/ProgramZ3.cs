@@ -46,7 +46,8 @@ namespace AsmSim
             //TestExecutionTree();
             //TestGraph();
             //TestMnemonic();
-            Test_Rep();
+            //Test_Rep();
+            Test_Usage();
             //TestMemorySpeed();
             //TestDynamicFlow();
             //TestSIMD();
@@ -519,7 +520,27 @@ namespace AsmSim
             }
         }
 
+        static void Test_Usage()
+        {
+            Dictionary<string, string> settings = new Dictionary<string, string>
+            {
+                { "unsat-core", "false" },    // enable generation of unsat cores
+                { "model", "false" },         // enable model generation
+                { "proof", "false" },         // enable proof generation
+                { "timeout", "1000" }
+            };
+            Tools tools = new Tools(settings);
 
+            var keys = ("dummy1", "dummy2", "dummy3");
+
+            var opcode = Runner.InstantiateOpcode(Mnemonic.MOV, new string[] { "rbx", "ptr qword [rax + rcx]" }, keys, tools);
+            var read = new SortedSet<Rn>(opcode.RegsReadStatic);
+            var write = new SortedSet<Rn>(opcode.RegsWriteStatic);
+
+            Console.WriteLine("read = " + string.Join(",", read));
+            Console.WriteLine("write = " + string.Join(",", write));
+
+        }
         static void TestMnemonic()
         {
             Dictionary<string, string> settings = new Dictionary<string, string>

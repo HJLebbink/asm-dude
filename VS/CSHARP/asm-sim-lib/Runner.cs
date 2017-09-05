@@ -168,6 +168,8 @@ namespace AsmSim
             {
                 #region NonSse
                 case Mnemonic.NONE: return new Ignore(mnemonic, args, keys, t);
+                case Mnemonic.HLT: return null;
+
                 case Mnemonic.MOV: return new Mov(args, keys, t);
                 case Mnemonic.CMOVE:
                 case Mnemonic.CMOVZ:
@@ -224,7 +226,6 @@ namespace AsmSim
                 case Mnemonic.MOVSX: return new Movsx(args, keys, t);
                 case Mnemonic.MOVSXD: return new Movsxd(args, keys, t);
                 case Mnemonic.MOVZX: return new Movzx(args, keys, t);
-                //case Mnemonic.MOVZXD: return new Movzxd(args, keys, t);
                 case Mnemonic.ADCX: return new Adcx(args, keys, t);
                 case Mnemonic.ADOX: return new Adox(args, keys, t);
                 case Mnemonic.ADD: return new Add(args, keys, t);
@@ -365,23 +366,23 @@ namespace AsmSim
                 case Mnemonic.CMPSD: return new Cmps(Mnemonic.CMPSD, Mnemonic.NONE, args, keys, t);
                 case Mnemonic.CMPSQ: return new Cmps(Mnemonic.CMPSQ, Mnemonic.NONE, args, keys, t);
 
-                case Mnemonic.SCAS: break;
-                case Mnemonic.SCASB: break;
-                case Mnemonic.SCASW: break;
-                case Mnemonic.SCASD: break;
-                case Mnemonic.SCASQ: break;
+                case Mnemonic.SCAS: return new Scas(Mnemonic.SCAS, Mnemonic.NONE, args, keys, t);
+                case Mnemonic.SCASB: return new Scas(Mnemonic.SCASB, Mnemonic.NONE, args, keys, t);
+                case Mnemonic.SCASW: return new Scas(Mnemonic.SCASW, Mnemonic.NONE, args, keys, t);
+                case Mnemonic.SCASD: return new Scas(Mnemonic.SCASD, Mnemonic.NONE, args, keys, t);
+                case Mnemonic.SCASQ: return new Scas(Mnemonic.SCASQ, Mnemonic.NONE, args, keys, t);
 
-                case Mnemonic.LODS: break;
-                case Mnemonic.LODSB: break;
-                case Mnemonic.LODSW: break;
-                case Mnemonic.LODSD: break;
-                case Mnemonic.LODSQ: break;
+                case Mnemonic.LODS: return new Lods(Mnemonic.LODS, Mnemonic.NONE, args, keys, t);
+                case Mnemonic.LODSB: return new Lods(Mnemonic.LODSB, Mnemonic.NONE, args, keys, t);
+                case Mnemonic.LODSW: return new Lods(Mnemonic.LODSQ, Mnemonic.NONE, args, keys, t);
+                case Mnemonic.LODSD: return new Lods(Mnemonic.LODSD, Mnemonic.NONE, args, keys, t);
+                case Mnemonic.LODSQ: return new Lods(Mnemonic.LODSQ, Mnemonic.NONE, args, keys, t);
 
-                case Mnemonic.STOS: break;
-                case Mnemonic.STOSB: break;
-                case Mnemonic.STOSW: break;
-                case Mnemonic.STOSD: break;
-                case Mnemonic.STOSQ: break;
+                case Mnemonic.STOS: return new Stos(Mnemonic.STOS, Mnemonic.NONE, args, keys, t);
+                case Mnemonic.STOSB: return new Stos(Mnemonic.STOSB, Mnemonic.NONE, args, keys, t);
+                case Mnemonic.STOSW: return new Stos(Mnemonic.STOSW, Mnemonic.NONE, args, keys, t);
+                case Mnemonic.STOSD: return new Stos(Mnemonic.STOSD, Mnemonic.NONE, args, keys, t);
+                case Mnemonic.STOSQ: return new Stos(Mnemonic.STOSQ, Mnemonic.NONE, args, keys, t);
 
                 #region REP Prefix
                 case Mnemonic.REP_MOVS: return new Movs(Mnemonic.MOVS, Mnemonic.REP, args, keys, t);
@@ -390,17 +391,17 @@ namespace AsmSim
                 case Mnemonic.REP_MOVSD: return new Movs(Mnemonic.MOVSD, Mnemonic.REP, args, keys, t);
                 case Mnemonic.REP_MOVSQ: return new Movs(Mnemonic.MOVSQ, Mnemonic.REP, args, keys, t);
 
-                case Mnemonic.REP_LODS: break;
-                case Mnemonic.REP_LODSB: break;
-                case Mnemonic.REP_LODSW: break;
-                case Mnemonic.REP_LODSD: break;
-                case Mnemonic.REP_LODSQ: break;
+                case Mnemonic.REP_LODS: return new Lods(Mnemonic.LODS, Mnemonic.REP, args, keys, t);
+                case Mnemonic.REP_LODSB: return new Lods(Mnemonic.LODSB, Mnemonic.REP, args, keys, t);
+                case Mnemonic.REP_LODSW: return new Lods(Mnemonic.LODSW, Mnemonic.REP, args, keys, t);
+                case Mnemonic.REP_LODSD: return new Lods(Mnemonic.LODSD, Mnemonic.REP, args, keys, t);
+                case Mnemonic.REP_LODSQ: return new Lods(Mnemonic.LODSQ, Mnemonic.REP, args, keys, t);
 
-                case Mnemonic.REP_STOS: break;
-                case Mnemonic.REP_STOSB: break;
-                case Mnemonic.REP_STOSW: break;
-                case Mnemonic.REP_STOSD: break;
-                case Mnemonic.REP_STOSQ: break;
+                case Mnemonic.REP_STOS: return new Stos(Mnemonic.STOS, Mnemonic.REP, args, keys, t);
+                case Mnemonic.REP_STOSB: return new Stos(Mnemonic.STOSB, Mnemonic.REP, args, keys, t);
+                case Mnemonic.REP_STOSW: return new Stos(Mnemonic.STOSW, Mnemonic.REP, args, keys, t);
+                case Mnemonic.REP_STOSD: return new Stos(Mnemonic.STOSD, Mnemonic.REP, args, keys, t);
+                case Mnemonic.REP_STOSQ: return new Stos(Mnemonic.STOSQ, Mnemonic.REP, args, keys, t);
 
                 case Mnemonic.REPE_CMPS: return new Cmps(Mnemonic.CMPS, Mnemonic.REPE, args, keys, t);
                 case Mnemonic.REPE_CMPSB: return new Cmps(Mnemonic.CMPSB, Mnemonic.REPE, args, keys, t);
@@ -426,29 +427,29 @@ namespace AsmSim
                 case Mnemonic.REPNZ_CMPSD: return new Cmps(Mnemonic.CMPSD, Mnemonic.REPNZ, args, keys, t);
                 case Mnemonic.REPNZ_CMPSQ: return new Cmps(Mnemonic.CMPSQ, Mnemonic.REPNZ, args, keys, t);
 
-                case Mnemonic.REPE_SCAS: break;
-                case Mnemonic.REPE_SCASB: break;
-                case Mnemonic.REPE_SCASW: break;
-                case Mnemonic.REPE_SCASD: break;
-                case Mnemonic.REPE_SCASQ: break;
+                case Mnemonic.REPE_SCAS: return new Scas(Mnemonic.SCAS, Mnemonic.REPE, args, keys, t);
+                case Mnemonic.REPE_SCASB: return new Scas(Mnemonic.SCASB, Mnemonic.REPE, args, keys, t);
+                case Mnemonic.REPE_SCASW: return new Scas(Mnemonic.SCASW, Mnemonic.REPE, args, keys, t);
+                case Mnemonic.REPE_SCASD: return new Scas(Mnemonic.SCASD, Mnemonic.REPE, args, keys, t);
+                case Mnemonic.REPE_SCASQ: return new Scas(Mnemonic.SCASQ, Mnemonic.REPE, args, keys, t);
 
-                case Mnemonic.REPZ_SCAS: break;
-                case Mnemonic.REPZ_SCASB: break;
-                case Mnemonic.REPZ_SCASW: break;
-                case Mnemonic.REPZ_SCASD: break;
-                case Mnemonic.REPZ_SCASQ: break;
+                case Mnemonic.REPZ_SCAS: return new Scas(Mnemonic.SCAS, Mnemonic.REPZ, args, keys, t);
+                case Mnemonic.REPZ_SCASB: return new Scas(Mnemonic.SCASB, Mnemonic.REPZ, args, keys, t);
+                case Mnemonic.REPZ_SCASW: return new Scas(Mnemonic.SCASW, Mnemonic.REPZ, args, keys, t);
+                case Mnemonic.REPZ_SCASD: return new Scas(Mnemonic.SCASD, Mnemonic.REPZ, args, keys, t);
+                case Mnemonic.REPZ_SCASQ: return new Scas(Mnemonic.SCASQ, Mnemonic.REPZ, args, keys, t);
 
-                case Mnemonic.REPNE_SCAS: break;
-                case Mnemonic.REPNE_SCASB: break;
-                case Mnemonic.REPNE_SCASW: break;
-                case Mnemonic.REPNE_SCASD: break;
-                case Mnemonic.REPNE_SCASQ: break;
+                case Mnemonic.REPNE_SCAS: return new Scas(Mnemonic.SCAS, Mnemonic.REPNE, args, keys, t);
+                case Mnemonic.REPNE_SCASB: return new Scas(Mnemonic.SCASB, Mnemonic.REPNE, args, keys, t);
+                case Mnemonic.REPNE_SCASW: return new Scas(Mnemonic.SCASW, Mnemonic.REPNE, args, keys, t);
+                case Mnemonic.REPNE_SCASD: return new Scas(Mnemonic.SCASD, Mnemonic.REPNE, args, keys, t);
+                case Mnemonic.REPNE_SCASQ: return new Scas(Mnemonic.SCASQ, Mnemonic.REPNE, args, keys, t);
 
-                case Mnemonic.REPNZ_SCAS: break;
-                case Mnemonic.REPNZ_SCASB: break;
-                case Mnemonic.REPNZ_SCASW: break;
-                case Mnemonic.REPNZ_SCASD: break;
-                case Mnemonic.REPNZ_SCASQ: break;
+                case Mnemonic.REPNZ_SCAS: return new Scas(Mnemonic.SCAS, Mnemonic.REPNZ, args, keys, t);
+                case Mnemonic.REPNZ_SCASB: return new Scas(Mnemonic.SCASB, Mnemonic.REPNZ, args, keys, t);
+                case Mnemonic.REPNZ_SCASW: return new Scas(Mnemonic.SCASW, Mnemonic.REPNZ, args, keys, t);
+                case Mnemonic.REPNZ_SCASD: return new Scas(Mnemonic.SCASD, Mnemonic.REPNZ, args, keys, t);
+                case Mnemonic.REPNZ_SCASQ: return new Scas(Mnemonic.SCASQ, Mnemonic.REPNZ, args, keys, t);
                 #endregion
 
                 case Mnemonic.IN: return new In(args, keys, t);
@@ -536,7 +537,7 @@ namespace AsmSim
 
                 #endregion SSE
 
-                default: return null;
+                default: return new DummySIMD(mnemonic, args, keys, t);
             }
             return null;
         }

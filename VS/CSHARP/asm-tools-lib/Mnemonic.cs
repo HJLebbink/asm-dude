@@ -27,7 +27,9 @@ namespace AsmTools {
     public enum Mnemonic
     {
         NONE,
-        //UNKNOWN,
+        /// <summary>Halt the CPU</summary>
+        HLT,
+
         #region Data Transfer Instructions
         //The data transfer instructions move data between memory and the general-purpose and segment registers. They
         //also perform specific operations such as conditional moves, stack access, and data conversion.
@@ -793,7 +795,6 @@ namespace AsmTools {
         FXTRACT,
         FYL2X,
         FYL2XP1,
-        HLT,
         IBTS,
         ICEBP,
         INCBIN,

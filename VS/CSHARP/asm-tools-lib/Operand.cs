@@ -37,6 +37,10 @@ namespace AsmTools
         /// <summary>constructor</summary>
         public Operand(string token, bool isCapitals, AsmParameters p = null)
         {
+#if DEBUG
+            if (isCapitals && (token != token.ToUpper())) throw new Exception();
+#endif
+
             if (!isCapitals) token = token.ToUpper();
             this._str = token;
 

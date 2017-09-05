@@ -13,7 +13,9 @@ label2:
 	mov rbx, rax
 	#endregion
 
-	vaddpd xmm1, xmm2, xmm3 ; unimplemented instruction to stop the simulator
+
+	#pragma assume HLT ; HLT instruction will reset the simulator
+
 
 	#region Jump test
 	cmp al, 0
@@ -27,6 +29,10 @@ label1:
 	mov rbx, rax
 	#endregion
 
+
+	#pragma assume HLT ; HLT instruction will reset the simulator
+
+
 	#region Semantic Error: usage of undefined register ax
 	mov cl, bl
 	xor cx, bx
@@ -34,22 +40,38 @@ label1:
 	inc rax
 	#endregion
 
-	vaddpd xmm1, xmm2, xmm3 ; unimplemented instruction to stop the simulator
+
+	#pragma assume HLT ; HLT instruction will reset the simulator
+
+
+	#region Test unimplemented instructions do not destroy known register content
+	mov rax, 10
+	subpd xmm1, xmm2
+	mov rbx, rax # rbx has content 10
+	#endregion
+
+
+	#pragma assume HLT ; HLT instruction will reset the simulator
 	
+
 	#region Semantic Error: usage of undefined carry 
 	mov cl, 0
 	bsf ax, cx
 	add eax, 1
 	#endregion
 
-	vaddpd xmm1, xmm2, xmm3 ; unimplemented instruction to stop the simulator
+
+	#pragma assume HLT ; HLT instruction will reset the simulator
+
 	
 	#region move value to memory
 	mov ptr qword [rax], 10
 	mov rax, ptr qword [rax]
 	#endregion
 
-	vaddpd xmm1, xmm2, xmm3 ; unimplemented instruction to stop the simulator
+
+	#pragma assume HLT ; HLT instruction will reset the simulator
+
 
 	#region slow (expensive) instruction
 	mov ptr qword [rax], 10
@@ -57,7 +79,9 @@ label1:
 	popcnt rbx, rax
 	#endregion
 
-	vaddpd xmm1, xmm2, xmm3 ; unimplemented instruction to stop the simulator
+
+	#pragma assume HLT ; HLT instruction will reset the simulator
+
 
 	#region moving undefined values to memory and retrieving it.
 	mov cx, 0
@@ -66,12 +90,18 @@ label1:
 	mov rcx, ptr qword [rbx]
 	#endregion
 
-	;vaddpd xmm1, xmm2, xmm3 ; unimplemented instruction to stop the simulator
+
+	#pragma assume HLT ; HLT instruction will reset the simulator
+
 
 	#region Redundant instruction warning
 	mov rax, rbx
 	mov rbx, rax
 	#endregion
+
+
+	#pragma assume HLT ; HLT instruction will reset the simulator
+
 
 	#region Redundant instruction warning in memory (but AsmSim does not find it simply because it times out)
 	mov qword [rcx], rax  

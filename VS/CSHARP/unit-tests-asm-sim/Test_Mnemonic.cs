@@ -59,6 +59,52 @@ namespace unit_tests_asm_z3
         #region MOV reg
 
         [TestMethod]
+        public void Test_MnemonicZ3_Mov_usage()
+        {
+            var tools = CreateTools();
+            var keys = ("dummy1", "dummy2", "dummy3");
+
+            {
+                var opcode = Runner.InstantiateOpcode(Mnemonic.MOV, new string[] { "rax", "rbx" }, keys, tools);
+                var read = new SortedSet<Rn>(opcode.RegsReadStatic);
+                Console.WriteLine("read = " + string.Join(",", read));
+                Assert.AreEqual(1, read.Count);
+                Assert.IsTrue(read.Contains(Rn.RBX));
+
+                var write = new SortedSet<Rn>(opcode.RegsWriteStatic);
+                Console.WriteLine("write = " + string.Join(",", write));
+                Assert.AreEqual(1, write.Count);
+                Assert.IsTrue(write.Contains(Rn.RAX));
+            }
+            {
+                var opcode = Runner.InstantiateOpcode(Mnemonic.MOV, new string[] { "ptr qword [rax + rcx]", "rbx" }, keys, tools);
+                var read = new SortedSet<Rn>(opcode.RegsReadStatic);
+                Console.WriteLine("read = " + string.Join(",", read));
+                Assert.AreEqual(3, read.Count);
+                Assert.IsTrue(read.Contains(Rn.RAX));
+                Assert.IsTrue(read.Contains(Rn.RBX));
+                Assert.IsTrue(read.Contains(Rn.RCX));
+
+                var write = new SortedSet<Rn>(opcode.RegsWriteStatic);
+                Console.WriteLine("write = " + string.Join(",", write));
+                Assert.AreEqual(0, write.Count);
+            }
+            {
+                var opcode = Runner.InstantiateOpcode(Mnemonic.MOV, new string[] { "rbx", "ptr qword [rax + rcx]"}, keys, tools);
+                var read = new SortedSet<Rn>(opcode.RegsReadStatic);
+                Console.WriteLine("read = " + string.Join(",", read));
+                Assert.AreEqual(2, read.Count);
+                Assert.IsTrue(read.Contains(Rn.RAX));
+                Assert.IsTrue(read.Contains(Rn.RCX));
+
+                var write = new SortedSet<Rn>(opcode.RegsWriteStatic);
+                Console.WriteLine("write = " + string.Join(",", write));
+                Assert.AreEqual(1, write.Count);
+                Assert.IsTrue(write.Contains(Rn.RBX));
+            }
+        }
+
+        [TestMethod]
         public void Test_MnemonicZ3_Mov_reg1()
         {
             Tools tools = CreateTools();

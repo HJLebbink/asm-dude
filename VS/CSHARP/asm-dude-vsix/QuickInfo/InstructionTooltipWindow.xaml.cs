@@ -195,7 +195,7 @@ namespace AsmDude.QuickInfo
             {
                 var textBlock = new TextBlock()
                 {
-                    Text = "Read:",
+                    Text = "Read: ",
                     FontFamily = f,
                     FontStyle = FontStyles.Italic,
                     FontWeight = FontWeights.Bold,
@@ -208,7 +208,7 @@ namespace AsmDude.QuickInfo
             {
                 var textBlock = new TextBlock()
                 {
-                    Text = "Write:",
+                    Text = "Write: ",
                     FontFamily = f,
                     FontStyle = FontStyles.Italic,
                     FontWeight = FontWeights.Bold,

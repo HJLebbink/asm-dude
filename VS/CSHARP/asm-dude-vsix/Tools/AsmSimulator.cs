@@ -434,14 +434,18 @@ namespace AsmDude.Tools
         }
         #endregion
 
+        #region Not Implemented
+
+        public bool Is_Implemented(int lineNumber)
+        {
+            return !this._isNotImplemented.Contains(lineNumber);
+        }
+        #endregion
+
         #region Syntax Errors
         public IEnumerable<(int LineNumber, (string Message, Mnemonic Mnemonic) info)> Syntax_Errors
         {
             get { foreach (var x in this._syntax_Errors) yield return (x.Key, x.Value); }
-        }
-        public bool Is_Implemented(int lineNumber)
-        {
-            return !this._isNotImplemented.Contains(lineNumber);
         }
         public bool Has_Syntax_Error(int lineNumber)
         {
@@ -458,7 +462,13 @@ namespace AsmDude.Tools
             var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, this.Tools);
             if (opcodeBase == null) return (IsImplemented: false, Mnemonic: Mnemonic.NONE, Message: null);
 
-            if (opcodeBase.GetType() == typeof(AsmSim.Mnemonics.NotImplemented))
+            var type = opcodeBase.GetType();
+
+            if (type == typeof(AsmSim.Mnemonics.NotImplemented))
+            {
+                return (IsImplemented: false, Mnemonic: content.Mnemonic, Message: null);
+            }
+            else if (type == typeof(AsmSim.Mnemonics.DummySIMD))
             {
                 return (IsImplemented: false, Mnemonic: content.Mnemonic, Message: null);
             }
@@ -558,7 +568,13 @@ namespace AsmDude.Tools
         {
             var content = this._sFlow.Get_Line(lineNumber);
             if (content.Mnemonic == Mnemonic.NONE) return ("", Mnemonic.NONE);
-            if (content.Mnemonic == Mnemonic.NOP) return ("", Mnemonic.NONE); // do not give a warning for NOP instruction 
+            if (content.Mnemonic == Mnemonic.NOP) return ("", Mnemonic.NONE); // do not give a warning for NOP instruction, we know it is redundant...
+
+            {// test if the instustruction is actually implemented properly.
+                var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, ("dummy1", "dummy2", "dummy3"), this.Tools);
+                if (opcodeBase == null) return ("", Mnemonic.NONE); // instruction is not implemented: not redundant
+                if (opcodeBase.GetType() == typeof(DummySIMD)) return ("", Mnemonic.NONE); // instruction is implemented with a mock: not redundant
+            }
 
             //TODO allow redundant branch points (related to unreachable code)
             if (this._dFlow.Is_Branch_Point(lineNumber)) return ("", Mnemonic.NONE);

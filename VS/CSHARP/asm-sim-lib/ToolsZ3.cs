@@ -599,7 +599,7 @@ namespace AsmSim
         public static ulong? ToUlong(Tv[] array)
         {
             ulong result = 0;
-            for (int i = 0; i < Math.Max(array.Length, 64); ++i)
+            for (int i = 0; i < Math.Min(array.Length, 64); ++i)
             {
                 switch (array[i])
                 {

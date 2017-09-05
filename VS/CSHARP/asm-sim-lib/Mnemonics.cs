@@ -261,36 +261,54 @@ namespace AsmSim
                 return ((op1 == null) ? false : op1.IsMem) || ((op2 == null) ? false : op2.IsMem) || ((op3 == null) ? false : op3.IsMem);
             }
 
-            protected IEnumerable<Rn> ToRegEnumerable(Operand op1, bool isRead)
+            protected static IEnumerable<Rn> ReadRegs(Operand op1, bool op1_IsWrite)
             {
                 if (op1 != null)
                 {
-                    if (op1.IsReg)
+                    if (op1.IsMem)
+                    {
+                        var mem = op1.Mem;
+                        if (mem.BaseReg != Rn.NOREG) yield return mem.BaseReg;
+                        if (mem.IndexReg != Rn.NOREG) yield return mem.IndexReg;
+                    }
+                    if ((!op1_IsWrite) && (op1.IsReg))
                     {
                         yield return op1.Rn;
                     }
-                    else if (op1.IsMem)
-                    {
-                        if (isRead)
-                        {
-                            var mem = op1.Mem;
-                            if (mem.BaseReg != Rn.NOREG) yield return mem.BaseReg;
-                            if (mem.IndexReg != Rn.NOREG) yield return mem.IndexReg;
-                        }
-                    }
                 }
             }
-            protected IEnumerable<Rn> ToRegEnumerable(Operand op1, Operand op2, bool isRead)
+
+            protected static IEnumerable<Rn> ReadRegs(Operand op1, bool op1_IsWrite, Operand op2, bool op2_IsWrite)
             {
-                foreach (var r in ToRegEnumerable(op1, isRead)) yield return r;
-                foreach (var r in ToRegEnumerable(op2, isRead)) yield return r;
+                foreach (var r in ReadRegs(op1, op1_IsWrite)) yield return r;
+                foreach (var r in ReadRegs(op2, op2_IsWrite)) yield return r;
             }
-            protected IEnumerable<Rn> ToRegEnumerable(Operand op1, Operand op2, Operand op3, bool isRead)
+
+            protected static IEnumerable<Rn> ReadRegs(Operand op1, bool op1_IsWrite, Operand op2, bool op2_IsWrite, Operand op3, bool op3_IsWrite)
             {
-                foreach (var r in ToRegEnumerable(op1, isRead)) yield return r;
-                foreach (var r in ToRegEnumerable(op2, isRead)) yield return r;
-                foreach (var r in ToRegEnumerable(op3, isRead)) yield return r;
+                foreach (var r in ReadRegs(op1, op1_IsWrite)) yield return r;
+                foreach (var r in ReadRegs(op2, op2_IsWrite)) yield return r;
+                foreach (var r in ReadRegs(op3, op3_IsWrite)) yield return r;
             }
+
+            protected static IEnumerable<Rn> WriteRegs(Operand op1)
+            {
+                if ((op1 != null) && (op1.IsReg)) yield return op1.Rn;
+            }
+
+            protected static IEnumerable<Rn> WriteRegs(Operand op1, Operand op2)
+            {
+                foreach (var r in WriteRegs(op1)) yield return r;
+                foreach (var r in WriteRegs(op2)) yield return r;
+            }
+
+            protected static IEnumerable<Rn> WriteRegs(Operand op1, Operand op2, Operand op3)
+            {
+                foreach (var r in WriteRegs(op1)) yield return r;
+                foreach (var r in WriteRegs(op2)) yield return r;
+                foreach (var r in WriteRegs(op3)) yield return r;
+            }
+
             /// <summary>Create Syntax Error that op1 and op2 should have been equal size</summary>
             protected void CreateSyntaxError1(Operand op1, Operand op2)
             {
@@ -328,7 +346,7 @@ namespace AsmSim
             {
                 if (this.NOperands == 1)
                 {
-                    this.op1 = new Operand(args[0], true);
+                    this.op1 = new Operand(args[0], false);
                     if (this.op1.ErrorMessage != null) this.SyntaxError = string.Format("\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
                 }
                 else
@@ -365,8 +383,8 @@ namespace AsmSim
             {
                 if (this.NOperands == 2)
                 {
-                    this.op1 = new Operand(args[0], true);
-                    this.op2 = new Operand(args[1], true);
+                    this.op1 = new Operand(args[0], false);
+                    this.op2 = new Operand(args[1], false);
                     if (this.op1.ErrorMessage != null) this.SyntaxError = string.Format("\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
                     if (this.op2.ErrorMessage != null) this.SyntaxError = string.Format("\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2.ErrorMessage);
                 }
@@ -407,9 +425,9 @@ namespace AsmSim
             {
                 if (this.NOperands == 3)
                 {
-                    this.op1 = new Operand(args[0], true);
-                    this.op2 = new Operand(args[1], true);
-                    this.op3 = new Operand(args[2], true);
+                    this.op1 = new Operand(args[0], false);
+                    this.op2 = new Operand(args[1], false);
+                    this.op3 = new Operand(args[2], false);
 
                     if (this.op1.ErrorMessage != null) this.SyntaxError = string.Format("\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
                     if (this.op2.ErrorMessage != null) this.SyntaxError = string.Format("\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2.ErrorMessage);
@@ -454,7 +472,7 @@ namespace AsmSim
                 }
                 if (this.NOperands >= 1)
                 {
-                    this.op1 = new Operand(args[0], true);
+                    this.op1 = new Operand(args[0], false);
                     if (this.op1.ErrorMessage != null)
                     {
                         this.SyntaxError = string.Format("\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
@@ -462,7 +480,7 @@ namespace AsmSim
                 }
                 if (this.NOperands >= 2)
                 {
-                    this.op2 = new Operand(args[1], true);
+                    this.op2 = new Operand(args[1], false);
                     if (this.op2.ErrorMessage != null)
                     {
                         this.SyntaxError = string.Format("\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2.ErrorMessage);
@@ -470,7 +488,7 @@ namespace AsmSim
                 }
                 if (this.NOperands >= 3)
                 {
-                    this.op3 = new Operand(args[2], true);
+                    this.op3 = new Operand(args[2], false);
                     if (this.op3.ErrorMessage != null)
                     {
                         this.SyntaxError = string.Format("\"{0}\": Operand 3 is malformed: {1}", this.ToString(), this.op3.ErrorMessage);
@@ -528,6 +546,46 @@ namespace AsmSim
             }
         }
 
+        /// <summary>
+        /// Dummy SIMD instruction implementation. Threats all operands as destructive, but leaves all untouched registers as unchanged.
+        /// </summary>
+        public sealed class DummySIMD : OpcodeNBase
+        {
+            public DummySIMD(Mnemonic mnemnonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.NOP, args, 3, keys, t) { }
+            public override void Execute()
+            {
+                this.Create_RegularUpdate();
+                bool memAlreadyCleared = false;
+                if (this.NOperands > 0)
+                {
+                    if (this.op1.IsReg) this.RegularUpdate.Set(this.op1.Rn, Tv.UNKNOWN);
+                    else if ((this.op1.IsMem) && (!memAlreadyCleared))
+                    {
+                        this.RegularUpdate.Set_Mem_Unknown();
+                        memAlreadyCleared = true;
+                    }
+                }
+                if (this.NOperands > 1)
+                {
+                    if (this.op2.IsReg) this.RegularUpdate.Set(this.op2.Rn, Tv.UNKNOWN);
+                    else if ((this.op2.IsMem) && (!memAlreadyCleared))
+                    {
+                        this.RegularUpdate.Set_Mem_Unknown();
+                        memAlreadyCleared = true;
+                    }
+                }
+                if (this.NOperands > 2)
+                {
+                    if (this.op3.IsReg) this.RegularUpdate.Set(this.op3.Rn, Tv.UNKNOWN);
+                    else if ((this.op3.IsMem) && (!memAlreadyCleared))
+                    {
+                        this.RegularUpdate.Set_Mem_Unknown();
+                        memAlreadyCleared = true;
+                    }
+                }
+            }
+        }
+
         #region Data Transfer Instructions
         public sealed class Mov : Opcode2Type1
         {
@@ -544,8 +602,8 @@ namespace AsmSim
                     this.RegularUpdate.Set(this.op1, this.Op2Value);
                 }
             }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op2, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
         public sealed class Cmovcc : Opcode2Base
         {
@@ -565,8 +623,8 @@ namespace AsmSim
                 this.RegularUpdate.Set(this.op1, value, undef);
             }
             public override Flags FlagsReadStatic { get { return ToolsAsmSim.FlagsUsed(this._ce); } }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op2, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
         
         /// <summary>Exchange Register/Memory with Register</summary>
@@ -582,8 +640,8 @@ namespace AsmSim
                 this.RegularUpdate.Set(this.op1, this.Op2Value);
                 this.RegularUpdate.Set(this.op2, this.Op1Value);
             }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, this.op2, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, true); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1, this.op2); } }
         }
         /// <summary>Byte swap</summary>
         public sealed class Bswap : Opcode1Base
@@ -623,8 +681,8 @@ namespace AsmSim
                 }
                 this.RegularUpdate.Set(this.op1, dest);
             }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
 
         /// <summary>Exchange and add</summary>
@@ -648,8 +706,8 @@ namespace AsmSim
                 this.RegularUpdate.Set(Flags.AF, tup.af);
                 this.RegularUpdate.Set_SF_ZF_PF(tup.result);
             }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, this.op2, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, this.op2, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, true); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1, this.op2); } }
         }
 
         /// <summary>Compare and exchange</summary>
@@ -715,8 +773,7 @@ namespace AsmSim
                             default: break;
                         }
                     }
-                    foreach (Rn r in ToRegEnumerable(this.op1, true)) yield return r;
-                    foreach (Rn r in ToRegEnumerable(this.op2, true)) yield return r;
+                    foreach (Rn r in ReadRegs(this.op1, true, this.op2, false)) yield return r;
                 }
             }
             public override IEnumerable<Rn> RegsWriteStatic
@@ -734,7 +791,7 @@ namespace AsmSim
                             default: break;
                         }
                     }
-                    foreach (Rn r in ToRegEnumerable(this.op1, false)) yield return r;
+                    foreach (Rn r in WriteRegs(this.op1)) yield return r;
                 }
             }
         }
@@ -911,7 +968,7 @@ namespace AsmSim
                     if (this.Tools.Parameters.mode_64bit) yield return Rn.RSP;
                     else if (this.Tools.Parameters.mode_32bit) yield return Rn.ESP;
                     else if (this.Tools.Parameters.mode_16bit) yield return Rn.SP;
-                    foreach (Rn r in ToRegEnumerable(this.op1, true)) yield return r;
+                    foreach (Rn r in ReadRegs(this.op1, false)) yield return r;
                 }
             }
             public override IEnumerable<Rn> RegsWriteStatic
@@ -1028,7 +1085,7 @@ namespace AsmSim
                     if (this.Tools.Parameters.mode_64bit) yield return Rn.RSP;
                     else if (this.Tools.Parameters.mode_32bit) yield return Rn.ESP;
                     else if (this.Tools.Parameters.mode_16bit) yield return Rn.SP;
-                    foreach (Rn r in ToRegEnumerable(this.op1, false)) yield return r;
+                    foreach (Rn r in ReadRegs(this.op1, false)) yield return r;
                 }
             }
             public override bool MemWriteStatic { get { return true; } }
@@ -1146,8 +1203,8 @@ namespace AsmSim
                 uint nBitsAdded = (uint)(this.op1.NBits - this.op2.NBits);
                 this.RegularUpdate.Set(this.op1, this._ctx.MkSignExt(nBitsAdded, this.Op2Value));
             }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op2, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
         /// <summary>Move and sign extend</summary>
         public sealed class Movsxd : Opcode2Base
@@ -1166,8 +1223,8 @@ namespace AsmSim
                 uint nBitsAdded = (uint)(this.op1.NBits - this.op2.NBits);
                 this.RegularUpdate.Set(this.op1, this._ctx.MkSignExt(nBitsAdded, this.Op2Value));
             }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op2, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
         /// <summary>Move and zero extend</summary>
         public sealed class Movzx : Opcode2Base
@@ -1204,8 +1261,8 @@ namespace AsmSim
                 uint nBitsAdded = (uint)(this.op1.NBits - this.op2.NBits);
                 this.RegularUpdate.Set(this.op1, this._ctx.MkZeroExt(nBitsAdded, this.Op2Value));
             }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op2, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op2, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
 
         #endregion Data Transfer Instructions
@@ -1243,8 +1300,8 @@ namespace AsmSim
                 this.RegularUpdate.Set_SF_ZF_PF(tup.result);
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, this.op2, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
         /// <summary>Add with carry</summary>
         public sealed class Adc : Opcode2Type1
@@ -1261,8 +1318,8 @@ namespace AsmSim
             }
             public override Flags FlagsReadStatic { get { return Flags.CF; } }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, this.op2, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
         /// <summary>Subtracts</summary>
         /// the second operand (source operand) from the first operand (destination operand) and stores the result in the destination operand. The destination operand can be a register or a memory location; the source operand can be an immediate, register, or memory location. (However, two memory operands cannot be used in one instruction.) When an immediate value is used as an operand, it is sign-extended to the length of the destination operand format.
@@ -1284,8 +1341,8 @@ namespace AsmSim
                 this.RegularUpdate.Set_SF_ZF_PF(tup.result);
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, this.op2, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
         /// <summary>Subtract with borrow</summary>
         public sealed class Sbb : Opcode2Type1
@@ -1302,8 +1359,8 @@ namespace AsmSim
             }
             public override Flags FlagsReadStatic { get { return Flags.CF; } }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, this.op2, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
         /// <summary>Signed multiply</summary>
         public sealed class Imul : OpcodeNBase
@@ -1504,11 +1561,11 @@ namespace AsmSim
                                 break;
                             default: break;
                         }
-                        foreach (Rn r in ToRegEnumerable(this.op1, true)) yield return r;
+                        foreach (Rn r in ReadRegs(this.op1, false)) yield return r;
                     }
                     else
                     {
-                        foreach (Rn r in ToRegEnumerable(this.op1, this.op2, true)) yield return r;
+                        foreach (Rn r in ReadRegs(this.op1, true, this.op2, false)) yield return r;
                     }
                 }
             }
@@ -1541,7 +1598,7 @@ namespace AsmSim
                     }
                     else
                     {
-                        foreach (Rn r in ToRegEnumerable(this.op1, false)) yield return r;
+                        foreach (Rn r in WriteRegs(this.op1)) yield return r;
                     }
                 }
             }
@@ -1629,7 +1686,7 @@ namespace AsmSim
                             break;
                         default: break;
                     }
-                    foreach (Rn r in ToRegEnumerable(this.op1, true)) yield return r;
+                    foreach (Rn r in ReadRegs(this.op1, false)) yield return r;
                 }
             }
             public override IEnumerable<Rn> RegsWriteStatic
@@ -1753,7 +1810,7 @@ namespace AsmSim
                             break;
                         default: break;
                     }
-                    foreach (Rn r in ToRegEnumerable(this.op1, true)) yield return r;
+                    foreach (Rn r in ReadRegs(this.op1, false)) yield return r;
                 }
             }
             public override IEnumerable<Rn> RegsWriteStatic
@@ -1877,7 +1934,7 @@ namespace AsmSim
                             break;
                         default: break;
                     }
-                    foreach (Rn r in ToRegEnumerable(this.op1, true)) yield return r;
+                    foreach (Rn r in ReadRegs(this.op1, false)) yield return r;
                 }
             }
             public override IEnumerable<Rn> RegsWriteStatic
@@ -1921,8 +1978,8 @@ namespace AsmSim
                 this.RegularUpdate.Set_SF_ZF_PF(tup.result);
             }
             public override Flags FlagsWriteStatic { get { return Flags.PF_AF_ZF_SF_OF; } }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
         /// <summary>Decrement</summary>
         public sealed class Dec : Opcode1Base
@@ -1938,8 +1995,8 @@ namespace AsmSim
                 this.RegularUpdate.Set_SF_ZF_PF(tup.result);
             }
             public override Flags FlagsWriteStatic { get { return Flags.PF_AF_ZF_SF_OF; } }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
         /// <summary>Negate</summary>
         public sealed class Neg : Opcode1Base
@@ -1955,8 +2012,8 @@ namespace AsmSim
                 this.RegularUpdate.Set_SF_ZF_PF(tup.result);
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
         /// <summary>Compare</summary>
         public sealed class Cmp : Opcode2Type1
@@ -1971,7 +2028,7 @@ namespace AsmSim
                 this.RegularUpdate.Set_SF_ZF_PF(tup.result);
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, this.op2, true); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, false, this.op2, false); } }
         }
         #endregion Binary Arithmetic Instructions
 
@@ -2225,8 +2282,8 @@ namespace AsmSim
                 this.RegularUpdate.Set(Flags.AF, Tv.UNDEFINED);
                 this.RegularUpdate.Set_SF_ZF_PF(value);
             }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, this.op2, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
         public sealed class Xor : LogicalBase
         {
@@ -2249,8 +2306,8 @@ namespace AsmSim
                 this.RegularUpdate.Set(this.op1, this._ctx.MkBVNot(this.Op1Value));
                 // Flags are unaffected
             }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
         public sealed class Test : Opcode2Base
         {
@@ -2279,7 +2336,7 @@ namespace AsmSim
                 this.RegularUpdate.Set_SF_ZF_PF(value);
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, this.op2, true); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, false, this.op2, false); } }
         }
 
         #endregion Logical Instructions
@@ -2384,8 +2441,8 @@ namespace AsmSim
                 this.RegularUpdate.Set(Flags.CF, ctx.MkITE(isZero, this.Get(Flags.CF), ctx.MkITE(isLessOrEqualTo, cfIn, this.Undef(Flags.CF))) as BoolExpr);
                 #endregion
             }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, this.op2, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
 
         #region Shift
@@ -2512,8 +2569,8 @@ namespace AsmSim
                     this.Warning = string.Format("\"{0}\": value of operand 3 does not fit in 8-bit field. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                 }
             }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, this.op2, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
         public sealed class Rorx : ShiftBaseX
         {
@@ -2579,8 +2636,8 @@ namespace AsmSim
                 }
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, this.op2, this.op3, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false, this.op3, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
 
         /// <summary>Shift right double</summary>
@@ -2663,7 +2720,7 @@ namespace AsmSim
                 this.RegularUpdate.Set(this.op1, result);
             }
             public override Flags FlagsReadStatic { get { return ToolsAsmSim.FlagsUsed(this._ce); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
 
         public abstract class BitTestBase : Opcode2Base
@@ -2731,7 +2788,7 @@ namespace AsmSim
                 this.RegularUpdate.Set(Flags.CF, ToolsZ3.GetBit(v1, bitPos, this._ctx));
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_SF_OF; } }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, this.op2, true); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
         }
 
         public sealed class Bt_Opcode : BitTestBase
@@ -2743,19 +2800,19 @@ namespace AsmSim
         {
             public Bts(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.BTS, args, keys, t) { }
             public override void Execute() { this.SetBitValue(Mnemonic.BTS); }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
         public sealed class Btr : BitTestBase
         {
             public Btr(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.BTR, args, keys, t) { }
             public override void Execute() { this.SetBitValue(Mnemonic.BTR); }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
         public sealed class Btc : BitTestBase
         {
             public Btc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.BTC, args, keys, t) { }
             public override void Execute() { this.SetBitValue(Mnemonic.BTC); }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
         public sealed class Bsf : Opcode2Base
         {
@@ -2802,8 +2859,8 @@ namespace AsmSim
                 }
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op2, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
         public sealed class Bsr : Opcode2Base
         {
@@ -2850,8 +2907,8 @@ namespace AsmSim
                 }
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op2, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
         #endregion
 
@@ -3070,7 +3127,7 @@ namespace AsmSim
                     if (this.Tools.Parameters.mode_64bit) yield return Rn.RSP;
                     if (this.Tools.Parameters.mode_32bit) yield return Rn.ESP;
                     if (this.Tools.Parameters.mode_16bit) yield return Rn.SP;
-                    foreach (Rn r in ToRegEnumerable(this.op1, false)) yield return r;
+                    foreach (Rn r in ReadRegs(this.op1, false)) yield return r;
                 }
             }
             public override bool MemReadStatic { get { return true; } }
@@ -3138,7 +3195,7 @@ namespace AsmSim
                     if (this.Tools.Parameters.mode_64bit) yield return Rn.RSP;
                     if (this.Tools.Parameters.mode_32bit) yield return Rn.ESP;
                     if (this.Tools.Parameters.mode_16bit) yield return Rn.SP;
-                    if (this.op1 != null) foreach (Rn r in ToRegEnumerable(this.op1, false)) yield return r;
+                    if (this.op1 != null) foreach (Rn r in ReadRegs(this.op1, false)) yield return r;
                 }
             }
             public override bool MemReadStatic { get { return true; } }
@@ -3271,7 +3328,7 @@ namespace AsmSim
                     this.RegularUpdate.Set(dst, ctx.MkITE(df, ctx.MkBVSub(dstBV, totalBytes), ctx.MkBVAdd(dstBV, totalBytes)) as BitVecExpr);
 
                     //Update memory: set all memory as unknown
-                    this.RegularUpdate.Set_Mem(Tools.Create_Mem_Key_Fresh(this.Tools.Rand, ctx));
+                    this.RegularUpdate.Set_Mem_Unknown();
                 }
             }
         }
@@ -3418,7 +3475,7 @@ namespace AsmSim
                     this.RegularUpdate.Set(counter, 0UL);
 
                     //Update memory: set all memory as unknown
-                    this.RegularUpdate.Set_Mem(Tools.Create_Mem_Key_Fresh(this.Tools.Rand, ctx));
+                    this.RegularUpdate.Set_Mem_Unknown();
                 }
             }
             public override IEnumerable<Rn> RegsReadStatic
@@ -3659,8 +3716,8 @@ namespace AsmSim
                 // special case: set the truth value to an defined but unknown value
                 this.RegularUpdate.Set(this.op1.Rn, Tv.UNKNOWN);
             }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op2, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op2, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
 
         /// <summary>Write to a port</summary>
@@ -3699,7 +3756,7 @@ namespace AsmSim
             {
                 // state is not changed
             }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op2, true); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op2, false); } }
         }
 
         //INS,
@@ -3865,7 +3922,7 @@ namespace AsmSim
                     this.RegularUpdate.Set(this.op1, this._ctx.MkZeroExt(32, address));
                 }
             }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
 
         public sealed class Nop : Opcode0Base
@@ -3930,8 +3987,8 @@ namespace AsmSim
                 }
                 this.RegularUpdate.Set(this.op1, swapped);
             }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op2, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
         /// <summary>Prefetch data into cache in anticipation of write</summary>
         //PREFETCHW,
@@ -4025,8 +4082,8 @@ namespace AsmSim
                 BitVecExpr result = ToolsFloatingPoint.FP_2_BV(a_FP, ctx);
                 this.RegularUpdate.Set(this.op1, result);
             }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, this.op2, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
         /// <summary>Xor Parallel Double FP</summary>
         public sealed class XorPD : Opcode2Base
@@ -4040,8 +4097,8 @@ namespace AsmSim
             {
                 this.RegularUpdate.Set(this.op1, this._ctx.MkBVXOR(this.Op1Value, this.Op2Value));
             }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op1, this.op2, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
 
         public sealed class Popcnt : Opcode2Base
@@ -4078,8 +4135,8 @@ namespace AsmSim
                 this.RegularUpdate.Set(Flags.PF, Tv.ZERO);
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
-            public override IEnumerable<Rn> RegsReadStatic { get { return ToRegEnumerable(this.op2, true); } }
-            public override IEnumerable<Rn> RegsWriteStatic { get { return ToRegEnumerable(this.op1, false); } }
+            public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
+            public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
         #endregion
         #endregion Instructions

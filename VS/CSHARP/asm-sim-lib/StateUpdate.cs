@@ -517,7 +517,7 @@ namespace AsmSim
                 case Tv.INCONSISTENT:
                 case Tv.UNDEFINED:
                 case Tv.ONE:
-                    throw new Exception("oOt implemented yet");
+                    throw new Exception("Not implemented yet");
                     break;
                 default: break;
             }
@@ -715,6 +715,12 @@ namespace AsmSim
             }
             this._mem_Full = memContent.Translate(this._ctx) as ArrayExpr;
         }
+
+        public void Set_Mem_Unknown()
+        {
+            this.Set_Mem(Tools.Create_Mem_Key_Fresh(this._tools.Rand, this._ctx));
+        }
+
 
         #endregion
 
