@@ -98,7 +98,7 @@ namespace AsmDude.QuickInfo
             var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(snapshot);
             if (triggerPoint == null)
             {
-                AsmDudeToolsStatic.Output_INFO("AsmQuickInfoSource:AugmentQuickInfoSession: trigger point is null");
+                AsmDudeToolsStatic.Output_WARNING("AsmQuickInfoSource:AugmentQuickInfoSession: trigger point is null");
                 return;
             }
 
@@ -130,10 +130,8 @@ namespace AsmDude.QuickInfo
                     }
                     #endregion
 
-                    int lineNumber = AsmDudeToolsStatic.Get_LineNumber(tagSpan);
-
                     //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoSource:AugmentQuickInfoSession: keyword=\""+ keyword + "\"; type=" + asmTokenTag.Tag.type +"; file="+AsmDudeToolsStatic.GetFileName(session.TextView.TextBuffer));
-                    applicableToSpan = snapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
+                    applicableToSpan = snapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeInclusive);
 
                     TextBlock description = null;
                     AsmTokenType type = asmTokenTag.Tag.Type;
@@ -175,6 +173,7 @@ namespace AsmDude.QuickInfo
                             }
                         case AsmTokenType.Register:
                             {
+                                int lineNumber = AsmDudeToolsStatic.Get_LineNumber(tagSpan);
                                 if (keywordUpper.StartsWith("%")) keywordUpper = keywordUpper.Substring(1); // remove the preceding % in AT&T syntax 
                                 Rn reg = RegisterTools.ParseRn(keywordUpper, true);
                                 var registerTooltipWindow = new RegisterTooltipWindow(foreground);
@@ -186,6 +185,7 @@ namespace AsmDude.QuickInfo
                         case AsmTokenType.Mnemonic:
                         case AsmTokenType.Jump:
                             {
+                                int lineNumber = AsmDudeToolsStatic.Get_LineNumber(tagSpan);
                                 Mnemonic mnemonic = AsmSourceTools.ParseMnemonic_Att(keywordUpper, true);
                                 var instructionTooltipWindow = new InstructionTooltipWindow(foreground);
                                 instructionTooltipWindow.SetDescription(mnemonic, this._asmDudeTools);

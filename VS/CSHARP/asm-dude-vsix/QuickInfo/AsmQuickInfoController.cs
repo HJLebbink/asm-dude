@@ -57,12 +57,17 @@ namespace AsmDude.QuickInfo
             this._textView.MouseHover += this.OnTextViewMouseHover;
         }
 
-        public void ConnectSubjectBuffer(ITextBuffer subjectBuffer) { }
+        public void ConnectSubjectBuffer(ITextBuffer subjectBuffer) {
+            AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:ConnectSubjectBuffer");
+        }
 
-        public void DisconnectSubjectBuffer(ITextBuffer subjectBuffer) { }
+        public void DisconnectSubjectBuffer(ITextBuffer subjectBuffer) {
+            AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:DisconnectSubjectBuffer");
+        }
 
         public void Detach(ITextView textView)
         {
+            AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:Detach");
             if (this._textView == textView)
             {
                 this._textView.MouseHover -= this.OnTextViewMouseHover;
@@ -82,21 +87,38 @@ namespace AsmDude.QuickInfo
                 string contentType = this._textView.TextBuffer.ContentType.DisplayName;
                 if (contentType.Equals(AsmDudePackage.AsmDudeContentType, StringComparison.Ordinal))
                 {
+                    int pos = point.Value.Position;
+                    int pos2 = Get_Keyword_Span_At_Point(point.Value).Start;
+
+                    AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: CreateQuickInfoSession for triggerPoint " + pos + "; pos2="+pos2);
+                    //ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(pos, PointTrackingMode.Positive);
+                    ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(pos2, PointTrackingMode.Positive);
+
                     if (!this._quickInfoBroker.IsQuickInfoActive(this._textView))
                     {
-                        //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: CreateQuickInfoSession for triggerPoint "+triggerPoint.TextBuffer+"; file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
-                        ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(point.Value.Position, PointTrackingMode.Positive);
-                        this._session = this._quickInfoBroker.CreateQuickInfoSession(this._textView, triggerPoint, false);
-                        this._session.Start();
-                    }
-                    else
-                    {
-                        //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: quickInfoBroker is already active; file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
+
+                        if ((this._session != null) && (this._session.ApplicableToSpan != null))
+                        {
+                            if (this._session.ApplicableToSpan.GetSpan(this._textView.TextSnapshot).IntersectsWith(new Span(point.Value.Position, 0)))
+                            {
+                                AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: intersects!");
+                            }
+                            else
+                            {
+                                AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: collapsing an existing session");
+                                this._session.Collapse();
+                                this._session = this._quickInfoBroker.TriggerQuickInfo(this._textView, triggerPoint, false);
+                            }
+                        }
+                        else
+                        {
+                            this._session = this._quickInfoBroker.TriggerQuickInfo(this._textView, triggerPoint, false);
+                        }
                     }
                 }
                 else if (contentType.Equals(AsmDudePackage.DisassemblyContentType, StringComparison.Ordinal))
                 {
-                    //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:OnTextViewMouseHover: Quickinfo for disassembly view", ToString()));
+                    AsmDudeToolsStatic.Output_INFO(string.Format("{0}:OnTextViewMouseHover: Quickinfo for disassembly view", ToString()));
                     this.ToolTipLegacy(point.Value);
                 }
                 else
@@ -125,11 +147,10 @@ namespace AsmDude.QuickInfo
             );
         }
 
-        private void ToolTipLegacy(SnapshotPoint triggerPoint)
+        private Span Get_Keyword_Span_At_Point(SnapshotPoint triggerPoint)
         {
             ITextSnapshotLine line = triggerPoint.GetContainingLine();
 
-            #region Find Keyword under the Mouse
             //1] find the start of the current keyword
             SnapshotPoint start = triggerPoint;
             while ((start > line.Start) && !AsmTools.AsmSourceTools.IsSeparatorChar((start - 1).GetChar()))
@@ -143,12 +164,16 @@ namespace AsmDude.QuickInfo
                 end += 1;
             }
             //3] get the word under the mouse
-            ITextSnapshot snapshot = this._textView.TextSnapshot;
-            Span span = new SnapshotSpan(start, end + 1);
-            ITrackingSpan applicableTo = snapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeInclusive);
-            string keyword = applicableTo.GetText(snapshot);
+            return new SnapshotSpan(start, end + 1);
+        }
+
+        private void ToolTipLegacy(SnapshotPoint triggerPoint)
+        {
+            var span = Get_Keyword_Span_At_Point(triggerPoint);
+            ITrackingSpan applicableTo = this._textView.TextSnapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeInclusive);
+
+            string keyword = applicableTo.GetText(this._textView.TextSnapshot);
             //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:OnTextViewMouseHover: keyword={1}", ToString(), keyword));
-            #endregion
 
             #region Create a window
             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword, false);

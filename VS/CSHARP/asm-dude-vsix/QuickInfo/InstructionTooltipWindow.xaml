@@ -1,6 +1,7 @@
 ﻿<UserControl x:Class="AsmDude.QuickInfo.InstructionTooltipWindow"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" >
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Name="MainWindow">
     <StackPanel>
         <TextBlock x:Name="Description" TextWrapping="Wrap"/>
         <Border x:Name="AsmSimGridBorder" BorderBrush="LightGray" CornerRadius="2" BorderThickness="1" Margin="0,6,0,0" Visibility="Collapsed">

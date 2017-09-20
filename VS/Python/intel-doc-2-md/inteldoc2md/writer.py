@@ -37,8 +37,8 @@ class Writer(object):
 		str = str.replace('destina-\ntion', 'destination\n')
 		str = str.replace('desti-\nnation', 'destination\n')
 		str = str.replace('infor-\nmation', 'information\n')
-		str = str.replace('instruc-\ntions ', 'instructions\n')
-
+		str = str.replace('instruc-\ntions', 'instructions\n')
+		str = str.replace('instruc-\ntion', 'instruction\n')
 		str = str.replace('regis-\nters', 'registers\n')
 		str = str.replace('regis-\nter', 'register\n')
 		str = str.replace('oper-\nands', 'operands\n') 

@@ -35,10 +35,7 @@ namespace AsmDude.QuickInfo
     public partial class InstructionTooltipWindow: UserControl
     {
         private readonly Brush _foreground;
-
         private IList<TextBox> _itemsOnPage;
-
-
         private int _lineNumber;
         private AsmSimulator _asmSimulator;
 
@@ -49,6 +46,16 @@ namespace AsmDude.QuickInfo
 
             this.AsmSimGridExpander.Collapsed += (o, i) => { this.AsmSimGridExpanderNumeration.Visibility = Visibility.Collapsed; };
             this.AsmSimGridExpander.Expanded += (o, i) => { this.AsmSimGridExpanderNumeration.Visibility = Visibility.Visible; };
+
+            this.MainWindow.MouseLeftButtonDown += (o, i) => {
+                i.Handled = true; // dont let the mouse event from inside this window bubble up to VS
+                AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:MouseLeftButtonDown Event");
+            }; 
+
+            this.MainWindow.PreviewMouseLeftButtonDown += (o, i) =>
+            {
+                AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:PreviewMouseLeftButtonDown Event");
+            };
         }
 
         public void SetDescription(Mnemonic mnemonic, AsmDudeTools asmDudeTools)
@@ -336,15 +343,6 @@ namespace AsmDude.QuickInfo
                     AsmDudeToolsStatic.Output_ERROR("InstructionTooltipWindow: Update_Async: e=" + e.ToString());
                 }
             });
-        }
-
-        private static Run Make_Bold_Run(string str, Brush foreground)
-        {
-            return new Run(str)
-            {
-                FontWeight = FontWeights.Bold,
-                Foreground = foreground
-            };
         }
     }
 }
