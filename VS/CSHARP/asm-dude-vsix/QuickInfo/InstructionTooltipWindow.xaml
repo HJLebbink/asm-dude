@@ -3,7 +3,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Name="MainWindow">
     <StackPanel>
-        <TextBlock x:Name="Description" TextWrapping="Wrap"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="4pt"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="Description" Grid.Column="0" TextWrapping="Wrap"/>
+            <Button Name="CloseButton" Grid.Column="2" Click="CloseButton_Click" BorderThickness="0" Background="Transparent">
+                <Path Data="M0,0 L1,1 M0,1 L1,0" Stretch="Fill" Stroke="Red" StrokeThickness="1" Width="8" Height="8" />
+            </Button>
+        </Grid>
         <Border x:Name="AsmSimGridBorder" BorderBrush="LightGray" CornerRadius="2" BorderThickness="1" Margin="0,6,0,0" Visibility="Collapsed">
             <Expander x:Name="AsmSimGridExpander" Visibility="Collapsed" IsExpanded="False">
                 <Expander.Header>
@@ -50,7 +60,7 @@
             </Expander>
         </Border>
         <Border x:Name="PerformanceBorder" BorderBrush="LightGray" CornerRadius="2" BorderThickness="1" Margin="0,2,0,0" Visibility="Collapsed" MaxHeight="200">
-            <Expander x:Name="PerformanceExpander" Header="Performance" IsExpanded="False">
+            <Expander x:Name="PerformanceExpander" Header="Performance" GotMouseCapture="PerformanceExpander_Click" IsExpanded="False">
                 <ScrollViewer>
                     <TextBlock x:Name="Performance" TextWrapping="Wrap" />
                 </ScrollViewer>

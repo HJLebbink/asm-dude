@@ -20,24 +20,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude.Tools;
 using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using AsmTools;
 using System.Windows.Media;
 using System.Windows.Documents;
 
+using AsmDude.Tools;
+using AsmTools;
+using Microsoft.VisualStudio.Text.Adornments;
+using Microsoft.VisualStudio.Language.Intellisense;
+
 namespace AsmDude.QuickInfo
 {
-
     public partial class InstructionTooltipWindow: UserControl
     {
         private readonly Brush _foreground;
         private IList<TextBox> _itemsOnPage;
         private int _lineNumber;
         private AsmSimulator _asmSimulator;
+
+        internal AsmQuickInfoController Owner { get; set; }
+        internal IQuickInfoSession Session { get; set; }
+
 
         public InstructionTooltipWindow(Brush foreground)
         {
@@ -48,7 +54,7 @@ namespace AsmDude.QuickInfo
             this.AsmSimGridExpander.Expanded += (o, i) => { this.AsmSimGridExpanderNumeration.Visibility = Visibility.Visible; };
 
             this.MainWindow.MouseLeftButtonDown += (o, i) => {
-                i.Handled = true; // dont let the mouse event from inside this window bubble up to VS
+               // i.Handled = true; // dont let the mouse event from inside this window bubble up to VS
                 AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:MouseLeftButtonDown Event");
             }; 
 
@@ -57,6 +63,21 @@ namespace AsmDude.QuickInfo
                 AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:PreviewMouseLeftButtonDown Event");
             };
         }
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:CloseButton_Click");
+            if (this.Owner != null) this.Owner.CloseToolTip();
+            if (this.Session != null) this.Session.Dismiss();
+            AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:CloseButton_Click: owner and session are null");
+        }
+
+        private void PerformanceExpander_Click(object sender, RoutedEventArgs e)
+        {
+            AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:PerformanceExpander_Click");
+            e.Handled = true;
+        }
+
 
         public void SetDescription(Mnemonic mnemonic, AsmDudeTools asmDudeTools)
         {

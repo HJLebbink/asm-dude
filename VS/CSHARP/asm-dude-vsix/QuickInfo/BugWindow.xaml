@@ -1,0 +1,6 @@
+﻿<UserControl x:Class="AsmDude.QuickInfo.BugWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Name="MainWindow">
+    <Expander x:Name="AsmSimGridExpander" GotMouseCapture="GotMouseCapture_Click" IsExpanded="False">Blah</Expander>
+</UserControl>

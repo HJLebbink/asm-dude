@@ -65,6 +65,14 @@ namespace AsmDude.QuickInfo
             this._asmDudeTools = AsmDudeTools.Instance;
         }
 
+        public void AugmentQuickInfoSession_Bug(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan)
+        {
+            var snapshot = this._sourceBuffer.CurrentSnapshot;
+            var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(snapshot);
+            applicableToSpan = snapshot.CreateTrackingSpan(new SnapshotSpan(triggerPoint, triggerPoint), SpanTrackingMode.EdgeInclusive);
+            quickInfoContent.Add(new BugWindow());
+        }
+
         /// <summary>Determine which pieces of Quickinfo content should be displayed</summary>
         public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan)
         {
@@ -187,7 +195,9 @@ namespace AsmDude.QuickInfo
                             {
                                 int lineNumber = AsmDudeToolsStatic.Get_LineNumber(tagSpan);
                                 Mnemonic mnemonic = AsmSourceTools.ParseMnemonic_Att(keywordUpper, true);
+
                                 var instructionTooltipWindow = new InstructionTooltipWindow(foreground);
+                                instructionTooltipWindow.Session = session; // set the owner of this windows such that we can manually close this window
                                 instructionTooltipWindow.SetDescription(mnemonic, this._asmDudeTools);
                                 instructionTooltipWindow.SetPerformanceInfo(mnemonic, this._asmDudeTools, false);
                                 instructionTooltipWindow.SetAsmSim(this._asmSimulator, lineNumber, true);
