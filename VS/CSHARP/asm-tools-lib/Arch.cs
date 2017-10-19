@@ -84,15 +84,34 @@ namespace AsmTools {
         ///and YMM registers instead of only to ZMM registers.
         AVX512_VL,
 
+        //Cannon Lake
         AVX512_IFMA,
 
+        //Cannon Lake
         AVX512_VBMI,
 
+        //Knight Mill, Ice Lake
         AVX512_VPOPCNTDQ,
 
+        //Knight Mill
         AVX512_4VNNIW,
 
+        //Knight Mill
         AVX512_4FMAPS,
+
+        //Ice Lake
+        AVX512_VBMI2,
+        //Ice Lake
+        AVX512_VNNI,
+
+        //Ice Lake
+        AVX512_BITALG,
+
+        //Ice Lake
+        GFNI,
+
+        //Ice Lake
+        VAES,
 
 
         #region Misc Intel
@@ -223,6 +242,11 @@ namespace AsmTools {
                 case "AVX5124VNNIW": return Arch.AVX512_4VNNIW;
                 case "AVX5124FMAPS": return Arch.AVX512_4FMAPS;
 
+                case "AVX512VBMI2": return Arch.AVX512_VBMI2;                case "AVX512VNNI": return Arch.AVX512_VNNI;
+                case "AVX512BITALG": return Arch.AVX512_BITALG;
+                case "GFNI": return Arch.GFNI;
+                case "VAES": return Arch.VAES;
+
                 case "HLE": return Arch.HLE;
                 case "BMI1": return Arch.BMI1;
                 case "BMI2": return Arch.BMI2;
@@ -254,6 +278,9 @@ namespace AsmTools {
                 case "SHA": return Arch.SHA;
                 case "RTM": return Arch.RTM;
                 case "PREFETCHWT1": return Arch.PREFETCHWT1;
+
+
+
 
                 case "UNDOC": return Arch.UNDOC;
                 default:

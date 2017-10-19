@@ -125,7 +125,7 @@ namespace AsmTools {
         /// <summary>Convert doubleword to quadword</summary>
         CDQ,
         /// <summary>Convert quadword to octoword</summary>
-        CQO, 
+        CQO,
         /// <summary>Convert byte to word</summary>
         CBW,
         /// <summary>Convert Word to Doubleword</summary>
@@ -357,11 +357,11 @@ namespace AsmTools {
         /// <summary>Jump if overflow</summary>
         JO,
         /// <summary>Jump if not overflow</summary>
-        JNO, 
+        JNO,
         /// <summary>Jump if sign (negative)</summary>
         JS,
         /// <summary>Jump if not sign (non-negative)</summary>
-        JNS, 
+        JNS,
         /// <summary>Jump if parity odd</summary>
         JPO,
         /// <summary>Jump if not parity</summary>
@@ -463,7 +463,7 @@ namespace AsmTools {
         REPNE,
         /// <summary>Repeat while not equal [REPNE=REPNZ] (termination condition: RCX or (E)CX = 0; or ZF=1)</summary>
         REPNZ,
-        
+
         REP_MOVS,
         REP_MOVSB,
         REP_MOVSW,
@@ -618,7 +618,7 @@ namespace AsmTools {
         /// <summary>Table lookup translation</summary>
         XLAT,
         /// <summary>Table lookup translation</summary>
-        XLATB, 
+        XLATB,
         /// <summary>Processor identification</summary>
         CPUID,
         /// <summary>Move data after swapping data bytes</summary>
@@ -1233,10 +1233,6 @@ namespace AsmTools {
         AESDECLAST,
         AESIMC,
         AESKEYGENASSIST,
-        VAESENC,
-        VAESENCLAST,
-        VAESDEC,
-        VAESDECLAST,
         VAESIMC,
         VAESKEYGENASSIST,
         VADDPD,
@@ -1684,7 +1680,6 @@ namespace AsmTools {
         VPCLMULHQLQDQ,
         VPCLMULLQHQDQ,
         VPCLMULHQHQDQ,
-        VPCLMULQDQ,
         VFMADD132PS,
         VFMADD132PD,
         VFMADD312PS,
@@ -1896,7 +1891,6 @@ namespace AsmTools {
         VPSHAQ,
         VPSHAW,
         VPSHLB,
-        VPSHLD,
         VPSHLQ,
         VPSHLW,
         VBROADCASTI128,
@@ -2336,8 +2330,51 @@ namespace AsmTools {
         /// <summary>Scalar Single-Precision Floating-Point Fused Multiply-Add (4-iterations)</summary>
         V4FNMADDSS,
 
+        /// <summary></summary>
         VPOPCNTD,
-        VPOPCNTQ
+        /// <summary></summary>
+        VPOPCNTQ,
+
+        /// <summary> Galois Field Affine Transformation Inverse</summary>
+        GF2P8AFFINEINVQB,
+        /// <summary>Galois Field Affine Transformation</summary>
+        GF2P8AFFINEQB,
+        /// <summary>Galois Field Multiply Bytes</summary>
+        GF2P8MULB,
+        /// <summary>Perform One Round of an AES Decryption Flow</summary>
+        VAESDEC,
+        /// <summary>Perform Last Round of an AES Decryption Flow</summary>
+        VAESDECLAST,
+        /// <summary>Perform One Round of an AES Encryption Flow</summary>
+        VAESENC,
+        /// <summary>Perform Last Round of an AES Encryption Flow</summary>
+        VAESENCLAST,
+        /// <summary>Carry-Less Multiplication Quadword</summary>
+        VPCLMULQDQ,
+        /// <summary>Store Sparse Packed Byte/Word Integer Values into Dense Memory/Register</summary>
+        VPCOMPRESS,
+        /// <summary>Multiply and Add Unsigned and Signed Bytes</summary>
+        VPDPBUSD,
+        /// <summary>Multiply and Add Unsigned and Signed Bytes with Saturation</summary>
+        VPDPBUSDS,
+        /// <summary>Multiply and Add Signed Word Integers</summary>
+        VPDPWSSD,
+        /// <summary>Multiply and Add Word Integers with Saturation</summary>
+        VPDPWSSDS,
+        /// <summary>Expand Byte/Word Values</summary>
+        VPEXPAND,
+        /// <summary>Return the Count of Number of Bits Set to 1 in BYTE/WORD/DWORD/QWORD</summary>
+        VPOPCNT,
+        /// <summary>Concatenate and Shift Packed Data Left Logical</summary>
+        VPSHLD,
+        /// <summary>Concatenate and Variable Shift Packed Data Left Logical</summary>
+        VPSHLDV,
+        /// <summary>Concatenate and Shift Packed Data Right Logical</summary>
+        VPSHRD,
+        /// <summary>Concatenate and Variable Shift Packed Data Right Logical</summary>
+        VPSHRDV,
+        /// <summary>Shuffle Bits from Quadword Elements Using Byte Indexes into Mask</summary>
+        VPSHUFBITQMB
     }
 
     public static partial class AsmSourceTools {
@@ -4392,6 +4429,22 @@ namespace AsmTools {
 
                 case "VPOPCNTD": return Mnemonic.VPOPCNTD;
                 case "VPOPCNTQ": return Mnemonic.VPOPCNTQ;
+
+                case "GF2P8AFFINEINVQB": return Mnemonic.GF2P8AFFINEINVQB;
+                case "GF2P8AFFINEQB": return Mnemonic.GF2P8AFFINEQB;
+                case "GF2P8MULB": return Mnemonic.GF2P8MULB;
+                case "VPCOMPRESS": return Mnemonic.VPCOMPRESS;
+                case "VPDPBUSD": return Mnemonic.VPDPBUSD;
+                case "VPDPBUSDS": return Mnemonic.VPDPBUSDS;
+                case "VPDPWSSD": return Mnemonic.VPDPWSSD;
+                case "VPDPWSSDS": return Mnemonic.VPDPWSSDS;
+                case "VPEXPAND": return Mnemonic.VPEXPAND;
+                case "VPOPCNT": return Mnemonic.VPOPCNT;
+                case "VPSHLDV": return Mnemonic.VPSHLDV;
+                case "VPSHRD": return Mnemonic.VPSHRD;
+                case "VPSHRDV": return Mnemonic.VPSHRDV;
+                case "VPSHUFBITQMB": return Mnemonic.VPSHUFBITQMB;
+
                 default:
                     Console.WriteLine("WARNING;parseMnemonic. unknown str=\"" + str + "\".");
                     return Mnemonic.NONE;
