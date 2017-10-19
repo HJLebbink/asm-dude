@@ -399,69 +399,69 @@ namespace AsmDude.OptionsPage
         }
         public bool UseArch_386
         {
-            get { return this.useArch_386_UI.IsChecked ?? false; }
-            set { this.useArch_386_UI.IsChecked = value; }
+            get { return this.UseArch_386_UI.IsChecked ?? false; }
+            set { this.UseArch_386_UI.IsChecked = value; }
         }
         public bool UseArch_486
         {
-            get { return this.useArch_486_UI.IsChecked ?? false; }
-            set { this.useArch_486_UI.IsChecked = value; }
+            get { return this.UseArch_486_UI.IsChecked ?? false; }
+            set { this.UseArch_486_UI.IsChecked = value; }
         }
         public bool UseArch_MMX
         {
-            get { return this.useArch_MMX_UI.IsChecked ?? false; }
-            set { this.useArch_MMX_UI.IsChecked = value; }
+            get { return this.UseArch_MMX_UI.IsChecked ?? false; }
+            set { this.UseArch_MMX_UI.IsChecked = value; }
         }
         public bool UseArch_SSE
         {
-            get { return this.useArch_SSE_UI.IsChecked ?? false; }
-            set { this.useArch_SSE_UI.IsChecked = value; }
+            get { return this.UseArch_SSE_UI.IsChecked ?? false; }
+            set { this.UseArch_SSE_UI.IsChecked = value; }
         }
         public bool UseArch_SSE2
         {
-            get { return this.useArch_SSE2_UI.IsChecked ?? false; }
-            set { this.useArch_SSE2_UI.IsChecked = value; }
+            get { return this.UseArch_SSE2_UI.IsChecked ?? false; }
+            set { this.UseArch_SSE2_UI.IsChecked = value; }
         }
         public bool UseArch_SSE3
         {
-            get { return this.useArch_SSE3_UI.IsChecked ?? false; }
-            set { this.useArch_SSE3_UI.IsChecked = value; }
+            get { return this.UseArch_SSE3_UI.IsChecked ?? false; }
+            set { this.UseArch_SSE3_UI.IsChecked = value; }
         }
         public bool UseArch_SSSE3
         {
-            get { return this.useArch_SSSE3_UI.IsChecked ?? false; }
-            set { this.useArch_SSSE3_UI.IsChecked = value; }
+            get { return this.UseArch_SSSE3_UI.IsChecked ?? false; }
+            set { this.UseArch_SSSE3_UI.IsChecked = value; }
         }
         public bool UseArch_SSE41
         {
-            get { return this.useArch_SSE41_UI.IsChecked ?? false; }
-            set { this.useArch_SSE41_UI.IsChecked = value; }
+            get { return this.UseArch_SSE41_UI.IsChecked ?? false; }
+            set { this.UseArch_SSE41_UI.IsChecked = value; }
         }
         public bool UseArch_SSE42
         {
-            get { return this.useArch_SSE42_UI.IsChecked ?? false; }
-            set { this.useArch_SSE42_UI.IsChecked = value; }
+            get { return this.UseArch_SSE42_UI.IsChecked ?? false; }
+            set { this.UseArch_SSE42_UI.IsChecked = value; }
         }
         public bool UseArch_SSE4A
         {
-            get { return this.useArch_SSE4A_UI.IsChecked ?? false; }
-            set { this.useArch_SSE4A_UI.IsChecked = value; }
+            get { return this.UseArch_SSE4A_UI.IsChecked ?? false; }
+            set { this.UseArch_SSE4A_UI.IsChecked = value; }
         }
 
         public bool UseArch_SSE5
         {
-            get { return this.useArch_SSE5_UI.IsChecked ?? false; }
-            set { this.useArch_SSE5_UI.IsChecked = value; }
+            get { return this.UseArch_SSE5_UI.IsChecked ?? false; }
+            set { this.UseArch_SSE5_UI.IsChecked = value; }
         }
         public bool UseArch_AVX
         {
-            get { return this.useArch_AVX_UI.IsChecked ?? false; }
-            set { this.useArch_AVX_UI.IsChecked = value; }
+            get { return this.UseArch_AVX_UI.IsChecked ?? false; }
+            set { this.UseArch_AVX_UI.IsChecked = value; }
         }
         public bool UseArch_AVX2
         {
-            get { return this.useArch_AVX2_UI.IsChecked ?? false; }
-            set { this.useArch_AVX2_UI.IsChecked = value; }
+            get { return this.UseArch_AVX2_UI.IsChecked ?? false; }
+            set { this.UseArch_AVX2_UI.IsChecked = value; }
         }
 
         public bool UseArch_AVX512_PF
@@ -528,159 +528,159 @@ namespace AsmDude.OptionsPage
 
         public bool UseArch_X64
         {
-            get { return this.useArch_X64_UI.IsChecked ?? false; }
-            set { this.useArch_X64_UI.IsChecked = value; }
+            get { return this.UseArch_X64_UI.IsChecked ?? false; }
+            set { this.UseArch_X64_UI.IsChecked = value; }
         }
         public bool UseArch_BMI1
         {
-            get { return this.useArch_BMI1_UI.IsChecked ?? false; }
-            set { this.useArch_BMI1_UI.IsChecked = value; }
+            get { return this.UseArch_BMI1_UI.IsChecked ?? false; }
+            set { this.UseArch_BMI1_UI.IsChecked = value; }
         }
         public bool UseArch_BMI2
         {
-            get { return this.useArch_BMI2_UI.IsChecked ?? false; }
-            set { this.useArch_BMI2_UI.IsChecked = value; }
+            get { return this.UseArch_BMI2_UI.IsChecked ?? false; }
+            set { this.UseArch_BMI2_UI.IsChecked = value; }
         }
         public bool UseArch_P6
         {
-            get { return this.useArch_P6_UI.IsChecked ?? false; }
-            set { this.useArch_P6_UI.IsChecked = value; }
+            get { return this.UseArch_P6_UI.IsChecked ?? false; }
+            set { this.UseArch_P6_UI.IsChecked = value; }
         }
         public bool UseArch_IA64
         {
-            get { return this.useArch_IA64_UI.IsChecked ?? false; }
-            set { this.useArch_IA64_UI.IsChecked = value; }
+            get { return this.UseArch_IA64_UI.IsChecked ?? false; }
+            set { this.UseArch_IA64_UI.IsChecked = value; }
         }
         public bool UseArch_FMA
         {
-            get { return this.useArch_FMA_UI.IsChecked ?? false; }
-            set { this.useArch_FMA_UI.IsChecked = value; }
+            get { return this.UseArch_FMA_UI.IsChecked ?? false; }
+            set { this.UseArch_FMA_UI.IsChecked = value; }
         }
         public bool UseArch_TBM
         {
-            get { return this.useArch_TBM_UI.IsChecked ?? false; }
-            set { this.useArch_TBM_UI.IsChecked = value; }
+            get { return this.UseArch_TBM_UI.IsChecked ?? false; }
+            set { this.UseArch_TBM_UI.IsChecked = value; }
         }
         public bool UseArch_AMD
         {
-            get { return this.useArch_AMD_UI.IsChecked ?? false; }
-            set { this.useArch_AMD_UI.IsChecked = value; }
+            get { return this.UseArch_AMD_UI.IsChecked ?? false; }
+            set { this.UseArch_AMD_UI.IsChecked = value; }
         }
         public bool UseArch_PENT
         {
-            get { return this.useArch_PENT_UI.IsChecked ?? false; }
-            set { this.useArch_PENT_UI.IsChecked = value; }
+            get { return this.UseArch_PENT_UI.IsChecked ?? false; }
+            set { this.UseArch_PENT_UI.IsChecked = value; }
         }
         public bool UseArch_3DNOW
         {
-            get { return this.useArch_3DNOW_UI.IsChecked ?? false; }
-            set { this.useArch_3DNOW_UI.IsChecked = value; }
+            get { return this.UseArch_3DNOW_UI.IsChecked ?? false; }
+            set { this.UseArch_3DNOW_UI.IsChecked = value; }
         }
         public bool UseArch_CYRIX
         {
-            get { return this.useArch_CYRIX_UI.IsChecked ?? false; }
-            set { this.useArch_CYRIX_UI.IsChecked = value; }
+            get { return this.UseArch_CYRIX_UI.IsChecked ?? false; }
+            set { this.UseArch_CYRIX_UI.IsChecked = value; }
         }
         public bool UseArch_CYRIXM
         {
-            get { return this.useArch_CYRIXM_UI.IsChecked ?? false; }
-            set { this.useArch_CYRIXM_UI.IsChecked = value; }
+            get { return this.UseArch_CYRIXM_UI.IsChecked ?? false; }
+            set { this.UseArch_CYRIXM_UI.IsChecked = value; }
         }
         public bool UseArch_VMX
         {
-            get { return this.useArch_VMX_UI.IsChecked ?? false; }
-            set { this.useArch_VMX_UI.IsChecked = value; }
+            get { return this.UseArch_VMX_UI.IsChecked ?? false; }
+            set { this.UseArch_VMX_UI.IsChecked = value; }
         }
         public bool UseArch_RTM
         {
-            get { return this.useArch_RTM_UI.IsChecked ?? false; }
-            set { this.useArch_RTM_UI.IsChecked = value; }
+            get { return this.UseArch_RTM_UI.IsChecked ?? false; }
+            set { this.UseArch_RTM_UI.IsChecked = value; }
         }
         public bool UseArch_MPX
         {
-            get { return this.useArch_MPX_UI.IsChecked ?? false; }
-            set { this.useArch_MPX_UI.IsChecked = value; }
+            get { return this.UseArch_MPX_UI.IsChecked ?? false; }
+            set { this.UseArch_MPX_UI.IsChecked = value; }
         }
         public bool UseArch_SHA
         {
-            get { return this.useArch_SHA_UI.IsChecked ?? false; }
-            set { this.useArch_SHA_UI.IsChecked = value; }
+            get { return this.UseArch_SHA_UI.IsChecked ?? false; }
+            set { this.UseArch_SHA_UI.IsChecked = value; }
         }
 
         public bool UseArch_ADX
         {
-            get { return this.useArch_ADX_UI.IsChecked ?? false; }
-            set { this.useArch_ADX_UI.IsChecked = value; }
+            get { return this.UseArch_ADX_UI.IsChecked ?? false; }
+            set { this.UseArch_ADX_UI.IsChecked = value; }
         }
         public bool UseArch_F16C
         {
-            get { return this.useArch_F16C_UI.IsChecked ?? false; }
-            set { this.useArch_F16C_UI.IsChecked = value; }
+            get { return this.UseArch_F16C_UI.IsChecked ?? false; }
+            set { this.UseArch_F16C_UI.IsChecked = value; }
         }
         public bool UseArch_FSGSBASE
         {
-            get { return this.useArch_FSGSBASE_UI.IsChecked ?? false; }
-            set { this.useArch_FSGSBASE_UI.IsChecked = value; }
+            get { return this.UseArch_FSGSBASE_UI.IsChecked ?? false; }
+            set { this.UseArch_FSGSBASE_UI.IsChecked = value; }
         }
         public bool UseArch_HLE
         {
-            get { return this.useArch_HLE_UI.IsChecked ?? false; }
-            set { this.useArch_HLE_UI.IsChecked = value; }
+            get { return this.UseArch_HLE_UI.IsChecked ?? false; }
+            set { this.UseArch_HLE_UI.IsChecked = value; }
         }
         public bool UseArch_INVPCID
         {
-            get { return this.useArch_INVPCID_UI.IsChecked ?? false; }
-            set { this.useArch_INVPCID_UI.IsChecked = value; }
+            get { return this.UseArch_INVPCID_UI.IsChecked ?? false; }
+            set { this.UseArch_INVPCID_UI.IsChecked = value; }
         }
         public bool UseArch_PCLMULQDQ
         {
-            get { return this.useArch_PCLMULQDQ_UI.IsChecked ?? false; }
-            set { this.useArch_PCLMULQDQ_UI.IsChecked = value; }
+            get { return this.UseArch_PCLMULQDQ_UI.IsChecked ?? false; }
+            set { this.UseArch_PCLMULQDQ_UI.IsChecked = value; }
         }
         public bool UseArch_LZCNT
         {
-            get { return this.useArch_LZCNT_UI.IsChecked ?? false; }
-            set { this.useArch_LZCNT_UI.IsChecked = value; }
+            get { return this.UseArch_LZCNT_UI.IsChecked ?? false; }
+            set { this.UseArch_LZCNT_UI.IsChecked = value; }
         }
         public bool UseArch_PREFETCHWT1
         {
-            get { return this.useArch_PREFETCHWT1_UI.IsChecked ?? false; }
-            set { this.useArch_PREFETCHWT1_UI.IsChecked = value; }
+            get { return this.UseArch_PREFETCHWT1_UI.IsChecked ?? false; }
+            set { this.UseArch_PREFETCHWT1_UI.IsChecked = value; }
         }
         public bool UseArch_PREFETCHW
         {
-            get { return this.useArch_PREFETCHW_UI.IsChecked ?? false; }
-            set { this.useArch_PREFETCHW_UI.IsChecked = value; }
+            get { return this.UseArch_PREFETCHW_UI.IsChecked ?? false; }
+            set { this.UseArch_PREFETCHW_UI.IsChecked = value; }
         }
         public bool UseArch_RDPID
         {
-            get { return this.useArch_RDPID_UI.IsChecked ?? false; }
-            set { this.useArch_RDPID_UI.IsChecked = value; }
+            get { return this.UseArch_RDPID_UI.IsChecked ?? false; }
+            set { this.UseArch_RDPID_UI.IsChecked = value; }
         }
         public bool UseArch_RDRAND
         {
-            get { return this.useArch_RDRAND_UI.IsChecked ?? false; }
-            set { this.useArch_RDRAND_UI.IsChecked = value; }
+            get { return this.UseArch_RDRAND_UI.IsChecked ?? false; }
+            set { this.UseArch_RDRAND_UI.IsChecked = value; }
         }
         public bool UseArch_RDSEED
         {
-            get { return this.useArch_RDSEED_UI.IsChecked ?? false; }
-            set { this.useArch_RDSEED_UI.IsChecked = value; }
+            get { return this.UseArch_RDSEED_UI.IsChecked ?? false; }
+            set { this.UseArch_RDSEED_UI.IsChecked = value; }
         }
         public bool UseArch_XSAVEOPT
         {
-            get { return this.useArch_XSAVEOPT_UI.IsChecked ?? false; }
-            set { this.useArch_XSAVEOPT_UI.IsChecked = value; }
+            get { return this.UseArch_XSAVEOPT_UI.IsChecked ?? false; }
+            set { this.UseArch_XSAVEOPT_UI.IsChecked = value; }
         }
         public bool UseArch_UNDOC
         {
-            get { return this.useArch_UNDOC_UI.IsChecked ?? false; }
-            set { this.useArch_UNDOC_UI.IsChecked = value; }
+            get { return this.UseArch_UNDOC_UI.IsChecked ?? false; }
+            set { this.UseArch_UNDOC_UI.IsChecked = value; }
         }
         public bool UseArch_AES
         {
-            get { return this.useArch_AES_UI.IsChecked ?? false; }
-            set { this.useArch_AES_UI.IsChecked = value; }
+            get { return this.UseArch_AES_UI.IsChecked ?? false; }
+            set { this.UseArch_AES_UI.IsChecked = value; }
         }
 
         #endregion

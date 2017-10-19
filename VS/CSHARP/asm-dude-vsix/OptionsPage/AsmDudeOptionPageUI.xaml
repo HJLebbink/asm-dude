@@ -283,31 +283,31 @@
                             <CheckBox x:Name="UseArch_8086_UI" Content="8086" Width="Auto" />
                             <CheckBox x:Name="UseArch_186_UI" Content="186" Width="Auto" />
                             <CheckBox x:Name="UseArch_286_UI" Content="286" Width="Auto" />
-                            <CheckBox x:Name="useArch_386_UI" Content="386" Width="Auto" />
-                            <CheckBox x:Name="useArch_486_UI" Content="486" Width="Auto" />
-                            <CheckBox x:Name="useArch_PENT_UI" Content="PENT" Width="Auto" />
-                            <CheckBox x:Name="useArch_P6_UI" Content="P6" Width="Auto" />
+                            <CheckBox x:Name="UseArch_386_UI" Content="386" Width="Auto" />
+                            <CheckBox x:Name="UseArch_486_UI" Content="486" Width="Auto" />
+                            <CheckBox x:Name="UseArch_PENT_UI" Content="PENT" Width="Auto" />
+                            <CheckBox x:Name="UseArch_P6_UI" Content="P6" Width="Auto" />
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Header="SIMD" >
                         <StackPanel>
                             <GroupBox Header="Streaming SIMD Extensions">
                                 <StackPanel>
-                                    <CheckBox x:Name="useArch_MMX_UI" Content="MMX" Width="Auto" />
-                                    <CheckBox x:Name="useArch_SSE_UI" Content="SSE" Width="Auto" />
-                                    <CheckBox x:Name="useArch_SSE2_UI" Content="SSE2" Width="Auto" />
-                                    <CheckBox x:Name="useArch_SSE3_UI" Content="SSE3" Width="Auto" />
-                                    <CheckBox x:Name="useArch_SSSE3_UI" Content="SSSE3" Width="Auto" />
-                                    <CheckBox x:Name="useArch_SSE41_UI" Content="SSE4.1" Width="Auto" />
-                                    <CheckBox x:Name="useArch_SSE42_UI" Content="SSE4.2" Width="Auto" />
-                                    <CheckBox x:Name="useArch_SSE4A_UI" Content="SSE4A - AMD" Width="Auto" />
-                                    <CheckBox x:Name="useArch_SSE5_UI" Content="SSE5 - AMD" Width="Auto" />
+                                    <CheckBox x:Name="UseArch_MMX_UI" Content="MMX" Width="Auto" />
+                                    <CheckBox x:Name="UseArch_SSE_UI" Content="SSE" Width="Auto" />
+                                    <CheckBox x:Name="UseArch_SSE2_UI" Content="SSE2" Width="Auto" />
+                                    <CheckBox x:Name="UseArch_SSE3_UI" Content="SSE3" Width="Auto" />
+                                    <CheckBox x:Name="UseArch_SSSE3_UI" Content="SSSE3" Width="Auto" />
+                                    <CheckBox x:Name="UseArch_SSE41_UI" Content="SSE4.1" Width="Auto" />
+                                    <CheckBox x:Name="UseArch_SSE42_UI" Content="SSE4.2" Width="Auto" />
+                                    <CheckBox x:Name="UseArch_SSE4A_UI" Content="SSE4A - AMD" Width="Auto" />
+                                    <CheckBox x:Name="UseArch_SSE5_UI" Content="SSE5 - AMD" Width="Auto" />
                                 </StackPanel>
                             </GroupBox>
                             <GroupBox Header="Advanced Vector Extensions">
                                 <StackPanel>
-                                    <CheckBox x:Name="useArch_AVX_UI" Content="AVX" HorizontalAlignment="Left" Width="Auto" />
-                                    <CheckBox x:Name="useArch_AVX2_UI" Content="AVX2" HorizontalAlignment="Left" Width="Auto" />
+                                    <CheckBox x:Name="UseArch_AVX_UI" Content="AVX" HorizontalAlignment="Left" Width="Auto" />
+                                    <CheckBox x:Name="UseArch_AVX2_UI" Content="AVX2" HorizontalAlignment="Left" Width="Auto" />
 
                                     <GroupBox Header="AVX512">
                                         <Grid>
@@ -395,39 +395,39 @@
                     </GroupBox>
                     <GroupBox Header="Intel Extensions" >
                         <StackPanel>
-                            <CheckBox x:Name="useArch_ADX_UI" Content="ADX - Multi-Precision Add-Carry Instruction Extensions" Width="Auto" />
-                            <CheckBox x:Name="useArch_AES_UI" Content="AES - Advanced Encryption Standard" Width="Auto" />
-                            <CheckBox x:Name="useArch_BMI1_UI" Content="BMI1 - Bit Manipulation Instructions Sets 1" Width="Auto" />
-                            <CheckBox x:Name="useArch_BMI2_UI" Content="BMI2 - Bit Manipulation Instructions Sets 2" Width="Auto" />
-                            <CheckBox x:Name="useArch_HLE_UI" Content="HLE - Hardware Lock Elision" Width="Auto" />
-                            <CheckBox x:Name="useArch_MPX_UI" Content="MPX - Memory Protection Extensions" Width="Auto" />
-                            <CheckBox x:Name="useArch_RTM_UI" Content="RTM - Transactional Synchronization Extensions" Width="Auto" />
-                            <CheckBox x:Name="useArch_SHA_UI" Content="SHA - Secure Hash Algorithm Extension" Width="Auto" />
-                            <CheckBox x:Name="useArch_VMX_UI" Content="VMX - Virtual Machine Extensions" Width="Auto" />
+                            <CheckBox x:Name="UseArch_ADX_UI" Content="ADX - Multi-Precision Add-Carry Instruction Extensions" Width="Auto" />
+                            <CheckBox x:Name="UseArch_AES_UI" Content="AES - Advanced Encryption Standard" Width="Auto" />
+                            <CheckBox x:Name="UseArch_BMI1_UI" Content="BMI1 - Bit Manipulation Instructions Sets 1" Width="Auto" />
+                            <CheckBox x:Name="UseArch_BMI2_UI" Content="BMI2 - Bit Manipulation Instructions Sets 2" Width="Auto" />
+                            <CheckBox x:Name="UseArch_HLE_UI" Content="HLE - Hardware Lock Elision" Width="Auto" />
+                            <CheckBox x:Name="UseArch_MPX_UI" Content="MPX - Memory Protection Extensions" Width="Auto" />
+                            <CheckBox x:Name="UseArch_RTM_UI" Content="RTM - Transactional Synchronization Extensions" Width="Auto" />
+                            <CheckBox x:Name="UseArch_SHA_UI" Content="SHA - Secure Hash Algorithm Extension" Width="Auto" />
+                            <CheckBox x:Name="UseArch_VMX_UI" Content="VMX - Virtual Machine Extensions" Width="Auto" />
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Header="Misc" >
                         <StackPanel>
-                            <CheckBox x:Name="useArch_X64_UI" Content="X64" Width="Auto" />
-                            <CheckBox x:Name="useArch_FMA_UI" Content="FMA - Fused Multiply-Add" Width="Auto" />
-                            <CheckBox x:Name="useArch_F16C_UI" Content="F16C - Half Precision FP Conversion" Width="Auto" />
-                            <CheckBox x:Name="useArch_FSGSBASE_UI" Content="FSGSBASE" Width="Auto" />
-                            <CheckBox x:Name="useArch_INVPCID_UI" Content="INVPCID - Invalidates TLBs" Width="Auto" />
-                            <CheckBox x:Name="useArch_PCLMULQDQ_UI" Content="PCLMULQDQ - Carry-Less Multiplication Quadword" Width="Auto" />
-                            <CheckBox x:Name="useArch_LZCNT_UI" Content="LZCNT - Leading Zero Count" Width="Auto" />
-                            <CheckBox x:Name="useArch_PREFETCHWT1_UI" Content="PREFETCHWT1" Width="Auto" />
-                            <CheckBox x:Name="useArch_PREFETCHW_UI" Content="PREFETCHW" Width="Auto" />
-                            <CheckBox x:Name="useArch_RDPID_UI" Content="RDPID - Read Processor ID" Width="Auto" />
-                            <CheckBox x:Name="useArch_RDRAND_UI" Content="RDRAND - Read Random Number" Width="Auto" />
-                            <CheckBox x:Name="useArch_RDSEED_UI" Content="RDSEED - Read Random Seed" Width="Auto" />
-                            <CheckBox x:Name="useArch_XSAVEOPT_UI" Content="XSAVEOPT - Save Processor Extended States Optimized" Width="Auto" />
-                            <CheckBox x:Name="useArch_UNDOC_UI" Content="UNDOC - undocumented instructions" Width="Auto" />
-                            <CheckBox x:Name="useArch_AMD_UI" Content="AMD" Width="Auto" />
-                            <CheckBox x:Name="useArch_TBM_UI" Content="TBM - Trailing Bit Manipulation (AMD)" Width="Auto" />
-                            <CheckBox x:Name="useArch_3DNOW_UI" Content="3DNOW" Width="Auto" />
-                            <CheckBox x:Name="useArch_IA64_UI" Content="IA64" Width="Auto" />
-                            <CheckBox x:Name="useArch_CYRIX_UI" Content="CYRIX" Width="Auto" />
-                            <CheckBox x:Name="useArch_CYRIXM_UI" Content="CYRIXM" Width="Auto" />
+                            <CheckBox x:Name="UseArch_X64_UI" Content="X64" Width="Auto" />
+                            <CheckBox x:Name="UseArch_FMA_UI" Content="FMA - Fused Multiply-Add" Width="Auto" />
+                            <CheckBox x:Name="UseArch_F16C_UI" Content="F16C - Half Precision FP Conversion" Width="Auto" />
+                            <CheckBox x:Name="UseArch_FSGSBASE_UI" Content="FSGSBASE" Width="Auto" />
+                            <CheckBox x:Name="UseArch_INVPCID_UI" Content="INVPCID - Invalidates TLBs" Width="Auto" />
+                            <CheckBox x:Name="UseArch_PCLMULQDQ_UI" Content="PCLMULQDQ - Carry-Less Multiplication Quadword" Width="Auto" />
+                            <CheckBox x:Name="UseArch_LZCNT_UI" Content="LZCNT - Leading Zero Count" Width="Auto" />
+                            <CheckBox x:Name="UseArch_PREFETCHWT1_UI" Content="PREFETCHWT1" Width="Auto" />
+                            <CheckBox x:Name="UseArch_PREFETCHW_UI" Content="PREFETCHW" Width="Auto" />
+                            <CheckBox x:Name="UseArch_RDPID_UI" Content="RDPID - Read Processor ID" Width="Auto" />
+                            <CheckBox x:Name="UseArch_RDRAND_UI" Content="RDRAND - Read Random Number" Width="Auto" />
+                            <CheckBox x:Name="UseArch_RDSEED_UI" Content="RDSEED - Read Random Seed" Width="Auto" />
+                            <CheckBox x:Name="UseArch_XSAVEOPT_UI" Content="XSAVEOPT - Save Processor Extended States Optimized" Width="Auto" />
+                            <CheckBox x:Name="UseArch_UNDOC_UI" Content="UNDOC - undocumented instructions" Width="Auto" />
+                            <CheckBox x:Name="UseArch_AMD_UI" Content="AMD" Width="Auto" />
+                            <CheckBox x:Name="UseArch_TBM_UI" Content="TBM - Trailing Bit Manipulation (AMD)" Width="Auto" />
+                            <CheckBox x:Name="UseArch_3DNOW_UI" Content="3DNOW" Width="Auto" />
+                            <CheckBox x:Name="UseArch_IA64_UI" Content="IA64" Width="Auto" />
+                            <CheckBox x:Name="UseArch_CYRIX_UI" Content="CYRIX" Width="Auto" />
+                            <CheckBox x:Name="UseArch_CYRIXM_UI" Content="CYRIXM" Width="Auto" />
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>
