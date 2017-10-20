@@ -14,8 +14,8 @@ class State(object):
 class Writer(object):
 
 	def __init__(self):
-		#self.source = 'Intel® Architecture Instruction Set Extensions Programming Reference (APRIL 2017)'
-		self.source = 'Intel® Architecture Software Developer\'s Manual (JULY 2017)'
+		self.source = 'Intel® Architecture Instruction Set Extensions and Future Features Programming Reference (OCTOBER 2017)'
+		#self.source = 'Intel® Architecture Software Developer\'s Manual (OCTOBER 2017)'
 
 
 	@staticmethod
@@ -65,8 +65,8 @@ class Writer(object):
 		filename = './output/' + str(instruction).replace('/', '_').replace(' ', '_') + '.md'
 		print 'writing ' + filename
 		fwrite = open(filename, 'w')
-		#generatedTime = time.strftime("%c")
-		generatedTime = '22-aug-2017: 11:37:19'
+		generatedTime = time.strftime("%c")
+		#generatedTime = '22-aug-2017: 11:37:19'
 		markdown += '\n --- \n<p align="right"><i>Source: '+self.source+'<br>Generated: '+generatedTime+'</i></p>\n'
 		fwrite.write(markdown)
 		fwrite.close()
