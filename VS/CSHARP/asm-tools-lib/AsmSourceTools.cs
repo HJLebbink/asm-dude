@@ -384,6 +384,18 @@ namespace AsmTools
             return ExpressionEvaluator.Parse_Constant(token, isCapitals);
         }
 
+        public static string Get_Related_Constant(string original, ulong value, int nBits)
+        {
+            string s0 = original;
+            string s1 = value.ToString();
+            string h1 = string.Format("{0:X}", value); // just the hex number
+
+            //string h3 = Convert.ToString(value, 8); // no octal
+
+            return "\\b(" + s0 + "|" + s1 + "|0x[0]{0,}" + h1 + "|[0]{0,}" + h1 + "[h]{0,1})\\b";
+        }
+
+
         /// <summary>
         /// return Offset = Base + (Index * Scale) + Displacement
         /// </summary>

@@ -527,5 +527,19 @@ namespace unit_tests {
                 }
             }
         }
+
+        [TestMethod]
+        public void Test_AsmSourceTools_Get_Related_Constant()
+        {
+            int nBits = 64;
+
+            ulong value = 3352562;
+            string original = value.ToString();
+            string related = AsmSourceTools.Get_Related_Constant(original, value, nBits);
+
+            Console.WriteLine(related);
+
+        }
+
     }
 }

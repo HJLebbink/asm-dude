@@ -190,21 +190,35 @@ namespace AsmDude.HighlightWord
                     Rn reg = AsmTools.RegisterTools.ParseRn(this.NewWord);
                     if (reg != Rn.NOREG) 
                     {
-                        //Debug.WriteLine(string.Format("INFO: {0}:SynchronousUpdate. Register={1}", this.ToString(), currentWordStr));
-                        findData = new FindData(AsmTools.RegisterTools.GetRelatedRegister(reg), s)
+                        //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. Register={1}", this.ToString(), this.NewWord));
+                        string t = AsmTools.RegisterTools.GetRelatedRegister(reg);
+                        findData = new FindData(t, s)
                         {
                             FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions
                         };
                     }
                     else
                     {
-                        //Debug.WriteLine(string.Format("INFO: {0}:SynchronousUpdate. Keyword={1}", this.ToString(), currentWordStr));
-                        //We have to replace all occurrences of special characters with escaped versions of that char since we cannot use verbatim strings.
-                        string t = this.NewWord.Replace(".", "\\.").Replace("$", "\\$").Replace("?", "\\?").Replace("/", "\\/"); //TODO escape backslashes
-                        findData = new FindData(t, s)
+                        var tup = AsmTools.AsmSourceTools.Parse_Constant(this.NewWord);
+                        if (tup.Valid)
                         {
-                            FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions
-                        };
+                            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. Contant={1}", this.ToString(), this.NewWord));
+                            string t = AsmTools.AsmSourceTools.Get_Related_Constant(this.NewWord, tup.Value, tup.NBits);
+                            findData = new FindData(t, s)
+                            {
+                                FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions
+                            };
+                        }
+                        else
+                        {
+                            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. Keyword={1}", this.ToString(), this.NewWord));
+                            //We have to replace all occurrences of special characters with escaped versions of that char since we cannot use verbatim strings.
+                            string t = this.NewWord.Replace(".", "\\.").Replace("$", "\\$").Replace("?", "\\?").Replace("/", "\\/"); //TODO escape backslashes
+                            findData = new FindData(t, s)
+                            {
+                                FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions
+                            };
+                        }
                     }
 
                     List<SnapshotSpan> wordSpans = new List<SnapshotSpan>();
