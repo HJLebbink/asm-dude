@@ -70,52 +70,69 @@ namespace AsmTools
 
 
             // note the special case of token 0h (zero hex) should not be confused with the prefix 0h;
-            else if (str.EndsWith("H", StringComparison.OrdinalIgnoreCase))
+            else if (str.EndsWith("H", StringComparison.Ordinal))
             {
                 token2 = str.Substring(0, str.Length - 1);
                 isHex = true;
             }
-            else if (str.StartsWith("0H", StringComparison.OrdinalIgnoreCase) || str.StartsWith("0X", StringComparison.OrdinalIgnoreCase) || str.StartsWith("$0"))
+            else if (str.StartsWith("0H", StringComparison.Ordinal) || str.StartsWith("0X", StringComparison.Ordinal) || str.StartsWith("$0", StringComparison.Ordinal))
             {
                 token2 = str.Substring(2);
                 isHex = true;
             }
-            else if (str.StartsWith("0B", StringComparison.OrdinalIgnoreCase) || str.StartsWith("0Y", StringComparison.OrdinalIgnoreCase))
-            {
-                token2 = str.Substring(2);
-                isBinary = true;
-            }
-            else if (str.EndsWith("B", StringComparison.OrdinalIgnoreCase) || str.EndsWith("Y", StringComparison.OrdinalIgnoreCase))
-            {
-                token2 = str.Substring(0, str.Length - 1);
-                isBinary = true;
-            }
-            else if (str.StartsWith("0O", StringComparison.OrdinalIgnoreCase) || str.StartsWith("0Q", StringComparison.OrdinalIgnoreCase))
+            else if (str.StartsWith("0O", StringComparison.Ordinal) || str.StartsWith("0Q", StringComparison.Ordinal))
             {
                 token2 = str.Substring(2);
                 isOctal = true;
             }
-            else if (str.EndsWith("Q", StringComparison.OrdinalIgnoreCase) || str.EndsWith("O", StringComparison.OrdinalIgnoreCase))
+            else if (str.EndsWith("Q", StringComparison.Ordinal) || str.EndsWith("O", StringComparison.Ordinal))
             {
                 token2 = str.Substring(0, str.Length - 1);
                 isOctal = true;
             }
-            else if (str.StartsWith("0d", StringComparison.OrdinalIgnoreCase))
+            else if (str.StartsWith("0D", StringComparison.Ordinal))
             {
                 token2 = str.Substring(2);
                 isDecimal = true;
             }
-            else if (str.EndsWith("D", StringComparison.OrdinalIgnoreCase))
+            else if (str.EndsWith("D", StringComparison.Ordinal))
             {
                 token2 = str;
                 isDecimal = true;
+            }
+            else if (str.StartsWith("0B", StringComparison.Ordinal) || str.StartsWith("0Y", StringComparison.Ordinal))
+            {
+                token2 = str.Substring(2);
+                isBinary = true;
+            }
+            else if (str.EndsWith("Y", StringComparison.Ordinal))
+            {
+                token2 = str.Substring(0, str.Length - 1);
+                isBinary = true;
             }
             else
-            {   // assume decimal
-                token2 = str;
-                isDecimal = true;
-            }
+            {
+                // special case with trailing B: either this B is from a hex number of the Binary 
+                if (str.EndsWith("B", StringComparison.Ordinal))
+                {
 
+                    bool parsedSuccessfully_tmp = ulong.TryParse(str, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out var dummy);
+                    if (parsedSuccessfully_tmp)
+                    {
+                        isHex = true;
+                        token2 = str;
+                    } else
+                    {
+                        token2 = str.Substring(0, str.Length - 1);
+                        isBinary = true;
+                    }
+                }
+                else
+                {   // assume decimal
+                    token2 = str;
+                    isDecimal = true;
+                }
+            }
             ulong value = 0;
             bool parsedSuccessfully;
             if (isHex)
@@ -157,6 +174,10 @@ namespace AsmTools
                 else
                 {
                     parsedSuccessfully = ulong.TryParse(token2, NumberStyles.Integer, CultureInfo.CurrentCulture, out value);
+                    if (!parsedSuccessfully)
+                    {
+                        parsedSuccessfully = ulong.TryParse(token2, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out value);
+                    }
                 }
             }
             else
