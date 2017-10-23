@@ -29,7 +29,6 @@ using System.Windows.Documents;
 
 using AsmDude.Tools;
 using AsmTools;
-using Microsoft.VisualStudio.Text.Adornments;
 using Microsoft.VisualStudio.Language.Intellisense;
 
 namespace AsmDude.QuickInfo
@@ -44,7 +43,6 @@ namespace AsmDude.QuickInfo
         internal AsmQuickInfoController Owner { get; set; }
         internal IQuickInfoSession Session { get; set; }
 
-
         public InstructionTooltipWindow(Brush foreground)
         {
             this._foreground = foreground;
@@ -52,21 +50,11 @@ namespace AsmDude.QuickInfo
 
             this.AsmSimGridExpander.Collapsed += (o, i) => { this.AsmSimGridExpanderNumeration.Visibility = Visibility.Collapsed; };
             this.AsmSimGridExpander.Expanded += (o, i) => { this.AsmSimGridExpanderNumeration.Visibility = Visibility.Visible; };
-
-            this.MainWindow.MouseLeftButtonDown += (o, i) => {
-               // i.Handled = true; // dont let the mouse event from inside this window bubble up to VS
-                AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:MouseLeftButtonDown Event");
-            }; 
-
-            this.MainWindow.PreviewMouseLeftButtonDown += (o, i) =>
-            {
-                AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:PreviewMouseLeftButtonDown Event");
-            };
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:CloseButton_Click");
+            //AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:CloseButton_Click");
             if (this.Owner != null) this.Owner.CloseToolTip();
             if (this.Session != null) this.Session.Dismiss();
             AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:CloseButton_Click: owner and session are null");
@@ -77,7 +65,6 @@ namespace AsmDude.QuickInfo
             AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:PerformanceExpander_Click");
             e.Handled = true;
         }
-
 
         public void SetDescription(Mnemonic mnemonic, AsmDudeTools asmDudeTools)
         {

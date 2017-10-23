@@ -41,8 +41,9 @@ namespace AsmDude.QuickInfo
         private readonly IQuickInfoBroker _quickInfoBroker;
         private IQuickInfoSession _session;
         private ITextView _textView;
-        private Window _lagecyTooltipWindow;
 
+        private Window _legacyTooltipWindow;
+        private Span _legacySpan;
 
         internal AsmQuickInfoController(
             ITextView textView,
@@ -136,9 +137,7 @@ namespace AsmDude.QuickInfo
                 }
                 else if (contentType.Equals(AsmDudePackage.DisassemblyContentType, StringComparison.Ordinal))
                 {
-                    AsmDudeToolsStatic.Output_INFO(string.Format("{0}:OnTextViewMouseHover: Quickinfo for disassembly view", ToString()));
-                    //this.ToolTipLegacy_OLD(point.Value);
-
+                    //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:OnTextViewMouseHover: Quickinfo for disassembly view", ToString()));
                     System.Drawing.Point p = System.Windows.Forms.Control.MousePosition;
                     this.ToolTipLegacy(point.Value, new System.Windows.Point(p.X, p.Y));
                 }
@@ -196,7 +195,7 @@ namespace AsmDude.QuickInfo
 
         public void CloseToolTip()
         {
-            this._lagecyTooltipWindow?.Close();
+            this._legacyTooltipWindow?.Close();
             this._session?.Dismiss();
             this._session = null;
         }
@@ -206,13 +205,15 @@ namespace AsmDude.QuickInfo
             var span = Get_Keyword_Span_At_Point(triggerPoint);
             ITrackingSpan applicableTo = this._textView.TextSnapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeInclusive);
 
-            // there is no means to test if tooltip is already active, and check whether the one we are about 
-            // to display is just the same tooltip but a bit displaced.
+            // check if a tooltip window is already visible for the applicable span
+            if ((this._legacySpan != null) && this._legacySpan.OverlapsWith(span))
+            {
+                //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:ToolTipLegacy: tooltip is already visible. span = " + this._legacySpan.ToString() + ", content =" + applicableTo.GetText(this._textView.TextSnapshot));
+                return;
+            }
 
             string keyword = applicableTo.GetText(this._textView.TextSnapshot);
-            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:OnTextViewMouseHover: keyword={1}", ToString(), keyword));
 
-            #region Create a window
             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword, false);
             if (mnemonic != Mnemonic.NONE)
             {
@@ -233,8 +234,21 @@ namespace AsmDude.QuickInfo
                     Child = instructionTooltipWindow
                 };
 
-                if (this._lagecyTooltipWindow != null) this._lagecyTooltipWindow.Close();
-                this._lagecyTooltipWindow = new Window
+                // cleanup old window remnants
+                if (this._legacyTooltipWindow != null)
+                {
+                    AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:ToolTipLegacy: going to cleanup old window remnants.");
+                    if (this._legacyTooltipWindow.IsLoaded)
+                    {
+                        this._legacyTooltipWindow = null;
+                    }
+                    else
+                    {
+                        this._legacyTooltipWindow?.Close();
+                    }
+                }
+
+                this._legacyTooltipWindow = new Window
                 {
                     WindowStyle = WindowStyle.None,
                     ResizeMode = ResizeMode.NoResize,
@@ -243,10 +257,22 @@ namespace AsmDude.QuickInfo
                     Top = p.Y,
                     Content = border
                 };
-                this._lagecyTooltipWindow.Show();
-
+                this._legacyTooltipWindow.LostKeyboardFocus += (o, i) =>
+                {
+                    //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:LostKeyboardFocus: going to close the tooltip window.");
+                    try
+                    {
+                        (o as Window).Close();
+                    }
+                    catch (Exception e)
+                    {
+                        AsmDudeToolsStatic.Output_WARNING("AsmQuickInfoController:LostKeyboardFocus: e=" + e.Message);
+                    }
+                };
+                this._legacySpan = span;
+                this._legacyTooltipWindow.Show();
+                this._legacyTooltipWindow.Focus(); //give the tooltip window focus, such that we can use the lostKeyboardFocus event to close this window;
             }
-            #endregion
         }
     }
 }
