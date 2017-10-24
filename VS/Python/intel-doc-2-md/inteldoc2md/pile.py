@@ -97,9 +97,7 @@ class Pile(object):
 		if pile_type == 'paragraph':
 			return self._gen_paragraph_markdown(state)
 		elif pile_type == 'table':
-			return self._gen_table_markdown()
-		#elif pile_type == 'image':
-		#	return self._gen_image_markdown()
+			return self._gen_table_markdown(state)
 		else:
 			raise Exception('Unsupported markdown type')
 
@@ -458,14 +456,9 @@ class Pile(object):
 		return markdown
 
 
-	def _gen_table_markdown(self):
+	def _gen_table_markdown(self, state):
 		intermediate = self._gen_table_intermediate()
-		return self._intermediate_to_markdown(intermediate)
-
-
-	def _gen_image_markdown(self):
-		image = self.get_image()
-		return '![{0}](images/{0})\n\n'.format(image.name)
+		return self._intermediate_to_markdown(intermediate, state)
 
 
 	def _gen_table_intermediate(self):
@@ -604,19 +597,31 @@ class Pile(object):
 		return obj.x0 <= (left + self._SEARCH_DISTANCE_HORIZONTAL) and (right - self._SEARCH_DISTANCE_HORIZONTAL) <= obj.x1
 
 
-	def _intermediate_to_markdown(self, intermediate):
+	def _intermediate_to_markdown(self, intermediate, state):
 		markdown = ''
-		markdown += self._create_tag('table', True, 0)
+
+		#print '_intermediate_to_markdown: prev ', state.prev_pile_is_opcode_table,'; curr ',  state.curr_pile_is_opcode_table, '; next ',  state.next_pile_is_opcode_table
 
 		firstLine = True
+		if (state.curr_pile_is_opcode_table and state.prev_pile_is_opcode_table):
+			intermediate.pop(0)
+			firstLine = False
+		else:
+			markdown += self._create_tag('table', True, 0)
+
 		for row in intermediate:
 			markdown += self._create_tag('tr', True, 1)
 			for cell in row:
 				markdown += self._create_td_tag(cell, firstLine)
 			markdown += self._create_tag('tr', False, 1)
 			firstLine = False
-		markdown += self._create_tag('table', False, 0)
-		markdown += '\n'
+
+		if (state.curr_pile_is_opcode_table and state.next_pile_is_opcode_table):
+			pass
+		else:
+			markdown += self._create_tag('table', False, 0)
+			markdown += '\n'
+
 		return markdown
 
 
@@ -642,7 +647,6 @@ class Pile(object):
 		    return indent + '<td' + colspan + rowspan + '>' + texts + '</td>\n'
 
 
-
 	def _calc_coordinates(self, axes, attr, reverse):
 		coor_set = set()
 		for axis in axes:
@@ -650,5 +654,19 @@ class Pile(object):
 		coor_list = list(coor_set)
 		coor_list.sort(reverse=reverse)
 		return coor_list
+
+
+	def _is_table(self):
+		return (self.get_type() == 'table')
+
+
+	def _is_opcode_table(self):
+		if (self._is_table()):
+			if (len(self.texts) > 0):
+				first_word = self.texts[0].get_text().encode('utf8').strip()
+				#print '_is_opcode_table first_word ', first_word
+				if (first_word == 'Opcode'):
+					return True
+		return False
 
 

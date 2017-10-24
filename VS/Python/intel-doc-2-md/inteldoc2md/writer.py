@@ -3,7 +3,7 @@
 import os
 import re
 import pdb
-import time
+import datetime
 
 class State(object):
 	def __init__(self):
@@ -14,8 +14,8 @@ class State(object):
 class Writer(object):
 
 	def __init__(self):
-		self.source = 'Intel® Architecture Instruction Set Extensions and Future Features Programming Reference (OCTOBER 2017)'
-		#self.source = 'Intel® Architecture Software Developer\'s Manual (OCTOBER 2017)'
+		#self.source = 'Intel® Architecture Instruction Set Extensions and Future Features Programming Reference (OCTOBER 2017)'
+		self.source = 'Intel® Architecture Software Developer\'s Manual (OCTOBER 2017)'
 
 
 	@staticmethod
@@ -55,7 +55,33 @@ class Writer(object):
 		str = str.replace('no- operands', 'no-operands')
 		str = str.replace('REP/REPE/REPZ /REPNE/REPNZ', 'REP/REPE/REPZ/REPNE/REPNZ')
 		str = str.replace('general- purpose', 'general-purpose')
+		str = str.replace('general- protection', 'general-protection')
+		str = str.replace('excep- tion', 'excep-tion')
+		
 		return str
+
+
+	@staticmethod
+	def _find_prev_opcode_table(i, piles, instruction_curr):
+		for j in range(i-1, 0, -1):
+			pile = piles[j]
+			pileInstruction, descr = pile._get_instruction()
+			if ((pileInstruction != None) and (pileInstruction != instruction_curr)):
+				return False
+			if (pile._is_table()):
+				return pile._is_opcode_table()
+		return False
+
+	@staticmethod
+	def _find_next_opcode_table(i, piles, instruction_curr):
+		for j in range(i+1, len(piles)):
+			pile = piles[j]
+			pileInstruction, descr = pile._get_instruction()
+			if ((pileInstruction != None) and (pileInstruction != instruction_curr)):
+				return False
+			if (pile._is_table()):
+				return pile._is_opcode_table()
+		return False
 
 
 	def close_file(self, instruction, markdown):
@@ -65,11 +91,14 @@ class Writer(object):
 		filename = './output/' + str(instruction).replace('/', '_').replace(' ', '_') + '.md'
 		print 'writing ' + filename
 		fwrite = open(filename, 'w')
-		generatedTime = time.strftime("%c")
-		#generatedTime = '22-aug-2017: 11:37:19'
+
+		now = datetime.datetime.now()
+		generatedTime = str(now.day) + '-' + str(now.month) + '-' + str(now.year)
+		#generatedTime = '10/20/17 13:38:30'
 		markdown += '\n --- \n<p align="right"><i>Source: '+self.source+'<br>Generated: '+generatedTime+'</i></p>\n'
 		fwrite.write(markdown)
 		fwrite.close()
+
 
 	def write(self, piles):
 		createNewFile = False
@@ -83,9 +112,13 @@ class Writer(object):
 		instruction_prev = instruction_curr
 
 		state = State()
-		state.code_mode = False;
+		state.code_mode = False
 		state.type = None
 		state.type_next = None
+
+		state.prev_pile_is_opcode_table = False
+		state.curr_pile_is_opcode_table = False
+		state.next_pile_is_opcode_table = False
 
 		markdown = ''
 
@@ -101,10 +134,22 @@ class Writer(object):
 					instruction_prev = instruction_curr
 					instruction_curr = pileInstruction
 					#print 'instruction_prev=' + str(instruction_prev) +'; instruction_curr='+instruction_curr
-				
+			
+			state.curr_pile_is_opcode_table = pile._is_opcode_table()
+			if (state.curr_pile_is_opcode_table):
+				state.prev_pile_is_opcode_table = Writer._find_prev_opcode_table(i, piles, instruction_curr)
+				state.next_pile_is_opcode_table = Writer._find_next_opcode_table(i, piles, instruction_curr)
+			else:
+				state.prev_pile_is_opcode_table = False
+				state.next_pile_is_opcode_table = False
+
+			#print 'write: ', pile.texts[0].get_text().encode('utf8').strip()
+			#print 'write: ', state.prev_pile_is_opcode_table,' ',  state.curr_pile_is_opcode_table, ' ',  state.next_pile_is_opcode_table
+
 			if (createNewFile):
 				self.close_file(instruction_prev, markdown)
 				markdown = ''
+				state.prev_pile_is_opcode_table = False
 
 			markdown += pile.gen_markdown(state)
 
