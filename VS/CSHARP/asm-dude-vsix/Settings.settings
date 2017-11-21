@@ -126,16 +126,16 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ARCH_AVX512PF" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="ARCH_AVX512DQ" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ARCH_AVX512BW" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ARCH_AVX512ER" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="ARCH_AVX512F" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>

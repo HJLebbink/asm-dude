@@ -517,7 +517,7 @@ namespace AsmDude {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool ARCH_AVX512PF {
             get {
                 return ((bool)(this["ARCH_AVX512PF"]));
@@ -529,7 +529,7 @@ namespace AsmDude {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool ARCH_AVX512DQ {
             get {
                 return ((bool)(this["ARCH_AVX512DQ"]));
@@ -541,7 +541,7 @@ namespace AsmDude {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool ARCH_AVX512BW {
             get {
                 return ((bool)(this["ARCH_AVX512BW"]));
@@ -553,7 +553,7 @@ namespace AsmDude {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool ARCH_AVX512ER {
             get {
                 return ((bool)(this["ARCH_AVX512ER"]));
