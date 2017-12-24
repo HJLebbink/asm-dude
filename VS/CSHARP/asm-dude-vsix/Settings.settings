@@ -177,7 +177,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="ARCH_CYRIXM" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="ARCH_VMX" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
