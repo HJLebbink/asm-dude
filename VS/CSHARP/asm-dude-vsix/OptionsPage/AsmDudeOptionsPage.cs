@@ -22,7 +22,7 @@
 
 using AsmDude.Tools;
 using AsmTools;
-using Microsoft.VisualStudio;
+using ClearComponentCache;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -32,6 +32,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Windows.Forms;
 
 namespace AsmDude.OptionsPage
 {
@@ -1031,15 +1032,14 @@ namespace AsmDude.OptionsPage
 
             if (changed)
             {
-                string title = null;
+                string title = "Microsoft Visual Studio";
+                string text = "Unsaved changes exist.\n\n"+ sb.ToString() + "\nWould you like to save?";
 
-                string message = "Unsaved changes exist.\n\n"+ sb.ToString() + "\nWould you like to save?";
-                int result = VsShellUtilities.ShowMessageBox(this.Site, message, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OKCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
-                if (result == (int)VSConstants.MessageBoxResult.IDOK)
+                if (MessageBox.Show(text, title, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     Save();
                 }
-                else if (result == (int)VSConstants.MessageBoxResult.IDCANCEL)
+                else
                 {
                     e.Cancel = true;
                 }
@@ -1783,12 +1783,22 @@ namespace AsmDude.OptionsPage
             if (changed)
             {
                 Settings.Default.Save();
+                ClearMefCache.Clear();
             }
             if (restartNeeded)
             {
-                string title = null;
-                string message = "You may need to close and open assembly files, or \nrestart visual studio for the changes to take effect.";
-                int result = VsShellUtilities.ShowMessageBox(this.Site, message, title, OLEMSGICON.OLEMSGICON_QUERY, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+                string title = "Microsoft Visual Studio";
+                string text1 = "Do you like to restart Visual Studio now?";
+
+                if (MessageBox.Show(text1, title, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    ClearMefCache.Restart();
+                }
+                else
+                {
+                    string text2 = "You may need to close and open assembly files, or \nrestart visual studio for the changes to take effect.";
+                    MessageBox.Show(text2, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
         }
 

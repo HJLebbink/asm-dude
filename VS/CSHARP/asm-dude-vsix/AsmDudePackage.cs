@@ -29,18 +29,21 @@ using Microsoft.VisualStudio.Shell;
 using AsmDude.OptionsPage;
 using System.Text;
 using AsmDude.Tools;
+using ClearComponentCache;
+using System.Threading;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace AsmDude
 {
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#110", "#112", Vsix.Version, IconResourceID = 400)] // Info on this package for Help/About
-    //[ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
+    [ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
     [Guid(PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ComVisible(false)]
     [ProvideOptionPage(typeof(AsmDudeOptionsPage), "AsmDude", "General", 0, 0, true)]
 
-    public sealed class AsmDudePackage : Package {
+    public sealed class AsmDudePackage : AsyncPackage {
 
         #region Global Constants
         public const string PackageGuidString = "27e0e7ef-ecaf-4b87-a574-6a909383f99f";
@@ -59,14 +62,8 @@ namespace AsmDude
             //AsmDudeToolsStatic.Output_INFO("AsmDudePackage: Entering constructor");
         }
 
-        #region Package Members
-
-        protected override void Initialize() {
-            base.Initialize();
-            //this.disassemblyWindow();
-            //this.initMenus();
-            //this.changeFontAutoComplete();
-
+        protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
+        {
             StringBuilder sb = new StringBuilder();
             sb.Append("Welcome to\n");
             sb.Append(" _____             ____        _     \n");
@@ -78,8 +75,9 @@ namespace AsmDude
             sb.Append("INFO: More info at https://github.com/HJLebbink/asm-dude \n");
             sb.Append("----------------------------------");
             AsmDudeToolsStatic.Output(sb.ToString());
+
+            await ClearMefCache.InitializeAsync(this);
         }
-        #endregion
 
         #region Disassembly window experiments
         /*
