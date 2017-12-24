@@ -203,7 +203,7 @@
     <Compile Include="AsmDoc\AsmDocUnderlineTaggerProvider.cs" />
     <Compile Include="AsmDoc\CtrlKeyState.cs" />
     <Compile Include="AsmDudePackage.cs" />
-    <Compile Include="ClearMefCache\ClearCache.cs" />
+    <Compile Include="ClearMefCache\ClearMefCache.cs" />
     <Compile Include="ClearMefCache\ComponentModelExtensions.cs" />
     <Compile Include="QuickInfo\ButtonInfo.cs" />
     <Compile Include="QuickInfo\BugWindow.xaml.cs">
@@ -215,6 +215,7 @@
     <Compile Include="QuickInfo\RegisterTooltipWindow.xaml.cs">
       <DependentUpon>RegisterTooltipWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Settings.cs" />
     <Compile Include="SyntaxHighlighting\AsmDisassemblyTaggerProvider.cs" />
     <Compile Include="SyntaxHighlighting\AsmDisassemblyTokenTagProvider.cs" />
     <Compile Include="SyntaxHighlighting\NasmAttTokenTagger.cs" />
