@@ -63,8 +63,9 @@ namespace AsmDude
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "=========================================\nINFO: AsmDudePackage: Entering constructor"));
             //AsmDudeToolsStatic.Output_INFO("AsmDudePackage: Entering constructor");
         }
-
+#pragma warning disable 1998
         protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
+#pragma warning restore 1998
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("Welcome to\n");

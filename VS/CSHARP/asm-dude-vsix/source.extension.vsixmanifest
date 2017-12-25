@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="c729d6b2-f412-49ed-893d-a8f61f25db98" Version="1.9.3.5" Language="en-US" Publisher="Henk-Jan Lebbink" />
+        <Identity Id="c729d6b2-f412-49ed-893d-a8f61f25db98" Version="1.9.3.6" Language="en-US" Publisher="Henk-Jan Lebbink" />
         <DisplayName>AsmDude</DisplayName>
         <Description xml:space="preserve">Syntax highlighting and code assistance for assembly source code (.asm, .cod, .inc, .s) and the Disassembly Window </Description>
         <MoreInfo>https://github.com/HJLebbink/asm-dude</MoreInfo>
@@ -17,8 +17,7 @@
         <InstallationTarget Version="[14.0,16.0]" Id="Microsoft.VisualStudio.Community" />
     </Installation>
     <Dependencies>
-        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.7,)" d:InstallSource="Download" />
-        <Dependency d:Source="Installed" Id="Microsoft.VisualStudio.MPF.15.0" DisplayName="Visual Studio MPF 15.0" Version="[15.0,16.0)" />
+        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.6.2,)" d:InstallSource="Download" />
     </Dependencies>
     <Assets>
         <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
@@ -26,5 +25,6 @@
     </Assets>
     <Prerequisites>
         <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0.26004.1,16.0)" DisplayName="Visual Studio core editor" />
+        <Prerequisite Id="Microsoft.Net.Component.4.7.TargetingPack" Version="[15.0.26621.2,16.0)" DisplayName=".NET Framework 4.7 targeting pack" />
     </Prerequisites>
 </PackageManifest>
