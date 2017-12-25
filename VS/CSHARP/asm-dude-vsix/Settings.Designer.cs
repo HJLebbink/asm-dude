@@ -1606,5 +1606,77 @@ namespace AsmDude {
                 this["AsmSim_Show_Register_In_Register_Tooltip_Numeration"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ARCH_AVX512_VBMI2 {
+            get {
+                return ((bool)(this["ARCH_AVX512_VBMI2"]));
+            }
+            set {
+                this["ARCH_AVX512_VBMI2"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ARCH_AVX512_VNNI {
+            get {
+                return ((bool)(this["ARCH_AVX512_VNNI"]));
+            }
+            set {
+                this["ARCH_AVX512_VNNI"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ARCH_AVX512_BITALG {
+            get {
+                return ((bool)(this["ARCH_AVX512_BITALG"]));
+            }
+            set {
+                this["ARCH_AVX512_BITALG"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ARCH_AVX512_GFNI {
+            get {
+                return ((bool)(this["ARCH_AVX512_GFNI"]));
+            }
+            set {
+                this["ARCH_AVX512_GFNI"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ARCH_AVX512_VAES {
+            get {
+                return ((bool)(this["ARCH_AVX512_VAES"]));
+            }
+            set {
+                this["ARCH_AVX512_VAES"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ARCH_AVX512_VPCLMULQDQ {
+            get {
+                return ((bool)(this["ARCH_AVX512_VPCLMULQDQ"]));
+            }
+            set {
+                this["ARCH_AVX512_VPCLMULQDQ"] = value;
+            }
+        }
     }
 }

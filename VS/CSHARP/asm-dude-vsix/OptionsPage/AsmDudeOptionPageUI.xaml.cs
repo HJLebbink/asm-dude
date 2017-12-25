@@ -526,6 +526,38 @@ namespace AsmDude.OptionsPage
             set { this.UseArch_AVX512_4FMAPS_UI.IsChecked = value; }
         }
 
+        public bool UseArch_AVX512_VBMI2
+        {
+            get { return this.UseArch_AVX512_VBMI2_UI.IsChecked ?? false; }
+            set { this.UseArch_AVX512_VBMI2_UI.IsChecked = value; }
+        }
+        public bool UseArch_AVX512_VNNI
+        {
+            get { return this.UseArch_AVX512_VNNI_UI.IsChecked ?? false; }
+            set { this.UseArch_AVX512_VNNI_UI.IsChecked = value; }
+        }
+        public bool UseArch_AVX512_BITALG
+        {
+            get { return this.UseArch_AVX512_BITALG_UI.IsChecked ?? false; }
+            set { this.UseArch_AVX512_BITALG_UI.IsChecked = value; }
+        }
+        public bool UseArch_AVX512_GFNI
+        {
+            get { return this.UseArch_AVX512_GFNI_UI.IsChecked ?? false; }
+            set { this.UseArch_AVX512_GFNI_UI.IsChecked = value; }
+        }
+        public bool UseArch_AVX512_VAES
+        {
+            get { return this.UseArch_AVX512_VAES_UI.IsChecked ?? false; }
+            set { this.UseArch_AVX512_VAES_UI.IsChecked = value; }
+        }
+        public bool UseArch_AVX512_VPCLMULQDQ
+        {
+            get { return this.UseArch_AVX512_VPCLMULQDQ_UI.IsChecked ?? false; }
+            set { this.UseArch_AVX512_VPCLMULQDQ_UI.IsChecked = value; }
+        }
+
+
         public bool UseArch_X64
         {
             get { return this.UseArch_X64_UI.IsChecked ?? false; }

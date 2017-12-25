@@ -220,6 +220,19 @@ namespace AsmDude.OptionsPage
             this._asmDudeOptionsPageUI.UseArch_AVX512_4FMAPS = Settings.Default.ARCH_AVX512_4FMAPS;
             this._asmDudeOptionsPageUI.UseArch_AVX512_4FMAPS_UI.ToolTip = MakeToolTip(Arch.AVX512_4FMAPS);
 
+            this._asmDudeOptionsPageUI.UseArch_AVX512_VBMI2 = Settings.Default.ARCH_AVX512_VBMI2;
+            this._asmDudeOptionsPageUI.UseArch_AVX512_VBMI2_UI.ToolTip = MakeToolTip(Arch.AVX512_VBMI2);
+            this._asmDudeOptionsPageUI.UseArch_AVX512_VNNI = Settings.Default.ARCH_AVX512_VNNI;
+            this._asmDudeOptionsPageUI.UseArch_AVX512_VNNI_UI.ToolTip = MakeToolTip(Arch.AVX512_VNNI);
+            this._asmDudeOptionsPageUI.UseArch_AVX512_BITALG = Settings.Default.ARCH_AVX512_BITALG;
+            this._asmDudeOptionsPageUI.UseArch_AVX512_BITALG_UI.ToolTip = MakeToolTip(Arch.AVX512_BITALG);
+            this._asmDudeOptionsPageUI.UseArch_AVX512_GFNI = Settings.Default.ARCH_AVX512_GFNI;
+            this._asmDudeOptionsPageUI.UseArch_AVX512_GFNI_UI.ToolTip = MakeToolTip(Arch.AVX512_GFNI);
+            this._asmDudeOptionsPageUI.UseArch_AVX512_VAES = Settings.Default.ARCH_AVX512_VAES;
+            this._asmDudeOptionsPageUI.UseArch_AVX512_VAES_UI.ToolTip = MakeToolTip(Arch.AVX512_VAES);
+            this._asmDudeOptionsPageUI.UseArch_AVX512_VPCLMULQDQ = Settings.Default.ARCH_AVX512_VPCLMULQDQ;
+            this._asmDudeOptionsPageUI.UseArch_AVX512_VPCLMULQDQ_UI.ToolTip = MakeToolTip(Arch.AVX512_VPCLMULQDQ);
+
             this._asmDudeOptionsPageUI.UseArch_X64 = Settings.Default.ARCH_X64;
             this._asmDudeOptionsPageUI.UseArch_X64_UI.ToolTip = MakeToolTip(Arch.X64);
             this._asmDudeOptionsPageUI.UseArch_BMI1 = Settings.Default.ARCH_BMI1;

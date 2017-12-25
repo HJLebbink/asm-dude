@@ -333,24 +333,33 @@
                                                 <RowDefinition Height="*" />
                                                 <RowDefinition Height="*" />
                                                 <RowDefinition Height="*" />
+                                                <RowDefinition Height="*" />
+                                                <RowDefinition Height="*" />
+                                                <RowDefinition Height="*" />
+                                                <RowDefinition Height="*" />
+                                                <RowDefinition Height="*" />
+                                                <RowDefinition Height="*" />
                                             </Grid.RowDefinitions>
 
                                             <TextBlock Text="SkyLake" Grid.Column="1" Grid.Row="0" TextWrapping="WrapWithOverflow" IsEnabled="False" HorizontalAlignment="Center" />
                                             <TextBlock Text="Knights Landing" Grid.Column="2" Grid.Row="0" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" />
                                             <TextBlock Text="Cannon-Lake" Grid.Column="3" Grid.Row="0" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"/>
                                             <TextBlock Text="Knights Mill" Grid.Column="4" Grid.Row="0" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="Ice Lake" Grid.Column="5" Grid.Row="0" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"/>
 
                                             <CheckBox x:Name="UseArch_AVX512_F_UI" Grid.Column="0" Grid.Row="1" Content="AVX512-F" VerticalAlignment="Center" Width="Auto" />
                                             <TextBlock Text="X" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             <TextBlock Text="X" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             <TextBlock Text="X" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             <TextBlock Text="X" Grid.Column="4" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            <TextBlock Text="X" Grid.Column="5" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
                                             <CheckBox x:Name="UseArch_AVX512_CD_UI" Grid.Column="0" Grid.Row="2" Content="AVX512-CD" VerticalAlignment="Center" Width="Auto" />
                                             <TextBlock Text="X" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             <TextBlock Text="X" Grid.Column="2" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             <TextBlock Text="X" Grid.Column="3" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             <TextBlock Text="X" Grid.Column="4" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            <TextBlock Text="X" Grid.Column="5" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
                                             <CheckBox x:Name="UseArch_AVX512_ER_UI" Grid.Column="0" Grid.Row="3" Content="AVX512-ER" VerticalAlignment="Center" Width="Auto" />
                                             <TextBlock Text="X" Grid.Column="2" Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -363,29 +372,53 @@
                                             <CheckBox x:Name="UseArch_AVX512_BW_UI" Grid.Column="0" Grid.Row="5" Content="AVX512-BW" VerticalAlignment="Center" Width="Auto" />
                                             <TextBlock Text="X" Grid.Column="1" Grid.Row="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             <TextBlock Text="X" Grid.Column="3" Grid.Row="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            <TextBlock Text="X" Grid.Column="5" Grid.Row="5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
                                             <CheckBox x:Name="UseArch_AVX512_DQ_UI" Grid.Column="0" Grid.Row="6" Content="AVX512-DQ" VerticalAlignment="Center" Width="Auto" />
                                             <TextBlock Text="X" Grid.Column="1" Grid.Row="6" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             <TextBlock Text="X" Grid.Column="3" Grid.Row="6" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            <TextBlock Text="X" Grid.Column="5" Grid.Row="6" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
                                             <CheckBox x:Name="UseArch_AVX512_VL_UI" Grid.Column="0" Grid.Row="7" Content="AVX512-VL" VerticalAlignment="Center" Width="Auto" />
                                             <TextBlock Text="X" Grid.Column="1" Grid.Row="7" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                             <TextBlock Text="X" Grid.Column="3" Grid.Row="7" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            <TextBlock Text="X" Grid.Column="5" Grid.Row="7" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
                                             <CheckBox x:Name="UseArch_AVX512_IFMA_UI" Grid.Column="0" Grid.Row="8" Content="AVX512-IFMA" VerticalAlignment="Center" Width="Auto" />
                                             <TextBlock Text="X" Grid.Column="3" Grid.Row="8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            <TextBlock Text="X" Grid.Column="5" Grid.Row="8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
                                             <CheckBox x:Name="UseArch_AVX512_VBMI_UI" Grid.Column="0" Grid.Row="9" Content="AVX512-VBMI" VerticalAlignment="Center" Width="Auto" />
                                             <TextBlock Text="X" Grid.Column="3" Grid.Row="9" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            <TextBlock Text="X" Grid.Column="5" Grid.Row="9" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
                                             <CheckBox x:Name="UseArch_AVX512_VPOPCNTDQ_UI" Grid.Column="0" Grid.Row="10" Content="AVX512-VPOPCNTDQ" VerticalAlignment="Center" Width="Auto" />
                                             <TextBlock Text="X" Grid.Column="4" Grid.Row="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            <TextBlock Text="X" Grid.Column="5" Grid.Row="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
                                             <CheckBox x:Name="UseArch_AVX512_4VNNIW_UI" Grid.Column="0" Grid.Row="11" Content="AVX512-4VNNIW" VerticalAlignment="Center" Width="Auto" />
                                             <TextBlock Text="X" Grid.Column="4" Grid.Row="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
                                             <CheckBox x:Name="UseArch_AVX512_4FMAPS_UI" Grid.Column="0" Grid.Row="12" Content="AVX512-4FMAPS" VerticalAlignment="Center" Width="Auto" />
                                             <TextBlock Text="X" Grid.Column="4" Grid.Row="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                            <CheckBox x:Name="UseArch_AVX512_VBMI2_UI" Grid.Column="0" Grid.Row="13" Content="AVX512-VBMI2" VerticalAlignment="Center" Width="Auto" />
+                                            <TextBlock Text="X" Grid.Column="5" Grid.Row="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                            <CheckBox x:Name="UseArch_AVX512_VNNI_UI" Grid.Column="0" Grid.Row="14" Content="AVX512-VNNI" VerticalAlignment="Center" Width="Auto" />
+                                            <TextBlock Text="X" Grid.Column="5" Grid.Row="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                            <CheckBox x:Name="UseArch_AVX512_BITALG_UI" Grid.Column="0" Grid.Row="15" Content="AVX512-BITALG" VerticalAlignment="Center" Width="Auto" />
+                                            <TextBlock Text="X" Grid.Column="5" Grid.Row="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                            <CheckBox x:Name="UseArch_AVX512_GFNI_UI" Grid.Column="0" Grid.Row="16" Content="AVX512-GFNI" VerticalAlignment="Center" Width="Auto" />
+                                            <TextBlock Text="X" Grid.Column="5" Grid.Row="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                            <CheckBox x:Name="UseArch_AVX512_VAES_UI" Grid.Column="0" Grid.Row="17" Content="AVX512-VAES" VerticalAlignment="Center" Width="Auto" />
+                                            <TextBlock Text="X" Grid.Column="5" Grid.Row="17" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                            <CheckBox x:Name="UseArch_AVX512_VPCLMULQDQ_UI"  Grid.Column="0" Grid.Row="18" Content="AVX512-VPCLMULQDQ" VerticalAlignment="Center" Width="Auto" />
+                                            <TextBlock Text="X" Grid.Column="5" Grid.Row="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
                                         </Grid>
                                     </GroupBox>

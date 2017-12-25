@@ -398,5 +398,23 @@
     <Setting Name="AsmSim_Show_Register_In_Register_Tooltip_Numeration" Type="System.String" Scope="User">
       <Value Profile="(Default)">HEX</Value>
     </Setting>
+    <Setting Name="ARCH_AVX512_VBMI2" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ARCH_AVX512_VNNI" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ARCH_AVX512_BITALG" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ARCH_AVX512_GFNI" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ARCH_AVX512_VAES" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ARCH_AVX512_VPCLMULQDQ" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

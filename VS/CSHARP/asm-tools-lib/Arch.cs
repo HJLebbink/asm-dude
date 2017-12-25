@@ -108,10 +108,12 @@ namespace AsmTools {
         AVX512_BITALG,
 
         //Ice Lake
-        GFNI,
+        AVX512_GFNI,
 
         //Ice Lake
-        VAES,
+        AVX512_VAES,
+        //Ice Lake
+        AVX512_VPCLMULQDQ,
 
 
         #region Misc Intel
@@ -244,8 +246,9 @@ namespace AsmTools {
 
                 case "AVX512VBMI2": return Arch.AVX512_VBMI2;                case "AVX512VNNI": return Arch.AVX512_VNNI;
                 case "AVX512BITALG": return Arch.AVX512_BITALG;
-                case "GFNI": return Arch.GFNI;
-                case "VAES": return Arch.VAES;
+                case "AVX512GFNI": return Arch.AVX512_GFNI;
+                case "AVX512VAES": return Arch.AVX512_VAES;
+                case "AVX512VPCLMULQDQ": return Arch.AVX512_VPCLMULQDQ;
 
                 case "HLE": return Arch.HLE;
                 case "BMI1": return Arch.BMI1;

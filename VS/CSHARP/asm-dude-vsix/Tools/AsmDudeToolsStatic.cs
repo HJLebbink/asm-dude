@@ -614,6 +614,13 @@ namespace AsmDude.Tools
                 case Arch.AVX512_4VNNIW: return Settings.Default.ARCH_AVX512_4VNNIW;
                 case Arch.AVX512_4FMAPS: return Settings.Default.ARCH_AVX512_4FMAPS;
 
+                case Arch.AVX512_VBMI2: return Settings.Default.ARCH_AVX512_VBMI2;
+                case Arch.AVX512_VNNI: return Settings.Default.ARCH_AVX512_VNNI;
+                case Arch.AVX512_BITALG: return Settings.Default.ARCH_AVX512_BITALG;
+                case Arch.AVX512_GFNI: return Settings.Default.ARCH_AVX512_GFNI;
+                case Arch.AVX512_VAES: return Settings.Default.ARCH_AVX512_VAES;
+                case Arch.AVX512_VPCLMULQDQ: return Settings.Default.ARCH_AVX512_VPCLMULQDQ;
+
                 case Arch.X64: return Settings.Default.ARCH_X64;
                 case Arch.BMI1: return Settings.Default.ARCH_BMI1;
                 case Arch.BMI2: return Settings.Default.ARCH_BMI2;
