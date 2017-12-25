@@ -20,13 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.ComponentModel.Design;
 using System.IO;
-using System.Windows.Forms;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace ClearComponentCache
+namespace AsmDude.ClearMefCache
 {
     internal sealed class ClearMefCache
     {
@@ -35,15 +33,16 @@ namespace ClearComponentCache
             ServiceProvider = package;
         }
 
-        public static ClearMefCache Instance { get; private set; }
+        private static ClearMefCache Instance;
 
         private AsyncPackage ServiceProvider { get; }
 
-        public static async System.Threading.Tasks.Task InitializeAsync(AsyncPackage package)
+        public static void Initialize(AsyncPackage package)
         {
             Instance = new ClearMefCache(package);
         }
-        
+
+        //Clear the MEF Cache
         public static async void Clear()
         {
             var componentModelHost = await Instance.ServiceProvider.GetServiceAsync(typeof(SVsComponentModelHost)) as IVsComponentModelHost;
@@ -55,6 +54,7 @@ namespace ClearComponentCache
             }
         }
 
+        //Restart Visual Studio
         public static async void Restart()
         {
             var shell = await Instance.ServiceProvider.GetServiceAsync(typeof(SVsShell)) as IVsShell4;

@@ -215,7 +215,6 @@
     <Compile Include="QuickInfo\RegisterTooltipWindow.xaml.cs">
       <DependentUpon>RegisterTooltipWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Settings.cs" />
     <Compile Include="SyntaxHighlighting\AsmDisassemblyTaggerProvider.cs" />
     <Compile Include="SyntaxHighlighting\AsmDisassemblyTokenTagProvider.cs" />
     <Compile Include="SyntaxHighlighting\NasmAttTokenTagger.cs" />

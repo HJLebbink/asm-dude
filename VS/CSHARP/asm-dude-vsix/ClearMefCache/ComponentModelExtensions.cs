@@ -22,7 +22,7 @@
 
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace ClearComponentCache
+namespace AsmDude.ClearMefCache
 {
     public static class ComponentModelExtensions
     {

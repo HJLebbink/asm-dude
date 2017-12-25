@@ -94,61 +94,68 @@ namespace AsmDude.QuickInfo
         /// </summary>
         private void OnTextViewMouseHover(object sender, MouseHoverEventArgs e)
         {
-            //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
-            SnapshotPoint? point = GetMousePosition(new SnapshotPoint(this._textView.TextSnapshot, e.Position));
-            if (point.HasValue)
+            try
             {
-                string contentType = this._textView.TextBuffer.ContentType.DisplayName;
-                if (contentType.Equals(AsmDudePackage.AsmDudeContentType, StringComparison.Ordinal))
+                //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
+                SnapshotPoint? point = GetMousePosition(new SnapshotPoint(this._textView.TextSnapshot, e.Position));
+                if (point.HasValue)
                 {
-                    int pos = point.Value.Position;
-                    int pos2 = Get_Keyword_Span_At_Point(point.Value).Start;
-
-                    AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: CreateQuickInfoSession for triggerPoint " + pos + "; pos2=" + pos2);
-                    //ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(pos, PointTrackingMode.Positive);
-                    ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(pos2, PointTrackingMode.Positive);
-
-                    if (this._session == null)
+                    string contentType = this._textView.TextBuffer.ContentType.DisplayName;
+                    if (contentType.Equals(AsmDudePackage.AsmDudeContentType, StringComparison.Ordinal))
                     {
-                        this._session = this._quickInfoBroker.TriggerQuickInfo(this._textView, triggerPoint, false);
-                        if (this._session != null) this._session.Dismissed += this._session_Dismissed;
-                    }
-                    else
-                    {
-                        if (this._session.IsDismissed)
+                        int pos = point.Value.Position;
+                        int pos2 = Get_Keyword_Span_At_Point(point.Value).Start;
+
+                        AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: CreateQuickInfoSession for triggerPoint " + pos + "; pos2=" + pos2);
+                        //ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(pos, PointTrackingMode.Positive);
+                        ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(pos2, PointTrackingMode.Positive);
+
+                        if (this._session == null)
                         {
                             this._session = this._quickInfoBroker.TriggerQuickInfo(this._textView, triggerPoint, false);
                             if (this._session != null) this._session.Dismissed += this._session_Dismissed;
                         }
                         else
                         {
-                            if (this._session.ApplicableToSpan.GetSpan(this._textView.TextSnapshot).IntersectsWith(new Span(point.Value.Position, 0)))
+                            if (this._session.IsDismissed)
                             {
-                                AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: intersects!");
-                            }
-                            else
-                            {
-                                if (this._session != null) this._session.Dismiss();
                                 this._session = this._quickInfoBroker.TriggerQuickInfo(this._textView, triggerPoint, false);
                                 if (this._session != null) this._session.Dismissed += this._session_Dismissed;
                             }
+                            else
+                            {
+                                if (this._session.ApplicableToSpan.GetSpan(this._textView.TextSnapshot).IntersectsWith(new Span(point.Value.Position, 0)))
+                                {
+                                    AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: intersects!");
+                                }
+                                else
+                                {
+                                    if (this._session != null) this._session.Dismiss();
+                                    this._session = this._quickInfoBroker.TriggerQuickInfo(this._textView, triggerPoint, false);
+                                    if (this._session != null) this._session.Dismissed += this._session_Dismissed;
+                                }
+                            }
                         }
                     }
-                }
-                else if (contentType.Equals(AsmDudePackage.DisassemblyContentType, StringComparison.Ordinal))
-                {
-                    //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:OnTextViewMouseHover: Quickinfo for disassembly view", ToString()));
-                    System.Drawing.Point p = System.Windows.Forms.Control.MousePosition;
-                    this.ToolTipLegacy(point.Value, new System.Windows.Point(p.X, p.Y));
+                    else if (contentType.Equals(AsmDudePackage.DisassemblyContentType, StringComparison.Ordinal))
+                    {
+                        //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:OnTextViewMouseHover: Quickinfo for disassembly view", ToString()));
+                        System.Drawing.Point p = System.Windows.Forms.Control.MousePosition;
+                        this.ToolTipLegacy(point.Value, new System.Windows.Point(p.X, p.Y));
+                    }
+                    else
+                    {
+                        AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:OnTextViewMouseHover: does not have have AsmDudeContentType: but has type {1}", ToString(), contentType));
+                    }
                 }
                 else
                 {
-                    AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:OnTextViewMouseHover: does not have have AsmDudeContentType: but has type {1}", ToString(), contentType));
+                    //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: point is null; file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
                 }
             }
-            else
+            catch (Exception e2)
             {
-                //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: point is null; file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
+                AsmDudeToolsStatic.Output_WARNING("AsmQuickInfoController:OnTextViewMouseHover: e=" + e2.Message);
             }
         }
 

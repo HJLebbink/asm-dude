@@ -25,13 +25,15 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.Shell;
-using AsmDude.OptionsPage;
 using System.Text;
-using AsmDude.Tools;
-using ClearComponentCache;
 using System.Threading;
+
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+
+using AsmDude.OptionsPage;
+using AsmDude.Tools;
+using AsmDude.ClearMefCache;
 
 namespace AsmDude
 {
@@ -76,7 +78,7 @@ namespace AsmDude
             sb.Append("----------------------------------");
             AsmDudeToolsStatic.Output(sb.ToString());
 
-            await ClearMefCache.InitializeAsync(this);
+            ClearMefCache.ClearMefCache.Initialize(this);
         }
 
         #region Disassembly window experiments

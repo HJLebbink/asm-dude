@@ -20,12 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude.Tools;
-using AsmTools;
-using ClearComponentCache;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -33,6 +27,14 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+
+using AsmDude.Tools;
+using AsmDude.ClearMefCache;
+using AsmTools;
+
 
 namespace AsmDude.OptionsPage
 {
@@ -1783,7 +1785,7 @@ namespace AsmDude.OptionsPage
             if (changed)
             {
                 Settings.Default.Save();
-                ClearMefCache.Clear();
+                ClearMefCache.ClearMefCache.Clear();
             }
             if (restartNeeded)
             {
@@ -1792,7 +1794,7 @@ namespace AsmDude.OptionsPage
 
                 if (MessageBox.Show(text1, title, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    ClearMefCache.Restart();
+                    ClearMefCache.ClearMefCache.Restart();
                 }
                 else
                 {
