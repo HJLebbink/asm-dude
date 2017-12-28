@@ -162,4 +162,4 @@ Visual Studio will launch under the experimental hive.
 * 22 July 2016: Added Signature Help [v1.6.1.1]
 * 13 Feb 2017: Added Performance Data for Skylake & Broadwell (Data from Agner Fog) [v1.7.4.0] 
 * 16 June 2017: Added AT&T syntax support [v1.8.2.0]
-* 25 Juli 2017: Added suport for the VS Disassembly Window [v1.9.0.0]
+* 25 Juli 2017: Added support for the VS Disassembly Window [v1.9.0.0]
