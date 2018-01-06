@@ -8,6 +8,14 @@ GENERAL	REPZ	Repeat while equal. Repeat string instruction the number of times s
 GENERAL	REPNE	Repeat while not equal. Repeat string instruction the number of times specified in the count register, and terminate or if ZF=1. (REPNE=REPNZ)	REP_REPE_REPZ_REPNE_REPNZ
 GENERAL	REPNZ	Repeat while not equal. Repeat string instruction the number of times specified in the count register, and terminate or if ZF=1. (REPNE=REPNZ)	REP_REPE_REPZ_REPNE_REPNZ
 
+REP		8086	REP	Repeat. Repeat string instruction the number of times specified in the count register.
+REPE		8086	REPE	Repeat while equal. Repeat string instruction the number of times specified in the count register, and terminate if ZF=0.
+REPZ		8086	REPZ	Repeat while equal. Repeat string instruction the number of times specified in the count register, and terminate if ZF=0.
+REPNE		8086	REPNE	Repeat while not equal. Repeat string instruction the number of times specified in the count register, and terminate or if ZF=1.
+REPNZ		8086	REPNZ	Repeat while not equal. Repeat string instruction the number of times specified in the count register, and terminate or if ZF=1.
+
+INT		8086	INT	Call to Interrupt Procedure.
+
 GENERAL	MOV	Move	MOV
 
 GENERAL	CMOVA	Move if above (CF=0 and ZF=0) (CMOVA=CMOVNBE)	CMOVcc
@@ -259,7 +267,7 @@ INVLPGA	AX,ECX	AMD	INVLPGA AX,ECX	TODO
 INVLPGA	EAX,ECX	AMD	INVLPGA EAX,ECX	TODO
 INVLPGA	RAX,ECX	AMD	INVLPGA RAX,ECX	TODO
 INVLPGA		AMD	INVLPGA 	TODO
-CLZERO		X64,FUTURE,AMD	CLZERO 	TODO: X64,FUTURE,AMD
+CLZERO		X64,AMD	CLZERO 	TODO: X64,FUTURE,AMD
 
 ;AMD VMX ====================================================================
 CLGI		VMX,AMD	CLGI 	TODO: VMX,AMD	
@@ -283,9 +291,9 @@ VMRESUME		VMX	VMRESUME 	Resumes a virtual machine managed by the VMCS. A VM entr
 VMXOFF		VMX	VMXOFF 	Causes the processor to leave VMX operation
 
 INVEPT	R32,MEM	VMX	INVEPT R32,MEM	Invalidate cached EPT mappings in the processor to synchronize address translation in virtual machines with memory-resident EPT pages
-INVEPT	R64,MEM	VMX,LONG	INVEPT R64,MEM	Invalidate cached EPT mappings in the processor to synchronize address translation in virtual machines with memory-resident EPT pages
+INVEPT	R64,MEM	VMX	INVEPT R64,MEM	Invalidate cached EPT mappings in the processor to synchronize address translation in virtual machines with memory-resident EPT pages
 INVVPID	R32,MEM	VMX	INVVPID R32,MEM	Invalidate cached mappings of address translation based on the Virtual Processor ID (VPID)
-INVVPID	R64,MEM	VMX,LONG	INVVPID R64,MEM	Invalidate cached mappings of address translation based on the Virtual Processor ID (VPID)
+INVVPID	R64,MEM	VMX	INVVPID R64,MEM	Invalidate cached mappings of address translation based on the Virtual Processor ID (VPID)
 
 VMCALL		VMX	VMCALL	Allows a guest in VMX non-root operation to call the VMM for service. A VM exit occurs, transferring control to the VMM
 VMFUNC		VMX	VMFUNC 	This instruction allows software in VMX non-root operation to invoke a VM function, which is processor functionality enabled and configured by software in VMX root operation. No VM exit occurs
