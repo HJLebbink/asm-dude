@@ -204,116 +204,75 @@ namespace AsmDude
             }
         }
 
-
-        /// <summary> check if the architecture of a register is switched on</summary>
-        public static bool Is_Register_Switched_On(Arch arch)
-        {
-            switch (arch)
-            {
-                case Arch.NONE: return true;
-                case Arch.AVX512_VL:
-                    return AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX512_VL);
-                case Arch.AVX512_F:
-                    return 
-                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX512_VL) |
-                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX512_F);
-                case Arch.AVX:
-                    return
-                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX512_VL) |
-                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX512_F) |
-                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX);
-                case Arch.SSE2:
-                    return
-                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX512_VL) |
-                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX512_F) |
-                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX) |
-                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.SSE2);
-                case Arch.SSE:
-                    return
-                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX512_VL) |
-                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX512_F) |
-                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX) |
-                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.SSE2) |
-                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.SSE);
-                case Arch.MMX:
-                    return AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.MMX);
-                case Arch.X64:
-                    return AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.X64);
-                case Arch.ARCH_8086:
-                    return 
-                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX512_VL) |
-                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX512_F) |
-                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.AVX) |
-                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.SSE2) |
-                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.SSE) |
-                        AsmDudeToolsStatic.Is_Arch_Switched_On(Arch.ARCH_8086);
-                default: return false;
-            }
-        }
-
         #region Private Methods
         private IEnumerable<Completion> Mnemonic_Operand_Completions(bool useCapitals, ISet<AsmSignatureEnum> allowedOperands, int lineNumber)
         {
             bool use_AsmSim_In_Code_Completion = this._asmSimulator.Enabled && Settings.Default.AsmSim_Show_Register_In_Code_Completion;
             bool att_Syntax = AsmDudeToolsStatic.Used_Assembler == AssemblerEnum.NASM_ATT;
 
-
             SortedSet<Completion> completions = new SortedSet<Completion>(new CompletionComparer());
+
+            foreach (Rn regName in this._asmDudeTools.Get_Allowed_Registers())
+            {
+                string additionalInfo = null;
+                if (AsmSignatureTools.Is_Allowed_Reg(regName, allowedOperands))
+                {
+                    string keyword = regName.ToString();
+                    if (use_AsmSim_In_Code_Completion && this._asmSimulator.Tools.StateConfig.IsRegOn(RegisterTools.Get64BitsRegister(regName)))
+                    {
+                        var v = this._asmSimulator.Get_Register_Value(regName, lineNumber, true, false, false, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration));
+                        if (!v.Bussy)
+                        {
+                            additionalInfo = v.Value;
+                            AsmDudeToolsStatic.Output_INFO("AsmCompletionSource:Mnemonic_Operand_Completions; register " + keyword + " is selected and has value " + additionalInfo);
+                        }
+                    }
+
+                    if (att_Syntax)
+                    {
+                        keyword = "%" + keyword;
+                    }
+
+                    Arch arch = RegisterTools.GetArch(regName);
+                    //AsmDudeToolsStatic.Output_INFO("AsmCompletionSource:AugmentCompletionSession: keyword \"" + keyword + "\" is added to the completions list");
+
+                    // by default, the entry.Key is with capitals
+                    string insertionText = (useCapitals) ? keyword : keyword.ToLower();
+                    string archStr = (arch == Arch.NONE) ? "" : " [" + ArchTools.ToString(arch) + "]";
+                    string descriptionStr = this._asmDudeTools.Get_Description(keyword);
+                    descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
+                    String displayText = Truncat(keyword + archStr + descriptionStr);
+                    this._icons.TryGetValue(AsmTokenType.Register, out var imageSource);
+                    completions.Add(new Completion(displayText, insertionText, additionalInfo, imageSource, ""));
+                }
+            }
+
             foreach (string keyword in this._asmDudeTools.Get_Keywords())
             {
                 AsmTokenType type = this._asmDudeTools.Get_Token_Type_Intel(keyword);
                 Arch arch = this._asmDudeTools.Get_Architecture(keyword);
 
                 string keyword2 = keyword;
-                bool selected = Is_Register_Switched_On(arch);
+                bool selected = true;
 
                 //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:Mnemonic_Operand_Completions; keyword=" + keyword +"; selected="+selected +"; arch="+arch);
 
                 string additionalInfo = null;
-                if (selected)
+                switch (type)
                 {
-                    switch (type)
-                    {
-                        case AsmTokenType.Register:
-                            {
-                                //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:Mnemonic_Operand_Completions; rn=" + keyword);
-                                Rn regName = RegisterTools.ParseRn(keyword, true);
-                                if (AsmSignatureTools.Is_Allowed_Reg(regName, allowedOperands))
-                                {
-                                    if (use_AsmSim_In_Code_Completion && this._asmSimulator.Tools.StateConfig.IsRegOn(RegisterTools.Get64BitsRegister(regName)))
-                                    {
-                                        var v = this._asmSimulator.Get_Register_Value(regName, lineNumber, true, false, false, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration));
-                                        if (!v.Bussy)
-                                        {
-                                            additionalInfo = v.Value;
-                                            AsmDudeToolsStatic.Output_INFO("AsmCompletionSource:Mnemonic_Operand_Completions; register " + keyword + " is selected and has value " + additionalInfo);
-                                        }
-                                    }
-                                    if (att_Syntax)
-                                    {
-                                        keyword2 = "%" + keyword;
-                                    }
-                                }
-                                else
-                                {
-                                    selected = false;
-                                }
-                                break;
-                            }
-                        case AsmTokenType.Misc:
-                            {
-                                if (!AsmSignatureTools.Is_Allowed_Misc(keyword, allowedOperands))
-                                {
-                                    selected = false;
-                                }
-                                break;
-                            }
-                        default:
+                    case AsmTokenType.Misc:
+                        {
+                            if (!AsmSignatureTools.Is_Allowed_Misc(keyword, allowedOperands))
                             {
                                 selected = false;
-                                break;
                             }
-                    }
+                            break;
+                        }
+                    default:
+                        {
+                            selected = false;
+                            break;
+                        }
                 }
                 if (selected)
                 {
@@ -360,22 +319,6 @@ namespace AsmDude
             }
         }
 
-        private IEnumerable<Mnemonic> Get_Allowed_Mnemonics(ISet<Arch> selectedArchitectures)
-        {
-            MnemonicStore store = this._asmDudeTools.Mnemonic_Store;
-            foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
-            {
-                foreach (Arch a in store.GetArch(mnemonic))
-                {
-                    if (selectedArchitectures.Contains(a))
-                    {
-                        yield return mnemonic;
-                        break; // leave the foreach Arch loop
-                    }
-                }
-            }
-        }
-
         private IEnumerable<Completion> Selected_Completions(bool useCapitals, ISet<AsmTokenType> selectedTypes, bool addSpecialKeywords)
         {
             SortedSet<Completion> completions = new SortedSet<Completion>(new CompletionComparer());
@@ -405,9 +348,8 @@ namespace AsmDude
 
             if (selectedTypes.Contains(AsmTokenType.Mnemonic))
             {
-                ISet<Arch> selectedArchs = AsmDudeToolsStatic.Get_Arch_Swithed_On();
                 this._icons.TryGetValue(AsmTokenType.Mnemonic, out var imageSource);
-                foreach (Mnemonic mnemonic in Get_Allowed_Mnemonics(selectedArchs))
+                foreach (Mnemonic mnemonic in _asmDudeTools.Get_Allowed_Mnemonics())
                 {
                     string keyword = mnemonic.ToString();
                     string description = this._asmDudeTools.Mnemonic_Store.GetSignatures(mnemonic).First().Documentation;
@@ -420,6 +362,10 @@ namespace AsmDude
                     completions.Add(new Completion(displayText, insertionText, description, imageSource, ""));
                 }
             }
+
+
+
+
 
             //Add the completions that are defined in the xml file
             foreach (string keyword in this._asmDudeTools.Get_Keywords())
