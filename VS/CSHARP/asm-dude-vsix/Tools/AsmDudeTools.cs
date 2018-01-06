@@ -44,8 +44,10 @@ namespace AsmDude
         private IDictionary<string, AssemblerEnum> _assembler;
         private IDictionary<string, Arch> _arch;
         private IDictionary<string, string> _description;
-        private readonly ErrorListProvider _errorListProvider;
+        private ISet<Mnemonic> _mnemonics_switched_on;
+        private ISet<Rn> _register_switched_on;
 
+        private readonly ErrorListProvider _errorListProvider;
         private readonly MnemonicStore _mnemonicStore;
         private readonly PerformanceStore _performanceStore;
         private readonly SmartThreadPool _threadPool;
@@ -87,6 +89,12 @@ namespace AsmDude
             #endregion
 
             Init_Data();
+
+            this._mnemonics_switched_on = new HashSet<Mnemonic>();
+            this.UpdateMnemonicSwitchedOn();
+
+            this._register_switched_on = new HashSet<Rn>();
+            this.UpdateRegisterSwitchedOn();
 
             #region Experiments
 
@@ -257,6 +265,55 @@ namespace AsmDude
 
         #region Public Methods
 
+        public bool MnemonicSwitchedOn(Mnemonic mnemonic)
+        {
+            return this._mnemonics_switched_on.Contains(mnemonic);
+        }
+        public IEnumerable<Mnemonic> Get_Allowed_Mnemonics()
+        {
+            return this._mnemonics_switched_on;
+        }
+        public void UpdateMnemonicSwitchedOn()
+        {
+            this._mnemonics_switched_on.Clear();
+            ISet<Arch> selectedArchs = AsmDudeToolsStatic.Get_Arch_Swithed_On();
+            foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
+            {
+                foreach (Arch a in this.Mnemonic_Store.GetArch(mnemonic))
+                {
+                    if (selectedArchs.Contains(a))
+                    {
+                        _mnemonics_switched_on.Add(mnemonic);
+                        break;
+                    }
+                }
+            }
+        }
+
+        public bool RegisterSwitchedOn(Rn reg)
+        {
+            return this._register_switched_on.Contains(reg);
+        }
+        public IEnumerable<Rn> Get_Allowed_Registers()
+        {
+            return this._register_switched_on;
+        }
+        public void UpdateRegisterSwitchedOn()
+        {
+            this._register_switched_on.Clear();
+            ISet<Arch> selectedArchs = AsmDudeToolsStatic.Get_Arch_Swithed_On();
+            foreach (Rn reg in Enum.GetValues(typeof(Rn)))
+            {
+                if (reg != Rn.NOREG)
+                {
+                    if (selectedArchs.Contains(RegisterTools.GetArch(reg)))
+                    {
+                        _register_switched_on.Add(reg);
+                    }
+                }
+            }
+        }
+
         public ErrorListProvider Error_List_Provider { get { return this._errorListProvider; } }
 
         public MnemonicStore Mnemonic_Store { get { return this._mnemonicStore; } }
@@ -265,7 +322,7 @@ namespace AsmDude
 
         public SmartThreadPool Thread_Pool { get { return this._threadPool; } }
 
-        /// <summary>Get the collection of Keywords (in CAPITALS)</summary>
+        /// <summary>Get the collection of Keywords (in CAPITALS), but NOT mnemonics and registers</summary>
         public IEnumerable<string> Get_Keywords()
         {
             if (this._type == null) this.Init_Data();
@@ -285,7 +342,10 @@ namespace AsmDude
             {
                 string keyword2 = keyword.Substring(1);
                 Rn reg = RegisterTools.ParseRn(keyword2, true);
-                return (reg != Rn.NOREG) ? AsmTokenType.Register : AsmTokenType.UNKNOWN;
+                if (reg != Rn.NOREG)
+                {
+                    if (RegisterSwitchedOn(reg)) return AsmTokenType.Register;
+                }
             }
             #endregion
             #region Test if keyword is an imm
@@ -299,7 +359,7 @@ namespace AsmDude
                 Mnemonic mnemonic = AsmSourceTools.ParseMnemonic_Att(keyword, true);
                 if (mnemonic != Mnemonic.NONE)
                 {
-                    return (AsmSourceTools.IsJump(mnemonic)) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
+                    if (MnemonicSwitchedOn(mnemonic)) return (AsmSourceTools.IsJump(mnemonic)) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
                 }
             }
             #endregion
@@ -314,9 +374,13 @@ namespace AsmDude
             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword, true);
             if (mnemonic != Mnemonic.NONE)
             {
-                return (AsmSourceTools.IsJump(mnemonic)) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
+                if (MnemonicSwitchedOn(mnemonic)) return (AsmSourceTools.IsJump(mnemonic)) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
             }
-
+            Rn reg = RegisterTools.ParseRn(keyword, true);
+            if (reg != Rn.NOREG)
+            {
+                if (RegisterSwitchedOn(reg)) return AsmTokenType.Register;
+            }
             return (this._type.TryGetValue(keyword, out var tokenType)) ? tokenType : AsmTokenType.UNKNOWN;
         }
 
@@ -368,7 +432,6 @@ namespace AsmDude
             this._arch = new Dictionary<string, Arch>();
             this._assembler = new Dictionary<string, AssemblerEnum>();
             this._description = new Dictionary<string, string>();
-
             // fill the dictionary with keywords
             XmlDocument xmlDoc = Get_Xml_Data();
             foreach (XmlNode node in xmlDoc.SelectNodes("//misc"))
@@ -413,7 +476,7 @@ namespace AsmDude
                 else
                 {
                     string name = nameAttribute.Value.ToUpper();
-                    this._type[name] = AsmTokenType.Register;
+                    //this._type[name] = AsmTokenType.Register;
                     this._arch[name] = Retrieve_Arch(node);
                     this._description[name] = Retrieve_Description(node);
                 }
