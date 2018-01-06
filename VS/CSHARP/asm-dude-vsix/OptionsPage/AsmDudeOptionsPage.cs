@@ -27,14 +27,15 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using System.Drawing;
 
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 using AsmDude.Tools;
-using AsmDude.ClearMefCache;
 using AsmTools;
-
+using AsmDude.SyntaxHighlighting;
+using Microsoft.VisualStudio;
 
 namespace AsmDude.OptionsPage
 {
@@ -1074,11 +1075,81 @@ namespace AsmDude.OptionsPage
             base.OnApply(e);
         }
 
+        private void UpdateFont(string colorKeyName, Color c)
+        {
+            var guid2 = Guid.Parse("{A27B4E24-A735-4d1d-B8E7-9716E1E3D8E0}");
+            var flags = __FCSTORAGEFLAGS.FCSF_LOADDEFAULTS | __FCSTORAGEFLAGS.FCSF_PROPAGATECHANGES;
+
+            var store = GetService(typeof(SVsFontAndColorStorage)) as IVsFontAndColorStorage;
+            if (store.OpenCategory(ref guid2, (uint)flags) != VSConstants.S_OK) return;
+
+            store.SetItem(colorKeyName, new[]{ new ColorableItemInfo
+            {
+                bForegroundValid = 1,
+                crForeground = (uint)ColorTranslator.ToWin32(c)
+            }});
+            store.CloseCategory();
+        }
+
+        private void UpdateItalic(string colorKeyName, bool b)
+        {
+            var TextEditorFontCategoryGuid = Guid.Parse("{A27B4E24-A735-4d1d-B8E7-9716E1E3D8E0}");
+            var flags = __FCSTORAGEFLAGS.FCSF_LOADDEFAULTS | __FCSTORAGEFLAGS.FCSF_PROPAGATECHANGES;
+
+            var store = GetService(typeof(SVsFontAndColorStorage)) as IVsFontAndColorStorage;
+            if (store.OpenCategory(ref TextEditorFontCategoryGuid, (uint)flags) != VSConstants.S_OK) return;
+
+
+            ColorableItemInfo x = new ColorableItemInfo
+            {
+                //bFontFlagsValid = 1,
+                //dwFontFlags = 1 // bold
+                //dwFontFlags = 2 // italic
+                //dwFontFlags = 4 // nothing
+                //dwFontFlags = 8
+            };
+
+            var y = new[] { x };
+            AsmDudeToolsStatic.Output_INFO("UpdateItalic: flags before: " + y[0].dwFontFlags);
+            store.GetItem(colorKeyName, y);
+            AsmDudeToolsStatic.Output_INFO("UpdateItalic: flags before save: " + y[0].dwFontFlags);
+            if (b)
+            {
+                y[0].dwFontFlags = y[0].dwFontFlags | 0x0002;
+            } else
+            {
+                y[0].dwFontFlags = y[0].dwFontFlags & 0xFFFD;
+            }
+            y[0].bFontFlagsValid = 1;
+
+            AsmDudeToolsStatic.Output_INFO("UpdateItalic: flags after save:  " + y[0].dwFontFlags);
+
+            store.SetItem(colorKeyName, y);
+            store.CloseCategory();
+
+            /*
+            if (store.OpenCategory(ref TextEditorFontCategoryGuid, (uint)flags) != VSConstants.S_OK) return;
+            SelectedTextSymbol symbol = sender as SelectedTextSymbol;
+
+
+            IClassificationFormatMap map = symbol.ClassificationMap;
+            map.BeginBatchUpdate();
+            TextFormattingRunProperties props = map.GetTextProperties(symbol.ClassificationType);
+
+            props = props.SetItalic(symbol.Italic);
+            map.SetTextProperties(symbol.ClassificationType, props);
+            map.EndBatchUpdate();
+            store.CloseCategory();
+            */
+        }
+
         private void Save()
         {
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:save", this.ToString()));
             bool changed = false;
             bool restartNeeded = false;
+            bool archChanged = false;
+
 
             if (AsmDudeToolsStatic.Used_Assembler != this._asmDudeOptionsPageUI.UsedAssembler)
             {
@@ -1129,143 +1200,169 @@ namespace AsmDude.OptionsPage
             #endregion
 
             #region Syntax Highlighting
-            if (Settings.Default.SyntaxHighlighting_On != this._asmDudeOptionsPageUI.SyntaxHighlighting_On)
             {
-                Settings.Default.SyntaxHighlighting_On = this._asmDudeOptionsPageUI.SyntaxHighlighting_On;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.SyntaxHighlighting_Opcode.ToArgb() != this._asmDudeOptionsPageUI.ColorMnemonic.ToArgb())
-            {
-                Settings.Default.SyntaxHighlighting_Opcode = this._asmDudeOptionsPageUI.ColorMnemonic;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.SyntaxHighlighting_Opcode_Italic != this._asmDudeOptionsPageUI.ColorMnemonic_Italic)
-            {
-                Settings.Default.SyntaxHighlighting_Opcode_Italic = this._asmDudeOptionsPageUI.ColorMnemonic_Italic;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.SyntaxHighlighting_Register.ToArgb() != this._asmDudeOptionsPageUI.ColorRegister.ToArgb())
-            {
-                Settings.Default.SyntaxHighlighting_Register = this._asmDudeOptionsPageUI.ColorRegister;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.SyntaxHighlighting_Register_Italic != this._asmDudeOptionsPageUI.ColorRegister_Italic)
-            {
-                Settings.Default.SyntaxHighlighting_Register_Italic = this._asmDudeOptionsPageUI.ColorRegister_Italic;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.SyntaxHighlighting_Remark.ToArgb() != this._asmDudeOptionsPageUI.ColorRemark.ToArgb())
-            {
-                Settings.Default.SyntaxHighlighting_Remark = this._asmDudeOptionsPageUI.ColorRemark;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.SyntaxHighlighting_Remark_Italic != this._asmDudeOptionsPageUI.ColorRemark_Italic)
-            {
-                Settings.Default.SyntaxHighlighting_Remark_Italic = this._asmDudeOptionsPageUI.ColorRemark_Italic;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.SyntaxHighlighting_Directive.ToArgb() != this._asmDudeOptionsPageUI.ColorDirective.ToArgb())
-            {
-                Settings.Default.SyntaxHighlighting_Directive = this._asmDudeOptionsPageUI.ColorDirective;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.SyntaxHighlighting_Directive_Italic != this._asmDudeOptionsPageUI.ColorDirective_Italic)
-            {
-                Settings.Default.SyntaxHighlighting_Directive_Italic = this._asmDudeOptionsPageUI.ColorDirective_Italic;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.SyntaxHighlighting_Constant.ToArgb() != this._asmDudeOptionsPageUI.ColorConstant.ToArgb())
-            {
-                Settings.Default.SyntaxHighlighting_Constant = this._asmDudeOptionsPageUI.ColorConstant;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.SyntaxHighlighting_Constant_Italic != this._asmDudeOptionsPageUI.ColorConstant_Italic)
-            {
-                Settings.Default.SyntaxHighlighting_Constant_Italic = this._asmDudeOptionsPageUI.ColorConstant_Italic;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.SyntaxHighlighting_Jump.ToArgb() != this._asmDudeOptionsPageUI.ColorJump.ToArgb())
-            {
-                Settings.Default.SyntaxHighlighting_Jump = this._asmDudeOptionsPageUI.ColorJump;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.SyntaxHighlighting_Jump_Italic != this._asmDudeOptionsPageUI.ColorJump_Italic)
-            {
-                Settings.Default.SyntaxHighlighting_Jump_Italic = this._asmDudeOptionsPageUI.ColorJump_Italic;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.SyntaxHighlighting_Label.ToArgb() != this._asmDudeOptionsPageUI.ColorLabel.ToArgb())
-            {
-                Settings.Default.SyntaxHighlighting_Label = this._asmDudeOptionsPageUI.ColorLabel;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.SyntaxHighlighting_Label_Italic != this._asmDudeOptionsPageUI.ColorLabel_Italic)
-            {
-                Settings.Default.SyntaxHighlighting_Label_Italic = this._asmDudeOptionsPageUI.ColorLabel_Italic;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.SyntaxHighlighting_Misc.ToArgb() != this._asmDudeOptionsPageUI.ColorMisc.ToArgb())
-            {
-                Settings.Default.SyntaxHighlighting_Misc = this._asmDudeOptionsPageUI.ColorMisc;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.SyntaxHighlighting_Misc_Italic != this._asmDudeOptionsPageUI.ColorMisc_Italic)
-            {
-                Settings.Default.SyntaxHighlighting_Misc_Italic = this._asmDudeOptionsPageUI.ColorMisc_Italic;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.SyntaxHighlighting_Userdefined1.ToArgb() != this._asmDudeOptionsPageUI.ColorUserDefined1.ToArgb())
-            {
-                Settings.Default.SyntaxHighlighting_Userdefined1 = this._asmDudeOptionsPageUI.ColorUserDefined1;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.SyntaxHighlighting_Userdefined1_Italic != this._asmDudeOptionsPageUI.ColorUserDefined1_Italic)
-            {
-                Settings.Default.SyntaxHighlighting_Userdefined1_Italic = this._asmDudeOptionsPageUI.ColorUserDefined1_Italic;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.SyntaxHighlighting_Userdefined2.ToArgb() != this._asmDudeOptionsPageUI.ColorUserDefined2.ToArgb())
-            {
-                Settings.Default.SyntaxHighlighting_Userdefined2 = this._asmDudeOptionsPageUI.ColorUserDefined2;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.SyntaxHighlighting_Userdefined2_Italic != this._asmDudeOptionsPageUI.ColorUserDefined2_Italic)
-            {
-                Settings.Default.SyntaxHighlighting_Userdefined2_Italic = this._asmDudeOptionsPageUI.ColorUserDefined2_Italic;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.SyntaxHighlighting_Userdefined3.ToArgb() != this._asmDudeOptionsPageUI.ColorUserDefined3.ToArgb())
-            {
-                Settings.Default.SyntaxHighlighting_Userdefined3 = this._asmDudeOptionsPageUI.ColorUserDefined3;
-                changed = true;
-                restartNeeded = true;
-            }
-            if (Settings.Default.SyntaxHighlighting_Userdefined3_Italic != this._asmDudeOptionsPageUI.ColorUserDefined3_Italic)
-            {
-                Settings.Default.SyntaxHighlighting_Userdefined3_Italic = this._asmDudeOptionsPageUI.ColorUserDefined3_Italic;
-                changed = true;
-                restartNeeded = true;
+                bool refreshRegistry = false;
+
+
+                if (Settings.Default.SyntaxHighlighting_On != this._asmDudeOptionsPageUI.SyntaxHighlighting_On)
+                {
+                    Settings.Default.SyntaxHighlighting_On = this._asmDudeOptionsPageUI.SyntaxHighlighting_On;
+                    changed = true;
+                    restartNeeded = true;
+                }
+                if (Settings.Default.SyntaxHighlighting_Opcode.ToArgb() != this._asmDudeOptionsPageUI.ColorMnemonic.ToArgb())
+                {
+                    Settings.Default.SyntaxHighlighting_Opcode = this._asmDudeOptionsPageUI.ColorMnemonic;
+                    UpdateFont(AsmClassificationDefinition.ClassificationTypeNames.Mnemonic, this._asmDudeOptionsPageUI.ColorMnemonic);
+                    changed = true;
+                    refreshRegistry = true;
+                }
+                if (Settings.Default.SyntaxHighlighting_Opcode_Italic != this._asmDudeOptionsPageUI.ColorMnemonic_Italic)
+                {
+                    Settings.Default.SyntaxHighlighting_Opcode_Italic = this._asmDudeOptionsPageUI.ColorMnemonic_Italic;
+                    //TODO
+                    //UpdateItalic(AsmClassificationDefinition.ClassificationTypeNames.Mnemonic, this._asmDudeOptionsPageUI.ColorMnemonic_Italic);
+                    changed = true;
+                    restartNeeded = true;
+                }
+                if (Settings.Default.SyntaxHighlighting_Register.ToArgb() != this._asmDudeOptionsPageUI.ColorRegister.ToArgb())
+                {
+                    Settings.Default.SyntaxHighlighting_Register = this._asmDudeOptionsPageUI.ColorRegister;
+                    UpdateFont(AsmClassificationDefinition.ClassificationTypeNames.Register, this._asmDudeOptionsPageUI.ColorRegister);
+                    changed = true;
+                    refreshRegistry = true;
+                }
+                if (Settings.Default.SyntaxHighlighting_Register_Italic != this._asmDudeOptionsPageUI.ColorRegister_Italic)
+                {
+                    Settings.Default.SyntaxHighlighting_Register_Italic = this._asmDudeOptionsPageUI.ColorRegister_Italic;
+                    changed = true;
+                    restartNeeded = true;
+                }
+                if (Settings.Default.SyntaxHighlighting_Remark.ToArgb() != this._asmDudeOptionsPageUI.ColorRemark.ToArgb())
+                {
+                    UpdateFont(AsmClassificationDefinition.ClassificationTypeNames.Remark, this._asmDudeOptionsPageUI.ColorRemark);
+                    changed = true;
+                    refreshRegistry = true;
+                }
+                if (Settings.Default.SyntaxHighlighting_Remark_Italic != this._asmDudeOptionsPageUI.ColorRemark_Italic)
+                {
+                    Settings.Default.SyntaxHighlighting_Remark_Italic = this._asmDudeOptionsPageUI.ColorRemark_Italic;
+                    changed = true;
+                    restartNeeded = true;
+                }
+                if (Settings.Default.SyntaxHighlighting_Directive.ToArgb() != this._asmDudeOptionsPageUI.ColorDirective.ToArgb())
+                {
+                    Settings.Default.SyntaxHighlighting_Directive = this._asmDudeOptionsPageUI.ColorDirective;
+                    UpdateFont(AsmClassificationDefinition.ClassificationTypeNames.Directive, this._asmDudeOptionsPageUI.ColorDirective);
+                    changed = true;
+                    refreshRegistry = true;
+                }
+                if (Settings.Default.SyntaxHighlighting_Directive_Italic != this._asmDudeOptionsPageUI.ColorDirective_Italic)
+                {
+                    Settings.Default.SyntaxHighlighting_Directive_Italic = this._asmDudeOptionsPageUI.ColorDirective_Italic;
+                    changed = true;
+                    restartNeeded = true;
+                }
+                if (Settings.Default.SyntaxHighlighting_Constant.ToArgb() != this._asmDudeOptionsPageUI.ColorConstant.ToArgb())
+                {
+                    Settings.Default.SyntaxHighlighting_Constant = this._asmDudeOptionsPageUI.ColorConstant;
+                    UpdateFont(AsmClassificationDefinition.ClassificationTypeNames.Constant, this._asmDudeOptionsPageUI.ColorConstant);
+                    changed = true;
+                    refreshRegistry = true;
+                }
+                if (Settings.Default.SyntaxHighlighting_Constant_Italic != this._asmDudeOptionsPageUI.ColorConstant_Italic)
+                {
+                    Settings.Default.SyntaxHighlighting_Constant_Italic = this._asmDudeOptionsPageUI.ColorConstant_Italic;
+                    changed = true;
+                    restartNeeded = true;
+                }
+                if (Settings.Default.SyntaxHighlighting_Jump.ToArgb() != this._asmDudeOptionsPageUI.ColorJump.ToArgb())
+                {
+                    Settings.Default.SyntaxHighlighting_Jump = this._asmDudeOptionsPageUI.ColorJump;
+                    UpdateFont(AsmClassificationDefinition.ClassificationTypeNames.Jump, this._asmDudeOptionsPageUI.ColorJump);
+                    changed = true;
+                    refreshRegistry = true;
+                }
+                if (Settings.Default.SyntaxHighlighting_Jump_Italic != this._asmDudeOptionsPageUI.ColorJump_Italic)
+                {
+                    Settings.Default.SyntaxHighlighting_Jump_Italic = this._asmDudeOptionsPageUI.ColorJump_Italic;
+                    changed = true;
+                    restartNeeded = true;
+                }
+                if (Settings.Default.SyntaxHighlighting_Label.ToArgb() != this._asmDudeOptionsPageUI.ColorLabel.ToArgb())
+                {
+                    Settings.Default.SyntaxHighlighting_Label = this._asmDudeOptionsPageUI.ColorLabel;
+                    UpdateFont(AsmClassificationDefinition.ClassificationTypeNames.Label, this._asmDudeOptionsPageUI.ColorLabel);
+                    UpdateFont(AsmClassificationDefinition.ClassificationTypeNames.LabelDef, this._asmDudeOptionsPageUI.ColorLabel);
+                    changed = true;
+                    refreshRegistry = true;
+                }
+                if (Settings.Default.SyntaxHighlighting_Label_Italic != this._asmDudeOptionsPageUI.ColorLabel_Italic)
+                {
+                    Settings.Default.SyntaxHighlighting_Label_Italic = this._asmDudeOptionsPageUI.ColorLabel_Italic;
+                    changed = true;
+                    restartNeeded = true;
+                }
+                if (Settings.Default.SyntaxHighlighting_Misc.ToArgb() != this._asmDudeOptionsPageUI.ColorMisc.ToArgb())
+                {
+                    Settings.Default.SyntaxHighlighting_Misc = this._asmDudeOptionsPageUI.ColorMisc;
+                    UpdateFont(AsmClassificationDefinition.ClassificationTypeNames.Misc, this._asmDudeOptionsPageUI.ColorMisc);
+                    changed = true;
+                    refreshRegistry = true;
+                }
+                if (Settings.Default.SyntaxHighlighting_Misc_Italic != this._asmDudeOptionsPageUI.ColorMisc_Italic)
+                {
+                    Settings.Default.SyntaxHighlighting_Misc_Italic = this._asmDudeOptionsPageUI.ColorMisc_Italic;
+                    changed = true;
+                    restartNeeded = true;
+                }
+                if (Settings.Default.SyntaxHighlighting_Userdefined1.ToArgb() != this._asmDudeOptionsPageUI.ColorUserDefined1.ToArgb())
+                {
+                    Settings.Default.SyntaxHighlighting_Userdefined1 = this._asmDudeOptionsPageUI.ColorUserDefined1;
+                    UpdateFont(AsmClassificationDefinition.ClassificationTypeNames.UserDefined1, this._asmDudeOptionsPageUI.ColorUserDefined1);
+                    changed = true;
+                    refreshRegistry = true;
+                }
+                if (Settings.Default.SyntaxHighlighting_Userdefined1_Italic != this._asmDudeOptionsPageUI.ColorUserDefined1_Italic)
+                {
+                    Settings.Default.SyntaxHighlighting_Userdefined1_Italic = this._asmDudeOptionsPageUI.ColorUserDefined1_Italic;
+                    changed = true;
+                    restartNeeded = true;
+                }
+                if (Settings.Default.SyntaxHighlighting_Userdefined2.ToArgb() != this._asmDudeOptionsPageUI.ColorUserDefined2.ToArgb())
+                {
+                    Settings.Default.SyntaxHighlighting_Userdefined2 = this._asmDudeOptionsPageUI.ColorUserDefined2;
+                    UpdateFont(AsmClassificationDefinition.ClassificationTypeNames.UserDefined2, this._asmDudeOptionsPageUI.ColorUserDefined2);
+                    changed = true;
+                    refreshRegistry = true;
+                }
+                if (Settings.Default.SyntaxHighlighting_Userdefined2_Italic != this._asmDudeOptionsPageUI.ColorUserDefined2_Italic)
+                {
+                    Settings.Default.SyntaxHighlighting_Userdefined2_Italic = this._asmDudeOptionsPageUI.ColorUserDefined2_Italic;
+                    changed = true;
+                    restartNeeded = true;
+                }
+                if (Settings.Default.SyntaxHighlighting_Userdefined3.ToArgb() != this._asmDudeOptionsPageUI.ColorUserDefined3.ToArgb())
+                {
+                    Settings.Default.SyntaxHighlighting_Userdefined3 = this._asmDudeOptionsPageUI.ColorUserDefined3;
+                    UpdateFont(AsmClassificationDefinition.ClassificationTypeNames.UserDefined3, this._asmDudeOptionsPageUI.ColorUserDefined3);
+                    changed = true;
+                    refreshRegistry = true;
+                }
+                if (Settings.Default.SyntaxHighlighting_Userdefined3_Italic != this._asmDudeOptionsPageUI.ColorUserDefined3_Italic)
+                {
+                    Settings.Default.SyntaxHighlighting_Userdefined3_Italic = this._asmDudeOptionsPageUI.ColorUserDefined3_Italic;
+                    changed = true;
+                    restartNeeded = true;
+                }
+                if (refreshRegistry)
+                {
+                    IVsFontAndColorCacheManager cacheManager = this.GetService(typeof(SVsFontAndColorCacheManager)) as IVsFontAndColorCacheManager;
+                    cacheManager.ClearAllCaches();
+                    var guid = new Guid("00000000-0000-0000-0000-000000000000");
+                    cacheManager.RefreshCache(ref guid);
+                    guid = new Guid("{A27B4E24-A735-4d1d-B8E7-9716E1E3D8E0}"); // Text editor category
+                }
             }
             #endregion
 
@@ -1350,299 +1447,358 @@ namespace AsmDude.OptionsPage
             {
                 Settings.Default.ARCH_8086 = this._asmDudeOptionsPageUI.UseArch_8086;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_186 != this._asmDudeOptionsPageUI.UseArch_186)
             {
                 Settings.Default.ARCH_186 = this._asmDudeOptionsPageUI.UseArch_186;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_286 != this._asmDudeOptionsPageUI.UseArch_286)
             {
                 Settings.Default.ARCH_286 = this._asmDudeOptionsPageUI.UseArch_286;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_386 != this._asmDudeOptionsPageUI.UseArch_386)
             {
                 Settings.Default.ARCH_386 = this._asmDudeOptionsPageUI.UseArch_386;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_486 != this._asmDudeOptionsPageUI.UseArch_486)
             {
                 Settings.Default.ARCH_486 = this._asmDudeOptionsPageUI.UseArch_486;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_MMX != this._asmDudeOptionsPageUI.UseArch_MMX)
             {
                 Settings.Default.ARCH_MMX = this._asmDudeOptionsPageUI.UseArch_MMX;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_SSE != this._asmDudeOptionsPageUI.UseArch_SSE)
             {
                 Settings.Default.ARCH_SSE = this._asmDudeOptionsPageUI.UseArch_SSE;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_SSE2 != this._asmDudeOptionsPageUI.UseArch_SSE2)
             {
                 Settings.Default.ARCH_SSE2 = this._asmDudeOptionsPageUI.UseArch_SSE2;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_SSE3 != this._asmDudeOptionsPageUI.UseArch_SSE3)
             {
                 Settings.Default.ARCH_SSE3 = this._asmDudeOptionsPageUI.UseArch_SSE3;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_SSSE3 != this._asmDudeOptionsPageUI.UseArch_SSSE3)
             {
                 Settings.Default.ARCH_SSSE3 = this._asmDudeOptionsPageUI.UseArch_SSSE3;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_SSE41 != this._asmDudeOptionsPageUI.UseArch_SSE41)
             {
                 Settings.Default.ARCH_SSE41 = this._asmDudeOptionsPageUI.UseArch_SSE41;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_SSE42 != this._asmDudeOptionsPageUI.UseArch_SSE42)
             {
                 Settings.Default.ARCH_SSE42 = this._asmDudeOptionsPageUI.UseArch_SSE42;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_SSE4A != this._asmDudeOptionsPageUI.UseArch_SSE4A)
             {
                 Settings.Default.ARCH_SSE4A = this._asmDudeOptionsPageUI.UseArch_SSE4A;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_SSE5 != this._asmDudeOptionsPageUI.UseArch_SSE5)
             {
                 Settings.Default.ARCH_SSE5 = this._asmDudeOptionsPageUI.UseArch_SSE5;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_AVX != this._asmDudeOptionsPageUI.UseArch_AVX)
             {
                 Settings.Default.ARCH_AVX = this._asmDudeOptionsPageUI.UseArch_AVX;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_AVX2 != this._asmDudeOptionsPageUI.UseArch_AVX2)
             {
                 Settings.Default.ARCH_AVX2 = this._asmDudeOptionsPageUI.UseArch_AVX2;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_AVX512PF != this._asmDudeOptionsPageUI.UseArch_AVX512_PF)
             {
                 Settings.Default.ARCH_AVX512PF = this._asmDudeOptionsPageUI.UseArch_AVX512_PF;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_AVX512VL != this._asmDudeOptionsPageUI.UseArch_AVX512_VL)
             {
                 Settings.Default.ARCH_AVX512VL = this._asmDudeOptionsPageUI.UseArch_AVX512_VL;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_AVX512DQ != this._asmDudeOptionsPageUI.UseArch_AVX512_DQ)
             {
                 Settings.Default.ARCH_AVX512DQ = this._asmDudeOptionsPageUI.UseArch_AVX512_DQ;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_AVX512BW != this._asmDudeOptionsPageUI.UseArch_AVX512_BW)
             {
                 Settings.Default.ARCH_AVX512BW = this._asmDudeOptionsPageUI.UseArch_AVX512_BW;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_AVX512ER != this._asmDudeOptionsPageUI.UseArch_AVX512_ER)
             {
                 Settings.Default.ARCH_AVX512ER = this._asmDudeOptionsPageUI.UseArch_AVX512_ER;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_AVX512F != this._asmDudeOptionsPageUI.UseArch_AVX512_F)
             {
                 Settings.Default.ARCH_AVX512F = this._asmDudeOptionsPageUI.UseArch_AVX512_F;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_AVX512CD != this._asmDudeOptionsPageUI.UseArch_AVX512_CD)
             {
                 Settings.Default.ARCH_AVX512CD = this._asmDudeOptionsPageUI.UseArch_AVX512_CD;
                 changed = true;
+                archChanged = true;
             }
 
             if (Settings.Default.ARCH_AVX512_IFMA != this._asmDudeOptionsPageUI.UseArch_AVX512_IFMA)
             {
                 Settings.Default.ARCH_AVX512_IFMA = this._asmDudeOptionsPageUI.UseArch_AVX512_IFMA;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_AVX512_VBMI != this._asmDudeOptionsPageUI.UseArch_AVX512_VBMI)
             {
                 Settings.Default.ARCH_AVX512_VBMI = this._asmDudeOptionsPageUI.UseArch_AVX512_VBMI;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_AVX512_VPOPCNTDQ != this._asmDudeOptionsPageUI.UseArch_AVX512_VPOPCNTDQ)
             {
                 Settings.Default.ARCH_AVX512_VPOPCNTDQ = this._asmDudeOptionsPageUI.UseArch_AVX512_VPOPCNTDQ;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_AVX512_4VNNIW != this._asmDudeOptionsPageUI.UseArch_AVX512_4VNNIW)
             {
                 Settings.Default.ARCH_AVX512_4VNNIW = this._asmDudeOptionsPageUI.UseArch_AVX512_4VNNIW;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_AVX512_4FMAPS != this._asmDudeOptionsPageUI.UseArch_AVX512_4FMAPS)
             {
                 Settings.Default.ARCH_AVX512_4FMAPS = this._asmDudeOptionsPageUI.UseArch_AVX512_4FMAPS;
                 changed = true;
+                archChanged = true;
             }
 
             if (Settings.Default.ARCH_X64 != this._asmDudeOptionsPageUI.UseArch_X64)
             {
                 Settings.Default.ARCH_X64 = this._asmDudeOptionsPageUI.UseArch_X64;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_BMI1 != this._asmDudeOptionsPageUI.UseArch_BMI1)
             {
                 Settings.Default.ARCH_BMI1 = this._asmDudeOptionsPageUI.UseArch_BMI1;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_BMI2 != this._asmDudeOptionsPageUI.UseArch_BMI2)
             {
                 Settings.Default.ARCH_BMI2 = this._asmDudeOptionsPageUI.UseArch_BMI2;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_P6 != this._asmDudeOptionsPageUI.UseArch_P6)
             {
                 Settings.Default.ARCH_P6 = this._asmDudeOptionsPageUI.UseArch_P6;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_IA64 != this._asmDudeOptionsPageUI.UseArch_IA64)
             {
                 Settings.Default.ARCH_IA64 = this._asmDudeOptionsPageUI.UseArch_IA64;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_FMA != this._asmDudeOptionsPageUI.UseArch_FMA)
             {
                 Settings.Default.ARCH_FMA = this._asmDudeOptionsPageUI.UseArch_FMA;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_TBM != this._asmDudeOptionsPageUI.UseArch_TBM)
             {
                 Settings.Default.ARCH_TBM = this._asmDudeOptionsPageUI.UseArch_TBM;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_AMD != this._asmDudeOptionsPageUI.UseArch_AMD)
             {
                 Settings.Default.ARCH_AMD = this._asmDudeOptionsPageUI.UseArch_AMD;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_PENT != this._asmDudeOptionsPageUI.UseArch_PENT)
             {
                 Settings.Default.ARCH_PENT = this._asmDudeOptionsPageUI.UseArch_PENT;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_3DNOW != this._asmDudeOptionsPageUI.UseArch_3DNOW)
             {
                 Settings.Default.ARCH_3DNOW = this._asmDudeOptionsPageUI.UseArch_3DNOW;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_CYRIX != this._asmDudeOptionsPageUI.UseArch_CYRIX)
             {
                 Settings.Default.ARCH_CYRIX = this._asmDudeOptionsPageUI.UseArch_CYRIX;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_CYRIXM != this._asmDudeOptionsPageUI.UseArch_CYRIXM)
             {
                 Settings.Default.ARCH_CYRIXM = this._asmDudeOptionsPageUI.UseArch_CYRIXM;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_VMX != this._asmDudeOptionsPageUI.UseArch_VMX)
             {
                 Settings.Default.ARCH_VMX = this._asmDudeOptionsPageUI.UseArch_VMX;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_RTM != this._asmDudeOptionsPageUI.UseArch_RTM)
             {
                 Settings.Default.ARCH_RTM = this._asmDudeOptionsPageUI.UseArch_RTM;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_MPX != this._asmDudeOptionsPageUI.UseArch_MPX)
             {
                 Settings.Default.ARCH_MPX = this._asmDudeOptionsPageUI.UseArch_MPX;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_SHA != this._asmDudeOptionsPageUI.UseArch_SHA)
             {
                 Settings.Default.ARCH_SHA = this._asmDudeOptionsPageUI.UseArch_SHA;
                 changed = true;
+                archChanged = true;
             }
 
             if (Settings.Default.ARCH_ADX != this._asmDudeOptionsPageUI.UseArch_ADX)
             {
                 Settings.Default.ARCH_ADX = this._asmDudeOptionsPageUI.UseArch_ADX;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_F16C != this._asmDudeOptionsPageUI.UseArch_F16C)
             {
                 Settings.Default.ARCH_F16C = this._asmDudeOptionsPageUI.UseArch_F16C;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_FSGSBASE != this._asmDudeOptionsPageUI.UseArch_FSGSBASE)
             {
                 Settings.Default.ARCH_FSGSBASE = this._asmDudeOptionsPageUI.UseArch_FSGSBASE;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_HLE != this._asmDudeOptionsPageUI.UseArch_HLE)
             {
                 Settings.Default.ARCH_HLE = this._asmDudeOptionsPageUI.UseArch_HLE;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_INVPCID != this._asmDudeOptionsPageUI.UseArch_INVPCID)
             {
                 Settings.Default.ARCH_INVPCID = this._asmDudeOptionsPageUI.UseArch_INVPCID;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_PCLMULQDQ != this._asmDudeOptionsPageUI.UseArch_PCLMULQDQ)
             {
                 Settings.Default.ARCH_PCLMULQDQ = this._asmDudeOptionsPageUI.UseArch_PCLMULQDQ;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_LZCNT != this._asmDudeOptionsPageUI.UseArch_LZCNT)
             {
                 Settings.Default.ARCH_LZCNT = this._asmDudeOptionsPageUI.UseArch_LZCNT;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_PREFETCHWT1 != this._asmDudeOptionsPageUI.UseArch_PREFETCHWT1)
             {
                 Settings.Default.ARCH_PREFETCHWT1 = this._asmDudeOptionsPageUI.UseArch_PREFETCHWT1;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_PRFCHW != this._asmDudeOptionsPageUI.UseArch_PREFETCHW)
             {
                 Settings.Default.ARCH_PRFCHW = this._asmDudeOptionsPageUI.UseArch_PREFETCHW;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_RDPID != this._asmDudeOptionsPageUI.UseArch_RDPID)
             {
                 Settings.Default.ARCH_RDPID = this._asmDudeOptionsPageUI.UseArch_RDPID;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_RDRAND != this._asmDudeOptionsPageUI.UseArch_RDRAND)
             {
                 Settings.Default.ARCH_RDRAND = this._asmDudeOptionsPageUI.UseArch_RDRAND;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_RDSEED != this._asmDudeOptionsPageUI.UseArch_RDSEED)
             {
                 Settings.Default.ARCH_RDSEED = this._asmDudeOptionsPageUI.UseArch_RDSEED;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_XSAVEOPT != this._asmDudeOptionsPageUI.UseArch_XSAVEOPT)
             {
                 Settings.Default.ARCH_XSAVEOPT = this._asmDudeOptionsPageUI.UseArch_XSAVEOPT;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_UNDOC != this._asmDudeOptionsPageUI.UseArch_UNDOC)
             {
                 Settings.Default.ARCH_UNDOC = this._asmDudeOptionsPageUI.UseArch_UNDOC;
                 changed = true;
+                archChanged = true;
             }
             if (Settings.Default.ARCH_AES != this._asmDudeOptionsPageUI.UseArch_AES)
             {
                 Settings.Default.ARCH_AES = this._asmDudeOptionsPageUI.UseArch_AES;
                 changed = true;
+                archChanged = true;
             }
             #endregion
 
@@ -1795,6 +1951,11 @@ namespace AsmDude.OptionsPage
             }
             #endregion
 
+            if (archChanged)
+            {
+                AsmDudeTools.Instance.UpdateMnemonicSwitchedOn();
+                AsmDudeTools.Instance.UpdateRegisterSwitchedOn();
+            }
             if (changed)
             {
                 Settings.Default.Save();
