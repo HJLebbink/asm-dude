@@ -1,5 +1,5 @@
 # Asm-Dude
-Assembly syntax highlighting and code assistance for assembly source files and the disassembly window for Visual Studio 2015 and 2017. This extension can be found in the [visual studio extensions gallery](https://visualstudiogallery.msdn.microsoft.com/ff839577-2b68-416a-b761-72f9b1ca7c8e) or download latest installer [AsmDude.vsix (v1.9.3.2)](https://github.com/HJLebbink/asm-dude/releases/download/1.9.3.2/AsmDude.vsix). If assembly is too much of a hassle but you still want access to specific machine instructions, consider [Intrinsics-Dude](https://github.com/HJLebbink/intrinsics-dude).
+Assembly syntax highlighting and code assistance for assembly source files and the disassembly window for Visual Studio 2015 and 2017. This extension can be found in the [visual studio extensions gallery](https://visualstudiogallery.msdn.microsoft.com/ff839577-2b68-416a-b761-72f9b1ca7c8e) or download latest installer [AsmDude.vsix (v1.9.3.6)](https://github.com/HJLebbink/asm-dude/releases/download/1.9.3.6/AsmDude.vsix). If assembly is too much of a hassle but you still want access to specific machine instructions, consider [Intrinsics-Dude](https://github.com/HJLebbink/intrinsics-dude).
 
 ### Features
 
@@ -162,4 +162,4 @@ Visual Studio will launch under the experimental hive.
 * 22 July 2016: Added Signature Help [v1.6.1.1]
 * 13 Feb 2017: Added Performance Data for Skylake & Broadwell (Data from Agner Fog) [v1.7.4.0] 
 * 16 June 2017: Added AT&T syntax support [v1.8.2.0]
-* 25 Juli 2017: Added suport for the VS Disassembly Window [v1.9.0.0]
+* 25 Juli 2017: Added support for the VS Disassembly Window [v1.9.0.0]
