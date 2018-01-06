@@ -57,13 +57,13 @@ namespace AsmDude.QuickInfo
             this.Description.Inlines.Add(new Run("Register ") { FontWeight = FontWeights.Bold, Foreground = this._foreground });
             this.Description.Inlines.Add(new Run(regStr) { FontWeight = FontWeights.Bold, Foreground = new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Register))});
 
+            Arch arch = RegisterTools.GetArch(reg);
+            string archStr = (arch == Arch.NONE) ? "" : " [" + ArchTools.ToString(arch) + "] ";
             string descr = asmDudeTools.Get_Description(regStr);
-            if (descr.Length > 0)
-            {
-                if (regStr.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
-                string full_Descr = AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips);
-                this.Description.Inlines.Add(new Run(full_Descr) { Foreground = this._foreground });
-            }
+
+            if (regStr.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
+            string full_Descr = AsmSourceTools.Linewrap(":" + archStr + descr, AsmDudePackage.maxNumberOfCharsInToolTips);
+            this.Description.Inlines.Add(new Run(full_Descr) { Foreground = this._foreground });
         }
 
         public void SetAsmSim(AsmSimulator asmSimulator, Rn reg, int lineNumber, bool isExpanded)

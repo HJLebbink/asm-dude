@@ -1447,6 +1447,231 @@ namespace AsmTools
             return Rn.NOREG;
         }
 
+        public static Arch GetArch(Rn rn)
+        {
+            switch (rn)
+            {
+                case Rn.AX:
+                case Rn.AL:
+                case Rn.AH:
+                case Rn.BX:
+                case Rn.BL:
+                case Rn.BH:
+                case Rn.CX:
+                case Rn.CL:
+                case Rn.CH:
+                case Rn.DX:
+                case Rn.DL:
+                case Rn.DH:
+                case Rn.SI:
+                case Rn.SIL:
+                case Rn.DI:
+                case Rn.DIL:
+                case Rn.BP:
+                case Rn.BPL:
+                case Rn.SP:
+                case Rn.SPL:
+                case Rn.CS:
+                case Rn.DS:
+                case Rn.ES:
+                case Rn.SS: return Arch.ARCH_8086;
+
+                case Rn.EAX:
+                case Rn.EBX:
+                case Rn.ECX:
+                case Rn.EDX:
+                case Rn.ESI:
+                case Rn.EDI:
+                case Rn.EBP:
+                case Rn.ESP:
+                case Rn.DR0:
+                case Rn.DR1:
+                case Rn.DR2:
+                case Rn.DR3:
+                case Rn.DR4:
+                case Rn.DR5:
+                case Rn.DR6:
+                case Rn.DR7:
+                case Rn.CR0:
+                case Rn.CR1:
+                case Rn.CR2:
+                case Rn.CR3:
+                case Rn.CR4:
+                case Rn.CR5:
+                case Rn.CR6:
+                case Rn.CR7:
+                case Rn.CR8: return Arch.ARCH_386;
+
+                case Rn.RAX:
+                case Rn.RBX:
+                case Rn.RCX:
+                case Rn.RDX:
+                case Rn.RSI:
+                case Rn.RDI:
+                case Rn.RBP:
+                case Rn.RSP:
+                case Rn.R8:
+                case Rn.R8D:
+                case Rn.R8W:
+                case Rn.R8B:
+                case Rn.R9:
+                case Rn.R9D:
+                case Rn.R9W:
+                case Rn.R9B:
+                case Rn.R10:
+                case Rn.R10D:
+                case Rn.R10W:
+                case Rn.R10B:
+                case Rn.R11:
+                case Rn.R11D:
+                case Rn.R11W:
+                case Rn.R11B:
+                case Rn.R12:
+                case Rn.R12D:
+                case Rn.R12W:
+                case Rn.R12B:
+                case Rn.R13:
+                case Rn.R13D:
+                case Rn.R13W:
+                case Rn.R13B:
+                case Rn.R14:
+                case Rn.R14D:
+                case Rn.R14W:
+                case Rn.R14B:
+                case Rn.R15:
+                case Rn.R15D:
+                case Rn.R15W:
+                case Rn.R15B:
+                case Rn.FS:
+                case Rn.GS: return Arch.X64;
+
+                case Rn.MM0:
+                case Rn.MM1:
+                case Rn.MM2:
+                case Rn.MM3:
+                case Rn.MM4:
+                case Rn.MM5:
+                case Rn.MM6:
+                case Rn.MM7: return Arch.MMX;
+
+                case Rn.XMM0:
+                case Rn.XMM1:
+                case Rn.XMM2:
+                case Rn.XMM3:
+                case Rn.XMM4:
+                case Rn.XMM5:
+                case Rn.XMM6:
+                case Rn.XMM7: return Arch.SSE;
+
+                case Rn.XMM8:
+                case Rn.XMM9:
+                case Rn.XMM10:
+                case Rn.XMM11:
+                case Rn.XMM12:
+                case Rn.XMM13:
+                case Rn.XMM14:
+                case Rn.XMM15: return Arch.X64;
+
+                case Rn.YMM0:
+                case Rn.YMM1:
+                case Rn.YMM2:
+                case Rn.YMM3:
+                case Rn.YMM4:
+                case Rn.YMM5:
+                case Rn.YMM6:
+                case Rn.YMM7:
+                case Rn.YMM8:
+                case Rn.YMM9:
+                case Rn.YMM10:
+                case Rn.YMM11:
+                case Rn.YMM12:
+                case Rn.YMM13:
+                case Rn.YMM14:
+                case Rn.YMM15:
+                case Rn.YMM16: return Arch.AVX;
+
+                case Rn.XMM16:
+                case Rn.XMM17:
+                case Rn.XMM18:
+                case Rn.XMM19:
+                case Rn.XMM20:
+                case Rn.XMM21:
+                case Rn.XMM22:
+                case Rn.XMM23:
+                case Rn.XMM24:
+                case Rn.XMM25:
+                case Rn.XMM26:
+                case Rn.XMM27:
+                case Rn.XMM28:
+                case Rn.XMM29:
+                case Rn.XMM30:
+                case Rn.XMM31:
+
+                case Rn.YMM17:
+                case Rn.YMM18:
+                case Rn.YMM19:
+                case Rn.YMM20:
+                case Rn.YMM21:
+                case Rn.YMM22:
+                case Rn.YMM23:
+                case Rn.YMM24:
+                case Rn.YMM25:
+                case Rn.YMM26:
+                case Rn.YMM27:
+                case Rn.YMM28:
+                case Rn.YMM29:
+                case Rn.YMM30:
+                case Rn.YMM31:
+
+                case Rn.ZMM0:
+                case Rn.ZMM1:
+                case Rn.ZMM2:
+                case Rn.ZMM3:
+                case Rn.ZMM4:
+                case Rn.ZMM5:
+                case Rn.ZMM6:
+                case Rn.ZMM7:
+                case Rn.ZMM8:
+                case Rn.ZMM9:
+                case Rn.ZMM10:
+                case Rn.ZMM11:
+                case Rn.ZMM12:
+                case Rn.ZMM13:
+                case Rn.ZMM14:
+                case Rn.ZMM15:
+                case Rn.ZMM16:
+                case Rn.ZMM17:
+                case Rn.ZMM18:
+                case Rn.ZMM19:
+                case Rn.ZMM20:
+                case Rn.ZMM21:
+                case Rn.ZMM22:
+                case Rn.ZMM23:
+                case Rn.ZMM24:
+                case Rn.ZMM25:
+                case Rn.ZMM26:
+                case Rn.ZMM27:
+                case Rn.ZMM28:
+                case Rn.ZMM29:
+                case Rn.ZMM30:
+                case Rn.ZMM31:
+                case Rn.K0:
+                case Rn.K1:
+                case Rn.K2:
+                case Rn.K3:
+                case Rn.K4:
+                case Rn.K5:
+                case Rn.K6:
+                case Rn.K7: return Arch.AVX512_F;
+
+                case Rn.BND0:
+                case Rn.BND1:
+                case Rn.BND2:
+                case Rn.BND3: return Arch.MPX;
+
+                default: return Arch.NONE;
+            }
+        }
 
         #region Register Classifications
         public static bool IsOpmaskRegister(Rn rn)

@@ -97,17 +97,6 @@ namespace AsmDude.QuickInfo
 
         #region Private Methods
 
-        private bool MnemonicSwitchedOn(Mnemonic mnemonic)
-        {
-            ISet<Arch> selectedArchs = AsmDudeToolsStatic.Get_Arch_Swithed_On();
-            MnemonicStore store = this._asmDudeTools.Mnemonic_Store;
-            foreach (Arch a in store.GetArch(mnemonic))
-            {
-                if (selectedArchs.Contains(a)) return true;
-            }
-            return false;
-        }
-
         private void Handle(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan)
         {
             applicableToSpan = null;
@@ -195,10 +184,13 @@ namespace AsmDude.QuickInfo
                                 int lineNumber = AsmDudeToolsStatic.Get_LineNumber(tagSpan);
                                 if (keywordUpper.StartsWith("%")) keywordUpper = keywordUpper.Substring(1); // remove the preceding % in AT&T syntax 
                                 Rn reg = RegisterTools.ParseRn(keywordUpper, true);
-                                var registerTooltipWindow = new RegisterTooltipWindow(foreground);
-                                registerTooltipWindow.SetDescription(reg, this._asmDudeTools);
-                                registerTooltipWindow.SetAsmSim(this._asmSimulator, reg, lineNumber, true);
-                                quickInfoContent.Add(registerTooltipWindow);
+                                if (this._asmDudeTools.RegisterSwitchedOn(reg))
+                                {
+                                    var registerTooltipWindow = new RegisterTooltipWindow(foreground);
+                                    registerTooltipWindow.SetDescription(reg, this._asmDudeTools);
+                                    registerTooltipWindow.SetAsmSim(this._asmSimulator, reg, lineNumber, true);
+                                    quickInfoContent.Add(registerTooltipWindow);
+                                }
                                 break;
                             }
                         case AsmTokenType.Mnemonic:
@@ -206,10 +198,12 @@ namespace AsmDude.QuickInfo
                             {
                                 int lineNumber = AsmDudeToolsStatic.Get_LineNumber(tagSpan);
                                 Mnemonic mnemonic = AsmSourceTools.ParseMnemonic_Att(keywordUpper, true);
-                                if (MnemonicSwitchedOn(mnemonic))
+                                if (this._asmDudeTools.MnemonicSwitchedOn(mnemonic))
                                 {
-                                    var instructionTooltipWindow = new InstructionTooltipWindow(foreground);
-                                    instructionTooltipWindow.Session = session; // set the owner of this windows such that we can manually close this window
+                                    var instructionTooltipWindow = new InstructionTooltipWindow(foreground)
+                                    {
+                                        Session = session // set the owner of this windows such that we can manually close this window
+                                    };
                                     instructionTooltipWindow.SetDescription(mnemonic, this._asmDudeTools);
                                     instructionTooltipWindow.SetPerformanceInfo(mnemonic, this._asmDudeTools, false);
                                     instructionTooltipWindow.SetAsmSim(this._asmSimulator, lineNumber, true);
@@ -278,9 +272,9 @@ namespace AsmDude.QuickInfo
                                 description = new TextBlock();
                                 description.Inlines.Add(Make_Run1("Constant ", foreground));
 
-                                var constant = AsmSourceTools.Evaluate_Constant(keyword);
-                                string constantStr = (constant.Valid)
-                                    ? constant.Value + "d = " + constant.Value.ToString("X") + "h = " + AsmSourceTools.ToStringBin(constant.Value, constant.NBits) + "b"
+                                var (Valid, Value, NBits) = AsmSourceTools.Evaluate_Constant(keyword);
+                                string constantStr = (Valid)
+                                    ? Value + "d = " + Value.ToString("X") + "h = " + AsmSourceTools.ToStringBin(Value, NBits) + "b"
                                     : keyword;
 
                                 description.Inlines.Add(Make_Run2(constantStr, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Constant))));
