@@ -97,6 +97,17 @@ namespace AsmDude.QuickInfo
 
         #region Private Methods
 
+        private bool MnemonicSwitchedOn(Mnemonic mnemonic)
+        {
+            ISet<Arch> selectedArchs = AsmDudeToolsStatic.Get_Arch_Swithed_On();
+            MnemonicStore store = this._asmDudeTools.Mnemonic_Store;
+            foreach (Arch a in store.GetArch(mnemonic))
+            {
+                if (selectedArchs.Contains(a)) return true;
+            }
+            return false;
+        }
+
         private void Handle(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan)
         {
             applicableToSpan = null;
@@ -195,13 +206,15 @@ namespace AsmDude.QuickInfo
                             {
                                 int lineNumber = AsmDudeToolsStatic.Get_LineNumber(tagSpan);
                                 Mnemonic mnemonic = AsmSourceTools.ParseMnemonic_Att(keywordUpper, true);
-
-                                var instructionTooltipWindow = new InstructionTooltipWindow(foreground);
-                                instructionTooltipWindow.Session = session; // set the owner of this windows such that we can manually close this window
-                                instructionTooltipWindow.SetDescription(mnemonic, this._asmDudeTools);
-                                instructionTooltipWindow.SetPerformanceInfo(mnemonic, this._asmDudeTools, false);
-                                instructionTooltipWindow.SetAsmSim(this._asmSimulator, lineNumber, true);
-                                quickInfoContent.Add(instructionTooltipWindow);
+                                if (MnemonicSwitchedOn(mnemonic))
+                                {
+                                    var instructionTooltipWindow = new InstructionTooltipWindow(foreground);
+                                    instructionTooltipWindow.Session = session; // set the owner of this windows such that we can manually close this window
+                                    instructionTooltipWindow.SetDescription(mnemonic, this._asmDudeTools);
+                                    instructionTooltipWindow.SetPerformanceInfo(mnemonic, this._asmDudeTools, false);
+                                    instructionTooltipWindow.SetAsmSim(this._asmSimulator, lineNumber, true);
+                                    quickInfoContent.Add(instructionTooltipWindow);
+                                }
                                 break;
                             }
                         case AsmTokenType.Label:

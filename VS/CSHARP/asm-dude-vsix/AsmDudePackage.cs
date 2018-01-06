@@ -109,7 +109,7 @@ namespace AsmDude
 
         /*
         private void changeFontAutoComplete() {
-            // experiments to change the font of the autocomplate
+            // experiments to change the font of the autocomplete
             try {
                 DTE vsEnvironment = (DTE)GetService(typeof(SDTE));
 
