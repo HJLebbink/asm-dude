@@ -257,33 +257,39 @@ namespace AsmDude.CodeFolding
         /// </summary>
         private (int StartPosFolding, int StartPosDescription) Is_Start_Masm_Keyword(string lineContent, int lineNumber)
         {
-            ITextSnapshotLine line = this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
-            IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(line.Extent);
-            foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in tags)
+            try
             {
-                if (asmTokenSpan.Tag.Type == AsmTokenType.Directive)
+                ITextSnapshotLine line = this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
+                IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(line.Extent);
+                foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in tags)
                 {
-                    string tokenStr = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText().ToUpper();
-                    //AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger:IsStartMasmKeyword: tokenStr=" + tokenStr);
-                    switch (tokenStr)
+                    if (asmTokenSpan.Tag.Type == AsmTokenType.Directive)
                     {
-                        case "SEGMENT":
-                        case "MACRO":
-                        case "STRUCT":
-                        case ".IF":
-                        case ".WHILE":
-                        case "PROC":
-                            {
-                                return (lineContent.Length, lineContent.Length);
-                            }
-                        case "EXTERN":
-                        case "EXTRN": // no start region on a line with EXTERN keyword
-                            {
-                                return (-1, -1);
-                            }
-                        default: break;
+                        string tokenStr = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText().ToUpper();
+                        //AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger:IsStartMasmKeyword: tokenStr=" + tokenStr);
+                        switch (tokenStr)
+                        {
+                            case "SEGMENT":
+                            case "MACRO":
+                            case "STRUCT":
+                            case ".IF":
+                            case ".WHILE":
+                            case "PROC":
+                                {
+                                    return (lineContent.Length, lineContent.Length);
+                                }
+                            case "EXTERN":
+                            case "EXTRN": // no start region on a line with EXTERN keyword
+                                {
+                                    return (-1, -1);
+                                }
+                            default: break;
+                        }
                     }
                 }
+            } catch (Exception e)
+            {
+                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Is_Start_Masm_Keyword; e={1}", ToString(), e.ToString()));
             }
             return (-1, -1);
         }
