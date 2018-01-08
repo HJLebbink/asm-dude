@@ -401,9 +401,11 @@ class Pile(object):
 				 (content == 'Other Mode Exceptions') or \
 				 (content == 'Virtual-8086 Mode Exceptions') or \
 				 (content == 'SIMD Floating-Point Exceptions') or \
+				 (content == 'SIMD Floating Point Exceptions') or \
 				 (content == 'Protected Mode Exceptions') or \
 				 (content == 'Exceptions') or \
 				 (content == 'Numeric Exceptions') or \
+				 (content == 'Virtual 8086 Mode Exceptions') or \
 				 (content == 'Real-Address Mode Exceptions'):
 				state.type_next = 'exceptions'
 				markdown += Pile._close_code(state) + Pile._header(content)

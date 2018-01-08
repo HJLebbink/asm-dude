@@ -15,7 +15,7 @@ class Writer(object):
 
 	def __init__(self):
 		#self.source = 'Intel® Architecture Instruction Set Extensions and Future Features Programming Reference (OCTOBER 2017)'
-		self.source = 'Intel® Architecture Software Developer\'s Manual (OCTOBER 2017)'
+		self.source = 'Intel® Architecture Software Developer\'s Manual (DECEMBER 2017)'
 
 
 	@staticmethod
@@ -48,15 +48,19 @@ class Writer(object):
 		str = str.replace('loca-\ntions', 'locations\n')
 		str = str.replace('loca-\ntion', 'location\n')
 		str = str.replace('speci-\nfied', 'specified\n')
-
-
+		str = str.replace('64-\nbit', '64-bit\n')
+		str = str.replace('unpre-\ndictable', '\nunpredictable')
+		str = str.replace('single-\nprecision', '\nsingle-precision')
+		str = str.replace('priv-\nilege', '\nprivilege')
+		
+		
 		str = str.replace('single- precision', 'single-precision')
 		str = str.replace('no- operand', 'no-operand')
 		str = str.replace('no- operands', 'no-operands')
 		str = str.replace('REP/REPE/REPZ /REPNE/REPNZ', 'REP/REPE/REPZ/REPNE/REPNZ')
 		str = str.replace('general- purpose', 'general-purpose')
 		str = str.replace('general- protection', 'general-protection')
-		str = str.replace('excep- tion', 'excep-tion')
+		str = str.replace('excep- tion', 'exception')
 		
 		return str
 
@@ -94,7 +98,7 @@ class Writer(object):
 
 		now = datetime.datetime.now()
 		generatedTime = str(now.day) + '-' + str(now.month) + '-' + str(now.year)
-		#generatedTime = '10/20/17 13:38:30'
+		#generatedTime = '24-10-2017'
 		markdown += '\n --- \n<p align="right"><i>Source: '+self.source+'<br>Generated: '+generatedTime+'</i></p>\n'
 		fwrite.write(markdown)
 		fwrite.close()
