@@ -1590,39 +1590,6 @@ namespace AsmTools
                 case Rn.YMM15:
                 case Rn.YMM16: return Arch.AVX;
 
-                case Rn.XMM16:
-                case Rn.XMM17:
-                case Rn.XMM18:
-                case Rn.XMM19:
-                case Rn.XMM20:
-                case Rn.XMM21:
-                case Rn.XMM22:
-                case Rn.XMM23:
-                case Rn.XMM24:
-                case Rn.XMM25:
-                case Rn.XMM26:
-                case Rn.XMM27:
-                case Rn.XMM28:
-                case Rn.XMM29:
-                case Rn.XMM30:
-                case Rn.XMM31:
-
-                case Rn.YMM17:
-                case Rn.YMM18:
-                case Rn.YMM19:
-                case Rn.YMM20:
-                case Rn.YMM21:
-                case Rn.YMM22:
-                case Rn.YMM23:
-                case Rn.YMM24:
-                case Rn.YMM25:
-                case Rn.YMM26:
-                case Rn.YMM27:
-                case Rn.YMM28:
-                case Rn.YMM29:
-                case Rn.YMM30:
-                case Rn.YMM31:
-
                 case Rn.ZMM0:
                 case Rn.ZMM1:
                 case Rn.ZMM2:
@@ -1663,6 +1630,39 @@ namespace AsmTools
                 case Rn.K5:
                 case Rn.K6:
                 case Rn.K7: return Arch.AVX512_F;
+
+                case Rn.XMM16:
+                case Rn.XMM17:
+                case Rn.XMM18:
+                case Rn.XMM19:
+                case Rn.XMM20:
+                case Rn.XMM21:
+                case Rn.XMM22:
+                case Rn.XMM23:
+                case Rn.XMM24:
+                case Rn.XMM25:
+                case Rn.XMM26:
+                case Rn.XMM27:
+                case Rn.XMM28:
+                case Rn.XMM29:
+                case Rn.XMM30:
+                case Rn.XMM31:
+
+                case Rn.YMM17:
+                case Rn.YMM18:
+                case Rn.YMM19:
+                case Rn.YMM20:
+                case Rn.YMM21:
+                case Rn.YMM22:
+                case Rn.YMM23:
+                case Rn.YMM24:
+                case Rn.YMM25:
+                case Rn.YMM26:
+                case Rn.YMM27:
+                case Rn.YMM28:
+                case Rn.YMM29:
+                case Rn.YMM30:
+                case Rn.YMM31: return Arch.AVX512_VL;
 
                 case Rn.BND0:
                 case Rn.BND1:
