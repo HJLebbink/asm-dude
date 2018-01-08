@@ -1669,3 +1669,438 @@ XSAVE	MEM	SSE42	XSAVE MEM	Save state components specified by EDX:EAX to mem.
 XSAVEC	MEM	SSE42	XSAVEC MEM	Save state components specified by EDX:EAX to mem with compaction.
 XSAVES	MEM	SSE42	XSAVES MEM	Save state components specified by EDX:EAX to mem with compaction, optimizing if possible.
 XSETBV		SSE42	XSETBV	Write the value in EDX:EAX to the XCR specified by ECX.
+
+ANDN	R32,R32,R/M32	BMI1	ANDN R32A,R32B,R/M32	Bitwise AND of inverted r32b with r/m32, store result in r32a.
+ANDN	R64,R64,R/M64	BMI1	ANDN R64A,R64B,R/M64	Bitwise AND of inverted r64b with r/m64, store result in r64a.
+
+BEXTR	R32,R/M32,R32	BMI1	BEXTR R32A,R/M32,R32B	Contiguous bitwise extract from r/m32 using r32b as control; store result in r32a.
+BEXTR	R64,R64,R/M64	BMI1	BEXTR R64A,R/M64,R64B	Contiguous bitwise extract from r/m64 using r64b as control; store result in r64a.
+
+BLSI	R32,R/M32	BMI1	BLSI R32,R/M32	Extract lowest set bit from r/m32 and set that bit in r32.
+BLSI	R64,R/M64	BMI1	BLSI R64,R/M64	Extract lowest set bit from r/m64, and set that bit in r64.
+BLSMSK	R32,R/M32	BMI1	BLSMSK R32,R/M32	Set all lower bits in r32 to “1” starting from bit 0 to lowest set bit in r/m32.
+BLSMSK	R64,R/M64	BMI1	BLSMSK R64,R/M64	Set all lower bits in r64 to “1” starting from bit 0 to lowest set bit in r/m64.
+BLSR	R32,R/M32	BMI1	BLSR R32,R/M32	Reset lowest set bit of r/m32, keep all other bits of r/m32 and write result to r32.
+BLSR	R64,R/M64	BMI1	BLSR R64,R/M64	Reset lowest set bit of r/m64, keep all other bits of r/m64 and write result to r64.
+
+BZHI	R32,R/M32,R32	BMI2	BZHI R32A,R/M32,R32B	Zero bits in r/m32 starting with the position in r32b, write result to r32a.
+BZHI	R64,R64,R/M64	BMI2	BZHI R64A,R/M64,R64B	Zero bits in r/m64 starting with the position in r64b, write result to r64a.
+
+MULX	R32,R32,R/M32	BMI2	MULX R32A,R32B,R/M32	Unsigned multiply of r/m32 with EDX without affecting arithmetic flags.
+MULX	R64,R64,R/M64	BMI2	MULX R64A,R64B,R/M64	Unsigned multiply of r/m64 with RDX without affecting arithmetic flags.
+
+SARX	R32,R/M32,R32	BMI2	SARX R32A,R/M32,R32B	Shift r/m32 arithmetically right with count specified in r32b.
+SHLX	R32,R/M32,R32	BMI2	SHLX R32A,R/M32,R32B	Shift r/m32 logically left with count specified in r32b.
+SHRX	R32,R/M32,R32	BMI2	SHRX R32A,R/M32,R32B	Shift r/m32 logically right with count specified in r32b.
+
+SARX	R64,R/M64,R64	BMI2	SARX R64A,R/M64,R64B	Shift r/m64 arithmetically right with count specified in r64b.
+SHLX	R64,R/M64,R64	BMI2	SHLX R64A,R/M64,R64B	Shift r/m64 logically left with count specified in r64b.
+SHRX	R64,R/M64,R64	BMI2	SHRX R64A,R/M64,R64B	Shift r/m64 logically right with count specified in r64b.
+
+; Carry-Less multiplications ====================================================================
+
+GENERAL	PCLMULQDQ	Carry-Less Multiplication Qword 	PCLMULQDQ
+GENERAL	VPCLMULQDQ	Carry-Less Multiplication Qword 	PCLMULQDQ
+
+GENERAL	PCLMULLQLQDQ	Carry-Less Multiplication Qword with Imm8 = 0000_0000B 	PCLMULQDQ
+GENERAL	PCLMULHQLQDQ	Carry-Less Multiplication Qword with Imm8 = 0000_0001B	PCLMULQDQ
+GENERAL	PCLMULLQHQDQ	Carry-Less Multiplication Qword with Imm8 = 0001_0000B	PCLMULQDQ
+GENERAL	PCLMULHQHQDQ	Carry-Less Multiplication Qword with Imm8 = 0001_0001B	PCLMULQDQ
+
+GENERAL	VPCLMULLQLQDQ	Carry-Less Multiplication Qword with Imm8 = 0000_0000B 	PCLMULQDQ
+GENERAL	VPCLMULHQLQDQ	Carry-Less Multiplication Qword with Imm8 = 0000_0001B	PCLMULQDQ
+GENERAL	VPCLMULLQHQDQ	Carry-Less Multiplication Qword with Imm8 = 0001_0000B	PCLMULQDQ
+GENERAL	VPCLMULHQHQDQ	Carry-Less Multiplication Qword with Imm8 = 0001_0001B	PCLMULQDQ
+
+PCLMULQDQ	XMM,XMM/M128,IMM8	PCLMULQDQ	PCLMULQDQ XMM1,XMM2/M128,IMM8	Carry-less multiplication of one Qword of xmm1 by one Qword of xmm2/m128, stores the 128-bit result in xmm1. The immediate is used to determine which quadwords of xmm1 and xmm2/m128 should be used.
+VPCLMULQDQ	XMM,XMM/M128,IMM8	PCLMULQDQ	VPCLMULQDQ XMM1,XMM2/M128,IMM8	Carry-less multiplication of one Qword of xmm1 by one Qword of xmm2/m128, stores the 128-bit result in xmm1. The immediate is used to determine which quadwords of xmm1 and xmm2/m128 should be used.
+
+PCLMULLQLQDQ	XMM,XMM/M128	PCLMULQDQ	PCLMULLQLQDQ XMM1,XMM2/M128	Carry-less multiplication of one Qword of xmm1 by one Qword of xmm2/m128, stores the 128-bit result in xmm1. The immediate is used to determine which quadwords of xmm1 and xmm2/m128 should be used is 0000_0000B.
+PCLMULHQLQDQ	XMM,XMM/M128	PCLMULQDQ	PCLMULHQLQDQ XMM1,XMM2/M128	Carry-less multiplication of one Qword of xmm1 by one Qword of xmm2/m128, stores the 128-bit result in xmm1. The immediate is used to determine which quadwords of xmm1 and xmm2/m128 should be used is 0000_0001B.
+PCLMULLQHQDQ	XMM,XMM/M128	PCLMULQDQ	PCLMULLQHQDQ XMM1,XMM2/M128	Carry-less multiplication of one Qword of xmm1 by one Qword of xmm2/m128, stores the 128-bit result in xmm1. The immediate is used to determine which quadwords of xmm1 and xmm2/m128 should be used is 0001_0000B.
+PCLMULHQHQDQ	XMM,XMM/M128	PCLMULQDQ	PCLMULHQHQDQ XMM1,XMM2/M128	Carry-less multiplication of one Qword of xmm1 by one Qword of xmm2/m128, stores the 128-bit result in xmm1. The immediate is used to determine which quadwords of xmm1 and xmm2/m128 should be used is 0001_0001B.
+
+VPCLMULLQLQDQ	XMM,XMM/M128	PCLMULQDQ	VPCLMULLQLQDQ XMM1,XMM2/M128	Carry-less multiplication of one Qword of xmm1 by one Qword of xmm2/m128, stores the 128-bit result in xmm1. The immediate is used to determine which quadwords of xmm1 and xmm2/m128 should be used is 0000_0000B.
+VPCLMULHQLQDQ	XMM,XMM/M128	PCLMULQDQ	VPCLMULHQLQDQ XMM1,XMM2/M128	Carry-less multiplication of one Qword of xmm1 by one Qword of xmm2/m128, stores the 128-bit result in xmm1. The immediate is used to determine which quadwords of xmm1 and xmm2/m128 should be used is 0000_0001B.
+VPCLMULLQHQDQ	XMM,XMM/M128	PCLMULQDQ	VPCLMULLQHQDQ XMM1,XMM2/M128	Carry-less multiplication of one Qword of xmm1 by one Qword of xmm2/m128, stores the 128-bit result in xmm1. The immediate is used to determine which quadwords of xmm1 and xmm2/m128 should be used is 0001_0000B.
+VPCLMULHQHQDQ	XMM,XMM/M128	PCLMULQDQ	VPCLMULHQHQDQ XMM1,XMM2/M128	Carry-less multiplication of one Qword of xmm1 by one Qword of xmm2/m128, stores the 128-bit result in xmm1. The immediate is used to determine which quadwords of xmm1 and xmm2/m128 should be used is 0001_0001B.
+
+; Compare CMPPD ====================================================================
+
+GENERAL	CMPPD	Compare Packed Double-Precision FP Values	CMPPD
+CMPPD	XMM,XMM/M128,IMM8	SSE2	CMPPD XMM1,XMM2/M128,IMM8	Compare packed Double-Precision FP values in xmm2/m128 and xmm1 using bits 2:0 of imm8 as a comparison predicate.
+
+GENERAL	CMPEQPD	Compare Packed Double-Precision FP Values. CMPEQPD xmm1, xmm2 equals CMPPD xmm1, xmm2, 0	CMPPD
+GENERAL	CMPLTPD	Compare Packed Double-Precision FP Values. CMPLTPD xmm1, xmm2 equals CMPPD xmm1, xmm2, 1	CMPPD
+GENERAL	CMPLEPD	Compare Packed Double-Precision FP Values. CMPLEPD xmm1, xmm2 equals CMPPD xmm1, xmm2, 2	CMPPD
+GENERAL	CMPUNORDPD	Compare Packed Double-Precision FP Values. CMPUNORDPD xmm1, xmm2 equals CMPPD xmm1, xmm2, 3	CMPPD
+GENERAL	CMPNEQPD	Compare Packed Double-Precision FP Values. CMPNEQPD xmm1, xmm2 equals CMPPD xmm1, xmm2, 4	CMPPD
+GENERAL	CMPNLTPD	Compare Packed Double-Precision FP Values. CMPNLTPD xmm1, xmm2 equals CMPPD xmm1, xmm2, 5	CMPPD
+GENERAL	CMPNLEPD	Compare Packed Double-Precision FP Values. CMPNLEPD xmm1, xmm2 equals CMPPD xmm1, xmm2, 6	CMPPD
+GENERAL	CMPORDPD	Compare Packed Double-Precision FP Values. CMPORDPD xmm1, xmm2 equals CMPPD xmm1, xmm2, 7	CMPPD
+
+CMPEQPD	XMM,XMM/M128	SSE2	CMPEQPD XMM1,XMM2/M128	Compare packed Double-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 0.
+CMPLTPD	XMM,XMM/M128	SSE2	CMPLTPD XMM1,XMM2/M128	Compare packed Double-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 1.
+CMPLEPD	XMM,XMM/M128	SSE2	CMPLEPD XMM1,XMM2/M128	Compare packed Double-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 2.
+CMPUNORDPD	XMM,XMM/M128	SSE2	CMPUNORDPD XMM1,XMM2/M128	Compare packed Double-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 3.
+CMPNEQPD	XMM,XMM/M128	SSE2	CMPNEQPD XMM1,XMM2/M128	Compare packed Double-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 4.
+CMPNLTPD	XMM,XMM/M128	SSE2	CMPNLTPD XMM1,XMM2/M128	Compare packed Double-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 5.
+CMPNLEPD	XMM,XMM/M128	SSE2	CMPNLEPD XMM1,XMM2/M128	Compare packed Double-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 6.
+CMPORDPD	XMM,XMM/M128	SSE2	CMPORDPD XMM1,XMM2/M128	Compare packed Double-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 7.
+
+GENERAL	VCMPPD	Compare Packed Double-Precision FP Values	CMPPD
+VCMPPD	XMM,XMM,XMM/M128,IMM8	AVX	VCMPPD XMM1,XMM2,XMM3/M128,IMM8	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using bits 4:0 of imm8 as a comparison predicate.
+VCMPPD	YMM,YMM,YMM/M256,IMM8	AVX	VCMPPD YMM1,YMM2,YMM3/M256,IMM8	Compare packed Double-Precision FP values in ymm3/m256 and ymm2 using bits 4:0 of imm8 as a comparison predicate.
+VCMPPD	K{K},XMM,XMM/M128/M64BCST,IMM8	AVX512VL,AVX512F	VCMPPD K1{K2},XMM2,XMM3/M128/M64BCST,IMM8	Compare packed Double-Precision FP values in xmm3/m128/m64bcst and xmm2 using bits 4:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
+VCMPPD	K{K},YMM,YMM/M256/M64BCST,IMM8	AVX512VL,AVX512F	VCMPPD K1{K2},YMM2,YMM3/M256/M64BCST,IMM8	Compare packed Double-Precision FP values in ymm3/m256/m64bcst and ymm2 using bits 4:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
+VCMPPD	K{K},ZMM,ZMM/M512/M64BCST{SAE},IMM8	AVX512F	VCMPPD K1{K2},ZMM2,ZMM3/M512/M64BCST{SAE},IMM8	Compare packed Double-Precision FP values in zmm3/m512/m64bcst and zmm2 using bits 4:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
+
+GENERAL	VCMPEQPD	Compare Packed Double-Precision FP Values. VCMPEQPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 0	CMPPD
+GENERAL	VCMPLTPD	Compare Packed Double-Precision FP Values. VCMPLTPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 1	CMPPD
+GENERAL	VCMPLEPD	Compare Packed Double-Precision FP Values. VCMPLEPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 2	CMPPD
+GENERAL	VCMPUNORDPD	Compare Packed Double-Precision FP Values. VCMPUNORDPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 3	CMPPD
+GENERAL	VCMPNEQPD	Compare Packed Double-Precision FP Values. VCMPNEQPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 4	CMPPD
+GENERAL	VCMPNLTPD	Compare Packed Double-Precision FP Values. VCMPNLTPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 5	CMPPD
+GENERAL	VCMPNLEPD	Compare Packed Double-Precision FP Values. VCMPNLEPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 6	CMPPD
+GENERAL	VCMPORDPD	Compare Packed Double-Precision FP Values. VCMPORDPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 7	CMPPD
+GENERAL	VCMPEQ_UQPD	Compare Packed Double-Precision FP Values. VCMPEQ_UQPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 8	CMPPD
+GENERAL	VCMPNGEPD	Compare Packed Double-Precision FP Values. VCMPNGEPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 9	CMPPD
+GENERAL	VCMPNGTPD	Compare Packed Double-Precision FP Values. VCMPNGTPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 0AH	CMPPD
+GENERAL	VCMPFALSEPD	Compare Packed Double-Precision FP Values. VCMPFALSEPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 0BH	CMPPD
+GENERAL	VCMPNEQ_OQPD	Compare Packed Double-Precision FP Values. VCMPNEQ_OQPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 0CH	CMPPD
+GENERAL	VCMPGEPD	Compare Packed Double-Precision FP Values. VCMPGEPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 0DH	CMPPD
+GENERAL	VCMPGTPD	Compare Packed Double-Precision FP Values. VCMPGTPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 0EH	CMPPD
+GENERAL	VCMPTRUEPD	Compare Packed Double-Precision FP Values. VCMPTRUEPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 0FH	CMPPD
+GENERAL	VCMPEQ_OSPD	Compare Packed Double-Precision FP Values. VCMPEQ_OSPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 10H	CMPPD
+GENERAL	VCMPLT_OQPD	Compare Packed Double-Precision FP Values. VCMPLT_OQPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 11H	CMPPD
+GENERAL	VCMPLE_OQPD	Compare Packed Double-Precision FP Values. VCMPLE_OQPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 12H	CMPPD
+GENERAL	VCMPUNORD_SPD	Compare Packed Double-Precision FP Values. VCMPUNORD_SPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 13H	CMPPD
+GENERAL	VCMPNEQ_USPD	Compare Packed Double-Precision FP Values. VCMPNEQ_USPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 14H	CMPPD
+GENERAL	VCMPNLT_UQPD	Compare Packed Double-Precision FP Values. VCMPNLT_UQPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 15H	CMPPD
+GENERAL	VCMPNLE_UQPD	Compare Packed Double-Precision FP Values. VCMPNLE_UQPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 16H	CMPPD
+GENERAL	VCMPORD_SPD	Compare Packed Double-Precision FP Values. VCMPORD_SPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 17H	CMPPD
+GENERAL	VCMPEQ_USPD	Compare Packed Double-Precision FP Values. VCMPEQ_USPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 18H	CMPPD
+GENERAL	VCMPNGE_UQPD	Compare Packed Double-Precision FP Values. VCMPNGE_UQPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 19H	CMPPD
+GENERAL	VCMPNGT_UQPD	Compare Packed Double-Precision FP Values. VCMPNGT_UQPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 1AH	CMPPD
+GENERAL	VCMPFALSE_OSPD	Compare Packed Double-Precision FP Values. VCMPFALSE_OSPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 1BH	CMPPD
+GENERAL	VCMPNEQ_OSPD	Compare Packed Double-Precision FP Values. VCMPNEQ_OSPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 1CH	CMPPD
+GENERAL	VCMPGE_OQPD	Compare Packed Double-Precision FP Values. VCMPGE_OQPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 1DH	CMPPD
+GENERAL	VCMPGT_OQPD	Compare Packed Double-Precision FP Values. VCMPGT_OQPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 1EH	CMPPD
+GENERAL	VCMPTRUE_USPD	Compare Packed Double-Precision FP Values. VCMPTRUE_USPD reg1, reg2, reg3 equals VCMPPD reg1, reg2, reg3, 1FH	CMPPD
+
+VCMPEQPD	XMM,XMM,XMM/M128	AVX	VCMPEQPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0.
+VCMPLTPD	XMM,XMM,XMM/M128	AVX	VCMPLTPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1.
+VCMPLEPD	XMM,XMM,XMM/M128	AVX	VCMPLEPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 2.
+VCMPUNORDPD	XMM,XMM,XMM/M128	AVX	VCMPUNORDPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 3.
+VCMPNEQPD	XMM,XMM,XMM/M128	AVX	VCMPNEQPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 4.
+VCMPNLTPD	XMM,XMM,XMM/M128	AVX	VCMPNLTPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 5.
+VCMPNLEPD	XMM,XMM,XMM/M128	AVX	VCMPNLEPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 6.
+VCMPORDPD	XMM,XMM,XMM/M128	AVX	VCMPORDPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 7.
+VCMPEQ_UQPD	XMM,XMM,XMM/M128	AVX	VCMPEQ_UQPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 8.
+VCMPNGEPD	XMM,XMM,XMM/M128	AVX	VCMPNGEPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 9.
+VCMPNGTPD	XMM,XMM,XMM/M128	AVX	VCMPNGTPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0AH.
+VCMPFALSEPD	XMM,XMM,XMM/M128	AVX	VCMPFALSEPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0BH.
+VCMPNEQ_OQPD	XMM,XMM,XMM/M128	AVX	VCMPNEQ_OQPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0CH.
+VCMPGEPD	XMM,XMM,XMM/M128	AVX	VCMPGEPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0DH.
+VCMPGTPD	XMM,XMM,XMM/M128	AVX	VCMPGTPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0EH.
+VCMPTRUEPD	XMM,XMM,XMM/M128	AVX	VCMPTRUEPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0FH.
+VCMPEQ_OSPD	XMM,XMM,XMM/M128	AVX	VCMPEQ_OSPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 10H.
+VCMPLT_OQPD	XMM,XMM,XMM/M128	AVX	VCMPLT_OQPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 11H.
+VCMPLE_OQPD	XMM,XMM,XMM/M128	AVX	VCMPLE_OQPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 12H.
+VCMPUNORD_SPD	XMM,XMM,XMM/M128	AVX	VCMPUNORD_SPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 13H.
+VCMPNEQ_USPD	XMM,XMM,XMM/M128	AVX	VCMPNEQ_USPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 14H.
+VCMPNLT_UQPD	XMM,XMM,XMM/M128	AVX	VCMPNLT_UQPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 15H.
+VCMPNLE_UQPD	XMM,XMM,XMM/M128	AVX	VCMPNLE_UQPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 16H.
+VCMPORD_SPD	XMM,XMM,XMM/M128	AVX	VCMPORD_SPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 17H.
+VCMPEQ_USPD	XMM,XMM,XMM/M128	AVX	VCMPEQ_USPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 18H.
+VCMPNGE_UQPD	XMM,XMM,XMM/M128	AVX	VCMPNGE_UQPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 19H.
+VCMPNGT_UQPD	XMM,XMM,XMM/M128	AVX	VCMPNGT_UQPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1AH.
+VCMPFALSE_OSPD	XMM,XMM,XMM/M128	AVX	VCMPFALSE_OSPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1BH.
+VCMPNEQ_OSPD	XMM,XMM,XMM/M128	AVX	VCMPNEQ_OSPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1CH.
+VCMPGE_OQPD	XMM,XMM,XMM/M128	AVX	VCMPGE_OQPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1DH.
+VCMPGT_OQPD	XMM,XMM,XMM/M128	AVX	VCMPGT_OQPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1EH.
+VCMPTRUE_USPD	XMM,XMM,XMM/M128	AVX	VCMPTRUE_USPD XMM1,XMM2,XMM3/M128	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1FH.
+;TODO add the other 4 signatures
+
+; Compare CMPPS ====================================================================
+
+GENERAL	CMPPS	Compare Packed Single-Precision FP Values	CMPPS
+CMPPS	XMM,XMM/M128,IMM8	SSE	CMPPS XMM1,XMM2/M128,IMM8	Compare packed Single-Precision FP values in xmm2/m128 and xmm1 using bits 2:0 of imm8 as a comparison predicate.
+
+GENERAL	CMPEQPS	Compare Packed Single-Precision FP Values. CMPEQPS xmm1, xmm2 equals CMPPS xmm1, xmm2, 0	CMPPS
+GENERAL	CMPLTPS	Compare Packed Single-Precision FP Values. CMPLTPS xmm1, xmm2 equals CMPPS xmm1, xmm2, 1	CMPPS
+GENERAL	CMPLEPS	Compare Packed Single-Precision FP Values. CMPLEPS xmm1, xmm2 equals CMPPS xmm1, xmm2, 2	CMPPS
+GENERAL	CMPUNORDPS	Compare Packed Single-Precision FP Values. CMPUNORDPS xmm1, xmm2 equals CMPPS xmm1, xmm2, 3	CMPPS
+GENERAL	CMPNEQPS	Compare Packed Single-Precision FP Values. CMPNEQPS xmm1, xmm2 equals CMPPS xmm1, xmm2, 4	CMPPS
+GENERAL	CMPNLTPS	Compare Packed Single-Precision FP Values. CMPNLTPS xmm1, xmm2 equals CMPPS xmm1, xmm2, 5	CMPPS
+GENERAL	CMPNLEPS	Compare Packed Single-Precision FP Values. CMPNLEPS xmm1, xmm2 equals CMPPS xmm1, xmm2, 6	CMPPS
+GENERAL	CMPORDPS	Compare Packed Single-Precision FP Values. CMPORDPS xmm1, xmm2 equals CMPPS xmm1, xmm2, 7	CMPPS
+
+CMPEQPS	XMM,XMM/M128	SSE2	CMPEQPS XMM1,XMM2/M128	Compare packed Single-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 0.
+CMPLTPS	XMM,XMM/M128	SSE2	CMPLTPS XMM1,XMM2/M128	Compare packed Single-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 1.
+CMPLEPS	XMM,XMM/M128	SSE2	CMPLEPS XMM1,XMM2/M128	Compare packed Single-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 2.
+CMPUNORDPS	XMM,XMM/M128	SSE2	CMPUNORDPS XMM1,XMM2/M128	Compare packed Single-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 3.
+CMPNEQPS	XMM,XMM/M128	SSE2	CMPNEQPS XMM1,XMM2/M128	Compare packed Single-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 4.
+CMPNLTPS	XMM,XMM/M128	SSE2	CMPNLTPS XMM1,XMM2/M128	Compare packed Single-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 5.
+CMPNLEPS	XMM,XMM/M128	SSE2	CMPNLEPS XMM1,XMM2/M128	Compare packed Single-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 6.
+CMPORDPS	XMM,XMM/M128	SSE2	CMPORDPS XMM1,XMM2/M128	Compare packed Single-Precision FP values in xmm2/m128 and xmm1 using comparison predicate 7.
+
+GENERAL	VCMPPS	Compare Packed Single-Precision FP Values	CMPPS
+VCMPPS	K{K},XMM,XMM/M128/M32BCST,IMM8	AVX512VL,AVX512F	VCMPPS K1{K2},XMM2,XMM3/M128/M32BCST,IMM8	Compare packed Single-Precision FP values in xmm3/m128/m32bcst and xmm2 using bits 4:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
+VCMPPS	K{K},YMM,YMM/M256/M32BCST,IMM8	AVX512VL,AVX512F	VCMPPS K1{K2},YMM2,YMM3/M256/M32BCST,IMM8	Compare packed Single-Precision FP values in ymm3/m256/m32bcst and ymm2 using bits 4:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
+VCMPPS	K{K},ZMM,ZMM/M512/M32BCST{SAE},IMM8	AVX512F	VCMPPS K1{K2},ZMM2,ZMM3/M512/M32BCST{SAE},IMM8	Compare packed Single-Precision FP values in zmm3/m512/m32bcst and zmm2 using bits 4:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
+VCMPPS	XMM,XMM,XMM/M128,IMM8	AVX	VCMPPS XMM1,XMM2,XMM3/M128,IMM8	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using bits 4:0 of imm8 as a comparison predicate.
+VCMPPS	YMM,YMM,YMM/M256,IMM8	AVX	VCMPPS YMM1,YMM2,YMM3/M256,IMM8	Compare packed Single-Precision FP values in ymm3/m256 and ymm2 using bits 4:0 of imm8 as a comparison predicate.
+
+GENERAL	VCMPEQPS	Compare Packed Single-Precision FP Values. VCMPEQPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 0	CMPPS
+GENERAL	VCMPLTPS	Compare Packed Single-Precision FP Values. VCMPLTPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 1	CMPPS
+GENERAL	VCMPLEPS	Compare Packed Single-Precision FP Values. VCMPLEPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 2	CMPPS
+GENERAL	VCMPUNORDPS	Compare Packed Single-Precision FP Values. VCMPUNORDPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 3	CMPPS
+GENERAL	VCMPNEQPS	Compare Packed Single-Precision FP Values. VCMPNEQPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 4	CMPPS
+GENERAL	VCMPNLTPS	Compare Packed Single-Precision FP Values. VCMPNLTPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 5	CMPPS
+GENERAL	VCMPNLEPS	Compare Packed Single-Precision FP Values. VCMPNLEPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 6	CMPPS
+GENERAL	VCMPORDPS	Compare Packed Single-Precision FP Values. VCMPORDPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 7	CMPPS
+GENERAL	VCMPEQ_UQPS	Compare Packed Single-Precision FP Values. VCMPEQ_UQPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 8	CMPPS
+GENERAL	VCMPNGEPS	Compare Packed Single-Precision FP Values. VCMPNGEPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 9	CMPPS
+GENERAL	VCMPNGTPS	Compare Packed Single-Precision FP Values. VCMPNGTPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 0AH	CMPPS
+GENERAL	VCMPFALSEPS	Compare Packed Single-Precision FP Values. VCMPFALSEPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 0BH	CMPPS
+GENERAL	VCMPNEQ_OQPS	Compare Packed Single-Precision FP Values. VCMPNEQ_OQPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 0CH	CMPPS
+GENERAL	VCMPGEPS	Compare Packed Single-Precision FP Values. VCMPGEPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 0DH	CMPPS
+GENERAL	VCMPGTPS	Compare Packed Single-Precision FP Values. VCMPGTPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 0EH	CMPPS
+GENERAL	VCMPTRUEPS	Compare Packed Single-Precision FP Values. VCMPTRUEPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 0FH	CMPPS
+GENERAL	VCMPEQ_OSPS	Compare Packed Single-Precision FP Values. VCMPEQ_OSPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 10H	CMPPS
+GENERAL	VCMPLT_OQPS	Compare Packed Single-Precision FP Values. VCMPLT_OQPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 11H	CMPPS
+GENERAL	VCMPLE_OQPS	Compare Packed Single-Precision FP Values. VCMPLE_OQPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 12H	CMPPS
+GENERAL	VCMPUNORD_SPS	Compare Packed Single-Precision FP Values. VCMPUNORD_SPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 13H	CMPPS
+GENERAL	VCMPNEQ_USPS	Compare Packed Single-Precision FP Values. VCMPNEQ_USPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 14H	CMPPS
+GENERAL	VCMPNLT_UQPS	Compare Packed Single-Precision FP Values. VCMPNLT_UQPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 15H	CMPPS
+GENERAL	VCMPNLE_UQPS	Compare Packed Single-Precision FP Values. VCMPNLE_UQPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 16H	CMPPS
+GENERAL	VCMPORD_SPS	Compare Packed Single-Precision FP Values. VCMPORD_SPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 17H	CMPPS
+GENERAL	VCMPEQ_USPS	Compare Packed Single-Precision FP Values. VCMPEQ_USPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 18H	CMPPS
+GENERAL	VCMPNGE_UQPS	Compare Packed Single-Precision FP Values. VCMPNGE_UQPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 19H	CMPPS
+GENERAL	VCMPNGT_UQPS	Compare Packed Single-Precision FP Values. VCMPNGT_UQPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 1AH	CMPPS
+GENERAL	VCMPFALSE_OSPS	Compare Packed Single-Precision FP Values. VCMPFALSE_OSPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 1BH	CMPPS
+GENERAL	VCMPNEQ_OSPS	Compare Packed Single-Precision FP Values. VCMPNEQ_OSPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 1CH	CMPPS
+GENERAL	VCMPGE_OQPS	Compare Packed Single-Precision FP Values. VCMPGE_OQPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 1DH	CMPPS
+GENERAL	VCMPGT_OQPS	Compare Packed Single-Precision FP Values. VCMPGT_OQPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 1EH	CMPPS
+GENERAL	VCMPTRUE_USPS	Compare Packed Single-Precision FP Values. VCMPTRUE_USPS reg1, reg2, reg3 equals VCMPPS reg1, reg2, reg3, 1FH	CMPPS
+
+VCMPEQPS	XMM,XMM,XMM/M128	AVX	VCMPEQPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0.
+VCMPLTPS	XMM,XMM,XMM/M128	AVX	VCMPLTPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1.
+VCMPLEPS	XMM,XMM,XMM/M128	AVX	VCMPLEPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 2.
+VCMPUNORDPS	XMM,XMM,XMM/M128	AVX	VCMPUNORDPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 3.
+VCMPNEQPS	XMM,XMM,XMM/M128	AVX	VCMPNEQPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 4.
+VCMPNLTPS	XMM,XMM,XMM/M128	AVX	VCMPNLTPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 5.
+VCMPNLEPS	XMM,XMM,XMM/M128	AVX	VCMPNLEPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 6.
+VCMPORDPS	XMM,XMM,XMM/M128	AVX	VCMPORDPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 7.
+VCMPEQ_UQPS	XMM,XMM,XMM/M128	AVX	VCMPEQ_UQPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 8.
+VCMPNGEPS	XMM,XMM,XMM/M128	AVX	VCMPNGEPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 9.
+VCMPNGTPS	XMM,XMM,XMM/M128	AVX	VCMPNGTPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0AH.
+VCMPFALSEPS	XMM,XMM,XMM/M128	AVX	VCMPFALSEPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0BH.
+VCMPNEQ_OQPS	XMM,XMM,XMM/M128	AVX	VCMPNEQ_OQPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0CH.
+VCMPGEPS	XMM,XMM,XMM/M128	AVX	VCMPGEPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0DH.
+VCMPGTPS	XMM,XMM,XMM/M128	AVX	VCMPGTPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0EH.
+VCMPTRUEPS	XMM,XMM,XMM/M128	AVX	VCMPTRUEPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 0FH.
+VCMPEQ_OSPS	XMM,XMM,XMM/M128	AVX	VCMPEQ_OSPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 10H.
+VCMPLT_OQPS	XMM,XMM,XMM/M128	AVX	VCMPLT_OQPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 11H.
+VCMPLE_OQPS	XMM,XMM,XMM/M128	AVX	VCMPLE_OQPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 12H.
+VCMPUNORD_SPS	XMM,XMM,XMM/M128	AVX	VCMPUNORD_SPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 13H.
+VCMPNEQ_USPS	XMM,XMM,XMM/M128	AVX	VCMPNEQ_USPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 14H.
+VCMPNLT_UQPS	XMM,XMM,XMM/M128	AVX	VCMPNLT_UQPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 15H.
+VCMPNLE_UQPS	XMM,XMM,XMM/M128	AVX	VCMPNLE_UQPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 16H.
+VCMPORD_SPS	XMM,XMM,XMM/M128	AVX	VCMPORD_SPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 17H.
+VCMPEQ_USPS	XMM,XMM,XMM/M128	AVX	VCMPEQ_USPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 18H.
+VCMPNGE_UQPS	XMM,XMM,XMM/M128	AVX	VCMPNGE_UQPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 19H.
+VCMPNGT_UQPS	XMM,XMM,XMM/M128	AVX	VCMPNGT_UQPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1AH.
+VCMPFALSE_OSPS	XMM,XMM,XMM/M128	AVX	VCMPFALSE_OSPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1BH.
+VCMPNEQ_OSPS	XMM,XMM,XMM/M128	AVX	VCMPNEQ_OSPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1CH.
+VCMPGE_OQPS	XMM,XMM,XMM/M128	AVX	VCMPGE_OQPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1DH.
+VCMPGT_OQPS	XMM,XMM,XMM/M128	AVX	VCMPGT_OQPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1EH.
+VCMPTRUE_USPS	XMM,XMM,XMM/M128	AVX	VCMPTRUE_USPS XMM1,XMM2,XMM3/M128	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using comparison predicate 1FH.
+;TODO add the other 4 signatures
+
+; Compare CMPSD ====================================================================
+
+GENERAL	CMPSD	Compare Scalar Double-Precision FP Value	CMPSD
+GENERAL	VCMPSD	Compare Scalar Double-Precision FP Value	CMPSD
+
+GENERAL	CMPEQSD	Compare Scalar Double-Precision FP Values. CMPEQSD xmm1, xmm2 equals CMPSD xmm1, xmm2, 0	CMPSD
+GENERAL	CMPLTSD	Compare Scalar Double-Precision FP Values. CMPLTSD xmm1, xmm2 equals CMPSD xmm1, xmm2, 1	CMPSD
+GENERAL	CMPLESD	Compare Scalar Double-Precision FP Values. CMPLESD xmm1, xmm2 equals CMPSD xmm1, xmm2, 2	CMPSD
+GENERAL	CMPUNORDSD	Compare Scalar Double-Precision FP Values. CMPUNORDSD xmm1, xmm2 equals CMPSD xmm1, xmm2, 3	CMPSD
+GENERAL	CMPNEQSD	Compare Scalar Double-Precision FP Values. CMPNEQSD xmm1, xmm2 equals CMPSD xmm1, xmm2, 4	CMPSD
+GENERAL	CMPNLTSD	Compare Scalar Double-Precision FP Values. CMPNLTSD xmm1, xmm2 equals CMPSD xmm1, xmm2, 5	CMPSD
+GENERAL	CMPNLESD	Compare Scalar Double-Precision FP Values. CMPNLESD xmm1, xmm2 equals CMPSD xmm1, xmm2, 6	CMPSD
+GENERAL	CMPORDSD	Compare Scalar Double-Precision FP Values. CMPORDSD xmm1, xmm2 equals CMPSD xmm1, xmm2, 7	CMPSD
+
+CMPEQSD	XMM,XMM/M128	SSE2	CMPEQSD XMM1,XMM2/M128	Compare Scalar Double-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 0.
+CMPLTSD	XMM,XMM/M128	SSE2	CMPLTSD XMM1,XMM2/M128	Compare Scalar Double-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 1.
+CMPLESD	XMM,XMM/M128	SSE2	CMPLESD XMM1,XMM2/M128	Compare Scalar Double-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 2.
+CMPUNORDSD	XMM,XMM/M128	SSE2	CMPUNORDSD XMM1,XMM2/M128	Compare Scalar Double-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 3.
+CMPNEQSD	XMM,XMM/M128	SSE2	CMPNEQSD XMM1,XMM2/M128	Compare Scalar Double-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 4.
+CMPNLTSD	XMM,XMM/M128	SSE2	CMPNLTSD XMM1,XMM2/M128	Compare Scalar Double-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 5.
+CMPNLESD	XMM,XMM/M128	SSE2	CMPNLESD XMM1,XMM2/M128	Compare Scalar Double-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 6.
+CMPORDSD	XMM,XMM/M128	SSE2	CMPORDSD XMM1,XMM2/M128	Compare Scalar Double-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 7.
+
+VCMPSD	XMM,XMM,XMM/M64,IMM8	AVX	VCMPSD XMM1,XMM2,XMM3/M64,IMM8	Compare low Double-Precision FP value in xmm3/m64 and xmm2 using bits 4:0 of imm8 as comparison predicate.
+VCMPSD	K{K},XMM,XMM/M64{SAE},IMM8	AVX512F	VCMPSD K1{K2},XMM2,XMM3/M64{SAE},IMM8	Compare low Double-Precision FP value in xmm3/m64 and xmm2 using bits 4:0 of imm8 as comparison predicate with writemask k2 and leave the result in mask register k1.
+
+GENERAL	VCMPEQSD	Compare Scalar Double-Precision FP Values. VCMPEQSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 0	CMPSD
+GENERAL	VCMPLTSD	Compare Scalar Double-Precision FP Values. VCMPLTSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 1	CMPSD
+GENERAL	VCMPLESD	Compare Scalar Double-Precision FP Values. VCMPLESD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 2	CMPSD
+GENERAL	VCMPUNORDSD	Compare Scalar Double-Precision FP Values. VCMPUNORDSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 3	CMPSD
+GENERAL	VCMPNEQSD	Compare Scalar Double-Precision FP Values. VCMPNEQSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 4	CMPSD
+GENERAL	VCMPNLTSD	Compare Scalar Double-Precision FP Values. VCMPNLTSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 5	CMPSD
+GENERAL	VCMPNLESD	Compare Scalar Double-Precision FP Values. VCMPNLESD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 6	CMPSD
+GENERAL	VCMPORDSD	Compare Scalar Double-Precision FP Values. VCMPORDSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 7	CMPSD
+GENERAL	VCMPEQ_UQSD	Compare Scalar Double-Precision FP Values. VCMPEQ_UQSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 8	CMPSD
+GENERAL	VCMPNGESD	Compare Scalar Double-Precision FP Values. VCMPNGESD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 9	CMPSD
+GENERAL	VCMPNGTSD	Compare Scalar Double-Precision FP Values. VCMPNGTSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 0AH	CMPSD
+GENERAL	VCMPFALSESD	Compare Scalar Double-Precision FP Values. VCMPFALSESD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 0BH	CMPSD
+GENERAL	VCMPNEQ_OQSD	Compare Scalar Double-Precision FP Values. VCMPNEQ_OQSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 0CH	CMPSD
+GENERAL	VCMPGESD	Compare Scalar Double-Precision FP Values. VCMPGESD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 0DH	CMPSD
+GENERAL	VCMPGTSD	Compare Scalar Double-Precision FP Values. VCMPGTSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 0EH	CMPSD
+GENERAL	VCMPTRUESD	Compare Scalar Double-Precision FP Values. VCMPTRUESD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 0FH	CMPSD
+GENERAL	VCMPEQ_OSSD	Compare Scalar Double-Precision FP Values. VCMPEQ_OSSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 10H	CMPSD
+GENERAL	VCMPLT_OQSD	Compare Scalar Double-Precision FP Values. VCMPLT_OQSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 11H	CMPSD
+GENERAL	VCMPLE_OQSD	Compare Scalar Double-Precision FP Values. VCMPLE_OQSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 12H	CMPSD
+GENERAL	VCMPUNORD_SSD	Compare Scalar Double-Precision FP Values. VCMPUNORD_SSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 13H	CMPSD
+GENERAL	VCMPNEQ_USSD	Compare Scalar Double-Precision FP Values. VCMPNEQ_USSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 14H	CMPSD
+GENERAL	VCMPNLT_UQSD	Compare Scalar Double-Precision FP Values. VCMPNLT_UQSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 15H	CMPSD
+GENERAL	VCMPNLE_UQSD	Compare Scalar Double-Precision FP Values. VCMPNLE_UQSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 16H	CMPSD
+GENERAL	VCMPORD_SSD	Compare Scalar Double-Precision FP Values. VCMPORD_SSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 17H	CMPSD
+GENERAL	VCMPEQ_USSD	Compare Scalar Double-Precision FP Values. VCMPEQ_USSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 18H	CMPSD
+GENERAL	VCMPNGE_UQSD	Compare Scalar Double-Precision FP Values. VCMPNGE_UQSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 19H	CMPSD
+GENERAL	VCMPNGT_UQSD	Compare Scalar Double-Precision FP Values. VCMPNGT_UQSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 1AH	CMPSD
+GENERAL	VCMPFALSE_OSSD	Compare Scalar Double-Precision FP Values. VCMPFALSE_OSSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 1BH	CMPSD
+GENERAL	VCMPNEQ_OSSD	Compare Scalar Double-Precision FP Values. VCMPNEQ_OSSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 1CH	CMPSD
+GENERAL	VCMPGE_OQSD	Compare Scalar Double-Precision FP Values. VCMPGE_OQSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 1DH	CMPSD
+GENERAL	VCMPGT_OQSD	Compare Scalar Double-Precision FP Values. VCMPGT_OQSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 1EH	CMPSD
+GENERAL	VCMPTRUE_USSD	Compare Scalar Double-Precision FP Values. VCMPTRUE_USSD reg1, reg2, reg3 equals VCMPSD reg1, reg2, reg3, 1FH	CMPSD
+
+VCMPEQSD	XMM,XMM,XMM/M64	AVX	VCMPEQSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0.
+VCMPLTSD	XMM,XMM,XMM/M64	AVX	VCMPLTSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1.
+VCMPLESD	XMM,XMM,XMM/M64	AVX	VCMPLESD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 2.
+VCMPUNORDSD	XMM,XMM,XMM/M64	AVX	VCMPUNORDSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 3.
+VCMPNEQSD	XMM,XMM,XMM/M64	AVX	VCMPNEQSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 4.
+VCMPNLTSD	XMM,XMM,XMM/M64	AVX	VCMPNLTSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 5.
+VCMPNLESD	XMM,XMM,XMM/M64	AVX	VCMPNLESD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 6.
+VCMPORDSD	XMM,XMM,XMM/M64	AVX	VCMPORDSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 7.
+VCMPEQ_UQSD	XMM,XMM,XMM/M64	AVX	VCMPEQ_UQSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 8.
+VCMPNGESD	XMM,XMM,XMM/M64	AVX	VCMPNGESD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 9.
+VCMPNGTSD	XMM,XMM,XMM/M64	AVX	VCMPNGTSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0AH.
+VCMPFALSESD	XMM,XMM,XMM/M64	AVX	VCMPFALSESD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0BH.
+VCMPNEQ_OQSD	XMM,XMM,XMM/M64	AVX	VCMPNEQ_OQSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0CH.
+VCMPGESD	XMM,XMM,XMM/M64	AVX	VCMPGESD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0DH.
+VCMPGTSD	XMM,XMM,XMM/M64	AVX	VCMPGTSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0EH.
+VCMPTRUESD	XMM,XMM,XMM/M64	AVX	VCMPTRUESD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0FH.
+VCMPEQ_OSSD	XMM,XMM,XMM/M64	AVX	VCMPEQ_OSSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 10H.
+VCMPLT_OQSD	XMM,XMM,XMM/M64	AVX	VCMPLT_OQSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 11H.
+VCMPLE_OQSD	XMM,XMM,XMM/M64	AVX	VCMPLE_OQSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 12H.
+VCMPUNORD_SSD	XMM,XMM,XMM/M64	AVX	VCMPUNORD_SSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 13H.
+VCMPNEQ_USSD	XMM,XMM,XMM/M64	AVX	VCMPNEQ_USSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 14H.
+VCMPNLT_UQSD	XMM,XMM,XMM/M64	AVX	VCMPNLT_UQSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 15H.
+VCMPNLE_UQSD	XMM,XMM,XMM/M64	AVX	VCMPNLE_UQSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 16H.
+VCMPORD_SSD	XMM,XMM,XMM/M64	AVX	VCMPORD_SSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 17H.
+VCMPEQ_USSD	XMM,XMM,XMM/M64	AVX	VCMPEQ_USSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 18H.
+VCMPNGE_UQSD	XMM,XMM,XMM/M64	AVX	VCMPNGE_UQSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 19H.
+VCMPNGT_UQSD	XMM,XMM,XMM/M64	AVX	VCMPNGT_UQSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1AH.
+VCMPFALSE_OSSD	XMM,XMM,XMM/M64	AVX	VCMPFALSE_OSSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1BH.
+VCMPNEQ_OSSD	XMM,XMM,XMM/M64	AVX	VCMPNEQ_OSSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1CH.
+VCMPGE_OQSD	XMM,XMM,XMM/M64	AVX	VCMPGE_OQSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1DH.
+VCMPGT_OQSD	XMM,XMM,XMM/M64	AVX	VCMPGT_OQSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1EH.
+VCMPTRUE_USSD	XMM,XMM,XMM/M64	AVX	VCMPTRUE_USSD XMM1,XMM2,XMM3/M64	Compare Scalar Double-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1FH.
+;TODO add the other 1 signature
+
+; Compare CMPSS ====================================================================
+
+GENERAL	CMPSS	Compare Scalar Single-Precision FP Value	CMPSS
+GENERAL	VCMPSS	Compare Scalar Single-Precision FP Value	CMPSS
+
+GENERAL	CMPEQSS	Compare Scalar Single-Precision FP Values. CMPEQSS xmm1, xmm2 equals CMPSS xmm1, xmm2, 0	CMPSS
+GENERAL	CMPLTSS	Compare Scalar Single-Precision FP Values. CMPLTSS xmm1, xmm2 equals CMPSS xmm1, xmm2, 1	CMPSS
+GENERAL	CMPLESS	Compare Scalar Single-Precision FP Values. CMPLESS xmm1, xmm2 equals CMPSS xmm1, xmm2, 2	CMPSS
+GENERAL	CMPUNORDSS	Compare Scalar Single-Precision FP Values. CMPUNORDSS xmm1, xmm2 equals CMPSS xmm1, xmm2, 3	CMPSS
+GENERAL	CMPNEQSS	Compare Scalar Single-Precision FP Values. CMPNEQSS xmm1, xmm2 equals CMPSS xmm1, xmm2, 4	CMPSS
+GENERAL	CMPNLTSS	Compare Scalar Single-Precision FP Values. CMPNLTSS xmm1, xmm2 equals CMPSS xmm1, xmm2, 5	CMPSS
+GENERAL	CMPNLESS	Compare Scalar Single-Precision FP Values. CMPNLESS xmm1, xmm2 equals CMPSS xmm1, xmm2, 6	CMPSS
+GENERAL	CMPORDSS	Compare Scalar Single-Precision FP Values. CMPORDSS xmm1, xmm2 equals CMPSS xmm1, xmm2, 7	CMPSS
+
+CMPEQSS	XMM,XMM/M128	SSE2	CMPEQSS XMM1,XMM2/M128	Compare packed Single-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 0.
+CMPLTSS	XMM,XMM/M128	SSE2	CMPLTSS XMM1,XMM2/M128	Compare packed Single-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 1.
+CMPLESS	XMM,XMM/M128	SSE2	CMPLESS XMM1,XMM2/M128	Compare packed Single-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 2.
+CMPUNORDSS	XMM,XMM/M128	SSE2	CMPUNORDSS XMM1,XMM2/M128	Compare packed Single-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 3.
+CMPNEQSS	XMM,XMM/M128	SSE2	CMPNEQSS XMM1,XMM2/M128	Compare packed Single-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 4.
+CMPNLTSS	XMM,XMM/M128	SSE2	CMPNLTSS XMM1,XMM2/M128	Compare packed Single-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 5.
+CMPNLESS	XMM,XMM/M128	SSE2	CMPNLESS XMM1,XMM2/M128	Compare packed Single-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 6.
+CMPORDSS	XMM,XMM/M128	SSE2	CMPORDSS XMM1,XMM2/M128	Compare packed Single-Precision FP value in xmm2/m128 and xmm1 using comparison predicate 7.
+
+VCMPSS	XMM,XMM,XMM/M32,IMM8	AVX	VCMPSS XMM1,XMM2,XMM3/M32,IMM8	Compare low Single-Precision FP value in xmm3/m32 and xmm2 using bits 4:0 of imm8 as comparison predicate.
+VCMPSS	K{K},XMM,XMM/M32{SAE},IMM8	AVX512F	VCMPSS K1{K2},XMM2,XMM3/M32{SAE},IMM8	Compare low Single-Precision FP value in xmm3/m32 and xmm2 using bits 4:0 of imm8 as comparison predicate with writemask k2 and leave the result in mask register k1.
+
+GENERAL	VCMPEQSS	Compare Scalar Single-Precision FP Values. VCMPEQSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 0	CMPSS
+GENERAL	VCMPLTSS	Compare Scalar Single-Precision FP Values. VCMPLTSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 1	CMPSS
+GENERAL	VCMPLESS	Compare Scalar Single-Precision FP Values. VCMPLESS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 2	CMPSS
+GENERAL	VCMPUNORDSS	Compare Scalar Single-Precision FP Values. VCMPUNORDSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 3	CMPSS
+GENERAL	VCMPNEQSS	Compare Scalar Single-Precision FP Values. VCMPNEQSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 4	CMPSS
+GENERAL	VCMPNLTSS	Compare Scalar Single-Precision FP Values. VCMPNLTSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 5	CMPSS
+GENERAL	VCMPNLESS	Compare Scalar Single-Precision FP Values. VCMPNLESS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 6	CMPSS
+GENERAL	VCMPORDSS	Compare Scalar Single-Precision FP Values. VCMPORDSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 7	CMPSS
+GENERAL	VCMPEQ_UQSS	Compare Scalar Single-Precision FP Values. VCMPEQ_UQSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 8	CMPSS
+GENERAL	VCMPNGESS	Compare Scalar Single-Precision FP Values. VCMPNGESS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 9	CMPSS
+GENERAL	VCMPNGTSS	Compare Scalar Single-Precision FP Values. VCMPNGTSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 0AH	CMPSS
+GENERAL	VCMPFALSESS	Compare Scalar Single-Precision FP Values. VCMPFALSESS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 0BH	CMPSS
+GENERAL	VCMPNEQ_OQSS	Compare Scalar Single-Precision FP Values. VCMPNEQ_OQSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 0CH	CMPSS
+GENERAL	VCMPGESS	Compare Scalar Single-Precision FP Values. VCMPGESS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 0DH	CMPSS
+GENERAL	VCMPGTSS	Compare Scalar Single-Precision FP Values. VCMPGTSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 0EH	CMPSS
+GENERAL	VCMPTRUESS	Compare Scalar Single-Precision FP Values. VCMPTRUESS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 0FH	CMPSS
+GENERAL	VCMPEQ_OSSS	Compare Scalar Single-Precision FP Values. VCMPEQ_OSSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 10H	CMPSS
+GENERAL	VCMPLT_OQSS	Compare Scalar Single-Precision FP Values. VCMPLT_OQSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 11H	CMPSS
+GENERAL	VCMPLE_OQSS	Compare Scalar Single-Precision FP Values. VCMPLE_OQSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 12H	CMPSS
+GENERAL	VCMPUNORD_SSS	Compare Scalar Single-Precision FP Values. VCMPUNORD_SSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 13H	CMPSS
+GENERAL	VCMPNEQ_USSS	Compare Scalar Single-Precision FP Values. VCMPNEQ_USSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 14H	CMPSS
+GENERAL	VCMPNLT_UQSS	Compare Scalar Single-Precision FP Values. VCMPNLT_UQSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 15H	CMPSS
+GENERAL	VCMPNLE_UQSS	Compare Scalar Single-Precision FP Values. VCMPNLE_UQSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 16H	CMPSS
+GENERAL	VCMPORD_SSS	Compare Scalar Single-Precision FP Values. VCMPORD_SSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 17H	CMPSS
+GENERAL	VCMPEQ_USSS	Compare Scalar Single-Precision FP Values. VCMPEQ_USSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 18H	CMPSS
+GENERAL	VCMPNGE_UQSS	Compare Scalar Single-Precision FP Values. VCMPNGE_UQSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 19H	CMPSS
+GENERAL	VCMPNGT_UQSS	Compare Scalar Single-Precision FP Values. VCMPNGT_UQSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 1AH	CMPSS
+GENERAL	VCMPFALSE_OSSS	Compare Scalar Single-Precision FP Values. VCMPFALSE_OSSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 1BH	CMPSS
+GENERAL	VCMPNEQ_OSSS	Compare Scalar Single-Precision FP Values. VCMPNEQ_OSSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 1CH	CMPSS
+GENERAL	VCMPGE_OQSS	Compare Scalar Single-Precision FP Values. VCMPGE_OQSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 1DH	CMPSS
+GENERAL	VCMPGT_OQSS	Compare Scalar Single-Precision FP Values. VCMPGT_OQSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 1EH	CMPSS
+GENERAL	VCMPTRUE_USSS	Compare Scalar Single-Precision FP Values. VCMPTRUE_USSS reg1, reg2, reg3 equals VCMPSS reg1, reg2, reg3, 1FH	CMPSS
+
+VCMPEQSS	XMM,XMM,XMM/M64	AVX	VCMPEQSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0.
+VCMPLTSS	XMM,XMM,XMM/M64	AVX	VCMPLTSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1.
+VCMPLESS	XMM,XMM,XMM/M64	AVX	VCMPLESS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 2.
+VCMPUNORDSS	XMM,XMM,XMM/M64	AVX	VCMPUNORDSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 3.
+VCMPNEQSS	XMM,XMM,XMM/M64	AVX	VCMPNEQSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 4.
+VCMPNLTSS	XMM,XMM,XMM/M64	AVX	VCMPNLTSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 5.
+VCMPNLESS	XMM,XMM,XMM/M64	AVX	VCMPNLESS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 6.
+VCMPORDSS	XMM,XMM,XMM/M64	AVX	VCMPORDSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 7.
+VCMPEQ_UQSS	XMM,XMM,XMM/M64	AVX	VCMPEQ_UQSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 8.
+VCMPNGESS	XMM,XMM,XMM/M64	AVX	VCMPNGESS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 9.
+VCMPNGTSS	XMM,XMM,XMM/M64	AVX	VCMPNGTSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0AH.
+VCMPFALSESS	XMM,XMM,XMM/M64	AVX	VCMPFALSESS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0BH.
+VCMPNEQ_OQSS	XMM,XMM,XMM/M64	AVX	VCMPNEQ_OQSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0CH.
+VCMPGESS	XMM,XMM,XMM/M64	AVX	VCMPGESS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0DH.
+VCMPGTSS	XMM,XMM,XMM/M64	AVX	VCMPGTSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0EH.
+VCMPTRUESS	XMM,XMM,XMM/M64	AVX	VCMPTRUESS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 0FH.
+VCMPEQ_OSSS	XMM,XMM,XMM/M64	AVX	VCMPEQ_OSSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 10H.
+VCMPLT_OQSS	XMM,XMM,XMM/M64	AVX	VCMPLT_OQSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 11H.
+VCMPLE_OQSS	XMM,XMM,XMM/M64	AVX	VCMPLE_OQSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 12H.
+VCMPUNORD_SSS	XMM,XMM,XMM/M64	AVX	VCMPUNORD_SSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 13H.
+VCMPNEQ_USSS	XMM,XMM,XMM/M64	AVX	VCMPNEQ_USSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 14H.
+VCMPNLT_UQSS	XMM,XMM,XMM/M64	AVX	VCMPNLT_UQSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 15H.
+VCMPNLE_UQSS	XMM,XMM,XMM/M64	AVX	VCMPNLE_UQSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 16H.
+VCMPORD_SSS	XMM,XMM,XMM/M64	AVX	VCMPORD_SSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 17H.
+VCMPEQ_USSS	XMM,XMM,XMM/M64	AVX	VCMPEQ_USSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 18H.
+VCMPNGE_UQSS	XMM,XMM,XMM/M64	AVX	VCMPNGE_UQSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 19H.
+VCMPNGT_UQSS	XMM,XMM,XMM/M64	AVX	VCMPNGT_UQSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1AH.
+VCMPFALSE_OSSS	XMM,XMM,XMM/M64	AVX	VCMPFALSE_OSSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1BH.
+VCMPNEQ_OSSS	XMM,XMM,XMM/M64	AVX	VCMPNEQ_OSSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1CH.
+VCMPGE_OQSS	XMM,XMM,XMM/M64	AVX	VCMPGE_OQSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1DH.
+VCMPGT_OQSS	XMM,XMM,XMM/M64	AVX	VCMPGT_OQSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1EH.
+VCMPTRUE_USSS	XMM,XMM,XMM/M64	AVX	VCMPTRUE_USSS XMM1,XMM2,XMM3/M64	Compare Scalar Single-Precision FP values in xmm3/M64 and xmm2 using comparison predicate 1FH.
+;TODO add the other 1 signature

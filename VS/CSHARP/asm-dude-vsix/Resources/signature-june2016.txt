@@ -97,14 +97,6 @@ GENERAL	CMOVNB	Conditional Move	CMOVcc
 GENERAL	CMOVGE	Conditional Move	CMOVcc
 GENERAL	CMOVLE	Conditional Move	CMOVcc
 GENERAL	CMP	Compare Two Operands	CMP
-GENERAL	VCMPPD	Compare Packed Double-Precision FP Values	CMPPD
-GENERAL	CMPPD	Compare Packed Double-Precision FP Values	CMPPD
-GENERAL	VCMPPS	Compare Packed Single-Precision FP Values	CMPPS
-GENERAL	CMPPS	Compare Packed Single-Precision FP Values	CMPPS
-GENERAL	CMPSD	Compare Scalar Double-Precision FP Value	CMPSD
-GENERAL	VCMPSD	Compare Scalar Double-Precision FP Value	CMPSD
-GENERAL	CMPSS	Compare Scalar Single-Precision FP Value	CMPSS
-GENERAL	VCMPSS	Compare Scalar Single-Precision FP Value	CMPSS
 GENERAL	CMPSQ	Compare String Operands	CMPS_CMPSB_CMPSW_CMPSD_CMPSQ
 GENERAL	CMPSB	Compare String Operands	CMPS_CMPSB_CMPSW_CMPSD_CMPSQ
 GENERAL	CMPS	Compare String Operands	CMPS_CMPSB_CMPSW_CMPSD_CMPSQ
@@ -1565,8 +1557,6 @@ CMP	R32,R/M32		CMP R32,R/M32	Compare r/m32 with r32.
 CMP	R64,R/M64		CMP R64,R/M64	Compare r/m64 with r64.
 CMP	R8,R/M8		CMP R8,R/M8	Compare r/m8 with r8.
 CMP	RAX,IMM32		CMP RAX,IMM32	Compare imm32 sign-extended to 64-bits with RAX.
-CMPPD	XMM,XMM/M128,IMM8	SSE2	CMPPD XMM1,XMM2/M128,IMM8	Compare packed Double-Precision FP values in xmm2/m128 and xmm1 using bits 2:0 of imm8 as a comparison predicate.
-CMPPS	XMM,XMM/M128,IMM8	SSE	CMPPS XMM1,XMM2/M128,IMM8	Compare packed Single-Precision FP values in xmm2/m128 and xmm1 using bits 2:0 of imm8 as a comparison predicate.
 CMPS	M16,M16		CMPS M16,M16	For legacy mode, compare word at address DS:(E)SI with word at address ES:(E)DI; For 64-bit mode compare word at address (R|E)SI with word at address (R|E)DI. The status flags are set accordingly.
 CMPS	M32,M32		CMPS M32,M32	For legacy mode, compare Dword at address DS:(E)SI at Dword at address ES:(E)DI; For 64-bit mode compare Dword at address (R|E)SI at Dword at address (R|E)DI. The status flags are set accordingly.
 CMPS	M64,M64		CMPS M64,M64	Compares Qword at address (R|E)SI with Qword at address (R|E)DI and sets the status flags accordingly.
@@ -2752,20 +2742,8 @@ VBROADCASTSS	XMM{K}{Z},XMM/M32	AVX512VL,AVX512F	VBROADCASTSS XMM1{K1}{Z},XMM2/M3
 VBROADCASTSS	YMM,M32	AVX	VBROADCASTSS YMM1,M32	Broadcast Single-Precision FP element in mem to eight locations in ymm1.
 VBROADCASTSS	YMM{K}{Z},XMM/M32	AVX512VL,AVX512F	VBROADCASTSS YMM1{K1}{Z},XMM2/M32	Broadcast low Single-Precision FP element in xmm2/m32 to all locations in ymm1 using writemask k1.
 VBROADCASTSS	ZMM{K}{Z},XMM/M32	AVX512F	VBROADCASTSS ZMM1{K1}{Z},XMM2/M32	Broadcast low Single-Precision FP element in xmm2/m32 to all locations in zmm1 using writemask k1.
-VCMPPD	K{K},XMM,XMM/M128/M64BCST,IMM8	AVX512VL,AVX512F	VCMPPD K1{K2},XMM2,XMM3/M128/M64BCST,IMM8	Compare packed Double-Precision FP values in xmm3/m128/m64bcst and xmm2 using bits 4:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
-VCMPPD	K{K},YMM,YMM/M256/M64BCST,IMM8	AVX512VL,AVX512F	VCMPPD K1{K2},YMM2,YMM3/M256/M64BCST,IMM8	Compare packed Double-Precision FP values in ymm3/m256/m64bcst and ymm2 using bits 4:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
-VCMPPD	K{K},ZMM,ZMM/M512/M64BCST{SAE},IMM8	AVX512F	VCMPPD K1{K2},ZMM2,ZMM3/M512/M64BCST{SAE},IMM8	Compare packed Double-Precision FP values in zmm3/m512/m64bcst and zmm2 using bits 4:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
-VCMPPD	XMM,XMM,XMM/M128,IMM8	AVX	VCMPPD XMM1,XMM2,XMM3/M128,IMM8	Compare packed Double-Precision FP values in xmm3/m128 and xmm2 using bits 4:0 of imm8 as a comparison predicate.
-VCMPPD	YMM,YMM,YMM/M256,IMM8	AVX	VCMPPD YMM1,YMM2,YMM3/M256,IMM8	Compare packed Double-Precision FP values in ymm3/m256 and ymm2 using bits 4:0 of imm8 as a comparison predicate.
-VCMPPS	K{K},XMM,XMM/M128/M32BCST,IMM8	AVX512VL,AVX512F	VCMPPS K1{K2},XMM2,XMM3/M128/M32BCST,IMM8	Compare packed Single-Precision FP values in xmm3/m128/m32bcst and xmm2 using bits 4:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
-VCMPPS	K{K},YMM,YMM/M256/M32BCST,IMM8	AVX512VL,AVX512F	VCMPPS K1{K2},YMM2,YMM3/M256/M32BCST,IMM8	Compare packed Single-Precision FP values in ymm3/m256/m32bcst and ymm2 using bits 4:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
-VCMPPS	K{K},ZMM,ZMM/M512/M32BCST{SAE},IMM8	AVX512F	VCMPPS K1{K2},ZMM2,ZMM3/M512/M32BCST{SAE},IMM8	Compare packed Single-Precision FP values in zmm3/m512/m32bcst and zmm2 using bits 4:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
-VCMPPS	XMM,XMM,XMM/M128,IMM8	AVX	VCMPPS XMM1,XMM2,XMM3/M128,IMM8	Compare packed Single-Precision FP values in xmm3/m128 and xmm2 using bits 4:0 of imm8 as a comparison predicate.
-VCMPPS	YMM,YMM,YMM/M256,IMM8	AVX	VCMPPS YMM1,YMM2,YMM3/M256,IMM8	Compare packed Single-Precision FP values in ymm3/m256 and ymm2 using bits 4:0 of imm8 as a comparison predicate.
-VCMPSD	K{K},XMM,XMM/M64{SAE},IMM8	AVX512F	VCMPSD K1{K2},XMM2,XMM3/M64{SAE},IMM8	Compare low Double-Precision FP value in xmm3/m64 and xmm2 using bits 4:0 of imm8 as comparison predicate with writemask k2 and leave the result in mask register k1.
-VCMPSD	XMM,XMM,XMM/M64,IMM8	AVX	VCMPSD XMM1,XMM2,XMM3/M64,IMM8	Compare low Double-Precision FP value in xmm3/m64 and xmm2 using bits 4:0 of imm8 as comparison predicate.
-VCMPSS	K{K},XMM,XMM/M32{SAE},IMM8	AVX512F	VCMPSS K1{K2},XMM2,XMM3/M32{SAE},IMM8	Compare low Single-Precision FP value in xmm3/m32 and xmm2 using bits 4:0 of imm8 as comparison predicate with writemask k2 and leave the result in mask register k1.
-VCMPSS	XMM,XMM,XMM/M32,IMM8	AVX	VCMPSS XMM1,XMM2,XMM3/M32,IMM8	Compare low Single-Precision FP value in xmm3/m32 and xmm2 using bits 4:0 of imm8 as comparison predicate.
+
+
 VCOMISD	XMM,XMM/M64	AVX	VCOMISD XMM1,XMM2/M64	Compare low Double-Precision FP values in xmm1 and xmm2/mem64 and set the EFLAGS flags accordingly.
 VCOMISD	XMM,XMM/M64{SAE}	AVX512F	VCOMISD XMM1,XMM2/M64{SAE}	Compare low Double-Precision FP values in xmm1 and xmm2/mem64 and set the EFLAGS flags accordingly.
 VCOMISS	XMM,XMM/M32	AVX	VCOMISS XMM1,XMM2/M32	Compare low Single-Precision FP values in xmm1 and xmm2/mem32 and set the EFLAGS flags accordingly.
