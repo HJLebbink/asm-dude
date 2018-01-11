@@ -181,6 +181,14 @@ namespace AsmTools {
         XSAVEOPT,
         #endregion
 
+        //Software Guard Extensions
+        SGX1,
+        
+        //Software Guard Extensions
+        SGX2,
+
+        VAES,
+
         #region Misc Other
         X64,
 
@@ -205,9 +213,10 @@ namespace AsmTools {
 
     public static class ArchTools {
 
-        public static Arch ParseArch(string str) {
-            
-            switch (str.Replace("_", "").ToUpper()) {
+        public static Arch ParseArch(string str, bool warn = true)
+        {
+            switch (str.Replace("_", "").ToUpper())
+            {
                 case "NONE": return Arch.NONE;
 
                 case "8086": return Arch.ARCH_8086;
@@ -273,7 +282,13 @@ namespace AsmTools {
                 case "RDPID": return Arch.RDPID;
                 case "RDRAND": return Arch.RDRAND;
                 case "RDSEED": return Arch.RDSEED;
+
                 case "XSAVEOPT": return Arch.XSAVEOPT;
+                case "XSS": return Arch.XSAVEOPT;
+                case "XSAVE": return Arch.XSAVEOPT;
+                case "XSAVEC": return Arch.XSAVEOPT;
+
+
                 case "FSGSBASE": return Arch.FSGSBASE;
                 case "LZCNT": return Arch.LZCNT;
                 case "F16C": return Arch.F16C;
@@ -282,12 +297,17 @@ namespace AsmTools {
                 case "RTM": return Arch.RTM;
                 case "PREFETCHWT1": return Arch.PREFETCHWT1;
 
+                case "SGX1": return Arch.SGX1;
+                case "SGX2": return Arch.SGX2;
 
-
+                case "VAES": return Arch.VAES;
 
                 case "UNDOC": return Arch.UNDOC;
                 default:
-                    Console.WriteLine("WARNING: parseArch: no arch for str " + str);
+                    if (warn)
+                    {
+                        Console.WriteLine("WARNING: parseArch: no arch for str " + str);
+                    }
                     return Arch.NONE;
             }
         }

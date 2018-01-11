@@ -631,6 +631,8 @@ namespace AsmTools {
         CLFLUSH,
         /// <summary>Flushes and invalidates a memory operand and its associated cache line from all levels of the processor’s cache hierarchy with optimized memory system throughput</summary>
         CLFLUSHOPT,
+        /// <summary>Writes back modified cache line containing m8, and may retain the line in cache hierarchy in non-modified state.</summary>
+        CLWB,
         #endregion
         #region User Mode Extended Sate Save/Restore Instructions
         /// <summary>Save processor extended states to memory</summary>
@@ -2374,7 +2376,46 @@ namespace AsmTools {
         /// <summary>Concatenate and Variable Shift Packed Data Right Logical</summary>
         VPSHRDV,
         /// <summary>Shuffle Bits from Quadword Elements Using Byte Indexes into Mask</summary>
-        VPSHUFBITQMB
+        VPSHUFBITQMB,
+        
+        /// <summary>This instruction is used to execute privileged Intel SGX leaf functions that are used for managing and debugging the enclaves.</summary>
+        ENCLS,
+
+        /// <summary>This instruction is used to execute non-privileged Intel SGX leaf functions.</summary>
+        ENCLU,
+
+        ENCLV,
+        EADD,
+        EAUG,
+        EBLOCK,
+        ECREATE,
+        EDBGRD,
+        EDBGWR,
+        EEXTEND,
+        EINIT,
+        ELDB,
+        ELDU,
+        ELDBC,
+        ELBUC,
+        EMODPR,
+        EMODT,
+        EPA,
+        ERDINFO,
+        EREMOVE,
+        ETRACK,
+        ETRACKC,
+        EWB,
+        EACCEPT,
+        EACCEPTCOPY,
+        EENTER,
+        EEXIT,
+        EGETKEY,
+        EMODPE,
+        EREPORT,
+        ERESUME,
+        EDECVIRTCHILD,
+        EINCVIRTCHILD,
+        ESETCONTEXT
     }
 
     public static partial class AsmSourceTools {
@@ -2948,7 +2989,7 @@ namespace AsmTools {
                 case "LMSW": return Mnemonic.LMSW;
                 case "LOADALL": return Mnemonic.LOADALL;
                 case "LOADALL286": return Mnemonic.LOADALL286;
-
+                case "CLWB": return Mnemonic.CLWB;
                 case "LSL": return Mnemonic.LSL;
                 case "LTR": return Mnemonic.LTR;
                 case "MFENCE": return Mnemonic.MFENCE;
@@ -4444,6 +4485,42 @@ namespace AsmTools {
                 case "VPSHRD": return Mnemonic.VPSHRD;
                 case "VPSHRDV": return Mnemonic.VPSHRDV;
                 case "VPSHUFBITQMB": return Mnemonic.VPSHUFBITQMB;
+
+                case "ENCLS": return Mnemonic.ENCLS;
+                case "ENCLU": return Mnemonic.ENCLU;
+                case "ENCLV": return Mnemonic.ENCLV;
+                case "EADD": return Mnemonic.EADD;
+                case "EAUG": return Mnemonic.EAUG;
+                case "EBLOCK": return Mnemonic.EBLOCK;
+                case "ECREATE": return Mnemonic.ECREATE;
+                case "EDBGRD": return Mnemonic.EDBGRD;
+                case "EDBGWR": return Mnemonic.EDBGWR;
+                case "EEXTEND": return Mnemonic.EEXTEND;
+                case "EINIT": return Mnemonic.EINIT;
+                case "ELDB": return Mnemonic.ELDB;
+                case "ELDU": return Mnemonic.ELDU;
+                case "ELDBC": return Mnemonic.ELDBC;
+                case "ELBUC": return Mnemonic.ELBUC;
+                case "EMODPR": return Mnemonic.EMODPR;
+                case "EMODT": return Mnemonic.EMODT;
+                case "EPA": return Mnemonic.EPA;
+                case "ERDINFO": return Mnemonic.ERDINFO;
+                case "EREMOVE": return Mnemonic.EREMOVE;
+                case "ETRACK": return Mnemonic.ETRACK;
+                case "ETRACKC": return Mnemonic.ETRACKC;
+                case "EWB": return Mnemonic.EWB;
+                case "EACCEPT": return Mnemonic.EACCEPT;
+                case "EACCEPTCOPY": return Mnemonic.EACCEPTCOPY;
+                case "EENTER": return Mnemonic.EENTER;
+                case "EEXIT": return Mnemonic.EEXIT;
+                case "EGETKEY": return Mnemonic.EGETKEY;
+                case "EMODPE": return Mnemonic.EMODPE;
+                case "EREPORT": return Mnemonic.EREPORT;
+                case "ERESUME": return Mnemonic.ERESUME;
+                case "EDECVIRTCHILD": return Mnemonic.EDECVIRTCHILD;
+                case "EINCVIRTCHILD": return Mnemonic.EINCVIRTCHILD;
+                case "ESETCONTEXT": return Mnemonic.ESETCONTEXT;
+
 
                 default:
                     Console.WriteLine("WARNING;parseMnemonic. unknown str=\"" + str + "\".");
