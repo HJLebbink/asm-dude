@@ -26,6 +26,9 @@ namespace intel_doc_2_data
         {
             string path = "../../../../asm-dude.wiki/doc";
             StringBuilder sb = new StringBuilder();
+            StringBuilder sb2 = new StringBuilder();
+
+            sb2.AppendLine("<table>");
 
             foreach (string filename in Directory.EnumerateFiles(path, "*.md", SearchOption.TopDirectoryOnly).OrderBy(f => f))
             {
@@ -38,12 +41,23 @@ namespace intel_doc_2_data
                 sb.AppendLine(";--------------------------------------------------------");
 
                 ISet<Mnemonic> mnemonics = new HashSet<Mnemonic>();
-                foreach (Signature s in Signatures)
-                {
-                    mnemonics.Add(s.mnemonic);
-                }
+                foreach (Signature s in Signatures) mnemonics.Add(s.mnemonic);
+
                 foreach (Mnemonic m in mnemonics)
                 {
+                    #region Handle Overview File
+                    ISet<Arch> archs = new HashSet<Arch>();
+                    foreach (Signature s in Signatures)
+                    {
+                        if (s.mnemonic == m) foreach (Arch a in s.archs) archs.Add(a);
+                    }
+                    string archStr = "";
+                    foreach (Arch a in archs) archStr += ArchTools.ToString(a) + " ";
+                    archStr = archStr.TrimEnd();
+                    sb2.AppendLine("<tr><td><a href=\"https://github.com/HJLebbink/asm-dude/wiki/" + Path.GetFileNameWithoutExtension(filename) + "\">" + m.ToString() + "</a></td><td>" + Description + "</td><td>" + archStr + "</td></tr>");
+                    #endregion
+
+                    #region Handle Signature File
                     sb.AppendLine("GENERAL\t" + m.ToString() + "\t" + Description + "\t" + Path.GetFileNameWithoutExtension(filename));
                     foreach (Signature s in Signatures)
                     {
@@ -52,9 +66,14 @@ namespace intel_doc_2_data
                             sb.AppendLine(s.ToString());
                         }
                     }
+                    #endregion
                 }
                 System.IO.File.WriteAllText(@"C:\Temp\VS\signature-dec2018.txt", sb.ToString());
             }
+
+            sb2.AppendLine("</table>");
+            System.IO.File.WriteAllText(@"C:\Temp\VS\overview.txt", sb2.ToString());
+
         }
 
         static (string Description, IList<Signature> Signatures) Parse(string content)
