@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace intel_doc_2_data
@@ -26,40 +27,47 @@ namespace intel_doc_2_data
             string path = "../../../../asm-dude.wiki/doc";
             StringBuilder sb = new StringBuilder();
 
-            foreach (string filename in Directory.EnumerateFiles(path, "*.md", SearchOption.TopDirectoryOnly))
+            foreach (string filename in Directory.EnumerateFiles(path, "*.md", SearchOption.TopDirectoryOnly).OrderBy(f => f))
             {
                 Console.WriteLine(filename);
                 StreamReader file_Stream = File.OpenText(filename);
                 string file_Content = file_Stream.ReadToEnd();
-                var Results = Parse(file_Content);
+                (string Description, IList<Signature> Signatures) = Parse(file_Content);
                 file_Stream.Close();
 
                 sb.AppendLine(";--------------------------------------------------------");
-                foreach (Mnemonic m in Results.Mnemonics)
-                {
-                    sb.AppendLine("GENERAL\t" + m.ToString() + "\t" + Results.Description + "\t" + Path.GetFileNameWithoutExtension(filename));
-                }
 
-                foreach (Signature s in Results.Signatures)
+                ISet<Mnemonic> mnemonics = new HashSet<Mnemonic>();
+                foreach (Signature s in Signatures)
                 {
-                    sb.AppendLine(s.ToString());
+                    mnemonics.Add(s.mnemonic);
+                }
+                foreach (Mnemonic m in mnemonics)
+                {
+                    sb.AppendLine("GENERAL\t" + m.ToString() + "\t" + Description + "\t" + Path.GetFileNameWithoutExtension(filename));
+                    foreach (Signature s in Signatures)
+                    {
+                        if (s.mnemonic == m)
+                        {
+                            sb.AppendLine(s.ToString());
+                        }
+                    }
                 }
                 System.IO.File.WriteAllText(@"C:\Temp\VS\signature-dec2018.txt", sb.ToString());
             }
         }
 
-        static (IList<Mnemonic> Mnemonics, string Description, IList<Signature> Signatures) Parse(string content)
+        static (string Description, IList<Signature> Signatures) Parse(string content)
         {
             //1] get everthing before the first occurance of "<table>"
             int pos_Start_Table = content.IndexOf("<table>");
             string substr1 = content.Substring(0, pos_Start_Table);
             int pos_Hyphen = Find_First_Hyphen_Position(substr1);
             string Description = substr1.Substring(pos_Hyphen + 1).Trim().Replace("\r\n", " ");
-            IList<Mnemonic> Mnemonics = Retrieve_Mnemonics(substr1.Substring(0, pos_Hyphen));
             int pos_End_Table = content.IndexOf("</table>");
             var table = Parse_Table(content.Substring(pos_Start_Table, pos_End_Table - pos_Start_Table).Replace("<table>",""));
-            var signatures = To_Signature(table, Mnemonics);
-            return (Mnemonics, Description, signatures);
+            var signatures = To_Signature(table);
+            return (Description, signatures);
         }
 
         struct Signature
@@ -76,21 +84,21 @@ namespace intel_doc_2_data
                 StringBuilder sb = new StringBuilder();
                 sb.Append(this.mnemonic.ToString() + "\t");
                 sb.Append(this.parameters + "\t");
-                sb.Append(this.parameter_descriptions + "\t");
 
                 for (int i = 0; i<this.archs.Count; ++i)
                 {
                     sb.Append(ArchTools.ToString(this.archs[i]));
-                    if (i < (this.archs.Count - 1)) sb.Append(" ");
+                    if (i < (this.archs.Count - 1)) sb.Append(",");
                 }
                 sb.Append("\t");
+                sb.Append(this.parameter_descriptions + "\t");
 
                 sb.Append(this.description);
                 return sb.ToString();
             }
         }
 
-        static IList<Signature> To_Signature(IList<IList<string>> table, IList<Mnemonic> mnemonics)
+        static IList<Signature> To_Signature(IList<IList<string>> table)
         {
             #region Determine what is where
             int mnemonic_column = -2;
@@ -121,6 +129,12 @@ namespace intel_doc_2_data
                     arch_column = 3;
                     description_column = 4;
                 }
+                else if (header[1].Contains("Instruction"))
+                {
+                    mnemonic_column = 1;
+                    arch_column = -1;
+                    description_column = 4;
+                }
                 else
                 {
                     mnemonic_column = 0;
@@ -138,6 +152,12 @@ namespace intel_doc_2_data
                 arch_column = -1;
                 description_column = 3;
             }
+            else if (header.Count == 3)
+            {
+                mnemonic_column = 1;
+                arch_column = -10;
+                description_column = 2;
+            }
             else
             {
                 Console.WriteLine("WARNING: To_Signature: found header count " + header.Count + ".");
@@ -152,16 +172,59 @@ namespace intel_doc_2_data
             {
                 var row = table[row_i];
 
+                if (mnemonic_column >= row.Count)
+                {
+                    Console.WriteLine("WARNING: malformed row");
+                    break;
+                }
+                var Parameters = Parse_Parameters(row[mnemonic_column]);
+
                 IList<Arch> archs;
                 if (arch_column == -1)
                 {
-                    archs = new List<Arch> { Arch.ARCH_8086 };
+                    string desr = " "+Parameters.Parameter_Descriptions;
+
+                    if (desr.Contains(" CMOV"))
+                    {
+                        if (desr.Contains("R64"))
+                        {
+                            archs = new List<Arch> { Arch.X64 };
+                        }
+                        else
+                        {
+                            archs = new List<Arch> { Arch.P6 };
+                        }
+                    }
+                    else if (desr.Contains("REL16") || desr.Contains("REL32"))
+                    {
+                        archs = new List<Arch> { Arch.ARCH_386 };
+                    }
+                    else if (desr.Contains("REL64"))
+                    {
+                        archs = new List<Arch> { Arch.X64 };
+                    }
+                    else if (desr.Contains("M64") || desr.Contains("R64") || desr.Contains("RCX"))
+                    {
+                        archs = new List<Arch> { Arch.X64 };
+                    }
+                    else if (desr.Contains("IMM32") || desr.Contains("M32") || desr.Contains("R32") || desr.Contains("ECX"))
+                    {
+                        archs = new List<Arch> { Arch.ARCH_386 };
+                    }
+                    else
+                    {
+                        archs = new List<Arch> { Arch.ARCH_8086 };
+                    }
+                }
+                else if (arch_column == -10)
+                {
+                    archs = new List<Arch> { Arch.SMX };
                 }
                 else
                 {
                     if (arch_column < row.Count)
                     {
-                        archs = Parse_Archs(row[arch_column]); 
+                        archs = Parse_Archs(row[arch_column]);
                     }
                     else
                     {
@@ -170,64 +233,57 @@ namespace intel_doc_2_data
                 }
 
                 string description = (description_column < row.Count) ? row[description_column] : "";
-                description = description.Replace("floating-point", "FP").Replace("floating- point", "FP").Replace("double-precision", "DP").Replace("single-precision", "SP");
+                description = description.
+                    Replace("floating-point", "FP").Replace("floating- point", "FP").Replace("Floating-Point", "FP").Replace("Floating- Point", "FP").
+                    Replace("double-precision", "DP").Replace("double- precision", "DP").Replace("Double-Precision", "DP").Replace("Double- Precision", "DP").
+                    Replace("single-precision", "SP").Replace("single- precision", "SP").Replace("Single-Precision", "SP").Replace("Single- Precision", "SP");
 
-                if (mnemonic_column < row.Count)
+                Results.Add(new Signature
                 {
-                    var Parameters = Parse_Parameters(row[mnemonic_column], mnemonics);
-
-                    Signature sig = new Signature
-                    {
-                        mnemonic = Parameters.mnemonic,
-                        parameters = Parameters.Parameters,
-                        parameter_descriptions = Parameters.Parameter_Descriptions,
-                        archs = archs,
-                        description = description
-                    };
-
-                    Results.Add(sig);
-                } else
-                {
-                    Console.WriteLine("WARNING: malformed row");
-                    //Console.ReadKey();
-                }
+                    mnemonic = Parameters.mnemonic,
+                    parameters = Parameters.Parameters,
+                    parameter_descriptions = Parameters.Parameter_Descriptions,
+                    archs = archs,
+                    description = description
+                });
             }
             return Results;
         }
 
-        static (Mnemonic mnemonic, string Parameters, string Parameter_Descriptions) Parse_Parameters(string str, IList<Mnemonic> mnemonics)
+        static (Mnemonic mnemonic, string Parameters, string Parameter_Descriptions) Parse_Parameters(string str)
         {
-            Mnemonic mnemonic = Mnemonic.NONE;
             string parameters = "";
             string parameter_descriptions = "";
-            foreach (Mnemonic m in mnemonics)
+            string str2 = " " + str.Replace("*", "").Trim() + " ";
+
+            str2 = str2.Replace("REP ", "REP_").Replace("REPE ", "REPE_").Replace("REPNE ", "REPNE_");
+
+            string str_Upper = " " + str2.ToUpper() + " ";
+
+            Mnemonic mnemonic = Mnemonic.NONE;
+            foreach (Mnemonic m in Enum.GetValues(typeof(Mnemonic)))
             {
                 string mnemonic_str = m.ToString();
-                string str_Upper = str.ToUpper();
-                int pos_mnemonic = str_Upper.IndexOf(mnemonic_str + " ");
-                if (pos_mnemonic == -1)
-                {
-                    pos_mnemonic = str_Upper.IndexOf(mnemonic_str);
-                }
+                int pos_mnemonic = str_Upper.IndexOf(" " + mnemonic_str + " ");
                 if (pos_mnemonic != -1)
                 {
                     mnemonic = m;
-                    string tmp = str.Substring(pos_mnemonic + mnemonic_str.Length).Replace(" ", "").Replace("*", "").Trim().ToUpper();
-                    parameters = tmp.
-                        Replace("XMM1", "XMM").Replace("XMM2", "XMM").Replace("XMM3", "XMM").
-                        Replace("YMM1", "YMM").Replace("YMM2", "YMM").Replace("YMM3", "YMM").
-                        Replace("ZMM1", "ZMM").Replace("ZMM2", "ZMM").Replace("ZMM3", "ZMM").
-                        Replace("K1", "K").Replace("K2", "K").Replace("K3", "K").
-                        Replace("R32A", "R32").Replace("R32B", "R32").Replace("R64B", "R64").Replace("R64B", "R64");
-                    if (tmp.Length > 0)
-                    {
-                        parameter_descriptions = mnemonic.ToString() + " " + tmp;
-                    }
-                    else
-                    {
-                        parameter_descriptions = mnemonic.ToString();
-                    }
+                    string tmp = str2.Substring(pos_mnemonic + mnemonic_str.Length).Replace(" ", "").Trim().ToUpper();
+                    parameters = Cleanup_Parameters(tmp);
+                    parameter_descriptions = (tmp.Length > 0) ? (mnemonic_str + " " + tmp) : mnemonic_str;
                     break;
+                }
+                else
+                {
+                    pos_mnemonic = str_Upper.IndexOf("[" + mnemonic_str + "]");
+                    if (pos_mnemonic != -1)
+                    {
+                        mnemonic = m;
+                        string tmp = str2.Substring(pos_mnemonic + mnemonic_str.Length).Replace("[", "").Replace("]", "").Replace(" ", "").Trim().ToUpper();
+                        parameters = Cleanup_Parameters(tmp);
+                        parameter_descriptions = (tmp.Length > 0) ? (mnemonic_str + " " + tmp) : mnemonic_str;
+                        break;
+                    }
                 }
             }
             if (mnemonic==Mnemonic.NONE)
@@ -236,6 +292,23 @@ namespace intel_doc_2_data
                 //Console.ReadKey();
             }
             return (mnemonic, parameters, parameter_descriptions);
+        }
+
+        static string Cleanup_Parameters(string str)
+        {
+            var tmp = str.Replace("IMM16", "XYZZY");
+            tmp = tmp.
+                Replace("+3", "").
+                Replace("XMM1", "XMM").Replace("XMM2", "XMM").Replace("XMM3", "XMM").Replace("XMM4", "XMM").
+                Replace("YMM1", "YMM").Replace("YMM2", "YMM").Replace("YMM3", "YMM").Replace("YMM4", "YMM").
+                Replace("ZMM1", "ZMM").Replace("ZMM2", "ZMM").Replace("ZMM3", "ZMM").
+                Replace("MM1", "MM").Replace("MM2", "MM").
+                Replace("<XMM0>", "XMM_ZERO").
+                Replace("BND1", "BND").Replace("BND2", "BND").Replace("ZMM3", "ZMM").
+                Replace("K1", "K").Replace("K2", "K").Replace("K3", "K").
+                Replace("R32A", "R32").Replace("R32B", "R32").Replace("R64A", "R64").Replace("R64B", "R64");
+            tmp = tmp.Replace("XYZZY", "IMM16");
+            return tmp;
         }
 
         static IList<Arch> Parse_Archs(string str)
@@ -293,71 +366,6 @@ namespace intel_doc_2_data
                 Results.Add(s2);
             }
             return Results;
-        }
-
-        static IList<Mnemonic> Retrieve_Mnemonics(string str)
-        {
-            var Mnemonics = new List<Mnemonic>();
-
-            int pos_b = str.IndexOf("<b>");
-            string str2 = (pos_b == -1) ? str : str.Substring(pos_b);
-
-            foreach (string mnemonicStr in str2.Replace("<b>", "").Replace("</b>", "").Split('/'))
-            {
-                string mnemonicStr2 = mnemonicStr.Trim().ToUpper();
-                Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(mnemonicStr2, true);
-                if (mnemonic == Mnemonic.NONE)
-                {
-                    if (mnemonicStr2.Equals("CMOVCC"))
-                    {
-                        foreach (Mnemonic m in new Mnemonic[] {
-                            Mnemonic.CMOVZ,Mnemonic.CMOVNE,Mnemonic.CMOVNZ,Mnemonic.CMOVA,Mnemonic.CMOVNBE,Mnemonic.CMOVAE,Mnemonic.CMOVNB,Mnemonic.CMOVB,Mnemonic.CMOVNAE,Mnemonic.CMOVBE,Mnemonic.CMOVNA,
-                            Mnemonic.CMOVG,Mnemonic.CMOVNLE,Mnemonic.CMOVGE,Mnemonic.CMOVNL,Mnemonic.CMOVL,Mnemonic.CMOVNGE,Mnemonic.CMOVLE,Mnemonic.CMOVNG,Mnemonic.CMOVC,Mnemonic.CMOVNC,Mnemonic.CMOVO,
-                            Mnemonic.CMOVNO,Mnemonic.CMOVS,Mnemonic.CMOVNS,Mnemonic.CMOVPO,Mnemonic.CMOVNP,Mnemonic.CMOVPE,Mnemonic.CMOVP, Mnemonic.CMOVE})
-                        {
-                            Mnemonics.Add(m);
-                        }
-                    }
-                    else if (mnemonicStr2.Equals("JCC"))
-                    {
-                        foreach (Mnemonic m in new Mnemonic[] {
-                            Mnemonic.JZ,Mnemonic.JNE,Mnemonic.JNZ,Mnemonic.JA,Mnemonic.JNBE,Mnemonic.JAE,Mnemonic.JNB,Mnemonic.JB,Mnemonic.JNAE,Mnemonic.JBE,Mnemonic.JNA,
-                            Mnemonic.JG,Mnemonic.JNLE,Mnemonic.JGE,Mnemonic.JNL,Mnemonic.JL,Mnemonic.JNGE,Mnemonic.JLE,Mnemonic.JNG,Mnemonic.JC,Mnemonic.JNC,Mnemonic.JO,
-                            Mnemonic.JNO,Mnemonic.JS,Mnemonic.JNS,Mnemonic.JPO,Mnemonic.JNP,Mnemonic.JPE,Mnemonic.JP, Mnemonic.JE})
-                        {
-                            Mnemonics.Add(m);
-                        }
-                    }
-                    else if (mnemonicStr2.Equals("SETCC"))
-                    {
-                        foreach (Mnemonic m in new Mnemonic[] {
-                            Mnemonic.SETZ,Mnemonic.SETNE,Mnemonic.SETNZ,Mnemonic.SETA,Mnemonic.SETNBE,Mnemonic.SETAE,Mnemonic.SETNB,Mnemonic.SETB,Mnemonic.SETNAE,Mnemonic.SETBE,Mnemonic.SETNA,
-                            Mnemonic.SETG,Mnemonic.SETNLE,Mnemonic.SETGE,Mnemonic.SETNL,Mnemonic.SETL,Mnemonic.SETNGE,Mnemonic.SETLE,Mnemonic.SETNG,Mnemonic.SETC,Mnemonic.SETNC,Mnemonic.SETO,
-                            Mnemonic.SETNO,Mnemonic.SETS,Mnemonic.SETNS,Mnemonic.SETPO,Mnemonic.SETNP,Mnemonic.SETPE,Mnemonic.SETP, Mnemonic.SETE})
-                        {
-                            Mnemonics.Add(m);
-                        }
-                    }
-                    else if (mnemonicStr2.Equals("LOOPCC"))
-                    {
-                        foreach (Mnemonic m in new Mnemonic[] {
-                            Mnemonic.LOOP,Mnemonic.LOOPE,Mnemonic.LOOPNE,Mnemonic.LOOPNZ,Mnemonic.LOOPZ})
-                        {
-                            Mnemonics.Add(m);
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("WARNING: Retrieve_Mnemonics: found unsupported mnemonic str \"" + mnemonicStr2 + "\".");
-                        //Console.ReadKey();
-                    }
-                }
-                else
-                {
-                    Mnemonics.Add(mnemonic);
-                }
-            }
-            return Mnemonics;
         }
 
         static int Find_First_Hyphen_Position(string str)

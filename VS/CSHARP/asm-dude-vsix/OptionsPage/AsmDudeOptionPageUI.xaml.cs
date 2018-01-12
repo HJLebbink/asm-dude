@@ -714,7 +714,21 @@ namespace AsmDude.OptionsPage
             get { return this.UseArch_AES_UI.IsChecked ?? false; }
             set { this.UseArch_AES_UI.IsChecked = value; }
         }
-
+        public bool UseArch_SMX
+        {
+            get { return this.UseArch_SMX_UI.IsChecked ?? false; }
+            set { this.UseArch_SMX_UI.IsChecked = value; }
+        }
+        public bool UseArch_SGX1
+        {
+            get { return this.UseArch_SGX1_UI.IsChecked ?? false; }
+            set { this.UseArch_SGX1_UI.IsChecked = value; }
+        }
+        public bool UseArch_SGX2
+        {
+            get { return this.UseArch_SGX2_UI.IsChecked ?? false; }
+            set { this.UseArch_SGX2_UI.IsChecked = value; }
+        }
         #endregion
 
         #region Intellisense

@@ -614,7 +614,12 @@ namespace AsmTools {
         /// <summary>No operation</summary>
         NOP,
         /// <summary>Generates an invalid opcode. This instruction is provided for software testing to explicitly generate an invalid opcode. The opcode for this instruction is reserved for this purpose. Other than raising the invalid opcode exception, this instruction is the same as the NOP instruction.</summary>
+
+        UD01,
+        UD1,
         UD2,
+
+
         /// <summary>Table lookup translation</summary>
         XLAT,
         /// <summary>Table lookup translation</summary>
@@ -935,10 +940,6 @@ namespace AsmTools {
         SYSENTER,
         SYSEXIT,
         SYSRET,
-        UD0,
-        UD1,
-        UD2B,
-        UD2A,
         UMOV,
         VERR,
         VERW,
@@ -2339,10 +2340,13 @@ namespace AsmTools {
 
         /// <summary> Galois Field Affine Transformation Inverse</summary>
         GF2P8AFFINEINVQB,
+        VGF2P8AFFINEINVQB,
         /// <summary>Galois Field Affine Transformation</summary>
         GF2P8AFFINEQB,
+        VGF2P8AFFINEQB,
         /// <summary>Galois Field Multiply Bytes</summary>
         GF2P8MULB,
+        VGF2P8MULB,
         /// <summary>Perform One Round of an AES Decryption Flow</summary>
         VAESDEC,
         /// <summary>Perform Last Round of an AES Decryption Flow</summary>
@@ -2354,7 +2358,8 @@ namespace AsmTools {
         /// <summary>Carry-Less Multiplication Quadword</summary>
         VPCLMULQDQ,
         /// <summary>Store Sparse Packed Byte/Word Integer Values into Dense Memory/Register</summary>
-        VPCOMPRESS,
+        VPCOMPRESSB,
+        VPCOMPRESSW,
         /// <summary>Multiply and Add Unsigned and Signed Bytes</summary>
         VPDPBUSD,
         /// <summary>Multiply and Add Unsigned and Signed Bytes with Saturation</summary>
@@ -2364,17 +2369,31 @@ namespace AsmTools {
         /// <summary>Multiply and Add Word Integers with Saturation</summary>
         VPDPWSSDS,
         /// <summary>Expand Byte/Word Values</summary>
-        VPEXPAND,
+        VPEXPANDB,
+        VPEXPANDW,
         /// <summary>Return the Count of Number of Bits Set to 1 in BYTE/WORD/DWORD/QWORD</summary>
-        VPOPCNT,
-        /// <summary>Concatenate and Shift Packed Data Left Logical</summary>
+        VPOPCNTB,
+        VPOPCNTW,
+
+        /// <summary>SSE5</summary>
         VPSHLD,
+
+        /// <summary>Concatenate and Shift Packed Data Left Logical</summary>
+        VPSHLDW,
+        VPSHLDD,
+        VPSHLDQ,
         /// <summary>Concatenate and Variable Shift Packed Data Left Logical</summary>
-        VPSHLDV,
+        VPSHLDVW,
+        VPSHLDVD,
+        VPSHLDVQ,
         /// <summary>Concatenate and Shift Packed Data Right Logical</summary>
-        VPSHRD,
+        VPSHRDW,
+        VPSHRDD,
+        VPSHRDQ,
         /// <summary>Concatenate and Variable Shift Packed Data Right Logical</summary>
-        VPSHRDV,
+        VPSHRDVW,
+        VPSHRDVD,
+        VPSHRDVQ,
         /// <summary>Shuffle Bits from Quadword Elements Using Byte Indexes into Mask</summary>
         VPSHUFBITQMB,
         
@@ -2415,7 +2434,15 @@ namespace AsmTools {
         ERESUME,
         EDECVIRTCHILD,
         EINCVIRTCHILD,
-        ESETCONTEXT
+        ESETCONTEXT,
+
+        EXITAC,
+        PARAMETERS,
+        SENTER,
+        SEXIT,
+        SMCTRL,
+        WAKEUP
+
     }
 
     public static partial class AsmSourceTools {
@@ -2823,7 +2850,6 @@ namespace AsmTools {
                 case "LSS": return Mnemonic.LSS;
                 case "LEA": return Mnemonic.LEA;
                 case "NOP": return Mnemonic.NOP;
-                case "UD2": return Mnemonic.UD2;
                 case "XLAT": return Mnemonic.XLAT;
                 case "XLATB": return Mnemonic.XLATB;
                 case "CPUID": return Mnemonic.CPUID;
@@ -3112,10 +3138,9 @@ namespace AsmTools {
                 case "SYSENTER": return Mnemonic.SYSENTER;
                 case "SYSEXIT": return Mnemonic.SYSEXIT;
                 case "SYSRET": return Mnemonic.SYSRET;
-                case "UD0": return Mnemonic.UD0;
+                case "UD01": return Mnemonic.UD01;
                 case "UD1": return Mnemonic.UD1;
-                case "UD2B": return Mnemonic.UD2B;
-                case "UD2A": return Mnemonic.UD2A;
+                case "UD2": return Mnemonic.UD2;
                 case "UMOV": return Mnemonic.UMOV;
                 case "VERR": return Mnemonic.VERR;
                 case "VERW": return Mnemonic.VERW;
@@ -4076,6 +4101,9 @@ namespace AsmTools {
                 case "VPSHAW": return Mnemonic.VPSHAW;
                 case "VPSHLB": return Mnemonic.VPSHLB;
                 case "VPSHLD": return Mnemonic.VPSHLD;
+                case "VPSHLDW": return Mnemonic.VPSHLDW;
+                case "VPSHLDD": return Mnemonic.VPSHLDD;
+                case "VPSHLDQ": return Mnemonic.VPSHLDQ;
                 case "VPSHLQ": return Mnemonic.VPSHLQ;
                 case "VPSHLW": return Mnemonic.VPSHLW;
                 case "VBROADCASTI128": return Mnemonic.VBROADCASTI128;
@@ -4468,22 +4496,34 @@ namespace AsmTools {
                 case "V4FMADDSS": return Mnemonic.V4FMADDSS;
                 case "V4FNMADDSS": return Mnemonic.V4FNMADDSS;
 
+                case "VPOPCNTB": return Mnemonic.VPOPCNTB;
+                case "VPOPCNTW": return Mnemonic.VPOPCNTW;
                 case "VPOPCNTD": return Mnemonic.VPOPCNTD;
                 case "VPOPCNTQ": return Mnemonic.VPOPCNTQ;
 
                 case "GF2P8AFFINEINVQB": return Mnemonic.GF2P8AFFINEINVQB;
+                case "VGF2P8AFFINEINVQB": return Mnemonic.VGF2P8AFFINEINVQB;
                 case "GF2P8AFFINEQB": return Mnemonic.GF2P8AFFINEQB;
+                case "VGF2P8AFFINEQB": return Mnemonic.VGF2P8AFFINEQB;
                 case "GF2P8MULB": return Mnemonic.GF2P8MULB;
-                case "VPCOMPRESS": return Mnemonic.VPCOMPRESS;
+                case "VGF2P8MULB": return Mnemonic.VGF2P8MULB;
+                case "VPCOMPRESSB": return Mnemonic.VPCOMPRESSB;
+                case "VPCOMPRESSW": return Mnemonic.VPCOMPRESSW;
                 case "VPDPBUSD": return Mnemonic.VPDPBUSD;
                 case "VPDPBUSDS": return Mnemonic.VPDPBUSDS;
                 case "VPDPWSSD": return Mnemonic.VPDPWSSD;
                 case "VPDPWSSDS": return Mnemonic.VPDPWSSDS;
-                case "VPEXPAND": return Mnemonic.VPEXPAND;
-                case "VPOPCNT": return Mnemonic.VPOPCNT;
-                case "VPSHLDV": return Mnemonic.VPSHLDV;
-                case "VPSHRD": return Mnemonic.VPSHRD;
-                case "VPSHRDV": return Mnemonic.VPSHRDV;
+                case "VPEXPANDB": return Mnemonic.VPEXPANDB;
+                case "VPEXPANDW": return Mnemonic.VPEXPANDW;
+                case "VPSHLDVW": return Mnemonic.VPSHLDVW;
+                case "VPSHLDVD": return Mnemonic.VPSHLDVD;
+                case "VPSHLDVQ": return Mnemonic.VPSHLDVQ;
+                case "VPSHRDW": return Mnemonic.VPSHRDW;
+                case "VPSHRDD": return Mnemonic.VPSHRDD;
+                case "VPSHRDQ": return Mnemonic.VPSHRDQ;
+                case "VPSHRDVW": return Mnemonic.VPSHRDVW;
+                case "VPSHRDVD": return Mnemonic.VPSHRDVD;
+                case "VPSHRDVQ": return Mnemonic.VPSHRDVQ;
                 case "VPSHUFBITQMB": return Mnemonic.VPSHUFBITQMB;
 
                 case "ENCLS": return Mnemonic.ENCLS;
@@ -4521,6 +4561,12 @@ namespace AsmTools {
                 case "EINCVIRTCHILD": return Mnemonic.EINCVIRTCHILD;
                 case "ESETCONTEXT": return Mnemonic.ESETCONTEXT;
 
+                case "EXITAC": return Mnemonic.EXITAC;
+                case "PARAMETERS": return Mnemonic.PARAMETERS;
+                case "SENTER": return Mnemonic.SENTER;
+                case "SEXIT": return Mnemonic.SEXIT;
+                case "SMCTRL": return Mnemonic.SMCTRL;
+                case "WAKEUP": return Mnemonic.WAKEUP;
 
                 default:
                     Console.WriteLine("WARNING;parseMnemonic. unknown str=\"" + str + "\".");

@@ -437,6 +437,10 @@
                             <CheckBox x:Name="UseArch_RTM_UI" Content="RTM - Transactional Synchronization Extensions" Width="Auto" />
                             <CheckBox x:Name="UseArch_SHA_UI" Content="SHA - Secure Hash Algorithm Extension" Width="Auto" />
                             <CheckBox x:Name="UseArch_VMX_UI" Content="VMX - Virtual Machine Extensions" Width="Auto" />
+
+                            <CheckBox x:Name="UseArch_SMX_UI" Content="SMX - Safer Mode Extensions" Width="Auto" />
+                            <CheckBox x:Name="UseArch_SGX1_UI" Content="SGX1 - Software Guard Extensions 1" Width="Auto" />
+                            <CheckBox x:Name="UseArch_SGX2_UI" Content="SGX2 - Software Guard Extensions 2" Width="Auto" />
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Header="Misc" >

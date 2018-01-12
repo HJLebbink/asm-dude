@@ -189,6 +189,8 @@ namespace AsmTools {
 
         VAES,
 
+        /// <summary>SAFER MODE EXTENSIONS</summary>
+        SMX,
         #region Misc Other
         X64,
 
@@ -256,6 +258,7 @@ namespace AsmTools {
                 case "AVX512VBMI2": return Arch.AVX512_VBMI2;                case "AVX512VNNI": return Arch.AVX512_VNNI;
                 case "AVX512BITALG": return Arch.AVX512_BITALG;
                 case "AVX512GFNI": return Arch.AVX512_GFNI;
+                case "VAES":
                 case "AVX512VAES": return Arch.AVX512_VAES;
                 case "AVX512VPCLMULQDQ": return Arch.AVX512_VPCLMULQDQ;
 
@@ -299,15 +302,11 @@ namespace AsmTools {
 
                 case "SGX1": return Arch.SGX1;
                 case "SGX2": return Arch.SGX2;
-
-                case "VAES": return Arch.VAES;
+                case "SMX": return Arch.SMX;
 
                 case "UNDOC": return Arch.UNDOC;
                 default:
-                    if (warn)
-                    {
-                        Console.WriteLine("WARNING: parseArch: no arch for str " + str);
-                    }
+                    if (warn) Console.WriteLine("WARNING: parseArch: no arch for str " + str);
                     return Arch.NONE;
             }
         }

@@ -1678,5 +1678,41 @@ namespace AsmDude {
                 this["ARCH_AVX512_VPCLMULQDQ"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ARCH_SMX {
+            get {
+                return ((bool)(this["ARCH_SMX"]));
+            }
+            set {
+                this["ARCH_SMX"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ARCH_SGX1 {
+            get {
+                return ((bool)(this["ARCH_SGX1"]));
+            }
+            set {
+                this["ARCH_SGX1"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ARCH_SGX2 {
+            get {
+                return ((bool)(this["ARCH_SGX2"]));
+            }
+            set {
+                this["ARCH_SGX2"] = value;
+            }
+        }
     }
 }

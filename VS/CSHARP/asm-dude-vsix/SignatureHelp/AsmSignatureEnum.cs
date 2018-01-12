@@ -132,8 +132,8 @@ namespace AsmDude.SignatureHelp
         {
             switch (str.ToUpper().Trim())
             {
-
                 #region Memory
+                case "M": return new AsmSignatureEnum[] { AsmSignatureEnum.MEM };
                 case "MEM": return new AsmSignatureEnum[] { AsmSignatureEnum.MEM };
                 case "M8": return new AsmSignatureEnum[] { AsmSignatureEnum.M8 };
                 case "M16": return new AsmSignatureEnum[] { AsmSignatureEnum.M16 };
@@ -143,8 +143,11 @@ namespace AsmDude.SignatureHelp
                 case "M64{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.M64, AsmSignatureEnum.K };
                 case "M80": return new AsmSignatureEnum[] { AsmSignatureEnum.M80 };
                 case "M128": return new AsmSignatureEnum[] { AsmSignatureEnum.M128 };
+                case "M128{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.M128, AsmSignatureEnum.K };
                 case "M256": return new AsmSignatureEnum[] { AsmSignatureEnum.M256 };
+                case "M256{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.M256, AsmSignatureEnum.K };
                 case "M512": return new AsmSignatureEnum[] { AsmSignatureEnum.M512 };
+                case "M512{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.M512, AsmSignatureEnum.K };
 
                 case "M16&16": return new AsmSignatureEnum[] { AsmSignatureEnum.MEM };
                 case "M16&32": return new AsmSignatureEnum[] { AsmSignatureEnum.MEM };
@@ -158,6 +161,7 @@ namespace AsmDude.SignatureHelp
                 case "PTR16:16": return new AsmSignatureEnum[] { AsmSignatureEnum.IMM };
                 case "PTR16:32": return new AsmSignatureEnum[] { AsmSignatureEnum.IMM };
                 case "PTR16:64": return new AsmSignatureEnum[] { AsmSignatureEnum.IMM };
+
 
                 #endregion
 
@@ -215,6 +219,8 @@ namespace AsmDude.SignatureHelp
                 case "R32/M32": return new AsmSignatureEnum[] { AsmSignatureEnum.R32, AsmSignatureEnum.M32 };
                 case "R64/M64": return new AsmSignatureEnum[] { AsmSignatureEnum.R64, AsmSignatureEnum.M64 };
                 case "R32/M8": return new AsmSignatureEnum[] { AsmSignatureEnum.R32, AsmSignatureEnum.M8 };
+
+                case "R16/R32/M16": return new AsmSignatureEnum[] { AsmSignatureEnum.R16, AsmSignatureEnum.R32, AsmSignatureEnum.M16 };
                 #endregion
 
                 #region Constants Immediates

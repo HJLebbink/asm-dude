@@ -129,7 +129,14 @@ namespace AsmDude.SignatureHelp
                 {
                     foreach (string arch2 in value.Split(','))
                     {
-                        this._arch.Add(ArchTools.ParseArch(arch2));
+                        Arch a = ArchTools.ParseArch(arch2);
+                        if (a != AsmTools.Arch.NONE)
+                        {
+                            this._arch.Add(a);
+                        } else
+                        {
+                            AsmDudeToolsStatic.Output_INFO("Arch_Str: could not parse ARCH string \"" + arch2 + "\".");
+                        }
                     }
                 }
             }

@@ -297,6 +297,13 @@ namespace AsmDude.OptionsPage
             this._asmDudeOptionsPageUI.UseArch_UNDOC_UI.ToolTip = MakeToolTip(Arch.UNDOC);
             this._asmDudeOptionsPageUI.UseArch_AES = Settings.Default.ARCH_AES;
             this._asmDudeOptionsPageUI.UseArch_AES_UI.ToolTip = MakeToolTip(Arch.AES);
+
+            this._asmDudeOptionsPageUI.UseArch_SMX = Settings.Default.ARCH_SMX;
+            this._asmDudeOptionsPageUI.UseArch_SMX_UI.ToolTip = MakeToolTip(Arch.SMX);
+            this._asmDudeOptionsPageUI.UseArch_SGX1 = Settings.Default.ARCH_SGX1;
+            this._asmDudeOptionsPageUI.UseArch_SGX1_UI.ToolTip = MakeToolTip(Arch.SGX1);
+            this._asmDudeOptionsPageUI.UseArch_SGX2 = Settings.Default.ARCH_SGX2;
+            this._asmDudeOptionsPageUI.UseArch_SGX2_UI.ToolTip = MakeToolTip(Arch.SGX2);
             #endregion
 
             #region Intellisense
@@ -882,6 +889,21 @@ namespace AsmDude.OptionsPage
             if (Settings.Default.ARCH_AES != this._asmDudeOptionsPageUI.UseArch_AES)
             {
                 sb.AppendLine("UseArch_AES=" + this._asmDudeOptionsPageUI.UseArch_AES);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_SMX != this._asmDudeOptionsPageUI.UseArch_SMX)
+            {
+                sb.AppendLine("UseArch_XMX=" + this._asmDudeOptionsPageUI.UseArch_SMX);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_SGX1 != this._asmDudeOptionsPageUI.UseArch_SGX1)
+            {
+                sb.AppendLine("UseArch_SGX1=" + this._asmDudeOptionsPageUI.UseArch_SGX1);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_SGX2 != this._asmDudeOptionsPageUI.UseArch_SGX2)
+            {
+                sb.AppendLine("UseArch_SGX2=" + this._asmDudeOptionsPageUI.UseArch_SGX2);
                 changed = true;
             }
             #endregion
@@ -1797,6 +1819,24 @@ namespace AsmDude.OptionsPage
             if (Settings.Default.ARCH_AES != this._asmDudeOptionsPageUI.UseArch_AES)
             {
                 Settings.Default.ARCH_AES = this._asmDudeOptionsPageUI.UseArch_AES;
+                changed = true;
+                archChanged = true;
+            }
+            if (Settings.Default.ARCH_SMX != this._asmDudeOptionsPageUI.UseArch_SMX)
+            {
+                Settings.Default.ARCH_SMX = this._asmDudeOptionsPageUI.UseArch_SMX;
+                changed = true;
+                archChanged = true;
+            }
+            if (Settings.Default.ARCH_SGX1 != this._asmDudeOptionsPageUI.UseArch_SGX1)
+            {
+                Settings.Default.ARCH_SGX1 = this._asmDudeOptionsPageUI.UseArch_SGX1;
+                changed = true;
+                archChanged = true;
+            }
+            if (Settings.Default.ARCH_SGX2 != this._asmDudeOptionsPageUI.UseArch_SGX2)
+            {
+                Settings.Default.ARCH_SGX2 = this._asmDudeOptionsPageUI.UseArch_SGX2;
                 changed = true;
                 archChanged = true;
             }

@@ -218,7 +218,14 @@ namespace AsmDude.Tools
                     {
                         foreach (Arch arch in signatureElement.Arch)
                         {
-                            archs.Add(arch);
+                            if (arch == Arch.NONE)
+                            {
+                                AsmDudeToolsStatic.Output_WARNING("MnemonicStore:loadRegularData: found ARCH NONE.");
+                            }
+                            else
+                            {
+                                archs.Add(arch);
+                            }
                         }
                     }
                     IList<Arch> list = new List<Arch>();
