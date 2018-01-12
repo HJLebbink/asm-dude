@@ -28,11 +28,13 @@ namespace intel_doc_2_data
             StringBuilder sb = new StringBuilder();
             StringBuilder sb2 = new StringBuilder();
 
+            IDictionary<Arch, ISet<Mnemonic>> dictionary = new Dictionary<Arch, ISet<Mnemonic>>();
+
             sb2.AppendLine("<table>");
 
             foreach (string filename in Directory.EnumerateFiles(path, "*.md", SearchOption.TopDirectoryOnly).OrderBy(f => f))
             {
-                Console.WriteLine(filename);
+                //Console.WriteLine(filename);
                 StreamReader file_Stream = File.OpenText(filename);
                 string file_Content = file_Stream.ReadToEnd();
                 (string Description, IList<Signature> Signatures) = Parse(file_Content);
@@ -41,21 +43,19 @@ namespace intel_doc_2_data
                 sb.AppendLine(";--------------------------------------------------------");
 
                 ISet<Mnemonic> mnemonics = new HashSet<Mnemonic>();
-                foreach (Signature s in Signatures) mnemonics.Add(s.mnemonic);
+                foreach (Signature s in Signatures)
+                {
+                    mnemonics.Add(s.mnemonic);
+                    foreach (Arch a in s.archs)
+                    {
+                        if (!dictionary.ContainsKey(a)) dictionary.Add(a, new HashSet<Mnemonic>());
+                        dictionary[a].Add(s.mnemonic);
+                    }
+                }
 
                 foreach (Mnemonic m in mnemonics)
                 {
-                    #region Handle Overview File
-                    ISet<Arch> archs = new HashSet<Arch>();
-                    foreach (Signature s in Signatures)
-                    {
-                        if (s.mnemonic == m) foreach (Arch a in s.archs) archs.Add(a);
-                    }
-                    string archStr = "";
-                    foreach (Arch a in archs) archStr += ArchTools.ToString(a) + " ";
-                    archStr = archStr.TrimEnd();
-                    sb2.AppendLine("<tr><td><a href=\"https://github.com/HJLebbink/asm-dude/wiki/" + Path.GetFileNameWithoutExtension(filename) + "\">" + m.ToString() + "</a></td><td>" + Description + "</td><td>" + archStr + "</td></tr>");
-                    #endregion
+                    sb2.AppendLine("<tr><td><a href=\"https://github.com/HJLebbink/asm-dude/wiki/" + Path.GetFileNameWithoutExtension(filename) + "\">" + m.ToString() + "</a></td><td>" + Description + "</td><td>" + Get_Arch_Str(Signatures, m) + "</td></tr>");
 
                     #region Handle Signature File
                     sb.AppendLine("GENERAL\t" + m.ToString() + "\t" + Description + "\t" + Path.GetFileNameWithoutExtension(filename));
@@ -70,10 +70,36 @@ namespace intel_doc_2_data
                 }
                 System.IO.File.WriteAllText(@"C:\Temp\VS\signature-dec2018.txt", sb.ToString());
             }
-
             sb2.AppendLine("</table>");
             System.IO.File.WriteAllText(@"C:\Temp\VS\overview.txt", sb2.ToString());
 
+            foreach (Arch a in dictionary.Keys.OrderBy(f => f))
+            {
+                Console.WriteLine("#region " + ArchTools.ToString(a));
+                foreach (Mnemonic m in dictionary[a].OrderBy(f => f))
+                {
+                    Console.WriteLine("    " + m.ToString() + "   ; " + Get_Arch_Str(dictionary, m));
+                }
+                Console.WriteLine("#endregion " + ArchTools.ToString(a));
+            }
+        }
+
+        static string Get_Arch_Str(IDictionary<Arch, ISet<Mnemonic>> dictionary, Mnemonic m)
+        {
+            ISet<Arch> archs = new HashSet<Arch>();
+            foreach (Arch a in dictionary.Keys) foreach (Mnemonic m2 in dictionary[a]) if (m == m2) archs.Add(a);
+            string archStr = "";
+            foreach (Arch a in archs) archStr += ArchTools.ToString(a) + " ";
+            return archStr;
+        }
+
+        static string Get_Arch_Str(IList<Signature> Signatures, Mnemonic m)
+        {
+            ISet<Arch> archs = new HashSet<Arch>();
+            foreach (Signature s in Signatures) if (s.mnemonic == m) foreach (Arch a in s.archs) archs.Add(a);
+            string archStr = "";
+            foreach (Arch a in archs) archStr += ArchTools.ToString(a) + " ";
+            return archStr.TrimEnd();
         }
 
         static (string Description, IList<Signature> Signatures) Parse(string content)
