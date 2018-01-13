@@ -187,8 +187,6 @@ namespace AsmTools {
         //Software Guard Extensions
         SGX2,
 
-        VAES,
-
         /// <summary>SAFER MODE EXTENSIONS</summary>
         SMX,
         #region Misc Other

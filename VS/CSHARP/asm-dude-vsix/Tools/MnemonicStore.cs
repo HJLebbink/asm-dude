@@ -27,12 +27,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows;
 
 namespace AsmDude.Tools
 {
-    //the data is retrieved from http://www.nasm.us/doc/nasmdocb.html
-
     public class MnemonicStore
     {
         private readonly IDictionary<Mnemonic, IList<AsmSignatureElement>> _data;
