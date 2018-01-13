@@ -651,10 +651,15 @@ namespace AsmDude.Tools
                 case Arch.RDSEED: return Settings.Default.ARCH_RDSEED;
                 case Arch.XSAVEOPT: return Settings.Default.ARCH_XSAVEOPT;
 
+                case Arch.SGX1: return Settings.Default.ARCH_SGX1;
+                case Arch.SGX2: return Settings.Default.ARCH_SGX2;
+                case Arch.SMX: return Settings.Default.ARCH_SMX;
+
+
                 case Arch.NONE: return true;
 
                 default:
-                    Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:AsmDudeToolsStatic::Is_Arch_Switched_On: unsupported arch {0}", arch));
+                    AsmDudeToolsStatic.Output_INFO("AsmDudeToolsStatic::Is_Arch_Switched_On: unsupported arch "+ arch.ToString());
                     return false;
             }
         }
