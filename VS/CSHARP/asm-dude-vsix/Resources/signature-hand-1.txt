@@ -149,27 +149,6 @@ GENERAL	PMVGEZB	Packed Conditional Move (greater than or equal to zero)
 GENERAL	PMULHRWC	Packed Multiply High with Rounding	
 GENERAL	RDSHR	Packed Multiply High with Rounding	
 
-;Intel® Architecture Instruction Set Extensions Programming Reference (APRIL 2017)====================================================================
-GENERAL	V4FMADDPS	Packed Single-Precision FP Fused Multiply-Add (4-iterations)	V4FMADDPS_V4FNMADDPS
-GENERAL	V4FNMADDPS	Packed Single-Precision FP Fused Multiply-Add (4-iterations)	V4FMADDPS_V4FNMADDPS
-GENERAL	V4FMADDSS	Scalar Single-Precision FP Fused Multiply-Add (4-iterations)	V4FMADDSS_V4FNMADDSS
-GENERAL	V4FNMADDSS	Scalar Single-Precision FP Fused Multiply-Add (4-iterations)	V4FMADDSS_V4FNMADDSS
-GENERAL	VP4DPWSSD	Dot Product of Signed Words with Dword Accumulation (4-iterations)	VP4DPWSSD
-GENERAL	VP4DPWSSDS	Dot Product of Signed Words with Dword Accumulation and Saturation (4-iterations)	VP4DPWSSDS
-GENERAL	VPERMB	Permute Packed Bytes Elements	VPERMB
-GENERAL	VPERMI2B	Full Permute of Bytes from Two Tables Overwriting the Index	VPERMI2B
-GENERAL	VPERMT2B	Full Permute of Bytes from Two Tables Overwriting a Table	VPERMT2B
-GENERAL	VPERMT2W	Full Permute from Two Tables Overwriting one Table	VPERMT2W_D_Q_PS_PD
-GENERAL	VPERMT2D	Full Permute from Two Tables Overwriting one Table	VPERMT2W_D_Q_PS_PD
-GENERAL	VPERMT2Q	Full Permute from Two Tables Overwriting one Table	VPERMT2W_D_Q_PS_PD
-GENERAL	VPERMT2PS	Full Permute from Two Tables Overwriting one Table	VPERMT2W_D_Q_PS_PD
-GENERAL	VPERMT2PD	Full Permute from Two Tables Overwriting one Table	VPERMT2W_D_Q_PS_PD
-GENERAL	VPMADD52LUQ	Packed Multiply of Unsigned 52-bit Integers and Add the Low 52-bit Products to Qword Accumulators	VPMADD52LUQ
-GENERAL	VPMADD52HUQ	Packed Multiply of Unsigned 52-bit Unsigned Integers and Add High 52-bit Products to 64-bit Accumulators	VPMADD52HUQ
-GENERAL	VPMULTISHIFTQB	Select Packed Unaligned Bytes from Qword Sources	VPMULTISHIFTQB
-GENERAL	VPOPCNTD	Return the Count of Number of Bits Set to 1 in DWORD	VPOPCNTD_VPOPCNTQ
-GENERAL	VPOPCNTQ	Return the Count of Number of Bits Set to 1 in QWORD	VPOPCNTD_VPOPCNTQ
-
 ;====================================================================
 GENERAL	MOVS	Move Data from String to String	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ
 GENERAL	MOVSB	Move byte from address DS:(E)SI to ES:(E)DI. For 64-bit mode move byte from address (R|E)SI to (R|E)DI.	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ
@@ -177,49 +156,6 @@ GENERAL	MOVSW	Move word from address DS:(E)SI to ES:(E)DI. For 64-bit mode move 
 GENERAL	MOVSD	Move Dword from address DS:(E)SI to ES:(E)DI. For 64-bit mode move Dword from address (R|E)SI to (R|E)DI.	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ
 GENERAL	MOVSQ	Move Qword from address (R|E)SI to (R|E)DI.	MOVS_MOVSB_MOVSW_MOVSD_MOVSQ
 
-BND		MPX	BND	Prefix to instruct that the next instruction is MPX-instrumented code.
-
-V4FMADDPS	ZMM{K}{Z},ZMM,M128	AVX512_4FMAPS	V4FMADDPS ZMM1{K}{Z},ZMM2+3,M128	Multiply packed Single-Precision FP values from source register block indicated by zmm2 by values from m128 and accumulate the result in zmm1.
-V4FNMADDPS	ZMM{K}{Z},ZMM,M128	AVX512_4FMAPS	V4FNMADDPS ZMM1{K}{Z},ZMM2+3,M128	Multiply and negate packed Single-Precision FP values from source register block indicated by zmm2 by values from m128 and accumulate the result in zmm1.
-V4FMADDSS	XMM{K}{Z},XMM,M128	AVX512_4FMAPS	V4FMADDSS XMM1{K}{Z},XMM2+3,M128	Multiply scalar Single-Precision FP values from source register block indicated by xmm2 by values from m128 and accumulate the result in xmm1.
-V4FNMADDSS	XMM{K}{Z},XMM,M128	AVX512_4FMAPS	V4FNMADDSS XMM1{K}{Z},XMM2+3,M128	Multiply and negate scalar Single-Precision FP values from source register block indicated by xmm2 by values from m128 and accumulate the result in xmm1.
-VP4DPWSSD	ZMM{K}{Z},ZMM,M128	AVX512_4VNNIW	VP4DPWSSD ZMM1{K}{Z},ZMM2+3,M128	Multiply signed words from source register block indicated by zmm2 by signed words from m128 and accumulate resulting signed dwords in zmm1.
-VP4DPWSSDS	ZMM{K}{Z},ZMM,M128	AVX512_4VNNIW	VP4DPWSSDS ZMM1{K}{Z},ZMM2+3,M128	Multiply signed words from source register block indicated by zmm2 by signed words from m128 and accumulate the resulting Dword results with signed saturation in zmm1.
-VPERMB	XMM{K}{Z},XMM,XMM/M128	AVX512VL,AVX512VBMI	VPERMB XMM{K}{Z},XMM2,XMM3/M128	Permute bytes in xmm3/m128 using byte indexes in xmm2 and store the result in xmm1 using writemask k1.
-VPERMB	YMM{K}{Z},YMM,YMM/M256	AVX512VL,AVX512VBMI	VPERMB YMM{K}{Z},YMM2,YMM3/M256	Permute bytes in ymm3/m256 using byte indexes in ymm2 and store the result in ymm1 using writemask k1.
-VPERMB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512VBMI	VPERMB ZMM{K}{Z},ZMM2,ZMM3/M512	Permute bytes in zmm3/m512 using byte indexes in zmm2 and store the result in zmm1 using writemask k1.
-VPERMI2B	XMM{K}{Z},XMM,XMM/M128	AVX512VL,AVX512VBMI	VPERMI2B XMM{K}{Z},XMM2,XMM3/M128	Permute bytes in xmm3/m128 and xmm2 using byte indexes in xmm1 and store the byte results in xmm1 using writemask k1.
-VPERMI2B	YMM{K}{Z},YMM,YMM/M256	AVX512VL,AVX512VBMI	VPERMI2B YMM{K}{Z},YMM2,YMM3/M256	Permute bytes in ymm3/m256 and ymm2 using byte indexes in ymm1 and store the byte results in ymm1 using writemask k1.
-VPERMI2B	ZMM{K}{Z},ZMM,ZMM/M512	AVX512VBMI	VPERMI2B ZMM{K}{Z},ZMM2,ZMM3/M512	Permute bytes in zmm3/m512 and zmm2 using byte indexes in zmm1 and store the byte results in zmm1 using writemask k1.
-VPERMT2B	XMM{K}{Z},XMM,XMM/M128	AVX512VL,AVX512VBMI	VPERMT2B XMM{K}{Z},XMM2,XMM3/M128	Permute bytes in xmm3/m128 and xmm1 using byte indexes in xmm2 and store the byte results in xmm1 using writemask k1.
-VPERMT2B	YMM{K}{Z},YMM,YMM/M256	AVX512VL,AVX512VBMI	VPERMT2B YMM{K}{Z},YMM2,YMM3/M256	Permute bytes in ymm3/m256 and ymm1 using byte indexes in ymm2 and store the byte results in ymm1 using writemask k1.
-VPERMT2B	ZMM{K}{Z},ZMM,ZMM/M512	AVX512VBMI	VPERMT2B ZMM{K}{Z},ZMM2,ZMM3/M512	Permute bytes in zmm3/m512 and zmm1 using byte indexes in zmm2 and store the byte results in zmm1 using writemask k1.
-VPERMT2W	XMM{K}{Z},XMM,XMM/M128	AVX512VL,AVX512BW	VPERMT2W XMM{K}{Z},XMM2,XMM3/M128	Permute word integers from two tables in xmm3/m128 and xmm1 using indexes in xmm2 and store the result in xmm1 using writemask k1.
-VPERMT2W	YMM{K}{Z},YMM,YMM/M256	AVX512VL,AVX512BW	VPERMT2W YMM{K}{Z},YMM2,YMM3/M256	Permute word integers from two tables in ymm3/m256 and ymm1 using indexes in ymm2 and store the result in ymm1 using writemask k1.
-VPERMT2W	ZMM{K}{Z},ZMM,ZMM/M512	AVX512BW	VPERMT2W ZMM{K}{Z},ZMM2,ZMM3/M512	Permute word integers from two tables in zmm3/m512 and zmm1 using indexes in zmm2 and store the result in zmm1 using writemask k1.
-VPERMT2D	XMM{K}{Z},XMM,XMM/M128/M32BCST	AVX512VL,AVX512F	VPERMT2D XMM{K}{Z},XMM2,XMM3/M128/M32BCST	Permute Dwords from two tables in xmm3/m128/m32bcst and xmm1 using indexes in xmm2 and store the result in xmm1 using writemask k1.
-VPERMT2D	YMM{K}{Z},YMM,YMM/M256/M32BCST	AVX512VL,AVX512F	VPERMT2D YMM{K}{Z},YMM2,YMM3/M256/M32BCST	Permute Dwords from two tables in ymm3/m256/m32bcst and ymm1 using indexes in ymm2 and store the result in ymm1 using writemask k1.
-VPERMT2D	ZMM{K}{Z},ZMM,ZMM/M512/M32BCST	AVX512F	VPERMT2D ZMM{K}{Z},ZMM2,ZMM3/M512/M32BCST	Permute Dwords from two tables in zmm3/m512/m32bcst and zmm1 using indices in zmm2 and store the result in zmm1 using writemask k1.
-VPERMT2Q	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512VL,AVX512F	VPERMT2Q XMM{K}{Z},XMM2,XMM3/M128/M64BCST	Permute Qwords from two tables in xmm3/m128/m64bcst and xmm1 using indexes in xmm2 and store the result in xmm1 using writemask k1.
-VPERMT2Q	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512VL,AVX512F	VPERMT2Q YMM{K}{Z},YMM2,YMM3/M256/M64BCST	Permute Qwords from two tables in ymm3/m256/m64bcst and ymm1 using indexes in ymm2 and store the result in ymm1 using writemask k1.
-VPERMT2Q	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST	AVX512F	VPERMT2Q ZMM{K}{Z},ZMM2,ZMM3/M512/M64BCST	Permute Qwords from two tables in zmm3/m512/m64bcst and zmm1 using indices in zmm2 and store the result in zmm1 using writemask k1.
-VPERMT2PS	XMM{K}{Z},XMM,XMM/M128/M32BCST	AVX512VL,AVX512F	VPERMT2PS XMM{K}{Z},XMM2,XMM3/M128/M32BCST	Permute Single-Precision FP values from two tables in xmm3/m128/m32bcst and xmm1 using indexes in xmm2 and store the result in xmm1 using writemask k1.
-VPERMT2PS	YMM{K}{Z},YMM,YMM/M256/M32BCST	AVX512VL,AVX512F	VPERMT2PS YMM{K}{Z},YMM2,YMM3/M256/M32BCST	Permute Single-Precision FP values from two tables in ymm3/m256/m32bcst and ymm1 using indexes in ymm2 and store the result in ymm1 using writemask k1.
-VPERMT2PS	ZMM{K}{Z},ZMM,ZMM/M512/M32BCST	AVX512F	VPERMT2PS ZMM{K}{Z},ZMM2,ZMM3/M512/M32BCST	Permute Single-Precision FP values from two tables in zmm3/m512/m32bcst and zmm1 using indices in zmm2 and store the result in zmm1 using writemask k1.
-VPERMT2PD	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512VL,AVX512F	VPERMT2PD XMM{K}{Z},XMM2,XMM3/M128/M64BCST	Permute Double-Precision FP values from two tables in xmm3/m128/m64bcst and xmm1 using indexes in xmm2 and store the result in xmm1 using writemask k1.
-VPERMT2PD	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512VL,AVX512F	VPERMT2PD YMM{K}{Z},YMM2,YMM3/M256/M64BCST	AVX512VL,AVX512F	Permute Double-Precision FP values from two tables in ymm3/m256/m64bcst and ymm1 using indexes in ymm2 and store the result in ymm1 using writemask k1.
-VPERMT2PD	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST	AVX512F	VPERMT2PD ZMM{K}{Z},ZMM2,ZMM3/M512/M64BCST	Permute Double-Precision FP values from two tables in zmm3/m512/m64bcst and zmm1 using indices in zmm2 and store the result in zmm1 using writemask k1.
-VPMADD52LUQ	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512IFMA,AVX512VL	VPMADD52LUQ XMM{K}{Z},XMM2,XMM3/M128/M64BCST	Multiply unsigned 52-bit integers in xmm2 and xmm3/m128 and add the low 52 bits of the 104-bit product to the Qword unsigned integers in xmm1 using writemask k1.
-VPMADD52LUQ	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512IFMA,AVX512VL	VPMADD52LUQ YMM{K}{Z},YMM2,YMM3/M256/M64BCST	Multiply unsigned 52-bit integers in ymm2 and ymm3/m128 and add the low 52 bits of the 104-bit product to the Qword unsigned integers in ymm1 using writemask k1.
-VPMADD52LUQ	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST	AVX512IFMA	VPMADD52LUQ ZMM{K}{Z},ZMM2,ZMM3/M512/M64BCST	Multiply unsigned 52-bit integers in zmm2 and zmm3/m128 and add the low 52 bits of the 104-bit product to the Qword unsigned integers in zmm1 using writemask k1.
-VPMADD52HUQ	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512IFMA,AVX512VL	VPMADD52HUQ XMM2,XMM3/M128/M64BCST	Multiply unsigned 52-bit integers in xmm2 and xmm3/m128 and add the high 52 bits of the 104-bit product to the Qword unsigned integers in xmm1 using writemask k1.
-VPMADD52HUQ	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512IFMA,AVX512VL	VPMADD52HUQ YMM{K}{Z},YMM2,YMM3/M256/M64BCST	Multiply unsigned 52-bit integers in ymm2 and ymm3/m128 and add the high 52 bits of the 104-bit product to the Qword unsigned integers in ymm1 using writemask k1.
-VPMADD52HUQ	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST	AVX512IFMA	VPMADD52HUQ ZMM{K}{Z},ZMM2,ZMM3/M512/M64BCST	Multiply unsigned 52-bit integers in zmm2 and zmm3/m128 and add the high 52 bits of the 104-bit product to the Qword unsigned integers in zmm1 using writemask k1.
-VPMULTISHIFTQB	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512VBMI,AVX512VL	VPMULTISHIFTQB	XMM{K}{Z},XMM2,XMM3/M128/M64BCST	Select unaligned bytes from qwords in xmm3/m128/m64bcst using control bytes in xmm2, write byte results to xmm1 under k1.
-VPMULTISHIFTQB	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512VBMI,AVX512VL	VPMULTISHIFTQB	YMM{K}{Z},YMM2,YMM3/M256/M64BCST	Select unaligned bytes from qwords in ymm3/m256/m64bcst using control bytes in ymm2, write byte results to ymm1 under k1.
-VPMULTISHIFTQB	XMM{K}{Z},ZMM,ZMM/M512/M64BCST	AVX512VBMI,AVX512VL	VPMULTISHIFTQB	ZMM{K}{Z},ZMM2,ZMM3/M512/M64BCST	Select unaligned bytes from qwords in zmm3/m512/m64bcst using control bytes in zmm2, write byte results to zmm1 under k1.
-VPOPCNTD	ZMM{K}{Z},ZMM/M512/M32BCST	AVX512_VPOPCNTDQ	VPOPCNTD ZMM1{K}{Z},ZMM2/M512/M32BCST	Counts the number of bits set to one in zmm2/m512/m32bcst and puts the result in zmm1 with writemask k1.
-VPOPCNTQ	ZMM{K}{Z},ZMM/M512/M64BCST	AVX512_VPOPCNTDQ	VPOPCNTQ ZMM1{K}{Z},ZMM2/M512/M64BCST	Counts the number of bits set to one in zmm2/m512/m64bcst and puts the result in zmm1 with writemask k1.
 ;
 PADDSIW	MM,MM/MEM	CYRIX	PADDSIW MM,MM/MEM	Packed Add with Saturation.
 PSUBSIW	MM,MM/MEM	CYRIX	PSUBSIW MM,MM/MEM	Packed Subtract with Saturation.
@@ -262,6 +198,7 @@ RSLDT	M80	CYRIXM	RSLDT M80	TODO
 
 RSTS	M80	CYRIXM	RSTS M80	TODO
 WRSHR	R/M32	CYRIXM	WRSHR R/M32	TODO
+
 ;AMD ====================================================================
 INVLPGA	AX,ECX	AMD	INVLPGA AX,ECX	TODO
 INVLPGA	EAX,ECX	AMD	INVLPGA EAX,ECX	TODO
@@ -276,8 +213,8 @@ VMLOAD		VMX,AMD	VMLOAD 	TODO: VMX,AMD
 VMMCALL		VMX,AMD	VMMCALL 	TODO: VMX,AMD	
 VMRUN		VMX,AMD	VMRUN 	TODO: VMX,AMD	
 VMSAVE		VMX,AMD	VMSAVE 	TODO: VMX,AMD	
-;INTEL VMX ====================================================================
 
+;INTEL VMX ====================================================================
 VMXON	MEM	VMX	VMXON MEM	Takes a single 64-bit source operand in memory. It causes a logical processor to enter VMX root operation and to use the memory referenced by the operand to support VMX operation
 VMPTRLD	MEM	VMX	VMPTRLD MEM	Takes a single 64-bit source operand in memory. It makes the referenced VMCS active and current
 VMPTRST	MEM	VMX	VMPTRST MEM	Takes a single 64-bit destination operand that is in memory. Current-VMCS pointer is stored into the destination operand
@@ -310,6 +247,7 @@ LWPVAL	R32,R/M32,IMM32	AMD,386	LWPVAL R32,R/M32,IMM32	TODO: AMD,386
 LWPVAL	R64,R/M32,IMM32	AMD,X64	LWPVAL R64,R/M32,IMM32	TODO: AMD,X64
 LWPINS	R32,R/M32,IMM32	AMD,386	LWPINS R32,R/M32,IMM32	TODO: AMD,386
 LWPINS	R64,R/M32,IMM32	AMD,X64	LWPINS R64,R/M32,IMM32	TODO: AMD,X64
+
 ;AMD SSE5 ====================================================================
 VFMADDPD	XMM,XMM,XMM/M128,XMM	SSE5	VFMADDPD XMM,XMM,XMM/M128,XMM	TODO
 VFMADDPD	YMM,YMM,YMM/M256,YMM	SSE5	VFMADDPD YMM,YMM,YMM/M256,YMM	TODO
@@ -450,6 +388,7 @@ VPSHLQ	XMM,XMM/M128,XMM	SSE5	VPSHLQ XMM,XMM/M128,XMM	TODO
 VPSHLQ	XMM,XMM,XMM/M128	SSE5	VPSHLQ XMM,XMM,XMM/M128	TODO
 VPSHLW	XMM,XMM/M128,XMM	SSE5	VPSHLW XMM,XMM/M128,XMM	TODO
 VPSHLW	XMM,XMM,XMM/M128	SSE5	VPSHLW XMM,XMM,XMM/M128	TODO
+
 ;AMD SSE4A ====================================================================
 EXTRQ	XMM,IMM,IMM	SSE4A	EXTRQ XMM,IMM,IMM	TODO
 EXTRQ	XMM,XMM	SSE4A	EXTRQ XMM,XMM	TODO
@@ -457,6 +396,7 @@ INSERTQ	XMM,XMM,IMM,IMM	SSE4A	INSERTQ XMM,XMM,IMM,IMM	TODO
 INSERTQ	XMM,XMM	SSE4A	INSERTQ XMM,XMM	TODO
 MOVNTSD	MEM,XMM	SSE4A	MOVNTSD MEM,XMM	TODO
 MOVNTSS	MEM,XMM	SSE4A	MOVNTSS MEM,XMM	TODO: SSE4A
+
 ;AMD 3DNOW;====================================================================
 FEMMS		3DNOW	FEMMS 	TODO: PENT,3DNOW
 PF2IW	MM,MM/MEM	3DNOW	PF2IW MM,MM/MEM	TODO: PENT,3DNOW
@@ -485,11 +425,13 @@ PPMULHRWA	MM,MM/MEM	3DNOW	PMULHRWA MM,MM/MEM	TODO: PENT,3DNOW
 PAVGUSB	MM,MM/MEM	3DNOW	PAVGUSB MM,MM/MEM	TODO: PENT,3DNOW
 PREFETCH	MEM	3DNOW	PREFETCH MEM	TODO: PENT,3DNOW
 PREFETCHW	MEM	3DNOW	PREFETCHW MEM	Prefetch Data into Caches in Anticipation of a Write
+
 ;AMD: Trailing Bit Manipulation (TBM) ====================================================================
 TZMSK	R32,R/M32	TBM	TZMSK R32,R/M32	TODO: AMD, Trailing Bit Manipulation
 TZMSK	R64,R/M64	TBM	TZMSK R64,R/M64	TODO: AMD, Trailing Bit Manipulation
 T1MSKC	R32,R/M32	TBM	T1MSKC R32,R/M32	TODO: AMD, Trailing Bit Manipulation
 T1MSKC	R64,R/M64	TBM	T1MSKC R64,R/M64	TODO: AMD, Trailing Bit Manipulation
+
 ;Undocumented INTEL ====================================================================
 FFREEP	ST	UNDOC	FFREEP ST	TODO: 286,UNDOC	
 FFREEP		UNDOC	FFREEP 	TODO: 286,UNDOC	
@@ -523,12 +465,14 @@ XBTS	R32,R32	UNDOC	XBTS R32,R32	TODO: 386,UNDOC
 SALC		UNDOC	SALC 	TODO: 8086,UNDOC	
 LOADALL		UNDOC	LOADALL 	TODO: 386,UNDOC	
 LOADALL286		UNDOC	LOADALL286 	TODO: 286,UNDOC	
+
 ;IA64 ====================================================================
 JMPE	IMM	IA64	JMPE IMM	TODO
 JMPE	IMM16	IA64	JMPE IMM16	TODO
 JMPE	IMM32	IA64	JMPE IMM32	TODO
 JMPE	R/M16	IA64	JMPE R/M16	TODO
 JMPE	R/M32	IA64	JMPE R/M32	TODO
+
 ; INTEL ====================================================================
 JMP	M16	8086	JMP M16:16	Jump far, absolute indirect, address given in m16
 JMP	M32	386	JMP M16:32	Jump far, absolute indirect, address given in m32.
@@ -539,6 +483,7 @@ JMP	R/M64	X64	JMP R/M64	Jump near, absolute indirect, RIP = 64-Bit offset from r
 JMP	REL8	8086	JMP REL8	Jump short, RIP = RIP + 8-bit displacement sign extended to 64-bits.
 JMP	REL16	8086	JMP REL16	Jump near, relative, displacement relative to next instruction. Not supported in 64-bit mode.
 JMP	REL32	386	JMP REL32	Jump near, relative, RIP = RIP + 32-bit displacement sign extended to 64-bits.
+
 ;====================================================================
 SETA	R/M8	386	SETA r/m8	Set byte if above (CF=0 and ZF=0) (SETA=SETNBE)
 SETAE	R/M8	386	SETAE r/m8	Set byte if above or equal (CF=0) (SETAE=SETNC=SETNB)

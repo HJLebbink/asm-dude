@@ -735,6 +735,37 @@ namespace AsmDude.OptionsPage
                 changed = true;
             }
 
+            if (Settings.Default.ARCH_AVX512_VBMI2 != this._asmDudeOptionsPageUI.UseArch_AVX512_VBMI2)
+            {
+                sb.AppendLine("UseArch_AVX512_VBMI2=" + this._asmDudeOptionsPageUI.UseArch_AVX512_VBMI2);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_AVX512_VNNI != this._asmDudeOptionsPageUI.UseArch_AVX512_VNNI)
+            {
+                sb.AppendLine("UseArch_AVX512_VNNI=" + this._asmDudeOptionsPageUI.UseArch_AVX512_VNNI);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_AVX512_BITALG != this._asmDudeOptionsPageUI.UseArch_AVX512_BITALG)
+            {
+                sb.AppendLine("UseArch_AVX512_BITALG=" + this._asmDudeOptionsPageUI.UseArch_AVX512_BITALG);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_AVX512_GFNI != this._asmDudeOptionsPageUI.UseArch_AVX512_GFNI)
+            {
+                sb.AppendLine("UseArch_AVX512_GFNI=" + this._asmDudeOptionsPageUI.UseArch_AVX512_GFNI);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_AVX512_VAES != this._asmDudeOptionsPageUI.UseArch_AVX512_VAES)
+            {
+                sb.AppendLine("UseArch_AVX512_VAES=" + this._asmDudeOptionsPageUI.UseArch_AVX512_VAES);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_AVX512_VPCLMULQDQ != this._asmDudeOptionsPageUI.UseArch_AVX512_VPCLMULQDQ)
+            {
+                sb.AppendLine("UseArch_AVX512_VPCLMULQDQ=" + this._asmDudeOptionsPageUI.UseArch_AVX512_VPCLMULQDQ);
+                changed = true;
+            }
+
             if (Settings.Default.ARCH_X64 != this._asmDudeOptionsPageUI.UseArch_X64)
             {
                 sb.AppendLine("UseArch_X64=" + this._asmDudeOptionsPageUI.UseArch_X64);
@@ -1631,6 +1662,43 @@ namespace AsmDude.OptionsPage
             if (Settings.Default.ARCH_AVX512_4FMAPS != this._asmDudeOptionsPageUI.UseArch_AVX512_4FMAPS)
             {
                 Settings.Default.ARCH_AVX512_4FMAPS = this._asmDudeOptionsPageUI.UseArch_AVX512_4FMAPS;
+                changed = true;
+                archChanged = true;
+            }
+
+            if (Settings.Default.ARCH_AVX512_VBMI2 != this._asmDudeOptionsPageUI.UseArch_AVX512_VBMI2)
+            {
+                Settings.Default.ARCH_AVX512_VBMI2 = this._asmDudeOptionsPageUI.UseArch_AVX512_VBMI2;
+                changed = true;
+                archChanged = true;
+            }
+            if (Settings.Default.ARCH_AVX512_VNNI != this._asmDudeOptionsPageUI.UseArch_AVX512_VNNI)
+            {
+                Settings.Default.ARCH_AVX512_VNNI = this._asmDudeOptionsPageUI.UseArch_AVX512_VNNI;
+                changed = true;
+                archChanged = true;
+            }
+            if (Settings.Default.ARCH_AVX512_BITALG != this._asmDudeOptionsPageUI.UseArch_AVX512_BITALG)
+            {
+                Settings.Default.ARCH_AVX512_BITALG = this._asmDudeOptionsPageUI.UseArch_AVX512_BITALG;
+                changed = true;
+                archChanged = true;
+            }
+            if (Settings.Default.ARCH_AVX512_GFNI != this._asmDudeOptionsPageUI.UseArch_AVX512_GFNI)
+            {
+                Settings.Default.ARCH_AVX512_GFNI = this._asmDudeOptionsPageUI.UseArch_AVX512_GFNI;
+                changed = true;
+                archChanged = true;
+            }
+            if (Settings.Default.ARCH_AVX512_VAES != this._asmDudeOptionsPageUI.UseArch_AVX512_VAES)
+            {
+                Settings.Default.ARCH_AVX512_VAES = this._asmDudeOptionsPageUI.UseArch_AVX512_VAES;
+                changed = true;
+                archChanged = true;
+            }
+            if (Settings.Default.ARCH_AVX512_VPCLMULQDQ != this._asmDudeOptionsPageUI.UseArch_AVX512_VPCLMULQDQ)
+            {
+                Settings.Default.ARCH_AVX512_VPCLMULQDQ = this._asmDudeOptionsPageUI.UseArch_AVX512_VPCLMULQDQ;
                 changed = true;
                 archChanged = true;
             }
