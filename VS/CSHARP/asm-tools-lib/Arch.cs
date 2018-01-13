@@ -253,11 +253,15 @@ namespace AsmTools {
                 case "AVX5124VNNIW": return Arch.AVX512_4VNNIW;
                 case "AVX5124FMAPS": return Arch.AVX512_4FMAPS;
 
-                case "AVX512VBMI2": return Arch.AVX512_VBMI2;                case "AVX512VNNI": return Arch.AVX512_VNNI;
+                case "VBMI2":                case "AVX512VBMI2": return Arch.AVX512_VBMI2;                case "VNNI":
+                case "AVX512VNNI": return Arch.AVX512_VNNI;
+                case "BITALG":
                 case "AVX512BITALG": return Arch.AVX512_BITALG;
+                case "GFNI":
                 case "AVX512GFNI": return Arch.AVX512_GFNI;
                 case "VAES":
                 case "AVX512VAES": return Arch.AVX512_VAES;
+                case "VPCLMULQDQ":
                 case "AVX512VPCLMULQDQ": return Arch.AVX512_VPCLMULQDQ;
 
                 case "HLE": return Arch.HLE;
@@ -301,6 +305,8 @@ namespace AsmTools {
                 case "SGX1": return Arch.SGX1;
                 case "SGX2": return Arch.SGX2;
                 case "SMX": return Arch.SMX;
+                
+
 
                 case "UNDOC": return Arch.UNDOC;
                 default:

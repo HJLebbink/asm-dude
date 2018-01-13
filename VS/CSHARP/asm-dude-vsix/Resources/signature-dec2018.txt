@@ -1250,31 +1250,31 @@ GENERAL	WAKEUP	Wake up sleeping processors in measured environment	GETSEC[WAKEUP
 WAKEUP		SMX	WAKEUP	Wake up the responding logical processors from the SENTER sleep state.
 ;--------------------------------------------------------
 GENERAL	GF2P8AFFINEINVQB	Galois Field Affine Transformation Inverse	GF2P8AFFINEINVQB
-GF2P8AFFINEINVQB	XMM,XMM/M128,IMM8		GF2P8AFFINEINVQB XMM1,XMM2/M128,IMM8	Computes inverse affine transformation in the finite field GF(2^8).
+GF2P8AFFINEINVQB	XMM,XMM/M128,IMM8	AVX512_GFNI	GF2P8AFFINEINVQB XMM1,XMM2/M128,IMM8	Computes inverse affine transformation in the finite field GF(2^8).
 GENERAL	VGF2P8AFFINEINVQB	Galois Field Affine Transformation Inverse	GF2P8AFFINEINVQB
-VGF2P8AFFINEINVQB	XMM,XMM,XMM/M128,IMM8	AVX	VGF2P8AFFINEINVQB XMM1,XMM2,XMM3/M128,IMM8	Computes inverse affine transformation in the finite field GF(2^8).
-VGF2P8AFFINEINVQB	YMM,YMM,YMM/M256,IMM8	AVX	VGF2P8AFFINEINVQB YMM1,YMM2,YMM3/M256,IMM8	Computes inverse affine transformation in the finite field GF(2^8).
-VGF2P8AFFINEINVQB	XMM{K}{Z},XMM,XMM/M128/M64BCST,IMM8	AVX512_VL	VGF2P8AFFINEINVQB XMM1{K1}{Z},XMM2,XMM3/M128/M64BCST,IMM8	Computes inverse affine transformation in the finite field GF(2^8).
-VGF2P8AFFINEINVQB	YMM{K}{Z},YMM,YMM/M256/M64BCST,IMM8	AVX512_VL	VGF2P8AFFINEINVQB YMM1{K1}{Z},YMM2,YMM3/M256/M64BCST,IMM8	Computes inverse affine transformation in the finite field GF(2^8).
-VGF2P8AFFINEINVQB	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST,IMM8	AVX512_F	VGF2P8AFFINEINVQB ZMM1{K1}{Z},ZMM2,ZMM3/M512/M64BCST,IMM8	Computes inverse affine transformation in the finite field GF(2^8).
+VGF2P8AFFINEINVQB	XMM,XMM,XMM/M128,IMM8	AVX,AVX512_GFNI	VGF2P8AFFINEINVQB XMM1,XMM2,XMM3/M128,IMM8	Computes inverse affine transformation in the finite field GF(2^8).
+VGF2P8AFFINEINVQB	YMM,YMM,YMM/M256,IMM8	AVX,AVX512_GFNI	VGF2P8AFFINEINVQB YMM1,YMM2,YMM3/M256,IMM8	Computes inverse affine transformation in the finite field GF(2^8).
+VGF2P8AFFINEINVQB	XMM{K}{Z},XMM,XMM/M128/M64BCST,IMM8	AVX512_VL,AVX512_GFNI	VGF2P8AFFINEINVQB XMM1{K1}{Z},XMM2,XMM3/M128/M64BCST,IMM8	Computes inverse affine transformation in the finite field GF(2^8).
+VGF2P8AFFINEINVQB	YMM{K}{Z},YMM,YMM/M256/M64BCST,IMM8	AVX512_VL,AVX512_GFNI	VGF2P8AFFINEINVQB YMM1{K1}{Z},YMM2,YMM3/M256/M64BCST,IMM8	Computes inverse affine transformation in the finite field GF(2^8).
+VGF2P8AFFINEINVQB	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST,IMM8	AVX512_F,AVX512_GFNI	VGF2P8AFFINEINVQB ZMM1{K1}{Z},ZMM2,ZMM3/M512/M64BCST,IMM8	Computes inverse affine transformation in the finite field GF(2^8).
 ;--------------------------------------------------------
 GENERAL	GF2P8AFFINEQB	Galois Field Affine Transformation	GF2P8AFFINEQB
-GF2P8AFFINEQB	XMM,XMM/M128,IMM8		GF2P8AFFINEQB XMM1,XMM2/M128,IMM8	Computes affine transformation in the finite field GF(2^8).
+GF2P8AFFINEQB	XMM,XMM/M128,IMM8	AVX512_GFNI	GF2P8AFFINEQB XMM1,XMM2/M128,IMM8	Computes affine transformation in the finite field GF(2^8).
 GENERAL	VGF2P8AFFINEQB	Galois Field Affine Transformation	GF2P8AFFINEQB
-VGF2P8AFFINEQB	XMM,XMM,XMM/M128,IMM8	AVX	VGF2P8AFFINEQB XMM1,XMM2,XMM3/M128,IMM8	Computes affine transformation in the finite field GF(2^8).
-VGF2P8AFFINEQB	YMM,YMM,YMM/M256,IMM8	AVX	VGF2P8AFFINEQB YMM1,YMM2,YMM3/M256,IMM8	Computes affine transformation in the finite field GF(2^8).
-VGF2P8AFFINEQB	XMM{K}{Z},XMM,XMM/M128/M64BCST,IMM8	AVX512_VL	VGF2P8AFFINEQB XMM1{K1}{Z},XMM2,XMM3/M128/M64BCST,IMM8	Computes affine transformation in the finite field GF(2^8).
-VGF2P8AFFINEQB	YMM{K}{Z},YMM,YMM/M256/M64BCST,IMM8	AVX512_VL	VGF2P8AFFINEQB YMM1{K1}{Z},YMM2,YMM3/M256/M64BCST,IMM8	Computes affine transformation in the finite field GF(2^8).
-VGF2P8AFFINEQB	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST,IMM8	AVX512_F	VGF2P8AFFINEQB ZMM1{K1}{Z},ZMM2,ZMM3/M512/M64BCST,IMM8	Computes affine transformation in the finite field GF(2^8).
+VGF2P8AFFINEQB	XMM,XMM,XMM/M128,IMM8	AVX,AVX512_GFNI	VGF2P8AFFINEQB XMM1,XMM2,XMM3/M128,IMM8	Computes affine transformation in the finite field GF(2^8).
+VGF2P8AFFINEQB	YMM,YMM,YMM/M256,IMM8	AVX,AVX512_GFNI	VGF2P8AFFINEQB YMM1,YMM2,YMM3/M256,IMM8	Computes affine transformation in the finite field GF(2^8).
+VGF2P8AFFINEQB	XMM{K}{Z},XMM,XMM/M128/M64BCST,IMM8	AVX512_VL,AVX512_GFNI	VGF2P8AFFINEQB XMM1{K1}{Z},XMM2,XMM3/M128/M64BCST,IMM8	Computes affine transformation in the finite field GF(2^8).
+VGF2P8AFFINEQB	YMM{K}{Z},YMM,YMM/M256/M64BCST,IMM8	AVX512_VL,AVX512_GFNI	VGF2P8AFFINEQB YMM1{K1}{Z},YMM2,YMM3/M256/M64BCST,IMM8	Computes affine transformation in the finite field GF(2^8).
+VGF2P8AFFINEQB	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST,IMM8	AVX512_F,AVX512_GFNI	VGF2P8AFFINEQB ZMM1{K1}{Z},ZMM2,ZMM3/M512/M64BCST,IMM8	Computes affine transformation in the finite field GF(2^8).
 ;--------------------------------------------------------
 GENERAL	GF2P8MULB	Galois Field Multiply Bytes	GF2P8MULB
-GF2P8MULB	XMM,XMM/M128		GF2P8MULB XMM1,XMM2/M128	Multiplies elements in the finite field GF(2^8).
+GF2P8MULB	XMM,XMM/M128	AVX512_GFNI	GF2P8MULB XMM1,XMM2/M128	Multiplies elements in the finite field GF(2^8).
 GENERAL	VGF2P8MULB	Galois Field Multiply Bytes	GF2P8MULB
-VGF2P8MULB	XMM,XMM,XMM/M128	AVX	VGF2P8MULB XMM1,XMM2,XMM3/M128	Multiplies elements in the finite field GF(2^8).
-VGF2P8MULB	YMM,YMM,YMM/M256	AVX	VGF2P8MULB YMM1,YMM2,YMM3/M256	Multiplies elements in the finite field GF(2^8).
-VGF2P8MULB	XMM{K}{Z},XMM,XMM/M128	AVX512_VL	VGF2P8MULB XMM1{K1}{Z},XMM2,XMM3/M128	Multiplies elements in the finite field GF(2^8).
-VGF2P8MULB	YMM{K}{Z},YMM,YMM/M256	AVX512_VL	VGF2P8MULB YMM1{K1}{Z},YMM2,YMM3/M256	Multiplies elements in the finite field GF(2^8).
-VGF2P8MULB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_F	VGF2P8MULB ZMM1{K1}{Z},ZMM2,ZMM3/M512	Multiplies elements in the finite field GF(2^8).
+VGF2P8MULB	XMM,XMM,XMM/M128	AVX,AVX512_GFNI	VGF2P8MULB XMM1,XMM2,XMM3/M128	Multiplies elements in the finite field GF(2^8).
+VGF2P8MULB	YMM,YMM,YMM/M256	AVX,AVX512_GFNI	VGF2P8MULB YMM1,YMM2,YMM3/M256	Multiplies elements in the finite field GF(2^8).
+VGF2P8MULB	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_GFNI	VGF2P8MULB XMM1{K1}{Z},XMM2,XMM3/M128	Multiplies elements in the finite field GF(2^8).
+VGF2P8MULB	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_GFNI	VGF2P8MULB YMM1{K1}{Z},YMM2,YMM3/M256	Multiplies elements in the finite field GF(2^8).
+VGF2P8MULB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_F,AVX512_GFNI	VGF2P8MULB ZMM1{K1}{Z},ZMM2,ZMM3/M512	Multiplies elements in the finite field GF(2^8).
 ;--------------------------------------------------------
 GENERAL	HADDPD	Packed Double-FP Horizontal Add	HADDPD
 HADDPD	XMM,XMM/M128	SSE3	HADDPD XMM1,XMM2/M128	Horizontal add packed DP FP values from xmm2/m128 to xmm1.
@@ -1530,27 +1530,27 @@ KADDW	K,K,K	AVX512_DQ	KADDW K1,K2,K3	Add 16 bits masks in k2 and k3 and place re
 GENERAL	KADDB	ADD Two Masks	KADDW_KADDB_KADDQ_KADDD
 KADDB	K,K,K	AVX512_DQ	KADDB K1,K2,K3	Add 8 bits masks in k2 and k3 and place result in k1.
 GENERAL	KADDQ	ADD Two Masks	KADDW_KADDB_KADDQ_KADDD
-KADDQ	K,K,K	AVX512_BW	KADDQ K1,K2,K3	
+KADDQ	K,K,K	AVX512_BW	KADDQ K1,K2,K3	Add 64 bits masks in k2 and k3 and place result in k1.
 GENERAL	KADDD	ADD Two Masks	KADDW_KADDB_KADDQ_KADDD
-KADDD	K,K,K	AVX512_BW	KADDD K1,K2,K3	
+KADDD	K,K,K	AVX512_BW	KADDD K1,K2,K3	Add 32 bits masks in k2 and k3 and place result in k1.
 ;--------------------------------------------------------
 GENERAL	KANDNW	Bitwise Logical AND NOT Masks	KANDNW_KANDNB_KANDNQ_KANDND
 KANDNW	K,K,K	AVX512_F	KANDNW K1,K2,K3	Bitwise AND NOT 16 bits masks k2 and k3 and place result in k1.
 GENERAL	KANDNB	Bitwise Logical AND NOT Masks	KANDNW_KANDNB_KANDNQ_KANDND
 KANDNB	K,K,K	AVX512_DQ	KANDNB K1,K2,K3	Bitwise AND NOT 8 bits masks k1 and k2 and place result in k1.
 GENERAL	KANDNQ	Bitwise Logical AND NOT Masks	KANDNW_KANDNB_KANDNQ_KANDND
-KANDNQ	K,K,K	AVX512_BW	KANDNQ K1,K2,K3	k1.
+KANDNQ	K,K,K	AVX512_BW	KANDNQ K1,K2,K3	Bitwise AND NOT 64 bits masks k2 and k3 and place result in k1.
 GENERAL	KANDND	Bitwise Logical AND NOT Masks	KANDNW_KANDNB_KANDNQ_KANDND
-KANDND	K,K,K	AVX512_BW	KANDND K1,K2,K3	k1.
+KANDND	K,K,K	AVX512_BW	KANDND K1,K2,K3	Bitwise AND NOT 32 bits masks k2 and k3 and place result in k1.
 ;--------------------------------------------------------
 GENERAL	KANDW	Bitwise Logical AND Masks	KANDW_KANDB_KANDQ_KANDD
 KANDW	K,K,K	AVX512_F	KANDW K1,K2,K3	Bitwise AND 16 bits masks k2 and k3 and place result in k1.
 GENERAL	KANDB	Bitwise Logical AND Masks	KANDW_KANDB_KANDQ_KANDD
 KANDB	K,K,K	AVX512_DQ	KANDB K1,K2,K3	Bitwise AND 8 bits masks k2 and k3 and place result in k1.
 GENERAL	KANDQ	Bitwise Logical AND Masks	KANDW_KANDB_KANDQ_KANDD
-KANDQ	K,K,K	AVX512_BW	KANDQ K1,K2,K3	
+KANDQ	K,K,K	AVX512_BW	KANDQ K1,K2,K3	Bitwise AND 64 bits masks k2 and k3 and place result in k1.
 GENERAL	KANDD	Bitwise Logical AND Masks	KANDW_KANDB_KANDQ_KANDD
-KANDD	K,K,K	AVX512_BW	KANDD K1,K2,K3	
+KANDD	K,K,K	AVX512_BW	KANDD K1,K2,K3	Bitwise AND 32 bits masks k2 and k3 and place result in k1.
 ;--------------------------------------------------------
 GENERAL	KMOVW	Move from and to Mask Registers	KMOVW_KMOVB_KMOVQ_KMOVD
 KMOVW	K,K/M16	AVX512_F	KMOVW K1,K2/M16	Move 16 bits mask from k2/m16 and store the result in k1.
@@ -1587,9 +1587,9 @@ KORTESTW	K,K	AVX512_F	KORTESTW K1,K2	Bitwise OR 16 bits masks k1 and k2 and upda
 GENERAL	KORTESTB	OR Masks And Set Flags	KORTESTW_KORTESTB_KORTESTQ_KORTESTD
 KORTESTB	K,K	AVX512_DQ	KORTESTB K1,K2	Bitwise OR 8 bits masks k1 and k2 and update ZF and CF accordingly.
 GENERAL	KORTESTQ	OR Masks And Set Flags	KORTESTW_KORTESTB_KORTESTQ_KORTESTD
-KORTESTQ	K,K	AVX512_BW	KORTESTQ K1,K2	
+KORTESTQ	K,K	AVX512_BW	KORTESTQ K1,K2	Bitwise OR 64 bits masks k1 and k2 and update ZF and CF accordingly.
 GENERAL	KORTESTD	OR Masks And Set Flags	KORTESTW_KORTESTB_KORTESTQ_KORTESTD
-KORTESTD	K,K	AVX512_BW	KORTESTD K1,K2	
+KORTESTD	K,K	AVX512_BW	KORTESTD K1,K2	Bitwise OR 32 bits masks k1 and k2 and update ZF and CF accordingly.
 ;--------------------------------------------------------
 GENERAL	KORW	Bitwise Logical OR Masks	KORW_KORB_KORQ_KORD
 KORW	K,K,K	AVX512_F	KORW K1,K2,K3	Bitwise OR 16 bits masks k2 and k3 and place result in k1.
@@ -1614,9 +1614,9 @@ KSHIFTRW	K,K,IMM8	AVX512_F	KSHIFTRW K1,K2,IMM8	Shift right 16 bits in k2 by imme
 GENERAL	KSHIFTRB	Shift Right Mask Registers	KSHIFTRW_KSHIFTRB_KSHIFTRQ_KSHIFTRD
 KSHIFTRB	K,K,IMM8	AVX512_DQ	KSHIFTRB K1,K2,IMM8	Shift right 8 bits in k2 by immediate and write result in k1.
 GENERAL	KSHIFTRQ	Shift Right Mask Registers	KSHIFTRW_KSHIFTRB_KSHIFTRQ_KSHIFTRD
-KSHIFTRQ	K,K,IMM8	AVX512_BW	KSHIFTRQ K1,K2,IMM8	
+KSHIFTRQ	K,K,IMM8	AVX512_BW	KSHIFTRQ K1,K2,IMM8	Shift right 64 bits in k2 by immediate and write result in k1.
 GENERAL	KSHIFTRD	Shift Right Mask Registers	KSHIFTRW_KSHIFTRB_KSHIFTRQ_KSHIFTRD
-KSHIFTRD	K,K,IMM8	AVX512_BW	KSHIFTRD K1,K2,IMM8	
+KSHIFTRD	K,K,IMM8	AVX512_BW	KSHIFTRD K1,K2,IMM8	Shift right 32 bits in k2 by immediate and write result in k1.
 ;--------------------------------------------------------
 GENERAL	KTESTW	Packed Bit Test Masks and Set Flags	KTESTW_KTESTB_KTESTQ_KTESTD
 KTESTW	K,K	AVX512_DQ	KTESTW K1,K2	Set ZF and CF depending on sign bit AND and ANDN of 16 bits mask register sources.
@@ -1630,9 +1630,9 @@ KTESTD	K,K	AVX512_BW	KTESTD K1,K2	Set ZF and CF depending on sign bit AND and AN
 GENERAL	KUNPCKBW	Unpack for Mask Registers	KUNPCKBW_KUNPCKWD_KUNPCKDQ
 KUNPCKBW	K,K,K	AVX512_F	KUNPCKBW K1,K2,K3	Unpack and interleave 8 bits masks in k2 and k3 and write word result in k1.
 GENERAL	KUNPCKWD	Unpack for Mask Registers	KUNPCKBW_KUNPCKWD_KUNPCKDQ
-KUNPCKWD	K,K,K	AVX512_BW	KUNPCKWD K1,K2,K3	word result in k1.
+KUNPCKWD	K,K,K	AVX512_BW	KUNPCKWD K1,K2,K3	Unpack and interleave 16 bits in k2 and k3 and write double-word result in k1.
 GENERAL	KUNPCKDQ	Unpack for Mask Registers	KUNPCKBW_KUNPCKWD_KUNPCKDQ
-KUNPCKDQ	K,K,K	AVX512_BW	KUNPCKDQ K1,K2,K3	quadword result in k1.
+KUNPCKDQ	K,K,K	AVX512_BW	KUNPCKDQ K1,K2,K3	Unpack and interleave 32 bits masks in k2 and k3 and write quadword result in k1.
 ;--------------------------------------------------------
 GENERAL	KXNORW	Bitwise Logical XNOR Masks	KXNORW_KXNORB_KXNORQ_KXNORD
 KXNORW	K,K,K	AVX512_F	KXNORW K1,K2,K3	Bitwise XNOR 16 bits masks k2 and k3 and place result in k1.
@@ -1914,13 +1914,13 @@ MOVQ	R/M64,XMM	SSE2	MOVQ R/M64,XMM	Move quadword from xmm register to r/m64.
 GENERAL	VMOVD	Move Doubleword/Move Quadword	MOVD_MOVQ
 VMOVD	XMM,R32/M32	AVX	VMOVD XMM1,R32/M32	Move doubleword from r/m32 to xmm1.
 VMOVD	R32/M32,XMM	AVX	VMOVD R32/M32,XMM1	Move doubleword from xmm1 register to r/m32.
-VMOVD	XMM,R32/M32	AVX512_F	VMOVD XMM1,R32/M32	
-VMOVD	R32/M32,XMM	AVX512_F	VMOVD R32/M32,XMM1	
+VMOVD	XMM,R32/M32	AVX512_F	VMOVD XMM1,R32/M32	Move doubleword from r/m32 to xmm1.
+VMOVD	R32/M32,XMM	AVX512_F	VMOVD R32/M32,XMM1	Move doubleword from xmm1 register to r/m32.
 GENERAL	VMOVQ	Move Doubleword/Move Quadword	MOVD_MOVQ
 VMOVQ	XMM,R64/M64	AVX	VMOVQ XMM1,R64/M64	Move quadword from r/m64 to xmm1.
 VMOVQ	R64/M64,XMM	AVX	VMOVQ R64/M64,XMM1	Move quadword from xmm1 register to r/m64.
-VMOVQ	XMM,R64/M64	AVX512_F	VMOVQ XMM1,R64/M64	
-VMOVQ	R64/M64,XMM	AVX512_F	VMOVQ R64/M64,XMM1	
+VMOVQ	XMM,R64/M64	AVX512_F	VMOVQ XMM1,R64/M64	Move quadword from r/m64 to xmm1.
+VMOVQ	R64/M64,XMM	AVX512_F	VMOVQ R64/M64,XMM1	Move quadword from xmm1 register to r/m64.
 ;--------------------------------------------------------
 GENERAL	MOVDDUP	Replicate Double FP Values	MOVDDUP
 MOVDDUP	XMM,XMM/M64	SSE3	MOVDDUP XMM1,XMM2/M64	Move DP FP value from xmm2/m64 and duplicate into xmm1.
@@ -1968,17 +1968,17 @@ VMOVDQU	YMM/M256,YMM	AVX	VMOVDQU YMM2/M256,YMM1	Move unaligned packed integer va
 GENERAL	VMOVDQU8	Move Unaligned Packed Integer Values	MOVDQU,VMOVDQU8_16_32_64
 VMOVDQU8	XMM{K}{Z},XMM/M128	AVX512_VL,AVX512_BW	VMOVDQU8 XMM1{K1}{Z},XMM2/M128	Move unaligned packed byte integer values from xmm2/m128 to xmm1 using writemask k1.
 VMOVDQU8	YMM{K}{Z},YMM/M256	AVX512_VL,AVX512_BW	VMOVDQU8 YMM1{K1}{Z},YMM2/M256	Move unaligned packed byte integer values from ymm2/m256 to ymm1 using writemask k1.
-VMOVDQU8	ZMM{K}{Z},ZMM/M512	AVX512_BW	VMOVDQU8 ZMM1{K1}{Z},ZMM2/M512	from zmm2/m512 to zmm1 using writemask k1.
+VMOVDQU8	ZMM{K}{Z},ZMM/M512	AVX512_BW	VMOVDQU8 ZMM1{K1}{Z},ZMM2/M512	Move unaligned packed byte integer values from zmm2/m512 to zmm1 using writemask k1.
 VMOVDQU8	XMM/M128{K}{Z},XMM	AVX512_VL,AVX512_BW	VMOVDQU8 XMM2/M128{K1}{Z},XMM1	Move unaligned packed byte integer values from xmm1 to xmm2/m128 using writemask k1.
 VMOVDQU8	YMM/M256{K}{Z},YMM	AVX512_VL,AVX512_BW	VMOVDQU8 YMM2/M256{K1}{Z},YMM1	Move unaligned packed byte integer values from ymm1 to ymm2/m256 using writemask k1.
-VMOVDQU8	ZMM/M512{K}{Z},ZMM	AVX512_BW	VMOVDQU8 ZMM2/M512{K1}{Z},ZMM1	from zmm1 to zmm2/m512 using writemask k1.
+VMOVDQU8	ZMM/M512{K}{Z},ZMM	AVX512_BW	VMOVDQU8 ZMM2/M512{K1}{Z},ZMM1	Move unaligned packed byte integer values from zmm1 to zmm2/m512 using writemask k1.
 GENERAL	VMOVDQU16	Move Unaligned Packed Integer Values	MOVDQU,VMOVDQU8_16_32_64
 VMOVDQU16	XMM{K}{Z},XMM/M128	AVX512_VL,AVX512_BW	VMOVDQU16 XMM1{K1}{Z},XMM2/M128	Move unaligned packed word integer values from xmm2/m128 to xmm1 using writemask k1.
 VMOVDQU16	YMM{K}{Z},YMM/M256	AVX512_VL,AVX512_BW	VMOVDQU16 YMM1{K1}{Z},YMM2/M256	Move unaligned packed word integer values from ymm2/m256 to ymm1 using writemask k1.
-VMOVDQU16	ZMM{K}{Z},ZMM/M512	AVX512_BW	VMOVDQU16 ZMM1{K1}{Z},ZMM2/M512	from zmm2/m512 to zmm1 using writemask k1.
+VMOVDQU16	ZMM{K}{Z},ZMM/M512	AVX512_BW	VMOVDQU16 ZMM1{K1}{Z},ZMM2/M512	Move unaligned packed word integer values from zmm2/m512 to zmm1 using writemask k1.
 VMOVDQU16	XMM/M128{K}{Z},XMM	AVX512_VL,AVX512_BW	VMOVDQU16 XMM2/M128{K1}{Z},XMM1	Move unaligned packed word integer values from xmm1 to xmm2/m128 using writemask k1.
 VMOVDQU16	YMM/M256{K}{Z},YMM	AVX512_VL,AVX512_BW	VMOVDQU16 YMM2/M256{K1}{Z},YMM1	Move unaligned packed word integer values from ymm1 to ymm2/m256 using writemask k1.
-VMOVDQU16	ZMM/M512{K}{Z},ZMM	AVX512_BW	VMOVDQU16 ZMM2/M512{K1}{Z},ZMM1	from zmm1 to zmm2/m512 using writemask k1.
+VMOVDQU16	ZMM/M512{K}{Z},ZMM	AVX512_BW	VMOVDQU16 ZMM2/M512{K1}{Z},ZMM1	Move unaligned packed word integer values from zmm1 to zmm2/m512 using writemask k1.
 GENERAL	VMOVDQU32	Move Unaligned Packed Integer Values	MOVDQU,VMOVDQU8_16_32_64
 VMOVDQU32	XMM{K}{Z},XMM/M128	AVX512_VL,AVX512_F	VMOVDQU32 XMM1{K1}{Z},XMM2/M128	Move unaligned packed doubleword integer values from xmm2/m128 to xmm1 using writemask k1.
 VMOVDQU32	YMM{K}{Z},YMM/M256	AVX512_VL,AVX512_F	VMOVDQU32 YMM1{K1}{Z},YMM2/M256	Move unaligned packed doubleword integer values from ymm2/m256 to ymm1 using writemask k1.
@@ -2104,9 +2104,9 @@ MOVQ	XMM,XMM/M64	SSE2	MOVQ XMM1,XMM2/M64	Move quadword from xmm2/mem64 to xmm1.
 MOVQ	XMM/M64,XMM	SSE2	MOVQ XMM2/M64,XMM1	Move quadword from xmm1 to xmm2/mem64.
 GENERAL	VMOVQ	Move Quadword	MOVQ
 VMOVQ	XMM,XMM/M64	AVX	VMOVQ XMM1,XMM2/M64	Move quadword from xmm2 to xmm1.
-VMOVQ	XMM,XMM/M64	AVX512_F	VMOVQ XMM1,XMM2/M64	
+VMOVQ	XMM,XMM/M64	AVX512_F	VMOVQ XMM1,XMM2/M64	Move quadword from xmm2/m64 to xmm1.
 VMOVQ	XMM/M64,XMM	AVX	VMOVQ XMM1/M64,XMM2	Move quadword from xmm2 register to xmm1/m64.
-VMOVQ	XMM/M64,XMM	AVX512_F	VMOVQ XMM1/M64,XMM2	
+VMOVQ	XMM/M64,XMM	AVX512_F	VMOVQ XMM1/M64,XMM2	Move quadword from xmm2 register to xmm1/m64.
 ;--------------------------------------------------------
 GENERAL	MOVQ2DQ	Move Quadword from MMX Technology to XMM Register	MOVQ2DQ
 MOVQ2DQ	XMM,MM	8086	MOVQ2DQ XMM,MM	Move quadword from mmx to low quadword of xmm.
@@ -2363,14 +2363,23 @@ VPABSB	XMM,XMM/M128	AVX	VPABSB XMM1,XMM2/M128	Compute the absolute value of byte
 VPABSB	YMM,YMM/M256	AVX2	VPABSB YMM1,YMM2/M256	Compute the absolute value of bytes in ymm2/m256 and store UNSIGNED result in ymm1.
 VPABSB	XMM{K}{Z},XMM/M128	AVX512_VL,AVX512_BW	VPABSB XMM1{K1}{Z},XMM2/M128	Compute the absolute value of bytes in xmm2/m128 and store UNSIGNED result in xmm1 using writemask k1.
 VPABSB	YMM{K}{Z},YMM/M256	AVX512_VL,AVX512_BW	VPABSB YMM1{K1}{Z},YMM2/M256	Compute the absolute value of bytes in ymm2/m256 and store UNSIGNED result in ymm1 using writemask k1.
-VPABSB	ZMM{K}{Z},ZMM/M512	AVX512_BW	VPABSB ZMM1{K1}{Z},ZMM2/M512	zmm2/m512 and store UNSIGNED result in zmm1 using writemask k1.
+VPABSB	ZMM{K}{Z},ZMM/M512	AVX512_BW	VPABSB ZMM1{K1}{Z},ZMM2/M512	Compute the absolute value of bytes in zmm2/m512 and store UNSIGNED result in zmm1 using writemask k1.
 GENERAL	VPABSW	Packed Absolute Value	PABSB_PABSW_PABSD_PABSQ
 VPABSW	XMM,XMM/M128	AVX	VPABSW XMM1,XMM2/M128	Compute the absolute value of 16- bit integers in xmm2/m128 and store UNSIGNED result in xmm1.
 VPABSW	YMM,YMM/M256	AVX2	VPABSW YMM1,YMM2/M256	Compute the absolute value of 16-bit integers in ymm2/m256 and store UNSIGNED result in ymm1.
 VPABSW	XMM{K}{Z},XMM/M128	AVX512_VL,AVX512_BW	VPABSW XMM1{K1}{Z},XMM2/M128	Compute the absolute value of 16-bit integers in xmm2/m128 and store UNSIGNED result in xmm1 using writemask k1.
+VPABSW	YMM{K}{Z},YMM/M256	AVX512_VL,AVX512_BW	VPABSW YMM1{K1}{Z},YMM2/M256	Compute the absolute value of 16-bit integers in ymm2/m256 and store UNSIGNED result in ymm1 using writemask k1.
+VPABSW	ZMM{K}{Z},ZMM/M512	AVX512_BW	VPABSW ZMM1{K1}{Z},ZMM2/M512	Compute the absolute value of 16-bit integers in zmm2/m512 and store UNSIGNED result in zmm1 using writemask k1.
 GENERAL	VPABSD	Packed Absolute Value	PABSB_PABSW_PABSD_PABSQ
 VPABSD	XMM,XMM/M128	AVX	VPABSD XMM1,XMM2/M128	Compute the absolute value of 32- bit integers in xmm2/m128 and store UNSIGNED result in xmm1.
 VPABSD	YMM,YMM/M256	AVX2	VPABSD YMM1,YMM2/M256	Compute the absolute value of 32-bit integers in ymm2/m256 and store UNSIGNED result in ymm1.
+VPABSD	XMM{K}{Z},XMM/M128/M32BCST	AVX512_VL,AVX512_F	VPABSD XMM1{K1}{Z},XMM2/M128/M32BCST	Compute the absolute value of 32-bit integers in xmm2/m128/m32bcst and store UNSIGNED result in xmm1 using writemask k1.
+VPABSD	YMM{K}{Z},YMM/M256/M32BCST	AVX512_VL,AVX512_F	VPABSD YMM1{K1}{Z},YMM2/M256/M32BCST	Compute the absolute value of 32-bit integers in ymm2/m256/m32bcst and store UNSIGNED result in ymm1 using writemask k1.
+VPABSD	ZMM{K}{Z},ZMM/M512/M32BCST	AVX512_F	VPABSD ZMM1{K1}{Z},ZMM2/M512/M32BCST	Compute the absolute value of 32-bit integers in zmm2/m512/m32bcst and store UNSIGNED result in zmm1 using writemask k1.
+GENERAL	VPABSQ	Packed Absolute Value	PABSB_PABSW_PABSD_PABSQ
+VPABSQ	XMM{K}{Z},XMM/M128/M64BCST	AVX512_VL,AVX512_F	VPABSQ XMM1{K1}{Z},XMM2/M128/M64BCST	Compute the absolute value of 64-bit integers in xmm2/m128/m64bcst and store UNSIGNED result in xmm1 using writemask k1.
+VPABSQ	YMM{K}{Z},YMM/M256/M64BCST	AVX512_VL,AVX512_F	VPABSQ YMM1{K1}{Z},YMM2/M256/M64BCST	Compute the absolute value of 64-bit integers in ymm2/m256/m64bcst and store UNSIGNED result in ymm1 using writemask k1.
+VPABSQ	ZMM{K}{Z},ZMM/M512/M64BCST	AVX512_F	VPABSQ ZMM1{K1}{Z},ZMM2/M512/M64BCST	Compute the absolute value of 64-bit integers in zmm2/m512/m64bcst and store UNSIGNED result in zmm1 using writemask k1.
 ;--------------------------------------------------------
 GENERAL	PACKSSWB	Pack with Signed Saturation	PACKSSWB_PACKSSDW
 PACKSSWB	MM,MM/M64	MMX	PACKSSWB MM1,MM2/M64	Converts 4 packed signed word integers from mm1 and from mm2/m64 into 8 packed signed byte integers in mm1 using signed saturation.
@@ -2383,13 +2392,13 @@ VPACKSSWB	XMM,XMM,XMM/M128	AVX	VPACKSSWB XMM1,XMM2,XMM3/M128	Converts 8 packed s
 VPACKSSWB	YMM,YMM,YMM/M256	AVX2	VPACKSSWB YMM1,YMM2,YMM3/M256	Converts 16 packed signed word integers from ymm2 and from ymm3/m256 into 32 packed signed byte integers in ymm1 using signed saturation.
 VPACKSSWB	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPACKSSWB XMM1{K1}{Z},XMM2,XMM3/M128	Converts packed signed word integers from xmm2 and from xmm3/m128 into packed signed byte integers in xmm1 using signed saturation under writemask k1.
 VPACKSSWB	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPACKSSWB YMM1{K1}{Z},YMM2,YMM3/M256	Converts packed signed word integers from ymm2 and from ymm3/m256 into packed signed byte integers in ymm1 using signed saturation under writemask k1.
-VPACKSSWB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPACKSSWB ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm2 and from zmm3/m512 into packed signed byte integers in zmm1 using signed saturation under writemask k1.
+VPACKSSWB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPACKSSWB ZMM1{K1}{Z},ZMM2,ZMM3/M512	Converts packed signed word integers from zmm2 and from zmm3/m512 into packed signed byte integers in zmm1 using signed saturation under writemask k1.
 GENERAL	VPACKSSDW	Pack with Signed Saturation	PACKSSWB_PACKSSDW
 VPACKSSDW	XMM,XMM,XMM/M128	AVX	VPACKSSDW XMM1,XMM2,XMM3/M128	Converts 4 packed signed doubleword integers from xmm2 and from xmm3/m128 into 8 packed signed word integers in xmm1 using signed saturation.
 VPACKSSDW	YMM,YMM,YMM/M256	AVX2	VPACKSSDW YMM1,YMM2,YMM3/M256	Converts 8 packed signed doubleword integers from ymm2 and from ymm3/m256 into 16 packed signed word integers in ymm1using signed saturation.
 VPACKSSDW	XMM{K}{Z},XMM,XMM/M128/M32BCST	AVX512_VL,AVX512_BW	VPACKSSDW XMM1{K1}{Z},XMM2,XMM3/M128/M32BCST	Converts packed signed doubleword integers from xmm2 and from xmm3/m128/m32bcst into packed signed word integers in xmm1 using signed saturation under writemask k1.
 VPACKSSDW	YMM{K}{Z},YMM,YMM/M256/M32BCST	AVX512_VL,AVX512_BW	VPACKSSDW YMM1{K1}{Z},YMM2,YMM3/M256/M32BCST	Converts packed signed doubleword integers from ymm2 and from ymm3/m256/m32bcst into packed signed word integers in ymm1 using signed saturation under writemask k1.
-VPACKSSDW	ZMM{K}{Z},ZMM,ZMM/M512/M32BCST	AVX512_BW	VPACKSSDW ZMM1{K1}{Z},ZMM2,ZMM3/M512/M32BCST	from zmm2 and from zmm3/m512/m32bcst into packed signed word integers in zmm1 using signed saturation under writemask k1.
+VPACKSSDW	ZMM{K}{Z},ZMM,ZMM/M512/M32BCST	AVX512_BW	VPACKSSDW ZMM1{K1}{Z},ZMM2,ZMM3/M512/M32BCST	Converts packed signed doubleword integers from zmm2 and from zmm3/m512/m32bcst into packed signed word integers in zmm1 using signed saturation under writemask k1.
 ;--------------------------------------------------------
 GENERAL	PACKUSDW	Pack with Unsigned Saturation	PACKUSDW
 PACKUSDW	XMM,XMM/M128	SSE4_1	PACKUSDW XMM1,XMM2/M128	Convert 4 packed signed doubleword integers from xmm1 and 4 packed signed doubleword integers from xmm2/m128 into 8 packed unsigned word integers in xmm1 using unsigned saturation.
@@ -2408,7 +2417,7 @@ VPACKUSWB	XMM,XMM,XMM/M128	AVX	VPACKUSWB XMM1,XMM2,XMM3/M128	Converts 8 signed w
 VPACKUSWB	YMM,YMM,YMM/M256	AVX2	VPACKUSWB YMM1,YMM2,YMM3/M256	Converts 16 signed word integers from ymm2 and 16signed word integers from ymm3/m256 into 32 unsigned byte integers in ymm1 using unsigned saturation.
 VPACKUSWB	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPACKUSWB XMM1{K1}{Z},XMM2,XMM3/M128	Converts signed word integers from xmm2 and signed word integers from xmm3/m128 into unsigned byte integers in xmm1 using unsigned saturation under writemask k1.
 VPACKUSWB	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPACKUSWB YMM1{K1}{Z},YMM2,YMM3/M256	Converts signed word integers from ymm2 and signed word integers from ymm3/m256 into unsigned byte integers in ymm1 using unsigned saturation under writemask k1.
-VPACKUSWB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPACKUSWB ZMM1{K1}{Z},ZMM2,ZMM3/M512	and signed word integers from zmm3/m512 into unsigned byte integers in zmm1 using unsigned saturation under writemask k1.
+VPACKUSWB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPACKUSWB ZMM1{K1}{Z},ZMM2,ZMM3/M512	Converts signed word integers from zmm2 and signed word integers from zmm3/m512 into unsigned byte integers in zmm1 using unsigned saturation under writemask k1.
 ;--------------------------------------------------------
 GENERAL	PADDB	Add Packed Integers	PADDB_PADDW_PADDD_PADDQ
 PADDB	MM,MM/M64	MMX	PADDB MM,MM/M64	Add packed byte integers from mm/m64 and mm.
@@ -2427,19 +2436,25 @@ VPADDB	XMM,XMM,XMM/M128	AVX	VPADDB XMM1,XMM2,XMM3/M128	Add packed byte integers 
 VPADDB	YMM,YMM,YMM/M256	AVX2	VPADDB YMM1,YMM2,YMM3/M256	Add packed byte integers from ymm2, and ymm3/m256 and store in ymm1.
 VPADDB	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPADDB XMM1{K1}{Z},XMM2,XMM3/M128	Add packed byte integers from xmm2, and xmm3/m128 and store in xmm1 using writemask k1.
 VPADDB	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPADDB YMM1{K1}{Z},YMM2,YMM3/M256	Add packed byte integers from ymm2, and ymm3/m256 and store in ymm1 using writemask k1.
+VPADDB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPADDB ZMM1{K1}{Z},ZMM2,ZMM3/M512	Add packed byte integers from zmm2, and zmm3/m512 and store in zmm1 using writemask k1.
 GENERAL	VPADDW	Add Packed Integers	PADDB_PADDW_PADDD_PADDQ
 VPADDW	XMM,XMM,XMM/M128	AVX	VPADDW XMM1,XMM2,XMM3/M128	Add packed word integers from xmm2, xmm3/m128 and store in xmm1.
 VPADDW	YMM,YMM,YMM/M256	AVX2	VPADDW YMM1,YMM2,YMM3/M256	Add packed word integers from ymm2, ymm3/m256 and store in ymm1.
 VPADDW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPADDW XMM1{K1}{Z},XMM2,XMM3/M128	Add packed word integers from xmm2, and xmm3/m128 and store in xmm1 using writemask k1.
 VPADDW	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPADDW YMM1{K1}{Z},YMM2,YMM3/M256	Add packed word integers from ymm2, and ymm3/m256 and store in ymm1 using writemask k1.
+VPADDW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPADDW ZMM1{K1}{Z},ZMM2,ZMM3/M512	Add packed word integers from zmm2, and zmm3/m512 and store in zmm1 using writemask k1.
 GENERAL	VPADDD	Add Packed Integers	PADDB_PADDW_PADDD_PADDQ
 VPADDD	XMM,XMM,XMM/M128	AVX	VPADDD XMM1,XMM2,XMM3/M128	Add packed doubleword integers from xmm2, xmm3/m128 and store in xmm1.
 VPADDD	YMM,YMM,YMM/M256	AVX2	VPADDD YMM1,YMM2,YMM3/M256	Add packed doubleword integers from ymm2, ymm3/m256 and store in ymm1.
 VPADDD	XMM{K}{Z},XMM,XMM/M128/M32BCST	AVX512_VL,AVX512_F	VPADDD XMM1{K1}{Z},XMM2,XMM3/M128/M32BCST	Add packed doubleword integers from xmm2, and xmm3/m128/m32bcst and store in xmm1 using writemask k1.
+VPADDD	YMM{K}{Z},YMM,YMM/M256/M32BCST	AVX512_VL,AVX512_F	VPADDD YMM1{K1}{Z},YMM2,YMM3/M256/M32BCST	Add packed doubleword integers from ymm2, ymm3/m256/m32bcst and store in ymm1 using writemask k1.
+VPADDD	ZMM{K}{Z},ZMM,ZMM/M512/M32BCST	AVX512_F	VPADDD ZMM1{K1}{Z},ZMM2,ZMM3/M512/M32BCST	Add packed doubleword integers from zmm2, zmm3/m512/m32bcst and store in zmm1 using writemask k1.
 GENERAL	VPADDQ	Add Packed Integers	PADDB_PADDW_PADDD_PADDQ
 VPADDQ	XMM,XMM,XMM/M128	AVX	VPADDQ XMM1,XMM2,XMM3/M128	Add packed quadword integers from xmm2, xmm3/m128 and store in xmm1.
 VPADDQ	YMM,YMM,YMM/M256	AVX2	VPADDQ YMM1,YMM2,YMM3/M256	Add packed quadword integers from ymm2, ymm3/m256 and store in ymm1.
 VPADDQ	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512_VL,AVX512_F	VPADDQ XMM1{K1}{Z},XMM2,XMM3/M128/M64BCST	Add packed quadword integers from xmm2, and xmm3/m128/m64bcst and store in xmm1 using writemask k1.
+VPADDQ	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512_VL,AVX512_F	VPADDQ YMM1{K1}{Z},YMM2,YMM3/M256/M64BCST	Add packed quadword integers from ymm2, ymm3/m256/m64bcst and store in ymm1 using writemask k1.
+VPADDQ	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST	AVX512_F	VPADDQ ZMM1{K1}{Z},ZMM2,ZMM3/M512/M64BCST	Add packed quadword integers from zmm2, zmm3/m512/m64bcst and store in zmm1 using writemask k1.
 ;--------------------------------------------------------
 GENERAL	PADDSB	Add Packed Signed Integers with Signed Saturation	PADDSB_PADDSW
 PADDSB	MM,MM/M64	MMX	PADDSB MM,MM/M64	Add packed signed byte integers from mm/m64 and mm and saturate the results.
@@ -2452,13 +2467,13 @@ VPADDSB	XMM,XMM,XMM/M128	AVX	VPADDSB XMM1,XMM2,XMM3/M128	Add packed signed byte 
 VPADDSB	YMM,YMM,YMM/M256	AVX2	VPADDSB YMM1,YMM2,YMM3/M256	Add packed signed byte integers from ymm2, and ymm3/m256 and store the saturated results in ymm1.
 VPADDSB	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPADDSB XMM1{K1}{Z},XMM2,XMM3/M128	Add packed signed byte integers from xmm2, and xmm3/m128 and store the saturated results in xmm1 under writemask k1.
 VPADDSB	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPADDSB YMM1{K1}{Z},YMM2,YMM3/M256	Add packed signed byte integers from ymm2, and ymm3/m256 and store the saturated results in ymm1 under writemask k1.
-VPADDSB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPADDSB ZMM1{K1}{Z},ZMM2,ZMM3/M512	and zmm3/m512 and store the saturated results in zmm1 under writemask k1.
+VPADDSB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPADDSB ZMM1{K1}{Z},ZMM2,ZMM3/M512	Add packed signed byte integers from zmm2, and zmm3/m512 and store the saturated results in zmm1 under writemask k1.
 GENERAL	VPADDSW	Add Packed Signed Integers with Signed Saturation	PADDSB_PADDSW
 VPADDSW	XMM,XMM,XMM/M128	AVX	VPADDSW XMM1,XMM2,XMM3/M128	Add packed signed word integers from xmm3/m128 and xmm2 and saturate the results.
 VPADDSW	YMM,YMM,YMM/M256	AVX2	VPADDSW YMM1,YMM2,YMM3/M256	Add packed signed word integers from ymm2, and ymm3/m256 and store the saturated results in ymm1.
 VPADDSW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPADDSW XMM1{K1}{Z},XMM2,XMM3/M128	Add packed signed word integers from xmm2, and xmm3/m128 and store the saturated results in xmm1 under writemask k1.
 VPADDSW	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPADDSW YMM1{K1}{Z},YMM2,YMM3/M256	Add packed signed word integers from ymm2, and ymm3/m256 and store the saturated results in ymm1 under writemask k1.
-VPADDSW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPADDSW ZMM1{K1}{Z},ZMM2,ZMM3/M512	and zmm3/m512 and store the saturated results in zmm1 under writemask k1.
+VPADDSW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPADDSW ZMM1{K1}{Z},ZMM2,ZMM3/M512	Add packed signed word integers from zmm2, and zmm3/m512 and store the saturated results in zmm1 under writemask k1.
 ;--------------------------------------------------------
 GENERAL	PADDUSB	Add Packed Unsigned Integers with Unsigned Saturation	PADDUSB_PADDUSW
 PADDUSB	MM,MM/M64	MMX	PADDUSB MM,MM/M64	Add packed unsigned byte integers from mm/m64 and mm and saturate the results.
@@ -2471,12 +2486,13 @@ VPADDUSB	XMM,XMM,XMM/M128	AVX	VPADDUSB XMM1,XMM2,XMM3/M128	Add packed unsigned b
 VPADDUSB	YMM,YMM,YMM/M256	AVX2	VPADDUSB YMM1,YMM2,YMM3/M256	Add packed unsigned byte integers from ymm2, and ymm3/m256 and store the saturated results in ymm1.
 VPADDUSB	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPADDUSB XMM1{K1}{Z},XMM2,XMM3/M128	Add packed unsigned byte integers from xmm2, and xmm3/m128 and store the saturated results in xmm1 under writemask k1.
 VPADDUSB	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPADDUSB YMM1{K1}{Z},YMM2,YMM3/M256	Add packed unsigned byte integers from ymm2, and ymm3/m256 and store the saturated results in ymm1 under writemask k1.
-VPADDUSB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPADDUSB ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm2, and zmm3/m512 and store the saturated results in zmm1 under writemask k1.
+VPADDUSB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPADDUSB ZMM1{K1}{Z},ZMM2,ZMM3/M512	Add packed unsigned byte integers from zmm2, and zmm3/m512 and store the saturated results in zmm1 under writemask k1.
 GENERAL	VPADDUSW	Add Packed Unsigned Integers with Unsigned Saturation	PADDUSB_PADDUSW
 VPADDUSW	XMM,XMM,XMM/M128	AVX	VPADDUSW XMM1,XMM2,XMM3/M128	Add packed unsigned word integers from xmm3/m128 to xmm2 and saturate the results.
 VPADDUSW	YMM,YMM,YMM/M256	AVX2	VPADDUSW YMM1,YMM2,YMM3/M256	Add packed unsigned word integers from ymm2, and ymm3/m256 and store the saturated results in ymm1.
 VPADDUSW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPADDUSW XMM1{K1}{Z},XMM2,XMM3/M128	Add packed unsigned word integers from xmm2, and xmm3/m128 and store the saturated results in xmm1 under writemask k1.
 VPADDUSW	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPADDUSW YMM1{K1}{Z},YMM2,YMM3/M256	Add packed unsigned word integers from ymm2, and ymm3/m256 and store the saturated results in ymm1 under writemask k1.
+VPADDUSW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPADDUSW ZMM1{K1}{Z},ZMM2,ZMM3/M512	Add packed unsigned word integers from zmm2, and zmm3/m512 and store the saturated results in zmm1 under writemask k1.
 ;--------------------------------------------------------
 GENERAL	PALIGNR	Packed Align Right	PALIGNR
 PALIGNR	MM,MM/M64,IMM8	SSSE3	PALIGNR MM1,MM2/M64,IMM8	Concatenate destination and source operands, extract byte-aligned result shifted to the right by constant value in imm8 into mm1.
@@ -2486,7 +2502,7 @@ VPALIGNR	XMM,XMM,XMM/M128,IMM8	AVX	VPALIGNR XMM1,XMM2,XMM3/M128,IMM8	Concatenate
 VPALIGNR	YMM,YMM,YMM/M256,IMM8	AVX2	VPALIGNR YMM1,YMM2,YMM3/M256,IMM8	Concatenate pairs of 16 bytes in ymm2 and ymm3/m256 into 32-byte intermediate result, extract byte-aligned, 16-byte result shifted to the right by constant values in imm8 from each intermediate result, and two 16-byte results are stored in ymm1.
 VPALIGNR	XMM{K}{Z},XMM,XMM/M128,IMM8	AVX512_VL,AVX512_BW	VPALIGNR XMM1{K1}{Z},XMM2,XMM3/M128,IMM8	Concatenate xmm2 and xmm3/m128 into a 32- byte intermediate result, extract byte aligned result shifted to the right by constant value in imm8 and result is stored in xmm1.
 VPALIGNR	YMM{K}{Z},YMM,YMM/M256,IMM8	AVX512_VL,AVX512_BW	VPALIGNR YMM1{K1}{Z},YMM2,YMM3/M256,IMM8	Concatenate pairs of 16 bytes in ymm2 and ymm3/m256 into 32-byte intermediate result, extract byte-aligned, 16-byte result shifted to the right by constant values in imm8 from each intermediate result, and two 16-byte results are stored in ymm1.
-VPALIGNR	ZMM{K}{Z},ZMM,ZMM/M512,IMM8	AVX512_BW	VPALIGNR ZMM1{K1}{Z},ZMM2,ZMM3/M512,IMM8	zmm3/m512 into 32-byte intermediate result, extract byte-aligned, 16-byte result shifted to the right by constant values in imm8 from each intermediate result, and four 16-byte results are stored in zmm1.
+VPALIGNR	ZMM{K}{Z},ZMM,ZMM/M512,IMM8	AVX512_BW	VPALIGNR ZMM1{K1}{Z},ZMM2,ZMM3/M512,IMM8	Concatenate pairs of 16 bytes in zmm2 and zmm3/m512 into 32-byte intermediate result, extract byte-aligned, 16-byte result shifted to the right by constant values in imm8 from each intermediate result, and four 16-byte results are stored in zmm1.
 ;--------------------------------------------------------
 GENERAL	PAND	Logical AND	PAND
 PAND	MM,MM/M64	MMX	PAND MM,MM/M64	Bitwise AND mm/m64 and mm.
@@ -2532,13 +2548,13 @@ VPAVGB	XMM,XMM,XMM/M128	AVX	VPAVGB XMM1,XMM2,XMM3/M128	Average packed unsigned b
 VPAVGB	YMM,YMM,YMM/M256	AVX2	VPAVGB YMM1,YMM2,YMM3/M256	Average packed unsigned byte integers from ymm2, and ymm3/m256 with rounding and store to ymm1.
 VPAVGB	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPAVGB XMM1{K1}{Z},XMM2,XMM3/M128	Average packed unsigned byte integers from xmm2, and xmm3/m128 with rounding and store to xmm1 under writemask k1.
 VPAVGB	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPAVGB YMM1{K1}{Z},YMM2,YMM3/M256	Average packed unsigned byte integers from ymm2, and ymm3/m256 with rounding and store to ymm1 under writemask k1.
-VPAVGB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPAVGB ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm2, and zmm3/m512 with rounding and store to zmm1 under writemask k1.
+VPAVGB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPAVGB ZMM1{K1}{Z},ZMM2,ZMM3/M512	Average packed unsigned byte integers from zmm2, and zmm3/m512 with rounding and store to zmm1 under writemask k1.
 GENERAL	VPAVGW	Average Packed Integers	PAVGB_PAVGW
 VPAVGW	XMM,XMM,XMM/M128	AVX	VPAVGW XMM1,XMM2,XMM3/M128	Average packed unsigned word integers from xmm3/m128 and xmm2 with rounding.
 VPAVGW	YMM,YMM,YMM/M256	AVX2	VPAVGW YMM1,YMM2,YMM3/M256	Average packed unsigned word integers from ymm2, ymm3/m256 with rounding to ymm1.
 VPAVGW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPAVGW XMM1{K1}{Z},XMM2,XMM3/M128	Average packed unsigned word integers from xmm2, xmm3/m128 with rounding to xmm1 under writemask k1.
 VPAVGW	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPAVGW YMM1{K1}{Z},YMM2,YMM3/M256	Average packed unsigned word integers from ymm2, ymm3/m256 with rounding to ymm1 under writemask k1.
-VPAVGW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPAVGW ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm2, zmm3/m512 with rounding to zmm1 under writemask k1.
+VPAVGW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPAVGW ZMM1{K1}{Z},ZMM2,ZMM3/M512	Average packed unsigned word integers from zmm2, zmm3/m512 with rounding to zmm1 under writemask k1.
 ;--------------------------------------------------------
 GENERAL	PBLENDVB	Variable Blend Packed Bytes	PBLENDVB
 PBLENDVB	XMM,XMM/M128,XMM_ZERO	SSE4_1	PBLENDVB XMM1,XMM2/M128,<XMM0>	Select byte values from xmm1 and xmm2/m128 from mask specified in the high bit of each byte in XMM0 and store the values into xmm1.
@@ -2553,9 +2569,9 @@ VPBLENDW	XMM,XMM,XMM/M128,IMM8	AVX	VPBLENDW XMM1,XMM2,XMM3/M128,IMM8	Select word
 VPBLENDW	YMM,YMM,YMM/M256,IMM8	AVX2	VPBLENDW YMM1,YMM2,YMM3/M256,IMM8	Select words from ymm2 and ymm3/m256 from mask specified in imm8 and store the values into ymm1.
 ;--------------------------------------------------------
 GENERAL	PCLMULQDQ	Carry-Less Multiplication Quadword	PCLMULQDQ
-PCLMULQDQ	XMM,XMM/M128,IMM8		PCLMULQDQ XMM1,XMM2/M128,IMM8	Carry-less multiplication of one quadword of xmm1 by one quadword of xmm2/m128, stores the 128-bit result in xmm1. The imme- diate is used to determine which quadwords of xmm1 and xmm2/m128 should be used.
+PCLMULQDQ	XMM,XMM/M128,IMM8	PCLMULQDQ	PCLMULQDQ XMM1,XMM2/M128,IMM8	Carry-less multiplication of one quadword of xmm1 by one quadword of xmm2/m128, stores the 128-bit result in xmm1. The imme- diate is used to determine which quadwords of xmm1 and xmm2/m128 should be used.
 GENERAL	VPCLMULQDQ	Carry-Less Multiplication Quadword	PCLMULQDQ
-VPCLMULQDQ	XMM,XMM,XMM/M128,IMM8	AVX	VPCLMULQDQ XMM1,XMM2,XMM3/M128,IMM8	Carry-less multiplication of one quadword of xmm2 by one quadword of xmm3/m128, stores the 128-bit result in xmm1. The imme- diate is used to determine which quadwords of xmm2 and xmm3/m128 should be used.
+VPCLMULQDQ	XMM,XMM,XMM/M128,IMM8	PCLMULQDQ,AVX	VPCLMULQDQ XMM1,XMM2,XMM3/M128,IMM8	Carry-less multiplication of one quadword of xmm2 by one quadword of xmm3/m128, stores the 128-bit result in xmm1. The imme- diate is used to determine which quadwords of xmm2 and xmm3/m128 should be used.
 ;--------------------------------------------------------
 GENERAL	PCMPEQB	Compare Packed Data for Equal	PCMPEQB_PCMPEQW_PCMPEQD
 PCMPEQB	MM,MM/M64	MMX	PCMPEQB MM,MM/M64	Compare packed bytes in mm/m64 and mm for equality.
@@ -2570,9 +2586,14 @@ GENERAL	VPCMPEQB	Compare Packed Data for Equal	PCMPEQB_PCMPEQW_PCMPEQD
 VPCMPEQB	XMM,XMM,XMM/M128	AVX	VPCMPEQB XMM1,XMM2,XMM3/M128	Compare packed bytes in xmm3/m128 and xmm2 for equality.
 VPCMPEQB	YMM,YMM,YMM/M256	AVX2	VPCMPEQB YMM1,YMM2,YMM3/M256	Compare packed bytes in ymm3/m256 and ymm2 for equality.
 VPCMPEQB	K{K},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPCMPEQB K1{K2},XMM2,XMM3/M128	Compare packed bytes in xmm3/m128 and xmm2 for equality and set vector mask k1 to reflect the zero/nonzero status of each element of the result, under writemask.
+VPCMPEQB	K{K},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPCMPEQB K1{K2},YMM2,YMM3/M256	Compare packed bytes in ymm3/m256 and ymm2 for equality and set vector mask k1 to reflect the zero/nonzero status of each element of the result, under writemask.
+VPCMPEQB	K{K},ZMM,ZMM/M512	AVX512_BW	VPCMPEQB K1{K2},ZMM2,ZMM3/M512	Compare packed bytes in zmm3/m512 and zmm2 for equality and set vector mask k1 to reflect the zero/nonzero status of each element of the result, under writemask.
 GENERAL	VPCMPEQW	Compare Packed Data for Equal	PCMPEQB_PCMPEQW_PCMPEQD
 VPCMPEQW	XMM,XMM,XMM/M128	AVX	VPCMPEQW XMM1,XMM2,XMM3/M128	Compare packed words in xmm3/m128 and xmm2 for equality.
 VPCMPEQW	YMM,YMM,YMM/M256	AVX2	VPCMPEQW YMM1,YMM2,YMM3/M256	Compare packed words in ymm3/m256 and ymm2 for equality.
+VPCMPEQW	K{K},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPCMPEQW K1{K2},XMM2,XMM3/M128	Compare packed words in xmm3/m128 and xmm2 for equality and set vector mask k1 to reflect the zero/nonzero status of each element of the result, under writemask.
+VPCMPEQW	K{K},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPCMPEQW K1{K2},YMM2,YMM3/M256	Compare packed words in ymm3/m256 and ymm2 for equality and set vector mask k1 to reflect the zero/nonzero status of each element of the result, under writemask.
+VPCMPEQW	K{K},ZMM,ZMM/M512	AVX512_BW	VPCMPEQW K1{K2},ZMM2,ZMM3/M512	Compare packed words in zmm3/m512 and zmm2 for equality and set vector mask k1 to reflect the zero/nonzero status of each element of the result, under writemask.
 GENERAL	VPCMPEQD	Compare Packed Data for Equal	PCMPEQB_PCMPEQW_PCMPEQD
 VPCMPEQD	XMM,XMM,XMM/M128	AVX	VPCMPEQD XMM1,XMM2,XMM3/M128	Compare packed doublewords in xmm3/m128 and xmm2 for equality.
 VPCMPEQD	YMM,YMM,YMM/M256	AVX2	VPCMPEQD YMM1,YMM2,YMM3/M256	Compare packed doublewords in ymm3/m256 and ymm2 for equality.
@@ -2613,9 +2634,13 @@ VPCMPGTB	XMM,XMM,XMM/M128	AVX	VPCMPGTB XMM1,XMM2,XMM3/M128	Compare packed signed
 VPCMPGTB	YMM,YMM,YMM/M256	AVX2	VPCMPGTB YMM1,YMM2,YMM3/M256	Compare packed signed byte integers in ymm2 and ymm3/m256 for greater than.
 VPCMPGTB	K{K},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPCMPGTB K1{K2},XMM2,XMM3/M128	Compare packed signed byte integers in xmm2 and xmm3/m128 for greater than, and set vector mask k1 to reflect the zero/nonzero status of each element of the result, under writemask.
 VPCMPGTB	K{K},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPCMPGTB K1{K2},YMM2,YMM3/M256	Compare packed signed byte integers in ymm2 and ymm3/m256 for greater than, and set vector mask k1 to reflect the zero/nonzero status of each element of the result, under writemask.
+VPCMPGTB	K{K},ZMM,ZMM/M512	AVX512_BW	VPCMPGTB K1{K2},ZMM2,ZMM3/M512	Compare packed signed byte integers in zmm2 and zmm3/m512 for greater than, and set vector mask k1 to reflect the zero/nonzero status of each element of the result, under writemask.
 GENERAL	VPCMPGTW	Compare Packed Signed Integers for Greater Than	PCMPGTB_PCMPGTW_PCMPGTD
 VPCMPGTW	XMM,XMM,XMM/M128	AVX	VPCMPGTW XMM1,XMM2,XMM3/M128	Compare packed signed word integers in xmm2 and xmm3/m128 for greater than.
 VPCMPGTW	YMM,YMM,YMM/M256	AVX2	VPCMPGTW YMM1,YMM2,YMM3/M256	Compare packed signed word integers in ymm2 and ymm3/m256 for greater than.
+VPCMPGTW	K{K},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPCMPGTW K1{K2},XMM2,XMM3/M128	Compare packed signed word integers in xmm2 and xmm3/m128 for greater than, and set vector mask k1 to reflect the zero/nonzero status of each element of the result, under writemask.
+VPCMPGTW	K{K},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPCMPGTW K1{K2},YMM2,YMM3/M256	Compare packed signed word integers in ymm2 and ymm3/m256 for greater than, and set vector mask k1 to reflect the zero/nonzero status of each element of the result, under writemask.
+VPCMPGTW	K{K},ZMM,ZMM/M512	AVX512_BW	VPCMPGTW K1{K2},ZMM2,ZMM3/M512	Compare packed signed word integers in zmm2 and zmm3/m512 for greater than, and set vector mask k1 to reflect the zero/nonzero status of each element of the result, under writemask.
 GENERAL	VPCMPGTD	Compare Packed Signed Integers for Greater Than	PCMPGTB_PCMPGTW_PCMPGTD
 VPCMPGTD	XMM,XMM,XMM/M128	AVX	VPCMPGTD XMM1,XMM2,XMM3/M128	Compare packed signed doubleword integers in xmm2 and xmm3/m128 for greater than.
 VPCMPGTD	YMM,YMM,YMM/M256	AVX2	VPCMPGTD YMM1,YMM2,YMM3/M256	Compare packed signed doubleword integers in ymm2 and ymm3/m256 for greater than.
@@ -2658,13 +2683,13 @@ GENERAL	PEXTRQ	Extract Byte/Dword/Qword	PEXTRB_PEXTRD_PEXTRQ
 PEXTRQ	R/M64,XMM,IMM8	SSE4_1	PEXTRQ R/M64,XMM2,IMM8	Extract a qword integer value from xmm2 at the source qword offset specified by imm8 into r/m64.
 GENERAL	VPEXTRB	Extract Byte/Dword/Qword	PEXTRB_PEXTRD_PEXTRQ
 VPEXTRB	REG/M8,XMM,IMM8	AVX	VPEXTRB REG/M8,XMM2,IMM8	Extract a byte integer value from xmm2 at the source byte offset specified by imm8 into reg or m8. The upper bits of r64/r32 is filled with zeros.
-VPEXTRB	REG/M8,XMM,IMM8	AVX512_BW	VPEXTRB REG/M8,XMM2,IMM8	source byte offset specified by imm8 into reg or m8. The upper bits of r64/r32 is filled with zeros.
+VPEXTRB	REG/M8,XMM,IMM8	AVX512_BW	VPEXTRB REG/M8,XMM2,IMM8	Extract a byte integer value from xmm2 at the source byte offset specified by imm8 into reg or m8. The upper bits of r64/r32 is filled with zeros.
 GENERAL	VPEXTRD	Extract Byte/Dword/Qword	PEXTRB_PEXTRD_PEXTRQ
 VPEXTRD	R32/M32,XMM,IMM8	AVX	VPEXTRD R32/M32,XMM2,IMM8	Extract a dword integer value from xmm2 at the source dword offset specified by imm8 into r32/m32.
-VPEXTRD	R32/M32,XMM,IMM8	AVX512_DQ	VPEXTRD R32/M32,XMM2,IMM8	source dword offset specified by imm8 into r32/m32.
+VPEXTRD	R32/M32,XMM,IMM8	AVX512_DQ	VPEXTRD R32/M32,XMM2,IMM8	Extract a dword integer value from xmm2 at the source dword offset specified by imm8 into r32/m32.
 GENERAL	VPEXTRQ	Extract Byte/Dword/Qword	PEXTRB_PEXTRD_PEXTRQ
 VPEXTRQ	R64/M64,XMM,IMM8	AVX	VPEXTRQ R64/M64,XMM2,IMM8	Extract a qword integer value from xmm2 at the source dword offset specified by imm8 into r64/m64.
-VPEXTRQ	R64/M64,XMM,IMM8	AVX512_DQ	VPEXTRQ R64/M64,XMM2,IMM8	source dword offset specified by imm8 into r64/m64.
+VPEXTRQ	R64/M64,XMM,IMM8	AVX512_DQ	VPEXTRQ R64/M64,XMM2,IMM8	Extract a qword integer value from xmm2 at the source dword offset specified by imm8 into r64/m64.
 ;--------------------------------------------------------
 GENERAL	PEXTRW	Extract Word	PEXTRW
 PEXTRW	REG,MM,IMM8	SSE	PEXTRW REG,MM,IMM8	Extract the word specified by imm8 from mm and move it to reg, bits 15-0. The upper bits of r32 or r64 is zeroed.
@@ -2673,8 +2698,8 @@ PEXTRW	REG/M16,XMM,IMM8	SSE4_1	PEXTRW REG/M16,XMM,IMM8	Extract the word specifie
 GENERAL	VPEXTRW	Extract Word	PEXTRW
 VPEXTRW	REG,XMM,IMM8	AVX	VPEXTRW REG,XMM1,IMM8	Extract the word specified by imm8 from xmm1 and move it to reg, bits 15:0. Zero- extend the result. The upper bits of r64/r32 is filled with zeros.
 VPEXTRW	REG/M16,XMM,IMM8	AVX	VPEXTRW REG/M16,XMM2,IMM8	Extract a word integer value from xmm2 at the source word offset specified by imm8 into reg or m16. The upper bits of r64/r32 is filled with zeros.
-VPEXTRW	REG,XMM,IMM8		VPEXTRW REG,XMM1,IMM8	Extract the word specified by imm8 from xmm1 and move it to reg, bits 15:0. Zero-extend the result. The upper bits of r64/r32 is filled with zeros.
-VPEXTRW	REG/M16,XMM,IMM8		VPEXTRW REG/M16,XMM2,IMM8	Extract a word integer value from xmm2 at the source word offset specified by imm8 into reg or m16. The upper bits of r64/r32 is filled with zeros.
+VPEXTRW	REG,XMM,IMM8	AVX512_BW	VPEXTRW REG,XMM1,IMM8	Extract the word specified by imm8 from xmm1 and move it to reg, bits 15:0. Zero-extend the result. The upper bits of r64/r32 is filled with zeros.
+VPEXTRW	REG/M16,XMM,IMM8	AVX512_BW	VPEXTRW REG/M16,XMM2,IMM8	Extract a word integer value from xmm2 at the source word offset specified by imm8 into reg or m16. The upper bits of r64/r32 is filled with zeros.
 ;--------------------------------------------------------
 GENERAL	PHADDSW	Packed Horizontal Add and Saturate	PHADDSW
 PHADDSW	MM,MM/M64	SSSE3	PHADDSW MM1,MM2/M64	Add 16-bit signed integers horizontally, pack saturated integers to mm1.
@@ -2729,20 +2754,20 @@ GENERAL	PINSRQ	Insert Byte/Dword/Qword	PINSRB_PINSRD_PINSRQ
 PINSRQ	XMM,R/M64,IMM8	SSE4_1	PINSRQ XMM1,R/M64,IMM8	Insert a qword integer value from r/m64 into the xmm1 at the destination element specified by imm8.
 GENERAL	VPINSRB	Insert Byte/Dword/Qword	PINSRB_PINSRD_PINSRQ
 VPINSRB	XMM,XMM,R32/M8,IMM8	AVX	VPINSRB XMM1,XMM2,R32/M8,IMM8	Merge a byte integer value from r32/m8 and rest from xmm2 into xmm1 at the byte offset in imm8.
-VPINSRB	XMM,XMM,R32/M8,IMM8	AVX512_BW	VPINSRB XMM1,XMM2,R32/M8,IMM8	rest from xmm2 into xmm1 at the byte offset in imm8.
+VPINSRB	XMM,XMM,R32/M8,IMM8	AVX512_BW	VPINSRB XMM1,XMM2,R32/M8,IMM8	Merge a byte integer value from r32/m8 and rest from xmm2 into xmm1 at the byte offset in imm8.
 GENERAL	VPINSRD	Insert Byte/Dword/Qword	PINSRB_PINSRD_PINSRQ
 VPINSRD	XMM,XMM,R/M32,IMM8	AVX	VPINSRD XMM1,XMM2,R/M32,IMM8	Insert a dword integer value from r32/m32 and rest from xmm2 into xmm1 at the dword offset in imm8.
-VPINSRD	XMM,XMM,R32/M32,IMM8	AVX512_DQ	VPINSRD XMM1,XMM2,R32/M32,IMM8	and rest from xmm2 into xmm1 at the dword offset in imm8.
+VPINSRD	XMM,XMM,R32/M32,IMM8	AVX512_DQ	VPINSRD XMM1,XMM2,R32/M32,IMM8	Insert a dword integer value from r32/m32 and rest from xmm2 into xmm1 at the dword offset in imm8.
 GENERAL	VPINSRQ	Insert Byte/Dword/Qword	PINSRB_PINSRD_PINSRQ
 VPINSRQ	XMM,XMM,R/M64,IMM8	AVX	VPINSRQ XMM1,XMM2,R/M64,IMM8	Insert a qword integer value from r64/m64 and rest from xmm2 into xmm1 at the qword offset in imm8.
-VPINSRQ	XMM,XMM,R64/M64,IMM8	AVX512_DQ	VPINSRQ XMM1,XMM2,R64/M64,IMM8	and rest from xmm2 into xmm1 at the qword offset in imm8.
+VPINSRQ	XMM,XMM,R64/M64,IMM8	AVX512_DQ	VPINSRQ XMM1,XMM2,R64/M64,IMM8	Insert a qword integer value from r64/m64 and rest from xmm2 into xmm1 at the qword offset in imm8.
 ;--------------------------------------------------------
 GENERAL	PINSRW	Insert Word	PINSRW
 PINSRW	MM,R32/M16,IMM8	SSE	PINSRW MM,R32/M16,IMM8	Insert the low word from r32 or from m16 into mm at the word position specified by imm8.
 PINSRW	XMM,R32/M16,IMM8	SSE2	PINSRW XMM,R32/M16,IMM8	Move the low word of r32 or from m16 into xmm at the word position specified by imm8.
 GENERAL	VPINSRW	Insert Word	PINSRW
 VPINSRW	XMM,XMM,R32/M16,IMM8	AVX	VPINSRW XMM1,XMM2,R32/M16,IMM8	Insert a word integer value from r32/m16 and rest from xmm2 into xmm1 at the word offset in imm8.
-VPINSRW	XMM,XMM,R32/M16,IMM8	AVX512_BW	VPINSRW XMM1,XMM2,R32/M16,IMM8	rest from xmm2 into xmm1 at the word offset in imm8.
+VPINSRW	XMM,XMM,R32/M16,IMM8	AVX512_BW	VPINSRW XMM1,XMM2,R32/M16,IMM8	Insert a word integer value from r32/m16 and rest from xmm2 into xmm1 at the word offset in imm8.
 ;--------------------------------------------------------
 GENERAL	PMADDUBSW	Multiply and Add Packed Signed and Unsigned Bytes	PMADDUBSW
 PMADDUBSW	MM,MM/M64	SSSE3	PMADDUBSW MM1,MM2/M64	Multiply signed and unsigned bytes, add horizontal pair of signed words, pack saturated signed-words to mm1.
@@ -2752,7 +2777,7 @@ VPMADDUBSW	XMM,XMM,XMM/M128	AVX	VPMADDUBSW XMM1,XMM2,XMM3/M128	Multiply signed a
 VPMADDUBSW	YMM,YMM,YMM/M256	AVX2	VPMADDUBSW YMM1,YMM2,YMM3/M256	Multiply signed and unsigned bytes, add horizontal pair of signed words, pack saturated signed-words to ymm1.
 VPMADDUBSW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPMADDUBSW XMM1{K1}{Z},XMM2,XMM3/M128	Multiply signed and unsigned bytes, add horizontal pair of signed words, pack saturated signed-words to xmm1 under writemask k1.
 VPMADDUBSW	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPMADDUBSW YMM1{K1}{Z},YMM2,YMM3/M256	Multiply signed and unsigned bytes, add horizontal pair of signed words, pack saturated signed-words to ymm1 under writemask k1.
-VPMADDUBSW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMADDUBSW ZMM1{K1}{Z},ZMM2,ZMM3/M512	horizontal pair of signed words, pack saturated signed-words to zmm1 under writemask k1.
+VPMADDUBSW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMADDUBSW ZMM1{K1}{Z},ZMM2,ZMM3/M512	Multiply signed and unsigned bytes, add horizontal pair of signed words, pack saturated signed-words to zmm1 under writemask k1.
 ;--------------------------------------------------------
 GENERAL	PMADDWD	Multiply and Add Packed Integers	PMADDWD
 PMADDWD	MM,MM/M64	MMX	PMADDWD MM,MM/M64	Multiply the packed words in mm by the packed words in mm/m64, add adjacent doubleword results, and store in mm.
@@ -2762,7 +2787,7 @@ VPMADDWD	XMM,XMM,XMM/M128	AVX	VPMADDWD XMM1,XMM2,XMM3/M128	Multiply the packed w
 VPMADDWD	YMM,YMM,YMM/M256	AVX2	VPMADDWD YMM1,YMM2,YMM3/M256	Multiply the packed word integers in ymm2 by the packed word integers in ymm3/m256, add adjacent doubleword results, and store in ymm1.
 VPMADDWD	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPMADDWD XMM1{K1}{Z},XMM2,XMM3/M128	Multiply the packed word integers in xmm2 by the packed word integers in xmm3/m128, add adjacent doubleword results, and store in xmm1 under writemask k1.
 VPMADDWD	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPMADDWD YMM1{K1}{Z},YMM2,YMM3/M256	Multiply the packed word integers in ymm2 by the packed word integers in ymm3/m256, add adjacent doubleword results, and store in ymm1 under writemask k1.
-VPMADDWD	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMADDWD ZMM1{K1}{Z},ZMM2,ZMM3/M512	the packed word integers in zmm3/m512, add adjacent doubleword results, and store in zmm1 under writemask k1.
+VPMADDWD	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMADDWD ZMM1{K1}{Z},ZMM2,ZMM3/M512	Multiply the packed word integers in zmm2 by the packed word integers in zmm3/m512, add adjacent doubleword results, and store in zmm1 under writemask k1.
 ;--------------------------------------------------------
 GENERAL	PMAXSW	Maximum of Packed Signed Integers	PMAXSB_PMAXSW_PMAXSD_PMAXSQ
 PMAXSW	MM,MM/M64	SSE	PMAXSW MM1,MM2/M64	Compare signed word integers in mm2/m64 and mm1 and return maximum values.
@@ -2776,17 +2801,23 @@ VPMAXSB	XMM,XMM,XMM/M128	AVX	VPMAXSB XMM1,XMM2,XMM3/M128	Compare packed signed b
 VPMAXSB	YMM,YMM,YMM/M256	AVX2	VPMAXSB YMM1,YMM2,YMM3/M256	Compare packed signed byte integers in ymm2 and ymm3/m256 and store packed maximum values in ymm1.
 VPMAXSB	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPMAXSB XMM1{K1}{Z},XMM2,XMM3/M128	Compare packed signed byte integers in xmm2 and xmm3/m128 and store packed maximum values in xmm1 under writemask k1.
 VPMAXSB	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPMAXSB YMM1{K1}{Z},YMM2,YMM3/M256	Compare packed signed byte integers in ymm2 and ymm3/m256 and store packed maximum values in ymm1 under writemask k1.
-VPMAXSB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMAXSB ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm3/m512 and store packed maximum values in zmm1 under writemask k1.
+VPMAXSB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMAXSB ZMM1{K1}{Z},ZMM2,ZMM3/M512	Compare packed signed byte integers in zmm2 and zmm3/m512 and store packed maximum values in zmm1 under writemask k1.
 GENERAL	VPMAXSW	Maximum of Packed Signed Integers	PMAXSB_PMAXSW_PMAXSD_PMAXSQ
 VPMAXSW	XMM,XMM,XMM/M128	AVX	VPMAXSW XMM1,XMM2,XMM3/M128	Compare packed signed word integers in xmm3/m128 and xmm2 and store packed maximum values in xmm1.
 VPMAXSW	YMM,YMM,YMM/M256	AVX2	VPMAXSW YMM1,YMM2,YMM3/M256	Compare packed signed word integers in ymm3/m256 and ymm2 and store packed maximum values in ymm1.
 VPMAXSW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPMAXSW XMM1{K1}{Z},XMM2,XMM3/M128	Compare packed signed word integers in xmm2 and xmm3/m128 and store packed maximum values in xmm1 under writemask k1.
 VPMAXSW	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPMAXSW YMM1{K1}{Z},YMM2,YMM3/M256	Compare packed signed word integers in ymm2 and ymm3/m256 and store packed maximum values in ymm1 under writemask k1.
-VPMAXSW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMAXSW ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm3/m512 and store packed maximum values in zmm1 under writemask k1.
+VPMAXSW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMAXSW ZMM1{K1}{Z},ZMM2,ZMM3/M512	Compare packed signed word integers in zmm2 and zmm3/m512 and store packed maximum values in zmm1 under writemask k1.
 GENERAL	VPMAXSD	Maximum of Packed Signed Integers	PMAXSB_PMAXSW_PMAXSD_PMAXSQ
 VPMAXSD	XMM,XMM,XMM/M128	AVX	VPMAXSD XMM1,XMM2,XMM3/M128	Compare packed signed dword integers in xmm2 and xmm3/m128 and store packed maximum values in xmm1.
 VPMAXSD	YMM,YMM,YMM/M256	AVX2	VPMAXSD YMM1,YMM2,YMM3/M256	Compare packed signed dword integers in ymm2 and ymm3/m256 and store packed maximum values in ymm1.
 VPMAXSD	XMM{K}{Z},XMM,XMM/M128/M32BCST	AVX512_VL,AVX512_F	VPMAXSD XMM1{K1}{Z},XMM2,XMM3/M128/M32BCST	Compare packed signed dword integers in xmm2 and xmm3/m128/m32bcst and store packed maximum values in xmm1 using writemask k1.
+VPMAXSD	YMM{K}{Z},YMM,YMM/M256/M32BCST	AVX512_VL,AVX512_F	VPMAXSD YMM1{K1}{Z},YMM2,YMM3/M256/M32BCST	Compare packed signed dword integers in ymm2 and ymm3/m256/m32bcst and store packed maximum values in ymm1 using writemask k1.
+VPMAXSD	ZMM{K}{Z},ZMM,ZMM/M512/M32BCST	AVX512_F	VPMAXSD ZMM1{K1}{Z},ZMM2,ZMM3/M512/M32BCST	Compare packed signed dword integers in zmm2 and zmm3/m512/m32bcst and store packed maximum values in zmm1 using writemask k1.
+GENERAL	VPMAXSQ	Maximum of Packed Signed Integers	PMAXSB_PMAXSW_PMAXSD_PMAXSQ
+VPMAXSQ	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512_VL,AVX512_F	VPMAXSQ XMM1{K1}{Z},XMM2,XMM3/M128/M64BCST	Compare packed signed qword integers in xmm2 and xmm3/m128/m64bcst and store packed maximum values in xmm1 using writemask k1.
+VPMAXSQ	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512_VL,AVX512_F	VPMAXSQ YMM1{K1}{Z},YMM2,YMM3/M256/M64BCST	Compare packed signed qword integers in ymm2 and ymm3/m256/m64bcst and store packed maximum values in ymm1 using writemask k1.
+VPMAXSQ	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST	AVX512_F	VPMAXSQ ZMM1{K1}{Z},ZMM2,ZMM3/M512/M64BCST	Compare packed signed qword integers in zmm2 and zmm3/m512/m64bcst and store packed maximum values in zmm1 using writemask k1.
 ;--------------------------------------------------------
 GENERAL	PMAXUB	Maximum of Packed Unsigned Integers	PMAXUB_PMAXUW
 PMAXUB	MM,MM/M64	SSE	PMAXUB MM1,MM2/M64	Compare unsigned byte integers in mm2/m64 and mm1 and returns maximum values.
@@ -2798,13 +2829,13 @@ VPMAXUB	XMM,XMM,XMM/M128	AVX	VPMAXUB XMM1,XMM2,XMM3/M128	Compare packed unsigned
 VPMAXUB	YMM,YMM,YMM/M256	AVX2	VPMAXUB YMM1,YMM2,YMM3/M256	Compare packed unsigned byte integers in ymm2 and ymm3/m256 and store packed maximum values in ymm1.
 VPMAXUB	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPMAXUB XMM1{K1}{Z},XMM2,XMM3/M128	Compare packed unsigned byte integers in xmm2 and xmm3/m128 and store packed maximum values in xmm1 under writemask k1.
 VPMAXUB	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPMAXUB YMM1{K1}{Z},YMM2,YMM3/M256	Compare packed unsigned byte integers in ymm2 and ymm3/m256 and store packed maximum values in ymm1 under writemask k1.
-VPMAXUB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMAXUB ZMM1{K1}{Z},ZMM2,ZMM3/M512	and zmm3/m512 and store packed maximum values in zmm1 under writemask k1.
+VPMAXUB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMAXUB ZMM1{K1}{Z},ZMM2,ZMM3/M512	Compare packed unsigned byte integers in zmm2 and zmm3/m512 and store packed maximum values in zmm1 under writemask k1.
 GENERAL	VPMAXUW	Maximum of Packed Unsigned Integers	PMAXUB_PMAXUW
 VPMAXUW	XMM,XMM,XMM/M128	AVX	VPMAXUW XMM1,XMM2,XMM3/M128	Compare packed unsigned word integers in xmm3/m128 and xmm2 and store maximum packed values in xmm1.
 VPMAXUW	YMM,YMM,YMM/M256	AVX2	VPMAXUW YMM1,YMM2,YMM3/M256	Compare packed unsigned word integers in ymm3/m256 and ymm2 and store maximum packed values in ymm1.
 VPMAXUW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPMAXUW XMM1{K1}{Z},XMM2,XMM3/M128	Compare packed unsigned word integers in xmm2 and xmm3/m128 and store packed maximum values in xmm1 under writemask k1.
 VPMAXUW	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPMAXUW YMM1{K1}{Z},YMM2,YMM3/M256	Compare packed unsigned word integers in ymm2 and ymm3/m256 and store packed maximum values in ymm1 under writemask k1.
-VPMAXUW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMAXUW ZMM1{K1}{Z},ZMM2,ZMM3/M512	and zmm3/m512 and store packed maximum values in zmm1 under writemask k1.
+VPMAXUW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMAXUW ZMM1{K1}{Z},ZMM2,ZMM3/M512	Compare packed unsigned word integers in zmm2 and zmm3/m512 and store packed maximum values in zmm1 under writemask k1.
 ;--------------------------------------------------------
 GENERAL	PMAXUD	Maximum of Packed Unsigned Integers	PMAXUD_PMAXUQ
 PMAXUD	XMM,XMM/M128	SSE4_1	PMAXUD XMM1,XMM2/M128	Compare packed unsigned dword integers in xmm1 and xmm2/m128 and store packed maximum values in xmm1.
@@ -2829,13 +2860,13 @@ VPMINSB	XMM,XMM,XMM/M128	AVX	VPMINSB XMM1,XMM2,XMM3/M128	Compare packed signed b
 VPMINSB	YMM,YMM,YMM/M256	AVX2	VPMINSB YMM1,YMM2,YMM3/M256	Compare packed signed byte integers in ymm2 and ymm3/m256 and store packed minimum values in ymm1.
 VPMINSB	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPMINSB XMM1{K1}{Z},XMM2,XMM3/M128	Compare packed signed byte integers in xmm2 and xmm3/m128 and store packed minimum values in xmm1 under writemask k1.
 VPMINSB	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPMINSB YMM1{K1}{Z},YMM2,YMM3/M256	Compare packed signed byte integers in ymm2 and ymm3/m256 and store packed minimum values in ymm1 under writemask k1.
-VPMINSB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMINSB ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm3/m512 and store packed minimum values in zmm1 under writemask k1.
+VPMINSB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMINSB ZMM1{K1}{Z},ZMM2,ZMM3/M512	Compare packed signed byte integers in zmm2 and zmm3/m512 and store packed minimum values in zmm1 under writemask k1.
 GENERAL	VPMINSW	Minimum of Packed Signed Integers	PMINSB_PMINSW
 VPMINSW	XMM,XMM,XMM/M128	AVX	VPMINSW XMM1,XMM2,XMM3/M128	Compare packed signed word integers in xmm3/m128 and xmm2 and return packed minimum values in xmm1.
 VPMINSW	YMM,YMM,YMM/M256	AVX2	VPMINSW YMM1,YMM2,YMM3/M256	Compare packed signed word integers in ymm3/m256 and ymm2 and return packed minimum values in ymm1.
 VPMINSW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPMINSW XMM1{K1}{Z},XMM2,XMM3/M128	Compare packed signed word integers in xmm2 and xmm3/m128 and store packed minimum values in xmm1 under writemask k1.
 VPMINSW	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPMINSW YMM1{K1}{Z},YMM2,YMM3/M256	Compare packed signed word integers in ymm2 and ymm3/m256 and store packed minimum values in ymm1 under writemask k1.
-VPMINSW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMINSW ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm3/m512 and store packed minimum values in zmm1 under writemask k1.
+VPMINSW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMINSW ZMM1{K1}{Z},ZMM2,ZMM3/M512	Compare packed signed word integers in zmm2 and zmm3/m512 and store packed minimum values in zmm1 under writemask k1.
 ;--------------------------------------------------------
 GENERAL	PMINSD	Minimum of Packed Signed Integers	PMINSD_PMINSQ
 PMINSD	XMM,XMM/M128	SSE4_1	PMINSD XMM1,XMM2/M128	Compare packed signed dword integers in xmm1 and xmm2/m128 and store packed minimum values in xmm1.
@@ -2860,13 +2891,13 @@ VPMINUB	XMM,XMM,XMM/M128	AVX	VPMINUB XMM1,XMM2,XMM3/M128	Compare packed unsigned
 VPMINUB	YMM,YMM,YMM/M256	AVX2	VPMINUB YMM1,YMM2,YMM3/M256	Compare packed unsigned byte integers in ymm2 and ymm3/m256 and store packed minimum values in ymm1.
 VPMINUB	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPMINUB XMM1{K1}{Z},XMM2,XMM3/M128	Compare packed unsigned byte integers in xmm2 and xmm3/m128 and store packed minimum values in xmm1 under writemask k1.
 VPMINUB	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPMINUB YMM1{K1}{Z},YMM2,YMM3/M256	Compare packed unsigned byte integers in ymm2 and ymm3/m256 and store packed minimum values in ymm1 under writemask k1.
-VPMINUB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMINUB ZMM1{K1}{Z},ZMM2,ZMM3/M512	and zmm3/m512 and store packed minimum values in zmm1 under writemask k1.
+VPMINUB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMINUB ZMM1{K1}{Z},ZMM2,ZMM3/M512	Compare packed unsigned byte integers in zmm2 and zmm3/m512 and store packed minimum values in zmm1 under writemask k1.
 GENERAL	VPMINUW	Minimum of Packed Unsigned Integers	PMINUB_PMINUW
 VPMINUW	XMM,XMM,XMM/M128	AVX	VPMINUW XMM1,XMM2,XMM3/M128	Compare packed unsigned word integers in xmm3/m128 and xmm2 and return packed minimum values in xmm1.
 VPMINUW	YMM,YMM,YMM/M256	AVX2	VPMINUW YMM1,YMM2,YMM3/M256	Compare packed unsigned word integers in ymm3/m256 and ymm2 and return packed minimum values in ymm1.
 VPMINUW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPMINUW XMM1{K1}{Z},XMM2,XMM3/M128	Compare packed unsigned word integers in xmm3/m128 and xmm2 and return packed minimum values in xmm1 under writemask k1.
 VPMINUW	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPMINUW YMM1{K1}{Z},YMM2,YMM3/M256	Compare packed unsigned word integers in ymm3/m256 and ymm2 and return packed minimum values in ymm1 under writemask k1.
-VPMINUW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMINUW ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm3/m512 and zmm2 and return packed minimum values in zmm1 under writemask k1.
+VPMINUW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMINUW ZMM1{K1}{Z},ZMM2,ZMM3/M512	Compare packed unsigned word integers in zmm3/m512 and zmm2 and return packed minimum values in zmm1 under writemask k1.
 ;--------------------------------------------------------
 GENERAL	PMINUD	Minimum of Packed Unsigned Integers	PMINUD_PMINUQ
 PMINUD	XMM,XMM/M128	SSE4_1	PMINUD XMM1,XMM2/M128	Compare packed unsigned dword integers in xmm1 and xmm2/m128 and store packed minimum values in xmm1.
@@ -2905,7 +2936,7 @@ VPMOVSXBW	XMM,XMM/M64	AVX	VPMOVSXBW XMM1,XMM2/M64	Sign extend 8 packed 8-bit int
 VPMOVSXBW	YMM,XMM/M128	AVX2	VPMOVSXBW YMM1,XMM2/M128	Sign extend 16 packed 8-bit integers in xmm2/m128 to 16 packed 16-bit integers in ymm1.
 VPMOVSXBW	XMM{K}{Z},XMM/M64	AVX512_VL,AVX512_BW	VPMOVSXBW XMM1{K1}{Z},XMM2/M64	Sign extend 8 packed 8-bit integers in xmm2/m64 to 8 packed 16-bit integers in zmm1.
 VPMOVSXBW	YMM{K}{Z},XMM/M128	AVX512_VL,AVX512_BW	VPMOVSXBW YMM1{K1}{Z},XMM2/M128	Sign extend 16 packed 8-bit integers in xmm2/m128 to 16 packed 16-bit integers in ymm1.
-VPMOVSXBW	ZMM{K}{Z},YMM/M256	AVX512_BW	VPMOVSXBW ZMM1{K1}{Z},YMM2/M256	32 packed 16-bit integers in zmm1.
+VPMOVSXBW	ZMM{K}{Z},YMM/M256	AVX512_BW	VPMOVSXBW ZMM1{K1}{Z},YMM2/M256	Sign extend 32 packed 8-bit integers in ymm2/m256 to 32 packed 16-bit integers in zmm1.
 GENERAL	VPMOVSXBD	Packed Move with Sign Extend	PMOVSX
 VPMOVSXBD	XMM,XMM/M32	AVX	VPMOVSXBD XMM1,XMM2/M32	Sign extend 4 packed 8-bit integers in the low 4 bytes of xmm2/m32 to 4 packed 32-bit integers in xmm1.
 VPMOVSXBD	YMM,XMM/M64	AVX2	VPMOVSXBD YMM1,XMM2/M64	Sign extend 8 packed 8-bit integers in the low 8 bytes of xmm2/m64 to 8 packed 32-bit integers in ymm1.
@@ -2954,7 +2985,7 @@ VPMOVZXBW	XMM,XMM/M64	AVX	VPMOVZXBW XMM1,XMM2/M64	Zero extend 8 packed 8-bit int
 VPMOVZXBW	YMM,XMM/M128	AVX2	VPMOVZXBW YMM1,XMM2/M128	Zero extend 16 packed 8-bit integers in xmm2/m128 to 16 packed 16-bit integers in ymm1.
 VPMOVZXBW	XMM{K}{Z},XMM/M64	AVX512_VL,AVX512_BW	VPMOVZXBW XMM1{K1}{Z},XMM2/M64	Zero extend 8 packed 8-bit integers in the low 8 bytes of xmm2/m64 to 8 packed 16-bit integers in xmm1.
 VPMOVZXBW	YMM{K}{Z},XMM/M128	AVX512_VL,AVX512_BW	VPMOVZXBW YMM1{K1}{Z},XMM2/M128	Zero extend 16 packed 8-bit integers in xmm2/m128 to 16 packed 16-bit integers in ymm1.
-VPMOVZXBW	ZMM{K}{Z},YMM/M256	AVX512_BW	VPMOVZXBW ZMM1{K1}{Z},YMM2/M256	ymm2/m256 to 32 packed 16-bit integers in zmm1.
+VPMOVZXBW	ZMM{K}{Z},YMM/M256	AVX512_BW	VPMOVZXBW ZMM1{K1}{Z},YMM2/M256	Zero extend 32 packed 8-bit integers in ymm2/m256 to 32 packed 16-bit integers in zmm1.
 GENERAL	VPMOVZXBD	Packed Move with Zero Extend	PMOVZX
 VPMOVZXBD	XMM,XMM/M32	AVX	VPMOVZXBD XMM1,XMM2/M32	Zero extend 4 packed 8-bit integers in the low 4 bytes of xmm2/m32 to 4 packed 32-bit integers in xmm1.
 VPMOVZXBD	YMM,XMM/M64	AVX2	VPMOVZXBD YMM1,XMM2/M64	Zero extend 8 packed 8-bit integers in the low 8 bytes of xmm2/m64 to 8 packed 32-bit integers in ymm1.
@@ -3003,7 +3034,7 @@ VPMULHRSW	XMM,XMM,XMM/M128	AVX	VPMULHRSW XMM1,XMM2,XMM3/M128	Multiply 16-bit sig
 VPMULHRSW	YMM,YMM,YMM/M256	AVX2	VPMULHRSW YMM1,YMM2,YMM3/M256	Multiply 16-bit signed words, scale and round signed doublewords, pack high 16 bits to ymm1.
 VPMULHRSW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPMULHRSW XMM1{K1}{Z},XMM2,XMM3/M128	Multiply 16-bit signed words, scale and round signed doublewords, pack high 16 bits to xmm1 under writemask k1.
 VPMULHRSW	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPMULHRSW YMM1{K1}{Z},YMM2,YMM3/M256	Multiply 16-bit signed words, scale and round signed doublewords, pack high 16 bits to ymm1 under writemask k1.
-VPMULHRSW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMULHRSW ZMM1{K1}{Z},ZMM2,ZMM3/M512	signed doublewords, pack high 16 bits to zmm1 under writemask k1.
+VPMULHRSW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMULHRSW ZMM1{K1}{Z},ZMM2,ZMM3/M512	Multiply 16-bit signed words, scale and round signed doublewords, pack high 16 bits to zmm1 under writemask k1.
 ;--------------------------------------------------------
 GENERAL	PMULHUW	Multiply Packed Unsigned Integers and Store High Result	PMULHUW
 PMULHUW	MM,MM/M64	SSE	PMULHUW MM1,MM2/M64	Multiply the packed unsigned word integers in mm1 register and mm2/m64, and store the high 16 bits of the results in mm1.
@@ -3013,7 +3044,7 @@ VPMULHUW	XMM,XMM,XMM/M128	AVX	VPMULHUW XMM1,XMM2,XMM3/M128	Multiply the packed u
 VPMULHUW	YMM,YMM,YMM/M256	AVX2	VPMULHUW YMM1,YMM2,YMM3/M256	Multiply the packed unsigned word integers in ymm2 and ymm3/m256, and store the high 16 bits of the results in ymm1.
 VPMULHUW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPMULHUW XMM1{K1}{Z},XMM2,XMM3/M128	Multiply the packed unsigned word integers in xmm2 and xmm3/m128, and store the high 16 bits of the results in xmm1 under writemask k1.
 VPMULHUW	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPMULHUW YMM1{K1}{Z},YMM2,YMM3/M256	Multiply the packed unsigned word integers in ymm2 and ymm3/m256, and store the high 16 bits of the results in ymm1 under writemask k1.
-VPMULHUW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMULHUW ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm2 and zmm3/m512, and store the high 16 bits of the results in zmm1 under writemask k1.
+VPMULHUW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMULHUW ZMM1{K1}{Z},ZMM2,ZMM3/M512	Multiply the packed unsigned word integers in zmm2 and zmm3/m512, and store the high 16 bits of the results in zmm1 under writemask k1.
 ;--------------------------------------------------------
 GENERAL	PMULHW	Multiply Packed Signed Integers and Store High Result	PMULHW
 PMULHW	MM,MM/M64	MMX	PMULHW MM,MM/M64	Multiply the packed signed word integers in mm1 register and mm2/m64, and store the high 16 bits of the results in mm1.
@@ -3023,7 +3054,7 @@ VPMULHW	XMM,XMM,XMM/M128	AVX	VPMULHW XMM1,XMM2,XMM3/M128	Multiply the packed sig
 VPMULHW	YMM,YMM,YMM/M256	AVX2	VPMULHW YMM1,YMM2,YMM3/M256	Multiply the packed signed word integers in ymm2 and ymm3/m256, and store the high 16 bits of the results in ymm1.
 VPMULHW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPMULHW XMM1{K1}{Z},XMM2,XMM3/M128	Multiply the packed signed word integers in xmm2 and xmm3/m128, and store the high 16 bits of the results in xmm1 under writemask k1.
 VPMULHW	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPMULHW YMM1{K1}{Z},YMM2,YMM3/M256	Multiply the packed signed word integers in ymm2 and ymm3/m256, and store the high 16 bits of the results in ymm1 under writemask k1.
-VPMULHW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMULHW ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm2 and zmm3/m512, and store the high 16 bits of the results in zmm1 under writemask k1.
+VPMULHW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMULHW ZMM1{K1}{Z},ZMM2,ZMM3/M512	Multiply the packed signed word integers in zmm2 and zmm3/m512, and store the high 16 bits of the results in zmm1 under writemask k1.
 ;--------------------------------------------------------
 GENERAL	PMULLD	Multiply Packed Integers and Store Low Result	PMULLD_PMULLQ
 PMULLD	XMM,XMM/M128	SSE4_1	PMULLD XMM1,XMM2/M128	Multiply the packed dword signed integers in xmm1 and xmm2/m128 and store the low 32 bits of each product in xmm1.
@@ -3036,7 +3067,7 @@ VPMULLD	ZMM{K}{Z},ZMM,ZMM/M512/M32BCST	AVX512_F	VPMULLD ZMM1{K1}{Z},ZMM2,ZMM3/M5
 GENERAL	VPMULLQ	Multiply Packed Integers and Store Low Result	PMULLD_PMULLQ
 VPMULLQ	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512_VL,AVX512_DQ	VPMULLQ XMM1{K1}{Z},XMM2,XMM3/M128/M64BCST	Multiply the packed qword signed integers in xmm2 and xmm3/m128/m64bcst and store the low 64 bits of each product in xmm1 under writemask k1.
 VPMULLQ	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512_VL,AVX512_DQ	VPMULLQ YMM1{K1}{Z},YMM2,YMM3/M256/M64BCST	Multiply the packed qword signed integers in ymm2 and ymm3/m256/m64bcst and store the low 64 bits of each product in ymm1 under writemask k1.
-VPMULLQ	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST	AVX512_DQ	VPMULLQ ZMM1{K1}{Z},ZMM2,ZMM3/M512/M64BCST	zmm3/m512/m64bcst and store the low 64 bits of each product in zmm1 under writemask k1.
+VPMULLQ	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST	AVX512_DQ	VPMULLQ ZMM1{K1}{Z},ZMM2,ZMM3/M512/M64BCST	Multiply the packed qword signed integers in zmm2 and zmm3/m512/m64bcst and store the low 64 bits of each product in zmm1 under writemask k1.
 ;--------------------------------------------------------
 GENERAL	PMULLW	Multiply Packed Signed Integers and Store Low Result	PMULLW
 PMULLW	MM,MM/M64	MMX	PMULLW MM,MM/M64	Multiply the packed signed word integers in mm1 register and mm2/m64, and store the low 16 bits of the results in mm1.
@@ -3046,7 +3077,7 @@ VPMULLW	XMM,XMM,XMM/M128	AVX	VPMULLW XMM1,XMM2,XMM3/M128	Multiply the packed dwo
 VPMULLW	YMM,YMM,YMM/M256	AVX2	VPMULLW YMM1,YMM2,YMM3/M256	Multiply the packed signed word integers in ymm2 and ymm3/m256, and store the low 16 bits of the results in ymm1.
 VPMULLW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPMULLW XMM1{K1}{Z},XMM2,XMM3/M128	Multiply the packed signed word integers in xmm2 and xmm3/m128, and store the low 16 bits of the results in xmm1 under writemask k1.
 VPMULLW	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPMULLW YMM1{K1}{Z},YMM2,YMM3/M256	Multiply the packed signed word integers in ymm2 and ymm3/m256, and store the low 16 bits of the results in ymm1 under writemask k1.
-VPMULLW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMULLW ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm2 and zmm3/m512, and store the low 16 bits of the results in zmm1 under writemask k1.
+VPMULLW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPMULLW ZMM1{K1}{Z},ZMM2,ZMM3/M512	Multiply the packed signed word integers in zmm2 and zmm3/m512, and store the low 16 bits of the results in zmm1 under writemask k1.
 ;--------------------------------------------------------
 GENERAL	PMULUDQ	Multiply Packed Unsigned Doubleword Integers	PMULUDQ
 PMULUDQ	MM,MM/M64	SSE2	PMULUDQ MM1,MM2/M64	Multiply unsigned doubleword integer in mm1 by unsigned doubleword integer in mm2/m64, and store the quadword result in mm1.
@@ -3120,7 +3151,7 @@ GENERAL	PREFETCHW	Prefetch Data into Caches in Anticipation of a Write	PREFETCHW
 PREFETCHW	M8	PRFCHW	PREFETCHW M8	Move data from m8 closer to the processor in anticipation of a write.
 ;--------------------------------------------------------
 GENERAL	PREFETCHWT1	Prefetch Vector Data Into Caches with Intent to Write and T1 Hint	PREFETCHWT1
-PREFETCHWT1	M8	PREFETCHWT1	PREFETCHWT1 M8	with intent to write.
+PREFETCHWT1	M8	PREFETCHWT1	PREFETCHWT1 M8	Move data from m8 closer to the processor using T1 hint with intent to write.
 ;--------------------------------------------------------
 GENERAL	PSADBW	Compute Sum of Absolute Differences	PSADBW
 PSADBW	MM,MM/M64	SSE	PSADBW MM1,MM2/M64	Computes the absolute differences of the packed unsigned byte integers from mm2 /m64 and mm1; differences are then summed to produce an unsigned word integer result.
@@ -3140,7 +3171,7 @@ VPSHUFB	XMM,XMM,XMM/M128	AVX	VPSHUFB XMM1,XMM2,XMM3/M128	Shuffle bytes in xmm2 a
 VPSHUFB	YMM,YMM,YMM/M256	AVX2	VPSHUFB YMM1,YMM2,YMM3/M256	Shuffle bytes in ymm2 according to contents of ymm3/m256.
 VPSHUFB	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPSHUFB XMM1{K1}{Z},XMM2,XMM3/M128	Shuffle bytes in xmm2 according to contents of xmm3/m128 under write mask k1.
 VPSHUFB	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPSHUFB YMM1{K1}{Z},YMM2,YMM3/M256	Shuffle bytes in ymm2 according to contents of ymm3/m256 under write mask k1.
-VPSHUFB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPSHUFB ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm3/m512 under write mask k1.
+VPSHUFB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPSHUFB ZMM1{K1}{Z},ZMM2,ZMM3/M512	Shuffle bytes in zmm2 according to contents of zmm3/m512 under write mask k1.
 ;--------------------------------------------------------
 GENERAL	PSHUFD	Shuffle Packed Doublewords	PSHUFD
 PSHUFD	XMM,XMM/M128,IMM8	SSE2	PSHUFD XMM1,XMM2/M128,IMM8	Shuffle the doublewords in xmm2/m128 based on the encoding in imm8 and store the result in xmm1.
@@ -3158,7 +3189,7 @@ VPSHUFHW	XMM,XMM/M128,IMM8	AVX	VPSHUFHW XMM1,XMM2/M128,IMM8	Shuffle the high wor
 VPSHUFHW	YMM,YMM/M256,IMM8	AVX2	VPSHUFHW YMM1,YMM2/M256,IMM8	Shuffle the high words in ymm2/m256 based on the encoding in imm8 and store the result in ymm1.
 VPSHUFHW	XMM{K}{Z},XMM/M128,IMM8	AVX512_VL,AVX512_BW	VPSHUFHW XMM1{K1}{Z},XMM2/M128,IMM8	Shuffle the high words in xmm2/m128 based on the encoding in imm8 and store the result in xmm1 under write mask k1.
 VPSHUFHW	YMM{K}{Z},YMM/M256,IMM8	AVX512_VL,AVX512_BW	VPSHUFHW YMM1{K1}{Z},YMM2/M256,IMM8	Shuffle the high words in ymm2/m256 based on the encoding in imm8 and store the result in ymm1 under write mask k1.
-VPSHUFHW	ZMM{K}{Z},ZMM/M512,IMM8	AVX512_BW	VPSHUFHW ZMM1{K1}{Z},ZMM2/M512,IMM8	on the encoding in imm8 and store the result in zmm1 under write mask k1.
+VPSHUFHW	ZMM{K}{Z},ZMM/M512,IMM8	AVX512_BW	VPSHUFHW ZMM1{K1}{Z},ZMM2/M512,IMM8	Shuffle the high words in zmm2/m512 based on the encoding in imm8 and store the result in zmm1 under write mask k1.
 ;--------------------------------------------------------
 GENERAL	PSHUFLW	Shuffle Packed Low Words	PSHUFLW
 PSHUFLW	XMM,XMM/M128,IMM8	SSE2	PSHUFLW XMM1,XMM2/M128,IMM8	Shuffle the low words in xmm2/m128 based on the encoding in imm8 and store the result in xmm1.
@@ -3167,7 +3198,7 @@ VPSHUFLW	XMM,XMM/M128,IMM8	AVX	VPSHUFLW XMM1,XMM2/M128,IMM8	Shuffle the low word
 VPSHUFLW	YMM,YMM/M256,IMM8	AVX2	VPSHUFLW YMM1,YMM2/M256,IMM8	Shuffle the low words in ymm2/m256 based on the encoding in imm8 and store the result in ymm1.
 VPSHUFLW	XMM{K}{Z},XMM/M128,IMM8	AVX512_VL,AVX512_BW	VPSHUFLW XMM1{K1}{Z},XMM2/M128,IMM8	Shuffle the low words in xmm2/m128 based on the encoding in imm8 and store the result in xmm1 under write mask k1.
 VPSHUFLW	YMM{K}{Z},YMM/M256,IMM8	AVX512_VL,AVX512_BW	VPSHUFLW YMM1{K1}{Z},YMM2/M256,IMM8	Shuffle the low words in ymm2/m256 based on the encoding in imm8 and store the result in ymm1 under write mask k1.
-VPSHUFLW	ZMM{K}{Z},ZMM/M512,IMM8	AVX512_BW	VPSHUFLW ZMM1{K1}{Z},ZMM2/M512,IMM8	the encoding in imm8 and store the result in zmm1 under write mask k1.
+VPSHUFLW	ZMM{K}{Z},ZMM/M512,IMM8	AVX512_BW	VPSHUFLW ZMM1{K1}{Z},ZMM2/M512,IMM8	Shuffle the low words in zmm2/m512 based on the encoding in imm8 and store the result in zmm1 under write mask k1.
 ;--------------------------------------------------------
 GENERAL	PSHUFW	Shuffle Packed Words	PSHUFW
 PSHUFW	MM,MM/M64,IMM8		PSHUFW MM1,MM2/M64,IMM8	Shuffle the words in mm2/m64 based on the encoding in imm8 and store the result in mm1.
@@ -3198,7 +3229,7 @@ VPSLLDQ	XMM,XMM,IMM8	AVX	VPSLLDQ XMM1,XMM2,IMM8	Shift xmm2 left by imm8 bytes wh
 VPSLLDQ	YMM,YMM,IMM8	AVX2	VPSLLDQ YMM1,YMM2,IMM8	Shift ymm2 left by imm8 bytes while shifting in 0s and store result in ymm1.
 VPSLLDQ	XMM,XMM/M128,IMM8	AVX512_VL,AVX512_BW	VPSLLDQ XMM1,XMM2/M128,IMM8	Shift xmm2/m128 left by imm8 bytes while shifting in 0s and store result in xmm1.
 VPSLLDQ	YMM,YMM/M256,IMM8	AVX512_VL,AVX512_BW	VPSLLDQ YMM1,YMM2/M256,IMM8	Shift ymm2/m256 left by imm8 bytes while shifting in 0s and store result in ymm1.
-VPSLLDQ	ZMM,ZMM/M512,IMM8	AVX512_BW	VPSLLDQ ZMM1,ZMM2/M512,IMM8	shifting in 0s and store result in zmm1.
+VPSLLDQ	ZMM,ZMM/M512,IMM8	AVX512_BW	VPSLLDQ ZMM1,ZMM2/M512,IMM8	Shift zmm2/m512 left by imm8 bytes while shifting in 0s and store result in zmm1.
 ;--------------------------------------------------------
 GENERAL	PSLLW	Shift Packed Data Left Logical	PSLLW_PSLLD_PSLLQ
 PSLLW	MM,MM/M64	MMX	PSLLW MM,MM/M64	Shift words in mm left mm/m64 while shifting in 0s.
@@ -3220,12 +3251,34 @@ VPSLLW	XMM,XMM,XMM/M128	AVX	VPSLLW XMM1,XMM2,XMM3/M128	Shift words in xmm2 left 
 VPSLLW	XMM,XMM,IMM8	AVX	VPSLLW XMM1,XMM2,IMM8	Shift words in xmm2 left by imm8 while shifting in 0s.
 VPSLLW	YMM,YMM,XMM/M128	AVX2	VPSLLW YMM1,YMM2,XMM3/M128	Shift words in ymm2 left by amount specified in xmm3/m128 while shifting in 0s.
 VPSLLW	YMM,YMM,IMM8	AVX2	VPSLLW YMM1,YMM2,IMM8	Shift words in ymm2 left by imm8 while shifting in 0s.
+VPSLLW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPSLLW XMM1{K1}{Z},XMM2,XMM3/M128	Shift words in xmm2 left by amount specified in xmm3/m128 while shifting in 0s using writemask k1.
+VPSLLW	YMM{K}{Z},YMM,XMM/M128	AVX512_VL,AVX512_BW	VPSLLW YMM1{K1}{Z},YMM2,XMM3/M128	Shift words in ymm2 left by amount specified in xmm3/m128 while shifting in 0s using writemask k1.
+VPSLLW	ZMM{K}{Z},ZMM,XMM/M128	AVX512_BW	VPSLLW ZMM1{K1}{Z},ZMM2,XMM3/M128	Shift words in zmm2 left by amount specified in xmm3/m128 while shifting in 0s using writemask k1.
+VPSLLW	XMM{K}{Z},XMM/M128,IMM8	AVX512_VL,AVX512_BW	VPSLLW XMM1{K1}{Z},XMM2/M128,IMM8	Shift words in xmm2/m128 left by imm8 while shifting in 0s using writemask k1.
+VPSLLW	YMM{K}{Z},YMM/M256,IMM8	AVX512_VL,AVX512_BW	VPSLLW YMM1{K1}{Z},YMM2/M256,IMM8	Shift words in ymm2/m256 left by imm8 while shifting in 0s using writemask k1.
+VPSLLW	ZMM{K}{Z},ZMM/M512,IMM8	AVX512_BW	VPSLLW ZMM1{K1}{Z},ZMM2/M512,IMM8	Shift words in zmm2/m512 left by imm8 while shifting in 0 using writemask k1.
 GENERAL	VPSLLD	Shift Packed Data Left Logical	PSLLW_PSLLD_PSLLQ
 VPSLLD	XMM,XMM,XMM/M128	AVX	VPSLLD XMM1,XMM2,XMM3/M128	Shift doublewords in xmm2 left by amount specified in xmm3/m128 while shifting in 0s.
 VPSLLD	XMM,XMM,IMM8	AVX	VPSLLD XMM1,XMM2,IMM8	Shift doublewords in xmm2 left by imm8 while shifting in 0s.
+VPSLLD	YMM,YMM,XMM/M128	AVX2	VPSLLD YMM1,YMM2,XMM3/M128	Shift doublewords in ymm2 left by amount specified in xmm3/m128 while shifting in 0s.
+VPSLLD	YMM,YMM,IMM8	AVX2	VPSLLD YMM1,YMM2,IMM8	Shift doublewords in ymm2 left by imm8 while shifting in 0s.
+VPSLLD	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_F	VPSLLD XMM1{K1}{Z},XMM2,XMM3/M128	Shift doublewords in xmm2 left by amount specified in xmm3/m128 while shifting in 0s under writemask k1.
+VPSLLD	YMM{K}{Z},YMM,XMM/M128	AVX512_VL,AVX512_F	VPSLLD YMM1{K1}{Z},YMM2,XMM3/M128	Shift doublewords in ymm2 left by amount specified in xmm3/m128 while shifting in 0s under writemask k1.
+VPSLLD	ZMM{K}{Z},ZMM,XMM/M128	AVX512_F	VPSLLD ZMM1{K1}{Z},ZMM2,XMM3/M128	Shift doublewords in zmm2 left by amount specified in xmm3/m128 while shifting in 0s under writemask k1.
+VPSLLD	XMM{K}{Z},XMM/M128/M32BCST,IMM8	AVX512_VL,AVX512_F	VPSLLD XMM1{K1}{Z},XMM2/M128/M32BCST,IMM8	Shift doublewords in xmm2/m128/m32bcst left by imm8 while shifting in 0s using writemask k1.
+VPSLLD	YMM{K}{Z},YMM/M256/M32BCST,IMM8	AVX512_VL,AVX512_F	VPSLLD YMM1{K1}{Z},YMM2/M256/M32BCST,IMM8	Shift doublewords in ymm2/m256/m32bcst left by imm8 while shifting in 0s using writemask k1.
+VPSLLD	ZMM{K}{Z},ZMM/M512/M32BCST,IMM8	AVX512_F	VPSLLD ZMM1{K1}{Z},ZMM2/M512/M32BCST,IMM8	Shift doublewords in zmm2/m512/m32bcst left by imm8 while shifting in 0s using writemask k1.
 GENERAL	VPSLLQ	Shift Packed Data Left Logical	PSLLW_PSLLD_PSLLQ
 VPSLLQ	XMM,XMM,XMM/M128	AVX	VPSLLQ XMM1,XMM2,XMM3/M128	Shift quadwords in xmm2 left by amount specified in xmm3/m128 while shifting in 0s.
 VPSLLQ	XMM,XMM,IMM8	AVX	VPSLLQ XMM1,XMM2,IMM8	Shift quadwords in xmm2 left by imm8 while shifting in 0s.
+VPSLLQ	YMM,YMM,XMM/M128	AVX2	VPSLLQ YMM1,YMM2,XMM3/M128	Shift quadwords in ymm2 left by amount specified in xmm3/m128 while shifting in 0s.
+VPSLLQ	YMM,YMM,IMM8	AVX2	VPSLLQ YMM1,YMM2,IMM8	Shift quadwords in ymm2 left by imm8 while shifting in 0s.
+VPSLLQ	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_F	VPSLLQ XMM1{K1}{Z},XMM2,XMM3/M128	Shift quadwords in xmm2 left by amount specified in xmm3/m128 while shifting in 0s using writemask k1.
+VPSLLQ	YMM{K}{Z},YMM,XMM/M128	AVX512_VL,AVX512_F	VPSLLQ YMM1{K1}{Z},YMM2,XMM3/M128	Shift quadwords in ymm2 left by amount specified in xmm3/m128 while shifting in 0s using writemask k1.
+VPSLLQ	ZMM{K}{Z},ZMM,XMM/M128	AVX512_F	VPSLLQ ZMM1{K1}{Z},ZMM2,XMM3/M128	Shift quadwords in zmm2 left by amount specified in xmm3/m128 while shifting in 0s using writemask k1.
+VPSLLQ	XMM{K}{Z},XMM/M128/M64BCST,IMM8	AVX512_VL,AVX512_F	VPSLLQ XMM1{K1}{Z},XMM2/M128/M64BCST,IMM8	Shift quadwords in xmm2/m128/m64bcst left by imm8 while shifting in 0s using writemask k1.
+VPSLLQ	YMM{K}{Z},YMM/M256/M64BCST,IMM8	AVX512_VL,AVX512_F	VPSLLQ YMM1{K1}{Z},YMM2/M256/M64BCST,IMM8	Shift quadwords in ymm2/m256/m64bcst left by imm8 while shifting in 0s using writemask k1.
+VPSLLQ	ZMM{K}{Z},ZMM/M512/M64BCST,IMM8	AVX512_F	VPSLLQ ZMM1{K1}{Z},ZMM2/M512/M64BCST,IMM8	Shift quadwords in zmm2/m512/m64bcst left by imm8 while shifting in 0s using writemask k1.
 ;--------------------------------------------------------
 GENERAL	PSRAW	Shift Packed Data Right Arithmetic	PSRAW_PSRAD_PSRAQ
 PSRAW	MM,MM/M64	MMX	PSRAW MM,MM/M64	Shift words in mm right by mm/m64 while shifting in sign bits.
@@ -3244,12 +3297,28 @@ VPSRAW	YMM,YMM,XMM/M128	AVX2	VPSRAW YMM1,YMM2,XMM3/M128	Shift words in ymm2 righ
 VPSRAW	YMM,YMM,IMM8	AVX2	VPSRAW YMM1,YMM2,IMM8	Shift words in ymm2 right by imm8 while shifting in sign bits.
 VPSRAW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPSRAW XMM1{K1}{Z},XMM2,XMM3/M128	Shift words in xmm2 right by amount specified in xmm3/m128 while shifting in sign bits using writemask k1.
 VPSRAW	YMM{K}{Z},YMM,XMM/M128	AVX512_VL,AVX512_BW	VPSRAW YMM1{K1}{Z},YMM2,XMM3/M128	Shift words in ymm2 right by amount specified in xmm3/m128 while shifting in sign bits using writemask k1.
-VPSRAW	ZMM{K}{Z},ZMM,XMM/M128	AVX512_BW	VPSRAW ZMM1{K1}{Z},ZMM2,XMM3/M128	xmm3/m128 while shifting in sign bits using writemask k1.
+VPSRAW	ZMM{K}{Z},ZMM,XMM/M128	AVX512_BW	VPSRAW ZMM1{K1}{Z},ZMM2,XMM3/M128	Shift words in zmm2 right by amount specified in xmm3/m128 while shifting in sign bits using writemask k1.
+VPSRAW	XMM{K}{Z},XMM/M128,IMM8	AVX512_VL,AVX512_BW	VPSRAW XMM1{K1}{Z},XMM2/M128,IMM8	Shift words in xmm2/m128 right by imm8 while shifting in sign bits using writemask k1.
+VPSRAW	YMM{K}{Z},YMM/M256,IMM8	AVX512_VL,AVX512_BW	VPSRAW YMM1{K1}{Z},YMM2/M256,IMM8	Shift words in ymm2/m256 right by imm8 while shifting in sign bits using writemask k1.
+VPSRAW	ZMM{K}{Z},ZMM/M512,IMM8	AVX512_BW	VPSRAW ZMM1{K1}{Z},ZMM2/M512,IMM8	Shift words in zmm2/m512 right by imm8 while shifting in sign bits using writemask k1.
 GENERAL	VPSRAD	Shift Packed Data Right Arithmetic	PSRAW_PSRAD_PSRAQ
 VPSRAD	XMM,XMM,XMM/M128	AVX	VPSRAD XMM1,XMM2,XMM3/M128	Shift doublewords in xmm2 right by amount specified in xmm3/m128 while shifting in sign bits.
 VPSRAD	XMM,XMM,IMM8	AVX	VPSRAD XMM1,XMM2,IMM8	Shift doublewords in xmm2 right by imm8 while shifting in sign bits.
 VPSRAD	YMM,YMM,XMM/M128	AVX2	VPSRAD YMM1,YMM2,XMM3/M128	Shift doublewords in ymm2 right by amount specified in xmm3/m128 while shifting in sign bits.
 VPSRAD	YMM,YMM,IMM8	AVX2	VPSRAD YMM1,YMM2,IMM8	Shift doublewords in ymm2 right by imm8 while shifting in sign bits.
+VPSRAD	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_F	VPSRAD XMM1{K1}{Z},XMM2,XMM3/M128	Shift doublewords in xmm2 right by amount specified in xmm3/m128 while shifting in sign bits using writemask k1.
+VPSRAD	YMM{K}{Z},YMM,XMM/M128	AVX512_VL,AVX512_F	VPSRAD YMM1{K1}{Z},YMM2,XMM3/M128	Shift doublewords in ymm2 right by amount specified in xmm3/m128 while shifting in sign bits using writemask k1.
+VPSRAD	ZMM{K}{Z},ZMM,XMM/M128	AVX512_F	VPSRAD ZMM1{K1}{Z},ZMM2,XMM3/M128	Shift doublewords in zmm2 right by amount specified in xmm3/m128 while shifting in sign bits using writemask k1.
+VPSRAD	XMM{K}{Z},XMM/M128/M32BCST,IMM8	AVX512_VL,AVX512_F	VPSRAD XMM1{K1}{Z},XMM2/M128/M32BCST,IMM8	Shift doublewords in xmm2/m128/m32bcst right by imm8 while shifting in sign bits using writemask k1.
+VPSRAD	YMM{K}{Z},YMM/M256/M32BCST,IMM8	AVX512_VL,AVX512_F	VPSRAD YMM1{K1}{Z},YMM2/M256/M32BCST,IMM8	Shift doublewords in ymm2/m256/m32bcst right by imm8 while shifting in sign bits using writemask k1.
+VPSRAD	ZMM{K}{Z},ZMM/M512/M32BCST,IMM8	AVX512_F	VPSRAD ZMM1{K1}{Z},ZMM2/M512/M32BCST,IMM8	Shift doublewords in zmm2/m512/m32bcst right by imm8 while shifting in sign bits using writemask k1.
+GENERAL	VPSRAQ	Shift Packed Data Right Arithmetic	PSRAW_PSRAD_PSRAQ
+VPSRAQ	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_F	VPSRAQ XMM1{K1}{Z},XMM2,XMM3/M128	Shift quadwords in xmm2 right by amount specified in xmm3/m128 while shifting in sign bits using writemask k1.
+VPSRAQ	YMM{K}{Z},YMM,XMM/M128	AVX512_VL,AVX512_F	VPSRAQ YMM1{K1}{Z},YMM2,XMM3/M128	Shift quadwords in ymm2 right by amount specified in xmm3/m128 while shifting in sign bits using writemask k1.
+VPSRAQ	ZMM{K}{Z},ZMM,XMM/M128	AVX512_F	VPSRAQ ZMM1{K1}{Z},ZMM2,XMM3/M128	Shift quadwords in zmm2 right by amount specified in xmm3/m128 while shifting in sign bits using writemask k1.
+VPSRAQ	XMM{K}{Z},XMM/M128/M64BCST,IMM8	AVX512_VL,AVX512_F	VPSRAQ XMM1{K1}{Z},XMM2/M128/M64BCST,IMM8	Shift quadwords in xmm2/m128/m64bcst right by imm8 while shifting in sign bits using writemask k1.
+VPSRAQ	YMM{K}{Z},YMM/M256/M64BCST,IMM8	AVX512_VL,AVX512_F	VPSRAQ YMM1{K1}{Z},YMM2/M256/M64BCST,IMM8	Shift quadwords in ymm2/m256/m64bcst right by imm8 while shifting in sign bits using writemask k1.
+VPSRAQ	ZMM{K}{Z},ZMM/M512/M64BCST,IMM8	AVX512_F	VPSRAQ ZMM1{K1}{Z},ZMM2/M512/M64BCST,IMM8	Shift quadwords in zmm2/m512/m64bcst right by imm8 while shifting in sign bits using writemask k1.
 ;--------------------------------------------------------
 GENERAL	PSRLDQ	Shift Double Quadword Right Logical	PSRLDQ
 PSRLDQ	XMM,IMM8	SSE2	PSRLDQ XMM1,IMM8	Shift xmm1 right by imm8 while shifting in 0s.
@@ -3258,7 +3327,7 @@ VPSRLDQ	XMM,XMM,IMM8	AVX	VPSRLDQ XMM1,XMM2,IMM8	Shift xmm2 right by imm8 bytes w
 VPSRLDQ	YMM,YMM,IMM8	AVX2	VPSRLDQ YMM1,YMM2,IMM8	Shift ymm1 right by imm8 bytes while shifting in 0s.
 VPSRLDQ	XMM,XMM/M128,IMM8	AVX512_VL,AVX512_BW	VPSRLDQ XMM1,XMM2/M128,IMM8	Shift xmm2/m128 right by imm8 bytes while shifting in 0s and store result in xmm1.
 VPSRLDQ	YMM,YMM/M256,IMM8	AVX512_VL,AVX512_BW	VPSRLDQ YMM1,YMM2/M256,IMM8	Shift ymm2/m256 right by imm8 bytes while shifting in 0s and store result in ymm1.
-VPSRLDQ	ZMM,ZMM/M512,IMM8	AVX512_BW	VPSRLDQ ZMM1,ZMM2/M512,IMM8	shifting in 0s and store result in zmm1.
+VPSRLDQ	ZMM,ZMM/M512,IMM8	AVX512_BW	VPSRLDQ ZMM1,ZMM2/M512,IMM8	Shift zmm2/m512 right by imm8 bytes while shifting in 0s and store result in zmm1.
 ;--------------------------------------------------------
 GENERAL	PSRLW	Shift Packed Data Right Logical	PSRLW_PSRLD_PSRLQ
 PSRLW	MM,MM/M64	MMX	PSRLW MM,MM/M64	Shift words in mm right by amount specified in mm/m64 while shifting in 0s.
@@ -3280,12 +3349,34 @@ VPSRLW	XMM,XMM,XMM/M128	AVX	VPSRLW XMM1,XMM2,XMM3/M128	Shift words in xmm2 right
 VPSRLW	XMM,XMM,IMM8	AVX	VPSRLW XMM1,XMM2,IMM8	Shift words in xmm2 right by imm8 while shifting in 0s.
 VPSRLW	YMM,YMM,XMM/M128	AVX2	VPSRLW YMM1,YMM2,XMM3/M128	Shift words in ymm2 right by amount specified in xmm3/m128 while shifting in 0s.
 VPSRLW	YMM,YMM,IMM8	AVX2	VPSRLW YMM1,YMM2,IMM8	Shift words in ymm2 right by imm8 while shifting in 0s.
+VPSRLW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPSRLW XMM1{K1}{Z},XMM2,XMM3/M128	Shift words in xmm2 right by amount specified in xmm3/m128 while shifting in 0s using writemask k1.
+VPSRLW	YMM{K}{Z},YMM,XMM/M128	AVX512_VL,AVX512_BW	VPSRLW YMM1{K1}{Z},YMM2,XMM3/M128	Shift words in ymm2 right by amount specified in xmm3/m128 while shifting in 0s using writemask k1.
+VPSRLW	ZMM{K}{Z},ZMM,XMM/M128	AVX512_BW	VPSRLW ZMM1{K1}{Z},ZMM2,XMM3/M128	Shift words in zmm2 right by amount specified in xmm3/m128 while shifting in 0s using writemask k1.
+VPSRLW	XMM{K}{Z},XMM/M128,IMM8	AVX512_VL,AVX512_BW	VPSRLW XMM1{K1}{Z},XMM2/M128,IMM8	Shift words in xmm2/m128 right by imm8 while shifting in 0s using writemask k1.
+VPSRLW	YMM{K}{Z},YMM/M256,IMM8	AVX512_VL,AVX512_BW	VPSRLW YMM1{K1}{Z},YMM2/M256,IMM8	Shift words in ymm2/m256 right by imm8 while shifting in 0s using writemask k1.
+VPSRLW	ZMM{K}{Z},ZMM/M512,IMM8	AVX512_BW	VPSRLW ZMM1{K1}{Z},ZMM2/M512,IMM8	Shift words in zmm2/m512 right by imm8 while shifting in 0s using writemask k1.
 GENERAL	VPSRLD	Shift Packed Data Right Logical	PSRLW_PSRLD_PSRLQ
 VPSRLD	XMM,XMM,XMM/M128	AVX	VPSRLD XMM1,XMM2,XMM3/M128	Shift doublewords in xmm2 right by amount specified in xmm3/m128 while shifting in 0s.
 VPSRLD	XMM,XMM,IMM8	AVX	VPSRLD XMM1,XMM2,IMM8	Shift doublewords in xmm2 right by imm8 while shifting in 0s.
+VPSRLD	YMM,YMM,XMM/M128	AVX2	VPSRLD YMM1,YMM2,XMM3/M128	Shift doublewords in ymm2 right by amount specified in xmm3/m128 while shifting in 0s.
+VPSRLD	YMM,YMM,IMM8	AVX2	VPSRLD YMM1,YMM2,IMM8	Shift doublewords in ymm2 right by imm8 while shifting in 0s.
+VPSRLD	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_F	VPSRLD XMM1{K1}{Z},XMM2,XMM3/M128	Shift doublewords in xmm2 right by amount specified in xmm3/m128 while shifting in 0s using writemask k1.
+VPSRLD	YMM{K}{Z},YMM,XMM/M128	AVX512_VL,AVX512_F	VPSRLD YMM1{K1}{Z},YMM2,XMM3/M128	Shift doublewords in ymm2 right by amount specified in xmm3/m128 while shifting in 0s using writemask k1.
+VPSRLD	ZMM{K}{Z},ZMM,XMM/M128	AVX512_F	VPSRLD ZMM1{K1}{Z},ZMM2,XMM3/M128	Shift doublewords in zmm2 right by amount specified in xmm3/m128 while shifting in 0s using writemask k1.
+VPSRLD	XMM{K}{Z},XMM/M128/M32BCST,IMM8	AVX512_VL,AVX512_F	VPSRLD XMM1{K1}{Z},XMM2/M128/M32BCST,IMM8	Shift doublewords in xmm2/m128/m32bcst right by imm8 while shifting in 0s using writemask k1.
+VPSRLD	YMM{K}{Z},YMM/M256/M32BCST,IMM8	AVX512_VL,AVX512_F	VPSRLD YMM1{K1}{Z},YMM2/M256/M32BCST,IMM8	Shift doublewords in ymm2/m256/m32bcst right by imm8 while shifting in 0s using writemask k1.
+VPSRLD	ZMM{K}{Z},ZMM/M512/M32BCST,IMM8	AVX512_F	VPSRLD ZMM1{K1}{Z},ZMM2/M512/M32BCST,IMM8	Shift doublewords in zmm2/m512/m32bcst right by imm8 while shifting in 0s using writemask k1.
 GENERAL	VPSRLQ	Shift Packed Data Right Logical	PSRLW_PSRLD_PSRLQ
 VPSRLQ	XMM,XMM,XMM/M128	AVX	VPSRLQ XMM1,XMM2,XMM3/M128	Shift quadwords in xmm2 right by amount specified in xmm3/m128 while shifting in 0s.
 VPSRLQ	XMM,XMM,IMM8	AVX	VPSRLQ XMM1,XMM2,IMM8	Shift quadwords in xmm2 right by imm8 while shifting in 0s.
+VPSRLQ	YMM,YMM,XMM/M128	AVX2	VPSRLQ YMM1,YMM2,XMM3/M128	Shift quadwords in ymm2 right by amount specified in xmm3/m128 while shifting in 0s.
+VPSRLQ	YMM,YMM,IMM8	AVX2	VPSRLQ YMM1,YMM2,IMM8	Shift quadwords in ymm2 right by imm8 while shifting in 0s.
+VPSRLQ	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_F	VPSRLQ XMM1{K1}{Z},XMM2,XMM3/M128	Shift quadwords in xmm2 right by amount specified in xmm3/m128 while shifting in 0s using writemask k1.
+VPSRLQ	YMM{K}{Z},YMM,XMM/M128	AVX512_VL,AVX512_F	VPSRLQ YMM1{K1}{Z},YMM2,XMM3/M128	Shift quadwords in ymm2 right by amount specified in xmm3/m128 while shifting in 0s using writemask k1.
+VPSRLQ	ZMM{K}{Z},ZMM,XMM/M128	AVX512_F	VPSRLQ ZMM1{K1}{Z},ZMM2,XMM3/M128	Shift quadwords in zmm2 right by amount specified in xmm3/m128 while shifting in 0s using writemask k1.
+VPSRLQ	XMM{K}{Z},XMM/M128/M64BCST,IMM8	AVX512_VL,AVX512_F	VPSRLQ XMM1{K1}{Z},XMM2/M128/M64BCST,IMM8	Shift quadwords in xmm2/m128/m64bcst right by imm8 while shifting in 0s using writemask k1.
+VPSRLQ	YMM{K}{Z},YMM/M256/M64BCST,IMM8	AVX512_VL,AVX512_F	VPSRLQ YMM1{K1}{Z},YMM2/M256/M64BCST,IMM8	Shift quadwords in ymm2/m256/m64bcst right by imm8 while shifting in 0s using writemask k1.
+VPSRLQ	ZMM{K}{Z},ZMM/M512/M64BCST,IMM8	AVX512_F	VPSRLQ ZMM1{K1}{Z},ZMM2/M512/M64BCST,IMM8	Shift quadwords in zmm2/m512/m64bcst right by imm8 while shifting in 0s using writemask k1.
 ;--------------------------------------------------------
 GENERAL	PSUBB	Subtract Packed Integers	PSUBB_PSUBW_PSUBD
 PSUBB	MM,MM/M64	MMX	PSUBB MM,MM/M64	Subtract packed byte integers in mm/m64 from packed byte integers in mm.
@@ -3301,7 +3392,7 @@ VPSUBB	XMM,XMM,XMM/M128	AVX	VPSUBB XMM1,XMM2,XMM3/M128	Subtract packed byte inte
 VPSUBB	YMM,YMM,YMM/M256	AVX2	VPSUBB YMM1,YMM2,YMM3/M256	Subtract packed byte integers in ymm3/m256 from ymm2.
 VPSUBB	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPSUBB XMM1{K1}{Z},XMM2,XMM3/M128	Subtract packed byte integers in xmm3/m128 from xmm2 and store in xmm1 using writemask k1.
 VPSUBB	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPSUBB YMM1{K1}{Z},YMM2,YMM3/M256	Subtract packed byte integers in ymm3/m256 from ymm2 and store in ymm1 using writemask k1.
-VPSUBB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPSUBB ZMM1{K1}{Z},ZMM2,ZMM3/M512	from zmm2 and store in zmm1 using writemask k1.
+VPSUBB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPSUBB ZMM1{K1}{Z},ZMM2,ZMM3/M512	Subtract packed byte integers in zmm3/m512 from zmm2 and store in zmm1 using writemask k1.
 GENERAL	VPSUBW	Subtract Packed Integers	PSUBB_PSUBW_PSUBD
 VPSUBW	XMM,XMM,XMM/M128	AVX	VPSUBW XMM1,XMM2,XMM3/M128	Subtract packed word integers in xmm3/m128 from xmm2.
 VPSUBW	YMM,YMM,YMM/M256	AVX2	VPSUBW YMM1,YMM2,YMM3/M256	Subtract packed word integers in ymm3/m256 from ymm2.
@@ -3311,6 +3402,9 @@ VPSUBW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPSUBW ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm3/m
 GENERAL	VPSUBD	Subtract Packed Integers	PSUBB_PSUBW_PSUBD
 VPSUBD	XMM,XMM,XMM/M128	AVX	VPSUBD XMM1,XMM2,XMM3/M128	Subtract packed doubleword integers in xmm3/m128 from xmm2.
 VPSUBD	YMM,YMM,YMM/M256	AVX2	VPSUBD YMM1,YMM2,YMM3/M256	Subtract packed doubleword integers in ymm3/m256 from ymm2.
+VPSUBD	XMM{K}{Z},XMM,XMM/M128/M32BCST	AVX512_VL,AVX512_F	VPSUBD XMM1{K1}{Z},XMM2,XMM3/M128/M32BCST	Subtract packed doubleword integers in xmm3/m128/m32bcst from xmm2 and store in xmm1 using writemask k1.
+VPSUBD	YMM{K}{Z},YMM,YMM/M256/M32BCST	AVX512_VL,AVX512_F	VPSUBD YMM1{K1}{Z},YMM2,YMM3/M256/M32BCST	Subtract packed doubleword integers in ymm3/m256/m32bcst from ymm2 and store in ymm1 using writemask k1.
+VPSUBD	ZMM{K}{Z},ZMM,ZMM/M512/M32BCST	AVX512_F	VPSUBD ZMM1{K1}{Z},ZMM2,ZMM3/M512/M32BCST	Subtract packed doubleword integers in zmm3/m512/m32bcst from zmm2 and store in zmm1 using writemask k1
 ;--------------------------------------------------------
 GENERAL	PSUBQ	Subtract Packed Quadword Integers	PSUBQ
 PSUBQ	MM,MM/M64	SSE2	PSUBQ MM1,MM2/M64	Subtract quadword integer in mm1 from mm2 /m64.
@@ -3333,12 +3427,13 @@ VPSUBSB	XMM,XMM,XMM/M128	AVX	VPSUBSB XMM1,XMM2,XMM3/M128	Subtract packed signed 
 VPSUBSB	YMM,YMM,YMM/M256	AVX2	VPSUBSB YMM1,YMM2,YMM3/M256	Subtract packed signed byte integers in ymm3/m256 from packed signed byte integers in ymm2 and saturate results.
 VPSUBSB	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPSUBSB XMM1{K1}{Z},XMM2,XMM3/M128	Subtract packed signed byte integers in xmm3/m128 from packed signed byte integers in xmm2 and saturate results and store in xmm1 using writemask k1.
 VPSUBSB	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPSUBSB YMM1{K1}{Z},YMM2,YMM3/M256	Subtract packed signed byte integers in ymm3/m256 from packed signed byte integers in ymm2 and saturate results and store in ymm1 using writemask k1.
-VPSUBSB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPSUBSB ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm3/m512 from packed signed byte integers in zmm2 and saturate results and store in zmm1 using writemask k1.
+VPSUBSB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPSUBSB ZMM1{K1}{Z},ZMM2,ZMM3/M512	Subtract packed signed byte integers in zmm3/m512 from packed signed byte integers in zmm2 and saturate results and store in zmm1 using writemask k1.
 GENERAL	VPSUBSW	Subtract Packed Signed Integers with Signed Saturation	PSUBSB_PSUBSW
 VPSUBSW	XMM,XMM,XMM/M128	AVX	VPSUBSW XMM1,XMM2,XMM3/M128	Subtract packed signed word integers in xmm3/m128 from packed signed word integers in xmm2 and saturate results.
 VPSUBSW	YMM,YMM,YMM/M256	AVX2	VPSUBSW YMM1,YMM2,YMM3/M256	Subtract packed signed word integers in ymm3/m256 from packed signed word integers in ymm2 and saturate results.
 VPSUBSW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPSUBSW XMM1{K1}{Z},XMM2,XMM3/M128	Subtract packed signed word integers in xmm3/m128 from packed signed word integers in xmm2 and saturate results and store in xmm1 using writemask k1.
 VPSUBSW	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPSUBSW YMM1{K1}{Z},YMM2,YMM3/M256	Subtract packed signed word integers in ymm3/m256 from packed signed word integers in ymm2 and saturate results and store in ymm1 using writemask k1.
+VPSUBSW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPSUBSW ZMM1{K1}{Z},ZMM2,ZMM3/M512	Subtract packed signed word integers in zmm3/m512 from packed signed word integers in zmm2 and saturate results and store in zmm1 using writemask k1.
 ;--------------------------------------------------------
 GENERAL	PSUBUSB	Subtract Packed Unsigned Integers with Unsigned Saturation	PSUBUSB_PSUBUSW
 PSUBUSB	MM,MM/M64	MMX	PSUBUSB MM,MM/M64	Subtract unsigned packed bytes in mm/m64 from unsigned packed bytes in mm and saturate result.
@@ -3351,12 +3446,13 @@ VPSUBUSB	XMM,XMM,XMM/M128	AVX	VPSUBUSB XMM1,XMM2,XMM3/M128	Subtract packed unsig
 VPSUBUSB	YMM,YMM,YMM/M256	AVX2	VPSUBUSB YMM1,YMM2,YMM3/M256	Subtract packed unsigned byte integers in ymm3/m256 from packed unsigned byte integers in ymm2 and saturate result.
 VPSUBUSB	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPSUBUSB XMM1{K1}{Z},XMM2,XMM3/M128	Subtract packed unsigned byte integers in xmm3/m128 from packed unsigned byte integers in xmm2, saturate results and store in xmm1 using writemask k1.
 VPSUBUSB	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPSUBUSB YMM1{K1}{Z},YMM2,YMM3/M256	Subtract packed unsigned byte integers in ymm3/m256 from packed unsigned byte integers in ymm2, saturate results and store in ymm1 using writemask k1.
-VPSUBUSB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPSUBUSB ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm3/m512 from packed unsigned byte integers in zmm2, saturate results and store in zmm1 using writemask k1.
+VPSUBUSB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPSUBUSB ZMM1{K1}{Z},ZMM2,ZMM3/M512	Subtract packed unsigned byte integers in zmm3/m512 from packed unsigned byte integers in zmm2, saturate results and store in zmm1 using writemask k1.
 GENERAL	VPSUBUSW	Subtract Packed Unsigned Integers with Unsigned Saturation	PSUBUSB_PSUBUSW
 VPSUBUSW	XMM,XMM,XMM/M128	AVX	VPSUBUSW XMM1,XMM2,XMM3/M128	Subtract packed unsigned word integers in xmm3/m128 from packed unsigned word integers in xmm2 and saturate result.
 VPSUBUSW	YMM,YMM,YMM/M256	AVX2	VPSUBUSW YMM1,YMM2,YMM3/M256	Subtract packed unsigned word integers in ymm3/m256 from packed unsigned word integers in ymm2 and saturate result.
 VPSUBUSW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPSUBUSW XMM1{K1}{Z},XMM2,XMM3/M128	Subtract packed unsigned word integers in xmm3/m128 from packed unsigned word integers in xmm2 and saturate results and store in xmm1 using writemask k1.
 VPSUBUSW	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPSUBUSW YMM1{K1}{Z},YMM2,YMM3/M256	Subtract packed unsigned word integers in ymm3/m256 from packed unsigned word integers in ymm2, saturate results and store in ymm1 using writemask k1.
+VPSUBUSW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPSUBUSW ZMM1{K1}{Z},ZMM2,ZMM3/M512	Subtract packed unsigned word integers in zmm3/m512 from packed unsigned word integers in zmm2, saturate results and store in zmm1 using writemask k1.
 ;--------------------------------------------------------
 GENERAL	PUNPCKHBW	Unpack High Data	PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ
 PUNPCKHBW	MM,MM/M64	MMX	PUNPCKHBW MM,MM/M64	Unpack and interleave high-order bytes from mm and mm/m64 into mm.
@@ -3373,18 +3469,26 @@ GENERAL	VPUNPCKHBW	Unpack High Data	PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ
 VPUNPCKHBW	XMM,XMM,XMM/M128	AVX	VPUNPCKHBW XMM1,XMM2,XMM3/M128	Interleave high-order bytes from xmm2 and xmm3/m128 into xmm1.
 VPUNPCKHBW	YMM,YMM,YMM/M256	AVX2	VPUNPCKHBW YMM1,YMM2,YMM3/M256	Interleave high-order bytes from ymm2 and ymm3/m256 into ymm1 register.
 VPUNPCKHBW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPUNPCKHBW XMM1{K1}{Z},XMM2,XMM3/M128	Interleave high-order bytes from xmm2 and xmm3/m128 into xmm1 register using k1 write mask.
+VPUNPCKHBW	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPUNPCKHBW YMM1{K1}{Z},YMM2,YMM3/M256	Interleave high-order bytes from ymm2 and ymm3/m256 into ymm1 register using k1 write mask.
+VPUNPCKHBW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPUNPCKHBW ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm3/m512 into zmm1 register.
 GENERAL	VPUNPCKHWD	Unpack High Data	PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ
 VPUNPCKHWD	XMM,XMM,XMM/M128	AVX	VPUNPCKHWD XMM1,XMM2,XMM3/M128	Interleave high-order words from xmm2 and xmm3/m128 into xmm1.
 VPUNPCKHWD	YMM,YMM,YMM/M256	AVX2	VPUNPCKHWD YMM1,YMM2,YMM3/M256	Interleave high-order words from ymm2 and ymm3/m256 into ymm1 register.
 VPUNPCKHWD	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPUNPCKHWD XMM1{K1}{Z},XMM2,XMM3/M128	Interleave high-order words from xmm2 and xmm3/m128 into xmm1 register using k1 write mask.
+VPUNPCKHWD	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPUNPCKHWD YMM1{K1}{Z},YMM2,YMM3/M256	Interleave high-order words from ymm2 and ymm3/m256 into ymm1 register using k1 write mask.
+VPUNPCKHWD	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPUNPCKHWD ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm3/m512 into zmm1 register.
 GENERAL	VPUNPCKHDQ	Unpack High Data	PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ
 VPUNPCKHDQ	XMM,XMM,XMM/M128	AVX	VPUNPCKHDQ XMM1,XMM2,XMM3/M128	Interleave high-order doublewords from xmm2 and xmm3/m128 into xmm1.
 VPUNPCKHDQ	YMM,YMM,YMM/M256	AVX2	VPUNPCKHDQ YMM1,YMM2,YMM3/M256	Interleave high-order doublewords from ymm2 and ymm3/m256 into ymm1 register.
 VPUNPCKHDQ	XMM{K}{Z},XMM,XMM/M128/M32BCST	AVX512_VL,AVX512_F	VPUNPCKHDQ XMM1{K1}{Z},XMM2,XMM3/M128/M32BCST	Interleave high-order doublewords from xmm2 and xmm3/m128/m32bcst into xmm1 register using k1 write mask.
+VPUNPCKHDQ	YMM{K}{Z},YMM,YMM/M256/M32BCST	AVX512_VL,AVX512_F	VPUNPCKHDQ YMM1{K1}{Z},YMM2,YMM3/M256/M32BCST	Interleave high-order doublewords from ymm2 and ymm3/m256/m32bcst into ymm1 register using k1 write mask.
+VPUNPCKHDQ	ZMM{K}{Z},ZMM,ZMM/M512/M32BCST	AVX512_F	VPUNPCKHDQ ZMM1{K1}{Z},ZMM2,ZMM3/M512/M32BCST	Interleave high-order doublewords from zmm2 and zmm3/m512/m32bcst into zmm1 register using k1 write mask.
 GENERAL	VPUNPCKHQDQ	Unpack High Data	PUNPCKHBW_PUNPCKHWD_PUNPCKHDQ_PUNPCKHQDQ
 VPUNPCKHQDQ	XMM,XMM,XMM/M128	AVX	VPUNPCKHQDQ XMM1,XMM2,XMM3/M128	Interleave high-order quadword from xmm2 and xmm3/m128 into xmm1 register.
 VPUNPCKHQDQ	YMM,YMM,YMM/M256	AVX2	VPUNPCKHQDQ YMM1,YMM2,YMM3/M256	Interleave high-order quadword from ymm2 and ymm3/m256 into ymm1 register.
 VPUNPCKHQDQ	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512_VL,AVX512_F	VPUNPCKHQDQ XMM1{K1}{Z},XMM2,XMM3/M128/M64BCST	Interleave high-order quadword from xmm2 and xmm3/m128/m64bcst into xmm1 register using k1 write mask.
+VPUNPCKHQDQ	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512_VL,AVX512_F	VPUNPCKHQDQ YMM1{K1}{Z},YMM2,YMM3/M256/M64BCST	Interleave high-order quadword from ymm2 and ymm3/m256/m64bcst into ymm1 register using k1 write mask.
+VPUNPCKHQDQ	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST	AVX512_F	VPUNPCKHQDQ ZMM1{K1}{Z},ZMM2,ZMM3/M512/M64BCST	Interleave high-order quadword from zmm2 and zmm3/m512/m64bcst into zmm1 register using k1 write mask.
 ;--------------------------------------------------------
 GENERAL	PUNPCKLBW	Unpack Low Data	PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ
 PUNPCKLBW	MM,MM/M32	MMX	PUNPCKLBW MM,MM/M32	Interleave low-order bytes from mm and mm/m32 into mm.
@@ -3401,18 +3505,26 @@ GENERAL	VPUNPCKLBW	Unpack Low Data	PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ
 VPUNPCKLBW	XMM,XMM,XMM/M128	AVX	VPUNPCKLBW XMM1,XMM2,XMM3/M128	Interleave low-order bytes from xmm2 and xmm3/m128 into xmm1.
 VPUNPCKLBW	YMM,YMM,YMM/M256	AVX2	VPUNPCKLBW YMM1,YMM2,YMM3/M256	Interleave low-order bytes from ymm2 and ymm3/m256 into ymm1 register.
 VPUNPCKLBW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPUNPCKLBW XMM1{K1}{Z},XMM2,XMM3/M128	Interleave low-order bytes from xmm2 and xmm3/m128 into xmm1 register subject to write mask k1.
+VPUNPCKLBW	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPUNPCKLBW YMM1{K1}{Z},YMM2,YMM3/M256	Interleave low-order bytes from ymm2 and ymm3/m256 into ymm1 register subject to write mask k1.
+VPUNPCKLBW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPUNPCKLBW ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm3/m512 into zmm1 register subject to write mask k1.
 GENERAL	VPUNPCKLWD	Unpack Low Data	PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ
 VPUNPCKLWD	XMM,XMM,XMM/M128	AVX	VPUNPCKLWD XMM1,XMM2,XMM3/M128	Interleave low-order words from xmm2 and xmm3/m128 into xmm1.
 VPUNPCKLWD	YMM,YMM,YMM/M256	AVX2	VPUNPCKLWD YMM1,YMM2,YMM3/M256	Interleave low-order words from ymm2 and ymm3/m256 into ymm1 register.
 VPUNPCKLWD	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPUNPCKLWD XMM1{K1}{Z},XMM2,XMM3/M128	Interleave low-order words from xmm2 and xmm3/m128 into xmm1 register subject to write mask k1.
+VPUNPCKLWD	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPUNPCKLWD YMM1{K1}{Z},YMM2,YMM3/M256	Interleave low-order words from ymm2 and ymm3/m256 into ymm1 register subject to write mask k1.
+VPUNPCKLWD	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPUNPCKLWD ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm3/m512 into zmm1 register subject to write mask k1.
 GENERAL	VPUNPCKLDQ	Unpack Low Data	PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ
 VPUNPCKLDQ	XMM,XMM,XMM/M128	AVX	VPUNPCKLDQ XMM1,XMM2,XMM3/M128	Interleave low-order doublewords from xmm2 and xmm3/m128 into xmm1.
 VPUNPCKLDQ	YMM,YMM,YMM/M256	AVX2	VPUNPCKLDQ YMM1,YMM2,YMM3/M256	Interleave low-order doublewords from ymm2 and ymm3/m256 into ymm1 register.
 VPUNPCKLDQ	XMM{K}{Z},XMM,XMM/M128/M32BCST	AVX512_VL,AVX512_F	VPUNPCKLDQ XMM1{K1}{Z},XMM2,XMM3/M128/M32BCST	Interleave low-order doublewords from xmm2 and xmm3/m128/m32bcst into xmm1 register subject to write mask k1.
+VPUNPCKLDQ	YMM{K}{Z},YMM,YMM/M256/M32BCST	AVX512_VL,AVX512_F	VPUNPCKLDQ YMM1{K1}{Z},YMM2,YMM3/M256/M32BCST	Interleave low-order doublewords from ymm2 and ymm3/m256/m32bcst into ymm1 register subject to write mask k1.
+VPUNPCKLDQ	ZMM{K}{Z},ZMM,ZMM/M512/M32BCST	AVX512_F	VPUNPCKLDQ ZMM1{K1}{Z},ZMM2,ZMM3/M512/M32BCST	Interleave low-order doublewords from zmm2 and zmm3/m512/m32bcst into zmm1 register subject to write mask k1.
 GENERAL	VPUNPCKLQDQ	Unpack Low Data	PUNPCKLBW_PUNPCKLWD_PUNPCKLDQ_PUNPCKLQDQ
 VPUNPCKLQDQ	XMM,XMM,XMM/M128	AVX	VPUNPCKLQDQ XMM1,XMM2,XMM3/M128	Interleave low-order quadword from xmm2 and xmm3/m128 into xmm1 register.
 VPUNPCKLQDQ	YMM,YMM,YMM/M256	AVX2	VPUNPCKLQDQ YMM1,YMM2,YMM3/M256	Interleave low-order quadword from ymm2 and ymm3/m256 into ymm1 register.
 VPUNPCKLQDQ	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512_VL,AVX512_F	VPUNPCKLQDQ XMM1{K1}{Z},XMM2,XMM3/M128/M64BCST	Interleave low-order quadword from zmm2 and zmm3/m512/m64bcst into zmm1 register subject to write mask k1.
+VPUNPCKLQDQ	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512_VL,AVX512_F	VPUNPCKLQDQ YMM1{K1}{Z},YMM2,YMM3/M256/M64BCST	Interleave low-order quadword from ymm2 and ymm3/m256/m64bcst into ymm1 register subject to write mask k1.
+VPUNPCKLQDQ	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST	AVX512_F	VPUNPCKLQDQ ZMM1{K1}{Z},ZMM2,ZMM3/M512/M64BCST	Interleave low-order quadword from zmm2 and zmm3/m512/m64bcst into zmm1 register subject to write mask k1.
 ;--------------------------------------------------------
 GENERAL	PUSH	Push Word, Doubleword or Quadword Onto the Stack	PUSH
 PUSH	R/M16	8086	PUSH R/M16	Push r/m16.
@@ -3496,6 +3608,32 @@ ROL	R/M8,1	8086	ROL R/M8,1	Rotate 8 bits r/m8 left once
 ROL	R/M8,CL	8086	ROL R/M8,CL	Rotate 8 bits r/m8 left CL times.
 ROL	R/M8,CL	8086	ROL R/M8,CL	Rotate 8 bits r/m8 left CL times.
 ROL	R/M8,IMM8	8086	ROL R/M8,IMM8	Rotate 8 bits r/m8 left imm8 times.
+ROL	R/M8,IMM8	8086	ROL R/M8,IMM8	Rotate 8 bits r/m8 left imm8 times.
+ROL	R/M16,1	8086	ROL R/M16,1	Rotate 16 bits r/m16 left once.
+ROL	R/M16,CL	8086	ROL R/M16,CL	Rotate 16 bits r/m16 left CL times.
+ROL	R/M16,IMM8	8086	ROL R/M16,IMM8	Rotate 16 bits r/m16 left imm8 times.
+ROL	R/M32,1	386	ROL R/M32,1	Rotate 32 bits r/m32 left once.
+ROL	R/M64,1	X64	ROL R/M64,1	Rotate 64 bits r/m64 left once. Uses a 6 bit count.
+ROL	R/M32,CL	386	ROL R/M32,CL	Rotate 32 bits r/m32 left CL times.
+ROL	R/M64,CL	X64	ROL R/M64,CL	Rotate 64 bits r/m64 left CL times. Uses a 6 bit count.
+ROL	R/M32,IMM8	386	ROL R/M32,IMM8	Rotate 32 bits r/m32 left imm8 times.
+ROL	R/M64,IMM8	X64	ROL R/M64,IMM8	Rotate 64 bits r/m64 left imm8 times. Uses a 6 bit count.
+GENERAL	ROR	Rotate	RCL_RCR_ROL_ROR
+ROR	R/M8,1	8086	ROR R/M8,1	Rotate 8 bits r/m8 right once.
+ROR	R/M8,1	8086	ROR R/M8,1	Rotate 8 bits r/m8 right once.
+ROR	R/M8,CL	8086	ROR R/M8,CL	Rotate 8 bits r/m8 right CL times.
+ROR	R/M8,CL	8086	ROR R/M8,CL	Rotate 8 bits r/m8 right CL times.
+ROR	R/M8,IMM8	8086	ROR R/M8,IMM8	Rotate 8 bits r/m16 right imm8 times.
+ROR	R/M8,IMM8	8086	ROR R/M8,IMM8	Rotate 8 bits r/m16 right imm8 times.
+ROR	R/M16,1	8086	ROR R/M16,1	Rotate 16 bits r/m16 right once.
+ROR	R/M16,CL	8086	ROR R/M16,CL	Rotate 16 bits r/m16 right CL times.
+ROR	R/M16,IMM8	8086	ROR R/M16,IMM8	Rotate 16 bits r/m16 right imm8 times.
+ROR	R/M32,1	386	ROR R/M32,1	Rotate 32 bits r/m32 right once.
+ROR	R/M64,1	X64	ROR R/M64,1	Rotate 64 bits r/m64 right once. Uses a 6 bit count.
+ROR	R/M32,CL	386	ROR R/M32,CL	Rotate 32 bits r/m32 right CL times.
+ROR	R/M64,CL	X64	ROR R/M64,CL	Rotate 64 bits r/m64 right CL times. Uses a 6 bit count.
+ROR	R/M32,IMM8	386	ROR R/M32,IMM8	Rotate 32 bits r/m32 right imm8 times.
+ROR	R/M64,IMM8	X64	ROR R/M64,IMM8	Rotate 64 bits r/m64 right imm8 times. Uses a 6 bit count.
 ;--------------------------------------------------------
 GENERAL	RCPPS	Compute Reciprocals of Packed Single-Precision Floating-Point Values	RCPPS
 RCPPS	XMM,XMM/M128	SSE	RCPPS XMM1,XMM2/M128	Computes the approximate reciprocals of the packed SP FP values in xmm2/m128 and stores the results in xmm1.
@@ -3691,6 +3829,27 @@ SHL	R/M16,1	8086	SHL R/M16,1	Multiply r/m16 by 2, once.
 SHL	R/M16,CL	8086	SHL R/M16,CL	Multiply r/m16 by 2, CL times.
 SHL	R/M16,IMM8	8086	SHL R/M16,IMM8	Multiply r/m16 by 2, imm8 times.
 SHL	R/M32,1	386	SHL R/M32,1	Multiply r/m32 by 2, once.
+SHL	R/M64,1	X64	SHL R/M64,1	Multiply r/m64 by 2, once.
+SHL	R/M32,CL	386	SHL R/M32,CL	Multiply r/m32 by 2, CL times.
+SHL	R/M64,CL	X64	SHL R/M64,CL	Multiply r/m64 by 2, CL times.
+SHL	R/M32,IMM8	386	SHL R/M32,IMM8	Multiply r/m32 by 2, imm8 times.
+SHL	R/M64,IMM8	X64	SHL R/M64,IMM8	Multiply r/m64 by 2, imm8 times.
+GENERAL	SHR	Shift	SAL_SAR_SHL_SHR
+SHR	R/M8,1	8086	SHR R/M8,1	Unsigned divide r/m8 by 2, once.
+SHR	R/M8,1	8086	SHR R/M8,1	Unsigned divide r/m8 by 2, once.
+SHR	R/M8,CL	8086	SHR R/M8,CL	Unsigned divide r/m8 by 2, CL times.
+SHR	R/M8,CL	8086	SHR R/M8,CL	Unsigned divide r/m8 by 2, CL times.
+SHR	R/M8,IMM8	8086	SHR R/M8,IMM8	Unsigned divide r/m8 by 2, imm8 times.
+SHR	R/M8,IMM8	8086	SHR R/M8,IMM8	Unsigned divide r/m8 by 2, imm8 times.
+SHR	R/M16,1	8086	SHR R/M16,1	Unsigned divide r/m16 by 2, once.
+SHR	R/M16,CL	8086	SHR R/M16,CL	Unsigned divide r/m16 by 2, CL times
+SHR	R/M16,IMM8	8086	SHR R/M16,IMM8	Unsigned divide r/m16 by 2, imm8 times.
+SHR	R/M32,1	386	SHR R/M32,1	Unsigned divide r/m32 by 2, once.
+SHR	R/M64,1	X64	SHR R/M64,1	Unsigned divide r/m64 by 2, once.
+SHR	R/M32,CL	386	SHR R/M32,CL	Unsigned divide r/m32 by 2, CL times.
+SHR	R/M64,CL	X64	SHR R/M64,CL	Unsigned divide r/m64 by 2, CL times.
+SHR	R/M32,IMM8	386	SHR R/M32,IMM8	Unsigned divide r/m32 by 2, imm8 times.
+SHR	R/M64,IMM8	X64	SHR R/M64,IMM8	Unsigned divide r/m64 by 2, imm8 times.
 ;--------------------------------------------------------
 GENERAL	SARX	Shift Without Affecting Flags	SARX_SHLX_SHRX
 SARX	R32,R/M32,R32	BMI2	SARX R32A,R/M32,R32B	Shift r/m32 arithmetically right with count specified in r32b.
@@ -4465,16 +4624,19 @@ VFMADDSUB132PD	XMM,XMM,XMM/M128	FMA	VFMADDSUB132PD XMM1,XMM2,XMM3/M128	Multiply 
 VFMADDSUB132PD	YMM,YMM,YMM/M256	FMA	VFMADDSUB132PD YMM1,YMM2,YMM3/M256	Multiply packed DP FP values from ymm1 and ymm3/mem, add/subtract elements in ymm2 and put result in ymm1.
 VFMADDSUB132PD	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512_VL,AVX512_F	VFMADDSUB132PD XMM1{K1}{Z},XMM2,XMM3/M128/M64BCST	Multiply packed DP FP values from xmm1 and xmm3/m128/m64bcst, add/subtract elements in xmm2 and put result in xmm1 subject to writemask k1.
 VFMADDSUB132PD	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512_VL,AVX512_F	VFMADDSUB132PD YMM1{K1}{Z},YMM2,YMM3/M256/M64BCST	Multiply packed DP FP values from ymm1 and ymm3/m256/m64bcst, add/subtract elements in ymm2 and put result in ymm1 subject to writemask k1.
+VFMADDSUB132PD	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST{ER}	AVX512_F	VFMADDSUB132PD ZMM1{K1}{Z},ZMM2,ZMM3/M512/M64BCST{ER}	Multiply packed DP FP values from zmm1 and zmm3/m512/m64bcst, add/subtract elements in zmm2 and put result in zmm1 subject to writemask k1.
 GENERAL	VFMADDSUB213PD	Fused Multiply-Alternating Add/Subtract of Packed Double-Precision Floating-Point Values	VFMADDSUB132PD_VFMADDSUB213PD_VFMADDSUB231PD
 VFMADDSUB213PD	XMM,XMM,XMM/M128	FMA	VFMADDSUB213PD XMM1,XMM2,XMM3/M128	Multiply packed DP FP values from xmm1 and xmm2, add/subtract elements in xmm3/mem and put result in xmm1.
 VFMADDSUB213PD	YMM,YMM,YMM/M256	FMA	VFMADDSUB213PD YMM1,YMM2,YMM3/M256	Multiply packed DP FP values from ymm1 and ymm2, add/subtract elements in ymm3/mem and put result in ymm1.
 VFMADDSUB213PD	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512_VL,AVX512_F	VFMADDSUB213PD XMM1{K1}{Z},XMM2,XMM3/M128/M64BCST	Multiply packed DP FP values from xmm1 and xmm2, add/subtract elements in xmm3/m128/m64bcst and put result in xmm1 subject to writemask k1.
 VFMADDSUB213PD	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512_VL,AVX512_F	VFMADDSUB213PD YMM1{K1}{Z},YMM2,YMM3/M256/M64BCST	Multiply packed DP FP values from ymm1 and ymm2, add/subtract elements in ymm3/m256/m64bcst and put result in ymm1 subject to writemask k1.
+VFMADDSUB213PD	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST{ER}	AVX512_F	VFMADDSUB213PD ZMM1{K1}{Z},ZMM2,ZMM3/M512/M64BCST{ER}	Multiply packed DP FP values from zmm1and zmm2, add/subtract elements in zmm3/m512/m64bcst and put result in zmm1 subject to writemask k1.
 GENERAL	VFMADDSUB231PD	Fused Multiply-Alternating Add/Subtract of Packed Double-Precision Floating-Point Values	VFMADDSUB132PD_VFMADDSUB213PD_VFMADDSUB231PD
 VFMADDSUB231PD	XMM,XMM,XMM/M128	FMA	VFMADDSUB231PD XMM1,XMM2,XMM3/M128	Multiply packed DP FP values from xmm2 and xmm3/mem, add/subtract elements in xmm1 and put result in xmm1.
 VFMADDSUB231PD	YMM,YMM,YMM/M256	FMA	VFMADDSUB231PD YMM1,YMM2,YMM3/M256	Multiply packed DP FP values from ymm2 and ymm3/mem, add/subtract elements in ymm1 and put result in ymm1.
 VFMADDSUB231PD	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512_VL,AVX512_F	VFMADDSUB231PD XMM1{K1}{Z},XMM2,XMM3/M128/M64BCST	Multiply packed DP FP values from xmm2 and xmm3/m128/m64bcst, add/subtract elements in xmm1 and put result in xmm1 subject to writemask k1.
 VFMADDSUB231PD	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512_VL,AVX512_F	VFMADDSUB231PD YMM1{K1}{Z},YMM2,YMM3/M256/M64BCST	Multiply packed DP FP values from ymm2 and ymm3/m256/m64bcst, add/subtract elements in ymm1 and put result in ymm1 subject to writemask k1.
+VFMADDSUB231PD	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST{ER}	AVX512_F	VFMADDSUB231PD ZMM1{K1}{Z},ZMM2,ZMM3/M512/M64BCST{ER}	Multiply packed DP FP values from zmm2 and zmm3/m512/m64bcst, add/subtract elements in zmm1 and put result in zmm1 subject to writemask k1.
 ;--------------------------------------------------------
 GENERAL	VFMADDSUB132PS	Fused Multiply-Alternating Add/Subtract of Packed Single-Precision Floating-Point Values	VFMADDSUB132PS_VFMADDSUB213PS_VFMADDSUB231PS
 VFMADDSUB132PS	XMM,XMM,XMM/M128	FMA	VFMADDSUB132PS XMM1,XMM2,XMM3/M128	Multiply packed SP FP values from xmm1 and xmm3/mem, add/subtract elements in xmm2 and put result in xmm1.
@@ -4558,16 +4720,19 @@ VFMSUBADD132PD	XMM,XMM,XMM/M128	FMA	VFMSUBADD132PD XMM1,XMM2,XMM3/M128	Multiply 
 VFMSUBADD132PD	YMM,YMM,YMM/M256	FMA	VFMSUBADD132PD YMM1,YMM2,YMM3/M256	Multiply packed DP FP values from ymm1 and ymm3/mem, subtract/add elements in ymm2 and put result in ymm1.
 VFMSUBADD132PD	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512_VL,AVX512_F	VFMSUBADD132PD XMM1{K1}{Z},XMM2,XMM3/M128/M64BCST	Multiply packed DP FP values from xmm1 and xmm3/m128/m64bcst, subtract/add elements in xmm2 and put result in xmm1 subject to writemask k1.
 VFMSUBADD132PD	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512_VL,AVX512_F	VFMSUBADD132PD YMM1{K1}{Z},YMM2,YMM3/M256/M64BCST	Multiply packed DP FP values from ymm1 and ymm3/m256/m64bcst, subtract/add elements in ymm2 and put result in ymm1 subject to writemask k1.
+VFMSUBADD132PD	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST{ER}	AVX512_F	VFMSUBADD132PD ZMM1{K1}{Z},ZMM2,ZMM3/M512/M64BCST{ER}	Multiply packed DP FP values from zmm1 and zmm3/m512/m64bcst, subtract/add elements in zmm2 and put result in zmm1 subject to writemask k1.
 GENERAL	VFMSUBADD213PD	Fused Multiply-Alternating Subtract/Add of Packed Double-Precision Floating-Point Values	VFMSUBADD132PD_VFMSUBADD213PD_VFMSUBADD231PD
 VFMSUBADD213PD	XMM,XMM,XMM/M128	FMA	VFMSUBADD213PD XMM1,XMM2,XMM3/M128	Multiply packed DP FP values from xmm1 and xmm2, subtract/add elements in xmm3/mem and put result in xmm1.
 VFMSUBADD213PD	YMM,YMM,YMM/M256	FMA	VFMSUBADD213PD YMM1,YMM2,YMM3/M256	Multiply packed DP FP values from ymm1 and ymm2, subtract/add elements in ymm3/mem and put result in ymm1.
 VFMSUBADD213PD	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512_VL,AVX512_F	VFMSUBADD213PD XMM1{K1}{Z},XMM2,XMM3/M128/M64BCST	Multiply packed DP FP values from xmm1 and xmm2, subtract/add elements in xmm3/m128/m64bcst and put result in xmm1 subject to writemask k1.
 VFMSUBADD213PD	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512_VL,AVX512_F	VFMSUBADD213PD YMM1{K1}{Z},YMM2,YMM3/M256/M64BCST	Multiply packed DP FP values from ymm1 and ymm2, subtract/add elements in ymm3/m256/m64bcst and put result in ymm1 subject to writemask k1.
+VFMSUBADD213PD	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST{ER}	AVX512_F	VFMSUBADD213PD ZMM1{K1}{Z},ZMM2,ZMM3/M512/M64BCST{ER}	Multiply packed DP FP values from zmm1 and zmm2, subtract/add elements in zmm3/m512/m64bcst and put result in zmm1 subject to writemask k1.
 GENERAL	VFMSUBADD231PD	Fused Multiply-Alternating Subtract/Add of Packed Double-Precision Floating-Point Values	VFMSUBADD132PD_VFMSUBADD213PD_VFMSUBADD231PD
 VFMSUBADD231PD	XMM,XMM,XMM/M128	FMA	VFMSUBADD231PD XMM1,XMM2,XMM3/M128	Multiply packed DP FP values from xmm2 and xmm3/mem, subtract/add elements in xmm1 and put result in xmm1.
 VFMSUBADD231PD	YMM,YMM,YMM/M256	FMA	VFMSUBADD231PD YMM1,YMM2,YMM3/M256	Multiply packed DP FP values from ymm2 and ymm3/mem, subtract/add elements in ymm1 and put result in ymm1.
 VFMSUBADD231PD	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512_VL,AVX512_F	VFMSUBADD231PD XMM1{K1}{Z},XMM2,XMM3/M128/M64BCST	Multiply packed DP FP values from xmm2 and xmm3/m128/m64bcst, subtract/add elements in xmm1 and put result in xmm1 subject to writemask k1.
 VFMSUBADD231PD	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512_VL,AVX512_F	VFMSUBADD231PD YMM1{K1}{Z},YMM2,YMM3/M256/M64BCST	Multiply packed DP FP values from ymm2 and ymm3/m256/m64bcst, subtract/add elements in ymm1 and put result in ymm1 subject to writemask k1.
+VFMSUBADD231PD	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST{ER}	AVX512_F	VFMSUBADD231PD ZMM1{K1}{Z},ZMM2,ZMM3/M512/M64BCST{ER}	Multiply packed DP FP values from zmm2 and zmm3/m512/m64bcst, subtract/add elements in zmm1 and put result in zmm1 subject to writemask k1.
 ;--------------------------------------------------------
 GENERAL	VFMSUBADD132PS	Fused Multiply-Alternating Subtract/Add of Packed Single-Precision Floating-Point Values	VFMSUBADD132PS_VFMSUBADD213PS_VFMSUBADD231PS
 VFMSUBADD132PS	XMM,XMM,XMM/M128	FMA	VFMSUBADD132PS XMM1,XMM2,XMM3/M128	Multiply packed SP FP values from xmm1 and xmm3/mem, subtract/add elements in xmm2 and put result in xmm1.
@@ -4743,22 +4908,22 @@ GENERAL	VGATHERQPS	Gather Packed SP FP values Using Signed Dword/Qword Indices	V
 VGATHERQPS	XMM,VM64X,XMM	AVX2	VGATHERQPS XMM1,VM64X,XMM2	Using qword indices specified in vm64x, gather single-preci- sion FP values from memory conditioned on mask specified by xmm2. Conditionally gathered elements are merged into xmm1.
 VGATHERQPS	XMM,VM64Y,XMM	AVX2	VGATHERQPS XMM1,VM64Y,XMM2	Using qword indices specified in vm64y, gather single-preci- sion FP values from memory conditioned on mask specified by xmm2. Conditionally gathered elements are merged into xmm1.
 ;--------------------------------------------------------
-GENERAL	VGATHERPF0DPS	Sparse Prefetch  Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint	VGATHERPF0DPS_VGATHERPF0QPS_VGATHERPF0DPD_VGATHERPF0QPD
+GENERAL	VGATHERPF0DPS	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint	VGATHERPF0DPS_VGATHERPF0QPS_VGATHERPF0DPD_VGATHERPF0QPD
 VGATHERPF0DPS	VM32Z{K}	AVX512_PF	VGATHERPF0DPS VM32Z{K1}	Using signed dword indices, prefetch sparse byte memory locations containing SP data using opmask k1 and T0 hint.
-GENERAL	VGATHERPF0QPS	Sparse Prefetch  Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint	VGATHERPF0DPS_VGATHERPF0QPS_VGATHERPF0DPD_VGATHERPF0QPD
+GENERAL	VGATHERPF0QPS	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint	VGATHERPF0DPS_VGATHERPF0QPS_VGATHERPF0DPD_VGATHERPF0QPD
 VGATHERPF0QPS	VM64Z{K}	AVX512_PF	VGATHERPF0QPS VM64Z{K1}	Using signed qword indices, prefetch sparse byte memory locations containing SP data using opmask k1 and T0 hint.
-GENERAL	VGATHERPF0DPD	Sparse Prefetch  Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint	VGATHERPF0DPS_VGATHERPF0QPS_VGATHERPF0DPD_VGATHERPF0QPD
+GENERAL	VGATHERPF0DPD	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint	VGATHERPF0DPS_VGATHERPF0QPS_VGATHERPF0DPD_VGATHERPF0QPD
 VGATHERPF0DPD	VM32Y{K}	AVX512_PF	VGATHERPF0DPD VM32Y{K1}	Using signed dword indices, prefetch sparse byte memory locations containing DP data using opmask k1 and T0 hint.
-GENERAL	VGATHERPF0QPD	Sparse Prefetch  Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint	VGATHERPF0DPS_VGATHERPF0QPS_VGATHERPF0DPD_VGATHERPF0QPD
+GENERAL	VGATHERPF0QPD	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T0 Hint	VGATHERPF0DPS_VGATHERPF0QPS_VGATHERPF0DPD_VGATHERPF0QPD
 VGATHERPF0QPD	VM64Z{K}	AVX512_PF	VGATHERPF0QPD VM64Z{K1}	Using signed qword indices, prefetch sparse byte memory locations containing DP data using opmask k1 and T0 hint.
 ;--------------------------------------------------------
-GENERAL	VGATHERPF1DPS	Sparse Prefetch  Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint	VGATHERPF1DPS_VGATHERPF1QPS_VGATHERPF1DPD_VGATHERPF1QPD
+GENERAL	VGATHERPF1DPS	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint	VGATHERPF1DPS_VGATHERPF1QPS_VGATHERPF1DPD_VGATHERPF1QPD
 VGATHERPF1DPS	VM32Z{K}	AVX512_PF	VGATHERPF1DPS VM32Z{K1}	Using signed dword indices, prefetch sparse byte memory locations containing SP data using opmask k1 and T1 hint.
-GENERAL	VGATHERPF1QPS	Sparse Prefetch  Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint	VGATHERPF1DPS_VGATHERPF1QPS_VGATHERPF1DPD_VGATHERPF1QPD
+GENERAL	VGATHERPF1QPS	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint	VGATHERPF1DPS_VGATHERPF1QPS_VGATHERPF1DPD_VGATHERPF1QPD
 VGATHERPF1QPS	VM64Z{K}	AVX512_PF	VGATHERPF1QPS VM64Z{K1}	Using signed qword indices, prefetch sparse byte memory locations containing SP data using opmask k1 and T1 hint.
-GENERAL	VGATHERPF1DPD	Sparse Prefetch  Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint	VGATHERPF1DPS_VGATHERPF1QPS_VGATHERPF1DPD_VGATHERPF1QPD
+GENERAL	VGATHERPF1DPD	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint	VGATHERPF1DPS_VGATHERPF1QPS_VGATHERPF1DPD_VGATHERPF1QPD
 VGATHERPF1DPD	VM32Y{K}	AVX512_PF	VGATHERPF1DPD VM32Y{K1}	Using signed dword indices, prefetch sparse byte memory locations containing DP data using opmask k1 and T1 hint.
-GENERAL	VGATHERPF1QPD	Sparse Prefetch  Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint	VGATHERPF1DPS_VGATHERPF1QPS_VGATHERPF1DPD_VGATHERPF1QPD
+GENERAL	VGATHERPF1QPD	Sparse Prefetch Packed SP/DP Data Values with Signed Dword, Signed Qword Indices Using T1 Hint	VGATHERPF1DPS_VGATHERPF1QPS_VGATHERPF1DPD_VGATHERPF1QPD
 VGATHERPF1QPD	VM64Z{K}	AVX512_PF	VGATHERPF1QPD VM64Z{K1}	Using signed qword indices, prefetch sparse byte memory locations containing DP data using opmask k1 and T1 hint.
 ;--------------------------------------------------------
 GENERAL	VGATHERQPS	Gather Packed Single, Packed Double with Signed Qword Indices	VGATHERQPS_VGATHERQPD
@@ -4840,10 +5005,10 @@ VMASKMOVPD	M128,XMM,XMM	AVX	VMASKMOVPD M128,XMM1,XMM2	Conditionally store packed
 VMASKMOVPD	M256,YMM,YMM	AVX	VMASKMOVPD M256,YMM1,YMM2	Conditionally store packed DP values from ymm2 using mask in ymm1.
 ;--------------------------------------------------------
 GENERAL	VP4DPWSSD	Dot Product of Signed Words with Dword Accumulation (4-iterations)	VP4DPWSSD
-VP4DPWSSD	ZMM{K}{Z},ZMM,M128	AVX512_4VNNIW	VP4DPWSSD ZMM1{K1}{Z},ZMM2+3,M128	indicated by zmm2 by signed words from m128 and accumulate resulting signed dwords in zmm1.
+VP4DPWSSD	ZMM{K}{Z},ZMM,M128	AVX512_4VNNIW	VP4DPWSSD ZMM1{K1}{Z},ZMM2+3,M128	Multiply signed words from source register block indicated by zmm2 by signed words from m128 and accumulate resulting signed dwords in zmm1.
 ;--------------------------------------------------------
 GENERAL	VP4DPWSSDS	Dot Product of Signed Words with Dword Accumulation and Saturation  (4-iterations)	VP4DPWSSDS
-VP4DPWSSDS	ZMM{K}{Z},ZMM,M128	AVX512_4VNNIW	VP4DPWSSDS ZMM1{K1}{Z},ZMM2+3,M128	indicated by zmm2 by signed words from m128 and accumulate the resulting dword results with signed saturation in zmm1.
+VP4DPWSSDS	ZMM{K}{Z},ZMM,M128	AVX512_4VNNIW	VP4DPWSSDS ZMM1{K1}{Z},ZMM2+3,M128	Multiply signed words from source register block indicated by zmm2 by signed words from m128 and accumulate the resulting dword results with signed saturation in zmm1.
 ;--------------------------------------------------------
 GENERAL	VPBLENDD	Blend Packed Dwords	VPBLENDD
 VPBLENDD	XMM,XMM,XMM/M128,IMM8	AVX2	VPBLENDD XMM1,XMM2,XMM3/M128,IMM8	Select dwords from xmm2 and xmm3/m128 from mask specified in imm8 and store the values into xmm1.
@@ -4852,11 +5017,11 @@ VPBLENDD	YMM,YMM,YMM/M256,IMM8	AVX2	VPBLENDD YMM1,YMM2,YMM3/M256,IMM8	Select dwo
 GENERAL	VPBLENDMB	Blend Byte/Word Vectors Using an Opmask Control	VPBLENDMB_VPBLENDMW
 VPBLENDMB	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPBLENDMB XMM1{K1}{Z},XMM2,XMM3/M128	Blend byte integer vector xmm2 and byte vector xmm3/m128 and store the result in xmm1, under control mask.
 VPBLENDMB	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPBLENDMB YMM1{K1}{Z},YMM2,YMM3/M256	Blend byte integer vector ymm2 and byte vector ymm3/m256 and store the result in ymm1, under control mask.
-VPBLENDMB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPBLENDMB ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm3/m512 and store the result in zmm1, under control mask.
+VPBLENDMB	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPBLENDMB ZMM1{K1}{Z},ZMM2,ZMM3/M512	Blend byte integer vector zmm2 and byte vector zmm3/m512 and store the result in zmm1, under control mask.
 GENERAL	VPBLENDMW	Blend Byte/Word Vectors Using an Opmask Control	VPBLENDMB_VPBLENDMW
 VPBLENDMW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPBLENDMW XMM1{K1}{Z},XMM2,XMM3/M128	Blend word integer vector xmm2 and word vector xmm3/m128 and store the result in xmm1, under control mask.
 VPBLENDMW	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPBLENDMW YMM1{K1}{Z},YMM2,YMM3/M256	Blend word integer vector ymm2 and word vector ymm3/m256 and store the result in ymm1, under control mask.
-VPBLENDMW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPBLENDMW ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm3/m512 and store the result in zmm1, under control mask.
+VPBLENDMW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPBLENDMW ZMM1{K1}{Z},ZMM2,ZMM3/M512	Blend word integer vector zmm2 and word vector zmm3/m512 and store the result in zmm1, under control mask.
 ;--------------------------------------------------------
 GENERAL	VPBLENDMD	Blend Int32/Int64 Vectors Using an OpMask Control	VPBLENDMD_VPBLENDMQ
 VPBLENDMD	XMM{K}{Z},XMM,XMM/M128/M32BCST	AVX512_VL,AVX512_F	VPBLENDMD XMM1{K1}{Z},XMM2,XMM3/M128/M32BCST	Blend doubleword integer vector xmm2 and doubleword vector xmm3/m128/m32bcst and store the result in xmm1, under control mask.
@@ -4872,13 +5037,13 @@ VPBROADCASTB	XMM,XMM/M8	AVX2	VPBROADCASTB XMM1,XMM2/M8	Broadcast a byte integer 
 VPBROADCASTB	YMM,XMM/M8	AVX2	VPBROADCASTB YMM1,XMM2/M8	Broadcast a byte integer in the source operand to thirty-two locations in ymm1.
 VPBROADCASTB	XMM{K}{Z},XMM/M8	AVX512_VL,AVX512_BW	VPBROADCASTB XMM1{K1}{Z},XMM2/M8	Broadcast a byte integer in the source operand to locations in xmm1 subject to writemask k1.
 VPBROADCASTB	YMM{K}{Z},XMM/M8	AVX512_VL,AVX512_BW	VPBROADCASTB YMM1{K1}{Z},XMM2/M8	Broadcast a byte integer in the source operand to locations in ymm1 subject to writemask k1.
-VPBROADCASTB	ZMM{K}{Z},XMM/M8	AVX512_BW	VPBROADCASTB ZMM1{K1}{Z},XMM2/M8	to 64 locations in zmm1 subject to writemask k1.
+VPBROADCASTB	ZMM{K}{Z},XMM/M8	AVX512_BW	VPBROADCASTB ZMM1{K1}{Z},XMM2/M8	Broadcast a byte integer in the source operand to 64 locations in zmm1 subject to writemask k1.
 GENERAL	VPBROADCASTW	Load Integer and Broadcast	VPBROADCAST
 VPBROADCASTW	XMM,XMM/M16	AVX2	VPBROADCASTW XMM1,XMM2/M16	Broadcast a word integer in the source operand to eight locations in xmm1.
 VPBROADCASTW	YMM,XMM/M16	AVX2	VPBROADCASTW YMM1,XMM2/M16	Broadcast a word integer in the source operand to sixteen locations in ymm1.
 VPBROADCASTW	XMM{K}{Z},XMM/M16	AVX512_VL,AVX512_BW	VPBROADCASTW XMM1{K1}{Z},XMM2/M16	Broadcast a word integer in the source operand to locations in xmm1 subject to writemask k1.
 VPBROADCASTW	YMM{K}{Z},XMM/M16	AVX512_VL,AVX512_BW	VPBROADCASTW YMM1{K1}{Z},XMM2/M16	Broadcast a word integer in the source operand to locations in ymm1 subject to writemask k1.
-VPBROADCASTW	ZMM{K}{Z},XMM/M16	AVX512_BW	VPBROADCASTW ZMM1{K1}{Z},XMM2/M16	operand to 32 locations in zmm1 subject to writemask k1.
+VPBROADCASTW	ZMM{K}{Z},XMM/M16	AVX512_BW	VPBROADCASTW ZMM1{K1}{Z},XMM2/M16	Broadcast a word integer in the source operand to 32 locations in zmm1 subject to writemask k1.
 GENERAL	VPBROADCASTD	Load Integer and Broadcast	VPBROADCAST
 VPBROADCASTD	XMM,XMM/M32	AVX2	VPBROADCASTD XMM1,XMM2/M32	Broadcast a dword integer in the source operand to four locations in xmm1.
 VPBROADCASTD	YMM,XMM/M32	AVX2	VPBROADCASTD YMM1,XMM2/M32	Broadcast a dword integer in the source operand to eight locations in ymm1.
@@ -4911,11 +5076,11 @@ VBROADCASTI64X4	ZMM{K}{Z},M256	AVX512_F	VBROADCASTI64X4 ZMM1{K1}{Z},M256	Broadca
 GENERAL	VPBROADCASTB	Load with Broadcast Integer Data from General Purpose Register	VPBROADCASTB_W_D_Q
 VPBROADCASTB	XMM{K}{Z},REG	AVX512_VL,AVX512_BW	VPBROADCASTB XMM1{K1}{Z},REG	Broadcast an 8-bit value from a GPR to all bytes in the 128-bit destination subject to writemask k1.
 VPBROADCASTB	YMM{K}{Z},REG	AVX512_VL,AVX512_BW	VPBROADCASTB YMM1{K1}{Z},REG	Broadcast an 8-bit value from a GPR to all bytes in the 256-bit destination subject to writemask k1.
-VPBROADCASTB	ZMM{K}{Z},REG	AVX512_BW	VPBROADCASTB ZMM1{K1}{Z},REG	512-bit destination subject to writemask k1.
+VPBROADCASTB	ZMM{K}{Z},REG	AVX512_BW	VPBROADCASTB ZMM1{K1}{Z},REG	Broadcast an 8-bit value from a GPR to all bytes in the 512-bit destination subject to writemask k1.
 GENERAL	VPBROADCASTW	Load with Broadcast Integer Data from General Purpose Register	VPBROADCASTB_W_D_Q
 VPBROADCASTW	XMM{K}{Z},REG	AVX512_VL,AVX512_BW	VPBROADCASTW XMM1{K1}{Z},REG	Broadcast a 16-bit value from a GPR to all words in the 128-bit destination subject to writemask k1.
 VPBROADCASTW	YMM{K}{Z},REG	AVX512_VL,AVX512_BW	VPBROADCASTW YMM1{K1}{Z},REG	Broadcast a 16-bit value from a GPR to all words in the 256-bit destination subject to writemask k1.
-VPBROADCASTW	ZMM{K}{Z},REG	AVX512_BW	VPBROADCASTW ZMM1{K1}{Z},REG	512-bit destination subject to writemask k1.
+VPBROADCASTW	ZMM{K}{Z},REG	AVX512_BW	VPBROADCASTW ZMM1{K1}{Z},REG	Broadcast a 16-bit value from a GPR to all words in the 512-bit destination subject to writemask k1.
 GENERAL	VPBROADCASTD	Load with Broadcast Integer Data from General Purpose Register	VPBROADCASTB_W_D_Q
 VPBROADCASTD	XMM{K}{Z},R32	AVX512_VL,AVX512_F	VPBROADCASTD XMM1{K1}{Z},R32	Broadcast a 32-bit value from a GPR to all double-words in the 128-bit destination subject to writemask k1.
 VPBROADCASTD	YMM{K}{Z},R32	AVX512_VL,AVX512_F	VPBROADCASTD YMM1{K1}{Z},R32	Broadcast a 32-bit value from a GPR to all double-words in the 256-bit destination subject to writemask k1.
@@ -4935,19 +5100,19 @@ VPBROADCASTMW2D	YMM,K	AVX512_VL,AVX512_CD	VPBROADCASTMW2D YMM1,K1	Broadcast low 
 VPBROADCASTMW2D	ZMM,K	AVX512_CD	VPBROADCASTMW2D ZMM1,K1	Broadcast low word value in k1 to sixteen locations in zmm1.
 ;--------------------------------------------------------
 GENERAL	VPCLMULQDQ	Carry-Less Multiplication Quadword	VPCLMULQDQ
-VPCLMULQDQ	YMM,YMM,YMM/M256,IMM8		VPCLMULQDQ YMM1,YMM2,YMM3/M256,IMM8	Carry-less multiplication of one quadword of ymm2 by one quadword of ymm3/m256, stores the 128-bit result in ymm1. The immediate is used to determine which quadwords of ymm2 and ymm3/m256 should be used.
-VPCLMULQDQ	XMM,XMM,XMM/M128,IMM8	AVX512_VL	VPCLMULQDQ XMM1,XMM2,XMM3/M128,IMM8	Carry-less multiplication of one quadword of xmm2 by one quadword of xmm3/m128, stores the 128-bit result in xmm1. The immediate is used to determine which quadwords of xmm2 and xmm3/m128 should be used.
-VPCLMULQDQ	YMM,YMM,YMM/M256,IMM8	AVX512_VL	VPCLMULQDQ YMM1,YMM2,YMM3/M256,IMM8	Carry-less multiplication of one quadword of ymm2 by one quadword of ymm3/m256, stores the 128-bit result in ymm1. The immediate is used to determine which quadwords of ymm2 and ymm3/m256 should be used.
-VPCLMULQDQ	ZMM,ZMM,ZMM/M512,IMM8	AVX512_F	VPCLMULQDQ ZMM1,ZMM2,ZMM3/M512,IMM8	Carry-less multiplication of one quadword of zmm2 by one quadword of zmm3/m512, stores the 128-bit result in zmm1. The immediate is used to determine which quadwords of zmm2 and zmm3/m512 should be used.
+VPCLMULQDQ	YMM,YMM,YMM/M256,IMM8	AVX512_VPCLMULQDQ	VPCLMULQDQ YMM1,YMM2,YMM3/M256,IMM8	Carry-less multiplication of one quadword of ymm2 by one quadword of ymm3/m256, stores the 128-bit result in ymm1. The immediate is used to determine which quadwords of ymm2 and ymm3/m256 should be used.
+VPCLMULQDQ	XMM,XMM,XMM/M128,IMM8	AVX512_VL,AVX512_VPCLMULQDQ	VPCLMULQDQ XMM1,XMM2,XMM3/M128,IMM8	Carry-less multiplication of one quadword of xmm2 by one quadword of xmm3/m128, stores the 128-bit result in xmm1. The immediate is used to determine which quadwords of xmm2 and xmm3/m128 should be used.
+VPCLMULQDQ	YMM,YMM,YMM/M256,IMM8	AVX512_VL,AVX512_VPCLMULQDQ	VPCLMULQDQ YMM1,YMM2,YMM3/M256,IMM8	Carry-less multiplication of one quadword of ymm2 by one quadword of ymm3/m256, stores the 128-bit result in ymm1. The immediate is used to determine which quadwords of ymm2 and ymm3/m256 should be used.
+VPCLMULQDQ	ZMM,ZMM,ZMM/M512,IMM8	AVX512_F,AVX512_VPCLMULQDQ	VPCLMULQDQ ZMM1,ZMM2,ZMM3/M512,IMM8	Carry-less multiplication of one quadword of zmm2 by one quadword of zmm3/m512, stores the 128-bit result in zmm1. The immediate is used to determine which quadwords of zmm2 and zmm3/m512 should be used.
 ;--------------------------------------------------------
 GENERAL	VPCMPB	Compare Packed Byte Values Into Mask	VPCMPB_VPCMPUB
 VPCMPB	K{K},XMM,XMM/M128,IMM8	AVX512_VL,AVX512_BW	VPCMPB K1{K2},XMM2,XMM3/M128,IMM8	Compare packed signed byte values in xmm3/m128 and xmm2 using bits 2:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
 VPCMPB	K{K},YMM,YMM/M256,IMM8	AVX512_VL,AVX512_BW	VPCMPB K1{K2},YMM2,YMM3/M256,IMM8	Compare packed signed byte values in ymm3/m256 and ymm2 using bits 2:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
-VPCMPB	K{K},ZMM,ZMM/M512,IMM8	AVX512_BW	VPCMPB K1{K2},ZMM2,ZMM3/M512,IMM8	zmm2 using bits 2:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
+VPCMPB	K{K},ZMM,ZMM/M512,IMM8	AVX512_BW	VPCMPB K1{K2},ZMM2,ZMM3/M512,IMM8	Compare packed signed byte values in zmm3/m512 and zmm2 using bits 2:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
 GENERAL	VPCMPUB	Compare Packed Byte Values Into Mask	VPCMPB_VPCMPUB
 VPCMPUB	K{K},XMM,XMM/M128,IMM8	AVX512_VL,AVX512_BW	VPCMPUB K1{K2},XMM2,XMM3/M128,IMM8	Compare packed unsigned byte values in xmm3/m128 and xmm2 using bits 2:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
 VPCMPUB	K{K},YMM,YMM/M256,IMM8	AVX512_VL,AVX512_BW	VPCMPUB K1{K2},YMM2,YMM3/M256,IMM8	Compare packed unsigned byte values in ymm3/m256 and ymm2 using bits 2:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
-VPCMPUB	K{K},ZMM,ZMM/M512,IMM8	AVX512_BW	VPCMPUB K1{K2},ZMM2,ZMM3/M512,IMM8	and zmm2 using bits 2:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
+VPCMPUB	K{K},ZMM,ZMM/M512,IMM8	AVX512_BW	VPCMPUB K1{K2},ZMM2,ZMM3/M512,IMM8	Compare packed unsigned byte values in zmm3/m512 and zmm2 using bits 2:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
 ;--------------------------------------------------------
 GENERAL	VPCMPD	Compare Packed Integer Values into Mask	VPCMPD_VPCMPUD
 VPCMPD	K{K},XMM,XMM/M128/M32BCST,IMM8	AVX512_VL,AVX512_F	VPCMPD K1{K2},XMM2,XMM3/M128/M32BCST,IMM8	Compare packed signed doubleword integer values in xmm3/m128/m32bcst and xmm2 using bits 2:0 of imm8 as a comparison predicate with writemask k2 and leave the result in mask register k1.
@@ -5048,7 +5213,7 @@ VPERMD	ZMM{K}{Z},ZMM,ZMM/M512/M32BCST	AVX512_F	VPERMD ZMM1{K1}{Z},ZMM2,ZMM3/M512
 GENERAL	VPERMW	Permute Packed Doublewords/Words Elements	VPERMD_VPERMW
 VPERMW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPERMW XMM1{K1}{Z},XMM2,XMM3/M128	Permute word integers in xmm3/m128 using indexes in xmm2 and store the result in xmm1 using writemask k1.
 VPERMW	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPERMW YMM1{K1}{Z},YMM2,YMM3/M256	Permute word integers in ymm3/m256 using indexes in ymm2 and store the result in ymm1 using writemask k1.
-VPERMW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPERMW ZMM1{K1}{Z},ZMM2,ZMM3/M512	in zmm2 and store the result in zmm1 using writemask k1.
+VPERMW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPERMW ZMM1{K1}{Z},ZMM2,ZMM3/M512	Permute word integers in zmm3/m512 using indexes in zmm2 and store the result in zmm1 using writemask k1.
 ;--------------------------------------------------------
 GENERAL	VPERMI2B	Full Permute of Bytes from Two Tables Overwriting the Index	VPERMI2B
 VPERMI2B	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_VBMI	VPERMI2B XMM1{K1}{Z},XMM2,XMM3/M128	Permute bytes in xmm3/m128 and xmm2 using byte indexes in xmm1 and store the byte results in xmm1 using writemask k1.
@@ -5058,7 +5223,7 @@ VPERMI2B	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_VBMI	VPERMI2B ZMM1{K1}{Z},ZMM2,ZMM3/M512	
 GENERAL	VPERMI2W	Full Permute From Two Tables Overwriting the Index	VPERMI2W_D_Q_PS_PD
 VPERMI2W	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPERMI2W XMM1{K1}{Z},XMM2,XMM3/M128	Permute word integers from two tables in xmm3/m128 and xmm2 using indexes in xmm1 and store the result in xmm1 using writemask k1.
 VPERMI2W	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPERMI2W YMM1{K1}{Z},YMM2,YMM3/M256	Permute word integers from two tables in ymm3/m256 and ymm2 using indexes in ymm1 and store the result in ymm1 using writemask k1.
-VPERMI2W	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPERMI2W ZMM1{K1}{Z},ZMM2,ZMM3/M512	zmm3/m512 and zmm2 using indexes in zmm1 and store the result in zmm1 using writemask k1.
+VPERMI2W	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPERMI2W ZMM1{K1}{Z},ZMM2,ZMM3/M512	Permute word integers from two tables in zmm3/m512 and zmm2 using indexes in zmm1 and store the result in zmm1 using writemask k1.
 GENERAL	VPERMI2D	Full Permute From Two Tables Overwriting the Index	VPERMI2W_D_Q_PS_PD
 VPERMI2D	XMM{K}{Z},XMM,XMM/M128/M32BCST	AVX512_VL,AVX512_F	VPERMI2D XMM1{K1}{Z},XMM2,XMM3/M128/M32BCST	Permute double-words from two tables in xmm3/m128/m32bcst and xmm2 using indexes in xmm1 and store the result in xmm1 using writemask k1.
 VPERMI2D	YMM{K}{Z},YMM,YMM/M256/M32BCST	AVX512_VL,AVX512_F	VPERMI2D YMM1{K1}{Z},YMM2,YMM3/M256/M32BCST	Permute double-words from two tables in ymm3/m256/m32bcst and ymm2 using indexes in ymm1 and store the result in ymm1 using writemask k1.
@@ -5127,7 +5292,7 @@ VPERMT2B	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_VBMI	VPERMT2B ZMM1{K1}{Z},ZMM2,ZMM3/M512	
 GENERAL	VPERMT2W	Full Permute from Two Tables Overwriting one Table	VPERMT2W_D_Q_PS_PD
 VPERMT2W	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPERMT2W XMM1{K1}{Z},XMM2,XMM3/M128	Permute word integers from two tables in xmm3/m128 and xmm1 using indexes in xmm2 and store the result in xmm1 using writemask k1.
 VPERMT2W	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPERMT2W YMM1{K1}{Z},YMM2,YMM3/M256	Permute word integers from two tables in ymm3/m256 and ymm1 using indexes in ymm2 and store the result in ymm1 using writemask k1.
-VPERMT2W	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPERMT2W ZMM1{K1}{Z},ZMM2,ZMM3/M512	and zmm1 using indexes in zmm2 and store the result in zmm1 using writemask k1.
+VPERMT2W	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPERMT2W ZMM1{K1}{Z},ZMM2,ZMM3/M512	Permute word integers from two tables in zmm3/m512 and zmm1 using indexes in zmm2 and store the result in zmm1 using writemask k1.
 GENERAL	VPERMT2D	Full Permute from Two Tables Overwriting one Table	VPERMT2W_D_Q_PS_PD
 VPERMT2D	XMM{K}{Z},XMM,XMM/M128/M32BCST	AVX512_VL,AVX512_F	VPERMT2D XMM1{K1}{Z},XMM2,XMM3/M128/M32BCST	Permute double-words from two tables in xmm3/m128/m32bcst and xmm1 using indexes in xmm2 and store the result in xmm1 using writemask k1.
 VPERMT2D	YMM{K}{Z},YMM,YMM/M256/M32BCST	AVX512_VL,AVX512_F	VPERMT2D YMM1{K1}{Z},YMM2,YMM3/M256/M32BCST	Permute double-words from two tables in ymm3/m256/m32bcst and ymm1 using indexes in ymm2 and store the result in ymm1 using writemask k1.
@@ -5235,11 +5400,11 @@ VPMASKMOVQ	M256,YMM,YMM	AVX2	VPMASKMOVQ M256,YMM1,YMM2	Conditionally store qword
 GENERAL	VPMOVB2M	Convert a Vector Register to a Mask	VPMOVB2M_VPMOVW2M_VPMOVD2M_VPMOVQ2M
 VPMOVB2M	K,XMM	AVX512_VL,AVX512_BW	VPMOVB2M K1,XMM1	Sets each bit in k1 to 1 or 0 based on the value of the most significant bit of the corresponding byte in XMM1.
 VPMOVB2M	K,YMM	AVX512_VL,AVX512_BW	VPMOVB2M K1,YMM1	Sets each bit in k1 to 1 or 0 based on the value of the most significant bit of the corresponding byte in YMM1.
-VPMOVB2M	K,ZMM	AVX512_BW	VPMOVB2M K1,ZMM1	significant bit of the corresponding byte in ZMM1.
+VPMOVB2M	K,ZMM	AVX512_BW	VPMOVB2M K1,ZMM1	Sets each bit in k1 to 1 or 0 based on the value of the most significant bit of the corresponding byte in ZMM1.
 GENERAL	VPMOVW2M	Convert a Vector Register to a Mask	VPMOVB2M_VPMOVW2M_VPMOVD2M_VPMOVQ2M
 VPMOVW2M	K,XMM	AVX512_VL,AVX512_BW	VPMOVW2M K1,XMM1	Sets each bit in k1 to 1 or 0 based on the value of the most significant bit of the corresponding word in XMM1.
 VPMOVW2M	K,YMM	AVX512_VL,AVX512_BW	VPMOVW2M K1,YMM1	Sets each bit in k1 to 1 or 0 based on the value of the most significant bit of the corresponding word in YMM1.
-VPMOVW2M	K,ZMM	AVX512_BW	VPMOVW2M K1,ZMM1	significant bit of the corresponding word in ZMM1.
+VPMOVW2M	K,ZMM	AVX512_BW	VPMOVW2M K1,ZMM1	Sets each bit in k1 to 1 or 0 based on the value of the most significant bit of the corresponding word in ZMM1.
 GENERAL	VPMOVD2M	Convert a Vector Register to a Mask	VPMOVB2M_VPMOVW2M_VPMOVD2M_VPMOVQ2M
 VPMOVD2M	K,XMM	AVX512_VL,AVX512_DQ	VPMOVD2M K1,XMM1	Sets each bit in k1 to 1 or 0 based on the value of the most significant bit of the corresponding doubleword in XMM1.
 VPMOVD2M	K,YMM	AVX512_VL,AVX512_DQ	VPMOVD2M K1,YMM1	Sets each bit in k1 to 1 or 0 based on the value of the most significant bit of the corresponding doubleword in YMM1.
@@ -5278,11 +5443,11 @@ VPMOVUSDW	YMM/M256{K}{Z},ZMM	AVX512_F	VPMOVUSDW YMM1/M256{K1}{Z},ZMM2	Converts 1
 GENERAL	VPMOVM2B	Convert a Mask Register to a Vector Register	VPMOVM2B_VPMOVM2W_VPMOVM2D_VPMOVM2Q
 VPMOVM2B	XMM,K	AVX512_VL,AVX512_BW	VPMOVM2B XMM1,K1	Sets each byte in XMM1 to all 1’s or all 0’s based on the value of the corresponding bit in k1.
 VPMOVM2B	YMM,K	AVX512_VL,AVX512_BW	VPMOVM2B YMM1,K1	Sets each byte in YMM1 to all 1’s or all 0’s based on the value of the corresponding bit in k1.
-VPMOVM2B	ZMM,K	AVX512_BW	VPMOVM2B ZMM1,K1	of the corresponding bit in k1.
+VPMOVM2B	ZMM,K	AVX512_BW	VPMOVM2B ZMM1,K1	Sets each byte in ZMM1 to all 1’s or all 0’s based on the value of the corresponding bit in k1.
 GENERAL	VPMOVM2W	Convert a Mask Register to a Vector Register	VPMOVM2B_VPMOVM2W_VPMOVM2D_VPMOVM2Q
 VPMOVM2W	XMM,K	AVX512_VL,AVX512_BW	VPMOVM2W XMM1,K1	Sets each word in XMM1 to all 1’s or all 0’s based on the value of the corresponding bit in k1.
 VPMOVM2W	YMM,K	AVX512_VL,AVX512_BW	VPMOVM2W YMM1,K1	Sets each word in YMM1 to all 1’s or all 0’s based on the value of the corresponding bit in k1.
-VPMOVM2W	ZMM,K	AVX512_BW	VPMOVM2W ZMM1,K1	of the corresponding bit in k1.
+VPMOVM2W	ZMM,K	AVX512_BW	VPMOVM2W ZMM1,K1	Sets each word in ZMM1 to all 1’s or all 0’s based on the value of the corresponding bit in k1.
 GENERAL	VPMOVM2D	Convert a Mask Register to a Vector Register	VPMOVM2B_VPMOVM2W_VPMOVM2D_VPMOVM2Q
 VPMOVM2D	XMM,K	AVX512_VL,AVX512_DQ	VPMOVM2D XMM1,K1	Sets each doubleword in XMM1 to all 1’s or all 0’s based on the value of the corresponding bit in k1.
 VPMOVM2D	YMM,K	AVX512_VL,AVX512_DQ	VPMOVM2D YMM1,K1	Sets each doubleword in YMM1 to all 1’s or all 0’s based on the value of the corresponding bit in k1.
@@ -5334,15 +5499,15 @@ VPMOVUSQW	XMM/M128{K}{Z},ZMM	AVX512_F	VPMOVUSQW XMM1/M128{K1}{Z},ZMM2	Converts 8
 GENERAL	VPMOVWB	Down Convert Word to Byte	VPMOVWB_VPMOVSWB_VPMOVUSWB
 VPMOVWB	XMM/M64{K}{Z},XMM	AVX512_VL,AVX512_BW	VPMOVWB XMM1/M64{K1}{Z},XMM2	Converts 8 packed word integers from xmm2 into 8 packed bytes in xmm1/m64 with truncation under writemask k1.
 VPMOVWB	XMM/M128{K}{Z},YMM	AVX512_VL,AVX512_BW	VPMOVWB XMM1/M128{K1}{Z},YMM2	Converts 16 packed word integers from ymm2 into 16 packed bytes in xmm1/m128 with truncation under writemask k1.
-VPMOVWB	YMM/M256{K}{Z},ZMM	AVX512_BW	VPMOVWB YMM1/M256{K1}{Z},ZMM2	32 packed bytes in ymm1/m256 with truncation under writemask k1.
+VPMOVWB	YMM/M256{K}{Z},ZMM	AVX512_BW	VPMOVWB YMM1/M256{K1}{Z},ZMM2	Converts 32 packed word integers from zmm2 into 32 packed bytes in ymm1/m256 with truncation under writemask k1.
 GENERAL	VPMOVSWB	Down Convert Word to Byte	VPMOVWB_VPMOVSWB_VPMOVUSWB
 VPMOVSWB	XMM/M64{K}{Z},XMM	AVX512_VL,AVX512_BW	VPMOVSWB XMM1/M64{K1}{Z},XMM2	Converts 8 packed signed word integers from xmm2 into 8 packed signed bytes in xmm1/m64 using signed saturation under writemask k1.
 VPMOVSWB	XMM/M128{K}{Z},YMM	AVX512_VL,AVX512_BW	VPMOVSWB XMM1/M128{K1}{Z},YMM2	Converts 16 packed signed word integers from ymm2 into 16 packed signed bytes in xmm1/m128 using signed saturation under writemask k1.
-VPMOVSWB	YMM/M256{K}{Z},ZMM	AVX512_BW	VPMOVSWB YMM1/M256{K1}{Z},ZMM2	into 32 packed signed bytes in ymm1/m256 using signed saturation under writemask k1.
+VPMOVSWB	YMM/M256{K}{Z},ZMM	AVX512_BW	VPMOVSWB YMM1/M256{K1}{Z},ZMM2	Converts 32 packed signed word integers from zmm2 into 32 packed signed bytes in ymm1/m256 using signed saturation under writemask k1.
 GENERAL	VPMOVUSWB	Down Convert Word to Byte	VPMOVWB_VPMOVSWB_VPMOVUSWB
 VPMOVUSWB	XMM/M64{K}{Z},XMM	AVX512_VL,AVX512_BW	VPMOVUSWB XMM1/M64{K1}{Z},XMM2	Converts 8 packed unsigned word integers from xmm2 into 8 packed unsigned bytes in 8mm1/m64 using unsigned saturation under writemask k1.
 VPMOVUSWB	XMM/M128{K}{Z},YMM	AVX512_VL,AVX512_BW	VPMOVUSWB XMM1/M128{K1}{Z},YMM2	Converts 16 packed unsigned word integers from ymm2 into 16 packed unsigned bytes in xmm1/m128 using unsigned saturation under writemask k1.
-VPMOVUSWB	YMM/M256{K}{Z},ZMM	AVX512_BW	VPMOVUSWB YMM1/M256{K1}{Z},ZMM2	zmm2 into 32 packed unsigned bytes in ymm1/m256 using unsigned saturation under writemask k1.
+VPMOVUSWB	YMM/M256{K}{Z},ZMM	AVX512_BW	VPMOVUSWB YMM1/M256{K1}{Z},ZMM2	Converts 32 packed unsigned word integers from zmm2 into 32 packed unsigned bytes in ymm1/m256 using unsigned saturation under writemask k1.
 ;--------------------------------------------------------
 GENERAL	VPMULTISHIFTQB	Select Packed Unaligned Bytes from Quadword Sources	VPMULTISHIFTQB
 VPMULTISHIFTQB	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512_VBMI,AVX512_VL	VPMULTISHIFTQB XMM1{K1}{Z},XMM2,XMM3/M128/M64BCST	Select unaligned bytes from qwords in xmm3/m128/m64bcst using control bytes in xmm2, write byte results to xmm1 under k1.
@@ -5494,7 +5659,7 @@ VPSLLVQ	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST	AVX512_F	VPSLLVQ ZMM1{K1}{Z},ZMM2,ZMM3/M5
 GENERAL	VPSLLVW	Variable Bit Shift Left Logical	VPSLLVW_VPSLLVD_VPSLLVQ
 VPSLLVW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPSLLVW XMM1{K1}{Z},XMM2,XMM3/M128	Shift words in xmm2 left by amount specified in the corresponding element of xmm3/m128 while shifting in 0s using writemask k1.
 VPSLLVW	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPSLLVW YMM1{K1}{Z},YMM2,YMM3/M256	Shift words in ymm2 left by amount specified in the corresponding element of ymm3/m256 while shifting in 0s using writemask k1.
-VPSLLVW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPSLLVW ZMM1{K1}{Z},ZMM2,ZMM3/M512	corresponding element of zmm3/m512 while shifting in 0s using writemask k1.
+VPSLLVW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPSLLVW ZMM1{K1}{Z},ZMM2,ZMM3/M512	Shift words in zmm2 left by amount specified in the corresponding element of zmm3/m512 while shifting in 0s using writemask k1.
 ;--------------------------------------------------------
 GENERAL	VPSRAVD	Variable Bit Shift Right Arithmetic	VPSRAVW_VPSRAVD_VPSRAVQ
 VPSRAVD	XMM,XMM,XMM/M128	AVX2	VPSRAVD XMM1,XMM2,XMM3/M128	Shift doublewords in xmm2 right by amount specified in the corresponding element of xmm3/m128 while shifting in sign bits.
@@ -5505,7 +5670,7 @@ VPSRAVD	ZMM{K}{Z},ZMM,ZMM/M512/M32BCST	AVX512_F	VPSRAVD ZMM1{K1}{Z},ZMM2,ZMM3/M5
 GENERAL	VPSRAVW	Variable Bit Shift Right Arithmetic	VPSRAVW_VPSRAVD_VPSRAVQ
 VPSRAVW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPSRAVW XMM1{K1}{Z},XMM2,XMM3/M128	Shift words in xmm2 right by amount specified in the corresponding element of xmm3/m128 while shifting in sign bits using writemask k1.
 VPSRAVW	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPSRAVW YMM1{K1}{Z},YMM2,YMM3/M256	Shift words in ymm2 right by amount specified in the corresponding element of ymm3/m256 while shifting in sign bits using writemask k1.
-VPSRAVW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPSRAVW ZMM1{K1}{Z},ZMM2,ZMM3/M512	corresponding element of zmm3/m512 while shifting in sign bits using writemask k1.
+VPSRAVW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPSRAVW ZMM1{K1}{Z},ZMM2,ZMM3/M512	Shift words in zmm2 right by amount specified in the corresponding element of zmm3/m512 while shifting in sign bits using writemask k1.
 GENERAL	VPSRAVQ	Variable Bit Shift Right Arithmetic	VPSRAVW_VPSRAVD_VPSRAVQ
 VPSRAVQ	XMM{K}{Z},XMM,XMM/M128/M64BCST	AVX512_VL,AVX512_F	VPSRAVQ XMM1{K1}{Z},XMM2,XMM3/M128/M64BCST	Shift quadwords in xmm2 right by amount specified in the corresponding element of xmm3/m128/m64bcst while shifting in sign bits using writemask k1.
 VPSRAVQ	YMM{K}{Z},YMM,YMM/M256/M64BCST	AVX512_VL,AVX512_F	VPSRAVQ YMM1{K1}{Z},YMM2,YMM3/M256/M64BCST	Shift quadwords in ymm2 right by amount specified in the corresponding element of ymm3/m256/m64bcst while shifting in sign bits using writemask k1.
@@ -5526,7 +5691,7 @@ VPSRLVQ	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST	AVX512_F	VPSRLVQ ZMM1{K1}{Z},ZMM2,ZMM3/M5
 GENERAL	VPSRLVW	Variable Bit Shift Right Logical	VPSRLVW_VPSRLVD_VPSRLVQ
 VPSRLVW	XMM{K}{Z},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPSRLVW XMM1{K1}{Z},XMM2,XMM3/M128	Shift words in xmm2 right by amount specified in the corresponding element of xmm3/m128 while shifting in 0s using writemask k1.
 VPSRLVW	YMM{K}{Z},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPSRLVW YMM1{K1}{Z},YMM2,YMM3/M256	Shift words in ymm2 right by amount specified in the corresponding element of ymm3/m256 while shifting in 0s using writemask k1.
-VPSRLVW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPSRLVW ZMM1{K1}{Z},ZMM2,ZMM3/M512	corresponding element of zmm3/m512 while shifting in 0s using writemask k1.
+VPSRLVW	ZMM{K}{Z},ZMM,ZMM/M512	AVX512_BW	VPSRLVW ZMM1{K1}{Z},ZMM2,ZMM3/M512	Shift words in zmm2 right by amount specified in the corresponding element of zmm3/m512 while shifting in 0s using writemask k1.
 ;--------------------------------------------------------
 GENERAL	VPTERNLOGD	Bitwise Ternary Logic	VPTERNLOGD_VPTERNLOGQ
 VPTERNLOGD	XMM{K}{Z},XMM,XMM/M128/M32BCST,IMM8	AVX512_VL,AVX512_F	VPTERNLOGD XMM1{K1}{Z},XMM2,XMM3/M128/M32BCST,IMM8	Bitwise ternary logic taking xmm1, xmm2 and xmm3/m128/m32bcst as source operands and writing the result to xmm1 under writemask k1 with dword granularity. The immediate value determines the specific binary function being implemented.
@@ -5540,11 +5705,11 @@ VPTERNLOGQ	ZMM{K}{Z},ZMM,ZMM/M512/M64BCST,IMM8	AVX512_F	VPTERNLOGQ ZMM1{K1}{Z},Z
 GENERAL	VPTESTMB	Logical AND and Set Mask	VPTESTMB_VPTESTMW_VPTESTMD_VPTESTMQ
 VPTESTMB	K{K},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPTESTMB K2{K1},XMM2,XMM3/M128	Bitwise AND of packed byte integers in xmm2 and xmm3/m128 and set mask k2 to reflect the zero/non-zero status of each element of the result, under writemask k1.
 VPTESTMB	K{K},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPTESTMB K2{K1},YMM2,YMM3/M256	Bitwise AND of packed byte integers in ymm2 and ymm3/m256 and set mask k2 to reflect the zero/non-zero status of each element of the result, under writemask k1.
-VPTESTMB	K{K},ZMM,ZMM/M512	AVX512_BW	VPTESTMB K2{K1},ZMM2,ZMM3/M512	zmm3/m512 and set mask k2 to reflect the zero/non-zero status of each element of the result, under writemask k1.
+VPTESTMB	K{K},ZMM,ZMM/M512	AVX512_BW	VPTESTMB K2{K1},ZMM2,ZMM3/M512	Bitwise AND of packed byte integers in zmm2 and zmm3/m512 and set mask k2 to reflect the zero/non-zero status of each element of the result, under writemask k1.
 GENERAL	VPTESTMW	Logical AND and Set Mask	VPTESTMB_VPTESTMW_VPTESTMD_VPTESTMQ
 VPTESTMW	K{K},XMM,XMM/M128	AVX512_VL,AVX512_BW	VPTESTMW K2{K1},XMM2,XMM3/M128	Bitwise AND of packed word integers in xmm2 and xmm3/m128 and set mask k2 to reflect the zero/non-zero status of each element of the result, under writemask k1.
 VPTESTMW	K{K},YMM,YMM/M256	AVX512_VL,AVX512_BW	VPTESTMW K2{K1},YMM2,YMM3/M256	Bitwise AND of packed word integers in ymm2 and ymm3/m256 and set mask k2 to reflect the zero/non-zero status of each element of the result, under writemask k1.
-VPTESTMW	K{K},ZMM,ZMM/M512	AVX512_BW	VPTESTMW K2{K1},ZMM2,ZMM3/M512	zmm3/m512 and set mask k2 to reflect the zero/non-zero status of each element of the result, under writemask k1.
+VPTESTMW	K{K},ZMM,ZMM/M512	AVX512_BW	VPTESTMW K2{K1},ZMM2,ZMM3/M512	Bitwise AND of packed word integers in zmm2 and zmm3/m512 and set mask k2 to reflect the zero/non-zero status of each element of the result, under writemask k1.
 GENERAL	VPTESTMD	Logical AND and Set Mask	VPTESTMB_VPTESTMW_VPTESTMD_VPTESTMQ
 VPTESTMD	K{K},XMM,XMM/M128/M32BCST	AVX512_VL,AVX512_F	VPTESTMD K2{K1},XMM2,XMM3/M128/M32BCST	Bitwise AND of packed doubleword integers in xmm2 and xmm3/m128/m32bcst and set mask k2 to reflect the zero/non-zero status of each element of the result, under writemask k1.
 VPTESTMD	K{K},YMM,YMM/M256/M32BCST	AVX512_VL,AVX512_F	VPTESTMD K2{K1},YMM2,YMM3/M256/M32BCST	Bitwise AND of packed doubleword integers in ymm2 and ymm3/m256/m32bcst and set mask k2 to reflect the zero/non-zero status of each element of the result, under writemask k1.
@@ -5885,9 +6050,9 @@ GENERAL	XSAVEC64	Save Processor Extended States with Compaction	XSAVEC
 XSAVEC64	MEM	XSAVEOPT	XSAVEC64 MEM	Save state components specified by EDX:EAX to mem with compaction.
 ;--------------------------------------------------------
 GENERAL	XSAVEOPT	Save Processor Extended States Optimized	XSAVEOPT
-XSAVEOPT	MEM	XSAVEOPT	XSAVEOPT MEM	to mem, optimizing if possible.
+XSAVEOPT	MEM	XSAVEOPT	XSAVEOPT MEM	Save state components specified by EDX:EAX to mem, optimizing if possible.
 GENERAL	XSAVEOPT64	Save Processor Extended States Optimized	XSAVEOPT
-XSAVEOPT64	MEM	XSAVEOPT	XSAVEOPT64 MEM	to mem, optimizing if possible.
+XSAVEOPT64	MEM	XSAVEOPT	XSAVEOPT64 MEM	Save state components specified by EDX:EAX to mem, optimizing if possible.
 ;--------------------------------------------------------
 GENERAL	XSAVES	Save Processor Extended States Supervisor	XSAVES
 XSAVES	MEM	XSAVEOPT	XSAVES MEM	Save state components specified by EDX:EAX to mem with compaction, optimizing if possible.
