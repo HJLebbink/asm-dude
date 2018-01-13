@@ -25,7 +25,6 @@ using System.Diagnostics;
 using System.Xml;
 using System.Globalization;
 using System.IO;
-using System.Windows;
 using System.Collections.Generic;
 
 using AsmTools;
@@ -79,7 +78,6 @@ namespace AsmDude
             #region load Signature Store and Performance Store
             string path = AsmDudeToolsStatic.Get_Install_Path() + "Resources" + Path.DirectorySeparatorChar;
             {
-                //string filename_Regular = path + "signature-june2016.txt";
                 string filename_Regular = path + "signature-dec2018.txt";
                 string filename_Hand = path + "signature-hand-1.txt";
                 this._mnemonicStore = new MnemonicStore(filename_Regular, filename_Hand);
