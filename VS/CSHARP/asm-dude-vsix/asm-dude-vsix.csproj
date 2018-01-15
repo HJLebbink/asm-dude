@@ -91,11 +91,9 @@
   <ItemGroup>
     <Content Include="AsmDudePackage.ico" />
     <Content Include="libz3.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Microsoft.Z3.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\AsmDudeData.xml">
@@ -414,10 +412,9 @@
       <HintPath>..\..\packages\Microsoft.VisualStudio.Validation.14.1.111\lib\net45\Microsoft.VisualStudio.Validation.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Z3, Version=4.5.0.0, Culture=neutral, PublicKeyToken=9c8d792caae602a2, processorArchitecture=x86">
-      <HintPath>..\..\packages\z3x86win.4.5.0.1\lib\Microsoft.Z3.dll</HintPath>
-      <Private>True</Private>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
+    <Reference Include="Microsoft.Z3, Version=4.6.0.0, Culture=neutral, PublicKeyToken=9c8d792caae602a2, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\asm-sim-lib\libs\z3-4.6.0-x64-win\bin\Microsoft.Z3.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />

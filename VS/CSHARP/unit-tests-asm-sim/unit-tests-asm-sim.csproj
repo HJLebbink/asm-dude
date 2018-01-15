@@ -78,6 +78,10 @@
     <NoWarn>CS0162</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Z3, Version=4.6.0.0, Culture=neutral, PublicKeyToken=9c8d792caae602a2, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\asm-sim-lib\libs\z3-4.6.0-x64-win\bin\Microsoft.Z3.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Numerics" />
   </ItemGroup>
@@ -118,11 +122,6 @@
       <Project>{e0d833c8-652e-4026-bdc1-13568940b1a8}</Project>
       <Name>asm-sim-lib</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="z3x64win">
-      <Version>4.5.0.1</Version>
-    </PackageReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

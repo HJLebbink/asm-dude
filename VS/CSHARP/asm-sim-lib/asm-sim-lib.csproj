@@ -84,6 +84,10 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Z3, Version=4.6.0.0, Culture=neutral, PublicKeyToken=9c8d792caae602a2, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\asm-dude-vsix\Microsoft.Z3.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -126,9 +130,6 @@
     </PackageReference>
     <PackageReference Include="SmartThreadPool.dll">
       <Version>2.2.4</Version>
-    </PackageReference>
-    <PackageReference Include="z3x64win">
-      <Version>4.5.0.1</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
