@@ -40,7 +40,7 @@ namespace unit_tests_asm_tools
                 var op = new Operand(regStr, true);
                 Assert.IsFalse(op.IsMem, "regStr=" + regStr);
                 Assert.IsFalse(op.IsImm, "regStr=" + regStr);
-                Assert.IsTrue(op.IsReg, "regStr="+ regStr);
+                Assert.IsTrue(op.IsReg, "regStr=" + regStr);
 
                 Assert.AreEqual(reg, op.Rn);
                 Assert.AreEqual(RegisterTools.NBits(reg), op.NBits);
@@ -140,60 +140,70 @@ namespace unit_tests_asm_tools
         [TestMethod]
         public void Test_Operand_Constant_NegativeDecimal_1()
         {
-            {
-                long signedValue = -10;
-                ulong unsignedValue = (ulong)signedValue;
+            long signedValue = -10;
+            ulong unsignedValue = (ulong)signedValue;
 
-                Operand op = new Operand(signedValue.ToString(), true);
-                Assert.IsTrue(op.IsImm);
-                Assert.AreEqual(unsignedValue, op.Imm);
-                Assert.AreEqual(8, op.NBits);
-            }
-            {
-                long signedValue = -128;
-                ulong unsignedValue = (ulong)signedValue;
+            Operand op = new Operand(signedValue.ToString(), true);
+            Assert.IsTrue(op.IsImm);
+            Assert.AreEqual(unsignedValue, op.Imm);
+            Assert.AreEqual(8, op.NBits);
+        }
 
-                Operand op = new Operand(signedValue.ToString(), true);
-                Assert.IsTrue(op.IsImm);
-                Assert.AreEqual(unsignedValue, op.Imm);
-                Assert.AreEqual(8, op.NBits);
-            }
-            {
-                long signedValue = -256;
-                ulong unsignedValue = (ulong)signedValue;
+        [TestMethod]
+        public void Test_Operand_Constant_NegativeDecimal_2()
+        {
+            long signedValue = -128;
+            ulong unsignedValue = (ulong)signedValue;
 
-                Operand op = new Operand(signedValue.ToString(), true);
-                Assert.IsTrue(op.IsImm);
-                Assert.AreEqual(unsignedValue, op.Imm);
-                Assert.AreEqual(16, op.NBits);
-            }
-            {
-                long signedValue = -0x4FFF;
-                ulong unsignedValue = (ulong)signedValue;
+            Operand op = new Operand(signedValue.ToString(), true);
+            Assert.IsTrue(op.IsImm);
+            Assert.AreEqual(unsignedValue, op.Imm);
+            Assert.AreEqual(8, op.NBits);
+        }
+        [TestMethod]
+        public void Test_Operand_Constant_NegativeDecimal_3()
+        {
+            long signedValue = -256;
+            ulong unsignedValue = (ulong)signedValue;
 
-                Operand op = new Operand(signedValue.ToString(), true);
-                Assert.IsTrue(op.IsImm);
-                Assert.AreEqual(unsignedValue, op.Imm);
-                Assert.AreEqual(16, op.NBits);
-            }
-            {
-                long signedValue = -0x4FFF_0000;
-                ulong unsignedValue = (ulong)signedValue;
+            Operand op = new Operand(signedValue.ToString(), true);
+            Assert.IsTrue(op.IsImm);
+            Assert.AreEqual(unsignedValue, op.Imm);
+            Assert.AreEqual(16, op.NBits);
+        }
+        [TestMethod]
+        public void Test_Operand_Constant_NegativeDecimal_4()
+        {
+            long signedValue = -0x4FFF;
+            ulong unsignedValue = (ulong)signedValue;
 
-                Operand op = new Operand(signedValue.ToString(), true);
-                Assert.IsTrue(op.IsImm);
-                Assert.AreEqual(unsignedValue, op.Imm);
-                Assert.AreEqual(32, op.NBits);
-            }
-            {
-                long signedValue = -0x4FFF_0000_0000_0000;
-                ulong unsignedValue = (ulong)signedValue;
+            Operand op = new Operand(signedValue.ToString(), true);
+            Assert.IsTrue(op.IsImm);
+            Assert.AreEqual(unsignedValue, op.Imm);
+            Assert.AreEqual(16, op.NBits);
+        }
+        [TestMethod]
+        public void Test_Operand_Constant_NegativeDecimal_5()
+        {
+            long signedValue = -0x4FFF_0000;
+            ulong unsignedValue = (ulong)signedValue;
 
-                Operand op = new Operand(signedValue.ToString(), true);
-                Assert.IsTrue(op.IsImm);
-                Assert.AreEqual(unsignedValue, op.Imm);
-                Assert.AreEqual(64, op.NBits);
-            }
+            Operand op = new Operand(signedValue.ToString(), true);
+            Assert.IsTrue(op.IsImm);
+            Assert.AreEqual(unsignedValue, op.Imm);
+            Assert.AreEqual(32, op.NBits);
+        }
+        [TestMethod]
+        public void Test_Operand_Constant_NegativeDecimal_6()
+        {
+            long signedValue = -0x4FFF_0000_0000_0000;
+            ulong unsignedValue = (ulong)signedValue;
+
+            Operand op = new Operand(signedValue.ToString(), true);
+            Assert.IsTrue(op.IsImm);
+            Assert.AreEqual(unsignedValue, op.Imm);
+            Assert.AreEqual(64, op.NBits);
         }
     }
 }
+

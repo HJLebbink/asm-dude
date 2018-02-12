@@ -2396,13 +2396,13 @@ namespace AsmSim
 
                 #region Set the Flags
                 stateUpdate.Set(Flags.OF, of);
+                // if the shift is too larte than CF is undefined; if the shift is zero, than CF is unchanged; otherwise it is the provided value;
                 stateUpdate.Set(Flags.CF, ctx.MkITE(shiftTooLarge, OpcodeBase.Undef(Flags.CF, rand, ctx), ctx.MkITE(isZero, OpcodeBase.Get(Flags.CF, prevKey, ctx), cfIn)) as BoolExpr);
                 stateUpdate.Set(Flags.PF, ctx.MkITE(isZero, OpcodeBase.Get(Flags.PF, prevKey, ctx), ToolsFlags.Create_PF(value, ctx)) as BoolExpr);
                 stateUpdate.Set(Flags.ZF, ctx.MkITE(isZero, OpcodeBase.Get(Flags.ZF, prevKey, ctx), ToolsFlags.Create_ZF(value, ctx)) as BoolExpr);
                 stateUpdate.Set(Flags.SF, ctx.MkITE(isZero, OpcodeBase.Get(Flags.SF, prevKey, ctx), ToolsFlags.Create_SF(value, value.SortSize, ctx)) as BoolExpr);
                 stateUpdate.Set(Flags.AF, ctx.MkITE(isZero, OpcodeBase.Get(Flags.AF, prevKey, ctx), OpcodeBase.Undef(Flags.AF, rand, ctx)) as BoolExpr);
                 #endregion
-
             }
             public void UpdateFlagsRotate(BitVecExpr value, BoolExpr cfIn, BitVecExpr shiftCount, bool left)
             {
@@ -2479,9 +2479,9 @@ namespace AsmSim
             public override void Execute()
             {
                 var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SHR, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
-                this.UpdateFlagsShift(shiftValue.result, shiftValue.cf, shiftCount.shiftCount, shiftCount.tooLarge, false);
-                this.RegularUpdate.Set(this.op1, shiftValue.result);
+                var (result, cf) = BitOperations.ShiftOperations(Mnemonic.SHR, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
+                this.UpdateFlagsShift(result, cf, shiftCount.shiftCount, shiftCount.tooLarge, false);
+                this.RegularUpdate.Set(this.op1, result);
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
         }
@@ -2649,20 +2649,22 @@ namespace AsmSim
                 Context ctx = this._ctx;
                 uint nBits = (uint)this.op1.NBits;
                 var shiftCount = ShiftRotateBase.GetShiftCount(this.Op3Value, (int)nBits, ctx);
-                BitVecExpr nShifts = shiftCount.shiftCount;
-                BitVecExpr nShifts64 = ctx.MkZeroExt(nBits - 8, nShifts);
+                BitVecExpr nShifts8 = shiftCount.shiftCount; // nShifts8 is 8bits
+                BitVecExpr nShifts = ctx.MkZeroExt(nBits - 8, nShifts8);
                 BitVecExpr value_in = this.Op1Value;
 
                 // calculate new value of register
-                BitVecExpr bitPos = ctx.MkBVSub(nShifts, ctx.MkBV(1, 8));
-                BitVecExpr value_a = ctx.MkBVLSHR(value_in, nShifts64);
-                BitVecExpr value_b = ctx.MkBVSHL(this.Op2Value, ctx.MkBVSub(ctx.MkBV(nBits, nBits), nShifts64));
+                BitVecExpr value_a = ctx.MkBVLSHR(value_in, nShifts); // shift op1 nShift to the right while shifiting in 0
+                BitVecExpr value_b = ctx.MkBVSHL(this.Op2Value, ctx.MkBVSub(ctx.MkBV(nBits, nBits), nShifts));
                 BitVecExpr value_out = ctx.MkBVOR(value_a, value_b);
 
                 // calculate value of CF
-                BitVecExpr bitPos64 = ctx.MkZeroExt(nBits - 8, bitPos);
-                BoolExpr bitValue = ToolsZ3.GetBit(value_in, bitPos64, ctx);
-                BoolExpr cf = ctx.MkITE(ctx.MkEq(nShifts, ctx.MkBV(0, 8)), this.Undef(Flags.CF), bitValue) as BoolExpr;
+                BoolExpr cf = ToolsZ3.GetBit(value_in, ctx.MkBVSub(nShifts, ctx.MkBV(1, nBits)), ctx);
+
+                //TODO: check COUNT > SIZE
+                //THEN(*Bad parameters *)
+                //DEST is undefined;
+                //CF, OF, SF, ZF, AF, PF are undefined;
 
                 ShiftRotateBase.UpdateFlagsShift(value_out, cf, shiftCount.shiftCount, shiftCount.tooLarge, false, this.keys.PrevKey, this.RegularUpdate, this.Tools.Rand, this._ctx);
                 this.RegularUpdate.Set(this.op1, value_out);

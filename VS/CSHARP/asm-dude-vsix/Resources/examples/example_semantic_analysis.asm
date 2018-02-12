@@ -1,7 +1,5 @@
 .intel_syntax noprefix
 
-
-
 	#region Unreachable code
 	#pragma assume mov al, 1 << 3
 	cmp al, 1<<3
@@ -11,6 +9,16 @@
 	mov al, 2
 label2:
 	mov rbx, rax
+	#endregion
+
+
+	#pragma assume HLT ; HLT instruction will reset the simulator
+
+
+	#region negative constants
+	mov rax, -10
+	mov rbx, 10
+	add rax, rbx
 	#endregion
 
 
