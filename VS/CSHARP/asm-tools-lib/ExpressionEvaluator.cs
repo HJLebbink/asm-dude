@@ -24,6 +24,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 
+//using Microsoft.CodeAnalysis.CSharp.Scripting;
+//using Microsoft.CodeAnalysis.Scripting;
+
 namespace AsmTools
 {
     public class ExpressionEvaluator
@@ -190,7 +193,22 @@ namespace AsmTools
             return (Valid: parsedSuccessfully, Value: value, NBits: nBits);
         }
 
+
         public static (bool Valid, ulong Value, int NBits) Evaluate_Constant(string str, bool IsCapitals = false)
+        {
+            //try
+            {
+                Console.WriteLine(CSharpScript.EvaluateAsync("2+2"));
+                return (true, 0, 0);
+            }
+           // catch (CompilationErrorException e)
+            {
+               // Console.WriteLine(string.Join(Environment.NewLine, e.Diagnostics));
+                return (false, 0, 0);
+            }
+        }
+
+        public static (bool Valid, ulong Value, int NBits) Evaluate_Constant_OLD(string str, bool IsCapitals = false)
         {
             //Console.WriteLine("INFO: Evaluate_Constant: str=" + str + ": length=" + str.Length);
 
