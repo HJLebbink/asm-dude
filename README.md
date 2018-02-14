@@ -145,8 +145,8 @@ Visual Studio will launch under the experimental hive.
 * Add pragmas to disable warnings such as "#pragma AsmDude warning disable/restore".
 * Add support for MASM keyword "comment".
 * Add syntax highlighting, statement completion and syntax checks for struct member fields.
-* Disassembly window: show memory content from selected address (see https://github.com/HJLebbink/asm-dude/issues/72).
-* Disassembly window: show memory content of the stack frame and stack pointer (see https://github.com/HJLebbink/asm-dude/issues/72).
+* Disassembly window: show memory content from selected address (see [here](https://github.com/HJLebbink/asm-dude/issues/72)).
+* Disassembly window: show memory content of the stack frame and stack pointer (see [here](https://github.com/HJLebbink/asm-dude/issues/72)).
 
 ### Updates:
 * 19 February 2016: Initial alpha release. Basic highlighting and descriptions for i386 instructions are available.
