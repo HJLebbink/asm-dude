@@ -196,15 +196,22 @@ namespace AsmTools
 
         public static (bool Valid, ulong Value, int NBits) Evaluate_Constant(string str, bool IsCapitals = false)
         {
-            //try
+            if (true)
             {
-                Console.WriteLine(CSharpScript.EvaluateAsync("2+2"));
-                return (true, 0, 0);
+                return Evaluate_Constant_OLD(str, IsCapitals);
             }
-           // catch (CompilationErrorException e)
+            else
             {
-               // Console.WriteLine(string.Join(Environment.NewLine, e.Diagnostics));
-                return (false, 0, 0);
+                //try
+                {
+                    //    Console.WriteLine(CSharpScript.EvaluateAsync("2+2"));
+                    return (true, 0, 0);
+                }
+                // catch (CompilationErrorException e)
+                {
+                    // Console.WriteLine(string.Join(Environment.NewLine, e.Diagnostics));
+                    return (false, 0, 0);
+                }
             }
         }
 
