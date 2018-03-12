@@ -25,6 +25,6 @@
     </Assets>
     <Prerequisites>
         <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0.26004.1,16.0)" DisplayName="Visual Studio core editor" />
-        <Prerequisite Id="Microsoft.Net.Component.4.7.TargetingPack" Version="[15.0.26621.2,16.0)" DisplayName=".NET Framework 4.7 targeting pack" />
+        <Prerequisite Id="Microsoft.Net.Component.4.6.2.TargetingPack" Version="[15.6.27406.0,16.0)" DisplayName=".NET Framework 4.6.2 targeting pack" />
     </Prerequisites>
 </PackageManifest>
