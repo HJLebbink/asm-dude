@@ -267,9 +267,9 @@ namespace AsmSim
                 {
                     if (op1.IsMem)
                     {
-                        var mem = op1.Mem;
-                        if (mem.BaseReg != Rn.NOREG) yield return mem.BaseReg;
-                        if (mem.IndexReg != Rn.NOREG) yield return mem.IndexReg;
+                        var (BaseReg, IndexReg, Scale, Displacement) = op1.Mem;
+                        if (BaseReg != Rn.NOREG) yield return BaseReg;
+                        if (IndexReg != Rn.NOREG) yield return IndexReg;
                     }
                     if ((!op1_IsWrite) && (op1.IsReg))
                     {
@@ -698,13 +698,13 @@ namespace AsmSim
                 BitVecExpr a = this.Op1Value;
                 BitVecExpr b = this.Op2Value;
 
-                var tup = BitOperations.Addition(a, b, this._ctx);
-                this.RegularUpdate.Set(this.op1, tup.result);
+                var (result, cf, of, af) = BitOperations.Addition(a, b, this._ctx);
+                this.RegularUpdate.Set(this.op1, result);
                 this.RegularUpdate.Set(this.op2, a);// swap op1 and op2
-                this.RegularUpdate.Set(Flags.CF, tup.cf);
-                this.RegularUpdate.Set(Flags.OF, tup.of);
-                this.RegularUpdate.Set(Flags.AF, tup.af);
-                this.RegularUpdate.Set_SF_ZF_PF(tup.result);
+                this.RegularUpdate.Set(Flags.CF, cf);
+                this.RegularUpdate.Set(Flags.OF, of);
+                this.RegularUpdate.Set(Flags.AF, af);
+                this.RegularUpdate.Set_SF_ZF_PF(result);
             }
             public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, true); } }
             public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1, this.op2); } }
@@ -749,13 +749,13 @@ namespace AsmSim
                 this.RegularUpdate.Set(this.op1, this._ctx.MkITE(zf, this.Op2Value, op1) as BitVecExpr);
                 this.RegularUpdate.Set(regA, this._ctx.MkITE(zf, regA_Expr_Curr, op1) as BitVecExpr);
 
-                var tup = BitOperations.Substract(this.Op1Value, this.Op2Value, this._ctx);
-                this.RegularUpdate.Set(Flags.CF, tup.cf);
-                this.RegularUpdate.Set(Flags.OF, tup.of);
-                this.RegularUpdate.Set(Flags.AF, tup.af);
-                this.RegularUpdate.Set(Flags.SF, ToolsFlags.Create_SF(tup.result, tup.result.SortSize, this._ctx));
+                var (result, cf, of, af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this._ctx);
+                this.RegularUpdate.Set(Flags.CF, cf);
+                this.RegularUpdate.Set(Flags.OF, of);
+                this.RegularUpdate.Set(Flags.AF, af);
+                this.RegularUpdate.Set(Flags.SF, ToolsFlags.Create_SF(result, result.SortSize, this._ctx));
                 this.RegularUpdate.Set(Flags.ZF, zf);
-                this.RegularUpdate.Set(Flags.PF, ToolsFlags.Create_PF(tup.result, this._ctx));
+                this.RegularUpdate.Set(Flags.PF, ToolsFlags.Create_PF(result, this._ctx));
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
             public override IEnumerable<Rn> RegsReadStatic
@@ -1292,12 +1292,12 @@ namespace AsmSim
             public Add(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.ADD, args, keys, t) { }
             public override void Execute()
             {
-                var tup = BitOperations.Addition(this.Op1Value, this.Op2Value, this._ctx);
-                this.RegularUpdate.Set(this.op1, tup.result);
-                this.RegularUpdate.Set(Flags.CF, tup.cf);
-                this.RegularUpdate.Set(Flags.OF, tup.of);
-                this.RegularUpdate.Set(Flags.AF, tup.af);
-                this.RegularUpdate.Set_SF_ZF_PF(tup.result);
+                var (result, cf, of, af) = BitOperations.Addition(this.Op1Value, this.Op2Value, this._ctx);
+                this.RegularUpdate.Set(this.op1, result);
+                this.RegularUpdate.Set(Flags.CF, cf);
+                this.RegularUpdate.Set(Flags.OF, of);
+                this.RegularUpdate.Set(Flags.AF, af);
+                this.RegularUpdate.Set_SF_ZF_PF(result);
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
             public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
@@ -1309,12 +1309,12 @@ namespace AsmSim
             public Adc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.ADC, args, keys, t) { }
             public override void Execute()
             {
-                var tup = BitOperations.Addition(this.Op1Value, this.Op2Value, this.Get(Flags.CF), this._ctx);
-                this.RegularUpdate.Set(this.op1, tup.result);
-                this.RegularUpdate.Set(Flags.CF, tup.cf);
-                this.RegularUpdate.Set(Flags.OF, tup.of);
-                this.RegularUpdate.Set(Flags.AF, tup.af);
-                this.RegularUpdate.Set_SF_ZF_PF(tup.result);
+                var (result, cf, of, af) = BitOperations.Addition(this.Op1Value, this.Op2Value, this.Get(Flags.CF), this._ctx);
+                this.RegularUpdate.Set(this.op1, result);
+                this.RegularUpdate.Set(Flags.CF, cf);
+                this.RegularUpdate.Set(Flags.OF, of);
+                this.RegularUpdate.Set(Flags.AF, af);
+                this.RegularUpdate.Set_SF_ZF_PF(result);
             }
             public override Flags FlagsReadStatic { get { return Flags.CF; } }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
@@ -1333,12 +1333,12 @@ namespace AsmSim
             public Sub(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.SUB, args, keys, t) { }
             public override void Execute()
             {
-                var tup = BitOperations.Substract(this.Op1Value, this.Op2Value, this._ctx);
-                this.RegularUpdate.Set(this.op1, tup.result);
-                this.RegularUpdate.Set(Flags.CF, tup.cf);
-                this.RegularUpdate.Set(Flags.OF, tup.of);
-                this.RegularUpdate.Set(Flags.AF, tup.af);
-                this.RegularUpdate.Set_SF_ZF_PF(tup.result);
+                var (result, cf, of, af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this._ctx);
+                this.RegularUpdate.Set(this.op1, result);
+                this.RegularUpdate.Set(Flags.CF, cf);
+                this.RegularUpdate.Set(Flags.OF, of);
+                this.RegularUpdate.Set(Flags.AF, af);
+                this.RegularUpdate.Set_SF_ZF_PF(result);
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
             public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
@@ -1350,12 +1350,12 @@ namespace AsmSim
             public Sbb(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.SBB, args, keys, t) { }
             public override void Execute()
             {
-                var tup = BitOperations.Substract(this.Op1Value, this.Op2Value, this.Get(Flags.CF), this._ctx);
-                this.RegularUpdate.Set(this.op1, tup.result);
-                this.RegularUpdate.Set(Flags.CF, tup.cf);
-                this.RegularUpdate.Set(Flags.OF, tup.of);
-                this.RegularUpdate.Set(Flags.AF, tup.af);
-                this.RegularUpdate.Set_SF_ZF_PF(tup.result);
+                var (result, cf, of, af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this.Get(Flags.CF), this._ctx);
+                this.RegularUpdate.Set(this.op1, result);
+                this.RegularUpdate.Set(Flags.CF, cf);
+                this.RegularUpdate.Set(Flags.OF, of);
+                this.RegularUpdate.Set(Flags.AF, af);
+                this.RegularUpdate.Set_SF_ZF_PF(result);
             }
             public override Flags FlagsReadStatic { get { return Flags.CF; } }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
@@ -1970,12 +1970,12 @@ namespace AsmSim
             public Inc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.INC, args, Ot1.reg | Ot1.mem, keys, t) { }
             public override void Execute()
             {
-                var tup = BitOperations.Addition(this.Op1Value, this._ctx.MkBV(1, (uint)this.op1.NBits), this._ctx);
-                this.RegularUpdate.Set(this.op1, tup.result);
+                var (result, cf, of, af) = BitOperations.Addition(this.Op1Value, this._ctx.MkBV(1, (uint)this.op1.NBits), this._ctx);
+                this.RegularUpdate.Set(this.op1, result);
                 //CF is not updated!
-                this.RegularUpdate.Set(Flags.OF, tup.of);
-                this.RegularUpdate.Set(Flags.AF, tup.af);
-                this.RegularUpdate.Set_SF_ZF_PF(tup.result);
+                this.RegularUpdate.Set(Flags.OF, of);
+                this.RegularUpdate.Set(Flags.AF, af);
+                this.RegularUpdate.Set_SF_ZF_PF(result);
             }
             public override Flags FlagsWriteStatic { get { return Flags.PF_AF_ZF_SF_OF; } }
             public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true); } }
@@ -1987,12 +1987,12 @@ namespace AsmSim
             public Dec(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.DEC, args, Ot1.reg | Ot1.mem, keys, t) { }
             public override void Execute()
             {
-                var tup = BitOperations.Substract(this.Op1Value, this._ctx.MkBV(1, (uint)this.op1.NBits), this._ctx);
-                this.RegularUpdate.Set(this.op1, tup.result);
+                var (result, cf, of, af) = BitOperations.Substract(this.Op1Value, this._ctx.MkBV(1, (uint)this.op1.NBits), this._ctx);
+                this.RegularUpdate.Set(this.op1, result);
                 //CF is not updated!
-                this.RegularUpdate.Set(Flags.OF, tup.of);
-                this.RegularUpdate.Set(Flags.AF, tup.af);
-                this.RegularUpdate.Set_SF_ZF_PF(tup.result);
+                this.RegularUpdate.Set(Flags.OF, of);
+                this.RegularUpdate.Set(Flags.AF, af);
+                this.RegularUpdate.Set_SF_ZF_PF(result);
             }
             public override Flags FlagsWriteStatic { get { return Flags.PF_AF_ZF_SF_OF; } }
             public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true); } }
@@ -2004,12 +2004,12 @@ namespace AsmSim
             public Neg(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.NEG, args, Ot1.reg | Ot1.mem, keys, t) { }
             public override void Execute()
             {
-                var tup = BitOperations.Neg(this.Op1Value, this._ctx);
-                this.RegularUpdate.Set(this.op1, tup.result);
-                this.RegularUpdate.Set(Flags.CF, tup.cf);
-                this.RegularUpdate.Set(Flags.OF, tup.of);
-                this.RegularUpdate.Set(Flags.AF, tup.af);
-                this.RegularUpdate.Set_SF_ZF_PF(tup.result);
+                var (result, cf, of, af) = BitOperations.Neg(this.Op1Value, this._ctx);
+                this.RegularUpdate.Set(this.op1, result);
+                this.RegularUpdate.Set(Flags.CF, cf);
+                this.RegularUpdate.Set(Flags.OF, of);
+                this.RegularUpdate.Set(Flags.AF, af);
+                this.RegularUpdate.Set_SF_ZF_PF(result);
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
             public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true); } }
@@ -2021,11 +2021,11 @@ namespace AsmSim
             public Cmp(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.CMP, args, keys, t) { }
             public override void Execute()
             {
-                var tup = BitOperations.Substract(this.Op1Value, this.Op2Value, this._ctx);
-                this.RegularUpdate.Set(Flags.CF, tup.cf);
-                this.RegularUpdate.Set(Flags.OF, tup.of);
-                this.RegularUpdate.Set(Flags.AF, tup.af);
-                this.RegularUpdate.Set_SF_ZF_PF(tup.result);
+                var (result, cf, of, af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this._ctx);
+                this.RegularUpdate.Set(Flags.CF, cf);
+                this.RegularUpdate.Set(Flags.OF, of);
+                this.RegularUpdate.Set(Flags.AF, af);
+                this.RegularUpdate.Set_SF_ZF_PF(result);
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
             public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, false, this.op2, false); } }
@@ -2453,9 +2453,9 @@ namespace AsmSim
             public override void Execute()
             {
                 var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SAR, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
-                this.UpdateFlagsShift(shiftValue.result, shiftValue.cf, shiftCount.shiftCount, shiftCount.tooLarge, false);
-                this.RegularUpdate.Set(this.op1, shiftValue.result);
+                var (result, cf) = BitOperations.ShiftOperations(Mnemonic.SAR, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
+                this.UpdateFlagsShift(result, cf, shiftCount.shiftCount, shiftCount.tooLarge, false);
+                this.RegularUpdate.Set(this.op1, result);
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
         }
@@ -2466,9 +2466,9 @@ namespace AsmSim
             public override void Execute()
             {
                 var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SAL, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
-                this.UpdateFlagsShift(shiftValue.result, shiftValue.cf, shiftCount.shiftCount, shiftCount.tooLarge, true);
-                this.RegularUpdate.Set(this.op1, shiftValue.result);
+                var (result, cf) = BitOperations.ShiftOperations(Mnemonic.SAL, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
+                this.UpdateFlagsShift(result, cf, shiftCount.shiftCount, shiftCount.tooLarge, true);
+                this.RegularUpdate.Set(this.op1, result);
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
         }
@@ -2492,9 +2492,9 @@ namespace AsmSim
             public override void Execute()
             {
                 var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SHL, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
-                this.UpdateFlagsShift(shiftValue.result, shiftValue.cf, shiftCount.shiftCount, shiftCount.tooLarge, true);
-                this.RegularUpdate.Set(this.op1, shiftValue.result);
+                var (result, cf) = BitOperations.ShiftOperations(Mnemonic.SHL, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
+                this.UpdateFlagsShift(result, cf, shiftCount.shiftCount, shiftCount.tooLarge, true);
+                this.RegularUpdate.Set(this.op1, result);
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
         }
@@ -2508,9 +2508,9 @@ namespace AsmSim
             public override void Execute()
             {
                 var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.ROR, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
-                this.UpdateFlagsRotate(shiftValue.result, shiftValue.cf, shiftCount.shiftCount, false);
-                this.RegularUpdate.Set(this.op1, shiftValue.result);
+                var (result, cf) = BitOperations.ShiftOperations(Mnemonic.ROR, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
+                this.UpdateFlagsRotate(result, cf, shiftCount.shiftCount, false);
+                this.RegularUpdate.Set(this.op1, result);
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF | Flags.OF; } }
         }
@@ -2521,9 +2521,9 @@ namespace AsmSim
             public override void Execute()
             {
                 var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.RCR, this.Op1Value, shiftCount.shiftCount, this.Get(Flags.CF), this.keys.PrevKey, this._ctx);
-                this.UpdateFlagsRotate(shiftValue.result, shiftValue.cf, shiftCount.shiftCount, false);
-                this.RegularUpdate.Set(this.op1, shiftValue.result);
+                var (result, cf) = BitOperations.ShiftOperations(Mnemonic.RCR, this.Op1Value, shiftCount.shiftCount, this.Get(Flags.CF), this.keys.PrevKey, this._ctx);
+                this.UpdateFlagsRotate(result, cf, shiftCount.shiftCount, false);
+                this.RegularUpdate.Set(this.op1, result);
             }
             public override Flags FlagsReadStatic { get { return Flags.CF; } }
             public override Flags FlagsWriteStatic { get { return Flags.CF | Flags.OF; } }
@@ -2535,9 +2535,9 @@ namespace AsmSim
             public override void Execute()
             {
                 var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.RCL, this.Op1Value, shiftCount.shiftCount, this.Get(Flags.CF), this.keys.PrevKey, this._ctx);
-                this.UpdateFlagsRotate(shiftValue.result, shiftValue.cf, shiftCount.shiftCount, true);
-                this.RegularUpdate.Set(this.op1, shiftValue.result);
+                var (result, cf) = BitOperations.ShiftOperations(Mnemonic.RCL, this.Op1Value, shiftCount.shiftCount, this.Get(Flags.CF), this.keys.PrevKey, this._ctx);
+                this.UpdateFlagsRotate(result, cf, shiftCount.shiftCount, true);
+                this.RegularUpdate.Set(this.op1, result);
             }
             public override Flags FlagsReadStatic { get { return Flags.CF; } }
             public override Flags FlagsWriteStatic { get { return Flags.CF | Flags.OF; } }
@@ -2549,9 +2549,9 @@ namespace AsmSim
             public override void Execute()
             {
                 var shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.ROL, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
-                this.UpdateFlagsRotate(shiftValue.result, shiftValue.cf, shiftCount.shiftCount, true);
-                this.RegularUpdate.Set(this.op1, shiftValue.result);
+                var (result, cf) = BitOperations.ShiftOperations(Mnemonic.ROL, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
+                this.UpdateFlagsRotate(result, cf, shiftCount.shiftCount, true);
+                this.RegularUpdate.Set(this.op1, result);
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF | Flags.OF; } }
         }
@@ -2578,8 +2578,8 @@ namespace AsmSim
             public override void Execute()
             {
                 BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx).shiftCount;
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.ROR, this.Op1Value, shiftCount, this._ctx, this.Tools.Rand);
-                this.RegularUpdate.Set(this.op1, shiftValue.result);
+                var (result, cf) = BitOperations.ShiftOperations(Mnemonic.ROR, this.Op1Value, shiftCount, this._ctx, this.Tools.Rand);
+                this.RegularUpdate.Set(this.op1, result);
             }
         }
         public sealed class Sarx : ShiftBaseX
@@ -2588,8 +2588,8 @@ namespace AsmSim
             public override void Execute()
             {
                 BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx).shiftCount;
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SAR, this.Op1Value, shiftCount, this._ctx, this.Tools.Rand);
-                this.RegularUpdate.Set(this.op1, shiftValue.result);
+                var (result, cf) = BitOperations.ShiftOperations(Mnemonic.SAR, this.Op1Value, shiftCount, this._ctx, this.Tools.Rand);
+                this.RegularUpdate.Set(this.op1, result);
             }
         }
         public sealed class Shlx : ShiftBaseX
@@ -2598,8 +2598,8 @@ namespace AsmSim
             public override void Execute()
             {
                 BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx).shiftCount;
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SHL, this.Op1Value, shiftCount, this._ctx, this.Tools.Rand);
-                this.RegularUpdate.Set(this.op1, shiftValue.result);
+                var (result, cf) = BitOperations.ShiftOperations(Mnemonic.SHL, this.Op1Value, shiftCount, this._ctx, this.Tools.Rand);
+                this.RegularUpdate.Set(this.op1, result);
             }
         }
         public sealed class Shrx : ShiftBaseX
@@ -2608,8 +2608,8 @@ namespace AsmSim
             public override void Execute()
             {
                 BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx).shiftCount;
-                var shiftValue = BitOperations.ShiftOperations(Mnemonic.SHR, this.Op1Value, shiftCount, this._ctx, this.Tools.Rand);
-                this.RegularUpdate.Set(this.op1, shiftValue.result);
+                var (result, cf) = BitOperations.ShiftOperations(Mnemonic.SHR, this.Op1Value, shiftCount, this._ctx, this.Tools.Rand);
+                this.RegularUpdate.Set(this.op1, result);
             }
         }
         #endregion  Shift/Rotate X (no flags updates)
@@ -2678,8 +2678,8 @@ namespace AsmSim
             {
                 Context ctx = this._ctx;
                 uint nBits = (uint)this.op1.NBits;
-                var shiftTup = ShiftRotateBase.GetShiftCount(this.Op3Value, (int)nBits, ctx);
-                BitVecExpr nShifts = shiftTup.shiftCount;
+                var (shiftCount, tooLarge) = ShiftRotateBase.GetShiftCount(this.Op3Value, (int)nBits, ctx);
+                BitVecExpr nShifts = shiftCount;
                 BitVecExpr nShifts64 = ctx.MkZeroExt(nBits - 8, nShifts);
                 BitVecExpr value_in = this.Op1Value;
 
@@ -2694,7 +2694,7 @@ namespace AsmSim
                 BoolExpr bitValue = ToolsZ3.GetBit(value_in, bitPos64, ctx);
                 BoolExpr cf = ctx.MkITE(ctx.MkEq(nShifts, ctx.MkBV(0, 8)), this.Undef(Flags.CF), bitValue) as BoolExpr;
 
-                ShiftRotateBase.UpdateFlagsShift(value_out, cf, shiftTup.shiftCount, shiftTup.tooLarge, true, this.keys.PrevKey, this.RegularUpdate, this.Tools.Rand, this._ctx);
+                ShiftRotateBase.UpdateFlagsShift(value_out, cf, shiftCount, tooLarge, true, this.keys.PrevKey, this.RegularUpdate, this.Tools.Rand, this._ctx);
                 this.RegularUpdate.Set(this.op1, value_out);
             }
         }
@@ -3146,12 +3146,12 @@ namespace AsmSim
                     {
                         if (this.op1.NBits != 16)
                         {
-                            this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                            this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
                         }
                     }
                     else
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                        this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
                     }
                 }
             }
@@ -3379,12 +3379,12 @@ namespace AsmSim
 
                 if (this._prefix == Mnemonic.NONE)
                 {
-                    var tup = BitOperations.Substract(this.GetMem(src, this._nBytes), this.GetMem(dst, this._nBytes), this._ctx);
+                    var (result, cf, of, af) = BitOperations.Substract(this.GetMem(src, this._nBytes), this.GetMem(dst, this._nBytes), this._ctx);
 
-                    this.RegularUpdate.Set(Flags.CF, tup.cf);
-                    this.RegularUpdate.Set(Flags.OF, tup.of);
-                    this.RegularUpdate.Set(Flags.AF, tup.af);
-                    this.RegularUpdate.Set_SF_ZF_PF(tup.result);
+                    this.RegularUpdate.Set(Flags.CF, cf);
+                    this.RegularUpdate.Set(Flags.OF, of);
+                    this.RegularUpdate.Set(Flags.AF, af);
+                    this.RegularUpdate.Set_SF_ZF_PF(result);
 
                     BitVecExpr totalBytes = this.IncrementBV;
                     this.RegularUpdate.Set(src, ctx.MkITE(df, ctx.MkBVSub(srcBV, totalBytes), ctx.MkBVAdd(srcBV, totalBytes)) as BitVecExpr);
@@ -3546,12 +3546,12 @@ namespace AsmSim
 
                 if (this._prefix == Mnemonic.NONE)
                 {
-                    var tup = BitOperations.Substract(accumulator, this.GetMem(dst, this._nBytes), this._ctx);
+                    var (result, cf, of, af) = BitOperations.Substract(accumulator, this.GetMem(dst, this._nBytes), this._ctx);
 
-                    this.RegularUpdate.Set(Flags.CF, tup.cf);
-                    this.RegularUpdate.Set(Flags.OF, tup.of);
-                    this.RegularUpdate.Set(Flags.AF, tup.af);
-                    this.RegularUpdate.Set_SF_ZF_PF(tup.result);
+                    this.RegularUpdate.Set(Flags.CF, cf);
+                    this.RegularUpdate.Set(Flags.OF, of);
+                    this.RegularUpdate.Set(Flags.AF, af);
+                    this.RegularUpdate.Set_SF_ZF_PF(result);
 
                     BitVecExpr totalBytes = this.IncrementBV;
                     this.RegularUpdate.Set(dst, ctx.MkITE(df, ctx.MkBVSub(dstBV, totalBytes), ctx.MkBVAdd(dstBV, totalBytes)) as BitVecExpr);

@@ -323,10 +323,10 @@ namespace AsmSim
                     var nextLineNumber = sFlow.Get_Next_LineNumber(currentLineNumber);
                     (string nextKey, string nextKeyBranch) = sFlow.Get_Key(nextLineNumber);
 
-                    var updates = Runner.Execute(sFlow, currentLineNumber, (prevKey, nextKey, nextKeyBranch), this._tools);
+                    var (Regular, Branch) = Runner.Execute(sFlow, currentLineNumber, (prevKey, nextKey, nextKeyBranch), this._tools);
 
-                    HandleBranch_LOCAL(currentLineNumber, nextLineNumber.Branch, updates.Branch, prevKey, nextKeyBranch);
-                    HandleRegular_LOCAL(currentLineNumber, nextLineNumber.Regular, updates.Regular, prevKey, nextKey);
+                    HandleBranch_LOCAL(currentLineNumber, nextLineNumber.Branch, Branch, prevKey, nextKeyBranch);
+                    HandleRegular_LOCAL(currentLineNumber, nextLineNumber.Regular, Regular, prevKey, nextKey);
                 }
             }
             #region Local Methods
@@ -421,16 +421,16 @@ namespace AsmSim
                         string prevKey = sFlow.Get_Key(prev.LineNumber);
                         if (!this.Has_Edge(prevKey, nextKey, prev.IsBranch))
                         {
-                            var updates = Runner.Execute(sFlow, prev.LineNumber, (prevKey, nextKey, nextKey), this._tools);
+                            var (Regular, Branch) = Runner.Execute(sFlow, prev.LineNumber, (prevKey, nextKey, nextKey), this._tools);
                             StateUpdate update = null;
                             if (prev.IsBranch)
                             {
-                                update = updates.Branch;
-                                updates.Regular?.Dispose();
+                                update = Branch;
+                                Regular?.Dispose();
                             } else
                             {
-                                update = updates.Regular;
-                                updates.Branch?.Dispose();
+                                update = Regular;
+                                Branch?.Dispose();
                             }
 
                             this.Add_Vertex(prevKey, prev.LineNumber);
