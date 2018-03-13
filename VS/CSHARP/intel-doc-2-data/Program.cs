@@ -24,7 +24,15 @@ namespace intel_doc_2_data
 
         static void Payload()
         {
-            string path = "../../../../asm-dude.wiki/doc";
+            //string path = "../../../../asm-dude.wiki/doc";
+            string path = "H:/Dropbox/sc/GitHub/asm-dude.wiki/doc";
+
+            if (!Directory.Exists(path))
+            {
+                Console.WriteLine("Could not find directory \"" + path + "\".");
+                return;
+            }
+
             StringBuilder sb = new StringBuilder();
             StringBuilder sb2 = new StringBuilder();
 
