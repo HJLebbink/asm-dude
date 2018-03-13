@@ -1319,7 +1319,7 @@ IMUL	R16,R/M16	8086	IMUL R16,R/M16	word register ← word register ∗ r/m16.
 IMUL	R32,R/M32	386	IMUL R32,R/M32	doubleword register ← doubleword register ∗ r/m32.
 IMUL	R64,R/M64	X64	IMUL R64,R/M64	Quadword register ← Quadword register ∗ r/m64.
 IMUL	R16,R/M16,IMM8	8086	IMUL R16,R/M16,IMM8	word register ← r/m16 ∗ sign-extended immediate byte.
-IMUL	R32,R/M32,IMM8	386	IMUL R32,R/M32,IMM8	doubleword register ← r/m32 ∗ sign- extended immediate byte.
+IMUL	R32,R/M32,IMM8	386	IMUL R32,R/M32,IMM8	doubleword register ← r/m32 ∗ sign-extended immediate byte.
 IMUL	R64,R/M64,IMM8	X64	IMUL R64,R/M64,IMM8	Quadword register ← r/m64 ∗ sign-extended immediate byte.
 IMUL	R16,R/M16,IMM16	8086	IMUL R16,R/M16,IMM16	word register ← r/m16 ∗ immediate word.
 IMUL	R32,R/M32,IMM32	386	IMUL R32,R/M32,IMM32	doubleword register ← r/m32 ∗ immediate doubleword.
@@ -2569,9 +2569,9 @@ VPBLENDW	XMM,XMM,XMM/M128,IMM8	AVX	VPBLENDW XMM1,XMM2,XMM3/M128,IMM8	Select word
 VPBLENDW	YMM,YMM,YMM/M256,IMM8	AVX2	VPBLENDW YMM1,YMM2,YMM3/M256,IMM8	Select words from ymm2 and ymm3/m256 from mask specified in imm8 and store the values into ymm1.
 ;--------------------------------------------------------
 GENERAL	PCLMULQDQ	Carry-Less Multiplication Quadword	PCLMULQDQ
-PCLMULQDQ	XMM,XMM/M128,IMM8	PCLMULQDQ	PCLMULQDQ XMM1,XMM2/M128,IMM8	Carry-less multiplication of one quadword of xmm1 by one quadword of xmm2/m128, stores the 128-bit result in xmm1. The imme- diate is used to determine which quadwords of xmm1 and xmm2/m128 should be used.
+PCLMULQDQ	XMM,XMM/M128,IMM8	PCLMULQDQ	PCLMULQDQ XMM1,XMM2/M128,IMM8	Carry-less multiplication of one quadword of xmm1 by one quadword of xmm2/m128, stores the 128-bit result in xmm1. The immediate is used to determine which quadwords of xmm1 and xmm2/m128 should be used.
 GENERAL	VPCLMULQDQ	Carry-Less Multiplication Quadword	PCLMULQDQ
-VPCLMULQDQ	XMM,XMM,XMM/M128,IMM8	PCLMULQDQ,AVX	VPCLMULQDQ XMM1,XMM2,XMM3/M128,IMM8	Carry-less multiplication of one quadword of xmm2 by one quadword of xmm3/m128, stores the 128-bit result in xmm1. The imme- diate is used to determine which quadwords of xmm2 and xmm3/m128 should be used.
+VPCLMULQDQ	XMM,XMM,XMM/M128,IMM8	PCLMULQDQ,AVX	VPCLMULQDQ XMM1,XMM2,XMM3/M128,IMM8	Carry-less multiplication of one quadword of xmm2 by one quadword of xmm3/m128, stores the 128-bit result in xmm1. The immediate is used to determine which quadwords of xmm2 and xmm3/m128 should be used.
 ;--------------------------------------------------------
 GENERAL	PCMPEQB	Compare Packed Data for Equal	PCMPEQB_PCMPEQW_PCMPEQD
 PCMPEQB	MM,MM/M64	MMX	PCMPEQB MM,MM/M64	Compare packed bytes in mm/m64 and mm for equality.
