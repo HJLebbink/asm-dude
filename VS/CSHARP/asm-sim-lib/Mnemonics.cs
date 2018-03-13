@@ -3237,7 +3237,9 @@ namespace AsmSim
                         case 2: return Rn.AX;
                         case 4: return Rn.EAX;
                         case 8: return Rn.RAX;
-                        default: throw new Exception();
+                        default:
+                            Console.WriteLine("WARNING: StringOperationAbstract: AccumulatorReg: _nBytes has invalid value " + this._nBytes + ".");
+                            return Rn.AL;
                     }
                 }
             }

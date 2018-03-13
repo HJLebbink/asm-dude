@@ -199,11 +199,11 @@ namespace AsmDude.HighlightWord
                     }
                     else
                     {
-                        var tup = AsmTools.AsmSourceTools.Parse_Constant(this.NewWord);
-                        if (tup.Valid)
+                        var (Valid, Value, NBits) = AsmTools.AsmSourceTools.Parse_Constant(this.NewWord);
+                        if (Valid)
                         {
                             //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. Contant={1}", this.ToString(), this.NewWord));
-                            string t = AsmTools.AsmSourceTools.Get_Related_Constant(this.NewWord, tup.Value, tup.NBits);
+                            string t = AsmTools.AsmSourceTools.Get_Related_Constant(this.NewWord, Value, NBits);
                             findData = new FindData(t, s)
                             {
                                 FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions
