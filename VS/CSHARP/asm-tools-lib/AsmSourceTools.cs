@@ -243,7 +243,7 @@ namespace AsmTools
                         inStringDef = true;
                         keywordBegin = i; // '"' is part of the keyword
                     }
-                    else if (IsSeparatorChar(c))
+                    else if (IsSeparatorChar_NoOperator(c))
                     {
                         if (keywordBegin < i)
                         {
@@ -273,6 +273,11 @@ namespace AsmTools
             {
                 yield return (keywordBegin, line.Length, false);
             }
+        }
+
+        public static bool IsSeparatorChar_NoOperator(char c)
+        {
+            return char.IsWhiteSpace(c) || c.Equals(',') || c.Equals('[') || c.Equals(']') || c.Equals('(') || c.Equals(')') || c.Equals('{') || c.Equals('}') || c.Equals(':');
         }
 
         public static bool IsSeparatorChar(char c)
@@ -460,8 +465,8 @@ namespace AsmTools
             {
                 string y = x[i].Trim();
 
-                var t2 = ExpressionEvaluator.Parse_Constant(y, true);
-                if (t2.Valid)
+                var (Valid, Value, NBits) = ExpressionEvaluator.Parse_Constant(y, true);
+                if (Valid)
                 {
                     if (foundDisplacement)
                     {
@@ -471,7 +476,7 @@ namespace AsmTools
                     else
                     {
                         foundDisplacement = true;
-                        displacement = (negativeDisplacement) ? -(long)t2.Value : (long)t2.Value;
+                        displacement = (negativeDisplacement) ? -(long)Value : (long)Value;
                     }
                 }
                 else
