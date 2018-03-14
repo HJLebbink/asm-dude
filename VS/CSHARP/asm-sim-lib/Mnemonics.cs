@@ -468,7 +468,7 @@ namespace AsmSim
             {
                 if (args.Length > maxNArgs)
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Only " + maxNArgs + " operand(s) are allowed, and received " + args.Length + " operand(s).");
+                    this.SyntaxError = string.Format("\"{0}\": Only {1} operand(s) are allowed, and received {2} operand(s).", this.ToString(), maxNArgs, args.Length);
                 }
                 if (this.NOperands >= 1)
                 {
@@ -1877,7 +1877,7 @@ namespace AsmSim
                 BitVecExpr quotient = ctx.MkBVUDiv(term1, term2);
                 BitVecExpr remainder = ctx.MkBVURem(term1, term2);
 
-                Console.WriteLine("op1Value=" + op1Value + "; term1=" + term1 + "; term2=" + term2 + "; quotient=" + quotient + "; remainder=" + remainder);
+                //Console.WriteLine("op1Value=" + op1Value + "; term1=" + term1 + "; term2=" + term2 + "; quotient=" + quotient + "; remainder=" + remainder);
 
                 BoolExpr op1IsZero = ctx.MkEq(op1Value, ctx.MkBV(0, nBits));
                 BoolExpr quotientTooLarge = ctx.MkBVUGT(quotient, maxValue);
