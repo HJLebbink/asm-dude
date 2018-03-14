@@ -21,11 +21,9 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Threading.Tasks;
+using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.Scripting;
 
 namespace AsmTools
 {
@@ -55,7 +53,6 @@ namespace AsmTools
                 isDecimal = true;
                 isNegative = true;
             }
-
 
             // note the special case of token 0h (zero hex) should not be confused with the prefix 0h;
             else if (str.EndsWith("H", StringComparison.Ordinal))
@@ -178,19 +175,32 @@ namespace AsmTools
             return (Valid: parsedSuccessfully, Value: value, NBits: nBits);
         }
 
-        public static (bool Valid, ulong Value, int NBits) Evaluate_Constant(string str, bool IsCapitals = false)
+        public static (bool Valid, ulong Value, int NBits) Evaluate_Constant(string str, bool isCapitals = false)
         {
-            try
+            // 1] test whether str has digits, if it has none it is not a constant
+            if (!str.Any(char.IsDigit)) return (false, 0, -1);
+
+            // 2] test whether str is a constant
+            var v = Parse_Constant(str, isCapitals);
+            if (v.Valid) return v;
+
+            // 3] check if str contains operators
+            if (str.Contains('+') || str.Contains('-') || str.Contains('*') || str.Contains('/') ||
+                str.Contains("<<") || str.Contains(">>"))
             {
-                var t = CSharpScript.EvaluateAsync<ulong>(str);
-                ulong value = t.Result;
-                bool isNegative = false;
-                return (true, value, AsmSourceTools.NBitsStorageNeeded(value, isNegative));
+                // second: if str is not a constant, test whether evaluating it yields a ulong
+                try
+                {
+                    var t = CSharpScript.EvaluateAsync<ulong>(str);
+                    ulong value = t.Result;
+                    bool isNegative = false;
+                    return (true, value, AsmSourceTools.NBitsStorageNeeded(value, isNegative));
+                }
+                catch (Exception)
+                {}
             }
-            catch (Exception)
-            {
-                return (false, 0, -1);
-            }
+            // 4] don't know what it is but it is not likely to be an constant.
+            return (false, 0, -1);
         }
     }
 }
