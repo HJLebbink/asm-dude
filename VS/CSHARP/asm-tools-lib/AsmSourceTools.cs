@@ -243,7 +243,8 @@ namespace AsmTools
                         inStringDef = true;
                         keywordBegin = i; // '"' is part of the keyword
                     }
-                    else if (IsSeparatorChar_NoOperator(c))
+                    //else if (IsSeparatorChar_NoOperator(c))
+                    else if (IsSeparatorChar(c))
                     {
                         if (keywordBegin < i)
                         {
