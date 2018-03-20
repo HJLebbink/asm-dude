@@ -4,7 +4,6 @@ using AsmSim;
 using Microsoft.Z3;
 using AsmTools;
 using System.Diagnostics;
-using AsmSim.Mnemonics;
 using System.Collections.Generic;
 
 namespace unit_tests_asm_z3

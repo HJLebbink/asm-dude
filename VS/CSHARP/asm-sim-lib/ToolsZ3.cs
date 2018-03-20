@@ -452,9 +452,9 @@ namespace AsmSim
 
         public static string ToStringDec(Tv[] a)
         {
-            var r = ToUlong();
-            if (r.Value != null) return r.Value.ToString() + "d";
-            return r.Misc.ToString();
+            var (Value, Misc) = ToUlong();
+            if (Value != null) return Value.ToString() + "d";
+            return Misc.ToString();
 
             #region LocalMethod
             (ulong? Value, Tv Misc) ToUlong()
@@ -929,14 +929,14 @@ namespace AsmSim
 
         public static Expr UpdateConstName(Expr expr, string postfix, Context ctx)
         {
-            var tup = GetConstants(expr);
+            var (BoolConstants, BvConstants) = GetConstants(expr);
 
-            foreach (Symbol s in tup.BoolConstants)
+            foreach (Symbol s in BoolConstants)
             {
                 expr = expr.Substitute(ctx.MkBoolConst(s), ctx.MkBoolConst(s + postfix));
                 //Console.WriteLine("UpdateConstName: s=" + s + "; expr=" + expr);
             }
-            foreach (Symbol s in tup.BvConstants)
+            foreach (Symbol s in BvConstants)
             {
                 expr = expr.Substitute(ctx.MkBVConst(s, 64), ctx.MkBVConst(s + postfix, 64));
                 //Console.WriteLine("UpdateConstName: s=" + s + "; expr=" + expr);

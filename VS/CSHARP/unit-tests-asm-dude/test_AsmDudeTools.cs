@@ -1,9 +1,8 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace unit_tests
 {
-	[TestClass]
+    [TestClass]
 	public class test_AsmDudeTools
 	{
 	//	[TestMethod]

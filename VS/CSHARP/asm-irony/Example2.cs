@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using Irony.Parsing;
-using System.Globalization;
 using System.Diagnostics;
 
-namespace asm_irony {
+namespace asm_irony
+{
 
     [Language("asm2", "1.0", "Assembly Intel-Style Grammar")]
     public class AsmGrammar2 : Grammar {

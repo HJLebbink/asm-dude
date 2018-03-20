@@ -291,29 +291,29 @@ namespace unit_tests_asm_z3
             if (logToDisplay) Console.WriteLine(flow);
 
             {
-                var v = flow.Is_Loop_Branch_Point(0);
-                Assert.IsFalse(v.IsLoopBranchPoint);
+                var (IsLoopBranchPoint, BranchToExitLoop) = flow.Is_Loop_Branch_Point(0);
+                Assert.IsFalse(IsLoopBranchPoint);
             }
             {
-                var v = flow.Is_Loop_Branch_Point(1);
-                Assert.IsFalse(v.IsLoopBranchPoint);
+                var (IsLoopBranchPoint, BranchToExitLoop) = flow.Is_Loop_Branch_Point(1);
+                Assert.IsFalse(IsLoopBranchPoint);
             }
             {
-                var v = flow.Is_Loop_Branch_Point(2);
-                Assert.IsFalse(v.IsLoopBranchPoint);
+                var (IsLoopBranchPoint, BranchToExitLoop) = flow.Is_Loop_Branch_Point(2);
+                Assert.IsFalse(IsLoopBranchPoint);
             }
             {
-                var v = flow.Is_Loop_Branch_Point(3);
-                Assert.IsFalse(v.IsLoopBranchPoint);
+                var (IsLoopBranchPoint, BranchToExitLoop) = flow.Is_Loop_Branch_Point(3);
+                Assert.IsFalse(IsLoopBranchPoint);
             }
             {
-                var v = flow.Is_Loop_Branch_Point(4);
-                Assert.IsTrue(v.IsLoopBranchPoint);
-                Assert.IsFalse(v.BranchToExitLoop);
+                var (IsLoopBranchPoint, BranchToExitLoop) = flow.Is_Loop_Branch_Point(4);
+                Assert.IsTrue(IsLoopBranchPoint);
+                Assert.IsFalse(BranchToExitLoop);
             }
             {
-                var v = flow.Is_Loop_Branch_Point(5);
-                Assert.IsFalse(v.IsLoopBranchPoint);
+                var (IsLoopBranchPoint, BranchToExitLoop) = flow.Is_Loop_Branch_Point(5);
+                Assert.IsFalse(IsLoopBranchPoint);
             }
         }
 
@@ -333,29 +333,29 @@ namespace unit_tests_asm_z3
             if (logToDisplay) Console.WriteLine(flow);
 
             {
-                var v = flow.Is_Loop_Merge_Point(0);
-                Assert.IsFalse(v.IsLoopMergePoint);
+                var (IsLoopMergePoint, LoopLineNumber) = flow.Is_Loop_Merge_Point(0);
+                Assert.IsFalse(IsLoopMergePoint);
             }
             {
-                var v = flow.Is_Loop_Merge_Point(1);
-                Assert.IsTrue(v.IsLoopMergePoint);
+                var (IsLoopMergePoint, LoopLineNumber) = flow.Is_Loop_Merge_Point(1);
+                Assert.IsTrue(IsLoopMergePoint);
                 //Assert.IsFalse(v.BranchToExitLoop);
             }
             {
-                var v = flow.Is_Loop_Merge_Point(2);
-                Assert.IsFalse(v.IsLoopMergePoint);
+                var (IsLoopMergePoint, LoopLineNumber) = flow.Is_Loop_Merge_Point(2);
+                Assert.IsFalse(IsLoopMergePoint);
             }
             {
-                var v = flow.Is_Loop_Merge_Point(3);
-                Assert.IsFalse(v.IsLoopMergePoint);
+                var (IsLoopMergePoint, LoopLineNumber) = flow.Is_Loop_Merge_Point(3);
+                Assert.IsFalse(IsLoopMergePoint);
             }
             {
-                var v = flow.Is_Loop_Merge_Point(4);
-                Assert.IsFalse(v.IsLoopMergePoint);
+                var (IsLoopMergePoint, LoopLineNumber) = flow.Is_Loop_Merge_Point(4);
+                Assert.IsFalse(IsLoopMergePoint);
             }
             {
-                var v = flow.Is_Loop_Merge_Point(5);
-                Assert.IsFalse(v.IsLoopMergePoint);
+                var (IsLoopMergePoint, LoopLineNumber) = flow.Is_Loop_Merge_Point(5);
+                Assert.IsFalse(IsLoopMergePoint);
             }
         }
     }

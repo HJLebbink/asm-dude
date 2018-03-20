@@ -37,7 +37,6 @@ using Microsoft.VisualStudio.Text.Adornments;
 using AsmTools;
 using AsmDude.SyntaxHighlighting;
 using AsmDude.Tools;
-using AsmSim;
 
 namespace AsmDude.Squiggles
 {
@@ -203,13 +202,13 @@ namespace AsmDude.Squiggles
                                 Rn regName = RegisterTools.ParseRn(tagSpan.GetText());
                                 //AsmDudeToolsStatic.Output_INFO("SquigglesTagger:GetTags: found register " + regName + " at line " + lineNumber);
                                 bool preCompute = false;
-                                var v1 = this._asmSimulator.Has_Register_Value(regName, lineNumber, true, preCompute);
-                                if (!v1.Bussy)
+                                var (HasValue1, Bussy1) = this._asmSimulator.Has_Register_Value(regName, lineNumber, true, preCompute);
+                                if (!Bussy1)
                                 {
-                                    var v2 = this._asmSimulator.Has_Register_Value(regName, lineNumber, false, preCompute);
-                                    if (!v2.Bussy)
+                                    var (HasValue2, Bussy2) = this._asmSimulator.Has_Register_Value(regName, lineNumber, false, preCompute);
+                                    if (!Bussy2)
                                     {
-                                        if ((v1.HasValue || v2.HasValue))
+                                        if ((HasValue1 || HasValue2))
                                         {   // only show squiggles to indicate that information is available
                                             //AsmDudeToolsStatic.Output_INFO("SquigglesTagger:GetTags: adding squiggles for register " + regName + " at line " + lineNumber);
                                             yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.Warning));
@@ -466,33 +465,33 @@ namespace AsmDude.Squiggles
 
                             if (Settings.Default.AsmSim_Show_Syntax_Errors)
                             {
-                                foreach (var tup in this._asmSimulator.Syntax_Errors)
+                                foreach (var (LineNumber, info) in this._asmSimulator.Syntax_Errors)
                                 {
-                                    this.AddErrorTask_Syntax_Error_Async(tup.LineNumber, tup.info.Mnemonic.ToString(), tup.info.Message);
+                                    this.AddErrorTask_Syntax_Error_Async(LineNumber, info.Mnemonic.ToString(), info.Message);
                                     errorListNeedsRefresh = true;
                                 }
                             }
                             if (Settings.Default.AsmSim_Show_Usage_Of_Undefined)
                             {
-                                foreach (var tup in this._asmSimulator.Usage_Undefined)
+                                foreach (var (LineNumber, info) in this._asmSimulator.Usage_Undefined)
                                 {
-                                    this.AddErrorTask_Usage_Undefined_Async(tup.LineNumber, tup.info.Mnemonic.ToString(), tup.info.Message);
+                                    this.AddErrorTask_Usage_Undefined_Async(LineNumber, info.Mnemonic.ToString(), info.Message);
                                     errorListNeedsRefresh = true;
                                 }
                             }
                             if (Settings.Default.AsmSim_Show_Redundant_Instructions)
                             {
-                                foreach (var tup in this._asmSimulator.Redundant_Instruction)
+                                foreach (var (LineNumber, info) in this._asmSimulator.Redundant_Instruction)
                                 {
-                                    this.AddErrorTask_Redundant_Instruction_Async(tup.LineNumber, tup.info.Mnemonic.ToString(), tup.info.Message);
+                                    this.AddErrorTask_Redundant_Instruction_Async(LineNumber, info.Mnemonic.ToString(), info.Message);
                                     errorListNeedsRefresh = true;
                                 }
                             }
                             if (Settings.Default.AsmSim_Show_Unreachable_Instructions)
                             {
-                                foreach (var tup in this._asmSimulator.Unreachable_Instruction)
+                                foreach (var (LineNumber, info) in this._asmSimulator.Unreachable_Instruction)
                                 {
-                                    this.AddErrorTask_Unreachable_Instruction_Async(tup.LineNumber, tup.info.Mnemonic.ToString(), tup.info.Message);
+                                    this.AddErrorTask_Unreachable_Instruction_Async(LineNumber, info.Mnemonic.ToString(), info.Message);
                                     errorListNeedsRefresh = true;
                                 }
                             }
@@ -649,21 +648,21 @@ namespace AsmDude.Squiggles
 
                             if (Settings.Default.IntelliSense_Show_ClashingLabels)
                             {
-                                foreach (var entry in this._labelGraph.Label_Clashes) // TODO Label_Clashes does not return the classes in any particular order, 
+                                foreach (var (Key, Value) in this._labelGraph.Label_Clashes) // TODO Label_Clashes does not return the classes in any particular order, 
                                 {
-                                    string label = entry.Value;
-                                    int lineNumber = this._labelGraph.Get_Linenumber(entry.Key);
+                                    string label = Value;
+                                    int lineNumber = this._labelGraph.Get_Linenumber(Key);
                                     //TODO retrieve the lineContent of the correct buffer!
                                     string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
 
                                     ErrorTask errorTask = new ErrorTask()
                                     {
                                         SubcategoryIndex = (int)AsmMessageEnum.LABEL_CLASH,
-                                        Line = this._labelGraph.Get_Linenumber(entry.Key),
+                                        Line = this._labelGraph.Get_Linenumber(Key),
                                         Column = Get_Keyword_Begin_End(lineContent, label),
                                         Text = "Label Clash: \"" + label + "\"",
                                         ErrorCategory = TaskErrorCategory.Warning,
-                                        Document = this._labelGraph.Get_Filename(entry.Key)
+                                        Document = this._labelGraph.Get_Filename(Key)
                                     };
                                     errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
                                     errorTasks.Add(errorTask);
@@ -672,10 +671,10 @@ namespace AsmDude.Squiggles
                             }
                             if (Settings.Default.IntelliSense_Show_UndefinedLabels)
                             {
-                                foreach (var entry in this._labelGraph.Undefined_Labels)
+                                foreach (var (Key, Value) in this._labelGraph.Undefined_Labels)
                                 {
-                                    string label = entry.Value;
-                                    int lineNumber = this._labelGraph.Get_Linenumber(entry.Key);
+                                    string label = Value;
+                                    int lineNumber = this._labelGraph.Get_Linenumber(Key);
                                     //TODO retrieve the lineContent of the correct buffer!
                                     string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
 
@@ -686,7 +685,7 @@ namespace AsmDude.Squiggles
                                         Column = Get_Keyword_Begin_End(lineContent, label),
                                         Text = "Undefined Label: \"" + label + "\"",
                                         ErrorCategory = TaskErrorCategory.Warning,
-                                        Document = this._labelGraph.Get_Filename(entry.Key)
+                                        Document = this._labelGraph.Get_Filename(Key)
                                     };
                                     errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
                                     errorTasks.Add(errorTask);

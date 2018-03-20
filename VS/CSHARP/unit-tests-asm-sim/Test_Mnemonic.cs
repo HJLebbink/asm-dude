@@ -7,7 +7,6 @@ using Microsoft.Z3;
 
 using AsmSim;
 using AsmTools;
-using AsmSim.Mnemonics;
 
 namespace unit_tests_asm_z3
 {
@@ -788,9 +787,9 @@ namespace unit_tests_asm_z3
                 TestTools.AreEqual(Rn.RBX, "00000000.00000000.00000000.00000000.00000000.00000000.00000000.000????0", state);
             }
             {
-                var tup = Runner.Step_Forward(line4, state);
-                State state1 = tup.Regular;
-                State state2 = tup.Branch;
+                var (Regular, Branch) = Runner.Step_Forward(line4, state);
+                State state1 = Regular;
+                State state2 = Branch;
 
                 if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", Branch NOT taken, we know:\n" + state1);
                 TestTools.AreEqual(Rn.RAX, value_rax, state1);

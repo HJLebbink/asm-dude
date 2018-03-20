@@ -27,7 +27,6 @@ using System.Reflection;
 using System.Linq;
 using Microsoft.Z3;
 using QuickGraph;
-using System.Globalization;
 
 namespace AsmSim
 {

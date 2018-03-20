@@ -33,7 +33,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 using AsmDude.OptionsPage;
 using AsmDude.Tools;
-using AsmDude.ClearMefCache;
 
 namespace AsmDude
 {

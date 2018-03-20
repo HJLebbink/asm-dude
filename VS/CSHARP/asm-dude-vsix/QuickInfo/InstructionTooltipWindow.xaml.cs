@@ -145,9 +145,9 @@ namespace AsmDude.QuickInfo
                 this.AsmSimGridExpander.IsExpanded = isExpanded;
                 this.AsmSimGridExpanderNumeration.Text = Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration;
 
-                var usage = this._asmSimulator.Get_Usage(lineNumber);
-                var readReg = new HashSet<Rn>(usage.ReadReg);
-                var writeReg = new HashSet<Rn>(usage.WriteReg);
+                var (ReadReg, WriteReg, ReadFlag, WriteFlag, MemRead, MemWrite) = this._asmSimulator.Get_Usage(lineNumber);
+                var readReg = new HashSet<Rn>(ReadReg);
+                var writeReg = new HashSet<Rn>(WriteReg);
 
                 this.GenerateHeader();
                 int row = 2;
@@ -165,11 +165,11 @@ namespace AsmDude.QuickInfo
                     }
                 }
 
-                foreach (Flags flag in FlagTools.GetFlags(usage.ReadFlag | usage.WriteFlag))
+                foreach (Flags flag in FlagTools.GetFlags(ReadFlag | WriteFlag))
                 {
                     if (flag == Flags.NONE) continue;
-                    bool b1 = usage.ReadFlag.HasFlag(flag);
-                    bool b2 = usage.WriteFlag.HasFlag(flag);
+                    bool b1 = ReadFlag.HasFlag(flag);
+                    bool b2 = WriteFlag.HasFlag(flag);
                     if (b1 || b2)
                     {
                         empty = false;

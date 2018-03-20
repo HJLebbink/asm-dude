@@ -204,8 +204,8 @@ namespace AsmSim
             uint nBits = (uint)RegisterTools.NBits(reg);
             if (RegisterTools.Is_SIMD_Register(reg))
             {
-                var range = SIMD_Extract_Range(reg);
-                return ctx.MkExtract(range.High, range.Low, ctx.MkBVConst(Tools.Reg_Name(reg, key), 32 * 512));
+                var (High, Low) = SIMD_Extract_Range(reg);
+                return ctx.MkExtract(High, Low, ctx.MkBVConst(Tools.Reg_Name(reg, key), 32 * 512));
             }
             else if (RegisterTools.IsGeneralPurposeRegister(reg))
             {
@@ -264,29 +264,29 @@ namespace AsmSim
             {
                 //Console.WriteLine("INFO: MemZ3:Calc_Effective_Address: operand=" + op);
 
-                var t = op.Mem;
+                var (BaseReg, IndexReg, Scale, Displacement) = op.Mem;
                 //Console.WriteLine(string.Format("INFO: Calc_Effective_Address: base={0}; index={1}; scale={2}; disp={3}", t.Item1, t.Item2, t.Item3, t.Item4));
 
                 BitVecExpr address = null;
                 //Offset = Base + (Index * Scale) + Displacement
 
                 //1] set the address to the value of the displacement
-                if (t.Displacement != 0)
+                if (Displacement != 0)
                 {
-                    BitVecNum displacement = ctx.MkBV(t.Displacement, nBitsAddress);
+                    BitVecNum displacement = ctx.MkBV(Displacement, nBitsAddress);
                     address = displacement;
                     //Console.WriteLine(string.Format("INFO: MemZ3:Calc_Effective_Address: A: address={0}", address));
                 }
 
                 //2] add value of the base register
-                if (t.BaseReg != Rn.NOREG)
+                if (BaseReg != Rn.NOREG)
                 {
                     BitVecExpr baseRegister;
-                    switch (RegisterTools.NBits(t.BaseReg))
+                    switch (RegisterTools.NBits(BaseReg))
                     {
-                        case 64: baseRegister = Tools.Create_Key(t.BaseReg, key, ctx); break;
-                        case 32: baseRegister = ctx.MkZeroExt(32, Tools.Create_Key(t.BaseReg, key, ctx)); break;
-                        case 16: baseRegister = ctx.MkZeroExt(48, Tools.Create_Key(t.BaseReg, key, ctx)); break;
+                        case 64: baseRegister = Tools.Create_Key(BaseReg, key, ctx); break;
+                        case 32: baseRegister = ctx.MkZeroExt(32, Tools.Create_Key(BaseReg, key, ctx)); break;
+                        case 16: baseRegister = ctx.MkZeroExt(48, Tools.Create_Key(BaseReg, key, ctx)); break;
                         default: throw new Exception();
                     }
                     //Console.WriteLine("baseRegister.NBits = " + baseRegister.SortSize + "; address.NBits = " + address.SortSize);
@@ -295,12 +295,12 @@ namespace AsmSim
                 }
 
                 //3] add the value of (Index * Scale)
-                if (t.IndexReg != Rn.NOREG)
+                if (IndexReg != Rn.NOREG)
                 {
-                    if (t.Scale > 0)
+                    if (Scale > 0)
                     {
-                        BitVecExpr indexRegister = Tools.Create_Key(t.IndexReg, key, ctx);
-                        switch (t.Scale)
+                        BitVecExpr indexRegister = Tools.Create_Key(IndexReg, key, ctx);
+                        switch (Scale)
                         {
                             case 0:
                                 indexRegister = null;

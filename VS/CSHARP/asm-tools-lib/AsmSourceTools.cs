@@ -44,12 +44,12 @@ namespace AsmTools
 
             if (line.Length > 0)
             {
-                var labelPos = AsmTools.AsmSourceTools.GetLabelDefPos(line);
+                var (Valid, BeginPos, EndPos) = AsmTools.AsmSourceTools.GetLabelDefPos(line);
                 int codeBeginPos = 0;
-                if (labelPos.Valid)
+                if (Valid)
                 {
-                    label = line.Substring(labelPos.BeginPos, labelPos.EndPos - labelPos.BeginPos);
-                    codeBeginPos = labelPos.EndPos + 1; // plus one to get rid of the colon 
+                    label = line.Substring(BeginPos, EndPos - BeginPos);
+                    codeBeginPos = EndPos + 1; // plus one to get rid of the colon 
                     if (line.Length > codeBeginPos)
                     {
                         if (line[codeBeginPos] == ':') codeBeginPos++; // remove a second colon

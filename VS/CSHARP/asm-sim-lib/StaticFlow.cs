@@ -209,9 +209,9 @@ namespace AsmSim
         {
             if (this.Is_Branch_Point(lineNumber))
             {
-                var next = this.Get_Next_LineNumber(lineNumber);
-                bool hasCodePath_Branch = HasCodePath(next.Branch, lineNumber);
-                bool hasCodePath_Regular = HasCodePath(next.Regular, lineNumber);
+                var (Regular, Branch) = this.Get_Next_LineNumber(lineNumber);
+                bool hasCodePath_Branch = HasCodePath(Branch, lineNumber);
+                bool hasCodePath_Regular = HasCodePath(Regular, lineNumber);
 
                 if (hasCodePath_Branch && !hasCodePath_Regular)
                 {
@@ -234,12 +234,12 @@ namespace AsmSim
                 int loopLineNumber = -1;
                 // TODO return the smallest loop 
 
-                foreach (var v in this.Get_Prev_LineNumber(lineNumber))
+                foreach (var (LineNumber, IsBranch) in this.Get_Prev_LineNumber(lineNumber))
                 {
-                    if (HasCodePath(lineNumber, v.LineNumber))
+                    if (HasCodePath(lineNumber, LineNumber))
                     {
                         numberOfLoops++;
-                        loopLineNumber = v.LineNumber;
+                        loopLineNumber = LineNumber;
                     }
                 }
                 if (numberOfLoops > 0)
@@ -268,9 +268,9 @@ namespace AsmSim
                 if (this.HasLine(lineNumber2) && !result.Contains(lineNumber2))
                 {
                     result.Add(lineNumber2);
-                    var next = this.Get_Next_LineNumber(lineNumber2);
-                    FutureLineNumbers_Local(next.Regular);
-                    FutureLineNumbers_Local(next.Branch);
+                    var (Regular, Branch) = this.Get_Next_LineNumber(lineNumber2);
+                    FutureLineNumbers_Local(Regular);
+                    FutureLineNumbers_Local(Branch);
                 }
             }
         }
@@ -378,10 +378,10 @@ namespace AsmSim
         {
             for (int i=0; i<args.Length; ++i)
             {
-                var v = ExpressionEvaluator.Evaluate_Constant(args[i]);
-                if (v.Valid)
+                var (Valid, Value, NBits) = ExpressionEvaluator.Evaluate_Constant(args[i]);
+                if (Valid)
                 {
-                    args[i] = v.Value.ToString();
+                    args[i] = Value.ToString();
                 }
             }
         }
@@ -459,14 +459,14 @@ namespace AsmSim
                 sb.Append("Line " + i + ": ");
                 sb.Append(this.Get_Line_Str(i));
                 sb.Append(" [Prev:");
-                foreach (var previous in this.Get_Prev_LineNumber(i))
+                foreach (var (LineNumber, IsBranch) in this.Get_Prev_LineNumber(i))
                 {
-                    sb.Append(previous.LineNumber + ((previous.IsBranch) ? "B" : "R") + ",");  // B=Branching; R=Regular Continuation
+                    sb.Append(LineNumber + ((IsBranch) ? "B" : "R") + ",");  // B=Branching; R=Regular Continuation
                 }
                 sb.Append("][Next:");
-                var nextLineNumber = this.Get_Next_LineNumber(i);
-                if (nextLineNumber.Regular != -1) sb.Append(nextLineNumber.Regular + "R,");
-                if (nextLineNumber.Branch != -1) sb.Append(nextLineNumber.Branch + "B");
+                var (Regular, Branch) = this.Get_Next_LineNumber(i);
+                if (Regular != -1) sb.Append(Regular + "R,");
+                if (Branch != -1) sb.Append(Branch + "B");
                 sb.AppendLine("]");
             }
             return sb.ToString();
@@ -581,11 +581,11 @@ namespace AsmSim
             for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
             {
                 string line = lines[lineNumber];
-                var labelPos = AsmTools.AsmSourceTools.GetLabelDefPos(line);
-                if (labelPos.Valid)
+                var (Valid, BeginPos, EndPos) = AsmTools.AsmSourceTools.GetLabelDefPos(line);
+                if (Valid)
                 {
-                    int labelBeginPos = labelPos.BeginPos;
-                    int labelEndPos = labelPos.EndPos;
+                    int labelBeginPos = BeginPos;
+                    int labelEndPos = EndPos;
                     string label = line.Substring(labelBeginPos, labelEndPos - labelBeginPos);
                     if (result.ContainsKey(label))
                     {

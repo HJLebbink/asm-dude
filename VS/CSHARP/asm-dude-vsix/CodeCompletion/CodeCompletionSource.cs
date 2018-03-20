@@ -32,7 +32,6 @@ using System.Windows.Media;
 using AsmTools;
 using AsmDude.Tools;
 using AsmDude.SignatureHelp;
-using AsmSim;
 
 namespace AsmDude
 {
@@ -220,10 +219,10 @@ namespace AsmDude
                     string keyword = regName.ToString();
                     if (use_AsmSim_In_Code_Completion && this._asmSimulator.Tools.StateConfig.IsRegOn(RegisterTools.Get64BitsRegister(regName)))
                     {
-                        var v = this._asmSimulator.Get_Register_Value(regName, lineNumber, true, false, false, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration));
-                        if (!v.Bussy)
+                        var (Value, Bussy) = this._asmSimulator.Get_Register_Value(regName, lineNumber, true, false, false, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration));
+                        if (!Bussy)
                         {
-                            additionalInfo = v.Value;
+                            additionalInfo = Value;
                             AsmDudeToolsStatic.Output_INFO("AsmCompletionSource:Mnemonic_Operand_Completions; register " + keyword + " is selected and has value " + additionalInfo);
                         }
                     }
@@ -349,7 +348,7 @@ namespace AsmDude
             if (selectedTypes.Contains(AsmTokenType.Mnemonic))
             {
                 this._icons.TryGetValue(AsmTokenType.Mnemonic, out var imageSource);
-                foreach (Mnemonic mnemonic in _asmDudeTools.Get_Allowed_Mnemonics())
+                foreach (Mnemonic mnemonic in this._asmDudeTools.Get_Allowed_Mnemonics())
                 {
                     string keyword = mnemonic.ToString();
                     string description = this._asmDudeTools.Mnemonic_Store.GetSignatures(mnemonic).First().Documentation;

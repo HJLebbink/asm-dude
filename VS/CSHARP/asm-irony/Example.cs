@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using Irony.Parsing;
-using System.Globalization;
 using System.Diagnostics;
 
-namespace asm_irony {
+namespace asm_irony
+{
 
     //http://www.codeproject.com/Articles/33250/Writing-Your-First-Visual-Studio-Language-Service
 

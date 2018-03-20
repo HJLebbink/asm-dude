@@ -740,8 +740,8 @@ namespace AsmSim
             foreach (Rn reg in this.Tools.StateConfig.GetRegOn())
             {
                 Tv[] regContent = this.GetTvArray(reg);
-                var t = ToolsZ3.HasOneValue(regContent);
-                bool showReg = (!(t.hasOneValue && t.value == Tv.UNKNOWN));
+                var (hasOneValue, value) = ToolsZ3.HasOneValue(regContent);
+                bool showReg = (!(hasOneValue && value == Tv.UNKNOWN));
                 if (showReg) sb.Append("\n" + identStr + string.Format(reg + " = {0} = {1}", ToolsZ3.ToStringBin(regContent), ToolsZ3.ToStringHex(regContent)));
             }
             return sb.ToString();
@@ -753,8 +753,8 @@ namespace AsmSim
             {
                 Rn reg = Rn.XMM1;
                 Tv[] regContent = this.GetTvArray(reg);
-                var t = ToolsZ3.HasOneValue(regContent);
-                bool showReg = (!(t.hasOneValue && t.value == Tv.UNKNOWN));
+                var (hasOneValue, value) = ToolsZ3.HasOneValue(regContent);
+                bool showReg = (!(hasOneValue && value == Tv.UNKNOWN));
                 if (showReg) sb.Append("\n" + identStr + string.Format(reg + " = {0} = {1}", ToolsZ3.ToStringBin(regContent), ToolsZ3.ToStringHex(regContent)));
             }
             return sb.ToString();

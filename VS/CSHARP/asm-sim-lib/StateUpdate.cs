@@ -601,13 +601,13 @@ namespace AsmSim
                     uint max = (512 * 32);
 
                     BitVecExpr prevKey = ctx.MkBVConst(Tools.Reg_Name(reg, this._prevKey_Regular), max);
-                    var range = Tools.SIMD_Extract_Range(reg);
+                    var (High, Low) = Tools.SIMD_Extract_Range(reg);
 
 
                     BitVecExpr top = null;
                     BitVecExpr bottom = null;
-                    if (range.High < (max - 1)) top = ctx.MkExtract(max - 1, range.High + 1, prevKey);
-                    if (range.Low > 0) bottom = ctx.MkExtract(range.Low - 1, 0, prevKey);
+                    if (High < (max - 1)) top = ctx.MkExtract(max - 1, High + 1, prevKey);
+                    if (Low > 0) bottom = ctx.MkExtract(Low - 1, 0, prevKey);
 
                     Console.WriteLine(top.SortSize + "+" + value.SortSize + "+" + bottom.SortSize + "=" + prevKey.SortSize);
 

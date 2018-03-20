@@ -433,10 +433,7 @@ namespace AsmDude.CodeFolding
                         string lineContent = line.GetText();
                         int lineNumber = line.LineNumber;
 
-                        var tup = Is_Start_Keyword(lineContent, lineNumber);
-                        int regionStart = tup.StartPosFolding;
-                        int regionStartHoverText = tup.StartPosDescription;
-
+                        var (regionStart, regionStartHoverText) = Is_Start_Keyword(lineContent, lineNumber);
                         if (regionStart != -1)
                         {
                             Add_Start_Region(lineContent, regionStart, lineNumber, regionStartHoverText, ref currentRegion, newRegions);

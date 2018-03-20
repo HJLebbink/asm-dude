@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Z3;
 using System.Collections.Generic;
 
 using AsmSim;
