@@ -147,6 +147,7 @@ Visual Studio will launch under the experimental hive.
 * Add syntax highlighting, statement completion and syntax checks for struct member fields.
 * Disassembly window: show memory content from selected address (see [here](https://github.com/HJLebbink/asm-dude/issues/72)).
 * Disassembly window: show memory content of the stack frame and stack pointer (see [here](https://github.com/HJLebbink/asm-dude/issues/72)).
+* Add comment/uncomment functionality (see [Issue](https://github.com/HJLebbink/asm-dude/issues/76)).
 
 ### Updates:
 * 19 February 2016: Initial alpha release. Basic highlighting and descriptions for i386 instructions are available.
