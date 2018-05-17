@@ -121,22 +121,33 @@ namespace AsmDude.Tools
         /// </summary>
         public static string GetFileName(ITextBuffer buffer)
         {
-            buffer.Properties.TryGetProperty(typeof(Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer), out IVsTextBuffer bufferAdapter);
-            if (bufferAdapter != null)
+            try
             {
-                IPersistFileFormat persistFileFormat = bufferAdapter as IPersistFileFormat;
-
-                string filename = null;
-                if (persistFileFormat != null)
+                if (false)
                 {
-                    persistFileFormat.GetCurFile(out filename, out uint dummyInteger);
+                    buffer.Properties.TryGetProperty(typeof(ITextDocument), out ITextDocument document);
+                    return document?.FilePath;
                 }
-                return filename;
-            }
-            else
+                else
+                {
+                    buffer.Properties.TryGetProperty(typeof(Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer), out IVsTextBuffer bufferAdapter);
+                    if (bufferAdapter != null)
+                    {
+                        IPersistFileFormat persistFileFormat = bufferAdapter as IPersistFileFormat;
+
+                        string filename = null;
+                        if (persistFileFormat != null)
+                        {
+                            persistFileFormat.GetCurFile(out filename, out uint dummyInteger);
+                        }
+                        return filename;
+                    }
+                }
+            } catch (Exception e)
             {
-                return null;
+                AsmDudeToolsStatic.Output_ERROR(string.Format("AsmDudeToolsStatic:GetFileName {0}", e.Message));
             }
+            return null;
         }
 
         public static bool Proper_File(ITextBuffer buffer)
