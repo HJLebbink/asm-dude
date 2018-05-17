@@ -30,7 +30,7 @@ namespace AsmDude.ClearMefCache
     {
         private ClearMefCache(AsyncPackage package)
         {
-            ServiceProvider = package;
+            this.ServiceProvider = package;
         }
 
         private static ClearMefCache Instance;

@@ -282,7 +282,7 @@ namespace AsmDude
                 {
                     if (selectedArchs.Contains(a))
                     {
-                        _mnemonics_switched_on.Add(mnemonic);
+                        this._mnemonics_switched_on.Add(mnemonic);
                         break;
                     }
                 }
@@ -307,7 +307,7 @@ namespace AsmDude
                 {
                     if (selectedArchs.Contains(RegisterTools.GetArch(reg)))
                     {
-                        _register_switched_on.Add(reg);
+                        this._register_switched_on.Add(reg);
                     }
                 }
             }

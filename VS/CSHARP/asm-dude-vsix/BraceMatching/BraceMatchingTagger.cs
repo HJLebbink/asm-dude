@@ -104,7 +104,7 @@ namespace AsmDude.BraceMatching {
                     yield return new TagSpan<TextMarkerTag>(pairSpan, new TextMarkerTag("blue"));
                 }
             } else if (this._braceList.ContainsValue(lastText)) {   //the value is the close brace, which is the *previous* character 
-                var open = from n in _braceList
+                var open = from n in this._braceList
                            where n.Value.Equals(lastText)
                            select n.Key;
                 if (BraceMatchingTagger.FindMatchingOpenChar(lastChar, (char)open.ElementAt<char>(0), lastText, this._view.TextViewLines.Count, out pairSpan) == true) {
