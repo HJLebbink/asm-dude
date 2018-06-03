@@ -553,6 +553,7 @@ namespace AsmDude.Tools
                 case MicroArch.Haswell: return Settings.Default.PerformanceInfo_Haswell_On;
                 case MicroArch.Broadwell: return Settings.Default.PerformanceInfo_Broadwell_On;
                 case MicroArch.Skylake: return Settings.Default.PerformanceInfo_Skylake_On;
+                case MicroArch.SkylakeX: return Settings.Default.PerformanceInfo_SkylakeX_On;
                 case MicroArch.Kabylake: return false;
                 case MicroArch.Cannonlake: return false;
                 case MicroArch.Icelake: return false;
@@ -658,7 +659,6 @@ namespace AsmDude.Tools
                 case Arch.SGX1: return Settings.Default.ARCH_SGX1;
                 case Arch.SGX2: return Settings.Default.ARCH_SGX2;
                 case Arch.SMX: return Settings.Default.ARCH_SMX;
-
 
                 case Arch.NONE: return true;
 

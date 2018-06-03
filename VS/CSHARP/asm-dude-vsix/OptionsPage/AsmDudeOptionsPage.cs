@@ -156,6 +156,7 @@ namespace AsmDude.OptionsPage
             this._asmDudeOptionsPageUI.PerformanceInfo_Haswell_On = Settings.Default.PerformanceInfo_Haswell_On;
             this._asmDudeOptionsPageUI.PerformanceInfo_Broadwell_On = Settings.Default.PerformanceInfo_Broadwell_On;
             this._asmDudeOptionsPageUI.PerformanceInfo_Skylake_On = Settings.Default.PerformanceInfo_Skylake_On;
+            this._asmDudeOptionsPageUI.PerformanceInfo_SkylakeX_On = Settings.Default.PerformanceInfo_SkylakeX_On;
             this._asmDudeOptionsPageUI.PerformanceInfo_KnightsLanding_On = Settings.Default.PerformanceInfo_KnightsLanding_On;
             #endregion
 
@@ -572,6 +573,11 @@ namespace AsmDude.OptionsPage
             if (Settings.Default.PerformanceInfo_Skylake_On != this._asmDudeOptionsPageUI.PerformanceInfo_Skylake_On)
             {
                 sb.AppendLine("PerformanceInfo_Skylake_On=" + this._asmDudeOptionsPageUI.PerformanceInfo_Skylake_On);
+                changed = true;
+            }
+            if (Settings.Default.PerformanceInfo_SkylakeX_On != this._asmDudeOptionsPageUI.PerformanceInfo_SkylakeX_On)
+            {
+                sb.AppendLine("PerformanceInfo_SkylakeX_On=" + this._asmDudeOptionsPageUI.PerformanceInfo_SkylakeX_On);
                 changed = true;
             }
             if (Settings.Default.PerformanceInfo_KnightsLanding_On != this._asmDudeOptionsPageUI.PerformanceInfo_KnightsLanding_On)
@@ -1475,6 +1481,12 @@ namespace AsmDude.OptionsPage
             {
                 Settings.Default.PerformanceInfo_Skylake_On = this._asmDudeOptionsPageUI.PerformanceInfo_Skylake_On;
                 restartNeeded = this._asmDudeOptionsPageUI.PerformanceInfo_Skylake_On;
+                changed = true;
+            }
+            if (Settings.Default.PerformanceInfo_SkylakeX_On != this._asmDudeOptionsPageUI.PerformanceInfo_SkylakeX_On)
+            {
+                Settings.Default.PerformanceInfo_SkylakeX_On = this._asmDudeOptionsPageUI.PerformanceInfo_SkylakeX_On;
+                restartNeeded = this._asmDudeOptionsPageUI.PerformanceInfo_SkylakeX_On;
                 changed = true;
             }
             if (Settings.Default.PerformanceInfo_KnightsLanding_On != this._asmDudeOptionsPageUI.PerformanceInfo_KnightsLanding_On)

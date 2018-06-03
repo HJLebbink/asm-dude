@@ -58,6 +58,7 @@ namespace AsmDude.Tools
                 if (selectedMicroarchitures.HasFlag(MicroArch.Haswell)) this.AddData(MicroArch.Haswell, path + "Haswell.tsv", translations);
                 if (selectedMicroarchitures.HasFlag(MicroArch.Broadwell)) this.AddData(MicroArch.Broadwell, path + "Broadwell.tsv", translations);
                 if (selectedMicroarchitures.HasFlag(MicroArch.Skylake)) this.AddData(MicroArch.Skylake, path + "Skylake.tsv", translations);
+                if (selectedMicroarchitures.HasFlag(MicroArch.SkylakeX)) this.AddData(MicroArch.SkylakeX, path + "SkylakeX.tsv", translations);
             }
         }
 
@@ -96,8 +97,15 @@ namespace AsmDude.Tools
                                     {
                                         Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(mnemonicStr);
                                         if (mnemonic == Mnemonic.NONE)
-                                        {
-                                            AsmDudeToolsStatic.Output_WARNING("PerformanceStore:LoadData: microArch=" + microArch + ": unknown mnemonic " + mnemonicStr + " in line: " + line);
+                                        {   // check if the mnemonicStr can be translated to a list of mnemonics
+                                            if (translations.TryGetValue(mnemonicStr, out IList<Mnemonic> mnemonics2))
+                                            {
+                                                foreach (Mnemonic m in mnemonics2) mnemonics.Add(m);
+                                            }
+                                            else
+                                            {
+                                                AsmDudeToolsStatic.Output_WARNING("PerformanceStore:LoadData: microArch=" + microArch + ": unknown mnemonic " + mnemonicStr + " in line: " + line);
+                                            }
                                         }
                                         else
                                         {
@@ -170,7 +178,14 @@ namespace AsmDude.Tools
                                 }
                             }
                             //AsmDudeToolsStatic.Output_INFO("PerformanceStore:Load_Instruction_Translation: key=" + key + " = " + String.Join(",", values));
-                            translations.Add(key, values);
+                            if (translations.ContainsKey(key))
+                            {
+                                AsmDudeToolsStatic.Output_WARNING("PerformanceStore:Load_Instruction_Translation: key=" + key + " in line: " + line +" already used");
+                            }
+                            else
+                            {
+                                translations.Add(key, values);
+                            }
                         }
                     }
                 }

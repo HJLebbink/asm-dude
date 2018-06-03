@@ -361,6 +361,11 @@ namespace AsmDude.OptionsPage
             get { return this.PerformanceInfo_Skylake_UI.IsChecked ?? false; }
             set { this.PerformanceInfo_Skylake_UI.IsChecked = value; }
         }
+        public bool PerformanceInfo_SkylakeX_On
+        {
+            get { return this.PerformanceInfo_SkylakeX_UI.IsChecked ?? false; }
+            set { this.PerformanceInfo_SkylakeX_UI.IsChecked = value; }
+        }
         public bool PerformanceInfo_KnightsLanding_On
         {
             get { return false; }
