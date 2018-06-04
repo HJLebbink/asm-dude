@@ -1311,6 +1311,7 @@ namespace AsmDude.OptionsPage
                 }
                 if (Settings.Default.SyntaxHighlighting_Remark.ToArgb() != this._asmDudeOptionsPageUI.ColorRemark.ToArgb())
                 {
+                    Settings.Default.SyntaxHighlighting_Remark = this._asmDudeOptionsPageUI.ColorRemark;
                     UpdateFont(AsmClassificationDefinition.ClassificationTypeNames.Remark, this._asmDudeOptionsPageUI.ColorRemark);
                     changed = true;
                     refreshRegistry = true;
