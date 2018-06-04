@@ -20,13 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+using System.ComponentModel.Composition;
+
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Text;
-using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
 
 using AsmDude.SyntaxHighlighting;
-using System;
+using AsmDude.Tools;
+using AsmTools;
 
 namespace AsmDude
 {
@@ -41,7 +44,8 @@ namespace AsmDude
             //AsmDudeToolsStatic.Output_INFO("AsmDisassemblyTokenTagProvider:CreateTagger");
             Func<ITagger<T>> sc = delegate ()
             {
-                return new DisassemblyTokenTagger(buffer) as ITagger<T>;
+                if (AsmDudeToolsStatic.Used_Assembler == AssemblerEnum.NASM_ATT) return new NasmAttDisassemblyTokenTagger(buffer) as ITagger<T>;
+                return new MasmDisassemblyTokenTagger(buffer) as ITagger<T>;
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }

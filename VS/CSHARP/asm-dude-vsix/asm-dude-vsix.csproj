@@ -219,6 +219,7 @@
     </Compile>
     <Compile Include="SyntaxHighlighting\AsmDisassemblyTaggerProvider.cs" />
     <Compile Include="SyntaxHighlighting\AsmDisassemblyTokenTagProvider.cs" />
+    <Compile Include="SyntaxHighlighting\NasmAttDisassemblyTokenTagger.cs" />
     <Compile Include="SyntaxHighlighting\NasmAttTokenTagger.cs" />
     <Compile Include="Tools\AsmSimulator.cs" />
     <Compile Include="BraceMatching\BraceMatchingTagger.cs" />
@@ -269,7 +270,7 @@
     <Compile Include="SyntaxHighlighting\AsmTokenTaggerProvider.cs" />
     <Compile Include="SyntaxHighlighting\AsmTokenTypes.cs" />
     <Compile Include="SyntaxHighlighting\AsmClassificationFormat.cs" />
-    <Compile Include="SyntaxHighlighting\DisassemblyTokenTagger.cs" />
+    <Compile Include="SyntaxHighlighting\MasmDisassemblyTokenTagger.cs" />
     <Compile Include="SyntaxHighlighting\MasmTokenTagger.cs" />
     <Compile Include="SyntaxHighlighting\NasmIntelTokenTagger.cs" />
     <Compile Include="Tools\ApplicationInformation.cs" />

@@ -33,7 +33,7 @@ using System.Globalization;
 
 namespace AsmDude
 {
-    internal sealed class DisassemblyTokenTagger : ITagger<AsmTokenTag>
+    internal sealed class MasmDisassemblyTokenTagger : ITagger<AsmTokenTag>
     {
         private readonly ITextBuffer _buffer;
         private readonly AsmDudeTools _asmDudeTools = null;
@@ -52,7 +52,7 @@ namespace AsmDude
         //private readonly AsmTokenTag _userDefined3;
         //private readonly AsmTokenTag _UNKNOWN;
 
-        internal DisassemblyTokenTagger(ITextBuffer buffer)
+        internal MasmDisassemblyTokenTagger(ITextBuffer buffer)
         {
             this._buffer = buffer;
             this._asmDudeTools = AsmDudeTools.Instance;
@@ -72,7 +72,8 @@ namespace AsmDude
             //this._UNKNOWN = new AsmTokenTag(AsmTokenType.UNKNOWN);
         }
 
-        event EventHandler<SnapshotSpanEventArgs> ITagger<AsmTokenTag>.TagsChanged {
+        event EventHandler<SnapshotSpanEventArgs> ITagger<AsmTokenTag>.TagsChanged
+        {
             add { }
             remove { }
         }
@@ -124,7 +125,7 @@ namespace AsmDude
                                 yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._jump);
 
                                 k++; // goto the next word
-                                if (k == nKeywords) break;
+                                if (k == nKeywords) break; // there are no next words
 
                                 string asmToken2 = NasmIntelTokenTagger.Keyword(pos[k], line);
                                 switch (asmToken2)
@@ -186,7 +187,7 @@ namespace AsmDude
                                 else if (asmToken.StartsWith("\"") && asmToken.EndsWith("\""))
                                 {
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
-                                }
+									}
                                 else
                                 {
                                     //yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._UNKNOWN);
@@ -213,9 +214,10 @@ namespace AsmDude
                     
                 }
             }
-            AsmDudeToolsStatic.Print_Speed_Warning(time1, "DisassemblyTokenTagger");
+            AsmDudeToolsStatic.Print_Speed_Warning(time1, "MasmDisassemblyTokenTagger");
         }
 
+		#region Private Member Methods
         private static bool IsConstant(string token)
         {
             if (long.TryParse(token, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out var dummy1))
@@ -260,8 +262,7 @@ namespace AsmDude
             }
             return true;
         }
-
-
+        #endregion
         #region Public Static Methods
 
         public static string Keyword((int, int, bool) pos, string line)
