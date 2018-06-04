@@ -123,12 +123,14 @@ namespace AsmDude.Tools
         {
             try
             {
-                if (false)
+                if (true)
                 {
                     buffer.Properties.TryGetProperty(typeof(ITextDocument), out ITextDocument document);
-                    return document?.FilePath;
+                    string filename = document?.FilePath;
+                    AsmDudeToolsStatic.Output_INFO(string.Format("AsmDudeToolsStatic:GetFileName: retrieving filename {0}", filename));
+                    return filename;
                 }
-                else
+                else // this method had worked in VS 15.6, but ceased working in 15.7. GetCurFile could not be issued from a non UI thread
                 {
                     buffer.Properties.TryGetProperty(typeof(Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer), out IVsTextBuffer bufferAdapter);
                     if (bufferAdapter != null)
@@ -136,11 +138,16 @@ namespace AsmDude.Tools
                         IPersistFileFormat persistFileFormat = bufferAdapter as IPersistFileFormat;
 
                         string filename = null;
-                        if (persistFileFormat != null)
+                        int? code = persistFileFormat?.GetCurFile(out filename, out uint dummyInteger);
+                        if (code == Microsoft.VisualStudio.VSConstants.S_OK)
                         {
-                            persistFileFormat.GetCurFile(out filename, out uint dummyInteger);
+                            AsmDudeToolsStatic.Output_INFO(string.Format("AsmDudeToolsStatic:GetFileName: retrieving filename {0}", filename));
+                            return filename;
                         }
-                        return filename;
+                        else
+                        {
+                            AsmDudeToolsStatic.Output_ERROR(string.Format("AsmDudeToolsStatic:GetFileName: retrieving filename yielded error code {0}", code));
+                        }
                     }
                 }
             } catch (Exception e)
@@ -426,7 +433,7 @@ namespace AsmDude.Tools
             else
             {
                 Guid paneGuid = new Guid("F97896F3-19AB-4E1F-A9C4-E11D489E5141");
-                outputWindow.CreatePane(paneGuid, "AsmSim", 1, 0);
+                outputWindow.CreatePane(paneGuid, "AsmDude", 1, 0);
                 outputWindow.GetPane(paneGuid, out var pane);
                 return pane;
             }
