@@ -141,13 +141,15 @@ namespace AsmDude
                                             k++;
                                             if (k == nKeywords) break;
                                             string asmToken3 = NasmIntelTokenTagger.Keyword(pos[k], line);
-                                            if (asmToken3.Equals("PTR"))
+                                            switch (asmToken3)
                                             {
-                                                yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._misc);
-                                            }
-                                            else
-                                            {
-                                                yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._label);
+                                                case "PTR":
+                                                    {
+                                                        yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._misc);
+                                                        break;
+                                                    }
+                                                    yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._label);
+                                                    break;
                                             }
                                             break;
                                         }

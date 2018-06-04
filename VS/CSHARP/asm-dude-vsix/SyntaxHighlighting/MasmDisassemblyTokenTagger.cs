@@ -148,12 +148,10 @@ namespace AsmDude
                                                         yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._misc);
                                                         break;
                                                     }
-                                                default:
-                                                    {
                                                         yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._label);
                                                         break;
                                                     }
-                                            }
+                                            
                                             break;
                                         }
                                     default:
@@ -174,6 +172,7 @@ namespace AsmDude
                         case AsmTokenType.UNKNOWN: // asmToken is not a known keyword, check if it is numerical
                             {
                                 if (asmToken.Equals("OFFSET"))
+																						   
                                 {
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._directive);
                                     k++; // goto the next word
@@ -211,13 +210,13 @@ namespace AsmDude
                             }
                         default: break;
                     }
-                    
                 }
             }
             AsmDudeToolsStatic.Print_Speed_Warning(time1, "MasmDisassemblyTokenTagger");
         }
 
 		#region Private Member Methods
+
         private static bool IsConstant(string token)
         {
             if (long.TryParse(token, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out var dummy1))
@@ -262,7 +261,9 @@ namespace AsmDude
             }
             return true;
         }
+
         #endregion
+
         #region Public Static Methods
 
         public static string Keyword((int, int, bool) pos, string line)
@@ -274,6 +275,7 @@ namespace AsmDude
         {
             return new SnapshotSpan(lineSnapShot.Snapshot, new Span(pos.Item1 + offset, pos.Item2 - pos.Item1));
         }
+
         #endregion Public Static Methods
     }
 }

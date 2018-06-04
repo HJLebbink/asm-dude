@@ -91,7 +91,7 @@ namespace AsmDude
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
 
                 string line = containingLine.GetText().ToUpper();
-                IList<(int beginPos, int length, bool isLabel)> pos = new List<(int beginPos, int length, bool isLabel)>(AsmSourceTools.SplitIntoKeywordPos(line));
+                var pos = new List<(int BeginPos, int Length, bool IsLabel)>(AsmSourceTools.SplitIntoKeywordPos(line));
 
                 int offset = containingLine.Start.Position;
                 int nKeywords = pos.Count;
@@ -99,6 +99,7 @@ namespace AsmDude
                 for (int k = 0; k < nKeywords; k++)
                 {
                     string asmToken = NasmIntelTokenTagger.Keyword(pos[k], line);
+
                     // keyword starts with a remark char
                     if (AsmSourceTools.IsRemarkChar(asmToken[0]))
                     {
@@ -107,7 +108,7 @@ namespace AsmDude
                     }
 
                     // keyword k is a label definition
-                    if (pos[k].isLabel)
+                    if (pos[k].IsLabel)
                     {
                         //AsmDudeToolsStatic.Output_INFO("NasmTokenTagger:GetTags: found label " +asmToken);
                         if (IsProperLabelDef(asmToken, containingLine.LineNumber, out AsmTokenTag asmTokenTag))
@@ -116,7 +117,6 @@ namespace AsmDude
                             continue;
                         }
                     }
-
                     AsmTokenType keywordType = this._asmDudeTools.Get_Token_Type_Att(asmToken);
                     switch (keywordType)
                     {
@@ -174,16 +174,14 @@ namespace AsmDude
                             }
                         case AsmTokenType.UNKNOWN: // asmToken is not a known keyword, check if it is numerical
                             {
-                                //if (AsmTools.AsmSourceTools.Parse_Constant(asmToken, true).Valid)
                                 if (AsmSourceTools.Evaluate_Constant(asmToken, true).Valid)
+                                //if (AsmSourceTools.Parse_Constant(asmToken, true).Valid)
                                 {
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
-
                                 }
                                 else if (asmToken.StartsWith("\"") && asmToken.EndsWith("\""))
                                 {
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
-
                                 }
                                 else
                                 {
@@ -259,7 +257,7 @@ namespace AsmDude
                     }
                 }
             }
-            AsmDudeToolsStatic.Print_Speed_Warning(time1, "AttTokenTagger");
+            AsmDudeToolsStatic.Print_Speed_Warning(time1, "NasmAttTokenTagger");
         }
 
         #region Public Static Methods
@@ -324,9 +322,9 @@ namespace AsmDude
             return line.Substring(pos.Item1, pos.Item2 - pos.Item1);
         }
 
-        public static SnapshotSpan New_Span((int, int, bool) pos, int offset, SnapshotSpan lineSnapShot)
+        public static SnapshotSpan New_Span((int BeginPos, int Length, bool IsLabel) pos, int offset, SnapshotSpan lineSnapShot)
         {
-            return new SnapshotSpan(lineSnapShot.Snapshot, new Span(pos.Item1 + offset, pos.Item2 - pos.Item1));
+            return new SnapshotSpan(lineSnapShot.Snapshot, new Span(pos.BeginPos + offset, pos.Length - pos.BeginPos));
         }
         #endregion Public Static Methods
 
