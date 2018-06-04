@@ -166,3 +166,4 @@ Visual Studio will launch under the experimental hive.
 * 13 Feb 2017: Added Performance Data for Skylake & Broadwell (Data from Agner Fog) [v1.7.4.0] 
 * 16 June 2017: Added AT&T syntax support [v1.8.2.0]
 * 25 Juli 2017: Added support for the VS Disassembly Window [v1.9.0.0]
+* 04 June 2018: added Performance Data for Skylake-X [v1.9.5.0]
