@@ -1057,7 +1057,7 @@ namespace AsmDude {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool PerformanceInfo_Skylake_On {
             get {
                 return ((bool)(this["PerformanceInfo_Skylake_On"]));
@@ -1724,6 +1724,30 @@ namespace AsmDude {
             }
             set {
                 this["PerformanceInfo_SkylakeX_On"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool PerformanceInfo_IsDefaultCollapsed {
+            get {
+                return ((bool)(this["PerformanceInfo_IsDefaultCollapsed"]));
+            }
+            set {
+                this["PerformanceInfo_IsDefaultCollapsed"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool PerformanceInfo_On {
+            get {
+                return ((bool)(this["PerformanceInfo_On"]));
+            }
+            set {
+                this["PerformanceInfo_On"] = value;
             }
         }
     }

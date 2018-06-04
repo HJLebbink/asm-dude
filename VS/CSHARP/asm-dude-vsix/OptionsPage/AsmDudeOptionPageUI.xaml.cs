@@ -39,6 +39,9 @@ namespace AsmDude.OptionsPage
             this.SyntaxHighlighting_On_UI.Click += (o, i) => { this.SyntaxHighlighting_Update(this.SyntaxHighlighting_On); };
             this.SyntaxHighlighting_Update(Settings.Default.SyntaxHighlighting_On);
 
+            this.PerformanceInfo_On_UI.Click += (o, i) => { this.PerformanceInfo_Update(this.PerformanceInfo_On); };
+            this.PerformanceInfo_Update(Settings.Default.PerformanceInfo_On);
+
             this.AsmDoc_On_UI.Click += (o, i) => { this.AsmDoc_Update(this.AsmDoc_On); };
             this.AsmDoc_Update(Settings.Default.AsmDoc_On);
 
@@ -75,13 +78,24 @@ namespace AsmDude.OptionsPage
             this.ColorUserDefined3_UI.IsEnabled = value;
             this.ColorUserDefined3_Italic_UI.IsEnabled = value;
         }
+        private void PerformanceInfo_Update(bool value)
+        {
+            this.PerformanceInfo_IsDefaultCollapsed_UI.IsEnabled = value;
+            //this.PerformanceInfo_SandyBridge_UI.IsEnabled = value;
+            this.PerformanceInfo_IvyBridge_UI.IsEnabled = value;
+            this.PerformanceInfo_Haswell_UI.IsEnabled = value;
+            this.PerformanceInfo_Broadwell_UI.IsEnabled = value;
+            this.PerformanceInfo_Skylake_UI.IsEnabled = value;
+            this.PerformanceInfo_SkylakeX_UI.IsEnabled = value;
+            //this.PerformanceInfo_KnightsLanding_UI.IsEnabled = value;
+        }
         private void AsmDoc_Update(bool value)
         {
             this.AsmDoc_Url_UI.IsEnabled = value;
         }
         private void CodeFolding_Update(bool value)
         {
-            this.CodeFolding_IsDefaultCollaped_UI.IsEnabled = value;
+            this.CodeFolding_IsDefaultCollapsed_UI.IsEnabled = value;
             this.CodeFolding_BeginTag_UI.IsEnabled = value;
             this.CodeFolding_EndTag_UI.IsEnabled = value;
         }
@@ -162,10 +176,10 @@ namespace AsmDude.OptionsPage
             get { return this.CodeFolding_On_UI.IsChecked ?? false; }
             set { this.CodeFolding_On_UI.IsChecked = value; }
         }
-        public bool CodeFolding_IsDefaultCollaped
+        public bool CodeFolding_IsDefaultCollapsed
         {
-            get { return this.CodeFolding_IsDefaultCollaped_UI.IsChecked ?? false; }
-            set { this.CodeFolding_IsDefaultCollaped_UI.IsChecked = value; }
+            get { return this.CodeFolding_IsDefaultCollapsed_UI.IsChecked ?? false; }
+            set { this.CodeFolding_IsDefaultCollapsed_UI.IsChecked = value; }
         }
         public string CodeFolding_BeginTag
         {
@@ -334,6 +348,17 @@ namespace AsmDude.OptionsPage
         #endregion
 
         #region Latency and Throughput Information (Performance Info)
+
+        public bool PerformanceInfo_On
+        {
+            get { return this.PerformanceInfo_On_UI.IsChecked ?? false; }
+            set { this.PerformanceInfo_On_UI.IsChecked = value; }
+        }
+        public bool PerformanceInfo_IsDefaultCollapsed
+        {
+            get { return this.PerformanceInfo_IsDefaultCollapsed_UI.IsChecked ?? false; }
+            set { this.PerformanceInfo_IsDefaultCollapsed_UI.IsChecked = value; }
+        }
         public bool PerformanceInfo_SandyBridge_On
         {
             get { return false; }

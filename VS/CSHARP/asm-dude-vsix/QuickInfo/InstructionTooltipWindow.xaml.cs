@@ -79,56 +79,58 @@ namespace AsmDude.QuickInfo
             this.Description.Inlines.Add(new Run(full_Descr) { Foreground = this._foreground });
         }
 
-        public void SetPerformanceInfo(Mnemonic mnemonic, AsmDudeTools asmDudeTools, bool isExpanded)
+        public void SetPerformanceInfo(Mnemonic mnemonic, AsmDudeTools asmDudeTools)
         {
-            this.PerformanceExpander.IsExpanded = isExpanded;
-
-            bool empty = true;
-            bool first = true;
-            FontFamily family = new FontFamily("Consolas");
-            string format = "{0,-14}{1,-24}{2,-7}{3,-9}{4,-20}{5,-9}{6,-11}{7,-10}";
-
-            MicroArch selectedMicroarchitures = AsmDudeToolsStatic.Get_MicroArch_Switched_On();
-            foreach (PerformanceItem item in asmDudeTools.Performance_Store.GetPerformance(mnemonic, selectedMicroarchitures))
+            if (Settings.Default.PerformanceInfo_On)
             {
-                empty = false;
-                if (first)
+                this.PerformanceExpander.IsExpanded = !Settings.Default.PerformanceInfo_IsDefaultCollapsed;
+
+                bool empty = true;
+                bool first = true;
+                FontFamily family = new FontFamily("Consolas");
+                string format = "{0,-14}{1,-24}{2,-7}{3,-9}{4,-20}{5,-9}{6,-11}{7,-10}";
+
+                MicroArch selectedMicroarchitures = AsmDudeToolsStatic.Get_MicroArch_Switched_On();
+                foreach (PerformanceItem item in asmDudeTools.Performance_Store.GetPerformance(mnemonic, selectedMicroarchitures))
                 {
-                    first = false;
-                    this.Performance.Inlines.Add(new Run(string.Format(format,
-                        "", "", "µOps", "µOps", "µOps", "", "", ""))
+                    empty = false;
+                    if (first)
                     {
-                        FontFamily = family,
-                        FontStyle = FontStyles.Italic,
-                        FontWeight = FontWeights.Bold,
-                        Foreground = this._foreground
-                    });
+                        first = false;
+                        this.Performance.Inlines.Add(new Run(string.Format(format,
+                            "", "", "µOps", "µOps", "µOps", "", "", ""))
+                        {
+                            FontFamily = family,
+                            FontStyle = FontStyles.Italic,
+                            FontWeight = FontWeights.Bold,
+                            Foreground = this._foreground
+                        });
+                        this.Performance.Inlines.Add(new Run(string.Format("\n" + format,
+                            "Architecture", "Instruction", "Fused", "Unfused", "Port", "Latency", "Throughput", ""))
+                        {
+                            FontFamily = family,
+                            FontStyle = FontStyles.Italic,
+                            FontWeight = FontWeights.Bold,
+                            Foreground = this._foreground
+                        });
+                    }
                     this.Performance.Inlines.Add(new Run(string.Format("\n" + format,
-                        "Architecture", "Instruction", "Fused", "Unfused", "Port", "Latency", "Throughput", ""))
+                        item._microArch,
+                        item._instr + " " + item._args,
+                        item._mu_Ops_Fused,
+                        item._mu_Ops_Merged,
+                        item._mu_Ops_Port,
+                        item._latency,
+                        item._throughput,
+                        item._remark))
                     {
                         FontFamily = family,
-                        FontStyle = FontStyles.Italic,
-                        FontWeight = FontWeights.Bold,
                         Foreground = this._foreground
                     });
                 }
-                this.Performance.Inlines.Add(new Run(string.Format("\n" + format,
-                    item._microArch,
-                    item._instr + " " + item._args,
-                    item._mu_Ops_Fused,
-                    item._mu_Ops_Merged,
-                    item._mu_Ops_Port,
-                    item._latency,
-                    item._throughput,
-                    item._remark))
-                {
-                    FontFamily = family,
-                    Foreground = this._foreground
-                });
+                this.PerformanceExpander.Visibility = (empty) ? Visibility.Collapsed : Visibility.Visible;
+                this.PerformanceBorder.Visibility = (empty) ? Visibility.Collapsed : Visibility.Visible;
             }
-
-            this.PerformanceExpander.Visibility = (empty) ? Visibility.Collapsed : Visibility.Visible;
-            this.PerformanceBorder.Visibility = (empty) ? Visibility.Collapsed : Visibility.Visible;
         }
 
         public void SetAsmSim(AsmSimulator asmSimulator, int lineNumber, bool isExpanded)

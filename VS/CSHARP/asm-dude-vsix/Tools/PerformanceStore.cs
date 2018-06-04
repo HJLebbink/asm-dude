@@ -50,15 +50,18 @@ namespace AsmDude.Tools
         {
             this._data = new List<PerformanceItem>();
 
-            MicroArch selectedMicroarchitures = AsmDudeToolsStatic.Get_MicroArch_Switched_On();
-            if (selectedMicroarchitures != MicroArch.NONE)
+            if (Settings.Default.PerformanceInfo_On)
             {
-                var translations = this.Load_Instruction_Translation(path + "Instructions-Translations.tsv");
-                if (selectedMicroarchitures.HasFlag(MicroArch.IvyBridge)) this.AddData(MicroArch.IvyBridge, path + "IvyBridge.tsv", translations);
-                if (selectedMicroarchitures.HasFlag(MicroArch.Haswell)) this.AddData(MicroArch.Haswell, path + "Haswell.tsv", translations);
-                if (selectedMicroarchitures.HasFlag(MicroArch.Broadwell)) this.AddData(MicroArch.Broadwell, path + "Broadwell.tsv", translations);
-                if (selectedMicroarchitures.HasFlag(MicroArch.Skylake)) this.AddData(MicroArch.Skylake, path + "Skylake.tsv", translations);
-                if (selectedMicroarchitures.HasFlag(MicroArch.SkylakeX)) this.AddData(MicroArch.SkylakeX, path + "SkylakeX.tsv", translations);
+                MicroArch selectedMicroarchitures = AsmDudeToolsStatic.Get_MicroArch_Switched_On();
+                if (selectedMicroarchitures != MicroArch.NONE)
+                {
+                    var translations = this.Load_Instruction_Translation(path + "Instructions-Translations.tsv");
+                    if (selectedMicroarchitures.HasFlag(MicroArch.IvyBridge)) this.AddData(MicroArch.IvyBridge, path + "IvyBridge.tsv", translations);
+                    if (selectedMicroarchitures.HasFlag(MicroArch.Haswell)) this.AddData(MicroArch.Haswell, path + "Haswell.tsv", translations);
+                    if (selectedMicroarchitures.HasFlag(MicroArch.Broadwell)) this.AddData(MicroArch.Broadwell, path + "Broadwell.tsv", translations);
+                    if (selectedMicroarchitures.HasFlag(MicroArch.Skylake)) this.AddData(MicroArch.Skylake, path + "Skylake.tsv", translations);
+                    if (selectedMicroarchitures.HasFlag(MicroArch.SkylakeX)) this.AddData(MicroArch.SkylakeX, path + "SkylakeX.tsv", translations);
+                }
             }
         }
 

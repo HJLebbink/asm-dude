@@ -205,7 +205,7 @@ namespace AsmDude.QuickInfo
                                         Session = session // set the owner of this windows such that we can manually close this window
                                     };
                                     instructionTooltipWindow.SetDescription(mnemonic, this._asmDudeTools);
-                                    instructionTooltipWindow.SetPerformanceInfo(mnemonic, this._asmDudeTools, false);
+                                    instructionTooltipWindow.SetPerformanceInfo(mnemonic, this._asmDudeTools);
                                     instructionTooltipWindow.SetAsmSim(this._asmSimulator, lineNumber, true);
                                     quickInfoContent.Add(instructionTooltipWindow);
                                 }

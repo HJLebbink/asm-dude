@@ -116,7 +116,7 @@
                     </Grid.RowDefinitions>
 
                     <CheckBox x:Name="CodeFolding_On_UI" Grid.Column="0" Grid.Row="0" ToolTipService.ShowOnDisabled="True" ToolTip="Code folding enabled" Content="Enable code folding" VerticalAlignment="Center" />
-                    <CheckBox x:Name="CodeFolding_IsDefaultCollaped_UI" Grid.Column="1" Grid.Row="0" ToolTipService.ShowOnDisabled="True" ToolTip="Whether folding regions are collapsed by default" Content="Default collapsed" VerticalAlignment="Center" />
+                    <CheckBox x:Name="CodeFolding_IsDefaultCollapsed_UI" Grid.Column="1" Grid.Row="0" ToolTipService.ShowOnDisabled="True" ToolTip="Whether folding regions are collapsed by default" Content="Default collapsed" VerticalAlignment="Center" />
 
                     <Label Content="Start tag:" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" />
                     <TextBox x:Name="CodeFolding_BeginTag_UI" Grid.Column="1" Grid.Row="1" ToolTipService.ShowOnDisabled="True" ToolTip="The characters that start the outlining region. E.g. #region." Height="26" VerticalAlignment="Center" VerticalContentAlignment="Center" />
@@ -147,17 +147,28 @@
             </GroupBox>
             <GroupBox Header="Latency and Throughput Information" >
                 <Grid Margin="0,2,0,0">
-                    <StackPanel>
-                        <!--<CheckBox x:Name="PerformanceInfo_SandyBridge_UI" ToolTipService.ShowOnDisabled="True" ToolTip="Show performance information for Sandy Bridge in instruction QuickInfo tooltips" Content="Sandy Bridge (Intel 2nd gen Core)" Margin="0,4,0,2" HorizontalAlignment="Left" Width="Auto" />
-                        -->
-                        <CheckBox x:Name="PerformanceInfo_IvyBridge_UI" ToolTipService.ShowOnDisabled="True" ToolTip="Show performance information for Ivy Bridge in instruction QuickInfo tooltips" Content="Ivy Bridge (Intel 3nd gen Core)" Margin="0,2,0,2" HorizontalAlignment="Left" Width="Auto" />
-                        <CheckBox x:Name="PerformanceInfo_Haswell_UI" ToolTipService.ShowOnDisabled="True" ToolTip="Show performance information for Haswell in instruction QuickInfo tooltips" Content="Haswell (Intel 4nd gen Core)" Margin="0,2,0,2" HorizontalAlignment="Left" Width="Auto" />
-                        <CheckBox x:Name="PerformanceInfo_Broadwell_UI" ToolTipService.ShowOnDisabled="True" ToolTip="Show performance information for Broadwell in instruction QuickInfo tooltips" Content="Broadwell (Intel 5nd gen Core)" Margin="0,2,0,2" HorizontalAlignment="Left" Width="Auto" />
-                        <CheckBox x:Name="PerformanceInfo_Skylake_UI" ToolTipService.ShowOnDisabled="True" ToolTip="Show performance information for Skylake in instruction QuickInfo tooltips" Content="Skylake (Intel 6nd gen Core)" Margin="0,2,0,2" HorizontalAlignment="Left" Width="Auto" />
-                        <CheckBox x:Name="PerformanceInfo_SkylakeX_UI" ToolTipService.ShowOnDisabled="True" ToolTip="Show performance information for Skylake-X in instruction QuickInfo tooltips" Content="Skylake-X (Intel 7nd gen Core)" Margin="0,2,0,4" HorizontalAlignment="Left" Width="Auto" />
-                        <!--<CheckBox x:Name="PerformanceInfo_KnightsLanding_UI" ToolTipService.ShowOnDisabled="True" ToolTip="Show performance information for Knights Landing in instruction QuickInfo tooltips" Content="Knights Landing (Intel Xeon Phi)" Margin="0,2,0,4" />
-                        -->
-                    </StackPanel>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="26" />
+                        <RowDefinition Height="26" />
+                        <RowDefinition Height="26" />
+                        <RowDefinition Height="26" />
+                        <RowDefinition Height="26" />
+                        <RowDefinition Height="26" />
+                    </Grid.RowDefinitions>
+
+                    <CheckBox x:Name="PerformanceInfo_On_UI" Grid.Column="0" Grid.Row="0" ToolTipService.ShowOnDisabled="True" ToolTip="Latency and Throughput information enabled" Content="Enable" VerticalAlignment="Center" />
+                    <CheckBox x:Name="PerformanceInfo_IsDefaultCollapsed_UI" Grid.Column="1" Grid.Row="0" ToolTipService.ShowOnDisabled="True" ToolTip="Whether performance information is collapsed by default" Content="Default collapsed" VerticalAlignment="Center" />
+
+                    <!--<CheckBox x:Name="PerformanceInfo_SandyBridge_UI" Grid.Row="0" ToolTipService.ShowOnDisabled="True" ToolTip="Show performance information for Sandy Bridge in instruction QuickInfo tooltips" Content="Sandy Bridge (Intel 2nd gen Core)" VerticalAlignment="Center" Width="Auto" /> -->
+                    <CheckBox x:Name="PerformanceInfo_IvyBridge_UI" Grid.Row="1" ToolTipService.ShowOnDisabled="True" ToolTip="Show performance information for Ivy Bridge in instruction QuickInfo tooltips" Content="Ivy Bridge (Intel 3nd gen Core)" VerticalAlignment="Center" Width="Auto" />
+                    <CheckBox x:Name="PerformanceInfo_Haswell_UI"   Grid.Row="2" ToolTipService.ShowOnDisabled="True" ToolTip="Show performance information for Haswell in instruction QuickInfo tooltips" Content="Haswell (Intel 4nd gen Core)" VerticalAlignment="Center" Width="Auto" />
+                    <CheckBox x:Name="PerformanceInfo_Broadwell_UI" Grid.Row="3" ToolTipService.ShowOnDisabled="True" ToolTip="Show performance information for Broadwell in instruction QuickInfo tooltips" Content="Broadwell (Intel 5nd gen Core)" VerticalAlignment="Center" Width="Auto" />
+                    <CheckBox x:Name="PerformanceInfo_Skylake_UI"   Grid.Row="4" ToolTipService.ShowOnDisabled="True" ToolTip="Show performance information for Skylake in instruction QuickInfo tooltips" Content="Skylake (Intel 6nd gen Core)" VerticalAlignment="Center"  Width="Auto" />
+                    <CheckBox x:Name="PerformanceInfo_SkylakeX_UI"  Grid.Row="5" ToolTipService.ShowOnDisabled="True" ToolTip="Show performance information for Skylake-X in instruction QuickInfo tooltips" Content="Skylake-X (Intel 7nd gen Core)" VerticalAlignment="Center" Width="Auto" />
                 </Grid>
             </GroupBox>
             <GroupBox Header="Intellisense" >

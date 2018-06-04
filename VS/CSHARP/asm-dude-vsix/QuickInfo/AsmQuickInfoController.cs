@@ -228,7 +228,7 @@ namespace AsmDude.QuickInfo
                     Owner = this // set the owner of this windows such that we can manually close this window
                 };
                 instructionTooltipWindow.SetDescription(mnemonic, AsmDudeTools.Instance);
-                instructionTooltipWindow.SetPerformanceInfo(mnemonic, AsmDudeTools.Instance, true);
+                instructionTooltipWindow.SetPerformanceInfo(mnemonic, AsmDudeTools.Instance);
                 instructionTooltipWindow.Margin = new Thickness(7.0);
 
                 var border = new Border()

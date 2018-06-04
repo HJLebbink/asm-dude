@@ -112,7 +112,7 @@ namespace AsmDude.OptionsPage
 
             #region CodeFolding
             this._asmDudeOptionsPageUI.CodeFolding_On = Settings.Default.CodeFolding_On;
-            this._asmDudeOptionsPageUI.CodeFolding_IsDefaultCollaped = Settings.Default.CodeFolding_IsDefaultCollapsed;
+            this._asmDudeOptionsPageUI.CodeFolding_IsDefaultCollapsed = Settings.Default.CodeFolding_IsDefaultCollapsed;
             this._asmDudeOptionsPageUI.CodeFolding_BeginTag = Settings.Default.CodeFolding_BeginTag;
             this._asmDudeOptionsPageUI.CodeFolding_EndTag = Settings.Default.CodeFolding_EndTag;
             #endregion
@@ -151,6 +151,8 @@ namespace AsmDude.OptionsPage
             #endregion
 
             #region Latency and Throughput Information (Performance Info)
+            this._asmDudeOptionsPageUI.PerformanceInfo_On = Settings.Default.PerformanceInfo_On;
+            this._asmDudeOptionsPageUI.PerformanceInfo_IsDefaultCollapsed = Settings.Default.PerformanceInfo_IsDefaultCollapsed;
             this._asmDudeOptionsPageUI.PerformanceInfo_SandyBridge_On = Settings.Default.PerformanceInfo_SandyBridge_On;
             this._asmDudeOptionsPageUI.PerformanceInfo_IvyBridge_On = Settings.Default.PerformanceInfo_IvyBridge_On;
             this._asmDudeOptionsPageUI.PerformanceInfo_Haswell_On = Settings.Default.PerformanceInfo_Haswell_On;
@@ -391,9 +393,9 @@ namespace AsmDude.OptionsPage
                 sb.AppendLine("CodeFolding_On=" + this._asmDudeOptionsPageUI.CodeFolding_On);
                 changed = true;
             }
-            if (Settings.Default.CodeFolding_IsDefaultCollapsed != this._asmDudeOptionsPageUI.CodeFolding_IsDefaultCollaped)
+            if (Settings.Default.CodeFolding_IsDefaultCollapsed != this._asmDudeOptionsPageUI.CodeFolding_IsDefaultCollapsed)
             {
-                sb.AppendLine("CodeFolding_IsDefaultCollaped=" + this._asmDudeOptionsPageUI.CodeFolding_IsDefaultCollaped);
+                sb.AppendLine("CodeFolding_IsDefaultCollapsed=" + this._asmDudeOptionsPageUI.CodeFolding_IsDefaultCollapsed);
                 changed = true;
             }
             if (Settings.Default.CodeFolding_BeginTag != this._asmDudeOptionsPageUI.CodeFolding_BeginTag)
@@ -550,6 +552,16 @@ namespace AsmDude.OptionsPage
             #endregion
 
             #region Latency and Throughput Information (Performance Info)
+            if (Settings.Default.PerformanceInfo_On != this._asmDudeOptionsPageUI.PerformanceInfo_On)
+            {
+                sb.AppendLine("PerformanceInfo_On=" + this._asmDudeOptionsPageUI.PerformanceInfo_On);
+                changed = true;
+            }
+            if (Settings.Default.PerformanceInfo_IsDefaultCollapsed != this._asmDudeOptionsPageUI.PerformanceInfo_IsDefaultCollapsed)
+            {
+                sb.AppendLine("PerformanceInfo_IsDefaultCollapsed=" + this._asmDudeOptionsPageUI.PerformanceInfo_IsDefaultCollapsed);
+                changed = true;
+            }
             if (Settings.Default.PerformanceInfo_SandyBridge_On != this._asmDudeOptionsPageUI.PerformanceInfo_SandyBridge_On)
             {
                 sb.AppendLine("PerformanceInfo_SandyBridge_On=" + this._asmDudeOptionsPageUI.PerformanceInfo_SandyBridge_On);
@@ -1238,9 +1250,9 @@ namespace AsmDude.OptionsPage
                 changed = true;
                 restartNeeded = true;
             }
-            if (Settings.Default.CodeFolding_IsDefaultCollapsed != this._asmDudeOptionsPageUI.CodeFolding_IsDefaultCollaped)
+            if (Settings.Default.CodeFolding_IsDefaultCollapsed != this._asmDudeOptionsPageUI.CodeFolding_IsDefaultCollapsed)
             {
-                Settings.Default.CodeFolding_IsDefaultCollapsed = this._asmDudeOptionsPageUI.CodeFolding_IsDefaultCollaped;
+                Settings.Default.CodeFolding_IsDefaultCollapsed = this._asmDudeOptionsPageUI.CodeFolding_IsDefaultCollapsed;
                 changed = true;
                 restartNeeded = false;
             }
@@ -1453,6 +1465,18 @@ namespace AsmDude.OptionsPage
             #endregion
 
             #region Latency and Throughput Information (Performance Info)
+            if (Settings.Default.PerformanceInfo_On != this._asmDudeOptionsPageUI.PerformanceInfo_On)
+            {
+                Settings.Default.PerformanceInfo_On = this._asmDudeOptionsPageUI.PerformanceInfo_On;
+                restartNeeded = Settings.Default.PerformanceInfo_On = this._asmDudeOptionsPageUI.PerformanceInfo_On;
+                changed = true;
+            }
+            if (Settings.Default.PerformanceInfo_IsDefaultCollapsed != this._asmDudeOptionsPageUI.PerformanceInfo_IsDefaultCollapsed)
+            {
+                Settings.Default.PerformanceInfo_IsDefaultCollapsed = this._asmDudeOptionsPageUI.PerformanceInfo_IsDefaultCollapsed;
+                restartNeeded = false;
+                changed = true;
+            }
             if (Settings.Default.PerformanceInfo_SandyBridge_On != this._asmDudeOptionsPageUI.PerformanceInfo_SandyBridge_On)
             {
                 Settings.Default.PerformanceInfo_SandyBridge_On = this._asmDudeOptionsPageUI.PerformanceInfo_SandyBridge_On;
