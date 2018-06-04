@@ -213,7 +213,7 @@ namespace AsmDude.HighlightWord
                         {
                             //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. Keyword={1}", this.ToString(), this.NewWord));
                             //We have to replace all occurrences of special characters with escaped versions of that char since we cannot use verbatim strings.
-                            string t = this.NewWord.Replace(".", "\\.").Replace("$", "\\$").Replace("?", "\\?").Replace("/", "\\/"); //TODO escape backslashes
+                            string t = this.NewWord.Replace(".", "\\.").Replace("$", "\\$").Replace("?", "\\?").Replace("/", "\\/");
                             findData = new FindData(t, s)
                             {
                                 FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions

@@ -1291,7 +1291,7 @@ namespace AsmDude.OptionsPage
                 if (Settings.Default.SyntaxHighlighting_Opcode_Italic != this._asmDudeOptionsPageUI.ColorMnemonic_Italic)
                 {
                     Settings.Default.SyntaxHighlighting_Opcode_Italic = this._asmDudeOptionsPageUI.ColorMnemonic_Italic;
-                    //TODO
+                    //TODO fix that toggling italic is displayed immediately
                     //UpdateItalic(AsmClassificationDefinition.ClassificationTypeNames.Mnemonic, this._asmDudeOptionsPageUI.ColorMnemonic_Italic);
                     changed = true;
                     restartNeeded = true;

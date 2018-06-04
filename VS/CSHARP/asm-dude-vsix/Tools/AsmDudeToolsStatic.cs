@@ -157,21 +157,6 @@ namespace AsmDude.Tools
             return null;
         }
 
-        public static bool Proper_File(ITextBuffer buffer)
-        {
-            string filename = GetFileName(buffer);
-            if ((filename == null) ||
-                (filename.Length == 0) ||
-                (filename.EndsWith(".asm", StringComparison.OrdinalIgnoreCase)) ||
-                (filename.EndsWith(".cod", StringComparison.OrdinalIgnoreCase)) ||
-                (filename.EndsWith(".inc", StringComparison.OrdinalIgnoreCase)) ||
-                (filename.EndsWith(".s", StringComparison.OrdinalIgnoreCase)))
-            {
-                return true;
-            }
-            return false;
-        }
-
         public static void Open_Disassembler()
         {
             try

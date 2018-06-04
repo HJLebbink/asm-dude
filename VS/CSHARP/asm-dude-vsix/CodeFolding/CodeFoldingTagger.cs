@@ -119,7 +119,6 @@ namespace AsmDude.CodeFolding
                     int startLineNumber = entire.Start.GetContainingLine().LineNumber;
                     int endLineNumber = entire.End.GetContainingLine().LineNumber;
 
-                    //foreach (Region region in this._regions.ToArray()) //TODO expensive and ugly ToArray here to prevent a modification exception
                     foreach (Region region in this._regions)
                     {
                         if ((region.StartLine <= endLineNumber) && (region.EndLine >= startLineNumber))
