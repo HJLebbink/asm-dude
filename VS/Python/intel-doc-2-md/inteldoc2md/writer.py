@@ -14,8 +14,8 @@ class State(object):
 class Writer(object):
 
 	def __init__(self):
-		#self.source = 'Intel® Architecture Instruction Set Extensions and Future Features Programming Reference (OCTOBER 2017)'
-		self.source = 'Intel® Architecture Software Developer\'s Manual (DECEMBER 2017)'
+		self.source = 'Intel® Architecture Instruction Set Extensions and Future Features Programming Reference (May 2018)'
+		#self.source = 'Intel® Architecture Software Developer\'s Manual (May 2018)'
 
 
 	@staticmethod
