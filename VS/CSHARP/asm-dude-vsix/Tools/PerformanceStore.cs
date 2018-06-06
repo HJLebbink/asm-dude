@@ -84,6 +84,8 @@ namespace AsmDude.Tools
             {
                 System.IO.StreamReader file = new System.IO.StreamReader(filename);
                 string line;
+                int lineNumber = 0;
+
                 while ((line = file.ReadLine()) != null)
                 {
                     if ((line.Trim().Length > 0) && (!line.StartsWith(";")))
@@ -107,7 +109,7 @@ namespace AsmDude.Tools
                                             }
                                             else
                                             {
-                                                AsmDudeToolsStatic.Output_WARNING("PerformanceStore:LoadData: microArch=" + microArch + ": unknown mnemonic " + mnemonicStr + " in line: " + line);
+                                                AsmDudeToolsStatic.Output_WARNING("PerformanceStore:AddData: microArch=" + microArch + ": unknown mnemonic " + mnemonicStr + " in line " +lineNumber +" with content \"" + line + "\".");
                                             }
                                         }
                                         else
@@ -138,6 +140,7 @@ namespace AsmDude.Tools
                             AsmDudeToolsStatic.Output_WARNING("PerformanceStore:AddData: found " + columns.Length + " columns; funky line" + line);
                         }
                     }
+                    lineNumber++;
                 }
                 file.Close();
             }
@@ -173,7 +176,7 @@ namespace AsmDude.Tools
                                 Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(mnemonicStr);
                                 if (mnemonic == Mnemonic.NONE)
                                 {
-                                    AsmDudeToolsStatic.Output_WARNING("PerformanceStore:LoadData: key=" + columns[0] + ": unknown mnemonic " + mnemonicStr + " in line: " + line);
+                                    AsmDudeToolsStatic.Output_WARNING("PerformanceStore:Load_Instruction_Translation: key=" + columns[0] + ": unknown mnemonic " + mnemonicStr + " in line: " + line);
                                 }
                                 else
                                 {

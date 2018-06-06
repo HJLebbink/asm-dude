@@ -13,7 +13,7 @@
 ;p4:	The number of ?ops going to port 4 (memory write data).						
 ;Latency:	This is the delay that the instruction generates in a dependency chain. The numbers are minimum values. Cache misses, misalignment, and exceptions may increase the clock counts considerably. Where hyperthreading is enabled, the use of the same execution units in the other thread leads to inferior performance. Denormal numbers, NANs and infinity do not increase the latency. The time unit used is core clock cycles, not the reference clock cycles given by the time stamp counter.						
 ;Reciprocal throughput:	The average number of core clock cycles per instruction for a series of independent instructions of the same kind in the same thread.						
-	The latencies and throughputs listed below for addition and multiplication using full size YMM registers are obtained only after a warm-up period of a thousand instructions or more. The latencies may be one or two clock cycles longer and the reciprocal throughputs double the values for shorter sequences of code. There is no warm-up effect when vectors are 128 bits wide or less.						
+;The latencies and throughputs listed below for addition and multiplication using full size YMM registers are obtained only after a warm-up period of a thousand instructions or more. The latencies may be one or two clock cycles longer and the reciprocal throughputs double the values for shorter sequences of code. There is no warm-up effect when vectors are 128 bits wide or less.						
 							
 ;Instruction	Operands	?ops fused domain	µops unfused domain 	µops each port 	Latency	Reci-procal through-put	
 							
@@ -169,17 +169,17 @@ INTO		4	todo	todo		6	not 64 bit
 
 ;String instructions			todo	todo			
 LODS		3	todo	todo		1	
-REP LODS		~5n	todo	todo	~2n		
+;REP LODS		~5n	todo	todo	~2n		
 STOS		3	todo	todo		1	
-REP STOS		many	todo	todo	n		worst case
-REP STOS		many	todo	todo	1/16B		best case
+;REP STOS		many	todo	todo	n		worst case
+;REP STOS		many	todo	todo	1/16B		best case
 MOVS		5	todo	todo		4	
-REP MOVS		2n	todo	todo	n		worst case
-REP MOVS		4/16B	todo	todo	1/16B		best case
+;REP MOVS		2n	todo	todo	n		worst case
+;REP MOVS		4/16B	todo	todo	1/16B		best case
 SCAS		3	todo	todo		1	
-REP SCAS		~6n	todo	todo	~2n		
+;REP SCAS		~6n	todo	todo	~2n		
 CMPS		5	todo	todo		4	
-REP CMPS		~8n	todo	todo	~2n		
+;REP CMPS		~8n	todo	todo	~2n		
 
 ;Synchronization instructions			todo	todo			
 XADD	m,r	4	todo	todo	7		
@@ -191,9 +191,9 @@ CMPXCHG8B	m,r	14	todo	todo	7
 ;LOCK CMPXCHG8B	m,r	18	todo	todo	22		
 CMPXCHG16B	m,r	22	todo	todo	16		
 ;LOCK CMPXCHG16B	m,r	24	todo	todo	27		
-			todo	todo			
-Other			todo	todo			
-NOP		1	todo	todo		0.25	
+
+;Other			todo	todo			
+;NOP		1	todo	todo		0.25	
 PAUSE		7	todo	todo		10	
 ENTER	a,0	12	todo	todo		8	
 ENTER	a,b	45+7b	todo	todo	84+3b		
@@ -268,7 +268,7 @@ FYL2X 		42	todo	todo	90-106
 FYL2XP1		56	todo	todo	82		
 FPTAN		102	todo	todo	130		
 FPATAN		28-72	todo	todo	94-150		
-			todo	todo			
+
 ;Other			todo	todo			
 FNOP		1	todo	todo		1	
 WAIT		2	todo	todo		1	
@@ -520,10 +520,10 @@ CVTDQ2PS	x,x	1	todo	todo	3	1
 CVTDQ2PS	x,m128	1	todo	todo		1	
 VCVTDQ2PS	y,y	1	todo	todo	3	1	AVX
 VCVTDQ2PS	y,m256	1	todo	todo		1	AVX
-CVT(T) PS2DQ	x,x	1	todo	todo	3	1	
-CVT(T) PS2DQ	x,m128	1	todo	todo		1	
-VCVT(T) PS2DQ	y,y	1	todo	todo	3	1	AVX
-VCVT(T) PS2DQ	y,m256	1	todo	todo		1	AVX
+CVT(T)PS2DQ	x,x	1	todo	todo	3	1	
+CVT(T)PS2DQ	x,m128	1	todo	todo		1	
+VCVT(T)PS2DQ	y,y	1	todo	todo	3	1	AVX
+VCVT(T)PS2DQ	y,m256	1	todo	todo		1	AVX
 CVTDQ2PD	x,x	2	todo	todo	4	1	
 CVTDQ2PD	x,m64	2	todo	todo		1	
 VCVTDQ2PD	y,x	2	todo	todo	5	1	AVX
@@ -538,8 +538,8 @@ CVT(T)PS2PI	mm,x	2	todo	todo	4	1
 CVT(T)PS2PI	mm,m128	2	todo	todo		1	
 CVTPI2PD	x,mm	2	todo	todo	4	1	
 CVTPI2PD	x,m64	2	todo	todo		1	
-CVT(T) PD2PI	mm,x	2	todo	todo	4	1	
-CVT(T) PD2PI	mm,m128	2	todo	todo		1	
+CVT(T)PD2PI	mm,x	2	todo	todo	4	1	
+CVT(T)PD2PI	mm,m128	2	todo	todo		1	
 CVTSI2SS	x,r32	2	todo	todo	4	3	
 CVTSI2SS	x,m32	1	todo	todo		3	
 CVT(T)SS2SI	r32,x	2	todo	todo	4	1	
