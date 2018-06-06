@@ -2508,7 +2508,7 @@ namespace unit_tests_asm_z3
             if (true) {   // forward
                 string line1 = "mov eax, " + eax;
                 string line2 = "mov ebx, " + ebx;
-                string line3 = "imul ebx";
+                //string line3 = "imul ebx";
 
                 State state = CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
