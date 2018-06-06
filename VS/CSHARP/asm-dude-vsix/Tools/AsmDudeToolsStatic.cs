@@ -652,6 +652,11 @@ namespace AsmDude.Tools
                 case Arch.SGX2: return Settings.Default.ARCH_SGX2;
                 case Arch.SMX: return Settings.Default.ARCH_SMX;
 
+                case Arch.CLDEMOTE: return Settings.Default.ARCH_CLDEMOTE;                case Arch.MOVDIR64B: return Settings.Default.ARCH_MOVDIR64B;
+                case Arch.MOVDIRI: return Settings.Default.ARCH_MOVDIRI;
+                case Arch.PCONFIG: return Settings.Default.ARCH_PCONFIG;
+                case Arch.WAITPKG: return Settings.Default.ARCH_PCONFIG;
+
                 case Arch.NONE: return true;
 
                 default:

@@ -298,6 +298,7 @@
     FXTRACT   ; 8086
     FYL2X   ; 8086
     FYL2XP1   ; 8086
+    INT1   ; 8086
     INT3   ; 8086
     INVD   ; 8086
     INVLPG   ; 8086
@@ -2513,6 +2514,23 @@
     SMCTRL   ; SMX
     WAKEUP   ; SMX
 #endregion SMX
+#region CLDEMOTE
+    CLDEMOTE   ; CLDEMOTE
+#endregion CLDEMOTE
+#region MOVDIR64B
+    MOVDIR64B   ; MOVDIR64B
+#endregion MOVDIR64B
+#region MOVDIRI
+    MOVDIRI   ; MOVDIRI
+#endregion MOVDIRI
+#region PCONFIG
+    PCONFIG   ; PCONFIG
+#endregion PCONFIG
+#region WAITPKG
+    TPAUSE   ; WAITPKG
+    UMONITOR   ; WAITPKG
+    UMWAIT   ; WAITPKG
+#endregion WAITPKG
 #region X64
     MOV   ; 8086 386 X64
     CMOVE   ; X64 P6

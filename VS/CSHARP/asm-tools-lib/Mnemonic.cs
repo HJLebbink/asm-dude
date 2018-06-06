@@ -2441,8 +2441,16 @@ namespace AsmTools {
         SENTER,
         SEXIT,
         SMCTRL,
-        WAKEUP
+        WAKEUP,
 
+        CLDEMOTE,
+        MOVDIR64B,
+        MOVDIRI,
+        PCONFIG,
+        TPAUSE,
+        UMONITOR,
+        UMWAIT,
+        WBNOINVD
     }
 
     public static partial class AsmSourceTools {
@@ -4567,6 +4575,15 @@ namespace AsmTools {
                 case "SEXIT": return Mnemonic.SEXIT;
                 case "SMCTRL": return Mnemonic.SMCTRL;
                 case "WAKEUP": return Mnemonic.WAKEUP;
+
+                case "CLDEMOTE": return Mnemonic.CLDEMOTE;
+                case "MOVDIR64B": return Mnemonic.MOVDIR64B;
+                case "MOVDIRI": return Mnemonic.MOVDIRI;
+                case "PCONFIG": return Mnemonic.PCONFIG;
+                case "TPAUSE": return Mnemonic.TPAUSE;
+                case "UMONITOR": return Mnemonic.UMONITOR;
+                case "UMWAIT": return Mnemonic.UMWAIT;
+                case "WBNOINVD": return Mnemonic.WBNOINVD;
 
                 default:
                     Console.WriteLine("WARNING;parseMnemonic. unknown str=\"" + str + "\".");

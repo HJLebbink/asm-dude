@@ -189,6 +189,19 @@ namespace AsmTools {
 
         /// <summary>SAFER MODE EXTENSIONS</summary>
         SMX,
+
+
+        CLDEMOTE,
+
+        MOVDIR64B,
+
+        MOVDIRI,
+
+        PCONFIG,
+
+        WAITPKG,
+
+
         #region Misc Other
         X64,
 
@@ -305,8 +318,12 @@ namespace AsmTools {
                 case "SGX1": return Arch.SGX1;
                 case "SGX2": return Arch.SGX2;
                 case "SMX": return Arch.SMX;
-                
 
+                case "CLDEMOTE": return Arch.CLDEMOTE;
+                case "MOVDIR64B": return Arch.MOVDIR64B;
+                case "MOVDIRI": return Arch.MOVDIRI;
+                case "PCONFIG": return Arch.PCONFIG;
+                case "WAITPKG": return Arch.WAITPKG;
 
                 case "UNDOC": return Arch.UNDOC;
                 default:
@@ -378,6 +395,13 @@ namespace AsmTools {
                 case Arch.ARCH_3DNOW: return "3DNow (AMD)";
                 case Arch.CYRIX: return "Cyrix Instructions Set";
                 case Arch.CYRIXM: return "Cyrix M Instruction Set";
+
+                case Arch.CLDEMOTE: return "";
+                case Arch.MOVDIR64B: return "";
+                case Arch.MOVDIRI: return "";
+                case Arch.PCONFIG: return "";
+                case Arch.WAITPKG: return "";
+
                 default:
                     return "";
             }

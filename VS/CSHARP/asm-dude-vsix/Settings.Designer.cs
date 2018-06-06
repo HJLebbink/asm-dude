@@ -1750,5 +1750,65 @@ namespace AsmDude {
                 this["PerformanceInfo_On"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ARCH_CLDEMOTE {
+            get {
+                return ((bool)(this["ARCH_CLDEMOTE"]));
+            }
+            set {
+                this["ARCH_CLDEMOTE"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ARCH_MOVDIR64B {
+            get {
+                return ((bool)(this["ARCH_MOVDIR64B"]));
+            }
+            set {
+                this["ARCH_MOVDIR64B"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ARCH_MOVDIRI {
+            get {
+                return ((bool)(this["ARCH_MOVDIRI"]));
+            }
+            set {
+                this["ARCH_MOVDIRI"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ARCH_PCONFIG {
+            get {
+                return ((bool)(this["ARCH_PCONFIG"]));
+            }
+            set {
+                this["ARCH_PCONFIG"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ARCH_WAITPKG {
+            get {
+                return ((bool)(this["ARCH_WAITPKG"]));
+            }
+            set {
+                this["ARCH_WAITPKG"] = value;
+            }
+        }
     }
 }

@@ -170,6 +170,7 @@ namespace AsmDude.SignatureHelp
                 case "R16": return new AsmSignatureEnum[] { AsmSignatureEnum.R16 };
                 case "R32": return new AsmSignatureEnum[] { AsmSignatureEnum.R32 };
                 case "R64": return new AsmSignatureEnum[] { AsmSignatureEnum.R64 };
+                case "R16/R32/R64": return new AsmSignatureEnum[] { AsmSignatureEnum.R16, AsmSignatureEnum.R32, AsmSignatureEnum.R64 };
 
                 case "REG": return new AsmSignatureEnum[] { AsmSignatureEnum.R32 };
                 case "AL": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_AL };
@@ -362,7 +363,7 @@ namespace AsmDude.SignatureHelp
                 case "NONE": return new AsmSignatureEnum[] { AsmSignatureEnum.NONE };
 
                 default:
-                    AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource:parseOperandTypeEnum: unknown content " + str);
+                    AsmDudeToolsStatic.Output_INFO("AsmSignatureTools:parseOperandTypeEnum: unknown content " + str);
                     return new AsmSignatureEnum[] { AsmSignatureEnum.UNKNOWN };
             }
         }
