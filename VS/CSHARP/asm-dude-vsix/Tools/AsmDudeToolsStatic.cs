@@ -442,9 +442,9 @@ namespace AsmDude.Tools
             return null;
         }
 
-        public static TextExtent? Get_Keyword(SnapshotPoint? bufferPosition)
+        // TODO: THIS CODE MAY NOT WORK.
+        public static TextExtent? Get_Keyword_OLD(SnapshotPoint? bufferPosition)
         {
-
             if (bufferPosition != null)
             {
                 string line = bufferPosition.Value.GetContainingLine().GetText();

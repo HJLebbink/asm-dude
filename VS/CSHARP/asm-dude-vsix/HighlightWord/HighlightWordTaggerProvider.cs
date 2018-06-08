@@ -39,6 +39,9 @@ namespace AsmDude.HighlightWord
         [Import]
         private ITextSearchService _textSearchService = null;
 
+        [Import]
+        private ITextStructureNavigatorSelectorService _textStructureNavigatorSelector = null;
+
         /// <summary>
         /// This method is called by VS to generate the tagger
         /// </summary>
@@ -54,7 +57,8 @@ namespace AsmDude.HighlightWord
 
             Func<ITagger<T>> sc = delegate ()
             {
-                return new HighlightWordTagger(textView, buffer, this._textSearchService) as ITagger<T>;
+                ITextStructureNavigator textStructureNavigator = this._textStructureNavigatorSelector.GetTextStructureNavigator(buffer);
+                return new HighlightWordTagger(textView, buffer, this._textSearchService, textStructureNavigator) as ITagger<T>;
             };
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }

@@ -55,7 +55,7 @@ namespace AsmDude.HighlightWord
             {
                 this.Border = new Pen(new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.KeywordHighlighting_BorderColor)), 1);
             }
-            this.ZOrder = 5; // do not know where the ZOrder is useful for
+            this.ZOrder = 5; // do not know where the ZOrder is usefull for
         }
     }
 
@@ -81,7 +81,8 @@ namespace AsmDude.HighlightWord
         private readonly ITextView _view;
         private readonly ITextBuffer _sourceBuffer;
         private readonly ITextSearchService _textSearchService;
-        private object _updateLock = new object();
+        private ITextStructureNavigator _textStructureNavigator { get; set; }
+        private readonly object _updateLock = new object();
 
         // The current set of words to highlight
         private NormalizedSnapshotSpanCollection _wordSpans;
@@ -95,11 +96,12 @@ namespace AsmDude.HighlightWord
         // The current request, from the last cursor movement or view render
         private SnapshotPoint RequestedPoint { get; set; }
 
-        public HighlightWordTagger(ITextView view, ITextBuffer sourceBuffer, ITextSearchService textSearchService)
+        public HighlightWordTagger(ITextView view, ITextBuffer sourceBuffer, ITextSearchService textSearchService, ITextStructureNavigator textStructureNavigator)
         {
             this._view = view;
             this._sourceBuffer = sourceBuffer;
             this._textSearchService = textSearchService;
+            this._textStructureNavigator = textStructureNavigator;
 
             this._wordSpans = new NormalizedSnapshotSpanCollection();
 
@@ -126,7 +128,7 @@ namespace AsmDude.HighlightWord
                 // If a new snapshot wasn't generated, then skip this layout
                 if (e.NewViewState.EditSnapshot != e.OldViewState.EditSnapshot)
                 {
-                    UpdateAtCaretPosition(this._view.Caret.Position);
+                    this.UpdateAtCaretPosition(this._view.Caret.Position);
                 }
             }
         }
@@ -138,25 +140,32 @@ namespace AsmDude.HighlightWord
         {
             if (Settings.Default.KeywordHighlighting_BackgroundColor_On || Settings.Default.KeywordHighlighting_BorderColor_On)
             {
-                UpdateAtCaretPosition(e.NewPosition);
+                this.UpdateAtCaretPosition(e.NewPosition);
             }
         }
 
         /// <summary>
         /// Check the caret position. If the caret is on a new word, update the CurrentWord value
         /// </summary>
-        private void UpdateAtCaretPosition(CaretPosition caretPoisition)
+        private void UpdateAtCaretPosition(CaretPosition caretPosition)
         {
-            SnapshotPoint? point = caretPoisition.Point.GetPoint(this._sourceBuffer, caretPoisition.Affinity);
+            SnapshotPoint? point = caretPosition.Point.GetPoint(this._sourceBuffer, caretPosition.Affinity);
+
+            TextExtent? newWordExtend = this._textStructureNavigator.GetExtentOfWord(point.Value);
+            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. word={1}", this.ToString(), newWordExtend.ToString()));
 
             // If the new cursor position is still within the current word (and on the same snapshot),
             // we don't need to check it.
-            TextExtent? newWordExtend = AsmDudeToolsStatic.Get_Keyword(point);
             if (newWordExtend.HasValue)
             {
                 string newWord = newWordExtend.Value.Span.GetText();
+                //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. caretPoisition={1}; point={2}; newWordExtend={3}", this.ToString(), caretPosition, point, newWordExtend));
 
                 if ((this.CurrentWord != null) && newWord.Equals(this.CurrentWord))
+                {
+                    return;
+                }
+                else if (newWord == " ") // test for some words that one may not want to highlight.
                 {
                     return;
                 }
@@ -165,6 +174,7 @@ namespace AsmDude.HighlightWord
                     this.RequestedPoint = point.Value;
                     this.NewWord = newWord;
                     this.NewWordSpan = newWordExtend.Value.Span;
+                    //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. RequestedPoint={1}; NewWord=\"{2}\"; NewWordSpan={3}", this.ToString(), this.RequestedPoint, this.NewWord, this.NewWordSpan));
 
                     AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Update_Word_Adornments);
                 }
@@ -190,7 +200,7 @@ namespace AsmDude.HighlightWord
                     Rn reg = AsmTools.RegisterTools.ParseRn(this.NewWord);
                     if (reg != Rn.NOREG) 
                     {
-                        //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. Register={1}", this.ToString(), this.NewWord));
+                        AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. Register={1}", this.ToString(), this.NewWord));
                         string t = AsmTools.RegisterTools.GetRelatedRegister(reg);
                         findData = new FindData(t, s)
                         {
@@ -202,7 +212,7 @@ namespace AsmDude.HighlightWord
                         var (Valid, Value, NBits) = AsmTools.AsmSourceTools.Parse_Constant(this.NewWord);
                         if (Valid)
                         {
-                            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. Contant={1}", this.ToString(), this.NewWord));
+                            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. Contant={1}", this.ToString(), this.NewWord));
                             string t = AsmTools.AsmSourceTools.Get_Related_Constant(this.NewWord, Value, NBits);
                             findData = new FindData(t, s)
                             {
@@ -211,7 +221,7 @@ namespace AsmDude.HighlightWord
                         }
                         else
                         {
-                            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. Keyword={1}", this.ToString(), this.NewWord));
+                            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. Keyword={1}", this.ToString(), this.NewWord));
                             //We have to replace all occurrences of special characters with escaped versions of that char since we cannot use verbatim strings.
                             string t = this.NewWord.Replace(".", "\\.").Replace("$", "\\$").Replace("?", "\\?").Replace("/", "\\/");
                             findData = new FindData(t, s)
