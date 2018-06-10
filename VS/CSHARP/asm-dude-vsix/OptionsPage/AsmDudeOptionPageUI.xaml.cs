@@ -759,6 +759,34 @@ namespace AsmDude.OptionsPage
             get { return this.UseArch_SGX2_UI.IsChecked ?? false; }
             set { this.UseArch_SGX2_UI.IsChecked = value; }
         }
+
+        public bool UseArch_CLDEMOTE
+        {
+            get { return this.UseArch_CLDEMOTE_UI.IsChecked ?? false; }
+            set { this.UseArch_CLDEMOTE_UI.IsChecked = value; }
+        }
+        public bool UseArch_MOVDIR64B
+        {
+            get { return this.UseArch_MOVDIR64B_UI.IsChecked ?? false; }
+            set { this.UseArch_MOVDIR64B_UI.IsChecked = value; }
+        }
+        public bool UseArch_MOVDIRI
+        {
+            get { return this.UseArch_MOVDIRI_UI.IsChecked ?? false; }
+            set { this.UseArch_MOVDIRI_UI.IsChecked = value; }
+        }
+        public bool UseArch_PCONFIG
+        {
+            get { return this.UseArch_PCONFIG_UI.IsChecked ?? false; }
+            set { this.UseArch_PCONFIG_UI.IsChecked = value; }
+        }
+        public bool UseArch_WAITPKG
+        {
+            get { return this.UseArch_WAITPKG_UI.IsChecked ?? false; }
+            set { this.UseArch_WAITPKG_UI.IsChecked = value; }
+        }
+
+
         #endregion
 
         #region Intellisense

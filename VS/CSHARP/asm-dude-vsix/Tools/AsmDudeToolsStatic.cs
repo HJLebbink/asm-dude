@@ -442,26 +442,6 @@ namespace AsmDude.Tools
             return null;
         }
 
-        // TODO: THIS CODE MAY NOT WORK.
-        public static TextExtent? Get_Keyword_OLD(SnapshotPoint? bufferPosition)
-        {
-            if (bufferPosition != null)
-            {
-                string line = bufferPosition.Value.GetContainingLine().GetText();
-                int startLine = bufferPosition.Value.GetContainingLine().Start;
-                int currentPos = bufferPosition.Value.Position;
-
-                var (beginPos, endPos) = AsmTools.AsmSourceTools.GetKeywordPos(currentPos - startLine, line);
-                //AsmDudeToolsStatic.Output_INFO(string.Format("getKeywordPos: beginPos={0}; endPos={1}.", t.Item1, t.Item2));
-                int length = endPos - beginPos;
-
-                SnapshotSpan span = new SnapshotSpan(bufferPosition.Value.Snapshot, beginPos, length);
-                //AsmDudeToolsStatic.Output_INFO("getKeyword: \"" + span.GetText() + "\".");
-                return new TextExtent(span, true);
-            }
-            return null;
-        }
-
         /// <summary>
         /// Find the previous keyword (if any) that exists BEFORE the provided triggerPoint, and the provided start.
         /// Eg. qqqq xxxxxx yyyyyyy zzzzzz

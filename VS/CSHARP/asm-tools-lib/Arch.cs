@@ -181,24 +181,28 @@ namespace AsmTools {
         XSAVEOPT,
         #endregion
 
-        //Software Guard Extensions
+        /// <summary>Software Guard Extensions 1</summary>
         SGX1,
-        
-        //Software Guard Extensions
+
+        /// <summary>Software Guard Extensions 2</summary>
         SGX2,
 
         /// <summary>SAFER MODE EXTENSIONS</summary>
         SMX,
 
-
+        /// <summary> Cache Line DEMOTE (CPUID.(EAX=0x7, ECX=0):ECX[bit25])</summary>
         CLDEMOTE,
 
+        /// <summary> Direct store instructions – Direct store using write combining (WC) for 64B (CPUID.(EAX=?, ECX=?):ECX[bit?])</summary>
         MOVDIR64B,
 
+        /// <summary> Direct store instructions – Direct store using write combining (WC) for doublewords (CPUID.(EAX=?, ECX=?):ECX[bit?])</summary>
         MOVDIRI,
 
+        /// <summary> (CPUID.(EAX=0x?, ECX=?):ECX[bit?])</summary>
         PCONFIG,
 
+        /// <summary> User wait – TPAUSE, UMONITOR, UMWAIT (CPUID.(EAX=0x?, ECX=?):ECX[bit?])</summary>
         WAITPKG,
 
 

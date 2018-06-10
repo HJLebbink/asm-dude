@@ -105,19 +105,28 @@ namespace AsmDude.QuickInfo
                         int pos = point.Value.Position;
                         int pos2 = Get_Keyword_Span_At_Point(point.Value).Start;
 
-                        AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: CreateQuickInfoSession for triggerPoint " + pos + "; pos2=" + pos2);
+                        //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: CreateQuickInfoSession for triggerPoint " + pos + "; pos2=" + pos2);
                         //ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(pos, PointTrackingMode.Positive);
                         ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(pos2, PointTrackingMode.Positive);
 
                         if (this._session == null)
                         {
+                            AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: A: session was null, create a new session  for triggerPoint " + pos + "; pos2=" + pos2);
                             this._session = this._quickInfoBroker.TriggerQuickInfo(this._textView, triggerPoint, false);
-                            if (this._session != null) this._session.Dismissed += this._session_Dismissed;
+                            if (this._session != null)
+                            {
+                                this._session.Dismissed += this._session_Dismissed;
+                                //this._session.ApplicableToSpanChanged += (o, i) => { AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:ApplicableToSpanChanged Event"); };
+                                //this._session.PresenterChanged += (o, i) => { AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:PresenterChanged Event"); };
+                                //this._session.Recalculated += (o, i) => { AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:Recalculated Event"); };
+                            }
                         }
                         else
                         {
                             if (this._session.IsDismissed)
                             {
+                                AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: B: session was not null but was dismissed, create a new session  for triggerPoint " + pos + "; pos2=" + pos2);
+
                                 this._session = this._quickInfoBroker.TriggerQuickInfo(this._textView, triggerPoint, false);
                                 if (this._session != null) this._session.Dismissed += this._session_Dismissed;
                             }
@@ -125,11 +134,13 @@ namespace AsmDude.QuickInfo
                             {
                                 if (this._session.ApplicableToSpan.GetSpan(this._textView.TextSnapshot).IntersectsWith(new Span(point.Value.Position, 0)))
                                 {
-                                    AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: intersects!");
+                                    AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: C: session was not dismissed: intersects!");
                                 }
                                 else
                                 {
-                                    if (this._session != null) this._session.Dismiss();
+                                    AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: D: session  was not dismissed but we need a new session for triggerPoint " + pos + "; pos2=" + pos2);
+
+                                    //if (this._session != null) this._session.Dismiss();
                                     this._session = this._quickInfoBroker.TriggerQuickInfo(this._textView, triggerPoint, false);
                                     if (this._session != null) this._session.Dismissed += this._session_Dismissed;
                                 }
@@ -160,7 +171,7 @@ namespace AsmDude.QuickInfo
 
         private void _session_Dismissed(object sender, EventArgs e)
         {
-            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:_session_Dismissed", ToString()));
+            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:_session_Dismissed: e={1}", ToString(), e));
             this._session = null;
         }
 

@@ -41,6 +41,7 @@ namespace AsmSim
             System.Version ver = thisAssemName.Version;
             Console.WriteLine(string.Format("Loaded AsmSim version {0}.", ver));
 
+            ExpressionTest();
             //TestMem2();
             //TestExecutionTree();
             //TestGraph();
@@ -60,6 +61,13 @@ namespace AsmSim
             Console.WriteLine(string.Format("Elapsed time " + elapsedSec + " sec"));
             Console.WriteLine(string.Format("Press any key to continue."));
             Console.ReadKey();
+        }
+
+
+        static void ExpressionTest()
+        {
+            var (Valid, Value, NBits) = ExpressionEvaluator.Evaluate_Constant("01b", false);
+            Console.WriteLine("valid = " + Value + "; value = " + Value, "; nBits = " + NBits);
         }
 
         static void TestExecutionTree()

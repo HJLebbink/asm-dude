@@ -47,14 +47,33 @@ namespace AsmDude.QuickInfo
         {
             this._foreground = foreground;
             InitializeComponent();
+            /*
+            this.MainWindow.MouseLeftButtonDown += (o, i) => {
+                AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:MouseLeftButtonDown Event");
+                i.Handled = true; // dont let the mouse event from inside this window bubble up to VS
+            };
 
+            this.MainWindow.PreviewMouseLeftButtonDown += (o, i) =>
+            {
+                //i.Handled = true; // if true then no event is able to bubble to the gui
+                AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:PreviewMouseLeftButtonDown Event");
+            };
+            */
             this.AsmSimGridExpander.Collapsed += (o, i) => { this.AsmSimGridExpanderNumeration.Visibility = Visibility.Collapsed; };
             this.AsmSimGridExpander.Expanded += (o, i) => { this.AsmSimGridExpanderNumeration.Visibility = Visibility.Visible; };
         }
 
+        /*
+        private void GotMouseCapture_Click(object sender, RoutedEventArgs e)
+        {
+            AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:PerformanceExpander_Click");
+            e.Handled = true;
+        }
+        */
+
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            //AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:CloseButton_Click");
+            AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:CloseButton_Click");
             if (this.Owner != null) this.Owner.CloseToolTip();
             if (this.Session != null) this.Session.Dismiss();
             AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:CloseButton_Click: owner and session are null");

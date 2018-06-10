@@ -307,6 +307,17 @@ namespace AsmDude.OptionsPage
             this._asmDudeOptionsPageUI.UseArch_SGX1_UI.ToolTip = MakeToolTip(Arch.SGX1);
             this._asmDudeOptionsPageUI.UseArch_SGX2 = Settings.Default.ARCH_SGX2;
             this._asmDudeOptionsPageUI.UseArch_SGX2_UI.ToolTip = MakeToolTip(Arch.SGX2);
+
+            this._asmDudeOptionsPageUI.UseArch_CLDEMOTE = Settings.Default.ARCH_CLDEMOTE;
+            this._asmDudeOptionsPageUI.UseArch_CLDEMOTE_UI.ToolTip = MakeToolTip(Arch.CLDEMOTE);
+            this._asmDudeOptionsPageUI.UseArch_MOVDIR64B = Settings.Default.ARCH_MOVDIR64B;
+            this._asmDudeOptionsPageUI.UseArch_MOVDIR64B_UI.ToolTip = MakeToolTip(Arch.MOVDIR64B);
+            this._asmDudeOptionsPageUI.UseArch_MOVDIRI = Settings.Default.ARCH_MOVDIRI;
+            this._asmDudeOptionsPageUI.UseArch_MOVDIRI_UI.ToolTip = MakeToolTip(Arch.MOVDIRI);
+            this._asmDudeOptionsPageUI.UseArch_PCONFIG = Settings.Default.ARCH_PCONFIG;
+            this._asmDudeOptionsPageUI.UseArch_PCONFIG_UI.ToolTip = MakeToolTip(Arch.PCONFIG);
+            this._asmDudeOptionsPageUI.UseArch_WAITPKG = Settings.Default.ARCH_WAITPKG;
+            this._asmDudeOptionsPageUI.UseArch_WAITPKG_UI.ToolTip = MakeToolTip(Arch.WAITPKG);
             #endregion
 
             #region Intellisense
@@ -610,7 +621,9 @@ namespace AsmDude.OptionsPage
                 sb.AppendLine("UseSignatureHelp=" + this._asmDudeOptionsPageUI.UseSignatureHelp);
                 changed = true;
             }
+            #endregion
 
+            #region ARCH
             if (Settings.Default.ARCH_8086 != this._asmDudeOptionsPageUI.UseArch_8086)
             {
                 sb.AppendLine("UseArch_8086=" + this._asmDudeOptionsPageUI.UseArch_8086);
@@ -955,6 +968,33 @@ namespace AsmDude.OptionsPage
                 sb.AppendLine("UseArch_SGX2=" + this._asmDudeOptionsPageUI.UseArch_SGX2);
                 changed = true;
             }
+
+            if (Settings.Default.ARCH_CLDEMOTE != this._asmDudeOptionsPageUI.UseArch_CLDEMOTE)
+            {
+                sb.AppendLine("UseArch_CLDEMOTE=" + this._asmDudeOptionsPageUI.UseArch_CLDEMOTE);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_MOVDIR64B != this._asmDudeOptionsPageUI.UseArch_MOVDIR64B)
+            {
+                sb.AppendLine("UseArch_MOVDIR64B=" + this._asmDudeOptionsPageUI.UseArch_MOVDIR64B);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_MOVDIRI != this._asmDudeOptionsPageUI.UseArch_MOVDIRI)
+            {
+                sb.AppendLine("UseArch_MOVDIRI=" + this._asmDudeOptionsPageUI.UseArch_MOVDIRI);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_PCONFIG != this._asmDudeOptionsPageUI.UseArch_PCONFIG)
+            {
+                sb.AppendLine("UseArch_PCONFIG=" + this._asmDudeOptionsPageUI.UseArch_PCONFIG);
+                changed = true;
+            }
+            if (Settings.Default.ARCH_WAITPKG != this._asmDudeOptionsPageUI.UseArch_WAITPKG)
+            {
+                sb.AppendLine("UseArch_WAITPKG=" + this._asmDudeOptionsPageUI.UseArch_WAITPKG);
+                changed = true;
+            }
+
             #endregion
 
             #region Intellisense
@@ -1274,7 +1314,6 @@ namespace AsmDude.OptionsPage
             {
                 bool refreshRegistry = false;
 
-
                 if (Settings.Default.SyntaxHighlighting_On != this._asmDudeOptionsPageUI.SyntaxHighlighting_On)
                 {
                     Settings.Default.SyntaxHighlighting_On = this._asmDudeOptionsPageUI.SyntaxHighlighting_On;
@@ -1533,6 +1572,9 @@ namespace AsmDude.OptionsPage
                 Settings.Default.SignatureHelp_On = this._asmDudeOptionsPageUI.UseSignatureHelp;
                 changed = true;
             }
+            #endregion
+
+            #region ARCH
             if (Settings.Default.ARCH_8086 != this._asmDudeOptionsPageUI.UseArch_8086)
             {
                 Settings.Default.ARCH_8086 = this._asmDudeOptionsPageUI.UseArch_8086;
@@ -1945,6 +1987,38 @@ namespace AsmDude.OptionsPage
                 changed = true;
                 archChanged = true;
             }
+
+            if (Settings.Default.ARCH_CLDEMOTE != this._asmDudeOptionsPageUI.UseArch_CLDEMOTE)
+            {
+                Settings.Default.ARCH_CLDEMOTE = this._asmDudeOptionsPageUI.UseArch_CLDEMOTE;
+                changed = true;
+                archChanged = true;
+            }
+            if (Settings.Default.ARCH_MOVDIR64B != this._asmDudeOptionsPageUI.UseArch_MOVDIR64B)
+            {
+                Settings.Default.ARCH_MOVDIR64B = this._asmDudeOptionsPageUI.UseArch_MOVDIR64B;
+                changed = true;
+                archChanged = true;
+            }
+            if (Settings.Default.ARCH_MOVDIRI != this._asmDudeOptionsPageUI.UseArch_MOVDIRI)
+            {
+                Settings.Default.ARCH_MOVDIRI = this._asmDudeOptionsPageUI.UseArch_MOVDIRI;
+                changed = true;
+                archChanged = true;
+            }
+            if (Settings.Default.ARCH_PCONFIG != this._asmDudeOptionsPageUI.UseArch_PCONFIG)
+            {
+                Settings.Default.ARCH_PCONFIG = this._asmDudeOptionsPageUI.UseArch_PCONFIG;
+                changed = true;
+                archChanged = true;
+            }
+            if (Settings.Default.ARCH_WAITPKG != this._asmDudeOptionsPageUI.UseArch_WAITPKG)
+            {
+                Settings.Default.ARCH_WAITPKG = this._asmDudeOptionsPageUI.UseArch_WAITPKG;
+                changed = true;
+                archChanged = true;
+            }
+
             #endregion
 
             #region Intellisense

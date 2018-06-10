@@ -453,6 +453,12 @@
                             <CheckBox x:Name="UseArch_SMX_UI" Content="SMX - Safer Mode Extensions" Width="Auto" />
                             <CheckBox x:Name="UseArch_SGX1_UI" Content="SGX1 - Software Guard Extensions 1" Width="Auto" />
                             <CheckBox x:Name="UseArch_SGX2_UI" Content="SGX2 - Software Guard Extensions 2" Width="Auto" />
+
+                            <CheckBox x:Name="UseArch_CLDEMOTE_UI" Content="CLDEMOTE - Cache Line DEMOTE" Width="Auto" />
+                            <CheckBox x:Name="UseArch_MOVDIR64B_UI" Content="MOVDIR64B - Direct store instructions" Width="Auto" />
+                            <CheckBox x:Name="UseArch_MOVDIRI_UI" Content="MOVDIRI - Direct store instructions" Width="Auto" />
+                            <CheckBox x:Name="UseArch_PCONFIG_UI" Content="PCONFIG" Width="Auto" />
+                            <CheckBox x:Name="UseArch_WAITPKG_UI" Content="User Wait" Width="Auto" />
                         </StackPanel>
                     </GroupBox>
                     <GroupBox Header="Misc" >

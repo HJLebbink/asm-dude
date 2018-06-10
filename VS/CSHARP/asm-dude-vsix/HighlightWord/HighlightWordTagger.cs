@@ -158,14 +158,10 @@ namespace AsmDude.HighlightWord
             // we don't need to check it.
             if (newWordExtend.HasValue)
             {
-                string newWord = newWordExtend.Value.Span.GetText();
+                string newWord = newWordExtend.Value.Span.GetText().Trim();
                 //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. caretPoisition={1}; point={2}; newWordExtend={3}", this.ToString(), caretPosition, point, newWordExtend));
 
                 if ((this.CurrentWord != null) && newWord.Equals(this.CurrentWord))
-                {
-                    return;
-                }
-                else if (newWord == " ") // test for some words that one may not want to highlight.
                 {
                     return;
                 }
