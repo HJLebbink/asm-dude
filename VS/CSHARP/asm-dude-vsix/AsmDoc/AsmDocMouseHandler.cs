@@ -276,7 +276,7 @@ namespace AsmDude.AsmDoc
 
             return (reference.StartsWith("http", StringComparison.OrdinalIgnoreCase)) 
                 ? reference
-                : Settings.Default.AsmDoc_url + reference;
+                : Settings.Default.AsmDoc_Url + reference;
         }
 
         private EnvDTE.Window GetWindow(DTE2 dte2, string url)

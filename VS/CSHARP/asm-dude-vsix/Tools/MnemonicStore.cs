@@ -215,7 +215,7 @@ namespace AsmDude.Tools
                     {
                         foreach (Arch arch in signatureElement.Arch)
                         {
-                            if (arch == Arch.NONE)
+                            if (arch == Arch.ARCH_NONE)
                             {
                                 AsmDudeToolsStatic.Output_WARNING("MnemonicStore:loadRegularData: found ARCH NONE.");
                             }

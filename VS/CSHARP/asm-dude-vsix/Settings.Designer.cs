@@ -182,12 +182,12 @@ namespace AsmDude {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("https://github.com/HJLebbink/asm-dude/wiki/")]
-        public string AsmDoc_url {
+        public string AsmDoc_Url {
             get {
-                return ((string)(this["AsmDoc_url"]));
+                return ((string)(this["AsmDoc_Url"]));
             }
             set {
-                this["AsmDoc_url"] = value;
+                this["AsmDoc_Url"] = value;
             }
         }
         
@@ -266,48 +266,48 @@ namespace AsmDude {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool IntelliSense_Show_UndefinedLabels {
+        public bool IntelliSense_Show_Undefined_Labels {
             get {
-                return ((bool)(this["IntelliSense_Show_UndefinedLabels"]));
+                return ((bool)(this["IntelliSense_Show_Undefined_Labels"]));
             }
             set {
-                this["IntelliSense_Show_UndefinedLabels"] = value;
+                this["IntelliSense_Show_Undefined_Labels"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool IntelliSense_Show_ClashingLabels {
+        public bool IntelliSense_Show_Clashing_Labels {
             get {
-                return ((bool)(this["IntelliSense_Show_ClashingLabels"]));
+                return ((bool)(this["IntelliSense_Show_Clashing_Labels"]));
             }
             set {
-                this["IntelliSense_Show_ClashingLabels"] = value;
+                this["IntelliSense_Show_Clashing_Labels"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool IntelliSense_Decorate_UndefinedLabels {
+        public bool IntelliSense_Decorate_Undefined_Labels {
             get {
-                return ((bool)(this["IntelliSense_Decorate_UndefinedLabels"]));
+                return ((bool)(this["IntelliSense_Decorate_Undefined_Labels"]));
             }
             set {
-                this["IntelliSense_Decorate_UndefinedLabels"] = value;
+                this["IntelliSense_Decorate_Undefined_Labels"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool IntelliSense_Decorate_ClashingLabels {
+        public bool IntelliSense_Decorate_Clashing_Labels {
             get {
-                return ((bool)(this["IntelliSense_Decorate_ClashingLabels"]));
+                return ((bool)(this["IntelliSense_Decorate_Clashing_Labels"]));
             }
             set {
-                this["IntelliSense_Decorate_ClashingLabels"] = value;
+                this["IntelliSense_Decorate_Clashing_Labels"] = value;
             }
         }
         
@@ -434,24 +434,24 @@ namespace AsmDude {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ARCH_SSE41 {
+        public bool ARCH_SSE4_1 {
             get {
-                return ((bool)(this["ARCH_SSE41"]));
+                return ((bool)(this["ARCH_SSE4_1"]));
             }
             set {
-                this["ARCH_SSE41"] = value;
+                this["ARCH_SSE4_1"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ARCH_SSE42 {
+        public bool ARCH_SSE4_2 {
             get {
-                return ((bool)(this["ARCH_SSE42"]));
+                return ((bool)(this["ARCH_SSE4_2"]));
             }
             set {
-                this["ARCH_SSE42"] = value;
+                this["ARCH_SSE4_2"] = value;
             }
         }
         
@@ -506,84 +506,84 @@ namespace AsmDude {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ARCH_AVX512VL {
+        public bool ARCH_AVX512_VL {
             get {
-                return ((bool)(this["ARCH_AVX512VL"]));
+                return ((bool)(this["ARCH_AVX512_VL"]));
             }
             set {
-                this["ARCH_AVX512VL"] = value;
+                this["ARCH_AVX512_VL"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ARCH_AVX512PF {
+        public bool ARCH_AVX512_PF {
             get {
-                return ((bool)(this["ARCH_AVX512PF"]));
+                return ((bool)(this["ARCH_AVX512_PF"]));
             }
             set {
-                this["ARCH_AVX512PF"] = value;
+                this["ARCH_AVX512_PF"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ARCH_AVX512DQ {
+        public bool ARCH_AVX512_DQ {
             get {
-                return ((bool)(this["ARCH_AVX512DQ"]));
+                return ((bool)(this["ARCH_AVX512_DQ"]));
             }
             set {
-                this["ARCH_AVX512DQ"] = value;
+                this["ARCH_AVX512_DQ"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ARCH_AVX512BW {
+        public bool ARCH_AVX512_BW {
             get {
-                return ((bool)(this["ARCH_AVX512BW"]));
+                return ((bool)(this["ARCH_AVX512_BW"]));
             }
             set {
-                this["ARCH_AVX512BW"] = value;
+                this["ARCH_AVX512_BW"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ARCH_AVX512ER {
+        public bool ARCH_AVX512_ER {
             get {
-                return ((bool)(this["ARCH_AVX512ER"]));
+                return ((bool)(this["ARCH_AVX512_ER"]));
             }
             set {
-                this["ARCH_AVX512ER"] = value;
+                this["ARCH_AVX512_ER"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ARCH_AVX512F {
+        public bool ARCH_AVX512_F {
             get {
-                return ((bool)(this["ARCH_AVX512F"]));
+                return ((bool)(this["ARCH_AVX512_F"]));
             }
             set {
-                this["ARCH_AVX512F"] = value;
+                this["ARCH_AVX512_F"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ARCH_AVX512CD {
+        public bool ARCH_AVX512_CD {
             get {
-                return ((bool)(this["ARCH_AVX512CD"]));
+                return ((bool)(this["ARCH_AVX512_CD"]));
             }
             set {
-                this["ARCH_AVX512CD"] = value;
+                this["ARCH_AVX512_CD"] = value;
             }
         }
         
@@ -896,18 +896,6 @@ namespace AsmDude {
             }
             set {
                 this["ARCH_PREFETCHWT1"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ARCH_PRFCHW {
-            get {
-                return ((bool)(this["ARCH_PRFCHW"]));
-            }
-            set {
-                this["ARCH_PRFCHW"] = value;
             }
         }
         
@@ -1808,6 +1796,18 @@ namespace AsmDude {
             }
             set {
                 this["ARCH_WAITPKG"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ARCH_PRFCHW {
+            get {
+                return ((bool)(this["ARCH_PRFCHW"]));
+            }
+            set {
+                this["ARCH_PRFCHW"] = value;
             }
         }
     }

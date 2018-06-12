@@ -237,7 +237,7 @@ namespace AsmDude
 
                     // by default, the entry.Key is with capitals
                     string insertionText = (useCapitals) ? keyword : keyword.ToLower();
-                    string archStr = (arch == Arch.NONE) ? "" : " [" + ArchTools.ToString(arch) + "]";
+                    string archStr = (arch == Arch.ARCH_NONE) ? "" : " [" + ArchTools.ToString(arch) + "]";
                     string descriptionStr = this._asmDudeTools.Get_Description(keyword);
                     descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
                     String displayText = Truncat(keyword + archStr + descriptionStr);
@@ -279,7 +279,7 @@ namespace AsmDude
 
                     // by default, the entry.Key is with capitals
                     string insertionText = (useCapitals) ? keyword2 : keyword2.ToLower();
-                    string archStr = (arch == Arch.NONE) ? "" : " [" + ArchTools.ToString(arch) + "]";
+                    string archStr = (arch == Arch.ARCH_NONE) ? "" : " [" + ArchTools.ToString(arch) + "]";
                     string descriptionStr = this._asmDudeTools.Get_Description(keyword);
                     descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
                     String displayText = Truncat(keyword2 + archStr + descriptionStr);
@@ -372,7 +372,7 @@ namespace AsmDude
                 AsmTokenType type = this._asmDudeTools.Get_Token_Type_Intel(keyword);
                 if (selectedTypes.Contains(type))
                 {
-                    Arch arch = Arch.NONE;
+                    Arch arch = Arch.ARCH_NONE;
                     bool selected = true;
 
                     if (type == AsmTokenType.Directive)
@@ -401,7 +401,7 @@ namespace AsmDude
 
                         // by default, the entry.Key is with capitals
                         string insertionText = (useCapitals) ? keyword : keyword.ToLower();
-                        string archStr = (arch == Arch.NONE) ? "" : " [" + ArchTools.ToString(arch) + "]";
+                        string archStr = (arch == Arch.ARCH_NONE) ? "" : " [" + ArchTools.ToString(arch) + "]";
                         string descriptionStr = this._asmDudeTools.Get_Description(keyword);
                         descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
                         string displayTextFull = keyword + archStr + descriptionStr;

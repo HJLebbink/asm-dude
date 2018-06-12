@@ -58,7 +58,7 @@ namespace AsmDude.QuickInfo
             this.Description.Inlines.Add(new Run(regStr) { FontWeight = FontWeights.Bold, Foreground = new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Register))});
 
             Arch arch = RegisterTools.GetArch(reg);
-            string archStr = (arch == Arch.NONE) ? "" : " [" + ArchTools.ToString(arch) + "] ";
+            string archStr = (arch == Arch.ARCH_NONE) ? "" : " [" + ArchTools.ToString(arch) + "] ";
             string descr = asmDudeTools.Get_Description(regStr);
 
             if (regStr.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;

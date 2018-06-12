@@ -1541,7 +1541,7 @@ namespace AsmTools
                 case Rn.R15W:
                 case Rn.R15B:
                 case Rn.FS:
-                case Rn.GS: return Arch.X64;
+                case Rn.GS: return Arch.ARCH_X64;
 
                 case Rn.MM0:
                 case Rn.MM1:
@@ -1550,7 +1550,7 @@ namespace AsmTools
                 case Rn.MM4:
                 case Rn.MM5:
                 case Rn.MM6:
-                case Rn.MM7: return Arch.MMX;
+                case Rn.MM7: return Arch.ARCH_MMX;
 
                 case Rn.XMM0:
                 case Rn.XMM1:
@@ -1559,7 +1559,7 @@ namespace AsmTools
                 case Rn.XMM4:
                 case Rn.XMM5:
                 case Rn.XMM6:
-                case Rn.XMM7: return Arch.SSE;
+                case Rn.XMM7: return Arch.ARCH_SSE;
 
                 case Rn.XMM8:
                 case Rn.XMM9:
@@ -1568,7 +1568,7 @@ namespace AsmTools
                 case Rn.XMM12:
                 case Rn.XMM13:
                 case Rn.XMM14:
-                case Rn.XMM15: return Arch.X64;
+                case Rn.XMM15: return Arch.ARCH_X64;
 
                 case Rn.YMM0:
                 case Rn.YMM1:
@@ -1586,7 +1586,7 @@ namespace AsmTools
                 case Rn.YMM13:
                 case Rn.YMM14:
                 case Rn.YMM15:
-                case Rn.YMM16: return Arch.AVX;
+                case Rn.YMM16: return Arch.ARCH_AVX;
 
                 case Rn.ZMM0:
                 case Rn.ZMM1:
@@ -1627,7 +1627,7 @@ namespace AsmTools
                 case Rn.K4:
                 case Rn.K5:
                 case Rn.K6:
-                case Rn.K7: return Arch.AVX512_F;
+                case Rn.K7: return Arch.ARCH_AVX512_F;
 
                 case Rn.XMM16:
                 case Rn.XMM17:
@@ -1660,14 +1660,14 @@ namespace AsmTools
                 case Rn.YMM28:
                 case Rn.YMM29:
                 case Rn.YMM30:
-                case Rn.YMM31: return Arch.AVX512_VL;
+                case Rn.YMM31: return Arch.ARCH_AVX512_VL;
 
                 case Rn.BND0:
                 case Rn.BND1:
                 case Rn.BND2:
-                case Rn.BND3: return Arch.MPX;
+                case Rn.BND3: return Arch.ARCH_MPX;
 
-                default: return Arch.NONE;
+                default: return Arch.ARCH_NONE;
             }
         }
 

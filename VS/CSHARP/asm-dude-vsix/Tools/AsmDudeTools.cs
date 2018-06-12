@@ -412,7 +412,7 @@ namespace AsmDude
         public Arch Get_Architecture(string keyword)
         {
             Debug.Assert(keyword == keyword.ToUpper());
-            return (this._arch.TryGetValue(keyword, out Arch value)) ? value : Arch.NONE;
+            return (this._arch.TryGetValue(keyword, out Arch value)) ? value : Arch.ARCH_NONE;
         }
 
         public void Invalidate_Data()
@@ -529,11 +529,11 @@ namespace AsmDude
             try
             {
                 var archAttribute = node.Attributes["arch"];
-                return (archAttribute == null) ? Arch.NONE : AsmTools.ArchTools.ParseArch(archAttribute.Value.ToUpper());
+                return (archAttribute == null) ? Arch.ARCH_NONE : AsmTools.ArchTools.ParseArch(archAttribute.Value.ToUpper());
             }
             catch (Exception)
             {
-                return Arch.NONE;
+                return Arch.ARCH_NONE;
             }
         }
 

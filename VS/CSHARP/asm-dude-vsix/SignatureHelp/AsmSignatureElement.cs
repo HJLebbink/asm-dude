@@ -130,7 +130,7 @@ namespace AsmDude.SignatureHelp
                     foreach (string arch2 in value.Split(','))
                     {
                         Arch a = ArchTools.ParseArch(arch2);
-                        if (a != AsmTools.Arch.NONE)
+                        if (a != AsmTools.Arch.ARCH_NONE)
                         {
                             this._arch.Add(a);
                         } else

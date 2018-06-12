@@ -112,8 +112,8 @@ namespace AsmDude.Squiggles
             DateTime time1 = DateTime.Now;
 
             //TODO move the followign boolean to constructor
-            bool Decorate_Undefined_Labels = labelGraph_Enabled && Settings.Default.IntelliSense_Decorate_UndefinedLabels;
-            bool Decorate_Clashing_Labels = labelGraph_Enabled && Settings.Default.IntelliSense_Decorate_ClashingLabels;
+            bool Decorate_Undefined_Labels = labelGraph_Enabled && Settings.Default.IntelliSense_Decorate_Undefined_Labels;
+            bool Decorate_Clashing_Labels = labelGraph_Enabled && Settings.Default.IntelliSense_Decorate_Clashing_Labels;
             bool Decorate_Undefined_Includes = labelGraph_Enabled && Settings.Default.IntelliSense_Show_Undefined_Includes;
 
             bool Decorate_Registers_Known_Register_Values = asmSimulator_Enabled && Settings.Default.AsmSim_Decorate_Registers;
@@ -625,8 +625,8 @@ namespace AsmDude.Squiggles
                     try
                     {
                         #region Update Error Tasks
-                        if (Settings.Default.IntelliSense_Show_ClashingLabels ||
-                            Settings.Default.IntelliSense_Show_UndefinedLabels ||
+                        if (Settings.Default.IntelliSense_Show_Clashing_Labels ||
+                            Settings.Default.IntelliSense_Show_Undefined_Labels ||
                             Settings.Default.IntelliSense_Show_Undefined_Includes)
                         {
                             var errorTasks = this._errorListProvider.Tasks;
@@ -646,7 +646,7 @@ namespace AsmDude.Squiggles
                             }
                             #endregion
 
-                            if (Settings.Default.IntelliSense_Show_ClashingLabels)
+                            if (Settings.Default.IntelliSense_Show_Clashing_Labels)
                             {
                                 foreach (var (Key, Value) in this._labelGraph.Label_Clashes) // TODO Label_Clashes does not return the classes in any particular order, 
                                 {
@@ -669,7 +669,7 @@ namespace AsmDude.Squiggles
                                     errorListNeedsRefresh = true;
                                 }
                             }
-                            if (Settings.Default.IntelliSense_Show_UndefinedLabels)
+                            if (Settings.Default.IntelliSense_Show_Undefined_Labels)
                             {
                                 foreach (var (Key, Value) in this._labelGraph.Undefined_Labels)
                                 {
