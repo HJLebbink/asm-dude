@@ -65,11 +65,12 @@ namespace AsmDude.QuickInfo
             this._asmDudeTools = AsmDudeTools.Instance;
         }
 
-        //public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan)
-        //{
-        //    AugmentQuickInfoSession_OK(session, quickInfoContent, out applicableToSpan);
-            //AugmentQuickInfoSession_Bug(session, quickInfoContent, out applicableToSpan);
-        //}
+        /*
+        public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan)
+        {
+            //AugmentQuickInfoSession_OK(session, quickInfoContent, out applicableToSpan);
+            AugmentQuickInfoSession_Bug(session, quickInfoContent, out applicableToSpan);
+        }
 
         public void AugmentQuickInfoSession_Bug(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan)
         {
@@ -78,6 +79,7 @@ namespace AsmDude.QuickInfo
             applicableToSpan = snapshot.CreateTrackingSpan(new SnapshotSpan(triggerPoint, triggerPoint), SpanTrackingMode.EdgeInclusive);
             quickInfoContent.Add(new BugWindow());
         }
+        */
 
         /// <summary>Determine which pieces of Quickinfo content should be displayed</summary>
         public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan)

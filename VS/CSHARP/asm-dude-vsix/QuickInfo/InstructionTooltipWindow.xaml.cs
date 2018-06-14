@@ -134,13 +134,13 @@ namespace AsmDude.QuickInfo
                         });
                     }
                     this.Performance.Inlines.Add(new Run(string.Format("\n" + format,
-                        item._microArch,
-                        item._instr + " " + item._args,
-                        item._mu_Ops_Fused,
-                        item._mu_Ops_Merged,
-                        item._mu_Ops_Port,
-                        item._latency,
-                        item._throughput,
+                        item._microArch + " ",
+                        item._instr + " " + item._args + " ",
+                        item._mu_Ops_Fused + " ",
+                        item._mu_Ops_Merged + " ",
+                        item._mu_Ops_Port + " ",
+                        item._latency + " ",
+                        item._throughput + " ",
                         item._remark))
                     {
                         FontFamily = family,
