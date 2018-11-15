@@ -111,7 +111,7 @@ namespace AsmDude
                     if (pos[k].IsLabel)
                     {
                         //AsmDudeToolsStatic.Output_INFO("NasmTokenTagger:GetTags: found label " +asmToken);
-                        if (IsProperLabelDef(asmToken, containingLine.LineNumber, out AsmTokenTag asmTokenTag))
+                        if (this.IsProperLabelDef(asmToken, containingLine.LineNumber, out AsmTokenTag asmTokenTag))
                         {
                             yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), asmTokenTag);
                             continue;
@@ -147,7 +147,7 @@ namespace AsmDude
                                             }
                                             else
                                             {
-                                                if (IsProperLabel(asmToken3, containingLine.LineNumber, out AsmTokenTag asmTokenTag))
+                                                if (this.IsProperLabel(asmToken3, containingLine.LineNumber, out AsmTokenTag asmTokenTag))
                                                 {
                                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), asmTokenTag);
                                                 }
@@ -162,7 +162,7 @@ namespace AsmDude
                                             }
                                             else
                                             {
-                                                if (IsProperLabel(asmToken2, containingLine.LineNumber, out AsmTokenTag asmTokenTag))
+                                                if (this.IsProperLabel(asmToken2, containingLine.LineNumber, out AsmTokenTag asmTokenTag))
                                                 {
                                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), asmTokenTag);
                                                 }
@@ -333,11 +333,11 @@ namespace AsmDude
         private bool IsProperLabelDef(string asmToken, int lineNumber, out AsmTokenTag labelDefSpan)
         {
             labelDefSpan = null;
-            if (!IsExecutableCode(lineNumber)) return false;
+            if (!this.IsExecutableCode(lineNumber)) return false;
 
             if (asmToken.StartsWith("."))
             {
-                if (Get_Last_Non_Local_Label(lineNumber, out string lastNonLocalLabel))
+                if (this.Get_Last_Non_Local_Label(lineNumber, out string lastNonLocalLabel))
                 {
                     labelDefSpan = new AsmTokenTag(AsmTokenType.LabelDef, lastNonLocalLabel);
                     return true;
@@ -358,7 +358,7 @@ namespace AsmDude
             //AsmDudeToolsStatic.Output_INFO("NasmTokenTagger:GetTags: found label " +asmToken);
             if (asmToken.StartsWith("."))
             {
-                if (Get_Last_Non_Local_Label(lineNumber, out string lastNonLocalLabel))
+                if (this.Get_Last_Non_Local_Label(lineNumber, out string lastNonLocalLabel))
                 {
                     labelSpan = new AsmTokenTag(AsmTokenType.Label, lastNonLocalLabel);
                     return true;

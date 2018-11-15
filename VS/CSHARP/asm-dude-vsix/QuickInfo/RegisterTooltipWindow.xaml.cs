@@ -44,7 +44,7 @@ namespace AsmDude.QuickInfo
         public RegisterTooltipWindow(Brush foreground)
         {
             this._foreground = foreground;
-            InitializeComponent();
+            this.InitializeComponent();
 
             this.AsmSimGridExpander.Collapsed += (o, i) => { this.AsmSimGridExpanderNumeration.Visibility = Visibility.Collapsed; };
             this.AsmSimGridExpander.Expanded += (o, i) => { this.AsmSimGridExpanderNumeration.Visibility = Visibility.Visible; };

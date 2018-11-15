@@ -46,12 +46,12 @@ namespace AsmDude.AsmDoc
 
         public override void PreviewKeyDown(KeyEventArgs args)
         {
-            UpdateState(args);
+            this.UpdateState(args);
         }
 
         public override void PreviewKeyUp(KeyEventArgs args)
         {
-            UpdateState(args);
+            this.UpdateState(args);
         }
     }
 }

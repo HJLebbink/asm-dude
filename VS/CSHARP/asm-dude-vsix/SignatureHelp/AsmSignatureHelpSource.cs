@@ -122,13 +122,13 @@ namespace AsmDude.SignatureHelp
 
                 foreach (AsmSignatureElement se in AsmSignatureHelpSource.Constrain_Signatures(this._store.GetSignatures(mnemonic), operands, selectedArchitectures))
                 {
-                    signatures.Add(Create_Signature(this._buffer, se, applicableToSpan));
+                    signatures.Add(this.Create_Signature(this._buffer, se, applicableToSpan));
                 }
                 AsmDudeToolsStatic.Print_Speed_Warning(time1, "Signature Help");
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:AugmentSignatureHelpSession; e={1}", ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:AugmentSignatureHelpSession; e={1}", this.ToString(), e.ToString()));
             }
         }
 

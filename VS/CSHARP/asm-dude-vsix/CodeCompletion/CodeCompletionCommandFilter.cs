@@ -58,11 +58,11 @@ namespace AsmDude
             //}
             if (false)
             {
-                return ExecMethod1(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+                return this.ExecMethod1(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
             }
             else
             {
-                return ExecMethod2(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+                return this.ExecMethod2(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
             }
         }
 
@@ -74,7 +74,7 @@ namespace AsmDude
             //make sure the input is a char before getting it
             if ((pguidCmdGroup == VSConstants.VSStd2K) && (nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR))
             {
-                typedChar = GetTypeChar(pvaIn);
+                typedChar = this.GetTypeChar(pvaIn);
             }
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:Exec: typedChar={1}", this.ToString(), typedChar));
 
@@ -113,7 +113,7 @@ namespace AsmDude
             {
                 if (this._currentSession == null || this._currentSession.IsDismissed)
                 { // If there is no active session, bring up completion
-                    if (StartSession())
+                    if (this.StartSession())
                     {
                         if (this._currentSession != null)
                         {
@@ -155,33 +155,33 @@ namespace AsmDude
                 {
                     case VSConstants.VSStd2KCmdID.AUTOCOMPLETE:
                     case VSConstants.VSStd2KCmdID.COMPLETEWORD:
-                        handledChar = StartSession();
+                        handledChar = this.StartSession();
                         break;
                     case VSConstants.VSStd2KCmdID.RETURN:
-                        handledChar = Complete(true);
+                        handledChar = this.Complete(true);
                         break;
                     case VSConstants.VSStd2KCmdID.TAB:
-                        Complete(true);
+                        this.Complete(true);
                         handledChar = false;
                         break;
                     case VSConstants.VSStd2KCmdID.CANCEL:
-                        handledChar = Cancel();
+                        handledChar = this.Cancel();
                         break;
                     case VSConstants.VSStd2KCmdID.TYPECHAR:
-                        typedChar = GetTypeChar(pvaIn);
+                        typedChar = this.GetTypeChar(pvaIn);
                         if (char.IsWhiteSpace(typedChar))
                         {
-                            Complete(true);
+                            this.Complete(true);
                             handledChar = false;
                         }
                         else if (AsmTools.AsmSourceTools.IsSeparatorChar(typedChar))
                         {
-                            Complete(false);
+                            this.Complete(false);
                             handledChar = false;
                         }
                         else if (AsmTools.AsmSourceTools.IsRemarkChar(typedChar))
                         {
-                            Complete(true);
+                            this.Complete(true);
                             handledChar = false;
                         }
                         break;
@@ -199,9 +199,9 @@ namespace AsmDude
                     //if (!typedChar.Equals(char.MinValue)) {
                     if ((this._currentSession == null) || this._currentSession.IsDismissed)
                     { // If there is no active session, bring up completion
-                        StartSession();
+                        this.StartSession();
                     }
-                    Filter();
+                    this.Filter();
                     hresult = VSConstants.S_OK;
                 }
                 else if (nCmdID == (uint)VSConstants.VSStd2KCmdID.BACKSPACE   //redo the filter if there is a deletion
@@ -209,7 +209,7 @@ namespace AsmDude
                 {
                     if ((this._currentSession != null) && !this._currentSession.IsDismissed)
                     {
-                        Filter();
+                        this.Filter();
                     }
                     hresult = VSConstants.S_OK;
                 }
@@ -226,7 +226,7 @@ namespace AsmDude
                         case VSConstants.VSStd2KCmdID.TYPECHAR:
                         case VSConstants.VSStd2KCmdID.BACKSPACE:
                         case VSConstants.VSStd2KCmdID.DELETE:
-                            Filter();
+                            this.Filter();
                             break;
                     }
                 }

@@ -35,7 +35,7 @@ namespace AsmDude.OptionsPage
     {
         public AsmDudeOptionsPageUI()
         {
-            InitializeComponent();
+            this.InitializeComponent();
 
             this.version_UI.Content = "Asm Dude v" + typeof(AsmDudePackage).Assembly.GetName().Version.ToString() + " (" + ApplicationInformation.CompileDate.ToUniversalTime().ToString() + ")";
 

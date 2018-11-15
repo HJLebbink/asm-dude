@@ -160,13 +160,13 @@ namespace AsmDude.Squiggles
                                         }
                                         else
                                         {
-                                            var toolTipContent = Undefined_Label_Tool_Tip_Content();
+                                            var toolTipContent = this.Undefined_Label_Tool_Tip_Content();
                                             yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.SyntaxError, toolTipContent));
                                         }
                                     }
                                     else
                                     {
-                                        var toolTipContent = Undefined_Label_Tool_Tip_Content();
+                                        var toolTipContent = this.Undefined_Label_Tool_Tip_Content();
                                         yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.SyntaxError, toolTipContent));
                                     }
                                 }
@@ -182,7 +182,7 @@ namespace AsmDude.Squiggles
 
                                 if (this._labelGraph.Has_Label_Clash(full_Qualified_Label))
                                 {
-                                    var toolTipContent = Label_Clash_Tool_Tip_Content(full_Qualified_Label);
+                                    var toolTipContent = this.Label_Clash_Tool_Tip_Content(full_Qualified_Label);
 
                                     //PredefinedErrorTypeNames.Warning is green
                                     //PredefinedErrorTypeNames.SyntaxError is red
@@ -331,7 +331,7 @@ namespace AsmDude.Squiggles
                 });
             } catch (Exception e)
             {
-                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:labelClashToolTipContent; e={1}", ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:labelClashToolTipContent; e={1}", this.ToString(), e.ToString()));
             }
             return textBlock;
         }
@@ -505,7 +505,7 @@ namespace AsmDude.Squiggles
                     }
                     catch (Exception e)
                     {
-                        AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Update_AsmSim_Error_Task_Async; e={1}", ToString(), e.ToString()));
+                        AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Update_AsmSim_Error_Task_Async; e={1}", this.ToString(), e.ToString()));
                     }
                 }
             });
@@ -522,7 +522,7 @@ namespace AsmDude.Squiggles
                     {
                         SubcategoryIndex = (int)AsmMessageEnum.SYNTAX_ERROR,
                         Line = lineNumber,
-                        Column = Get_Keyword_Begin_End(lineContent, keyword),
+                        Column = this.Get_Keyword_Begin_End(lineContent, keyword),
                         Text = "Syntax Error: " + message,
                         ErrorCategory = TaskErrorCategory.Error,
                         Document = AsmDudeToolsStatic.GetFileName(this._sourceBuffer)
@@ -532,7 +532,7 @@ namespace AsmDude.Squiggles
                 }
                 catch (Exception e)
                 {
-                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:AddErrorTask_Syntax_Error_Async; e={1}", ToString(), e.ToString()));
+                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:AddErrorTask_Syntax_Error_Async; e={1}", this.ToString(), e.ToString()));
                 }
             });
         }
@@ -548,7 +548,7 @@ namespace AsmDude.Squiggles
                     {
                         SubcategoryIndex = (int)AsmMessageEnum.USAGE_OF_UNDEFINED,
                         Line = lineNumber,
-                        Column = Get_Keyword_Begin_End(lineContent, keyword),
+                        Column = this.Get_Keyword_Begin_End(lineContent, keyword),
                         Text = "Semantic Warning: " + message,
                         ErrorCategory = TaskErrorCategory.Warning,
                         Document = AsmDudeToolsStatic.GetFileName(this._sourceBuffer)
@@ -558,7 +558,7 @@ namespace AsmDude.Squiggles
                 }
                 catch (Exception e)
                 {
-                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:AddErrorTask_Usage_Undefined_Async; e={1}", ToString(), e.ToString()));
+                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:AddErrorTask_Usage_Undefined_Async; e={1}", this.ToString(), e.ToString()));
                 }
             });
         }
@@ -574,7 +574,7 @@ namespace AsmDude.Squiggles
                     {
                         SubcategoryIndex = (int)AsmMessageEnum.REDUNDANT,
                         Line = lineNumber,
-                        Column = Get_Keyword_Begin_End(lineContent, keyword),
+                        Column = this.Get_Keyword_Begin_End(lineContent, keyword),
                         Text = "Semantic Warning: " + message,
                         ErrorCategory = TaskErrorCategory.Warning,
                         Document = AsmDudeToolsStatic.GetFileName(this._sourceBuffer)
@@ -584,7 +584,7 @@ namespace AsmDude.Squiggles
                 }
                 catch (Exception e)
                 {
-                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:AddErrorTask_Redundant_Instruction_Async; e={1}", ToString(), e.ToString()));
+                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:AddErrorTask_Redundant_Instruction_Async; e={1}", this.ToString(), e.ToString()));
                 }
             });
         }
@@ -600,7 +600,7 @@ namespace AsmDude.Squiggles
                     {
                         SubcategoryIndex = (int)AsmMessageEnum.UNREACHABLE,
                         Line = lineNumber,
-                        Column = Get_Keyword_Begin_End(lineContent, keyword),
+                        Column = this.Get_Keyword_Begin_End(lineContent, keyword),
                         Text = "Semantic Warning: " + message,
                         ErrorCategory = TaskErrorCategory.Warning,
                         Document = AsmDudeToolsStatic.GetFileName(this._sourceBuffer)
@@ -610,7 +610,7 @@ namespace AsmDude.Squiggles
                 }
                 catch (Exception e)
                 {
-                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:AddErrorTask_Unreachable_Instruction_Async; e={1}", ToString(), e.ToString()));
+                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:AddErrorTask_Unreachable_Instruction_Async; e={1}", this.ToString(), e.ToString()));
                 }
             });
         }
@@ -659,7 +659,7 @@ namespace AsmDude.Squiggles
                                     {
                                         SubcategoryIndex = (int)AsmMessageEnum.LABEL_CLASH,
                                         Line = this._labelGraph.Get_Linenumber(Key),
-                                        Column = Get_Keyword_Begin_End(lineContent, label),
+                                        Column = this.Get_Keyword_Begin_End(lineContent, label),
                                         Text = "Label Clash: \"" + label + "\"",
                                         ErrorCategory = TaskErrorCategory.Warning,
                                         Document = this._labelGraph.Get_Filename(Key)
@@ -682,7 +682,7 @@ namespace AsmDude.Squiggles
                                     {
                                         SubcategoryIndex = (int)AsmMessageEnum.LABEL_UNDEFINED,
                                         Line = lineNumber,
-                                        Column = Get_Keyword_Begin_End(lineContent, label),
+                                        Column = this.Get_Keyword_Begin_End(lineContent, label),
                                         Text = "Undefined Label: \"" + label + "\"",
                                         ErrorCategory = TaskErrorCategory.Warning,
                                         Document = this._labelGraph.Get_Filename(Key)
@@ -705,7 +705,7 @@ namespace AsmDude.Squiggles
                                     {
                                         SubcategoryIndex = (int)AsmMessageEnum.INCLUDE_UNDEFINED,
                                         Line = lineNumber,
-                                        Column = Get_Keyword_Begin_End(lineContent, include),
+                                        Column = this.Get_Keyword_Begin_End(lineContent, include),
                                         Text = "Could not resolve include \"" + include + "\" at line " + (lineNumber + 1) + " in file \"" + entry.Source_Filename + "\"",
                                         ErrorCategory = TaskErrorCategory.Warning,
                                         Document = entry.Source_Filename
@@ -725,7 +725,7 @@ namespace AsmDude.Squiggles
                     }
                     catch (Exception e)
                     {
-                        AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Update_Label_Error_Tasks_Async; e={1}", ToString(), e.ToString()));
+                        AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Update_Label_Error_Tasks_Async; e={1}", this.ToString(), e.ToString()));
                     }
                 }
             });
@@ -768,7 +768,7 @@ namespace AsmDude.Squiggles
                     }
                     catch (Exception e)
                     {
-                        AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Update_Squiggles_Tasks_Async; e={1}", ToString(), e.ToString()));
+                        AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Update_Squiggles_Tasks_Async; e={1}", this.ToString(), e.ToString()));
                     }
                 }
             });

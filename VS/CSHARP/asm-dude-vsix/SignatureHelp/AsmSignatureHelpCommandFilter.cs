@@ -74,7 +74,7 @@ namespace AsmDude.SignatureHelp
 
                             if ((pguidCmdGroup == VSConstants.VSStd2K) && (nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR))
                             {
-                                char typedChar = GetTypeChar(pvaIn);
+                                char typedChar = this.GetTypeChar(pvaIn);
                                 if (char.IsWhiteSpace(typedChar) || typedChar.Equals(','))
                                 {
                                     var t = AsmSourceTools.ParseLine(lineStr);
@@ -105,7 +105,7 @@ namespace AsmDude.SignatureHelp
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Exec; e={1}", ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Exec; e={1}", this.ToString(), e.ToString()));
             }
             return this._nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
         }

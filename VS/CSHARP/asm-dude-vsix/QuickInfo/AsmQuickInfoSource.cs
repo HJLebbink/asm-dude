@@ -93,11 +93,11 @@ namespace AsmDude.QuickInfo
                     this.Handle(session, quickInfoContent, out applicableToSpan);
                     return;
                 }
-                AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:AugmentQuickInfoSession; does not have have AsmDudeContentType: but has type {1}", ToString(), contentType));
+                AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:AugmentQuickInfoSession; does not have have AsmDudeContentType: but has type {1}", this.ToString(), contentType));
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:AugmentQuickInfoSession; e={1}", ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:AugmentQuickInfoSession; e={1}", this.ToString(), e.ToString()));
             }
         }
 
@@ -141,7 +141,7 @@ namespace AsmDude.QuickInfo
                             var asmTokenTagX = enumerator.Current;
                             var enumeratorX = asmTokenTagX.Span.GetSpans(this._sourceBuffer).GetEnumerator();
                             enumeratorX.MoveNext();
-                            AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:AugmentQuickInfoSession. current keyword " + keyword + ": but span has more than one tag! next tag=\"{1}\"", ToString(), enumeratorX.Current.GetText()));
+                            AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:AugmentQuickInfoSession. current keyword " + keyword + ": but span has more than one tag! next tag=\"{1}\"", this.ToString(), enumeratorX.Current.GetText()));
                         }
                     }
                     #endregion
@@ -229,10 +229,10 @@ namespace AsmDude.QuickInfo
                                 description.Inlines.Add(Make_Run1("Label ", foreground));
                                 description.Inlines.Add(Make_Run2(full_Qualified_Label, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Label))));
 
-                                string descr = Get_Label_Description(full_Qualified_Label);
+                                string descr = this.Get_Label_Description(full_Qualified_Label);
                                 if (descr.Length == 0)
                                 {
-                                    descr = Get_Label_Description(label);
+                                    descr = this.Get_Label_Description(label);
                                 }
                                 if (descr.Length > 0)
                                 {
@@ -264,7 +264,7 @@ namespace AsmDude.QuickInfo
                                 description.Inlines.Add(Make_Run1("Label ", foreground));
                                 description.Inlines.Add(Make_Run2(full_Qualified_Label, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Label))));
 
-                                string descr = Get_Label_Def_Description(full_Qualified_Label, label);
+                                string descr = this.Get_Label_Def_Description(full_Qualified_Label, label);
                                 if (descr.Length > 0)
                                 {
                                     if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;

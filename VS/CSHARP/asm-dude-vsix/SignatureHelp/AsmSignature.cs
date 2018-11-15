@@ -57,7 +57,7 @@ namespace AsmDude.SignatureHelp
                 {
                     IParameter prevCurrentParameter = this._currentParameter;
                     this._currentParameter = value;
-                    RaiseCurrentParameterChanged(prevCurrentParameter, this._currentParameter);
+                    this.RaiseCurrentParameterChanged(prevCurrentParameter, this._currentParameter);
                 }
             }
         }
@@ -115,7 +115,7 @@ namespace AsmDude.SignatureHelp
 
         internal void OnSubjectBufferChanged(object sender, TextContentChangedEventArgs e)
         {
-            Compute_Current_Parameter();
+            this.Compute_Current_Parameter();
         }
 
         public ITrackingSpan ApplicableToSpan

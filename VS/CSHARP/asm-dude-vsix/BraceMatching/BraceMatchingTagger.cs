@@ -59,12 +59,12 @@ namespace AsmDude.BraceMatching {
 
         private void ViewLayoutChanged(object sender, TextViewLayoutChangedEventArgs e) {
             if (e.NewSnapshot != e.OldSnapshot) { //make sure that there has really been a change
-                UpdateAtCaretPosition(this._view.Caret.Position);
+                this.UpdateAtCaretPosition(this._view.Caret.Position);
             }
         }
 
         private void CaretPositionChanged(object sender, CaretPositionChangedEventArgs e) {
-            UpdateAtCaretPosition(e.NewPosition);
+            this.UpdateAtCaretPosition(e.NewPosition);
         }
         private void UpdateAtCaretPosition(CaretPosition caretPosition) {
             this._currentChar = caretPosition.Point.GetPoint(this._sourceBuffer, caretPosition.Affinity);

@@ -73,18 +73,18 @@ namespace AsmDude.AsmDoc
                 {
                     if (this._state.Enabled)
                     {
-                        TryHighlightItemUnderMouse(RelativeToView(Mouse.PrimaryDevice.GetPosition(this._view.VisualElement)));
+                        this.TryHighlightItemUnderMouse(this.RelativeToView(Mouse.PrimaryDevice.GetPosition(this._view.VisualElement)));
                     }
                     else
                     {
-                        Set_Highlight_Span(null);
+                        this.Set_Highlight_Span(null);
                     }
                 }
             };
 
             // Some other points to clear the highlight span:
-            this._view.LostAggregateFocus += (sender, args) => Set_Highlight_Span(null);
-            this._view.VisualElement.MouseLeave += (sender, args) => Set_Highlight_Span(null);
+            this._view.LostAggregateFocus += (sender, args) => this.Set_Highlight_Span(null);
+            this._view.VisualElement.MouseLeave += (sender, args) => this.Set_Highlight_Span(null);
 
         }
 
@@ -96,7 +96,7 @@ namespace AsmDude.AsmDoc
 
         public override void PostprocessMouseLeftButtonDown(MouseButtonEventArgs e)
         {
-            this._mouseDownAnchorPoint = RelativeToView(e.GetPosition(this._view.VisualElement));
+            this._mouseDownAnchorPoint = this.RelativeToView(e.GetPosition(this._view.VisualElement));
         }
 
         public override void PreprocessMouseMove(MouseEventArgs e)
@@ -105,16 +105,16 @@ namespace AsmDude.AsmDoc
 
             if (!this._mouseDownAnchorPoint.HasValue && this._state.Enabled && (e.LeftButton == MouseButtonState.Released))
             {
-                TryHighlightItemUnderMouse(RelativeToView(e.GetPosition(this._view.VisualElement)));
+                this.TryHighlightItemUnderMouse(this.RelativeToView(e.GetPosition(this._view.VisualElement)));
             }
             else if (this._mouseDownAnchorPoint.HasValue)
             {
                 // Check and see if this is a drag; if so, clear out the highlight.
-                var currentMousePosition = RelativeToView(e.GetPosition(this._view.VisualElement));
-                if (InDragOperation(this._mouseDownAnchorPoint.Value, currentMousePosition))
+                var currentMousePosition = this.RelativeToView(e.GetPosition(this._view.VisualElement));
+                if (this.InDragOperation(this._mouseDownAnchorPoint.Value, currentMousePosition))
                 {
                     this._mouseDownAnchorPoint = null;
-                    Set_Highlight_Span(null);
+                    this.Set_Highlight_Span(null);
                 }
             }
         }
@@ -139,9 +139,9 @@ namespace AsmDude.AsmDoc
             {
                 if (this._mouseDownAnchorPoint.HasValue && this._state.Enabled)
                 {
-                    var currentMousePosition = RelativeToView(e.GetPosition(this._view.VisualElement));
+                    var currentMousePosition = this.RelativeToView(e.GetPosition(this._view.VisualElement));
 
-                    if (!InDragOperation(this._mouseDownAnchorPoint.Value, currentMousePosition))
+                    if (!this.InDragOperation(this._mouseDownAnchorPoint.Value, currentMousePosition))
                     {
                         this._state.Enabled = false;
 
@@ -152,7 +152,7 @@ namespace AsmDude.AsmDoc
                         {
                             this.Dispatch_Goto_Doc(keyword);
                         }
-                        Set_Highlight_Span(null);
+                        this.Set_Highlight_Span(null);
                         this._view.Selection.Clear();
                         e.Handled = true;
                     }
@@ -161,7 +161,7 @@ namespace AsmDude.AsmDoc
             }
             catch (Exception ex)
             {
-                AsmDudeToolsStatic.Output_ERROR(string.Format("{0} PreprocessMouseUp; e={1}", ToString(), ex.ToString()));
+                AsmDudeToolsStatic.Output_ERROR(string.Format("{0} PreprocessMouseUp; e={1}", this.ToString(), ex.ToString()));
             }
         }
 
@@ -215,7 +215,7 @@ namespace AsmDude.AsmDoc
                     //string type = classification.ClassificationType.Classification.ToLower();
                     string url = this.Get_Url(keyword);
                     //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:TryHighlightItemUnderMouse: keyword={1}; type={2}; url={3}", this.ToString(), keyword, type, url));
-                    if ((url != null) && Set_Highlight_Span(classification.Span))
+                    if ((url != null) && this.Set_Highlight_Span(classification.Span))
                     {
                         updated = true;
                         return true;
@@ -228,7 +228,7 @@ namespace AsmDude.AsmDoc
             {
                 if (!updated)
                 {
-                    Set_Highlight_Span(null);
+                    this.Set_Highlight_Span(null);
                 }
             }
         }
@@ -311,7 +311,7 @@ namespace AsmDude.AsmDoc
             var dte2 = Package.GetGlobalService(typeof(SDTE)) as DTE2;
             if (dte2 == null)
             {
-                AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:openFile; dte2 is null.", ToString()));
+                AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:openFile; dte2 is null.", this.ToString()));
                 return 1;
             }
 
@@ -322,7 +322,7 @@ namespace AsmDude.AsmDoc
                 {
                     // vsNavigateOptionsDefault    0   The Web page opens in the currently open browser window. (Default)
                     // vsNavigateOptionsNewWindow  1   The Web page opens in a new browser window.
-                    AsmDudeToolsStatic.Output_INFO(string.Format("{0}:openFile; going to open url {1}.", ToString(), url));
+                    AsmDudeToolsStatic.Output_INFO(string.Format("{0}:openFile; going to open url {1}.", this.ToString(), url));
                     window = dte2.ItemOperations.Navigate(url, EnvDTE.vsNavigateOptions.vsNavigateOptionsNewWindow);
 
                     var parts = url.Split('/');
@@ -346,7 +346,7 @@ namespace AsmDude.AsmDoc
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:openFile; exception={1}", ToString(), e));
+                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:openFile; exception={1}", this.ToString(), e));
                 return 2;
             }
         }

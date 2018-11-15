@@ -96,14 +96,14 @@ namespace AsmDude.QuickInfo
             try
             {
                 //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
-                SnapshotPoint? point = GetMousePosition(new SnapshotPoint(this._textView.TextSnapshot, e.Position));
+                SnapshotPoint? point = this.GetMousePosition(new SnapshotPoint(this._textView.TextSnapshot, e.Position));
                 if (point.HasValue)
                 {
                     string contentType = this._textView.TextBuffer.ContentType.DisplayName;
                     if (contentType.Equals(AsmDudePackage.AsmDudeContentType, StringComparison.Ordinal))
                     {
                         int pos = point.Value.Position;
-                        int pos2 = Get_Keyword_Span_At_Point(point.Value).Start;
+                        int pos2 = this.Get_Keyword_Span_At_Point(point.Value).Start;
 
                         //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: CreateQuickInfoSession for triggerPoint " + pos + "; pos2=" + pos2);
                         //ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(pos, PointTrackingMode.Positive);
@@ -155,7 +155,7 @@ namespace AsmDude.QuickInfo
                     }
                     else
                     {
-                        AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:OnTextViewMouseHover: does not have have AsmDudeContentType: but has type {1}", ToString(), contentType));
+                        AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:OnTextViewMouseHover: does not have have AsmDudeContentType: but has type {1}", this.ToString(), contentType));
                     }
                 }
                 else
@@ -171,7 +171,7 @@ namespace AsmDude.QuickInfo
 
         private void _session_Dismissed(object sender, EventArgs e)
         {
-            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:_session_Dismissed: e={1}", ToString(), e));
+            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:_session_Dismissed: e={1}", this.ToString(), e));
             this._session = null;
         }
 
@@ -219,7 +219,7 @@ namespace AsmDude.QuickInfo
 
         private void ToolTipLegacy(SnapshotPoint triggerPoint, System.Windows.Point p)
         {
-            var span = Get_Keyword_Span_At_Point(triggerPoint);
+            var span = this.Get_Keyword_Span_At_Point(triggerPoint);
             ITrackingSpan applicableTo = this._textView.TextSnapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeInclusive);
 
             // check if a tooltip window is already visible for the applicable span

@@ -60,7 +60,7 @@ namespace AsmDude
             this._icons = new Dictionary<AsmTokenType, ImageSource>();
             this._asmDudeTools = AsmDudeTools.Instance;
             this._asmSimulator = asmSimulator;
-            Load_Icons();
+            this.Load_Icons();
         }
 
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
@@ -132,24 +132,24 @@ namespace AsmDude
                     if (previousKeyword.Equals("INVOKE")) //TODO INVOKE is a MASM keyword not a NASM one...
                     {
                         // Suggest a label
-                        var completions = Label_Completions(useCapitals, false);
+                        var completions = this.Label_Completions(useCapitals, false);
                         if (completions.Any<Completion>()) completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
                     }
                     else
                     {
                         {
                             ISet<AsmTokenType> selected1 = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic };
-                            var completions1 = Selected_Completions(useCapitals, selected1, true);
+                            var completions1 = this.Selected_Completions(useCapitals, selected1, true);
                             if (completions1.Any<Completion>()) completionSets.Add(new CompletionSet("All", "All", applicableTo, completions1, Enumerable.Empty<Completion>()));
                         }
                         if (false) {
                             ISet<AsmTokenType> selected2 = new HashSet<AsmTokenType> { AsmTokenType.Jump, AsmTokenType.Mnemonic };
-                            var completions2 = Selected_Completions(useCapitals, selected2, false);
+                            var completions2 = this.Selected_Completions(useCapitals, selected2, false);
                             if (completions2.Any<Completion>()) completionSets.Add(new CompletionSet("Instr", "Instr", applicableTo, completions2, Enumerable.Empty<Completion>()));
                         }
                         if (false) {
                             ISet<AsmTokenType> selected3 = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Misc };
-                            var completions3 = Selected_Completions(useCapitals, selected3, true);
+                            var completions3 = this.Selected_Completions(useCapitals, selected3, true);
                             if (completions3.Any<Completion>()) completionSets.Add(new CompletionSet("Directive", "Directive", applicableTo, completions3, Enumerable.Empty<Completion>()));
                         }
                     }
@@ -162,14 +162,14 @@ namespace AsmDude
                     {
                         //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:AugmentCompletionSession; previous keyword is a jump mnemonic");
                         // previous keyword is jump (or call) mnemonic. Suggest "SHORT" or a label
-                        var completions = Label_Completions(useCapitals, true);
+                        var completions = this.Label_Completions(useCapitals, true);
                         if (completions.Any<Completion>()) completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
 
                     }
                     else if (previousKeyword.Equals("SHORT") || previousKeyword.Equals("NEAR"))
                     {
                         // Suggest a label
-                        var completions = Label_Completions(useCapitals, false);
+                        var completions = this.Label_Completions(useCapitals, false);
                         if (completions.Any<Completion>()) completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
                     }
                     else
@@ -199,7 +199,7 @@ namespace AsmDude
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:AugmentCompletionSession; e={1}", ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:AugmentCompletionSession; e={1}", this.ToString(), e.ToString()));
             }
         }
 

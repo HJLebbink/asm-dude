@@ -46,7 +46,7 @@ namespace AsmDude.QuickInfo
         public InstructionTooltipWindow(Brush foreground)
         {
             this._foreground = foreground;
-            InitializeComponent();
+            this.InitializeComponent();
             /*
             this.MainWindow.MouseLeftButtonDown += (o, i) => {
                 AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:MouseLeftButtonDown Event");

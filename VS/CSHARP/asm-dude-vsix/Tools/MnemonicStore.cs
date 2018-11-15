@@ -44,8 +44,8 @@ namespace AsmDude.Tools
             this._htmlRef = new Dictionary<Mnemonic, string>();
             this._description = new Dictionary<Mnemonic, string>();
 
-            LoadRegularData(filename_RegularData);
-            if (filename_HandcraftedData != null) LoadHandcraftedData(filename_HandcraftedData);
+            this.LoadRegularData(filename_RegularData);
+            if (filename_HandcraftedData != null) this.LoadHandcraftedData(filename_HandcraftedData);
         }
 
         public bool HasElement(Mnemonic mnemonic)
@@ -192,7 +192,7 @@ namespace AsmDude.Tools
                             else
                             {
                                 AsmSignatureElement se = new AsmSignatureElement(mnemonic, columns[1], columns[2], columns[3], columns[4]);
-                                if (Add(se))
+                                if (this.Add(se))
                                 {
                                     AsmDudeToolsStatic.Output_WARNING("MnemonicStore:loadRegularData: signature already exists" + se.ToString());
                                 }
@@ -291,7 +291,7 @@ namespace AsmDude.Tools
                             else
                             {
                                 AsmSignatureElement se = new AsmSignatureElement(mnemonic, columns[1], columns[2], columns[3], columns[4]);
-                                Add(se);
+                                this.Add(se);
                             }
                             #endregion
                         }

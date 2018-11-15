@@ -119,7 +119,7 @@ namespace AsmDude
                         }
                         else
                         {
-                            var v = Make_AsmTokenTag_LabelDef(containingLine.LineNumber);
+                            var v = this.Make_AsmTokenTag_LabelDef(containingLine.LineNumber);
                             yield return new TagSpan<AsmTokenTag>(labelDefSpan, v);
                         }
                         continue;
@@ -172,7 +172,7 @@ namespace AsmDude
                                                     }
                                                 default:
                                                     {
-                                                        yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), Make_AsmTokenTag_Label(containingLine.LineNumber));
+                                                        yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this.Make_AsmTokenTag_Label(containingLine.LineNumber));
                                                         break;
                                                     }
                                             }
@@ -186,7 +186,7 @@ namespace AsmDude
                                             }
                                             else
                                             {
-                                                yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), Make_AsmTokenTag_Label(containingLine.LineNumber));
+                                                yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this.Make_AsmTokenTag_Label(containingLine.LineNumber));
                                             }
                                             break;
                                         }
@@ -286,7 +286,7 @@ namespace AsmDude
                                                 if (k == nKeywords) break;
 
                                                 string asmToken2 = NasmIntelTokenTagger.Keyword(pos[k], line);
-                                                yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), Make_AsmTokenTag_Label(containingLine.LineNumber));
+                                                yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this.Make_AsmTokenTag_Label(containingLine.LineNumber));
                                                 break;
                                             }
                                         case "EXTRN":
@@ -358,7 +358,7 @@ namespace AsmDude
                         }
                         else
                         {
-                            yield return new TagSpan<AsmTokenTag>(labelDefSpan, Make_AsmTokenTag_LabelDef(containingLine.LineNumber));
+                            yield return new TagSpan<AsmTokenTag>(labelDefSpan, this.Make_AsmTokenTag_LabelDef(containingLine.LineNumber));
                         }
                         continue;
                     }
@@ -420,7 +420,7 @@ namespace AsmDude
                                                     }
                                                 default:
                                                     {
-                                                        yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(current, offset, curSpan), Make_AsmTokenTag_Label(containingLine.LineNumber));
+                                                        yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(current, offset, curSpan), this.Make_AsmTokenTag_Label(containingLine.LineNumber));
                                                         break;
                                                     }
                                             }
@@ -434,7 +434,7 @@ namespace AsmDude
                                             }
                                             else
                                             {
-                                                yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(current, offset, curSpan), Make_AsmTokenTag_Label(containingLine.LineNumber));
+                                                yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(current, offset, curSpan), this.Make_AsmTokenTag_Label(containingLine.LineNumber));
                                             }
                                             break;
                                         }
@@ -525,7 +525,7 @@ namespace AsmDude
                                             needToAdvance = true;
                                         }
                                         //string asmToken2 = NasmTokenTagger.Keyword(current, line);
-                                        yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(current, offset, curSpan), Make_AsmTokenTag_Label(containingLine.LineNumber));
+                                        yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(current, offset, curSpan), this.Make_AsmTokenTag_Label(containingLine.LineNumber));
                                     }
                                 }
                                 break;
@@ -552,7 +552,7 @@ namespace AsmDude
 
         private AsmTokenTag Make_AsmTokenTag_LabelDef(int lineNumber)
         {
-            string procedure_Name = Get_Procedure_Name(lineNumber);
+            string procedure_Name = this.Get_Procedure_Name(lineNumber);
             return (procedure_Name != null)
                ? new AsmTokenTag(AsmTokenType.LabelDef, procedure_Name)
                : this._labelDef;
@@ -560,7 +560,7 @@ namespace AsmDude
 
         private AsmTokenTag Make_AsmTokenTag_Label(int lineNumber)
         {
-            string procedure_Name = Get_Procedure_Name(lineNumber);
+            string procedure_Name = this.Get_Procedure_Name(lineNumber);
             return (procedure_Name != null)
                ? new AsmTokenTag(AsmTokenType.Label, procedure_Name)
                : this._label;

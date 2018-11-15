@@ -175,12 +175,12 @@ namespace AsmDude.Tools
         #region Disposing
         public void Dispose()
         {
-            Dispose(true);
+            this.Dispose(true);
             GC.SuppressFinalize(this);
         }
         ~AsmSimulator()
         {
-            Dispose(false);
+            this.Dispose(false);
         }
         void Dispose(bool disposing)
         {
@@ -777,7 +777,7 @@ namespace AsmDude.Tools
                 }
                 else if (state.State == null)
                 {
-                    if (create) PreCompute_Register_Value(name, lineNumber, before);
+                    if (create) this.PreCompute_Register_Value(name, lineNumber, before);
                     return (false, true);
                 }
                 else
@@ -785,7 +785,7 @@ namespace AsmDude.Tools
                     Tv[] content = state.State.GetTvArray_Cached(name);
                     if (content == null)
                     {
-                        if (create) PreCompute_Register_Value(name, lineNumber, before);
+                        if (create) this.PreCompute_Register_Value(name, lineNumber, before);
                         return (false, true);
                     }
                     foreach (Tv tv in content)
@@ -797,7 +797,7 @@ namespace AsmDude.Tools
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Has_Register_Value; e={1}", ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Has_Register_Value; e={1}", this.ToString(), e.ToString()));
                 return (false, false);
             }
         }

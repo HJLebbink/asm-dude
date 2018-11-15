@@ -236,18 +236,18 @@ namespace AsmDude.HighlightWord
                     {
                         AsmDudeToolsStatic.Output_WARNING(string.Format("could not highlight string \"{0}\"; e={1}", findData.SearchString, e2.InnerException.Message));
                     }
-                    SynchronousUpdate(this.RequestedPoint, new NormalizedSnapshotSpanCollection(wordSpans), this.NewWord, sp);
+                    this.SynchronousUpdate(this.RequestedPoint, new NormalizedSnapshotSpanCollection(wordSpans), this.NewWord, sp);
                 }
                 else
                 {
                     // If we couldn't find a word, just clear out the existing markers
-                    SynchronousUpdate(this.RequestedPoint, new NormalizedSnapshotSpanCollection(), null, null);
+                    this.SynchronousUpdate(this.RequestedPoint, new NormalizedSnapshotSpanCollection(), null, null);
                 }
                 AsmDudeToolsStatic.Print_Speed_Warning(time1, "HighlightWordTagger");
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:UpdateWordAdornments; e={1}", ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:UpdateWordAdornments; e={1}", this.ToString(), e.ToString()));
             }
         }
 

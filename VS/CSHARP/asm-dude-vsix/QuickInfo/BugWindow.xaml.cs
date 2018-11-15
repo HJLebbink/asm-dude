@@ -9,7 +9,7 @@ namespace AsmDude.QuickInfo
     {
         public BugWindow()
         {
-            InitializeComponent();
+            this.InitializeComponent();
 
             this.MainWindow.MouseLeftButtonDown += (o, i) => {
                 AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:MouseLeftButtonDown Event");

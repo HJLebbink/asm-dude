@@ -87,7 +87,7 @@ namespace AsmDude
             }
             #endregion
 
-            Init_Data();
+            this.Init_Data();
 
             this._mnemonics_switched_on = new HashSet<Mnemonic>();
             this.UpdateMnemonicSwitchedOn();
@@ -225,7 +225,7 @@ namespace AsmDude
                     if (this._description.ContainsKey(keyword))
                     {
                         string description = this._description[keyword];
-                        string reference = Get_Url(keyword);
+                        string reference = this.Get_Url(keyword);
 
                         this.Mnemonic_Store.SetHtmlRef(mnemonic, reference);
 
@@ -343,7 +343,7 @@ namespace AsmDude
                 Rn reg = RegisterTools.ParseRn(keyword2, true);
                 if (reg != Rn.NOREG)
                 {
-                    if (RegisterSwitchedOn(reg)) return AsmTokenType.Register;
+                    if (this.RegisterSwitchedOn(reg)) return AsmTokenType.Register;
                 }
             }
             #endregion
@@ -358,7 +358,7 @@ namespace AsmDude
                 Mnemonic mnemonic = AsmSourceTools.ParseMnemonic_Att(keyword, true);
                 if (mnemonic != Mnemonic.NONE)
                 {
-                    if (MnemonicSwitchedOn(mnemonic)) return (AsmSourceTools.IsJump(mnemonic)) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
+                    if (this.MnemonicSwitchedOn(mnemonic)) return (AsmSourceTools.IsJump(mnemonic)) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
                 }
             }
             #endregion
@@ -373,12 +373,12 @@ namespace AsmDude
             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword, true);
             if (mnemonic != Mnemonic.NONE)
             {
-                if (MnemonicSwitchedOn(mnemonic)) return (AsmSourceTools.IsJump(mnemonic)) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
+                if (this.MnemonicSwitchedOn(mnemonic)) return (AsmSourceTools.IsJump(mnemonic)) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
             }
             Rn reg = RegisterTools.ParseRn(keyword, true);
             if (reg != Rn.NOREG)
             {
-                if (RegisterSwitchedOn(reg)) return AsmTokenType.Register;
+                if (this.RegisterSwitchedOn(reg)) return AsmTokenType.Register;
             }
             return (this._type.TryGetValue(keyword, out var tokenType)) ? tokenType : AsmTokenType.UNKNOWN;
         }
@@ -432,7 +432,7 @@ namespace AsmDude
             this._assembler = new Dictionary<string, AssemblerEnum>();
             this._description = new Dictionary<string, string>();
             // fill the dictionary with keywords
-            XmlDocument xmlDoc = Get_Xml_Data();
+            XmlDocument xmlDoc = this.Get_Xml_Data();
             foreach (XmlNode node in xmlDoc.SelectNodes("//misc"))
             {
                 var nameAttribute = node.Attributes["name"];
@@ -444,8 +444,8 @@ namespace AsmDude
                 {
                     string name = nameAttribute.Value.ToUpper();
                     this._type[name] = AsmTokenType.Misc;
-                    this._arch[name] = Retrieve_Arch(node);
-                    this._description[name] = Retrieve_Description(node);
+                    this._arch[name] = this.Retrieve_Arch(node);
+                    this._description[name] = this.Retrieve_Description(node);
                 }
             }
 
@@ -460,9 +460,9 @@ namespace AsmDude
                 {
                     string name = nameAttribute.Value.ToUpper();
                     this._type[name] = AsmTokenType.Directive;
-                    this._arch[name] = Retrieve_Arch(node);
-                    this._assembler[name] = Retrieve_Assembler(node);
-                    this._description[name] = Retrieve_Description(node);
+                    this._arch[name] = this.Retrieve_Arch(node);
+                    this._assembler[name] = this.Retrieve_Assembler(node);
+                    this._description[name] = this.Retrieve_Description(node);
                 }
             }
             foreach (XmlNode node in xmlDoc.SelectNodes("//register"))
@@ -476,8 +476,8 @@ namespace AsmDude
                 {
                     string name = nameAttribute.Value.ToUpper();
                     //this._type[name] = AsmTokenType.Register;
-                    this._arch[name] = Retrieve_Arch(node);
-                    this._description[name] = Retrieve_Description(node);
+                    this._arch[name] = this.Retrieve_Arch(node);
+                    this._description[name] = this.Retrieve_Description(node);
                 }
             }
             foreach (XmlNode node in xmlDoc.SelectNodes("//userdefined1"))
@@ -491,7 +491,7 @@ namespace AsmDude
                 {
                     string name = nameAttribute.Value.ToUpper();
                     this._type[name] = AsmTokenType.UserDefined1;
-                    this._description[name] = Retrieve_Description(node);
+                    this._description[name] = this.Retrieve_Description(node);
                 }
             }
             foreach (XmlNode node in xmlDoc.SelectNodes("//userdefined2"))
@@ -505,7 +505,7 @@ namespace AsmDude
                 {
                     string name = nameAttribute.Value.ToUpper();
                     this._type[name] = AsmTokenType.UserDefined2;
-                    this._description[name] = Retrieve_Description(node);
+                    this._description[name] = this.Retrieve_Description(node);
                 }
             }
             foreach (XmlNode node in xmlDoc.SelectNodes("//userdefined3"))
@@ -519,7 +519,7 @@ namespace AsmDude
                 {
                     string name = nameAttribute.Value.ToUpper();
                     this._type[name] = AsmTokenType.UserDefined3;
-                    this._description[name] = Retrieve_Description(node);
+                    this._description[name] = this.Retrieve_Description(node);
                 }
             }
         }
