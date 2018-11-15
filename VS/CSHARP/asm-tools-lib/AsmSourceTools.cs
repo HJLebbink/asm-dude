@@ -380,8 +380,17 @@ namespace AsmTools
         /// <summary> Check if the provided string is a constant by evaluating it.</summary>
         public static (bool Valid, ulong Value, int NBits) Evaluate_Constant(string token, bool isCapitals = false)
         {
-            var token2 = token.Replace("_", string.Empty).Replace(".", string.Empty);
-            return ExpressionEvaluator.Evaluate_Constant(token2, isCapitals);
+            //TODO bugfix: there is a issue with .net 1.6.2 and the evaluation code in Evaluate_Constant
+            if (true)
+            {
+                // dont use expression evaluation, just parse it.
+                return ExpressionEvaluator.Parse_Constant(token, isCapitals);
+            }
+            else
+            {
+                var token2 = token.Replace("_", string.Empty).Replace(".", string.Empty);
+                return ExpressionEvaluator.Evaluate_Constant(token2, isCapitals);
+            }
         }
 
         /// <summary> Check if the provided string is a constant by parsing it. Does not evaluate arithmetic in the string.</summary>
