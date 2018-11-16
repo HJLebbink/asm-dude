@@ -55,6 +55,11 @@ namespace AsmSim
         /// <summary>Perform one step forward and return the regular branch</summary>
         public static State SimpleStep_Forward(string line, State state)
         {
+            if (state == null)
+            {
+                Console.WriteLine("WARNING: Runner:SimpleStep_Forward: provided state is null");
+                return null;
+            }
             try
             {
                 Tools tools = state.Tools;
