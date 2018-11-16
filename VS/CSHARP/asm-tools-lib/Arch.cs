@@ -428,7 +428,8 @@ namespace AsmTools {
         }
 
         public static string ToString(Arch arch) {
-            switch (arch) {
+            switch (arch)
+            {
                 case Arch.ARCH_NONE: return "NONE";
                 case Arch.ARCH_8086: return "8086";
                 case Arch.ARCH_186: return "186";
@@ -501,7 +502,7 @@ namespace AsmTools {
                 case Arch.ARCH_3DNOW: return "3DNOW";
                 case Arch.ARCH_CYRIX: return "CYRIX";
                 case Arch.ARCH_CYRIXM: return "CYRIXM";
-
+                case Arch.ARCH_VMX: return "VMX";
                 default:
                     break;
             }
