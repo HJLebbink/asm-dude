@@ -90,6 +90,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="AsmDudePackage.ico" />
+    <Content Include="libz3.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Microsoft.Z3.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\AsmDudeData.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -447,9 +455,6 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Validation">
       <Version>14.1.111</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Z3.x64">
-      <Version>4.8.1</Version>
     </PackageReference>
     <PackageReference Include="QuickGraph">
       <Version>3.6.61119.7</Version>
