@@ -83,10 +83,6 @@
     <NoWarn>CS0162</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Z3, Version=4.5.0.0, Culture=neutral, PublicKeyToken=9c8d792caae602a2, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\asm-dude-vsix\Microsoft.Z3.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -110,6 +106,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Z3.x64">
+      <Version>4.8.1</Version>
+    </PackageReference>
     <PackageReference Include="QuickGraph">
       <Version>3.6.61119.7</Version>
     </PackageReference>
