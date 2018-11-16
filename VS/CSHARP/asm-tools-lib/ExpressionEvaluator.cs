@@ -41,6 +41,8 @@ namespace AsmTools
 
             //Console.WriteLine("AsmSourceTools:ToConstant token=" + token);
 
+            str = str.Replace("_", String.Empty);
+
             if (!isCapitals)
             {
                 str = str.ToUpper();
