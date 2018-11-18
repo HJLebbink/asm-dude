@@ -247,6 +247,12 @@ namespace unit_tests_asm_z3
                 TestTools.AreEqual(expectedTvArray, actualTvArray);
             }
         }
+        /// <summary>
+        /// Test whether the provided registers are equal in the provided state
+        /// </summary>
+        /// <param name="reg1"></param>
+        /// <param name="reg2"></param>
+        /// <param name="state"></param>
         public static void AreEqual(Rn reg1, Rn reg2, State state)
         {
             using (BoolExpr eq = state.Ctx.MkEq(state.Create(reg1), state.Create(reg2)))
@@ -264,6 +270,34 @@ namespace unit_tests_asm_z3
                         Console.WriteLine(state);
                     }
                     Assert.AreEqual(Tv.ONE, tv);
+                }
+            }
+        }
+        /// <summary>
+        /// Test whether the provided registers are unrelated in the provided state. That is, whether the 
+        /// equality of the two registers is unknown in the provided state.
+        /// </summary>
+        /// <param name="reg1"></param>
+        /// <param name="reg2"></param>
+        /// <param name="state"></param>
+        public static void AreUnrelated(Rn reg1, Rn reg2, State state)
+        {
+            using (BoolExpr eq = state.Ctx.MkEq(state.Create(reg1), state.Create(reg2)))
+            {
+                Tv tv = ToolsZ3.GetTv(eq, state.Solver, state.Ctx);
+                Console.WriteLine("TestTools:AreUnrelated: tv:"+tv);
+                if (tv == Tv.UNDETERMINED)
+                {
+                    Assert.Inconclusive("Could not determine whether " + reg1 + " and " + reg2 + " are unrelated");
+                }
+                else
+                {
+                    if (tv != Tv.UNKNOWN)
+                    {
+                        Console.WriteLine("TestTools:AreUnrelated: state:");
+                        Console.WriteLine(state);
+                        Assert.Fail();
+                    }
                 }
             }
         }

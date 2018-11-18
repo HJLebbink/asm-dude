@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2017 Henk-Jan Lebbink
+// Copyright (c) 2018 Henk-Jan Lebbink
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -47,8 +47,8 @@ namespace AsmSim
             //TestGraph();
             //TestMnemonic();
             //Test_Rep();
-            Test_Usage();
-            //TestMemorySpeed();
+            //Test_Usage();
+            TestMemorySpeed();
             //TestDynamicFlow();
             //TestSIMD();
             //EmptyMemoryTest();
@@ -56,6 +56,7 @@ namespace AsmSim
             //TestFunctions();
             //TacticTest();
             //TestMemoryLeak();
+            //Test_NullReference_Bsf_1();
 
             double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
             Console.WriteLine(string.Format("Elapsed time " + elapsedSec + " sec"));
@@ -63,6 +64,40 @@ namespace AsmSim
             Console.ReadKey();
         }
 
+        static Tools CreateTools(int timeOut = 1000)
+        {
+            /* The following parameters can be set: 
+                    - proof (Boolean) Enable proof generation
+                    - debug_ref_count (Boolean) Enable debug support for Z3_ast reference counting
+                    - trace (Boolean) Tracing support for VCC 
+                    - trace_file_name (String) Trace out file for VCC traces 
+                    - timeout (unsigned) default timeout (in milliseconds) used for solvers 
+                    - well_sorted_check type checker 
+                    - auto_config use heuristics to automatically select solver and configure it 
+                    - model model generation for solvers, this parameter can be overwritten when creating a solver 
+                    - model_validate validate models produced by solvers 
+                    - unsat_core unsat-core generation for solvers, this parameter can be overwritten when creating 
+                            a solver Note that in previous versions of Z3, this constructor was also used to set 
+                            global and module parameters. For this purpose we should now use 
+                            Microsoft.Z3.Global.SetParameter(System.String,System.String)
+            */
+
+            Dictionary<string, string> settings = new Dictionary<string, string>
+            {
+                { "unsat_core", "false" },    // enable generation of unsat cores
+                { "model", "false" },         // enable model generation
+                { "proof", "false" },         // enable proof generation
+                { "timeout", timeOut.ToString() }
+            };
+            return new Tools(settings);
+        }
+
+        static State CreateState(Tools tools)
+        {
+            string tailKey = "!0";// Tools.CreateKey(tools.Rand);
+            string headKey = tailKey;
+            return new State(tools, tailKey, headKey);
+        }
 
         static void ExpressionTest()
         {
@@ -132,18 +167,16 @@ namespace AsmSim
 
         static void TestMemorySpeed()
         {
-            Dictionary<string, string> settings = new Dictionary<string, string>
+            var settings = new Dictionary<string, string>
             {
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" },         // enable proof generation
                 { "timeout", "60000" }        // 60000=1min
             };
-            using (Context ctx = new Context(settings))
+            using (var ctx = new Context(settings))
             {
-
                 /*
-                 * 
                 string line1 = "mov qword ptr [rax], rbx";
                 string line2 = "mov rcx, qword ptr [rax]";
                  * 
@@ -181,7 +214,7 @@ namespace AsmSim
                 //Solver solver = ctx.MkSimpleSolver();
                 Solver solver = ctx.MkSolver();
 
-
+                #region Create 3 64bit-registers and 1 64-bit memory location, at 3 time stamps
                 BitVecExpr rax0 = ctx.MkBVConst("RAX!0", 64);
                 BitVecExpr rax1 = ctx.MkBVConst("RAX!1", 64);
                 BitVecExpr rax2 = ctx.MkBVConst("RAX!2", 64);
@@ -197,8 +230,9 @@ namespace AsmSim
                 ArrayExpr mem0 = ctx.MkArrayConst("MEM!0", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
                 ArrayExpr mem1 = ctx.MkArrayConst("MEM!1", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
                 ArrayExpr mem2 = ctx.MkArrayConst("MEM!2", ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
+                #endregion
 
-                if (true)
+                if (false)
                 {
                     #region mov qword ptr [rax], rbx
 
@@ -217,8 +251,9 @@ namespace AsmSim
 
                     #endregion
                     #region mov rcx, qword ptr [rax]
-                    solver.Assert(ctx.MkEq(rax2, rax1));
-                    solver.Assert(ctx.MkEq(rbx2, rbx1));
+                    solver.Assert(ctx.MkEq(rax2, rax1)); // rax at t=2 is equal to rax at t=1, although we do not know the exact value
+                    solver.Assert(ctx.MkEq(rbx2, rbx1)); // rbx at t=2 is equal to rbx at t=1, although we do not know the exact value
+
                     BitVecExpr y0 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(0, 64), rax1)) as BitVecExpr;
                     BitVecExpr y1 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(1, 64), rax1)) as BitVecExpr;
                     BitVecExpr y2 = ctx.MkSelect(mem1, ctx.MkBVAdd(ctx.MkBV(2, 64), rax1)) as BitVecExpr;
@@ -231,7 +266,6 @@ namespace AsmSim
                     solver.Assert(ctx.MkEq(rcx2, y));
                     solver.Assert(ctx.MkEq(mem2, mem1));
                     #endregion
-                    //Console.WriteLine(solver);
                 }
                 else
                 {
@@ -269,9 +303,10 @@ namespace AsmSim
                     BitVecExpr y = ctx.MkConcat(y7, ctx.MkConcat(y6, ctx.MkConcat(y5, ctx.MkConcat(y4, ctx.MkConcat(y3, ctx.MkConcat(y2, ctx.MkConcat(y1, y0)))))));
                     solver.Assert(ctx.MkEq(rcx2, y));
                     solver.Assert(ctx.MkEq(mem2, mem1));
-
-                    //Console.WriteLine(solver);
                 }
+                //Console.WriteLine(solver);
+                Console.WriteLine("========================");
+
                 bool method1 = false;
                 bool method2 = false;
 
@@ -300,7 +335,8 @@ namespace AsmSim
                     }
                     double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
                     Console.WriteLine("Status Neg = " + status + ": Elapsed time " + elapsedSec + " sec");
-                    Console.WriteLine(solver.Statistics);
+                    //Console.WriteLine(solver);
+                    Console.WriteLine("========================");
 
                     if (method1)
                     {
@@ -339,7 +375,8 @@ namespace AsmSim
                     }
                     double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
                     Console.WriteLine("Status Pos = " + status + ": Elapsed time " + elapsedSec + " sec");
-                    Console.WriteLine(solver.Statistics);
+                    //Console.WriteLine(solver);
+                    Console.WriteLine("========================");
                     if (method1)
                     {
                         // do nothing
@@ -377,7 +414,8 @@ namespace AsmSim
                     }
                     double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
                     Console.WriteLine("Status Neg = " + status + ": Elapsed time " + elapsedSec + " sec");
-                    Console.WriteLine(solver.Statistics);
+                    //Console.WriteLine(solver);
+                    Console.WriteLine("========================");
 
                     if (method1)
                     {
@@ -437,7 +475,7 @@ namespace AsmSim
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" },         // enable proof generation
-                { "timeout", "10000" }
+                { "timeout", "20000" }
             };
 
             using (Context ctx = new Context(settings))
@@ -526,7 +564,6 @@ namespace AsmSim
                 }
             }
         }
-
         static void Test_Usage()
         {
             Dictionary<string, string> settings = new Dictionary<string, string>
@@ -822,7 +859,6 @@ namespace AsmSim
                 }
             }
         }
-
         static void TestDynamicFlow()
         {
             string programStr1a =
@@ -1522,5 +1558,29 @@ namespace AsmSim
             Console.ReadKey();
             System.GC.Collect();
         }
+
+        static void Test_NullReference_Bsf_1()
+        {
+            bool logToDisplay = true;
+            Tools tools = CreateTools();
+            tools.StateConfig.Set_All_Off();
+            tools.StateConfig.RAX = true;
+            tools.StateConfig.RBX = true;
+
+            string line1 = "mov rbx, 00010000_00000000_00000000_00000000_00000000_00000000_00000000_00001110b";
+            string line2 = "bsf rax, rbx";
+
+            {   // forward
+                State state = CreateState(tools);
+
+                state = Runner.SimpleStep_Forward(line1, state);
+                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+
+                state = Runner.SimpleStep_Forward(line2, state);
+                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                //TestTools.AreEqual(Rn.RAX, 1, state);
+            }
+        }
+
     }
 }

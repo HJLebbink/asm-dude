@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2017 Henk-Jan Lebbink
+// Copyright (c) 2018 Henk-Jan Lebbink
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -77,14 +77,9 @@ namespace AsmSim
         public static string Cleanup(string line, int maxNumberOfCharsOnLine = 150)
         {
             string cleanedString = System.Text.RegularExpressions.Regex.Replace(line, @"\s+", " ").Trim();
-            if (cleanedString.Length > maxNumberOfCharsOnLine)
-            {
-                return cleanedString.Substring(0, maxNumberOfCharsOnLine - 3) + "...";
-            }
-            else
-            {
-                return cleanedString;
-            }
+            return (cleanedString.Length > maxNumberOfCharsOnLine)
+                ? cleanedString.Substring(0, maxNumberOfCharsOnLine - 3) + "..."
+                : cleanedString;
         }
 
         public static BoolExpr GetBit(BitVecExpr value, BitVecExpr pos, Context ctx)

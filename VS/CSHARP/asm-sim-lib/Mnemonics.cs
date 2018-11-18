@@ -2374,18 +2374,19 @@ namespace AsmSim
                 uint nBits = shiftCount.SortSize;
                 BoolExpr isZero = ctx.MkEq(shiftCount, ctx.MkBV(0, nBits));
                 BoolExpr isOne = ctx.MkEq(shiftCount, ctx.MkBV(1, nBits));
+                BitVecNum one = ctx.MkBV(1, 1);
 
                 #region Calculate Overflow Flag
                 BoolExpr of_tmp;
                 if (left)
                 {
-                    BoolExpr b1 = ToolsZ3.GetBit(value, nBits - 1, ctx.MkBV(1, 1), ctx);
-                    BoolExpr b2 = ToolsZ3.GetBit(value, nBits - 2, ctx.MkBV(1, 1), ctx);
+                    BoolExpr b1 = ToolsZ3.GetBit(value, nBits - 1, one, ctx);
+                    BoolExpr b2 = ToolsZ3.GetBit(value, nBits - 2, one, ctx);
                     of_tmp = ctx.MkXor(b1, b2);
                 }
                 else
                 {
-                    of_tmp = ToolsZ3.GetBit(value, nBits - 1, ctx.MkBV(1, 1), ctx);
+                    of_tmp = ToolsZ3.GetBit(value, nBits - 1, one, ctx);
                 }
 
                 BoolExpr of =

@@ -43,7 +43,8 @@ namespace unit_tests_asm_z3
                 { "unsat_core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" },         // enable proof generation
-                { "timeout", timeOut.ToString() }
+                { "timeout", timeOut.ToString() },
+                { "parallel", "true" }
             };
             return new Tools(settings);
         }
@@ -60,7 +61,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Mov_usage()
         {
-            var tools = CreateTools();
+            var tools = this.CreateTools();
             var keys = ("dummy1", "dummy2", "dummy3");
 
             {
@@ -106,7 +107,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Mov_reg1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -120,7 +121,7 @@ namespace unit_tests_asm_z3
             if (true)
             {
                 if (logToDisplay) Console.WriteLine("Forward:");
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 state = Runner.SimpleStep_Forward(line2, state);
@@ -134,7 +135,7 @@ namespace unit_tests_asm_z3
             if (true)
             {
                 if (logToDisplay) Console.WriteLine("Backward:");
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Backward(line3, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 state = Runner.SimpleStep_Backward(line2, state);
@@ -150,7 +151,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Mov_reg2()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -160,7 +161,7 @@ namespace unit_tests_asm_z3
             string line2 = "mov rcx, rbx";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 state = Runner.SimpleStep_Forward(line2, state);
@@ -168,7 +169,7 @@ namespace unit_tests_asm_z3
                 TestTools.AreEqual(Rn.RAX, Rn.RCX, state);
             }
             {   // backward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Backward(line2, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 state = Runner.SimpleStep_Backward(line1, state);
@@ -180,7 +181,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Mov_reg3()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -191,7 +192,7 @@ namespace unit_tests_asm_z3
             ulong value_eax_2 = 5;
             string line3 = "mov eax, " + value_eax_2;
             {
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
@@ -209,7 +210,7 @@ namespace unit_tests_asm_z3
                 TestTools.AreEqual(Rn.EBX, value_eax, state);
             }
             {
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Backward(line3, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
@@ -230,7 +231,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Mov_mem1_1byte_a()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -242,10 +243,11 @@ namespace unit_tests_asm_z3
 
             if (true)
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
+                TestTools.AreUnrelated(Rn.BL, Rn.CL, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay) Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
@@ -256,7 +258,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Mov_mem1_1byte_b()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -271,10 +273,11 @@ namespace unit_tests_asm_z3
 
             if (true)
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
+                TestTools.AreUnrelated(Rn.BL, Rn.CL, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay) Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
@@ -282,6 +285,7 @@ namespace unit_tests_asm_z3
 
                 state = Runner.SimpleStep_Forward(line3, state);
                 if (logToDisplay) Console.WriteLine("Forward: After \"" + line3 + "\", we know:\n" + state);
+                TestTools.AreUnrelated(Rn.DL, Rn.CL, state);
 
                 state = Runner.SimpleStep_Forward(line4, state);
                 if (logToDisplay) Console.WriteLine("Forward: After \"" + line4 + "\", we know:\n" + state);
@@ -289,9 +293,12 @@ namespace unit_tests_asm_z3
             }
             if (true)
             {   // backward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
+
                 state = Runner.SimpleStep_Backward(line2, state);
                 if (logToDisplay) Console.WriteLine("Backward: After \"" + line2 + "\", we know:\n" + state);
+                TestTools.AreUnrelated(Rn.BL, Rn.CL, state);
+
                 state = Runner.SimpleStep_Backward(line1, state);
                 if (logToDisplay) Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
                 TestTools.AreEqual(Rn.BL, Rn.CL, state);
@@ -301,7 +308,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Mov_mem1_2byte()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -311,17 +318,21 @@ namespace unit_tests_asm_z3
             string line1 = "mov word ptr [rax], bx";
             string line2 = "mov cx, word ptr [rax]";
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
+                TestTools.AreUnrelated(Rn.BX, Rn.CX, state);
+
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay) Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
                 TestTools.AreEqual(Rn.BX, Rn.CX, state);
             }
             {   // backward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Backward(line2, state);
                 if (logToDisplay) Console.WriteLine("Backward: After \"" + line2 + "\", we know:\n" + state);
+                TestTools.AreUnrelated(Rn.BX, Rn.CX, state);
+
                 state = Runner.SimpleStep_Backward(line1, state);
                 if (logToDisplay) Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
                 TestTools.AreEqual(Rn.BX, Rn.CX, state);
@@ -331,7 +342,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Mov_mem1_4byte()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -341,17 +352,21 @@ namespace unit_tests_asm_z3
             string line1 = "mov dword ptr [rax], ebx";
             string line2 = "mov ecx, dword ptr [rax]";
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
+                TestTools.AreUnrelated(Rn.EBX, Rn.ECX, state);
+
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay) Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
                 TestTools.AreEqual(Rn.EBX, Rn.ECX, state);
             }
             {   // backward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Backward(line2, state);
                 if (logToDisplay) Console.WriteLine("Backward: After \"" + line2 + "\", we know:\n" + state);
+                TestTools.AreUnrelated(Rn.EBX, Rn.ECX, state);
+
                 state = Runner.SimpleStep_Backward(line1, state);
                 if (logToDisplay) Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
                 TestTools.AreEqual(Rn.EBX, Rn.ECX, state);
@@ -361,7 +376,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Mov_mem1_8byte()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -372,17 +387,21 @@ namespace unit_tests_asm_z3
             string line2 = "mov rcx, qword ptr [rax]";
             if (false)
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
+                TestTools.AreUnrelated(Rn.RBX, Rn.RCX, state);
+
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay) Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
                 TestTools.AreEqual(Rn.RBX, Rn.RCX, state);
             }
             {   // backward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Backward(line2, state);
                 if (logToDisplay) Console.WriteLine("Backward: After \"" + line2 + "\", we know:\n" + state);
+                TestTools.AreUnrelated(Rn.RBX, Rn.RCX, state);
+
                 state = Runner.SimpleStep_Backward(line1, state);
                 if (logToDisplay) Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
                 TestTools.AreEqual(Rn.RBX, Rn.RCX, state);
@@ -392,7 +411,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Mov_mem2()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -404,7 +423,7 @@ namespace unit_tests_asm_z3
             string line3 = "mov rbx, qword ptr [rcx + 2 * rbx]";
             string line4 = "xor rax, rbx";
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 state = Runner.SimpleStep_Forward(line2, state);
@@ -416,7 +435,7 @@ namespace unit_tests_asm_z3
                 TestTools.AreEqual(Rn.RAX, 0, state);
             }
             {   // backward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Backward(line4, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
                 state = Runner.SimpleStep_Backward(line3, state);
@@ -432,7 +451,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Mov_mem3()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -447,7 +466,7 @@ namespace unit_tests_asm_z3
             string line4 = "jnz label";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 state = Runner.SimpleStep_Forward(line2, state);
@@ -463,7 +482,7 @@ namespace unit_tests_asm_z3
             }
             if (true)
             {   // backward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.NZ, state.HeadKey, state.Ctx), false));
                 if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
                 state = Runner.SimpleStep_Backward(line3, state);
@@ -483,7 +502,7 @@ namespace unit_tests_asm_z3
         {
             // Test Memory overwrite
 
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -498,7 +517,7 @@ namespace unit_tests_asm_z3
 
             if (true)
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 state = Runner.SimpleStep_Forward(line2, state);
@@ -512,7 +531,7 @@ namespace unit_tests_asm_z3
             }
             if (false)
             {   // backward: TODO is this test correct??
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Backward(line4, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
                 state = Runner.SimpleStep_Backward(line3, state);
@@ -529,7 +548,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Mov_mem5()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -548,7 +567,7 @@ namespace unit_tests_asm_z3
 
             if (true)
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 //if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
@@ -570,7 +589,7 @@ namespace unit_tests_asm_z3
 
             if (false) // is this test correct??
             {   // backward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.NZ, state.HeadKey, state.Ctx), false));
                 if (logToDisplay) Console.WriteLine("After \"" + line6 + "\", we know:\n" + state);
                 state = Runner.SimpleStep_Backward(line5, state);
@@ -592,7 +611,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Mov_mem6()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -604,7 +623,7 @@ namespace unit_tests_asm_z3
             string line2 = "mov ecx, dword ptr [rax]";
             if (true)
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
                 state = Runner.SimpleStep_Forward(line2, state);
@@ -613,7 +632,7 @@ namespace unit_tests_asm_z3
             }
             if (true)
             {   // backward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Backward(line2, state);
                 if (logToDisplay) Console.WriteLine("Backward: After \"" + line2 + "\", we know:\n" + state);
                 state = Runner.SimpleStep_Backward(line1, state);
@@ -627,7 +646,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Lea_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -640,7 +659,7 @@ namespace unit_tests_asm_z3
             string line3 = "lea rbx, byte ptr [rdx]";
             if (true)
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 //if (logToDisplay) Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
@@ -655,7 +674,7 @@ namespace unit_tests_asm_z3
             }
             if (true)
             {   // backward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Backward(line3, state);
                 if (logToDisplay) Console.WriteLine("Backward: After \"" + line3 + "\", we know:\n" + state);
@@ -673,7 +692,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Lea_2()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -686,7 +705,7 @@ namespace unit_tests_asm_z3
             string line3 = "lea rbx, byte ptr [2 * rdx + 10]";
             if (true)
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 //if (logToDisplay) Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
@@ -701,7 +720,7 @@ namespace unit_tests_asm_z3
             }
             if (true)
             {   // backward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Backward(line3, state);
                 if (logToDisplay) Console.WriteLine("Backward: After \"" + line3 + "\", we know:\n" + state);
@@ -721,7 +740,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Add_Backwards()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -730,7 +749,7 @@ namespace unit_tests_asm_z3
             string line2 = "mov rbx, 20";
             string line3 = "add rax, rbx";
             { // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 state = Runner.SimpleStep_Forward(line2, state);
@@ -741,7 +760,7 @@ namespace unit_tests_asm_z3
                 TestTools.AreEqual(Rn.RBX, 20, state);
             }
             { // backward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Backward(line3, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 state = Runner.SimpleStep_Backward(line2, state);
@@ -756,7 +775,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Cmovcc_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -770,7 +789,7 @@ namespace unit_tests_asm_z3
             string line3 = "cmovz rbx, rax";
             string line4 = "jz label1";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
 
             {
                 state = Runner.SimpleStep_Forward(line1, state);
@@ -804,7 +823,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Cmovcc_2()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -812,7 +831,7 @@ namespace unit_tests_asm_z3
 
             string line1 = "cmovz rbx, rax";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             Context ctx = state.Ctx;
             {
                 StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools);
@@ -831,7 +850,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Sub_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -845,7 +864,7 @@ namespace unit_tests_asm_z3
             string line3 = "sub rax, rbx";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
@@ -867,7 +886,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Sub_2()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -877,7 +896,7 @@ namespace unit_tests_asm_z3
             string line1 = "sub al, bl";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 BitVecExpr al0 = state.Create(Rn.AL);
                 BitVecExpr bl0 = state.Create(Rn.BL);
@@ -893,7 +912,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Add_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -906,7 +925,7 @@ namespace unit_tests_asm_z3
                 ulong a = 0b0000_1000;
                 ulong b = 0b0000_0100;
 
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 Context ctx = state.Ctx;
 
                 StateUpdate updateState = new StateUpdate(state.TailKey, Tools.CreateKey(state.Tools.Rand), tools);
@@ -928,7 +947,7 @@ namespace unit_tests_asm_z3
                 ulong a = 0b1100_0000;
                 ulong b = 0b1000_0000;
 
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 Context ctx = state.Ctx;
 
                 StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", tools);
@@ -948,7 +967,7 @@ namespace unit_tests_asm_z3
                 ulong a = 0b0000_1000;
                 ulong b = 0b0000_0100;
 
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 Context ctx = state.Ctx;
 
                 StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", tools);
@@ -970,7 +989,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Add_2()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -986,7 +1005,7 @@ namespace unit_tests_asm_z3
                     ulong rbx_value = TestTools.RandUlong((int)nBits, rand);
                     ulong result = (rax_value + rbx_value);
 
-                    State state = CreateState(tools);
+                    State state = this.CreateState(tools);
                     Context ctx = state.Ctx;
 
                     StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools);
@@ -1017,7 +1036,7 @@ namespace unit_tests_asm_z3
                     ulong bx_value = TestTools.RandUlong((int)nBits, rand);
                     ulong result = (ax_value + bx_value) & 0xFFFF;
 
-                    State state = CreateState(tools);
+                    State state = this.CreateState(tools);
                     Context ctx = state.Ctx;
 
                     StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools);
@@ -1044,11 +1063,11 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Inc_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
 
             ulong value_rax = 10;
             string line1 = "mov rax, " + value_rax;
@@ -1068,7 +1087,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Dec_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
 
@@ -1078,7 +1097,7 @@ namespace unit_tests_asm_z3
             string line2 = "dec rax";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
@@ -1093,7 +1112,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Neg_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
 
@@ -1102,7 +1121,7 @@ namespace unit_tests_asm_z3
             string line2 = "neg rax";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
@@ -1117,7 +1136,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Xor_1_Forward()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -1135,7 +1154,7 @@ namespace unit_tests_asm_z3
                 string line2 = "mov rbx, " + value_rbx;
                 string line3 = "xor rax, rbx";
 
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -1155,7 +1174,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Xor_1_Backward()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -1173,7 +1192,7 @@ namespace unit_tests_asm_z3
                 string line2 = "mov rbx, " + value_rbx;
                 string line3 = "xor rax, rbx";
 
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 if (logToDisplay) Console.WriteLine("Before line 3 with \"" + line3 + "\", we know:\n" + state);
                 state = Runner.SimpleStep_Backward(line3, state);
                 if (logToDisplay) Console.WriteLine("After line 3 with \"" + line3 + "\", we know:\n" + state);
@@ -1201,14 +1220,14 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Cmp_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
             tools.StateConfig.RCX = true;
             tools.StateConfig.ZF = true;
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
 
             ulong value_rax = 0x0AAAAAAAAAAAAAAA;
             {
@@ -1239,14 +1258,14 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Cmp_2()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
             tools.StateConfig.mem = true;
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
 
             ulong value1 = 0xFF;
             ulong value2 = 0x3F;
@@ -1279,7 +1298,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Bts_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RCX = true;
@@ -1292,7 +1311,7 @@ namespace unit_tests_asm_z3
             string line2 = "mov cl, " + value_cl;
             string line3 = "bts rax, rcx";
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
@@ -1307,7 +1326,7 @@ namespace unit_tests_asm_z3
                 TestTools.AreEqual(Rn.RAX, value2_rax, state);
             }
             {   // backward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Backward(line3, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
@@ -1325,7 +1344,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Bts_2()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RCX = true;
@@ -1339,7 +1358,7 @@ namespace unit_tests_asm_z3
             string line3 = "bts eax, ecx";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
@@ -1353,7 +1372,7 @@ namespace unit_tests_asm_z3
                 TestTools.AreEqual(Rn.EAX, value2_eax, state);
             }
             {   // backward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Backward(line3, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
@@ -1372,7 +1391,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Btc_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -1386,7 +1405,7 @@ namespace unit_tests_asm_z3
 
             if (true)
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
@@ -1405,7 +1424,7 @@ namespace unit_tests_asm_z3
             }
             if (true)
             {   // backward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Backward(line4, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
@@ -1427,7 +1446,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Btc_2()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -1439,7 +1458,7 @@ namespace unit_tests_asm_z3
             string line3 = "xor rax, rbx";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
@@ -1453,7 +1472,7 @@ namespace unit_tests_asm_z3
                 TestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
             }
             {   // backward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line3, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
@@ -1471,7 +1490,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Btc_3()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -1485,7 +1504,7 @@ namespace unit_tests_asm_z3
             string line4 = "btc rbx, rdx";
             string line5 = "xor rax, rbx";
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
@@ -1512,7 +1531,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Rcl_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.CF = true;
@@ -1523,7 +1542,7 @@ namespace unit_tests_asm_z3
 
             if (true)
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
@@ -1544,7 +1563,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Rcr_3()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RCX = true;
@@ -1556,7 +1575,7 @@ namespace unit_tests_asm_z3
 
             if (true)
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 //if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
@@ -1572,7 +1591,7 @@ namespace unit_tests_asm_z3
             }
             if (false) // incorrect test... 
             {   // backward is 
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line3, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
@@ -1591,7 +1610,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Rcr_4()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -1604,7 +1623,7 @@ namespace unit_tests_asm_z3
             string line5 = "xor rax, rbx";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
@@ -1637,7 +1656,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Bsf_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -1646,7 +1665,7 @@ namespace unit_tests_asm_z3
             string line2 = "bsf rax, rbx";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 //if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
@@ -1660,7 +1679,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Bsf_2()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -1669,7 +1688,7 @@ namespace unit_tests_asm_z3
             string line2 = "bsf rax, rbx";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 //if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
@@ -1684,7 +1703,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Bsr_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -1693,7 +1712,7 @@ namespace unit_tests_asm_z3
             string line2 = "bsr rax, rbx";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 //if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
@@ -1707,7 +1726,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Bsr_2()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -1716,7 +1735,7 @@ namespace unit_tests_asm_z3
             string line2 = "bsr rax, rbx";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 //if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
@@ -1731,7 +1750,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Shl_1a()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -1740,7 +1759,7 @@ namespace unit_tests_asm_z3
             string line2 = "shl rax, 1"; // normal behaviour: shift with count 1
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
@@ -1758,7 +1777,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Shl_1b()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -1769,7 +1788,7 @@ namespace unit_tests_asm_z3
             string line3 = "shl rax, cl"; // normal behaviour: shift with count 1
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -1788,7 +1807,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Shl_2a()
         {   // normal behaviour: shift with count 3: no carry
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -1797,7 +1816,7 @@ namespace unit_tests_asm_z3
             string line2 = "shl rax, 3";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
@@ -1815,7 +1834,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Shl_2b()
         {   // normal behaviour: shift with count 3: carry set
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -1824,7 +1843,7 @@ namespace unit_tests_asm_z3
             string line2 = "shl rax, 3"; // normal behaviour: shift with count 3
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
@@ -1842,7 +1861,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Shl_3()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -1853,7 +1872,7 @@ namespace unit_tests_asm_z3
             string line3 = "shl rax, 0"; // special behaviour: shift left zero positions
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
 
@@ -1883,7 +1902,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Shl_4()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -1892,7 +1911,7 @@ namespace unit_tests_asm_z3
             string line2 = "shl rax, 65"; // special behaviour: shift left too large; 65 mod 64 = 1
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
@@ -1910,7 +1929,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Shl_5a()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -1919,7 +1938,7 @@ namespace unit_tests_asm_z3
             string line2 = "shl eax, 2"; // normal behaviour: shift left 2
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
@@ -1937,7 +1956,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Shl_5b()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -1946,7 +1965,7 @@ namespace unit_tests_asm_z3
             string line2 = "shl ax, 1"; // normal behaviour: shift left 2
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
@@ -1966,7 +1985,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Shrd_1a()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -1977,7 +1996,7 @@ namespace unit_tests_asm_z3
             string line3 = "shrd rax, rbx, 1"; // normal behaviour: shift with count 1
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -1996,7 +2015,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Shrd_1b()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -2009,7 +2028,7 @@ namespace unit_tests_asm_z3
             string line4 = "shrd rax, rbx, cl"; // normal behaviour: Shift rax to right 1 place while shifting bits from rbx in from the left.
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2030,7 +2049,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Shrd_2a()
         {   // normal behaviour: shift with count 3: no carry
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -2041,7 +2060,7 @@ namespace unit_tests_asm_z3
             string line3 = "shrd rax, rbx, 3"; // normal behaviour: Shift rax to right 3 places while shifting bits from rbx in from the left.
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2061,7 +2080,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Shrd_2b()
         {   // normal behaviour: shift with count 3: carry set
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -2072,7 +2091,7 @@ namespace unit_tests_asm_z3
             string line3 = "shrd rax, rbx, 3"; // normal behaviour: shift with count 3
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2094,7 +2113,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Shld_1a()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -2105,7 +2124,7 @@ namespace unit_tests_asm_z3
             string line3 = "shld rax, rbx, 1"; // normal behaviour: shift with count 1
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2124,7 +2143,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Shld_1b()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -2137,7 +2156,7 @@ namespace unit_tests_asm_z3
             string line4 = "shld rax, rbx, cl"; // normal behaviour: shift with count 1
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2158,7 +2177,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Xadd()
         {   // normal behaviour: shift with count 3: carry set
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -2169,7 +2188,7 @@ namespace unit_tests_asm_z3
             string line3 = "xadd rax, rbx"; // normal behaviour
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2191,7 +2210,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Imul_8bits_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -2206,7 +2225,7 @@ namespace unit_tests_asm_z3
             string line3 = "imul bl";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2222,7 +2241,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Imul_8bits_2()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -2237,7 +2256,7 @@ namespace unit_tests_asm_z3
             string line3 = "imul bl";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2253,7 +2272,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Imul_8bits_3()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -2268,7 +2287,7 @@ namespace unit_tests_asm_z3
             string line3 = "imul bl";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2284,7 +2303,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Imul_16bits_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -2302,7 +2321,7 @@ namespace unit_tests_asm_z3
                 string line2 = "mov bx, " + bx;
                 string line3 = "imul bx";
 
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2319,7 +2338,7 @@ namespace unit_tests_asm_z3
                 string line2 = "mov bx, " + bx;
                 string line3 = "imul ax, bx";
 
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2334,7 +2353,7 @@ namespace unit_tests_asm_z3
                 string line1 = "mov bx, " + bx;
                 string line2 = "imul ax, bx, " + ax;
 
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
@@ -2349,7 +2368,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Imul_16bits_2()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
@@ -2367,7 +2386,7 @@ namespace unit_tests_asm_z3
                 string line2 = "mov bx, " + bx;
                 string line3 = "imul bx";
 
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2384,7 +2403,7 @@ namespace unit_tests_asm_z3
                 string line2 = "mov bx, " + bx;
                 string line3 = "imul ax, bx";
 
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2399,7 +2418,7 @@ namespace unit_tests_asm_z3
                 string line1 = "mov bx, " + bx;
                 string line2 = "imul ax, bx, " + ax;
 
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
@@ -2414,7 +2433,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Imul_32bits_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -2437,7 +2456,7 @@ namespace unit_tests_asm_z3
                 string line2 = "mov ebx, " + ebx;
                 string line3 = "imul ebx";
 
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2454,7 +2473,7 @@ namespace unit_tests_asm_z3
                 string line2 = "mov ebx, " + ebx;
                 string line3 = "imul eax, ebx";
 
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2469,7 +2488,7 @@ namespace unit_tests_asm_z3
                 string line1 = "mov ebx, " + ebx;
                 string line2 = "imul eax, ebx, " + eax;
 
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
@@ -2484,7 +2503,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Imul_32bits_2()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -2510,7 +2529,7 @@ namespace unit_tests_asm_z3
                 string line2 = "mov ebx, " + ebx;
                 //string line3 = "imul ebx";
 
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 Assert.IsFalse(state.IsHalted);
                 if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
@@ -2532,7 +2551,7 @@ namespace unit_tests_asm_z3
                 string line2 = "mov ebx, " + ebx;
                 string line3 = "imul eax, ebx";
 
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2548,7 +2567,7 @@ namespace unit_tests_asm_z3
                 string line1 = "mov ebx, " + ebx;
                 string line2 = "imul eax, ebx, " + eax;
 
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
@@ -2563,7 +2582,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Imul_64bits_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -2588,7 +2607,7 @@ namespace unit_tests_asm_z3
                 string line2 = "mov rbx, " + rbx;
                 string line3 = "imul rbx";
 
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2605,7 +2624,7 @@ namespace unit_tests_asm_z3
                 string line2 = "mov rbx, " + rbx;
                 string line3 = "imul rax, rbx";
 
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2620,7 +2639,7 @@ namespace unit_tests_asm_z3
                 string line1 = "mov rbx, " + rbx;
                 string line2 = "imul rax, rbx, " + rax;
 
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
@@ -2635,7 +2654,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Imul_64bits_2()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -2661,7 +2680,7 @@ namespace unit_tests_asm_z3
                 string line2 = "mov rbx, " + rbx;
                 string line3 = "imul rbx";
 
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
@@ -2680,7 +2699,7 @@ namespace unit_tests_asm_z3
                 string line2 = "mov rbx, " + rbx;
                 string line3 = "imul rax, rbx";
 
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 Assert.IsFalse(state.IsHalted);
@@ -2700,7 +2719,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Div_8bits_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -2722,7 +2741,7 @@ namespace unit_tests_asm_z3
             string line3 = "div bl";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2737,7 +2756,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Div_8bits_2()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -2758,7 +2777,7 @@ namespace unit_tests_asm_z3
             string line3 = "div bl";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2773,7 +2792,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Div_16bits_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -2799,7 +2818,7 @@ namespace unit_tests_asm_z3
             string line4 = "div bx";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2816,7 +2835,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Div_32bits_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -2842,7 +2861,7 @@ namespace unit_tests_asm_z3
             string line4 = "div ebx";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2859,7 +2878,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Div_64bits_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -2890,7 +2909,7 @@ namespace unit_tests_asm_z3
             string line4 = "div rbx";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2910,7 +2929,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Push_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RSP = true;
@@ -2921,7 +2940,7 @@ namespace unit_tests_asm_z3
             string line3 = "push rax";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2934,7 +2953,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Pop_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RSP = true;
@@ -2944,7 +2963,7 @@ namespace unit_tests_asm_z3
             string line2 = "pop rax";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
@@ -2956,7 +2975,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_PushPop_64bit_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -2969,7 +2988,7 @@ namespace unit_tests_asm_z3
             string line4 = "pop rbx";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -2984,7 +3003,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_PushPop_64bit_2()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -2996,7 +3015,7 @@ namespace unit_tests_asm_z3
             string line3 = "pop rbx";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
@@ -3010,7 +3029,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_PushPop_64bit_3()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools(10000); //1000=10sec
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -3021,8 +3040,11 @@ namespace unit_tests_asm_z3
             string line2 = "pop rbx";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
+
                 state = Runner.SimpleStep_Forward(line1, state);
+                TestTools.AreUnrelated(Rn.RAX, Rn.RBX, state);
+
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 TestTools.AreEqual(Rn.RAX, Rn.RBX, state);
@@ -3032,7 +3054,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_PushPop_64bit_4()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -3043,7 +3065,7 @@ namespace unit_tests_asm_z3
             string line2 = "pop rbx";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 Context ctx = state.Ctx;
 
                 StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools);
@@ -3063,7 +3085,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_In_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
 
@@ -3071,7 +3093,7 @@ namespace unit_tests_asm_z3
             string line2 = "in eax, 8";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
@@ -3084,14 +3106,14 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_In_2()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
 
             string line1 = "in eax, 8";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
                 Context ctx = state.Ctx;
 
                 StateUpdate updateState = new StateUpdate("!PREVKEY", "!NEXTKEY", state.Tools);
@@ -3110,7 +3132,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Popcnt_64bits_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -3119,7 +3141,7 @@ namespace unit_tests_asm_z3
             string line2 = "popcnt rbx, rax";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
@@ -3132,7 +3154,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Popcnt_64bits_2()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -3141,7 +3163,7 @@ namespace unit_tests_asm_z3
             string line2 = "popcnt rbx, rax";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
@@ -3154,7 +3176,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Popcnt_32bits_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -3163,7 +3185,7 @@ namespace unit_tests_asm_z3
             string line2 = "popcnt ebx, eax";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
@@ -3176,7 +3198,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Popcnt_32bits_3()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -3185,7 +3207,7 @@ namespace unit_tests_asm_z3
             string line2 = "popcnt ebx, eax";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
@@ -3198,7 +3220,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Popcnt_16bits_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -3207,7 +3229,7 @@ namespace unit_tests_asm_z3
             string line2 = "popcnt bx, ax";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
@@ -3220,7 +3242,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Popcnt_16bits_2()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -3229,7 +3251,7 @@ namespace unit_tests_asm_z3
             string line2 = "popcnt bx, ax";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
@@ -3242,7 +3264,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Popcnt_16bits_3()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -3250,7 +3272,7 @@ namespace unit_tests_asm_z3
             string line1 = "popcnt bx, ax";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
@@ -3264,7 +3286,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Jcc_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.CF = true;
@@ -3272,7 +3294,7 @@ namespace unit_tests_asm_z3
             string line1 = "jc label";
 
             {   // forward
-                State state = CreateState(tools);
+                State state = this.CreateState(tools);
 
                 (State state1a, State state1b) = Runner.Step_Forward(line1, state);
                 if (logToDisplay) Console.WriteLine("State1A: After \"" + line1 + "\", we know:\n" + state1a);
@@ -3293,7 +3315,7 @@ namespace unit_tests_asm_z3
         {
             // no overflow
 
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.AF = true;
             tools.StateConfig.CF = true;
@@ -3309,7 +3331,7 @@ namespace unit_tests_asm_z3
             string line2 = "add eax, " + ((byteB_2 << 4) | (byteB_1 << 0));
             string line3 = "daa";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
             state = Runner.SimpleStep_Forward(line3, state);
@@ -3321,7 +3343,7 @@ namespace unit_tests_asm_z3
         public void Test_MnemonicZ3_Daa_2()
         {
             // with overflow
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.AF = true;
             tools.StateConfig.CF = true;
@@ -3337,7 +3359,7 @@ namespace unit_tests_asm_z3
             string line2 = "add eax, " + ((byteB_2 << 4) | (byteB_1 << 0));
             string line3 = "daa";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
             state = Runner.SimpleStep_Forward(line3, state);
@@ -3354,7 +3376,7 @@ namespace unit_tests_asm_z3
         {
             // no overflow
 
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.AF = true;
             tools.StateConfig.CF = true;
@@ -3371,7 +3393,7 @@ namespace unit_tests_asm_z3
             string line2 = "sub eax, " + ((byteB_2 << 4) | (byteB_1 << 0));
             string line3 = "das";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
             state = Runner.SimpleStep_Forward(line3, state);
@@ -3383,7 +3405,7 @@ namespace unit_tests_asm_z3
         public void Test_MnemonicZ3_Das_2()
         {
             // with overflow
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.AF = true;
             tools.StateConfig.CF = true;
@@ -3400,7 +3422,7 @@ namespace unit_tests_asm_z3
             string line2 = "sub eax, " + ((byteB_2 << 4) | (byteB_1 << 0));
             string line3 = "das";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
             state = Runner.SimpleStep_Forward(line3, state);
@@ -3417,7 +3439,7 @@ namespace unit_tests_asm_z3
         {
             // no overflow
 
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.AF = true;
             tools.StateConfig.CF = true;
@@ -3432,7 +3454,7 @@ namespace unit_tests_asm_z3
             string line2 = "add al, " + byteB_1;
             string line3 = "aaa";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
             state = Runner.SimpleStep_Forward(line3, state);
@@ -3446,7 +3468,7 @@ namespace unit_tests_asm_z3
         public void Test_MnemonicZ3_Aaa_2()
         {
             // with overflow
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.AF = true;
             tools.StateConfig.CF = true;
@@ -3462,7 +3484,7 @@ namespace unit_tests_asm_z3
             string line2 = "add al, " + byteB_1;
             string line3 = "aaa";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
             if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
@@ -3483,7 +3505,7 @@ namespace unit_tests_asm_z3
         {
             // no overflow
 
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.AF = true;
             tools.StateConfig.CF = true;
@@ -3498,7 +3520,7 @@ namespace unit_tests_asm_z3
             string line2 = "sub al, " + byteB_1;
             string line3 = "aas";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
             state = Runner.SimpleStep_Forward(line3, state);
@@ -3513,7 +3535,7 @@ namespace unit_tests_asm_z3
         public void Test_MnemonicZ3_Aas_2()
         {
             // with overflow
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.AF = true;
             tools.StateConfig.CF = true;
@@ -3531,7 +3553,7 @@ namespace unit_tests_asm_z3
             string line2 = "sub al, " + byteB_1;
             string line3 = "aas";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line0, state);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
@@ -3550,7 +3572,7 @@ namespace unit_tests_asm_z3
         public void Test_MnemonicZ3_Aam_Base10_1()
         {
             // no overflow
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.AF = true;
             tools.StateConfig.CF = true;
@@ -3571,7 +3593,7 @@ namespace unit_tests_asm_z3
             string line2 = "mul dl";
             string line3 = "aam";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line0, state);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
@@ -3589,7 +3611,7 @@ namespace unit_tests_asm_z3
         public void Test_MnemonicZ3_Aam_Base10_2()
         {
             // with overflow
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.AF = true;
             tools.StateConfig.CF = true;
@@ -3610,7 +3632,7 @@ namespace unit_tests_asm_z3
             string line2 = "mul dl";
             string line3 = "aam";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line0, state);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
@@ -3627,7 +3649,7 @@ namespace unit_tests_asm_z3
         public void Test_MnemonicZ3_Aam_Base11_1()
         {
             // no overflow
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.AF = true;
             tools.StateConfig.CF = true;
@@ -3648,7 +3670,7 @@ namespace unit_tests_asm_z3
             string line2 = "mul dl";
             string line3 = "aam " + imm8;
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line0, state);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
@@ -3666,7 +3688,7 @@ namespace unit_tests_asm_z3
         public void Test_MnemonicZ3_Aam_Base11_2()
         {
             // with overflow
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.AF = true;
             tools.StateConfig.CF = true;
@@ -3687,7 +3709,7 @@ namespace unit_tests_asm_z3
             string line2 = "mul dl";
             string line3 = "aam " + imm8;
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line0, state);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
@@ -3706,7 +3728,7 @@ namespace unit_tests_asm_z3
         public void Test_MnemonicZ3_Aad_Base10_1()
         {
             // no overflow
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.AF = true;
             tools.StateConfig.CF = true;
@@ -3726,7 +3748,7 @@ namespace unit_tests_asm_z3
             string line2 = "aad"; // adjust AX BEFORE Division
             string line3 = "div dl";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line0, state);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
@@ -3744,7 +3766,7 @@ namespace unit_tests_asm_z3
         public void Test_MnemonicZ3_Aad_Base10_2()
         {
             // with overflow
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.AF = true;
             tools.StateConfig.CF = true;
@@ -3767,7 +3789,7 @@ namespace unit_tests_asm_z3
             string line2 = "aad"; // adjust AX BEFORE Division
             string line3 = "div dl";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line0, state);
             state = Runner.SimpleStep_Forward(line1, state);
             if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
@@ -3790,7 +3812,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Cmpxchg_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.ZF = true;
             tools.StateConfig.RAX = true;
@@ -3802,7 +3824,7 @@ namespace unit_tests_asm_z3
             string line2 = "mov rcx, 3";
             string line3 = "cmpxchg rbx, rcx";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line0, state);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
@@ -3820,7 +3842,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Cmpxchg_2()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.ZF = true;
             tools.StateConfig.RAX = true;
@@ -3832,7 +3854,7 @@ namespace unit_tests_asm_z3
             string line2 = "mov rcx, 3";
             string line3 = "cmpxchg rbx, rcx";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line0, state);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
@@ -3850,7 +3872,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Cmpxchg_3()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.ZF = true;
             tools.StateConfig.RAX = true;
@@ -3864,7 +3886,7 @@ namespace unit_tests_asm_z3
             string line3 = "cmpxchg byte ptr [rbx], cl";
             string line4 = "mov bl, byte ptr [rbx]";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line0, state);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
@@ -3883,7 +3905,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Cmpxchg_4()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.ZF = true;
             tools.StateConfig.RAX = true;
@@ -3897,7 +3919,7 @@ namespace unit_tests_asm_z3
             string line3 = "cmpxchg byte ptr [rbx], cl";
             string line4 = "mov bl, byte ptr [rbx]";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line0, state);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
@@ -3919,7 +3941,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Cmpxchg8b_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.ZF = true;
             tools.StateConfig.RAX = true;
@@ -3943,7 +3965,7 @@ namespace unit_tests_asm_z3
             string line7 = "cmpxchg8b qword ptr [r9]"; // compare edx:eax with qword ptr [r9] (which is r8 = 10)
             string line8 = "mov r10, qword ptr [r9]";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
 
             state = Runner.SimpleStep_Forward(line0, state);
             state = Runner.SimpleStep_Forward(line1, state);
@@ -3966,7 +3988,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Cmpxchg16b_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.ZF = true;
             tools.StateConfig.RAX = true;
@@ -3990,7 +4012,7 @@ namespace unit_tests_asm_z3
             string line7 = "cmpxchg8b qword ptr [r9]"; // compare edx:eax with qword ptr [r9] (which is r8 = 10)
             string line8 = "mov r10, qword ptr [r9]";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
 
             state = Runner.SimpleStep_Forward(line0, state);
             state = Runner.SimpleStep_Forward(line1, state);
@@ -4013,7 +4035,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Movbe_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -4024,7 +4046,7 @@ namespace unit_tests_asm_z3
             string line2 = "movbe dword ptr [rbx], eax";
             string line3 = "mov eax, dword ptr [rbx]";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line0, state);
             //if (logToDisplay) Console.WriteLine("After \"" + line0 + "\", we know:\n" + state);
             state = Runner.SimpleStep_Forward(line1, state);
@@ -4042,7 +4064,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Xchg_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -4051,7 +4073,7 @@ namespace unit_tests_asm_z3
             string line2 = "mov ebx, 2";
             string line3 = "xchg eax, ebx";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
             if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
@@ -4065,7 +4087,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Xchg_2()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -4074,7 +4096,7 @@ namespace unit_tests_asm_z3
             string line2 = "mov rbx, 2";
             string line3 = "xchg rax, rbx";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
             if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
@@ -4090,14 +4112,14 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Bswap_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
 
             string line1 = "mov eax, 0x08040201";
             string line2 = "bswap eax";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
             if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
             state = Runner.SimpleStep_Forward(line2, state);
@@ -4108,14 +4130,14 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Bswap_2()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
 
             string line1 = "mov rax, 0x4030201008040201";
             string line2 = "bswap rax";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
             if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
             state = Runner.SimpleStep_Forward(line2, state);
@@ -4129,7 +4151,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Rep_Movsb_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.DF = true;
             tools.StateConfig.RCX = true;
@@ -4147,7 +4169,7 @@ namespace unit_tests_asm_z3
             string line4 = "mov rcx, " + rcx;
             string line5 = "rep movsb";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
             state = Runner.SimpleStep_Forward(line3, state);
@@ -4164,7 +4186,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Rep_Movsb_2()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.DF = true;
             tools.StateConfig.RCX = true;
@@ -4182,7 +4204,7 @@ namespace unit_tests_asm_z3
             string line4 = "mov rcx, " + rcx;
             string line5 = "rep movsb";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
             state = Runner.SimpleStep_Forward(line3, state);
@@ -4199,7 +4221,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Rep_Movsb_3()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.DF = true;
             tools.StateConfig.RCX = true;
@@ -4217,7 +4239,7 @@ namespace unit_tests_asm_z3
             string line4 = "mov rcx, " + rcx;
             string line5 = "rep movs byte ptr[rax], byte ptr[rax]";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
             state = Runner.SimpleStep_Forward(line3, state);
@@ -4234,7 +4256,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Rep_Movsw_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.DF = true;
             tools.StateConfig.RCX = true;
@@ -4252,7 +4274,7 @@ namespace unit_tests_asm_z3
             string line4 = "mov rcx, " + rcx;
             string line5 = "rep movsw";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
             state = Runner.SimpleStep_Forward(line3, state);
@@ -4269,7 +4291,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Rep_Movsd_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.DF = true;
             tools.StateConfig.RCX = true;
@@ -4287,7 +4309,7 @@ namespace unit_tests_asm_z3
             string line4 = "mov rcx, " + rcx;
             string line5 = "rep movsd";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
             state = Runner.SimpleStep_Forward(line3, state);
