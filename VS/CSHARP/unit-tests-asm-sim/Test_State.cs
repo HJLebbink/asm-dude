@@ -32,7 +32,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_State_Redundant_Mem_1()
         {
-            Tools tools = CreateTools(100000);
+            Tools tools = this.CreateTools(100000);
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.mem = true;
@@ -40,7 +40,7 @@ namespace unit_tests_asm_z3
             string line1 = "mov ptr qword [rax], 10";
             string line2 = "mov ptr qword [rax], 10";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
             if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
             var key1 = state.HeadKey;
@@ -55,7 +55,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_State_Redundant_Mem_2()
         {
-            Tools tools = CreateTools(100000);
+            Tools tools = this.CreateTools(100000);
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -64,7 +64,7 @@ namespace unit_tests_asm_z3
             string line1 = "mov ptr qword [rax], rbx";
             string line2 = "mov ptr qword [rax], rbx";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
             if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
             var key1 = state.HeadKey;
@@ -79,7 +79,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_State_Redundant_Mem_3()
         {
-            Tools tools = CreateTools(100000);
+            Tools tools = this.CreateTools(100000);
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -90,7 +90,7 @@ namespace unit_tests_asm_z3
             string line1 = "mov ptr byte [rax], cl";
             string line2 = "mov ptr byte [rax], bl";
 
-            State state = CreateState(tools);
+            State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line0, state);
             state = Runner.SimpleStep_Forward(line1, state);
             if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);

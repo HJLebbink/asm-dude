@@ -513,7 +513,7 @@ namespace AsmSim
             string codeLine = (sFlow == null) ? "" : sFlow.Get_Line_Str(lineNumber);
 
             sb.AppendLine("==========================================");
-            using (var v = Create_State_Private(key, true)) {
+            using (var v = this.Create_State_Private(key, true)) {
                 sb.AppendLine("State " + key + ": " + v?.ToString());
             }
             foreach (var v in this._graph.OutEdges(key))
@@ -522,7 +522,7 @@ namespace AsmSim
                 string nextKey = v.Target;
                 sb.AppendLine("------------------------------------------");
                 sb.AppendLine("Transition from state " + key + " to " + nextKey + "; execute LINE " + lineNumber + ": \"" + codeLine + "\" " + ((v.Tag.Branch) ? "[Forward Branching]" : "[Forward Continue]"));
-                ToString(nextKey, sFlow, ref sb);
+                this.ToString(nextKey, sFlow, ref sb);
             }
         }
 
@@ -586,8 +586,8 @@ namespace AsmSim
                         }
                     default:
                         {
-                            var incoming_Regular = Get_Regular(this._graph.InEdges(key_LOCAL));
-                            var incoming_Branches = Get_Branches(this._graph.InEdges(key_LOCAL));
+                            var incoming_Regular = this.Get_Regular(this._graph.InEdges(key_LOCAL));
+                            var incoming_Branches = this.Get_Branches(this._graph.InEdges(key_LOCAL));
                             result = Merge_State_Update_LOCAL(key_LOCAL, incoming_Regular, incoming_Branches, visited_LOCAL);
                             if (result == null) return null;
                             break;

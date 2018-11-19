@@ -371,8 +371,8 @@ namespace AsmSim
                 }
             }
             public BitVecExpr Op1Value { get { return OpcodeBase.OpValue(this.op1, this.keys.PrevKey, this._ctx); } }
-            public override bool MemReadStatic { get { return ToMemReadWrite(this.op1); } }
-            public override bool MemWriteStatic { get { return ToMemReadWrite(this.op1); } }
+            public override bool MemReadStatic { get { return this.ToMemReadWrite(this.op1); } }
+            public override bool MemWriteStatic { get { return this.ToMemReadWrite(this.op1); } }
         }
         public abstract class Opcode2Base : OpcodeBase
         {
@@ -412,8 +412,8 @@ namespace AsmSim
             }
             public BitVecExpr Op1Value { get { return OpcodeBase.OpValue(this.op1, this.keys.PrevKey, this._ctx); } }
             public BitVecExpr Op2Value { get { return OpcodeBase.OpValue(this.op2, this.keys.PrevKey, this._ctx); } }
-            public override bool MemReadStatic { get { return ToMemReadWrite(this.op1, this.op2); } }
-            public override bool MemWriteStatic { get { return ToMemReadWrite(this.op1, this.op2); } }
+            public override bool MemReadStatic { get { return this.ToMemReadWrite(this.op1, this.op2); } }
+            public override bool MemWriteStatic { get { return this.ToMemReadWrite(this.op1, this.op2); } }
         }
         public abstract class Opcode3Base : OpcodeBase
         {
@@ -456,8 +456,8 @@ namespace AsmSim
             public BitVecExpr Op1Value { get { return OpcodeBase.OpValue(this.op1, this.keys.PrevKey, this._ctx); } }
             public BitVecExpr Op2Value { get { return OpcodeBase.OpValue(this.op2, this.keys.PrevKey, this._ctx); } }
             public BitVecExpr Op3Value { get { return OpcodeBase.OpValue(this.op3, this.keys.PrevKey, this._ctx); } }
-            public override bool MemReadStatic { get { return ToMemReadWrite(this.op1, this.op2, this.op3); } }
-            public override bool MemWriteStatic { get { return ToMemReadWrite(this.op1, this.op2, this.op3); } }
+            public override bool MemReadStatic { get { return this.ToMemReadWrite(this.op1, this.op2, this.op3); } }
+            public override bool MemWriteStatic { get { return this.ToMemReadWrite(this.op1, this.op2, this.op3); } }
         }
         public abstract class OpcodeNBase : OpcodeBase
         {
@@ -498,8 +498,8 @@ namespace AsmSim
             public BitVecExpr Op1Value { get { return OpcodeBase.OpValue(this.op1, this.keys.PrevKey, this._ctx); } }
             public BitVecExpr Op2Value { get { return OpcodeBase.OpValue(this.op2, this.keys.PrevKey, this._ctx); } }
             public BitVecExpr Op3Value { get { return OpcodeBase.OpValue(this.op3, this.keys.PrevKey, this._ctx); } }
-            public override bool MemReadStatic { get { return ToMemReadWrite(this.op1, this.op2, this.op3); } }
-            public override bool MemWriteStatic { get { return ToMemReadWrite(this.op1, this.op2, this.op3); } }
+            public override bool MemReadStatic { get { return this.ToMemReadWrite(this.op1, this.op2, this.op3); } }
+            public override bool MemWriteStatic { get { return this.ToMemReadWrite(this.op1, this.op2, this.op3); } }
         }
         public abstract class Opcode2Type1 : Opcode2Base
         {

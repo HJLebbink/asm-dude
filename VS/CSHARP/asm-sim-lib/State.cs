@@ -703,7 +703,7 @@ namespace AsmSim
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.AppendLine(ToStringConstraints(identStr));
+            sb.AppendLine(this.ToStringConstraints(identStr));
 
             Tv consistent = this.IsConsistent;
             if (consistent != Tv.ONE)
@@ -712,8 +712,8 @@ namespace AsmSim
             }
             else
             {
-                sb.Append(ToStringFlags(identStr));
-                sb.Append(ToStringRegs(identStr));
+                sb.Append(this.ToStringFlags(identStr));
+                sb.Append(this.ToStringRegs(identStr));
                 //sb.Append(ToStringSIMD(identStr));
             }
             //sb.AppendLine(ToStringWarning(identStr));
@@ -911,7 +911,7 @@ namespace AsmSim
 
         public Tv EqualValues(Rn reg1, Rn reg2)
         {
-            return EqualValues(this.Create(reg1), this.Create(reg2));
+            return this.EqualValues(this.Create(reg1), this.Create(reg2));
         }
         public Tv EqualValues(Expr value1, Expr value2)
         {

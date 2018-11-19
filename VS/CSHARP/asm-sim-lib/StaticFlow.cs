@@ -107,8 +107,8 @@ namespace AsmSim
         {
             if (true)
             {
-                string key1 = Get_Key(lineNumber.lineNumber1);
-                string key2 = Get_Key(lineNumber.lineNumber2);
+                string key1 = this.Get_Key(lineNumber.lineNumber1);
+                string key2 = this.Get_Key(lineNumber.lineNumber2);
                 return (Key1: key1, Key2: key2);
             } else
             {
@@ -210,8 +210,8 @@ namespace AsmSim
             if (this.Is_Branch_Point(lineNumber))
             {
                 var (Regular, Branch) = this.Get_Next_LineNumber(lineNumber);
-                bool hasCodePath_Branch = HasCodePath(Branch, lineNumber);
-                bool hasCodePath_Regular = HasCodePath(Regular, lineNumber);
+                bool hasCodePath_Branch = this.HasCodePath(Branch, lineNumber);
+                bool hasCodePath_Regular = this.HasCodePath(Regular, lineNumber);
 
                 if (hasCodePath_Branch && !hasCodePath_Regular)
                 {
@@ -236,7 +236,7 @@ namespace AsmSim
 
                 foreach (var (LineNumber, IsBranch) in this.Get_Prev_LineNumber(lineNumber))
                 {
-                    if (HasCodePath(lineNumber, LineNumber))
+                    if (this.HasCodePath(lineNumber, LineNumber))
                     {
                         numberOfLoops++;
                         loopLineNumber = LineNumber;

@@ -252,7 +252,7 @@ namespace AsmSim
                 Context ctx = this._ctx;
                 if (this._branch_Condition == null)
                 {
-                    return Get_Raw_Private(reg, undef) ?? ctx.MkEq(Tools.Create_Key(reg, this.NextKey, ctx), Tools.Create_Key(reg, this._prevKey_Regular, ctx));
+                    return this.Get_Raw_Private(reg, undef) ?? ctx.MkEq(Tools.Create_Key(reg, this.NextKey, ctx), Tools.Create_Key(reg, this._prevKey_Regular, ctx));
                 }
                 else
                 {
@@ -299,7 +299,7 @@ namespace AsmSim
                 {
                     BoolExpr f1 = Tools.Create_Key(flag, this.NextKey, ctx);
                     BoolExpr f2 = Tools.Create_Key(flag, this._prevKey_Regular, ctx);
-                    return Get_Raw_Private(flag, undef) ?? ctx.MkEq(f1, f2);
+                    return this.Get_Raw_Private(flag, undef) ?? ctx.MkEq(f1, f2);
                 }
                 else
                 {

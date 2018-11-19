@@ -43,9 +43,9 @@ namespace unit_tests_asm_z3
 
         private State CreateState(StateConfig stateConfig)
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig = stateConfig;
-            return CreateState(tools);
+            return this.CreateState(tools);
         }
 
         private State CreateState(Tools tools)
@@ -64,7 +64,7 @@ namespace unit_tests_asm_z3
             stateConfig.RBX = true;
             stateConfig.mem = true;
 
-            State state = CreateState(stateConfig);
+            State state = this.CreateState(stateConfig);
             Context ctx = state.Ctx;
             Tools tools = state.Tools;
 
@@ -97,7 +97,7 @@ namespace unit_tests_asm_z3
             stateConfig.R9 = true;
             stateConfig.mem = true;
 
-            State state = CreateState(stateConfig);
+            State state = this.CreateState(stateConfig);
             Context ctx = state.Ctx;
             Tools tools = state.Tools;
 
@@ -140,7 +140,7 @@ namespace unit_tests_asm_z3
             stateConfig.RCX = true;
             stateConfig.mem = true;
 
-            State state = CreateState(stateConfig);
+            State state = this.CreateState(stateConfig);
             Context ctx = state.Ctx;
             Tools tools = state.Tools;
 
@@ -196,7 +196,7 @@ namespace unit_tests_asm_z3
             stateConfig.RCX = true;
             stateConfig.mem = true;
 
-            State state = CreateState(stateConfig);
+            State state = this.CreateState(stateConfig);
             Context ctx = state.Ctx;
             Tools tools = state.Tools;
 
@@ -251,7 +251,7 @@ namespace unit_tests_asm_z3
             stateConfig.R8 = true;
             stateConfig.mem = true;
 
-            State state = CreateState(stateConfig);
+            State state = this.CreateState(stateConfig);
             Context ctx = state.Ctx;
             Tools tools = state.Tools;
 
@@ -298,7 +298,7 @@ namespace unit_tests_asm_z3
             stateConfig.RDX = true;
             stateConfig.mem = true;
 
-            State state = CreateState(stateConfig);
+            State state = this.CreateState(stateConfig);
             Context ctx = state.Ctx;
             Tools tools = state.Tools;
 
@@ -342,7 +342,7 @@ namespace unit_tests_asm_z3
             stateConfig.RDX = true;
             stateConfig.mem = true;
 
-            State state = CreateState(stateConfig);
+            State state = this.CreateState(stateConfig);
             Context ctx = state.Ctx;
             Tools tools = state.Tools;
 
@@ -394,7 +394,7 @@ namespace unit_tests_asm_z3
             stateConfig.RDX = true;
             stateConfig.mem = true;
 
-            State state = CreateState(stateConfig);
+            State state = this.CreateState(stateConfig);
             Context ctx = state.Ctx;
             Tools tools = state.Tools;
 

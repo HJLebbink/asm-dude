@@ -33,7 +33,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_DynamicFlow_Forward_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
@@ -112,7 +112,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_DynamicFlow_Backward_1()
         {
-            Tools tools = CreateTools();
+            Tools tools = this.CreateTools();
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;

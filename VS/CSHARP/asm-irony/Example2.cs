@@ -12,8 +12,8 @@ namespace asm_irony
 
             NumberLiteral number = new NumberLiteral("NUMBER", NumberOptions.Default);
 
-            KeyTerm PLUS = ToTerm("+", "PLUS");
-            KeyTerm TIMES = ToTerm("*", "TIMES");
+            KeyTerm PLUS = this.ToTerm("+", "PLUS");
+            KeyTerm TIMES = this.ToTerm("*", "TIMES");
 
             var mem_op = new NonTerminal("MemOp");
             var scaleIdx = new NonTerminal("ScaleIdx");
@@ -37,11 +37,11 @@ namespace asm_irony
             scaleIdx.Rule |= idxReg + TIMES + scale;
             scaleIdx.Rule |= idxReg;
 
-            baseReg.Rule = ToTerm("rax");
-            scale.Rule = ToTerm("0") | "1" | "2" | "4" | "8";
-            idxReg.Rule = ToTerm("rbx");
+            baseReg.Rule = this.ToTerm("rax");
+            scale.Rule = this.ToTerm("0") | "1" | "2" | "4" | "8";
+            idxReg.Rule = this.ToTerm("rbx");
 
-            disp.Rule = PLUS + CustomActionHere(this.findTimesChar) + number;
+            disp.Rule = PLUS + this.CustomActionHere(this.findTimesChar) + number;
         }
 
         private void findTimesChar(ParsingContext context, CustomParserAction customAction) {

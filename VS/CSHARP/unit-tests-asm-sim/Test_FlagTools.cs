@@ -38,7 +38,7 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_FlagTools_Create_OF_Add()
         {
-            Context ctx = CreateContext();
+            Context ctx = this.CreateContext();
             {
                 uint nBits = 8;
                 ulong a = 10;

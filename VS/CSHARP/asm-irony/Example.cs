@@ -26,25 +26,25 @@ namespace asm_irony
             CommentTerminal SingleLineComment = new CommentTerminal("SingleLineComment", ";", "#");
             this.NonGrammarTerminals.Add(SingleLineComment);
 
-            KeyTerm COMMA = ToTerm(",", "COMMA");
-            KeyTerm PLUS = ToTerm("+", "PLUS");
-            KeyTerm MINUS = ToTerm("-", "MINUS");
-            KeyTerm TIMES = ToTerm("*", "TIMES");
+            KeyTerm COMMA = this.ToTerm(",", "COMMA");
+            KeyTerm PLUS = this.ToTerm("+", "PLUS");
+            KeyTerm MINUS = this.ToTerm("-", "MINUS");
+            KeyTerm TIMES = this.ToTerm("*", "TIMES");
 
             ///<remarks>Bracket Square Left</remarks>
-            KeyTerm BSL = ToTerm("[");
+            KeyTerm BSL = this.ToTerm("[");
             ///<remarks>Bracket Square Right</remarks>
-            KeyTerm BSR = ToTerm("]");
+            KeyTerm BSR = this.ToTerm("]");
             ///<remarks>Bracket Left</remarks>
-            KeyTerm BL = ToTerm("(");
+            KeyTerm BL = this.ToTerm("(");
             ///<remarks>Bracket Right</remarks>
-            KeyTerm BR = ToTerm(")");
+            KeyTerm BR = this.ToTerm(")");
 
 
 
 
 
-            MarkPunctuation("(", ")", "[", "]");
+            this.MarkPunctuation("(", ")", "[", "]");
 
             
             #endregion Lexical structure
@@ -96,8 +96,8 @@ namespace asm_irony
             #endregion NonTerminals
 
             #region operators, punctuation and delimiters
-            RegisterOperators(1, "+", "-");
-            RegisterOperators(2, "*");
+            this.RegisterOperators(1, "+", "-");
+            this.RegisterOperators(2, "*");
             #endregion
 
             #region comments
@@ -161,7 +161,7 @@ namespace asm_irony
 
             mem_base_64.Rule = r64;
 
-            mem_scale.Rule = ToTerm("0");
+            mem_scale.Rule = this.ToTerm("0");
             mem_scale.Rule |= "1";
             mem_scale.Rule |= "2";
             mem_scale.Rule |= "4";
@@ -171,20 +171,20 @@ namespace asm_irony
 
             mem_index_64.Rule = r64;
 
-            mem_disp.Rule  = PLUS + CustomActionHere(this.findTimesChar) + number;
-            mem_disp.Rule |= MINUS + CustomActionHere(this.findTimesChar) + number;
+            mem_disp.Rule  = PLUS + this.CustomActionHere(this.findTimesChar) + number;
+            mem_disp.Rule |= MINUS + this.CustomActionHere(this.findTimesChar) + number;
 
             #endregion Memory Operand
 
 
-            r8.Rule = ToTerm("al");
+            r8.Rule = this.ToTerm("al");
             r8.Rule |= "ah";
 
-            r16.Rule = ToTerm("ax");
+            r16.Rule = this.ToTerm("ax");
 
-            r32.Rule = ToTerm("eax");
+            r32.Rule = this.ToTerm("eax");
 
-            r64.Rule = ToTerm("rax") | "rbx" | "rcx" | "rdx";
+            r64.Rule = this.ToTerm("rax") | "rbx" | "rcx" | "rdx";
 
 
             #region Mnemonics
@@ -203,7 +203,7 @@ namespace asm_irony
             #endregion Mnemonics
 
             #region Directive
-            directive.Rule = ToTerm("align");
+            directive.Rule = this.ToTerm("align");
             directive.Rule |= "proc";
 
             #endregion Directive
