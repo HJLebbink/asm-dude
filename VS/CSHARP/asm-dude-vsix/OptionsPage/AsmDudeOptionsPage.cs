@@ -109,16 +109,16 @@ namespace AsmDude.OptionsPage
         AsmSim_Show_Redundant_Instructions,
         AsmSim_Decorate_Redundant_Instructions,
         AsmSim_Show_Unreachable_Instructions,
-
         AsmSim_Decorate_Unreachable_Instructions,
         AsmSim_Decorate_Registers,
+        AsmSim_Decorate_Unimplemented,
+
         AsmSim_Show_Register_In_Code_Completion,
         AsmSim_Show_Register_In_Code_Completion_Numeration,
         AsmSim_Show_Register_In_Register_Tooltip,
         AsmSim_Show_Register_In_Register_Tooltip_Numeration,
         AsmSim_Show_Register_In_Instruction_Tooltip,
         AsmSim_Show_Register_In_Instruction_Tooltip_Numeration,
-        AsmSim_Decorate_Unimplemented,
         AsmSim_Pragma_Assume
     };
 
@@ -449,6 +449,7 @@ namespace AsmDude.OptionsPage
             this.Set_GUI(PropertyEnum.AsmSim_Show_Unreachable_Instructions);
             this.Set_GUI(PropertyEnum.AsmSim_Decorate_Unreachable_Instructions);
             this.Set_GUI(PropertyEnum.AsmSim_Show_Register_In_Code_Completion);
+            this.Set_GUI(PropertyEnum.AsmSim_Decorate_Registers);
             //TODO
             this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Code_Completion_Numeration = AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration);
             this.Set_GUI(PropertyEnum.AsmSim_Show_Register_In_Register_Tooltip);
