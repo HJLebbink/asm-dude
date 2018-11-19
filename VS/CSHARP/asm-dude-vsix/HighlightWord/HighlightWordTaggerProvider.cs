@@ -55,11 +55,11 @@ namespace AsmDude.HighlightWord
             // Only provide highlighting on the top-level buffer
             if (textView.TextBuffer != buffer) return null;
 
-            Func<ITagger<T>> sc = delegate ()
+            ITagger<T> sc()
             {
                 ITextStructureNavigator textStructureNavigator = this._textStructureNavigatorSelector.GetTextStructureNavigator(buffer);
                 return new HighlightWordTagger(textView, buffer, this._textSearchService, textStructureNavigator) as ITagger<T>;
-            };
+            }
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
     }

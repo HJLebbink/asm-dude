@@ -51,12 +51,12 @@ namespace AsmDude.Squiggles
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
-            Func<ITagger<T>> sc = delegate ()
+            ITagger<T> sc()
             {
                 var labelGraph = AsmDudeToolsStatic.GetOrCreate_Label_Graph(buffer, this._aggregatorFactory, this._docFactory, this._contentService);
                 var asmSimulator = AsmSimulator.GetOrCreate_AsmSimulator(buffer, this._aggregatorFactory);
                 return new SquigglesTagger(buffer, this._aggregatorFactory, labelGraph, asmSimulator) as ITagger<T>;
-            };
+            }
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
     }

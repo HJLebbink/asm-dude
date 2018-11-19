@@ -43,10 +43,10 @@ namespace AsmDude.BraceMatching
             //provide highlighting only on the top-level buffer
             if (textView.TextBuffer != buffer) return null;
 
-            Func<ITagger<T>> sc = delegate ()
+            ITagger<T> sc()
             {
                 return new BraceMatchingTagger(textView, buffer) as ITagger<T>;
-            };
+            }
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
     }

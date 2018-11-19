@@ -77,10 +77,10 @@ namespace AsmDude.Tools
             ITextBuffer buffer,
             IBufferTagAggregatorFactoryService aggregatorFactory)
         {
-            System.Func<AsmSimulator> sc = delegate ()
+            AsmSimulator sc()
             {
                 return new AsmSimulator(buffer, aggregatorFactory);
-            };
+            }
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
 

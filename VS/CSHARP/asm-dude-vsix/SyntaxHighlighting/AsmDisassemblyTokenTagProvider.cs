@@ -42,11 +42,11 @@ namespace AsmDude
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
             //AsmDudeToolsStatic.Output_INFO("AsmDisassemblyTokenTagProvider:CreateTagger");
-            Func<ITagger<T>> sc = delegate ()
+            ITagger<T> sc()
             {
                 if (AsmDudeToolsStatic.Used_Assembler == AssemblerEnum.NASM_ATT) return new NasmAttDisassemblyTokenTagger(buffer) as ITagger<T>;
                 return new MasmDisassemblyTokenTagger(buffer) as ITagger<T>;
-            };
+            }
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
     }

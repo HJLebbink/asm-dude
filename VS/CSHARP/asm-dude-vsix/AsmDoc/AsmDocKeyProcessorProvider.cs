@@ -37,10 +37,10 @@ namespace AsmDude.AsmDoc
         public KeyProcessor GetAssociatedProcessor(IWpfTextView view)
         {
             //AsmDudeToolsStatic.Output_INFO("AsmDocKeyProcessorProvider:GetAssociatedProcessor: file=" + AsmDudeToolsStatic.GetFileName(view.TextBuffer));
-            Func<AsmDocKeyProcessor> sc = delegate ()
+            AsmDocKeyProcessor sc()
             {
                 return new AsmDocKeyProcessor(CtrlKeyState.GetStateForView(view));
-            };
+            }
             return view.Properties.GetOrCreateSingletonProperty(typeof(AsmDocKeyProcessor), sc);
         }
     }

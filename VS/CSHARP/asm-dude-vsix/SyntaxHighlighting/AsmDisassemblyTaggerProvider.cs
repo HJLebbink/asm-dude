@@ -111,11 +111,11 @@ namespace AsmDude.SyntaxHighlighting
         {
             //AsmDudeToolsStatic.Output_INFO("AsmDisassemblyTaggerProvider: Creating a TaggerProvider for buffer " + buffer.CurrentSnapshot.GetText());
 
-            Func<ITagger<T>> sc = delegate ()
+            ITagger<T> sc()
             {
                 var aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, this._aggregatorFactory);
                 return new AsmClassifier(buffer, aggregator, this._classificationTypeRegistry) as ITagger<T>;
-            };
+            }
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
     }

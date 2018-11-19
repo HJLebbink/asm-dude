@@ -111,10 +111,40 @@ label1:
 	#pragma assume HLT ; HLT instruction will reset the simulator
 
 
-	#region Redundant instruction warning in memory (but AsmSim does not find it simply because it times out)
-	mov qword [rcx], rax  
+	#region Redundant instruction warning (but AsmSim may not find it simply because it times out)
+	mov rax, rsp
+	push rbx
+	pop rcx
+	mov rax, rsp
+	#endregion
+
+
+	#pragma assume HLT ; HLT instruction will reset the simulator
+
+
+	#region Redundant instruction warning in memory (but AsmSim may not find it simply because it times out)
+	mov rax, rbx
+	mov qword [rcx], rax
 	mov qword [rcx], rbx
 	#endregion
+
+
+	#pragma assume HLT ; HLT instruction will reset the simulator
+
+
+	#region Redundant instruction warning in memory (but AsmSim may not find it simply because it times out)
+	#mov qword [rdx], 0xFF #bug if memory content at rdx is known, then the redundant instruction is not flagged.
+	mov rax, qword [rcx]
+	mov rbx, qword [rdx]
+	cmp rcx, rdx
+	jne label4
+	mov rbx, rax
+	label4:
+
+
+	#endregion
+
+
 
 
 .att_syntax

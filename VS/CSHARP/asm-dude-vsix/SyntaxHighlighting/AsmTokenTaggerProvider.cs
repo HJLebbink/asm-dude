@@ -42,13 +42,13 @@ namespace AsmDude
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
             //AsmDudeToolsStatic.Output_INFO("AsmTokenTagProvider:CreateTagger");
-            Func<ITagger<T>> sc = delegate ()
+            ITagger<T> sc()
             {
                 if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.MASM)) return new MasmTokenTagger(buffer) as ITagger<T>;
                 if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.NASM_INTEL)) return new NasmIntelTokenTagger(buffer) as ITagger<T>;
                 if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.NASM_ATT)) return new NasmAttTokenTagger(buffer) as ITagger<T>;
                 return new MasmTokenTagger(buffer) as ITagger<T>;
-            };
+            }
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
     }

@@ -134,11 +134,11 @@ namespace AsmDude.SyntaxHighlighting
 
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
-            Func<ITagger<T>> sc = delegate ()
+            ITagger<T> sc()
             {
                 var aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, this._aggregatorFactory);
                 return new AsmClassifier(buffer, aggregator, this._classificationTypeRegistry) as ITagger<T>;
-            };
+            }
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
     }

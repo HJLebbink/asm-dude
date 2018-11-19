@@ -50,11 +50,11 @@ namespace AsmDude.CodeFolding
         /// <returns> Returns a OutliningTagger instance</returns>
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
-            Func<ITagger<T>> sc = delegate ()
+            ITagger<T> sc()
             {
                 var aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, this._aggregatorFactory);
                 return new CodeFoldingTagger(buffer, aggregator, AsmDudeTools.Instance.Error_List_Provider) as ITagger<T>;
-            };
+            }
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
     }

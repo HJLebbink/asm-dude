@@ -48,11 +48,11 @@ namespace AsmDude.Tools
             ITextBuffer buffer,
             IBufferTagAggregatorFactoryService aggregatorFactory)
         {
-            Func<ITagAggregator<AsmTokenTag>> sc = delegate ()
+            ITagAggregator<AsmTokenTag> sc()
             {   // this is the only place where ITagAggregator are created
                 //AsmDudeToolsStatic.Output_INFO("Creating a ITagAggregator");
                 return aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
-            };
+            }
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
 
@@ -62,11 +62,11 @@ namespace AsmDude.Tools
             ITextDocumentFactoryService docFactory,
             IContentTypeRegistryService contentService)
         {
-            Func<LabelGraph> sc1 = delegate ()
+            LabelGraph sc1()
             {
                 IContentType contentType = contentService.GetContentType(AsmDudePackage.AsmDudeContentType);
                 return new LabelGraph(buffer, aggregatorFactory, AsmDudeTools.Instance.Error_List_Provider, docFactory, contentType);
-            };
+            }
             return buffer.Properties.GetOrCreateSingletonProperty(sc1);
         }
 
@@ -137,8 +137,7 @@ namespace AsmDude.Tools
                     {
                         IPersistFileFormat persistFileFormat = bufferAdapter as IPersistFileFormat;
 
-                        string filename = null;
-                        int? code = persistFileFormat?.GetCurFile(out filename, out uint dummyInteger);
+                        int? code = persistFileFormat?.GetCurFile(out string filename, out uint dummyInteger);
                         if (code == Microsoft.VisualStudio.VSConstants.S_OK)
                         {
                             AsmDudeToolsStatic.Output_INFO(string.Format("AsmDudeToolsStatic:GetFileName: retrieving filename {0}", filename));
