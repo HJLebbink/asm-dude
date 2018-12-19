@@ -39,3 +39,4 @@ VS/CSHARP/asm-dude-vsix/Resources/Performance/instruction_tables.ods
 /VS/Python/intel-doc-2-md/resources/architecture-instruction-set-extensions-programming-reference.pdf
 /VS/.vs/*
 /.vs/*
+**/.vs/*
