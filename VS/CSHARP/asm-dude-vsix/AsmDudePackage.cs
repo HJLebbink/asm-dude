@@ -1,4 +1,4 @@
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2018 Henk-Jan Lebbink
 // 
@@ -36,9 +36,12 @@ using AsmDude.Tools;
 
 namespace AsmDude
 {
-    [PackageRegistration(UseManagedResourcesOnly = true)]
+    //[PackageRegistration(UseManagedResourcesOnly = true)]
+    [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
+    //[ProvideService(typeof(SMyTestService), IsAsyncQueryable = true)]
+
     [InstalledProductRegistration("#110", "#112", Vsix.Version, IconResourceID = 400)] // Info on this package for Help/About
-    [ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
+    //[ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
     [Guid(PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ComVisible(false)]
@@ -66,6 +69,8 @@ namespace AsmDude
         protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
 #pragma warning restore 1998
         {
+            await base.InitializeAsync(cancellationToken, progress);
+
             StringBuilder sb = new StringBuilder();
             sb.Append("Welcome to\n");
             sb.Append(" _____             ____        _     \n");
