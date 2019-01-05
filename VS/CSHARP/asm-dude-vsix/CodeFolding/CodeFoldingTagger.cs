@@ -184,7 +184,7 @@ namespace AsmDude.CodeFolding
         private string Get_Hover_Text_String(int beginLineNumber, int endLineNumber, ITextSnapshot snapshot)
         {
             StringBuilder sb = new StringBuilder();
-            int numberOfLines = Math.Min((endLineNumber + 1) - beginLineNumber, 40); // do not show more than 40 lines 
+            int numberOfLines = Math.Min(endLineNumber + 1 - beginLineNumber, 40); // do not show more than 40 lines 
             for (int i = 0; i < numberOfLines; ++i)
             {
                 sb.AppendLine(snapshot.GetLineFromLineNumber(beginLineNumber + i).GetText());
@@ -586,10 +586,10 @@ namespace AsmDude.CodeFolding
         {
             //determine the changed span, and send a changed event with the new spans
             IList<Span> oldSpans =
-                    new List<Span>(this._regions.Select(r => CodeFoldingTagger.As_Snapshot_Span(r, this._snapshot)
+                    new List<Span>(this._regions.Select(r => As_Snapshot_Span(r, this._snapshot)
                         .TranslateTo(newSnapshot, SpanTrackingMode.EdgeExclusive)
                         .Span));
-            IList<Span> newSpans = new List<Span>(newRegions.Select(r => CodeFoldingTagger.As_Snapshot_Span(r, newSnapshot).Span));
+            IList<Span> newSpans = new List<Span>(newRegions.Select(r => As_Snapshot_Span(r, newSnapshot).Span));
 
             NormalizedSpanCollection oldSpanCollection = new NormalizedSpanCollection(oldSpans);
             NormalizedSpanCollection newSpanCollection = new NormalizedSpanCollection(newSpans);
