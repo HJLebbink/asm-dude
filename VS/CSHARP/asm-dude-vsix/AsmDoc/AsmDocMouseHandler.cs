@@ -35,6 +35,7 @@ using EnvDTE80;
 using Microsoft.VisualStudio.Text.Formatting;
 using AsmDude.Tools;
 using System.Windows.Threading;
+using System.Threading.Tasks;
 
 namespace AsmDude.AsmDoc
 {
@@ -48,12 +49,10 @@ namespace AsmDude.AsmDoc
         private readonly CtrlKeyState _state;
         private readonly IClassifier _aggregator;
         private readonly ITextStructureNavigator _navigator;
-        private readonly IOleCommandTarget _commandTarget;
         private readonly AsmDudeTools _asmDudeTools;
 
         public AsmDocMouseHandler(
             IWpfTextView view,
-            IOleCommandTarget commandTarget,
             IClassifier aggregator,
             ITextStructureNavigator navigator,
             CtrlKeyState state,
@@ -61,7 +60,6 @@ namespace AsmDude.AsmDoc
         {
             //AsmDudeToolsStatic.Output_INFO("AsmDocMouseHandler:constructor: file=" + AsmDudeToolsStatic.GetFileName(view.TextBuffer));
             this._view = view;
-            this._commandTarget = commandTarget;
             this._state = state;
             this._aggregator = aggregator;
             this._navigator = navigator;
@@ -150,7 +148,7 @@ namespace AsmDude.AsmDoc
                         string keyword = AsmDudeToolsStatic.Get_Keyword_Str(bufferPosition);
                         if (keyword != null)
                         {
-                            this.Dispatch_Goto_Doc(keyword);
+                            this.Dispatch_Goto_DocAsync(keyword).ConfigureAwait(false);
                         }
                         this.Set_Highlight_Span(null);
                         this._view.Selection.Clear();
@@ -254,17 +252,17 @@ namespace AsmDude.AsmDoc
             var classifier = AsmDocUnderlineTaggerProvider.GetClassifierForView(this._view);
             if (classifier != null)
             {
-                Mouse.OverrideCursor = (span.HasValue) ? Cursors.Hand : null;
+                Mouse.OverrideCursor = span.HasValue ? Cursors.Hand : null;
                 classifier.SetUnderlineSpan(span);
                 return true;
             }
             return false;
         }
 
-        private bool Dispatch_Goto_Doc(string keyword)
+        private async Task<bool> Dispatch_Goto_DocAsync(string keyword)
         {
             //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:DispatchGoToDoc; keyword=\"{1}\".", this.ToString(), keyword));
-            int hr = this.Open_File(keyword);
+            int hr = await this.Open_File_Async(keyword);
             return ErrorHandler.Succeeded(hr);
         }
 
@@ -274,13 +272,16 @@ namespace AsmDude.AsmDoc
             if (reference == null) return null;
             if (reference.Length == 0) return null;
 
-            return (reference.StartsWith("http", StringComparison.OrdinalIgnoreCase)) 
+            return reference.StartsWith("http", StringComparison.OrdinalIgnoreCase) 
                 ? reference
                 : Settings.Default.AsmDoc_Url + reference;
         }
 
-        private EnvDTE.Window GetWindow(DTE2 dte2, string url)
+        private async Task<EnvDTE.Window> GetWindowAsync(DTE2 dte2, string url)
         {
+            if (!ThreadHelper.CheckAccess())
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             var enumerator = dte2.Windows.GetEnumerator();
             while (enumerator.MoveNext())
             {
@@ -298,31 +299,34 @@ namespace AsmDude.AsmDoc
             return null;
         }
 
-        private int Open_File(string keyword)
+        private async Task<int> Open_File_Async(string keyword)
         {
+            if (!ThreadHelper.CheckAccess())
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             string url = this.Get_Url(keyword);
             if (url == null)
             { // this situation happens for all keywords that do not have an url specified (such as registers).
                 //AsmDudeToolsStatic.Output_INFO(string.Format("INFO: {0}:openFile; url for keyword \"{1}\" is null.", this.ToString(), keyword));
                 return 1;
             }
-            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:openFile; url={1}", this.ToString(), url));
+            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Open_File; url={1}", this.ToString(), url));
 
             var dte2 = Package.GetGlobalService(typeof(SDTE)) as DTE2;
             if (dte2 == null)
             {
-                AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:openFile; dte2 is null.", this.ToString()));
+                AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:Open_File; dte2 is null.", this.ToString()));
                 return 1;
             }
 
             try
             {
-                var window = this.GetWindow(dte2, url);
+                var window = await this.GetWindowAsync(dte2, url);
                 if (window == null)
                 {
                     // vsNavigateOptionsDefault    0   The Web page opens in the currently open browser window. (Default)
                     // vsNavigateOptionsNewWindow  1   The Web page opens in a new browser window.
-                    AsmDudeToolsStatic.Output_INFO(string.Format("{0}:openFile; going to open url {1}.", this.ToString(), url));
+                    AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Open_File; going to open url {1}.", this.ToString(), url));
                     window = dte2.ItemOperations.Navigate(url, EnvDTE.vsNavigateOptions.vsNavigateOptionsNewWindow);
 
                     var parts = url.Split('/');
@@ -331,7 +335,16 @@ namespace AsmDude.AsmDoc
 
                     window.Caption = caption;
 
-                    var action = new Action(() => { if (!window.Caption.Equals(caption)) window.Caption = caption; });
+                    var action = new Action(() => {
+                        try
+                        {
+                            ThreadHelper.ThrowIfNotOnUIThread();
+                            if (!window.Caption.Equals(caption)) window.Caption = caption;
+                        } catch (Exception e)
+                        {
+                            AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Open_File; exception={1}", this.ToString(), e));
+                        }
+                    });
                     DelayAction(100, action);
                     DelayAction(500, action);
                     DelayAction(1000, action);
@@ -346,7 +359,7 @@ namespace AsmDude.AsmDoc
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:openFile; exception={1}", this.ToString(), e));
+                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Open_File; exception={1}", this.ToString(), e));
                 return 2;
             }
         }
@@ -376,6 +389,8 @@ namespace AsmDude.AsmDoc
 
         private static void Evaluate(EnvDTE.Window WindowReference, Action<System.Windows.Forms.WebBrowser> OnEvaluate)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             //Note: Window of EnvDTE.Constants.vsWindowKindWebBrowser type contains an IWebBrowser2 object
             using (System.Threading.ManualResetEvent evt = new System.Threading.ManualResetEvent(false))
             {
@@ -403,7 +418,7 @@ namespace AsmDude.AsmDoc
         public static Uri GetWebBrowserWindowUrl(EnvDTE.Window WindowReference)
         {
             Uri BrowserUrl = new Uri("", UriKind.RelativeOrAbsolute);
-            VisualStudioWebBrowser.Evaluate(WindowReference, new Action<System.Windows.Forms.WebBrowser>((wb) =>
+            Evaluate(WindowReference, new Action<System.Windows.Forms.WebBrowser>((wb) =>
             {
                 BrowserUrl = wb.Url;
             }));

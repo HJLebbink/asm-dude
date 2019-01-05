@@ -45,29 +45,14 @@ namespace AsmDude.AsmDoc
         [Import]
         private ITextStructureNavigatorSelectorService _navigatorService = null;
 
-        [Import]
-        private SVsServiceProvider _globalServiceProvider = null;
-
         public IMouseProcessor GetAssociatedProcessor(IWpfTextView view)
         {
-            //AsmDudeToolsStatic.Output_INFO("AsmDocMouseHandlerProvider:GetAssociatedProcessor: file=" + AsmDudeToolsStatic.GetFileName(view.TextBuffer));
-
-            IOleCommandTarget shellCommandDispatcher = this._globalServiceProvider.GetService(typeof(SUIHostCommandDispatcher)) as IOleCommandTarget;
-            if (shellCommandDispatcher == null)
-            {
-                return null;
-            }
-            else
-            {
-                var buffer = view.TextBuffer;
-                return new AsmDocMouseHandler(
-                    view,
-                    shellCommandDispatcher,
-                    this._aggregatorFactory.GetClassifier(buffer),
-                    this._navigatorService.GetTextStructureNavigator(buffer),
-                    CtrlKeyState.GetStateForView(view),
-                    AsmDudeTools.Instance);
-            }
+            return new AsmDocMouseHandler(
+                view,
+                this._aggregatorFactory.GetClassifier(view.TextBuffer),
+                this._navigatorService.GetTextStructureNavigator(view.TextBuffer),
+                CtrlKeyState.GetStateForView(view),
+                AsmDudeTools.Instance);
         }
     }
 }
