@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System.IO;
+using Microsoft;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -43,10 +44,13 @@ namespace AsmDude.ClearMefCache
         }
 
         //Clear the MEF Cache
-        public static async void Clear()
+        public static async System.Threading.Tasks.Task ClearAsync()
         {
+            if (!ThreadHelper.CheckAccess())
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             var componentModelHost = await Instance.ServiceProvider.GetServiceAsync(typeof(SVsComponentModelHost)) as IVsComponentModelHost;
-            string folder = componentModelHost.GetFolderPath();
+            string folder = await componentModelHost?.GetFolderPathAsync();
 
             if (!string.IsNullOrEmpty(folder) && Directory.Exists(folder))
             {
@@ -55,9 +59,13 @@ namespace AsmDude.ClearMefCache
         }
 
         //Restart Visual Studio
-        public static async void Restart()
+        public static async System.Threading.Tasks.Task RestartAsync()
         {
+            if (!ThreadHelper.CheckAccess())
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             var shell = await Instance.ServiceProvider.GetServiceAsync(typeof(SVsShell)) as IVsShell4;
+            Assumes.Present(shell);
             shell.Restart((uint)__VSRESTARTTYPE.RESTART_Normal);
         }
     }

@@ -20,14 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using System.Threading.Tasks;
 
 namespace AsmDude.ClearMefCache
 {
     public static class ComponentModelExtensions
     {
-        public static string GetFolderPath(this IVsComponentModelHost componentModelHost)
+        public static async Task<string> GetFolderPathAsync(this IVsComponentModelHost componentModelHost)
         {
+            if (!ThreadHelper.CheckAccess())
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             componentModelHost.GetCatalogCacheFolder(out string folderPath);
             return folderPath;
         }
