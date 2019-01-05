@@ -99,7 +99,7 @@ namespace AsmDude.BraceMatching {
 
             if (this._braceList.ContainsKey(currentText)) {  //the key is the open brace
                 this._braceList.TryGetValue(currentText, out char closeChar);
-                if (BraceMatchingTagger.FindMatchingCloseChar(currentChar, currentText, closeChar, this._view.TextViewLines.Count, out pairSpan) == true) {
+                if (FindMatchingCloseChar(currentChar, currentText, closeChar, this._view.TextViewLines.Count, out pairSpan) == true) {
                     yield return new TagSpan<TextMarkerTag>(new SnapshotSpan(currentChar, 1), new TextMarkerTag("blue"));
                     yield return new TagSpan<TextMarkerTag>(pairSpan, new TextMarkerTag("blue"));
                 }
@@ -107,7 +107,7 @@ namespace AsmDude.BraceMatching {
                 var open = from n in this._braceList
                            where n.Value.Equals(lastText)
                            select n.Key;
-                if (BraceMatchingTagger.FindMatchingOpenChar(lastChar, (char)open.ElementAt<char>(0), lastText, this._view.TextViewLines.Count, out pairSpan) == true) {
+                if (FindMatchingOpenChar(lastChar, (char)open.ElementAt(0), lastText, this._view.TextViewLines.Count, out pairSpan) == true) {
                     yield return new TagSpan<TextMarkerTag>(new SnapshotSpan(lastChar, 1), new TextMarkerTag("blue"));
                     yield return new TagSpan<TextMarkerTag>(pairSpan, new TextMarkerTag("blue"));
                 }
