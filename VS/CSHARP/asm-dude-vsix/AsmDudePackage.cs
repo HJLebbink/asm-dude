@@ -1,4 +1,4 @@
-// The MIT License (MIT)
+﻿// The MIT License (MIT)
 //
 // Copyright (c) 2018 Henk-Jan Lebbink
 // 
@@ -29,19 +29,14 @@ using System.Text;
 using System.Threading;
 
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 
 using AsmDude.OptionsPage;
 using AsmDude.Tools;
 
 namespace AsmDude
 {
-    //[PackageRegistration(UseManagedResourcesOnly = true)]
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-    //[ProvideService(typeof(SMyTestService), IsAsyncQueryable = true)]
-
     [InstalledProductRegistration("#110", "#112", Vsix.Version, IconResourceID = 400)] // Info on this package for Help/About
-    //[ProvideAutoLoad(UIContextGuids.NoSolution)] //load this package once visual studio starts.
     [Guid(PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ComVisible(false)]
@@ -55,7 +50,7 @@ namespace AsmDude
         internal const string AsmDudeContentType = "asm!";
         internal const string DisassemblyContentType = "Disassembly";
         internal const double slowWarningThresholdSec = 0.4; // threshold to warn that actions are considered slow
-        internal const double slowShutdownThresholdSec = 4.0; // threshold to switch of components
+        internal const double slowShutdownThresholdSec = 4.0; // threshold to switch off components
         internal const int maxNumberOfCharsInToolTips = 150;
         internal const int msSleepBeforeAsyncExecution = 1000;
 
@@ -63,13 +58,13 @@ namespace AsmDude
 
         public AsmDudePackage() {
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "=========================================\nINFO: AsmDudePackage: Entering constructor"));
-            //AsmDudeToolsStatic.Output_INFO("AsmDudePackage: Entering constructor");
+            AsmDudeToolsStatic.Output_INFO("AsmDudePackage: Entering constructor");
         }
-#pragma warning disable 1998
+
         protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
-#pragma warning restore 1998
         {
             await base.InitializeAsync(cancellationToken, progress);
+            ClearMefCache.ClearMefCache.Initialize(this);
 
             StringBuilder sb = new StringBuilder();
             sb.Append("Welcome to\n");
@@ -81,9 +76,7 @@ namespace AsmDude
             sb.Append("INFO: Open source assembly extension. Making programming in assembler almost bearable.\n");
             sb.Append("INFO: More info at https://github.com/HJLebbink/asm-dude \n");
             sb.Append("----------------------------------");
-            AsmDudeToolsStatic.OutputAsync(sb.ToString());
-
-            ClearMefCache.ClearMefCache.Initialize(this);
+            await AsmDudeToolsStatic.OutputAsync(sb.ToString());
         }
 
         #region Disassembly window experiments
