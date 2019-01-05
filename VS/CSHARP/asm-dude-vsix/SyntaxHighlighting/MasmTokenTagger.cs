@@ -195,7 +195,7 @@ namespace AsmDude
                             }
                         case AsmTokenType.UNKNOWN: // asmToken is not a known keyword, check if it is numerical
                             {
-                                if (AsmTools.AsmSourceTools.Evaluate_Constant(asmToken, true).Valid)
+                                if (AsmSourceTools.Evaluate_Constant(asmToken, true).Valid)
                                 //if (AsmTools.AsmSourceTools.Parse_Constant(asmToken, true).Valid)
                                 {
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
@@ -444,7 +444,7 @@ namespace AsmDude
                         case AsmTokenType.UNKNOWN: // asmToken is not a known keyword, check if it is numerical
                             {
                                 //if (AsmTools.AsmSourceTools.Evaluate_Constant(asmToken, true).Valid)
-                                if (AsmTools.AsmSourceTools.Parse_Constant(asmToken, true).Valid)
+                                if (AsmSourceTools.Parse_Constant(asmToken, true).Valid)
                                 {
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(current, offset, curSpan), this._constant);
                                 }
