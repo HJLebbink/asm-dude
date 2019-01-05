@@ -167,4 +167,4 @@ Visual Studio will launch under the experimental hive.
 * 16 June 2017: Added AT&T syntax support [v1.8.2.0]
 * 25 Juli 2017: Added support for the VS Disassembly Window [v1.9.0.0]
 * 04 June 2018: added Performance Data for Skylake-X [v1.9.5.0]
-* 5 Januari 2019: Added support for VS2019
+* 5 Januari 2019: Added support for VS2019 [v1.9.6.0]
