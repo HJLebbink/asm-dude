@@ -43,7 +43,7 @@ namespace AsmDude.Tools
 
         public void Reset(int delay = -1)
         {
-            if ((this._current == null) || (this._current.IsCompleted) || (this._current.IsCanceled))
+            if ((this._current == null) || this._current.IsCompleted || this._current.IsCanceled)
             {
                 //AsmDudeToolsStatic.Output_INFO("Delay:Reset: starting a new timer");
                 this._nResets = 0;

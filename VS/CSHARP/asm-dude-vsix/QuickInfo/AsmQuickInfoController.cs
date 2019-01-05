@@ -234,7 +234,7 @@ namespace AsmDude.QuickInfo
             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword, false);
             if (mnemonic != Mnemonic.NONE)
             {
-                var instructionTooltipWindow = new InstructionTooltipWindow(AsmDudeToolsStatic.Get_Font_Color())
+                var instructionTooltipWindow = new InstructionTooltipWindow(AsmDudeToolsStatic.Get_Font_Color_Async().Result)
                 {
                     Owner = this // set the owner of this windows such that we can manually close this window
                 };
@@ -247,7 +247,7 @@ namespace AsmDude.QuickInfo
                     BorderBrush = System.Windows.Media.Brushes.LightGray,
                     BorderThickness = new Thickness(1.0),
                     CornerRadius = new CornerRadius(2.0),
-                    Background = AsmDudeToolsStatic.Get_Background_Color(),
+                    Background = AsmDudeToolsStatic.Get_Background_Color_Async().Result,
                     Child = instructionTooltipWindow
                 };
 

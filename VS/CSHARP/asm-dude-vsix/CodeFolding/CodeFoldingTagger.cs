@@ -628,7 +628,7 @@ namespace AsmDude.CodeFolding
 
         private void Disable()
         {
-            string filename = AsmDudeToolsStatic.GetFileName(this._buffer);
+            string filename = AsmDudeToolsStatic.Get_Filename_Async(this._buffer).Result;
             string msg = string.Format("Performance of CodeFoldingTagger is horrible: disabling folding for {0}.", filename);
             AsmDudeToolsStatic.Output_WARNING(msg);
 

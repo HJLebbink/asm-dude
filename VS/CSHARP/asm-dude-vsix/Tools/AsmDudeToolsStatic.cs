@@ -27,7 +27,6 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
@@ -35,8 +34,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Task = Microsoft.VisualStudio.Shell.Task;
 
 namespace AsmDude.Tools
 {
@@ -75,7 +76,7 @@ namespace AsmDude.Tools
             double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
             if (elapsedSec > AsmDudePackage.slowWarningThresholdSec)
             {
-                AsmDudeToolsStatic.Output_WARNING(string.Format("SLOW: took {0} {1:F3} seconds to finish", component, elapsedSec));
+                Output_WARNING(string.Format("SLOW: took {0} {1:F3} seconds to finish", component, elapsedSec));
             }
         }
 
@@ -88,7 +89,7 @@ namespace AsmDude.Tools
                 if (Settings.Default.useAssemblerMasm) return AssemblerEnum.MASM;
                 if (Settings.Default.useAssemblerNasm) return AssemblerEnum.NASM_INTEL;
                 if (Settings.Default.useAssemblerNasm_Att) return AssemblerEnum.NASM_ATT;
-                Output("WARNING: AsmDudeToolsStatic.usedAssebler: no assembler specified, assuming MASM");
+                Output_WARNING("AsmDudeToolsStatic.Used_Assembler: no assembler specified, assuming MASM");
                 return AssemblerEnum.MASM;
             }
             set
@@ -119,140 +120,111 @@ namespace AsmDude.Tools
         /// <summary>
         /// get the full filename (with path) of the provided buffer; returns null if such name does not exist
         /// </summary>
-        public static string GetFileName(ITextBuffer buffer)
+        public static async Task<string> Get_Filename_Async(ITextBuffer buffer)
         {
-            try
-            {
-                if (true)
-                {
-                    buffer.Properties.TryGetProperty(typeof(ITextDocument), out ITextDocument document);
-                    string filename = document?.FilePath;
-                    AsmDudeToolsStatic.Output_INFO(string.Format("AsmDudeToolsStatic:GetFileName: retrieving filename {0}", filename));
-                    return filename;
-                }
-                else // this method had worked in VS 15.6, but ceased working in 15.7. GetCurFile could not be issued from a non UI thread
-                {
-                    buffer.Properties.TryGetProperty(typeof(Microsoft.VisualStudio.TextManager.Interop.IVsTextBuffer), out IVsTextBuffer bufferAdapter);
-                    if (bufferAdapter != null)
-                    {
-                        IPersistFileFormat persistFileFormat = bufferAdapter as IPersistFileFormat;
+            if (!ThreadHelper.CheckAccess())
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-                        int? code = persistFileFormat?.GetCurFile(out string filename, out uint dummyInteger);
-                        if (code == Microsoft.VisualStudio.VSConstants.S_OK)
-                        {
-                            AsmDudeToolsStatic.Output_INFO(string.Format("AsmDudeToolsStatic:GetFileName: retrieving filename {0}", filename));
-                            return filename;
-                        }
-                        else
-                        {
-                            AsmDudeToolsStatic.Output_ERROR(string.Format("AsmDudeToolsStatic:GetFileName: retrieving filename yielded error code {0}", code));
-                        }
-                    }
-                }
-            } catch (Exception e)
-            {
-                AsmDudeToolsStatic.Output_ERROR(string.Format("AsmDudeToolsStatic:GetFileName {0}", e.Message));
-            }
-            return null;
+            buffer.Properties.TryGetProperty(typeof(ITextDocument), out ITextDocument document);
+            string filename = document?.FilePath;
+            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Get_Filename_Async: retrieving filename {1}", typeof(AsmDudeToolsStatic), filename));
+            return filename;
         }
 
-        public static void Open_Disassembler()
+        public static async System.Threading.Tasks.Task Open_Disassembler_Async()
         {
-            try
-            {
-                DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
-                dte.ExecuteCommand("Debug.Disassembly");
-            }
-            catch (Exception e)
-            {
-                AsmDudeToolsStatic.Output_ERROR(string.Format("AsmDudeToolsStatic:openDisassembler {0}", e.Message));
-            }
-        }
+            if (!ThreadHelper.CheckAccess())
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-        public static int Get_Font_Size()
-        {
             DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
-            EnvDTE.Properties propertiesList = dte.get_Properties("FontsAndColors", "TextEditor");
+            dte.ExecuteCommand("Debug.Disassembly");
+        }
+
+        public static async Task<int> Get_Font_Size_Async()
+        {
+            if (!ThreadHelper.CheckAccess())
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
+            Properties propertiesList = dte.get_Properties("FontsAndColors", "TextEditor");
             Property prop = propertiesList.Item("FontSize");
-            int fontSize = (System.Int16)prop.Value;
+            int fontSize = (short)prop.Value;
             return fontSize;
         }
 
-        public static FontFamily Get_Font_Type()
+        public static async Task<FontFamily> Get_Font_Type_Async()
         {
+            if (!ThreadHelper.CheckAccess())
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
-            EnvDTE.Properties propertiesList = dte.get_Properties("FontsAndColors", "TextEditor");
+            Properties propertiesList = dte.get_Properties("FontsAndColors", "TextEditor");
             Property prop = propertiesList.Item("FontFamily");
             string font = (string)prop.Value;
             //AsmDudeToolsStatic.Output_INFO(string.Format("AsmDudeToolsStatic:Get_Font_Type {0}", font));
             return new FontFamily(font);
         }
 
-        public static Brush Get_Font_Color()
+        public static async Task<Brush> Get_Font_Color_Async()
         {
-            try
+            if (!ThreadHelper.CheckAccess())
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
+            Properties propertiesList = dte.get_Properties("FontsAndColors", "TextEditor");
+            Property prop = propertiesList.Item("FontsAndColorsItems");
+
+            FontsAndColorsItems fci = (FontsAndColorsItems)prop.Object;
+
+            for (int i = 1; i < fci.Count; ++i)
             {
-                DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
-                EnvDTE.Properties propertiesList = dte.get_Properties("FontsAndColors", "TextEditor");
-                Property prop = propertiesList.Item("FontsAndColorsItems");
-
-                FontsAndColorsItems fci = (FontsAndColorsItems)prop.Object;
-
-                for (int i = 1; i < fci.Count; ++i)
+                ColorableItems ci = fci.Item(i);
+                if (ci.Name.Equals("PLAIN TEXT", StringComparison.OrdinalIgnoreCase))
                 {
-                    ColorableItems ci = fci.Item(i);
-                    if (ci.Name.Equals("PLAIN TEXT", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return new SolidColorBrush(ConvertColor(System.Drawing.ColorTranslator.FromOle((int)ci.Foreground)));
-                    }
+                    return new SolidColorBrush(ConvertColor(System.Drawing.ColorTranslator.FromOle((int)ci.Foreground)));
                 }
             }
-            catch (Exception e)
-            {
-                AsmDudeToolsStatic.Output_ERROR("AsmDudeToolsStatic:Get_Font_Color " + e.Message);
-            }
-            AsmDudeToolsStatic.Output_WARNING("AsmDudeToolsStatic:Get_Font_Color: could not retrieve text color");
+            Output_WARNING("AsmDudeToolsStatic:Get_Font_Color: could not retrieve text color");
             return new SolidColorBrush(Colors.Gray);
         }
 
-        public static Brush Get_Background_Color()
+        public static async Task<Brush> Get_Background_Color_Async()
         {
-            try
+            if (!ThreadHelper.CheckAccess())
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
+            Properties propertiesList = dte.get_Properties("FontsAndColors", "TextEditor");
+            Property prop = propertiesList.Item("FontsAndColorsItems");
+
+            FontsAndColorsItems fci = (FontsAndColorsItems)prop.Object;
+
+            for (int i = 1; i < fci.Count; ++i)
             {
-                DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
-                EnvDTE.Properties propertiesList = dte.get_Properties("FontsAndColors", "TextEditor");
-                Property prop = propertiesList.Item("FontsAndColorsItems");
-
-                FontsAndColorsItems fci = (FontsAndColorsItems)prop.Object;
-
-                for (int i = 1; i < fci.Count; ++i)
+                ColorableItems ci = fci.Item(i);
+                if (ci.Name.Equals("PLAIN TEXT", StringComparison.OrdinalIgnoreCase))
                 {
-                    ColorableItems ci = fci.Item(i);
-                    if (ci.Name.Equals("PLAIN TEXT", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return new SolidColorBrush(ConvertColor(System.Drawing.ColorTranslator.FromOle((int)ci.Background)));
-                    }
+                    return new SolidColorBrush(ConvertColor(System.Drawing.ColorTranslator.FromOle((int)ci.Background)));
                 }
             }
-            catch (Exception e)
-            {
-                AsmDudeToolsStatic.Output_ERROR("AsmDudeToolsStatic:Get_Background_Color " + e.Message);
-            }
-            AsmDudeToolsStatic.Output_WARNING("AsmDudeToolsStatic:Get_Background_Color: could not retrieve text color");
+            Output_WARNING("AsmDudeToolsStatic:Get_Background_Color: could not retrieve text color");
             return new SolidColorBrush(Colors.Gray);
         }
 
-        public static void Error_Task_Navigate_Handler(object sender, EventArgs arguments)
+        public static async void Error_Task_Navigate_Handler(object sender, EventArgs arguments)
         {
-            Microsoft.VisualStudio.Shell.Task task = sender as Microsoft.VisualStudio.Shell.Task;
+            if (!ThreadHelper.CheckAccess())
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            Task task = sender as Task;
 
             if (task == null)
             {
                 throw new ArgumentException("sender parm cannot be null");
             }
-            if (String.IsNullOrEmpty(task.Document))
+            if (string.IsNullOrEmpty(task.Document))
             {
-                Output("INFO: AsmDudeToolsStatic:Error_Task_Navigate_Handler: task.Document is empty");
+                Output_INFO("AsmDudeToolsStatic:Error_Task_Navigate_Handler: task.Document is empty");
                 return;
             }
 
@@ -262,7 +234,7 @@ namespace AsmDude.Tools
             IVsUIShellOpenDocument openDoc = Package.GetGlobalService(typeof(IVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
             if (openDoc == null)
             {
-                Output("INFO: AsmDudeToolsStatic:Error_Task_Navigate_Handler: openDoc is null");
+                Output_INFO("AsmDudeToolsStatic:Error_Task_Navigate_Handler: openDoc is null");
                 return;
             }
 
@@ -271,7 +243,7 @@ namespace AsmDude.Tools
             int hr = openDoc.OpenDocumentViaProject(task.Document, ref logicalView, out var serviceProvider, out var hierarchy, out uint itemId, out var frame);
             if (ErrorHandler.Failed(hr) || (frame == null))
             {
-                Output("INFO: AsmDudeToolsStatic:Error_Task_Navigate_Handler: OpenDocumentViaProject failed");
+                Output_INFO("AsmDudeToolsStatic:Error_Task_Navigate_Handler: OpenDocumentViaProject failed");
                 return;
             }
 
@@ -287,7 +259,7 @@ namespace AsmDude.Tools
 
                     if (buffer == null)
                     {
-                        Output("INFO: AsmDudeToolsStatic:Error_Task_Navigate_Handler: buffer is null");
+                        Output_INFO("INFO: AsmDudeToolsStatic:Error_Task_Navigate_Handler: buffer is null");
                         return;
                     }
                 }
@@ -295,7 +267,7 @@ namespace AsmDude.Tools
             IVsTextManager mgr = Package.GetGlobalService(typeof(SVsTextManager)) as IVsTextManager;
             if (mgr == null)
             {
-                Output("INFO: AsmDudeToolsStatic:Error_Task_Navigate_Handler: IVsTextManager is null");
+                Output_INFO("AsmDudeToolsStatic:Error_Task_Navigate_Handler: IVsTextManager is null");
                 return;
             }
 
@@ -328,12 +300,12 @@ namespace AsmDude.Tools
             return span.Snapshot.GetLineNumberFromPosition(span.Start);
         }
 
-        public static System.Windows.Media.Color ConvertColor(System.Drawing.Color drawingColor)
+        public static Color ConvertColor(System.Drawing.Color drawingColor)
         {
-            return System.Windows.Media.Color.FromArgb(drawingColor.A, drawingColor.R, drawingColor.G, drawingColor.B);
+            return Color.FromArgb(drawingColor.A, drawingColor.R, drawingColor.G, drawingColor.B);
         }
 
-        public static System.Drawing.Color ConvertColor(System.Windows.Media.Color mediaColor)
+        public static System.Drawing.Color ConvertColor(Color mediaColor)
         {
             return System.Drawing.Color.FromArgb(mediaColor.A, mediaColor.R, mediaColor.G, mediaColor.B);
         }
@@ -350,7 +322,7 @@ namespace AsmDude.Tools
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output_WARNING("bitmapFromUri: could not read icon from uri " + bitmapUri.ToString() + "; " + e.Message);
+                Output_WARNING("bitmapFromUri: could not read icon from uri " + bitmapUri.ToString() + "; " + e.Message);
             }
             return bitmap;
         }
@@ -375,26 +347,29 @@ namespace AsmDude.Tools
         public static void Output_INFO(string msg)
         {
 #           if DEBUG
-            Output("INFO: " + msg);
+            OutputAsync("INFO: " + msg).ConfigureAwait(false);
 #           endif
         }
         /// <summary>Output message to the AsmDude window</summary>
         public static void Output_WARNING(string msg)
         {
-            Output("WARNING: " + msg);
+            OutputAsync("WARNING: " + msg).ConfigureAwait(false);
         }
         /// <summary>Output message to the AsmDude window</summary>
         public static void Output_ERROR(string msg)
         {
-            Output("ERROR: " + msg);
+            OutputAsync("ERROR: " + msg).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Output message to the AsmSim window
         /// </summary>
-        public static void Output(string msg)
+        public static async System.Threading.Tasks.Task OutputAsync(string msg)
         {
-            IVsOutputWindowPane outputPane = GetOutputPane();
+            if (!ThreadHelper.CheckAccess())
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+            IVsOutputWindowPane outputPane = await GetOutputPaneAsync();
             string msg2 = string.Format(CultureInfo.CurrentCulture, "{0}", msg.Trim() + Environment.NewLine);
             if (outputPane == null)
             {
@@ -407,8 +382,11 @@ namespace AsmDude.Tools
             }
         }
 
-        public static IVsOutputWindowPane GetOutputPane()
+        public static async Task<IVsOutputWindowPane> GetOutputPaneAsync()
         {
+            if (!ThreadHelper.CheckAccess())
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             IVsOutputWindow outputWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
             if (outputWindow == null)
             {
@@ -431,7 +409,7 @@ namespace AsmDude.Tools
                 int startLine = bufferPosition.Value.GetContainingLine().Start;
                 int currentPos = bufferPosition.Value.Position;
 
-                var (beginPos, endPos) = AsmTools.AsmSourceTools.GetKeywordPos(currentPos - startLine, line);
+                var (beginPos, endPos) = AsmSourceTools.GetKeywordPos(currentPos - startLine, line);
                 int length = endPos - beginPos;
 
                 string result = line.Substring(beginPos, length);
@@ -466,7 +444,7 @@ namespace AsmDude.Tools
         {
             for (int i = 0; i < input.Length; i++)
             {
-                if (Char.IsLetter(input[i]) && !Char.IsUpper(input[i]))
+                if (char.IsLetter(input[i]) && !char.IsUpper(input[i]))
                 {
                     return false;
                 }
@@ -476,7 +454,7 @@ namespace AsmDude.Tools
 
         public static void Disable_Message(string msg, string filename, ErrorListProvider errorListProvider)
         {
-            AsmDudeToolsStatic.Output_WARNING(msg);
+            Output_WARNING(msg);
 
             for (int i = 0; i < errorListProvider.Tasks.Count; ++i)
             {
@@ -494,7 +472,7 @@ namespace AsmDude.Tools
                 ErrorCategory = TaskErrorCategory.Message,
                 Document = filename
             };
-            errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
+            errorTask.Navigate += Error_Task_Navigate_Handler;
 
             errorListProvider.Tasks.Add(errorTask);
             errorListProvider.Refresh();

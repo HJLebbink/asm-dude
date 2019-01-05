@@ -32,6 +32,7 @@ using Microsoft.VisualStudio.Utilities;
 using AsmTools;
 using AsmDude.SyntaxHighlighting;
 using Amib.Threading;
+using System.Collections.Concurrent;
 
 namespace AsmDude.Tools
 {
@@ -94,13 +95,13 @@ namespace AsmDude.Tools
             this._filenames = new Dictionary<uint, string>();
 
             //this._graph = new BidirectionalGraph<uint, TaggedEdge<uint, (string LabelSource, string LabelTarget)>>(false);
-            this._usedAt = new Dictionary<string, IList<uint>>();
-            this._defAt = new Dictionary<string, IList<uint>>();
-            this._defAt_PROTO = new Dictionary<string, IList<uint>>();
+            this._usedAt = new ConcurrentDictionary<string, IList<uint>>();
+            this._defAt = new ConcurrentDictionary<string, IList<uint>>();
+            this._defAt_PROTO = new ConcurrentDictionary<string, IList<uint>>();
             this._hasLabel = new HashSet<uint>();
             this._hasDef = new HashSet<uint>();
             this._undefined_includes = new List<(string Include_Filename, string Path, string Source_Filename, int LineNumber)>();
-            this._thisFilename = AsmDudeToolsStatic.GetFileName(this._buffer);
+            this._thisFilename = AsmDudeToolsStatic.Get_Filename_Async(this._buffer).Result;
             this._delay = new Delay(AsmDudePackage.msSleepBeforeAsyncExecution, 100, AsmDudeTools.Instance.Thread_Pool);
 
             this.Enabled = Settings.Default.IntelliSense_Label_Analysis_On;
@@ -141,7 +142,7 @@ namespace AsmDude.Tools
 
         public uint Get_File_Id(uint id)
         {
-            return (id >> 24);
+            return id >> 24;
         }
         public string Get_Filename(uint id)
         {
@@ -164,7 +165,7 @@ namespace AsmDude.Tools
             return id <= 0xFFFFFF;
         }
 
-        public IEnumerable<(uint Key, string Value)> Label_Clashes //TODO consider returning an IEnumerable
+        public IEnumerable<(uint Key, string Value)> Label_Clashes
         {
             get
             {
@@ -242,7 +243,7 @@ namespace AsmDude.Tools
                         {
                             lineContent = "";
                         }
-                        result.Add(entry.Key, AsmDudeToolsStatic.Cleanup(string.Format("LINE {0} ({1}){2}", (lineNumber + 1), filename, lineContent)));
+                        result.Add(entry.Key, AsmDudeToolsStatic.Cleanup(string.Format("LINE {0} ({1}){2}", lineNumber + 1, filename, lineContent)));
                     }
                 }
                 return result;
@@ -258,7 +259,7 @@ namespace AsmDude.Tools
         {
             if (this._defAt.TryGetValue(label, out var list))
             {
-                return (list.Count > 1);
+                return list.Count > 1;
             }
             return false;
         }
@@ -329,7 +330,7 @@ namespace AsmDude.Tools
                 this._hasLabel.Clear();
                 this._hasDef.Clear();
                 this._filenames.Clear();
-                this._filenames.Add(0, AsmDudeToolsStatic.GetFileName(this._buffer));
+                this._filenames.Add(0, AsmDudeToolsStatic.Get_Filename_Async(this._buffer).Result);
                 this._undefined_includes.Clear();
 
                 const uint fileId = 0; // use fileId=0 for the main file (and use numbers higher than 0 for included files)
@@ -613,7 +614,7 @@ namespace AsmDude.Tools
             }
         }
 
-        private void Doc_File_Action_Occurred(Object sender, TextDocumentFileActionEventArgs e)
+        private void Doc_File_Action_Occurred(object sender, TextDocumentFileActionEventArgs e)
         {
             ITextDocument doc = sender as ITextDocument;
             //AsmDudeToolsStatic.Output_INFO("LabelGraph:Doc_File_Action_Occurred: " + doc.FilePath + ":" + e.FileActionType);

@@ -64,6 +64,8 @@ namespace AsmDude
         {
             //AsmDudeToolsStatic.Output_INFO("AsmDudeTools constructor");
 
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             #region Initialize ErrorListProvider
             IServiceProvider serviceProvider = new ServiceProvider(Package.GetGlobalService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider)) as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
             this._errorListProvider = new ErrorListProvider(serviceProvider)
@@ -102,7 +104,7 @@ namespace AsmDude
                 string filename2 = AsmDudeToolsStatic.Get_Install_Path() + "Resources" + Path.DirectorySeparatorChar + "mnemonics-nasm.txt";
                 MnemonicStore store2 = new MnemonicStore(filename2, null);
 
-                ISet<String> archs = new SortedSet<String>();
+                ISet<string> archs = new SortedSet<string>();
                 IDictionary<string, string> signaturesIntel = new Dictionary<string, string>();
                 IDictionary<string, string> signaturesNasm = new Dictionary<string, string>();
 
@@ -188,7 +190,7 @@ namespace AsmDude
                         }
                     }
                 }
-                foreach (String str in archs)
+                foreach (string str in archs)
                 {
                     AsmDudeToolsStatic.Output_INFO("INTEL arch " + str);
                 }
@@ -358,12 +360,12 @@ namespace AsmDude
                 Mnemonic mnemonic = AsmSourceTools.ParseMnemonic_Att(keyword, true);
                 if (mnemonic != Mnemonic.NONE)
                 {
-                    if (this.MnemonicSwitchedOn(mnemonic)) return (AsmSourceTools.IsJump(mnemonic)) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
+                    if (this.MnemonicSwitchedOn(mnemonic)) return AsmSourceTools.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
                 }
             }
             #endregion
 
-            return (this._type.TryGetValue(keyword, out var tokenType)) ? tokenType : AsmTokenType.UNKNOWN;
+            return this._type.TryGetValue(keyword, out var tokenType) ? tokenType : AsmTokenType.UNKNOWN;
         }
 
         public AsmTokenType Get_Token_Type_Intel(string keyword)
@@ -373,20 +375,20 @@ namespace AsmDude
             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword, true);
             if (mnemonic != Mnemonic.NONE)
             {
-                if (this.MnemonicSwitchedOn(mnemonic)) return (AsmSourceTools.IsJump(mnemonic)) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
+                if (this.MnemonicSwitchedOn(mnemonic)) return AsmSourceTools.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
             }
             Rn reg = RegisterTools.ParseRn(keyword, true);
             if (reg != Rn.NOREG)
             {
                 if (this.RegisterSwitchedOn(reg)) return AsmTokenType.Register;
             }
-            return (this._type.TryGetValue(keyword, out var tokenType)) ? tokenType : AsmTokenType.UNKNOWN;
+            return this._type.TryGetValue(keyword, out var tokenType) ? tokenType : AsmTokenType.UNKNOWN;
         }
 
         public AssemblerEnum Get_Assembler(string keyword)
         {
             Debug.Assert(keyword == keyword.ToUpper());
-            return (this._assembler.TryGetValue(keyword, out var value)) ? value : AssemblerEnum.UNKNOWN;
+            return this._assembler.TryGetValue(keyword, out var value) ? value : AssemblerEnum.UNKNOWN;
         }
 
         /// <summary>
@@ -403,7 +405,7 @@ namespace AsmDude
         public string Get_Description(string keyword)
         {
             Debug.Assert(keyword == keyword.ToUpper());
-            return (this._description.TryGetValue(keyword, out string description)) ? description : "";
+            return this._description.TryGetValue(keyword, out string description) ? description : "";
         }
 
         /// <summary>
@@ -412,7 +414,7 @@ namespace AsmDude
         public Arch Get_Architecture(string keyword)
         {
             Debug.Assert(keyword == keyword.ToUpper());
-            return (this._arch.TryGetValue(keyword, out Arch value)) ? value : Arch.ARCH_NONE;
+            return this._arch.TryGetValue(keyword, out Arch value) ? value : Arch.ARCH_NONE;
         }
 
         public void Invalidate_Data()
@@ -529,7 +531,7 @@ namespace AsmDude
             try
             {
                 var archAttribute = node.Attributes["arch"];
-                return (archAttribute == null) ? Arch.ARCH_NONE : AsmTools.ArchTools.ParseArch(archAttribute.Value.ToUpper());
+                return (archAttribute == null) ? Arch.ARCH_NONE : ArchTools.ParseArch(archAttribute.Value.ToUpper());
             }
             catch (Exception)
             {
@@ -542,7 +544,7 @@ namespace AsmDude
             try
             {
                 var archAttribute = node.Attributes["tool"];
-                return (archAttribute == null) ? AssemblerEnum.UNKNOWN : AsmTools.AsmSourceTools.ParseAssembler(archAttribute.Value);
+                return (archAttribute == null) ? AssemblerEnum.UNKNOWN : AsmSourceTools.ParseAssembler(archAttribute.Value);
             }
             catch (Exception)
             {

@@ -55,17 +55,17 @@ namespace AsmDude.Tools
 
         public IEnumerable<AsmSignatureElement> GetSignatures(Mnemonic mnemonic)
         {
-            return (this._data.TryGetValue(mnemonic, out var list)) ? list : Enumerable.Empty<AsmSignatureElement>();
+            return this._data.TryGetValue(mnemonic, out var list) ? list : Enumerable.Empty<AsmSignatureElement>();
         }
 
         public IEnumerable<Arch> GetArch(Mnemonic mnemonic)
         {
-            return (this._arch.TryGetValue(mnemonic, out var value)) ? value : Enumerable.Empty<Arch>();
+            return this._arch.TryGetValue(mnemonic, out var value) ? value : Enumerable.Empty<Arch>();
         }
 
         public string GetHtmlRef(Mnemonic mnemonic)
         {
-            return (this._htmlRef.TryGetValue(mnemonic, out string value)) ? value : "";
+            return this._htmlRef.TryGetValue(mnemonic, out string value) ? value : "";
         }
 
         public void SetHtmlRef(Mnemonic mnemonic, string value)
@@ -87,7 +87,7 @@ namespace AsmDude.Tools
 
         public string GetDescription(Mnemonic mnemonic)
         {
-            return (this._description.TryGetValue(mnemonic, out string value)) ? value : "";
+            return this._description.TryGetValue(mnemonic, out string value) ? value : "";
         }
 
         public override string ToString()
@@ -142,7 +142,7 @@ namespace AsmDude.Tools
             //AsmDudeToolsStatic.Output_INFO("MnemonicStore:loadRegularData: filename=" + filename);
             try
             {
-                System.IO.StreamReader file = new System.IO.StreamReader(filename);
+                StreamReader file = new StreamReader(filename);
                 string line;
                 while ((line = file.ReadLine()) != null)
                 {
@@ -249,7 +249,7 @@ namespace AsmDude.Tools
             //AsmDudeToolsStatic.Output_INFO("MnemonicStore:load_data_intel: filename=" + filename);
             try
             {
-                System.IO.StreamReader file = new System.IO.StreamReader(filename);
+                StreamReader file = new StreamReader(filename);
                 string line;
                 while ((line = file.ReadLine()) != null)
                 {

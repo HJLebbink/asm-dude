@@ -82,7 +82,7 @@ namespace AsmDude.Tools
             //AsmDudeToolsStatic.Output_INFO("PerformanceStore:AddData_New: microArch=" + microArch + "; filename=" + filename);
             try
             {
-                System.IO.StreamReader file = new System.IO.StreamReader(filename);
+                StreamReader file = new StreamReader(filename);
                 string line;
                 int lineNumber = 0;
 
@@ -159,7 +159,7 @@ namespace AsmDude.Tools
             IDictionary<string, IList<Mnemonic>> translations = new Dictionary<string, IList<Mnemonic>>();
             try
             {
-                System.IO.StreamReader file = new System.IO.StreamReader(filename);
+                StreamReader file = new StreamReader(filename);
                 string line;
                 while ((line = file.ReadLine()) != null)
                 {

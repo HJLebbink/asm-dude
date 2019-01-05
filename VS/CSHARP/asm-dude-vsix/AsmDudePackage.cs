@@ -81,7 +81,7 @@ namespace AsmDude
             sb.Append("INFO: Open source assembly extension. Making programming in assembler almost bearable.\n");
             sb.Append("INFO: More info at https://github.com/HJLebbink/asm-dude \n");
             sb.Append("----------------------------------");
-            AsmDudeToolsStatic.Output(sb.ToString());
+            AsmDudeToolsStatic.OutputAsync(sb.ToString());
 
             ClearMefCache.ClearMefCache.Initialize(this);
         }

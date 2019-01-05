@@ -118,7 +118,7 @@ namespace AsmDude.QuickInfo
                 return;
             }
 
-            Brush foreground = AsmDudeToolsStatic.Get_Font_Color();
+            Brush foreground = AsmDudeToolsStatic.Get_Font_Color_Async().Result;
 
             var enumerator = this._aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint)).GetEnumerator();
             if (enumerator.MoveNext())
@@ -346,8 +346,8 @@ namespace AsmDude.QuickInfo
                     }
                     if (description != null)
                     {
-                        description.FontSize = AsmDudeToolsStatic.Get_Font_Size() + 2;
-                        description.FontFamily = AsmDudeToolsStatic.Get_Font_Type();
+                        description.FontSize = AsmDudeToolsStatic.Get_Font_Size_Async().Result + 2;
+                        description.FontFamily = AsmDudeToolsStatic.Get_Font_Type_Async().Result;
                         //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:AugmentQuickInfoSession; setting description fontSize={1}; fontFamily={2}", this.ToString(), description.FontSize, description.FontFamily));
                         quickInfoContent.Add(description);
                     }

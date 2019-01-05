@@ -148,7 +148,7 @@ namespace AsmDude.Tools
                 this._delay = new Delay(AsmDudePackage.msSleepBeforeAsyncExecution, 1000, this._threadPool);
 
                 // after a delay, reset this AsmSimulator
-                this._delay.Done_Event += (o, i) => { this.Schedule_Reset_Async(); };
+                this._delay.Done_Event += (o, i) => { this.Schedule_Reset_Async().ConfigureAwait(false); };
 
                 this.Reset(); // wait to give the system some breathing time
                 this._buffer.ChangedLowPriority += (o, i) => {
@@ -236,7 +236,7 @@ namespace AsmDude.Tools
             this._isNotImplemented.Clear();
         }
 
-        private async void Schedule_Reset_Async()
+        private async System.Threading.Tasks.Task Schedule_Reset_Async()
         {
             await System.Threading.Tasks.Task.Run(() =>
             {
@@ -343,12 +343,12 @@ namespace AsmDude.Tools
                 void PreCalculate_LOCAL()
                 {
                     bool update_Syntax_Error = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Show_Syntax_Errors || Settings.Default.AsmSim_Decorate_Syntax_Errors);
-                    bool decorate_Not_Implemented = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Decorate_Unimplemented);
+                    bool decorate_Not_Implemented = Settings.Default.AsmSim_On && Settings.Default.AsmSim_Decorate_Unimplemented;
 
                     bool update_Usage_Undefined = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Show_Usage_Of_Undefined || Settings.Default.AsmSim_Decorate_Usage_Of_Undefined);
                     bool update_Redundant_Instruction = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Show_Redundant_Instructions || Settings.Default.AsmSim_Decorate_Redundant_Instructions);
                     bool update_Unreachable_Instruction = Settings.Default.AsmSim_On && Settings.Default.AsmSim_Decorate_Unreachable_Instructions;
-                    bool update_Known_Register = Settings.Default.AsmSim_On && (Settings.Default.AsmSim_Decorate_Registers);
+                    bool update_Known_Register = Settings.Default.AsmSim_On && Settings.Default.AsmSim_Decorate_Registers;
 
                     foreach (int lineNumber in LineNumber_Centered_LOCAL(this._sFlow.FirstLineNumber, this._last_Changed_LineNumber, this._sFlow.LastLineNumber))
                     {
@@ -464,17 +464,17 @@ namespace AsmDude.Tools
 
             var type = opcodeBase.GetType();
 
-            if (type == typeof(AsmSim.Mnemonics.NotImplemented))
+            if (type == typeof(NotImplemented))
             {
                 return (IsImplemented: false, Mnemonic: content.Mnemonic, Message: null);
             }
-            else if (type == typeof(AsmSim.Mnemonics.DummySIMD))
+            else if (type == typeof(DummySIMD))
             {
                 return (IsImplemented: false, Mnemonic: content.Mnemonic, Message: null);
             }
             else
             {
-                return (opcodeBase.IsHalted)
+                return opcodeBase.IsHalted
                     ? (IsImplemented: true, Mnemonic: content.Mnemonic, Message: opcodeBase.SyntaxError)
                     : (IsImplemented: true, Mnemonic: content.Mnemonic, Message: null);
             }
@@ -647,7 +647,7 @@ namespace AsmDude.Tools
         public string Get_Register_Value_If_Already_Computed(Rn name, int lineNumber, bool before, NumerationEnum numeration)
         {
             if (!this.Enabled) return "";
-            var state = (before) ? this.Get_State_Before(lineNumber, false, false) : this.Get_State_After(lineNumber, false, false);
+            var state = before ? this.Get_State_Before(lineNumber, false, false) : this.Get_State_After(lineNumber, false, false);
             if (state.Bussy) return null;
             if (state.State == null) return null;
             Tv[] reg = state.State.GetTvArray_Cached(name);
@@ -665,7 +665,7 @@ namespace AsmDude.Tools
         public string Get_Flag_Value_If_Already_Computed(Flags name, int lineNumber, bool before)
         {
             if (!this.Enabled) return "";
-            var state = (before) ? this.Get_State_Before(lineNumber, false, false) : this.Get_State_After(lineNumber, false, false);
+            var state = before ? this.Get_State_Before(lineNumber, false, false) : this.Get_State_After(lineNumber, false, false);
             if (state.Bussy) return null;
             if (state.State == null) return null;
             Tv? content = state.State.GetTv_Cached(name);
@@ -676,7 +676,7 @@ namespace AsmDude.Tools
         public string Get_Register_Value_and_Block(Rn name, int lineNumber, bool before, NumerationEnum numeration)
         {
             if (!this.Enabled) return null;
-            var state = (before) ? this.Get_State_Before(lineNumber, false, true) : this.Get_State_After(lineNumber, false, true);
+            var state = before ? this.Get_State_Before(lineNumber, false, true) : this.Get_State_After(lineNumber, false, true);
             if (state.State == null) return null;
             Tv[] reg = state.State.GetTvArray_Cached(name);
             if (reg == null) reg = state.State.GetTvArray(name);
@@ -694,7 +694,7 @@ namespace AsmDude.Tools
         public string Get_Flag_Value_and_Block(Flags name, int lineNumber, bool before)
         {
             if (!this.Enabled) return null;
-            var state = (before) ? this.Get_State_Before(lineNumber, false, true) : this.Get_State_After(lineNumber, false, true);
+            var state = before ? this.Get_State_Before(lineNumber, false, true) : this.Get_State_After(lineNumber, false, true);
             if (state.State == null) return null;
             Tv? content = state.State.GetTv_Cached(name);
             if (content == null) content = state.State.GetTv(name);
@@ -707,7 +707,7 @@ namespace AsmDude.Tools
         {
             if (!this.Enabled) return ("", false);
 
-            var state = (before) ? this.Get_State_Before(lineNumber, async, create) : this.Get_State_After(lineNumber, async, create);
+            var state = before ? this.Get_State_Before(lineNumber, async, create) : this.Get_State_After(lineNumber, async, create);
             if (state.Bussy)
             {
                 this._threadPool2.QueueWorkItem(Update_State_And_TvArray_LOCAL);
@@ -737,7 +737,7 @@ namespace AsmDude.Tools
 
             void Update_State_And_TvArray_LOCAL()
             {
-                var state2 = (before) ? this.Get_State_Before(lineNumber, false, true) : this.Get_State_After(lineNumber, false, true);
+                var state2 = before ? this.Get_State_Before(lineNumber, false, true) : this.Get_State_After(lineNumber, false, true);
                 if (state2.State != null) Update_TvArray_LOCAL(state2.State);
             }
 
@@ -768,7 +768,7 @@ namespace AsmDude.Tools
                 if (this._syntax_Errors.ContainsKey(lineNumber)) return (HasValue: false, Bussy: false);
                 if (this._isNotImplemented.Contains(lineNumber)) return (HasValue: false, Bussy: false);
 
-                var state = (before)
+                var state = before
                     ? this.Get_State_Before(lineNumber, false, false)
                     : this.Get_State_After(lineNumber, false, false);
                 if (state.Bussy)
