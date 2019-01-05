@@ -100,7 +100,7 @@ namespace AsmDude.SignatureHelp
             string lineStr = this._subjectBuffer.CurrentSnapshot.GetLineFromPosition(position).GetText();
             //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: computeCurrentParameter. lineStr=" + lineStr);
 
-            int commaCount = AsmSignature.Count_Commas(lineStr);
+            int commaCount = Count_Commas(lineStr);
             //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: computeCurrentParameter. commaCount="+ commaCount);
 
             if (commaCount < nParameters)
@@ -120,31 +120,31 @@ namespace AsmDude.SignatureHelp
 
         public ITrackingSpan ApplicableToSpan
         {
-            get { return (this._applicableToSpan); }
+            get { return this._applicableToSpan; }
             internal set { this._applicableToSpan = value; }
         }
 
         public string Content
         {
-            get { return (this._content); }
+            get { return this._content; }
             internal set { this._content = value; }
         }
 
         public string Documentation
         {
-            get { return (this._documentation); }
+            get { return this._documentation; }
             internal set { this._documentation = value; }
         }
 
         public ReadOnlyCollection<IParameter> Parameters
         {
-            get { return (this._parameters); }
+            get { return this._parameters; }
             internal set { this._parameters = value; }
         }
 
         public string PrettyPrintedContent
         {
-            get { return (this._printContent); }
+            get { return this._printContent; }
             internal set { this._printContent = value; }
         }
     }

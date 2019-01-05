@@ -47,7 +47,7 @@ namespace AsmDude.SignatureHelp
             this._mnemonic = mnem;
             this._operands = new List<IList<AsmSignatureEnum>>();
             this._arch = new List<Arch>();
-            this._reversed_Signature = (AsmDudeToolsStatic.Used_Assembler == AssemblerEnum.NASM_ATT);
+            this._reversed_Signature = AsmDudeToolsStatic.Used_Assembler == AssemblerEnum.NASM_ATT;
 
             {
                 string[] x = operandDoc.Split(' ');
@@ -70,7 +70,7 @@ namespace AsmDude.SignatureHelp
             this.Arch_Str = archStr;
         }
 
-        public static String Make_Doc(IList<AsmSignatureEnum> operandType)
+        public static string Make_Doc(IList<AsmSignatureEnum> operandType)
         {
             StringBuilder sb = new StringBuilder();
             foreach (AsmSignatureEnum op in operandType)
@@ -227,7 +227,7 @@ namespace AsmDude.SignatureHelp
 
         #endregion
 
-        public override String ToString()
+        public override string ToString()
         {
             return this.Mnemonic.ToString() + " " + this.Operands_Str;
         }

@@ -120,7 +120,7 @@ namespace AsmDude.SignatureHelp
                 ISet<Arch> selectedArchitectures = AsmDudeToolsStatic.Get_Arch_Swithed_On();
                 //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: AugmentSignatureHelpSession: selected architectures=" + ArchTools.ToString(selectedArchitectures));
 
-                foreach (AsmSignatureElement se in AsmSignatureHelpSource.Constrain_Signatures(this._store.GetSignatures(mnemonic), operands, selectedArchitectures))
+                foreach (AsmSignatureElement se in Constrain_Signatures(this._store.GetSignatures(mnemonic), operands, selectedArchitectures))
                 {
                     signatures.Add(this.Create_Signature(this._buffer, se, applicableToSpan));
                 }

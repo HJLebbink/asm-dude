@@ -538,43 +538,43 @@ namespace AsmDude.SignatureHelp
             {
                 case AsmSignatureEnum.UNKNOWN: return true;
                 case AsmSignatureEnum.MEM: return op.IsMem;
-                case AsmSignatureEnum.M8: return (op.IsMem && op.NBits == 8);
-                case AsmSignatureEnum.M16: return (op.IsMem && op.NBits == 16);
-                case AsmSignatureEnum.M32: return (op.IsMem && op.NBits == 32);
-                case AsmSignatureEnum.M64: return (op.IsMem && op.NBits == 64);
-                case AsmSignatureEnum.M80: return (op.IsMem && op.NBits == 80);
-                case AsmSignatureEnum.M128: return (op.IsMem && op.NBits == 128);
-                case AsmSignatureEnum.M256: return (op.IsMem && op.NBits == 256);
-                case AsmSignatureEnum.M512: return (op.IsMem && op.NBits == 512);
+                case AsmSignatureEnum.M8: return op.IsMem && op.NBits == 8;
+                case AsmSignatureEnum.M16: return op.IsMem && op.NBits == 16;
+                case AsmSignatureEnum.M32: return op.IsMem && op.NBits == 32;
+                case AsmSignatureEnum.M64: return op.IsMem && op.NBits == 64;
+                case AsmSignatureEnum.M80: return op.IsMem && op.NBits == 80;
+                case AsmSignatureEnum.M128: return op.IsMem && op.NBits == 128;
+                case AsmSignatureEnum.M256: return op.IsMem && op.NBits == 256;
+                case AsmSignatureEnum.M512: return op.IsMem && op.NBits == 512;
 
-                case AsmSignatureEnum.R8: return (op.IsReg && op.NBits == 8);
-                case AsmSignatureEnum.R16: return (op.IsReg && op.NBits == 16);
-                case AsmSignatureEnum.R32: return (op.IsReg && op.NBits == 32);
-                case AsmSignatureEnum.R64: return (op.IsReg && op.NBits == 64);
-                case AsmSignatureEnum.REG_AL: return (op.IsReg && op.Rn == Rn.AL);
-                case AsmSignatureEnum.REG_AX: return (op.IsReg && op.Rn == Rn.AX);
-                case AsmSignatureEnum.REG_EAX: return (op.IsReg && op.Rn == Rn.EAX);
-                case AsmSignatureEnum.REG_RAX: return (op.IsReg && op.Rn == Rn.RAX);
-                case AsmSignatureEnum.REG_CL: return (op.IsReg && op.Rn == Rn.CL);
-                case AsmSignatureEnum.REG_CX: return (op.IsReg && op.Rn == Rn.CX);
-                case AsmSignatureEnum.REG_ECX: return (op.IsReg && op.Rn == Rn.ECX);
-                case AsmSignatureEnum.REG_RCX: return (op.IsReg && op.Rn == Rn.RCX);
-                case AsmSignatureEnum.REG_DX: return (op.IsReg && op.Rn == Rn.DX);
-                case AsmSignatureEnum.REG_EDX: return (op.IsReg && op.Rn == Rn.EDX);
-                case AsmSignatureEnum.REG_XMM0: return (op.IsReg && op.Rn == Rn.XMM0);
+                case AsmSignatureEnum.R8: return op.IsReg && op.NBits == 8;
+                case AsmSignatureEnum.R16: return op.IsReg && op.NBits == 16;
+                case AsmSignatureEnum.R32: return op.IsReg && op.NBits == 32;
+                case AsmSignatureEnum.R64: return op.IsReg && op.NBits == 64;
+                case AsmSignatureEnum.REG_AL: return op.IsReg && op.Rn == Rn.AL;
+                case AsmSignatureEnum.REG_AX: return op.IsReg && op.Rn == Rn.AX;
+                case AsmSignatureEnum.REG_EAX: return op.IsReg && op.Rn == Rn.EAX;
+                case AsmSignatureEnum.REG_RAX: return op.IsReg && op.Rn == Rn.RAX;
+                case AsmSignatureEnum.REG_CL: return op.IsReg && op.Rn == Rn.CL;
+                case AsmSignatureEnum.REG_CX: return op.IsReg && op.Rn == Rn.CX;
+                case AsmSignatureEnum.REG_ECX: return op.IsReg && op.Rn == Rn.ECX;
+                case AsmSignatureEnum.REG_RCX: return op.IsReg && op.Rn == Rn.RCX;
+                case AsmSignatureEnum.REG_DX: return op.IsReg && op.Rn == Rn.DX;
+                case AsmSignatureEnum.REG_EDX: return op.IsReg && op.Rn == Rn.EDX;
+                case AsmSignatureEnum.REG_XMM0: return op.IsReg && op.Rn == Rn.XMM0;
 
-                case AsmSignatureEnum.REG_CS: return (op.IsReg && op.Rn == Rn.CS);
-                case AsmSignatureEnum.REG_DS: return (op.IsReg && op.Rn == Rn.DS);
-                case AsmSignatureEnum.REG_ES: return (op.IsReg && op.Rn == Rn.ES);
-                case AsmSignatureEnum.REG_SS: return (op.IsReg && op.Rn == Rn.SS);
-                case AsmSignatureEnum.REG_FS: return (op.IsReg && op.Rn == Rn.FS);
-                case AsmSignatureEnum.REG_GS: return (op.IsReg && op.Rn == Rn.GS);
+                case AsmSignatureEnum.REG_CS: return op.IsReg && op.Rn == Rn.CS;
+                case AsmSignatureEnum.REG_DS: return op.IsReg && op.Rn == Rn.DS;
+                case AsmSignatureEnum.REG_ES: return op.IsReg && op.Rn == Rn.ES;
+                case AsmSignatureEnum.REG_SS: return op.IsReg && op.Rn == Rn.SS;
+                case AsmSignatureEnum.REG_FS: return op.IsReg && op.Rn == Rn.FS;
+                case AsmSignatureEnum.REG_GS: return op.IsReg && op.Rn == Rn.GS;
 
                 case AsmSignatureEnum.IMM: return op.IsImm;
-                case AsmSignatureEnum.IMM8: return (op.IsImm && op.NBits == 8);
-                case AsmSignatureEnum.IMM16: return (op.IsImm && op.NBits == 16);
-                case AsmSignatureEnum.IMM32: return (op.IsImm && op.NBits == 32);
-                case AsmSignatureEnum.IMM64: return (op.IsImm && op.NBits == 64);
+                case AsmSignatureEnum.IMM8: return op.IsImm && op.NBits == 8;
+                case AsmSignatureEnum.IMM16: return op.IsImm && op.NBits == 16;
+                case AsmSignatureEnum.IMM32: return op.IsImm && op.NBits == 32;
+                case AsmSignatureEnum.IMM64: return op.IsImm && op.NBits == 64;
 
                 case AsmSignatureEnum.imm_imm: return true;
                 case AsmSignatureEnum.imm16_imm: return true;
@@ -582,35 +582,35 @@ namespace AsmDude.SignatureHelp
                 case AsmSignatureEnum.imm32_imm: return true;
                 case AsmSignatureEnum.imm_imm32: return true;
 
-                case AsmSignatureEnum.NEAR: return (op.IsImm);
-                case AsmSignatureEnum.FAR: return (op.IsImm);
-                case AsmSignatureEnum.SHORT_ENUM: return (op.IsImm);
-                case AsmSignatureEnum.UNITY: return (op.IsImm && (op.Imm == 1));
+                case AsmSignatureEnum.NEAR: return op.IsImm;
+                case AsmSignatureEnum.FAR: return op.IsImm;
+                case AsmSignatureEnum.SHORT_ENUM: return op.IsImm;
+                case AsmSignatureEnum.UNITY: return op.IsImm && (op.Imm == 1);
 
                 case AsmSignatureEnum.Z: return false;
                 case AsmSignatureEnum.ER: return false;
                 case AsmSignatureEnum.SAE: return false;
 
-                case AsmSignatureEnum.K: return (op.IsReg && (RegisterTools.IsOpmaskRegister(op.Rn)));
-                case AsmSignatureEnum.XMMREG: return (op.IsReg && RegisterTools.IsSseRegister(op.Rn));
-                case AsmSignatureEnum.YMMREG: return (op.IsReg && RegisterTools.IsAvxRegister(op.Rn));
-                case AsmSignatureEnum.ZMMREG: return (op.IsReg && RegisterTools.IsAvx512Register(op.Rn));
+                case AsmSignatureEnum.K: return op.IsReg && RegisterTools.IsOpmaskRegister(op.Rn);
+                case AsmSignatureEnum.XMMREG: return op.IsReg && RegisterTools.IsSseRegister(op.Rn);
+                case AsmSignatureEnum.YMMREG: return op.IsReg && RegisterTools.IsAvxRegister(op.Rn);
+                case AsmSignatureEnum.ZMMREG: return op.IsReg && RegisterTools.IsAvx512Register(op.Rn);
 
-                case AsmSignatureEnum.M32BCST: return (op.IsMem && op.NBits == 32);
-                case AsmSignatureEnum.M64BCST: return (op.IsMem && op.NBits == 64);
-                case AsmSignatureEnum.MEM_OFFSET: return (op.IsImm);
-                case AsmSignatureEnum.REG_SREG: return (op.IsReg && (RegisterTools.IsSegmentRegister(op.Rn)));
-                case AsmSignatureEnum.CR0: return (op.IsReg && (op.Rn == Rn.CR0));
-                case AsmSignatureEnum.CR1: return (op.IsReg && (op.Rn == Rn.CR1));
-                case AsmSignatureEnum.CR2: return (op.IsReg && (op.Rn == Rn.CR2));
-                case AsmSignatureEnum.CR3: return (op.IsReg && (op.Rn == Rn.CR3));
-                case AsmSignatureEnum.CR4: return (op.IsReg && (op.Rn == Rn.CR4));
-                case AsmSignatureEnum.CR5: return (op.IsReg && (op.Rn == Rn.CR5));
-                case AsmSignatureEnum.CR6: return (op.IsReg && (op.Rn == Rn.CR6));
-                case AsmSignatureEnum.CR7: return (op.IsReg && (op.Rn == Rn.CR7));
-                case AsmSignatureEnum.CR8: return (op.IsReg && (op.Rn == Rn.CR8));
-                case AsmSignatureEnum.REG_DREG: return (op.IsReg && (RegisterTools.IsDebugRegister(op.Rn)));
-                case AsmSignatureEnum.BNDREG: return (op.IsReg && (RegisterTools.IsBoundRegister(op.Rn)));
+                case AsmSignatureEnum.M32BCST: return op.IsMem && op.NBits == 32;
+                case AsmSignatureEnum.M64BCST: return op.IsMem && op.NBits == 64;
+                case AsmSignatureEnum.MEM_OFFSET: return op.IsImm;
+                case AsmSignatureEnum.REG_SREG: return op.IsReg && RegisterTools.IsSegmentRegister(op.Rn);
+                case AsmSignatureEnum.CR0: return op.IsReg && (op.Rn == Rn.CR0);
+                case AsmSignatureEnum.CR1: return op.IsReg && (op.Rn == Rn.CR1);
+                case AsmSignatureEnum.CR2: return op.IsReg && (op.Rn == Rn.CR2);
+                case AsmSignatureEnum.CR3: return op.IsReg && (op.Rn == Rn.CR3);
+                case AsmSignatureEnum.CR4: return op.IsReg && (op.Rn == Rn.CR4);
+                case AsmSignatureEnum.CR5: return op.IsReg && (op.Rn == Rn.CR5);
+                case AsmSignatureEnum.CR6: return op.IsReg && (op.Rn == Rn.CR6);
+                case AsmSignatureEnum.CR7: return op.IsReg && (op.Rn == Rn.CR7);
+                case AsmSignatureEnum.CR8: return op.IsReg && (op.Rn == Rn.CR8);
+                case AsmSignatureEnum.REG_DREG: return op.IsReg && RegisterTools.IsDebugRegister(op.Rn);
+                case AsmSignatureEnum.BNDREG: return op.IsReg && RegisterTools.IsBoundRegister(op.Rn);
 
                 default:
                     AsmDudeToolsStatic.Output_WARNING("AsmSignatureTools:isAllowed: add " + operandType);

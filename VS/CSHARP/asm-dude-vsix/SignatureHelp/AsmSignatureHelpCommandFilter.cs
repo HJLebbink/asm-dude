@@ -57,6 +57,7 @@ namespace AsmDude.SignatureHelp
 
         public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
+            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
             try
             {
                 SnapshotPoint currentPoint = this._textView.Caret.Position.BufferPosition;
@@ -92,7 +93,7 @@ namespace AsmDude.SignatureHelp
                             }
                             else
                             {
-                                bool enterPressed = (nCmdID == (uint)VSConstants.VSStd2KCmdID.RETURN);
+                                bool enterPressed = nCmdID == (uint)VSConstants.VSStd2KCmdID.RETURN;
                                 if (enterPressed && (this._session != null))
                                 {
                                     this._session.Dismiss();
@@ -112,6 +113,7 @@ namespace AsmDude.SignatureHelp
 
         public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
         {
+            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
             return this._nextCommandHandler.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
         }
     }
