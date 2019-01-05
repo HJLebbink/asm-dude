@@ -57,7 +57,7 @@ namespace AsmDude.OptionsPage
             #endregion
         }
 
-        public object GetPropValue(String propName)
+        public object GetPropValue(string propName)
         {
             try
             {
@@ -69,7 +69,7 @@ namespace AsmDude.OptionsPage
                 return "ERROR";
             }
         }
-        public void SetPropValue(String propName, object o)
+        public void SetPropValue(string propName, object o)
         {
             try
             {
@@ -232,7 +232,7 @@ namespace AsmDude.OptionsPage
 
         public System.Drawing.Color SyntaxHighlighting_Opcode
         {
-            get { return (this.ColorMnemonic_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorMnemonic_UI.SelectedColor.Value) : System.Drawing.Color.Blue; }
+            get { return this.ColorMnemonic_UI.SelectedColor.HasValue ? AsmDudeToolsStatic.ConvertColor(this.ColorMnemonic_UI.SelectedColor.Value) : System.Drawing.Color.Blue; }
             set { this.ColorMnemonic_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
         public bool SyntaxHighlighting_Opcode_Italic
@@ -243,7 +243,7 @@ namespace AsmDude.OptionsPage
 
         public System.Drawing.Color SyntaxHighlighting_Register
         {
-            get { return (this.ColorRegister_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorRegister_UI.SelectedColor.Value) : System.Drawing.Color.DarkRed; }
+            get { return this.ColorRegister_UI.SelectedColor.HasValue ? AsmDudeToolsStatic.ConvertColor(this.ColorRegister_UI.SelectedColor.Value) : System.Drawing.Color.DarkRed; }
             set { this.ColorRegister_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
         public bool SyntaxHighlighting_Register_Italic
@@ -253,7 +253,7 @@ namespace AsmDude.OptionsPage
         }
         public System.Drawing.Color SyntaxHighlighting_Remark
         {
-            get { return (this.ColorRemark_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorRemark_UI.SelectedColor.Value) : System.Drawing.Color.Green; }
+            get { return this.ColorRemark_UI.SelectedColor.HasValue ? AsmDudeToolsStatic.ConvertColor(this.ColorRemark_UI.SelectedColor.Value) : System.Drawing.Color.Green; }
             set { this.ColorRemark_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
         public bool SyntaxHighlighting_Remark_Italic
@@ -263,7 +263,7 @@ namespace AsmDude.OptionsPage
         }
         public System.Drawing.Color SyntaxHighlighting_Directive
         {
-            get { return (this.ColorDirective_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorDirective_UI.SelectedColor.Value) : System.Drawing.Color.Magenta; }
+            get { return this.ColorDirective_UI.SelectedColor.HasValue ? AsmDudeToolsStatic.ConvertColor(this.ColorDirective_UI.SelectedColor.Value) : System.Drawing.Color.Magenta; }
             set { this.ColorDirective_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
         public bool SyntaxHighlighting_Directive_Italic
@@ -273,7 +273,7 @@ namespace AsmDude.OptionsPage
         }
         public System.Drawing.Color SyntaxHighlighting_Constant
         {
-            get { return (this.ColorConstant_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorConstant_UI.SelectedColor.Value) : System.Drawing.Color.Chocolate; }
+            get { return this.ColorConstant_UI.SelectedColor.HasValue ? AsmDudeToolsStatic.ConvertColor(this.ColorConstant_UI.SelectedColor.Value) : System.Drawing.Color.Chocolate; }
             set { this.ColorConstant_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
         public bool SyntaxHighlighting_Constant_Italic
@@ -283,7 +283,7 @@ namespace AsmDude.OptionsPage
         }
         public System.Drawing.Color SyntaxHighlighting_Jump
         {
-            get { return (this.ColorJump_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorJump_UI.SelectedColor.Value) : System.Drawing.Color.Blue; }
+            get { return this.ColorJump_UI.SelectedColor.HasValue ? AsmDudeToolsStatic.ConvertColor(this.ColorJump_UI.SelectedColor.Value) : System.Drawing.Color.Blue; }
             set { this.ColorJump_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
         public bool SyntaxHighlighting_Jump_Italic
@@ -293,7 +293,7 @@ namespace AsmDude.OptionsPage
         }
         public System.Drawing.Color SyntaxHighlighting_Label
         {
-            get { return (this.ColorLabel_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorLabel_UI.SelectedColor.Value) : System.Drawing.Color.OrangeRed; }
+            get { return this.ColorLabel_UI.SelectedColor.HasValue ? AsmDudeToolsStatic.ConvertColor(this.ColorLabel_UI.SelectedColor.Value) : System.Drawing.Color.OrangeRed; }
             set { this.ColorLabel_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
         public bool SyntaxHighlighting_Label_Italic
@@ -303,7 +303,7 @@ namespace AsmDude.OptionsPage
         }
         public System.Drawing.Color SyntaxHighlighting_Misc
         {
-            get { return (this.ColorMisc_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorMisc_UI.SelectedColor.Value) : System.Drawing.Color.DarkOrange; }
+            get { return this.ColorMisc_UI.SelectedColor.HasValue ? AsmDudeToolsStatic.ConvertColor(this.ColorMisc_UI.SelectedColor.Value) : System.Drawing.Color.DarkOrange; }
             set { this.ColorMisc_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
         public bool SyntaxHighlighting_Misc_Italic
@@ -313,7 +313,7 @@ namespace AsmDude.OptionsPage
         }
         public System.Drawing.Color SyntaxHighlighting_Userdefined1
         {
-            get { return (this.ColorUserDefined1_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorUserDefined1_UI.SelectedColor.Value) : System.Drawing.Color.Silver; }
+            get { return this.ColorUserDefined1_UI.SelectedColor.HasValue ? AsmDudeToolsStatic.ConvertColor(this.ColorUserDefined1_UI.SelectedColor.Value) : System.Drawing.Color.Silver; }
             set { this.ColorUserDefined1_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
         public bool SyntaxHighlighting_Userdefined1_Italic
@@ -323,7 +323,7 @@ namespace AsmDude.OptionsPage
         }
         public System.Drawing.Color SyntaxHighlighting_Userdefined2
         {
-            get { return (this.ColorUserDefined2_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorUserDefined2_UI.SelectedColor.Value) : System.Drawing.Color.Silver; }
+            get { return this.ColorUserDefined2_UI.SelectedColor.HasValue ? AsmDudeToolsStatic.ConvertColor(this.ColorUserDefined2_UI.SelectedColor.Value) : System.Drawing.Color.Silver; }
             set { this.ColorUserDefined2_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
         public bool SyntaxHighlighting_Userdefined2_Italic
@@ -333,7 +333,7 @@ namespace AsmDude.OptionsPage
         }
         public System.Drawing.Color SyntaxHighlighting_Userdefined3
         {
-            get { return (this.ColorUserDefined3_UI.SelectedColor.HasValue) ? AsmDudeToolsStatic.ConvertColor(this.ColorUserDefined3_UI.SelectedColor.Value) : System.Drawing.Color.Silver; }
+            get { return this.ColorUserDefined3_UI.SelectedColor.HasValue ? AsmDudeToolsStatic.ConvertColor(this.ColorUserDefined3_UI.SelectedColor.Value) : System.Drawing.Color.Silver; }
             set { this.ColorUserDefined3_UI.SelectedColor = AsmDudeToolsStatic.ConvertColor(value); }
         }
         public bool SyntaxHighlighting_Userdefined3_Italic
@@ -353,7 +353,7 @@ namespace AsmDude.OptionsPage
         {
             get
             {
-                return (this.KeywordHighling_BackgroundColor_UI.SelectedColor.HasValue)
+                return this.KeywordHighling_BackgroundColor_UI.SelectedColor.HasValue
                     ? AsmDudeToolsStatic.ConvertColor(this.KeywordHighling_BackgroundColor_UI.SelectedColor.Value)
                     : System.Drawing.Color.Cyan;
             }
@@ -368,7 +368,7 @@ namespace AsmDude.OptionsPage
         {
             get
             {
-                return (this.KeywordHighling_BorderColor_UI.SelectedColor.HasValue)
+                return this.KeywordHighling_BorderColor_UI.SelectedColor.HasValue
                     ? AsmDudeToolsStatic.ConvertColor(this.KeywordHighling_BorderColor_UI.SelectedColor.Value)
                     : System.Drawing.Color.Cyan;
             }
