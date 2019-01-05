@@ -193,11 +193,11 @@ namespace AsmDude.HighlightWord
 
                     // Find the new spans
                     FindData findData;
-                    Rn reg = AsmTools.RegisterTools.ParseRn(this.NewWord);
+                    Rn reg = RegisterTools.ParseRn(this.NewWord);
                     if (reg != Rn.NOREG) 
                     {
                         AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. Register={1}", this.ToString(), this.NewWord));
-                        string t = AsmTools.RegisterTools.GetRelatedRegister(reg);
+                        string t = RegisterTools.GetRelatedRegister(reg);
                         findData = new FindData(t, s)
                         {
                             FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions
@@ -205,11 +205,11 @@ namespace AsmDude.HighlightWord
                     }
                     else
                     {
-                        var (Valid, Value, NBits) = AsmTools.AsmSourceTools.Parse_Constant(this.NewWord);
+                        var (Valid, Value, NBits) = AsmSourceTools.Parse_Constant(this.NewWord);
                         if (Valid)
                         {
                             AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. Contant={1}", this.ToString(), this.NewWord));
-                            string t = AsmTools.AsmSourceTools.Get_Related_Constant(this.NewWord, Value, NBits);
+                            string t = AsmSourceTools.Get_Related_Constant(this.NewWord, Value, NBits);
                             findData = new FindData(t, s)
                             {
                                 FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions
