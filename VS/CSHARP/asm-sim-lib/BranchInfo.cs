@@ -47,11 +47,11 @@ namespace AsmSim
             if (false)
             {
                 BoolExpr bc = this.BranchCondition.Translate(ctx) as BoolExpr;
-                return (this.BranchTaken) ? bc : ctx.MkNot(bc);
+                return this.BranchTaken ? bc : ctx.MkNot(bc);
             }
             else
             {
-                return (this.BranchTaken) ? this.BranchCondition : ctx.MkNot(this.BranchCondition);
+                return this.BranchTaken ? this.BranchCondition : ctx.MkNot(this.BranchCondition);
             }
         }
         public override string ToString()

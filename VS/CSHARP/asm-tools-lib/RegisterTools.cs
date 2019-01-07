@@ -35,10 +35,10 @@ namespace AsmTools
     {
         public static (bool Valid, Rn Reg, int NBits) ToRn(string str, bool isCapitals = false)
         {
-            Rn rn = RegisterTools.ParseRn(str, isCapitals);
+            Rn rn = ParseRn(str, isCapitals);
             return (rn == Rn.NOREG)
                 ? (Valid: false, Reg: Rn.NOREG, NBits: 0)
-                : (Valid: true, Reg: rn, NBits: RegisterTools.NBits(rn));
+                : (Valid: true, Reg: rn, NBits: NBits(rn));
         }
 
         public static Rn ParseRn(string str, bool isCapitals = false)
@@ -47,7 +47,7 @@ namespace AsmTools
             if (isCapitals && (str != str.ToUpper())) throw new Exception();
             #endif
 
-            switch ((isCapitals) ? str : str.ToUpper())
+            switch (isCapitals ? str : str.ToUpper())
             {
                 case "RAX": return Rn.RAX;
                 case "EAX": return Rn.EAX;
@@ -752,7 +752,7 @@ namespace AsmTools
 
         public static bool IsRegister(string keyword, bool strIsCapitals = false)
         {
-            return RegisterTools.ParseRn(keyword, strIsCapitals) != Rn.NOREG;
+            return ParseRn(keyword, strIsCapitals) != Rn.NOREG;
         }
 
         public static RegisterType GetRegisterType(Rn rn)

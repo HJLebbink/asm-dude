@@ -76,7 +76,7 @@ namespace AsmSim
                 {
                     if (opcodeBase != null)
                     {
-                        flags |= (opcodeBase.FlagsReadStatic | opcodeBase.FlagsWriteStatic);
+                        flags |= opcodeBase.FlagsReadStatic | opcodeBase.FlagsWriteStatic;
                         foreach (Rn r in opcodeBase.RegsReadStatic) regs.Add(RegisterTools.Get64BitsRegister(r));
                         foreach (Rn r in opcodeBase.RegsWriteStatic) regs.Add(RegisterTools.Get64BitsRegister(r));
                         mem |= opcodeBase.MemWriteStatic || opcodeBase.MemReadStatic;
@@ -100,7 +100,7 @@ namespace AsmSim
             }
             else
             {
-                return "!" + (lineNumber).ToString();
+                return "!" + lineNumber.ToString();
             }
         }
         public (string Key1, string Key2) Get_Key((int lineNumber1, int lineNumber2) lineNumber)
@@ -153,7 +153,7 @@ namespace AsmSim
 
         public string Get_Line_Str(int lineNumber)
         {
-            return (this.HasLine(lineNumber)) ? StaticFlow.ToString(this.Current[lineNumber]) : "";
+            return this.HasLine(lineNumber) ? ToString(this.Current[lineNumber]) : "";
         }
         
         public bool Has_Prev_LineNumber(int lineNumber)
@@ -278,13 +278,13 @@ namespace AsmSim
         /// <summary>A BranchPoint is an code line that has two next states (that need not be different)</summary>
         public bool Is_Branch_Point(int lineNumber)
         {
-            return (this._graph.OutDegree(lineNumber) > 1);
+            return this._graph.OutDegree(lineNumber) > 1;
         }
 
         /// <summary>A MergePoint is a code line which has at least two control flows that merge into this line</summary>
         public bool Is_Merge_Point(int lineNumber)
         {
-            return (this._graph.InDegree(lineNumber) > 1);
+            return this._graph.InDegree(lineNumber) > 1;
         }
 
         #endregion
@@ -446,7 +446,7 @@ namespace AsmSim
             }
             else
             {
-                return string.Format("{0}{1} {2}", ((t.label.Length > 0) ? (t.label + ": ") : ""), t.mnemonic, arguments);
+                return string.Format("{0}{1} {2}", (t.label.Length > 0) ? (t.label + ": ") : "", t.mnemonic, arguments);
             }
         }
 
@@ -461,7 +461,7 @@ namespace AsmSim
                 sb.Append(" [Prev:");
                 foreach (var (LineNumber, IsBranch) in this.Get_Prev_LineNumber(i))
                 {
-                    sb.Append(LineNumber + ((IsBranch) ? "B" : "R") + ",");  // B=Branching; R=Regular Continuation
+                    sb.Append(LineNumber + (IsBranch ? "B" : "R") + ",");  // B=Branching; R=Regular Continuation
                 }
                 sb.Append("][Next:");
                 var (Regular, Branch) = this.Get_Next_LineNumber(i);
@@ -477,11 +477,11 @@ namespace AsmSim
         #region Private Methods
 
         private IList<(string Label, Mnemonic Mnemonic, string[] Args)> Current {
-            get { return (this._use_Parsed_Code_A) ? this._parsed_Code_A : this._parsed_Code_B; }
+            get { return this._use_Parsed_Code_A ? this._parsed_Code_A : this._parsed_Code_B; }
         }
         private IList<(string Label, Mnemonic Mnemonic, string[] Args)> Previous
         {
-            get { return (this._use_Parsed_Code_A) ? this._parsed_Code_B : this._parsed_Code_A; }
+            get { return this._use_Parsed_Code_A ? this._parsed_Code_B : this._parsed_Code_A; }
         }
 
         private void Add_Edge(int jumpFrom, int jumpTo, bool isBranch)
@@ -581,7 +581,7 @@ namespace AsmSim
             for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
             {
                 string line = lines[lineNumber];
-                var (Valid, BeginPos, EndPos) = AsmTools.AsmSourceTools.GetLabelDefPos(line);
+                var (Valid, BeginPos, EndPos) = AsmSourceTools.GetLabelDefPos(line);
                 if (Valid)
                 {
                     int labelBeginPos = BeginPos;

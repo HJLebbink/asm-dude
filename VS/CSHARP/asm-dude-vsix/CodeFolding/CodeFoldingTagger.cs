@@ -32,6 +32,7 @@ using System.Text;
 using Microsoft.VisualStudio.Shell;
 using AsmTools;
 using Amib.Threading;
+using Microsoft.VisualStudio.Threading;
 
 namespace AsmDude.CodeFolding
 {
@@ -628,7 +629,7 @@ namespace AsmDude.CodeFolding
 
         private void Disable()
         {
-            string filename = AsmDudeToolsStatic.Get_Filename_Async(this._buffer).Result;
+            string filename = AsmDudeToolsStatic.GetFilename(this._buffer);
             string msg = string.Format("Performance of CodeFoldingTagger is horrible: disabling folding for {0}.", filename);
             AsmDudeToolsStatic.Output_WARNING(msg);
 

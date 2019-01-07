@@ -74,7 +74,7 @@ namespace AsmDude.Tools
         private readonly Delay _delay;
         private bool _bussy = false;
         private IWorkItemResult _thread_Result;
-        private object _updateLock = new object();
+        private readonly object _updateLock = new object();
         #endregion Private Fields
 
         #region Constructor
@@ -101,7 +101,7 @@ namespace AsmDude.Tools
             this._hasLabel = new HashSet<uint>();
             this._hasDef = new HashSet<uint>();
             this._undefined_includes = new List<(string Include_Filename, string Path, string Source_Filename, int LineNumber)>();
-            this._thisFilename = AsmDudeToolsStatic.Get_Filename_Async(this._buffer).Result;
+            this._thisFilename = AsmDudeToolsStatic.GetFilename(this._buffer);
             this._delay = new Delay(AsmDudePackage.msSleepBeforeAsyncExecution, 100, AsmDudeTools.Instance.Thread_Pool);
 
             this.Enabled = Settings.Default.IntelliSense_Label_Analysis_On;
@@ -330,7 +330,7 @@ namespace AsmDude.Tools
                 this._hasLabel.Clear();
                 this._hasDef.Clear();
                 this._filenames.Clear();
-                this._filenames.Add(0, AsmDudeToolsStatic.Get_Filename_Async(this._buffer).Result);
+                this._filenames.Add(0, AsmDudeToolsStatic.GetFilename(this._buffer));
                 this._undefined_includes.Clear();
 
                 const uint fileId = 0; // use fileId=0 for the main file (and use numbers higher than 0 for included files)
@@ -378,7 +378,7 @@ namespace AsmDude.Tools
             AsmDudeToolsStatic.Disable_Message(msg, this._thisFilename, this.Error_List_Provider);
         }
 
-        private static int Get_Line_Number(IMappingTagSpan<AsmTokenTag> tag)
+        private static int Get_Line_Number_UNUSED(IMappingTagSpan<AsmTokenTag> tag)
         {
             return AsmDudeToolsStatic.Get_LineNumber(tag.Span.GetSpans(tag.Span.AnchorBuffer)[0]);
         }

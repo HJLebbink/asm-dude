@@ -93,9 +93,9 @@ namespace AsmDude.QuickInfo
         /// </summary>
         private void OnTextViewMouseHover(object sender, MouseHoverEventArgs e)
         {
+            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:OnTextViewMouseHover: file={1}", this.ToString(), AsmDudeToolsStatic.GetFilename(this._textView.TextBuffer)));
             try
             {
-                //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: file=" + AsmDudeToolsStatic.GetFileName(this._textView.TextBuffer));
                 SnapshotPoint? point = this.GetMousePosition(new SnapshotPoint(this._textView.TextSnapshot, e.Position));
                 if (point.HasValue)
                 {
@@ -111,7 +111,7 @@ namespace AsmDude.QuickInfo
 
                         if (this._session == null)
                         {
-                            AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: A: session was null, create a new session  for triggerPoint " + pos + "; pos2=" + pos2);
+                            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:OnTextViewMouseHover: A: session was null, create a new session for triggerPoint {1}; pos2={2}", this.ToString(), pos, pos2));
                             this._session = this._quickInfoBroker.TriggerQuickInfo(this._textView, triggerPoint, false);
                             if (this._session != null)
                             {
@@ -125,7 +125,7 @@ namespace AsmDude.QuickInfo
                         {
                             if (this._session.IsDismissed)
                             {
-                                AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: B: session was not null but was dismissed, create a new session  for triggerPoint " + pos + "; pos2=" + pos2);
+                                AsmDudeToolsStatic.Output_INFO(string.Format("{0}:OnTextViewMouseHover: B: session was not null but was dismissed, create a new session  for triggerPoint {1}; pos2={2}", this.ToString(), pos, pos2));
 
                                 this._session = this._quickInfoBroker.TriggerQuickInfo(this._textView, triggerPoint, false);
                                 if (this._session != null) this._session.Dismissed += this._session_Dismissed;
@@ -134,11 +134,11 @@ namespace AsmDude.QuickInfo
                             {
                                 if (this._session.ApplicableToSpan.GetSpan(this._textView.TextSnapshot).IntersectsWith(new Span(point.Value.Position, 0)))
                                 {
-                                    AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: C: session was not dismissed: intersects!");
+                                    AsmDudeToolsStatic.Output_INFO(string.Format("{0}:OnTextViewMouseHover: C: session was not dismissed: intersects!", this.ToString()));
                                 }
                                 else
                                 {
-                                    AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:OnTextViewMouseHover: D: session  was not dismissed but we need a new session for triggerPoint " + pos + "; pos2=" + pos2);
+                                    AsmDudeToolsStatic.Output_INFO(string.Format("{0}:OnTextViewMouseHover: D: session  was not dismissed but we need a new session for triggerPoint {1}; pos2={2}", this.ToString(), pos, pos2));
 
                                     //if (this._session != null) this._session.Dismiss();
                                     this._session = this._quickInfoBroker.TriggerQuickInfo(this._textView, triggerPoint, false);
@@ -151,7 +151,7 @@ namespace AsmDude.QuickInfo
                     {
                         //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:OnTextViewMouseHover: Quickinfo for disassembly view", ToString()));
                         System.Drawing.Point p = System.Windows.Forms.Control.MousePosition;
-                        this.ToolTipLegacy(point.Value, new System.Windows.Point(p.X, p.Y));
+                        this.ToolTipLegacy(point.Value, new Point(p.X, p.Y));
                     }
                     else
                     {
@@ -196,13 +196,13 @@ namespace AsmDude.QuickInfo
 
             //1] find the start of the current keyword
             SnapshotPoint start = triggerPoint;
-            while ((start > line.Start) && !AsmTools.AsmSourceTools.IsSeparatorChar((start - 1).GetChar()))
+            while ((start > line.Start) && !AsmSourceTools.IsSeparatorChar((start - 1).GetChar()))
             {
                 start -= 1;
             }
             //2] find the end of the current keyword
             SnapshotPoint end = triggerPoint;
-            while (((end + 1) < line.End) && !AsmTools.AsmSourceTools.IsSeparatorChar((end + 1).GetChar()))
+            while (((end + 1) < line.End) && !AsmSourceTools.IsSeparatorChar((end + 1).GetChar()))
             {
                 end += 1;
             }
@@ -217,7 +217,7 @@ namespace AsmDude.QuickInfo
             this._session = null;
         }
 
-        private void ToolTipLegacy(SnapshotPoint triggerPoint, System.Windows.Point p)
+        private void ToolTipLegacy(SnapshotPoint triggerPoint, Point p)
         {
             var span = this.Get_Keyword_Span_At_Point(triggerPoint);
             ITrackingSpan applicableTo = this._textView.TextSnapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeInclusive);
@@ -234,7 +234,7 @@ namespace AsmDude.QuickInfo
             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword, false);
             if (mnemonic != Mnemonic.NONE)
             {
-                var instructionTooltipWindow = new InstructionTooltipWindow(AsmDudeToolsStatic.Get_Font_Color_Async().Result)
+                var instructionTooltipWindow = new InstructionTooltipWindow(AsmDudeToolsStatic.GetFontColor())
                 {
                     Owner = this // set the owner of this windows such that we can manually close this window
                 };
@@ -247,7 +247,7 @@ namespace AsmDude.QuickInfo
                     BorderBrush = System.Windows.Media.Brushes.LightGray,
                     BorderThickness = new Thickness(1.0),
                     CornerRadius = new CornerRadius(2.0),
-                    Background = AsmDudeToolsStatic.Get_Background_Color_Async().Result,
+                    Background = AsmDudeToolsStatic.GetBackgroundColor(),
                     Child = instructionTooltipWindow
                 };
 

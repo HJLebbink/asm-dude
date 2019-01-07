@@ -44,7 +44,7 @@ namespace AsmTools
 
             if (line.Length > 0)
             {
-                var (Valid, BeginPos, EndPos) = AsmTools.AsmSourceTools.GetLabelDefPos(line);
+                var (Valid, BeginPos, EndPos) = GetLabelDefPos(line);
                 int codeBeginPos = 0;
                 if (Valid)
                 {
@@ -57,7 +57,7 @@ namespace AsmTools
                     //Console.WriteLine("found label " + label);
                 }
 
-                var remarkPos = AsmTools.AsmSourceTools.GetRemarkPos(line);
+                var remarkPos = GetRemarkPos(line);
                 int codeEndPos = line.Length;
                 if (remarkPos.Valid)
                 {
@@ -73,12 +73,12 @@ namespace AsmTools
                     //Console.WriteLine(codeStr + ":" + codeStr.Length);
 
                     // get the first keyword, check if it is a mnemonic
-                    var keyword1Pos = AsmTools.AsmSourceTools.GetKeywordPos(0, codeStr); // find a keyword starting a position 0
+                    var keyword1Pos = GetKeywordPos(0, codeStr); // find a keyword starting a position 0
                     string keyword1 = codeStr.Substring(keyword1Pos.BeginPos, keyword1Pos.EndPos - keyword1Pos.BeginPos);
                     if (keyword1.Length > 0)
                     {
                         int startArgPos = keyword1Pos.EndPos;
-                        mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(keyword1, true);
+                        mnemonic = ParseMnemonic(keyword1, true);
                         switch (mnemonic)
                         {
                             case Mnemonic.NONE: break;
@@ -89,15 +89,15 @@ namespace AsmTools
                             case Mnemonic.REPNZ:
                                 {
                                     // find a second keyword starting a postion keywordPos.EndPos
-                                    var keyword2Pos = AsmTools.AsmSourceTools.GetKeywordPos(keyword1Pos.EndPos+1, codeStr); // find a keyword starting a position 0
+                                    var keyword2Pos = GetKeywordPos(keyword1Pos.EndPos+1, codeStr); // find a keyword starting a position 0
                                     string keyword2 = codeStr.Substring(keyword2Pos.BeginPos, keyword2Pos.EndPos - keyword2Pos.BeginPos);
                                     if (keyword2.Length > 0)
                                     {
-                                        Mnemonic mnemonic2 = AsmTools.AsmSourceTools.ParseMnemonic(keyword2, true);
+                                        Mnemonic mnemonic2 = ParseMnemonic(keyword2, true);
                                         if (mnemonic2 != Mnemonic.NONE)
                                         {
                                             startArgPos = keyword2Pos.EndPos;
-                                            mnemonic = AsmTools.AsmSourceTools.ParseMnemonic(mnemonic.ToString() + "_" + mnemonic2.ToString(), true);
+                                            mnemonic = ParseMnemonic(mnemonic.ToString() + "_" + mnemonic2.ToString(), true);
                                         }
                                     }
                                     break;
@@ -305,7 +305,7 @@ namespace AsmTools
             int startPos = (pos >= nChars) ? nChars - 1 : pos;
             for (int i = startPos; i >= 0; --i)
             {
-                if (AsmSourceTools.IsRemarkChar(line[i]))
+                if (IsRemarkChar(line[i]))
                 {
                     return true;
                 }
@@ -324,7 +324,7 @@ namespace AsmTools
             for (int i = 0; i < nChars; ++i)
             {
                 char c = line[i];
-                if (AsmSourceTools.IsRemarkChar(c))
+                if (IsRemarkChar(c))
                 {
                     return true;
                 }
@@ -348,7 +348,7 @@ namespace AsmTools
         {
             for (int i = 0; i < line.Length; ++i)
             {
-                if (AsmSourceTools.IsRemarkChar(line[i]))
+                if (IsRemarkChar(line[i]))
                 {
                     return i;
                 }
@@ -486,7 +486,7 @@ namespace AsmTools
                     else
                     {
                         foundDisplacement = true;
-                        displacement = (negativeDisplacement) ? -(long)Value : (long)Value;
+                        displacement = negativeDisplacement ? -(long)Value : (long)Value;
                     }
                 }
                 else
@@ -590,7 +590,7 @@ namespace AsmTools
             #endregion
         }
 
-        private static int FindEndNextWord(string str, int begin)
+        private static int FindEndNextWord_UNUSED(string str, int begin)
         {
             for (int i = begin; i < str.Length; ++i)
             {
@@ -605,7 +605,7 @@ namespace AsmTools
 
         public static string GetKeyword(int pos, string line)
         {
-            (int beginPos, int endPos) = AsmSourceTools.GetKeywordPos(pos, line);
+            (int beginPos, int endPos) = GetKeywordPos(pos, line);
             return line.Substring(beginPos, endPos - beginPos);
         }
 
@@ -632,7 +632,7 @@ namespace AsmTools
             // find the end of current keyword; i.e. read until a separator
             while (pos >= begin)
             {
-                if (AsmTools.AsmSourceTools.IsSeparatorChar(line[pos]))
+                if (IsSeparatorChar(line[pos]))
                 {
                     //Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; pos={1} has a separator. Found end of current keyword", line, pos));
                     pos--;
@@ -649,7 +649,7 @@ namespace AsmTools
             int endPrevious = begin;
             while (pos >= begin)
             {
-                if (AsmTools.AsmSourceTools.IsSeparatorChar(line[pos]))
+                if (IsSeparatorChar(line[pos]))
                 {
                     //Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; pos={1} has a separator.", line, pos));
                     pos--;
@@ -667,7 +667,7 @@ namespace AsmTools
             int beginPrevious = begin; // set the begin of the previous keyword to the begin of search window, such that if no separator is found this will be the begin
             while (pos >= begin)
             {
-                if (AsmTools.AsmSourceTools.IsSeparatorChar(line[pos]))
+                if (IsSeparatorChar(line[pos]))
                 {
                     beginPrevious = pos + 1;
                     //Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; beginPrevious={1}; pos={2}", line, beginPrevious, pos));
@@ -706,7 +706,7 @@ namespace AsmTools
             for (int i1 = pos - 1; i1 >= 0; --i1)
             {
                 char c = line[i1];
-                if (AsmSourceTools.IsSeparatorChar(c) || Char.IsControl(c) || AsmSourceTools.IsRemarkChar(c))
+                if (IsSeparatorChar(c) || Char.IsControl(c) || IsRemarkChar(c))
                 {
                     beginPos = i1 + 1;
                     break;
@@ -717,7 +717,7 @@ namespace AsmTools
             for (int i2 = pos; i2 < line.Length; ++i2)
             {
                 char c = line[i2];
-                if (AsmSourceTools.IsSeparatorChar(c) || Char.IsControl(c) || AsmSourceTools.IsRemarkChar(c))
+                if (IsSeparatorChar(c) || Char.IsControl(c) || IsRemarkChar(c))
                 {
                     endPos = i2;
                     break;
@@ -745,7 +745,7 @@ namespace AsmTools
             for (; i < nChars; ++i)
             {
                 char c = line[i];
-                if (AsmSourceTools.IsRemarkChar(c))
+                if (IsRemarkChar(c))
                 {
                     return (Valid: false, BeginPos: 0, EndPos: 0);
                 }
@@ -780,11 +780,11 @@ namespace AsmTools
                         return (Valid: true, BeginPos: beginPos, EndPos: i);
                     }
                 }
-                else if (AsmSourceTools.IsRemarkChar(c))
+                else if (IsRemarkChar(c))
                 {
                     return (Valid: false, BeginPos: 0, EndPos: 0);
                 }
-                else if (AsmSourceTools.IsSeparatorChar(c))
+                else if (IsSeparatorChar(c))
                 {
                     // found another keyword: labels can only be the first keyword on a line
                     break;
@@ -831,7 +831,7 @@ namespace AsmTools
             int nChars = line.Length;
             for (int i = 0; i < nChars; ++i)
             {
-                if (AsmSourceTools.IsRemarkChar(line[i]))
+                if (IsRemarkChar(line[i]))
                 {
                     return (Valid: true, BeginPos: i, EndPos: nChars);
                 }
@@ -907,7 +907,7 @@ namespace AsmTools
         public static string ToStringBin(ulong value, int nBits)
         {
             StringBuilder sb = new StringBuilder();
-            for (int i = (nBits - 1); i >= 0; --i)
+            for (int i = nBits - 1; i >= 0; --i)
             {
                 int bit = (int)((value >> i) & 1);
                 sb.Append(bit);

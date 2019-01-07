@@ -118,7 +118,7 @@ namespace AsmDude.QuickInfo
                 return;
             }
 
-            Brush foreground = AsmDudeToolsStatic.Get_Font_Color_Async().Result;
+            Brush foreground = AsmDudeToolsStatic.GetFontColor();
 
             var enumerator = this._aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint)).GetEnumerator();
             if (enumerator.MoveNext())
@@ -281,7 +281,7 @@ namespace AsmDude.QuickInfo
                                 description.Inlines.Add(Make_Run1("Constant ", foreground));
 
                                 var (Valid, Value, NBits) = AsmSourceTools.Evaluate_Constant(keyword);
-                                string constantStr = (Valid)
+                                string constantStr = Valid
                                     ? Value + "d = " + Value.ToString("X") + "h = " + AsmSourceTools.ToStringBin(Value, NBits) + "b"
                                     : keyword;
 
@@ -346,8 +346,8 @@ namespace AsmDude.QuickInfo
                     }
                     if (description != null)
                     {
-                        description.FontSize = AsmDudeToolsStatic.Get_Font_Size_Async().Result + 2;
-                        description.FontFamily = AsmDudeToolsStatic.Get_Font_Type_Async().Result;
+                        description.FontSize = AsmDudeToolsStatic.GetFontSize() + 2;
+                        description.FontFamily = AsmDudeToolsStatic.GetFontType();
                         //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:AugmentQuickInfoSession; setting description fontSize={1}; fontFamily={2}", this.ToString(), description.FontSize, description.FontFamily));
                         quickInfoContent.Add(description);
                     }

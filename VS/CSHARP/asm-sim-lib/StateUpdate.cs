@@ -266,25 +266,25 @@ namespace AsmSim
         {
             switch (reg)
             {
-                case Rn.RAX: return (undef) ? this._rax_U : this._rax;
-                case Rn.RBX: return (undef) ? this._rbx_U : this._rbx;
-                case Rn.RCX: return (undef) ? this._rcx_U : this._rcx;
-                case Rn.RDX: return (undef) ? this._rdx_U : this._rdx;
+                case Rn.RAX: return undef ? this._rax_U : this._rax;
+                case Rn.RBX: return undef ? this._rbx_U : this._rbx;
+                case Rn.RCX: return undef ? this._rcx_U : this._rcx;
+                case Rn.RDX: return undef ? this._rdx_U : this._rdx;
 
-                case Rn.RSI: return (undef) ? this._rsi_U : this._rsi;
-                case Rn.RDI: return (undef) ? this._rdi_U : this._rdi;
-                case Rn.RBP: return (undef) ? this._rbp_U : this._rbp;
-                case Rn.RSP: return (undef) ? this._rsp_U : this._rsp;
+                case Rn.RSI: return undef ? this._rsi_U : this._rsi;
+                case Rn.RDI: return undef ? this._rdi_U : this._rdi;
+                case Rn.RBP: return undef ? this._rbp_U : this._rbp;
+                case Rn.RSP: return undef ? this._rsp_U : this._rsp;
 
-                case Rn.R8: return (undef) ? this._r8_U : this._r8;
-                case Rn.R9: return (undef) ? this._r9_U : this._r9;
-                case Rn.R10: return (undef) ? this._r10_U : this._r10;
-                case Rn.R11: return (undef) ? this._r11_U : this._r11;
+                case Rn.R8: return undef ? this._r8_U : this._r8;
+                case Rn.R9: return undef ? this._r9_U : this._r9;
+                case Rn.R10: return undef ? this._r10_U : this._r10;
+                case Rn.R11: return undef ? this._r11_U : this._r11;
 
-                case Rn.R12: return (undef) ? this._r12_U : this._r12;
-                case Rn.R13: return (undef) ? this._r13_U : this._r13;
-                case Rn.R14: return (undef) ? this._r14_U : this._r14;
-                case Rn.R15: return (undef) ? this._r15_U : this._r15;
+                case Rn.R12: return undef ? this._r12_U : this._r12;
+                case Rn.R13: return undef ? this._r13_U : this._r13;
+                case Rn.R14: return undef ? this._r14_U : this._r14;
+                case Rn.R15: return undef ? this._r15_U : this._r15;
 
                 default: throw new Exception();
             }
@@ -314,13 +314,13 @@ namespace AsmSim
         {
             switch (flag)
             {
-                case Flags.CF: return (undef) ? this._cf_U : this._cf;
-                case Flags.PF: return (undef) ? this._pf_U : this._pf;
-                case Flags.AF: return (undef) ? this._af_U : this._af;
-                case Flags.ZF: return (undef) ? this._zf_U : this._zf;
-                case Flags.SF: return (undef) ? this._sf_U : this._sf;
-                case Flags.OF: return (undef) ? this._of_U : this._of;
-                case Flags.DF: return (undef) ? this._df_U : this._df;
+                case Flags.CF: return undef ? this._cf_U : this._cf;
+                case Flags.PF: return undef ? this._pf_U : this._pf;
+                case Flags.AF: return undef ? this._af_U : this._af;
+                case Flags.ZF: return undef ? this._zf_U : this._zf;
+                case Flags.SF: return undef ? this._sf_U : this._sf;
+                case Flags.OF: return undef ? this._of_U : this._of;
+                case Flags.DF: return undef ? this._df_U : this._df;
                 default: throw new Exception();
             }
         }
@@ -383,7 +383,7 @@ namespace AsmSim
         #region Set Flag
         public void Set(Flags flag, bool value)
         {
-            this.Set(flag, (value) ? Tv.ONE : Tv.ZERO);
+            this.Set(flag, value ? Tv.ONE : Tv.ZERO);
         }
         public void Set(Flags flag, Tv value)
         {
@@ -598,7 +598,7 @@ namespace AsmSim
                 }
                 else if (RegisterTools.Is_SIMD_Register(reg))
                 {
-                    uint max = (512 * 32);
+                    uint max = 512 * 32;
 
                     BitVecExpr prevKey = ctx.MkBVConst(Tools.Reg_Name(reg, this._prevKey_Regular), max);
                     var (High, Low) = Tools.SIMD_Extract_Range(reg);

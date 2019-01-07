@@ -24,7 +24,6 @@ using System;
 using System.Windows;
 using System.Windows.Input;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
@@ -402,7 +401,7 @@ namespace AsmDude.AsmDoc
                         {
                             try
                             {
-                                OnEvaluate.Invoke((System.Windows.Forms.WebBrowser)Browser);
+                                OnEvaluate.Invoke(Browser);
                             }
                             catch { }
                         }
@@ -418,10 +417,7 @@ namespace AsmDude.AsmDoc
         public static Uri GetWebBrowserWindowUrl(EnvDTE.Window WindowReference)
         {
             Uri BrowserUrl = new Uri("", UriKind.RelativeOrAbsolute);
-            Evaluate(WindowReference, new Action<System.Windows.Forms.WebBrowser>((wb) =>
-            {
-                BrowserUrl = wb.Url;
-            }));
+            Evaluate(WindowReference, new Action<System.Windows.Forms.WebBrowser>((wb) => BrowserUrl = wb.Url));
             return BrowserUrl;
         }
         protected override void AttachInterfaces(object nativeActiveXObject)

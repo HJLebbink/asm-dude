@@ -105,7 +105,7 @@ namespace AsmDude
                 //2] find the start of the current keyword
                 #region
                 SnapshotPoint start = triggerPoint;
-                while ((start > line.Start) && !AsmTools.AsmSourceTools.IsSeparatorChar((start - 1).GetChar()))
+                while ((start > line.Start) && !AsmSourceTools.IsSeparatorChar((start - 1).GetChar()))
                 {
                     start -= 1;
                 }
@@ -133,24 +133,24 @@ namespace AsmDude
                     {
                         // Suggest a label
                         var completions = this.Label_Completions(useCapitals, false);
-                        if (completions.Any<Completion>()) completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
+                        if (completions.Any()) completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
                     }
                     else
                     {
                         {
                             ISet<AsmTokenType> selected1 = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic };
                             var completions1 = this.Selected_Completions(useCapitals, selected1, true);
-                            if (completions1.Any<Completion>()) completionSets.Add(new CompletionSet("All", "All", applicableTo, completions1, Enumerable.Empty<Completion>()));
+                            if (completions1.Any()) completionSets.Add(new CompletionSet("All", "All", applicableTo, completions1, Enumerable.Empty<Completion>()));
                         }
                         if (false) {
                             ISet<AsmTokenType> selected2 = new HashSet<AsmTokenType> { AsmTokenType.Jump, AsmTokenType.Mnemonic };
                             var completions2 = this.Selected_Completions(useCapitals, selected2, false);
-                            if (completions2.Any<Completion>()) completionSets.Add(new CompletionSet("Instr", "Instr", applicableTo, completions2, Enumerable.Empty<Completion>()));
+                            if (completions2.Any()) completionSets.Add(new CompletionSet("Instr", "Instr", applicableTo, completions2, Enumerable.Empty<Completion>()));
                         }
                         if (false) {
                             ISet<AsmTokenType> selected3 = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Misc };
                             var completions3 = this.Selected_Completions(useCapitals, selected3, true);
-                            if (completions3.Any<Completion>()) completionSets.Add(new CompletionSet("Directive", "Directive", applicableTo, completions3, Enumerable.Empty<Completion>()));
+                            if (completions3.Any()) completionSets.Add(new CompletionSet("Directive", "Directive", applicableTo, completions3, Enumerable.Empty<Completion>()));
                         }
                     }
                 }
@@ -163,14 +163,14 @@ namespace AsmDude
                         //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:AugmentCompletionSession; previous keyword is a jump mnemonic");
                         // previous keyword is jump (or call) mnemonic. Suggest "SHORT" or a label
                         var completions = this.Label_Completions(useCapitals, true);
-                        if (completions.Any<Completion>()) completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
+                        if (completions.Any()) completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
 
                     }
                     else if (previousKeyword.Equals("SHORT") || previousKeyword.Equals("NEAR"))
                     {
                         // Suggest a label
                         var completions = this.Label_Completions(useCapitals, false);
-                        if (completions.Any<Completion>()) completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
+                        if (completions.Any()) completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
                     }
                     else
                     {
@@ -191,7 +191,7 @@ namespace AsmDude
                             }
                         }
                         var completions = this.Mnemonic_Operand_Completions(useCapitals, allowed, line.LineNumber);
-                        if (completions.Any<Completion>()) completionSets.Add(new CompletionSet("All", "All", applicableTo, completions, Enumerable.Empty<Completion>()));
+                        if (completions.Any()) completionSets.Add(new CompletionSet("All", "All", applicableTo, completions, Enumerable.Empty<Completion>()));
                     }
                 }
                 #endregion
@@ -236,7 +236,7 @@ namespace AsmDude
                     //AsmDudeToolsStatic.Output_INFO("AsmCompletionSource:AugmentCompletionSession: keyword \"" + keyword + "\" is added to the completions list");
 
                     // by default, the entry.Key is with capitals
-                    string insertionText = (useCapitals) ? keyword : keyword.ToLower();
+                    string insertionText = useCapitals ? keyword : keyword.ToLower();
                     string archStr = (arch == Arch.ARCH_NONE) ? "" : " [" + ArchTools.ToString(arch) + "]";
                     string descriptionStr = this._asmDudeTools.Get_Description(keyword);
                     descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
@@ -278,7 +278,7 @@ namespace AsmDude
                     //AsmDudeToolsStatic.Output_INFO("AsmCompletionSource:AugmentCompletionSession: keyword \"" + keyword + "\" is added to the completions list");
 
                     // by default, the entry.Key is with capitals
-                    string insertionText = (useCapitals) ? keyword2 : keyword2.ToLower();
+                    string insertionText = useCapitals ? keyword2 : keyword2.ToLower();
                     string archStr = (arch == Arch.ARCH_NONE) ? "" : " [" + ArchTools.ToString(arch) + "]";
                     string descriptionStr = this._asmDudeTools.Get_Description(keyword);
                     descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
@@ -300,8 +300,8 @@ namespace AsmDude
         {
             if (addSpecialKeywords)
             {
-                yield return new Completion("SHORT", (useCapitals) ? "SHORT" : "short", null, this._icons[AsmTokenType.Misc], "");
-                yield return new Completion("NEAR", (useCapitals) ? "NEAR" : "near", null, this._icons[AsmTokenType.Misc], "");
+                yield return new Completion("SHORT", useCapitals ? "SHORT" : "short", null, this._icons[AsmTokenType.Misc], "");
+                yield return new Completion("NEAR", useCapitals ? "NEAR" : "near", null, this._icons[AsmTokenType.Misc], "");
             }
 
             ImageSource imageSource = this._icons[AsmTokenType.Label];
@@ -352,7 +352,7 @@ namespace AsmDude
                 {
                     string keyword = mnemonic.ToString();
                     string description = this._asmDudeTools.Mnemonic_Store.GetSignatures(mnemonic).First().Documentation;
-                    string insertionText = (useCapitals) ? keyword : keyword.ToLower();
+                    string insertionText = useCapitals ? keyword : keyword.ToLower();
                     string archStr = ArchTools.ToString(this._asmDudeTools.Mnemonic_Store.GetArch(mnemonic));
                     string descriptionStr = this._asmDudeTools.Mnemonic_Store.GetDescription(mnemonic);
                     descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
@@ -400,7 +400,7 @@ namespace AsmDude
                         //Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: name keyword \"" + entry.Key + "\"");
 
                         // by default, the entry.Key is with capitals
-                        string insertionText = (useCapitals) ? keyword : keyword.ToLower();
+                        string insertionText = useCapitals ? keyword : keyword.ToLower();
                         string archStr = (arch == Arch.ARCH_NONE) ? "" : " [" + ArchTools.ToString(arch) + "]";
                         string descriptionStr = this._asmDudeTools.Get_Description(keyword);
                         descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;

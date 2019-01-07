@@ -67,8 +67,8 @@ namespace AsmSim
         {
             this._tools = new Tools(tools);
             this._ctx = new Context(this._tools.Settings); // housekeeping in Dispose();
-            this.Solver = State.MakeSolver(this._ctx);
-            this.Solver_U = State.MakeSolver(this._ctx);
+            this.Solver = MakeSolver(this._ctx);
+            this.Solver_U = MakeSolver(this._ctx);
             this._branchInfoStore = new BranchInfoStore(this._ctx);
             this._cached_Reg_Values = new Dictionary<Rn, Tv[]>();
             this._cached_Flag_Values = new Dictionary<Flags, Tv>();
@@ -344,7 +344,7 @@ namespace AsmSim
         #region Getters 
         public bool Is_Undefined(Flags flagName)
         {
-            return (this.GetTv(flagName) == Tv.UNDEFINED);
+            return this.GetTv(flagName) == Tv.UNDEFINED;
         }
         public bool Is_Undefined(Rn regName)
         {
@@ -382,7 +382,7 @@ namespace AsmSim
                         this.Solver.Pop();
                         this.Solver_U.Pop();
                     }
-                    return (result == Tv.ONE);
+                    return result == Tv.ONE;
                 }
             }
         }
@@ -412,7 +412,7 @@ namespace AsmSim
                         this.Solver.Pop();
                         this.Solver_U.Pop();
                     }
-                    return (result == Tv.ONE);
+                    return result == Tv.ONE;
                 }
             }
         }
@@ -508,7 +508,7 @@ namespace AsmSim
         {
             lock (this._ctxLock)
             {
-                if (this.Frozen && (this._cached_Reg_Values.TryGetValue(regName, out var value)))
+                if (this.Frozen && this._cached_Reg_Values.TryGetValue(regName, out var value))
                 {
                     return value;
                 }
@@ -741,7 +741,7 @@ namespace AsmSim
             {
                 Tv[] regContent = this.GetTvArray(reg);
                 var (hasOneValue, value) = ToolsZ3.HasOneValue(regContent);
-                bool showReg = (!(hasOneValue && value == Tv.UNKNOWN));
+                bool showReg = !(hasOneValue && value == Tv.UNKNOWN);
                 if (showReg) sb.Append("\n" + identStr + string.Format(reg + " = {0} = {1}", ToolsZ3.ToStringBin(regContent), ToolsZ3.ToStringHex(regContent)));
             }
             return sb.ToString();
@@ -754,7 +754,7 @@ namespace AsmSim
                 Rn reg = Rn.XMM1;
                 Tv[] regContent = this.GetTvArray(reg);
                 var (hasOneValue, value) = ToolsZ3.HasOneValue(regContent);
-                bool showReg = (!(hasOneValue && value == Tv.UNKNOWN));
+                bool showReg = !(hasOneValue && value == Tv.UNKNOWN);
                 if (showReg) sb.Append("\n" + identStr + string.Format(reg + " = {0} = {1}", ToolsZ3.ToStringBin(regContent), ToolsZ3.ToStringHex(regContent)));
             }
             return sb.ToString();

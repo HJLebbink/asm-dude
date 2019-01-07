@@ -49,7 +49,7 @@ namespace asm_irony
             string currentStr = context.CurrentParserInput.Term.Name;
             Debug.WriteLine("findTimesChar: current Term = " + currentStr);
 
-            if (context.CurrentParserInput.Term == base.Eof) {
+            if (context.CurrentParserInput.Term == Eof) {
                 return;
             }
             var scanner = context.Parser.Scanner;

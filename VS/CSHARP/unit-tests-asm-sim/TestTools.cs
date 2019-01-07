@@ -22,7 +22,7 @@ namespace unit_tests_asm_z3
             ulong i1 = (ulong)rand.Next();
             if (nBits < 32)
             {
-                return (i1 & ((1UL << nBits) - 1));
+                return i1 & ((1UL << nBits) - 1);
             }
             else
             {
@@ -30,7 +30,7 @@ namespace unit_tests_asm_z3
                 if (nBits < 63)
                 {
                     ulong r = (i1 << 31) | i2;
-                    return (r & ((1UL << nBits) - 1));
+                    return r & ((1UL << nBits) - 1);
                 }
                 else
                 {
@@ -43,7 +43,7 @@ namespace unit_tests_asm_z3
                     else
                     {
                         ulong r = (i1 << 33) | (i2 << 2) | (i3 & 0x3);
-                        return (r & ((1UL << nBits) - 1));
+                        return r & ((1UL << nBits) - 1);
                     }
                 }
             }
@@ -51,12 +51,12 @@ namespace unit_tests_asm_z3
         public static long RandLong(int nBits, Random rand)
         {
             ulong raw = RandUlong(nBits, rand);
-            bool sign = ((raw & (1UL << (nBits - 1))) != 0);
+            bool sign = (raw & (1UL << (nBits - 1))) != 0;
             if (sign)
             {
                 for (int i = nBits; i < 64; ++i)
                 {
-                    raw |= (1UL << i);
+                    raw |= 1UL << i;
                 }
             }
             return (long)raw;
@@ -64,7 +64,7 @@ namespace unit_tests_asm_z3
 
         public static Tv ToTv5(bool b)
         {
-            return (b) ? Tv.ONE : Tv.ZERO;
+            return b ? Tv.ONE : Tv.ZERO;
         }
 
         #region Calculate Flags
@@ -74,7 +74,7 @@ namespace unit_tests_asm_z3
             bool signB = Calc_SF(nBits, b);
             ulong c = a + b;
             bool signC = Calc_SF(nBits, c);
-            bool result = ((signA == signB) && (signA != signC));
+            bool result = (signA == signB) && (signA != signC);
             //Console.WriteLine("TestTools: calc_OF_Add: nBits="+nBits+"; a=" + a + "; b=" + b + "; c=" + c + "; signA=" + signA + "; signB=" + signB + "; signC=" + signC +"; result="+result);
             return result;
         }
@@ -84,7 +84,7 @@ namespace unit_tests_asm_z3
             bool signB = Calc_SF(nBits, b);
             ulong c = a - b;
             bool signC = Calc_SF(nBits, c);
-            bool result = ((signA == signB) && (signA != signC));
+            bool result = (signA == signB) && (signA != signC);
             //Console.WriteLine("TestTools: calc_OF_Add: nBits="+nBits+"; a=" + a + "; b=" + b + "; c=" + c + "; signA=" + signA + "; signB=" + signB + "; signC=" + signC +"; result="+result);
             return result;
         }
@@ -198,13 +198,13 @@ namespace unit_tests_asm_z3
         }
         public static void AreEqual(Flags flags, bool expected, State state)
         {
-            TestTools.AreEqual(flags, (expected) ? Tv.ONE : Tv.ZERO, state);
+            AreEqual(flags, expected ? Tv.ONE : Tv.ZERO, state);
         }
         public static void AreEqual(Flags flags, Tv expected, State state)
         {
             foreach (Flags flag in FlagTools.GetFlags(flags))
             {
-                TestTools.AreEqual(expected, state.GetTv(flag));
+                AreEqual(expected, state.GetTv(flag));
             }
         }
         #endregion
@@ -212,18 +212,18 @@ namespace unit_tests_asm_z3
         #region AreEqual Register
         public static void AreEqual(Rn name, int expected, State state)
         {
-            TestTools.AreEqual(name, (ulong)expected, state);
+            AreEqual(name, (ulong)expected, state);
         }
         public static void AreEqual(Rn name, ulong expected, State state)
         {
             Tv[] expectedTvArray = ToolsZ3.GetTvArray(expected, RegisterTools.NBits(name));
-            TestTools.AreEqual(name, expectedTvArray, state);
+            AreEqual(name, expectedTvArray, state);
         }
         public static void AreEqual(Rn name, string expected, State state)
         {
             Tv[] expectedTvArray = ToolsZ3.GetTvArray(expected);
             Assert.AreEqual(RegisterTools.NBits(name), expectedTvArray.Length);
-            TestTools.AreEqual(name, expectedTvArray, state);
+            AreEqual(name, expectedTvArray, state);
         }
         public static void AreEqual(Rn name, Tv[] expectedTvArray, State state)
         {
@@ -244,7 +244,7 @@ namespace unit_tests_asm_z3
             }
             else
             {
-                TestTools.AreEqual(expectedTvArray, actualTvArray);
+                AreEqual(expectedTvArray, actualTvArray);
             }
         }
         /// <summary>
@@ -308,13 +308,13 @@ namespace unit_tests_asm_z3
         {
             Tv[] expectedTvArray = ToolsZ3.GetTvArray(expected, (int)expr.SortSize);
             Assert.IsNotNull(expectedTvArray);
-            TestTools.AreEqual(expr, expectedTvArray, state);
+            AreEqual(expr, expectedTvArray, state);
         }
         public static void AreEqual(BitVecExpr expr, string expected, State state)
         {
             Tv[] expectedTvArray = ToolsZ3.GetTvArray(expected);
             Assert.AreEqual(expr.SortSize, (uint)expectedTvArray.Length);
-            TestTools.AreEqual(expr, expectedTvArray, state);
+            AreEqual(expr, expectedTvArray, state);
         }
         public static void AreEqual(BitVecExpr expr, Tv[] expectedTvArray, State state)
         {
@@ -344,7 +344,7 @@ namespace unit_tests_asm_z3
         #region AreEqual TV
         public static void AreEqual(ulong expected, Tv[] actualArray)
         {
-            TestTools.AreEqual(ToolsZ3.GetTvArray(expected, actualArray.Length), actualArray);
+            AreEqual(ToolsZ3.GetTvArray(expected, actualArray.Length), actualArray);
         }
         public static void AreEqual(Tv[] expectedArray, Tv[] actualArray)
         {

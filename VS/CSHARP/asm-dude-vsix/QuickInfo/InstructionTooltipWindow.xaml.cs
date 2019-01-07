@@ -30,6 +30,7 @@ using System.Windows.Documents;
 using AsmDude.Tools;
 using AsmTools;
 using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Shell;
 
 namespace AsmDude.QuickInfo
 {
@@ -90,7 +91,7 @@ namespace AsmDude.QuickInfo
             string mnemonicStr = mnemonic.ToString();
 
             this.Description.Inlines.Add(new Run("Mnemonic ") { FontWeight = FontWeights.Bold, Foreground = this._foreground });
-            this.Description.Inlines.Add(new Run(mnemonicStr) { FontWeight = FontWeights.Bold, Foreground = new SolidColorBrush(AsmDudeToolsStatic.ConvertColor((AsmSourceTools.IsJump(mnemonic) ? Settings.Default.SyntaxHighlighting_Jump : Settings.Default.SyntaxHighlighting_Opcode))) });
+            this.Description.Inlines.Add(new Run(mnemonicStr) { FontWeight = FontWeights.Bold, Foreground = new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(AsmSourceTools.IsJump(mnemonic) ? Settings.Default.SyntaxHighlighting_Jump : Settings.Default.SyntaxHighlighting_Opcode)) });
 
             string archStr = ":" + ArchTools.ToString(asmDudeTools.Mnemonic_Store.GetArch(mnemonic)) + " ";
             string descr = asmDudeTools.Mnemonic_Store.GetDescription(mnemonic);
@@ -147,8 +148,8 @@ namespace AsmDude.QuickInfo
                         Foreground = this._foreground
                     });
                 }
-                this.PerformanceExpander.Visibility = (empty) ? Visibility.Collapsed : Visibility.Visible;
-                this.PerformanceBorder.Visibility = (empty) ? Visibility.Collapsed : Visibility.Visible;
+                this.PerformanceExpander.Visibility = empty ? Visibility.Collapsed : Visibility.Visible;
+                this.PerformanceBorder.Visibility = empty ? Visibility.Collapsed : Visibility.Visible;
             }
         }
 
@@ -201,8 +202,8 @@ namespace AsmDude.QuickInfo
                 }
             }
 
-            this.AsmSimGridExpander.Visibility = (empty) ? Visibility.Collapsed : Visibility.Visible;
-            this.AsmSimGridBorder.Visibility = (empty) ? Visibility.Collapsed : Visibility.Visible;
+            this.AsmSimGridExpander.Visibility = empty ? Visibility.Collapsed : Visibility.Visible;
+            this.AsmSimGridBorder.Visibility = empty ? Visibility.Collapsed : Visibility.Visible;
 
             this.AsmSimGridExpanderNumeration.SelectionChanged += (sender, i) =>
             {
@@ -260,7 +261,7 @@ namespace AsmDude.QuickInfo
         {
             FontFamily f = new FontFamily("Consolas");
 
-            int column = (isBefore) ? 0 : 1;
+            int column = isBefore ? 0 : 1;
             {
                 var textBox = new TextBox()
                 {
@@ -291,7 +292,8 @@ namespace AsmDude.QuickInfo
                     this.AsmSimGrid.Children.Add(button);
                     Grid.SetRow(button, row);
                     Grid.SetColumn(button, column);
-                    button.Click += (sender, e) => { this.Update_Async(sender as Button); };
+                    //TODO: is the following Event handler ever unsubscribed?
+                    button.Click += (sender, e) => this.Update_Async(sender as Button).ConfigureAwait(false);
                 }
                 else
                 {
@@ -305,7 +307,7 @@ namespace AsmDude.QuickInfo
         {
             FontFamily f = new FontFamily("Consolas");
 
-            int column = (isBefore) ? 0 : 1;
+            int column = isBefore ? 0 : 1;
             {
                 var textBlock = new TextBox()
                 {
@@ -334,7 +336,7 @@ namespace AsmDude.QuickInfo
                     this.AsmSimGrid.Children.Add(button);
                     Grid.SetRow(button, row);
                     Grid.SetColumn(button, column);
-                    button.Click += (sender, e) => { this.Update_Async(sender as Button); };
+                    button.Click += (sender, e) => this.Update_Async(sender as Button).ConfigureAwait(false);
                 }
                 else
                 {
@@ -344,34 +346,28 @@ namespace AsmDude.QuickInfo
             }
         }
 
-        private async void Update_Async(Button button)
+        private async System.Threading.Tasks.Task Update_Async(Button button)
         {
-            await System.Threading.Tasks.Task.Run(() =>
+            if (button == null) return;
+            if (this._asmSimulator == null) return;
+
+            try
             {
-                try
-                {
-                    if (button == null) return;
-                    if (this._asmSimulator == null) return;
-                    this.Dispatcher.Invoke((Action)(() =>
-                    {
-                        ButtonInfo info = (ButtonInfo)button.Tag;
-                        if (info.reg == Rn.NOREG)
-                        {
-                            info.text.Text = info.flag.ToString() + " = " + this._asmSimulator.Get_Flag_Value_and_Block(info.flag, this._lineNumber, info.before);
-                        }
-                        else
-                        {
-                            info.text.Text = info.reg.ToString() + " = " + this._asmSimulator.Get_Register_Value_and_Block(info.reg, this._lineNumber, info.before, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration));
-                        }
-                        info.text.Visibility = Visibility.Visible;
-                        button.Visibility = Visibility.Collapsed;
-                    }));
-                }
-                catch (Exception e)
-                {
-                    AsmDudeToolsStatic.Output_ERROR("InstructionTooltipWindow: Update_Async: e=" + e.ToString());
-                }
-            });
+                if (!ThreadHelper.CheckAccess())
+                    await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+                ButtonInfo info = (ButtonInfo)button.Tag;
+                info.text.Text = (info.reg == Rn.NOREG)
+                    ? info.flag.ToString() + " = " + this._asmSimulator.Get_Flag_Value_and_Block(info.flag, this._lineNumber, info.before)
+                    : info.reg.ToString() + " = " + this._asmSimulator.Get_Register_Value_and_Block(info.reg, this._lineNumber, info.before, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration));
+
+                info.text.Visibility = Visibility.Visible;
+                button.Visibility = Visibility.Collapsed;
+            }
+            catch (Exception e)
+            {
+                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Update_Async; e={1}", this.ToString(), e.ToString()));
+            };
         }
     }
 }

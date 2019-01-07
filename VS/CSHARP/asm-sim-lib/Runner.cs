@@ -66,7 +66,7 @@ namespace AsmSim
                 string nextKey = Tools.CreateKey(tools.Rand);
                 string nextKeyBranch = "DUMMY_NOT_USED";
                 var content = AsmSourceTools.ParseLine(line);
-                using (var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, (state.HeadKey, nextKey, nextKeyBranch), tools))
+                using (var opcodeBase = InstantiateOpcode(content.Mnemonic, content.Args, (state.HeadKey, nextKey, nextKeyBranch), tools))
                 {
                     if (opcodeBase == null) return null;
                     if (opcodeBase.IsHalted)
@@ -101,7 +101,7 @@ namespace AsmSim
             {
                 string prevKey = Tools.CreateKey(state.Tools.Rand);
                 var content = AsmSourceTools.ParseLine(line);
-                using (var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, (prevKey, state.TailKey, state.TailKey), state.Tools))
+                using (var opcodeBase = InstantiateOpcode(content.Mnemonic, content.Args, (prevKey, state.TailKey, state.TailKey), state.Tools))
                 {
                     if (opcodeBase == null) return null;
                     if (opcodeBase.IsHalted) return null;
@@ -133,7 +133,7 @@ namespace AsmSim
                 string nextKey = Tools.CreateKey(state.Tools.Rand);
                 string nextKeyBranch = nextKey + "!BRANCH";
                 var content = AsmSourceTools.ParseLine(line);
-                using (var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, (state.HeadKey, nextKey, nextKeyBranch), state.Tools))
+                using (var opcodeBase = InstantiateOpcode(content.Mnemonic, content.Args, (state.HeadKey, nextKey, nextKeyBranch), state.Tools))
                 {
                     if (opcodeBase == null) return (Regular: null, Branch: null);
                     if (opcodeBase.IsHalted) return (Regular: null, Branch: null);
@@ -172,7 +172,7 @@ namespace AsmSim
             try
             {
                 var content = sFlow.Get_Line(lineNumber);
-                using (var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, keys, tools))
+                using (var opcodeBase = InstantiateOpcode(content.Mnemonic, content.Args, keys, tools))
                 {
                     if ((opcodeBase == null) || opcodeBase.IsHalted)
                     {

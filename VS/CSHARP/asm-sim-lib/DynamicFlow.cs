@@ -144,7 +144,7 @@ namespace AsmSim
         {
             if (this._graph.TryGetEdge(source, target, out var tag))
             {
-                return (tag.Tag.Branch == isBranch);
+                return tag.Tag.Branch == isBranch;
             }
             return false;
         }
@@ -156,7 +156,7 @@ namespace AsmSim
 
         public int LineNumber(string key)
         {
-            return (this._key_2_LineNumber.TryGetValue(key, out var v)) ? v : -1;
+            return this._key_2_LineNumber.TryGetValue(key, out var v) ? v : -1;
         }
 
         public IEnumerable<State> Create_States_Before(int lineNumber)
@@ -212,7 +212,7 @@ namespace AsmSim
         private bool Has_Branch(int lineNumber)
         {
             string key = this._lineNumber_2_Key[lineNumber];
-            return (this._graph.OutDegree(key) > 1);
+            return this._graph.OutDegree(key) > 1;
         }
 
         public BoolExpr Get_Branch_Condition(int lineNumber)
@@ -521,7 +521,7 @@ namespace AsmSim
                 Debug.Assert(v.Source == key);
                 string nextKey = v.Target;
                 sb.AppendLine("------------------------------------------");
-                sb.AppendLine("Transition from state " + key + " to " + nextKey + "; execute LINE " + lineNumber + ": \"" + codeLine + "\" " + ((v.Tag.Branch) ? "[Forward Branching]" : "[Forward Continue]"));
+                sb.AppendLine("Transition from state " + key + " to " + nextKey + "; execute LINE " + lineNumber + ": \"" + codeLine + "\" " + (v.Tag.Branch ? "[Forward Branching]" : "[Forward Continue]"));
                 this.ToString(nextKey, sFlow, ref sb);
             }
         }

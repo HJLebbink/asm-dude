@@ -34,15 +34,19 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Task = Microsoft.VisualStudio.Shell.Task;
+//using Task = Microsoft.VisualStudio.Shell.Task;
+
 
 namespace AsmDude.Tools
 {
     public static class AsmDudeToolsStatic
     {
+        private static bool first_log_message = true;
+
         #region Singleton Factories
 
         public static ITagAggregator<AsmTokenTag> GetOrCreate_Aggregator(
@@ -117,10 +121,18 @@ namespace AsmDude.Tools
             }
         }
 
+        public static string GetFilename(ITextBuffer buffer)
+        {
+            return ThreadHelper.JoinableTaskFactory.Run(async delegate
+            {
+                return await GetFilenameAsync(buffer);
+            });
+        }
+
         /// <summary>
         /// get the full filename (with path) of the provided buffer; returns null if such name does not exist
         /// </summary>
-        public static async Task<string> Get_Filename_Async(ITextBuffer buffer)
+        public static async Task<string> GetFilenameAsync(ITextBuffer buffer)
         {
             if (!ThreadHelper.CheckAccess())
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -140,7 +152,15 @@ namespace AsmDude.Tools
             dte.ExecuteCommand("Debug.Disassembly");
         }
 
-        public static async Task<int> Get_Font_Size_Async()
+        public static int GetFontSize()
+        {
+            return ThreadHelper.JoinableTaskFactory.Run(async delegate
+            {
+                return await GetFontSizeAsync();
+            });
+        }
+
+        public static async Task<int> GetFontSizeAsync()
         {
             if (!ThreadHelper.CheckAccess())
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -152,8 +172,16 @@ namespace AsmDude.Tools
             return fontSize;
         }
 
-        public static async Task<FontFamily> Get_Font_Type_Async()
+        public static FontFamily GetFontType()
         {
+            return ThreadHelper.JoinableTaskFactory.Run(async delegate {
+                return await GetFontTypeAsync();
+            });
+        }
+
+        public static async Task<FontFamily> GetFontTypeAsync()
+        {
+            await System.Threading.Tasks.Task.Yield();
             if (!ThreadHelper.CheckAccess())
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
@@ -165,7 +193,15 @@ namespace AsmDude.Tools
             return new FontFamily(font);
         }
 
-        public static async Task<Brush> Get_Font_Color_Async()
+        public static Brush GetFontColor()
+        {
+            return ThreadHelper.JoinableTaskFactory.Run(async delegate
+            {
+                return await GetFontColorAsync();
+            });
+        }
+
+        public static async Task<Brush> GetFontColorAsync()
         {
             if (!ThreadHelper.CheckAccess())
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -188,7 +224,15 @@ namespace AsmDude.Tools
             return new SolidColorBrush(Colors.Gray);
         }
 
-        public static async Task<Brush> Get_Background_Color_Async()
+        public static Brush GetBackgroundColor()
+        {
+            return ThreadHelper.JoinableTaskFactory.Run(async delegate
+            {
+                return await GetBackgroundColorAsync();
+            });
+        }
+
+        public static async Task<Brush> GetBackgroundColorAsync()
         {
             if (!ThreadHelper.CheckAccess())
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -216,7 +260,7 @@ namespace AsmDude.Tools
             if (!ThreadHelper.CheckAccess())
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            Task task = sender as Task;
+            var task = sender as Microsoft.VisualStudio.Shell.Task;
 
             if (task == null)
             {
@@ -371,6 +415,23 @@ namespace AsmDude.Tools
 
             IVsOutputWindowPane outputPane = await GetOutputPaneAsync();
             string msg2 = string.Format(CultureInfo.CurrentCulture, "{0}", msg.Trim() + Environment.NewLine);
+
+            if (first_log_message)
+            {
+                first_log_message = false;
+
+                StringBuilder sb = new StringBuilder();
+                sb.Append("Welcome to\n");
+                sb.Append(" _____             ____        _     \n");
+                sb.Append("|  _  |___ _____  |    \\ _ _ _| |___ \n");
+                sb.Append("|     |_ -|     | |  |  | | | . | -_|\n");
+                sb.Append("|__|__|___|_|_|_| |____/|___|___|___|\n");
+                sb.Append("INFO: Loaded AsmDude version " + typeof(AsmDudePackage).Assembly.GetName().Version + " (" + ApplicationInformation.CompileDate.ToString() + ")\n");
+                sb.Append("INFO: Open source assembly extension. Making programming in assembler almost bearable.\n");
+                sb.Append("INFO: More info at https://github.com/HJLebbink/asm-dude \n");
+                sb.Append("----------------------------------\n");
+                msg2 = sb.ToString() + msg2;
+            }
             if (outputPane == null)
             {
                 Debug.Write(msg2);
@@ -458,7 +519,7 @@ namespace AsmDude.Tools
 
             for (int i = 0; i < errorListProvider.Tasks.Count; ++i)
             {
-                Task t = errorListProvider.Tasks[i];
+                var t = errorListProvider.Tasks[i];
                 if (t.Text.Equals(msg))
                 {
                     return;

@@ -25,6 +25,7 @@ using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -68,6 +69,8 @@ namespace AsmDude
 
         private int ExecMethod1(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:Exec", this.ToString()));
             char typedChar = char.MinValue;
 
@@ -142,6 +145,7 @@ namespace AsmDude
 
         private int ExecMethod2(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:ExecMethod2", this.ToString()));
 
             bool handledChar = false;
@@ -310,6 +314,7 @@ namespace AsmDude
 
         public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:QueryStatus", this.ToString()));
             if (pguidCmdGroup == VSConstants.VSStd2K)
             {

@@ -65,18 +65,6 @@ namespace AsmDude
         {
             await base.InitializeAsync(cancellationToken, progress);
             ClearMefCache.ClearMefCache.Initialize(this);
-
-            StringBuilder sb = new StringBuilder();
-            sb.Append("Welcome to\n");
-            sb.Append(" _____             ____        _     \n");
-            sb.Append("|  _  |___ _____  |    \\ _ _ _| |___ \n");
-            sb.Append("|     |_ -|     | |  |  | | | . | -_|\n");
-            sb.Append("|__|__|___|_|_|_| |____/|___|___|___|\n");
-            sb.Append("INFO: Loaded AsmDude version " + typeof(AsmDudePackage).Assembly.GetName().Version + " (" + ApplicationInformation.CompileDate.ToString() + ")\n");
-            sb.Append("INFO: Open source assembly extension. Making programming in assembler almost bearable.\n");
-            sb.Append("INFO: More info at https://github.com/HJLebbink/asm-dude \n");
-            sb.Append("----------------------------------");
-            await AsmDudeToolsStatic.OutputAsync(sb.ToString());
         }
 
         #region Disassembly window experiments

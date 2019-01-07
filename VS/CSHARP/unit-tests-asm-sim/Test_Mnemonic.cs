@@ -1003,7 +1003,7 @@ namespace unit_tests_asm_z3
                 {
                     ulong rax_value = TestTools.RandUlong((int)nBits, rand);
                     ulong rbx_value = TestTools.RandUlong((int)nBits, rand);
-                    ulong result = (rax_value + rbx_value);
+                    ulong result = rax_value + rbx_value;
 
                     State state = this.CreateState(tools);
                     Context ctx = state.Ctx;
@@ -2218,7 +2218,7 @@ namespace unit_tests_asm_z3
 
             sbyte al = 0b0000_0100;
             sbyte bl = 0b0000_0100;
-            short ax = (short)((int)al * (int)bl);
+            short ax = (short)(al * bl);
 
             string line1 = "mov al, " + al;
             string line2 = "mov bl, " + bl;
@@ -2249,7 +2249,7 @@ namespace unit_tests_asm_z3
 
             sbyte al = 0b0100_0000;
             sbyte bl = 0b0010_0000;
-            short ax = (short)((int)al * (int)bl);
+            short ax = (short)(al * bl);
 
             string line1 = "mov al, " + al;
             string line2 = "mov bl, " + bl;
@@ -2280,7 +2280,7 @@ namespace unit_tests_asm_z3
 
             sbyte al = unchecked((sbyte)0b1000_0000);
             sbyte bl = 0b0010_0000;
-            short ax = (short)((int)al * (int)bl);
+            short ax = (short)(al * bl);
 
             string line1 = "mov al, " + al;
             string line2 = "mov bl, " + bl;
@@ -2312,7 +2312,7 @@ namespace unit_tests_asm_z3
 
             short ax = -16;
             short bx = 22;
-            int result = (int)((int)ax * (int)bx);
+            int result = ax * bx;
             ulong resultAx = ((ulong)result) & 0xFFFF;
             ulong resultDx = ((ulong)result >> 16) & 0xFFFF;
 
@@ -2377,7 +2377,7 @@ namespace unit_tests_asm_z3
 
             short ax = 0b0100_0000_0000_0000; // large positive
             short bx = -0b0110_0000_0000_0000; // large negative
-            int result = (int)((int)ax * (int)bx);
+            int result = ax * bx;
             ulong resultAx = ((ulong)result) & 0xFFFF;
             ulong resultDx = ((ulong)result >> 16) & 0xFFFF;
 
@@ -2447,7 +2447,7 @@ namespace unit_tests_asm_z3
 
             int eax = 0b0100_0000_0000_0000;
             int ebx = -0b0110_0000_0000_0000;
-            long result = (int)((int)eax * (int)ebx);
+            long result = eax * ebx;
             ulong resultEax = ((ulong)result) & 0xFFFF_FFFF;
             ulong resultEdx = ((ulong)result >> 32) & 0xFFFF_FFFF;
 
@@ -2517,7 +2517,7 @@ namespace unit_tests_asm_z3
 
             int eax = 0b0100_0000_0000_0000_0000_0000_0000_0000; // large positive
             int ebx = -0b0110_0000_0000_0000_0100_0000_0000_0000; // large negative
-            long result = (long)eax * (long)ebx;
+            long result = eax * (long)ebx;
             ulong resultEax = ((ulong)result) & 0xFFFF_FFFF;
             ulong resultEdx = ((ulong)result >> 32) & 0xFFFF_FFFF;
 
@@ -2808,9 +2808,9 @@ namespace unit_tests_asm_z3
             UInt16 ax = 0b0000_0011_0100_0000;
             UInt16 bx = 0b0000_0000_0100_0000;
 
-            UInt32 value = (((UInt32)dx) << 16) | (UInt32)ax;
-            UInt16 quotient = (UInt16)(value / (UInt32)bx);
-            UInt16 remainder = (UInt16)(value % (UInt32)bx);
+            UInt32 value = (((UInt32)dx) << 16) | ax;
+            UInt16 quotient = (UInt16)(value / bx);
+            UInt16 remainder = (UInt16)(value % bx);
 
             string line1 = "mov ax, " + ax;
             string line2 = "mov dx, " + dx;
@@ -2851,9 +2851,9 @@ namespace unit_tests_asm_z3
             UInt32 eax = 0b0000_0000_0000_0000_0000_0011_0100_0000;
             UInt32 ebx = 0b0000_0000_0000_1000_0000_0000_0100_0000;
 
-            UInt64 value = (((UInt64)edx) << 32) | (UInt64)eax;
-            UInt32 quotient = (UInt32)(value / (UInt64)ebx);
-            UInt32 remainder = (UInt32)(value % (UInt64)ebx);
+            UInt64 value = (((UInt64)edx) << 32) | eax;
+            UInt32 quotient = (UInt32)(value / ebx);
+            UInt32 remainder = (UInt32)(value % ebx);
 
             string line1 = "mov eax, " + eax;
             string line2 = "mov edx, " + edx;
@@ -2869,8 +2869,8 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line4, state);
                 if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
 
-                TestTools.AreEqual(Rn.EAX, (ulong)quotient, state);
-                TestTools.AreEqual(Rn.EDX, (ulong)remainder, state);
+                TestTools.AreEqual(Rn.EAX, quotient, state);
+                TestTools.AreEqual(Rn.EDX, remainder, state);
                 TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF | Flags.CF | Flags.OF, Tv.UNDEFINED, state);
             }
         }
@@ -3325,7 +3325,7 @@ namespace unit_tests_asm_z3
             int byteA_2 = 3;
             int byteB_1 = 2;
             int byteB_2 = 1;
-            int result = (((byteA_2 + byteB_2) << 4) | ((byteA_1 + byteB_1) << 0));
+            int result = ((byteA_2 + byteB_2) << 4) | ((byteA_1 + byteB_1) << 0);
 
             string line1 = "mov eax, " + ((byteA_2 << 4) | (byteA_1 << 0));
             string line2 = "add eax, " + ((byteB_2 << 4) | (byteB_1 << 0));
@@ -3353,7 +3353,7 @@ namespace unit_tests_asm_z3
             int byteA_2 = 3;
             int byteB_1 = 3;
             int byteB_2 = 1;
-            int result = (((byteA_2 + byteB_2 + 1) << 4) | (1 << 0));
+            int result = ((byteA_2 + byteB_2 + 1) << 4) | (1 << 0);
 
             string line1 = "mov eax, " + ((byteA_2 << 4) | (byteA_1 << 0));
             string line2 = "add eax, " + ((byteB_2 << 4) | (byteB_1 << 0));
@@ -3387,7 +3387,7 @@ namespace unit_tests_asm_z3
             int byteA_2 = 3;
             int byteB_1 = 2;
             int byteB_2 = 1;
-            int result = (((byteA_2 - byteB_2) << 4) | ((byteA_1 - byteB_1) << 0));
+            int result = ((byteA_2 - byteB_2) << 4) | ((byteA_1 - byteB_1) << 0);
 
             string line1 = "mov eax, " + ((byteA_2 << 4) | (byteA_1 << 0));
             string line2 = "sub eax, " + ((byteB_2 << 4) | (byteB_1 << 0));
@@ -3778,7 +3778,7 @@ namespace unit_tests_asm_z3
             //32 / 2 = 16
             int byteA_2 = 3;
             int byteA_1 = 2;
-            int decimalA = ((byteA_2 * 10) + byteA_1);
+            int decimalA = (byteA_2 * 10) + byteA_1;
             int byteD_1 = 2;
 
             int result = decimalA / byteD_1;

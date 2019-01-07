@@ -67,8 +67,8 @@ namespace AsmDude.Tools
 
         private readonly Delay _delay;
         private int _last_Changed_LineNumber = 0;
-        private object _resetLock = new object();
-        private object _updateLock = new object();
+        private readonly object _resetLock = new object();
+        private readonly object _updateLock = new object();
         #endregion
 
         #region Constuctors

@@ -52,11 +52,12 @@ namespace AsmDude.QuickInfo
 
         public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer buffer)
         {
-            Func<AsmQuickInfoSource> sc = delegate () {
+            AsmQuickInfoSource sc()
+            {
                 var labelGraph = AsmDudeToolsStatic.GetOrCreate_Label_Graph(buffer, this._aggregatorFactory, this._docFactory, this._contentService);
                 var asmSimulator = AsmSimulator.GetOrCreate_AsmSimulator(buffer, this._aggregatorFactory);
                 return new AsmQuickInfoSource(buffer, this._aggregatorFactory, labelGraph, asmSimulator);
-            };
+            }
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
     }

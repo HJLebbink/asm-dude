@@ -63,13 +63,12 @@ namespace AsmDude.Squiggles
             this._sourceBuffer = buffer;
             this._aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, aggregatorFactory);
             this._errorListProvider = AsmDudeTools.Instance.Error_List_Provider;
-            this._foreground = AsmDudeToolsStatic.Get_Font_Color_Async().Result;
+            this._foreground = AsmDudeToolsStatic.GetFontColor();
 
             this._labelGraph = labelGraph;
             if (this._labelGraph.Enabled)
             {
-                this._labelGraph.Reset_Done_Event += (o, i) => 
-                {
+                this._labelGraph.Reset_Done_Event += (o, i) => {
                     this.Update_Squiggles_Tasks_Async().ConfigureAwait(false);
                     this.Update_Error_Tasks_Labels_Async().ConfigureAwait(false);
                 };
@@ -525,7 +524,7 @@ namespace AsmDude.Squiggles
                         Column = this.Get_Keyword_Begin_End(lineContent, keyword),
                         Text = "Syntax Error: " + message,
                         ErrorCategory = TaskErrorCategory.Error,
-                        Document = AsmDudeToolsStatic.Get_Filename_Async(this._sourceBuffer).Result
+                        Document = AsmDudeToolsStatic.GetFilenameAsync(this._sourceBuffer).Result
                     };
                     errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
                     this._errorListProvider.Tasks.Add(errorTask);
@@ -551,7 +550,7 @@ namespace AsmDude.Squiggles
                         Column = this.Get_Keyword_Begin_End(lineContent, keyword),
                         Text = "Semantic Warning: " + message,
                         ErrorCategory = TaskErrorCategory.Warning,
-                        Document = AsmDudeToolsStatic.Get_Filename_Async(this._sourceBuffer).Result
+                        Document = AsmDudeToolsStatic.GetFilenameAsync(this._sourceBuffer).Result
                     };
                     errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
                     this._errorListProvider.Tasks.Add(errorTask);
@@ -577,7 +576,7 @@ namespace AsmDude.Squiggles
                         Column = this.Get_Keyword_Begin_End(lineContent, keyword),
                         Text = "Semantic Warning: " + message,
                         ErrorCategory = TaskErrorCategory.Warning,
-                        Document = AsmDudeToolsStatic.Get_Filename_Async(this._sourceBuffer).Result
+                        Document = AsmDudeToolsStatic.GetFilenameAsync(this._sourceBuffer).Result
                     };
                     errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
                     this._errorListProvider.Tasks.Add(errorTask);
@@ -603,7 +602,7 @@ namespace AsmDude.Squiggles
                         Column = this.Get_Keyword_Begin_End(lineContent, keyword),
                         Text = "Semantic Warning: " + message,
                         ErrorCategory = TaskErrorCategory.Warning,
-                        Document = AsmDudeToolsStatic.Get_Filename_Async(this._sourceBuffer).Result
+                        Document = AsmDudeToolsStatic.GetFilenameAsync(this._sourceBuffer).Result
                     };
                     errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
                     this._errorListProvider.Tasks.Add(errorTask);

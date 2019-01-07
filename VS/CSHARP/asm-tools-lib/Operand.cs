@@ -45,7 +45,7 @@ namespace AsmTools
             this._str = token;
 
             //TODO: properly handle optional elements {K}{Z} {AES}{ER}
-            string token2 = (token.Contains("{")) 
+            string token2 = token.Contains("{") 
                 ? token.
                     Replace("{K0}", "").
                     Replace("{K1}", "").
@@ -123,7 +123,7 @@ namespace AsmTools
                     {
                         for (int bit = this.NBits; bit < nBits; ++bit)
                         {
-                            this._imm |= (1ul << bit);
+                            this._imm |= 1ul << bit;
                         }
                     } else
                     {

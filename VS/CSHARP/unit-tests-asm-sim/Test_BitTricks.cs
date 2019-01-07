@@ -423,10 +423,10 @@ namespace unit_tests_asm_z3
                 Context ctx = state.Ctx;
                 BitVecExpr zero = ctx.MkBV(0, 8);
                 bytes = bytes.Translate(ctx) as BitVecExpr;
-                BitVecExpr byte1 = ctx.MkExtract((1 * 8) - 1, (0 * 8), bytes);
-                BitVecExpr byte2 = ctx.MkExtract((2 * 8) - 1, (1 * 8), bytes);
-                BitVecExpr byte3 = ctx.MkExtract((3 * 8) - 1, (2 * 8), bytes);
-                BitVecExpr byte4 = ctx.MkExtract((4 * 8) - 1, (3 * 8), bytes);
+                BitVecExpr byte1 = ctx.MkExtract((1 * 8) - 1, 0 * 8, bytes);
+                BitVecExpr byte2 = ctx.MkExtract((2 * 8) - 1, 1 * 8, bytes);
+                BitVecExpr byte3 = ctx.MkExtract((3 * 8) - 1, 2 * 8, bytes);
+                BitVecExpr byte4 = ctx.MkExtract((4 * 8) - 1, 3 * 8, bytes);
 
                 {
                     // if at least one of the bytes is equal to zero, then ECX cannot be equal to zero
@@ -514,14 +514,14 @@ namespace unit_tests_asm_z3
                     BitVecExpr zero8 = ctx.MkBV(0, 8);
                     bytes = bytes.Translate(ctx) as BitVecExpr;
 
-                    BitVecExpr byte1 = ctx.MkExtract((1 * 8) - 1, (0 * 8), bytes);
-                    BitVecExpr byte2 = ctx.MkExtract((2 * 8) - 1, (1 * 8), bytes);
-                    BitVecExpr byte3 = ctx.MkExtract((3 * 8) - 1, (2 * 8), bytes);
-                    BitVecExpr byte4 = ctx.MkExtract((4 * 8) - 1, (3 * 8), bytes);
-                    BitVecExpr byte5 = ctx.MkExtract((5 * 8) - 1, (4 * 8), bytes);
-                    BitVecExpr byte6 = ctx.MkExtract((6 * 8) - 1, (5 * 8), bytes);
-                    BitVecExpr byte7 = ctx.MkExtract((7 * 8) - 1, (6 * 8), bytes);
-                    BitVecExpr byte8 = ctx.MkExtract((8 * 8) - 1, (7 * 8), bytes);
+                    BitVecExpr byte1 = ctx.MkExtract((1 * 8) - 1, 0 * 8, bytes);
+                    BitVecExpr byte2 = ctx.MkExtract((2 * 8) - 1, 1 * 8, bytes);
+                    BitVecExpr byte3 = ctx.MkExtract((3 * 8) - 1, 2 * 8, bytes);
+                    BitVecExpr byte4 = ctx.MkExtract((4 * 8) - 1, 3 * 8, bytes);
+                    BitVecExpr byte5 = ctx.MkExtract((5 * 8) - 1, 4 * 8, bytes);
+                    BitVecExpr byte6 = ctx.MkExtract((6 * 8) - 1, 5 * 8, bytes);
+                    BitVecExpr byte7 = ctx.MkExtract((7 * 8) - 1, 6 * 8, bytes);
+                    BitVecExpr byte8 = ctx.MkExtract((8 * 8) - 1, 7 * 8, bytes);
 
                     BoolExpr property = ctx.MkEq(
                         ctx.MkOr(

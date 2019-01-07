@@ -107,7 +107,7 @@ namespace AsmDude.BraceMatching {
                 var open = from n in this._braceList
                            where n.Value.Equals(lastText)
                            select n.Key;
-                if (FindMatchingOpenChar(lastChar, (char)open.ElementAt(0), lastText, this._view.TextViewLines.Count, out pairSpan) == true) {
+                if (FindMatchingOpenChar(lastChar, open.ElementAt(0), lastText, this._view.TextViewLines.Count, out pairSpan) == true) {
                     yield return new TagSpan<TextMarkerTag>(new SnapshotSpan(lastChar, 1), new TextMarkerTag("blue"));
                     yield return new TagSpan<TextMarkerTag>(pairSpan, new TextMarkerTag("blue"));
                 }

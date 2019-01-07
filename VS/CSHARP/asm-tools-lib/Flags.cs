@@ -89,7 +89,7 @@ namespace AsmTools
         /// <summary>Test whether provided flags is a single flag</summary>
         public static bool SingleFlag(Flags flags)
         {
-            int intVal = ((int)flags);
+            int intVal = (int)flags;
             return (intVal != 0) && ((intVal & (intVal - 1)) == 0);
         }
 

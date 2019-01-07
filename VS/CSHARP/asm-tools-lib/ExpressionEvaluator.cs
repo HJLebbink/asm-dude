@@ -173,7 +173,7 @@ namespace AsmTools
                 parsedSuccessfully = false;
             }
 
-            int nBits = (parsedSuccessfully) ? AsmSourceTools.NBitsStorageNeeded(value, isNegative) : -1;
+            int nBits = parsedSuccessfully ? AsmSourceTools.NBitsStorageNeeded(value, isNegative) : -1;
             return (Valid: parsedSuccessfully, Value: value, NBits: nBits);
         }
 

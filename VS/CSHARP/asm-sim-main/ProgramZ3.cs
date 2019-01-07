@@ -1556,7 +1556,7 @@ namespace AsmSim
 
             Console.WriteLine(string.Format("When a key is pressed ctxArray goes out of scope and may be garbage collected."));
             Console.ReadKey();
-            System.GC.Collect();
+            GC.Collect();
         }
 
         static void Test_NullReference_Bsf_1()

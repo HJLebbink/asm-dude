@@ -102,7 +102,7 @@ namespace AsmSim
                     foreach (var v in Get_First_Branch_Point_Backwards(s1, graph)) branchPoints1.Add(v);
                     foreach (var v in Get_First_Branch_Point_Backwards(s2, graph)) branchPoints2.Add(v);
 
-                    foreach (string mutual in branchPoints1.Intersect<string>(branchPoints2))
+                    foreach (string mutual in branchPoints1.Intersect(branchPoints2))
                     {
                         yield return mutual;
                     }
@@ -128,7 +128,7 @@ namespace AsmSim
             foreach (var v in Get_Branch_Points_Backwards(vertex1, graph)) branchPoints1.Add(v);
             foreach (var v in Get_Branch_Points_Backwards(vertex2, graph)) branchPoints2.Add(v);
 
-            var m = new List<string>(branchPoints1.Intersect<string>(branchPoints2));
+            var m = new List<string>(branchPoints1.Intersect(branchPoints2));
             switch (m.Count)
             {
                 case 0:

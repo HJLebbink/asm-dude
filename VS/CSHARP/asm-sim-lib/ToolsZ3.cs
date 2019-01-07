@@ -154,7 +154,7 @@ namespace AsmSim
                     {
                         //Console.WriteLine("isSimpleAssignment: " + e + "; found name " + name+ "; type second argument ="+ e.Args[1].GetType());
 
-                        if (e.Args[1].GetType().Equals(typeof(Microsoft.Z3.BitVecNum)))
+                        if (e.Args[1].GetType().Equals(typeof(BitVecNum)))
                         {
                             //Console.WriteLine("isSimpleAssignment: e=" + e + "; second argument is numeral "+e.Args[1]);
                             BitVecNum value = e.Args[1] as BitVecNum;
@@ -335,11 +335,11 @@ namespace AsmSim
             {
                 for (uint bit = 0; bit < nBits; ++bit)
                 {
-                    using (BoolExpr b = ToolsZ3.GetBit(valueExpr, bit, bv1_1bit, ctx))
-                    using (BoolExpr b_undef = ToolsZ3.GetBit(undef, bit, bv1_1bit, ctx))
+                    using (BoolExpr b = GetBit(valueExpr, bit, bv1_1bit, ctx))
+                    using (BoolExpr b_undef = GetBit(undef, bit, bv1_1bit, ctx))
                     {
                         // this can be done faster
-                        Tv tv = ToolsZ3.GetTv(b, b_undef, solver, solver_U, ctx);
+                        Tv tv = GetTv(b, b_undef, solver, solver_U, ctx);
                         if (tv != valueTv[bit]) return false;
                     }
                 }
@@ -350,8 +350,8 @@ namespace AsmSim
         public static bool Equals(BoolExpr valueExpr, BoolExpr undef, Tv valueTv, Solver solver, Solver solver_U, Context ctx)
         {
             // this can be done faster
-            Tv tv = ToolsZ3.GetTv(valueExpr, undef, solver, solver_U, ctx);
-            return (tv == Tv.ONE);
+            Tv tv = GetTv(valueExpr, undef, solver, solver_U, ctx);
+            return tv == Tv.ONE;
         }
 
         private static Flags CollectFlags_UNUSED(Expr e)
@@ -371,7 +371,7 @@ namespace AsmSim
             {
                 foreach (Expr e2 in e.Args)
                 {
-                    ToolsZ3.CollectFlags_UNUSED(e2, ref flags);
+                    CollectFlags_UNUSED(e2, ref flags);
                 }
             }
         }
@@ -387,7 +387,7 @@ namespace AsmSim
             {
                 foreach (Expr e2 in e.Args)
                 {
-                    ToolsZ3.CollectConstants_UNUSED(e2, ref set);
+                    CollectConstants_UNUSED(e2, ref set);
                 }
             }
         }
@@ -416,9 +416,9 @@ namespace AsmSim
             else
             {
                 int nBits = a.Length;
-                for (int i = (nBits - 1); i >= 0; --i)
+                for (int i = nBits - 1; i >= 0; --i)
                 {
-                    sb.Append(ToolsZ3.ToStringBin(a[i]));
+                    sb.Append(ToStringBin(a[i]));
                     if ((i > 0) && (i != nBits - 1) && (i % 8 == 0)) sb.Append('_');
                 }
             }
@@ -431,7 +431,7 @@ namespace AsmSim
             int offset = 0;
             while (offset < a.Length)
             {
-                str = ToolsZ3.BitToCharHex(GetTv(offset), GetTv(offset + 1), GetTv(offset + 2), GetTv(offset + 3)) + str;
+                str = BitToCharHex(GetTv(offset), GetTv(offset + 1), GetTv(offset + 2), GetTv(offset + 3)) + str;
                 offset += 4;
                 if ((offset > 0) && (offset < a.Length) && ((offset % 16) == 0)) str = '_' + str;
             }
@@ -460,7 +460,7 @@ namespace AsmSim
                     switch (a[i])
                     {
                         case Tv.ONE:
-                            result |= (1UL << i);
+                            result |= 1UL << i;
                             break;
                         case Tv.ZERO:
                             break;
@@ -478,7 +478,7 @@ namespace AsmSim
             int offset = 0;
             while (offset < a.Length)
             {
-                str = ToolsZ3.BitToCharOct(GetTv(offset), GetTv(offset + 1), GetTv(offset + 2)) + str;
+                str = BitToCharOct(GetTv(offset), GetTv(offset + 1), GetTv(offset + 2)) + str;
                 offset += 3;
                 if ((offset > 0) && (offset < a.Length) && ((offset % 9) == 0)) str = '_' + str;
             }
@@ -573,9 +573,9 @@ namespace AsmSim
             {
                 for (uint bit = 0; bit < nBits; ++bit)
                 {
-                    using (BoolExpr b = ToolsZ3.GetBit(value, bit, ONE, ctx))
+                    using (BoolExpr b = GetBit(value, bit, ONE, ctx))
                     {
-                        switch (ToolsZ3.GetTv(b, solver, ctx))
+                        switch (GetTv(b, solver, ctx))
                         {
                             case Tv.ONE:
                                 results[bit] = Tv.ONE;
@@ -589,7 +589,7 @@ namespace AsmSim
                     }
                 }
             }
-            return ToolsZ3.ToUlong(results);
+            return ToUlong(results);
         }
         public static ulong? ToUlong(Tv[] array)
         {
@@ -599,7 +599,7 @@ namespace AsmSim
                 switch (array[i])
                 {
                     case Tv.ONE:
-                        result |= (1UL << i);
+                        result |= 1UL << i;
                         break;
                     case Tv.ZERO:
                         break;
@@ -668,10 +668,10 @@ namespace AsmSim
             {
                 for (uint bit = 0; bit < nBits; ++bit)
                 {
-                    using (BoolExpr b = ToolsZ3.GetBit(value, bit, bv1_1bit, ctx))
-                    using (BoolExpr b_undef = ToolsZ3.GetBit(undef, bit, bv1_1bit, ctx))
+                    using (BoolExpr b = GetBit(value, bit, bv1_1bit, ctx))
+                    using (BoolExpr b_undef = GetBit(undef, bit, bv1_1bit, ctx))
                     {
-                        results[bit] = ToolsZ3.GetTv(b, b_undef, solver, solver_U, ctx);
+                        results[bit] = GetTv(b, b_undef, solver, solver_U, ctx);
                     }
                 }
             }
@@ -689,9 +689,9 @@ namespace AsmSim
             {
                 for (uint bit = 0; bit < nBits; ++bit)
                 {
-                    using (BoolExpr b = ToolsZ3.GetBit(value, bit, bv1_1bit, ctx))
+                    using (BoolExpr b = GetBit(value, bit, bv1_1bit, ctx))
                     {
-                        results[bit] = ToolsZ3.GetTv(b, solver, ctx);
+                        results[bit] = GetTv(b, solver, ctx);
                     }
                 }
             }
@@ -702,7 +702,7 @@ namespace AsmSim
         {
             try
             {
-                return (freshSolver)
+                return freshSolver
                     ? GetTv_Method1(value, undef, solver, solver_U, ctx)
                     : GetTv_Method2(value, undef, solver, solver_U, ctx);
             }
@@ -722,7 +722,7 @@ namespace AsmSim
                     //Console.WriteLine("ToolsZ3:getTv5: A: value=" + value + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
                     return Tv.UNDETERMINED;
                 }
-                tvTrue = (status == Status.SATISFIABLE);
+                tvTrue = status == Status.SATISFIABLE;
             }
 
             //if (!tvTrue) return Tv5.ZERO;
@@ -737,7 +737,7 @@ namespace AsmSim
                         //Console.WriteLine("ToolsZ3:getTv5: B: value=" + ctx.MkNot(value) + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
                         return Tv.UNDETERMINED;
                     }
-                    tvFalse = (status == Status.SATISFIABLE);
+                    tvFalse = status == Status.SATISFIABLE;
                 }
             }
             // if it consistent to assert that the provided bit is true, 
@@ -760,7 +760,7 @@ namespace AsmSim
                             //Console.WriteLine("ToolsZ3:getTv5: C: undef=" + ctx.MkNot(undef) + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
                             return Tv.UNDETERMINED;
                         }
-                        tvFalseU = (status == Status.SATISFIABLE);
+                        tvFalseU = status == Status.SATISFIABLE;
                     }
                 }
                 // if (!tvFalseU) return Tv5.UNKNOWN;
@@ -773,7 +773,7 @@ namespace AsmSim
                         //Console.WriteLine("ToolsZ3:getTv5: D: undef=" + undef + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
                         return Tv.UNDETERMINED;
                     }
-                    tvTrueU = (status == Status.SATISFIABLE);
+                    tvTrueU = status == Status.SATISFIABLE;
                 }
                 return (tvTrueU && tvFalseU) ? Tv.UNDEFINED : Tv.UNKNOWN;
             }
@@ -796,7 +796,7 @@ namespace AsmSim
                         //Console.WriteLine("ToolsZ3:getTv5: A: value=" + value + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
                         return Tv.UNDETERMINED;
                     }
-                    tvTrue = (status == Status.SATISFIABLE);
+                    tvTrue = status == Status.SATISFIABLE;
                 }
             }
 
@@ -814,7 +814,7 @@ namespace AsmSim
                         //Console.WriteLine("ToolsZ3:getTv5: B: value=" + ctx.MkNot(value) + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
                         return Tv.UNDETERMINED;
                     }
-                    tvFalse = (status == Status.SATISFIABLE);
+                    tvFalse = status == Status.SATISFIABLE;
                 }
             }
             // if it consistent to assert that the provided bit is true, 
@@ -839,7 +839,7 @@ namespace AsmSim
                             //Console.WriteLine("ToolsZ3:getTv5: C: undef=" + ctx.MkNot(undef) + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
                             return Tv.UNDETERMINED;
                         }
-                        tvFalseU = (status == Status.SATISFIABLE);
+                        tvFalseU = status == Status.SATISFIABLE;
                     }
                 }
                 // if (!tvFalseU) return Tv5.UNKNOWN;
@@ -856,7 +856,7 @@ namespace AsmSim
                             //Console.WriteLine("ToolsZ3:getTv5: D: undef=" + undef + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
                             return Tv.UNDETERMINED;
                         }
-                        tvTrueU = (status == Status.SATISFIABLE);
+                        tvTrueU = status == Status.SATISFIABLE;
                     }
                 }
                 return (tvTrueU && tvFalseU) ? Tv.UNDEFINED : Tv.UNKNOWN;
@@ -880,7 +880,7 @@ namespace AsmSim
                         //Console.WriteLine("ToolsZ3:getTv5: A: value=" + value + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
                         return Tv.UNDETERMINED;
                     }
-                    tvTrue = (status == Status.SATISFIABLE);
+                    tvTrue = status == Status.SATISFIABLE;
                     solver.Pop();
                 }
 
@@ -896,7 +896,7 @@ namespace AsmSim
                         //Console.WriteLine("ToolsZ3:getTv5: B: value=" + ctx.MkNot(value) + " yields UNKNOWN solver status. Reason: " + solver.ReasonUnknown);
                         return Tv.UNDETERMINED;
                     }
-                    tvFalse = (status == Status.SATISFIABLE);
+                    tvFalse = status == Status.SATISFIABLE;
                     solver.Pop();
                 }
                 // if it consistent to assert that the provided bit is true, 
@@ -943,7 +943,7 @@ namespace AsmSim
         {
             IList<Symbol> boolResults = new List<Symbol>();
             IList<Symbol> bvResults = new List<Symbol>();
-            ToolsZ3.GetConstants(expr, ref boolResults, ref bvResults);
+            GetConstants(expr, ref boolResults, ref bvResults);
             return (BoolConstants: boolResults, BvConstants: bvResults);
         }
 

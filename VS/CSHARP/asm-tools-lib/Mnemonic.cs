@@ -2504,7 +2504,7 @@ namespace AsmTools {
         /// <summary>Parse the provided string that contains a AT&T syntax mnemonic</summary>
         public static Mnemonic ParseMnemonic_Att(string str, bool strIsCapitals = false)
         {
-            string str2 = (strIsCapitals) ? str : str.ToUpper();
+            string str2 = strIsCapitals ? str : str.ToUpper();
 
             Mnemonic r = ParseMnemonic(str2, true);
             if (r != Mnemonic.NONE) return r;
@@ -2524,7 +2524,7 @@ namespace AsmTools {
             if (suffix)
             {
                 string keyword2 = str.Substring(0, length - 1);
-                return AsmSourceTools.ParseMnemonic(keyword2, true);
+                return ParseMnemonic(keyword2, true);
             }
             return Mnemonic.NONE;
         }

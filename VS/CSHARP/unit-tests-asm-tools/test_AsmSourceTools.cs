@@ -36,25 +36,25 @@ namespace unit_tests
         private static ulong RandUlong(int nBits, Random rand) {
             ulong i1 = (ulong)rand.Next();
             if (nBits < 32) {
-                return (i1 & ((1UL << nBits) - 1));
+                return i1 & ((1UL << nBits) - 1);
             } else {
                 ulong i2 = (ulong)rand.Next();
                 if (nBits < 63) {
                     ulong r = (i1 << 31) | i2;
-                    return (r & ((1UL << nBits) - 1));
+                    return r & ((1UL << nBits) - 1);
                 } else {
                     ulong i3 = (ulong)rand.Next();
                     ulong r = (i1 << 33) | (i2 << 2) | (i3 & 0x3);
-                    return (r & ((1UL << nBits) - 1));
+                    return r & ((1UL << nBits) - 1);
                 }
             }
         }
         private static long RandLong(int nBits, Random rand) {
             ulong raw = RandUlong(nBits, rand);
-            bool sign = ((raw & (1UL << (nBits - 1))) != 0);
+            bool sign = (raw & (1UL << (nBits - 1))) != 0;
             if (sign) {
                 for (int i = nBits; i < 64; ++i) {
-                    raw |= (1UL << i);
+                    raw |= 1UL << i;
                 }
             }
             return (long)raw;
@@ -95,42 +95,42 @@ namespace unit_tests
             {
                 int begin = 0;
                 int end = 8;
-                string result = AsmTools.AsmSourceTools.GetPreviousKeyword(begin, end, line);
+                string result = AsmSourceTools.GetPreviousKeyword(begin, end, line);
                 string msg = "line=\"" + line + "\"; result=\"" + result + "\"; begin=" + begin + "; end=" + end;
                 Assert.AreEqual("mov", result, msg);
             }
             {
                 int begin = 4;
                 int end = 8;
-                string result = AsmTools.AsmSourceTools.GetPreviousKeyword(begin, end, line);
+                string result = AsmSourceTools.GetPreviousKeyword(begin, end, line);
                 string msg = "line=\"" + line + "\"; result=\"" + result + "\"; begin=" + begin + "; end=" + end;
                 Assert.AreEqual("mov", result, msg);
             }
             {
                 int begin = 5;
                 int end = 8;
-                string result = AsmTools.AsmSourceTools.GetPreviousKeyword(begin, end, line);
+                string result = AsmSourceTools.GetPreviousKeyword(begin, end, line);
                 string msg = "line=\"" + line + "\"; result=\"" + result + "\"; begin=" + begin + "; end=" + end;
                 Assert.AreEqual("ov", result, msg);
             }
             {
                 int begin = 0;
                 int end = 7;
-                string result = AsmTools.AsmSourceTools.GetPreviousKeyword(begin, end, line);
+                string result = AsmSourceTools.GetPreviousKeyword(begin, end, line);
                 string msg = "line=\"" + line + "\"; result=\"" + result + "\"; begin=" + begin + "; end=" + end;
                 Assert.AreEqual("mov", result, msg);
             }
             {
                 int begin = 0;
                 int end = 6;
-                string result = AsmTools.AsmSourceTools.GetPreviousKeyword(begin, end, line);
+                string result = AsmSourceTools.GetPreviousKeyword(begin, end, line);
                 string msg = "line=\"" + line + "\"; result=\"" + result + "\"; begin=" + begin + "; end=" + end;
                 Assert.AreEqual("", result, msg);
             }
             {
                 int begin = 0;
                 int end = 11;
-                string result = AsmTools.AsmSourceTools.GetPreviousKeyword(begin, end, line);
+                string result = AsmSourceTools.GetPreviousKeyword(begin, end, line);
                 string msg = "line=\"" + line + "\"; result=\"" + result + "\"; begin=" + begin + "; end=" + end;
                 Assert.AreEqual("rax", result, msg);
             }
@@ -309,14 +309,14 @@ namespace unit_tests
         [TestMethod]
         public void Test_AsmSourceTools_parseMnemonic() {
             foreach (Mnemonic x in Enum.GetValues(typeof(Mnemonic))) {
-                Assert.AreEqual(AsmTools.AsmSourceTools.ParseMnemonic(x.ToString()), x,
+                Assert.AreEqual(AsmSourceTools.ParseMnemonic(x.ToString()), x,
                     "Parsing string " + x.ToString() + " does not yield the same enumeration.");
             }
         }
         [TestMethod]
         public void Test_AsmSourceTools_parseArch() {
             foreach (Arch x in Enum.GetValues(typeof(Arch))) {
-                Assert.AreEqual(AsmTools.ArchTools.ParseArch(ArchTools.ToString(x)), x,
+                Assert.AreEqual(ArchTools.ParseArch(ArchTools.ToString(x)), x,
                     "Parsing string " + x.ToString() + " does not yield the same enumeration.");
             }
         }

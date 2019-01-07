@@ -205,7 +205,7 @@ namespace AsmSim
             if (RegisterTools.Is_SIMD_Register(reg))
             {
                 var (High, Low) = SIMD_Extract_Range(reg);
-                return ctx.MkExtract(High, Low, ctx.MkBVConst(Tools.Reg_Name(reg, key), 32 * 512));
+                return ctx.MkExtract(High, Low, ctx.MkBVConst(Reg_Name(reg, key), 32 * 512));
             }
             else if (RegisterTools.IsGeneralPurposeRegister(reg))
             {
@@ -216,7 +216,7 @@ namespace AsmSim
                 else
                 {
                     Rn reg64 = RegisterTools.Get64BitsRegister(reg);
-                    return (RegisterTools.Is8BitHigh(reg))
+                    return RegisterTools.Is8BitHigh(reg)
                         ? ctx.MkExtract(15, 8, ctx.MkBVConst(Reg_Name(reg64, key), 64))
                         : ctx.MkExtract(nBits - 1, 0, ctx.MkBVConst(Reg_Name(reg64, key), 64));
                 }
@@ -258,7 +258,7 @@ namespace AsmSim
 
             if (op.IsReg)
             {
-                return Tools.Create_Key(op.Rn, key, ctx);
+                return Create_Key(op.Rn, key, ctx);
             }
             else if (op.IsMem)
             {
@@ -284,9 +284,9 @@ namespace AsmSim
                     BitVecExpr baseRegister;
                     switch (RegisterTools.NBits(BaseReg))
                     {
-                        case 64: baseRegister = Tools.Create_Key(BaseReg, key, ctx); break;
-                        case 32: baseRegister = ctx.MkZeroExt(32, Tools.Create_Key(BaseReg, key, ctx)); break;
-                        case 16: baseRegister = ctx.MkZeroExt(48, Tools.Create_Key(BaseReg, key, ctx)); break;
+                        case 64: baseRegister = Create_Key(BaseReg, key, ctx); break;
+                        case 32: baseRegister = ctx.MkZeroExt(32, Create_Key(BaseReg, key, ctx)); break;
+                        case 16: baseRegister = ctx.MkZeroExt(48, Create_Key(BaseReg, key, ctx)); break;
                         default: throw new Exception();
                     }
                     //Console.WriteLine("baseRegister.NBits = " + baseRegister.SortSize + "; address.NBits = " + address.SortSize);
@@ -299,7 +299,7 @@ namespace AsmSim
                 {
                     if (Scale > 0)
                     {
-                        BitVecExpr indexRegister = Tools.Create_Key(IndexReg, key, ctx);
+                        BitVecExpr indexRegister = Create_Key(IndexReg, key, ctx);
                         switch (Scale)
                         {
                             case 0:
@@ -345,7 +345,7 @@ namespace AsmSim
         {
             Debug.Assert(nBytes > 0, "Number of bytes has to larger than zero. nBytes=" + nBytes);
 
-            ArrayExpr mem = Tools.Create_Mem_Key(key, ctx);
+            ArrayExpr mem = Create_Mem_Key(key, ctx);
             BitVecExpr result = ctx.MkSelect(mem, address) as BitVecExpr;
 
             for (uint i = 1; i < nBytes; ++i)
@@ -370,7 +370,7 @@ namespace AsmSim
             for (uint i = 0; i < nBytes; ++i)
             {
                 BitVecExpr address2 = ctx.MkBVAdd(address, ctx.MkBV(i, 64));
-                mem = ctx.MkStore(mem, address2, ctx.MkExtract((8 * (i + 1)) - 1, (8 * i), value));
+                mem = ctx.MkStore(mem, address2, ctx.MkExtract((8 * (i + 1)) - 1, 8 * i, value));
             }
             return mem;
         }

@@ -414,7 +414,7 @@ namespace AsmTools {
             bool empty = true;
             StringBuilder sb = new StringBuilder();
             foreach (Arch arch in archs) {
-                sb.Append(ArchTools.ToString(arch));
+                sb.Append(ToString(arch));
                 sb.Append(",");
                 empty = false;
             }

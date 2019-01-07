@@ -33,7 +33,7 @@ namespace AsmSim
     {
         public static void SaveToDot(StaticFlow sFlow, DynamicFlow dFlow, string filename)
         {
-            var displayGraph = new QuickGraph.AdjacencyGraph<string, TaggedEdge<string, string>>();
+            var displayGraph = new AdjacencyGraph<string, TaggedEdge<string, string>>();
 
             foreach (var vertex in dFlow.Graph.Vertices)
             {
@@ -45,7 +45,7 @@ namespace AsmSim
                 string displayInfo = sFlow.Get_Line_Str(lineNumber) + "\n" + edge.Tag.StateUpdate.ToString2();
                 displayGraph.AddEdge(new TaggedEdge<string, string>(edge.Source, edge.Target, displayInfo));
             }
-            DotVisualizer.Visualize(displayGraph, filename);
+            Visualize(displayGraph, filename);
         }
 
         public static void ShowPicture(string filename)
@@ -109,7 +109,7 @@ namespace AsmSim
                     if (true)
                     {
                         process.WaitForExit();
-                        DotVisualizer.ShowPicture(outputFileName + ".jpg");
+                        ShowPicture(outputFileName + ".jpg");
                     }
                 }
                 return output;

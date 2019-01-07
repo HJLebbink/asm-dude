@@ -35,7 +35,7 @@ namespace AsmSim
         )
         {
             BitVecExpr zero = ctx.MkBV(0, a.SortSize);
-            return BitOperations.Substract(zero, a, ctx);
+            return Substract(zero, a, ctx);
         }
 
         #endregion
