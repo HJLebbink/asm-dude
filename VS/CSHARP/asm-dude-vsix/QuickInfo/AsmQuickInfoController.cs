@@ -70,17 +70,17 @@ namespace AsmDude.QuickInfo
 
         public void ConnectSubjectBuffer(ITextBuffer subjectBuffer)
         {
-            AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:ConnectSubjectBuffer");
+            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:ConnectSubjectBuffer", this.ToString()));
         }
 
         public void DisconnectSubjectBuffer(ITextBuffer subjectBuffer)
         {
-            AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:DisconnectSubjectBuffer");
+            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:DisconnectSubjectBuffer", this.ToString()));
         }
 
         public void Detach(ITextView textView)
         {
-            AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:Detach");
+            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Detach", this.ToString()));
             if (this._textView == textView)
             {
                 this._textView.MouseHover -= this.OnTextViewMouseHover;
@@ -165,14 +165,14 @@ namespace AsmDude.QuickInfo
             }
             catch (Exception e2)
             {
-                AsmDudeToolsStatic.Output_WARNING("AsmQuickInfoController:OnTextViewMouseHover: e=" + e2.Message);
+                AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:OnTextViewMouseHover: exception={1}", this.ToString(), e2.Message));
             }
         }
 
         private void _session_Dismissed(object sender, EventArgs e)
         {
-            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:_session_Dismissed: e={1}", this.ToString(), e));
             this._session = null;
+            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:_session_Dismissed: event={1}", this.ToString(), e));
         }
 
         /// <summary>

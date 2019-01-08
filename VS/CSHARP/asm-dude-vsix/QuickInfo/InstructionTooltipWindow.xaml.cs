@@ -336,7 +336,13 @@ namespace AsmDude.QuickInfo
                     this.AsmSimGrid.Children.Add(button);
                     Grid.SetRow(button, row);
                     Grid.SetColumn(button, column);
-                    button.Click += (sender, e) => this.Update_Async(sender as Button).ConfigureAwait(false);
+
+                    button.GotFocus += (s, e) => AsmDudeToolsStatic.Output_INFO(string.Format("{0}:GotFocus", this.ToString()));
+                    button.Click += (sender, e) =>
+                    {
+                        AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Click", this.ToString()));
+                        this.Update_Async(sender as Button).ConfigureAwait(false);
+                    };
                 }
                 else
                 {
@@ -348,6 +354,8 @@ namespace AsmDude.QuickInfo
 
         private async System.Threading.Tasks.Task Update_Async(Button button)
         {
+            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Async", this.ToString()));
+
             if (button == null) return;
             if (this._asmSimulator == null) return;
 
