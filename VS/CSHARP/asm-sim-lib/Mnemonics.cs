@@ -392,7 +392,7 @@ namespace AsmSim
                 {
                     if (this.NOperands == 0)
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Expected 2 operands. Found 0 operands.", this.ToString(), this.NOperands);
+                        this.SyntaxError = string.Format("\"{0}\": Expected 2 operands. Found 0 operands.", this.ToString());
                     }
                     else
                     {
@@ -437,7 +437,7 @@ namespace AsmSim
                 {
                     if (this.NOperands == 0)
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Expected 3 operands. Found 0 operands.", this.ToString(), this.NOperands);
+                        this.SyntaxError = string.Format("\"{0}\": Expected 3 operands. Found 0 operands.", this.ToString());
                     }
                     else
                     {
@@ -450,7 +450,7 @@ namespace AsmSim
                 if (this.IsHalted) return;
                 if (!allowedOperands3.HasFlag(AsmSourceTools.MergeOt(this.op1.Type, this.op2.Type, this.op3.Type)))
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6}); op3={6} ({7}, bits={8}) Allowed types: {9}.", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits, AsmSourceTools.ToString(allowedOperands3));
+                    this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6}); op3={7} ({8}, bits={9}) Allowed types: {10}.", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits, AsmSourceTools.ToString(allowedOperands3));
                 }
             }
             public BitVecExpr Op1Value { get { return OpValue(this.op1, this.keys.PrevKey, this._ctx); } }
@@ -1401,7 +1401,7 @@ namespace AsmSim
                             Ot3 allowedOperands3 = Ot3.reg_reg_imm | Ot3.reg_mem_imm;
                             if (!allowedOperands3.HasFlag(AsmSourceTools.MergeOt(this.op1.Type, this.op2.Type, this.op3.Type)))
                             {
-                                this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6}); op3={6} ({7}, bits={8}) Allowed types: {9}.",
+                                this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6}); op3={7} ({8}, bits={9}) Allowed types: {10}.",
                                     this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits, AsmSourceTools.ToString(allowedOperands3));
                             }
                             if (this.op1.NBits == 8)
