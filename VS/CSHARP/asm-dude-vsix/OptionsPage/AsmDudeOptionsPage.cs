@@ -448,6 +448,7 @@ namespace AsmDude.OptionsPage
             this.Set_GUI(PropertyEnum.AsmSim_Decorate_Redundant_Instructions);
             this.Set_GUI(PropertyEnum.AsmSim_Show_Unreachable_Instructions);
             this.Set_GUI(PropertyEnum.AsmSim_Decorate_Unreachable_Instructions);
+            this.Set_GUI(PropertyEnum.AsmSim_Decorate_Registers);
             this.Set_GUI(PropertyEnum.AsmSim_Show_Register_In_Code_Completion);
             //TODO
             this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Code_Completion_Numeration = AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration);
