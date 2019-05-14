@@ -270,6 +270,7 @@ namespace AsmDude.QuickInfo
                     WindowStyle = WindowStyle.None,
                     ResizeMode = ResizeMode.NoResize,
                     SizeToContent = SizeToContent.WidthAndHeight,
+                    ShowInTaskbar = false,
                     Left = p.X,
                     Top = p.Y,
                     Content = border
