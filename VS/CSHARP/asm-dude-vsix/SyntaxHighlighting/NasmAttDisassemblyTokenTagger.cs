@@ -239,36 +239,16 @@ namespace AsmDude
             }
 
             // just some rules of thumb
-            if (line.Contains(";"))
+            if (line.Contains("#"))
             {
                 return true;
             }
 
             {
                 string line2 = line.Trim();
-                if (line2.StartsWith("---"))
+                if (line2.StartsWith("0x0"))
                 {
-                    return true;
-                }
-
-                if (line2.StartsWith("{"))
-                {
-                    return true;
-                }
-
-                if (line2.StartsWith("}"))
-                {
-                    return true;
-                }
-
-                if (line2.StartsWith("/"))
-                {
-                    return true;
-                }
-
-                if (line2.Contains("__CDECL"))
-                {
-                    return true;
+                    return false;
                 }
             }
 
@@ -280,7 +260,7 @@ namespace AsmDude
             foreach ((int BeginPos, int Length, bool IsLabel) v in pos)
             {
                 string asmToken = NasmIntelTokenTagger.Keyword(v, line);
-                if (AsmSourceTools.ParseMnemonic(asmToken, true) != Mnemonic.NONE)
+                if (AsmSourceTools.ParseMnemonic_Att(asmToken, true) != Mnemonic.NONE)
                 {
                     return false; // found an assebly instruction, think this is assembly code
                 }

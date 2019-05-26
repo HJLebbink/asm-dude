@@ -41,12 +41,9 @@ namespace AsmDude
             //AsmDudeToolsStatic.Output_INFO("AsmDisassemblyTokenTagProvider:CreateTagger");
             ITagger<T> sc()
             {
-                if (AsmDudeToolsStatic.Used_Assembler == AssemblerEnum.NASM_ATT)
-                {
-                    return new NasmAttDisassemblyTokenTagger(buffer) as ITagger<T>;
-                }
-
-                return new MasmDisassemblyTokenTagger(buffer) as ITagger<T>;
+                return (AsmDudeToolsStatic.Used_Assembler == AssemblerEnum.NASM_ATT)
+                    ? new NasmAttDisassemblyTokenTagger(buffer) as ITagger<T>
+                    : new MasmDisassemblyTokenTagger(buffer) as ITagger<T>;
             }
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }
