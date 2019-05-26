@@ -74,25 +74,25 @@ namespace AsmSim
         /// <summary>if not below or equal (CF = 0 and ZF = 0)</summary>
         NBE,
 
-        
+
         /// <summary>if below or equal (CF = 1 or ZF = 1)</summary>
         BE,
         /// <summary>if not above (CF = 1 or ZF = 1)</summary>
         NA,
 
-        
+
         /// <summary>if greater (ZF = 0 and SF = OF)</summary>
         G,
         /// <summary>if not less or equal (ZF = 0 and SF = OF)</summary>
         NLE,
 
-        
+
         /// <summary>if greater or equal (SF = OF)</summary>
         GE,
         /// <summary>if not less (SF = OF)</summary>
         NL,
 
-        
+
         /// <summary>if less (SF ≠ OF)</summary>
         L,
         /// <summary>if not greater or equal (SF ≠ OF)</summary>
@@ -320,7 +320,7 @@ namespace AsmSim
                 case ConditionalElement.P:
                 case ConditionalElement.PE: return PF();
 
-                case ConditionalElement.PO: 
+                case ConditionalElement.PO:
                 case ConditionalElement.NP: return ctx.MkNot(PF());
 
                 case ConditionalElement.O: return OF();

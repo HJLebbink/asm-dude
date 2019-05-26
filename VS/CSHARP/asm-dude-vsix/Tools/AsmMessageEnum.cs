@@ -27,18 +27,18 @@ namespace AsmDude.Tools
     [Flags]
     public enum AsmMessageEnum
     {
-        NONE               = 0,
+        NONE = 0,
 
-        LABEL_UNDEFINED    = 1 << 1,
-        LABEL_CLASH        = 1 << 2,
-        INCLUDE_UNDEFINED  = 1 << 3,
-        SYNTAX_ERROR       = 1 << 4,
+        LABEL_UNDEFINED = 1 << 1,
+        LABEL_CLASH = 1 << 2,
+        INCLUDE_UNDEFINED = 1 << 3,
+        SYNTAX_ERROR = 1 << 4,
         USAGE_OF_UNDEFINED = 1 << 5,
-        NOT_IMPLEMENTED    = 1 << 6,
-        REDUNDANT          = 1 << 7,
-        UNREACHABLE        = 1 << 8,
+        NOT_IMPLEMENTED = 1 << 6,
+        REDUNDANT = 1 << 7,
+        UNREACHABLE = 1 << 8,
 
-        DECORATE_REG       = 1 << 9,
-        OTHER              = 1 << 10
+        DECORATE_REG = 1 << 9,
+        OTHER = 1 << 10
     }
 }

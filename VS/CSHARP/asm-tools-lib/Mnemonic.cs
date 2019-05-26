@@ -22,7 +22,8 @@
 
 using System;
 
-namespace AsmTools {
+namespace AsmTools
+{
 
     public enum Mnemonic
     {
@@ -2396,7 +2397,7 @@ namespace AsmTools {
         VPSHRDVQ,
         /// <summary>Shuffle Bits from Quadword Elements Using Byte Indexes into Mask</summary>
         VPSHUFBITQMB,
-        
+
         /// <summary>This instruction is used to execute privileged Intel SGX leaf functions that are used for managing and debugging the enclaves.</summary>
         ENCLS,
 
@@ -2453,10 +2454,13 @@ namespace AsmTools {
         WBNOINVD
     }
 
-    public static partial class AsmSourceTools {
+    public static partial class AsmSourceTools
+    {
 
-        public static bool IsJump(Mnemonic mnemonic) {
-            switch (mnemonic) {
+        public static bool IsJump(Mnemonic mnemonic)
+        {
+            switch (mnemonic)
+            {
                 case Mnemonic.JMP:
                 case Mnemonic.JE:
                 case Mnemonic.JZ:
@@ -2507,7 +2511,11 @@ namespace AsmTools {
             string str2 = strIsCapitals ? str : str.ToUpper();
 
             Mnemonic r = ParseMnemonic(str2, true);
-            if (r != Mnemonic.NONE) return r;
+            if (r != Mnemonic.NONE)
+            {
+                return r;
+            }
+
             int length = str2.Length;
 
             bool suffix;
@@ -2530,13 +2538,21 @@ namespace AsmTools {
         }
 
         /// <summary>Parse the provided string that contains a Intel syntax mnemonic</summary>
-        public static Mnemonic ParseMnemonic(string str, bool strIsCapitals = false) {
-            #if DEBUG
-                if (strIsCapitals && (str != str.ToUpper())) throw new Exception();
-            #endif
-            if (!strIsCapitals) str = str.ToUpper();
+        public static Mnemonic ParseMnemonic(string str, bool strIsCapitals = false)
+        {
+#if DEBUG
+            if (strIsCapitals && (str != str.ToUpper()))
+            {
+                throw new Exception();
+            }
+#endif
+            if (!strIsCapitals)
+            {
+                str = str.ToUpper();
+            }
 
-            switch (str) {
+            switch (str)
+            {
                 case "NONE": return Mnemonic.NONE;
                 case "MOV": return Mnemonic.MOV;
                 case "CMOVE": return Mnemonic.CMOVE;
@@ -2751,7 +2767,7 @@ namespace AsmTools {
                 case "REPZ": return Mnemonic.REPZ;
                 case "REPNE": return Mnemonic.REPNE;
                 case "REPNZ": return Mnemonic.REPNZ;
-               
+
                 case "REP_MOVS": return Mnemonic.REP_MOVS;
                 case "REP_MOVSB": return Mnemonic.REP_MOVSB;
                 case "REP_MOVSW": return Mnemonic.REP_MOVSW;

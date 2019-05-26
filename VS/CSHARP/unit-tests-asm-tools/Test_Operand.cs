@@ -20,9 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using AsmTools;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace unit_tests_asm_tools
 {
@@ -34,10 +34,13 @@ namespace unit_tests_asm_tools
         {
             foreach (Rn reg in Enum.GetValues(typeof(Rn)))
             {
-                if (reg == Rn.NOREG) continue;
+                if (reg == Rn.NOREG)
+                {
+                    continue;
+                }
 
-                var regStr = reg.ToString();
-                var op = new Operand(regStr, true);
+                string regStr = reg.ToString();
+                Operand op = new Operand(regStr, true);
                 Assert.IsFalse(op.IsMem, "regStr=" + regStr);
                 Assert.IsFalse(op.IsImm, "regStr=" + regStr);
                 Assert.IsTrue(op.IsReg, "regStr=" + regStr);

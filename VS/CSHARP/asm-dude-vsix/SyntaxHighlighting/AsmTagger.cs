@@ -20,14 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-
+using AsmDude.SyntaxHighlighting;
+using AsmDude.Tools;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
-using AsmDude.SyntaxHighlighting;
-using AsmDude.Tools;
+using System;
+using System.Collections.Generic;
 
 namespace AsmDude
 {
@@ -74,7 +73,8 @@ namespace AsmDude
             this._userDefined3 = new ClassificationTag(typeService.GetClassificationType(AsmClassificationDefinition.ClassificationTypeNames.UserDefined3));
         }
 
-        event EventHandler<SnapshotSpanEventArgs> ITagger<ClassificationTag>.TagsChanged {
+        event EventHandler<SnapshotSpanEventArgs> ITagger<ClassificationTag>.TagsChanged
+        {
             add { }
             remove { }
         }

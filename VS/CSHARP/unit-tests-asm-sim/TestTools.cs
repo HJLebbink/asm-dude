@@ -1,9 +1,9 @@
 ﻿using AsmSim;
 using AsmTools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Z3;
 using System;
 using System.Numerics;
-using Microsoft.Z3;
 
 namespace unit_tests_asm_z3
 {
@@ -138,7 +138,7 @@ namespace unit_tests_asm_z3
             {
                 case Tv.ONE:
                     break;
-                case Tv.UNKNOWN: 
+                case Tv.UNKNOWN:
                 case Tv.UNDEFINED:
                 case Tv.ZERO:
                 case Tv.INCONSISTENT:
@@ -183,7 +183,8 @@ namespace unit_tests_asm_z3
             if (state1Str.Equals(state2Str))
             {
                 // ok
-            } else
+            }
+            else
             {
                 Console.WriteLine("State1=" + state1Str);
                 Console.WriteLine("State2=" + state2Str);
@@ -285,7 +286,7 @@ namespace unit_tests_asm_z3
             using (BoolExpr eq = state.Ctx.MkEq(state.Create(reg1), state.Create(reg2)))
             {
                 Tv tv = ToolsZ3.GetTv(eq, state.Solver, state.Ctx);
-                Console.WriteLine("TestTools:AreUnrelated: tv:"+tv);
+                Console.WriteLine("TestTools:AreUnrelated: tv:" + tv);
                 if (tv == Tv.UNDETERMINED)
                 {
                     Assert.Inconclusive("Could not determine whether " + reg1 + " and " + reg2 + " are unrelated");

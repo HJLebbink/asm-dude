@@ -45,7 +45,10 @@ namespace AsmDude.Tools
             this._description = new Dictionary<Mnemonic, string>();
 
             this.LoadRegularData(filename_RegularData);
-            if (filename_HandcraftedData != null) this.LoadHandcraftedData(filename_HandcraftedData);
+            if (filename_HandcraftedData != null)
+            {
+                this.LoadHandcraftedData(filename_HandcraftedData);
+            }
         }
 
         public bool HasElement(Mnemonic mnemonic)
@@ -55,12 +58,12 @@ namespace AsmDude.Tools
 
         public IEnumerable<AsmSignatureElement> GetSignatures(Mnemonic mnemonic)
         {
-            return this._data.TryGetValue(mnemonic, out var list) ? list : Enumerable.Empty<AsmSignatureElement>();
+            return this._data.TryGetValue(mnemonic, out IList<AsmSignatureElement> list) ? list : Enumerable.Empty<AsmSignatureElement>();
         }
 
         public IEnumerable<Arch> GetArch(Mnemonic mnemonic)
         {
-            return this._arch.TryGetValue(mnemonic, out var value) ? value : Enumerable.Empty<Arch>();
+            return this._arch.TryGetValue(mnemonic, out IList<Arch> value) ? value : Enumerable.Empty<Arch>();
         }
 
         public string GetHtmlRef(Mnemonic mnemonic)
@@ -120,7 +123,7 @@ namespace AsmDude.Tools
             Mnemonic mnemonic = asmSignatureElement.Mnemonic;
             bool result = false;
 
-            if (this._data.TryGetValue(mnemonic, out var signatureElementList))
+            if (this._data.TryGetValue(mnemonic, out IList<AsmSignatureElement> signatureElementList))
             {
                 if (signatureElementList.Contains(asmSignatureElement))
                 {

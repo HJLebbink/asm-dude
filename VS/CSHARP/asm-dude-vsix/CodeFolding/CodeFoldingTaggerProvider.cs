@@ -25,7 +25,6 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
-using System;
 using System.ComponentModel.Composition;
 
 namespace AsmDude.CodeFolding
@@ -40,7 +39,7 @@ namespace AsmDude.CodeFolding
     internal sealed class CodeFoldingTaggerProvider : ITaggerProvider
     {
         [Import]
-        private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
+        private readonly IBufferTagAggregatorFactoryService _aggregatorFactory = null;
 
         /// <summary>
         /// This method is called by VS to generate the tagger
@@ -52,7 +51,7 @@ namespace AsmDude.CodeFolding
         {
             ITagger<T> sc()
             {
-                var aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, this._aggregatorFactory);
+                ITagAggregator<SyntaxHighlighting.AsmTokenTag> aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, this._aggregatorFactory);
                 return new CodeFoldingTagger(buffer, aggregator, AsmDudeTools.Instance.Error_List_Provider) as ITagger<T>;
             }
             return buffer.Properties.GetOrCreateSingletonProperty(sc);

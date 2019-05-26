@@ -20,18 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-
+using AsmDude.SignatureHelp;
+using AsmDude.Tools;
+using AsmTools;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows.Media;
-
-using AsmTools;
-using AsmDude.Tools;
-using AsmDude.SignatureHelp;
 
 namespace AsmDude
 {
@@ -45,7 +43,7 @@ namespace AsmDude
 
     public sealed class CodeCompletionSource : ICompletionSource
     {
-        private static int MAX_LENGTH_DESCR_TEXT = 120;
+        private static readonly int MAX_LENGTH_DESCR_TEXT = 120;
 
         private readonly ITextBuffer _buffer;
         private readonly LabelGraph _labelGraph;
@@ -67,7 +65,10 @@ namespace AsmDude
         {
             //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:AugmentCompletionSession", this.ToString()));
 
-            if (!Settings.Default.CodeCompletion_On) return;
+            if (!Settings.Default.CodeCompletion_On)
+            {
+                return;
+            }
 
             try
             {
@@ -118,7 +119,7 @@ namespace AsmDude
                 bool useCapitals = AsmDudeToolsStatic.Is_All_Upper(partialKeyword);
 
                 string lineStr = line.GetText();
-                var t = AsmSourceTools.ParseLine(lineStr);
+                (string Label, Mnemonic Mnemonic, string[] Args, string Remark) t = AsmSourceTools.ParseLine(lineStr);
                 Mnemonic mnemonic = t.Mnemonic;
 
                 //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:AugmentCompletionSession; lineStr="+ lineStr+ "; t.Item1="+t.Item1);
@@ -132,25 +133,39 @@ namespace AsmDude
                     if (previousKeyword.Equals("INVOKE")) //TODO INVOKE is a MASM keyword not a NASM one...
                     {
                         // Suggest a label
-                        var completions = this.Label_Completions(useCapitals, false);
-                        if (completions.Any()) completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
+                        IEnumerable<Completion> completions = this.Label_Completions(useCapitals, false);
+                        if (completions.Any())
+                        {
+                            completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
+                        }
                     }
                     else
                     {
                         {
                             ISet<AsmTokenType> selected1 = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Jump, AsmTokenType.Misc, AsmTokenType.Mnemonic };
-                            var completions1 = this.Selected_Completions(useCapitals, selected1, true);
-                            if (completions1.Any()) completionSets.Add(new CompletionSet("All", "All", applicableTo, completions1, Enumerable.Empty<Completion>()));
+                            IEnumerable<Completion> completions1 = this.Selected_Completions(useCapitals, selected1, true);
+                            if (completions1.Any())
+                            {
+                                completionSets.Add(new CompletionSet("All", "All", applicableTo, completions1, Enumerable.Empty<Completion>()));
+                            }
                         }
-                        if (false) {
+                        if (false)
+                        {
                             ISet<AsmTokenType> selected2 = new HashSet<AsmTokenType> { AsmTokenType.Jump, AsmTokenType.Mnemonic };
-                            var completions2 = this.Selected_Completions(useCapitals, selected2, false);
-                            if (completions2.Any()) completionSets.Add(new CompletionSet("Instr", "Instr", applicableTo, completions2, Enumerable.Empty<Completion>()));
+                            IEnumerable<Completion> completions2 = this.Selected_Completions(useCapitals, selected2, false);
+                            if (completions2.Any())
+                            {
+                                completionSets.Add(new CompletionSet("Instr", "Instr", applicableTo, completions2, Enumerable.Empty<Completion>()));
+                            }
                         }
-                        if (false) {
+                        if (false)
+                        {
                             ISet<AsmTokenType> selected3 = new HashSet<AsmTokenType> { AsmTokenType.Directive, AsmTokenType.Misc };
-                            var completions3 = this.Selected_Completions(useCapitals, selected3, true);
-                            if (completions3.Any()) completionSets.Add(new CompletionSet("Directive", "Directive", applicableTo, completions3, Enumerable.Empty<Completion>()));
+                            IEnumerable<Completion> completions3 = this.Selected_Completions(useCapitals, selected3, true);
+                            if (completions3.Any())
+                            {
+                                completionSets.Add(new CompletionSet("Directive", "Directive", applicableTo, completions3, Enumerable.Empty<Completion>()));
+                            }
                         }
                     }
                 }
@@ -162,15 +177,20 @@ namespace AsmDude
                     {
                         //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:AugmentCompletionSession; previous keyword is a jump mnemonic");
                         // previous keyword is jump (or call) mnemonic. Suggest "SHORT" or a label
-                        var completions = this.Label_Completions(useCapitals, true);
-                        if (completions.Any()) completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
-
+                        IEnumerable<Completion> completions = this.Label_Completions(useCapitals, true);
+                        if (completions.Any())
+                        {
+                            completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
+                        }
                     }
                     else if (previousKeyword.Equals("SHORT") || previousKeyword.Equals("NEAR"))
                     {
                         // Suggest a label
-                        var completions = this.Label_Completions(useCapitals, false);
-                        if (completions.Any()) completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
+                        IEnumerable<Completion> completions = this.Label_Completions(useCapitals, false);
+                        if (completions.Any())
+                        {
+                            completionSets.Add(new CompletionSet("Labels", "Labels", applicableTo, completions, Enumerable.Empty<Completion>()));
+                        }
                     }
                     else
                     {
@@ -190,8 +210,11 @@ namespace AsmDude
                                 }
                             }
                         }
-                        var completions = this.Mnemonic_Operand_Completions(useCapitals, allowed, line.LineNumber);
-                        if (completions.Any()) completionSets.Add(new CompletionSet("All", "All", applicableTo, completions, Enumerable.Empty<Completion>()));
+                        IEnumerable<Completion> completions = this.Mnemonic_Operand_Completions(useCapitals, allowed, line.LineNumber);
+                        if (completions.Any())
+                        {
+                            completionSets.Add(new CompletionSet("All", "All", applicableTo, completions, Enumerable.Empty<Completion>()));
+                        }
                     }
                 }
                 #endregion
@@ -219,7 +242,7 @@ namespace AsmDude
                     string keyword = regName.ToString();
                     if (use_AsmSim_In_Code_Completion && this._asmSimulator.Tools.StateConfig.IsRegOn(RegisterTools.Get64BitsRegister(regName)))
                     {
-                        var (Value, Bussy) = this._asmSimulator.Get_Register_Value(regName, lineNumber, true, false, false, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration));
+                        (string Value, bool Bussy) = this._asmSimulator.Get_Register_Value(regName, lineNumber, true, false, false, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration));
                         if (!Bussy)
                         {
                             additionalInfo = Value;
@@ -240,8 +263,8 @@ namespace AsmDude
                     string archStr = (arch == Arch.ARCH_NONE) ? "" : " [" + ArchTools.ToString(arch) + "]";
                     string descriptionStr = this._asmDudeTools.Get_Description(keyword);
                     descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
-                    String displayText = Truncat(keyword + archStr + descriptionStr);
-                    this._icons.TryGetValue(AsmTokenType.Register, out var imageSource);
+                    string displayText = Truncat(keyword + archStr + descriptionStr);
+                    this._icons.TryGetValue(AsmTokenType.Register, out ImageSource imageSource);
                     completions.Add(new Completion(displayText, insertionText, additionalInfo, imageSource, ""));
                 }
             }
@@ -282,8 +305,8 @@ namespace AsmDude
                     string archStr = (arch == Arch.ARCH_NONE) ? "" : " [" + ArchTools.ToString(arch) + "]";
                     string descriptionStr = this._asmDudeTools.Get_Description(keyword);
                     descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
-                    String displayText = Truncat(keyword2 + archStr + descriptionStr);
-                    this._icons.TryGetValue(type, out var imageSource);
+                    string displayText = Truncat(keyword2 + archStr + descriptionStr);
+                    this._icons.TryGetValue(type, out ImageSource imageSource);
                     completions.Add(new Completion(displayText, insertionText, additionalInfo, imageSource, ""));
                 }
             }
@@ -292,7 +315,11 @@ namespace AsmDude
 
         private static string Truncat(string text)
         {
-            if (text.Length < MAX_LENGTH_DESCR_TEXT) return text;
+            if (text.Length < MAX_LENGTH_DESCR_TEXT)
+            {
+                return text;
+            }
+
             return text.Substring(0, MAX_LENGTH_DESCR_TEXT) + "...";
         }
 
@@ -326,7 +353,7 @@ namespace AsmDude
             #region 
             if (addSpecialKeywords && Settings.Default.CodeFolding_On)
             {
-                this._icons.TryGetValue(AsmTokenType.Directive, out var imageSource);
+                this._icons.TryGetValue(AsmTokenType.Directive, out ImageSource imageSource);
                 {
                     string insertionText = Settings.Default.CodeFolding_BeginTag;     //the characters that start the outlining region
                     string displayTextFull = insertionText + " - keyword to start code folding";
@@ -347,7 +374,7 @@ namespace AsmDude
 
             if (selectedTypes.Contains(AsmTokenType.Mnemonic))
             {
-                this._icons.TryGetValue(AsmTokenType.Mnemonic, out var imageSource);
+                this._icons.TryGetValue(AsmTokenType.Mnemonic, out ImageSource imageSource);
                 foreach (Mnemonic mnemonic in this._asmDudeTools.Get_Allowed_Mnemonics())
                 {
                     string keyword = mnemonic.ToString();
@@ -356,7 +383,7 @@ namespace AsmDude
                     string archStr = ArchTools.ToString(this._asmDudeTools.Mnemonic_Store.GetArch(mnemonic));
                     string descriptionStr = this._asmDudeTools.Mnemonic_Store.GetDescription(mnemonic);
                     descriptionStr = (descriptionStr.Length == 0) ? "" : " - " + descriptionStr;
-                    String displayText = Truncat(keyword + archStr + descriptionStr);
+                    string displayText = Truncat(keyword + archStr + descriptionStr);
                     //String description = keyword.PadRight(15) + archStr.PadLeft(8) + descriptionStr;
                     completions.Add(new Completion(displayText, insertionText, description, imageSource, ""));
                 }
@@ -380,11 +407,17 @@ namespace AsmDude
                         AssemblerEnum assembler = this._asmDudeTools.Get_Assembler(keyword);
                         if (assembler.HasFlag(AssemblerEnum.MASM))
                         {
-                            if (!usedAssember.HasFlag(AssemblerEnum.MASM)) selected = false;
+                            if (!usedAssember.HasFlag(AssemblerEnum.MASM))
+                            {
+                                selected = false;
+                            }
                         }
                         else if (assembler.HasFlag(AssemblerEnum.NASM_INTEL) || assembler.HasFlag(AssemblerEnum.NASM_ATT))
                         {
-                            if (!usedAssember.HasFlag(AssemblerEnum.NASM_INTEL)) selected = false;
+                            if (!usedAssember.HasFlag(AssemblerEnum.NASM_INTEL))
+                            {
+                                selected = false;
+                            }
                         }
                     }
                     else
@@ -407,7 +440,7 @@ namespace AsmDude
                         string displayTextFull = keyword + archStr + descriptionStr;
                         string displayText = Truncat(displayTextFull);
                         //String description = keyword.PadRight(15) + archStr.PadLeft(8) + descriptionStr;
-                        this._icons.TryGetValue(type, out var imageSource);
+                        this._icons.TryGetValue(type, out ImageSource imageSource);
                         completions.Add(new Completion(displayText, insertionText, displayTextFull, imageSource, ""));
                     }
                 }

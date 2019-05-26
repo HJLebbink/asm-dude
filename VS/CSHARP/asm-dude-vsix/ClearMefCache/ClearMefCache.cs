@@ -20,10 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.IO;
 using Microsoft;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using System.IO;
 
 namespace AsmDude.ClearMefCache
 {
@@ -47,9 +47,11 @@ namespace AsmDude.ClearMefCache
         public static async System.Threading.Tasks.Task ClearAsync()
         {
             if (!ThreadHelper.CheckAccess())
+            {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            }
 
-            var componentModelHost = await Instance.ServiceProvider.GetServiceAsync(typeof(SVsComponentModelHost)) as IVsComponentModelHost;
+            IVsComponentModelHost componentModelHost = await Instance.ServiceProvider.GetServiceAsync(typeof(SVsComponentModelHost)) as IVsComponentModelHost;
             string folder = await componentModelHost?.GetFolderPathAsync();
 
             if (!string.IsNullOrEmpty(folder) && Directory.Exists(folder))
@@ -62,9 +64,11 @@ namespace AsmDude.ClearMefCache
         public static async System.Threading.Tasks.Task RestartAsync()
         {
             if (!ThreadHelper.CheckAccess())
+            {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            }
 
-            var shell = await Instance.ServiceProvider.GetServiceAsync(typeof(SVsShell)) as IVsShell4;
+            IVsShell4 shell = await Instance.ServiceProvider.GetServiceAsync(typeof(SVsShell)) as IVsShell4;
             Assumes.Present(shell);
             shell.Restart((uint)__VSRESTARTTYPE.RESTART_Normal);
         }

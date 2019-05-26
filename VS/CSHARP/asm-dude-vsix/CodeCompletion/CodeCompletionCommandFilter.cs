@@ -20,14 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using System;
+using System.Runtime.InteropServices;
 
 namespace AsmDude
 {
@@ -139,7 +139,11 @@ namespace AsmDude
                 }
                 handled = true;
             }
-            if (handled) return VSConstants.S_OK;
+            if (handled)
+            {
+                return VSConstants.S_OK;
+            }
+
             return retVal;
         }
 

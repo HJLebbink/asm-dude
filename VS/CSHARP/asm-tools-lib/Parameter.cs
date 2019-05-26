@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 namespace AsmTools
-{ 
+{
     public class AsmParameters
     {
         public bool assume_initial_known_mem;

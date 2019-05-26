@@ -20,15 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Microsoft.VisualStudio.Text.Tagging;
-using Microsoft.VisualStudio.Text;
-using System.ComponentModel.Composition;
-using Microsoft.VisualStudio.Utilities;
-
 using AsmDude.SyntaxHighlighting;
-using System;
 using AsmDude.Tools;
 using AsmTools;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Tagging;
+using Microsoft.VisualStudio.Utilities;
+using System.ComponentModel.Composition;
 
 namespace AsmDude
 {
@@ -44,9 +42,21 @@ namespace AsmDude
             //AsmDudeToolsStatic.Output_INFO("AsmTokenTagProvider:CreateTagger");
             ITagger<T> sc()
             {
-                if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.MASM)) return new MasmTokenTagger(buffer) as ITagger<T>;
-                if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.NASM_INTEL)) return new NasmIntelTokenTagger(buffer) as ITagger<T>;
-                if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.NASM_ATT)) return new NasmAttTokenTagger(buffer) as ITagger<T>;
+                if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.MASM))
+                {
+                    return new MasmTokenTagger(buffer) as ITagger<T>;
+                }
+
+                if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.NASM_INTEL))
+                {
+                    return new NasmIntelTokenTagger(buffer) as ITagger<T>;
+                }
+
+                if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.NASM_ATT))
+                {
+                    return new NasmAttTokenTagger(buffer) as ITagger<T>;
+                }
+
                 return new MasmTokenTagger(buffer) as ITagger<T>;
             }
             return buffer.Properties.GetOrCreateSingletonProperty(sc);

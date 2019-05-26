@@ -38,14 +38,21 @@ namespace AsmTools
         public Operand(string token, bool isCapitals, AsmParameters p = null)
         {
 #if DEBUG
-            if (isCapitals && (token != token.ToUpper())) throw new Exception();
+            if (isCapitals && (token != token.ToUpper()))
+            {
+                throw new Exception();
+            }
 #endif
 
-            if (!isCapitals) token = token.ToUpper();
+            if (!isCapitals)
+            {
+                token = token.ToUpper();
+            }
+
             this._str = token;
 
             //TODO: properly handle optional elements {K}{Z} {AES}{ER}
-            string token2 = token.Contains("{") 
+            string token2 = token.Contains("{")
                 ? token.
                     Replace("{K0}", "").
                     Replace("{K1}", "").
@@ -63,7 +70,7 @@ namespace AsmTools
                     Replace("{1TO16}", "")
                 : token2 = token;
 
-            var t0 = RegisterTools.ToRn(token2, true);
+            (bool Valid, Rn Reg, int NBits) t0 = RegisterTools.ToRn(token2, true);
             if (t0.Valid)
             {
                 this._type = Ot1.reg;
@@ -74,7 +81,7 @@ namespace AsmTools
             {
                 this._rn = Rn.NOREG;
 
-                var t1 = AsmSourceTools.Evaluate_Constant(token2, true);
+                (bool Valid, ulong Value, int NBits) t1 = AsmSourceTools.Evaluate_Constant(token2, true);
                 if (t1.Valid)
                 {
                     this._type = Ot1.imm;
@@ -83,7 +90,7 @@ namespace AsmTools
                 }
                 else
                 {
-                    var t2 = AsmSourceTools.Parse_Mem_Operand(token2, true);
+                    (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits, string ErrorMessage) t2 = AsmSourceTools.Parse_Mem_Operand(token2, true);
                     if (t2.Valid)
                     {
                         this._type = Ot1.mem;
@@ -107,7 +114,7 @@ namespace AsmTools
 
         public Rn Rn { get { return this._rn; } }
         public ulong Imm { get { return this._imm; } }
-        
+
         /// <summary> Return tup with BaseReg, IndexReg, Scale and Displacement. Offset = Base + (Index * Scale) + Displacement </summary>
         public (Rn BaseReg, Rn IndexReg, int Scale, long Displacement) Mem { get { return this._mem; } }
 
@@ -125,7 +132,8 @@ namespace AsmTools
                         {
                             this._imm |= 1ul << bit;
                         }
-                    } else
+                    }
+                    else
                     {
                         // no need to change _imm
                     }
@@ -147,7 +155,8 @@ namespace AsmTools
                 {
                     this.NBits = nBits;
                 }
-            } else
+            }
+            else
             {
                 Console.WriteLine("WARNING: Operand:ZeroExtend: can only zero extend imm.");
             }

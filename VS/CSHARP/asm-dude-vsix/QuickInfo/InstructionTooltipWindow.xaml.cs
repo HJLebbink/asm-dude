@@ -20,21 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Documents;
-
 using AsmDude.Tools;
 using AsmTools;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Shell;
+using System;
+using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Media;
 
 namespace AsmDude.QuickInfo
 {
-    public partial class InstructionTooltipWindow: UserControl
+    public partial class InstructionTooltipWindow : UserControl
     {
         private readonly Brush _foreground;
         private IList<TextBox> _itemsOnPage;
@@ -75,8 +74,16 @@ namespace AsmDude.QuickInfo
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:CloseButton_Click");
-            if (this.Owner != null) this.Owner.CloseToolTip();
-            if (this.Session != null) this.Session.Dismiss();
+            if (this.Owner != null)
+            {
+                this.Owner.CloseToolTip();
+            }
+
+            if (this.Session != null)
+            {
+                this.Session.Dismiss();
+            }
+
             AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:CloseButton_Click: owner and session are null");
         }
 
@@ -167,9 +174,9 @@ namespace AsmDude.QuickInfo
                 this.AsmSimGridExpander.IsExpanded = isExpanded;
                 this.AsmSimGridExpanderNumeration.Text = Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration;
 
-                var (ReadReg, WriteReg, ReadFlag, WriteFlag, MemRead, MemWrite) = this._asmSimulator.Get_Usage(lineNumber);
-                var readReg = new HashSet<Rn>(ReadReg);
-                var writeReg = new HashSet<Rn>(WriteReg);
+                (IEnumerable<Rn> ReadReg, IEnumerable<Rn> WriteReg, Flags ReadFlag, Flags WriteFlag, bool MemRead, bool MemWrite) = this._asmSimulator.Get_Usage(lineNumber);
+                HashSet<Rn> readReg = new HashSet<Rn>(ReadReg);
+                HashSet<Rn> writeReg = new HashSet<Rn>(WriteReg);
 
                 this.GenerateHeader();
                 int row = 2;
@@ -181,22 +188,42 @@ namespace AsmDude.QuickInfo
                     if (b1 || b2)
                     {
                         empty = false;
-                        if (b1) this.Generate(reg, true, row);
-                        if (b2) this.Generate(reg, false, row);
+                        if (b1)
+                        {
+                            this.Generate(reg, true, row);
+                        }
+
+                        if (b2)
+                        {
+                            this.Generate(reg, false, row);
+                        }
+
                         row++;
                     }
                 }
 
                 foreach (Flags flag in FlagTools.GetFlags(ReadFlag | WriteFlag))
                 {
-                    if (flag == Flags.NONE) continue;
+                    if (flag == Flags.NONE)
+                    {
+                        continue;
+                    }
+
                     bool b1 = ReadFlag.HasFlag(flag);
                     bool b2 = WriteFlag.HasFlag(flag);
                     if (b1 || b2)
                     {
                         empty = false;
-                        if (b1) this.Generate(flag, true, row);
-                        if (b2) this.Generate(flag, false, row);
+                        if (b1)
+                        {
+                            this.Generate(flag, true, row);
+                        }
+
+                        if (b2)
+                        {
+                            this.Generate(flag, false, row);
+                        }
+
                         row++;
                     }
                 }
@@ -209,18 +236,24 @@ namespace AsmDude.QuickInfo
             {
                 string numerationStr = ((sender as ComboBox).SelectedItem as ComboBoxItem).Content.ToString();
                 NumerationEnum numeration = AsmSourceTools.ParseNumeration(numerationStr);
-                if (numeration == NumerationEnum.UNKNOWN) AsmDudeToolsStatic.Output_WARNING("SetAsmSim:smSimGridExpanderNumeration.SelectionChanged: unknown numerationStr=" + numerationStr);
+                if (numeration == NumerationEnum.UNKNOWN)
+                {
+                    AsmDudeToolsStatic.Output_WARNING("SetAsmSim:smSimGridExpanderNumeration.SelectionChanged: unknown numerationStr=" + numerationStr);
+                }
                 //AsmDudeToolsStatic.Output_INFO("AsmSimGridExpanderNumeration:SelectionChanged: numeration="+ numeration);
 
-                foreach (var textBox in this._itemsOnPage)
+                foreach (TextBox textBox in this._itemsOnPage)
                 {
-                    var info = textBox.Tag as ButtonInfo;
+                    ButtonInfo info = textBox.Tag as ButtonInfo;
 
                     string content = (info.reg == Rn.NOREG)
                         ? this._asmSimulator.Get_Flag_Value_If_Already_Computed(info.flag, this._lineNumber, info.before)
                         : this._asmSimulator.Get_Register_Value_If_Already_Computed(info.reg, this._lineNumber, info.before, numeration);
 
-                    if (content != null) textBox.Text = info.reg.ToString() + " = " + content;
+                    if (content != null)
+                    {
+                        textBox.Text = info.reg.ToString() + " = " + content;
+                    }
                 }
             };
         }
@@ -230,7 +263,7 @@ namespace AsmDude.QuickInfo
             int row = 1;
             FontFamily f = new FontFamily("Consolas");
             {
-                var textBlock = new TextBlock()
+                TextBlock textBlock = new TextBlock()
                 {
                     Text = "Read: ",
                     FontFamily = f,
@@ -243,7 +276,7 @@ namespace AsmDude.QuickInfo
                 Grid.SetColumn(textBlock, 0);
             }
             {
-                var textBlock = new TextBlock()
+                TextBlock textBlock = new TextBlock()
                 {
                     Text = "Write: ",
                     FontFamily = f,
@@ -263,7 +296,7 @@ namespace AsmDude.QuickInfo
 
             int column = isBefore ? 0 : 1;
             {
-                var textBox = new TextBox()
+                TextBox textBox = new TextBox()
                 {
                     FontFamily = f,
                     Foreground = this._foreground,
@@ -282,9 +315,9 @@ namespace AsmDude.QuickInfo
                 if (register_Content == null)
                 {
                     textBox.Visibility = Visibility.Collapsed;
-                    var button = new Button()
+                    Button button = new Button()
                     {
-                        Content = "Determine "+ reg.ToString(),
+                        Content = "Determine " + reg.ToString(),
                         Foreground = this._foreground,
                         Visibility = Visibility.Visible,
                         Tag = new ButtonInfo(textBox, reg, isBefore)
@@ -309,7 +342,7 @@ namespace AsmDude.QuickInfo
 
             int column = isBefore ? 0 : 1;
             {
-                var textBlock = new TextBox()
+                TextBox textBlock = new TextBox()
                 {
                     FontFamily = f,
                     Foreground = this._foreground,
@@ -326,7 +359,7 @@ namespace AsmDude.QuickInfo
                 if (flag_Content == null)
                 {
                     textBlock.Visibility = Visibility.Collapsed;
-                    var button = new Button()
+                    Button button = new Button()
                     {
                         Content = "Determine " + flag.ToString(),
                         Foreground = this._foreground,
@@ -356,13 +389,22 @@ namespace AsmDude.QuickInfo
         {
             AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Async", this.ToString()));
 
-            if (button == null) return;
-            if (this._asmSimulator == null) return;
+            if (button == null)
+            {
+                return;
+            }
+
+            if (this._asmSimulator == null)
+            {
+                return;
+            }
 
             try
             {
                 if (!ThreadHelper.CheckAccess())
+                {
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                }
 
                 ButtonInfo info = (ButtonInfo)button.Tag;
                 info.text.Text = (info.reg == Rn.NOREG)

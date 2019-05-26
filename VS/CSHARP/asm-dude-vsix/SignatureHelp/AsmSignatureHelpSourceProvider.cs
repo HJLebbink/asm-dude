@@ -33,9 +33,11 @@ namespace AsmDude.SignatureHelp
     [Order(Before = "default")]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    internal class AsmSignatureHelpSourceProvider : ISignatureHelpSourceProvider {
+    internal class AsmSignatureHelpSourceProvider : ISignatureHelpSourceProvider
+    {
 
-        public ISignatureHelpSource TryCreateSignatureHelpSource(ITextBuffer textBuffer) {
+        public ISignatureHelpSource TryCreateSignatureHelpSource(ITextBuffer textBuffer)
+        {
             return new AsmSignatureHelpSource(textBuffer);
         }
     }

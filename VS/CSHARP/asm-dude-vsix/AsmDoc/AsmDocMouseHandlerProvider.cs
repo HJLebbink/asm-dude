@@ -20,14 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.ComponentModel.Composition;
-using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Utilities;
-using Microsoft.VisualStudio.Shell;
+using System.ComponentModel.Composition;
 
 namespace AsmDude.AsmDoc
 {
@@ -40,10 +37,10 @@ namespace AsmDude.AsmDoc
     internal sealed class AsmDocMouseHandlerProvider : IMouseProcessorProvider
     {
         [Import]
-        private IClassifierAggregatorService _aggregatorFactory = null;
+        private readonly IClassifierAggregatorService _aggregatorFactory = null;
 
         [Import]
-        private ITextStructureNavigatorSelectorService _navigatorService = null;
+        private readonly ITextStructureNavigatorSelectorService _navigatorService = null;
 
         public IMouseProcessor GetAssociatedProcessor(IWpfTextView view)
         {

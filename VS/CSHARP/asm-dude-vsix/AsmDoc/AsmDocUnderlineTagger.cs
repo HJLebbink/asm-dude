@@ -48,7 +48,7 @@ namespace AsmDude.AsmDoc
 
         public void SetUnderlineSpan(SnapshotSpan? span)
         {
-            var oldSpan = this._underlineSpan;
+            SnapshotSpan? oldSpan = this._underlineSpan;
             this._underlineSpan = span;
 
             if (!oldSpan.HasValue && !this._underlineSpan.HasValue)

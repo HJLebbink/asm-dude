@@ -27,7 +27,10 @@ namespace AsmTools
 
         public void Start(string key)
         {
-            if (this.On) this._startTimeTicks[key] = DateTime.Now.Ticks;
+            if (this.On)
+            {
+                this._startTimeTicks[key] = DateTime.Now.Ticks;
+            }
         }
 
         public void Stop(string key)
@@ -42,7 +45,8 @@ namespace AsmTools
                 if (this._totalTimeInSec.TryGetValue(key, out double sum))
                 {
                     this._totalTimeInSec[key] = sum + elapsedSec;
-                } else
+                }
+                else
                 {
                     this._totalTimeInSec[key] = elapsedSec;
                 }

@@ -20,8 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Windows.Input;
 using Microsoft.VisualStudio.Text.Editor;
+using System.Windows.Input;
 
 namespace AsmDude.AsmDoc
 {
@@ -39,7 +39,7 @@ namespace AsmDude.AsmDoc
 
         private void UpdateState(KeyEventArgs args)
         {
-            this._state.Enabled = 
+            this._state.Enabled =
                 ((args.KeyboardDevice.Modifiers & ModifierKeys.Control) != 0) &&
                 ((args.KeyboardDevice.Modifiers & ModifierKeys.Shift) == 0);
         }

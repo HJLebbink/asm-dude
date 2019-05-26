@@ -39,7 +39,7 @@ namespace AsmDude.SignatureHelp
         private readonly ISignatureHelpBroker _broker;
 
         private ISignatureHelpSession _session;
-        private IOleCommandTarget _nextCommandHandler;
+        private readonly IOleCommandTarget _nextCommandHandler;
 
         internal AsmSignatureHelpCommandFilter(IVsTextView textViewAdapter, ITextView textView, ISignatureHelpBroker broker)
         {
@@ -78,8 +78,12 @@ namespace AsmDude.SignatureHelp
                                 char typedChar = this.GetTypeChar(pvaIn);
                                 if (char.IsWhiteSpace(typedChar) || typedChar.Equals(','))
                                 {
-                                    var t = AsmSourceTools.ParseLine(lineStr);
-                                    if (this._session != null) this._session.Dismiss(); // cleanup previous session
+                                    (string Label, Mnemonic Mnemonic, string[] Args, string Remark) t = AsmSourceTools.ParseLine(lineStr);
+                                    if (this._session != null)
+                                    {
+                                        this._session.Dismiss(); // cleanup previous session
+                                    }
+
                                     if (t.Mnemonic != Mnemonic.NONE)
                                     {
                                         this._session = this._broker.TriggerSignatureHelp(this._textView);

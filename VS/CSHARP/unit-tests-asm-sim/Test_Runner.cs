@@ -1,16 +1,15 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
-
-using AsmSim;
+﻿using AsmSim;
 using AsmTools;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
 
 namespace unit_tests_asm_z3
 {
     [TestClass]
     public class Test_Runner
     {
-        const bool logToDisplay = TestTools.LOG_TO_DISPLAY;
+        private const bool logToDisplay = TestTools.LOG_TO_DISPLAY;
 
         #region Private Methods
 
@@ -38,7 +37,10 @@ namespace unit_tests_asm_z3
         {
             StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
-            if (logToDispay2) Console.WriteLine(sFlow.ToString());
+            if (logToDispay2)
+            {
+                Console.WriteLine(sFlow.ToString());
+            }
 
             DynamicFlow dFlow0 = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
             DynamicFlow dFlow1 = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
@@ -227,11 +229,14 @@ namespace unit_tests_asm_z3
             StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
-            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
-            var state = dFlow.EndState;
+            State state = dFlow.EndState;
             //if (logToDisplay) Console.WriteLine("DynamicFlow:\n" + dFlow.ToString(staticFlow));
-            if (logToDisplay) Console.WriteLine(state);
+            if (logToDisplay)
+            {
+                Console.WriteLine(state);
+            }
 
             TestTools.IsTrue(state.IsConsistent);
             TestTools.AreEqual(Rn.RAX, 0, state);
@@ -249,13 +254,16 @@ namespace unit_tests_asm_z3
                 "label2:                                        ";
 
             Tools tools = this.CreateTools();
-            var sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
-            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
             State state = dFlow.EndState;
-            if (logToDisplay) Console.WriteLine(state);
+            if (logToDisplay)
+            {
+                Console.WriteLine(state);
+            }
 
             TestTools.IsTrue(state.IsConsistent);
             TestTools.AreEqual(Rn.RBX, 10, state);
@@ -273,14 +281,17 @@ namespace unit_tests_asm_z3
                 "label2:                                        ";
 
             Tools tools = this.CreateTools();
-            var sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
             //var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
-            var dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
 
             State state = dFlow.EndState;
-            if (logToDisplay) Console.WriteLine(state);
+            if (logToDisplay)
+            {
+                Console.WriteLine(state);
+            }
 
             TestTools.IsTrue(state.IsConsistent);
             TestTools.AreEqual(Rn.RAX, 10, state);
@@ -299,11 +310,11 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        20              ";
 
             Tools tools = this.CreateTools();
-            var sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
             //var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
-            var dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
             //if (logToDisplay) Console.WriteLine(dFlow.ToString(sFlow));
 
             State state = dFlow.EndState;
@@ -325,35 +336,50 @@ namespace unit_tests_asm_z3
                 "label2:                                        ";
 
             Tools tools = this.CreateTools();
-            var sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
             //var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
-            var dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
             bool logToDisplay2 = true;
             tools.Quiet = true;// !logToDisplay2;
 
             State state = dFlow.EndState;
             Assert.IsNotNull(state);
 
-            if (logToDisplay2) Console.WriteLine("state:\n" + state);
+            if (logToDisplay2)
+            {
+                Console.WriteLine("state:\n" + state);
+            }
+
             TestTools.IsTrue(state.IsConsistent);
             TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_000????0", state);
 
-            var branch_Condition = dFlow.Get_Branch_Condition(0);
-            if (logToDisplay2) Console.WriteLine("Branch Condition:" + branch_Condition);
+            Microsoft.Z3.BoolExpr branch_Condition = dFlow.Get_Branch_Condition(0);
+            if (logToDisplay2)
+            {
+                Console.WriteLine("Branch Condition:" + branch_Condition);
+            }
 
             {
                 State state2a = new State(state);
                 state2a.Add(new BranchInfo(branch_Condition, true));
-                if (logToDisplay2) Console.WriteLine("state with ZF = true:\n" + state2a);
+                if (logToDisplay2)
+                {
+                    Console.WriteLine("state with ZF = true:\n" + state2a);
+                }
+
                 TestTools.IsTrue(state2a.IsConsistent);
                 TestTools.AreEqual(Rn.RAX, 10, state2a); // TODO why is 10 / 20 reversed?
             }
             {
                 State state2b = new State(state);
                 state2b.Add(new BranchInfo(branch_Condition, false));
-                if (logToDisplay2) Console.WriteLine("state with ZF = false:\n" + state2b);
+                if (logToDisplay2)
+                {
+                    Console.WriteLine("state with ZF = false:\n" + state2b);
+                }
+
                 TestTools.IsTrue(state2b.IsConsistent);
                 TestTools.AreEqual(Rn.RAX, 20, state2b);
             }
@@ -373,18 +399,22 @@ namespace unit_tests_asm_z3
                 "label2:                                        ";
 
             Tools tools = this.CreateTools();
-            var sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
             //var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
-            var dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
 
             State state0 = dFlow.Create_States_Before(0, 0);
             Assert.IsNotNull(state0);
             State state = dFlow.EndState;
             Assert.IsNotNull(state);
 
-            if (logToDisplay) Console.WriteLine("state:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("state:\n" + state);
+            }
+
             TestTools.IsTrue(state.IsConsistent);
             TestTools.AreEqual(Rn.RAX, 20, state);
         }
@@ -403,18 +433,22 @@ namespace unit_tests_asm_z3
                 "label2:                                        ";
 
             Tools tools = this.CreateTools();
-            var sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
             //var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
-            var dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
 
             State state0 = dFlow.Create_States_Before(0, 0);
             Assert.IsNotNull(state0);
             State state = dFlow.EndState;
             Assert.IsNotNull(state);
 
-            if (logToDisplay) Console.WriteLine("state:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("state:\n" + state);
+            }
+
             TestTools.IsTrue(state.IsConsistent);
             TestTools.AreEqual(Rn.RAX, 10, state);
         }
@@ -427,30 +461,42 @@ namespace unit_tests_asm_z3
                 "label1:                                        ";
 
             Tools tools = this.CreateTools();
-            var sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
-            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
             State state = dFlow.EndState;
             Assert.IsNotNull(state);
 
             //DotVisualizer.SaveToDot(sFlow, dFlow, "test1.dot");
 
-            if (logToDisplay) Console.WriteLine("state:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("state:\n" + state);
+            }
+
             TestTools.IsTrue(state.IsConsistent);
-            var branch_Condition = dFlow.Get_Branch_Condition(0);
+            Microsoft.Z3.BoolExpr branch_Condition = dFlow.Get_Branch_Condition(0);
 
             {
                 State state2a = new State(state);
                 state2a.Add(new BranchInfo(branch_Condition, true));
-                if (logToDisplay) Console.WriteLine("state with ZF = true:\n" + state2a);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("state with ZF = true:\n" + state2a);
+                }
+
                 TestTools.AreEqual(Tv.ONE, state2a.IsConsistent);
             }
             {
                 State state2b = new State(state);
                 state2b.Add(new BranchInfo(branch_Condition, false));
-                if (logToDisplay) Console.WriteLine("state with ZF = false:\n" + state2b);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("state with ZF = false:\n" + state2b);
+                }
+
                 TestTools.AreEqual(Tv.ONE, state2b.IsConsistent);
             }
         }
@@ -470,32 +516,44 @@ namespace unit_tests_asm_z3
                 "label3:                                        ";
 
             Tools tools = this.CreateTools();
-            var sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
             tools.StateConfig = sFlow.Create_StateConfig();
             //var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
-            var dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
             //DotVisualizer.SaveToDot(sFlow, dFlow, "test1.dot");
 
             State state = dFlow.EndState;
             Assert.IsNotNull(state);
 
-            if (logToDisplay) Console.WriteLine("state:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("state:\n" + state);
+            }
+
             TestTools.IsTrue(state.IsConsistent);
             TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_000????0", state);
 
-            var branch_Condition = dFlow.Get_Branch_Condition(0);
+            Microsoft.Z3.BoolExpr branch_Condition = dFlow.Get_Branch_Condition(0);
             {
                 State state2a = new State(state);
                 state2a.Add(new BranchInfo(branch_Condition, true));
-                if (logToDisplay) Console.WriteLine("state with ZF = true:\n" + state2a);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("state with ZF = true:\n" + state2a);
+                }
+
                 TestTools.IsTrue(state2a.IsConsistent);
                 TestTools.AreEqual(Rn.RAX, 10, state2a);
             }
             {
                 State state2b = new State(state);
                 state2b.Add(new BranchInfo(branch_Condition, false));
-                if (logToDisplay) Console.WriteLine("state with ZF = false:\n" + state2b);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("state with ZF = false:\n" + state2b);
+                }
+
                 TestTools.IsTrue(state2b.IsConsistent);
                 TestTools.AreEqual(Rn.RAX, 20, state2b);
             }
@@ -513,20 +571,28 @@ namespace unit_tests_asm_z3
                 "           mov     rcx,        3               ";
 
             Tools tools = this.CreateTools();
-            var sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
-            if (logToDisplay) Console.WriteLine(sFlow.ToString());
+            if (logToDisplay)
+            {
+                Console.WriteLine(sFlow.ToString());
+            }
+
             tools.StateConfig = sFlow.Create_StateConfig();
-            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
             State state = dFlow.EndState;
             Assert.IsNotNull(state);
 
-            if (logToDisplay) Console.WriteLine("state:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("state:\n" + state);
+            }
+
             TestTools.IsTrue(state.IsConsistent);
 
-            var branch_Condition_jz = dFlow.Get_Branch_Condition(0);
-            var branch_Condition_jc = dFlow.Get_Branch_Condition(2);
+            Microsoft.Z3.BoolExpr branch_Condition_jz = dFlow.Get_Branch_Condition(0);
+            Microsoft.Z3.BoolExpr branch_Condition_jc = dFlow.Get_Branch_Condition(2);
 
             if (true)
             {
@@ -620,23 +686,32 @@ namespace unit_tests_asm_z3
                 "label1:                                        ";
 
             Tools tools = this.CreateTools();
-            var sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
-            if (logToDisplay) Console.WriteLine(sFlow.ToString());
+            if (logToDisplay)
+            {
+                Console.WriteLine(sFlow.ToString());
+            }
+
             tools.StateConfig = sFlow.Create_StateConfig();
-            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
             State state = dFlow.EndState;
             Assert.IsNotNull(state);
 
-            if (logToDisplay) Console.WriteLine("state:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("state:\n" + state);
+            }
+
             TestTools.IsTrue(state.IsConsistent);
 
-            var branch_Condition_jz = dFlow.Get_Branch_Condition(0);
-            var branch_Condition_jc = dFlow.Get_Branch_Condition(2);
-            var branch_Condition_jp = dFlow.Get_Branch_Condition(4);
+            Microsoft.Z3.BoolExpr branch_Condition_jz = dFlow.Get_Branch_Condition(0);
+            Microsoft.Z3.BoolExpr branch_Condition_jc = dFlow.Get_Branch_Condition(2);
+            Microsoft.Z3.BoolExpr branch_Condition_jp = dFlow.Get_Branch_Condition(4);
 
-            if (true) {
+            if (true)
+            {
                 if (true)
                 {
                     State state2 = new State(state);
@@ -716,20 +791,28 @@ namespace unit_tests_asm_z3
                 "label1:                                        ";
 
             Tools tools = this.CreateTools();
-            var sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
-            if (logToDisplay) Console.WriteLine(sFlow.ToString());
+            if (logToDisplay)
+            {
+                Console.WriteLine(sFlow.ToString());
+            }
+
             tools.StateConfig = sFlow.Create_StateConfig();
-            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
             State state = dFlow.EndState;
             Assert.IsNotNull(state);
 
-            if (logToDisplay) Console.WriteLine("state:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("state:\n" + state);
+            }
+
             TestTools.IsTrue(state.IsConsistent);
 
-            var branch_Condition_jz1 = dFlow.Get_Branch_Condition(1);
-            var branch_Condition_jz2 = dFlow.Get_Branch_Condition(3);
+            Microsoft.Z3.BoolExpr branch_Condition_jz1 = dFlow.Get_Branch_Condition(1);
+            Microsoft.Z3.BoolExpr branch_Condition_jz2 = dFlow.Get_Branch_Condition(3);
 
             if (true)
             {
@@ -776,20 +859,28 @@ namespace unit_tests_asm_z3
                 "label1:                                        ";
 
             Tools tools = this.CreateTools();
-            var sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
-            if (logToDisplay) Console.WriteLine(sFlow.ToString());
+            if (logToDisplay)
+            {
+                Console.WriteLine(sFlow.ToString());
+            }
+
             tools.StateConfig = sFlow.Create_StateConfig();
-            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
             State state = dFlow.EndState;
             Assert.IsNotNull(state);
 
-            if (logToDisplay) Console.WriteLine("state:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("state:\n" + state);
+            }
+
             TestTools.IsTrue(state.IsConsistent);
 
-            var branch_Condition_jp = dFlow.Get_Branch_Condition(1);
-            var branch_Condition_jz = dFlow.Get_Branch_Condition(3);
+            Microsoft.Z3.BoolExpr branch_Condition_jp = dFlow.Get_Branch_Condition(1);
+            Microsoft.Z3.BoolExpr branch_Condition_jz = dFlow.Get_Branch_Condition(3);
 
             if (true)
             {
@@ -839,9 +930,9 @@ namespace unit_tests_asm_z3
                 "           mov     qword ptr[rax],  rcx        " + Environment.NewLine +
                 "           mov     rdx,        qword ptr[rax]  ";
 
-            var sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
-            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             State state = dFlow.EndState;
 
             TestTools.AreEqual(Rn.RCX, 20, state);
@@ -866,9 +957,9 @@ namespace unit_tests_asm_z3
                 "           mov     rbx, qword ptr [rax]        " + Environment.NewLine +
                 "           mov     rcx, qword ptr [rbx]        ";
 
-            var sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
-            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             State state = dFlow.EndState;
 
             TestTools.AreEqual(Rn.RAX, 0, state);
@@ -894,16 +985,20 @@ namespace unit_tests_asm_z3
                 "           mov     rbx, qword ptr [rax]        " + Environment.NewLine +
                 "           mov     rcx, qword ptr [rbx]        ";
 
-            var sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
-            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             State state0 = dFlow.Create_States_Before(0, 0);
             State state = dFlow.EndState;
 
-            var rax = state0.Create(Rn.RAX).Translate(state.Ctx);
+            Microsoft.Z3.Expr rax = state0.Create(Rn.RAX).Translate(state.Ctx);
             state.Frozen = false;
             state.Add(new BranchInfo(state.Ctx.MkEq(rax, state.Ctx.MkBV(0, 64)), true));
-            if (logToDisplay2) Console.WriteLine("Forward:\n" + state);
+            if (logToDisplay2)
+            {
+                Console.WriteLine("Forward:\n" + state);
+            }
+
             TestTools.AreEqual(Rn.RAX, 0, state);
             TestTools.AreEqual(Rn.RBX, 10, state);
             TestTools.AreEqual(Rn.RCX, 20, state);
@@ -929,20 +1024,28 @@ namespace unit_tests_asm_z3
                 "label2:                                        " + Environment.NewLine +
                 "           mov     bl, byte ptr[rax]         ";
 
-            var sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
-            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             State state = dFlow.EndState;
 
             State state3 = new State(state);
             State state4 = new State(state);
-            var branch_Condition = dFlow.Get_Branch_Condition(0);
+            Microsoft.Z3.BoolExpr branch_Condition = dFlow.Get_Branch_Condition(0);
             state3.Add(new BranchInfo(branch_Condition, true));
-            if (logToDisplay) Console.WriteLine("state3:\n" + state3);
+            if (logToDisplay)
+            {
+                Console.WriteLine("state3:\n" + state3);
+            }
+
             TestTools.AreEqual(Rn.BL, 10, state3);
 
             state4.Add(new BranchInfo(branch_Condition, false));
-            if (logToDisplay) Console.WriteLine("state4:\n" + state4);
+            if (logToDisplay)
+            {
+                Console.WriteLine("state4:\n" + state4);
+            }
+
             TestTools.AreEqual(Rn.BL, 20, state4);
         }
 
@@ -965,19 +1068,30 @@ namespace unit_tests_asm_z3
                 "           dec        rax                      " + Environment.NewLine +
                 "           jnz        label1                   ";
 
-            var sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
-            if (logToDisplay2) Console.WriteLine(sFlow);
-            var dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
+            if (logToDisplay2)
+            {
+                Console.WriteLine(sFlow);
+            }
+
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
 
             if (false)
-            { 
+            {
                 State state = dFlow.EndState;
-                if (logToDisplay2) Console.WriteLine(state);
+                if (logToDisplay2)
+                {
+                    Console.WriteLine(state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, 0, state);
                 TestTools.AreEqual(Rn.RBX, 3, state);
             }
-            else Assert.Inconclusive("TODO");
+            else
+            {
+                Assert.Inconclusive("TODO");
+            }
         }
 
         [TestMethod]
@@ -996,18 +1110,29 @@ namespace unit_tests_asm_z3
                 "label1:    dec        rax                      " + Environment.NewLine +
                 "           jnz        label1                   ";
 
-            var sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
-            if (logToDisplay2) Console.WriteLine(sFlow);
-            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            if (logToDisplay2)
+            {
+                Console.WriteLine(sFlow);
+            }
+
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
             if (false)
             {   // backward
                 State state = dFlow.EndState;
-                if (logToDisplay2) Console.WriteLine(state);
+                if (logToDisplay2)
+                {
+                    Console.WriteLine(state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, 0, state);
             }
-            else Assert.Inconclusive("TODO");
+            else
+            {
+                Assert.Inconclusive("TODO");
+            }
         }
     }
 }

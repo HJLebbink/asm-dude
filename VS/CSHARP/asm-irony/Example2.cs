@@ -1,33 +1,35 @@
-﻿using System.Linq;
-using Irony.Parsing;
+﻿using Irony.Parsing;
 using System.Diagnostics;
+using System.Linq;
 
 namespace asm_irony
 {
 
     [Language("asm2", "1.0", "Assembly Intel-Style Grammar")]
-    public class AsmGrammar2 : Grammar {
-        TerminalSet _skipTokensInPreview = new TerminalSet(); //used in token preview for conflict resolution
-        public AsmGrammar2() {
+    public class AsmGrammar2 : Grammar
+    {
+        private readonly TerminalSet _skipTokensInPreview = new TerminalSet(); //used in token preview for conflict resolution
+        public AsmGrammar2()
+        {
 
             NumberLiteral number = new NumberLiteral("NUMBER", NumberOptions.Default);
 
             KeyTerm PLUS = this.ToTerm("+", "PLUS");
             KeyTerm TIMES = this.ToTerm("*", "TIMES");
 
-            var mem_op = new NonTerminal("MemOp");
-            var scaleIdx = new NonTerminal("ScaleIdx");
-            var scaleIdxBr = new NonTerminal("ScaleIdxBrac64");
+            NonTerminal mem_op = new NonTerminal("MemOp");
+            NonTerminal scaleIdx = new NonTerminal("ScaleIdx");
+            NonTerminal scaleIdxBr = new NonTerminal("ScaleIdxBrac64");
 
-            var baseReg = new NonTerminal("Base");
-            var scale = new NonTerminal("Scale");
-            var idxReg = new NonTerminal("Idx");
-            var disp = new NonTerminal("Disp");
+            NonTerminal baseReg = new NonTerminal("Base");
+            NonTerminal scale = new NonTerminal("Scale");
+            NonTerminal idxReg = new NonTerminal("Idx");
+            NonTerminal disp = new NonTerminal("Disp");
 
 
             this.Root = mem_op;
 
-            mem_op.Rule = "[" + baseReg + PLUS + scaleIdxBr + disp +"]";
+            mem_op.Rule = "[" + baseReg + PLUS + scaleIdxBr + disp + "]";
             mem_op.Rule |= "[" + baseReg + disp + PLUS + scaleIdxBr + "]";
 
             scaleIdxBr.Rule = "(" + scaleIdx + ")";
@@ -44,15 +46,17 @@ namespace asm_irony
             disp.Rule = PLUS + this.CustomActionHere(this.findTimesChar) + number;
         }
 
-        private void findTimesChar(ParsingContext context, CustomParserAction customAction) {
+        private void findTimesChar(ParsingContext context, CustomParserAction customAction)
+        {
 
             string currentStr = context.CurrentParserInput.Term.Name;
             Debug.WriteLine("findTimesChar: current Term = " + currentStr);
 
-            if (context.CurrentParserInput.Term == Eof) {
+            if (context.CurrentParserInput.Term == this.Eof)
+            {
                 return;
             }
-            var scanner = context.Parser.Scanner;
+            Scanner scanner = context.Parser.Scanner;
             ParserAction action;
 
             scanner.BeginPreview();
@@ -61,9 +65,12 @@ namespace asm_irony
 
             string previewStr = preview.Terminal.Name;
             Debug.WriteLine("findTimesChar: preview Term = " + previewStr);
-            if (currentStr.Equals("NUMBER") && previewStr.Equals("TIMES")) {
+            if (currentStr.Equals("NUMBER") && previewStr.Equals("TIMES"))
+            {
                 action = customAction.ReduceActions.First();
-            } else {
+            }
+            else
+            {
                 action = customAction.ShiftActions.First(a => a.Term.Name == "NUMBER");
             }
             action.Execute(context);

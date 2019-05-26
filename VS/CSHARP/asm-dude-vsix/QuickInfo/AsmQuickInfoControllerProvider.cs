@@ -20,12 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
 
 namespace AsmDude.QuickInfo
 {
@@ -37,7 +37,7 @@ namespace AsmDude.QuickInfo
     internal sealed class AsmQuickInfoControllerProvider : IIntellisenseControllerProvider
     {
         [Import]
-        private IQuickInfoBroker _quickInfoBroker = null;
+        private readonly IQuickInfoBroker _quickInfoBroker = null;
 
         public IIntellisenseController TryCreateIntellisenseController(ITextView textView, IList<ITextBuffer> subjectBuffers)
         {

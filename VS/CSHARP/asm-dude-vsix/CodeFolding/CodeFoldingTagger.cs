@@ -20,23 +20,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Amib.Threading;
+using AsmDude.SyntaxHighlighting;
+using AsmDude.Tools;
+using AsmTools;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.Text.Tagging;
-using Microsoft.VisualStudio.Text;
-using System.Windows.Controls;
-using AsmDude.Tools;
-using AsmDude.SyntaxHighlighting;
 using System.Text;
-using Microsoft.VisualStudio.Shell;
-using AsmTools;
-using Amib.Threading;
-using Microsoft.VisualStudio.Threading;
+using System.Windows.Controls;
 
 namespace AsmDude.CodeFolding
 {
-    class PartialRegion
+    internal class PartialRegion
     {
         public int StartLine { get; set; }
         public int StartOffset { get; set; }
@@ -45,7 +44,7 @@ namespace AsmDude.CodeFolding
         public PartialRegion PartialParent { get; set; }
     }
 
-    class Region : PartialRegion
+    internal class Region : PartialRegion
     {
         public int EndLine { get; set; }
     }
@@ -53,8 +52,8 @@ namespace AsmDude.CodeFolding
     internal sealed class CodeFoldingTagger : ITagger<IOutliningRegionTag>
     {
         #region Private Fields
-        private string startRegionTag = Settings.Default.CodeFolding_BeginTag;  //the characters that start the outlining region
-        private string endRegionTag = Settings.Default.CodeFolding_EndTag;      //the characters that end the outlining region
+        private readonly string startRegionTag = Settings.Default.CodeFolding_BeginTag;  //the characters that start the outlining region
+        private readonly string endRegionTag = Settings.Default.CodeFolding_EndTag;      //the characters that end the outlining region
 
         private readonly ITextBuffer _buffer;
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
@@ -65,7 +64,7 @@ namespace AsmDude.CodeFolding
         private readonly Delay _delay;
         private IWorkItemResult _thread_Result;
 
-        private object _updateLock = new object();
+        private readonly object _updateLock = new object();
         private bool _enabled;
         #endregion Private Fields
 
@@ -86,7 +85,7 @@ namespace AsmDude.CodeFolding
             this._enabled = true;
 
             this._delay = new Delay(AsmDudePackage.msSleepBeforeAsyncExecution, 10, AsmDudeTools.Instance.Thread_Pool);
-            this._delay.Done_Event += (o, i) => 
+            this._delay.Done_Event += (o, i) =>
             {
                 if ((this._thread_Result != null) && (!this._thread_Result.IsCanceled))
                 {
@@ -127,7 +126,7 @@ namespace AsmDude.CodeFolding
                             ITextSnapshotLine startLine = this._snapshot.GetLineFromLineNumber(region.StartLine);
                             ITextSnapshotLine endLine = this._snapshot.GetLineFromLineNumber(region.EndLine);
 
-                            var replacement = this.Get_Region_Description(startLine.GetText(), region.StartOffsetHoverText);
+                            string replacement = this.Get_Region_Description(startLine.GetText(), region.StartOffsetHoverText);
                             object hover = null;
                             if (true)
                             {
@@ -213,7 +212,7 @@ namespace AsmDude.CodeFolding
         /// </summary>
         private (int StartPosFolding, int StartPosDescription) Is_Start_Keyword(string lineContent, int lineNumber)
         {
-            var tup = this.Is_Start_Directive_Keyword(lineContent);
+            (int StartPos, int StartPosDescription) tup = this.Is_Start_Directive_Keyword(lineContent);
             if (tup.StartPos != -1)
             {
                 return tup;
@@ -287,7 +286,8 @@ namespace AsmDude.CodeFolding
                         }
                     }
                 }
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Is_Start_Masm_Keyword; e={1}", this.ToString(), e.ToString()));
             }
@@ -403,7 +403,10 @@ namespace AsmDude.CodeFolding
 
         private void Parse()
         {
-            if (!this._enabled) return;
+            if (!this._enabled)
+            {
+                return;
+            }
 
             lock (this._updateLock)
             {
@@ -421,7 +424,10 @@ namespace AsmDude.CodeFolding
                 ITextSnapshotLine line = null;
                 bool hasNext = enumerator.MoveNext();
                 bool already_advanced = true;
-                if (hasNext) line = enumerator.Current;
+                if (hasNext)
+                {
+                    line = enumerator.Current;
+                }
 
                 while (hasNext)
                 {
@@ -433,7 +439,7 @@ namespace AsmDude.CodeFolding
                         string lineContent = line.GetText();
                         int lineNumber = line.LineNumber;
 
-                        var (regionStart, regionStartHoverText) = this.Is_Start_Keyword(lineContent, lineNumber);
+                        (int regionStart, int regionStartHoverText) = this.Is_Start_Keyword(lineContent, lineNumber);
                         if (regionStart != -1)
                         {
                             this.Add_Start_Region(lineContent, regionStart, lineNumber, regionStartHoverText, ref currentRegion, newRegions);
@@ -493,7 +499,10 @@ namespace AsmDude.CodeFolding
                     if (!already_advanced)
                     {
                         hasNext = enumerator.MoveNext();
-                        if (hasNext) line = enumerator.Current;
+                        if (hasNext)
+                        {
+                            line = enumerator.Current;
+                        }
                     }
                     #endregion
                 }
@@ -622,8 +631,8 @@ namespace AsmDude.CodeFolding
 
         private static SnapshotSpan As_Snapshot_Span(Region region, ITextSnapshot snapshot)
         {
-            var startLine = snapshot.GetLineFromLineNumber(region.StartLine);
-            var endLine = (region.StartLine == region.EndLine) ? startLine : snapshot.GetLineFromLineNumber(region.EndLine);
+            ITextSnapshotLine startLine = snapshot.GetLineFromLineNumber(region.StartLine);
+            ITextSnapshotLine endLine = (region.StartLine == region.EndLine) ? startLine : snapshot.GetLineFromLineNumber(region.EndLine);
             return new SnapshotSpan(startLine.Start + region.StartOffset, endLine.End);
         }
 

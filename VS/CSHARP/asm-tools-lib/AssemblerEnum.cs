@@ -22,10 +22,12 @@
 
 using System;
 
-namespace AsmTools {
+namespace AsmTools
+{
 
     [Flags]
-    public enum AssemblerEnum : byte {
+    public enum AssemblerEnum : byte
+    {
         UNKNOWN = 0,
         MASM = 1 << 0,
         NASM_INTEL = 1 << 1,
@@ -33,8 +35,10 @@ namespace AsmTools {
         ALL = NASM_INTEL | NASM_ATT | MASM
     }
 
-    public static partial class AsmSourceTools {
-        public static AssemblerEnum ParseAssembler(string str) {
+    public static partial class AsmSourceTools
+    {
+        public static AssemblerEnum ParseAssembler(string str)
+        {
             if ((str == null) || (str.Length == 0))
             {
                 return AssemblerEnum.UNKNOWN;

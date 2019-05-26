@@ -33,13 +33,13 @@ namespace AsmSim
     {
         public static void SaveToDot(StaticFlow sFlow, DynamicFlow dFlow, string filename)
         {
-            var displayGraph = new AdjacencyGraph<string, TaggedEdge<string, string>>();
+            AdjacencyGraph<string, TaggedEdge<string, string>> displayGraph = new AdjacencyGraph<string, TaggedEdge<string, string>>();
 
-            foreach (var vertex in dFlow.Graph.Vertices)
+            foreach (string vertex in dFlow.Graph.Vertices)
             {
                 displayGraph.AddVertex(vertex);
             }
-            foreach (var edge in dFlow.Graph.Edges)
+            foreach (TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)> edge in dFlow.Graph.Edges)
             {
                 int lineNumber = dFlow.LineNumber(edge.Source);
                 string displayInfo = sFlow.Get_Line_Str(lineNumber) + "\n" + edge.Tag.StateUpdate.ToString2();
@@ -50,10 +50,10 @@ namespace AsmSim
 
         public static void ShowPicture(string filename)
         {
-            var f = new Form();
+            Form f = new Form();
             //f.FormBorderStyle = FormBorderStyle.None;
 
-            var picture = new PictureBox()
+            PictureBox picture = new PictureBox()
             {
                 ImageLocation = filename,
                 SizeMode = PictureBoxSizeMode.Normal,
@@ -74,22 +74,24 @@ namespace AsmSim
             string fileName,
             string dir = @"C:\Temp\AsmSim")
         {
-            var fullFileName = Path.Combine(dir, fileName);
-            var viz = new GraphvizAlgorithm<string, TaggedEdge<string, string>>(graph);
+            string fullFileName = Path.Combine(dir, fileName);
+            GraphvizAlgorithm<string, TaggedEdge<string, string>> viz = new GraphvizAlgorithm<string, TaggedEdge<string, string>>(graph);
 
             viz.FormatVertex += VizFormatVertex;
             viz.FormatEdge += MyEdgeFormatter;
             viz.Generate(new FileDotEngine(), fullFileName);
         }
 
-        static void MyEdgeFormatter(object sender, FormatEdgeEventArgs<string, TaggedEdge<string, string>> e)
+        private static void MyEdgeFormatter(object sender, FormatEdgeEventArgs<string, TaggedEdge<string, string>> e)
         {
-            var label = new GraphvizEdgeLabel();
-            label.Value = e.Edge.Tag;
+            GraphvizEdgeLabel label = new GraphvizEdgeLabel
+            {
+                Value = e.Edge.Tag
+            };
             e.EdgeFormatter.Label = label;
         }
 
-        static void VizFormatVertex(object sender, FormatVertexEventArgs<string> e)
+        private static void VizFormatVertex(object sender, FormatVertexEventArgs<string> e)
         {
             e.VertexFormatter.Label = e.Vertex.ToString();
         }
@@ -104,8 +106,8 @@ namespace AsmSim
                 if (true)
                 {
                     // assumes dot.exe is on the path:
-                    var args = string.Format(@"{0} -Tjpg -O", output);
-                    var process = System.Diagnostics.Process.Start("dot.exe", args);
+                    string args = string.Format(@"{0} -Tjpg -O", output);
+                    System.Diagnostics.Process process = System.Diagnostics.Process.Start("dot.exe", args);
                     if (true)
                     {
                         process.WaitForExit();

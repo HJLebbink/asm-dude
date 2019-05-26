@@ -1,17 +1,17 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using AsmSim;
-using Microsoft.Z3;
+﻿using AsmSim;
 using AsmTools;
-using System.Diagnostics;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Z3;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace unit_tests_asm_z3
 {
     [TestClass]
     public class Test_MemZ3
     {
-        const bool logToDisplay = TestTools.LOG_TO_DISPLAY;
+        private const bool logToDisplay = TestTools.LOG_TO_DISPLAY;
 
         private Tools CreateTools(int timeOut = TestTools.DEFAULT_TIMEOUT)
         {
@@ -266,7 +266,7 @@ namespace unit_tests_asm_z3
                 StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools);
                 updateState.Set(Rn.RAX, state.Ctx.MkBVAdd(state.Create(Rn.RAX), state.Ctx.MkBV(0, 64)));
                 state.Update_Forward(updateState);
-            }            
+            }
             BitVecExpr address2 = Tools.Calc_Effective_Address("qword ptr[rax + 4 * rcx + 10]", state.HeadKey, tools, ctx);
 
             BitVecExpr value1 = state.Create(Rn.R8B);

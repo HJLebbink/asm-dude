@@ -20,13 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using AsmDude.Tools;
+using AsmTools;
+using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Text;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text;
-using AsmDude.Tools;
-using AsmTools;
 using System.Text;
 
 namespace AsmDude.SignatureHelp
@@ -100,7 +100,10 @@ namespace AsmDude.SignatureHelp
             //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: AugmentSignatureHelpSession");
 
             //if (true) return;
-            if (!Settings.Default.SignatureHelp_On) return;
+            if (!Settings.Default.SignatureHelp_On)
+            {
+                return;
+            }
 
             try
             {
@@ -113,7 +116,7 @@ namespace AsmDude.SignatureHelp
                 string lineStr = line.GetText();
                 //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: AugmentSignatureHelpSession: lineStr=" + lineStr+ "; positionInLine=" + positionInLine);
 
-                var t = AsmSourceTools.ParseLine(lineStr);
+                (string Label, Mnemonic Mnemonic, string[] Args, string Remark) t = AsmSourceTools.ParseLine(lineStr);
                 IList<Operand> operands = AsmSourceTools.MakeOperands(t.Args);
                 Mnemonic mnemonic = t.Mnemonic;
 
@@ -171,7 +174,10 @@ namespace AsmDude.SignatureHelp
                 sb.Append(signatureElement.Get_Operand_Doc(i));
                 //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: createSignature: i="+i+"; sb=" + sb.ToString());
                 locus[i] = new Span(locusStart, sb.Length - locusStart);
-                if (i < nOperands - 1) sb.Append(", ");
+                if (i < nOperands - 1)
+                {
+                    sb.Append(", ");
+                }
             }
 
             sb.Append(ArchTools.ToString(signatureElement.Arch));
@@ -192,6 +198,6 @@ namespace AsmDude.SignatureHelp
             return sig;
         }
 
-        public void Dispose() {}
+        public void Dispose() { }
     }
 }

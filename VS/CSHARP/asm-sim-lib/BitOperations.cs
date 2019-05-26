@@ -44,17 +44,19 @@ namespace AsmSim
 
         public static (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) Addition(
             BitVecExpr a, BitVecExpr b, Context ctx
-        ) {
+        )
+        {
             BitVecExpr result = ctx.MkBVAdd(a, b);
             BoolExpr cf = ToolsFlags.Create_CF_Add(a, b, a.SortSize, ctx);
             BoolExpr of = ToolsFlags.Create_OF_Add(a, b, a.SortSize, ctx);
             BoolExpr af = ToolsFlags.Create_AF_Add(a, b, ctx);
-            return (result:result, cf:cf, of:of, af:af);
+            return (result: result, cf: cf, of: of, af: af);
         }
 
         public static (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) Addition(
             BitVecExpr a, BitVecExpr b, BoolExpr carry, Context ctx
-        ) {
+        )
+        {
             //if (carry.IsFalse) return Addition(a, b, ctx);
 
             uint nBits = a.SortSize;
@@ -72,24 +74,29 @@ namespace AsmSim
             BoolExpr cf = ToolsFlags.Create_CF_Add(ax, bx2, nBits, ctx);
             BoolExpr of = ToolsFlags.Create_OF_Add(ax, bx2, nBits, ctx);
             BoolExpr af = ToolsFlags.Create_AF_Add(ax, bx2, ctx);
-            return (result:result, cf:cf, of:of, af:af);
+            return (result: result, cf: cf, of: of, af: af);
         }
 
         public static (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) Substract(
             BitVecExpr a, BitVecExpr b, Context ctx
-        ) {
+        )
+        {
             uint nBits = a.SortSize;
             BitVecExpr result = ctx.MkBVSub(a, b);
             BoolExpr cf = ToolsFlags.Create_CF_Sub(a, b, nBits, ctx);
             BoolExpr of = ToolsFlags.Create_OF_Sub(a, b, nBits, ctx);
             BoolExpr af = ToolsFlags.Create_AF_Sub(a, b, ctx);
-            return (result:result, cf:cf, of:of, af:af);
+            return (result: result, cf: cf, of: of, af: af);
         }
 
         public static (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) Substract(
             BitVecExpr a, BitVecExpr b, BoolExpr carry, Context ctx
-        ) {
-            if (carry.IsFalse) return Substract(a, b, ctx);
+        )
+        {
+            if (carry.IsFalse)
+            {
+                return Substract(a, b, ctx);
+            }
 
             uint nBits = a.SortSize;
 
@@ -105,7 +112,7 @@ namespace AsmSim
             BoolExpr cf = ToolsFlags.Create_CF_Sub(ax, bx2, nBits, ctx);
             BoolExpr of = ToolsFlags.Create_OF_Sub(ax, bx2, nBits, ctx);
             BoolExpr af = ToolsFlags.Create_AF_Sub(ax, bx2, ctx);
-            return (result:result, cf:cf, of:of, af:af);
+            return (result: result, cf: cf, of: of, af: af);
         }
 
         #endregion
@@ -115,7 +122,7 @@ namespace AsmSim
             Mnemonic op,
             BitVecExpr value,
             BitVecExpr nShifts,
-            Context ctx, 
+            Context ctx,
             Random rand)
         {
             Debug.Assert(nShifts.SortSize == 8);
@@ -182,7 +189,7 @@ namespace AsmSim
             //Console.WriteLine("ShiftOperations:nShifts=" + nShifts);
 
             uint nBits = value.SortSize;
-            BitVecExpr carryBV = ctx.MkITE(carryIn, ctx.MkBV(1,1), ctx.MkBV(0, 1)) as BitVecExpr;
+            BitVecExpr carryBV = ctx.MkITE(carryIn, ctx.MkBV(1, 1), ctx.MkBV(0, 1)) as BitVecExpr;
             BitVecExpr nShifts65 = ctx.MkZeroExt(nBits + 1 - 8, nShifts);
 
             BitVecExpr value_out;

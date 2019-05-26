@@ -20,18 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using AsmDude.OptionsPage;
+using AsmDude.Tools;
+using Microsoft.VisualStudio.Shell;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
-
-using Microsoft.VisualStudio.Shell;
-
-using AsmDude.OptionsPage;
-using AsmDude.Tools;
 
 namespace AsmDude
 {
@@ -42,7 +39,8 @@ namespace AsmDude
     [ComVisible(false)]
     [ProvideOptionPage(typeof(AsmDudeOptionsPage), "AsmDude", "General", 0, 0, true)]
 
-    public sealed class AsmDudePackage : AsyncPackage {
+    public sealed class AsmDudePackage : AsyncPackage
+    {
 
         #region Global Constants
         public const string PackageGuidString = "27e0e7ef-ecaf-4b87-a574-6a909383f99f";
@@ -56,7 +54,8 @@ namespace AsmDude
 
         #endregion Global Constants
 
-        public AsmDudePackage() {
+        public AsmDudePackage()
+        {
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "=========================================\nINFO: AsmDudePackage: Entering constructor"));
             AsmDudeToolsStatic.Output_INFO("AsmDudePackage: Entering constructor");
         }

@@ -24,7 +24,6 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
-using System;
 using System.ComponentModel.Composition;
 
 namespace AsmDude.BraceMatching
@@ -39,9 +38,15 @@ namespace AsmDude.BraceMatching
     {
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
-            if (textView == null) return null;
+            if (textView == null)
+            {
+                return null;
+            }
             //provide highlighting only on the top-level buffer
-            if (textView.TextBuffer != buffer) return null;
+            if (textView.TextBuffer != buffer)
+            {
+                return null;
+            }
 
             ITagger<T> sc()
             {

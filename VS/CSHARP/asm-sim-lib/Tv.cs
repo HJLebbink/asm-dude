@@ -22,7 +22,8 @@
 
 using System;
 
-namespace AsmSim {
+namespace AsmSim
+{
 
     [Flags]
     public enum Tv : byte

@@ -1,7 +1,6 @@
-﻿using System.Windows;
+﻿using AsmDude.Tools;
+using System.Windows;
 using System.Windows.Controls;
-
-using AsmDude.Tools;
 
 namespace AsmDude.QuickInfo
 {
@@ -11,10 +10,11 @@ namespace AsmDude.QuickInfo
         {
             this.InitializeComponent();
 
-            this.MainWindow.MouseLeftButtonDown += (o, i) => {
+            this.MainWindow.MouseLeftButtonDown += (o, i) =>
+            {
                 AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:MouseLeftButtonDown Event");
                 i.Handled = true; // dont let the mouse event from inside this window bubble up to VS
-            }; 
+            };
 
             this.MainWindow.PreviewMouseLeftButtonDown += (o, i) =>
             {

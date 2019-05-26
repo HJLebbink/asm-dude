@@ -20,17 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Windows.Controls;
-
+using AsmDude.Tools;
+using AsmTools;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-
-using AsmDude.Tools;
-using AsmTools;
+using System;
+using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace AsmDude.QuickInfo
 {
@@ -128,7 +126,10 @@ namespace AsmDude.QuickInfo
                                 AsmDudeToolsStatic.Output_INFO(string.Format("{0}:OnTextViewMouseHover: B: session was not null but was dismissed, create a new session  for triggerPoint {1}; pos2={2}", this.ToString(), pos, pos2));
 
                                 this._session = this._quickInfoBroker.TriggerQuickInfo(this._textView, triggerPoint, false);
-                                if (this._session != null) this._session.Dismissed += this._session_Dismissed;
+                                if (this._session != null)
+                                {
+                                    this._session.Dismissed += this._session_Dismissed;
+                                }
                             }
                             else
                             {
@@ -142,7 +143,10 @@ namespace AsmDude.QuickInfo
 
                                     //if (this._session != null) this._session.Dismiss();
                                     this._session = this._quickInfoBroker.TriggerQuickInfo(this._textView, triggerPoint, false);
-                                    if (this._session != null) this._session.Dismissed += this._session_Dismissed;
+                                    if (this._session != null)
+                                    {
+                                        this._session.Dismissed += this._session_Dismissed;
+                                    }
                                 }
                             }
                         }
@@ -219,7 +223,7 @@ namespace AsmDude.QuickInfo
 
         private void ToolTipLegacy(SnapshotPoint triggerPoint, Point p)
         {
-            var span = this.Get_Keyword_Span_At_Point(triggerPoint);
+            Span span = this.Get_Keyword_Span_At_Point(triggerPoint);
             ITrackingSpan applicableTo = this._textView.TextSnapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeInclusive);
 
             // check if a tooltip window is already visible for the applicable span
@@ -234,7 +238,7 @@ namespace AsmDude.QuickInfo
             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword, false);
             if (mnemonic != Mnemonic.NONE)
             {
-                var instructionTooltipWindow = new InstructionTooltipWindow(AsmDudeToolsStatic.GetFontColor())
+                InstructionTooltipWindow instructionTooltipWindow = new InstructionTooltipWindow(AsmDudeToolsStatic.GetFontColor())
                 {
                     Owner = this // set the owner of this windows such that we can manually close this window
                 };
@@ -242,7 +246,7 @@ namespace AsmDude.QuickInfo
                 instructionTooltipWindow.SetPerformanceInfo(mnemonic, AsmDudeTools.Instance);
                 instructionTooltipWindow.Margin = new Thickness(7.0);
 
-                var border = new Border()
+                Border border = new Border()
                 {
                     BorderBrush = System.Windows.Media.Brushes.LightGray,
                     BorderThickness = new Thickness(1.0),

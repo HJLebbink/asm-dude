@@ -25,7 +25,6 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
-using System;
 using System.ComponentModel.Composition;
 
 
@@ -127,16 +126,16 @@ namespace AsmDude.SyntaxHighlighting
         internal static FileExtensionToContentTypeDefinition AsmFileType_s = null;
 
         [Import]
-        private IClassificationTypeRegistryService _classificationTypeRegistry = null;
+        private readonly IClassificationTypeRegistryService _classificationTypeRegistry = null;
 
         [Import]
-        private IBufferTagAggregatorFactoryService _aggregatorFactory = null;
+        private readonly IBufferTagAggregatorFactoryService _aggregatorFactory = null;
 
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
             ITagger<T> sc()
             {
-                var aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, this._aggregatorFactory);
+                ITagAggregator<AsmTokenTag> aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, this._aggregatorFactory);
                 return new AsmClassifier(buffer, aggregator, this._classificationTypeRegistry) as ITagger<T>;
             }
             return buffer.Properties.GetOrCreateSingletonProperty(sc);

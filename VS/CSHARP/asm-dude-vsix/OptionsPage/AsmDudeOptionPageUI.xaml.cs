@@ -23,7 +23,6 @@
 using AsmDude.Tools;
 using AsmTools;
 using System;
-using System.Collections.Generic;
 using System.Windows.Controls;
 
 namespace AsmDude.OptionsPage
@@ -171,9 +170,21 @@ namespace AsmDude.OptionsPage
         {
             get
             {
-                if (this.usedAssemblerMasm_UI.IsChecked.HasValue && this.usedAssemblerMasm_UI.IsChecked.Value) return AssemblerEnum.MASM;
-                if (this.usedAssemblerNasm_UI.IsChecked.HasValue && this.usedAssemblerNasm_UI.IsChecked.Value) return AssemblerEnum.NASM_INTEL;
-                if (this.usedAssemblerAtt_UI.IsChecked.HasValue && this.usedAssemblerAtt_UI.IsChecked.Value) return AssemblerEnum.NASM_ATT;
+                if (this.usedAssemblerMasm_UI.IsChecked.HasValue && this.usedAssemblerMasm_UI.IsChecked.Value)
+                {
+                    return AssemblerEnum.MASM;
+                }
+
+                if (this.usedAssemblerNasm_UI.IsChecked.HasValue && this.usedAssemblerNasm_UI.IsChecked.Value)
+                {
+                    return AssemblerEnum.NASM_INTEL;
+                }
+
+                if (this.usedAssemblerAtt_UI.IsChecked.HasValue && this.usedAssemblerAtt_UI.IsChecked.Value)
+                {
+                    return AssemblerEnum.NASM_ATT;
+                }
+
                 return AssemblerEnum.MASM; // if nothing is checked somehow return MASM
             }
             set

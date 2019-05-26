@@ -43,9 +43,12 @@ namespace AsmTools
 
         public static Rn ParseRn(string str, bool isCapitals = false)
         {
-            #if DEBUG
-            if (isCapitals && (str != str.ToUpper())) throw new Exception();
-            #endif
+#if DEBUG
+            if (isCapitals && (str != str.ToUpper()))
+            {
+                throw new Exception();
+            }
+#endif
 
             switch (isCapitals ? str : str.ToUpper())
             {

@@ -22,7 +22,8 @@
 
 using System;
 
-namespace AsmDude.Tools {
+namespace AsmDude.Tools
+{
 
     public class CustomEventArgs : EventArgs
     {

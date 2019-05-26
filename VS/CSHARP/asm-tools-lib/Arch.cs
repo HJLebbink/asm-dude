@@ -24,9 +24,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AsmTools {
+namespace AsmTools
+{
 
-    public enum Arch {
+    public enum Arch
+    {
 
         ARCH_NONE,
 
@@ -239,7 +241,8 @@ namespace AsmTools {
         ARCH_CYRIXM,
     }
 
-    public static class ArchTools {
+    public static class ArchTools
+    {
 
         public static Arch ParseArch(string str, bool warn = true)
         {
@@ -348,13 +351,19 @@ namespace AsmTools {
 
                 case "UNDOC": return Arch.ARCH_UNDOC;
                 default:
-                    if (warn) Console.WriteLine("WARNING: parseArch: no arch for str " + str);
+                    if (warn)
+                    {
+                        Console.WriteLine("WARNING: parseArch: no arch for str " + str);
+                    }
+
                     return Arch.ARCH_NONE;
             }
         }
 
-        public static string ArchDocumentation(Arch arch) {
-            switch (arch) {
+        public static string ArchDocumentation(Arch arch)
+        {
+            switch (arch)
+            {
                 case Arch.ARCH_NONE: return "";
                 case Arch.ARCH_8086: return "";
                 case Arch.ARCH_186: return "";
@@ -431,24 +440,30 @@ namespace AsmTools {
             }
         }
 
-        public static string ToString(IEnumerable<Arch> archs) {
+        public static string ToString(IEnumerable<Arch> archs)
+        {
             bool empty = true;
             StringBuilder sb = new StringBuilder();
-            foreach (Arch arch in archs) {
+            foreach (Arch arch in archs)
+            {
                 sb.Append(ToString(arch));
                 sb.Append(",");
                 empty = false;
             }
-            if (empty) {
+            if (empty)
+            {
                 return "";
-            } else {
+            }
+            else
+            {
                 sb.Length--; // get rid of the last comma;
                 sb.Append("]");
                 return " [" + sb.ToString();
             }
         }
 
-        public static string ToString(Arch arch) {
+        public static string ToString(Arch arch)
+        {
             switch (arch)
             {
                 case Arch.ARCH_NONE: return "NONE";

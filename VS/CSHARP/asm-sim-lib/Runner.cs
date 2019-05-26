@@ -65,10 +65,14 @@ namespace AsmSim
                 Tools tools = state.Tools;
                 string nextKey = Tools.CreateKey(tools.Rand);
                 string nextKeyBranch = "DUMMY_NOT_USED";
-                var content = AsmSourceTools.ParseLine(line);
-                using (var opcodeBase = InstantiateOpcode(content.Mnemonic, content.Args, (state.HeadKey, nextKey, nextKeyBranch), tools))
+                (string Label, Mnemonic Mnemonic, string[] Args, string Remark) content = AsmSourceTools.ParseLine(line);
+                using (OpcodeBase opcodeBase = InstantiateOpcode(content.Mnemonic, content.Args, (state.HeadKey, nextKey, nextKeyBranch), tools))
                 {
-                    if (opcodeBase == null) return null;
+                    if (opcodeBase == null)
+                    {
+                        return null;
+                    }
+
                     if (opcodeBase.IsHalted)
                     {
                         Console.WriteLine("WARNING: Runner:SimpleStep_Forward: line: " + line + " is halted. Message: " + opcodeBase.SyntaxError);
@@ -82,8 +86,16 @@ namespace AsmSim
                     opcodeBase.Updates.Regular?.Dispose();
                     opcodeBase.Updates.Branch?.Dispose();
 
-                    if (!tools.Quiet) Console.WriteLine("INFO: Runner:SimpleStep_Forward: after \"" + line + "\" we know:");
-                    if (!tools.Quiet) Console.WriteLine(stateOut);
+                    if (!tools.Quiet)
+                    {
+                        Console.WriteLine("INFO: Runner:SimpleStep_Forward: after \"" + line + "\" we know:");
+                    }
+
+                    if (!tools.Quiet)
+                    {
+                        Console.WriteLine(stateOut);
+                    }
+
                     return stateOut;
                 }
             }
@@ -100,11 +112,18 @@ namespace AsmSim
             try
             {
                 string prevKey = Tools.CreateKey(state.Tools.Rand);
-                var content = AsmSourceTools.ParseLine(line);
-                using (var opcodeBase = InstantiateOpcode(content.Mnemonic, content.Args, (prevKey, state.TailKey, state.TailKey), state.Tools))
+                (string Label, Mnemonic Mnemonic, string[] Args, string Remark) content = AsmSourceTools.ParseLine(line);
+                using (OpcodeBase opcodeBase = InstantiateOpcode(content.Mnemonic, content.Args, (prevKey, state.TailKey, state.TailKey), state.Tools))
                 {
-                    if (opcodeBase == null) return null;
-                    if (opcodeBase.IsHalted) return null;
+                    if (opcodeBase == null)
+                    {
+                        return null;
+                    }
+
+                    if (opcodeBase.IsHalted)
+                    {
+                        return null;
+                    }
 
                     opcodeBase.Execute();
                     State stateOut = new State(state);
@@ -113,8 +132,16 @@ namespace AsmSim
                     opcodeBase.Updates.Regular?.Dispose();
                     opcodeBase.Updates.Branch?.Dispose();
 
-                    if (!state.Tools.Quiet) Console.WriteLine("INFO: Runner:SimpleStep_Backward: after \"" + line + "\" we know:");
-                    if (!state.Tools.Quiet) Console.WriteLine(stateOut);
+                    if (!state.Tools.Quiet)
+                    {
+                        Console.WriteLine("INFO: Runner:SimpleStep_Backward: after \"" + line + "\" we know:");
+                    }
+
+                    if (!state.Tools.Quiet)
+                    {
+                        Console.WriteLine(stateOut);
+                    }
+
                     return stateOut;
                 }
             }
@@ -132,11 +159,18 @@ namespace AsmSim
             {
                 string nextKey = Tools.CreateKey(state.Tools.Rand);
                 string nextKeyBranch = nextKey + "!BRANCH";
-                var content = AsmSourceTools.ParseLine(line);
-                using (var opcodeBase = InstantiateOpcode(content.Mnemonic, content.Args, (state.HeadKey, nextKey, nextKeyBranch), state.Tools))
+                (string Label, Mnemonic Mnemonic, string[] Args, string Remark) content = AsmSourceTools.ParseLine(line);
+                using (OpcodeBase opcodeBase = InstantiateOpcode(content.Mnemonic, content.Args, (state.HeadKey, nextKey, nextKeyBranch), state.Tools))
                 {
-                    if (opcodeBase == null) return (Regular: null, Branch: null);
-                    if (opcodeBase.IsHalted) return (Regular: null, Branch: null);
+                    if (opcodeBase == null)
+                    {
+                        return (Regular: null, Branch: null);
+                    }
+
+                    if (opcodeBase.IsHalted)
+                    {
+                        return (Regular: null, Branch: null);
+                    }
 
                     opcodeBase.Execute();
                     State stateRegular = null;
@@ -171,8 +205,8 @@ namespace AsmSim
         {
             try
             {
-                var content = sFlow.Get_Line(lineNumber);
-                using (var opcodeBase = InstantiateOpcode(content.Mnemonic, content.Args, keys, tools))
+                (Mnemonic Mnemonic, string[] Args) content = sFlow.Get_Line(lineNumber);
+                using (OpcodeBase opcodeBase = InstantiateOpcode(content.Mnemonic, content.Args, keys, tools))
                 {
                     if ((opcodeBase == null) || opcodeBase.IsHalted)
                     {

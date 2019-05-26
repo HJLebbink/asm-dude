@@ -36,10 +36,10 @@ namespace AsmDude.HighlightWord
     public class HighlightWordTaggerProvider : IViewTaggerProvider
     {
         [Import]
-        private ITextSearchService _textSearchService = null;
+        private readonly ITextSearchService _textSearchService = null;
 
         [Import]
-        private ITextStructureNavigatorSelectorService _textStructureNavigatorSelector = null;
+        private readonly ITextStructureNavigatorSelectorService _textStructureNavigatorSelector = null;
 
         /// <summary>
         /// This method is called by VS to generate the tagger
@@ -50,9 +50,15 @@ namespace AsmDude.HighlightWord
         /// <returns> Returns a HighlightWordTagger instance</returns>
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
-            if (textView == null) return null;
+            if (textView == null)
+            {
+                return null;
+            }
             // Only provide highlighting on the top-level buffer
-            if (textView.TextBuffer != buffer) return null;
+            if (textView.TextBuffer != buffer)
+            {
+                return null;
+            }
 
             ITagger<T> sc()
             {

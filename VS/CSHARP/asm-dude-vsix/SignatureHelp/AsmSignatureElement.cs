@@ -133,7 +133,8 @@ namespace AsmDude.SignatureHelp
                         if (a != AsmTools.Arch.ARCH_NONE)
                         {
                             this._arch.Add(a);
-                        } else
+                        }
+                        else
                         {
                             AsmDudeToolsStatic.Output_INFO("Arch_Str: could not parse ARCH string \"" + arch2 + "\".");
                         }
@@ -154,7 +155,10 @@ namespace AsmDude.SignatureHelp
                 for (int i = 0; i < nOperands; ++i)
                 {
                     sb.Append(this._operandStr[i]);
-                    if (i < nOperands - 1) sb.Append(", ");
+                    if (i < nOperands - 1)
+                    {
+                        sb.Append(", ");
+                    }
                 }
                 return sb.ToString();
             }
@@ -163,7 +167,8 @@ namespace AsmDude.SignatureHelp
                 this._operands.Clear();
 
                 this._operandStr = value.Split(',');
-                if (this._reversed_Signature) {
+                if (this._reversed_Signature)
+                {
                     Array.Reverse(this._operandStr);
                 }
 

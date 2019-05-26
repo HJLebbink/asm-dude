@@ -20,19 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using AsmDude.Tools;
+using AsmTools;
+using Microsoft.VisualStudio.Shell;
 using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Documents;
-
-using AsmTools;
-using AsmDude.Tools;
-using Microsoft.VisualStudio.Shell;
+using System.Windows.Media;
 
 namespace AsmDude.QuickInfo
 {
-    public partial class RegisterTooltipWindow: UserControl
+    public partial class RegisterTooltipWindow : UserControl
     {
         private readonly Brush _foreground;
 
@@ -56,13 +55,17 @@ namespace AsmDude.QuickInfo
             string regStr = reg.ToString();
 
             this.Description.Inlines.Add(new Run("Register ") { FontWeight = FontWeights.Bold, Foreground = this._foreground });
-            this.Description.Inlines.Add(new Run(regStr) { FontWeight = FontWeights.Bold, Foreground = new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Register))});
+            this.Description.Inlines.Add(new Run(regStr) { FontWeight = FontWeights.Bold, Foreground = new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Register)) });
 
             Arch arch = RegisterTools.GetArch(reg);
             string archStr = (arch == Arch.ARCH_NONE) ? "" : " [" + ArchTools.ToString(arch) + "] ";
             string descr = asmDudeTools.Get_Description(regStr);
 
-            if (regStr.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2)) descr = "\n" + descr;
+            if (regStr.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2))
+            {
+                descr = "\n" + descr;
+            }
+
             string full_Descr = AsmSourceTools.Linewrap(":" + archStr + descr, AsmDudePackage.maxNumberOfCharsInToolTips);
             this.Description.Inlines.Add(new Run(full_Descr) { Foreground = this._foreground });
         }
@@ -91,14 +94,23 @@ namespace AsmDude.QuickInfo
             {
                 string numerationStr = ((sender as ComboBox).SelectedItem as ComboBoxItem).Content.ToString();
                 NumerationEnum numeration = AsmSourceTools.ParseNumeration(numerationStr);
-                if (numeration == NumerationEnum.UNKNOWN) AsmDudeToolsStatic.Output_WARNING("SetAsmSim:smSimGridExpanderNumeration.SelectionChanged: unknown numerationStr="+ numerationStr);
+                if (numeration == NumerationEnum.UNKNOWN)
+                {
+                    AsmDudeToolsStatic.Output_WARNING("SetAsmSim:smSimGridExpanderNumeration.SelectionChanged: unknown numerationStr=" + numerationStr);
+                }
                 //AsmDudeToolsStatic.Output_INFO("AsmSimGridExpanderNumeration:SelectionChanged: numeration="+ numeration);
 
-                var content_before = this._asmSimulator.Get_Register_Value_If_Already_Computed(reg, this._lineNumber, true, numeration);
-                if (content_before != null) this._textBox_before.Text = content_before;
+                string content_before = this._asmSimulator.Get_Register_Value_If_Already_Computed(reg, this._lineNumber, true, numeration);
+                if (content_before != null)
+                {
+                    this._textBox_before.Text = content_before;
+                }
 
-                var content_after = this._asmSimulator.Get_Register_Value_If_Already_Computed(reg, this._lineNumber, false, numeration);
-                if (content_after != null) this._textBox_after.Text = content_after;
+                string content_after = this._asmSimulator.Get_Register_Value_If_Already_Computed(reg, this._lineNumber, false, numeration);
+                if (content_after != null)
+                {
+                    this._textBox_after.Text = content_after;
+                }
             };
         }
 
@@ -108,7 +120,8 @@ namespace AsmDude.QuickInfo
 
             int row = isBefore ? 1 : 2;
             {
-                var textBlock = new TextBlock() {
+                TextBlock textBlock = new TextBlock()
+                {
                     Text = isBefore ? "Before:" : "After:",
                     FontFamily = f,
                     Foreground = this._foreground
@@ -119,7 +132,7 @@ namespace AsmDude.QuickInfo
             }
 
             {
-                var textBox = new TextBox()
+                TextBox textBox = new TextBox()
                 {
                     FontFamily = f,
                     Foreground = this._foreground,
@@ -130,19 +143,23 @@ namespace AsmDude.QuickInfo
                 };
 
                 if (isBefore)
+                {
                     this._textBox_before = textBox;
+                }
                 else
+                {
                     this._textBox_after = textBox;
+                }
 
                 this.AsmSimGrid.Children.Add(textBox);
                 Grid.SetRow(textBox, row);
                 Grid.SetColumn(textBox, 1);
 
-                var register_Content = this._asmSimulator.Get_Register_Value_If_Already_Computed(reg, this._lineNumber, isBefore, AsmSourceTools.ParseNumeration(this.AsmSimGridExpanderNumeration.Text));
+                string register_Content = this._asmSimulator.Get_Register_Value_If_Already_Computed(reg, this._lineNumber, isBefore, AsmSourceTools.ParseNumeration(this.AsmSimGridExpanderNumeration.Text));
                 if (register_Content == null)
                 {
                     textBox.Visibility = Visibility.Collapsed;
-                    var button = new Button()
+                    Button button = new Button()
                     {
                         Content = "Determine " + reg.ToString(),
                         Foreground = this._foreground,
@@ -164,13 +181,22 @@ namespace AsmDude.QuickInfo
 
         private async System.Threading.Tasks.Task Update_Async(Button button)
         {
-            if (button == null) return;
-            if (this._asmSimulator == null) return;
+            if (button == null)
+            {
+                return;
+            }
+
+            if (this._asmSimulator == null)
+            {
+                return;
+            }
 
             try
             {
                 if (!ThreadHelper.CheckAccess())
+                {
                     await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                }
 
                 ButtonInfo info = (ButtonInfo)button.Tag;
 

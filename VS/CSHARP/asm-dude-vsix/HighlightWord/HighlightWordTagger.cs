@@ -20,20 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using AsmDude.Tools;
+using AsmTools;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
-using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
-using Microsoft.VisualStudio.Text.Classification;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Linq;
 using System.Runtime.InteropServices;
-using AsmDude.Tools;
 using System.Windows.Media;
-using AsmTools;
 
 namespace AsmDude.HighlightWord
 {
@@ -194,7 +194,7 @@ namespace AsmDude.HighlightWord
                     // Find the new spans
                     FindData findData;
                     Rn reg = RegisterTools.ParseRn(this.NewWord);
-                    if (reg != Rn.NOREG) 
+                    if (reg != Rn.NOREG)
                     {
                         AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. Register={1}", this.ToString(), this.NewWord));
                         string t = RegisterTools.GetRelatedRegister(reg);
@@ -205,7 +205,7 @@ namespace AsmDude.HighlightWord
                     }
                     else
                     {
-                        var (Valid, Value, NBits) = AsmSourceTools.Parse_Constant(this.NewWord);
+                        (bool Valid, ulong Value, int NBits) = AsmSourceTools.Parse_Constant(this.NewWord);
                         if (Valid)
                         {
                             AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. Contant={1}", this.ToString(), this.NewWord));
@@ -254,7 +254,7 @@ namespace AsmDude.HighlightWord
         /// <summary>
         /// Determine if a given "word" should be highlighted
         /// </summary>
-        static bool WordExtentIsValid(SnapshotPoint currentRequest, TextExtent word)
+        private static bool WordExtentIsValid(SnapshotPoint currentRequest, TextExtent word)
         {
             return word.IsSignificant && currentRequest.Snapshot.GetText(word.Span).Any(c => char.IsLetter(c));
         }

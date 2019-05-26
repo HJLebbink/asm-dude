@@ -1,15 +1,15 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using AsmSim;
-using System.Collections.Generic;
+﻿using AsmSim;
 using AsmTools;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
 
 namespace unit_tests_asm_z3
 {
     [TestClass]
     public class Test_DynamicFlow
     {
-        const bool logToDisplay = true;// TestTools.LOG_TO_DISPLAY;
+        private const bool logToDisplay = true;// TestTools.LOG_TO_DISPLAY;
 
         private Tools CreateTools(int timeOut = TestTools.DEFAULT_TIMEOUT)
         {
@@ -44,13 +44,20 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        0       ; line 0        " + Environment.NewLine +
                 "           mov     rbx,        10      ; line 1        " + Environment.NewLine +
                 "           mov     rbx,        rax     ; line 2        ";
-            var sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
-            if (logToDisplay) Console.WriteLine(sFlow);
+            if (logToDisplay)
+            {
+                Console.WriteLine(sFlow);
+            }
 
-            if (true) {
+            if (true)
+            {
                 DynamicFlow dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
-                if (logToDisplay) Console.WriteLine(dFlow.ToString(sFlow));
+                if (logToDisplay)
+                {
+                    Console.WriteLine(dFlow.ToString(sFlow));
+                }
 
                 {
                     int lineNumber = 0;
@@ -62,11 +69,19 @@ namespace unit_tests_asm_z3
                     Assert.AreEqual(1, states_After.Count);
                     State state_After = states_After[0];
 
-                    if (logToDisplay) Console.WriteLine("Tree_Forward: Before lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
+                    if (logToDisplay)
+                    {
+                        Console.WriteLine("Tree_Forward: Before lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
+                    }
+
                     TestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state_Before);
                     TestTools.AreEqual(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state_Before);
 
-                    if (logToDisplay) Console.WriteLine("Tree_Forward: After lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
+                    if (logToDisplay)
+                    {
+                        Console.WriteLine("Tree_Forward: After lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
+                    }
+
                     TestTools.AreEqual(Rn.RAX, 0, state_After);
                     TestTools.AreEqual(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state_After);
                 }
@@ -80,11 +95,19 @@ namespace unit_tests_asm_z3
                     Assert.AreEqual(1, states_After.Count);
                     State state_After = states_After[0];
 
-                    if (logToDisplay) Console.WriteLine("Tree_Forward: Before lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
+                    if (logToDisplay)
+                    {
+                        Console.WriteLine("Tree_Forward: Before lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
+                    }
+
                     TestTools.AreEqual(Rn.RAX, 0, state_Before);
                     TestTools.AreEqual(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state_Before);
 
-                    if (logToDisplay) Console.WriteLine("Tree_Forward: After lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
+                    if (logToDisplay)
+                    {
+                        Console.WriteLine("Tree_Forward: After lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
+                    }
+
                     TestTools.AreEqual(Rn.RAX, 0, state_After);
                     TestTools.AreEqual(Rn.RBX, 10, state_After);
                 }
@@ -98,11 +121,19 @@ namespace unit_tests_asm_z3
                     Assert.AreEqual(1, states_After.Count);
                     State state_After = states_After[0];
 
-                    if (logToDisplay) Console.WriteLine("Tree_Forward: Before lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
+                    if (logToDisplay)
+                    {
+                        Console.WriteLine("Tree_Forward: Before lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
+                    }
+
                     TestTools.AreEqual(Rn.RAX, 0, state_Before);
                     TestTools.AreEqual(Rn.RBX, 10, state_Before);
 
-                    if (logToDisplay) Console.WriteLine("Tree_Forward: After lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
+                    if (logToDisplay)
+                    {
+                        Console.WriteLine("Tree_Forward: After lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
+                    }
+
                     TestTools.AreEqual(Rn.RAX, 0, state_After);
                     TestTools.AreEqual(Rn.RBX, 0, state_After);
                 }
@@ -121,9 +152,12 @@ namespace unit_tests_asm_z3
                 "           mov     rax,        0       ; line 0        " + Environment.NewLine +
                 "           mov     rbx,        10      ; line 1        " + Environment.NewLine +
                 "           mov     rbx,        rax     ; line 2        ";
-            var sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
-            if (logToDisplay) Console.WriteLine(sFlow);
+            if (logToDisplay)
+            {
+                Console.WriteLine(sFlow);
+            }
 
             if (true)
             {
@@ -138,11 +172,19 @@ namespace unit_tests_asm_z3
                     Assert.AreEqual(1, states_After.Count);
                     State state_After = states_After[0];
 
-                    if (logToDisplay) Console.WriteLine("Tree_Backward: Before lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
+                    if (logToDisplay)
+                    {
+                        Console.WriteLine("Tree_Backward: Before lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
+                    }
+
                     TestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state_Before);
                     TestTools.AreEqual(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state_Before);
 
-                    if (logToDisplay) Console.WriteLine("Tree_Backward: After lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
+                    if (logToDisplay)
+                    {
+                        Console.WriteLine("Tree_Backward: After lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
+                    }
+
                     TestTools.AreEqual(Rn.RAX, 0, state_After);
                     TestTools.AreEqual(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state_After);
                 }
@@ -156,11 +198,19 @@ namespace unit_tests_asm_z3
                     Assert.AreEqual(1, states_After.Count);
                     State state_After = states_After[0];
 
-                    if (logToDisplay) Console.WriteLine("Tree_Backward: Before lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
+                    if (logToDisplay)
+                    {
+                        Console.WriteLine("Tree_Backward: Before lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
+                    }
+
                     TestTools.AreEqual(Rn.RAX, 0, state_Before);
                     TestTools.AreEqual(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state_Before);
 
-                    if (logToDisplay) Console.WriteLine("Tree_Backward: After lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
+                    if (logToDisplay)
+                    {
+                        Console.WriteLine("Tree_Backward: After lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
+                    }
+
                     TestTools.AreEqual(Rn.RAX, 0, state_After);
                     TestTools.AreEqual(Rn.RBX, 10, state_After);
                 }
@@ -174,11 +224,19 @@ namespace unit_tests_asm_z3
                     Assert.AreEqual(1, states_After.Count);
                     State state_After = states_After[0];
 
-                    if (logToDisplay) Console.WriteLine("Tree_Backward: Before lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
+                    if (logToDisplay)
+                    {
+                        Console.WriteLine("Tree_Backward: Before lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_Before);
+                    }
+
                     TestTools.AreEqual(Rn.RAX, 0, state_Before);
                     TestTools.AreEqual(Rn.RBX, 10, state_Before);
 
-                    if (logToDisplay) Console.WriteLine("Tree_Backward: After lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
+                    if (logToDisplay)
+                    {
+                        Console.WriteLine("Tree_Backward: After lineNumber " + lineNumber + " \"" + sFlow.Get_Line_Str(lineNumber) + "\", we know:\n" + state_After);
+                    }
+
                     TestTools.AreEqual(Rn.RAX, 0, state_After);
                     TestTools.AreEqual(Rn.RBX, 0, state_After);
                 }

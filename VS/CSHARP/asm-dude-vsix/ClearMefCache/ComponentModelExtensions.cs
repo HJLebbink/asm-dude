@@ -31,7 +31,9 @@ namespace AsmDude.ClearMefCache
         public static async Task<string> GetFolderPathAsync(this IVsComponentModelHost componentModelHost)
         {
             if (!ThreadHelper.CheckAccess())
+            {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            }
 
             componentModelHost.GetCatalogCacheFolder(out string folderPath);
             return folderPath;

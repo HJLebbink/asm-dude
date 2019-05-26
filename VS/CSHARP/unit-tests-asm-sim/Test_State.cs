@@ -1,6 +1,6 @@
-﻿using System;
+﻿using AsmSim;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using AsmSim;
+using System;
 using System.Collections.Generic;
 
 namespace unit_tests_asm_z3
@@ -8,7 +8,7 @@ namespace unit_tests_asm_z3
     [TestClass]
     public class Test_State
     {
-        const bool logToDisplay = TestTools.LOG_TO_DISPLAY;
+        private const bool logToDisplay = TestTools.LOG_TO_DISPLAY;
 
         private Tools CreateTools(int timeOut = TestTools.DEFAULT_TIMEOUT)
         {
@@ -42,12 +42,20 @@ namespace unit_tests_asm_z3
 
             State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
-            var key1 = state.HeadKey;
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+            }
+
+            string key1 = state.HeadKey;
 
             state = Runner.SimpleStep_Forward(line2, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
-            var key2 = state.HeadKey;
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            }
+
+            string key2 = state.HeadKey;
 
             TestTools.IsTrue(state.Is_Redundant_Mem(key1, key2));
         }
@@ -66,12 +74,20 @@ namespace unit_tests_asm_z3
 
             State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
-            var key1 = state.HeadKey;
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+            }
+
+            string key1 = state.HeadKey;
 
             state = Runner.SimpleStep_Forward(line2, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
-            var key2 = state.HeadKey;
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            }
+
+            string key2 = state.HeadKey;
 
             TestTools.IsTrue(state.Is_Redundant_Mem(key1, key2));
         }
@@ -93,12 +109,20 @@ namespace unit_tests_asm_z3
             State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line0, state);
             state = Runner.SimpleStep_Forward(line1, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
-            var key1 = state.HeadKey;
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+            }
+
+            string key1 = state.HeadKey;
 
             state = Runner.SimpleStep_Forward(line2, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
-            var key2 = state.HeadKey;
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            }
+
+            string key2 = state.HeadKey;
 
             TestTools.IsTrue(state.Is_Redundant_Mem(key1, key2));
         }

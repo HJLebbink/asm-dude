@@ -27,19 +27,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AsmDude.BraceMatching {
+namespace AsmDude.BraceMatching
+{
 
     /// <summary>
     /// Somewhat unnecessary brace matching functionality
     /// </summary>
-    internal sealed class BraceMatchingTagger : ITagger<TextMarkerTag> {
+    internal sealed class BraceMatchingTagger : ITagger<TextMarkerTag>
+    {
 
         private readonly ITextView _view;
         private readonly ITextBuffer _sourceBuffer;
         private readonly Dictionary<char, char> _braceList;
         private SnapshotPoint? _currentChar;
 
-        internal BraceMatchingTagger(ITextView view, ITextBuffer sourceBuffer) {
+        internal BraceMatchingTagger(ITextView view, ITextBuffer sourceBuffer)
+        {
             this._view = view;
             this._sourceBuffer = sourceBuffer;
             this._currentChar = null;
@@ -57,37 +60,46 @@ namespace AsmDude.BraceMatching {
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
-        private void ViewLayoutChanged(object sender, TextViewLayoutChangedEventArgs e) {
-            if (e.NewSnapshot != e.OldSnapshot) { //make sure that there has really been a change
+        private void ViewLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
+        {
+            if (e.NewSnapshot != e.OldSnapshot)
+            { //make sure that there has really been a change
                 this.UpdateAtCaretPosition(this._view.Caret.Position);
             }
         }
 
-        private void CaretPositionChanged(object sender, CaretPositionChangedEventArgs e) {
+        private void CaretPositionChanged(object sender, CaretPositionChangedEventArgs e)
+        {
             this.UpdateAtCaretPosition(e.NewPosition);
         }
-        private void UpdateAtCaretPosition(CaretPosition caretPosition) {
+        private void UpdateAtCaretPosition(CaretPosition caretPosition)
+        {
             this._currentChar = caretPosition.Point.GetPoint(this._sourceBuffer, caretPosition.Affinity);
 
-            if (!this._currentChar.HasValue) {
+            if (!this._currentChar.HasValue)
+            {
                 return;
             }
             TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(new SnapshotSpan(this._sourceBuffer.CurrentSnapshot, 0, this._sourceBuffer.CurrentSnapshot.Length)));
         }
 
-        public IEnumerable<ITagSpan<TextMarkerTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
-            if (spans.Count == 0) {  //there is no content in the buffer
+        public IEnumerable<ITagSpan<TextMarkerTag>> GetTags(NormalizedSnapshotSpanCollection spans)
+        {
+            if (spans.Count == 0)
+            {  //there is no content in the buffer
                 yield break;
             }
             //don't do anything if the current SnapshotPoint is not initialized or at the end of the buffer
-            if (!this._currentChar.HasValue || this._currentChar.Value.Position >= this._currentChar.Value.Snapshot.Length) {
+            if (!this._currentChar.HasValue || this._currentChar.Value.Position >= this._currentChar.Value.Snapshot.Length)
+            {
                 yield break;
             }
             //hold on to a snapshot of the current character
             SnapshotPoint currentChar = this._currentChar.Value;
 
             //if the requested snapshot isn't the same as the one the brace is on, translate our spans to the expected snapshot
-            if (spans[0].Snapshot != currentChar.Snapshot) {
+            if (spans[0].Snapshot != currentChar.Snapshot)
+            {
                 currentChar = currentChar.TranslateTo(spans[0].Snapshot, PointTrackingMode.Positive);
             }
 
@@ -97,24 +109,30 @@ namespace AsmDude.BraceMatching {
             char lastText = lastChar.GetChar();
             SnapshotSpan pairSpan = new SnapshotSpan();
 
-            if (this._braceList.ContainsKey(currentText)) {  //the key is the open brace
+            if (this._braceList.ContainsKey(currentText))
+            {  //the key is the open brace
                 this._braceList.TryGetValue(currentText, out char closeChar);
-                if (FindMatchingCloseChar(currentChar, currentText, closeChar, this._view.TextViewLines.Count, out pairSpan) == true) {
+                if (FindMatchingCloseChar(currentChar, currentText, closeChar, this._view.TextViewLines.Count, out pairSpan) == true)
+                {
                     yield return new TagSpan<TextMarkerTag>(new SnapshotSpan(currentChar, 1), new TextMarkerTag("blue"));
                     yield return new TagSpan<TextMarkerTag>(pairSpan, new TextMarkerTag("blue"));
                 }
-            } else if (this._braceList.ContainsValue(lastText)) {   //the value is the close brace, which is the *previous* character 
-                var open = from n in this._braceList
-                           where n.Value.Equals(lastText)
-                           select n.Key;
-                if (FindMatchingOpenChar(lastChar, open.ElementAt(0), lastText, this._view.TextViewLines.Count, out pairSpan) == true) {
+            }
+            else if (this._braceList.ContainsValue(lastText))
+            {   //the value is the close brace, which is the *previous* character 
+                IEnumerable<char> open = from n in this._braceList
+                                         where n.Value.Equals(lastText)
+                                         select n.Key;
+                if (FindMatchingOpenChar(lastChar, open.ElementAt(0), lastText, this._view.TextViewLines.Count, out pairSpan) == true)
+                {
                     yield return new TagSpan<TextMarkerTag>(new SnapshotSpan(lastChar, 1), new TextMarkerTag("blue"));
                     yield return new TagSpan<TextMarkerTag>(pairSpan, new TextMarkerTag("blue"));
                 }
             }
         }
 
-        private static bool FindMatchingCloseChar(SnapshotPoint startPoint, char open, char close, int maxLines, out SnapshotSpan pairSpan) {
+        private static bool FindMatchingCloseChar(SnapshotPoint startPoint, char open, char close, int maxLines, out SnapshotSpan pairSpan)
+        {
             pairSpan = new SnapshotSpan(startPoint.Snapshot, 1, 1);
             ITextSnapshotLine line = startPoint.GetContainingLine();
             string lineText = line.GetText();
@@ -122,29 +140,39 @@ namespace AsmDude.BraceMatching {
             int offset = startPoint.Position - line.Start.Position + 1;
 
             int stopLineNumber = startPoint.Snapshot.LineCount - 1;
-            if (maxLines > 0) {
+            if (maxLines > 0)
+            {
                 stopLineNumber = Math.Min(stopLineNumber, lineNumber + maxLines);
             }
             int openCount = 0;
-            while (true) {
+            while (true)
+            {
                 //walk the entire line
-                while (offset < line.Length) {
+                while (offset < line.Length)
+                {
                     char currentChar = lineText[offset];
-                    if (currentChar == close) { //found the close character
-                        if (openCount > 0) {
+                    if (currentChar == close)
+                    { //found the close character
+                        if (openCount > 0)
+                        {
                             openCount--;
-                        } else {   //found the matching close
+                        }
+                        else
+                        {   //found the matching close
                             pairSpan = new SnapshotSpan(startPoint.Snapshot, line.Start + offset, 1);
                             return true;
                         }
-                    } else if (currentChar == open) { // this is another open
+                    }
+                    else if (currentChar == open)
+                    { // this is another open
                         openCount++;
                     }
                     offset++;
                 }
 
                 //move on to the next line
-                if (++lineNumber > stopLineNumber) {
+                if (++lineNumber > stopLineNumber)
+                {
                     break;
                 }
                 line = line.Snapshot.GetLineFromLineNumber(lineNumber);
@@ -154,7 +182,8 @@ namespace AsmDude.BraceMatching {
 
             return false;
         }
-        private static bool FindMatchingOpenChar(SnapshotPoint startPoint, char open, char close, int maxLines, out SnapshotSpan pairSpan) {
+        private static bool FindMatchingOpenChar(SnapshotPoint startPoint, char open, char close, int maxLines, out SnapshotSpan pairSpan)
+        {
             pairSpan = new SnapshotSpan(startPoint, startPoint);
 
             ITextSnapshotLine line = startPoint.GetContainingLine();
@@ -163,7 +192,8 @@ namespace AsmDude.BraceMatching {
             int offset = startPoint - line.Start - 1; //move the offset to the character before this one
 
             //if the offset is negative, move to the previous line
-            if (offset < 0) {
+            if (offset < 0)
+            {
                 line = line.Snapshot.GetLineFromLineNumber(--lineNumber);
                 offset = line.Length - 1;
             }
@@ -171,31 +201,41 @@ namespace AsmDude.BraceMatching {
             string lineText = line.GetText();
 
             int stopLineNumber = 0;
-            if (maxLines > 0) {
+            if (maxLines > 0)
+            {
                 stopLineNumber = Math.Max(stopLineNumber, lineNumber - maxLines);
             }
             int closeCount = 0;
 
-            while (true) {
+            while (true)
+            {
                 // Walk the entire line
-                while (offset >= 0) {
+                while (offset >= 0)
+                {
                     char currentChar = lineText[offset];
 
-                    if (currentChar == open) {
-                        if (closeCount > 0) {
+                    if (currentChar == open)
+                    {
+                        if (closeCount > 0)
+                        {
                             closeCount--;
-                        } else {  // We've found the open character
+                        }
+                        else
+                        {  // We've found the open character
                             pairSpan = new SnapshotSpan(line.Start + offset, 1); //we just want the character itself
                             return true;
                         }
-                    } else if (currentChar == close) {
+                    }
+                    else if (currentChar == close)
+                    {
                         closeCount++;
                     }
                     offset--;
                 }
 
                 // Move to the previous line
-                if (--lineNumber < stopLineNumber) {
+                if (--lineNumber < stopLineNumber)
+                {
                     break;
                 }
                 line = line.Snapshot.GetLineFromLineNumber(lineNumber);

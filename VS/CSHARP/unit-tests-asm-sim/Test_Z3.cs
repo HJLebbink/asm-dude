@@ -1,13 +1,15 @@
-﻿using System;
+﻿using AsmSim;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Z3;
-using AsmSim;
+using System;
 using System.Collections.Generic;
 
-namespace unit_tests_asm_z3 {
+namespace unit_tests_asm_z3
+{
 
     [TestClass]
-    public class Test_Z3 {
+    public class Test_Z3
+    {
 
         /*
         #region Memory With Functions
@@ -233,7 +235,8 @@ namespace unit_tests_asm_z3 {
         */
         #region Memory with Arrays
         [TestMethod]
-        public void Test_Z3_MemWithArray_1() {
+        public void Test_Z3_MemWithArray_1()
+        {
             #region Definitions
             uint nBits = 8;
             Context ctx = new Context();
@@ -285,7 +288,8 @@ namespace unit_tests_asm_z3 {
             #endregion
         }
         [TestMethod]
-        public void Test_Z3_MemWithArray_2() {
+        public void Test_Z3_MemWithArray_2()
+        {
             #region Definitions
             uint nBits = 8;
             Context ctx = new Context();
@@ -314,7 +318,8 @@ namespace unit_tests_asm_z3 {
             Console.WriteLine("mov rbx, qword ptr[16] ; load rbx with value at address 16, appreciate that rbx need not be equal to rax");
             state.Assert(ctx.MkEq(rbx, ctx.MkSelect(mem, bv_16)));
 
-            if (true) {
+            if (true)
+            {
                 Console.WriteLine("cmp rcx, 16 ;");
                 Console.WriteLine("jnz label1: ");
                 state.Assert(ctx.MkEq(rcx, bv_16));
@@ -326,7 +331,8 @@ namespace unit_tests_asm_z3 {
             Solver solver_U = ctx.MkSolver();
             solver.Assert(state.Formulas);
             Console.WriteLine("state1=" + state);
-            if (true) {
+            if (true)
+            {
                 Tactic tactic1 = ctx.MkTactic("propagate-values");
                 Goal state2 = tactic1.Apply(state).Subgoals[0];
                 Console.WriteLine("state2=" + state2.ToString());
@@ -343,7 +349,8 @@ namespace unit_tests_asm_z3 {
             #endregion
         }
         [TestMethod]
-        public void Test_Z3_MemWithArray_3() {
+        public void Test_Z3_MemWithArray_3()
+        {
             #region Definitions
             uint nBits = 8;
             Context ctx = new Context();
@@ -395,7 +402,8 @@ namespace unit_tests_asm_z3 {
             #endregion
         }
         [TestMethod]
-        public void Test_Z3_MemWithArray_4() {
+        public void Test_Z3_MemWithArray_4()
+        {
             #region Definitions
             uint nBits = 8;
             Context ctx = new Context();
@@ -439,7 +447,8 @@ namespace unit_tests_asm_z3 {
             solver.Assert(state.Formulas);
             Console.WriteLine("");
             Console.WriteLine("state1=" + state);
-            if (true) {
+            if (true)
+            {
                 Tactic tactic1 = ctx.MkTactic("propagate-values");
                 Goal state2 = tactic1.Apply(state).Subgoals[0];
                 Console.WriteLine("state2=" + state2.ToString());
@@ -458,7 +467,8 @@ namespace unit_tests_asm_z3 {
         #endregion
 
         [TestMethod]
-        public void Test_Z3_MemWithImplies() {
+        public void Test_Z3_MemWithImplies()
+        {
             Context ctx = new Context();
 
             BitVecExpr bv_0 = ctx.MkBV(0, 64);
@@ -499,18 +509,21 @@ namespace unit_tests_asm_z3 {
 
             solver.Assert(state.Formulas);
             Tv[] f = ToolsZ3.GetTvArray(value, 64, solver, solver_U, ctx);
-            Console.WriteLine("Value = 0b" + ToolsZ3.ToStringBin(f)+" = 0x"+ToolsZ3.ToStringHex(f));
+            Console.WriteLine("Value = 0b" + ToolsZ3.ToStringBin(f) + " = 0x" + ToolsZ3.ToStringHex(f));
         }
 
         [TestMethod]
-        public void Test_Z3_GoalsAndProbes() {
+        public void Test_Z3_GoalsAndProbes()
+        {
 
             Context ctx = new Context();
             Solver solver = ctx.MkSolver();
 
             #region Print all Probes
-            if (false) {
-                for (int i = 0; i < ctx.ProbeNames.Length; ++i) {
+            if (false)
+            {
+                for (int i = 0; i < ctx.ProbeNames.Length; ++i)
+                {
                     Console.WriteLine(i + ": probe " + ctx.ProbeNames[i] + "; " + ctx.ProbeDescription(ctx.ProbeNames[i]));
                 }
                 /*
@@ -557,8 +570,10 @@ namespace unit_tests_asm_z3 {
             }
             #endregion Print all Probes
             #region Print all Tactics
-            if (false) {
-                for (int i = 0; i < ctx.TacticNames.Length; ++i) {
+            if (false)
+            {
+                for (int i = 0; i < ctx.TacticNames.Length; ++i)
+                {
                     Console.WriteLine(i + ": tactic " + ctx.TacticNames[i] + "; " + ctx.TacticDescription(ctx.TacticNames[i]));
                 }
                 /*
@@ -659,7 +674,8 @@ namespace unit_tests_asm_z3 {
             //Console.WriteLine("AsBoolExpr=" + goal1.AsBoolExpr());
 
             #region Probe Tests
-            if (false) {
+            if (false)
+            {
                 Probe probe1 = ctx.MkProbe("is-qfbv");
                 double d = probe1.Apply(goal1);
                 Console.WriteLine("d=" + d);

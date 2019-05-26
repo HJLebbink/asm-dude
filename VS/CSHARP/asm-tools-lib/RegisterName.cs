@@ -20,10 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace AsmTools {
+namespace AsmTools
+{
 
     /// <summary>Register Name Enumeration</summary>
-    public enum Rn {
+    public enum Rn
+    {
         NOREG,
         RAX, EAX, AX, AL, AH,
         RBX, EBX, BX, BL, BH,

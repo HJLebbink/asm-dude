@@ -20,22 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using AsmDude.SyntaxHighlighting;
+using AsmDude.Tools;
+using AsmTools;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-using System.Drawing;
-
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-
-using AsmDude.Tools;
-using AsmTools;
-using AsmDude.SyntaxHighlighting;
-using Microsoft.VisualStudio;
 
 namespace AsmDude.OptionsPage
 {
@@ -329,7 +327,11 @@ namespace AsmDude.OptionsPage
                 }
             }
 
-            if (arch == Arch.ARCH_NONE) return;
+            if (arch == Arch.ARCH_NONE)
+            {
+                return;
+            }
+
             string k = arch.ToString();
             this._asmDudeOptionsPageUI.SetPropValue(k, Settings.Default[k]);
             SetToolTip(MakeToolTip());
@@ -649,13 +651,18 @@ namespace AsmDude.OptionsPage
         private async System.Threading.Tasks.Task UpdateFontAsync(string colorKeyName, Color c)
         {
             if (!ThreadHelper.CheckAccess())
+            {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            }
 
-            var guid2 = Guid.Parse("{A27B4E24-A735-4d1d-B8E7-9716E1E3D8E0}");
-            var flags = __FCSTORAGEFLAGS.FCSF_LOADDEFAULTS | __FCSTORAGEFLAGS.FCSF_PROPAGATECHANGES;
+            Guid guid2 = Guid.Parse("{A27B4E24-A735-4d1d-B8E7-9716E1E3D8E0}");
+            __FCSTORAGEFLAGS flags = __FCSTORAGEFLAGS.FCSF_LOADDEFAULTS | __FCSTORAGEFLAGS.FCSF_PROPAGATECHANGES;
 
-            var store = this.GetService(typeof(SVsFontAndColorStorage)) as IVsFontAndColorStorage;
-            if (store.OpenCategory(ref guid2, (uint)flags) != VSConstants.S_OK) return;
+            IVsFontAndColorStorage store = this.GetService(typeof(SVsFontAndColorStorage)) as IVsFontAndColorStorage;
+            if (store.OpenCategory(ref guid2, (uint)flags) != VSConstants.S_OK)
+            {
+                return;
+            }
 
             store.SetItem(colorKeyName, new[]{ new ColorableItemInfo
             {
@@ -668,14 +675,18 @@ namespace AsmDude.OptionsPage
         private async System.Threading.Tasks.Task UpdateItalicAsync(string colorKeyName, bool b)
         {
             if (!ThreadHelper.CheckAccess())
+            {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            }
 
-            var TextEditorFontCategoryGuid = Guid.Parse("{A27B4E24-A735-4d1d-B8E7-9716E1E3D8E0}");
-            var flags = __FCSTORAGEFLAGS.FCSF_LOADDEFAULTS | __FCSTORAGEFLAGS.FCSF_PROPAGATECHANGES;
+            Guid TextEditorFontCategoryGuid = Guid.Parse("{A27B4E24-A735-4d1d-B8E7-9716E1E3D8E0}");
+            __FCSTORAGEFLAGS flags = __FCSTORAGEFLAGS.FCSF_LOADDEFAULTS | __FCSTORAGEFLAGS.FCSF_PROPAGATECHANGES;
 
-            var store = this.GetService(typeof(SVsFontAndColorStorage)) as IVsFontAndColorStorage;
-            if (store.OpenCategory(ref TextEditorFontCategoryGuid, (uint)flags) != VSConstants.S_OK) return;
-
+            IVsFontAndColorStorage store = this.GetService(typeof(SVsFontAndColorStorage)) as IVsFontAndColorStorage;
+            if (store.OpenCategory(ref TextEditorFontCategoryGuid, (uint)flags) != VSConstants.S_OK)
+            {
+                return;
+            }
 
             ColorableItemInfo x = new ColorableItemInfo
             {
@@ -686,7 +697,7 @@ namespace AsmDude.OptionsPage
                 //dwFontFlags = 8
             };
 
-            var y = new[] { x };
+            ColorableItemInfo[] y = new[] { x };
             AsmDudeToolsStatic.Output_INFO("UpdateItalic: flags before: " + y[0].dwFontFlags);
             store.GetItem(colorKeyName, y);
             AsmDudeToolsStatic.Output_INFO("UpdateItalic: flags before save: " + y[0].dwFontFlags);
@@ -724,7 +735,9 @@ namespace AsmDude.OptionsPage
         private async System.Threading.Tasks.Task SaveAsync()
         {
             if (!ThreadHelper.CheckAccess())
+            {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            }
 
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO:{0}:save", this.ToString()));
             bool changed = false;
@@ -833,7 +846,7 @@ namespace AsmDude.OptionsPage
                 {
                     IVsFontAndColorCacheManager cacheManager = this.GetService(typeof(SVsFontAndColorCacheManager)) as IVsFontAndColorCacheManager;
                     cacheManager.ClearAllCaches();
-                    var guid = new Guid("00000000-0000-0000-0000-000000000000");
+                    Guid guid = new Guid("00000000-0000-0000-0000-000000000000");
                     cacheManager.RefreshCache(ref guid);
                     guid = new Guid("{A27B4E24-A735-4d1d-B8E7-9716E1E3D8E0}"); // Text editor category
                 }

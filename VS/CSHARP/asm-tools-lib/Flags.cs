@@ -110,26 +110,60 @@ namespace AsmTools
 
         public static string ToString(Flags flags)
         {
-            if (flags == Flags.NONE) return "NONE";
-            if (flags == Flags.ALL) return "ALL";
+            if (flags == Flags.NONE)
+            {
+                return "NONE";
+            }
+
+            if (flags == Flags.ALL)
+            {
+                return "ALL";
+            }
 
             StringBuilder sb = new StringBuilder();
             foreach (Flags flag in GetFlags(flags))
             {
                 sb.Append(flag).Append("|");
             }
-            if (sb.Length > 1) sb.Length -= 1; // remove the trailing comma space
+            if (sb.Length > 1)
+            {
+                sb.Length -= 1; // remove the trailing comma space
+            }
+
             return sb.ToString();
         }
 
         public static IEnumerable<Flags> GetFlags(Flags flags)
         {
-            if (flags.HasFlag(Flags.CF)) yield return Flags.CF;
-            if (flags.HasFlag(Flags.PF)) yield return Flags.PF;
-            if (flags.HasFlag(Flags.AF)) yield return Flags.AF;
-            if (flags.HasFlag(Flags.ZF)) yield return Flags.ZF;
-            if (flags.HasFlag(Flags.SF)) yield return Flags.SF;
-            if (flags.HasFlag(Flags.OF)) yield return Flags.OF;
+            if (flags.HasFlag(Flags.CF))
+            {
+                yield return Flags.CF;
+            }
+
+            if (flags.HasFlag(Flags.PF))
+            {
+                yield return Flags.PF;
+            }
+
+            if (flags.HasFlag(Flags.AF))
+            {
+                yield return Flags.AF;
+            }
+
+            if (flags.HasFlag(Flags.ZF))
+            {
+                yield return Flags.ZF;
+            }
+
+            if (flags.HasFlag(Flags.SF))
+            {
+                yield return Flags.SF;
+            }
+
+            if (flags.HasFlag(Flags.OF))
+            {
+                yield return Flags.OF;
+            }
         }
         public static IEnumerable<Flags> GetFlags()
         {
@@ -141,4 +175,4 @@ namespace AsmTools
             yield return Flags.OF;
         }
     }
- }
+}

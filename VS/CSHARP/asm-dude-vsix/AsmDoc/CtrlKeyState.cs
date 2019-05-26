@@ -20,9 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Microsoft.VisualStudio.Text.Editor;
 using System;
 using System.Windows.Input;
-using Microsoft.VisualStudio.Text.Editor;
 
 namespace AsmDude.AsmDoc
 {
@@ -42,10 +42,12 @@ namespace AsmDude.AsmDoc
             //AsmDudeToolsStatic.Output_INFO("CtrlKeyState:Constructor");
         }
 
-        bool _enabled = false;
+        private bool _enabled = false;
 
-        internal bool Enabled {
-            get {
+        internal bool Enabled
+        {
+            get
+            {
                 // Check and see if ctrl is down but we missed it somehow.
                 bool ctrlDown = (Keyboard.Modifiers & ModifierKeys.Control) != 0 &&
                                 (Keyboard.Modifiers & ModifierKeys.Shift) == 0;
@@ -55,7 +57,8 @@ namespace AsmDude.AsmDoc
                 }
                 return this._enabled;
             }
-            set {
+            set
+            {
                 bool oldVal = this._enabled;
                 this._enabled = value;
                 if (oldVal != this._enabled)

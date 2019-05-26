@@ -20,15 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Tagging;
-
 using AsmDude.SyntaxHighlighting;
 using AsmDude.Tools;
 using AsmTools;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Tagging;
+using System;
+using System.Collections.Generic;
 
 namespace AsmDude
 {
@@ -91,7 +89,7 @@ namespace AsmDude
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
 
                 string line = containingLine.GetText().ToUpper();
-                var pos = new List<(int BeginPos, int Length, bool IsLabel)>(AsmSourceTools.SplitIntoKeywordPos(line));
+                List<(int BeginPos, int Length, bool IsLabel)> pos = new List<(int BeginPos, int Length, bool IsLabel)>(AsmSourceTools.SplitIntoKeywordPos(line));
 
                 int offset = containingLine.Start.Position;
                 int nKeywords = pos.Count;
@@ -125,7 +123,10 @@ namespace AsmDude
                                 yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._jump);
 
                                 k++; // goto the next word
-                                if (k == nKeywords) break; // there are no next words
+                                if (k == nKeywords)
+                                {
+                                    break; // there are no next words
+                                }
 
                                 string asmToken2 = NasmIntelTokenTagger.Keyword(pos[k], line);
                                 switch (asmToken2)
@@ -139,7 +140,11 @@ namespace AsmDude
                                             yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._misc);
 
                                             k++;
-                                            if (k == nKeywords) break;
+                                            if (k == nKeywords)
+                                            {
+                                                break;
+                                            }
+
                                             string asmToken3 = NasmIntelTokenTagger.Keyword(pos[k], line);
                                             if (asmToken3.Equals("PTR"))
                                             {
@@ -271,7 +276,7 @@ namespace AsmDude
             string[] tokens,
             SnapshotSpan curSpan)
         {
-            var tup = Get_Next_Token(tokenId, nextLoc, tokens);
+            (bool, int, int, string) tup = Get_Next_Token(tokenId, nextLoc, tokens);
             tokenId = tup.Item2;
             nextLoc = tup.Item3;
 
@@ -333,7 +338,10 @@ namespace AsmDude
         private bool IsProperLabelDef(string asmToken, int lineNumber, out AsmTokenTag labelDefSpan)
         {
             labelDefSpan = null;
-            if (!this.IsExecutableCode(lineNumber)) return false;
+            if (!this.IsExecutableCode(lineNumber))
+            {
+                return false;
+            }
 
             if (asmToken.StartsWith("."))
             {

@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics; // for BigInt
-
+﻿using AsmSim;
+using AsmTools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Z3;
-
-using AsmSim;
-using AsmTools;
+using System;
+using System.Collections.Generic;
+using System.Numerics; // for BigInt
 
 namespace unit_tests_asm_z3
 {
     [TestClass]
     public class Test_Mnemonic
     {
-        const bool logToDisplay = TestTools.LOG_TO_DISPLAY;
+        private const bool logToDisplay = TestTools.LOG_TO_DISPLAY;
 
         public Test_Mnemonic()
         {
@@ -61,43 +59,43 @@ namespace unit_tests_asm_z3
         [TestMethod]
         public void Test_MnemonicZ3_Mov_usage()
         {
-            var tools = this.CreateTools();
-            var keys = ("dummy1", "dummy2", "dummy3");
+            Tools tools = this.CreateTools();
+            (string, string, string) keys = ("dummy1", "dummy2", "dummy3");
 
             {
-                var opcode = Runner.InstantiateOpcode(Mnemonic.MOV, new string[] { "rax", "rbx" }, keys, tools);
-                var read = new SortedSet<Rn>(opcode.RegsReadStatic);
+                AsmSim.Mnemonics.OpcodeBase opcode = Runner.InstantiateOpcode(Mnemonic.MOV, new string[] { "rax", "rbx" }, keys, tools);
+                SortedSet<Rn> read = new SortedSet<Rn>(opcode.RegsReadStatic);
                 Console.WriteLine("read = " + string.Join(",", read));
                 Assert.AreEqual(1, read.Count);
                 Assert.IsTrue(read.Contains(Rn.RBX));
 
-                var write = new SortedSet<Rn>(opcode.RegsWriteStatic);
+                SortedSet<Rn> write = new SortedSet<Rn>(opcode.RegsWriteStatic);
                 Console.WriteLine("write = " + string.Join(",", write));
                 Assert.AreEqual(1, write.Count);
                 Assert.IsTrue(write.Contains(Rn.RAX));
             }
             {
-                var opcode = Runner.InstantiateOpcode(Mnemonic.MOV, new string[] { "ptr qword [rax + rcx]", "rbx" }, keys, tools);
-                var read = new SortedSet<Rn>(opcode.RegsReadStatic);
+                AsmSim.Mnemonics.OpcodeBase opcode = Runner.InstantiateOpcode(Mnemonic.MOV, new string[] { "ptr qword [rax + rcx]", "rbx" }, keys, tools);
+                SortedSet<Rn> read = new SortedSet<Rn>(opcode.RegsReadStatic);
                 Console.WriteLine("read = " + string.Join(",", read));
                 Assert.AreEqual(3, read.Count);
                 Assert.IsTrue(read.Contains(Rn.RAX));
                 Assert.IsTrue(read.Contains(Rn.RBX));
                 Assert.IsTrue(read.Contains(Rn.RCX));
 
-                var write = new SortedSet<Rn>(opcode.RegsWriteStatic);
+                SortedSet<Rn> write = new SortedSet<Rn>(opcode.RegsWriteStatic);
                 Console.WriteLine("write = " + string.Join(",", write));
                 Assert.AreEqual(0, write.Count);
             }
             {
-                var opcode = Runner.InstantiateOpcode(Mnemonic.MOV, new string[] { "rbx", "ptr qword [rax + rcx]"}, keys, tools);
-                var read = new SortedSet<Rn>(opcode.RegsReadStatic);
+                AsmSim.Mnemonics.OpcodeBase opcode = Runner.InstantiateOpcode(Mnemonic.MOV, new string[] { "rbx", "ptr qword [rax + rcx]" }, keys, tools);
+                SortedSet<Rn> read = new SortedSet<Rn>(opcode.RegsReadStatic);
                 Console.WriteLine("read = " + string.Join(",", read));
                 Assert.AreEqual(2, read.Count);
                 Assert.IsTrue(read.Contains(Rn.RAX));
                 Assert.IsTrue(read.Contains(Rn.RCX));
 
-                var write = new SortedSet<Rn>(opcode.RegsWriteStatic);
+                SortedSet<Rn> write = new SortedSet<Rn>(opcode.RegsWriteStatic);
                 Console.WriteLine("write = " + string.Join(",", write));
                 Assert.AreEqual(1, write.Count);
                 Assert.IsTrue(write.Contains(Rn.RBX));
@@ -120,28 +118,60 @@ namespace unit_tests_asm_z3
 
             if (true)
             {
-                if (logToDisplay) Console.WriteLine("Forward:");
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Forward:");
+                }
+
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, value_rcx, state);
                 TestTools.AreEqual(Rn.RBX, value_rcx, state);
                 TestTools.AreEqual(Rn.RCX, value_rcx, state);
             }
             if (true)
             {
-                if (logToDisplay) Console.WriteLine("Backward:");
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Backward:");
+                }
+
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Backward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Backward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Backward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, value_rcx, state);
                 TestTools.AreEqual(Rn.RBX, value_rcx, state);
                 TestTools.AreEqual(Rn.RCX, value_rcx, state);
@@ -163,17 +193,33 @@ namespace unit_tests_asm_z3
             {   // forward
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, Rn.RCX, state);
             }
             {   // backward
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Backward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Backward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, Rn.RCX, state);
             }
         }
@@ -195,17 +241,29 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.EAX, value_eax, state);
                 TestTools.AreEqual(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.EAX, value_eax, state);
                 TestTools.AreEqual(Rn.EBX, value_eax, state);
 
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.EAX, value_eax_2, state);
                 TestTools.AreEqual(Rn.EBX, value_eax, state);
             }
@@ -213,13 +271,23 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Backward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Backward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Backward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.EAX, value_eax_2, state);
                 TestTools.AreEqual(Rn.EBX, value_eax, state);
             }
@@ -246,11 +314,19 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreUnrelated(Rn.BL, Rn.CL, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.BL, Rn.CL, state);
             }
         }
@@ -276,19 +352,35 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreUnrelated(Rn.BL, Rn.CL, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.BL, Rn.CL, state);
 
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("Forward: After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Forward: After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreUnrelated(Rn.DL, Rn.CL, state);
 
                 state = Runner.SimpleStep_Forward(line4, state);
-                if (logToDisplay) Console.WriteLine("Forward: After \"" + line4 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Forward: After \"" + line4 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.DL, Rn.CL, state);
             }
             if (true)
@@ -296,11 +388,19 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Backward(line2, state);
-                if (logToDisplay) Console.WriteLine("Backward: After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Backward: After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreUnrelated(Rn.BL, Rn.CL, state);
 
                 state = Runner.SimpleStep_Backward(line1, state);
-                if (logToDisplay) Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.BL, Rn.CL, state);
             }
         }
@@ -320,21 +420,37 @@ namespace unit_tests_asm_z3
             {   // forward
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreUnrelated(Rn.BX, Rn.CX, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.BX, Rn.CX, state);
             }
             {   // backward
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Backward(line2, state);
-                if (logToDisplay) Console.WriteLine("Backward: After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Backward: After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreUnrelated(Rn.BX, Rn.CX, state);
 
                 state = Runner.SimpleStep_Backward(line1, state);
-                if (logToDisplay) Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.BX, Rn.CX, state);
             }
         }
@@ -354,21 +470,37 @@ namespace unit_tests_asm_z3
             {   // forward
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreUnrelated(Rn.EBX, Rn.ECX, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.EBX, Rn.ECX, state);
             }
             {   // backward
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Backward(line2, state);
-                if (logToDisplay) Console.WriteLine("Backward: After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Backward: After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreUnrelated(Rn.EBX, Rn.ECX, state);
 
                 state = Runner.SimpleStep_Backward(line1, state);
-                if (logToDisplay) Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.EBX, Rn.ECX, state);
             }
         }
@@ -389,21 +521,37 @@ namespace unit_tests_asm_z3
             {   // forward
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreUnrelated(Rn.RBX, Rn.RCX, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RBX, Rn.RCX, state);
             }
             {   // backward
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Backward(line2, state);
-                if (logToDisplay) Console.WriteLine("Backward: After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Backward: After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreUnrelated(Rn.RBX, Rn.RCX, state);
 
                 state = Runner.SimpleStep_Backward(line1, state);
-                if (logToDisplay) Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RBX, Rn.RCX, state);
             }
         }
@@ -425,25 +573,57 @@ namespace unit_tests_asm_z3
             {   // forward
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Forward(line4, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, 0, state);
             }
             {   // backward
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Backward(line4, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Backward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Backward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Backward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, 0, state);
             }
         }
@@ -468,14 +648,29 @@ namespace unit_tests_asm_z3
             {   // forward
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 state.Frozen = false;
                 state.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.NZ, state.HeadKey, state.Ctx), false));
-                if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RAX, value, state);
                 TestTools.AreEqual(Rn.RBX, address, state);
@@ -484,13 +679,28 @@ namespace unit_tests_asm_z3
             {   // backward
                 State state = this.CreateState(tools);
                 state.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.NZ, state.HeadKey, state.Ctx), false));
-                if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Backward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Backward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Backward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RAX, value, state);
                 TestTools.AreEqual(Rn.RBX, address, state);
@@ -519,28 +729,60 @@ namespace unit_tests_asm_z3
             {   // forward
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RDX, Rn.RBX, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Forward(line4, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RDX, Rn.RCX, state);
             }
             if (false)
             {   // backward: TODO is this test correct??
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Backward(line4, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Backward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RDX, Rn.RCX, state);
                 state = Runner.SimpleStep_Backward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Backward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RDX, Rn.RCX, state);// rbx is written to [rax] before [rax] is written with rcx, hence rcx is equal to rdx
             }
         }
@@ -585,21 +827,44 @@ namespace unit_tests_asm_z3
                 TestTools.AreEqual(Rn.RBX, 20, state);
                 TestTools.AreEqual(Rn.RCX, 10, state);
             }
-            else Assert.Inconclusive("SLOW");
+            else
+            {
+                Assert.Inconclusive("SLOW");
+            }
 
             if (false) // is this test correct??
             {   // backward
                 State state = this.CreateState(tools);
                 state.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.NZ, state.HeadKey, state.Ctx), false));
-                if (logToDisplay) Console.WriteLine("After \"" + line6 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line6 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Backward(line5, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Backward(line4, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Backward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Backward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Backward(line1, state);
 
                 TestTools.AreEqual(Rn.RAX, 30, state);
@@ -625,18 +890,34 @@ namespace unit_tests_asm_z3
             {   // forward
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.EBX, Rn.ECX, state);
             }
             if (true)
             {   // backward
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Backward(line2, state);
-                if (logToDisplay) Console.WriteLine("Backward: After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Backward: After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Backward(line1, state);
-                if (logToDisplay) Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.EBX, Rn.ECX, state);
             }
         }
@@ -666,10 +947,17 @@ namespace unit_tests_asm_z3
                 TestTools.AreEqual(Rn.RDX, Rn.RCX, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("Forward: After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Forward: After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, Rn.RBX, state);
             }
             if (true)
@@ -677,13 +965,23 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Backward(line3, state);
-                if (logToDisplay) Console.WriteLine("Backward: After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Backward: After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Backward(line2, state);
-                if (logToDisplay) Console.WriteLine("Backward: After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Backward: After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Backward(line1, state);
-                if (logToDisplay) Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, Rn.RBX, state);
                 TestTools.AreEqual(Rn.RDX, Rn.RCX, state);
             }
@@ -712,10 +1010,17 @@ namespace unit_tests_asm_z3
                 TestTools.AreEqual(Rn.RDX, Rn.RCX, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("Forward: After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Forward: After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, Rn.RBX, state);
             }
             if (true)
@@ -723,13 +1028,23 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Backward(line3, state);
-                if (logToDisplay) Console.WriteLine("Backward: After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Backward: After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Backward(line2, state);
-                if (logToDisplay) Console.WriteLine("Backward: After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Backward: After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Backward(line1, state);
-                if (logToDisplay) Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, Rn.RBX, state);
                 TestTools.AreEqual(Rn.RDX, Rn.RCX, state);
             }
@@ -751,22 +1066,46 @@ namespace unit_tests_asm_z3
             { // forward
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, 30, state);
                 TestTools.AreEqual(Rn.RBX, 20, state);
             }
             { // backward
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Backward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Backward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Backward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, 30, state);
                 TestTools.AreEqual(Rn.RBX, 20, state);
             }
@@ -793,28 +1132,47 @@ namespace unit_tests_asm_z3
 
             {
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RAX, value_rax, state);
                 TestTools.AreEqual(Rn.RBX, value_rbx, state);
                 state = Runner.SimpleStep_Forward(line3, state);
 
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, value_rax, state);
                 TestTools.AreEqual(Rn.RBX, "00000000.00000000.00000000.00000000.00000000.00000000.00000000.000????0", state);
             }
             {
-                var (Regular, Branch) = Runner.Step_Forward(line4, state);
+                (State Regular, State Branch) = Runner.Step_Forward(line4, state);
                 State state1 = Regular;
                 State state2 = Branch;
 
-                if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", Branch NOT taken, we know:\n" + state1);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line4 + "\", Branch NOT taken, we know:\n" + state1);
+                }
+
                 TestTools.AreEqual(Rn.RAX, value_rax, state1);
                 TestTools.AreEqual(Rn.RBX, value_rbx, state1);
 
-                if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", Branch taken, we know:\n" + state2);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line4 + "\", Branch taken, we know:\n" + state2);
+                }
+
                 TestTools.AreEqual(Rn.RAX, value_rax, state2);
                 TestTools.AreEqual(Rn.RBX, value_rax, state2);
             }
@@ -839,10 +1197,17 @@ namespace unit_tests_asm_z3
                 updateState.Set(Rn.RBX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000010");
                 state.Update_Forward(updateState);
 
-                if (logToDisplay) Console.WriteLine("Before we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Before we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RBX, "00000000.00000000.00000000.00000000.00000000.00000000.00000000.000000?U", state);
             }
         }
@@ -867,17 +1232,29 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, value_rax, state);
                 TestTools.AreEqual(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, value_rax, state);
                 TestTools.AreEqual(Rn.RBX, value_rbx, state);
 
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, value_rax_2, state);
                 TestTools.AreEqual(Rn.RBX, value_rbx, state);
             }
@@ -902,7 +1279,10 @@ namespace unit_tests_asm_z3
                 BitVecExpr bl0 = state.Create(Rn.BL);
 
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
 
                 BoolExpr overflowExpr = ToolsFlags.Create_OF_Sub(al0.Translate(state.Ctx) as BitVecExpr, bl0.Translate(state.Ctx) as BitVecExpr, nBits, state.Ctx);
                 BoolExpr eq = state.Ctx.MkEq(state.Create(Flags.OF), overflowExpr);
@@ -929,16 +1309,25 @@ namespace unit_tests_asm_z3
                 Context ctx = state.Ctx;
 
                 StateUpdate updateState = new StateUpdate(state.TailKey, Tools.CreateKey(state.Tools.Rand), tools);
-                if (logToDisplay) Console.WriteLine("Intially, we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Intially, we know:\n" + state);
+                }
 
                 updateState.Set(Rn.AL, a);
                 updateState.Set(Rn.BL, b);
 
                 state.Update_Forward(updateState);
-                if (logToDisplay) Console.WriteLine("Before \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Before \"" + line1 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Flags.OF, false, state);
                 TestTools.AreEqual(Rn.AL, a + b, state);
@@ -959,7 +1348,11 @@ namespace unit_tests_asm_z3
                 //if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
 
                 BoolExpr of = ToolsFlags.Create_OF_Add(state.Ctx.MkBV(a, nBits), state.Ctx.MkBV(b, nBits), nBits, state.Ctx);
-                if (logToDisplay) Console.WriteLine(of);
+                if (logToDisplay)
+                {
+                    Console.WriteLine(of);
+                }
+
                 TestTools.AreEqual(Flags.OF, true, state);
                 TestTools.AreEqual(Rn.AL, a + b, state); //NOTE: only the lower 8bits are checked for equality!
             }
@@ -977,10 +1370,17 @@ namespace unit_tests_asm_z3
 
 
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
 
                 BoolExpr of = ToolsFlags.Create_OF_Add(state.Ctx.MkBV(a, nBits), state.Ctx.MkBV(b, nBits), nBits, state.Ctx);
-                if (logToDisplay) Console.WriteLine(of);
+                if (logToDisplay)
+                {
+                    Console.WriteLine(of);
+                }
+
                 TestTools.AreEqual(Flags.OF, false, state);
                 TestTools.AreEqual(Rn.AL, a + b, state);
             }
@@ -1017,7 +1417,9 @@ namespace unit_tests_asm_z3
                     state = Runner.SimpleStep_Forward(line, state);
 
                     if (logToDisplay)
+                    {
                         Console.WriteLine("After \"" + line + "\", we know:\n" + state);
+                    }
 
                     TestTools.AreEqual(Rn.RAX, result, state);
                     TestTools.AreEqual(Flags.CF, TestTools.ToTv5(TestTools.Calc_CF_Add(nBits, rax_value, rbx_value)), state);
@@ -1075,11 +1477,19 @@ namespace unit_tests_asm_z3
 
             {   // forward
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, value_rax, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, value_rax + 1, state);
             }
         }
@@ -1100,11 +1510,19 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, value_rax, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, value_rax - 1, state);
             }
         }
@@ -1124,11 +1542,19 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, value_rax, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, 0 - value_rax, state);
             }
         }
@@ -1158,7 +1584,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After line 3 with \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After line 3 with \"" + line3 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RAX, value_result, state);
 
@@ -1193,18 +1622,32 @@ namespace unit_tests_asm_z3
                 string line3 = "xor rax, rbx";
 
                 State state = this.CreateState(tools);
-                if (logToDisplay) Console.WriteLine("Before line 3 with \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("Before line 3 with \"" + line3 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Backward(line3, state);
-                if (logToDisplay) Console.WriteLine("After line 3 with \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After line 3 with \"" + line3 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Flags.OF, Tv.ZERO, state);
                 TestTools.AreEqual(Flags.CF, Tv.ZERO, state);
                 TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
 
                 state = Runner.SimpleStep_Backward(line2, state);
-                if (logToDisplay) Console.WriteLine("After line 2 with \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After line 2 with \"" + line2 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Backward(line1, state);
-                if (logToDisplay) Console.WriteLine("After line 1 with \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After line 1 with \"" + line1 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RAX, value_result, state);
 
@@ -1242,14 +1685,22 @@ namespace unit_tests_asm_z3
             {
                 string line = "cmp rax, rbx";
                 state = Runner.SimpleStep_Forward(line, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, value_rax, state);
                 TestTools.AreEqual(Rn.RBX, value_rbx, state);
             }
             {
                 string line = "cmove rcx, rbx";
                 state = Runner.SimpleStep_Forward(line, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, value_rax, state);
                 TestTools.AreEqual(Rn.RBX, value_rbx, state);
                 TestTools.AreEqual(Rn.RCX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
@@ -1281,7 +1732,10 @@ namespace unit_tests_asm_z3
             {
                 string line = "cmp byte [rax], bl";
                 state = Runner.SimpleStep_Forward(line, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
                 TestTools.AreEqual(Rn.BL, value2, state);
@@ -1314,29 +1768,52 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, value_rax, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.CL, value_cl, state);
 
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, value2_rax, state);
             }
             {   // backward
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Backward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Backward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.CL, value_cl, state);
 
                 state = Runner.SimpleStep_Backward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, value2_rax, state);
             }
         }
@@ -1361,28 +1838,50 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.CL, value_cl, state);
 
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.EAX, value2_eax, state);
             }
             {   // backward
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Backward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Backward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.CL, value_cl, state);
 
                 state = Runner.SimpleStep_Backward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.EAX, value2_eax, state);
             }
         }
@@ -1408,18 +1907,31 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
                 //TestTools.test(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
                 //TestTools.test(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Forward(line4, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, 0, state);
             }
             if (true)
@@ -1427,18 +1939,31 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Backward(line4, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Backward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
                 //TestTools.test(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Backward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
                 //TestTools.test(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Backward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, 0, state);
             }
         }
@@ -1461,28 +1986,50 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
             }
             {   // backward
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
             }
         }
@@ -1507,21 +2054,39 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Forward(line4, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Forward(line5, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, 0, state);
             }
         }
@@ -1545,15 +2110,27 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.AX, 0, state);
 
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, "00000000.00000000.00000000.00000000.????????.???????0.00000000.0000000U", state);
             }
         }
@@ -1594,15 +2171,27 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, 0, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, 0, state);
 
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, 0, state);
             }
         }
@@ -1626,27 +2215,46 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
                 //TestTools.Test(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
                 TestTools.AreEqual(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
                 //TestTools.Test(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
                 TestTools.AreEqual(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Forward(line4, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
                 //TestTools.Test(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Forward(line5, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, "00000000.00000000.00000000.00000000.00000000.00000000.00000000.0000?000", state);
                 //TestTools.Test(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
             }
@@ -1671,7 +2279,11 @@ namespace unit_tests_asm_z3
                 //if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, 1, state);
             }
         }
@@ -1694,7 +2306,11 @@ namespace unit_tests_asm_z3
                 //if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, "UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU", state);
             }
         }
@@ -1718,7 +2334,11 @@ namespace unit_tests_asm_z3
                 //if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, 60, state);
             }
         }
@@ -1741,7 +2361,11 @@ namespace unit_tests_asm_z3
                 //if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, "UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU", state);
             }
         }
@@ -1762,7 +2386,10 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000010", state);
                 TestTools.AreEqual(Flags.CF, Tv.ZERO, state);
@@ -1792,7 +2419,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000010", state);
                 TestTools.AreEqual(Flags.CF, Tv.ZERO, state);
@@ -1819,7 +2449,10 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00001000", state);
                 TestTools.AreEqual(Flags.CF, Tv.ZERO, state);
@@ -1846,7 +2479,10 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00001000", state);
                 TestTools.AreEqual(Flags.CF, Tv.ONE, state);
@@ -1885,7 +2521,10 @@ namespace unit_tests_asm_z3
 
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001", state);
 
@@ -1914,7 +2553,10 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000010", state);
                 TestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state); //The CF is undefined for SHL and SHR instructions where the count is greater than or equal to the size (in bits) of the destination operand.
@@ -1941,7 +2583,10 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00001000", state);
                 TestTools.AreEqual(Flags.CF, Tv.ONE, state); //The CF is undefined for SHL and SHR instructions where the count is greater than or equal to the size (in bits) of the destination operand.
@@ -1968,7 +2613,10 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_10000000_00000100", state);
                 TestTools.AreEqual(Flags.CF, Tv.ONE, state); //The CF is undefined for SHL and SHR instructions where the count is greater than or equal to the size (in bits) of the destination operand.
@@ -2000,7 +2648,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RAX, "10000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000", state);
                 TestTools.AreEqual(Flags.CF, Tv.ZERO, state);
@@ -2033,7 +2684,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
                 state = Runner.SimpleStep_Forward(line4, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RAX, "10000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000", state);
                 TestTools.AreEqual(Rn.RBX, "11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111", state);
@@ -2064,7 +2718,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RAX, "11100000_00000000_00000000_00000000_00000000_00000000_00000000_00000000", state);
                 TestTools.AreEqual(Rn.RBX, "11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111", state);
@@ -2095,7 +2752,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RAX, "11100000_00000000_00000000_00000000_00000000_00000000_00000000_00000000", state);
                 TestTools.AreEqual(Rn.RBX, "11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111", state);
@@ -2128,7 +2788,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RAX, "10000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000", state);
                 TestTools.AreEqual(Flags.CF, Tv.ZERO, state);
@@ -2161,7 +2824,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
                 state = Runner.SimpleStep_Forward(line4, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RAX, "10000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000", state);
                 TestTools.AreEqual(Flags.CF, Tv.ZERO, state);
@@ -2192,7 +2858,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RAX, "00000000_00000001_11111111_11111111_00000000_00000001_11111111_11111111", state);
                 TestTools.AreEqual(Rn.RBX, "00000000_00000000_11111111_11111111_00000000_00000000_11111111_11111111", state);
@@ -2229,7 +2898,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 Assert.IsFalse(state.IsHalted);
                 TestTools.AreEqual(Rn.AX, (ulong)ax, state);
@@ -2260,7 +2932,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 Assert.IsFalse(state.IsHalted);
                 TestTools.AreEqual(Rn.AX, (ulong)ax, state);
@@ -2291,7 +2966,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 Assert.IsFalse(state.IsHalted);
                 TestTools.AreEqual(Rn.AX, (ulong)ax, state);
@@ -2325,7 +3003,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 Assert.IsFalse(state.IsHalted);
                 TestTools.AreEqual(Rn.AX, resultAx, state);
@@ -2342,7 +3023,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 Assert.IsFalse(state.IsHalted);
                 TestTools.AreEqual(Rn.AX, resultAx, state);
@@ -2356,7 +3040,10 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 Assert.IsFalse(state.IsHalted);
                 TestTools.AreEqual(Rn.AX, resultAx, state);
@@ -2390,7 +3077,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 Assert.IsFalse(state.IsHalted);
                 TestTools.AreEqual(Rn.AX, resultAx, state);
@@ -2407,7 +3097,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 Assert.IsFalse(state.IsHalted);
                 TestTools.AreEqual(Rn.AX, resultAx, state);
@@ -2421,7 +3114,10 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 Assert.IsFalse(state.IsHalted);
                 TestTools.AreEqual(Rn.AX, resultAx, state);
@@ -2460,7 +3156,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 Assert.IsFalse(state.IsHalted);
                 TestTools.AreEqual(Rn.EAX, resultEax, state);
@@ -2477,7 +3176,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 Assert.IsFalse(state.IsHalted);
                 TestTools.AreEqual(Rn.EAX, resultEax, state);
@@ -2491,7 +3193,10 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 Assert.IsFalse(state.IsHalted);
                 TestTools.AreEqual(Rn.EAX, resultEax, state);
@@ -2521,10 +3226,18 @@ namespace unit_tests_asm_z3
             ulong resultEax = ((ulong)result) & 0xFFFF_FFFF;
             ulong resultEdx = ((ulong)result >> 32) & 0xFFFF_FFFF;
 
-            if (false) Console.WriteLine("resultEax=" + Convert.ToString((long)resultEax, 2));
-            if (false) Console.WriteLine("resultEdx=" + Convert.ToString((long)resultEdx, 2));
+            if (false)
+            {
+                Console.WriteLine("resultEax=" + Convert.ToString((long)resultEax, 2));
+            }
 
-            if (true) {   // forward
+            if (false)
+            {
+                Console.WriteLine("resultEdx=" + Convert.ToString((long)resultEdx, 2));
+            }
+
+            if (true)
+            {   // forward
                 string line1 = "mov eax, " + eax;
                 string line2 = "mov ebx, " + ebx;
                 //string line3 = "imul ebx";
@@ -2532,18 +3245,25 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 Assert.IsFalse(state.IsHalted);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Forward(line2, state);
                 Assert.IsFalse(state.IsHalted);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
                 //state = Runner.SimpleStep_Forward(line3, state);
                 //Assert.IsFalse(state.IsHalted);
                 //if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
 
-               // TestTools.AreEqual(Rn.EAX, resultEax, state);
-               // TestTools.AreEqual(Rn.EDX, resultEdx, state);
-              //  TestTools.AreEqual(Flags.CF | Flags.OF, Tv.ONE, state);
-               // TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
+                // TestTools.AreEqual(Rn.EAX, resultEax, state);
+                // TestTools.AreEqual(Rn.EDX, resultEdx, state);
+                //  TestTools.AreEqual(Flags.CF | Flags.OF, Tv.ONE, state);
+                // TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
             }
             if (false)
             {   // forward
@@ -2555,7 +3275,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 Assert.IsFalse(state.IsHalted);
                 TestTools.AreEqual(Rn.EAX, resultEax, state);
@@ -2570,7 +3293,10 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 Assert.IsFalse(state.IsHalted);
                 TestTools.AreEqual(Rn.EAX, resultEax, state);
@@ -2611,7 +3337,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 Assert.IsFalse(state.IsHalted);
                 TestTools.AreEqual(Rn.RAX, resultRax, state);
@@ -2628,7 +3357,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 Assert.IsFalse(state.IsHalted);
                 TestTools.AreEqual(Rn.RAX, resultRax, state);
@@ -2642,7 +3374,10 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 Assert.IsFalse(state.IsHalted);
                 TestTools.AreEqual(Rn.RAX, resultRax, state);
@@ -2683,10 +3418,17 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 Assert.IsFalse(state.IsHalted);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 Assert.IsFalse(state.IsHalted);
                 TestTools.AreEqual(Rn.RAX, resultRax, state);
@@ -2694,7 +3436,8 @@ namespace unit_tests_asm_z3
                 TestTools.AreEqual(Flags.CF | Flags.OF, Tv.ONE, state);
                 TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
             }
-            if (false) {   // forward
+            if (false)
+            {   // forward
                 string line1 = "mov rax, " + rax;
                 string line2 = "mov rbx, " + rbx;
                 string line3 = "imul rax, rbx";
@@ -2704,7 +3447,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line2, state);
                 Assert.IsFalse(state.IsHalted);
                 //state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 Assert.IsFalse(state.IsHalted);
                 TestTools.AreEqual(Rn.RAX, resultRax, state);
@@ -2731,7 +3477,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.ZF = true;
             tools.StateConfig.PF = true;
 
-            UInt16 ax = 0b0000_0000_0100_0000;
+            ushort ax = 0b0000_0000_0100_0000;
             byte bl = 0b0000_0010;
             byte quotient = (byte)(ax / bl);
             byte remainder = (byte)(ax % bl);
@@ -2745,7 +3491,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.AL, quotient, state);
                 TestTools.AreEqual(Rn.AH, remainder, state);
@@ -2767,7 +3516,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.ZF = true;
             tools.StateConfig.PF = true;
 
-            UInt16 ax = 0b0000_0011_0100_0000;
+            ushort ax = 0b0000_0011_0100_0000;
             byte bl = 0b0000_0100;
             byte quotient = (byte)(ax / bl);
             byte remainder = (byte)(ax % bl);
@@ -2781,7 +3530,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.AL, quotient, state);
                 TestTools.AreEqual(Rn.AH, remainder, state);
@@ -2804,13 +3556,13 @@ namespace unit_tests_asm_z3
             tools.StateConfig.ZF = true;
             tools.StateConfig.PF = true;
 
-            UInt16 dx = 0b0000_0000_0000_0100;
-            UInt16 ax = 0b0000_0011_0100_0000;
-            UInt16 bx = 0b0000_0000_0100_0000;
+            ushort dx = 0b0000_0000_0000_0100;
+            ushort ax = 0b0000_0011_0100_0000;
+            ushort bx = 0b0000_0000_0100_0000;
 
-            UInt32 value = (((UInt32)dx) << 16) | ax;
-            UInt16 quotient = (UInt16)(value / bx);
-            UInt16 remainder = (UInt16)(value % bx);
+            uint value = (((uint)dx) << 16) | ax;
+            ushort quotient = (ushort)(value / bx);
+            ushort remainder = (ushort)(value % bx);
 
             string line1 = "mov ax, " + ax;
             string line2 = "mov dx, " + dx;
@@ -2822,9 +3574,16 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Forward(line4, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.AX, (ulong)quotient, state);
                 TestTools.AreEqual(Rn.DX, (ulong)remainder, state);
@@ -2847,13 +3606,13 @@ namespace unit_tests_asm_z3
             tools.StateConfig.ZF = true;
             tools.StateConfig.PF = true;
 
-            UInt32 edx = 0b0000_0000_0000_0100_0000_0000_0000_0100;
-            UInt32 eax = 0b0000_0000_0000_0000_0000_0011_0100_0000;
-            UInt32 ebx = 0b0000_0000_0000_1000_0000_0000_0100_0000;
+            uint edx = 0b0000_0000_0000_0100_0000_0000_0000_0100;
+            uint eax = 0b0000_0000_0000_0000_0000_0011_0100_0000;
+            uint ebx = 0b0000_0000_0000_1000_0000_0000_0100_0000;
 
-            UInt64 value = (((UInt64)edx) << 32) | eax;
-            UInt32 quotient = (UInt32)(value / ebx);
-            UInt32 remainder = (UInt32)(value % ebx);
+            ulong value = (((ulong)edx) << 32) | eax;
+            uint quotient = (uint)(value / ebx);
+            uint remainder = (uint)(value % ebx);
 
             string line1 = "mov eax, " + eax;
             string line2 = "mov edx, " + edx;
@@ -2865,9 +3624,16 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Forward(line4, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.EAX, quotient, state);
                 TestTools.AreEqual(Rn.EDX, remainder, state);
@@ -2890,9 +3656,9 @@ namespace unit_tests_asm_z3
             tools.StateConfig.ZF = true;
             tools.StateConfig.PF = true;
 
-            UInt64 rdx = 0x0000_0010_FFFF_FFFF;
-            UInt64 rax = 0x0000_0000_1000_F000;
-            UInt64 rbx = 0x0000_0100_FFFF_FFFF;
+            ulong rdx = 0x0000_0010_FFFF_FFFF;
+            ulong rax = 0x0000_0000_1000_F000;
+            ulong rbx = 0x0000_0100_FFFF_FFFF;
 
             BigInteger value = ((new BigInteger(rdx)) << 64) + new BigInteger(rax);
             BigInteger quotient = BigInteger.DivRem(value, new BigInteger(rbx), out BigInteger remainder);
@@ -2913,9 +3679,16 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Forward(line4, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RAX, quotient_ulong, state);
                 TestTools.AreEqual(Rn.RDX, remainder_ulong, state);
@@ -2944,7 +3717,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RSP, 0x3FFF - 8, state);
             }
@@ -2966,7 +3742,10 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RSP, 0x3FFF + 8, state);
             }
@@ -2993,7 +3772,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
                 state = Runner.SimpleStep_Forward(line4, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RSP, 0x3FFF, state);
                 TestTools.AreEqual(Rn.RAX, Rn.RBX, state);
@@ -3019,7 +3801,10 @@ namespace unit_tests_asm_z3
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RSP, 0x3FFF, state);
                 TestTools.AreEqual(Rn.RAX, Rn.RBX, state);
@@ -3046,7 +3831,11 @@ namespace unit_tests_asm_z3
                 TestTools.AreUnrelated(Rn.RAX, Rn.RBX, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, Rn.RBX, state);
             }
         }
@@ -3074,7 +3863,11 @@ namespace unit_tests_asm_z3
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
+
                 TestTools.AreEqual(Rn.RAX, Rn.RBX, state);
             }
         }
@@ -3097,7 +3890,10 @@ namespace unit_tests_asm_z3
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.EAX, "????_????_????_????_????_????_????_????", state);
             }
@@ -3121,7 +3917,10 @@ namespace unit_tests_asm_z3
                 state.Update_Forward(updateState);
 
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.EAX, "????_????_????_????_????_????_????_????", state);
             }
@@ -3145,7 +3944,10 @@ namespace unit_tests_asm_z3
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RBX, 2, state);
             }
@@ -3167,7 +3969,10 @@ namespace unit_tests_asm_z3
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.RBX, 64, state);
             }
@@ -3189,7 +3994,10 @@ namespace unit_tests_asm_z3
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.EBX, 1, state);
             }
@@ -3211,7 +4019,10 @@ namespace unit_tests_asm_z3
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.EBX, 32, state);
             }
@@ -3233,7 +4044,10 @@ namespace unit_tests_asm_z3
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.BX, 1, state);
             }
@@ -3255,7 +4069,10 @@ namespace unit_tests_asm_z3
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.BX, 16, state);
             }
@@ -3275,7 +4092,10 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
 
                 TestTools.AreEqual(Rn.BX, "0000_0000_000?_????", state);
             }
@@ -3297,8 +4117,15 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
 
                 (State state1a, State state1b) = Runner.Step_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("State1A: After \"" + line1 + "\", we know:\n" + state1a);
-                if (logToDisplay) Console.WriteLine("State1B: After \"" + line1 + "\", we know:\n" + state1b);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("State1A: After \"" + line1 + "\", we know:\n" + state1a);
+                }
+
+                if (logToDisplay)
+                {
+                    Console.WriteLine("State1B: After \"" + line1 + "\", we know:\n" + state1b);
+                }
 
                 //                TestTools.AreEqual(Rn.RBX, 2, state);
             }
@@ -3335,7 +4162,10 @@ namespace unit_tests_asm_z3
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
             state = Runner.SimpleStep_Forward(line3, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Rn.AL, result, state);
         }
@@ -3363,7 +4193,10 @@ namespace unit_tests_asm_z3
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
             state = Runner.SimpleStep_Forward(line3, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Rn.AL, result, state);
         }
@@ -3397,7 +4230,10 @@ namespace unit_tests_asm_z3
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
             state = Runner.SimpleStep_Forward(line3, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Rn.AL, result, state);
         }
@@ -3426,7 +4262,10 @@ namespace unit_tests_asm_z3
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
             state = Runner.SimpleStep_Forward(line3, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Rn.AL, result, state);
         }
@@ -3458,7 +4297,10 @@ namespace unit_tests_asm_z3
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
             state = Runner.SimpleStep_Forward(line3, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Rn.AL, result, state);
             TestTools.AreEqual(Flags.AF, false, state);
@@ -3487,9 +4329,16 @@ namespace unit_tests_asm_z3
             State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            }
+
             state = Runner.SimpleStep_Forward(line3, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Rn.AL, al_result, state);
             TestTools.AreEqual(Rn.AH, ah_result, state);
@@ -3524,7 +4373,10 @@ namespace unit_tests_asm_z3
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
             state = Runner.SimpleStep_Forward(line3, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Rn.AL, result, state);
             TestTools.AreEqual(Flags.AF, false, state);
@@ -3557,9 +4409,16 @@ namespace unit_tests_asm_z3
             state = Runner.SimpleStep_Forward(line0, state);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            }
+
             state = Runner.SimpleStep_Forward(line3, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Rn.AL, al_result, state);
             TestTools.AreEqual(Rn.AH, ah_result, state);
@@ -3597,9 +4456,16 @@ namespace unit_tests_asm_z3
             state = Runner.SimpleStep_Forward(line0, state);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            }
+
             state = Runner.SimpleStep_Forward(line3, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Rn.AL, al_result, state);
             TestTools.AreEqual(Rn.AH, ah_result, state);
@@ -3636,9 +4502,16 @@ namespace unit_tests_asm_z3
             state = Runner.SimpleStep_Forward(line0, state);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            }
+
             state = Runner.SimpleStep_Forward(line3, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Rn.AL, al_result, state);
             TestTools.AreEqual(Rn.AH, ah_result, state);
@@ -3674,9 +4547,16 @@ namespace unit_tests_asm_z3
             state = Runner.SimpleStep_Forward(line0, state);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            }
+
             state = Runner.SimpleStep_Forward(line3, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Rn.AL, al_result, state);
             TestTools.AreEqual(Rn.AH, ah_result, state);
@@ -3713,9 +4593,16 @@ namespace unit_tests_asm_z3
             state = Runner.SimpleStep_Forward(line0, state);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            }
+
             state = Runner.SimpleStep_Forward(line3, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Rn.AL, al_result, state);
             TestTools.AreEqual(Rn.AH, ah_result, state);
@@ -3752,9 +4639,16 @@ namespace unit_tests_asm_z3
             state = Runner.SimpleStep_Forward(line0, state);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            }
+
             state = Runner.SimpleStep_Forward(line3, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Rn.AL, al_result, state);
             TestTools.AreEqual(Rn.AH, 0, state);
@@ -3792,13 +4686,24 @@ namespace unit_tests_asm_z3
             State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line0, state);
             state = Runner.SimpleStep_Forward(line1, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+            }
+
             state = Runner.SimpleStep_Forward(line2, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            }
+
             TestTools.AreEqual(Rn.AX, decimalA, state);
 
             state = Runner.SimpleStep_Forward(line3, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Rn.AL, result, state);
             TestTools.AreEqual(Rn.AH, 0, state);
@@ -3829,9 +4734,16 @@ namespace unit_tests_asm_z3
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
 
-            if (logToDisplay) Console.WriteLine("Before \"" + line3 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("Before \"" + line3 + "\", we know:\n" + state);
+            }
+
             state = Runner.SimpleStep_Forward(line3, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Flags.ZF, true, state); // thus rax and rbx are equal
             TestTools.AreEqual(Rn.RAX, 1, state);
@@ -3859,9 +4771,16 @@ namespace unit_tests_asm_z3
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
 
-            if (logToDisplay) Console.WriteLine("Before \"" + line3 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("Before \"" + line3 + "\", we know:\n" + state);
+            }
+
             state = Runner.SimpleStep_Forward(line3, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Flags.ZF, false, state); // thus rax and rbx are not equal
             TestTools.AreEqual(Rn.RAX, 2, state);
@@ -3891,10 +4810,17 @@ namespace unit_tests_asm_z3
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
 
-            if (logToDisplay) Console.WriteLine("Before \"" + line3 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("Before \"" + line3 + "\", we know:\n" + state);
+            }
+
             state = Runner.SimpleStep_Forward(line3, state);
             state = Runner.SimpleStep_Forward(line4, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Flags.ZF, true, state); // thus rax and rbx are equal
             TestTools.AreEqual(Rn.AL, 1, state);
@@ -3924,10 +4850,17 @@ namespace unit_tests_asm_z3
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
 
-            if (logToDisplay) Console.WriteLine("Before \"" + line3 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("Before \"" + line3 + "\", we know:\n" + state);
+            }
+
             state = Runner.SimpleStep_Forward(line3, state);
             state = Runner.SimpleStep_Forward(line4, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Flags.ZF, false, state); // thus rax and rbx are not equal
             TestTools.AreEqual(Rn.AL, 2, state);
@@ -3974,10 +4907,17 @@ namespace unit_tests_asm_z3
             state = Runner.SimpleStep_Forward(line4, state);
             state = Runner.SimpleStep_Forward(line5, state);
             state = Runner.SimpleStep_Forward(line6, state);
-            if (logToDisplay) Console.WriteLine("Before \"" + line7 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("Before \"" + line7 + "\", we know:\n" + state);
+            }
+
             state = Runner.SimpleStep_Forward(line7, state);
             state = Runner.SimpleStep_Forward(line8, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line8 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line8 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Flags.ZF, true, state); // thus rax and rbx are equal
             TestTools.AreEqual(Rn.R10, (1UL << 32) | (9UL), state);
@@ -4021,10 +4961,17 @@ namespace unit_tests_asm_z3
             state = Runner.SimpleStep_Forward(line4, state);
             state = Runner.SimpleStep_Forward(line5, state);
             state = Runner.SimpleStep_Forward(line6, state);
-            if (logToDisplay) Console.WriteLine("Before \"" + line7 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("Before \"" + line7 + "\", we know:\n" + state);
+            }
+
             state = Runner.SimpleStep_Forward(line7, state);
             state = Runner.SimpleStep_Forward(line8, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line8 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line8 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Flags.ZF, true, state); // thus rax and rbx are equal
             TestTools.AreEqual(Rn.R10, (1UL << 32) | (9UL), state);
@@ -4052,9 +4999,16 @@ namespace unit_tests_asm_z3
             state = Runner.SimpleStep_Forward(line1, state);
             //if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
             state = Runner.SimpleStep_Forward(line2, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            }
+
             state = Runner.SimpleStep_Forward(line3, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Rn.EAX, 0x1020408, state);
         }
@@ -4076,9 +5030,16 @@ namespace unit_tests_asm_z3
             State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            }
+
             state = Runner.SimpleStep_Forward(line3, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Rn.EAX, 2, state);
             TestTools.AreEqual(Rn.EBX, 1, state);
@@ -4099,9 +5060,16 @@ namespace unit_tests_asm_z3
             State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
             state = Runner.SimpleStep_Forward(line2, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            }
+
             state = Runner.SimpleStep_Forward(line3, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Rn.RAX, 2, state);
             TestTools.AreEqual(Rn.RBX, 1, state);
@@ -4121,9 +5089,16 @@ namespace unit_tests_asm_z3
 
             State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+            }
+
             state = Runner.SimpleStep_Forward(line2, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Rn.EAX, 0x1020408, state);
         }
@@ -4139,9 +5114,16 @@ namespace unit_tests_asm_z3
 
             State state = this.CreateState(tools);
             state = Runner.SimpleStep_Forward(line1, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+            }
+
             state = Runner.SimpleStep_Forward(line2, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Rn.RAX, 0x102040810203040, state);
         }
@@ -4174,9 +5156,16 @@ namespace unit_tests_asm_z3
             state = Runner.SimpleStep_Forward(line2, state);
             state = Runner.SimpleStep_Forward(line3, state);
             state = Runner.SimpleStep_Forward(line4, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+            }
+
             state = Runner.SimpleStep_Forward(line5, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Rn.RCX, 0, state);
             TestTools.AreEqual(Rn.RDI, rdi - (1 * rcx), state);
@@ -4209,9 +5198,16 @@ namespace unit_tests_asm_z3
             state = Runner.SimpleStep_Forward(line2, state);
             state = Runner.SimpleStep_Forward(line3, state);
             state = Runner.SimpleStep_Forward(line4, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+            }
+
             state = Runner.SimpleStep_Forward(line5, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Rn.RCX, 0, state);
             TestTools.AreEqual(Rn.RDI, rdi + (1 * rcx), state);
@@ -4244,9 +5240,16 @@ namespace unit_tests_asm_z3
             state = Runner.SimpleStep_Forward(line2, state);
             state = Runner.SimpleStep_Forward(line3, state);
             state = Runner.SimpleStep_Forward(line4, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+            }
+
             state = Runner.SimpleStep_Forward(line5, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Rn.RCX, 0, state);
             TestTools.AreEqual(Rn.RDI, rdi - (1 * rcx), state);
@@ -4279,9 +5282,16 @@ namespace unit_tests_asm_z3
             state = Runner.SimpleStep_Forward(line2, state);
             state = Runner.SimpleStep_Forward(line3, state);
             state = Runner.SimpleStep_Forward(line4, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+            }
+
             state = Runner.SimpleStep_Forward(line5, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Rn.RCX, 0, state);
             TestTools.AreEqual(Rn.RDI, rdi - (2 * rcx), state);
@@ -4314,9 +5324,16 @@ namespace unit_tests_asm_z3
             state = Runner.SimpleStep_Forward(line2, state);
             state = Runner.SimpleStep_Forward(line3, state);
             state = Runner.SimpleStep_Forward(line4, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+            }
+
             state = Runner.SimpleStep_Forward(line5, state);
-            if (logToDisplay) Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+            if (logToDisplay)
+            {
+                Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+            }
 
             TestTools.AreEqual(Rn.RCX, 0, state);
             TestTools.AreEqual(Rn.RDI, rdi - (4 * rcx), state);

@@ -55,7 +55,7 @@ namespace AsmSim
         private readonly IDictionary<Rn, Tv[]> _cached_Reg_Values;
         private readonly IDictionary<Flags, Tv> _cached_Flag_Values;
 
-        private object _ctxLock = new object();
+        private readonly object _ctxLock = new object();
 
         private BranchInfoStore _branchInfoStore;
         public BranchInfoStore BranchInfoStore { get { return this._branchInfoStore; } }
@@ -93,13 +93,20 @@ namespace AsmSim
         /// <summary>Copy constructor</summary>
         public State(State other) : this(other.Tools)
         {
-            lock (this._ctxLock) other.Copy(this);
+            lock (this._ctxLock)
+            {
+                other.Copy(this);
+            }
         }
 
         /// <summary>Copy this state to the provided other State</summary>
         public void Copy(State other)
         {
-            if (this == other) return;
+            if (this == other)
+            {
+                return;
+            }
+
             lock (this._ctxLock)
             {
                 other.TailKey = this.TailKey;
@@ -119,7 +126,10 @@ namespace AsmSim
                 }
                 {
                     other.BranchInfoStore.Clear();
-                    foreach (var v in this.BranchInfoStore.Values) other.BranchInfoStore.Add(v, true);
+                    foreach (BranchInfo v in this.BranchInfoStore.Values)
+                    {
+                        other.BranchInfoStore.Add(v, true);
+                    }
                 }
             }
         }
@@ -150,12 +160,20 @@ namespace AsmSim
                 }
                 if (!consistent1)
                 {
-                    lock (this._ctxLock) state2.Copy(this);
+                    lock (this._ctxLock)
+                    {
+                        state2.Copy(this);
+                    }
+
                     return;
                 }
                 if (!consistent2)
                 {
-                    lock (this._ctxLock) state1.Copy(this);
+                    lock (this._ctxLock)
+                    {
+                        state1.Copy(this);
+                    }
+
                     return;
                 }
             }
@@ -179,14 +197,36 @@ namespace AsmSim
                 {
                     ISet<BoolExpr> mergedContent = new HashSet<BoolExpr>();
 #pragma warning disable DisposableFixer // Undisposed ressource.
-                    foreach (BoolExpr b in state1.Solver.Assertions) mergedContent.Add(b.Translate(ctx) as BoolExpr);
-                    foreach (BoolExpr b in state2.Solver.Assertions) mergedContent.Add(b.Translate(ctx) as BoolExpr);
-                    foreach (BoolExpr b in mergedContent) this.Solver.Assert(b);
+                    foreach (BoolExpr b in state1.Solver.Assertions)
+                    {
+                        mergedContent.Add(b.Translate(ctx) as BoolExpr);
+                    }
+
+                    foreach (BoolExpr b in state2.Solver.Assertions)
+                    {
+                        mergedContent.Add(b.Translate(ctx) as BoolExpr);
+                    }
+
+                    foreach (BoolExpr b in mergedContent)
+                    {
+                        this.Solver.Assert(b);
+                    }
 
                     ISet<BoolExpr> mergedContent_U = new HashSet<BoolExpr>();
-                    foreach (BoolExpr b in state1.Solver_U.Assertions) mergedContent_U.Add(b.Translate(ctx) as BoolExpr);
-                    foreach (BoolExpr b in state2.Solver_U.Assertions) mergedContent_U.Add(b.Translate(ctx) as BoolExpr);
-                    foreach (BoolExpr b in mergedContent_U) this.Solver_U.Assert(b);
+                    foreach (BoolExpr b in state1.Solver_U.Assertions)
+                    {
+                        mergedContent_U.Add(b.Translate(ctx) as BoolExpr);
+                    }
+
+                    foreach (BoolExpr b in state2.Solver_U.Assertions)
+                    {
+                        mergedContent_U.Add(b.Translate(ctx) as BoolExpr);
+                    }
+
+                    foreach (BoolExpr b in mergedContent_U)
+                    {
+                        this.Solver_U.Assert(b);
+                    }
 #pragma warning restore DisposableFixer // Undisposed resource.
                 }
 
@@ -242,27 +282,51 @@ namespace AsmSim
 
         public void Assert(BoolExpr expr, bool undef, bool translate)
         {
-            if (expr == null) return;
+            if (expr == null)
+            {
+                return;
+            }
 
             if (translate)
             {
                 BoolExpr t = expr.Translate(this._ctx) as BoolExpr;
-                if (undef) this.Solver_U.Assert(t);
-                else this.Solver.Assert(t);
+                if (undef)
+                {
+                    this.Solver_U.Assert(t);
+                }
+                else
+                {
+                    this.Solver.Assert(t);
+                }
             }
             else
             {
-                if (undef) this.Solver_U.Assert(expr);
-                else this.Solver.Assert(expr);
+                if (undef)
+                {
+                    this.Solver_U.Assert(expr);
+                }
+                else
+                {
+                    this.Solver.Assert(expr);
+                }
             }
 
-            if (undef) this.Solver_U_Dirty = true;
-            else this.Solver_Dirty = true;
+            if (undef)
+            {
+                this.Solver_U_Dirty = true;
+            }
+            else
+            {
+                this.Solver_Dirty = true;
+            }
         }
 
         public void Assert(IEnumerable<BoolExpr> exprs, bool undef, bool translate)
         {
-            foreach (var v in exprs) this.Assert(v, undef, translate);
+            foreach (BoolExpr v in exprs)
+            {
+                this.Assert(v, undef, translate);
+            }
         }
 
         public bool Frozen
@@ -295,7 +359,10 @@ namespace AsmSim
 
         public void Update(StateUpdate stateUpdate)
         {
-            if (stateUpdate == null) return;
+            if (stateUpdate == null)
+            {
+                return;
+            }
             //if (stateUpdate.Empty) return;
 
             if (this._frozen)
@@ -313,15 +380,25 @@ namespace AsmSim
         }
         public void Update_Forward(StateUpdate stateUpdate)
         {
-            if (stateUpdate == null) return;
+            if (stateUpdate == null)
+            {
+                return;
+            }
             //if (stateUpdate.Empty) return;
             this.Update(stateUpdate);
             this.HeadKey = stateUpdate.NextKey;
         }
         public void Update_Backward(StateUpdate stateUpdate, string prevKey)
         {
-            if (stateUpdate == null) return;
-            if (stateUpdate.Empty) return;
+            if (stateUpdate == null)
+            {
+                return;
+            }
+
+            if (stateUpdate.Empty)
+            {
+                return;
+            }
 
             this.Update(stateUpdate);
             this.TailKey = prevKey;
@@ -351,7 +428,10 @@ namespace AsmSim
             Tv[] result = this.GetTvArray(regName);
             foreach (Tv tv in result)
             {
-                if (tv == Tv.UNDEFINED) return true;
+                if (tv == Tv.UNDEFINED)
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -453,7 +533,7 @@ namespace AsmSim
             {
                 return this._cached_Flag_Values[flagName];
             }
-            return null; 
+            return null;
         }
 
         public Tv GetTv(Flags flagName)
@@ -495,7 +575,7 @@ namespace AsmSim
 
         public Tv[] GetTvArray_Cached(Rn regName)
         {
-            this._cached_Reg_Values.TryGetValue(regName, out var value);
+            this._cached_Reg_Values.TryGetValue(regName, out Tv[] value);
             return value;
         }
 
@@ -508,7 +588,7 @@ namespace AsmSim
         {
             lock (this._ctxLock)
             {
-                if (this.Frozen && this._cached_Reg_Values.TryGetValue(regName, out var value))
+                if (this.Frozen && this._cached_Reg_Values.TryGetValue(regName, out Tv[] value))
                 {
                     return value;
                 }
@@ -561,7 +641,10 @@ namespace AsmSim
 
         public Tv[] GetTvArrayMem(BitVecExpr address, int nBytes, bool addBranchInfo = true)
         {
-            if (!addBranchInfo) throw new Exception(); //TODO
+            if (!addBranchInfo)
+            {
+                throw new Exception(); //TODO
+            }
 
             this.UndefGrounding = true; // needed!
 
@@ -740,22 +823,28 @@ namespace AsmSim
             foreach (Rn reg in this.Tools.StateConfig.GetRegOn())
             {
                 Tv[] regContent = this.GetTvArray(reg);
-                var (hasOneValue, value) = ToolsZ3.HasOneValue(regContent);
+                (bool hasOneValue, Tv value) = ToolsZ3.HasOneValue(regContent);
                 bool showReg = !(hasOneValue && value == Tv.UNKNOWN);
-                if (showReg) sb.Append("\n" + identStr + string.Format(reg + " = {0} = {1}", ToolsZ3.ToStringBin(regContent), ToolsZ3.ToStringHex(regContent)));
+                if (showReg)
+                {
+                    sb.Append("\n" + identStr + string.Format(reg + " = {0} = {1}", ToolsZ3.ToStringBin(regContent), ToolsZ3.ToStringHex(regContent)));
+                }
             }
             return sb.ToString();
         }
         public string ToStringSIMD(string identStr)
         {
             StringBuilder sb = new StringBuilder();
-//            foreach (Rn reg in this.Tools.StateConfig.GetRegOn())
+            //            foreach (Rn reg in this.Tools.StateConfig.GetRegOn())
             {
                 Rn reg = Rn.XMM1;
                 Tv[] regContent = this.GetTvArray(reg);
-                var (hasOneValue, value) = ToolsZ3.HasOneValue(regContent);
+                (bool hasOneValue, Tv value) = ToolsZ3.HasOneValue(regContent);
                 bool showReg = !(hasOneValue && value == Tv.UNKNOWN);
-                if (showReg) sb.Append("\n" + identStr + string.Format(reg + " = {0} = {1}", ToolsZ3.ToStringBin(regContent), ToolsZ3.ToStringHex(regContent)));
+                if (showReg)
+                {
+                    sb.Append("\n" + identStr + string.Format(reg + " = {0} = {1}", ToolsZ3.ToStringBin(regContent), ToolsZ3.ToStringHex(regContent)));
+                }
             }
             return sb.ToString();
         }
@@ -786,7 +875,7 @@ namespace AsmSim
             }
             sb.AppendLine(this.BranchInfoStore.ToString());
 
-            sb.Append("TailKey=" + this.TailKey+ "; HeadKey=" + this.HeadKey );
+            sb.Append("TailKey=" + this.TailKey + "; HeadKey=" + this.HeadKey);
             return sb.ToString();
         }
         #endregion
@@ -795,14 +884,14 @@ namespace AsmSim
         public void Remove_History()
         {
             ISet<string> keep = new HashSet<string>();
-            foreach (var v in this._tools.StateConfig.GetFlagOn())
+            foreach (Flags v in this._tools.StateConfig.GetFlagOn())
             {
                 using (BoolExpr expr = this.Create(v))
                 {
                     keep.Add(expr.ToString());
                 }
             }
-            foreach (var v in this._tools.StateConfig.GetRegOn())
+            foreach (Rn v in this._tools.StateConfig.GetRegOn())
             {
                 using (BitVecExpr expr = this.Create(v))
                 {
@@ -900,11 +989,17 @@ namespace AsmSim
                     this.Solver.Pop();
 
                     if (result == Status.SATISFIABLE)
+                    {
                         return Tv.ONE;
+                    }
                     else if (result == Status.UNSATISFIABLE)
+                    {
                         return Tv.ZERO;
+                    }
                     else
+                    {
                         return Tv.UNDETERMINED;
+                    }
                 }
             }
         }

@@ -1,6 +1,6 @@
-﻿using System.Linq;
-using Irony.Parsing;
+﻿using Irony.Parsing;
 using System.Diagnostics;
+using System.Linq;
 
 namespace asm_irony
 {
@@ -12,9 +12,11 @@ namespace asm_irony
 
 
     // [Language("asm", "1.0", "Assembly Intel-Style Grammar")]
-    public class AsmGrammar : Grammar {
-        TerminalSet _skipTokensInPreview = new TerminalSet(); //used in token preview for conflict resolution
-        public AsmGrammar() {
+    public class AsmGrammar : Grammar
+    {
+        private readonly TerminalSet _skipTokensInPreview = new TerminalSet(); //used in token preview for conflict resolution
+        public AsmGrammar()
+        {
             this.GrammarComments = "Asm grammar.\r\n";
 
             #region Lexical structure
@@ -46,7 +48,7 @@ namespace asm_irony
 
             this.MarkPunctuation("(", ")", "[", "]");
 
-            
+
             #endregion Lexical structure
 
 
@@ -54,43 +56,43 @@ namespace asm_irony
 
             #region NonTerminals
 
-            var line = new NonTerminal("line");
-            var directive = new NonTerminal("directive");
+            NonTerminal line = new NonTerminal("line");
+            NonTerminal directive = new NonTerminal("directive");
 
-            var label_def = new NonTerminal("label_def");
-            var label_def_opt = new NonTerminal("label_def_opt");
+            NonTerminal label_def = new NonTerminal("label_def");
+            NonTerminal label_def_opt = new NonTerminal("label_def_opt");
 
-            var instruction = new NonTerminal("instruction");
-            var instruction_opt = new NonTerminal("instruction_opt");
+            NonTerminal instruction = new NonTerminal("instruction");
+            NonTerminal instruction_opt = new NonTerminal("instruction_opt");
 
             #region Registers
-            var r8 = new NonTerminal("Reg8");
-            var r16 = new NonTerminal("Reg16");
-            var r32 = new NonTerminal("Reg32");
-            var r64 = new NonTerminal("Reg64");
+            NonTerminal r8 = new NonTerminal("Reg8");
+            NonTerminal r16 = new NonTerminal("Reg16");
+            NonTerminal r32 = new NonTerminal("Reg32");
+            NonTerminal r64 = new NonTerminal("Reg64");
             #endregion Registers
 
-            var m8 = new NonTerminal("Mem8");
-            var m16 = new NonTerminal("Mem16");
-            var m32 = new NonTerminal("Mem32");
-            var m64 = new NonTerminal("Mem64");
+            NonTerminal m8 = new NonTerminal("Mem8");
+            NonTerminal m16 = new NonTerminal("Mem16");
+            NonTerminal m32 = new NonTerminal("Mem32");
+            NonTerminal m64 = new NonTerminal("Mem64");
 
-            var mem_op = new NonTerminal("MemOp");
+            NonTerminal mem_op = new NonTerminal("MemOp");
             //var mem_scale_index_32 = new NonTerminal("ScaleIdx32");
-            var mem_scale_index_64 = new NonTerminal("ScaleIdx64");
+            NonTerminal mem_scale_index_64 = new NonTerminal("ScaleIdx64");
             //var mem_scale_index_bracket_32 = new NonTerminal("ScaleIdxBrac32");
-            var mem_scale_index_bracket_64 = new NonTerminal("ScaleIdxBrac64");
+            NonTerminal mem_scale_index_bracket_64 = new NonTerminal("ScaleIdxBrac64");
 
-           // var mem_base_32 = new NonTerminal("Base32");
-            var mem_base_64 = new NonTerminal("Base64");
-            var mem_scale = new NonTerminal("Scale");
-            var mem_index_32 = new NonTerminal("Idx32");
-            var mem_index_64 = new NonTerminal("Idx64");
-            var mem_ptr = new NonTerminal("ptr");
-            var mem_disp = new NonTerminal("Disp");
+            // var mem_base_32 = new NonTerminal("Base32");
+            NonTerminal mem_base_64 = new NonTerminal("Base64");
+            NonTerminal mem_scale = new NonTerminal("Scale");
+            NonTerminal mem_index_32 = new NonTerminal("Idx32");
+            NonTerminal mem_index_64 = new NonTerminal("Idx64");
+            NonTerminal mem_ptr = new NonTerminal("ptr");
+            NonTerminal mem_disp = new NonTerminal("Disp");
 
-            var mnemomic_add = new NonTerminal("add");
-            var mnemomic_jmp = new NonTerminal("jmp");
+            NonTerminal mnemomic_add = new NonTerminal("add");
+            NonTerminal mnemomic_jmp = new NonTerminal("jmp");
 
 
             #endregion NonTerminals
@@ -133,7 +135,7 @@ namespace asm_irony
             mem_ptr.Rule = this.Empty;
             mem_ptr.Rule |= "ptr";
 
-            mem_op.Rule  = mem_base_64 + PLUS + mem_scale_index_bracket_64 + mem_disp; //ABC
+            mem_op.Rule = mem_base_64 + PLUS + mem_scale_index_bracket_64 + mem_disp; //ABC
             mem_op.Rule |= mem_base_64 + mem_disp + PLUS + mem_scale_index_bracket_64; //ACB
 
 
@@ -171,7 +173,7 @@ namespace asm_irony
 
             mem_index_64.Rule = r64;
 
-            mem_disp.Rule  = PLUS + this.CustomActionHere(this.findTimesChar) + number;
+            mem_disp.Rule = PLUS + this.CustomActionHere(this.findTimesChar) + number;
             mem_disp.Rule |= MINUS + this.CustomActionHere(this.findTimesChar) + number;
 
             #endregion Memory Operand
@@ -214,15 +216,17 @@ namespace asm_irony
             label.ValidateToken += this.label_ValidateToken;
         }
 
-        private void findTimesChar(ParsingContext context, CustomParserAction customAction) {
+        private void findTimesChar(ParsingContext context, CustomParserAction customAction)
+        {
 
             string currentStr = context.CurrentParserInput.Term.Name;
             Debug.WriteLine("findTimesChar: current Term = " + currentStr);
 
-            if (context.CurrentParserInput.Term == Eof) {
+            if (context.CurrentParserInput.Term == this.Eof)
+            {
                 return;
             }
-            var scanner = context.Parser.Scanner;
+            Scanner scanner = context.Parser.Scanner;
             ParserAction action;
 
             scanner.BeginPreview();
@@ -231,17 +235,23 @@ namespace asm_irony
 
             string previewStr = preview.Terminal.Name;
             Debug.WriteLine("findTimesChar: preview Term = " + previewStr);
-            if (currentStr.Equals("NUMBER") && previewStr.Equals("TIMES")) {
+            if (currentStr.Equals("NUMBER") && previewStr.Equals("TIMES"))
+            {
                 action = customAction.ReduceActions.First();
-            } else {
+            }
+            else
+            {
                 action = customAction.ShiftActions.First(a => a.Term.Name == "NUMBER");
             }
             action.Execute(context);
         }
 
-        void label_ValidateToken(object sender, ParsingEventArgs e) {
+        private void label_ValidateToken(object sender, ParsingEventArgs e)
+        {
             if (e.Context.CurrentToken.ValueString.Length > 4)
+            {
                 e.Context.CurrentToken = e.Context.CreateErrorToken("labels cannot be longer than 4 characters");
+            }
         }
     }
 }

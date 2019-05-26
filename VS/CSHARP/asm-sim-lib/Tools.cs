@@ -35,7 +35,7 @@ namespace AsmSim
         public StateConfig StateConfig { get; set; }
         public bool ShowUndefConstraints { get; set; }
 
-        public Tools() : this(new Dictionary<string, string>()) {}
+        public Tools() : this(new Dictionary<string, string>()) { }
         public Tools(Tools other)
         {
             this.Settings = new Dictionary<string, string>(other.Settings);
@@ -68,7 +68,11 @@ namespace AsmSim
         }
         public static string Reg_Name(Rn reg, string key)
         {
-            if (RegisterTools.Is_SIMD_Register(reg)) return "SIMD" + key;
+            if (RegisterTools.Is_SIMD_Register(reg))
+            {
+                return "SIMD" + key;
+            }
+
             return reg.ToString() + key;
         }
         public static string Reg_Name_Fresh(Rn reg, Random rand)
@@ -199,12 +203,12 @@ namespace AsmSim
             }
         }
 
-        public static BitVecExpr Create_Key(Rn reg, String key, Context ctx)
+        public static BitVecExpr Create_Key(Rn reg, string key, Context ctx)
         {
             uint nBits = (uint)RegisterTools.NBits(reg);
             if (RegisterTools.Is_SIMD_Register(reg))
             {
-                var (High, Low) = SIMD_Extract_Range(reg);
+                (uint High, uint Low) = SIMD_Extract_Range(reg);
                 return ctx.MkExtract(High, Low, ctx.MkBVConst(Reg_Name(reg, key), 32 * 512));
             }
             else if (RegisterTools.IsGeneralPurposeRegister(reg))
@@ -264,7 +268,7 @@ namespace AsmSim
             {
                 //Console.WriteLine("INFO: MemZ3:Calc_Effective_Address: operand=" + op);
 
-                var (BaseReg, IndexReg, Scale, Displacement) = op.Mem;
+                (Rn BaseReg, Rn IndexReg, int Scale, long Displacement) = op.Mem;
                 //Console.WriteLine(string.Format("INFO: Calc_Effective_Address: base={0}; index={1}; scale={2}; disp={3}", t.Item1, t.Item2, t.Item3, t.Item4));
 
                 BitVecExpr address = null;
@@ -389,7 +393,11 @@ namespace AsmSim
                     Console.WriteLine("INFO: Tools:Collapse: state1:\n" + result);
                     Console.WriteLine("INFO: Tools:Collapse: state2:\n" + prev);
                     State result2 = new State(result, prev, true);
-                    if (counter > 2) result.Dispose();
+                    if (counter > 2)
+                    {
+                        result.Dispose();
+                    }
+
                     result = result2;
                     Console.WriteLine("INFO: Tools:Collapse: merged state:\n" + result);
                 }

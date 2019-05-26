@@ -44,7 +44,7 @@ namespace AsmTools
 
             if (line.Length > 0)
             {
-                var (Valid, BeginPos, EndPos) = GetLabelDefPos(line);
+                (bool Valid, int BeginPos, int EndPos) = GetLabelDefPos(line);
                 int codeBeginPos = 0;
                 if (Valid)
                 {
@@ -52,12 +52,15 @@ namespace AsmTools
                     codeBeginPos = EndPos + 1; // plus one to get rid of the colon 
                     if (line.Length > codeBeginPos)
                     {
-                        if (line[codeBeginPos] == ':') codeBeginPos++; // remove a second colon
+                        if (line[codeBeginPos] == ':')
+                        {
+                            codeBeginPos++; // remove a second colon
+                        }
                     }
                     //Console.WriteLine("found label " + label);
                 }
 
-                var remarkPos = GetRemarkPos(line);
+                (bool Valid, int BeginPos, int EndPos) remarkPos = GetRemarkPos(line);
                 int codeEndPos = line.Length;
                 if (remarkPos.Valid)
                 {
@@ -73,7 +76,7 @@ namespace AsmTools
                     //Console.WriteLine(codeStr + ":" + codeStr.Length);
 
                     // get the first keyword, check if it is a mnemonic
-                    var keyword1Pos = GetKeywordPos(0, codeStr); // find a keyword starting a position 0
+                    (int BeginPos, int EndPos) keyword1Pos = GetKeywordPos(0, codeStr); // find a keyword starting a position 0
                     string keyword1 = codeStr.Substring(keyword1Pos.BeginPos, keyword1Pos.EndPos - keyword1Pos.BeginPos);
                     if (keyword1.Length > 0)
                     {
@@ -89,7 +92,7 @@ namespace AsmTools
                             case Mnemonic.REPNZ:
                                 {
                                     // find a second keyword starting a postion keywordPos.EndPos
-                                    var keyword2Pos = GetKeywordPos(keyword1Pos.EndPos+1, codeStr); // find a keyword starting a position 0
+                                    (int BeginPos, int EndPos) keyword2Pos = GetKeywordPos(keyword1Pos.EndPos + 1, codeStr); // find a keyword starting a position 0
                                     string keyword2 = codeStr.Substring(keyword2Pos.BeginPos, keyword2Pos.EndPos - keyword2Pos.BeginPos);
                                     if (keyword2.Length > 0)
                                     {
@@ -163,8 +166,16 @@ namespace AsmTools
             for (int i = 0; i < line.Length; ++i)
             {
                 char c = line[i];
-                if (IsRemarkChar(c)) return (beginPos: 0, length: 0, isLabel: false);
-                if (c.Equals('"')) return (beginPos: 0, length: 0, isLabel: false);
+                if (IsRemarkChar(c))
+                {
+                    return (beginPos: 0, length: 0, isLabel: false);
+                }
+
+                if (c.Equals('"'))
+                {
+                    return (beginPos: 0, length: 0, isLabel: false);
+                }
+
                 if (c.Equals(':'))
                 {
                     if (started)
@@ -362,16 +373,40 @@ namespace AsmTools
         {
             if (isNegative)
             {
-                if ((v | 0x0000_0000_0000_007Ful) == 0xFFFF_FFFF_FFFF_FFFFul) return 8;
-                if ((v | 0x0000_0000_0000_7FFFul) == 0xFFFF_FFFF_FFFF_FFFFul) return 16;
-                if ((v | 0x0000_0000_7FFF_FFFFul) == 0xFFFF_FFFF_FFFF_FFFFul) return 32;
+                if ((v | 0x0000_0000_0000_007Ful) == 0xFFFF_FFFF_FFFF_FFFFul)
+                {
+                    return 8;
+                }
+
+                if ((v | 0x0000_0000_0000_7FFFul) == 0xFFFF_FFFF_FFFF_FFFFul)
+                {
+                    return 16;
+                }
+
+                if ((v | 0x0000_0000_7FFF_FFFFul) == 0xFFFF_FFFF_FFFF_FFFFul)
+                {
+                    return 32;
+                }
+
                 return 64;
             }
             else
             {
-                if ((v & 0xFFFF_FFFF_FFFF_FF00ul) == 0) return 8;
-                if ((v & 0xFFFF_FFFF_FFFF_0000ul) == 0) return 16;
-                if ((v & 0xFFFF_FFFF_0000_0000ul) == 0) return 32;
+                if ((v & 0xFFFF_FFFF_FFFF_FF00ul) == 0)
+                {
+                    return 8;
+                }
+
+                if ((v & 0xFFFF_FFFF_FFFF_0000ul) == 0)
+                {
+                    return 16;
+                }
+
+                if ((v & 0xFFFF_FFFF_0000_0000ul) == 0)
+                {
+                    return 32;
+                }
+
                 return 64;
             }
         }
@@ -388,7 +423,7 @@ namespace AsmTools
             }
             else
             {
-                var token2 = token.Replace("_", string.Empty).Replace(".", string.Empty);
+                string token2 = token.Replace("_", string.Empty).Replace(".", string.Empty);
                 return ExpressionEvaluator.Evaluate_Constant(token2, isCapitals);
             }
         }
@@ -414,7 +449,7 @@ namespace AsmTools
         /// <summary>
         /// return Offset = Base + (Index * Scale) + Displacement
         /// </summary>
-        public static (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits, string ErrorMessage) 
+        public static (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits, string ErrorMessage)
             Parse_Mem_Operand(string token, bool isCapitals = false)
         {
             int length = token.Length;
@@ -423,20 +458,29 @@ namespace AsmTools
                 return (Valid: false, BaseReg: Rn.NOREG, IndexReg: Rn.NOREG, Scale: 0, Displacement: 0, NBits: 0, ErrorMessage: null); // do not return a error message because the provided token can be a label
             }
 
-            if (!isCapitals) token = token.ToUpper();
+            if (!isCapitals)
+            {
+                token = token.ToUpper();
+            }
 
             // 1] select everything between []
             int beginPos = length;
 
             for (int i = 0; i < length; ++i)
             {
-                if (token[i] == '[') beginPos = i + 1;
+                if (token[i] == '[')
+                {
+                    beginPos = i + 1;
+                }
             }
 
             int endPos = length;
             for (int i = beginPos; i < length; ++i)
             {
-                if (token[i] == ']') endPos = i;
+                if (token[i] == ']')
+                {
+                    endPos = i;
+                }
             }
 
             int nBits = Get_Nbits_Mem_Operand(token);
@@ -475,7 +519,7 @@ namespace AsmTools
             {
                 string y = x[i].Trim();
 
-                var (Valid, Value, NBits) = ExpressionEvaluator.Parse_Constant(y, true);
+                (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Parse_Constant(y, true);
                 if (Valid)
                 {
                     if (foundDisplacement)
@@ -530,7 +574,7 @@ namespace AsmTools
                         }
                         if (scale == -1)
                         {
-                            return (Valid: false, BaseReg: Rn.NOREG, IndexReg: Rn.NOREG, Scale: 0, Displacement: 0, NBits: 0, ErrorMessage: "Invalid scale "+scaleRaw);
+                            return (Valid: false, BaseReg: Rn.NOREG, IndexReg: Rn.NOREG, Scale: 0, Displacement: 0, NBits: 0, ErrorMessage: "Invalid scale " + scaleRaw);
                         }
                     }
                 }
@@ -540,7 +584,7 @@ namespace AsmTools
             {
                 if (RegisterTools.NBits(baseRn) != RegisterTools.NBits(indexRn))
                 {
-                    return (Valid: false, BaseReg: Rn.NOREG, IndexReg: Rn.NOREG, Scale: 0, Displacement: 0, NBits: 0, ErrorMessage: "Number of bits of base register "+baseRn + " is not equal to number of bits of index register "+ indexRn);
+                    return (Valid: false, BaseReg: Rn.NOREG, IndexReg: Rn.NOREG, Scale: 0, Displacement: 0, NBits: 0, ErrorMessage: "Number of bits of base register " + baseRn + " is not equal to number of bits of index register " + indexRn);
                 }
             }
             return (Valid: true, BaseReg: baseRn, IndexReg: indexRn, Scale: scale, Displacement: displacement, NBits: nBits, ErrorMessage: null);
@@ -562,26 +606,90 @@ namespace AsmTools
             int Get_Nbits_Mem_Operand(string token2)
             {
                 string s = token2.TrimStart();
-                if (s.StartsWith("PTR")) s = s.Substring(3, token.Length - 3).TrimStart();
+                if (s.StartsWith("PTR"))
+                {
+                    s = s.Substring(3, token.Length - 3).TrimStart();
+                }
 
-                if (s.StartsWith("BYTE")) return 8; //nasm
-                if (s.StartsWith("SBYTE")) return 8;
-                if (s.StartsWith("WORD")) return 16; //nasm
-                if (s.StartsWith("SWORD")) return 16;
+                if (s.StartsWith("BYTE"))
+                {
+                    return 8; //nasm
+                }
 
-                if (s.StartsWith("DWORD")) return 32; //nasm
-                if (s.StartsWith("SDWORD")) return 32;
-                if (s.StartsWith("QWORD")) return 64; //nasm
-                if (s.StartsWith("TWORD")) return 80; //nasm
+                if (s.StartsWith("SBYTE"))
+                {
+                    return 8;
+                }
 
-                if (s.StartsWith("DQWORD")) return 128;
-                if (s.StartsWith("OWORD")) return 128; //nasm
-                if (s.StartsWith("XMMWORD")) return 128;
-                if (s.StartsWith("XWORD")) return 128;
-                if (s.StartsWith("YMMWORD")) return 256;
-                if (s.StartsWith("YWORD")) return 256; //nasm
-                if (s.StartsWith("ZMMWORD")) return 512;
-                if (s.StartsWith("ZWORD")) return 512; //nasm
+                if (s.StartsWith("WORD"))
+                {
+                    return 16; //nasm
+                }
+
+                if (s.StartsWith("SWORD"))
+                {
+                    return 16;
+                }
+
+                if (s.StartsWith("DWORD"))
+                {
+                    return 32; //nasm
+                }
+
+                if (s.StartsWith("SDWORD"))
+                {
+                    return 32;
+                }
+
+                if (s.StartsWith("QWORD"))
+                {
+                    return 64; //nasm
+                }
+
+                if (s.StartsWith("TWORD"))
+                {
+                    return 80; //nasm
+                }
+
+                if (s.StartsWith("DQWORD"))
+                {
+                    return 128;
+                }
+
+                if (s.StartsWith("OWORD"))
+                {
+                    return 128; //nasm
+                }
+
+                if (s.StartsWith("XMMWORD"))
+                {
+                    return 128;
+                }
+
+                if (s.StartsWith("XWORD"))
+                {
+                    return 128;
+                }
+
+                if (s.StartsWith("YMMWORD"))
+                {
+                    return 256;
+                }
+
+                if (s.StartsWith("YWORD"))
+                {
+                    return 256; //nasm
+                }
+
+                if (s.StartsWith("ZMMWORD"))
+                {
+                    return 512;
+                }
+
+                if (s.StartsWith("ZWORD"))
+                {
+                    return 512; //nasm
+                }
 
                 //Console.WriteLine("AsmSourceTools:GetNbitsMemOperand: could not determine nBits in token " + token + " assuming 32 bits");
 
@@ -706,7 +814,7 @@ namespace AsmTools
             for (int i1 = pos - 1; i1 >= 0; --i1)
             {
                 char c = line[i1];
-                if (IsSeparatorChar(c) || Char.IsControl(c) || IsRemarkChar(c))
+                if (IsSeparatorChar(c) || char.IsControl(c) || IsRemarkChar(c))
                 {
                     beginPos = i1 + 1;
                     break;
@@ -717,7 +825,7 @@ namespace AsmTools
             for (int i2 = pos; i2 < line.Length; ++i2)
             {
                 char c = line[i2];
-                if (IsSeparatorChar(c) || Char.IsControl(c) || IsRemarkChar(c))
+                if (IsSeparatorChar(c) || char.IsControl(c) || IsRemarkChar(c))
                 {
                     endPos = i2;
                     break;
@@ -728,7 +836,7 @@ namespace AsmTools
 
         public static (bool Valid, int BeginPos, int EndPos) GetLabelDefPos(string line)
         {
-            var tup = GetLabelDefPos_Regular(line);
+            (bool Valid, int BeginPos, int EndPos) tup = GetLabelDefPos_Regular(line);
             if (tup.Valid)
             {
                 return tup;
@@ -812,7 +920,7 @@ namespace AsmTools
             }
 
             string line3 = line2.Substring(displacement);
-            var tup = GetLabelDefPos_Regular(line3);
+            (bool Valid, int BeginPos, int EndPos) tup = GetLabelDefPos_Regular(line3);
             if (tup.Valid)
             {
                 return (Valid: true, BeginPos: tup.BeginPos + displacement, EndPos: tup.EndPos + displacement);
@@ -860,18 +968,25 @@ namespace AsmTools
         /// <returns></returns>
         private static string Linewrap(string str, int maxLength, string prefix)
         {
-            if (string.IsNullOrEmpty(str)) return "";
-            if (maxLength <= 0) return prefix + str;
+            if (string.IsNullOrEmpty(str))
+            {
+                return "";
+            }
 
-            var lines = new List<string>();
+            if (maxLength <= 0)
+            {
+                return prefix + str;
+            }
+
+            List<string> lines = new List<string>();
 
             // breaking the string into lines makes it easier to process.
             foreach (string line in str.Split("\n".ToCharArray()))
             {
-                var remainingLine = line.Trim();
+                string remainingLine = line.Trim();
                 do
                 {
-                    var newLine = GetLine(remainingLine, maxLength - prefix.Length);
+                    string newLine = GetLine(remainingLine, maxLength - prefix.Length);
                     lines.Add(newLine);
                     remainingLine = remainingLine.Substring(newLine.Length).Trim();
                     // Keep iterating as int as we've got words remaining 
@@ -884,7 +999,10 @@ namespace AsmTools
         private static string GetLine(string str, int maxLength)
         {
             // The string is less than the max length so just return it.
-            if (str.Length <= maxLength) return str;
+            if (str.Length <= maxLength)
+            {
+                return str;
+            }
 
             // Search backwords in the string for a whitespace char
             // starting with the char one after the maximum length
@@ -892,7 +1010,9 @@ namespace AsmTools
             for (int i = maxLength; i >= 0; i--)
             {
                 if (IsTextSeparatorChar(str[i]))
+                {
                     return str.Substring(0, i).TrimEnd();
+                }
             }
 
             // No whitespace chars, just break the word at the maxlength.
@@ -911,7 +1031,10 @@ namespace AsmTools
             {
                 int bit = (int)((value >> i) & 1);
                 sb.Append(bit);
-                if ((i > 0) && (i != nBits - 1) && (i % 8 == 0)) sb.Append('_');
+                if ((i > 0) && (i != nBits - 1) && (i % 8 == 0))
+                {
+                    sb.Append('_');
+                }
             }
             return sb.ToString();
         }

@@ -20,10 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Microsoft.CodeAnalysis.CSharp.Scripting;
 using System;
 using System.Globalization;
 using System.Linq;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
 
 namespace AsmTools
 {
@@ -41,7 +41,7 @@ namespace AsmTools
 
             //Console.WriteLine("AsmSourceTools:ToConstant token=" + token);
 
-            str = str.Replace("_", String.Empty);
+            str = str.Replace("_", string.Empty);
 
             if (!isCapitals)
             {
@@ -103,12 +103,13 @@ namespace AsmTools
                 if (str.EndsWith("B", StringComparison.Ordinal))
                 {
 
-                    bool parsedSuccessfully_tmp = ulong.TryParse(str, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out var dummy);
+                    bool parsedSuccessfully_tmp = ulong.TryParse(str, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out ulong dummy);
                     if (parsedSuccessfully_tmp)
                     {
                         isHex = true;
                         token2 = str;
-                    } else
+                    }
+                    else
                     {
                         token2 = str.Substring(0, str.Length - 1);
                         isBinary = true;
@@ -180,11 +181,17 @@ namespace AsmTools
         public static (bool Valid, ulong Value, int NBits) Evaluate_Constant(string str, bool isCapitals = false)
         {
             // 1] test whether str has digits, if it has none it is not a constant
-            if (!str.Any(char.IsDigit)) return (false, 0, -1);
+            if (!str.Any(char.IsDigit))
+            {
+                return (false, 0, -1);
+            }
 
             // 2] test whether str is a constant
-            var v = Parse_Constant(str, isCapitals);
-            if (v.Valid) return v;
+            (bool Valid, ulong Value, int NBits) v = Parse_Constant(str, isCapitals);
+            if (v.Valid)
+            {
+                return v;
+            }
 
             // 3] check if str contains operators
             if (str.Contains('+') || str.Contains('-') || str.Contains('*') || str.Contains('/') ||
@@ -193,13 +200,13 @@ namespace AsmTools
                 // second: if str is not a constant, test whether evaluating it yields a ulong
                 try
                 {
-                    var t = CSharpScript.EvaluateAsync<ulong>(str);
+                    System.Threading.Tasks.Task<ulong> t = CSharpScript.EvaluateAsync<ulong>(str);
                     ulong value = t.Result;
                     bool isNegative = false;
                     return (true, value, AsmSourceTools.NBitsStorageNeeded(value, isNegative));
                 }
                 catch (Exception)
-                {}
+                { }
             }
             // 4] don't know what it is but it is not likely to be an constant.
             return (false, 0, -1);

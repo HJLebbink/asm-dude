@@ -1,5 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using AsmSim;
+﻿using AsmSim;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Z3;
 using System.Collections.Generic;
 

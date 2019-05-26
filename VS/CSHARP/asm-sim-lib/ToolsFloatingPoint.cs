@@ -37,7 +37,7 @@ namespace AsmSim
                 uint pos = nBits;
                 {
                     BitVecExpr sgn = ctx.MkExtract(pos - 1, pos - 1, value);
-                    BitVecExpr sig = ctx.MkExtract(pos - 2, pos - 13, value); 
+                    BitVecExpr sig = ctx.MkExtract(pos - 2, pos - 13, value);
                     BitVecExpr exp = ctx.MkExtract(pos - 14, pos - 64, value);
                     yield return ctx.MkFP(sgn, sig, exp);
                 }
@@ -48,9 +48,11 @@ namespace AsmSim
                     BitVecExpr exp = ctx.MkExtract(pos - 14, pos - 64, value);
                     yield return ctx.MkFP(sgn, sig, exp);
                 }
-            } else if (nBits == 256)
+            }
+            else if (nBits == 256)
             {
-            } else if (nBits == 512)
+            }
+            else if (nBits == 512)
             {
             }
             else

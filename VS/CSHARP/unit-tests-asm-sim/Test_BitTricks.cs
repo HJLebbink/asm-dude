@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using AsmSim;
-using Microsoft.Z3;
+﻿using AsmSim;
 using AsmTools;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Z3;
+using System;
+using System.Collections.Generic;
 
 namespace unit_tests_asm_z3
 {
     [TestClass]
     public class Test_BitTricks
     {
-        const bool logToDisplay = TestTools.LOG_TO_DISPLAY;
+        private const bool logToDisplay = TestTools.LOG_TO_DISPLAY;
 
         private Tools CreateTools(int timeOut = TestTools.DEFAULT_TIMEOUT)
         {
@@ -83,14 +83,20 @@ namespace unit_tests_asm_z3
                 "           ror al, 1                           " + Environment.NewLine +
                 "           jnc ZCOEF                           ";
 
-            var sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
-            if (logToDisplay) Console.WriteLine(sFlow);
+            if (logToDisplay)
+            {
+                Console.WriteLine(sFlow);
+            }
 
-            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
-            if (logToDisplay) Console.WriteLine("DynamicFlow:\n" + dFlow.ToString(sFlow));
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            if (logToDisplay)
+            {
+                Console.WriteLine("DynamicFlow:\n" + dFlow.ToString(sFlow));
+            }
 
-            var state = dFlow.EndState;
+            State state = dFlow.EndState;
         }
 
         [TestMethod]
@@ -133,7 +139,7 @@ namespace unit_tests_asm_z3
             string line0 = "mov       rcx, r10";
 
             string line1 = "mov       r8, 0aaaaaaaaaaaaaaabH";
-            string line2 = "mov       rax, rcx"; 
+            string line2 = "mov       rax, rcx";
             string line3 = "mul       r8";
             string line4 = "shr       rdx, 1";
             string line5 = "lea       r9, QWORD PTR [rdx+rdx*2]";
@@ -145,43 +151,76 @@ namespace unit_tests_asm_z3
             string line10 = "mov      rdx, 0";
             string line11 = "idiv     r8";
 
-            if (false) {
+            if (false)
+            {
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line0, state);
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Forward(line4, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Forward(line5, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Forward(line6, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line6 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line6 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Forward(line7, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line7 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line7 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Forward(line8, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line8 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line8 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Forward(line9, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line9 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line9 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Forward(line10, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line10 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line10 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Forward(line11, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line11 + "\", we know:\n" + state);
-
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line11 + "\", we know:\n" + state);
+                }
 
                 Context ctx = state.Ctx;
                 BoolExpr t = ctx.MkEq(state.Create(Rn.RCX), state.Create(Rn.RDX));
@@ -192,10 +231,17 @@ namespace unit_tests_asm_z3
                     state.Solver.Assert(t);
                     if (state.Solver.Check() != Status.SATISFIABLE)
                     {
-                        if (logToDisplay) Console.WriteLine("UnsatCore has " + state.Solver.UnsatCore.Length + " elements");
+                        if (logToDisplay)
+                        {
+                            Console.WriteLine("UnsatCore has " + state.Solver.UnsatCore.Length + " elements");
+                        }
+
                         foreach (BoolExpr b in state.Solver.UnsatCore)
                         {
-                            if (logToDisplay) Console.WriteLine("UnsatCore=" + b);
+                            if (logToDisplay)
+                            {
+                                Console.WriteLine("UnsatCore=" + b);
+                            }
                         }
                         Assert.Fail();
                     }
@@ -207,7 +253,11 @@ namespace unit_tests_asm_z3
                     state.Solver.Assert(ctx.MkNot(t));
                     if (state.Solver.Check() == Status.SATISFIABLE)
                     {
-                        if (logToDisplay) Console.WriteLine("Model=" + state.Solver.Model);
+                        if (logToDisplay)
+                        {
+                            Console.WriteLine("Model=" + state.Solver.Model);
+                        }
+
                         Assert.Fail();
                     }
                     state.Solver.Pop();
@@ -238,16 +288,28 @@ namespace unit_tests_asm_z3
                 BitVecExpr rbx0 = state.Create(Rn.RBX);
 
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Forward(line3, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Forward(line4, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                }
 
                 // ebx is minimum of ebx and eax
                 Context ctx = state.Ctx;
@@ -261,10 +323,17 @@ namespace unit_tests_asm_z3
                     state.Solver.Assert(t);
                     if (state.Solver.Check() != Status.SATISFIABLE)
                     {
-                        if (logToDisplay) Console.WriteLine("UnsatCore has " + state.Solver.UnsatCore.Length + " elements");
+                        if (logToDisplay)
+                        {
+                            Console.WriteLine("UnsatCore has " + state.Solver.UnsatCore.Length + " elements");
+                        }
+
                         foreach (BoolExpr b in state.Solver.UnsatCore)
                         {
-                            if (logToDisplay) Console.WriteLine("UnsatCore=" + b);
+                            if (logToDisplay)
+                            {
+                                Console.WriteLine("UnsatCore=" + b);
+                            }
                         }
                         Assert.Fail();
                     }
@@ -275,7 +344,11 @@ namespace unit_tests_asm_z3
                     state.Solver.Assert(ctx.MkNot(t));
                     if (state.Solver.Check() == Status.SATISFIABLE)
                     {
-                        if (logToDisplay) Console.WriteLine("Model=" + state.Solver.Model);
+                        if (logToDisplay)
+                        {
+                            Console.WriteLine("Model=" + state.Solver.Model);
+                        }
+
                         Assert.Fail();
                     }
                     state.Solver.Pop();
@@ -312,7 +385,10 @@ namespace unit_tests_asm_z3
                     updateState.Set(Rn.RAX, rax_value);
                     updateState.Set(Rn.RBX, rbx_value);
                     state.Update_Forward(updateState);
-                    if (logToDisplay) Console.WriteLine("Initially, we know:\n" + state);
+                    if (logToDisplay)
+                    {
+                        Console.WriteLine("Initially, we know:\n" + state);
+                    }
                 }
 
                 BitVecExpr rax0 = state.Create(Rn.RAX);
@@ -326,7 +402,10 @@ namespace unit_tests_asm_z3
                     // retrieve the overflow after line 1, OF has to be zero for the code to work
                     state.Solver.AssertAndTrack(ctx.MkNot(state.Create(Flags.OF)), ctx.MkBoolConst("OF-ZERO"));
                     Assert.AreEqual(Status.SATISFIABLE, state.Solver.Check());
-                    if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                    if (logToDisplay)
+                    {
+                        Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                    }
                 }
                 {   // line 2
                     state = Runner.SimpleStep_Forward(line2, state);
@@ -342,7 +421,10 @@ namespace unit_tests_asm_z3
                 }
                 {
                     state = Runner.SimpleStep_Forward(line4, state);
-                    if (logToDisplay) Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                    if (logToDisplay)
+                    {
+                        Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
+                    }
                 }
 
 
@@ -355,16 +437,31 @@ namespace unit_tests_asm_z3
                     state.Solver.Push();
                     state.Solver.AssertAndTrack(t, ctx.MkBoolConst("MIN_RAX_RBX"));
                     Status s = state.Solver.Check();
-                    if (logToDisplay) Console.WriteLine("Status A = " + s + "; expected " + Status.SATISFIABLE);
+                    if (logToDisplay)
+                    {
+                        Console.WriteLine("Status A = " + s + "; expected " + Status.SATISFIABLE);
+                    }
+
                     if (s == Status.UNSATISFIABLE)
                     {
-                        if (logToDisplay) Console.WriteLine("UnsatCore has " + state.Solver.UnsatCore.Length + " elements");
-                        foreach (BoolExpr b in state.Solver.UnsatCore)
+                        if (logToDisplay)
                         {
-                            if (logToDisplay) Console.WriteLine("UnsatCore=" + b);
+                            Console.WriteLine("UnsatCore has " + state.Solver.UnsatCore.Length + " elements");
                         }
 
-                        if (logToDisplay) Console.WriteLine(state.Solver);
+                        foreach (BoolExpr b in state.Solver.UnsatCore)
+                        {
+                            if (logToDisplay)
+                            {
+                                Console.WriteLine("UnsatCore=" + b);
+                            }
+                        }
+
+                        if (logToDisplay)
+                        {
+                            Console.WriteLine(state.Solver);
+                        }
+
                         Assert.Fail();
                     }
                     state.Solver.Pop();
@@ -374,10 +471,18 @@ namespace unit_tests_asm_z3
                     state.Solver.Push();
                     state.Solver.Assert(ctx.MkNot(t), ctx.MkBoolConst("NOT_MIN_RAX_RBX"));
                     Status s = state.Solver.Check();
-                    if (logToDisplay) Console.WriteLine("Status B = " + s + "; expected " + Status.UNSATISFIABLE);
+                    if (logToDisplay)
+                    {
+                        Console.WriteLine("Status B = " + s + "; expected " + Status.UNSATISFIABLE);
+                    }
+
                     if (s == Status.SATISFIABLE)
                     {
-                        if (logToDisplay) Console.WriteLine("Model=" + state.Solver.Model);
+                        if (logToDisplay)
+                        {
+                            Console.WriteLine("Model=" + state.Solver.Model);
+                        }
+
                         Assert.Fail();
                     }
                     state.Solver.Pop();
@@ -447,7 +552,11 @@ namespace unit_tests_asm_z3
                     state.Solver.Push();
                     BoolExpr p = ctx.MkOr(ctx.MkEq(byte1, zero), ctx.MkEq(byte2, zero), ctx.MkEq(byte3, zero), ctx.MkEq(byte4, zero));
                     state.Solver.Assert(p);
-                    if (logToDisplay) Console.WriteLine("After \"" + p + "\", we know:\n" + state);
+                    if (logToDisplay)
+                    {
+                        Console.WriteLine("After \"" + p + "\", we know:\n" + state);
+                    }
+
                     state.Solver.Pop();
                 }
                 {
@@ -459,7 +568,10 @@ namespace unit_tests_asm_z3
                         ctx.MkEq(ctx.MkEq(byte4, zero), ctx.MkFalse())
                     );
                     state.Solver.Assert(p);
-                    if (logToDisplay) Console.WriteLine("After \"" + p + "\", we know:\n" + state);
+                    if (logToDisplay)
+                    {
+                        Console.WriteLine("After \"" + p + "\", we know:\n" + state);
+                    }
                     //state.Solver.Pop();
                 }
             }
@@ -494,18 +606,40 @@ namespace unit_tests_asm_z3
                 if (false)
                 {
                     state = Runner.SimpleStep_Forward(line3, state);
-                    if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                    if (logToDisplay)
+                    {
+                        Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
+                    }
                 }
                 state = Runner.SimpleStep_Forward(line4a, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line4a + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line4a + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Forward(line4b, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line4b + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line4b + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Forward(line5, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Forward(line6, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line6 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line6 + "\", we know:\n" + state);
+                }
+
                 state = Runner.SimpleStep_Forward(line7, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line7 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line7 + "\", we know:\n" + state);
+                }
 
                 {
                     // if at least one of the bytes is equal to zero, then ECX cannot be equal to zero

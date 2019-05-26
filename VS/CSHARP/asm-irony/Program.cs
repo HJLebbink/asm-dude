@@ -1,17 +1,19 @@
 ﻿
-using Irony.Parsing;
 using Irony.Interpreter;
+using Irony.Parsing;
 
 
 namespace asm_irony
 {
-    class Program {
-        static void Main(string[] args) {
+    internal class Program
+    {
+        private static void Main(string[] args)
+        {
 
             Grammar grammar = new AsmGrammar2();
-            var language = new LanguageData(grammar);
-            var runtime = new LanguageRuntime(language);
-            var commandLine = new CommandLine(runtime);
+            LanguageData language = new LanguageData(grammar);
+            LanguageRuntime runtime = new LanguageRuntime(language);
+            CommandLine commandLine = new CommandLine(runtime);
             commandLine.Run();
         }
     }

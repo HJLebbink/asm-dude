@@ -20,20 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
 using AsmTools;
-using System.Reflection;
-using System.Linq;
 using Microsoft.Z3;
 using QuickGraph;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace AsmSim
 {
-    class AsmSimMain
+    internal class AsmSimMain
     {
         [STAThread]
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             DateTime startTime = DateTime.Now;
             Assembly thisAssem = typeof(AsmSimMain).Assembly;
@@ -64,7 +64,7 @@ namespace AsmSim
             Console.ReadKey();
         }
 
-        static Tools CreateTools(int timeOut = 1000)
+        private static Tools CreateTools(int timeOut = 1000)
         {
             /* The following parameters can be set: 
                     - proof (Boolean) Enable proof generation
@@ -92,20 +92,20 @@ namespace AsmSim
             return new Tools(settings);
         }
 
-        static State CreateState(Tools tools)
+        private static State CreateState(Tools tools)
         {
             string tailKey = "!0";// Tools.CreateKey(tools.Rand);
             string headKey = tailKey;
             return new State(tools, tailKey, headKey);
         }
 
-        static void ExpressionTest()
+        private static void ExpressionTest()
         {
-            var (Valid, Value, NBits) = ExpressionEvaluator.Evaluate_Constant("01b", false);
+            (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Evaluate_Constant("01b", false);
             Console.WriteLine("valid = " + Value + "; value = " + Value, "; nBits = " + NBits);
         }
 
-        static void TestExecutionTree()
+        private static void TestExecutionTree()
         {
             string programStr =
                 "           mov     rax,        3               " + Environment.NewLine +
@@ -125,17 +125,17 @@ namespace AsmSim
             {
                 Quiet = false
             };
-            var sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
             Console.WriteLine("sFlow=" + sFlow.ToString());
 
             tools.StateConfig = sFlow.Create_StateConfig();
-            var dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+            DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
             Console.WriteLine("dFlow=" + dFlow.ToString(sFlow));
         }
 
-        static void TestSIMD()
+        private static void TestSIMD()
         {
             Dictionary<string, string> settings = new Dictionary<string, string>
             {
@@ -165,16 +165,16 @@ namespace AsmSim
             }
         }
 
-        static void TestMemorySpeed()
+        private static void TestMemorySpeed()
         {
-            var settings = new Dictionary<string, string>
+            Dictionary<string, string> settings = new Dictionary<string, string>
             {
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" },         // enable proof generation
                 { "timeout", "60000" }        // 60000=1min
             };
-            using (var ctx = new Context(settings))
+            using (Context ctx = new Context(settings))
             {
                 /*
                 string line1 = "mov qword ptr [rax], rbx";
@@ -310,7 +310,7 @@ namespace AsmSim
                 bool method1 = false;
                 bool method2 = false;
 
-                var constraints = solver.Assertions;
+                BoolExpr[] constraints = solver.Assertions;
                 {
                     BoolExpr t = ctx.MkNot(ctx.MkEq(rbx2, rcx2));
                     Console.WriteLine("test=" + t);
@@ -433,9 +433,9 @@ namespace AsmSim
             }
         }
 
-        static void TestGraph()
+        private static void TestGraph()
         {
-            var graph = new BidirectionalGraph<long, TaggedEdge<long, bool>>(false);
+            BidirectionalGraph<long, TaggedEdge<long, bool>> graph = new BidirectionalGraph<long, TaggedEdge<long, bool>>(false);
             int rootVertex = 1;
 
             graph.AddVertex(1);
@@ -450,11 +450,14 @@ namespace AsmSim
             string ToString(long vertex, int depth)
             {
                 string result = "";
-                for (int i = 0; i < depth; ++i) result += "  ";
+                for (int i = 0; i < depth; ++i)
+                {
+                    result += "  ";
+                }
 
                 result += vertex.ToString() + "\n";
 
-                foreach (var v in graph.OutEdges(vertex))
+                foreach (TaggedEdge<long, bool> v in graph.OutEdges(vertex))
                 {
                     result += v.Tag + "\n";
                     result += ToString(v.Target, depth + 2);
@@ -468,7 +471,7 @@ namespace AsmSim
 
         }
 
-        static void TestMem2()
+        private static void TestMem2()
         {
             Dictionary<string, string> settings = new Dictionary<string, string>
             {
@@ -504,7 +507,7 @@ namespace AsmSim
                     solver.Assert(ctx.MkEq(mem1, ctx.MkStore(ctx.MkStore(mem0, address2, value2), address1, value1)));
                     solver.Assert(ctx.MkEq(rax1, ctx.MkZeroExt(64 - 8, ctx.MkSelect(mem1, address1) as BitVecExpr)));
                     solver.Assert(ctx.MkEq(rbx1, ctx.MkZeroExt(64 - 8, ctx.MkSelect(mem1, address2) as BitVecExpr)));
-                } 
+                }
                 else
                 {
                     BitVecExpr address = ctx.MkBVConst("address", 64);
@@ -514,12 +517,12 @@ namespace AsmSim
                     solver.Assert(ctx.MkEq(rbx1, ctx.MkZeroExt(64 - 8, ctx.MkSelect(mem1, address2) as BitVecExpr)));
                 }
                 Console.WriteLine("solver " + solver);
-                Console.WriteLine("rax="+ToolsZ3.ToStringBin(ToolsZ3.GetTvArray(rax1, 64, solver, ctx)));
-                Console.WriteLine("rbx="+ToolsZ3.ToStringBin(ToolsZ3.GetTvArray(rbx1, 64, solver, ctx)));
+                Console.WriteLine("rax=" + ToolsZ3.ToStringBin(ToolsZ3.GetTvArray(rax1, 64, solver, ctx)));
+                Console.WriteLine("rbx=" + ToolsZ3.ToStringBin(ToolsZ3.GetTvArray(rbx1, 64, solver, ctx)));
             }
         }
 
-        static void Test_Rep()
+        private static void Test_Rep()
         {
             Dictionary<string, string> settings = new Dictionary<string, string>
             {
@@ -564,7 +567,8 @@ namespace AsmSim
                 }
             }
         }
-        static void Test_Usage()
+
+        private static void Test_Usage()
         {
             Dictionary<string, string> settings = new Dictionary<string, string>
             {
@@ -575,17 +579,18 @@ namespace AsmSim
             };
             Tools tools = new Tools(settings);
 
-            var keys = ("dummy1", "dummy2", "dummy3");
+            (string, string, string) keys = ("dummy1", "dummy2", "dummy3");
 
-            var opcode = Runner.InstantiateOpcode(Mnemonic.MOV, new string[] { "rbx", "ptr qword [rax + rcx]" }, keys, tools);
-            var read = new SortedSet<Rn>(opcode.RegsReadStatic);
-            var write = new SortedSet<Rn>(opcode.RegsWriteStatic);
+            Mnemonics.OpcodeBase opcode = Runner.InstantiateOpcode(Mnemonic.MOV, new string[] { "rbx", "ptr qword [rax + rcx]" }, keys, tools);
+            SortedSet<Rn> read = new SortedSet<Rn>(opcode.RegsReadStatic);
+            SortedSet<Rn> write = new SortedSet<Rn>(opcode.RegsWriteStatic);
 
             Console.WriteLine("read = " + string.Join(",", read));
             Console.WriteLine("write = " + string.Join(",", write));
 
         }
-        static void TestMnemonic()
+
+        private static void TestMnemonic()
         {
             Dictionary<string, string> settings = new Dictionary<string, string>
             {
@@ -644,14 +649,28 @@ namespace AsmSim
                         string line3 = "xor rax, rbx";
 
                         State state = new State(tools, "!0", "!0");
-                        if (logToDisplay) Console.WriteLine("Before line 3 with \"" + line3 + "\", we know:\n" + state);
+                        if (logToDisplay)
+                        {
+                            Console.WriteLine("Before line 3 with \"" + line3 + "\", we know:\n" + state);
+                        }
+
                         state = Runner.SimpleStep_Backward(line3, state);
-                        if (logToDisplay) Console.WriteLine("After line 3 with \"" + line3 + "\", we know:\n" + state);
+                        if (logToDisplay)
+                        {
+                            Console.WriteLine("After line 3 with \"" + line3 + "\", we know:\n" + state);
+                        }
 
                         state = Runner.SimpleStep_Backward(line2, state);
-                        if (logToDisplay) Console.WriteLine("After line 2 with \"" + line2 + "\", we know:\n" + state);
+                        if (logToDisplay)
+                        {
+                            Console.WriteLine("After line 2 with \"" + line2 + "\", we know:\n" + state);
+                        }
+
                         state = Runner.SimpleStep_Backward(line1, state);
-                        if (logToDisplay) Console.WriteLine("After line 1 with \"" + line1 + "\", we know:\n" + state);
+                        if (logToDisplay)
+                        {
+                            Console.WriteLine("After line 1 with \"" + line1 + "\", we know:\n" + state);
+                        }
                     }
                 }
                 if (false)
@@ -736,12 +755,12 @@ namespace AsmSim
                         "label2:                                        " + Environment.NewLine +
                         "           mov     rbx,        0               ";
 
-                    var sFlow1 = new StaticFlow(tools);
+                    StaticFlow sFlow1 = new StaticFlow(tools);
                     sFlow1.Update(programStr);
                     Console.WriteLine(sFlow1);
 
                     tools.Quiet = false;
-                    var tree1 = new DynamicFlow(tools);
+                    DynamicFlow tree1 = new DynamicFlow(tools);
                     tree1.Reset(sFlow1, false);
                     Console.WriteLine(tree1.EndState);
                 }
@@ -762,18 +781,18 @@ namespace AsmSim
                     "label2:                                        " + Environment.NewLine +
                     "           mov     bl, byte ptr[rax]         ";
 
-                    var sFlow = new StaticFlow(tools);
+                    StaticFlow sFlow = new StaticFlow(tools);
                     sFlow.Update(programStr0);
                     Console.WriteLine(sFlow);
 
                     if (false)
                     {
                         tools.Quiet = false;
-                        var tree0 = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
+                        DynamicFlow tree0 = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
 
                         int lineNumber_JZ = 0;
                         State state_FirstLine = tree0.Create_States_Before(lineNumber_JZ, 0);
-                        var branchInfo = new BranchInfo(state_FirstLine.Create(Flags.ZF), true);
+                        BranchInfo branchInfo = new BranchInfo(state_FirstLine.Create(Flags.ZF), true);
 
                         State state0 = tree0.EndState;
                         state0.BranchInfoStore.Add(branchInfo, true);
@@ -782,11 +801,11 @@ namespace AsmSim
                     if (true)
                     {
                         tools.Quiet = false;
-                        var tree1 = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+                        DynamicFlow tree1 = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
                         int lineNumber_JZ = 0;
                         State state_FirstLine = tree1.Create_States_Before(lineNumber_JZ, 0);
-                        var branchInfo = new BranchInfo(state_FirstLine.Create(Flags.ZF), false);
+                        BranchInfo branchInfo = new BranchInfo(state_FirstLine.Create(Flags.ZF), false);
 
                         State state1 = tree1.EndState;
                         state1.BranchInfoStore.Add(branchInfo, true);
@@ -803,9 +822,9 @@ namespace AsmSim
                         "mov rbx, 1" + Environment.NewLine +
                         "mov ptr qword[rbx], 3";
 
-                    var sFlow1 = new StaticFlow(tools);
+                    StaticFlow sFlow1 = new StaticFlow(tools);
                     sFlow1.Update(programStr1);
-                    var sFlow2 = new StaticFlow(tools);
+                    StaticFlow sFlow2 = new StaticFlow(tools);
                     sFlow2.Update(programStr2);
 
                     tools.Quiet = true;
@@ -814,8 +833,8 @@ namespace AsmSim
                     tools.StateConfig.RBX = true;
                     tools.StateConfig.mem = true;
 
-                    var tree1 = Runner.Construct_DynamicFlow_Forward(sFlow1, tools);
-                    var tree2 = Runner.Construct_DynamicFlow_Forward(sFlow2, tools);
+                    DynamicFlow tree1 = Runner.Construct_DynamicFlow_Forward(sFlow1, tools);
+                    DynamicFlow tree2 = Runner.Construct_DynamicFlow_Forward(sFlow2, tools);
 
                     //Console.WriteLine(tree1.ToString(flow1));
                     State state1 = tree1.EndState;
@@ -836,15 +855,15 @@ namespace AsmSim
                         "mov rax, 1" + Environment.NewLine +
                         "mov rbx, 1";
 
-                    var sFlow1 = new StaticFlow(tools);
+                    StaticFlow sFlow1 = new StaticFlow(tools);
                     sFlow1.Update(programStr1);
-                    var sFlow2 = new StaticFlow(tools);
+                    StaticFlow sFlow2 = new StaticFlow(tools);
                     sFlow2.Update(programStr2);
 
                     tools.Quiet = true;
 
-                    var tree1 = Runner.Construct_DynamicFlow_Forward(sFlow1, tools);
-                    var tree2 = Runner.Construct_DynamicFlow_Forward(sFlow2, tools);
+                    DynamicFlow tree1 = Runner.Construct_DynamicFlow_Forward(sFlow1, tools);
+                    DynamicFlow tree2 = Runner.Construct_DynamicFlow_Forward(sFlow2, tools);
 
                     //Console.WriteLine(tree1.ToString(flow1));
 
@@ -859,7 +878,8 @@ namespace AsmSim
                 }
             }
         }
-        static void TestDynamicFlow()
+
+        private static void TestDynamicFlow()
         {
             string programStr1a =
                 "           cmp     rax,        0               " + Environment.NewLine +
@@ -943,7 +963,7 @@ namespace AsmSim
                 "           movbe   dword ptr [rbx], eax        " + Environment.NewLine +
                 "           mov     eax,        dword ptr [rbx] ";
 
-            Dictionary< string, string> settings = new Dictionary<string, string>
+            Dictionary<string, string> settings = new Dictionary<string, string>
             {
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
@@ -953,10 +973,10 @@ namespace AsmSim
 
             Tools tools = new Tools(settings)
             {
-                ShowUndefConstraints = false 
+                ShowUndefConstraints = false
             };
 
-            var sFlow = new StaticFlow(tools);
+            StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr8);
             Console.WriteLine(sFlow.ToString());
             tools.StateConfig = sFlow.Create_StateConfig();
@@ -991,7 +1011,8 @@ namespace AsmSim
                 }
             }
         }
-        static void EmptyMemoryTest()
+
+        private static void EmptyMemoryTest()
         {
             Dictionary<string, string> settings = new Dictionary<string, string>
             {
@@ -1045,7 +1066,7 @@ namespace AsmSim
             }
         }
 
-        static void ProgramSynthesis1()
+        private static void ProgramSynthesis1()
         {
             if (false)
             {
@@ -1081,8 +1102,10 @@ namespace AsmSim
                         Console.WriteLine(solver);
                         Status status = solver.Check();
                         Console.WriteLine("Status = " + status);
-                        if (status == Status.SATISFIABLE) Console.WriteLine(solver.Model);
-
+                        if (status == Status.SATISFIABLE)
+                        {
+                            Console.WriteLine(solver.Model);
+                        }
                     }
                 }
             }
@@ -1151,7 +1174,11 @@ namespace AsmSim
                     }
 
 
-                    foreach (BoolExpr b in solver.Assertions) Console.WriteLine("Solver A: " + b);
+                    foreach (BoolExpr b in solver.Assertions)
+                    {
+                        Console.WriteLine("Solver A: " + b);
+                    }
+
                     Console.WriteLine("-------------");
 
 
@@ -1261,10 +1288,14 @@ namespace AsmSim
                         solver.Assert(rax0_input, rax1_goal);
 
                         if (solver.Check(switch_L1_INC_RAX) == Status.UNSATISFIABLE)
+                        {
                             Console.WriteLine("A: INC RAX: switch_INC SHOULD HAVE BEEN ALLOWED");
+                        }
 
                         if (solver.Check(switch_L1_XOR_RAX_RAX) == Status.SATISFIABLE)
+                        {
                             Console.WriteLine("A: XOR RAX, RAX: switch_XOR SHOULD NOT HAVE BEEN ALLOWED");
+                        }
 
                         solver.Pop();
                     }
@@ -1274,17 +1305,24 @@ namespace AsmSim
                         solver.Assert(ctx.MkNot(rax0_input));
 
                         if (solver.Check(switch_L1_INC_RAX) == Status.SATISFIABLE)
+                        {
                             Console.WriteLine("B: INC RAX: switch_INC SHOULD NOT HAVE BEEN ALLOWED");
+                        }
 
                         if (solver.Check(switch_L1_XOR_RAX_RAX) == Status.UNSATISFIABLE)
+                        {
                             Console.WriteLine("B: XOR RAX, RAX: switch_XOR SHOULD HAVE BEEN ALLOWED");
+                        }
 
                         solver.Pop();
                     }
 
                     Console.WriteLine("");
                     foreach (BoolExpr b in solver.Assertions)
+                    {
                         Console.WriteLine("Solver = " + b);
+                    }
+
                     Console.WriteLine("");
 
                     Status status = solver.Check();
@@ -1342,7 +1380,7 @@ namespace AsmSim
             return ctx.MkImplies(ctx.MkNot(ctx.MkEq(reg, ctx.MkBV(0xFFFF_FFFF_FFFF_FFFF, 64))), ctx.MkEq(ctx.MkTrue(), ctx.MkFalse()));
         }
 
-        static void TestFunctions()
+        private static void TestFunctions()
         {
             using (Context ctx = new Context())
             {
@@ -1375,7 +1413,7 @@ namespace AsmSim
             }
         }
 
-        static void TacticTest()
+        private static void TacticTest()
         {
             using (Context ctx = new Context())
             {
@@ -1522,7 +1560,7 @@ namespace AsmSim
             }
         }
 
-        static void TestMemoryLeak()
+        private static void TestMemoryLeak()
         {
             Dictionary<string, string> settings = new Dictionary<string, string>
             {
@@ -1546,9 +1584,20 @@ namespace AsmSim
                     using (BitVecExpr rbx = ctx.MkBVConst("RBX!0", 64))
                     using (BitVecExpr rcx = ctx.MkBVConst("RCX!0", 64))
                     {
-                        using (var t = ctx.MkEq(rax, rbx)) s.Assert(t);
-                        using (var t = ctx.MkEq(rbx, rcx)) s.Assert(t);
-                        using (var t = ctx.MkEq(rax, rcx)) Console.WriteLine("i=" + i + ":" + ToolsZ3.GetTv(t, s, ctx));
+                        using (BoolExpr t = ctx.MkEq(rax, rbx))
+                        {
+                            s.Assert(t);
+                        }
+
+                        using (BoolExpr t = ctx.MkEq(rbx, rcx))
+                        {
+                            s.Assert(t);
+                        }
+
+                        using (BoolExpr t = ctx.MkEq(rax, rcx))
+                        {
+                            Console.WriteLine("i=" + i + ":" + ToolsZ3.GetTv(t, s, ctx));
+                        }
                     }
                 }
                 //System.GC.Collect();
@@ -1559,7 +1608,7 @@ namespace AsmSim
             GC.Collect();
         }
 
-        static void Test_NullReference_Bsf_1()
+        private static void Test_NullReference_Bsf_1()
         {
             bool logToDisplay = true;
             Tools tools = CreateTools();
@@ -1574,10 +1623,16 @@ namespace AsmSim
                 State state = CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
+                }
 
                 state = Runner.SimpleStep_Forward(line2, state);
-                if (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                if (logToDisplay)
+                {
+                    Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
+                }
                 //TestTools.AreEqual(Rn.RAX, 1, state);
             }
         }

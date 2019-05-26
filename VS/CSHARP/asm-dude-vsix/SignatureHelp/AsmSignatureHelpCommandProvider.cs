@@ -37,10 +37,10 @@ namespace AsmDude.SignatureHelp
     internal sealed class AsmSignatureHelpCommandProvider : IVsTextViewCreationListener
     {
         [Import]
-        private IVsEditorAdaptersFactoryService _adapterService = null;
+        private readonly IVsEditorAdaptersFactoryService _adapterService = null;
 
         [Import]
-        private ISignatureHelpBroker _signatureHelpBroker = null;
+        private readonly ISignatureHelpBroker _signatureHelpBroker = null;
 
         public void VsTextViewCreated(IVsTextView textViewAdapter)
         {

@@ -20,9 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Amib.Threading;
 using System;
 using System.Threading;
-using Amib.Threading;
 
 namespace AsmDude.Tools
 {

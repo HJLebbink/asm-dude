@@ -55,7 +55,10 @@ namespace AsmSim
                 }
                 else
                 {
-                    foreach (var e in this._branchInfo.Values) yield return e;
+                    foreach (BranchInfo e in this._branchInfo.Values)
+                    {
+                        yield return e;
+                    }
                 }
             }
         }
@@ -72,8 +75,15 @@ namespace AsmSim
         public static BranchInfoStore RetrieveSharedBranchInfo(
             BranchInfoStore store1, BranchInfoStore store2, Context ctx)
         {
-            if (store1 == null) return store2;
-            if (store2 == null) return store1;
+            if (store1 == null)
+            {
+                return store2;
+            }
+
+            if (store2 == null)
+            {
+                return store1;
+            }
 
             IList<string> sharedKeys = new List<string>();
 
@@ -180,7 +190,11 @@ namespace AsmSim
 
         public void Add(BranchInfo branchInfo, bool translate)
         {
-            if (branchInfo == null) return;
+            if (branchInfo == null)
+            {
+                return;
+            }
+
             if (this._branchInfo == null)
             {
                 this._branchInfo = new Dictionary<string, BranchInfo>();
@@ -201,8 +215,15 @@ namespace AsmSim
         }
         public void Add(IDictionary<string, BranchInfo> branchInfo, bool translate)
         {
-            if (branchInfo == null) return;
-            foreach (KeyValuePair<string, BranchInfo> b in branchInfo) this.Add(b.Value, translate);
+            if (branchInfo == null)
+            {
+                return;
+            }
+
+            foreach (KeyValuePair<string, BranchInfo> b in branchInfo)
+            {
+                this.Add(b.Value, translate);
+            }
         }
 
         public override string ToString()

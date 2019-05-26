@@ -53,18 +53,28 @@ namespace AsmSim
 
             protected void Create_RegularUpdate()
             {
-                if (this._regularUpdate == null) this._regularUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKey, this.Tools);
+                if (this._regularUpdate == null)
+                {
+                    this._regularUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKey, this.Tools);
+                }
             }
             protected void Create_BranchUpdate()
             {
-                if (this._branchUpdate == null) this._branchUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKeyBranch, this.Tools);
+                if (this._branchUpdate == null)
+                {
+                    this._branchUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKeyBranch, this.Tools);
+                }
             }
 
             protected StateUpdate RegularUpdate
             {
                 get
                 {
-                    if (this._regularUpdate == null) this._regularUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKey, this.Tools);
+                    if (this._regularUpdate == null)
+                    {
+                        this._regularUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKey, this.Tools);
+                    }
+
                     return this._regularUpdate;
                 }
             }
@@ -72,7 +82,11 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this._branchUpdate == null) this._branchUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKeyBranch, this.Tools);
+                    if (this._branchUpdate == null)
+                    {
+                        this._branchUpdate = new StateUpdate(this.keys.PrevKey, this.keys.NextKeyBranch, this.Tools);
+                    }
+
                     return this._branchUpdate;
                 }
             }
@@ -267,9 +281,16 @@ namespace AsmSim
                 {
                     if (op1.IsMem)
                     {
-                        var (BaseReg, IndexReg, Scale, Displacement) = op1.Mem;
-                        if (BaseReg != Rn.NOREG) yield return BaseReg;
-                        if (IndexReg != Rn.NOREG) yield return IndexReg;
+                        (Rn BaseReg, Rn IndexReg, int Scale, long Displacement) = op1.Mem;
+                        if (BaseReg != Rn.NOREG)
+                        {
+                            yield return BaseReg;
+                        }
+
+                        if (IndexReg != Rn.NOREG)
+                        {
+                            yield return IndexReg;
+                        }
                     }
                     if ((!op1_IsWrite) && op1.IsReg)
                     {
@@ -280,33 +301,72 @@ namespace AsmSim
 
             protected static IEnumerable<Rn> ReadRegs(Operand op1, bool op1_IsWrite, Operand op2, bool op2_IsWrite)
             {
-                foreach (var r in ReadRegs(op1, op1_IsWrite)) yield return r;
-                foreach (var r in ReadRegs(op2, op2_IsWrite)) yield return r;
+                foreach (Rn r in ReadRegs(op1, op1_IsWrite))
+                {
+                    yield return r;
+                }
+
+                foreach (Rn r in ReadRegs(op2, op2_IsWrite))
+                {
+                    yield return r;
+                }
             }
 
             protected static IEnumerable<Rn> ReadRegs(Operand op1, bool op1_IsWrite, Operand op2, bool op2_IsWrite, Operand op3, bool op3_IsWrite)
             {
-                foreach (var r in ReadRegs(op1, op1_IsWrite)) yield return r;
-                foreach (var r in ReadRegs(op2, op2_IsWrite)) yield return r;
-                foreach (var r in ReadRegs(op3, op3_IsWrite)) yield return r;
+                foreach (Rn r in ReadRegs(op1, op1_IsWrite))
+                {
+                    yield return r;
+                }
+
+                foreach (Rn r in ReadRegs(op2, op2_IsWrite))
+                {
+                    yield return r;
+                }
+
+                foreach (Rn r in ReadRegs(op3, op3_IsWrite))
+                {
+                    yield return r;
+                }
             }
 
             protected static IEnumerable<Rn> WriteRegs(Operand op1)
             {
-                if ((op1 != null) && op1.IsReg) yield return op1.Rn;
+                if ((op1 != null) && op1.IsReg)
+                {
+                    yield return op1.Rn;
+                }
             }
 
             protected static IEnumerable<Rn> WriteRegs(Operand op1, Operand op2)
             {
-                foreach (var r in WriteRegs(op1)) yield return r;
-                foreach (var r in WriteRegs(op2)) yield return r;
+                foreach (Rn r in WriteRegs(op1))
+                {
+                    yield return r;
+                }
+
+                foreach (Rn r in WriteRegs(op2))
+                {
+                    yield return r;
+                }
             }
 
             protected static IEnumerable<Rn> WriteRegs(Operand op1, Operand op2, Operand op3)
             {
-                foreach (var r in WriteRegs(op1)) yield return r;
-                foreach (var r in WriteRegs(op2)) yield return r;
-                foreach (var r in WriteRegs(op3)) yield return r;
+                foreach (Rn r in WriteRegs(op1))
+                {
+                    yield return r;
+                }
+
+                foreach (Rn r in WriteRegs(op2))
+                {
+                    yield return r;
+                }
+
+                foreach (Rn r in WriteRegs(op3))
+                {
+                    yield return r;
+                }
             }
 
             /// <summary>Create Syntax Error that op1 and op2 should have been equal size</summary>
@@ -332,7 +392,7 @@ namespace AsmSim
             {
                 if (this.NOperands != 0)
                 {
-                    this.SyntaxError = (this.NOperands == 1) 
+                    this.SyntaxError = (this.NOperands == 1)
                         ? string.Format("\"{0}\": Expected no operands. Found 1 operand with value \"{1}\".", this.ToString(), args[0])
                         : string.Format("\"{0}\": Expected no operands. Found {1} operands with values \"{2}\".", this.ToString(), this.NOperands, string.Join(", ", args));
                 }
@@ -347,7 +407,10 @@ namespace AsmSim
                 if (this.NOperands == 1)
                 {
                     this.op1 = new Operand(args[0], false);
-                    if (this.op1.ErrorMessage != null) this.SyntaxError = string.Format("\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
+                    if (this.op1.ErrorMessage != null)
+                    {
+                        this.SyntaxError = string.Format("\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
+                    }
                 }
                 else
                 {
@@ -364,7 +427,11 @@ namespace AsmSim
             public Opcode1Base(Mnemonic mnemonic, string[] args, Ot1 allowedOperands1, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : this(mnemonic, args, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (!allowedOperands1.HasFlag(this.op1.Type))
                 {
                     this.SyntaxError = string.Format("\"{0}\": First operand ({1}) cannot be of type {2}. Allowed types: {3}.", this.ToString(), this.op1, this.op1.Type, AsmSourceTools.ToString(allowedOperands1));
@@ -385,8 +452,15 @@ namespace AsmSim
                 {
                     this.op1 = new Operand(args[0], false);
                     this.op2 = new Operand(args[1], false);
-                    if (this.op1.ErrorMessage != null) this.SyntaxError = string.Format("\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
-                    if (this.op2.ErrorMessage != null) this.SyntaxError = string.Format("\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2.ErrorMessage);
+                    if (this.op1.ErrorMessage != null)
+                    {
+                        this.SyntaxError = string.Format("\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
+                    }
+
+                    if (this.op2.ErrorMessage != null)
+                    {
+                        this.SyntaxError = string.Format("\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2.ErrorMessage);
+                    }
                 }
                 else
                 {
@@ -403,7 +477,11 @@ namespace AsmSim
             public Opcode2Base(Mnemonic mnemonic, string[] args, Ot2 allowedOperands2, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : this(mnemonic, args, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (!allowedOperands2.HasFlag(AsmSourceTools.MergeOt(this.op1.Type, this.op2.Type)))
                 {
                     this.SyntaxError = string.Format("\"{0}\": Invalid combination of opcode and operands. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6}). Allowed types: {7}.",
@@ -429,9 +507,20 @@ namespace AsmSim
                     this.op2 = new Operand(args[1], false);
                     this.op3 = new Operand(args[2], false);
 
-                    if (this.op1.ErrorMessage != null) this.SyntaxError = string.Format("\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
-                    if (this.op2.ErrorMessage != null) this.SyntaxError = string.Format("\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2.ErrorMessage);
-                    if (this.op3.ErrorMessage != null) this.SyntaxError = string.Format("\"{0}\": Operand 3 is malformed: {1}", this.ToString(), this.op3.ErrorMessage);
+                    if (this.op1.ErrorMessage != null)
+                    {
+                        this.SyntaxError = string.Format("\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
+                    }
+
+                    if (this.op2.ErrorMessage != null)
+                    {
+                        this.SyntaxError = string.Format("\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2.ErrorMessage);
+                    }
+
+                    if (this.op3.ErrorMessage != null)
+                    {
+                        this.SyntaxError = string.Format("\"{0}\": Operand 3 is malformed: {1}", this.ToString(), this.op3.ErrorMessage);
+                    }
                 }
                 else
                 {
@@ -447,7 +536,11 @@ namespace AsmSim
             }
             public Opcode3Base(Mnemonic mnemonic, string[] args, Ot3 allowedOperands3, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : this(mnemonic, args, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (!allowedOperands3.HasFlag(AsmSourceTools.MergeOt(this.op1.Type, this.op2.Type, this.op3.Type)))
                 {
                     this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6}); op3={7} ({8}, bits={9}) Allowed types: {10}.", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits, AsmSourceTools.ToString(allowedOperands3));
@@ -505,7 +598,11 @@ namespace AsmSim
         {
             public Opcode2Type1(Mnemonic mnemonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(mnemonic, args, Ot2.mem_imm | Ot2.mem_reg | Ot2.reg_imm | Ot2.reg_reg | Ot2.reg_mem, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (this.op2.IsImm)
                 {
                     if (this.op1.NBits < this.op2.NBits)
@@ -521,7 +618,10 @@ namespace AsmSim
                         this.op2.ZeroExtend(this.op1.NBits);
                     }
                 }
-                else if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
+                else if (this.op1.NBits != this.op2.NBits)
+                {
+                    this.CreateSyntaxError1(this.op1, this.op2);
+                }
             }
         }
         #endregion Abstract OpcodeBases
@@ -558,7 +658,10 @@ namespace AsmSim
                 bool memAlreadyCleared = false;
                 if (this.NOperands > 0)
                 {
-                    if (this.op1.IsReg) this.RegularUpdate.Set(this.op1.Rn, Tv.UNKNOWN);
+                    if (this.op1.IsReg)
+                    {
+                        this.RegularUpdate.Set(this.op1.Rn, Tv.UNKNOWN);
+                    }
                     else if (this.op1.IsMem && (!memAlreadyCleared))
                     {
                         this.RegularUpdate.Set_Mem_Unknown();
@@ -567,7 +670,10 @@ namespace AsmSim
                 }
                 if (this.NOperands > 1)
                 {
-                    if (this.op2.IsReg) this.RegularUpdate.Set(this.op2.Rn, Tv.UNKNOWN);
+                    if (this.op2.IsReg)
+                    {
+                        this.RegularUpdate.Set(this.op2.Rn, Tv.UNKNOWN);
+                    }
                     else if (this.op2.IsMem && (!memAlreadyCleared))
                     {
                         this.RegularUpdate.Set_Mem_Unknown();
@@ -576,7 +682,10 @@ namespace AsmSim
                 }
                 if (this.NOperands > 2)
                 {
-                    if (this.op3.IsReg) this.RegularUpdate.Set(this.op3.Rn, Tv.UNKNOWN);
+                    if (this.op3.IsReg)
+                    {
+                        this.RegularUpdate.Set(this.op3.Rn, Tv.UNKNOWN);
+                    }
                     else if (this.op3.IsMem && (!memAlreadyCleared))
                     {
                         this.RegularUpdate.Set_Mem_Unknown();
@@ -626,14 +735,21 @@ namespace AsmSim
             public override IEnumerable<Rn> RegsReadStatic { get { return ReadRegs(this.op1, true, this.op2, false); } }
             public override IEnumerable<Rn> RegsWriteStatic { get { return WriteRegs(this.op1); } }
         }
-        
+
         /// <summary>Exchange Register/Memory with Register</summary>
         public sealed class Xchg : Opcode2Base
         {
             public Xchg(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.XCHG, args, Ot2.reg_reg | Ot2.reg_mem | Ot2.mem_reg, keys, t)
             {
-                if (this.IsHalted) return;
-                if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
+                if (this.op1.NBits != this.op2.NBits)
+                {
+                    this.CreateSyntaxError1(this.op1, this.op2);
+                }
             }
             public override void Execute()
             {
@@ -648,8 +764,12 @@ namespace AsmSim
         {
             public Bswap(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.BSWAP, args, Ot1.reg, keys, t)
             {
-                if (this.IsHalted) return;
-                if (!((this.op1.NBits == 32) || (this.op1.NBits == 64))) 
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
+                if (!((this.op1.NBits == 32) || (this.op1.NBits == 64)))
                 {
                     this.SyntaxError = string.Format("\"{0}\": Operand 1 should be 32-bits or 64-bits. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
                 }
@@ -657,26 +777,26 @@ namespace AsmSim
             public override void Execute()
             {
                 Context ctx = this._ctx;
-                var s = this.Op1Value;
+                BitVecExpr s = this.Op1Value;
                 BitVecExpr dest;
                 if (this.op1.NBits == 32)
                 {
-                    var b0 = ctx.MkExtract((1 * 8) - 1, 0 * 8, s);
-                    var b1 = ctx.MkExtract((2 * 8) - 1, 1 * 8, s);
-                    var b2 = ctx.MkExtract((3 * 8) - 1, 2 * 8, s);
-                    var b3 = ctx.MkExtract((4 * 8) - 1, 3 * 8, s);
+                    BitVecExpr b0 = ctx.MkExtract((1 * 8) - 1, 0 * 8, s);
+                    BitVecExpr b1 = ctx.MkExtract((2 * 8) - 1, 1 * 8, s);
+                    BitVecExpr b2 = ctx.MkExtract((3 * 8) - 1, 2 * 8, s);
+                    BitVecExpr b3 = ctx.MkExtract((4 * 8) - 1, 3 * 8, s);
                     dest = ctx.MkConcat(ctx.MkConcat(b0, b1), ctx.MkConcat(b2, b3));
                 }
                 else
                 {
-                    var b0 = ctx.MkExtract((1 * 8) - 1, 0 * 8, s);
-                    var b1 = ctx.MkExtract((2 * 8) - 1, 1 * 8, s);
-                    var b2 = ctx.MkExtract((3 * 8) - 1, 2 * 8, s);
-                    var b3 = ctx.MkExtract((4 * 8) - 1, 3 * 8, s);
-                    var b4 = ctx.MkExtract((5 * 8) - 1, 4 * 8, s);
-                    var b5 = ctx.MkExtract((6 * 8) - 1, 5 * 8, s);
-                    var b6 = ctx.MkExtract((7 * 8) - 1, 6 * 8, s);
-                    var b7 = ctx.MkExtract((8 * 8) - 1, 7 * 8, s);
+                    BitVecExpr b0 = ctx.MkExtract((1 * 8) - 1, 0 * 8, s);
+                    BitVecExpr b1 = ctx.MkExtract((2 * 8) - 1, 1 * 8, s);
+                    BitVecExpr b2 = ctx.MkExtract((3 * 8) - 1, 2 * 8, s);
+                    BitVecExpr b3 = ctx.MkExtract((4 * 8) - 1, 3 * 8, s);
+                    BitVecExpr b4 = ctx.MkExtract((5 * 8) - 1, 4 * 8, s);
+                    BitVecExpr b5 = ctx.MkExtract((6 * 8) - 1, 5 * 8, s);
+                    BitVecExpr b6 = ctx.MkExtract((7 * 8) - 1, 6 * 8, s);
+                    BitVecExpr b7 = ctx.MkExtract((8 * 8) - 1, 7 * 8, s);
                     dest = ctx.MkConcat(ctx.MkConcat(ctx.MkConcat(b0, b1), ctx.MkConcat(b2, b3)), ctx.MkConcat(ctx.MkConcat(b4, b5), ctx.MkConcat(b6, b7)));
                 }
                 this.RegularUpdate.Set(this.op1, dest);
@@ -690,15 +810,22 @@ namespace AsmSim
         {
             public Xadd(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.XADD, args, Ot2.mem_reg | Ot2.reg_reg, keys, t)
             {
-                if (this.IsHalted) return;
-                if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
+                if (this.op1.NBits != this.op2.NBits)
+                {
+                    this.CreateSyntaxError1(this.op1, this.op2);
+                }
             }
             public override void Execute()
             {
                 BitVecExpr a = this.Op1Value;
                 BitVecExpr b = this.Op2Value;
 
-                var (result, cf, of, af) = BitOperations.Addition(a, b, this._ctx);
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Addition(a, b, this._ctx);
                 this.RegularUpdate.Set(this.op1, result);
                 this.RegularUpdate.Set(this.op2, a);// swap op1 and op2
                 this.RegularUpdate.Set(Flags.CF, cf);
@@ -715,8 +842,15 @@ namespace AsmSim
         {
             public Cmpxchg(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.CMPXCHG, args, Ot2.mem_reg | Ot2.reg_reg, keys, t)
             {
-                if (this.IsHalted) return;
-                if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
+                if (this.op1.NBits != this.op2.NBits)
+                {
+                    this.CreateSyntaxError1(this.op1, this.op2);
+                }
             }
             public override void Execute()
             {
@@ -749,7 +883,7 @@ namespace AsmSim
                 this.RegularUpdate.Set(this.op1, this._ctx.MkITE(zf, this.Op2Value, op1) as BitVecExpr);
                 this.RegularUpdate.Set(regA, this._ctx.MkITE(zf, regA_Expr_Curr, op1) as BitVecExpr);
 
-                var (result, cf, of, af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this._ctx);
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this._ctx);
                 this.RegularUpdate.Set(Flags.CF, cf);
                 this.RegularUpdate.Set(Flags.OF, of);
                 this.RegularUpdate.Set(Flags.AF, af);
@@ -773,7 +907,10 @@ namespace AsmSim
                             default: break;
                         }
                     }
-                    foreach (Rn r in ReadRegs(this.op1, true, this.op2, false)) yield return r;
+                    foreach (Rn r in ReadRegs(this.op1, true, this.op2, false))
+                    {
+                        yield return r;
+                    }
                 }
             }
             public override IEnumerable<Rn> RegsWriteStatic
@@ -791,7 +928,10 @@ namespace AsmSim
                             default: break;
                         }
                     }
-                    foreach (Rn r in WriteRegs(this.op1)) yield return r;
+                    foreach (Rn r in WriteRegs(this.op1))
+                    {
+                        yield return r;
+                    }
                 }
             }
         }
@@ -801,7 +941,11 @@ namespace AsmSim
         {
             public Cmpxchg8b(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.CMPXCHG8B, args, Ot1.mem, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (this.op1.NBits != 64)
                 {
                     this.SyntaxError = string.Format("\"{0}\": Operand 1 should be a 64-bit memory operand. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
@@ -849,7 +993,11 @@ namespace AsmSim
         {
             public Cmpxchg16b(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.CMPXCHG16B, args, Ot1.mem, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (this.op1.NBits != 128)
                 {
                     this.SyntaxError = string.Format("\"{0}\": Operand 1 should be a 128-bit memory operand. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
@@ -897,7 +1045,11 @@ namespace AsmSim
         {
             public Push(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.PUSH, args, Ot1.reg | Ot1.mem | Ot1.imm, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if ((this.op1.NBits == 8) && (this.op1.IsReg || this.op1.IsMem))
                 {
                     this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
@@ -924,7 +1076,10 @@ namespace AsmSim
                     BitVecExpr value = this.Op1Value;
                     if (this.op1.IsImm)
                     {
-                        if (value.SortSize < 64) value = this._ctx.MkSignExt(64 - value.SortSize, value);
+                        if (value.SortSize < 64)
+                        {
+                            value = this._ctx.MkSignExt(64 - value.SortSize, value);
+                        }
                     }
                     else if (this.op1.IsReg && RegisterTools.IsSegmentRegister(this.op1.Rn))
                     {
@@ -939,7 +1094,10 @@ namespace AsmSim
                     BitVecExpr value = this.Op1Value;
                     if (this.op1.IsImm)
                     {
-                        if (value.SortSize < 32) value = this._ctx.MkSignExt(32 - value.SortSize, value);
+                        if (value.SortSize < 32)
+                        {
+                            value = this._ctx.MkSignExt(32 - value.SortSize, value);
+                        }
                     }
                     else if (this.op1.IsReg && RegisterTools.IsSegmentRegister(this.op1.Rn))
                     {
@@ -965,29 +1123,55 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this.Tools.Parameters.mode_64bit) yield return Rn.RSP;
-                    else if (this.Tools.Parameters.mode_32bit) yield return Rn.ESP;
-                    else if (this.Tools.Parameters.mode_16bit) yield return Rn.SP;
-                    foreach (Rn r in ReadRegs(this.op1, false)) yield return r;
+                    if (this.Tools.Parameters.mode_64bit)
+                    {
+                        yield return Rn.RSP;
+                    }
+                    else if (this.Tools.Parameters.mode_32bit)
+                    {
+                        yield return Rn.ESP;
+                    }
+                    else if (this.Tools.Parameters.mode_16bit)
+                    {
+                        yield return Rn.SP;
+                    }
+
+                    foreach (Rn r in ReadRegs(this.op1, false))
+                    {
+                        yield return r;
+                    }
                 }
             }
             public override IEnumerable<Rn> RegsWriteStatic
             {
                 get
                 {
-                    if (this.Tools.Parameters.mode_64bit) yield return Rn.RSP;
-                    else if (this.Tools.Parameters.mode_32bit) yield return Rn.ESP;
-                    else if (this.Tools.Parameters.mode_16bit) yield return Rn.SP;
+                    if (this.Tools.Parameters.mode_64bit)
+                    {
+                        yield return Rn.RSP;
+                    }
+                    else if (this.Tools.Parameters.mode_32bit)
+                    {
+                        yield return Rn.ESP;
+                    }
+                    else if (this.Tools.Parameters.mode_16bit)
+                    {
+                        yield return Rn.SP;
+                    }
                 }
             }
-            public override bool MemWriteStatic { get {return true; } }
+            public override bool MemWriteStatic { get { return true; } }
         }
         /// <summary>Pop off of stack</summary>
         public sealed class Pop : Opcode1Base
         {
             public Pop(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.POP, args, Ot1.reg | Ot1.mem, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (this.op1.NBits == 8)
                 {
                     this.SyntaxError = string.Format("\"{0}\": 8-bit operand is not allowed. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
@@ -1073,19 +1257,41 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this.Tools.Parameters.mode_64bit) yield return Rn.RSP;
-                    else if (this.Tools.Parameters.mode_32bit) yield return Rn.ESP;
-                    else if (this.Tools.Parameters.mode_16bit) yield return Rn.SP;
+                    if (this.Tools.Parameters.mode_64bit)
+                    {
+                        yield return Rn.RSP;
+                    }
+                    else if (this.Tools.Parameters.mode_32bit)
+                    {
+                        yield return Rn.ESP;
+                    }
+                    else if (this.Tools.Parameters.mode_16bit)
+                    {
+                        yield return Rn.SP;
+                    }
                 }
             }
             public override IEnumerable<Rn> RegsWriteStatic
             {
                 get
                 {
-                    if (this.Tools.Parameters.mode_64bit) yield return Rn.RSP;
-                    else if (this.Tools.Parameters.mode_32bit) yield return Rn.ESP;
-                    else if (this.Tools.Parameters.mode_16bit) yield return Rn.SP;
-                    foreach (Rn r in ReadRegs(this.op1, false)) yield return r;
+                    if (this.Tools.Parameters.mode_64bit)
+                    {
+                        yield return Rn.RSP;
+                    }
+                    else if (this.Tools.Parameters.mode_32bit)
+                    {
+                        yield return Rn.ESP;
+                    }
+                    else if (this.Tools.Parameters.mode_16bit)
+                    {
+                        yield return Rn.SP;
+                    }
+
+                    foreach (Rn r in ReadRegs(this.op1, false))
+                    {
+                        yield return r;
+                    }
                 }
             }
             public override bool MemWriteStatic { get { return true; } }
@@ -1173,7 +1379,11 @@ namespace AsmSim
         {
             public Movsx(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.MOVSX, args, Ot2.reg_reg | Ot2.reg_mem, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (this.op1.NBits == 8)
                 {
                     this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
@@ -1181,17 +1391,23 @@ namespace AsmSim
                 else if (this.op1.NBits == 16)
                 {
                     if (this.op2.NBits != 8)
+                    {
                         this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    }
                 }
                 else if (this.op1.NBits == 32)
                 {
                     if ((this.op2.NBits != 8) && (this.op2.NBits != 16))
+                    {
                         this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    }
                 }
                 else if (this.op1.NBits == 64)
                 {
                     if ((this.op2.NBits != 8) && (this.op2.NBits != 16))
+                    {
                         this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    }
                 }
                 else
                 {
@@ -1211,12 +1427,20 @@ namespace AsmSim
         {
             public Movsxd(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.MOVSXD, args, Ot2.reg_reg | Ot2.reg_mem, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (this.op1.NBits != 64)
+                {
                     this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                }
 
                 if (this.op2.NBits == 32)
+                {
                     this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                }
             }
             public override void Execute()
             {
@@ -1231,7 +1455,11 @@ namespace AsmSim
         {
             public Movzx(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.MOVZX, args, Ot2.reg_reg | Ot2.reg_mem, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (this.op1.NBits == 8)
                 {
                     this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
@@ -1239,17 +1467,23 @@ namespace AsmSim
                 else if (this.op1.NBits == 16)
                 {
                     if (this.op2.NBits != 8)
+                    {
                         this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    }
                 }
                 else if (this.op1.NBits == 32)
                 {
                     if ((this.op2.NBits != 8) && (this.op2.NBits != 16))
+                    {
                         this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    }
                 }
                 else if (this.op1.NBits == 64)
                 {
                     if ((this.op2.NBits != 8) && (this.op2.NBits != 16))
+                    {
                         this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    }
                 }
                 else
                 {
@@ -1292,7 +1526,7 @@ namespace AsmSim
             public Add(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.ADD, args, keys, t) { }
             public override void Execute()
             {
-                var (result, cf, of, af) = BitOperations.Addition(this.Op1Value, this.Op2Value, this._ctx);
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Addition(this.Op1Value, this.Op2Value, this._ctx);
                 this.RegularUpdate.Set(this.op1, result);
                 this.RegularUpdate.Set(Flags.CF, cf);
                 this.RegularUpdate.Set(Flags.OF, of);
@@ -1309,7 +1543,7 @@ namespace AsmSim
             public Adc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.ADC, args, keys, t) { }
             public override void Execute()
             {
-                var (result, cf, of, af) = BitOperations.Addition(this.Op1Value, this.Op2Value, this.Get(Flags.CF), this._ctx);
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Addition(this.Op1Value, this.Op2Value, this.Get(Flags.CF), this._ctx);
                 this.RegularUpdate.Set(this.op1, result);
                 this.RegularUpdate.Set(Flags.CF, cf);
                 this.RegularUpdate.Set(Flags.OF, of);
@@ -1333,7 +1567,7 @@ namespace AsmSim
             public Sub(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.SUB, args, keys, t) { }
             public override void Execute()
             {
-                var (result, cf, of, af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this._ctx);
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this._ctx);
                 this.RegularUpdate.Set(this.op1, result);
                 this.RegularUpdate.Set(Flags.CF, cf);
                 this.RegularUpdate.Set(Flags.OF, of);
@@ -1350,7 +1584,7 @@ namespace AsmSim
             public Sbb(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.SBB, args, keys, t) { }
             public override void Execute()
             {
-                var (result, cf, of, af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this.Get(Flags.CF), this._ctx);
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this.Get(Flags.CF), this._ctx);
                 this.RegularUpdate.Set(this.op1, result);
                 this.RegularUpdate.Set(Flags.CF, cf);
                 this.RegularUpdate.Set(Flags.OF, of);
@@ -1367,7 +1601,11 @@ namespace AsmSim
         {
             public Imul(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.IMUL, args, 3, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 switch (this.NOperands)
                 {
                     case 1:
@@ -1393,7 +1631,11 @@ namespace AsmSim
                                 this.SyntaxError = string.Format("\"{0}\": Operand 1 cannot be 8-bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6}).",
                                     this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                             }
-                            if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
+                            if (this.op1.NBits != this.op2.NBits)
+                            {
+                                this.CreateSyntaxError1(this.op1, this.op2);
+                            }
+
                             break;
                         }
                     case 3:
@@ -1409,7 +1651,10 @@ namespace AsmSim
                                 this.SyntaxError = string.Format("\"{0}\": Operand 1 cannot be 8-bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6}); op3={7} ({8}, bits={9}).",
                                     this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits);
                             }
-                            if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
+                            if (this.op1.NBits != this.op2.NBits)
+                            {
+                                this.CreateSyntaxError1(this.op1, this.op2);
+                            }
 
                             if (this.op3.NBits < this.op1.NBits)
                             {
@@ -1544,7 +1789,11 @@ namespace AsmSim
                 {
                     if (this.NOperands == 1)
                     {
-                        if (this.op1 == null) yield break;
+                        if (this.op1 == null)
+                        {
+                            yield break;
+                        }
+
                         switch (this.op1.NBits)
                         {
                             case 8:
@@ -1561,11 +1810,17 @@ namespace AsmSim
                                 break;
                             default: break;
                         }
-                        foreach (Rn r in ReadRegs(this.op1, false)) yield return r;
+                        foreach (Rn r in ReadRegs(this.op1, false))
+                        {
+                            yield return r;
+                        }
                     }
                     else
                     {
-                        foreach (Rn r in ReadRegs(this.op1, true, this.op2, false)) yield return r;
+                        foreach (Rn r in ReadRegs(this.op1, true, this.op2, false))
+                        {
+                            yield return r;
+                        }
                     }
                 }
             }
@@ -1573,7 +1828,11 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this.op1 == null) yield break;
+                    if (this.op1 == null)
+                    {
+                        yield break;
+                    }
+
                     if (this.NOperands == 1)
                     {
                         switch (this.op1.NBits)
@@ -1598,7 +1857,10 @@ namespace AsmSim
                     }
                     else
                     {
-                        foreach (Rn r in WriteRegs(this.op1)) yield return r;
+                        foreach (Rn r in WriteRegs(this.op1))
+                        {
+                            yield return r;
+                        }
                     }
                 }
             }
@@ -1669,7 +1931,11 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this.op1 == null) yield break;
+                    if (this.op1 == null)
+                    {
+                        yield break;
+                    }
+
                     switch (this.op1.NBits)
                     {
                         case 8:
@@ -1686,14 +1952,21 @@ namespace AsmSim
                             break;
                         default: break;
                     }
-                    foreach (Rn r in ReadRegs(this.op1, false)) yield return r;
+                    foreach (Rn r in ReadRegs(this.op1, false))
+                    {
+                        yield return r;
+                    }
                 }
             }
             public override IEnumerable<Rn> RegsWriteStatic
             {
                 get
                 {
-                    if (this.op1 == null) yield break;
+                    if (this.op1 == null)
+                    {
+                        yield break;
+                    }
+
                     switch (this.op1.NBits)
                     {
                         case 8:
@@ -1793,7 +2066,11 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this.op1 == null) yield break;
+                    if (this.op1 == null)
+                    {
+                        yield break;
+                    }
+
                     switch (this.op1.NBits)
                     {
                         case 8:
@@ -1810,14 +2087,21 @@ namespace AsmSim
                             break;
                         default: break;
                     }
-                    foreach (Rn r in ReadRegs(this.op1, false)) yield return r;
+                    foreach (Rn r in ReadRegs(this.op1, false))
+                    {
+                        yield return r;
+                    }
                 }
             }
             public override IEnumerable<Rn> RegsWriteStatic
             {
                 get
                 {
-                    if (this.op1 == null) yield break;
+                    if (this.op1 == null)
+                    {
+                        yield break;
+                    }
+
                     switch (this.op1.NBits)
                     {
                         case 8:
@@ -1917,7 +2201,11 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this.op1 == null) yield break;
+                    if (this.op1 == null)
+                    {
+                        yield break;
+                    }
+
                     switch (this.op1.NBits)
                     {
                         case 8:
@@ -1934,14 +2222,21 @@ namespace AsmSim
                             break;
                         default: break;
                     }
-                    foreach (Rn r in ReadRegs(this.op1, false)) yield return r;
+                    foreach (Rn r in ReadRegs(this.op1, false))
+                    {
+                        yield return r;
+                    }
                 }
             }
             public override IEnumerable<Rn> RegsWriteStatic
             {
                 get
                 {
-                    if (this.op1 == null) yield break;
+                    if (this.op1 == null)
+                    {
+                        yield break;
+                    }
+
                     switch (this.op1.NBits)
                     {
                         case 8:
@@ -1970,7 +2265,7 @@ namespace AsmSim
             public Inc(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.INC, args, Ot1.reg | Ot1.mem, keys, t) { }
             public override void Execute()
             {
-                var (result, cf, of, af) = BitOperations.Addition(this.Op1Value, this._ctx.MkBV(1, (uint)this.op1.NBits), this._ctx);
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Addition(this.Op1Value, this._ctx.MkBV(1, (uint)this.op1.NBits), this._ctx);
                 this.RegularUpdate.Set(this.op1, result);
                 //CF is not updated!
                 this.RegularUpdate.Set(Flags.OF, of);
@@ -1987,7 +2282,7 @@ namespace AsmSim
             public Dec(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.DEC, args, Ot1.reg | Ot1.mem, keys, t) { }
             public override void Execute()
             {
-                var (result, cf, of, af) = BitOperations.Substract(this.Op1Value, this._ctx.MkBV(1, (uint)this.op1.NBits), this._ctx);
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.Op1Value, this._ctx.MkBV(1, (uint)this.op1.NBits), this._ctx);
                 this.RegularUpdate.Set(this.op1, result);
                 //CF is not updated!
                 this.RegularUpdate.Set(Flags.OF, of);
@@ -2004,7 +2299,7 @@ namespace AsmSim
             public Neg(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.NEG, args, Ot1.reg | Ot1.mem, keys, t) { }
             public override void Execute()
             {
-                var (result, cf, of, af) = BitOperations.Neg(this.Op1Value, this._ctx);
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Neg(this.Op1Value, this._ctx);
                 this.RegularUpdate.Set(this.op1, result);
                 this.RegularUpdate.Set(Flags.CF, cf);
                 this.RegularUpdate.Set(Flags.OF, of);
@@ -2021,7 +2316,7 @@ namespace AsmSim
             public Cmp(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.CMP, args, keys, t) { }
             public override void Execute()
             {
-                var (result, cf, of, af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this._ctx);
+                (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.Op1Value, this.Op2Value, this._ctx);
                 this.RegularUpdate.Set(Flags.CF, cf);
                 this.RegularUpdate.Set(Flags.OF, of);
                 this.RegularUpdate.Set(Flags.AF, af);
@@ -2036,7 +2331,7 @@ namespace AsmSim
         ///<summary> DAA - Decimal adjust after addition</summary>
         public sealed class Daa : Opcode0Base
         {
-            public Daa(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.DAA, args, keys, t) {}
+            public Daa(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.DAA, args, keys, t) { }
             public override void Execute()
             {
                 Context ctx = this._ctx;
@@ -2161,9 +2456,14 @@ namespace AsmSim
         /// <summary>AAM - ASCII adjust after multiplication</summary>
         public sealed class Aam : OpcodeNBase
         {
-            private int imm;
-            public Aam(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.AAM, args, 1, keys, t) {
-                if(this.IsHalted) return;
+            private readonly int imm;
+            public Aam(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.AAM, args, 1, keys, t)
+            {
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (args.Length == 0)
                 {
                     this.imm = 10;
@@ -2199,9 +2499,14 @@ namespace AsmSim
         /// <summary>AAD - ASCII adjust after division</summary>
         public sealed class Aad : OpcodeNBase
         {
-            private int imm;
-            public Aad(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.AAD, args, 1, keys, t) {
-                if (this.IsHalted) return;
+            private readonly int imm;
+            public Aad(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.AAD, args, 1, keys, t)
+            {
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (args.Length == 0)
                 {
                     this.imm = 10;
@@ -2244,7 +2549,11 @@ namespace AsmSim
             public LogicalBase(Mnemonic mnemonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(mnemonic, args, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (this.op2.IsImm)
                 {
                     if (this.op1.NBits < this.op2.NBits)
@@ -2264,7 +2573,10 @@ namespace AsmSim
                         this.op2.ZeroExtend(this.op1.NBits);
                     }
                 }
-                else if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
+                else if (this.op1.NBits != this.op2.NBits)
+                {
+                    this.CreateSyntaxError1(this.op1, this.op2);
+                }
             }
             public override void Execute()
             {
@@ -2313,7 +2625,11 @@ namespace AsmSim
         {
             public Test(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.TEST, args, Ot2.mem_imm | Ot2.mem_reg | Ot2.reg_imm | Ot2.reg_reg, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (this.op2.IsImm)
                 {
                     if (this.op1.NBits < this.op2.NBits)
@@ -2325,7 +2641,10 @@ namespace AsmSim
                         this.op2.SignExtend(this.op1.NBits);
                     }
                 }
-                else if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
+                else if (this.op1.NBits != this.op2.NBits)
+                {
+                    this.CreateSyntaxError1(this.op1, this.op2);
+                }
             }
             public override void Execute()
             {
@@ -2347,7 +2666,11 @@ namespace AsmSim
         {
             public ShiftRotateBase(Mnemonic mnemonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(mnemonic, args, Ot2.mem_imm | Ot2.mem_reg | Ot2.reg_imm | Ot2.reg_reg | Ot2.reg_mem, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (this.op2.IsReg && (this.op2.Rn != Rn.CL))
                 {
                     this.SyntaxError = string.Format("\"{0}\": If operand 2 is a registers, only GPR cl is allowed. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
@@ -2453,8 +2776,8 @@ namespace AsmSim
             public Sar(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.SAR, args, keys, t) { }
             public override void Execute()
             {
-                var shiftCount = GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
-                var (result, cf) = BitOperations.ShiftOperations(Mnemonic.SAR, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
+                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.SAR, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
                 this.UpdateFlagsShift(result, cf, shiftCount.shiftCount, shiftCount.tooLarge, false);
                 this.RegularUpdate.Set(this.op1, result);
             }
@@ -2466,8 +2789,8 @@ namespace AsmSim
             public Sal(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.SAL, args, keys, t) { }
             public override void Execute()
             {
-                var shiftCount = GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
-                var (result, cf) = BitOperations.ShiftOperations(Mnemonic.SAL, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
+                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.SAL, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
                 this.UpdateFlagsShift(result, cf, shiftCount.shiftCount, shiftCount.tooLarge, true);
                 this.RegularUpdate.Set(this.op1, result);
             }
@@ -2479,8 +2802,8 @@ namespace AsmSim
             public Shr(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.SHR, args, keys, t) { }
             public override void Execute()
             {
-                var shiftCount = GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
-                var (result, cf) = BitOperations.ShiftOperations(Mnemonic.SHR, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
+                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.SHR, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
                 this.UpdateFlagsShift(result, cf, shiftCount.shiftCount, shiftCount.tooLarge, false);
                 this.RegularUpdate.Set(this.op1, result);
             }
@@ -2492,8 +2815,8 @@ namespace AsmSim
             public Shl(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.SHL, args, keys, t) { }
             public override void Execute()
             {
-                var shiftCount = GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
-                var (result, cf) = BitOperations.ShiftOperations(Mnemonic.SHL, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
+                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.SHL, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
                 this.UpdateFlagsShift(result, cf, shiftCount.shiftCount, shiftCount.tooLarge, true);
                 this.RegularUpdate.Set(this.op1, result);
             }
@@ -2508,8 +2831,8 @@ namespace AsmSim
             public Ror(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.ROR, args, keys, t) { }
             public override void Execute()
             {
-                var shiftCount = GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
-                var (result, cf) = BitOperations.ShiftOperations(Mnemonic.ROR, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
+                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.ROR, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
                 this.UpdateFlagsRotate(result, cf, shiftCount.shiftCount, false);
                 this.RegularUpdate.Set(this.op1, result);
             }
@@ -2521,8 +2844,8 @@ namespace AsmSim
             public Rcr(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.RCR, args, keys, t) { }
             public override void Execute()
             {
-                var shiftCount = GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
-                var (result, cf) = BitOperations.ShiftOperations(Mnemonic.RCR, this.Op1Value, shiftCount.shiftCount, this.Get(Flags.CF), this.keys.PrevKey, this._ctx);
+                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.RCR, this.Op1Value, shiftCount.shiftCount, this.Get(Flags.CF), this.keys.PrevKey, this._ctx);
                 this.UpdateFlagsRotate(result, cf, shiftCount.shiftCount, false);
                 this.RegularUpdate.Set(this.op1, result);
             }
@@ -2535,8 +2858,8 @@ namespace AsmSim
             public Rcl(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.RCL, args, keys, t) { }
             public override void Execute()
             {
-                var shiftCount = GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
-                var (result, cf) = BitOperations.ShiftOperations(Mnemonic.RCL, this.Op1Value, shiftCount.shiftCount, this.Get(Flags.CF), this.keys.PrevKey, this._ctx);
+                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.RCL, this.Op1Value, shiftCount.shiftCount, this.Get(Flags.CF), this.keys.PrevKey, this._ctx);
                 this.UpdateFlagsRotate(result, cf, shiftCount.shiftCount, true);
                 this.RegularUpdate.Set(this.op1, result);
             }
@@ -2549,8 +2872,8 @@ namespace AsmSim
             public Rol(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.ROL, args, keys, t) { }
             public override void Execute()
             {
-                var shiftCount = GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
-                var (result, cf) = BitOperations.ShiftOperations(Mnemonic.ROL, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
+                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx);
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.ROL, this.Op1Value, shiftCount.shiftCount, this._ctx, this.Tools.Rand);
                 this.UpdateFlagsRotate(result, cf, shiftCount.shiftCount, true);
                 this.RegularUpdate.Set(this.op1, result);
             }
@@ -2563,8 +2886,16 @@ namespace AsmSim
         {
             public ShiftBaseX(Mnemonic mnemonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(mnemonic, args, Ot3.reg_reg_imm | Ot3.reg_mem_imm, keys, t)
             {
-                if (this.IsHalted) return;
-                if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
+                if (this.op1.NBits != this.op2.NBits)
+                {
+                    this.CreateSyntaxError1(this.op1, this.op2);
+                }
+
                 if (this.Op3Value.SortSize != 8)
                 {
                     this.Warning = string.Format("\"{0}\": value of operand 3 does not fit in 8-bit field. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
@@ -2579,7 +2910,7 @@ namespace AsmSim
             public override void Execute()
             {
                 BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx).shiftCount;
-                var (result, cf) = BitOperations.ShiftOperations(Mnemonic.ROR, this.Op1Value, shiftCount, this._ctx, this.Tools.Rand);
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.ROR, this.Op1Value, shiftCount, this._ctx, this.Tools.Rand);
                 this.RegularUpdate.Set(this.op1, result);
             }
         }
@@ -2589,7 +2920,7 @@ namespace AsmSim
             public override void Execute()
             {
                 BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx).shiftCount;
-                var (result, cf) = BitOperations.ShiftOperations(Mnemonic.SAR, this.Op1Value, shiftCount, this._ctx, this.Tools.Rand);
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.SAR, this.Op1Value, shiftCount, this._ctx, this.Tools.Rand);
                 this.RegularUpdate.Set(this.op1, result);
             }
         }
@@ -2599,7 +2930,7 @@ namespace AsmSim
             public override void Execute()
             {
                 BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx).shiftCount;
-                var (result, cf) = BitOperations.ShiftOperations(Mnemonic.SHL, this.Op1Value, shiftCount, this._ctx, this.Tools.Rand);
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.SHL, this.Op1Value, shiftCount, this._ctx, this.Tools.Rand);
                 this.RegularUpdate.Set(this.op1, result);
             }
         }
@@ -2609,7 +2940,7 @@ namespace AsmSim
             public override void Execute()
             {
                 BitVecExpr shiftCount = ShiftRotateBase.GetShiftCount(this.Op2Value, this.op1.NBits, this._ctx).shiftCount;
-                var (result, cf) = BitOperations.ShiftOperations(Mnemonic.SHR, this.Op1Value, shiftCount, this._ctx, this.Tools.Rand);
+                (BitVecExpr result, BoolExpr cf) = BitOperations.ShiftOperations(Mnemonic.SHR, this.Op1Value, shiftCount, this._ctx, this.Tools.Rand);
                 this.RegularUpdate.Set(this.op1, result);
             }
         }
@@ -2621,12 +2952,20 @@ namespace AsmSim
         {
             public ShiftDoubleBase(Mnemonic mnemonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(mnemonic, args, Ot3.reg_reg_imm | Ot3.reg_reg_reg | Ot3.mem_reg_imm | Ot3.mem_reg_reg, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if ((this.op1.NBits == 8) || (this.op2.NBits == 8))
                 {
                     this.SyntaxError = string.Format("\"{0}\": Operand 1 and 2 cannot be 8-bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6};  op3={7} ({8}, bits={9})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits);
                 }
-                if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
+                if (this.op1.NBits != this.op2.NBits)
+                {
+                    this.CreateSyntaxError1(this.op1, this.op2);
+                }
+
                 if (this.op3.IsReg && (this.op3.Rn != Rn.CL))
                 {
                     this.SyntaxError = string.Format("\"{0}\": If operand 3 is a registers, only GPR cl is allowed. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6};  op3={7} ({8}, bits={9})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits);
@@ -2649,7 +2988,7 @@ namespace AsmSim
             {
                 Context ctx = this._ctx;
                 uint nBits = (uint)this.op1.NBits;
-                var shiftCount = ShiftRotateBase.GetShiftCount(this.Op3Value, (int)nBits, ctx);
+                (BitVecExpr shiftCount, BoolExpr tooLarge) shiftCount = ShiftRotateBase.GetShiftCount(this.Op3Value, (int)nBits, ctx);
                 BitVecExpr nShifts8 = shiftCount.shiftCount; // nShifts8 is 8bits
                 BitVecExpr nShifts = ctx.MkZeroExt(nBits - 8, nShifts8);
                 BitVecExpr value_in = this.Op1Value;
@@ -2679,7 +3018,7 @@ namespace AsmSim
             {
                 Context ctx = this._ctx;
                 uint nBits = (uint)this.op1.NBits;
-                var (shiftCount, tooLarge) = ShiftRotateBase.GetShiftCount(this.Op3Value, (int)nBits, ctx);
+                (BitVecExpr shiftCount, BoolExpr tooLarge) = ShiftRotateBase.GetShiftCount(this.Op3Value, (int)nBits, ctx);
                 BitVecExpr nShifts = shiftCount;
                 BitVecExpr nShifts64 = ctx.MkZeroExt(nBits - 8, nShifts);
                 BitVecExpr value_in = this.Op1Value;
@@ -2710,7 +3049,11 @@ namespace AsmSim
             public Setcc(Mnemonic mnemonic, string[] args, ConditionalElement ce, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(mnemonic, args, Ot1.reg | Ot1.mem, keys, t)
             {
                 this._ce = ce;
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (this.op1.NBits != 8)
                 {
                     this.SyntaxError = string.Format("Invalid operands size. Operands can only have size 8. Operand1={0}", this.op1);
@@ -2730,7 +3073,11 @@ namespace AsmSim
         {
             public BitTestBase(Mnemonic mnemonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(mnemonic, args, Ot2.mem_imm | Ot2.mem_reg | Ot2.reg_imm | Ot2.reg_reg, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (this.op2.IsImm)
                 {
                     if (this.op2.NBits != 8)
@@ -2738,7 +3085,10 @@ namespace AsmSim
                         this.SyntaxError = string.Format("Operand 2 is imm and should have 8 bits. Operand1={0} ({1}, bits={2}); Operand2={3} ({4}, bits={5})", this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                     }
                 }
-                else if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
+                else if (this.op1.NBits != this.op2.NBits)
+                {
+                    this.CreateSyntaxError1(this.op1, this.op2);
+                }
             }
             private BitVecExpr GetBitPos(BitVecExpr value, uint nBits)
             {
@@ -2821,10 +3171,20 @@ namespace AsmSim
         {
             public Bsf(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.BSF, args, Ot2.reg_reg | Ot2.reg_mem, keys, t)
             {
-                if (this.IsHalted) return;
-                if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
+                if (this.op1.NBits != this.op2.NBits)
+                {
+                    this.CreateSyntaxError1(this.op1, this.op2);
+                }
+
                 if (this.op1.NBits == 8)
+                {
                     this.SyntaxError = string.Format("\"{0}\": Operands cannot be 8-bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                }
             }
             private BitVecExpr MakeBsfExpr(uint nBits, uint pos, BitVecExpr sourceOperand, BitVecNum one)
             {
@@ -2869,10 +3229,20 @@ namespace AsmSim
         {
             public Bsr(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.BSR, args, Ot2.reg_reg | Ot2.reg_mem, keys, t)
             {
-                if (this.IsHalted) return;
-                if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
+                if (this.op1.NBits != this.op2.NBits)
+                {
+                    this.CreateSyntaxError1(this.op1, this.op2);
+                }
+
                 if (this.op1.NBits == 8)
+                {
                     this.SyntaxError = string.Format("\"{0}\": Operands cannot be 8-bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                }
             }
             private BitVecExpr MakeBsrExpr(uint nBits, uint pos, BitVecExpr sourceOperand, BitVecNum one)
             {
@@ -3045,7 +3415,11 @@ namespace AsmSim
         {
             public Call(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.CALL, args, Ot1.imm | Ot1.mem | Ot1.reg | Ot1.UNKNOWN, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (this.op1.NBits == 8)
                 {
                     this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
@@ -3118,19 +3492,45 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this.Tools.Parameters.mode_64bit) yield return Rn.RSP;
-                    if (this.Tools.Parameters.mode_32bit) yield return Rn.ESP;
-                    if (this.Tools.Parameters.mode_16bit) yield return Rn.SP;
+                    if (this.Tools.Parameters.mode_64bit)
+                    {
+                        yield return Rn.RSP;
+                    }
+
+                    if (this.Tools.Parameters.mode_32bit)
+                    {
+                        yield return Rn.ESP;
+                    }
+
+                    if (this.Tools.Parameters.mode_16bit)
+                    {
+                        yield return Rn.SP;
+                    }
                 }
             }
             public override IEnumerable<Rn> RegsWriteStatic
             {
                 get
                 {
-                    if (this.Tools.Parameters.mode_64bit) yield return Rn.RSP;
-                    if (this.Tools.Parameters.mode_32bit) yield return Rn.ESP;
-                    if (this.Tools.Parameters.mode_16bit) yield return Rn.SP;
-                    foreach (Rn r in ReadRegs(this.op1, false)) yield return r;
+                    if (this.Tools.Parameters.mode_64bit)
+                    {
+                        yield return Rn.RSP;
+                    }
+
+                    if (this.Tools.Parameters.mode_32bit)
+                    {
+                        yield return Rn.ESP;
+                    }
+
+                    if (this.Tools.Parameters.mode_16bit)
+                    {
+                        yield return Rn.SP;
+                    }
+
+                    foreach (Rn r in ReadRegs(this.op1, false))
+                    {
+                        yield return r;
+                    }
                 }
             }
             public override bool MemReadStatic { get { return true; } }
@@ -3140,7 +3540,11 @@ namespace AsmSim
         {
             public Ret(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.RET, args, 1, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (this.NOperands == 1)
                 {
                     if (this.op1.IsImm)
@@ -3178,7 +3582,10 @@ namespace AsmSim
                     nextLineNumberExpr = this.GetMem(newSpExpr, 2);
                     this.RegularUpdate.Set(Rn.SP, newSpExpr);
                 }
-                else return;
+                else
+                {
+                    return;
+                }
 
                 this.RegularUpdate.NextLineNumberExpr = nextLineNumberExpr;
             }
@@ -3186,19 +3593,48 @@ namespace AsmSim
             {
                 get
                 {
-                    if (this.Tools.Parameters.mode_64bit) yield return Rn.RSP;
-                    if (this.Tools.Parameters.mode_32bit) yield return Rn.ESP;
-                    if (this.Tools.Parameters.mode_16bit) yield return Rn.SP;
+                    if (this.Tools.Parameters.mode_64bit)
+                    {
+                        yield return Rn.RSP;
+                    }
+
+                    if (this.Tools.Parameters.mode_32bit)
+                    {
+                        yield return Rn.ESP;
+                    }
+
+                    if (this.Tools.Parameters.mode_16bit)
+                    {
+                        yield return Rn.SP;
+                    }
                 }
             }
             public override IEnumerable<Rn> RegsWriteStatic
             {
                 get
                 {
-                    if (this.Tools.Parameters.mode_64bit) yield return Rn.RSP;
-                    if (this.Tools.Parameters.mode_32bit) yield return Rn.ESP;
-                    if (this.Tools.Parameters.mode_16bit) yield return Rn.SP;
-                    if (this.op1 != null) foreach (Rn r in ReadRegs(this.op1, false)) yield return r;
+                    if (this.Tools.Parameters.mode_64bit)
+                    {
+                        yield return Rn.RSP;
+                    }
+
+                    if (this.Tools.Parameters.mode_32bit)
+                    {
+                        yield return Rn.ESP;
+                    }
+
+                    if (this.Tools.Parameters.mode_16bit)
+                    {
+                        yield return Rn.SP;
+                    }
+
+                    if (this.op1 != null)
+                    {
+                        foreach (Rn r in ReadRegs(this.op1, false))
+                        {
+                            yield return r;
+                        }
+                    }
                 }
             }
             public override bool MemReadStatic { get { return true; } }
@@ -3218,10 +3654,17 @@ namespace AsmSim
             public StringOperationAbstract(Mnemonic mnemonic, Mnemonic prefix, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(mnemonic, args, 2, keys, t)
             {
                 this._prefix = prefix;
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (this.NOperands == 2)
                 {
-                    if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
+                    if (this.op1.NBits != this.op2.NBits)
+                    {
+                        this.CreateSyntaxError1(this.op1, this.op2);
+                    }
                 }
             }
 
@@ -3260,7 +3703,10 @@ namespace AsmSim
                 {
                     yield return this.SourceIndexReg;
                     yield return this.DestinationIndexReg;
-                    if (this._prefix != Mnemonic.NONE) yield return this.CounterReg;
+                    if (this._prefix != Mnemonic.NONE)
+                    {
+                        yield return this.CounterReg;
+                    }
                 }
             }
             public override IEnumerable<Rn> RegsWriteStatic
@@ -3269,16 +3715,23 @@ namespace AsmSim
                 {
                     yield return this.SourceIndexReg;
                     yield return this.DestinationIndexReg;
-                    if (this._prefix != Mnemonic.NONE) yield return this.CounterReg;
+                    if (this._prefix != Mnemonic.NONE)
+                    {
+                        yield return this.CounterReg;
+                    }
                 }
             }
         }
         public sealed class Movs : StringOperationAbstract
         {
-            public Movs(Mnemonic mnemonic, Mnemonic prefix, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) 
+            public Movs(Mnemonic mnemonic, Mnemonic prefix, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(mnemonic, prefix, args, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (!((prefix == Mnemonic.NONE) || (prefix == Mnemonic.REP)))
                 {
                     this.SyntaxError = string.Format("\"{0}\": Invalid prefix {1}. Only REP is allowed.", this.ToString(), prefix);
@@ -3340,12 +3793,16 @@ namespace AsmSim
 
         public sealed class Cmps : StringOperationAbstract
         {
-            public Cmps(Mnemonic mnemonic, Mnemonic prefix, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) 
+            public Cmps(Mnemonic mnemonic, Mnemonic prefix, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(mnemonic, prefix, args, keys, t)
             {
                 Context ctx = this._ctx;
 
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (!((prefix == Mnemonic.NONE) || (prefix == Mnemonic.REPE) || (prefix == Mnemonic.REPZ) || (prefix == Mnemonic.REPNE) || (prefix == Mnemonic.REPNZ)))
                 {
                     this.SyntaxError = string.Format("\"{0}\": Invalid prefix {1}. Only REPE, REPZ, REPZE or REPNZ are allowed.", this.ToString(), prefix);
@@ -3382,7 +3839,7 @@ namespace AsmSim
 
                 if (this._prefix == Mnemonic.NONE)
                 {
-                    var (result, cf, of, af) = BitOperations.Substract(this.GetMem(src, this._nBytes), this.GetMem(dst, this._nBytes), this._ctx);
+                    (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(this.GetMem(src, this._nBytes), this.GetMem(dst, this._nBytes), this._ctx);
 
                     this.RegularUpdate.Set(Flags.CF, cf);
                     this.RegularUpdate.Set(Flags.OF, of);
@@ -3425,10 +3882,14 @@ namespace AsmSim
 
         public sealed class Stos : StringOperationAbstract
         {
-            public Stos(Mnemonic mnemonic, Mnemonic prefix, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) 
+            public Stos(Mnemonic mnemonic, Mnemonic prefix, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(mnemonic, prefix, args, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (!((prefix == Mnemonic.NONE) || (prefix == Mnemonic.REP)))
                 {
                     this.SyntaxError = string.Format("\"{0}\": Invalid prefix {1}. Only REP is allowed.", this.ToString(), prefix);
@@ -3447,7 +3908,7 @@ namespace AsmSim
                         case Mnemonic.STOSQ: this._nBytes = 8; break;
                         default: break;
                     }
-                } 
+                }
                 else
                 {
                     this.SyntaxError = string.Format("\"{0}\": Invalid number of operands. Expected 0 or 2 operands, found {1} operand(s)", this.ToString(), this.NOperands);
@@ -3489,7 +3950,10 @@ namespace AsmSim
                 {
                     yield return this.AccumulatorReg;
                     yield return this.DestinationIndexReg;
-                    if (this._prefix != Mnemonic.NONE) yield return this.CounterReg;
+                    if (this._prefix != Mnemonic.NONE)
+                    {
+                        yield return this.CounterReg;
+                    }
                 }
             }
             public override IEnumerable<Rn> RegsWriteStatic
@@ -3497,7 +3961,10 @@ namespace AsmSim
                 get
                 {
                     yield return this.DestinationIndexReg;
-                    if (this._prefix != Mnemonic.NONE) yield return this.CounterReg;
+                    if (this._prefix != Mnemonic.NONE)
+                    {
+                        yield return this.CounterReg;
+                    }
                 }
             }
         }
@@ -3513,7 +3980,11 @@ namespace AsmSim
             public Scas(Mnemonic mnemonic, Mnemonic prefix, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(mnemonic, prefix, args, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (!((prefix == Mnemonic.NONE) || (prefix == Mnemonic.REPE) || (prefix == Mnemonic.REPZ) || (prefix == Mnemonic.REPNE) || (prefix == Mnemonic.REPNZ)))
                 {
                     this.SyntaxError = string.Format("\"{0}\": Invalid prefix {1}. Only REPE, REPZ, REPZE or REPNZ are allowed.", this.ToString(), prefix);
@@ -3549,7 +4020,7 @@ namespace AsmSim
 
                 if (this._prefix == Mnemonic.NONE)
                 {
-                    var (result, cf, of, af) = BitOperations.Substract(accumulator, this.GetMem(dst, this._nBytes), this._ctx);
+                    (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) = BitOperations.Substract(accumulator, this.GetMem(dst, this._nBytes), this._ctx);
 
                     this.RegularUpdate.Set(Flags.CF, cf);
                     this.RegularUpdate.Set(Flags.OF, of);
@@ -3590,7 +4061,10 @@ namespace AsmSim
                 {
                     yield return this.AccumulatorReg;
                     yield return this.DestinationIndexReg;
-                    if (this._prefix != Mnemonic.NONE) yield return this.CounterReg;
+                    if (this._prefix != Mnemonic.NONE)
+                    {
+                        yield return this.CounterReg;
+                    }
                 }
             }
             public override IEnumerable<Rn> RegsWriteStatic
@@ -3598,7 +4072,10 @@ namespace AsmSim
                 get
                 {
                     yield return this.DestinationIndexReg;
-                    if (this._prefix != Mnemonic.NONE) yield return this.CounterReg;
+                    if (this._prefix != Mnemonic.NONE)
+                    {
+                        yield return this.CounterReg;
+                    }
                 }
             }
             public override Flags FlagsWriteStatic { get { return Flags.CF_PF_AF_ZF_SF_OF; } }
@@ -3613,10 +4090,14 @@ namespace AsmSim
         /// </summary>
         public sealed class Lods : StringOperationAbstract
         {
-            public Lods(Mnemonic mnemonic, Mnemonic prefix, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) 
+            public Lods(Mnemonic mnemonic, Mnemonic prefix, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(mnemonic, prefix, args, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (!(prefix == Mnemonic.NONE))
                 {
                     this.SyntaxError = string.Format("\"{0}\": Invalid prefix {1}. No Prefix is allowed.", this.ToString(), prefix);
@@ -3690,7 +4171,11 @@ namespace AsmSim
         {
             public In(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.IN, args, Ot2.reg_imm | Ot2.reg_reg, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (this.op1.NBits == 64)
                 {
                     this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
@@ -3730,7 +4215,11 @@ namespace AsmSim
         {
             public Out(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.OUT, args, Ot2.imm_reg | Ot2.reg_reg, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (this.op2.NBits == 64)
                 {
                     this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
@@ -3894,7 +4383,11 @@ namespace AsmSim
         {
             public Lea(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.LEA, args, Ot2.reg_mem, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (this.op1.NBits == 8)
                 {
                     this.SyntaxError = string.Format("\"{0}\": Operand 1 cannot be 8 bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
@@ -3953,12 +4446,19 @@ namespace AsmSim
         {
             public Movbe(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.MOVBE, args, Ot2.mem_reg | Ot2.reg_mem, keys, t)
             {
-                if (this.IsHalted) return;
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
                 if (this.op1.NBits == 8)
                 {
                     this.SyntaxError = string.Format("\"{0}\": Operand 1 cannot be 8 bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                 }
-                if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
+                if (this.op1.NBits != this.op2.NBits)
+                {
+                    this.CreateSyntaxError1(this.op1, this.op2);
+                }
             }
             public override void Execute()
             {
@@ -3974,17 +4474,17 @@ namespace AsmSim
                         }
                     case 32:
                         {
-                            var swapped1 = ctx.MkConcat(ctx.MkExtract(7, 0, src), ctx.MkExtract(15, 8, src));
-                            var swapped2 = ctx.MkConcat(ctx.MkExtract(23, 16, src), ctx.MkExtract(31, 24, src));
+                            BitVecExpr swapped1 = ctx.MkConcat(ctx.MkExtract(7, 0, src), ctx.MkExtract(15, 8, src));
+                            BitVecExpr swapped2 = ctx.MkConcat(ctx.MkExtract(23, 16, src), ctx.MkExtract(31, 24, src));
                             swapped = ctx.MkConcat(swapped1, swapped2);
                             break;
                         }
                     case 64:
                         {
-                            var swapped1 = ctx.MkConcat(ctx.MkExtract(7, 0, src), ctx.MkExtract(15, 8, src));
-                            var swapped2 = ctx.MkConcat(ctx.MkExtract(23, 16, src), ctx.MkExtract(31, 24, src));
-                            var swapped3 = ctx.MkConcat(ctx.MkExtract(39, 32, src), ctx.MkExtract(47, 40, src));
-                            var swapped4 = ctx.MkConcat(ctx.MkExtract(55, 48, src), ctx.MkExtract(63, 56, src));
+                            BitVecExpr swapped1 = ctx.MkConcat(ctx.MkExtract(7, 0, src), ctx.MkExtract(15, 8, src));
+                            BitVecExpr swapped2 = ctx.MkConcat(ctx.MkExtract(23, 16, src), ctx.MkExtract(31, 24, src));
+                            BitVecExpr swapped3 = ctx.MkConcat(ctx.MkExtract(39, 32, src), ctx.MkExtract(47, 40, src));
+                            BitVecExpr swapped4 = ctx.MkConcat(ctx.MkExtract(55, 48, src), ctx.MkExtract(63, 56, src));
                             swapped = ctx.MkConcat(ctx.MkConcat(swapped1, swapped2), ctx.MkConcat(swapped3, swapped4));
                             break;
                         }
@@ -4066,8 +4566,15 @@ namespace AsmSim
         {
             public AddPD(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.ADDPD, args, Ot2.reg_reg | Ot2.reg_mem, keys, t)
             {
-                if (this.IsHalted) return;
-                if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
+                if (this.op1.NBits != this.op2.NBits)
+                {
+                    this.CreateSyntaxError1(this.op1, this.op2);
+                }
             }
             public override void Execute()
             {
@@ -4095,8 +4602,15 @@ namespace AsmSim
         {
             public XorPD(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.XORPD, args, Ot2.reg_reg | Ot2.reg_mem, keys, t)
             {
-                if (this.IsHalted) return;
-                if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
+                if (this.op1.NBits != this.op2.NBits)
+                {
+                    this.CreateSyntaxError1(this.op1, this.op2);
+                }
             }
             public override void Execute()
             {
@@ -4110,8 +4624,16 @@ namespace AsmSim
         {
             public Popcnt(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t) : base(Mnemonic.POPCNT, args, Ot2.reg_reg | Ot2.reg_mem, keys, t)
             {
-                if (this.IsHalted) return;
-                if (this.op1.NBits != this.op2.NBits) this.CreateSyntaxError1(this.op1, this.op2);
+                if (this.IsHalted)
+                {
+                    return;
+                }
+
+                if (this.op1.NBits != this.op2.NBits)
+                {
+                    this.CreateSyntaxError1(this.op1, this.op2);
+                }
+
                 if (this.op1.NBits == 8)
                 {
                     this.SyntaxError = string.Format("\"{0}\": 8 bits operands are not allowed. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);

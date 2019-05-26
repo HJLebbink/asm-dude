@@ -183,7 +183,11 @@ namespace AsmTools
                     sb.Append(value.ToString() + ", ");
                 }
             }
-            if (sb.Length > 2) sb.Length -= 2;
+            if (sb.Length > 2)
+            {
+                sb.Length -= 2;
+            }
+
             return sb.ToString();
         }
         public static string ToString(Ot2 ot2)
@@ -196,7 +200,11 @@ namespace AsmTools
                     sb.Append(value.ToString() + ", ");
                 }
             }
-            if (sb.Length > 2) sb.Length -= 2;
+            if (sb.Length > 2)
+            {
+                sb.Length -= 2;
+            }
+
             return sb.ToString();
         }
         public static string ToString(Ot3 ot)
@@ -209,7 +217,11 @@ namespace AsmTools
                     sb.Append(value.ToString() + ", ");
                 }
             }
-            if (sb.Length > 2) sb.Length -= 2;
+            if (sb.Length > 2)
+            {
+                sb.Length -= 2;
+            }
+
             return sb.ToString();
         }
 

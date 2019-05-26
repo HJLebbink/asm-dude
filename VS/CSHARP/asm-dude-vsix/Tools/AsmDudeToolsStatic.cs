@@ -90,9 +90,21 @@ namespace AsmDude.Tools
         {
             get
             {
-                if (Settings.Default.useAssemblerMasm) return AssemblerEnum.MASM;
-                if (Settings.Default.useAssemblerNasm) return AssemblerEnum.NASM_INTEL;
-                if (Settings.Default.useAssemblerNasm_Att) return AssemblerEnum.NASM_ATT;
+                if (Settings.Default.useAssemblerMasm)
+                {
+                    return AssemblerEnum.MASM;
+                }
+
+                if (Settings.Default.useAssemblerNasm)
+                {
+                    return AssemblerEnum.NASM_INTEL;
+                }
+
+                if (Settings.Default.useAssemblerNasm_Att)
+                {
+                    return AssemblerEnum.NASM_ATT;
+                }
+
                 Output_WARNING("AsmDudeToolsStatic.Used_Assembler: no assembler specified, assuming MASM");
                 return AssemblerEnum.MASM;
             }
@@ -135,7 +147,9 @@ namespace AsmDude.Tools
         public static async Task<string> GetFilenameAsync(ITextBuffer buffer)
         {
             if (!ThreadHelper.CheckAccess())
+            {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            }
 
             buffer.Properties.TryGetProperty(typeof(ITextDocument), out ITextDocument document);
             string filename = document?.FilePath;
@@ -146,7 +160,9 @@ namespace AsmDude.Tools
         public static async System.Threading.Tasks.Task Open_Disassembler_Async()
         {
             if (!ThreadHelper.CheckAccess())
+            {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            }
 
             DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
             dte.ExecuteCommand("Debug.Disassembly");
@@ -163,7 +179,9 @@ namespace AsmDude.Tools
         public static async Task<int> GetFontSizeAsync()
         {
             if (!ThreadHelper.CheckAccess())
+            {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            }
 
             DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
             Properties propertiesList = dte.get_Properties("FontsAndColors", "TextEditor");
@@ -174,7 +192,8 @@ namespace AsmDude.Tools
 
         public static FontFamily GetFontType()
         {
-            return ThreadHelper.JoinableTaskFactory.Run(async delegate {
+            return ThreadHelper.JoinableTaskFactory.Run(async delegate
+            {
                 return await GetFontTypeAsync();
             });
         }
@@ -183,7 +202,9 @@ namespace AsmDude.Tools
         {
             await System.Threading.Tasks.Task.Yield();
             if (!ThreadHelper.CheckAccess())
+            {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            }
 
             DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
             Properties propertiesList = dte.get_Properties("FontsAndColors", "TextEditor");
@@ -204,7 +225,9 @@ namespace AsmDude.Tools
         public static async Task<Brush> GetFontColorAsync()
         {
             if (!ThreadHelper.CheckAccess())
+            {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            }
 
             DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
             Properties propertiesList = dte.get_Properties("FontsAndColors", "TextEditor");
@@ -235,7 +258,9 @@ namespace AsmDude.Tools
         public static async Task<Brush> GetBackgroundColorAsync()
         {
             if (!ThreadHelper.CheckAccess())
+            {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            }
 
             DTE dte = Package.GetGlobalService(typeof(SDTE)) as DTE;
             Properties propertiesList = dte.get_Properties("FontsAndColors", "TextEditor");
@@ -258,9 +283,11 @@ namespace AsmDude.Tools
         public static async void Error_Task_Navigate_Handler(object sender, EventArgs arguments)
         {
             if (!ThreadHelper.CheckAccess())
+            {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            }
 
-            var task = sender as Microsoft.VisualStudio.Shell.Task;
+            Microsoft.VisualStudio.Shell.Task task = sender as Microsoft.VisualStudio.Shell.Task;
 
             if (task == null)
             {
@@ -284,7 +311,7 @@ namespace AsmDude.Tools
 
             Guid logicalView = VSConstants.LOGVIEWID_Code;
 
-            int hr = openDoc.OpenDocumentViaProject(task.Document, ref logicalView, out var serviceProvider, out var hierarchy, out uint itemId, out var frame);
+            int hr = openDoc.OpenDocumentViaProject(task.Document, ref logicalView, out Microsoft.VisualStudio.OLE.Interop.IServiceProvider serviceProvider, out IVsUIHierarchy hierarchy, out uint itemId, out IVsWindowFrame frame);
             if (ErrorHandler.Failed(hr) || (frame == null))
             {
                 Output_INFO("AsmDudeToolsStatic:Error_Task_Navigate_Handler: OpenDocumentViaProject failed");
@@ -298,7 +325,7 @@ namespace AsmDude.Tools
             {
                 if (docData is IVsTextBufferProvider bufferProvider)
                 {
-                    ErrorHandler.ThrowOnFailure(bufferProvider.GetTextBuffer(out var lines));
+                    ErrorHandler.ThrowOnFailure(bufferProvider.GetTextBuffer(out IVsTextLines lines));
                     buffer = lines as VsTextBuffer;
 
                     if (buffer == null)
@@ -356,7 +383,7 @@ namespace AsmDude.Tools
 
         public static ImageSource Bitmap_From_Uri(Uri bitmapUri)
         {
-            var bitmap = new BitmapImage();
+            BitmapImage bitmap = new BitmapImage();
             try
             {
                 bitmap.BeginInit();
@@ -411,7 +438,9 @@ namespace AsmDude.Tools
         public static async System.Threading.Tasks.Task OutputAsync(string msg)
         {
             if (!ThreadHelper.CheckAccess())
+            {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            }
 
             IVsOutputWindowPane outputPane = await GetOutputPaneAsync();
             string msg2 = string.Format(CultureInfo.CurrentCulture, "{0}", msg.Trim() + Environment.NewLine);
@@ -446,7 +475,9 @@ namespace AsmDude.Tools
         public static async Task<IVsOutputWindowPane> GetOutputPaneAsync()
         {
             if (!ThreadHelper.CheckAccess())
+            {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            }
 
             IVsOutputWindow outputWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
             if (outputWindow == null)
@@ -457,7 +488,7 @@ namespace AsmDude.Tools
             {
                 Guid paneGuid = new Guid("F97896F3-19AB-4E1F-A9C4-E11D489E5141");
                 outputWindow.CreatePane(paneGuid, "AsmDude", 1, 0);
-                outputWindow.GetPane(paneGuid, out var pane);
+                outputWindow.GetPane(paneGuid, out IVsOutputWindowPane pane);
                 return pane;
             }
         }
@@ -470,7 +501,7 @@ namespace AsmDude.Tools
                 int startLine = bufferPosition.Value.GetContainingLine().Start;
                 int currentPos = bufferPosition.Value.Position;
 
-                var (beginPos, endPos) = AsmSourceTools.GetKeywordPos(currentPos - startLine, line);
+                (int beginPos, int endPos) = AsmSourceTools.GetKeywordPos(currentPos - startLine, line);
                 int length = endPos - beginPos;
 
                 string result = line.Substring(beginPos, length);
@@ -493,7 +524,10 @@ namespace AsmDude.Tools
         public static string Get_Previous_Keyword(SnapshotPoint begin, SnapshotPoint end)
         {
             // return getPreviousKeyword(begin.GetContainingLine.)
-            if (end == 0) return "";
+            if (end == 0)
+            {
+                return "";
+            }
 
             int beginLine = begin.GetContainingLine().Start;
             int beginPos = begin.Position - beginLine;
@@ -519,7 +553,7 @@ namespace AsmDude.Tools
 
             for (int i = 0; i < errorListProvider.Tasks.Count; ++i)
             {
-                var t = errorListProvider.Tasks[i];
+                Microsoft.VisualStudio.Shell.Task t = errorListProvider.Tasks[i];
                 if (t.Text.Equals(msg))
                 {
                     return;
@@ -592,9 +626,12 @@ namespace AsmDude.Tools
 
         public static bool Is_Arch_Switched_On(Arch arch)
         {
-            try {
+            try
+            {
                 return (arch == Arch.ARCH_NONE) ? true : (bool)Settings.Default[arch.ToString()];
-            } catch (Exception e) {
+            }
+            catch (Exception)
+            {
                 return false;
             }
         }

@@ -20,21 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Windows;
-using System.Windows.Input;
+using AsmDude.Tools;
+using EnvDTE80;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Operations;
-using Microsoft.VisualStudio.Shell;
-using EnvDTE80;
 using Microsoft.VisualStudio.Text.Formatting;
-using AsmDude.Tools;
-using System.Windows.Threading;
+using Microsoft.VisualStudio.Text.Operations;
+using System;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace AsmDude.AsmDoc
 {
@@ -98,7 +98,10 @@ namespace AsmDude.AsmDoc
 
         public override void PreprocessMouseMove(MouseEventArgs e)
         {
-            if (!Settings.Default.AsmDoc_On) return;
+            if (!Settings.Default.AsmDoc_On)
+            {
+                return;
+            }
 
             if (!this._mouseDownAnchorPoint.HasValue && this._state.Enabled && (e.LeftButton == MouseButtonState.Released))
             {
@@ -107,7 +110,7 @@ namespace AsmDude.AsmDoc
             else if (this._mouseDownAnchorPoint.HasValue)
             {
                 // Check and see if this is a drag; if so, clear out the highlight.
-                var currentMousePosition = this.RelativeToView(e.GetPosition(this._view.VisualElement));
+                Point currentMousePosition = this.RelativeToView(e.GetPosition(this._view.VisualElement));
                 if (this.InDragOperation(this._mouseDownAnchorPoint.Value, currentMousePosition))
                 {
                     this._mouseDownAnchorPoint = null;
@@ -130,13 +133,16 @@ namespace AsmDude.AsmDoc
 
         public override void PreprocessMouseUp(MouseButtonEventArgs e)
         {
-            if (!Settings.Default.AsmDoc_On) return;
+            if (!Settings.Default.AsmDoc_On)
+            {
+                return;
+            }
 
             try
             {
                 if (this._mouseDownAnchorPoint.HasValue && this._state.Enabled)
                 {
-                    var currentMousePosition = this.RelativeToView(e.GetPosition(this._view.VisualElement));
+                    Point currentMousePosition = this.RelativeToView(e.GetPosition(this._view.VisualElement));
 
                     if (!this.InDragOperation(this._mouseDownAnchorPoint.Value, currentMousePosition))
                     {
@@ -174,38 +180,41 @@ namespace AsmDude.AsmDoc
         private bool TryHighlightItemUnderMouse(Point position)
         {
             //AsmDudeToolsStatic.Output_INFO("AsmDocMouseHandler:TryHighlightItemUnderMouse: position=" + position);
-            if (!Settings.Default.AsmDoc_On) return false;
+            if (!Settings.Default.AsmDoc_On)
+            {
+                return false;
+            }
 
             bool updated = false;
             try
             {
-                var line = this._view.TextViewLines.GetTextViewLineContainingYCoordinate(position.Y);
+                ITextViewLine line = this._view.TextViewLines.GetTextViewLineContainingYCoordinate(position.Y);
                 if (line == null)
                 {
                     return false;
                 }
-                var bufferPosition = line.GetBufferPositionFromXCoordinate(position.X);
+                SnapshotPoint? bufferPosition = line.GetBufferPositionFromXCoordinate(position.X);
                 if (!bufferPosition.HasValue)
                 {
                     return false;
                 }
 
                 // Quick check - if the mouse is still inside the current underline span, we're already set
-                var currentSpan = this.CurrentUnderlineSpan;
+                SnapshotSpan? currentSpan = this.CurrentUnderlineSpan;
                 if (currentSpan.HasValue && currentSpan.Value.Contains(bufferPosition.Value))
                 {
                     updated = true;
                     return true;
                 }
 
-                var extent = this._navigator.GetExtentOfWord(bufferPosition.Value);
+                TextExtent extent = this._navigator.GetExtentOfWord(bufferPosition.Value);
                 if (!extent.IsSignificant)
                 {
                     return false;
                 }
 
                 //  check for valid classification type.
-                foreach (var classification in this._aggregator.GetClassificationSpans(extent.Span))
+                foreach (ClassificationSpan classification in this._aggregator.GetClassificationSpans(extent.Span))
                 {
                     //TODO check if classification is a mnemonic only then check for an url
                     string keyword = classification.Span.GetText();
@@ -234,7 +243,7 @@ namespace AsmDude.AsmDoc
         {
             get
             {
-                var classifier = AsmDocUnderlineTaggerProvider.GetClassifierForView(this._view);
+                AsmDocUnderlineTagger classifier = AsmDocUnderlineTaggerProvider.GetClassifierForView(this._view);
                 if (classifier != null && classifier.CurrentUnderlineSpan.HasValue)
                 {
                     return classifier.CurrentUnderlineSpan.Value.TranslateTo(this._view.TextSnapshot, SpanTrackingMode.EdgeExclusive);
@@ -248,7 +257,7 @@ namespace AsmDude.AsmDoc
 
         private bool Set_Highlight_Span(SnapshotSpan? span)
         {
-            var classifier = AsmDocUnderlineTaggerProvider.GetClassifierForView(this._view);
+            AsmDocUnderlineTagger classifier = AsmDocUnderlineTaggerProvider.GetClassifierForView(this._view);
             if (classifier != null)
             {
                 Mouse.OverrideCursor = span.HasValue ? Cursors.Hand : null;
@@ -268,10 +277,17 @@ namespace AsmDude.AsmDoc
         private string Get_Url(string keyword)
         {
             string reference = this._asmDudeTools.Get_Url(keyword);
-            if (reference == null) return null;
-            if (reference.Length == 0) return null;
+            if (reference == null)
+            {
+                return null;
+            }
 
-            return reference.StartsWith("http", StringComparison.OrdinalIgnoreCase) 
+            if (reference.Length == 0)
+            {
+                return null;
+            }
+
+            return reference.StartsWith("http", StringComparison.OrdinalIgnoreCase)
                 ? reference
                 : Settings.Default.AsmDoc_Url + reference;
         }
@@ -279,15 +295,17 @@ namespace AsmDude.AsmDoc
         private async Task<EnvDTE.Window> GetWindowAsync(DTE2 dte2, string url)
         {
             if (!ThreadHelper.CheckAccess())
+            {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            }
 
-            var enumerator = dte2.Windows.GetEnumerator();
+            System.Collections.IEnumerator enumerator = dte2.Windows.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                var window = enumerator.Current as EnvDTE.Window;
+                EnvDTE.Window window = enumerator.Current as EnvDTE.Window;
                 if (window.ObjectKind.Equals(EnvDTE.Constants.vsWindowKindWebBrowser))
                 {
-                    var url2 = VisualStudioWebBrowser.GetWebBrowserWindowUrl(window).ToString();
+                    string url2 = VisualStudioWebBrowser.GetWebBrowserWindowUrl(window).ToString();
                     //AsmDudeToolsStatic.Output_INFO("Documentation " + window.Caption + " is open. url=" + url2.ToString());
                     if (url2.Equals(url, StringComparison.InvariantCultureIgnoreCase))
                     {
@@ -301,7 +319,9 @@ namespace AsmDude.AsmDoc
         private async Task<int> Open_File_Async(string keyword)
         {
             if (!ThreadHelper.CheckAccess())
+            {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            }
 
             string url = this.Get_Url(keyword);
             if (url == null)
@@ -311,7 +331,7 @@ namespace AsmDude.AsmDoc
             }
             //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Open_File; url={1}", this.ToString(), url));
 
-            var dte2 = Package.GetGlobalService(typeof(SDTE)) as DTE2;
+            DTE2 dte2 = Package.GetGlobalService(typeof(SDTE)) as DTE2;
             if (dte2 == null)
             {
                 AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:Open_File; dte2 is null.", this.ToString()));
@@ -320,7 +340,7 @@ namespace AsmDude.AsmDoc
 
             try
             {
-                var window = await this.GetWindowAsync(dte2, url);
+                EnvDTE.Window window = await this.GetWindowAsync(dte2, url);
                 if (window == null)
                 {
                     // vsNavigateOptionsDefault    0   The Web page opens in the currently open browser window. (Default)
@@ -328,18 +348,23 @@ namespace AsmDude.AsmDoc
                     AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Open_File; going to open url {1}.", this.ToString(), url));
                     window = dte2.ItemOperations.Navigate(url, EnvDTE.vsNavigateOptions.vsNavigateOptionsNewWindow);
 
-                    var parts = url.Split('/');
-                    var caption = parts[parts.Length - 1];
+                    string[] parts = url.Split('/');
+                    string caption = parts[parts.Length - 1];
                     caption = caption.Replace('_', '/');
 
                     window.Caption = caption;
 
-                    var action = new Action(() => {
+                    Action action = new Action(() =>
+                    {
                         try
                         {
                             ThreadHelper.ThrowIfNotOnUIThread();
-                            if (!window.Caption.Equals(caption)) window.Caption = caption;
-                        } catch (Exception e)
+                            if (!window.Caption.Equals(caption))
+                            {
+                                window.Caption = caption;
+                            }
+                        }
+                        catch (Exception e)
                         {
                             AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Open_File; exception={1}", this.ToString(), e));
                         }
@@ -366,7 +391,7 @@ namespace AsmDude.AsmDoc
 
         private static void DelayAction(int millisecond, Action action)
         {
-            var timer = new DispatcherTimer();
+            DispatcherTimer timer = new DispatcherTimer();
             timer.Tick += delegate
             {
                 action.Invoke();

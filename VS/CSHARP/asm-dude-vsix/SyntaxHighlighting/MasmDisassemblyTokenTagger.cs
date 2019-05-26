@@ -20,15 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Tagging;
-
 using AsmDude.SyntaxHighlighting;
 using AsmDude.Tools;
 using AsmTools;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Tagging;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace AsmDude
@@ -92,7 +90,7 @@ namespace AsmDude
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
 
                 string line = containingLine.GetText().ToUpper();
-                var pos = new List<(int BeginPos, int Length, bool IsLabel)>(AsmSourceTools.SplitIntoKeywordPos(line));
+                List<(int BeginPos, int Length, bool IsLabel)> pos = new List<(int BeginPos, int Length, bool IsLabel)>(AsmSourceTools.SplitIntoKeywordPos(line));
 
                 int offset = containingLine.Start.Position;
                 int nKeywords = pos.Count;
@@ -125,7 +123,10 @@ namespace AsmDude
                                 yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._jump);
 
                                 k++; // goto the next word
-                                if (k == nKeywords) break; // there are no next words
+                                if (k == nKeywords)
+                                {
+                                    break; // there are no next words
+                                }
 
                                 string asmToken2 = NasmIntelTokenTagger.Keyword(pos[k], line);
                                 switch (asmToken2)
@@ -139,7 +140,11 @@ namespace AsmDude
                                             yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._misc);
 
                                             k++;
-                                            if (k == nKeywords) break;
+                                            if (k == nKeywords)
+                                            {
+                                                break;
+                                            }
+
                                             string asmToken3 = NasmIntelTokenTagger.Keyword(pos[k], line);
                                             switch (asmToken3)
                                             {
@@ -148,10 +153,10 @@ namespace AsmDude
                                                         yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._misc);
                                                         break;
                                                     }
-                                                        yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._label);
-                                                        break;
-                                                    }
-                                            
+                                                    yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._label);
+                                                    break;
+                                            }
+
                                             break;
                                         }
                                     default:
@@ -168,15 +173,19 @@ namespace AsmDude
                                         }
                                 }
                                 break;
-                            }                                
+                            }
                         case AsmTokenType.UNKNOWN: // asmToken is not a known keyword, check if it is numerical
                             {
                                 if (asmToken.Equals("OFFSET"))
-																						   
+
                                 {
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._directive);
                                     k++; // goto the next word
-                                    if (k == nKeywords) break;
+                                    if (k == nKeywords)
+                                    {
+                                        break;
+                                    }
+
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._label);
                                 }
                                 else if (IsConstant(asmToken))
@@ -186,7 +195,7 @@ namespace AsmDude
                                 else if (asmToken.StartsWith("\"") && asmToken.EndsWith("\""))
                                 {
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
-									}
+                                }
                                 else
                                 {
                                     //yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._UNKNOWN);
@@ -215,11 +224,11 @@ namespace AsmDude
             AsmDudeToolsStatic.Print_Speed_Warning(time1, "MasmDisassemblyTokenTagger");
         }
 
-		#region Private Member Methods
+        #region Private Member Methods
 
         private static bool IsConstant(string token)
         {
-            if (long.TryParse(token, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out var dummy1))
+            if (long.TryParse(token, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out long dummy1))
             {
                 return true;
             }
@@ -236,22 +245,51 @@ namespace AsmDude
 
         private static bool IsSourceCode(string line, List<(int BeginPos, int Length, bool IsLabel)> pos)
         {
-            if (pos.Count == 0) return true;
-
-            // just some rules of thumb
-            if (line.Contains(";")) return true;
+            if (pos.Count == 0)
             {
-                string line2 = line.Trim();
-                if (line2.StartsWith("---")) return true;
-                if (line2.StartsWith("{")) return true;
-                if (line2.StartsWith("}")) return true;
-                if (line2.StartsWith("/")) return true;
-                if (line2.Contains("__CDECL")) return true;
+                return true;
             }
 
-            if (pos[0].IsLabel) return false;
+            // just some rules of thumb
+            if (line.Contains(";"))
+            {
+                return true;
+            }
 
-            foreach (var v in pos)
+            {
+                string line2 = line.Trim();
+                if (line2.StartsWith("---"))
+                {
+                    return true;
+                }
+
+                if (line2.StartsWith("{"))
+                {
+                    return true;
+                }
+
+                if (line2.StartsWith("}"))
+                {
+                    return true;
+                }
+
+                if (line2.StartsWith("/"))
+                {
+                    return true;
+                }
+
+                if (line2.Contains("__CDECL"))
+                {
+                    return true;
+                }
+            }
+
+            if (pos[0].IsLabel)
+            {
+                return false;
+            }
+
+            foreach ((int BeginPos, int Length, bool IsLabel) v in pos)
             {
                 string asmToken = NasmIntelTokenTagger.Keyword(v, line);
                 if (AsmSourceTools.ParseMnemonic(asmToken, true) != Mnemonic.NONE)

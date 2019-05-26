@@ -20,14 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using AsmTools;
+using QuickGraph;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Linq;
-
-using AsmTools;
-using QuickGraph;
+using System.Text;
 
 namespace AsmSim
 {
@@ -58,7 +57,7 @@ namespace AsmSim
 
         public StateConfig Create_StateConfig()
         {
-            return this.Create_StateConfig(0, this.LastLineNumber-1);
+            return this.Create_StateConfig(0, this.LastLineNumber - 1);
         }
 
         public StateConfig Create_StateConfig(
@@ -68,17 +67,25 @@ namespace AsmSim
             ISet<Rn> regs = new HashSet<Rn>();
             Flags flags = Flags.NONE;
             bool mem = false;
-            var dummyKeys = ("", "", "");
+            (string, string, string) dummyKeys = ("", "", "");
             for (int lineNumber = lineNumberBegin; lineNumber <= lineNumberEnd; lineNumber++)
             {
-                var content = this.Get_Line(lineNumber);
-                using (var opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, this._tools))
+                (Mnemonic Mnemonic, string[] Args) content = this.Get_Line(lineNumber);
+                using (Mnemonics.OpcodeBase opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, this._tools))
                 {
                     if (opcodeBase != null)
                     {
                         flags |= opcodeBase.FlagsReadStatic | opcodeBase.FlagsWriteStatic;
-                        foreach (Rn r in opcodeBase.RegsReadStatic) regs.Add(RegisterTools.Get64BitsRegister(r));
-                        foreach (Rn r in opcodeBase.RegsWriteStatic) regs.Add(RegisterTools.Get64BitsRegister(r));
+                        foreach (Rn r in opcodeBase.RegsReadStatic)
+                        {
+                            regs.Add(RegisterTools.Get64BitsRegister(r));
+                        }
+
+                        foreach (Rn r in opcodeBase.RegsWriteStatic)
+                        {
+                            regs.Add(RegisterTools.Get64BitsRegister(r));
+                        }
+
                         mem |= opcodeBase.MemWriteStatic || opcodeBase.MemReadStatic;
                     }
                 }
@@ -87,7 +94,11 @@ namespace AsmSim
             StateConfig config = new StateConfig();
             config.Set_All_Off();
             config.Set_Flags_On(flags);
-            foreach (Rn reg in regs) config.Set_Reg_On(reg);
+            foreach (Rn reg in regs)
+            {
+                config.Set_Reg_On(reg);
+            }
+
             config.mem = mem;
             return config;
         }
@@ -110,7 +121,8 @@ namespace AsmSim
                 string key1 = this.Get_Key(lineNumber.lineNumber1);
                 string key2 = this.Get_Key(lineNumber.lineNumber2);
                 return (Key1: key1, Key2: key2);
-            } else
+            }
+            else
             {
                 string key1 = Tools.CreateKey(this._tools.Rand);
                 string key2 = key1 + "B";
@@ -120,10 +132,12 @@ namespace AsmSim
 
         public int NLines { get { return this.Current.Count; } }
 
-        public int FirstLineNumber {
-            get {
+        public int FirstLineNumber
+        {
+            get
+            {
                 int lineNumber = 0;
-                var current = this.Current;
+                IList<(string Label, Mnemonic Mnemonic, string[] Args)> current = this.Current;
                 while (current[lineNumber].Mnemonic == Mnemonic.NONE)
                 {
                     lineNumber++;
@@ -146,7 +160,7 @@ namespace AsmSim
                 Console.WriteLine("WARING: CFlow:geLine: lineNumber " + lineNumber + " does not exist");
                 return (Mnemonic.NONE, null);
             }
-            var v = this.Current[lineNumber];
+            (string Label, Mnemonic Mnemonic, string[] Args) v = this.Current[lineNumber];
 
             return (v.Mnemonic, v.Args);
         }
@@ -155,7 +169,7 @@ namespace AsmSim
         {
             return this.HasLine(lineNumber) ? ToString(this.Current[lineNumber]) : "";
         }
-        
+
         public bool Has_Prev_LineNumber(int lineNumber)
         {
             return !this._graph.IsInEdgesEmpty(lineNumber);
@@ -181,7 +195,10 @@ namespace AsmSim
         /// </summary>
         public IEnumerable<(int LineNumber, bool IsBranch)> Get_Prev_LineNumber(int lineNumber)
         {
-            foreach (var v in this._graph.InEdges(lineNumber)) yield return (v.Source, v.Tag);
+            foreach (TaggedEdge<int, bool> v in this._graph.InEdges(lineNumber))
+            {
+                yield return (v.Source, v.Tag);
+            }
         }
 
         public (int Regular, int Branch) Get_Next_LineNumber(int lineNumber)
@@ -189,7 +206,7 @@ namespace AsmSim
             int Regular = -1;
             int Branch = -1;
 
-            foreach (var v in this._graph.OutEdges(lineNumber))
+            foreach (TaggedEdge<int, bool> v in this._graph.OutEdges(lineNumber))
             {
                 if (v.Tag)
                 {
@@ -209,7 +226,7 @@ namespace AsmSim
         {
             if (this.Is_Branch_Point(lineNumber))
             {
-                var (Regular, Branch) = this.Get_Next_LineNumber(lineNumber);
+                (int Regular, int Branch) = this.Get_Next_LineNumber(lineNumber);
                 bool hasCodePath_Branch = this.HasCodePath(Branch, lineNumber);
                 bool hasCodePath_Regular = this.HasCodePath(Regular, lineNumber);
 
@@ -234,7 +251,7 @@ namespace AsmSim
                 int loopLineNumber = -1;
                 // TODO return the smallest loop 
 
-                foreach (var (LineNumber, IsBranch) in this.Get_Prev_LineNumber(lineNumber))
+                foreach ((int LineNumber, bool IsBranch) in this.Get_Prev_LineNumber(lineNumber))
                 {
                     if (this.HasCodePath(lineNumber, LineNumber))
                     {
@@ -264,11 +281,15 @@ namespace AsmSim
 
             void FutureLineNumbers_Local(int lineNumber2)
             {
-                if (lineNumber2 == -1) return;
+                if (lineNumber2 == -1)
+                {
+                    return;
+                }
+
                 if (this.HasLine(lineNumber2) && !result.Contains(lineNumber2))
                 {
                     result.Add(lineNumber2);
-                    var (Regular, Branch) = this.Get_Next_LineNumber(lineNumber2);
+                    (int Regular, int Branch) = this.Get_Next_LineNumber(lineNumber2);
                     FutureLineNumbers_Local(Regular);
                     FutureLineNumbers_Local(Branch);
                 }
@@ -311,8 +332,8 @@ namespace AsmSim
             }
             #endregion
 
-            var previous = this.Previous;
-            var current = this.Current;
+            IList<(string Label, Mnemonic Mnemonic, string[] Args)> previous = this.Previous;
+            IList<(string Label, Mnemonic Mnemonic, string[] Args)> current = this.Current;
 
             current.Clear();
             this._graph.Clear();
@@ -323,7 +344,7 @@ namespace AsmSim
 
                 for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
                 {
-                    var line = AsmSourceTools.ParseLine(lines[lineNumber]);
+                    (string Label, Mnemonic Mnemonic, string[] Args, string Remark) line = AsmSourceTools.ParseLine(lines[lineNumber]);
                     this.EvalArgs(ref line.Args);
                     current.Add((line.Label, line.Mnemonic, line.Args));
 
@@ -348,23 +369,28 @@ namespace AsmSim
             #region Test if different from previous version
             bool equal = true;
 
-            if (current.Count != previous.Count) {
+            if (current.Count != previous.Count)
+            {
                 equal = false;
-            } else
+            }
+            else
             {
                 for (int lineNumber = 0; lineNumber < current.Count; ++lineNumber)
                 {
-                    var previous_line = previous[lineNumber];
-                    var current_line = current[lineNumber];
+                    (string Label, Mnemonic Mnemonic, string[] Args) previous_line = previous[lineNumber];
+                    (string Label, Mnemonic Mnemonic, string[] Args) current_line = current[lineNumber];
                     if (previous_line.Label != current_line.Label)
                     {
                         equal = false;
                         break;
-                    } else if (previous_line.Mnemonic != current_line.Mnemonic)
+                    }
+                    else if (previous_line.Mnemonic != current_line.Mnemonic)
                     {
                         equal = false;
                         break;
-                    } else if (!Enumerable.SequenceEqual(previous_line.Args, current_line.Args)) {
+                    }
+                    else if (!Enumerable.SequenceEqual(previous_line.Args, current_line.Args))
+                    {
                         equal = false;
                         break;
                     }
@@ -373,12 +399,12 @@ namespace AsmSim
             return !equal;
             #endregion
         }
-        
+
         private void EvalArgs(ref string[] args)
         {
-            for (int i=0; i<args.Length; ++i)
+            for (int i = 0; i < args.Length; ++i)
             {
-                var (Valid, Value, NBits) = ExpressionEvaluator.Evaluate_Constant(args[i]);
+                (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Evaluate_Constant(args[i]);
                 if (Valid)
                 {
                     args[i] = Value.ToString();
@@ -389,10 +415,10 @@ namespace AsmSim
         /// <summary>Compress this static flow by removing empty lines</summary>
         private void Compress()
         {
-            var current = this.Current;
+            IList<(string Label, Mnemonic Mnemonic, string[] Args)> current = this.Current;
             for (int lineNumber = 0; lineNumber < current.Count; ++lineNumber)
             {
-                var c = current[lineNumber];
+                (string Label, Mnemonic Mnemonic, string[] Args) c = current[lineNumber];
 
                 if (c.Mnemonic == Mnemonic.NONE) // found an empty line
                 {
@@ -403,13 +429,13 @@ namespace AsmSim
                     }
                     else if (outDegree == 1)
                     {
-                        var outEdge = this._graph.OutEdge(lineNumber, 0);
+                        TaggedEdge<int, bool> outEdge = this._graph.OutEdge(lineNumber, 0);
                         this._graph.RemoveEdge(outEdge);
                         int next = outEdge.Target;
 
                         //Remove this empty line
-                        var inEdges = new List<TaggedEdge<int, bool>>(this._graph.InEdges(lineNumber));
-                        foreach (var e in inEdges)
+                        List<TaggedEdge<int, bool>> inEdges = new List<TaggedEdge<int, bool>>(this._graph.InEdges(lineNumber));
+                        foreach (TaggedEdge<int, bool> e in inEdges)
                         {
                             this._graph.AddEdge(new TaggedEdge<int, bool>(e.Source, next, e.Tag));
                             this._graph.RemoveEdge(e);
@@ -422,7 +448,7 @@ namespace AsmSim
                 }
             }
         }
-        
+
         #endregion
 
         #region ToString Methods
@@ -459,14 +485,22 @@ namespace AsmSim
                 sb.Append("Line " + i + ": ");
                 sb.Append(this.Get_Line_Str(i));
                 sb.Append(" [Prev:");
-                foreach (var (LineNumber, IsBranch) in this.Get_Prev_LineNumber(i))
+                foreach ((int LineNumber, bool IsBranch) in this.Get_Prev_LineNumber(i))
                 {
                     sb.Append(LineNumber + (IsBranch ? "B" : "R") + ",");  // B=Branching; R=Regular Continuation
                 }
                 sb.Append("][Next:");
-                var (Regular, Branch) = this.Get_Next_LineNumber(i);
-                if (Regular != -1) sb.Append(Regular + "R,");
-                if (Branch != -1) sb.Append(Branch + "B");
+                (int Regular, int Branch) = this.Get_Next_LineNumber(i);
+                if (Regular != -1)
+                {
+                    sb.Append(Regular + "R,");
+                }
+
+                if (Branch != -1)
+                {
+                    sb.Append(Branch + "B");
+                }
+
                 sb.AppendLine("]");
             }
             return sb.ToString();
@@ -476,7 +510,8 @@ namespace AsmSim
 
         #region Private Methods
 
-        private IList<(string Label, Mnemonic Mnemonic, string[] Args)> Current {
+        private IList<(string Label, Mnemonic Mnemonic, string[] Args)> Current
+        {
             get { return this._use_Parsed_Code_A ? this._parsed_Code_A : this._parsed_Code_B; }
         }
         private IList<(string Label, Mnemonic Mnemonic, string[] Args)> Previous
@@ -487,8 +522,15 @@ namespace AsmSim
         private void Add_Edge(int jumpFrom, int jumpTo, bool isBranch)
         {
             //Console.WriteLine("INFO: from " + jumpFrom + " to " + jumpTo + " (branch " + isBranch + ")");
-            if (!this._graph.ContainsVertex(jumpFrom)) this._graph.AddVertex(jumpFrom);
-            if (!this._graph.ContainsVertex(jumpTo)) this._graph.AddVertex(jumpTo);
+            if (!this._graph.ContainsVertex(jumpFrom))
+            {
+                this._graph.AddVertex(jumpFrom);
+            }
+
+            if (!this._graph.ContainsVertex(jumpTo))
+            {
+                this._graph.AddVertex(jumpTo);
+            }
 
             //if (this._graph.ContainsEdge(jumpFrom, jumpTo)) {
             //    Console.WriteLine("INFO: Edge already exists: from " + jumpFrom + " to " + jumpTo + " (branch " + isBranch + ")");
@@ -563,7 +605,7 @@ namespace AsmSim
                 case Mnemonic.IRET:
                 case Mnemonic.INT:
                 case Mnemonic.INTO: break;
-                   //throw new NotImplementedException();
+                //throw new NotImplementedException();
                 default:
                     jumpTo1 = lineNumber + 1;
                     break;
@@ -581,7 +623,7 @@ namespace AsmSim
             for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
             {
                 string line = lines[lineNumber];
-                var (Valid, BeginPos, EndPos) = AsmSourceTools.GetLabelDefPos(line);
+                (bool Valid, int BeginPos, int EndPos) = AsmSourceTools.GetLabelDefPos(line);
                 if (Valid)
                 {
                     int labelBeginPos = BeginPos;

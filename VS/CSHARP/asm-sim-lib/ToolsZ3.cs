@@ -31,7 +31,7 @@ namespace AsmSim
 {
     public static class ToolsZ3
     {
-        static readonly object _object = new object();
+        private static readonly object _object = new object();
 
         #region Public Methods
 
@@ -65,7 +65,7 @@ namespace AsmSim
                 int result = -1;
                 string substr = label.Substring(beginPos, endPos - beginPos);
                 //Console.WriteLine("INFO: ToolsZ3:getLineNumberFromLabel: substr=" + substr + ".");
-                if (Int32.TryParse(substr, out result))
+                if (int.TryParse(substr, out result))
                 {
                     return result;
                 }
@@ -297,7 +297,7 @@ namespace AsmSim
 
 
                     using (Tactic tactic = ctx.AndThen(ta2, ctx.AndThen(ta1, ta5)))
-//                    using (Tactic tactic = ctx.AndThen(ta2, ta1))
+                    //                    using (Tactic tactic = ctx.AndThen(ta2, ta1))
                     {
                         if (!undef)
                         {
@@ -340,7 +340,10 @@ namespace AsmSim
                     {
                         // this can be done faster
                         Tv tv = GetTv(b, b_undef, solver, solver_U, ctx);
-                        if (tv != valueTv[bit]) return false;
+                        if (tv != valueTv[bit])
+                        {
+                            return false;
+                        }
                     }
                 }
             }
@@ -419,7 +422,10 @@ namespace AsmSim
                 for (int i = nBits - 1; i >= 0; --i)
                 {
                     sb.Append(ToStringBin(a[i]));
-                    if ((i > 0) && (i != nBits - 1) && (i % 8 == 0)) sb.Append('_');
+                    if ((i > 0) && (i != nBits - 1) && (i % 8 == 0))
+                    {
+                        sb.Append('_');
+                    }
                 }
             }
             return sb.ToString();
@@ -433,7 +439,10 @@ namespace AsmSim
             {
                 str = BitToCharHex(GetTv(offset), GetTv(offset + 1), GetTv(offset + 2), GetTv(offset + 3)) + str;
                 offset += 4;
-                if ((offset > 0) && (offset < a.Length) && ((offset % 16) == 0)) str = '_' + str;
+                if ((offset > 0) && (offset < a.Length) && ((offset % 16) == 0))
+                {
+                    str = '_' + str;
+                }
             }
             return "0x" + str;
 
@@ -447,8 +456,12 @@ namespace AsmSim
 
         public static string ToStringDec(Tv[] a)
         {
-            var (Value, Misc) = ToUlong();
-            if (Value != null) return Value.ToString() + "d";
+            (ulong? Value, Tv Misc) = ToUlong();
+            if (Value != null)
+            {
+                return Value.ToString() + "d";
+            }
+
             return Misc.ToString();
 
             #region LocalMethod
@@ -464,7 +477,7 @@ namespace AsmSim
                             break;
                         case Tv.ZERO:
                             break;
-                        default: return (Value:null, Misc:a[i]);
+                        default: return (Value: null, Misc: a[i]);
                     }
                 }
                 return (Value: result, Misc: Tv.UNKNOWN);
@@ -480,7 +493,10 @@ namespace AsmSim
             {
                 str = BitToCharOct(GetTv(offset), GetTv(offset + 1), GetTv(offset + 2)) + str;
                 offset += 3;
-                if ((offset > 0) && (offset < a.Length) && ((offset % 9) == 0)) str = '_' + str;
+                if ((offset > 0) && (offset < a.Length) && ((offset % 9) == 0))
+                {
+                    str = '_' + str;
+                }
             }
             return "0o" + str;
 
@@ -508,30 +524,105 @@ namespace AsmSim
 
         public static char BitToCharHex(Tv b0, Tv b1, Tv b2, Tv b3)
         {
-            if ((b3 == Tv.UNDETERMINED) || (b2 == Tv.UNDETERMINED) || (b1 == Tv.UNDETERMINED) || (b0 == Tv.UNDETERMINED)) return '-';
-            if ((b3 == Tv.UNDEFINED) || (b2 == Tv.UNDEFINED) || (b1 == Tv.UNDEFINED) || (b0 == Tv.UNDEFINED)) return 'U';
-            if ((b3 == Tv.UNKNOWN) || (b2 == Tv.UNKNOWN) || (b1 == Tv.UNKNOWN) || (b0 == Tv.UNKNOWN)) return '?';
-            if ((b3 == Tv.INCONSISTENT) || (b2 == Tv.INCONSISTENT) || (b1 == Tv.INCONSISTENT) || (b0 == Tv.INCONSISTENT)) return 'X';
+            if ((b3 == Tv.UNDETERMINED) || (b2 == Tv.UNDETERMINED) || (b1 == Tv.UNDETERMINED) || (b0 == Tv.UNDETERMINED))
+            {
+                return '-';
+            }
 
-            if ((b3 == Tv.ZERO) && (b2 == Tv.ZERO) && (b1 == Tv.ZERO) && (b0 == Tv.ZERO)) return '0';
-            if ((b3 == Tv.ZERO) && (b2 == Tv.ZERO) && (b1 == Tv.ZERO) && (b0 == Tv.ONE)) return '1';
-            if ((b3 == Tv.ZERO) && (b2 == Tv.ZERO) && (b1 == Tv.ONE) && (b0 == Tv.ZERO)) return '2';
-            if ((b3 == Tv.ZERO) && (b2 == Tv.ZERO) && (b1 == Tv.ONE) && (b0 == Tv.ONE)) return '3';
+            if ((b3 == Tv.UNDEFINED) || (b2 == Tv.UNDEFINED) || (b1 == Tv.UNDEFINED) || (b0 == Tv.UNDEFINED))
+            {
+                return 'U';
+            }
 
-            if ((b3 == Tv.ZERO) && (b2 == Tv.ONE) && (b1 == Tv.ZERO) && (b0 == Tv.ZERO)) return '4';
-            if ((b3 == Tv.ZERO) && (b2 == Tv.ONE) && (b1 == Tv.ZERO) && (b0 == Tv.ONE)) return '5';
-            if ((b3 == Tv.ZERO) && (b2 == Tv.ONE) && (b1 == Tv.ONE) && (b0 == Tv.ZERO)) return '6';
-            if ((b3 == Tv.ZERO) && (b2 == Tv.ONE) && (b1 == Tv.ONE) && (b0 == Tv.ONE)) return '7';
+            if ((b3 == Tv.UNKNOWN) || (b2 == Tv.UNKNOWN) || (b1 == Tv.UNKNOWN) || (b0 == Tv.UNKNOWN))
+            {
+                return '?';
+            }
 
-            if ((b3 == Tv.ONE) && (b2 == Tv.ZERO) && (b1 == Tv.ZERO) && (b0 == Tv.ZERO)) return '8';
-            if ((b3 == Tv.ONE) && (b2 == Tv.ZERO) && (b1 == Tv.ZERO) && (b0 == Tv.ONE)) return '9';
-            if ((b3 == Tv.ONE) && (b2 == Tv.ZERO) && (b1 == Tv.ONE) && (b0 == Tv.ZERO)) return 'A';
-            if ((b3 == Tv.ONE) && (b2 == Tv.ZERO) && (b1 == Tv.ONE) && (b0 == Tv.ONE)) return 'B';
+            if ((b3 == Tv.INCONSISTENT) || (b2 == Tv.INCONSISTENT) || (b1 == Tv.INCONSISTENT) || (b0 == Tv.INCONSISTENT))
+            {
+                return 'X';
+            }
 
-            if ((b3 == Tv.ONE) && (b2 == Tv.ONE) && (b1 == Tv.ZERO) && (b0 == Tv.ZERO)) return 'C';
-            if ((b3 == Tv.ONE) && (b2 == Tv.ONE) && (b1 == Tv.ZERO) && (b0 == Tv.ONE)) return 'D';
-            if ((b3 == Tv.ONE) && (b2 == Tv.ONE) && (b1 == Tv.ONE) && (b0 == Tv.ZERO)) return 'E';
-            if ((b3 == Tv.ONE) && (b2 == Tv.ONE) && (b1 == Tv.ONE) && (b0 == Tv.ONE)) return 'F';
+            if ((b3 == Tv.ZERO) && (b2 == Tv.ZERO) && (b1 == Tv.ZERO) && (b0 == Tv.ZERO))
+            {
+                return '0';
+            }
+
+            if ((b3 == Tv.ZERO) && (b2 == Tv.ZERO) && (b1 == Tv.ZERO) && (b0 == Tv.ONE))
+            {
+                return '1';
+            }
+
+            if ((b3 == Tv.ZERO) && (b2 == Tv.ZERO) && (b1 == Tv.ONE) && (b0 == Tv.ZERO))
+            {
+                return '2';
+            }
+
+            if ((b3 == Tv.ZERO) && (b2 == Tv.ZERO) && (b1 == Tv.ONE) && (b0 == Tv.ONE))
+            {
+                return '3';
+            }
+
+            if ((b3 == Tv.ZERO) && (b2 == Tv.ONE) && (b1 == Tv.ZERO) && (b0 == Tv.ZERO))
+            {
+                return '4';
+            }
+
+            if ((b3 == Tv.ZERO) && (b2 == Tv.ONE) && (b1 == Tv.ZERO) && (b0 == Tv.ONE))
+            {
+                return '5';
+            }
+
+            if ((b3 == Tv.ZERO) && (b2 == Tv.ONE) && (b1 == Tv.ONE) && (b0 == Tv.ZERO))
+            {
+                return '6';
+            }
+
+            if ((b3 == Tv.ZERO) && (b2 == Tv.ONE) && (b1 == Tv.ONE) && (b0 == Tv.ONE))
+            {
+                return '7';
+            }
+
+            if ((b3 == Tv.ONE) && (b2 == Tv.ZERO) && (b1 == Tv.ZERO) && (b0 == Tv.ZERO))
+            {
+                return '8';
+            }
+
+            if ((b3 == Tv.ONE) && (b2 == Tv.ZERO) && (b1 == Tv.ZERO) && (b0 == Tv.ONE))
+            {
+                return '9';
+            }
+
+            if ((b3 == Tv.ONE) && (b2 == Tv.ZERO) && (b1 == Tv.ONE) && (b0 == Tv.ZERO))
+            {
+                return 'A';
+            }
+
+            if ((b3 == Tv.ONE) && (b2 == Tv.ZERO) && (b1 == Tv.ONE) && (b0 == Tv.ONE))
+            {
+                return 'B';
+            }
+
+            if ((b3 == Tv.ONE) && (b2 == Tv.ONE) && (b1 == Tv.ZERO) && (b0 == Tv.ZERO))
+            {
+                return 'C';
+            }
+
+            if ((b3 == Tv.ONE) && (b2 == Tv.ONE) && (b1 == Tv.ZERO) && (b0 == Tv.ONE))
+            {
+                return 'D';
+            }
+
+            if ((b3 == Tv.ONE) && (b2 == Tv.ONE) && (b1 == Tv.ONE) && (b0 == Tv.ZERO))
+            {
+                return 'E';
+            }
+
+            if ((b3 == Tv.ONE) && (b2 == Tv.ONE) && (b1 == Tv.ONE) && (b0 == Tv.ONE))
+            {
+                return 'F';
+            }
 
             // unreachable
             return 'Y';
@@ -539,20 +630,65 @@ namespace AsmSim
 
         public static char BitToCharOct(Tv b0, Tv b1, Tv b2)
         {
-            if ((b2 == Tv.UNDETERMINED) || (b1 == Tv.UNDETERMINED) || (b0 == Tv.UNDETERMINED)) return '-';
-            if ((b2 == Tv.UNDEFINED) || (b1 == Tv.UNDEFINED) || (b0 == Tv.UNDEFINED)) return 'U';
-            if ((b2 == Tv.UNKNOWN) || (b1 == Tv.UNKNOWN) || (b0 == Tv.UNKNOWN)) return '?';
-            if ((b2 == Tv.INCONSISTENT) || (b1 == Tv.INCONSISTENT) || (b0 == Tv.INCONSISTENT)) return 'X';
+            if ((b2 == Tv.UNDETERMINED) || (b1 == Tv.UNDETERMINED) || (b0 == Tv.UNDETERMINED))
+            {
+                return '-';
+            }
 
-            if ((b2 == Tv.ZERO) && (b1 == Tv.ZERO) && (b0 == Tv.ZERO)) return '0';
-            if ((b2 == Tv.ZERO) && (b1 == Tv.ZERO) && (b0 == Tv.ONE)) return '1';
-            if ((b2 == Tv.ZERO) && (b1 == Tv.ONE) && (b0 == Tv.ZERO)) return '2';
-            if ((b2 == Tv.ZERO) && (b1 == Tv.ONE) && (b0 == Tv.ONE)) return '3';
+            if ((b2 == Tv.UNDEFINED) || (b1 == Tv.UNDEFINED) || (b0 == Tv.UNDEFINED))
+            {
+                return 'U';
+            }
 
-            if ((b2 == Tv.ONE) && (b1 == Tv.ZERO) && (b0 == Tv.ZERO)) return '4';
-            if ((b2 == Tv.ONE) && (b1 == Tv.ZERO) && (b0 == Tv.ONE)) return '5';
-            if ((b2 == Tv.ONE) && (b1 == Tv.ONE) && (b0 == Tv.ZERO)) return '6';
-            if ((b2 == Tv.ONE) && (b1 == Tv.ONE) && (b0 == Tv.ONE)) return '7';
+            if ((b2 == Tv.UNKNOWN) || (b1 == Tv.UNKNOWN) || (b0 == Tv.UNKNOWN))
+            {
+                return '?';
+            }
+
+            if ((b2 == Tv.INCONSISTENT) || (b1 == Tv.INCONSISTENT) || (b0 == Tv.INCONSISTENT))
+            {
+                return 'X';
+            }
+
+            if ((b2 == Tv.ZERO) && (b1 == Tv.ZERO) && (b0 == Tv.ZERO))
+            {
+                return '0';
+            }
+
+            if ((b2 == Tv.ZERO) && (b1 == Tv.ZERO) && (b0 == Tv.ONE))
+            {
+                return '1';
+            }
+
+            if ((b2 == Tv.ZERO) && (b1 == Tv.ONE) && (b0 == Tv.ZERO))
+            {
+                return '2';
+            }
+
+            if ((b2 == Tv.ZERO) && (b1 == Tv.ONE) && (b0 == Tv.ONE))
+            {
+                return '3';
+            }
+
+            if ((b2 == Tv.ONE) && (b1 == Tv.ZERO) && (b0 == Tv.ZERO))
+            {
+                return '4';
+            }
+
+            if ((b2 == Tv.ONE) && (b1 == Tv.ZERO) && (b0 == Tv.ONE))
+            {
+                return '5';
+            }
+
+            if ((b2 == Tv.ONE) && (b1 == Tv.ONE) && (b0 == Tv.ZERO))
+            {
+                return '6';
+            }
+
+            if ((b2 == Tv.ONE) && (b1 == Tv.ONE) && (b0 == Tv.ONE))
+            {
+                return '7';
+            }
 
             // unreachable
             return 'Y';
@@ -744,12 +880,28 @@ namespace AsmSim
             // and seperately that it is consistent to be false, the model in the solver 
             // is indifferent about the truth-value of bit.
 
-            if (!tvTrue && !tvFalse) return Tv.INCONSISTENT; // TODO: if inconsistent does not occur and !tvTrue is observed we can directly return Tv5.ZERO 
-            if (!tvTrue && tvFalse) return Tv.ZERO;
-            if (tvTrue && !tvFalse) return Tv.ONE;
+            if (!tvTrue && !tvFalse)
+            {
+                return Tv.INCONSISTENT; // TODO: if inconsistent does not occur and !tvTrue is observed we can directly return Tv5.ZERO 
+            }
+
+            if (!tvTrue && tvFalse)
+            {
+                return Tv.ZERO;
+            }
+
+            if (tvTrue && !tvFalse)
+            {
+                return Tv.ONE;
+            }
+
             if (tvTrue && tvFalse) // truth value of bit cannot be determined is not known: it is either UNKNOWN or UNDEFINED
             {
-                if (solver_U == null) return Tv.UNKNOWN;
+                if (solver_U == null)
+                {
+                    return Tv.UNKNOWN;
+                }
+
                 bool tvFalseU;
                 {
                     using (BoolExpr t = ctx.MkNot(undef))
@@ -807,7 +959,11 @@ namespace AsmSim
                 using (Solver s = State.MakeSolver(ctx))
                 {
                     s.Assert(solver.Assertions);
-                    using (var t = ctx.MkNot(value)) s.Assert(t);
+                    using (BoolExpr t = ctx.MkNot(value))
+                    {
+                        s.Assert(t);
+                    }
+
                     Status status = s.Check();
                     if (status == Status.UNKNOWN)
                     {
@@ -821,18 +977,38 @@ namespace AsmSim
             // and seperately that it is consistent to be false, the model in the solver 
             // is indifferent about the truth-value of bit.
 
-            if (!tvTrue && !tvFalse) return Tv.INCONSISTENT; // TODO: if inconsistent does not occur and !tvTrue is observed we can directly return Tv5.ZERO 
-            if (!tvTrue && tvFalse) return Tv.ZERO;
-            if (tvTrue && !tvFalse) return Tv.ONE;
+            if (!tvTrue && !tvFalse)
+            {
+                return Tv.INCONSISTENT; // TODO: if inconsistent does not occur and !tvTrue is observed we can directly return Tv5.ZERO 
+            }
+
+            if (!tvTrue && tvFalse)
+            {
+                return Tv.ZERO;
+            }
+
+            if (tvTrue && !tvFalse)
+            {
+                return Tv.ONE;
+            }
+
             if (tvTrue && tvFalse) // truth value of bit cannot be determined is not known: it is either UNKNOWN or UNDEFINED
             {
-                if (solver_U == null) return Tv.UNKNOWN;
+                if (solver_U == null)
+                {
+                    return Tv.UNKNOWN;
+                }
+
                 bool tvFalseU;
                 {
                     using (Solver s = State.MakeSolver(ctx))
                     {
                         s.Assert(solver_U.Assertions);
-                        using (var t = ctx.MkNot(undef)) s.Assert(t);
+                        using (BoolExpr t = ctx.MkNot(undef))
+                        {
+                            s.Assert(t);
+                        }
+
                         Status status = s.Check();
                         if (status == Status.UNKNOWN)
                         {
@@ -889,7 +1065,11 @@ namespace AsmSim
                 bool tvFalse;
                 {
                     solver.Push();
-                    using (var t = ctx.MkNot(value)) solver.Assert(t);
+                    using (BoolExpr t = ctx.MkNot(value))
+                    {
+                        solver.Assert(t);
+                    }
+
                     Status status = solver.Check();
                     if (status == Status.UNKNOWN)
                     {
@@ -903,10 +1083,25 @@ namespace AsmSim
                 // and seperately that it is consistent to be false, the model in the solver 
                 // is indifferent about the truth-value of bit.
 
-                if (!tvTrue && !tvFalse) return Tv.INCONSISTENT; // TODO: if inconsistent does not occur and !tvTrue is observed we can directly return Tv5.ZERO 
-                if (!tvTrue && tvFalse) return Tv.ZERO;
-                if (tvTrue && !tvFalse) return Tv.ONE;
-                if (tvTrue && tvFalse) return Tv.UNKNOWN;
+                if (!tvTrue && !tvFalse)
+                {
+                    return Tv.INCONSISTENT; // TODO: if inconsistent does not occur and !tvTrue is observed we can directly return Tv5.ZERO 
+                }
+
+                if (!tvTrue && tvFalse)
+                {
+                    return Tv.ZERO;
+                }
+
+                if (tvTrue && !tvFalse)
+                {
+                    return Tv.ONE;
+                }
+
+                if (tvTrue && tvFalse)
+                {
+                    return Tv.UNKNOWN;
+                }
 
                 // unreachable
                 return Tv.UNDETERMINED;
@@ -924,7 +1119,7 @@ namespace AsmSim
 
         public static Expr UpdateConstName(Expr expr, string postfix, Context ctx)
         {
-            var (BoolConstants, BvConstants) = GetConstants(expr);
+            (IList<Symbol> BoolConstants, IList<Symbol> BvConstants) = GetConstants(expr);
 
             foreach (Symbol s in BoolConstants)
             {
@@ -967,11 +1162,30 @@ namespace AsmSim
                     case Tv.UNDEFINED: unknown = zero = one = inconsitent = false; break;
                 }
             }
-            if (unknown) return (hasOneValue: true, value: Tv.UNKNOWN);
-            if (zero) return (hasOneValue: true, value: Tv.ZERO);
-            if (one) return (hasOneValue: true, value: Tv.ONE);
-            if (inconsitent) return (hasOneValue: true, value: Tv.INCONSISTENT);
-            if (undefined) return (hasOneValue: true, value: Tv.UNDEFINED);
+            if (unknown)
+            {
+                return (hasOneValue: true, value: Tv.UNKNOWN);
+            }
+
+            if (zero)
+            {
+                return (hasOneValue: true, value: Tv.ZERO);
+            }
+
+            if (one)
+            {
+                return (hasOneValue: true, value: Tv.ONE);
+            }
+
+            if (inconsitent)
+            {
+                return (hasOneValue: true, value: Tv.INCONSISTENT);
+            }
+
+            if (undefined)
+            {
+                return (hasOneValue: true, value: Tv.UNDEFINED);
+            }
 
             return (hasOneValue: false, value: Tv.UNKNOWN);
         }
@@ -1006,9 +1220,12 @@ namespace AsmSim
             }
             else
             {
-                foreach (Expr expr2 in expr.Args) foreach (string str in Get_Constants(expr2))
+                foreach (Expr expr2 in expr.Args)
                 {
-                    yield return str;
+                    foreach (string str in Get_Constants(expr2))
+                    {
+                        yield return str;
+                    }
                 }
             }
         }
