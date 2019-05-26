@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+
+    <link rel="stylesheet" type="text/css" href="stylesheet.css" media="screen">
+
+    <title>Getting Started</title>
+  </head>
+
+<body>
+
+    <div class="container">
+        <div id="header">
+            <h1>Getting Started</h1>
+            <h2>Visual C++ for Linux Development</h2>
+        </div>
+    
+    <table>
+    <tr>    
+    <div id="main_content">
+        
+        <td>
+        <div id="lpanel">
+            <h1>Setting up your project for Linux Development</h1>
+
+            <p>With this workload you can author C++ code for Linux servers, desktops and devices. You can manage your connections to these machines from within VS. VS will automatically copy and remotely build your sources and can launch your application with the debugger. Our project system supports targeting specific architectures, including ARM.</p>
+            <img src="images\ArchOptions.gif"/>
+            
+            <h1>Connecting to Linux</h1>
+            <h2>Prerequisites</h2>
+            <p>Today we only support building remotely on the Linux target machine. We are not limited by specific Linux distros but we do have dependencies on the presence of some tools. Specifically, we need openssh-server, g++, gdb and gdbserver. Use your favorite package manager to install them, e.g. on Debian based systems: sudo apt-get install openssh-server g++ gdb gdbserver</p>
+            
+            <h2>First connection</h2>
+            <p>The first time you target a Linux machine you will be prompted for connection information.  This is triggered by building the project.</p>
+            <img src="images\firstconnection.png"/>
+                
+            <h2>Adding and removing connections</h2>
+            <p>To add a new connection, go to Tools > Options and search for Connection, Connection Manager will be under Cross Platform. From here you can add and remove connections.</p>
+            <img src="images\ManageConnections.gif"/>
+            
+            <p>To change which connection a project is using go to the project properties general settings and update the Remote Build Machine option.</p>
+            <img src="images\ChangeRemote.gif"/>
+            
+            <h1>Project Properties</h1>
+            <p>All of the options necessary to control C++ compilation are exposed on the project properies pages. We'll cover a few specific to how things work for Linux. First under general settings, you will see the remote root is set to ~/projects/ by default and that we are setting the remote project directory to match our project name in that location. </p>
+            <img src="images\OutputTypes.gif"/>
+            
+            <p>Looking at the General settings for the project, you can see how our output and intermediate directories were configured. Additionally, you’ll see that this project was configured as an application – thus our executable is under bin/x64/Debug/ as ConsoleApplication1.out. Notice that for configuration types we also support static and dynamic libraries.</p>
+            
+            <p>Add additional library dependencies on the Linker > Input property page.</p>
+            <img src="images\linker.png"/>
+            
+            <p>You can pass additional pre launch commands to the debugger to do things like launch graphical apps on the remote linux machine.</p>
+            <img src="images\debuggerexport.png"/>
+            
+            <p>You can also send post build events to control remote behavior, as in this example that exports a gpio pin for use without requiring the executable run as super user.</p>
+            <img src="images\postbuild.png"/>
+            
+        </div>
+        </td>
+        <td>
+        <div id="rpanel">
+
+            <h1>Resources</h1>
+
+            <p>Check out the <a href="http://aka.ms/vslinux">VC++ for Linux Development page</a> where we will keep updates posted and provider more in depth details on usage.</p>
+            <h1>Give us feedback</h1>
+            <p>Use the send feedback function in Visual Studio or contact us directly at <a href="mailto:vcpplinux-support@microsoft.com?subject=Linux%20Console%20App%20question">VC++ Linux Support</a></p>
+        </div>
+        </td>   
+    </div>
+    </tr>
+    </table>
+    </div>
+</body>
+</html>
