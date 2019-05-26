@@ -46,6 +46,12 @@
 	</miscs>
 
   <directives>
+    <directive name="ADDR" tool="MASM">
+      <description>TODO</description>
+    </directive>
+    <directive name="OFFSET" tool="MASM">
+      <description>TODO</description>
+    </directive>
     <directive name="PTR" tool="MASM">
       <description>TODO</description>
     </directive>

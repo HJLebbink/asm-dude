@@ -592,7 +592,11 @@ namespace AsmDude.Tools
 
         public static bool Is_Arch_Switched_On(Arch arch)
         {
-            return (arch == Arch.ARCH_NONE) ? true : (bool)Settings.Default[arch.ToString()];
+            try {
+                return (arch == Arch.ARCH_NONE) ? true : (bool)Settings.Default[arch.ToString()];
+            } catch (Exception e) {
+                return false;
+            }
         }
 
         public static string Make_Full_Qualified_Label(string prefix, string label2, AssemblerEnum assembler)
