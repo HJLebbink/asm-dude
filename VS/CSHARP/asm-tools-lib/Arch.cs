@@ -100,7 +100,8 @@ namespace AsmTools {
         ARCH_AVX512_4FMAPS,
 
         //Ice Lake
-        ARCH_AVX512_VBMI2,
+        ARCH_AVX512_VBMI2,
+
         //Ice Lake
         ARCH_AVX512_VNNI,
 
@@ -111,9 +112,16 @@ namespace AsmTools {
         ARCH_AVX512_GFNI,
 
         //Ice Lake
-        ARCH_AVX512_VAES,
+        ARCH_AVX512_VAES,
+
         //Ice Lake
         ARCH_AVX512_VPCLMULQDQ,
+
+        //Cooper Lake: Support for BFLOAT16 instructions.
+        ARCH_AVX512_BF16,
+
+        //Tiger Lake: Support for VP2INTERSECT[D,Q]
+        ARCH_AVX512_VP2INTERSECT,
 
 
         #region Misc Intel
@@ -165,7 +173,8 @@ namespace AsmTools {
         /// <summary>One instruction: PREFETCHWT1</summary>
         ARCH_PREFETCHWT1,
 
-        /// <summary>One instruction: PREFETCHW</summary>        ARCH_PRFCHW,
+        /// <summary>One instruction: PREFETCHW</summary>
+        ARCH_PRFCHW,
 
         /// <summary>One instruction: RDPID (Read Processor ID)</summary>
         ARCH_RDPID,
@@ -203,6 +212,9 @@ namespace AsmTools {
 
         /// <summary> User wait – TPAUSE, UMONITOR, UMWAIT (CPUID.(EAX=0x?, ECX=?):ECX[bit?])</summary>
         ARCH_WAITPKG,
+
+        /// <summary> Sapphire Rapids</summary>
+        ARCH_ENQCMD,
 
 
         #region Misc Other
@@ -269,7 +281,9 @@ namespace AsmTools {
                 case "AVX5124VNNIW": return Arch.ARCH_AVX512_4VNNIW;
                 case "AVX5124FMAPS": return Arch.ARCH_AVX512_4FMAPS;
 
-                case "VBMI2":                case "AVX512VBMI2": return Arch.ARCH_AVX512_VBMI2;                case "VNNI":
+                case "VBMI2":
+                case "AVX512VBMI2": return Arch.ARCH_AVX512_VBMI2;
+                case "VNNI":
                 case "AVX512VNNI": return Arch.ARCH_AVX512_VNNI;
                 case "BITALG":
                 case "AVX512BITALG": return Arch.ARCH_AVX512_BITALG;
@@ -279,6 +293,9 @@ namespace AsmTools {
                 case "AVX512VAES": return Arch.ARCH_AVX512_VAES;
                 case "VPCLMULQDQ":
                 case "AVX512VPCLMULQDQ": return Arch.ARCH_AVX512_VPCLMULQDQ;
+
+                case "AVX512BF16": return Arch.ARCH_AVX512_BF16;
+                case "AVX512VP2INTERSECT": return Arch.ARCH_AVX512_VP2INTERSECT;
 
                 case "HLE": return Arch.ARCH_HLE;
                 case "BMI1": return Arch.ARCH_BMI1;
@@ -327,6 +344,7 @@ namespace AsmTools {
                 case "MOVDIRI": return Arch.ARCH_MOVDIRI;
                 case "PCONFIG": return Arch.ARCH_PCONFIG;
                 case "WAITPKG": return Arch.ARCH_WAITPKG;
+                case "ENQCMD": return Arch.ARCH_ENQCMD;
 
                 case "UNDOC": return Arch.ARCH_UNDOC;
                 default:
@@ -368,6 +386,8 @@ namespace AsmTools {
                 case Arch.ARCH_AVX512_VPOPCNTDQ: return "AVX512-VPOPCNTDQ - Vector Population Count instructions for Dwords and Qwords";
                 case Arch.ARCH_AVX512_4VNNIW: return "AVX512-4VNNIW - Vector Neural Network Instructions Word variable precision";
                 case Arch.ARCH_AVX512_4FMAPS: return "AVX512-4FMAPS - Fused Multiply Accumulation Packed Single precision";
+                case Arch.ARCH_AVX512_BF16: return "AVX512-BF16 - Support for BFLOAT16 floating-point format";
+                case Arch.ARCH_AVX512_VP2INTERSECT: return "AVX512-VP2INTERSECT - Support for VP2INTERSECT[D,Q]";
 
                 case Arch.ARCH_ADX: return "Multi-Precision Add-Carry Instruction Extension";
                 case Arch.ARCH_AES: return "Advanced Encryption Standard Extension";
@@ -404,6 +424,7 @@ namespace AsmTools {
                 case Arch.ARCH_MOVDIRI: return "";
                 case Arch.ARCH_PCONFIG: return "";
                 case Arch.ARCH_WAITPKG: return "";
+                case Arch.ARCH_ENQCMD: return "Enqueue Stores";
 
                 default:
                     return "";
@@ -465,7 +486,11 @@ namespace AsmTools {
                 case Arch.ARCH_AVX512_VNNI: return "AVX512_VNNI";
                 case Arch.ARCH_AVX512_BITALG: return "AVX512_BITALG";
                 case Arch.ARCH_AVX512_GFNI: return "AVX512_GFNI";
-                case Arch.ARCH_AVX512_VAES: return "AVX512_VAES";                case Arch.ARCH_AVX512_VPCLMULQDQ: return "_AVX512_VPCLMULQDQ";
+                case Arch.ARCH_AVX512_VAES: return "AVX512_VAES";
+                case Arch.ARCH_AVX512_VPCLMULQDQ: return "AVX512_VPCLMULQDQ";
+                case Arch.ARCH_AVX512_BF16: return "AVX512_BF16";
+                case Arch.ARCH_AVX512_VP2INTERSECT: return "AVX512_VP2INTERSECT";
+
                 case Arch.ARCH_ADX: return "ADX";
                 case Arch.ARCH_AES: return "AES";
                 case Arch.ARCH_BMI1: return "BMI1";
@@ -494,6 +519,7 @@ namespace AsmTools {
                 case Arch.ARCH_MOVDIRI: return "MOVDIRI";
                 case Arch.ARCH_PCONFIG: return "PCONFIG";
                 case Arch.ARCH_WAITPKG: return "WAITPKG";
+                case Arch.ARCH_ENQCMD: return "ENQCMD";
                 case Arch.ARCH_X64: return "X64";
                 case Arch.ARCH_IA64: return "IA64";
                 case Arch.ARCH_UNDOC: return "UNDOC";
