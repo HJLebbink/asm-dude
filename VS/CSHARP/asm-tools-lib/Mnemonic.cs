@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2017 Henk-Jan Lebbink
+// Copyright (c) 2019 Henk-Jan Lebbink
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,6 @@ using System;
 
 namespace AsmTools
 {
-
     public enum Mnemonic
     {
         NONE,
@@ -2451,12 +2450,21 @@ namespace AsmTools
         TPAUSE,
         UMONITOR,
         UMWAIT,
-        WBNOINVD
+        WBNOINVD,
+
+        ENQCMD,
+        ENQCMDS,
+
+        VCVTNE2PS2BF16,
+        VCVTNEPS2BF16,
+        VDPBF16PS,
+
+        VP2INTERSECTD,
+        VP2INTERSECTQ
     }
 
     public static partial class AsmSourceTools
     {
-
         public static bool IsJump(Mnemonic mnemonic)
         {
             switch (mnemonic)
@@ -4600,6 +4608,16 @@ namespace AsmTools
                 case "UMONITOR": return Mnemonic.UMONITOR;
                 case "UMWAIT": return Mnemonic.UMWAIT;
                 case "WBNOINVD": return Mnemonic.WBNOINVD;
+
+                case "ENQCMD": return Mnemonic.ENQCMD;
+                case "ENQCMDS": return Mnemonic.ENQCMDS;
+
+                case "VCVTNE2PS2BF16": return Mnemonic.VCVTNE2PS2BF16;
+                case "VCVTNEPS2BF16": return Mnemonic.VCVTNEPS2BF16;
+                case "VDPBF16PS": return Mnemonic.VDPBF16PS;
+
+                case "VP2INTERSECTD": return Mnemonic.VP2INTERSECTD;
+                case "VP2INTERSECTQ": return Mnemonic.VP2INTERSECTQ;
 
                 default:
                     Console.WriteLine("WARNING;parseMnemonic. unknown str=\"" + str + "\".");
