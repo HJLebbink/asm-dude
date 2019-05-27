@@ -330,8 +330,13 @@
                                                 <ColumnDefinition Width="60"/>
                                                 <ColumnDefinition Width="60"/>
                                                 <ColumnDefinition Width="60"/>
+                                                <ColumnDefinition Width="60"/>
+                                                <ColumnDefinition Width="60"/>
                                             </Grid.ColumnDefinitions>
                                             <Grid.RowDefinitions>
+                                                <RowDefinition Height="*" />
+                                                <RowDefinition Height="*" />
+                                                <RowDefinition Height="*" />
                                                 <RowDefinition Height="*" />
                                                 <RowDefinition Height="*" />
                                                 <RowDefinition Height="*" />
@@ -358,6 +363,8 @@
                                             <TextBlock Text="Cannon-Lake" Grid.Column="3" Grid.Row="0" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"/>
                                             <TextBlock Text="Knights Mill" Grid.Column="4" Grid.Row="0" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"/>
                                             <TextBlock Text="Ice Lake" Grid.Column="5" Grid.Row="0" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="Tiger Lake" Grid.Column="6" Grid.Row="0" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="Sapphire Rapids" Grid.Column="7" Grid.Row="0" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center"/>
 
                                             <CheckBox x:Name="ARCH_AVX512_F_UI" Grid.Column="0" Grid.Row="1" Content="AVX512-F" VerticalAlignment="Center" Width="Auto" />
                                             <TextBlock Text="X" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -431,6 +438,16 @@
 
                                             <CheckBox x:Name="ARCH_AVX512_VPCLMULQDQ_UI"  Grid.Column="0" Grid.Row="18" Content="AVX512-VPCLMULQDQ" VerticalAlignment="Center" Width="Auto" />
                                             <TextBlock Text="X" Grid.Column="5" Grid.Row="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                            <CheckBox x:Name="ARCH_AVX512_BF16_UI"  Grid.Column="0" Grid.Row="19" Content="AVX512-BF16" VerticalAlignment="Center" Width="Auto" />
+                                            <TextBlock Text="X" Grid.Column="6" Grid.Row="19" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                            <CheckBox x:Name="ARCH_AVX512_VP2INTERSECT_UI"  Grid.Column="0" Grid.Row="20" Content="AVX512-VP2INTERSECT" VerticalAlignment="Center" Width="Auto" />
+                                            <TextBlock Text="X" Grid.Column="6" Grid.Row="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                            <CheckBox x:Name="ARCH_ENQCMD_UI"  Grid.Column="0" Grid.Row="21" Content="AVX512-ENQCMD" VerticalAlignment="Center" Width="Auto" />
+                                            <TextBlock Text="X" Grid.Column="7" Grid.Row="21" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
 
                                         </Grid>
                                     </GroupBox>

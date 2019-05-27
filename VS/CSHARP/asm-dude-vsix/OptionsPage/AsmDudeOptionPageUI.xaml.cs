@@ -626,8 +626,22 @@ namespace AsmDude.OptionsPage
             get { return this.ARCH_AVX512_VPCLMULQDQ_UI.IsChecked ?? false; }
             set { this.ARCH_AVX512_VPCLMULQDQ_UI.IsChecked = value; }
         }
-
-
+        public bool ARCH_AVX512_BF16
+        {
+            get { return this.ARCH_AVX512_BF16_UI.IsChecked ?? false; }
+            set { this.ARCH_AVX512_BF16_UI.IsChecked = value; }
+        }
+        public bool ARCH_AVX512_VP2INTERSECT
+        {
+            get { return this.ARCH_AVX512_VP2INTERSECT_UI.IsChecked ?? false; }
+            set { this.ARCH_AVX512_VP2INTERSECT_UI.IsChecked = value; }
+        }
+        public bool ARCH_ENQCMD
+        {
+            get { return this.ARCH_ENQCMD_UI.IsChecked ?? false; }
+            set { this.ARCH_ENQCMD_UI.IsChecked = value; }
+        }
+        
         public bool ARCH_X64
         {
             get { return this.ARCH_X64_UI.IsChecked ?? false; }

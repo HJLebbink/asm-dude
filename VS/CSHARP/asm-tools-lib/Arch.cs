@@ -395,8 +395,8 @@ namespace AsmTools
                 case Arch.ARCH_AVX512_VPOPCNTDQ: return "AVX512-VPOPCNTDQ - Vector Population Count instructions for Dwords and Qwords";
                 case Arch.ARCH_AVX512_4VNNIW: return "AVX512-4VNNIW - Vector Neural Network Instructions Word variable precision";
                 case Arch.ARCH_AVX512_4FMAPS: return "AVX512-4FMAPS - Fused Multiply Accumulation Packed Single precision";
-                case Arch.ARCH_AVX512_BF16: return "AVX512-BF16 - Support for BFLOAT16 floating-point format";
-                case Arch.ARCH_AVX512_VP2INTERSECT: return "AVX512-VP2INTERSECT - Support for VP2INTERSECT[D,Q]";
+                case Arch.ARCH_AVX512_BF16: return "AVX512-BF16 - BFLOAT16 floating-point format";
+                case Arch.ARCH_AVX512_VP2INTERSECT: return "AVX512-VP2INTERSECT - ";
 
                 case Arch.ARCH_ADX: return "Multi-Precision Add-Carry Instruction Extension";
                 case Arch.ARCH_AES: return "Advanced Encryption Standard Extension";
@@ -412,7 +412,7 @@ namespace AsmTools
                 case Arch.ARCH_RTM: return "Transactional Synchronization Extensions";
                 case Arch.ARCH_MPX: return "Memory Protection Extensions";
                 case Arch.ARCH_PCLMULQDQ: return "Carry-Less Multiplication Instructions";
-                case Arch.ARCH_LZCNT: return "";
+                case Arch.ARCH_LZCNT: return "Leading zero count";
                 case Arch.ARCH_PREFETCHWT1: return "";
                 case Arch.ARCH_PRFCHW: return "";
                 case Arch.ARCH_RDPID: return "Read processor ID";

@@ -285,6 +285,11 @@ namespace AsmDude.OptionsPage
                     case Arch.ARCH_AVX512_GFNI: this._asmDudeOptionsPageUI.ARCH_AVX512_GFNI_UI.ToolTip = tooltip; break;
                     case Arch.ARCH_AVX512_VAES: this._asmDudeOptionsPageUI.ARCH_AVX512_VAES_UI.ToolTip = tooltip; break;
                     case Arch.ARCH_AVX512_VPCLMULQDQ: this._asmDudeOptionsPageUI.ARCH_AVX512_VPCLMULQDQ_UI.ToolTip = tooltip; break;
+
+                    case Arch.ARCH_AVX512_BF16: this._asmDudeOptionsPageUI.ARCH_AVX512_BF16_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_AVX512_VP2INTERSECT: this._asmDudeOptionsPageUI.ARCH_AVX512_VP2INTERSECT_UI.ToolTip = tooltip; break;
+                    case Arch.ARCH_ENQCMD: this._asmDudeOptionsPageUI.ARCH_ENQCMD_UI.ToolTip = tooltip; break;
+
                     case Arch.ARCH_ADX: this._asmDudeOptionsPageUI.ARCH_ADX_UI.ToolTip = tooltip; break;
                     case Arch.ARCH_AES: this._asmDudeOptionsPageUI.ARCH_AES_UI.ToolTip = tooltip; break;
                     case Arch.ARCH_VMX: this._asmDudeOptionsPageUI.ARCH_VMX_UI.ToolTip = tooltip; break;
