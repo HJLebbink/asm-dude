@@ -171,6 +171,7 @@ namespace AsmDude.SignatureHelp
                 case "R32": return new AsmSignatureEnum[] { AsmSignatureEnum.R32 };
                 case "R64": return new AsmSignatureEnum[] { AsmSignatureEnum.R64 };
                 case "R16/R32/R64": return new AsmSignatureEnum[] { AsmSignatureEnum.R16, AsmSignatureEnum.R32, AsmSignatureEnum.R64 };
+                case "R32/64": return new AsmSignatureEnum[] { AsmSignatureEnum.R32, AsmSignatureEnum.R64 };
 
                 case "REG": return new AsmSignatureEnum[] { AsmSignatureEnum.R32 };
                 case "AL": return new AsmSignatureEnum[] { AsmSignatureEnum.REG_AL };
@@ -278,6 +279,7 @@ namespace AsmDude.SignatureHelp
 
                 case "Z": return new AsmSignatureEnum[] { AsmSignatureEnum.Z };
                 case "K": return new AsmSignatureEnum[] { AsmSignatureEnum.K };
+                case "K+1": return new AsmSignatureEnum[] { AsmSignatureEnum.K };
                 case "K{K}": return new AsmSignatureEnum[] { AsmSignatureEnum.K };
                 case "SAE": return new AsmSignatureEnum[] { AsmSignatureEnum.SAE };
                 case "ER": return new AsmSignatureEnum[] { AsmSignatureEnum.ER };
