@@ -25,7 +25,7 @@ namespace intel_doc_2_data
         static void Payload()
         {
             //string path = "../../../../asm-dude.wiki/doc";
-            string path = "H:/Dropbox/sc/GitHub/asm-dude.wiki/doc";
+            string path = "C:/Users/henk/Documents/Github/asm-dude.wiki/doc";
 
             if (!Directory.Exists(path))
             {
@@ -118,7 +118,7 @@ namespace intel_doc_2_data
             int pos_Hyphen = Find_First_Hyphen_Position(substr1);
             string Description = substr1.Substring(pos_Hyphen + 1).Trim().Replace("\r\n", " ");
             int pos_End_Table = content.IndexOf("</table>");
-            var table = Parse_Table(content.Substring(pos_Start_Table, pos_End_Table - pos_Start_Table).Replace("<table>",""));
+            var table = Parse_Table(content.Substring(pos_Start_Table, pos_End_Table - pos_Start_Table).Replace("<table>", ""));
             var signatures = To_Signature(table);
             return (Description, signatures);
         }
@@ -138,7 +138,7 @@ namespace intel_doc_2_data
                 sb.Append(this.mnemonic.ToString() + "\t");
                 sb.Append(this.parameters + "\t");
 
-                for (int i = 0; i<this.archs.Count; ++i)
+                for (int i = 0; i < this.archs.Count; ++i)
                 {
                     sb.Append(ArchTools.ToString(this.archs[i]));
                     if (i < (this.archs.Count - 1)) sb.Append(",");
@@ -235,17 +235,17 @@ namespace intel_doc_2_data
                 IList<Arch> archs;
                 if (arch_column == -1)
                 {
-                    string desr = " "+Parameters.Parameter_Descriptions;
+                    string desr = " " + Parameters.Parameter_Descriptions;
 
                     if (desr.Contains(" CMOV"))
                     {
                         if (desr.Contains("R64"))
                         {
-                            archs = new List<Arch> { Arch.X64 };
+                            archs = new List<Arch> { Arch.ARCH_X64 };
                         }
                         else
                         {
-                            archs = new List<Arch> { Arch.P6 };
+                            archs = new List<Arch> { Arch.ARCH_P6 };
                         }
                     }
                     else if (desr.Contains("REL16") || desr.Contains("REL32"))
@@ -254,11 +254,11 @@ namespace intel_doc_2_data
                     }
                     else if (desr.Contains("REL64"))
                     {
-                        archs = new List<Arch> { Arch.X64 };
+                        archs = new List<Arch> { Arch.ARCH_X64 };
                     }
                     else if (desr.Contains("M64") || desr.Contains("R64") || desr.Contains("RCX"))
                     {
-                        archs = new List<Arch> { Arch.X64 };
+                        archs = new List<Arch> { Arch.ARCH_X64 };
                     }
                     else if (desr.Contains("IMM32") || desr.Contains("M32") || desr.Contains("R32") || desr.Contains("ECX"))
                     {
@@ -271,7 +271,7 @@ namespace intel_doc_2_data
                 }
                 else if (arch_column == -10)
                 {
-                    archs = new List<Arch> { Arch.SMX };
+                    archs = new List<Arch> { Arch.ARCH_SMX };
                 }
                 else
                 {
@@ -281,7 +281,7 @@ namespace intel_doc_2_data
                     }
                     else
                     {
-                        archs = new List<Arch> { Arch.NONE };
+                        archs = new List<Arch> { Arch.ARCH_NONE };
                     }
                 }
 
@@ -339,7 +339,7 @@ namespace intel_doc_2_data
                     }
                 }
             }
-            if (mnemonic==Mnemonic.NONE)
+            if (mnemonic == Mnemonic.NONE)
             {
                 Console.WriteLine("Could not find a mnemonic in string " + str);
                 //Console.ReadKey();
@@ -370,7 +370,7 @@ namespace intel_doc_2_data
             foreach (string s in str.Replace(",", " ").Split(' '))
             {
                 Arch a = ArchTools.ParseArch(s.Trim(), false);
-                if (a != Arch.NONE)
+                if (a != Arch.ARCH_NONE)
                 {
                     Results.Add(a);
                 }

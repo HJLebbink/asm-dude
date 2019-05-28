@@ -37,9 +37,7 @@
   <ItemGroup>
     <Content Include="copy.cmd" />
     <Content Include="readme.md" />
-    <Content Include="resources\325462-sdm-vol-1-2abcd-3abcd-selection.pdf" />
     <Content Include="resources\325462-sdm-vol-1-2abcd-3abcd.pdf" />
-    <Content Include="resources\architecture-instruction-set-extensions-programming-reference-selection.PDF" />
     <Content Include="resources\architecture-instruction-set-extensions-programming-reference.pdf" />
     <Content Include="resources\make.sh" />
     <Content Include="resources\test\selection__%28p1-4%29.PDF" />
