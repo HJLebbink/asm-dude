@@ -175,13 +175,14 @@ namespace AsmDude.OptionsPage
         }
         private bool Setting_Update(string Key)
         {
-            string k = Key;
-            if (this._asmDudeOptionsPageUI.GetPropValue(k) != Settings.Default[k])
+            var persisted_value = Settings.Default[Key];
+            var gui_value = this._asmDudeOptionsPageUI.GetPropValue(Key);
+            if (gui_value.Equals(persisted_value))
             {
-                Settings.Default[k] = this._asmDudeOptionsPageUI.GetPropValue(k);
-                return true;
+                return false;
             }
-            return false;
+            Settings.Default[Key] = gui_value;
+            return true;
         }
         private bool Setting_Update(PropertyEnum Key)
         {
@@ -885,7 +886,10 @@ namespace AsmDude.OptionsPage
             #region ARCH
             foreach (Arch arch in Enum.GetValues(typeof(Arch)))
             {
-                if (this.Setting_Update(arch)) { changed = true; archChanged = true; }
+                if (this.Setting_Update(arch))
+                {
+                    changed = true; archChanged = true;
+                }
             }
             #endregion
 
