@@ -241,10 +241,10 @@ namespace AsmDude
             }
 
             // just some rules of thumb
-            if (line.Contains("#"))
-            {
-                return true;
-            }
+            //if (line.Contains("#"))
+            //{
+            //    return true;
+            //}
 
             {
                 string line2 = line.Trim();
