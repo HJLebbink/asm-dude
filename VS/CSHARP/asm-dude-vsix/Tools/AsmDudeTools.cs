@@ -226,7 +226,7 @@ namespace AsmDude
                     if (this._description.ContainsKey(keyword))
                     {
                         string description = this._description[keyword];
-                        string reference = this.Get_Url(keyword);
+                        string reference = this.Get_Url(mnemonic);
 
                         this.Mnemonic_Store.SetHtmlRef(mnemonic, reference);
 
@@ -409,9 +409,9 @@ namespace AsmDude
         /// <summary>
         /// get url for the provided keyword. Returns empty string if the keyword does not exist or the keyword does not have an url.
         /// </summary>
-        public string Get_Url(string keyword)
+        public string Get_Url(Mnemonic mnemonic)
         {
-            return this.Mnemonic_Store.GetHtmlRef(AsmSourceTools.ParseMnemonic(keyword));
+            return this.Mnemonic_Store.GetHtmlRef(mnemonic);
         }
 
         /// <summary>

@@ -174,17 +174,15 @@ namespace AsmDude.OptionsPage
                 {
                     return AssemblerEnum.MASM;
                 }
-
                 if (this.usedAssemblerNasm_UI.IsChecked.HasValue && this.usedAssemblerNasm_UI.IsChecked.Value)
                 {
                     return AssemblerEnum.NASM_INTEL;
                 }
-
                 if (this.usedAssemblerAtt_UI.IsChecked.HasValue && this.usedAssemblerAtt_UI.IsChecked.Value)
                 {
                     return AssemblerEnum.NASM_ATT;
                 }
-
+                AsmDudeToolsStatic.Output_WARNING("Unrecognized UsedAssembler, assuming MASM");
                 return AssemblerEnum.MASM; // if nothing is checked somehow return MASM
             }
             set
@@ -206,6 +204,47 @@ namespace AsmDude.OptionsPage
                     this.usedAssemblerMasm_UI.IsChecked = false;
                     this.usedAssemblerNasm_UI.IsChecked = false;
                     this.usedAssemblerAtt_UI.IsChecked = true;
+                } else
+                {
+                    AsmDudeToolsStatic.Output_WARNING("Unrecognized UsedAssembler, assuming MASM");
+                    this.usedAssemblerMasm_UI.IsChecked = true;
+                    this.usedAssemblerNasm_UI.IsChecked = false;
+                    this.usedAssemblerAtt_UI.IsChecked = false;
+                }
+            }
+        }
+
+        public AssemblerEnum UsedAssemblerDisassemblyWindow
+        {
+            get
+            {
+                if (this.AssemblerDisassemblyMasm_UI.IsChecked.HasValue && this.AssemblerDisassemblyMasm_UI.IsChecked.Value)
+                {
+                    return AssemblerEnum.MASM;
+                }
+                if (this.AssemblerDisassemblyAtt_UI.IsChecked.HasValue && this.AssemblerDisassemblyAtt_UI.IsChecked.Value)
+                {
+                    return AssemblerEnum.NASM_ATT;
+                }
+                AsmDudeToolsStatic.Output_WARNING("Unrecognized UsedAssembler, assuming MASM");
+                return AssemblerEnum.MASM; // if nothing is checked somehow return MASM
+            }
+            set
+            {
+                if (value.HasFlag(AssemblerEnum.MASM))
+                {
+                    this.AssemblerDisassemblyMasm_UI.IsChecked = true;
+                    this.AssemblerDisassemblyAtt_UI.IsChecked = false;
+                }
+                else if (value.HasFlag(AssemblerEnum.NASM_ATT))
+                {
+                    this.AssemblerDisassemblyMasm_UI.IsChecked = false;
+                    this.AssemblerDisassemblyAtt_UI.IsChecked = true;
+                } else
+                {
+                    AsmDudeToolsStatic.Output_WARNING("Unrecognized UsedAssembler, assuming MASM");
+                    this.AssemblerDisassemblyMasm_UI.IsChecked = true;
+                    this.AssemblerDisassemblyAtt_UI.IsChecked = false;
                 }
             }
         }

@@ -23,6 +23,7 @@
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -37,12 +38,15 @@ namespace AsmDude.QuickInfo
     internal sealed class AsmQuickInfoControllerProvider : IIntellisenseControllerProvider
     {
         [Import]
+        private readonly IBufferTagAggregatorFactoryService _aggregatorFactory = null;
+
+        [Import]
         private readonly IQuickInfoBroker _quickInfoBroker = null;
 
         public IIntellisenseController TryCreateIntellisenseController(ITextView textView, IList<ITextBuffer> subjectBuffers)
         {
             //TODO: make two different QuickInfoControllers: one for asm files and one for Disassembly window
-            return new AsmQuickInfoController(textView, subjectBuffers, this._quickInfoBroker);
+            return new AsmQuickInfoController(textView, subjectBuffers, this._quickInfoBroker, this._aggregatorFactory);
         }
     }
 }

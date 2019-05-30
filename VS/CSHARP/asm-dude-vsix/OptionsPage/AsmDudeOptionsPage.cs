@@ -123,8 +123,6 @@ namespace AsmDude.OptionsPage
     [Guid(Guids.GuidOptionsPageAsmDude)]
     public class AsmDudeOptionsPage : UIElementDialogPage
     {
-        private const bool logInfo = true;
-
         private readonly AsmDudeOptionsPageUI _asmDudeOptionsPageUI;
 
         public AsmDudeOptionsPage()
@@ -141,16 +139,14 @@ namespace AsmDude.OptionsPage
 
         private bool Setting_Changed(string Key, StringBuilder sb)
         {
-            string k = Key;
-            object o1 = this._asmDudeOptionsPageUI.GetPropValue(k);
-            object o2 = Settings.Default[k];
-
-            if (!o1.Equals(o2))
+            var persisted_value = Settings.Default[Key];
+            var gui_value = this._asmDudeOptionsPageUI.GetPropValue(Key);
+            if (gui_value.Equals(persisted_value))
             {
-                sb.AppendLine(k + ": old = " + o2 + "; new = " + o1);
-                return true;
+                return false;
             }
-            return false;
+            sb.AppendLine(Key + ": old = " + persisted_value + "; new = " + gui_value);
+            return true;
         }
         private bool Setting_Changed(PropertyEnum Key, StringBuilder sb)
         {
@@ -163,12 +159,12 @@ namespace AsmDude.OptionsPage
         private bool Setting_Changed_RGB(PropertyEnum Key, StringBuilder sb)
         {
             string k = Key.ToString();
-            Color c1 = (Color)this._asmDudeOptionsPageUI.GetPropValue(k);
-            Color c2 = (Color)Settings.Default[k];
+            Color persisted_value = (Color)Settings.Default[k];
+            Color gui_value = (Color)this._asmDudeOptionsPageUI.GetPropValue(k);
 
-            if (c1.ToArgb() != c2.ToArgb())
+            if (gui_value.ToArgb() != persisted_value.ToArgb())
             {
-                sb.AppendLine(k + " old " + c2.Name + "; new " + c1.Name);
+                sb.AppendLine(k + " old " + persisted_value.Name + "; new " + gui_value.Name);
                 return true;
             }
             return false;
@@ -195,10 +191,10 @@ namespace AsmDude.OptionsPage
         private bool Setting_Update_RGB(PropertyEnum Key)
         {
             string k = Key.ToString();
-            Color c1 = (Color)this._asmDudeOptionsPageUI.GetPropValue(k);
-            Color c2 = (Color)Settings.Default[k];
+            Color persisted_value = (Color)Settings.Default[k];
+            Color gui_value = (Color)this._asmDudeOptionsPageUI.GetPropValue(k);
 
-            if (c1.ToArgb() != c2.ToArgb())
+            if (gui_value.ToArgb() != persisted_value.ToArgb())
             {
                 Settings.Default[k] = this._asmDudeOptionsPageUI.GetPropValue(k);
                 return true;
@@ -363,6 +359,7 @@ namespace AsmDude.OptionsPage
             base.OnActivate(e);
 
             this._asmDudeOptionsPageUI.UsedAssembler = AsmDudeToolsStatic.Used_Assembler;
+            this._asmDudeOptionsPageUI.UsedAssemblerDisassemblyWindow = AsmDudeToolsStatic.Used_Assembler_Disassembly_Window;
 
             #region AsmDoc
             this.Set_GUI(PropertyEnum.AsmDoc_On);
@@ -495,11 +492,18 @@ namespace AsmDude.OptionsPage
             bool changed = false;
             StringBuilder sb = new StringBuilder();
 
+            #region Assembly Flavour
             if (AsmDudeToolsStatic.Used_Assembler != this._asmDudeOptionsPageUI.UsedAssembler)
             {
                 sb.AppendLine("UsedAssembler=" + this._asmDudeOptionsPageUI.UsedAssembler);
                 changed = true;
             }
+            if (AsmDudeToolsStatic.Used_Assembler_Disassembly_Window != this._asmDudeOptionsPageUI.UsedAssemblerDisassemblyWindow)
+            {
+                sb.AppendLine("UsedAssembler=" + this._asmDudeOptionsPageUI.UsedAssemblerDisassemblyWindow);
+                changed = true;
+            }
+            #endregion
 
             #region AsmDoc
             changed |= this.Setting_Changed(PropertyEnum.AsmDoc_On, sb);
@@ -750,13 +754,20 @@ namespace AsmDude.OptionsPage
             bool restartNeeded = false;
             bool archChanged = false;
 
-
+            #region Assembler Flavour
             if (AsmDudeToolsStatic.Used_Assembler != this._asmDudeOptionsPageUI.UsedAssembler)
             {
                 AsmDudeToolsStatic.Used_Assembler = this._asmDudeOptionsPageUI.UsedAssembler;
                 changed = true;
                 restartNeeded = true;
             }
+            if (AsmDudeToolsStatic.Used_Assembler_Disassembly_Window != this._asmDudeOptionsPageUI.UsedAssemblerDisassemblyWindow)
+            {
+                AsmDudeToolsStatic.Used_Assembler_Disassembly_Window = this._asmDudeOptionsPageUI.UsedAssemblerDisassemblyWindow;
+                changed = true;
+                restartNeeded = true;
+            }
+            #endregion
 
             #region AsmDoc
             if (this.Setting_Update(PropertyEnum.AsmDoc_On)) { changed = true; }

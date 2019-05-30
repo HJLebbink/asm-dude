@@ -20,7 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using AsmDude.SyntaxHighlighting;
 using AsmDude.Tools;
+using AsmTools;
 using EnvDTE80;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -30,6 +32,7 @@ using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.Text.Operations;
+using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
@@ -46,22 +49,19 @@ namespace AsmDude.AsmDoc
     {
         private readonly IWpfTextView _view;
         private readonly CtrlKeyState _state;
-        private readonly IClassifier _aggregator;
-        private readonly ITextStructureNavigator _navigator;
+        private readonly ITagAggregator<AsmTokenTag> _aggregator2;
         private readonly AsmDudeTools _asmDudeTools;
 
         public AsmDocMouseHandler(
             IWpfTextView view,
-            IClassifier aggregator,
-            ITextStructureNavigator navigator,
+            IBufferTagAggregatorFactoryService aggregatorFactory,
             CtrlKeyState state,
             AsmDudeTools asmDudeTools)
         {
-            //AsmDudeToolsStatic.Output_INFO("AsmDocMouseHandler:constructor: file=" + AsmDudeToolsStatic.GetFileName(view.TextBuffer));
+            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:constructor: file={1}", this.ToString(), AsmDudeToolsStatic.GetFilename(view.TextBuffer)));
             this._view = view;
             this._state = state;
-            this._aggregator = aggregator;
-            this._navigator = navigator;
+            this._aggregator2 = AsmDudeToolsStatic.GetOrCreate_Aggregator(view.TextBuffer, aggregatorFactory);
             this._asmDudeTools = asmDudeTools;
 
             this._state.CtrlKeyStateChanged += (sender, args) =>
@@ -82,7 +82,6 @@ namespace AsmDude.AsmDoc
             // Some other points to clear the highlight span:
             this._view.LostAggregateFocus += (sender, args) => this.Set_Highlight_Span(null);
             this._view.VisualElement.MouseLeave += (sender, args) => this.Set_Highlight_Span(null);
-
         }
 
         #region Mouse processor overrides
@@ -98,23 +97,21 @@ namespace AsmDude.AsmDoc
 
         public override void PreprocessMouseMove(MouseEventArgs e)
         {
-            if (!Settings.Default.AsmDoc_On)
+            if (Settings.Default.AsmDoc_On)
             {
-                return;
-            }
-
-            if (!this._mouseDownAnchorPoint.HasValue && this._state.Enabled && (e.LeftButton == MouseButtonState.Released))
-            {
-                this.TryHighlightItemUnderMouse(this.RelativeToView(e.GetPosition(this._view.VisualElement)));
-            }
-            else if (this._mouseDownAnchorPoint.HasValue)
-            {
-                // Check and see if this is a drag; if so, clear out the highlight.
-                Point currentMousePosition = this.RelativeToView(e.GetPosition(this._view.VisualElement));
-                if (this.InDragOperation(this._mouseDownAnchorPoint.Value, currentMousePosition))
+                if (!this._mouseDownAnchorPoint.HasValue && this._state.Enabled && (e.LeftButton == MouseButtonState.Released))
                 {
-                    this._mouseDownAnchorPoint = null;
-                    this.Set_Highlight_Span(null);
+                    this.TryHighlightItemUnderMouse(this.RelativeToView(e.GetPosition(this._view.VisualElement)));
+                }
+                else if (this._mouseDownAnchorPoint.HasValue)
+                {
+                    // Check and see if this is a drag; if so, clear out the highlight.
+                    Point currentMousePosition = this.RelativeToView(e.GetPosition(this._view.VisualElement));
+                    if (this.InDragOperation(this._mouseDownAnchorPoint.Value, currentMousePosition))
+                    {
+                        this._mouseDownAnchorPoint = null;
+                        this.Set_Highlight_Span(null);
+                    }
                 }
             }
         }
@@ -133,38 +130,37 @@ namespace AsmDude.AsmDoc
 
         public override void PreprocessMouseUp(MouseButtonEventArgs e)
         {
-            if (!Settings.Default.AsmDoc_On)
+            if (Settings.Default.AsmDoc_On)
             {
-                return;
-            }
-
-            try
-            {
-                if (this._mouseDownAnchorPoint.HasValue && this._state.Enabled)
+                try
                 {
-                    Point currentMousePosition = this.RelativeToView(e.GetPosition(this._view.VisualElement));
-
-                    if (!this.InDragOperation(this._mouseDownAnchorPoint.Value, currentMousePosition))
+                    if (this._mouseDownAnchorPoint.HasValue && this._state.Enabled)
                     {
-                        this._state.Enabled = false;
+                        Point currentMousePosition = this.RelativeToView(e.GetPosition(this._view.VisualElement));
 
-                        ITextViewLine line = this._view.TextViewLines.GetTextViewLineContainingYCoordinate(currentMousePosition.Y);
-                        SnapshotPoint? bufferPosition = line.GetBufferPositionFromXCoordinate(currentMousePosition.X);
-                        string keyword = AsmDudeToolsStatic.Get_Keyword_Str(bufferPosition);
-                        if (keyword != null)
+                        if (!this.InDragOperation(this._mouseDownAnchorPoint.Value, currentMousePosition))
                         {
-                            this.Dispatch_Goto_DocAsync(keyword).ConfigureAwait(false);
+                            this._state.Enabled = false;
+
+                            ITextViewLine line = this._view.TextViewLines.GetTextViewLineContainingYCoordinate(currentMousePosition.Y);
+                            SnapshotPoint? bufferPosition = line.GetBufferPositionFromXCoordinate(currentMousePosition.X);
+                            string keyword = AsmDudeToolsStatic.Get_Keyword_Str(bufferPosition);
+                            if (keyword != null)
+                            {
+                                Mnemonic mnemonic = AsmSourceTools.ParseMnemonic_Att(keyword, false);
+                                this.Dispatch_Goto_DocAsync(mnemonic).ConfigureAwait(false);
+                            }
+                            this.Set_Highlight_Span(null);
+                            this._view.Selection.Clear();
+                            e.Handled = true;
                         }
-                        this.Set_Highlight_Span(null);
-                        this._view.Selection.Clear();
-                        e.Handled = true;
                     }
+                    this._mouseDownAnchorPoint = null;
                 }
-                this._mouseDownAnchorPoint = null;
-            }
-            catch (Exception ex)
-            {
-                AsmDudeToolsStatic.Output_ERROR(string.Format("{0} PreprocessMouseUp; e={1}", this.ToString(), ex.ToString()));
+                catch (Exception ex)
+                {
+                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0} PreprocessMouseUp; e={1}", this.ToString(), ex.ToString()));
+                }
             }
         }
 
@@ -198,37 +194,39 @@ namespace AsmDude.AsmDoc
                 {
                     return false;
                 }
+                SnapshotPoint triggerPoint = bufferPosition.Value;
+
 
                 // Quick check - if the mouse is still inside the current underline span, we're already set
                 SnapshotSpan? currentSpan = this.CurrentUnderlineSpan;
-                if (currentSpan.HasValue && currentSpan.Value.Contains(bufferPosition.Value))
+                if (currentSpan.HasValue && currentSpan.Value.Contains(triggerPoint))
                 {
                     updated = true;
                     return true;
                 }
 
-                TextExtent extent = this._navigator.GetExtentOfWord(bufferPosition.Value);
-                if (!extent.IsSignificant)
+                (AsmTokenTag tag, SnapshotSpan? keywordSpan) = AsmDudeToolsStatic.GetAsmTokenTag(this._aggregator2, triggerPoint);
+                if (keywordSpan.HasValue)
                 {
-                    return false;
-                }
-
-                //  check for valid classification type.
-                foreach (ClassificationSpan classification in this._aggregator.GetClassificationSpans(extent.Span))
-                {
-                    //TODO check if classification is a mnemonic only then check for an url
-                    string keyword = classification.Span.GetText();
-                    //string type = classification.ClassificationType.Classification.ToLower();
-                    string url = this.Get_Url(keyword);
-                    //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:TryHighlightItemUnderMouse: keyword={1}; type={2}; url={3}", this.ToString(), keyword, type, url));
-                    if ((url != null) && this.Set_Highlight_Span(classification.Span))
+                    switch (tag.Type)
                     {
-                        updated = true;
-                        return true;
+                        case AsmTokenType.Mnemonic: // intentional fall through
+                        case AsmTokenType.Jump:
+                            {
+                                SnapshotSpan tagSpan = keywordSpan.Value;
+                                Mnemonic mnemonic = AsmSourceTools.ParseMnemonic_Att(tagSpan.GetText(), false);
+                                string url = this.Get_Url(mnemonic);
+                                //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:TryHighlightItemUnderMouse: keyword={1}; type={2}; url={3}", this.ToString(), keyword, type, url));
+                                if ((url != null) && this.Set_Highlight_Span(keywordSpan))
+                                {
+                                    updated = true;
+                                    return true;
+                                }
+                                break;
+                            }
+                        default: break;
                     }
                 }
-                // No update occurred, so return false
-                return false;
             }
             finally
             {
@@ -237,6 +235,8 @@ namespace AsmDude.AsmDoc
                     this.Set_Highlight_Span(null);
                 }
             }
+            // No update occurred, so return false
+            return false;
         }
 
         private SnapshotSpan? CurrentUnderlineSpan
@@ -244,14 +244,9 @@ namespace AsmDude.AsmDoc
             get
             {
                 AsmDocUnderlineTagger classifier = AsmDocUnderlineTaggerProvider.GetClassifierForView(this._view);
-                if (classifier != null && classifier.CurrentUnderlineSpan.HasValue)
-                {
-                    return classifier.CurrentUnderlineSpan.Value.TranslateTo(this._view.TextSnapshot, SpanTrackingMode.EdgeExclusive);
-                }
-                else
-                {
-                    return null;
-                }
+                return ((classifier != null) && classifier.CurrentUnderlineSpan.HasValue)
+                    ? classifier.CurrentUnderlineSpan.Value.TranslateTo(this._view.TextSnapshot, SpanTrackingMode.EdgeExclusive)
+                    : (SnapshotSpan?)null;
             }
         }
 
@@ -267,16 +262,16 @@ namespace AsmDude.AsmDoc
             return false;
         }
 
-        private async Task<bool> Dispatch_Goto_DocAsync(string keyword)
+        private async Task<bool> Dispatch_Goto_DocAsync(Mnemonic mnemonic)
         {
             //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:DispatchGoToDoc; keyword=\"{1}\".", this.ToString(), keyword));
-            int hr = await this.Open_File_Async(keyword);
+            int hr = await this.Open_File_Async(mnemonic);
             return ErrorHandler.Succeeded(hr);
         }
 
-        private string Get_Url(string keyword)
+        private string Get_Url(Mnemonic mnemonic)
         {
-            string reference = this._asmDudeTools.Get_Url(keyword);
+            string reference = this._asmDudeTools.Get_Url(mnemonic);
             if (reference == null)
             {
                 return null;
@@ -316,14 +311,14 @@ namespace AsmDude.AsmDoc
             return null;
         }
 
-        private async Task<int> Open_File_Async(string keyword)
+        private async Task<int> Open_File_Async(Mnemonic mnemonic)
         {
             if (!ThreadHelper.CheckAccess())
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             }
 
-            string url = this.Get_Url(keyword);
+            string url = this.Get_Url(mnemonic);
             if (url == null)
             { // this situation happens for all keywords that do not have an url specified (such as registers).
                 //AsmDudeToolsStatic.Output_INFO(string.Format("INFO: {0}:openFile; url for keyword \"{1}\" is null.", this.ToString(), keyword));

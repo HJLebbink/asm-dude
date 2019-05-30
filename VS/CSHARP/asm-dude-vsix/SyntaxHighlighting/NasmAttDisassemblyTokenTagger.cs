@@ -52,6 +52,8 @@ namespace AsmDude
 
         internal NasmAttDisassemblyTokenTagger(ITextBuffer buffer)
         {
+            AsmDudeToolsStatic.Output_INFO("NasmAttDisassemblyTokenTagger:constructor");
+
             this._buffer = buffer;
             this._asmDudeTools = AsmDudeTools.Instance;
 

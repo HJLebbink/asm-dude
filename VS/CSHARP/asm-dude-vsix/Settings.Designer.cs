@@ -1846,5 +1846,29 @@ namespace AsmDude {
                 this["ARCH_ENQCMD"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool useAssemblerDisassemblyMasm {
+            get {
+                return ((bool)(this["useAssemblerDisassemblyMasm"]));
+            }
+            set {
+                this["useAssemblerDisassemblyMasm"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool useAssemblerDisassemblyNasm_Att {
+            get {
+                return ((bool)(this["useAssemblerDisassemblyNasm_Att"]));
+            }
+            set {
+                this["useAssemblerDisassemblyNasm_Att"] = value;
+            }
+        }
     }
 }

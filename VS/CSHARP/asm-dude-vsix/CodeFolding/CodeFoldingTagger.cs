@@ -258,9 +258,7 @@ namespace AsmDude.CodeFolding
         {
             try
             {
-                ITextSnapshotLine line = this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
-                IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(line.Extent);
-                foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in tags)
+                foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in AsmDudeToolsStatic.GetAsmTokenTags(this._aggregator, lineNumber))
                 {
                     if (asmTokenSpan.Tag.Type == AsmTokenType.Directive)
                     {
@@ -299,9 +297,7 @@ namespace AsmDude.CodeFolding
         /// </summary>
         private (int StartPos, int StartPosDescription) Is_Start_Nasm_Keyword(string lineContent, int lineNumber)
         {
-            ITextSnapshotLine line = this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
-            IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(line.Extent);
-            foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in tags)
+            foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in AsmDudeToolsStatic.GetAsmTokenTags(this._aggregator, lineNumber))
             {
                 if (asmTokenSpan.Tag.Type == AsmTokenType.Directive)
                 {
@@ -354,8 +350,7 @@ namespace AsmDude.CodeFolding
 
         private int Is_End_Masm_Keyword(string lineContent, int lineNumber)
         {
-            IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent);
-            foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in tags)
+            foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in AsmDudeToolsStatic.GetAsmTokenTags(this._aggregator, lineNumber))
             {
                 if (asmTokenSpan.Tag.Type == AsmTokenType.Directive)
                 {
@@ -380,8 +375,7 @@ namespace AsmDude.CodeFolding
 
         private int Is_End_Nasm_Keyword(string lineContent, int lineNumber)
         {
-            IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = this._aggregator.GetTags(this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent);
-            foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in tags)
+            foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in AsmDudeToolsStatic.GetAsmTokenTags(this._aggregator, lineNumber))
             {
                 if (asmTokenSpan.Tag.Type == AsmTokenType.Directive)
                 {

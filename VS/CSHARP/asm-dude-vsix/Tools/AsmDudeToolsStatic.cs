@@ -94,17 +94,14 @@ namespace AsmDude.Tools
                 {
                     return AssemblerEnum.MASM;
                 }
-
                 if (Settings.Default.useAssemblerNasm)
                 {
                     return AssemblerEnum.NASM_INTEL;
                 }
-
                 if (Settings.Default.useAssemblerNasm_Att)
                 {
                     return AssemblerEnum.NASM_ATT;
                 }
-
                 Output_WARNING("AsmDudeToolsStatic.Used_Assembler: no assembler specified, assuming MASM");
                 return AssemblerEnum.MASM;
             }
@@ -128,11 +125,48 @@ namespace AsmDude.Tools
                 }
                 else
                 {
+                    Output_WARNING("AsmDudeToolsStatic.Used_Assembler: no assembler specified, assuming MASM");
                     Settings.Default.useAssemblerMasm = true;
                 }
             }
         }
 
+        public static AssemblerEnum Used_Assembler_Disassembly_Window
+        {
+            get
+            {
+                if (Settings.Default.useAssemblerDisassemblyMasm)
+                {
+                    return AssemblerEnum.MASM;
+                }
+                if (Settings.Default.useAssemblerDisassemblyNasm_Att)
+                {
+                    return AssemblerEnum.NASM_ATT;
+                }
+                Output_WARNING("AsmDudeToolsStatic.Used_Assembler_Disassembly_Window: no assembler specified, assuming MASM");
+                return AssemblerEnum.MASM;
+            }
+            set
+            {
+                Settings.Default.useAssemblerDisassemblyMasm = false;
+                Settings.Default.useAssemblerDisassemblyNasm_Att = false;
+
+                if (value.HasFlag(AssemblerEnum.MASM))
+                {
+                    Settings.Default.useAssemblerDisassemblyMasm = true;
+                }
+                else if (value.HasFlag(AssemblerEnum.NASM_ATT))
+                {
+                    Settings.Default.useAssemblerDisassemblyNasm_Att = true;
+                }
+                else
+                {
+                    Output_WARNING("AsmDudeToolsStatic.Used_Assembler_Disassembly_Window: no assembler specified, assuming MASM");
+                    Settings.Default.useAssemblerDisassemblyMasm = true;
+                }
+            }
+        }
+        
         public static string GetFilename(ITextBuffer buffer)
         {
             return ThreadHelper.JoinableTaskFactory.Run(async delegate
@@ -155,6 +189,26 @@ namespace AsmDude.Tools
             string filename = document?.FilePath;
             //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Get_Filename_Async: retrieving filename {1}", typeof(AsmDudeToolsStatic), filename));
             return filename;
+        }
+
+        public static (AsmTokenTag tag, SnapshotSpan? keywordSpan) GetAsmTokenTag(ITagAggregator<AsmTokenTag> aggregator, SnapshotPoint triggerPoint)
+        {
+            foreach (IMappingTagSpan<AsmTokenTag> asmTokenTag in aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint)))
+            {
+                foreach (SnapshotSpan span in asmTokenTag.Span.GetSpans(triggerPoint.Snapshot.TextBuffer))
+                {
+                    return (asmTokenTag.Tag, span);
+                }
+            }
+            return (null, null);
+        }
+
+        public static IEnumerable<IMappingTagSpan<AsmTokenTag>> GetAsmTokenTags(ITagAggregator<AsmTokenTag> aggregator, int lineNumber)
+        {
+            ITextBuffer buffer = aggregator.BufferGraph.TopBuffer;
+            ITextSnapshotLine line = buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
+            IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = aggregator.GetTags(line.Extent);
+            return tags;
         }
 
         public static async System.Threading.Tasks.Task Open_Disassembler_Async()

@@ -23,6 +23,7 @@
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
+using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 
@@ -37,17 +38,13 @@ namespace AsmDude.AsmDoc
     internal sealed class AsmDocMouseHandlerProvider : IMouseProcessorProvider
     {
         [Import]
-        private readonly IClassifierAggregatorService _aggregatorFactory = null;
-
-        [Import]
-        private readonly ITextStructureNavigatorSelectorService _navigatorService = null;
+        private readonly IBufferTagAggregatorFactoryService _aggregatorFactory = null;
 
         public IMouseProcessor GetAssociatedProcessor(IWpfTextView view)
         {
             return new AsmDocMouseHandler(
                 view,
-                this._aggregatorFactory.GetClassifier(view.TextBuffer),
-                this._navigatorService.GetTextStructureNavigator(view.TextBuffer),
+                this._aggregatorFactory,
                 CtrlKeyState.GetStateForView(view),
                 AsmDudeTools.Instance);
         }

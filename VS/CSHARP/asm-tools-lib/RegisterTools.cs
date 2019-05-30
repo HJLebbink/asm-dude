@@ -25,7 +25,6 @@ using System;
 
 namespace AsmTools
 {
-
     public enum RegisterType
     {
         UNKNOWN, BIT8, BIT16, BIT32, BIT64, MMX, XMM, YMM, ZMM, SEGMENT, OPMASK, CONTROL, DEBUG, BOUND
@@ -43,12 +42,12 @@ namespace AsmTools
 
         public static Rn ParseRn(string str, bool isCapitals = false)
         {
-#if DEBUG
+            #if DEBUG
             if (isCapitals && (str != str.ToUpper()))
             {
                 throw new Exception();
             }
-#endif
+            #endif
 
             switch (isCapitals ? str : str.ToUpper())
             {
