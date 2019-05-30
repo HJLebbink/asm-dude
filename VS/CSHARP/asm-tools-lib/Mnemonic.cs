@@ -2527,7 +2527,7 @@ namespace AsmTools
             int length = str2.Length;
 
             bool suffix;
-            switch (str[length - 1])
+            switch (str2[length - 1])
             {
                 case 'B':
                 case 'S':
@@ -2539,7 +2539,7 @@ namespace AsmTools
             }
             if (suffix)
             {
-                string keyword2 = str.Substring(0, length - 1);
+                string keyword2 = str2.Substring(0, length - 1);
                 return ParseMnemonic(keyword2, true);
             }
             return Mnemonic.NONE;
