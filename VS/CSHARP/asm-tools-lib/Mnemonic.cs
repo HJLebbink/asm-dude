@@ -21,6 +21,8 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace AsmTools
 {
@@ -2461,10 +2463,21 @@ namespace AsmTools
 
         VP2INTERSECTD,
         VP2INTERSECTQ
-    }
+    } 
 
     public static partial class AsmSourceTools
     {
+        private static readonly Dictionary<string, Mnemonic> _mnemonic_cache;
+
+        static AsmSourceTools() // static class initializer
+        {
+            _mnemonic_cache = new Dictionary<string, Mnemonic>();
+            foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
+            {
+                _mnemonic_cache.Add(mnemonic.ToString(), mnemonic);
+            }
+        }
+
         public static bool IsJump(Mnemonic mnemonic)
         {
             switch (mnemonic)
@@ -2545,15 +2558,24 @@ namespace AsmTools
             return Mnemonic.NONE;
         }
 
-        /// <summary>Parse the provided string that contains a Intel syntax mnemonic</summary>
         public static Mnemonic ParseMnemonic(string str, bool strIsCapitals = false)
         {
-#if DEBUG
+            if (!strIsCapitals)
+            {
+                str = str.ToUpper();
+            }
+            return (_mnemonic_cache.TryGetValue(str, out Mnemonic value)) ? value : Mnemonic.NONE;
+        }
+
+        /// <summary>Parse the provided string that contains a Intel syntax mnemonic</summary>
+        public static Mnemonic ParseMnemonic_OLD(string str, bool strIsCapitals = false)
+        {
+            #if DEBUG
             if (strIsCapitals && (str != str.ToUpper()))
             {
                 throw new Exception();
             }
-#endif
+            #endif
             if (!strIsCapitals)
             {
                 str = str.ToUpper();
@@ -4623,6 +4645,35 @@ namespace AsmTools
                     Console.WriteLine("WARNING;parseMnemonic. unknown str=\"" + str + "\".");
                     return Mnemonic.NONE;
             }
+        }
+
+        public static void SpeedTest()
+        {
+            Stopwatch stopwatch1 = new Stopwatch();
+            Stopwatch stopwatch2 = new Stopwatch();
+            bool strCapitals = true;
+
+            for (int i = 0; i < 1000; ++i)
+            {
+                foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
+                {
+                    string str = mnemonic.ToString();
+                    {
+                        stopwatch1.Start();
+                        Mnemonic m1 = ParseMnemonic_OLD(str, strCapitals);
+                        stopwatch1.Stop();
+                        if (m1 != mnemonic) Console.WriteLine("NOT OK OLD mnemonic=" + mnemonic.ToString() + "; str=" + str + "; m1=" + m1.ToString());
+                    }
+                    {
+                        stopwatch2.Start();
+                        Mnemonic m1 = ParseMnemonic(str, strCapitals);
+                        stopwatch2.Stop();
+                        if (m1 != mnemonic) Console.WriteLine("NOT OK     mnemonic=" + mnemonic.ToString() + "; str=" + str + "; m1=" + m1.ToString());
+                    }
+                }
+            }
+            Console.WriteLine("ParseMnemonic OLD " + stopwatch1.ElapsedMilliseconds + " ms");
+            Console.WriteLine("ParseMnemonic     " + stopwatch2.ElapsedMilliseconds + " ms");
         }
     }
 }
