@@ -90,15 +90,15 @@ namespace AsmDude
             {
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
 
-                string line = containingLine.GetText().ToUpper();
-                List<(int BeginPos, int Length, bool IsLabel)> pos = new List<(int BeginPos, int Length, bool IsLabel)>(AsmSourceTools.SplitIntoKeywordPos(line));
+                string line_upcase = containingLine.GetText().ToUpper();
+                List<(int BeginPos, int Length, bool IsLabel)> pos = new List<(int BeginPos, int Length, bool IsLabel)>(AsmSourceTools.SplitIntoKeywordPos(line_upcase));
 
                 int offset = containingLine.Start.Position;
                 int nKeywords = pos.Count;
 
                 for (int k = 0; k < nKeywords; k++)
                 {
-                    string asmToken = NasmIntelTokenTagger.Keyword(pos[k], line);
+                    string asmToken = NasmIntelTokenTagger.Keyword(pos[k], line_upcase);
                     // keyword starts with a remark char
                     if (AsmSourceTools.IsRemarkChar(asmToken[0]))
                     {
@@ -136,7 +136,7 @@ namespace AsmDude
                                     break;
                                 }
 
-                                string asmToken2 = NasmIntelTokenTagger.Keyword(pos[k], line);
+                                string asmToken2 = NasmIntelTokenTagger.Keyword(pos[k], line_upcase);
                                 switch (asmToken2)
                                 {
                                     case "$":
@@ -160,7 +160,7 @@ namespace AsmDude
                                                 break;
                                             }
 
-                                            string asmToken3 = NasmIntelTokenTagger.Keyword(pos[k], line);
+                                            string asmToken3 = NasmIntelTokenTagger.Keyword(pos[k], line_upcase);
                                             switch (asmToken3)
                                             {
                                                 case "$":
@@ -217,7 +217,7 @@ namespace AsmDude
                                     if ((k + 1) < nKeywords)
                                     {
                                         k++;
-                                        string nextKeyword = NasmIntelTokenTagger.Keyword(pos[k], line);
+                                        string nextKeyword = NasmIntelTokenTagger.Keyword(pos[k], line_upcase);
                                         switch (nextKeyword)
                                         {
                                             case "PROC":
@@ -247,7 +247,7 @@ namespace AsmDude
                                     // do one word look back; see whether we can understand the current unknown word
                                     if (k > 0)
                                     {
-                                        string previousKeyword = NasmIntelTokenTagger.Keyword(pos[k - 1], line);
+                                        string previousKeyword = NasmIntelTokenTagger.Keyword(pos[k - 1], line_upcase);
                                         switch (previousKeyword)
                                         {
                                             case "ALIAS":
@@ -293,7 +293,7 @@ namespace AsmDude
                                                     break;
                                                 }
 
-                                                string asmToken2 = NasmIntelTokenTagger.Keyword(pos[k], line);
+                                                string asmToken2 = NasmIntelTokenTagger.Keyword(pos[k], line_upcase);
                                                 yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this.Make_AsmTokenTag_Label(containingLine.LineNumber));
                                                 break;
                                             }
@@ -306,7 +306,7 @@ namespace AsmDude
                                                     break;
                                                 }
 
-                                                string asmToken2 = NasmIntelTokenTagger.Keyword(pos[k], line);
+                                                string asmToken2 = NasmIntelTokenTagger.Keyword(pos[k], line_upcase);
                                                 yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._labelDef_PROTO);
                                                 break;
                                             }

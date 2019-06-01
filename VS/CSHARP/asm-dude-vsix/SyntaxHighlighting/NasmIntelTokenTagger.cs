@@ -332,9 +332,9 @@ namespace AsmDude
             return (false, nextTokenId, nextLoc, "");
         }
 
-        public static string Keyword((int, int, bool) pos, string line)
+        public static string Keyword((int BeginPos, int Length, bool IsLabel) pos, string line)
         {
-            return line.Substring(pos.Item1, pos.Item2 - pos.Item1);
+            return line.Substring(pos.BeginPos, pos.Length - pos.BeginPos);
         }
 
         public static SnapshotSpan New_Span((int BeginPos, int Length, bool IsLabel) pos, int offset, SnapshotSpan lineSnapShot)

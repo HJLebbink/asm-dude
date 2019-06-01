@@ -24,7 +24,7 @@ int main()
 	std::cout << "Hello world! " << ymm_a[0] << std::endl; // print the result such that it is not optimized away
 
 	__m128d xmm_a = _mm_set1_pd(1.0);
-	for (int i = 0; i < (1 << 5); ++i) {
+	for (int i = 0; i < (1 << 4); ++i) {
 		xmm_a = _mm_div_pd(xmm_a, _mm_set1_pd(i)); // search for vdivpd in the disassembly window
 	}
 	std::cout << "Hello world! " << xmm_a[0] << std::endl; // print the result such that it is not optimized away

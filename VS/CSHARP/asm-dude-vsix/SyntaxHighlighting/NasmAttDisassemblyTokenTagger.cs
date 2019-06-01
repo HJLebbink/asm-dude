@@ -91,24 +91,24 @@ namespace AsmDude
             {
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
 
-                string line = containingLine.GetText().ToUpper();
-                List<(int BeginPos, int Length, bool IsLabel)> pos = new List<(int BeginPos, int Length, bool IsLabel)>(AsmSourceTools.SplitIntoKeywordPos(line));
+                string line_upcase = containingLine.GetText().ToUpper();
+                List<(int BeginPos, int Length, bool IsLabel)> pos = new List<(int BeginPos, int Length, bool IsLabel)>(AsmSourceTools.SplitIntoKeywordPos(line_upcase));
 
                 int offset = containingLine.Start.Position;
                 int nKeywords = pos.Count;
 
-                // if the line does not contain a Mnemonic, assume it is a source code line and make it a remark
-                #region Check source code line
-                if (IsSourceCode(line, pos))
+                #region Check if the current line is a line of source code
+                if (IsSourceCode(line_upcase, pos))
                 {
-                    yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span((0, line.Length, false), offset, curSpan), this._remark);
+                    yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span((0, line_upcase.Length, false), offset, curSpan), this._remark);
                     continue; // go to the next line
                 }
                 #endregion
 
                 for (int k = 0; k < nKeywords; k++)
                 {
-                    string asmToken = NasmIntelTokenTagger.Keyword(pos[k], line);
+                    string asmToken = NasmIntelTokenTagger.Keyword(pos[k], line_upcase);
+                    // keyword starts with a remark char
 
                     // keyword k is a label definition
                     if (pos[k].IsLabel)
@@ -130,7 +130,7 @@ namespace AsmDude
                                     break; // there are no next words
                                 }
 
-                                string asmToken2 = NasmIntelTokenTagger.Keyword(pos[k], line);
+                                string asmToken2 = NasmIntelTokenTagger.Keyword(pos[k], line_upcase);
                                 switch (asmToken2)
                                 {
                                     case "WORD":
@@ -147,7 +147,7 @@ namespace AsmDude
                                                 break;
                                             }
 
-                                            string asmToken3 = NasmIntelTokenTagger.Keyword(pos[k], line);
+                                            string asmToken3 = NasmIntelTokenTagger.Keyword(pos[k], line_upcase);
                                             switch (asmToken3)
                                             {
                                                 case "PTR":
