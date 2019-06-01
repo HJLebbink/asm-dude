@@ -415,6 +415,12 @@ namespace AsmTools
         /// <summary> Check if the provided string is a constant by evaluating it.</summary>
         public static (bool Valid, ulong Value, int NBits) Evaluate_Constant(string token, bool isCapitals = false)
         {
+            if (token.StartsWith("$")) // AT&T syntax constants start with '$'
+            {
+                token = token.Substring(1);
+            }
+
+            //TODO 01-06-19 fix evaluate_constant
             //TODO bugfix: there is a issue with .net 1.6.2 and the evaluation code in Evaluate_Constant
             if (true)
             {

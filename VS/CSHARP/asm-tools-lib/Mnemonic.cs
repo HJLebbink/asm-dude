@@ -2465,16 +2465,45 @@ namespace AsmTools
         VP2INTERSECTQ
     } 
 
+    /// <summary>
+    /// Suffix for AT&T mnemonic
+    /// </summary>
+    public enum AttType : byte
+    {
+        B = (byte)'B',
+        S = (byte)'S',
+        W = (byte)'W',
+        L = (byte)'L',
+        Q = (byte)'Q',
+        T = (byte)'T',
+        NONE = 0xFF
+    }
+
     public static partial class AsmSourceTools
     {
         private static readonly Dictionary<string, Mnemonic> _mnemonic_cache;
 
-        static AsmSourceTools() // static class initializer
+        /// <summary>Static class initializer for AsmSourceTools</summary>
+        static AsmSourceTools()
         {
             _mnemonic_cache = new Dictionary<string, Mnemonic>();
             foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
             {
                 _mnemonic_cache.Add(mnemonic.ToString(), mnemonic);
+            }
+        }
+
+        private static AttType ParseAttType(char c)
+        {
+            switch (c)
+            {
+                case 'B': return AttType.B;
+                case 'S': return AttType.S;
+                case 'W': return AttType.W;
+                case 'L': return AttType.L;
+                case 'Q': return AttType.Q;
+                case 'T': return AttType.T;
+                default: return AttType.NONE;
             }
         }
 
@@ -2529,35 +2558,48 @@ namespace AsmTools
         /// <summary>Parse the provided string that contains a AT&T syntax mnemonic</summary>
         public static Mnemonic ParseMnemonic_Att(string str, bool strIsCapitals = false)
         {
-            string str2 = strIsCapitals ? str : str.ToUpper();
-
-            Mnemonic r = ParseMnemonic(str2, true);
-            if (r != Mnemonic.NONE)
+            int length = str.Length;
+            if (length > 1)
             {
-                return r;
-            }
+                string str2 = strIsCapitals ? str : str.ToUpper();
 
-            int length = str2.Length;
+                Mnemonic r = ParseMnemonic(str2, true);
+                if (r != Mnemonic.NONE)
+                {
+                    return r;
+                }
 
-            bool suffix;
-            switch (str2[length - 1])
-            {
-                case 'B':
-                case 'S':
-                case 'W':
-                case 'L':
-                case 'Q':
-                case 'T': suffix = true; break;
-                default: suffix = false; break;
-            }
-            if (suffix)
-            {
-                string keyword2 = str2.Substring(0, length - 1);
-                return ParseMnemonic(keyword2, true);
+                AttType attType = ParseAttType(str2[length - 1]);
+                if (attType != AttType.NONE)
+                {
+                    string keyword2 = str2.Substring(0, length - 1);
+                    return ParseMnemonic(keyword2, true);
+                }
             }
             return Mnemonic.NONE;
         }
 
+        public static (Mnemonic, AttType) ParseMnemonic_Att_new(string str, bool strIsCapitals = false)
+        {
+            int length = str.Length;
+            if (length > 1)
+            {
+                string str2 = strIsCapitals ? str : str.ToUpper();
+
+                Mnemonic r = ParseMnemonic(str2, true);
+                if (r != Mnemonic.NONE)
+                {
+                    return (r, AttType.NONE);
+                }
+                AttType attType = ParseAttType(str2[length - 1]);
+                if (attType != AttType.NONE)
+                {
+                    string keyword2 = str2.Substring(0, length - 1);
+                    return (ParseMnemonic(keyword2, true), attType);
+                }
+            }
+            return (Mnemonic.NONE, AttType.NONE);
+        }
         public static Mnemonic ParseMnemonic(string str, bool strIsCapitals = false)
         {
             if (!strIsCapitals)
@@ -4645,6 +4687,27 @@ namespace AsmTools
                     Console.WriteLine("WARNING;parseMnemonic. unknown str=\"" + str + "\".");
                     return Mnemonic.NONE;
             }
+        }
+
+        public static void GenCacheTest()
+        {
+            if (false)
+            {
+                int shortest = 1000;
+                string shortest_str = "";
+                foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
+                {
+                    string str = mnemonic.ToString();
+                    if (str.Length < shortest)
+                    {
+                        shortest = str.Length;
+                        shortest_str = str;
+                    }
+                }
+                Console.WriteLine(shortest_str);
+            }
+
+
         }
 
         public static void SpeedTest()

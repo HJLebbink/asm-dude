@@ -41,14 +41,14 @@ namespace AsmSim
             System.Version ver = thisAssemName.Version;
             Console.WriteLine(string.Format("Loaded AsmSim version {0}.", ver));
 
-            ExpressionTest();
+            //ExpressionTest();
             //TestMem2();
             //TestExecutionTree();
             //TestGraph();
             //TestMnemonic();
             //Test_Rep();
             //Test_Usage();
-            TestMemorySpeed();
+            //TestMemorySpeed();
             //TestDynamicFlow();
             //TestSIMD();
             //EmptyMemoryTest();
@@ -57,6 +57,9 @@ namespace AsmSim
             //TacticTest();
             //TestMemoryLeak();
             //Test_NullReference_Bsf_1();
+
+            AsmSourceTools.SpeedTest();
+            AsmSourceTools.GenCacheTest();
 
             double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
             Console.WriteLine(string.Format("Elapsed time " + elapsedSec + " sec"));

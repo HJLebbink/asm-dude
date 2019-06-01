@@ -54,6 +54,8 @@ namespace AsmDude
 
         public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             //if (VsShellUtilities.IsInAutomationFunction(m_provider.ServiceProvider)) {
             //    return _nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
             //}
@@ -69,7 +71,6 @@ namespace AsmDude
 
         private int ExecMethod1(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            ThreadHelper.ThrowIfNotOnUIThread();
 
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:Exec", this.ToString()));
             char typedChar = char.MinValue;
@@ -149,7 +150,6 @@ namespace AsmDude
 
         private int ExecMethod2(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            ThreadHelper.ThrowIfNotOnUIThread();
             //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:ExecMethod2", this.ToString()));
 
             bool handledChar = false;

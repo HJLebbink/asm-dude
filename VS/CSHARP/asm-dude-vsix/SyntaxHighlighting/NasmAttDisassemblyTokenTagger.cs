@@ -109,6 +109,11 @@ namespace AsmDude
                 {
                     string asmToken = NasmIntelTokenTagger.Keyword(pos[k], line_upcase);
                     // keyword starts with a remark char
+                    if (AsmSourceTools.IsRemarkChar(asmToken[0]))
+                    {
+                        yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._remark);
+                        continue;
+                    }
 
                     // keyword k is a label definition
                     if (pos[k].IsLabel)
@@ -166,6 +171,10 @@ namespace AsmDude
                                             {
                                                 yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._register);
                                             }
+                                            else if (AsmSourceTools.Evaluate_Constant(asmToken2, true).Valid)
+                                            {
+                                                yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
+                                            }
                                             else
                                             {
                                                 yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._label);
@@ -179,6 +188,10 @@ namespace AsmDude
                             {
                                 //if (AsmTools.AsmSourceTools.Parse_Constant(asmToken, true).Valid)
                                 if (AsmSourceTools.Evaluate_Constant(asmToken, true).Valid)
+                                {
+                                    yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
+                                }
+                                else if (asmToken.StartsWith("$"))
                                 {
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
                                 }
@@ -235,20 +248,23 @@ namespace AsmDude
 
         private static bool IsSourceCode(string line, List<(int BeginPos, int Length, bool IsLabel)> pos)
         {
-            if (pos.Count == 0)
+            //NOTE: line has only capitals
+            if (pos.Count < 2)
             {
                 return true;
             }
 
             // just some rules of thumb
-            //if (line.Contains("#"))
-            //{
-            //    return true;
-            //}
-
             {
-                string line2 = line.Trim();
-                if (line2.StartsWith("0x0"))
+                if (line.Contains("(BAD)"))
+                {
+                    return false;
+                }
+                if (line.StartsWith("0X0"))
+                {
+                    return false;
+                }
+                if (line[0] == ' ')
                 {
                     return false;
                 }

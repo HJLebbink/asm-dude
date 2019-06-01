@@ -63,15 +63,15 @@ namespace AsmDude
 
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
         {
-            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:AugmentCompletionSession", this.ToString()));
-
-            if (!Settings.Default.CodeCompletion_On)
-            {
-                return;
-            }
-
             try
             {
+                //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:AugmentCompletionSession", this.ToString()));
+
+                if (!Settings.Default.CodeCompletion_On)
+                {
+                    return;
+                }
+
                 DateTime time1 = DateTime.Now;
                 ITextSnapshot snapshot = this._buffer.CurrentSnapshot;
                 SnapshotPoint triggerPoint = (SnapshotPoint)session.GetTriggerPoint(snapshot);
@@ -121,15 +121,12 @@ namespace AsmDude
                 string lineStr = line.GetText();
                 (string Label, Mnemonic Mnemonic, string[] Args, string Remark) t = AsmSourceTools.ParseLine(lineStr);
                 Mnemonic mnemonic = t.Mnemonic;
-
-                //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:AugmentCompletionSession; lineStr="+ lineStr+ "; t.Item1="+t.Item1);
-
                 string previousKeyword = AsmDudeToolsStatic.Get_Previous_Keyword(line.Start, start).ToUpper();
+
+                //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:AugmentCompletionSession. lineStr=\"{1}\"; previousKeyword=\"{2}\"", this.ToString(), lineStr, previousKeyword));
 
                 if (mnemonic == Mnemonic.NONE)
                 {
-                    //AsmDudeToolsStatic.Output_INFO("CodeCompletionSource:AugmentCompletionSession; lineStr=" + lineStr + "; previousKeyword=" + previousKeyword);
-
                     if (previousKeyword.Equals("INVOKE")) //TODO INVOKE is a MASM keyword not a NASM one...
                     {
                         // Suggest a label

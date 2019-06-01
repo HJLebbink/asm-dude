@@ -60,48 +60,52 @@ namespace AsmDude.SignatureHelp
             Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
             try
             {
-                SnapshotPoint currentPoint = this._textView.Caret.Position.BufferPosition;
-                if ((currentPoint != null) && (currentPoint > 0))
+                if (pguidCmdGroup == VSConstants.VSStd2K)
                 {
-                    SnapshotPoint point = currentPoint - 1;
-                    if (point.Position > 1)
-                    {
-                        ITextSnapshotLine line = point.Snapshot.GetLineFromPosition(point.Position);
-                        string lineStr = line.GetText();
+                    //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Exec: nCmdID={1}; nCmdexecopt={2}", this.ToString(), nCmdID, nCmdexecopt));
 
-                        int pos = point.Position - line.Start;
-                        if (!AsmSourceTools.IsInRemark(pos, lineStr))
-                        { //check if current position is in a remark; if we are in a remark, no signature help
-
-                            if ((pguidCmdGroup == VSConstants.VSStd2K) && (nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR))
+                    if (nCmdID == (uint)VSConstants.VSStd2KCmdID.RETURN)
+                    {   // return typed
+                        if (this._session != null)
+                        {
+                            this._session.Dismiss();
+                            this._session = null;
+                        }
+                    }
+                    else if (nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR)
+                    {   // character typed
+                        SnapshotPoint currentPoint = this._textView.Caret.Position.BufferPosition;
+                        if ((currentPoint != null) && (currentPoint > 0))
+                        {
+                            SnapshotPoint point = currentPoint - 1;
+                            if (point.Position > 1)
                             {
-                                char typedChar = this.GetTypeChar(pvaIn);
-                                if (char.IsWhiteSpace(typedChar) || typedChar.Equals(','))
-                                {
-                                    (string Label, Mnemonic Mnemonic, string[] Args, string Remark) t = AsmSourceTools.ParseLine(lineStr);
-                                    if (this._session != null)
-                                    {
-                                        this._session.Dismiss(); // cleanup previous session
-                                    }
+                                ITextSnapshotLine line = point.Snapshot.GetLineFromPosition(point.Position);
+                                string lineStr = line.GetText();
 
-                                    if (t.Mnemonic != Mnemonic.NONE)
+                                int pos = point.Position - line.Start;
+                                if (!AsmSourceTools.IsInRemark(pos, lineStr))
+                                { //check if current position is in a remark; if we are in a remark, no signature help
+
+                                    char typedChar = this.GetTypeChar(pvaIn);
+                                    if (char.IsWhiteSpace(typedChar) || typedChar.Equals(','))
                                     {
-                                        this._session = this._broker.TriggerSignatureHelp(this._textView);
+                                        (string Label, Mnemonic Mnemonic, string[] Args, string Remark) t = AsmSourceTools.ParseLine(lineStr);
+                                        if (this._session != null)
+                                        {
+                                            this._session.Dismiss(); // cleanup previous session
+                                        }
+
+                                        if (t.Mnemonic != Mnemonic.NONE)
+                                        {
+                                            this._session = this._broker.TriggerSignatureHelp(this._textView);
+                                        }
                                     }
-                                }
-                                else if (AsmSourceTools.IsRemarkChar(typedChar) && (this._session != null))
-                                {
-                                    this._session.Dismiss();
-                                    this._session = null;
-                                }
-                            }
-                            else
-                            {
-                                bool enterPressed = nCmdID == (uint)VSConstants.VSStd2KCmdID.RETURN;
-                                if (enterPressed && (this._session != null))
-                                {
-                                    this._session.Dismiss();
-                                    this._session = null;
+                                    else if (AsmSourceTools.IsRemarkChar(typedChar) && (this._session != null))
+                                    {
+                                        this._session.Dismiss();
+                                        this._session = null;
+                                    }
                                 }
                             }
                         }

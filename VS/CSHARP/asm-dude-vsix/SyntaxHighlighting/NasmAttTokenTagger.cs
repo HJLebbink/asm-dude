@@ -126,9 +126,18 @@ namespace AsmDude
                                 if (k == nKeywords)
                                 {
                                     break; // there are no next words
+                                    //TODO HJ 01-06-19 should be a warning that there is no label
                                 }
 
                                 string asmToken2 = NasmIntelTokenTagger.Keyword(pos[k], line);
+
+                                if (AsmSourceTools.IsRemarkChar(asmToken2[0]))
+                                {
+                                    yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._remark);
+                                    continue;
+                                    //TODO HJ 01-06-19 should be a warning that there is no label
+                                }
+
                                 switch (asmToken2)
                                 {
                                     case "WORD":
@@ -165,13 +174,14 @@ namespace AsmDude
                                             {
                                                 yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._register);
                                             }
-                                            else
+                                            else if (AsmSourceTools.Evaluate_Constant(asmToken2, true).Valid)
                                             {
-                                                if (this.IsProperLabel(asmToken2, containingLine.LineNumber, out AsmTokenTag asmTokenTag))
-                                                {
-                                                    yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), asmTokenTag);
-                                                }
+                                                yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
                                             }
+                                            else if (this.IsProperLabel(asmToken2, containingLine.LineNumber, out AsmTokenTag asmTokenTag))
+                                            {
+                                                yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), asmTokenTag);
+                                            }                                            
                                             break;
                                         }
                                 }
@@ -180,13 +190,16 @@ namespace AsmDude
                         case AsmTokenType.UNKNOWN: // asmToken is not a known keyword, check if it is numerical
                             {
                                 if (AsmSourceTools.Evaluate_Constant(asmToken, true).Valid)
-                                //if (AsmSourceTools.Parse_Constant(asmToken, true).Valid)
                                 {
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
                                 }
                                 else if (asmToken.StartsWith("\"") && asmToken.EndsWith("\""))
                                 {
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
+                                }
+                                else if (asmToken.StartsWith("$"))
+                                {
+                                    yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset+1, curSpan), this._constant);
                                 }
                                 else
                                 {
