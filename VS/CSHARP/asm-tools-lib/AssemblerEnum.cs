@@ -24,7 +24,6 @@ using System;
 
 namespace AsmTools
 {
-
     [Flags]
     public enum AssemblerEnum : byte
     {
@@ -32,7 +31,8 @@ namespace AsmTools
         MASM = 1 << 0,
         NASM_INTEL = 1 << 1,
         NASM_ATT = 1 << 2,
-        ALL = NASM_INTEL | NASM_ATT | MASM
+        ALL = NASM_INTEL | NASM_ATT | MASM,
+        AUTO_DETECT = 1 << 3
     }
 
     public static partial class AsmSourceTools

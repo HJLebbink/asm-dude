@@ -170,6 +170,10 @@ namespace AsmDude.OptionsPage
         {
             get
             {
+                if (this.usedAssemblerAuto_UI.IsChecked.HasValue && this.usedAssemblerAuto_UI.IsChecked.Value)
+                {
+                    return AssemblerEnum.AUTO_DETECT;
+                }
                 if (this.usedAssemblerMasm_UI.IsChecked.HasValue && this.usedAssemblerMasm_UI.IsChecked.Value)
                 {
                     return AssemblerEnum.MASM;
@@ -187,29 +191,31 @@ namespace AsmDude.OptionsPage
             }
             set
             {
-                if (value.HasFlag(AssemblerEnum.MASM))
+                this.usedAssemblerAuto_UI.IsChecked = false;
+                this.usedAssemblerMasm_UI.IsChecked = false;
+                this.usedAssemblerNasm_UI.IsChecked = false;
+                this.usedAssemblerAtt_UI.IsChecked = false;
+
+                if (value.HasFlag(AssemblerEnum.AUTO_DETECT))
+                {
+                    this.usedAssemblerAuto_UI.IsChecked = true;
+                }
+                else if (value.HasFlag(AssemblerEnum.MASM))
                 {
                     this.usedAssemblerMasm_UI.IsChecked = true;
-                    this.usedAssemblerNasm_UI.IsChecked = false;
-                    this.usedAssemblerAtt_UI.IsChecked = false;
                 }
                 else if (value.HasFlag(AssemblerEnum.NASM_INTEL))
                 {
-                    this.usedAssemblerMasm_UI.IsChecked = false;
                     this.usedAssemblerNasm_UI.IsChecked = true;
-                    this.usedAssemblerAtt_UI.IsChecked = false;
                 }
                 else if (value.HasFlag(AssemblerEnum.NASM_ATT))
                 {
-                    this.usedAssemblerMasm_UI.IsChecked = false;
-                    this.usedAssemblerNasm_UI.IsChecked = false;
                     this.usedAssemblerAtt_UI.IsChecked = true;
-                } else
+                }
+                else
                 {
-                    AsmDudeToolsStatic.Output_WARNING("Unrecognized UsedAssembler, assuming MASM");
-                    this.usedAssemblerMasm_UI.IsChecked = true;
-                    this.usedAssemblerNasm_UI.IsChecked = false;
-                    this.usedAssemblerAtt_UI.IsChecked = false;
+                    AsmDudeToolsStatic.Output_WARNING("Unrecognized UsedAssembler, assuming AUTO");
+                    this.usedAssemblerAuto_UI.IsChecked = true;
                 }
             }
         }
@@ -218,6 +224,10 @@ namespace AsmDude.OptionsPage
         {
             get
             {
+                if (this.AssemblerDisassemblyAuto_UI.IsChecked.HasValue && this.AssemblerDisassemblyAuto_UI.IsChecked.Value)
+                {
+                    return AssemblerEnum.AUTO_DETECT;
+                }
                 if (this.AssemblerDisassemblyMasm_UI.IsChecked.HasValue && this.AssemblerDisassemblyMasm_UI.IsChecked.Value)
                 {
                     return AssemblerEnum.MASM;
@@ -231,20 +241,26 @@ namespace AsmDude.OptionsPage
             }
             set
             {
-                if (value.HasFlag(AssemblerEnum.MASM))
+                this.AssemblerDisassemblyAuto_UI.IsChecked = false;
+                this.AssemblerDisassemblyMasm_UI.IsChecked = false;
+                this.AssemblerDisassemblyAtt_UI.IsChecked = false;
+
+                if (value.HasFlag(AssemblerEnum.AUTO_DETECT))
+                {
+                    this.AssemblerDisassemblyAuto_UI.IsChecked = true;
+                }
+                else if (value.HasFlag(AssemblerEnum.MASM))
                 {
                     this.AssemblerDisassemblyMasm_UI.IsChecked = true;
-                    this.AssemblerDisassemblyAtt_UI.IsChecked = false;
                 }
                 else if (value.HasFlag(AssemblerEnum.NASM_ATT))
                 {
-                    this.AssemblerDisassemblyMasm_UI.IsChecked = false;
                     this.AssemblerDisassemblyAtt_UI.IsChecked = true;
-                } else
+                }
+                else
                 {
-                    AsmDudeToolsStatic.Output_WARNING("Unrecognized UsedAssembler, assuming MASM");
-                    this.AssemblerDisassemblyMasm_UI.IsChecked = true;
-                    this.AssemblerDisassemblyAtt_UI.IsChecked = false;
+                    AsmDudeToolsStatic.Output_WARNING("Unrecognized UsedAssembler, assuming AUTO");
+                    this.AssemblerDisassemblyAuto_UI.IsChecked = true;
                 }
             }
         }

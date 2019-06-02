@@ -91,24 +91,24 @@ namespace AsmDude
             {
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
 
-                string line = containingLine.GetText().ToUpper();
-                List<(int BeginPos, int Length, bool IsLabel)> pos = new List<(int BeginPos, int Length, bool IsLabel)>(AsmSourceTools.SplitIntoKeywordPos(line));
+                string line_capitals = containingLine.GetText().ToUpper();
+                List<(int BeginPos, int Length, bool IsLabel)> pos = new List<(int BeginPos, int Length, bool IsLabel)>(AsmSourceTools.SplitIntoKeywordPos(line_capitals));
 
                 int offset = containingLine.Start.Position;
                 int nKeywords = pos.Count;
 
                 // if the line does not contain a Mnemonic, assume it is a source code line and make it a remark
                 #region Check source code line
-                if (IsSourceCode(line, pos))
+                if (IsSourceCode(line_capitals, pos))
                 {
-                    yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span((0, line.Length, false), offset, curSpan), this._remark);
+                    yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span((0, line_capitals.Length, false), offset, curSpan), this._remark);
                     continue; // go to the next line
                 }
                 #endregion
 
                 for (int k = 0; k < nKeywords; k++)
                 {
-                    string asmToken = NasmIntelTokenTagger.Keyword(pos[k], line);
+                    string asmToken = AsmSourceTools.Keyword(pos[k], line_capitals);
 
                     // keyword k is a label definition
                     if (pos[k].IsLabel)
@@ -130,7 +130,7 @@ namespace AsmDude
                                     break; // there are no next words
                                 }
 
-                                string asmToken2 = NasmIntelTokenTagger.Keyword(pos[k], line);
+                                string asmToken2 = AsmSourceTools.Keyword(pos[k], line_capitals);
                                 switch (asmToken2)
                                 {
                                     case "WORD":
@@ -147,7 +147,7 @@ namespace AsmDude
                                                 break;
                                             }
 
-                                            string asmToken3 = NasmIntelTokenTagger.Keyword(pos[k], line);
+                                            string asmToken3 = AsmSourceTools.Keyword(pos[k], line_capitals);
                                             switch (asmToken3)
                                             {
                                                 case "PTR":
@@ -247,53 +247,53 @@ namespace AsmDude
 
         private static bool IsSourceCode(string line, List<(int BeginPos, int Length, bool IsLabel)> pos)
         {
-            if (pos.Count == 0)
+            if (pos.Count < 2)
             {
                 return true;
             }
-
             // just some rules of thumb
-            if (line.Contains(";"))
+            if (line[0] == ' ')
             {
                 return true;
             }
-
+            if (line[0] == '-')
+            {
+                return true;
+            }
             {
                 string line2 = line.Trim();
-                if (line2.StartsWith("---"))
+                if (line2.Length < 2)
                 {
                     return true;
                 }
-
-                if (line2.StartsWith("{"))
+                if (line2[0] == '{')
                 {
                     return true;
                 }
-
-                if (line2.StartsWith("}"))
+                if (line2[0] == '}')
                 {
                     return true;
                 }
-
-                if (line2.StartsWith("/"))
+                if (line2[0] == '/')
                 {
                     return true;
                 }
-
                 if (line2.Contains("__CDECL"))
                 {
                     return true;
                 }
+                if (line2.Contains(";"))
+                {
+                    return true;
+                }
             }
-
             if (pos[0].IsLabel)
             {
                 return false;
             }
-
             foreach ((int BeginPos, int Length, bool IsLabel) v in pos)
             {
-                string asmToken = NasmIntelTokenTagger.Keyword(v, line);
+                string asmToken = AsmSourceTools.Keyword(v, line);
                 if (AsmSourceTools.ParseMnemonic(asmToken, true) != Mnemonic.NONE)
                 {
                     return false; // found an assebly instruction, think this is assembly code

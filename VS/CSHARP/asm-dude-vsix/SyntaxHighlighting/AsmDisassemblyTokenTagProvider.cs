@@ -38,12 +38,28 @@ namespace AsmDude
     {
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
-            //AsmDudeToolsStatic.Output_INFO("AsmDisassemblyTokenTagProvider:CreateTagger");
+            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:CreateTagger", this.ToString()));
             ITagger<T> sc()
             {
-                return (AsmDudeToolsStatic.Used_Assembler_Disassembly_Window == AssemblerEnum.NASM_ATT)
-                    ? new NasmAttDisassemblyTokenTagger(buffer) as ITagger<T>
-                    : new MasmDisassemblyTokenTagger(buffer) as ITagger<T>;
+                if (AsmDudeToolsStatic.Used_Assembler_Disassembly_Window.HasFlag(AssemblerEnum.AUTO_DETECT))
+                {
+                    int nLinesMax = 40;
+                    bool has_intel_syntax = AsmDudeToolsStatic.Guess_Intel_Syntax(buffer, nLinesMax);
+
+                    return (has_intel_syntax)
+                        ? new MasmDisassemblyTokenTagger(buffer) as ITagger<T>
+                        : new NasmAttDisassemblyTokenTagger(buffer) as ITagger<T>;
+                }
+                if (AsmDudeToolsStatic.Used_Assembler_Disassembly_Window.HasFlag(AssemblerEnum.NASM_ATT))
+                {
+                    return new NasmAttDisassemblyTokenTagger(buffer) as ITagger<T>;
+                }
+                if (AsmDudeToolsStatic.Used_Assembler_Disassembly_Window.HasFlag(AssemblerEnum.MASM))
+                {
+                    return new MasmDisassemblyTokenTagger(buffer) as ITagger<T>;
+                }
+                AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:CreateTagger: could not determine the used assembler", this.ToString()));
+                return new MasmDisassemblyTokenTagger(buffer) as ITagger<T>;
             }
             return buffer.Properties.GetOrCreateSingletonProperty(sc);
         }

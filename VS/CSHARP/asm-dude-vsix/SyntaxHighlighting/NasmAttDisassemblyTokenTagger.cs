@@ -107,7 +107,7 @@ namespace AsmDude
 
                 for (int k = 0; k < nKeywords; k++)
                 {
-                    string asmToken = NasmIntelTokenTagger.Keyword(pos[k], line_upcase);
+                    string asmToken = AsmSourceTools.Keyword(pos[k], line_upcase);
                     // keyword starts with a remark char
                     if (AsmSourceTools.IsRemarkChar(asmToken[0]))
                     {
@@ -135,7 +135,7 @@ namespace AsmDude
                                     break; // there are no next words
                                 }
 
-                                string asmToken2 = NasmIntelTokenTagger.Keyword(pos[k], line_upcase);
+                                string asmToken2 = AsmSourceTools.Keyword(pos[k], line_upcase);
                                 switch (asmToken2)
                                 {
                                     case "WORD":
@@ -152,7 +152,7 @@ namespace AsmDude
                                                 break;
                                             }
 
-                                            string asmToken3 = NasmIntelTokenTagger.Keyword(pos[k], line_upcase);
+                                            string asmToken3 = AsmSourceTools.Keyword(pos[k], line_upcase);
                                             switch (asmToken3)
                                             {
                                                 case "PTR":
@@ -186,7 +186,6 @@ namespace AsmDude
                             }
                         case AsmTokenType.UNKNOWN: // asmToken is not a known keyword, check if it is numerical
                             {
-                                //if (AsmTools.AsmSourceTools.Parse_Constant(asmToken, true).Valid)
                                 if (AsmSourceTools.Evaluate_Constant(asmToken, true).Valid)
                                 {
                                     yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._constant);
@@ -277,7 +276,7 @@ namespace AsmDude
 
             foreach ((int BeginPos, int Length, bool IsLabel) v in pos)
             {
-                string asmToken = NasmIntelTokenTagger.Keyword(v, line);
+                string asmToken = AsmSourceTools.Keyword(v, line);
                 if (AsmSourceTools.ParseMnemonic_Att(asmToken, true) != Mnemonic.NONE)
                 {
                     return false; // found an assebly instruction, think this is assembly code

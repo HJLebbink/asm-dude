@@ -1870,5 +1870,29 @@ namespace AsmDude {
                 this["useAssemblerDisassemblyNasm_Att"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool useAssemblerDisassemblyAutoDetect {
+            get {
+                return ((bool)(this["useAssemblerDisassemblyAutoDetect"]));
+            }
+            set {
+                this["useAssemblerDisassemblyAutoDetect"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool useAssemblerAutoDetect {
+            get {
+                return ((bool)(this["useAssemblerAutoDetect"]));
+            }
+            set {
+                this["useAssemblerAutoDetect"] = value;
+            }
+        }
     }
 }

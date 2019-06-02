@@ -38,7 +38,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-//using Task = Microsoft.VisualStudio.Shell.Task;
 
 
 namespace AsmDude.Tools
@@ -90,6 +89,10 @@ namespace AsmDude.Tools
         {
             get
             {
+                if (Settings.Default.useAssemblerAutoDetect)
+                {
+                    return AssemblerEnum.AUTO_DETECT;
+                }
                 if (Settings.Default.useAssemblerMasm)
                 {
                     return AssemblerEnum.MASM;
@@ -102,15 +105,20 @@ namespace AsmDude.Tools
                 {
                     return AssemblerEnum.NASM_ATT;
                 }
-                Output_WARNING("AsmDudeToolsStatic.Used_Assembler: no assembler specified, assuming MASM");
-                return AssemblerEnum.MASM;
+                Output_WARNING("AsmDudeToolsStatic.Used_Assembler: no assembler specified, assuming AUTO_DETECT");
+                return AssemblerEnum.AUTO_DETECT;
             }
             set
             {
+                Settings.Default.useAssemblerAutoDetect = false;
                 Settings.Default.useAssemblerMasm = false;
                 Settings.Default.useAssemblerNasm = false;
                 Settings.Default.useAssemblerNasm_Att = false;
 
+                if (value.HasFlag(AssemblerEnum.AUTO_DETECT))
+                {
+                    Settings.Default.useAssemblerAutoDetect = true;
+                }
                 if (value.HasFlag(AssemblerEnum.MASM))
                 {
                     Settings.Default.useAssemblerMasm = true;
@@ -125,16 +133,155 @@ namespace AsmDude.Tools
                 }
                 else
                 {
-                    Output_WARNING("AsmDudeToolsStatic.Used_Assembler: no assembler specified, assuming MASM");
-                    Settings.Default.useAssemblerMasm = true;
+                    Output_WARNING("AsmDudeToolsStatic.Used_Assembler: no assembler specified, assuming AUTO_DETECT");
+                    Settings.Default.useAssemblerAutoDetect = true;
                 }
             }
+        }
+
+        /// <summary>Guess whether the provided buffer has assembly in Intel syntax (return true) or AT&T syntax (return false)</summary>
+        public static bool Guess_Intel_Syntax(ITextBuffer buffer, int nLinesMax = 30)
+        {
+            bool contains_register_att(List<string> line)
+            {
+                foreach (string asmToken in line)
+                {
+                    if (asmToken[0].Equals('%'))
+                    {
+                        string asmToken2 = asmToken.Substring(1);
+                        if (RegisterTools.ParseRn(asmToken2, true) != Rn.NOREG)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+            bool contains_register_intel(List<string> line)
+            {
+                foreach (string asmToken in line)
+                {
+                    if (RegisterTools.ParseRn(asmToken, true) != Rn.NOREG)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            bool contains_constant_att(List<string> line)
+            {
+                foreach (string asmToken in line)
+                {
+                    if (asmToken[0].Equals('$'))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            bool contains_constant_intel(List<string> line)
+            {
+                 return false;
+            }
+            bool contains_mnemonic_att(List<string> line)
+            {
+                foreach (string word in line)
+                {
+                    if (AsmSourceTools.ParseMnemonic(word, true) == Mnemonic.NONE)
+                    {
+                        if (AsmSourceTools.ParseMnemonic_Att(word, true) != Mnemonic.NONE)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+            bool contains_mnemonic_intel(List<string> line)
+            {
+                return false;
+            }
+
+            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Guess_Intel_Syntax. file=\"{1}\"", "AsmDudeToolsStatic", AsmDudeToolsStatic.GetFilename(buffer)));
+            ITextSnapshot snapshot = buffer.CurrentSnapshot;            
+            int registers_i = 0;
+            int constants_i = 0;
+            int mnemonics_i = 0;
+
+            for (int i = 0; i < Math.Min(snapshot.LineCount, nLinesMax); ++i)
+            {
+                string line_capitals = snapshot.GetLineFromLineNumber(i).GetText().ToUpper();
+                AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Guess_Intel_Syntax {1}:\"{2}\"", "AsmDudeToolsStatic", i, line_capitals));
+
+                List<string> keywords = AsmSourceTools.SplitIntoKeywordsList(line_capitals);
+
+                foreach (string word in keywords)
+                {
+                    switch (word)
+                    {
+                        case ".INTEL_SYNTAX": return true; // we know for sure
+                        case ".ATT_SYNTAX": return false; // we know for sure
+                    }
+                }
+                if (contains_register_att(keywords)) registers_i++;
+                if (contains_register_intel(keywords)) registers_i--;
+                if (contains_constant_att(keywords)) constants_i++;
+                if (contains_constant_intel(keywords)) constants_i--;
+                if (contains_mnemonic_att(keywords)) mnemonics_i++;
+                if (contains_mnemonic_intel(keywords)) mnemonics_i--;
+            }
+            int total = 
+                Math.Max(Math.Min(1, registers_i), -1) + 
+                Math.Max(Math.Min(1, constants_i), -1) + 
+                Math.Max(Math.Min(1, mnemonics_i), -1);
+
+            bool result = (total <= 0);
+            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Guess_Intel_Syntax; result {1}; file=\"{2}\"; registers {3}; constants {4}; mnemonics {5}", "AsmDudeToolsStatic", result, AsmDudeToolsStatic.GetFilename(buffer), registers_i, constants_i, mnemonics_i));
+            return result;
+        }
+
+        /// <summary>Guess whether the provided buffer has assembly in Masm syntax (return true) or Gas syntax (return false)</summary>
+        public static bool Guess_Masm_Syntax(ITextBuffer buffer, int nLinesMax = 30)
+        {
+            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Guess_Masm_Syntax. file=\"{1}\"", "AsmDudeToolsStatic", AsmDudeToolsStatic.GetFilename(buffer)));
+            ITextSnapshot snapshot = buffer.CurrentSnapshot;
+            int evidence_masm = 0;
+
+            for (int i = 0; i < Math.Min(snapshot.LineCount, nLinesMax); ++i)
+            {
+                string line_capitals = snapshot.GetLineFromLineNumber(i).GetText().ToUpper();
+                //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Guess_Masm_Syntax {1}:\"{2}\"", "AsmDudeToolsStatic", i, line_capitals));
+
+                List<string> keywords = AsmSourceTools.SplitIntoKeywordsList(line_capitals);
+
+                foreach (string word in keywords)
+                {
+                    switch (word)
+                    {
+                        case "PTR":
+                        case "@B":
+                        case "@F":
+                            evidence_masm++;
+                            break;
+                        case ".INTEL_SYNTAX":
+                        case ".ATT_SYNTAX":
+                            return false; // we know for sure
+                    }
+                }
+            }
+            bool result = (evidence_masm > 0);
+            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Guess_Masm_Syntax; result {1}; file=\"{2}\"; evidence_masm {3}", "AsmDudeToolsStatic", result, AsmDudeToolsStatic.GetFilename(buffer), evidence_masm));
+            return result;
         }
 
         public static AssemblerEnum Used_Assembler_Disassembly_Window
         {
             get
             {
+                if (Settings.Default.useAssemblerDisassemblyAutoDetect)
+                {
+                    return AssemblerEnum.AUTO_DETECT;
+                }
                 if (Settings.Default.useAssemblerDisassemblyMasm)
                 {
                     return AssemblerEnum.MASM;
@@ -143,14 +290,19 @@ namespace AsmDude.Tools
                 {
                     return AssemblerEnum.NASM_ATT;
                 }
-                Output_WARNING("AsmDudeToolsStatic.Used_Assembler_Disassembly_Window: no assembler specified, assuming MASM");
-                return AssemblerEnum.MASM;
+                Output_WARNING("AsmDudeToolsStatic.Used_Assembler_Disassembly_Window: no assembler specified, assuming AUTO_DETECT");
+                return AssemblerEnum.AUTO_DETECT;
             }
             set
             {
+                Settings.Default.useAssemblerDisassemblyAutoDetect = false;
                 Settings.Default.useAssemblerDisassemblyMasm = false;
                 Settings.Default.useAssemblerDisassemblyNasm_Att = false;
 
+                if (value.HasFlag(AssemblerEnum.AUTO_DETECT))
+                {
+                    Settings.Default.useAssemblerDisassemblyAutoDetect = true;
+                }
                 if (value.HasFlag(AssemblerEnum.MASM))
                 {
                     Settings.Default.useAssemblerDisassemblyMasm = true;
@@ -161,30 +313,36 @@ namespace AsmDude.Tools
                 }
                 else
                 {
-                    Output_WARNING("AsmDudeToolsStatic.Used_Assembler_Disassembly_Window: no assembler specified, assuming MASM");
-                    Settings.Default.useAssemblerDisassemblyMasm = true;
+                    Output_WARNING("AsmDudeToolsStatic.Used_Assembler_Disassembly_Window: no assembler specified, assuming AUTO_DETECT");
+                    Settings.Default.useAssemblerDisassemblyAutoDetect = true;
                 }
             }
         }
         
-        public static string GetFilename(ITextBuffer buffer)
+        public static string GetFilename(ITextBuffer buffer, int timeout_ms = 200)
         {
             return ThreadHelper.JoinableTaskFactory.Run(async delegate
             {
-                return await GetFilenameAsync(buffer);
+                var task = GetFilenameAsync(buffer);
+                if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)) == task)
+                {
+                    return await task;
+                }
+                else
+                {
+                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:GetFilename; could not get filename within timeout {1} ms", "AsmDudeToolsStatic", timeout_ms));
+                    return "";
+                }
             });
         }
 
-        /// <summary>
-        /// get the full filename (with path) of the provided buffer; returns null if such name does not exist
-        /// </summary>
+        /// <summary>Get the full filename (with path) of the provided buffer; returns null if such name does not exist</summary>
         public static async Task<string> GetFilenameAsync(ITextBuffer buffer)
         {
             if (!ThreadHelper.CheckAccess())
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             }
-
             buffer.Properties.TryGetProperty(typeof(ITextDocument), out ITextDocument document);
             string filename = document?.FilePath;
             //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Get_Filename_Async: retrieving filename {1}", typeof(AsmDudeToolsStatic), filename));
@@ -205,10 +363,7 @@ namespace AsmDude.Tools
 
         public static IEnumerable<IMappingTagSpan<AsmTokenTag>> GetAsmTokenTags(ITagAggregator<AsmTokenTag> aggregator, int lineNumber)
         {
-            ITextBuffer buffer = aggregator.BufferGraph.TopBuffer;
-            ITextSnapshotLine line = buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
-            IEnumerable<IMappingTagSpan<AsmTokenTag>> tags = aggregator.GetTags(line.Extent);
-            return tags;
+            return aggregator.GetTags(aggregator.BufferGraph.TopBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent);
         }
 
         public static async System.Threading.Tasks.Task Open_Disassembler_Async()
@@ -224,6 +379,8 @@ namespace AsmDude.Tools
 
         public static int GetFontSize()
         {
+            //TODO 02-06 add timeout similar to GetFilename
+
             return ThreadHelper.JoinableTaskFactory.Run(async delegate
             {
                 return await GetFontSizeAsync();

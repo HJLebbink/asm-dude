@@ -39,24 +39,36 @@ namespace AsmDude
     {
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
-            //AsmDudeToolsStatic.Output_INFO("AsmTokenTagProvider:CreateTagger");
+            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:CreateTagger", this.ToString()));
             ITagger<T> sc()
             {
+                if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.AUTO_DETECT))
+                {
+                    int nLinesMax = 40;
+                    bool has_intel_syntax = AsmDudeToolsStatic.Guess_Intel_Syntax(buffer, nLinesMax);
+                    bool has_masm_syntax = AsmDudeToolsStatic.Guess_Masm_Syntax(buffer, nLinesMax);
+
+                    return (has_masm_syntax)
+                        ? (has_intel_syntax)
+                            ? new MasmTokenTagger(buffer) as ITagger<T>
+                            : new MasmTokenTagger(buffer) as ITagger<T>
+                        : (has_intel_syntax)
+                            ? new NasmIntelTokenTagger(buffer) as ITagger<T>
+                            : new NasmAttTokenTagger(buffer) as ITagger<T>;
+                }
                 if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.MASM))
                 {
                     return new MasmTokenTagger(buffer) as ITagger<T>;
                 }
-
                 if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.NASM_INTEL))
                 {
                     return new NasmIntelTokenTagger(buffer) as ITagger<T>;
                 }
-
                 if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.NASM_ATT))
                 {
                     return new NasmAttTokenTagger(buffer) as ITagger<T>;
                 }
-
+                AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:CreateTagger: could not determine the used assembler", this.ToString()));
                 return new MasmTokenTagger(buffer) as ITagger<T>;
             }
             return buffer.Properties.GetOrCreateSingletonProperty(sc);

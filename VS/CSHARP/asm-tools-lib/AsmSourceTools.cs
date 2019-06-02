@@ -287,6 +287,22 @@ namespace AsmTools
             }
         }
 
+
+        public static List<string> SplitIntoKeywordsList(string line)
+        {
+            List<string> keywords = new List<string>();
+            foreach ((int BeginPos, int Length, bool IsLabel) pos in AsmSourceTools.SplitIntoKeywordPos(line))
+            {
+                keywords.Add(AsmSourceTools.Keyword(pos, line));
+            }
+            return keywords;
+        }
+
+        public static string Keyword((int BeginPos, int Length, bool IsLabel) pos, string line)
+        {
+            return line.Substring(pos.BeginPos, pos.Length - pos.BeginPos);
+        }
+
         public static bool IsSeparatorChar_NoOperator(char c)
         {
             return char.IsWhiteSpace(c) || c.Equals(',') || c.Equals('[') || c.Equals(']') || c.Equals('(') || c.Equals(')') || c.Equals('{') || c.Equals('}') || c.Equals(':');

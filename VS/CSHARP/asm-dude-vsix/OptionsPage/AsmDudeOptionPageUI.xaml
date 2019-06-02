@@ -6,17 +6,32 @@
     <ScrollViewer>
         <StackPanel>
             <Label x:Name="version_UI" Content="AsmDude version" />
-            <Grid>
-                <Label Content="Assembly Flavour:" HorizontalAlignment="Left"/>
-                <RadioButton x:Name="usedAssemblerMasm_UI" GroupName="usedAssembler_UI" ToolTipService.ShowOnDisabled="True" ToolTip="Configure AsmDude for Intel syntax MASM" Content="Intel Masm" Margin="240,5,0,0" HorizontalAlignment="Left" Width="Auto" />
-                <RadioButton x:Name="usedAssemblerNasm_UI" GroupName="usedAssembler_UI" ToolTipService.ShowOnDisabled="True" ToolTip="Configure AsmDude for Intel syntax NASM" Content="Intel Nasm" Margin="340,5,0,0" HorizontalAlignment="Left" Width="Auto" />
-                <RadioButton x:Name="usedAssemblerAtt_UI" GroupName="usedAssembler_UI" ToolTipService.ShowOnDisabled="True" ToolTip="Configure AsmDude for AT&amp;T syntax NASM" Content="AT&amp;T Nasm" Margin="440,5,0,0" HorizontalAlignment="Left" Width="Auto" />
-            </Grid>
-            <Grid>
-                <Label Content="Assembly Flavour Disassembly Window:" HorizontalAlignment="Left"/>
-                <RadioButton x:Name="AssemblerDisassemblyMasm_UI" GroupName="usedAssemblerDissembler_UI" ToolTipService.ShowOnDisabled="True" ToolTip="Configure Visual Studio Disassembly window for Intel syntax MASM" Content="Intel Masm" Margin="240,5,0,0" HorizontalAlignment="Left" Width="Auto" />
-                <RadioButton x:Name="AssemblerDisassemblyAtt_UI" GroupName="usedAssemblerDissembler_UI" ToolTipService.ShowOnDisabled="True" ToolTip="Configure Visual Studio Disassembly window for AT&amp;T syntax NASM" Content="AT&amp;T Nasm" Margin="440,5,0,0" HorizontalAlignment="Left" Width="Auto" />
-            </Grid>
+            <GroupBox Header="Assembly Flavour" >
+                <Grid Margin="0,2,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130"/>
+                        <ColumnDefinition Width="90"/>
+                        <ColumnDefinition Width="90"/>
+                        <ColumnDefinition Width="90"/>
+                        <ColumnDefinition Width="90"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="26" />
+                        <RowDefinition Height="26" />
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Column="0" Grid.Row="0" Content="Main Window:" HorizontalAlignment="Left"/>
+                    <RadioButton Grid.Column="1" Grid.Row="0" x:Name="usedAssemblerAuto_UI" GroupName="usedAssembler_UI" ToolTipService.ShowOnDisabled="True" ToolTip="Auto-detect assembly syntax for the main window" Content="Auto Detect" VerticalAlignment="Center" Width="Auto" />
+                    <RadioButton Grid.Column="2" Grid.Row="0" x:Name="usedAssemblerMasm_UI" GroupName="usedAssembler_UI" ToolTipService.ShowOnDisabled="True" ToolTip="Configure AsmDude for Intel syntax MASM" Content="Intel Masm" VerticalAlignment="Center" Width="Auto" />
+                    <RadioButton Grid.Column="3" Grid.Row="0" x:Name="usedAssemblerNasm_UI" GroupName="usedAssembler_UI" ToolTipService.ShowOnDisabled="True" ToolTip="Configure AsmDude for Intel syntax NASM" Content="Intel Nasm" VerticalAlignment="Center" Width="Auto" />
+                    <RadioButton Grid.Column="4" Grid.Row="0" x:Name="usedAssemblerAtt_UI" GroupName="usedAssembler_UI" ToolTipService.ShowOnDisabled="True" ToolTip="Configure AsmDude for AT&amp;T syntax NASM" Content="AT&amp;T Nasm" VerticalAlignment="Center" Width="Auto" />
+
+                    <Label Grid.Column="0" Grid.Row="1" Content="Disassembly Window:" HorizontalAlignment="Left"/>
+                    <RadioButton Grid.Column="1" Grid.Row="1" x:Name="AssemblerDisassemblyAuto_UI" GroupName="usedAssemblerDissembler_UI" ToolTipService.ShowOnDisabled="True" ToolTip="Auto-detect assembly syntax for the disassembly window" Content="Auto Detect" VerticalAlignment="Center" Width="Auto" />
+                    <RadioButton Grid.Column="2" Grid.Row="1" x:Name="AssemblerDisassemblyMasm_UI" GroupName="usedAssemblerDissembler_UI" ToolTipService.ShowOnDisabled="True" ToolTip="Configure Visual Studio Disassembly window for Intel syntax MASM" Content="Intel Masm" VerticalAlignment="Center" Width="Auto" />
+                    <RadioButton Grid.Column="4" Grid.Row="1" x:Name="AssemblerDisassemblyAtt_UI" GroupName="usedAssemblerDissembler_UI" ToolTipService.ShowOnDisabled="True" ToolTip="Configure Visual Studio Disassembly window for AT&amp;T syntax NASM" Content="AT&amp;T Nasm" VerticalAlignment="Center" Width="Auto" />
+                </Grid>
+            </GroupBox>
             <GroupBox Header="Syntax Highlighting" >
                 <Grid Margin="0,2,0,0">
                     <Grid.ColumnDefinitions>

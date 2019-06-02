@@ -91,9 +91,11 @@ namespace AsmDude
                     yield break;
                 }
                 DateTime time1 = DateTime.Now;
+                ITextSnapshot snapshot = spans[0].Snapshot;
+
                 foreach (IMappingTagSpan<AsmTokenTag> tagSpan in this._aggregator.GetTags(spans))
                 {
-                    NormalizedSnapshotSpanCollection tagSpans = tagSpan.Span.GetSpans(spans[0].Snapshot);
+                    NormalizedSnapshotSpanCollection tagSpans = tagSpan.Span.GetSpans(snapshot);
                     switch (tagSpan.Tag.Type)
                     {
                         case AsmTokenType.Mnemonic: yield return new TagSpan<ClassificationTag>(tagSpans[0], this._mnemonic); break;

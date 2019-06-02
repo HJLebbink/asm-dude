@@ -98,7 +98,7 @@ namespace AsmDude
 
                 for (int k = 0; k < nKeywords; k++)
                 {
-                    string asmToken = NasmIntelTokenTagger.Keyword(pos[k], line_upcase);
+                    string asmToken = AsmSourceTools.Keyword(pos[k], line_upcase);
                     // keyword starts with a remark char
                     if (AsmSourceTools.IsRemarkChar(asmToken[0]))
                     {
@@ -136,7 +136,7 @@ namespace AsmDude
                                     break;
                                 }
 
-                                string asmToken2 = NasmIntelTokenTagger.Keyword(pos[k], line_upcase);
+                                string asmToken2 = AsmSourceTools.Keyword(pos[k], line_upcase);
                                 switch (asmToken2)
                                 {
                                     case "$":
@@ -160,7 +160,7 @@ namespace AsmDude
                                                 break;
                                             }
 
-                                            string asmToken3 = NasmIntelTokenTagger.Keyword(pos[k], line_upcase);
+                                            string asmToken3 = AsmSourceTools.Keyword(pos[k], line_upcase);
                                             switch (asmToken3)
                                             {
                                                 case "$":
@@ -217,7 +217,7 @@ namespace AsmDude
                                     if ((k + 1) < nKeywords)
                                     {
                                         k++;
-                                        string nextKeyword = NasmIntelTokenTagger.Keyword(pos[k], line_upcase);
+                                        string nextKeyword = AsmSourceTools.Keyword(pos[k], line_upcase);
                                         switch (nextKeyword)
                                         {
                                             case "PROC":
@@ -247,7 +247,7 @@ namespace AsmDude
                                     // do one word look back; see whether we can understand the current unknown word
                                     if (k > 0)
                                     {
-                                        string previousKeyword = NasmIntelTokenTagger.Keyword(pos[k - 1], line_upcase);
+                                        string previousKeyword = AsmSourceTools.Keyword(pos[k - 1], line_upcase);
                                         switch (previousKeyword)
                                         {
                                             case "ALIAS":
@@ -293,7 +293,7 @@ namespace AsmDude
                                                     break;
                                                 }
 
-                                                string asmToken2 = NasmIntelTokenTagger.Keyword(pos[k], line_upcase);
+                                                string asmToken2 = AsmSourceTools.Keyword(pos[k], line_upcase);
                                                 yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this.Make_AsmTokenTag_Label(containingLine.LineNumber));
                                                 break;
                                             }
@@ -306,7 +306,7 @@ namespace AsmDude
                                                     break;
                                                 }
 
-                                                string asmToken2 = NasmIntelTokenTagger.Keyword(pos[k], line_upcase);
+                                                string asmToken2 = AsmSourceTools.Keyword(pos[k], line_upcase);
                                                 yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._labelDef_PROTO);
                                                 break;
                                             }
@@ -354,7 +354,7 @@ namespace AsmDude
 
                 while (hasNext)
                 {
-                    string asmToken = NasmIntelTokenTagger.Keyword(current, line);
+                    string asmToken = AsmSourceTools.Keyword(current, line);
                     // keyword starts with a remark char
                     if (AsmSourceTools.IsRemarkChar(asmToken[0]))
                     {
@@ -393,7 +393,7 @@ namespace AsmDude
                                     }
                                     needToAdvance = true;
                                 }
-                                string asmToken2 = NasmIntelTokenTagger.Keyword(current, line);
+                                string asmToken2 = AsmSourceTools.Keyword(current, line);
                                 switch (asmToken2)
                                 {
                                     case "$":
@@ -419,7 +419,7 @@ namespace AsmDude
                                                 }
                                                 needToAdvance = true;
                                             }
-                                            switch (NasmIntelTokenTagger.Keyword(current, line))
+                                            switch (AsmSourceTools.Keyword(current, line))
                                             {
                                                 case "$":
                                                 case "@B":
@@ -470,7 +470,7 @@ namespace AsmDude
                                 else
                                 {
                                     // do one word look back; see whether we can understand the current unknown word
-                                    string previousKeyword = NasmIntelTokenTagger.Keyword(prev, line);
+                                    string previousKeyword = AsmSourceTools.Keyword(prev, line);
                                     switch (previousKeyword)
                                     {
                                         case "ALIAS":
@@ -493,7 +493,7 @@ namespace AsmDude
                                         prev = current;
                                         current = enumerator.Current;
 
-                                        string nextKeyword = NasmIntelTokenTagger.Keyword(current, line);
+                                        string nextKeyword = AsmSourceTools.Keyword(current, line);
                                         switch (nextKeyword)
                                         {
                                             case "PROC":
@@ -591,10 +591,10 @@ namespace AsmDude
                 IList<(int, int, bool)> positions = new List<(int, int, bool)>(AsmSourceTools.SplitIntoKeywordPos(line));
                 if (positions.Count > 1)
                 {
-                    string keywordStr = NasmIntelTokenTagger.Keyword(positions[1], line).ToUpper();
+                    string keywordStr = AsmSourceTools.Keyword(positions[1], line).ToUpper();
                     switch (keywordStr)
                     {
-                        case "PROC": return NasmIntelTokenTagger.Keyword(positions[0], line);
+                        case "PROC": return AsmSourceTools.Keyword(positions[0], line);
                         case "ENDP": return null;
                         default: break;
                     }

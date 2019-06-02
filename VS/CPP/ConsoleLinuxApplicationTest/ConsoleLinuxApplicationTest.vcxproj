@@ -77,7 +77,7 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-    <ValidateArchitecture>false</ValidateArchitecture>
+    <ValidateArchitecture>true</ValidateArchitecture>
     <MultiProcNumber>4</MultiProcNumber>
   </PropertyGroup>
   <ItemGroup>

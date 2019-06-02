@@ -495,12 +495,12 @@ namespace AsmDude.OptionsPage
             #region Assembly Flavour
             if (AsmDudeToolsStatic.Used_Assembler != this._asmDudeOptionsPageUI.UsedAssembler)
             {
-                sb.AppendLine("UsedAssembler=" + this._asmDudeOptionsPageUI.UsedAssembler);
+                sb.AppendLine("UsedAssembler_MainWindow=" + this._asmDudeOptionsPageUI.UsedAssembler);
                 changed = true;
             }
             if (AsmDudeToolsStatic.Used_Assembler_Disassembly_Window != this._asmDudeOptionsPageUI.UsedAssemblerDisassemblyWindow)
             {
-                sb.AppendLine("UsedAssembler=" + this._asmDudeOptionsPageUI.UsedAssemblerDisassemblyWindow);
+                sb.AppendLine("UsedAssembler_DisassemblyWindwo=" + this._asmDudeOptionsPageUI.UsedAssemblerDisassemblyWindow);
                 changed = true;
             }
             #endregion
@@ -950,7 +950,7 @@ namespace AsmDude.OptionsPage
             if (this.Setting_Update(PropertyEnum.AsmSim_Pragma_Assume)) { changed = true; };
             #endregion
 
-            if (archChanged)
+            if (archChanged) //TODO HJ 02-06-19 changes will propagate before save-yes is hit
             {
                 AsmDudeTools.Instance.UpdateMnemonicSwitchedOn();
                 AsmDudeTools.Instance.UpdateRegisterSwitchedOn();
@@ -971,8 +971,11 @@ namespace AsmDude.OptionsPage
                 }
                 else
                 {
-                    string text2 = "You may need to close and open assembly files, or \nrestart visual studio for the changes to take effect.";
-                    MessageBox.Show(text2, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if (false)
+                    {
+                        string text2 = "You may need to close and open assembly files, or \nrestart visual studio for the changes to take effect.";
+                        MessageBox.Show(text2, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
                 }
             }
         }

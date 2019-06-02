@@ -96,7 +96,7 @@ namespace AsmDude
 
                 for (int k = 0; k < nKeywords; k++)
                 {
-                    string asmToken = NasmIntelTokenTagger.Keyword(pos[k], line);
+                    string asmToken = AsmSourceTools.Keyword(pos[k], line);
 
                     // keyword starts with a remark char
                     if (AsmSourceTools.IsRemarkChar(asmToken[0]))
@@ -129,7 +129,7 @@ namespace AsmDude
                                     //TODO HJ 01-06-19 should be a warning that there is no label
                                 }
 
-                                string asmToken2 = NasmIntelTokenTagger.Keyword(pos[k], line);
+                                string asmToken2 = AsmSourceTools.Keyword(pos[k], line);
 
                                 if (AsmSourceTools.IsRemarkChar(asmToken2[0]))
                                 {
@@ -154,7 +154,7 @@ namespace AsmDude
                                                 break;
                                             }
 
-                                            string asmToken3 = NasmIntelTokenTagger.Keyword(pos[k], line);
+                                            string asmToken3 = AsmSourceTools.Keyword(pos[k], line);
                                             if (asmToken3.Equals("PTR"))
                                             {
                                                 yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._misc);
@@ -209,7 +209,7 @@ namespace AsmDude
                                     if ((k + 1) < nKeywords)
                                     {
                                         k++;
-                                        string nextKeyword = NasmIntelTokenTagger.Keyword(pos[k], line);
+                                        string nextKeyword = AsmSourceTools.Keyword(pos[k], line);
                                         switch (nextKeyword)
                                         {
                                             case "LABEL":
@@ -230,7 +230,7 @@ namespace AsmDude
                                     // do one word look back; see whether we can understand the current unknown word
                                     if (k > 0)
                                     {
-                                        string previousKeyword = NasmIntelTokenTagger.Keyword(pos[k - 1], line);
+                                        string previousKeyword = AsmSourceTools.Keyword(pos[k - 1], line);
                                         switch (previousKeyword)
                                         {
                                             case "ALIAS":
@@ -398,16 +398,16 @@ namespace AsmDude
         {
             for (int i = lineNumber - 1; i >= 0; --i)
             {
-                string line = this._buffer.CurrentSnapshot.GetLineFromLineNumber(i).GetText();
-                IList<(int, int, bool)> pos = new List<(int, int, bool)>(AsmSourceTools.SplitIntoKeywordPos(line));
+                string line_capitals = this._buffer.CurrentSnapshot.GetLineFromLineNumber(i).GetText().ToUpper();
+                IList<(int, int, bool)> pos = new List<(int, int, bool)>(AsmSourceTools.SplitIntoKeywordPos(line_capitals));
                 if ((pos.Count > 0) && !pos[0].Item3)
                 {
-                    string keywordString = NasmIntelTokenTagger.Keyword(pos[0], line).ToUpper();
-                    if (AsmSourceTools.ParseMnemonic(keywordString) != Mnemonic.NONE)
+                    string keyword_capitals = AsmSourceTools.Keyword(pos[0], line_capitals);
+                    if (AsmSourceTools.ParseMnemonic(keyword_capitals, true) != Mnemonic.NONE)
                     {
                         return true;
                     }
-                    switch (keywordString)
+                    switch (keyword_capitals)
                     {
                         case "STRUC": return false;
                         case "ENDSTRUC": return true;
@@ -415,8 +415,8 @@ namespace AsmDude
                 }
                 if ((pos.Count > 1) && !pos[1].Item3)
                 {
-                    string keywordString = NasmIntelTokenTagger.Keyword(pos[1], line).ToUpper();
-                    if (AsmSourceTools.ParseMnemonic(keywordString) != Mnemonic.NONE)
+                    string keywordString = AsmSourceTools.Keyword(pos[1], line_capitals);
+                    if (AsmSourceTools.ParseMnemonic(keywordString, true) != Mnemonic.NONE)
                     {
                         return true;
                     }
@@ -434,7 +434,7 @@ namespace AsmDude
             {
                 string line = this._buffer.CurrentSnapshot.GetLineFromLineNumber(i).GetText();
                 (int, int, bool) pos = AsmSourceTools.Get_First_Keyword(line);
-                string keywordString = NasmIntelTokenTagger.Keyword(pos, line);
+                string keywordString = AsmSourceTools.Keyword(pos, line);
 
                 if (pos.Item3)
                 {

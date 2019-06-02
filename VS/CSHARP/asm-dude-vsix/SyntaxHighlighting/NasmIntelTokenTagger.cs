@@ -96,7 +96,7 @@ namespace AsmDude
 
                 for (int k = 0; k < nKeywords; k++)
                 {
-                    string asmToken = Keyword(pos[k], line);
+                    string asmToken = AsmSourceTools.Keyword(pos[k], line);
 
                     // keyword starts with a remark char
                     if (AsmSourceTools.IsRemarkChar(asmToken[0]))
@@ -128,7 +128,7 @@ namespace AsmDude
                                     break; // there are no next words
                                 }
 
-                                string asmToken2 = Keyword(pos[k], line);
+                                string asmToken2 = AsmSourceTools.Keyword(pos[k], line);
                                 switch (asmToken2)
                                 {
                                     case "WORD":
@@ -145,7 +145,7 @@ namespace AsmDude
                                                 break;
                                             }
 
-                                            string asmToken3 = Keyword(pos[k], line);
+                                            string asmToken3 = AsmSourceTools.Keyword(pos[k], line);
                                             if (asmToken3.Equals("PTR"))
                                             {
                                                 yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._misc);
@@ -196,7 +196,7 @@ namespace AsmDude
                                     if ((k + 1) < nKeywords)
                                     {
                                         k++;
-                                        string nextKeyword = Keyword(pos[k], line);
+                                        string nextKeyword = AsmSourceTools.Keyword(pos[k], line);
                                         switch (nextKeyword)
                                         {
                                             case "LABEL":
@@ -217,7 +217,7 @@ namespace AsmDude
                                     // do one word look back; see whether we can understand the current unknown word
                                     if (k > 0)
                                     {
-                                        string previousKeyword = Keyword(pos[k - 1], line);
+                                        string previousKeyword = AsmSourceTools.Keyword(pos[k - 1], line);
                                         switch (previousKeyword)
                                         {
                                             case "ALIAS":
@@ -332,11 +332,6 @@ namespace AsmDude
             return (false, nextTokenId, nextLoc, "");
         }
 
-        public static string Keyword((int BeginPos, int Length, bool IsLabel) pos, string line)
-        {
-            return line.Substring(pos.BeginPos, pos.Length - pos.BeginPos);
-        }
-
         public static SnapshotSpan New_Span((int BeginPos, int Length, bool IsLabel) pos, int offset, SnapshotSpan lineSnapShot)
         {
             return new SnapshotSpan(lineSnapShot.Snapshot, new Span(pos.BeginPos + offset, pos.Length - pos.BeginPos));
@@ -399,7 +394,7 @@ namespace AsmDude
                 IList<(int, int, bool)> pos = new List<(int, int, bool)>(AsmSourceTools.SplitIntoKeywordPos(line));
                 if ((pos.Count > 0) && !pos[0].Item3)
                 {
-                    string keywordString = Keyword(pos[0], line).ToUpper();
+                    string keywordString = AsmSourceTools.Keyword(pos[0], line).ToUpper();
                     if (AsmSourceTools.ParseMnemonic(keywordString) != Mnemonic.NONE)
                     {
                         return true;
@@ -412,7 +407,7 @@ namespace AsmDude
                 }
                 if ((pos.Count > 1) && !pos[1].Item3)
                 {
-                    string keywordString = Keyword(pos[1], line).ToUpper();
+                    string keywordString = AsmSourceTools.Keyword(pos[1], line).ToUpper();
                     if (AsmSourceTools.ParseMnemonic(keywordString) != Mnemonic.NONE)
                     {
                         return true;
@@ -431,7 +426,7 @@ namespace AsmDude
             {
                 string line = this._buffer.CurrentSnapshot.GetLineFromLineNumber(i).GetText();
                 (int, int, bool) pos = AsmSourceTools.Get_First_Keyword(line);
-                string keywordString = Keyword(pos, line);
+                string keywordString = AsmSourceTools.Keyword(pos, line);
 
                 if (pos.Item3)
                 {
