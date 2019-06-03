@@ -88,15 +88,15 @@ namespace AsmDude
             {
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
 
-                string line = containingLine.GetText().ToUpper();
-                List<(int BeginPos, int Length, bool IsLabel)> pos = new List<(int BeginPos, int Length, bool IsLabel)>(AsmSourceTools.SplitIntoKeywordPos(line));
+                string line_capitals = containingLine.GetText().ToUpper();
+                List<(int BeginPos, int Length, bool IsLabel)> pos = new List<(int BeginPos, int Length, bool IsLabel)>(AsmSourceTools.SplitIntoKeywordPos(line_capitals));
 
                 int offset = containingLine.Start.Position;
                 int nKeywords = pos.Count;
 
                 for (int k = 0; k < nKeywords; k++)
                 {
-                    string asmToken = AsmSourceTools.Keyword(pos[k], line);
+                    string asmToken = AsmSourceTools.Keyword(pos[k], line_capitals);
 
                     // keyword starts with a remark char
                     if (AsmSourceTools.IsRemarkChar(asmToken[0]))
@@ -129,7 +129,7 @@ namespace AsmDude
                                     //TODO HJ 01-06-19 should be a warning that there is no label
                                 }
 
-                                string asmToken2 = AsmSourceTools.Keyword(pos[k], line);
+                                string asmToken2 = AsmSourceTools.Keyword(pos[k], line_capitals);
 
                                 if (AsmSourceTools.IsRemarkChar(asmToken2[0]))
                                 {
@@ -154,7 +154,7 @@ namespace AsmDude
                                                 break;
                                             }
 
-                                            string asmToken3 = AsmSourceTools.Keyword(pos[k], line);
+                                            string asmToken3 = AsmSourceTools.Keyword(pos[k], line_capitals);
                                             if (asmToken3.Equals("PTR"))
                                             {
                                                 yield return new TagSpan<AsmTokenTag>(New_Span(pos[k], offset, curSpan), this._misc);
@@ -209,7 +209,7 @@ namespace AsmDude
                                     if ((k + 1) < nKeywords)
                                     {
                                         k++;
-                                        string nextKeyword = AsmSourceTools.Keyword(pos[k], line);
+                                        string nextKeyword = AsmSourceTools.Keyword(pos[k], line_capitals);
                                         switch (nextKeyword)
                                         {
                                             case "LABEL":
@@ -230,7 +230,7 @@ namespace AsmDude
                                     // do one word look back; see whether we can understand the current unknown word
                                     if (k > 0)
                                     {
-                                        string previousKeyword = AsmSourceTools.Keyword(pos[k - 1], line);
+                                        string previousKeyword = AsmSourceTools.Keyword(pos[k - 1], line_capitals);
                                         switch (previousKeyword)
                                         {
                                             case "ALIAS":

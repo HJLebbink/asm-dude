@@ -36,6 +36,7 @@ namespace AsmDude
         private readonly AsmDudeTools _asmDudeTools = null;
 
         private readonly AsmTokenTag _mnemonic;
+        private readonly AsmTokenTag _mnemonicOff;
         private readonly AsmTokenTag _register;
         private readonly AsmTokenTag _remark;
         private readonly AsmTokenTag _directive;
@@ -56,6 +57,7 @@ namespace AsmDude
             this._asmDudeTools = AsmDudeTools.Instance;
 
             this._mnemonic = new AsmTokenTag(AsmTokenType.Mnemonic);
+            this._mnemonicOff = new AsmTokenTag(AsmTokenType.MnemonicOff);
             this._register = new AsmTokenTag(AsmTokenType.Register);
             this._remark = new AsmTokenTag(AsmTokenType.Remark);
             this._directive = new AsmTokenTag(AsmTokenType.Directive);
@@ -312,7 +314,10 @@ namespace AsmDude
                                             }
                                     }
                                 }
+                                break;
                             }
+                        case AsmTokenType.MnemonicOff:
+                            yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._mnemonic);
                             break;
                         default:
                             {

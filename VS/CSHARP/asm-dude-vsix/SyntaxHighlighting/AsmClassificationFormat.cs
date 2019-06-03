@@ -44,6 +44,23 @@ namespace AsmDude
         }
     }
 
+    [Export(typeof(EditorFormatDefinition))] // export as EditorFormatDefinition otherwise the syntax coloring does not work
+    [ClassificationType(ClassificationTypeNames = AsmClassificationDefinition.ClassificationTypeNames.MnemonicOff)]
+    [Name(AsmClassificationDefinition.ClassificationTypeNames.MnemonicOff)]
+    [UserVisible(true)] // sets this editor format definition visible for the user (in Tools>Options>Environment>Fonts and Colors>Text Editor
+    [Order(After = Priority.High)] //set the priority to be after the default classifiers
+    internal sealed class OpcodeOffP : ClassificationFormatDefinition
+    {
+        public OpcodeOffP()
+        {
+            //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: Entering constructor for: {0}", this.ToString()));
+            this.DisplayName = "AsmDude - Syntax Highlighting - Mnemonic (switched off)"; //human readable version of the name found in Tools>Options>Environment>Fonts and Colors>Text Editor
+            this.ForegroundColor = AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Opcode);
+            this.IsItalic = Settings.Default.SyntaxHighlighting_Opcode_Italic;
+            this.ForegroundOpacity = 0.4;
+        }
+    }
+
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = AsmClassificationDefinition.ClassificationTypeNames.Register)]
     [Name(AsmClassificationDefinition.ClassificationTypeNames.Register)]

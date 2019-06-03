@@ -31,6 +31,7 @@ namespace AsmDude.SyntaxHighlighting
         internal static class ClassificationTypeNames
         {
             public const string Mnemonic = "mnemonic-D74860FA-F0BC-4441-9D76-DF4ECB19CF71";
+            public const string MnemonicOff = "mnemonicOff-65C24A95-28E9-4141-802D-A40A3FA1081A";
             public const string Register = "register-D74860FA-F0BC-4441-9D76-DF4ECB19CF71";
             public const string Remark = "remark-D74860FA-F0BC-4441-9D76-DF4ECB19CF71";
             public const string Directive = "directive-D74860FA-F0BC-4441-9D76-DF4ECB19CF71";
@@ -47,6 +48,10 @@ namespace AsmDude.SyntaxHighlighting
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(ClassificationTypeNames.Mnemonic)]
         internal static ClassificationTypeDefinition mnemonic = null;
+
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name(ClassificationTypeNames.MnemonicOff)]
+        internal static ClassificationTypeDefinition mnemonicOff = null;
 
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(ClassificationTypeNames.Register)]

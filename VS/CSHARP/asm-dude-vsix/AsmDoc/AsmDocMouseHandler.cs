@@ -211,6 +211,7 @@ namespace AsmDude.AsmDoc
                     switch (tag.Type)
                     {
                         case AsmTokenType.Mnemonic: // intentional fall through
+                        case AsmTokenType.MnemonicOff:
                         case AsmTokenType.Jump:
                             {
                                 SnapshotSpan tagSpan = keywordSpan.Value;

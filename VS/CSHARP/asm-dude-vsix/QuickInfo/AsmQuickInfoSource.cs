@@ -194,21 +194,19 @@ namespace AsmDude.QuickInfo
                             break;
                         }
                     case AsmTokenType.Mnemonic: // intentional fall through
+                    case AsmTokenType.MnemonicOff: // intentional fall through
                     case AsmTokenType.Jump:
                         {
                             (Mnemonic mnemonic, AttType type) = AsmSourceTools.ParseMnemonic_Att(keywordUpper, true);
-                            if (this._asmDudeTools.MnemonicSwitchedOn(mnemonic))
+                            InstructionTooltipWindow instructionTooltipWindow = new InstructionTooltipWindow(foreground)
                             {
-                                InstructionTooltipWindow instructionTooltipWindow = new InstructionTooltipWindow(foreground)
-                                {
-                                    Session = session // set the owner of this windows such that we can manually close this window
-                                };
-                                instructionTooltipWindow.SetDescription(mnemonic, this._asmDudeTools);
-                                instructionTooltipWindow.SetPerformanceInfo(mnemonic, this._asmDudeTools);
-                                int lineNumber = AsmDudeToolsStatic.Get_LineNumber(tagSpan);
-                                instructionTooltipWindow.SetAsmSim(this._asmSimulator, lineNumber, true);
-                                quickInfoContent.Add(instructionTooltipWindow);
-                            }
+                                Session = session // set the owner of this windows such that we can manually close this window
+                            };
+                            instructionTooltipWindow.SetDescription(mnemonic, this._asmDudeTools);
+                            instructionTooltipWindow.SetPerformanceInfo(mnemonic, this._asmDudeTools);
+                            int lineNumber = AsmDudeToolsStatic.Get_LineNumber(tagSpan);
+                            instructionTooltipWindow.SetAsmSim(this._asmSimulator, lineNumber, true);
+                            quickInfoContent.Add(instructionTooltipWindow);
                             break;
                         }
                     case AsmTokenType.Label:

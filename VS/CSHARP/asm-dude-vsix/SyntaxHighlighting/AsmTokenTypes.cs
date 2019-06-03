@@ -27,6 +27,6 @@ namespace AsmDude
     /// </summary>
     public enum AsmTokenType
     {
-        Mnemonic, Register, Remark, Directive, Constant, Jump, Label, LabelDef, Misc, UserDefined1, UserDefined2, UserDefined3, UNKNOWN
+        Mnemonic, MnemonicOff, Register, Remark, Directive, Constant, Jump, Label, LabelDef, Misc, UserDefined1, UserDefined2, UserDefined3, UNKNOWN
     }
 }

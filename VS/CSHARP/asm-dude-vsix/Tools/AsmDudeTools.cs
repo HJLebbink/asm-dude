@@ -236,7 +236,6 @@ namespace AsmDude
             }
             if (false)
             {
-
                 ISet<string> archs = new HashSet<string>();
 
                 foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
@@ -253,12 +252,10 @@ namespace AsmDude
                         }
                     }
                 }
-
                 foreach (string s in archs)
                 {
                     AsmDudeToolsStatic.Output_INFO(s + ",");
                 }
-
             }
             #endregion
         }
@@ -348,10 +345,9 @@ namespace AsmDude
                 Rn reg = RegisterTools.ParseRn(keyword2, true);
                 if (reg != Rn.NOREG)
                 {
-                    if (this.RegisterSwitchedOn(reg))
-                    {
-                        return AsmTokenType.Register;
-                    }
+                    return (this.RegisterSwitchedOn(reg))
+                       ? AsmTokenType.Register
+                       : AsmTokenType.Register; //TODO
                 }
             }
             #endregion
@@ -366,10 +362,9 @@ namespace AsmDude
                 (Mnemonic mnemonic, AttType type) = AsmSourceTools.ParseMnemonic_Att(keyword, true);
                 if (mnemonic != Mnemonic.NONE)
                 {
-                    if (this.MnemonicSwitchedOn(mnemonic))
-                    {
-                        return AsmSourceTools.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
-                    }
+                    return (this.MnemonicSwitchedOn(mnemonic))
+                        ? AsmSourceTools.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic
+                        : AsmSourceTools.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.MnemonicOff;
                 }
             }
             #endregion
@@ -384,18 +379,16 @@ namespace AsmDude
             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword, true);
             if (mnemonic != Mnemonic.NONE)
             {
-                if (this.MnemonicSwitchedOn(mnemonic))
-                {
-                    return AsmSourceTools.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic;
-                }
+                return (this.MnemonicSwitchedOn(mnemonic))
+                    ? AsmSourceTools.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.Mnemonic
+                    : AsmSourceTools.IsJump(mnemonic) ? AsmTokenType.Jump : AsmTokenType.MnemonicOff;
             }
             Rn reg = RegisterTools.ParseRn(keyword, true);
             if (reg != Rn.NOREG)
             {
-                if (this.RegisterSwitchedOn(reg))
-                {
-                    return AsmTokenType.Register;
-                }
+                return (this.RegisterSwitchedOn(reg))
+                    ? AsmTokenType.Register
+                    : AsmTokenType.Register; //TODO
             }
             return this._type.TryGetValue(keyword, out AsmTokenType tokenType) ? tokenType : AsmTokenType.UNKNOWN;
         }

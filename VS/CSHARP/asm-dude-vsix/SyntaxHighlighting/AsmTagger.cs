@@ -36,6 +36,7 @@ namespace AsmDude
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
 
         private readonly ClassificationTag _mnemonic;
+        private readonly ClassificationTag _mnemonicOff;
         private readonly ClassificationTag _register;
         private readonly ClassificationTag _remark;
         private readonly ClassificationTag _directive;
@@ -60,6 +61,7 @@ namespace AsmDude
             this._aggregator = asmTagAggregator;
 
             this._mnemonic = new ClassificationTag(typeService.GetClassificationType(AsmClassificationDefinition.ClassificationTypeNames.Mnemonic));
+            this._mnemonicOff = new ClassificationTag(typeService.GetClassificationType(AsmClassificationDefinition.ClassificationTypeNames.MnemonicOff));
             this._register = new ClassificationTag(typeService.GetClassificationType(AsmClassificationDefinition.ClassificationTypeNames.Register));
             this._remark = new ClassificationTag(typeService.GetClassificationType(AsmClassificationDefinition.ClassificationTypeNames.Remark));
             this._directive = new ClassificationTag(typeService.GetClassificationType(AsmClassificationDefinition.ClassificationTypeNames.Directive));
@@ -99,6 +101,7 @@ namespace AsmDude
                     switch (tagSpan.Tag.Type)
                     {
                         case AsmTokenType.Mnemonic: yield return new TagSpan<ClassificationTag>(tagSpans[0], this._mnemonic); break;
+                        case AsmTokenType.MnemonicOff: yield return new TagSpan<ClassificationTag>(tagSpans[0], this._mnemonicOff); break;
                         case AsmTokenType.Register: yield return new TagSpan<ClassificationTag>(tagSpans[0], this._register); break;
                         case AsmTokenType.Remark: yield return new TagSpan<ClassificationTag>(tagSpans[0], this._remark); break;
                         case AsmTokenType.Directive: yield return new TagSpan<ClassificationTag>(tagSpans[0], this._directive); break;
