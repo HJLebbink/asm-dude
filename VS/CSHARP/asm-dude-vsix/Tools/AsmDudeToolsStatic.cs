@@ -149,7 +149,7 @@ namespace AsmDude.Tools
                     if (asmToken[0].Equals('%'))
                     {
                         string asmToken2 = asmToken.Substring(1);
-                        if (RegisterTools.ParseRn(asmToken2, true) != Rn.NOREG)
+                        if (RegisterTools.IsRn(asmToken2, true))
                         {
                             return true;
                         }
@@ -161,7 +161,7 @@ namespace AsmDude.Tools
             {
                 foreach (string asmToken in line)
                 {
-                    if (RegisterTools.ParseRn(asmToken, true) != Rn.NOREG)
+                    if (RegisterTools.IsRn(asmToken, true))
                     {
                         return true;
                     }
@@ -187,9 +187,9 @@ namespace AsmDude.Tools
             {
                 foreach (string word in line)
                 {
-                    if (AsmSourceTools.ParseMnemonic(word, true) == Mnemonic.NONE)
+                    if (!AsmSourceTools.IsMnemonic(word, true))
                     {
-                        if (AsmSourceTools.ParseMnemonic_Att(word, true) != Mnemonic.NONE)
+                        if (AsmSourceTools.IsMnemonic_Att(word, true))
                         {
                             return true;
                         }

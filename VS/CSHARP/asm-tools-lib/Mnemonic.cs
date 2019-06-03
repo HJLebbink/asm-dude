@@ -2493,6 +2493,17 @@ namespace AsmTools
             }
         }
 
+        private static string ToCapitals(string str, bool strIsCapitals)
+        {
+            #if DEBUG
+            if (strIsCapitals && (str != str.ToUpper()))
+            {
+                throw new Exception();
+            }
+            #endif
+            return (strIsCapitals) ? str : str.ToUpper();
+        }
+
         private static AttType ParseAttType(char c)
         {
             switch (c)
@@ -2504,6 +2515,20 @@ namespace AsmTools
                 case 'Q': return AttType.Q;
                 case 'T': return AttType.T;
                 default: return AttType.NONE;
+            }
+        }
+
+        private static bool IsAttType(char c)
+        {
+            switch (c)
+            {
+                case 'B': 
+                case 'S': 
+                case 'W': 
+                case 'L': 
+                case 'Q': 
+                case 'T': return true;
+                default: return false;
             }
         }
 
@@ -2556,12 +2581,12 @@ namespace AsmTools
         }
 
         /// <summary>Parse the provided string that contains a AT&T syntax mnemonic</summary>
-        public static Mnemonic ParseMnemonic_Att(string str, bool strIsCapitals = false)
+        public static Mnemonic ParseMnemonic_Att_OLD(string str, bool strIsCapitals = false)
         {
             int length = str.Length;
             if (length > 1)
             {
-                string str2 = strIsCapitals ? str : str.ToUpper();
+                string str2 = ToCapitals(str, strIsCapitals);
 
                 Mnemonic r = ParseMnemonic(str2, true);
                 if (r != Mnemonic.NONE)
@@ -2579,12 +2604,12 @@ namespace AsmTools
             return Mnemonic.NONE;
         }
 
-        public static (Mnemonic, AttType) ParseMnemonic_Att_new(string str, bool strIsCapitals = false)
+        public static (Mnemonic, AttType) ParseMnemonic_Att(string str, bool strIsCapitals = false)
         {
             int length = str.Length;
             if (length > 1)
             {
-                string str2 = strIsCapitals ? str : str.ToUpper();
+                string str2 = ToCapitals(str, strIsCapitals);
 
                 Mnemonic r = ParseMnemonic(str2, true);
                 if (r != Mnemonic.NONE)
@@ -2600,30 +2625,16 @@ namespace AsmTools
             }
             return (Mnemonic.NONE, AttType.NONE);
         }
+
         public static Mnemonic ParseMnemonic(string str, bool strIsCapitals = false)
         {
-            if (!strIsCapitals)
-            {
-                str = str.ToUpper();
-            }
-            return (_mnemonic_cache.TryGetValue(str, out Mnemonic value)) ? value : Mnemonic.NONE;
+            return (_mnemonic_cache.TryGetValue(ToCapitals(str, strIsCapitals), out Mnemonic value)) ? value : Mnemonic.NONE;
         }
 
         /// <summary>Parse the provided string that contains a Intel syntax mnemonic</summary>
         public static Mnemonic ParseMnemonic_OLD(string str, bool strIsCapitals = false)
         {
-            #if DEBUG
-            if (strIsCapitals && (str != str.ToUpper()))
-            {
-                throw new Exception();
-            }
-            #endif
-            if (!strIsCapitals)
-            {
-                str = str.ToUpper();
-            }
-
-            switch (str)
+            switch (ToCapitals(str, strIsCapitals))
             {
                 case "NONE": return Mnemonic.NONE;
                 case "MOV": return Mnemonic.MOV;
@@ -4689,28 +4700,22 @@ namespace AsmTools
             }
         }
 
-        public static void GenCacheTest()
+        public static bool IsMnemonic(string keyword, bool strIsCapitals = false)
         {
-            if (false)
-            {
-                int shortest = 1000;
-                string shortest_str = "";
-                foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
-                {
-                    string str = mnemonic.ToString();
-                    if (str.Length < shortest)
-                    {
-                        shortest = str.Length;
-                        shortest_str = str;
-                    }
-                }
-                Console.WriteLine(shortest_str);
-            }
-
-
+            return _mnemonic_cache.ContainsKey(ToCapitals(keyword, strIsCapitals));
         }
 
-        public static void SpeedTest()
+        public static bool IsMnemonic_Att(string keyword, bool strIsCapitals = false)
+        {
+            int length = keyword.Length;
+            if (length < 2) return false;
+            string str2 = ToCapitals(keyword, strIsCapitals);
+            if (IsMnemonic(str2, true)) return true;
+            if (!IsAttType(str2[length - 1])) return false;
+            return IsMnemonic(str2.Substring(0, length - 1), true);
+        }
+
+        public static void SpeedTestMnemonic()
         {
             Stopwatch stopwatch1 = new Stopwatch();
             Stopwatch stopwatch2 = new Stopwatch();
@@ -4737,6 +4742,34 @@ namespace AsmTools
             }
             Console.WriteLine("ParseMnemonic OLD " + stopwatch1.ElapsedMilliseconds + " ms");
             Console.WriteLine("ParseMnemonic     " + stopwatch2.ElapsedMilliseconds + " ms");
+        }
+        public static void SpeedTestRegister()
+        {
+            Stopwatch stopwatch1 = new Stopwatch();
+            Stopwatch stopwatch2 = new Stopwatch();
+            bool strCapitals = true;
+
+            for (int i = 0; i < 1000; ++i)
+            {
+                foreach (Rn mnemonic in Enum.GetValues(typeof(Rn)))
+                {
+                    string str = mnemonic.ToString();
+                    {
+                        stopwatch1.Start();
+                        Rn m1 = RegisterTools.ParseRn_OLD(str, strCapitals);
+                        stopwatch1.Stop();
+                        if (m1 != mnemonic) Console.WriteLine("NOT OK OLD rn=" + mnemonic.ToString() + "; str=" + str + "; m1=" + m1.ToString());
+                    }
+                    {
+                        stopwatch2.Start();
+                        Rn m1 = RegisterTools.ParseRn(str, strCapitals);
+                        stopwatch2.Stop();
+                        if (m1 != mnemonic) Console.WriteLine("NOT OK     rn=" + mnemonic.ToString() + "; str=" + str + "; m1=" + m1.ToString());
+                    }
+                }
+            }
+            Console.WriteLine("ParseRn OLD " + stopwatch1.ElapsedMilliseconds + " ms");
+            Console.WriteLine("ParseRn     " + stopwatch2.ElapsedMilliseconds + " ms");
         }
     }
 }

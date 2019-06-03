@@ -58,8 +58,8 @@ namespace AsmSim
             //TestMemoryLeak();
             //Test_NullReference_Bsf_1();
 
-            AsmSourceTools.SpeedTest();
-            AsmSourceTools.GenCacheTest();
+            AsmSourceTools.SpeedTestMnemonic();
+            AsmSourceTools.SpeedTestRegister();
 
             double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
             Console.WriteLine(string.Format("Elapsed time " + elapsedSec + " sec"));

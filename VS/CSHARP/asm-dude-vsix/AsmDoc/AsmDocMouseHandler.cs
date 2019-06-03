@@ -147,7 +147,7 @@ namespace AsmDude.AsmDoc
                             string keyword = AsmDudeToolsStatic.Get_Keyword_Str(bufferPosition);
                             if (keyword != null)
                             {
-                                Mnemonic mnemonic = AsmSourceTools.ParseMnemonic_Att(keyword, false);
+                                (Mnemonic mnemonic, AttType type) = AsmSourceTools.ParseMnemonic_Att(keyword, false);
                                 this.Dispatch_Goto_DocAsync(mnemonic).ConfigureAwait(false);
                             }
                             this.Set_Highlight_Span(null);
@@ -214,7 +214,7 @@ namespace AsmDude.AsmDoc
                         case AsmTokenType.Jump:
                             {
                                 SnapshotSpan tagSpan = keywordSpan.Value;
-                                Mnemonic mnemonic = AsmSourceTools.ParseMnemonic_Att(tagSpan.GetText(), false);
+                                (Mnemonic mnemonic, AttType type) = AsmSourceTools.ParseMnemonic_Att(tagSpan.GetText(), false);
                                 string url = this.Get_Url(mnemonic);
                                 //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:TryHighlightItemUnderMouse: keyword={1}; type={2}; url={3}", this.ToString(), keyword, type, url));
                                 if ((url != null) && this.Set_Highlight_Span(keywordSpan))

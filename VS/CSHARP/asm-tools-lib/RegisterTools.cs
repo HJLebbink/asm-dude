@@ -22,6 +22,7 @@
 
 
 using System;
+using System.Collections.Generic;
 
 namespace AsmTools
 {
@@ -32,6 +33,29 @@ namespace AsmTools
 
     public static class RegisterTools
     {
+        private static readonly Dictionary<string, Rn> _register_cache;
+
+        /// <summary>Static class initializer for RegisterTools</summary>
+        static RegisterTools()
+        {
+            _register_cache = new Dictionary<string, Rn>();
+            foreach (Rn rn in Enum.GetValues(typeof(Rn)))
+            {
+                _register_cache.Add(rn.ToString(), rn);
+            }
+        }
+
+        private static string ToCapitals(string str, bool strIsCapitals)
+        {
+            #if DEBUG
+            if (strIsCapitals && (str != str.ToUpper()))
+            {
+                throw new Exception();
+            }
+            #endif
+            return (strIsCapitals) ? str : str.ToUpper();
+        }
+
         public static (bool Valid, Rn Reg, int NBits) ToRn(string str, bool isCapitals = false)
         {
             Rn rn = ParseRn(str, isCapitals);
@@ -40,16 +64,14 @@ namespace AsmTools
                 : (Valid: true, Reg: rn, NBits: NBits(rn));
         }
 
-        public static Rn ParseRn(string str, bool isCapitals = false)
+        public static Rn ParseRn(string str, bool strIsCapitals = false)
         {
-            #if DEBUG
-            if (isCapitals && (str != str.ToUpper()))
-            {
-                throw new Exception();
-            }
-            #endif
+            return (_register_cache.TryGetValue(ToCapitals(str, strIsCapitals), out Rn value)) ? value : Rn.NOREG;
+        }
 
-            switch (isCapitals ? str : str.ToUpper())
+        public static Rn ParseRn_OLD(string str, bool strIsCapitals = false)
+        {
+            switch (ToCapitals(str, strIsCapitals))
             {
                 case "RAX": return Rn.RAX;
                 case "EAX": return Rn.EAX;
@@ -295,6 +317,11 @@ namespace AsmTools
                 default:
                     return Rn.NOREG;
             }
+        }
+
+        public static bool IsRn(string str, bool strIsCapitals = false)
+        {
+            return _register_cache.ContainsKey(ToCapitals(str, strIsCapitals));
         }
 
         public static int NBits(Rn rn)
@@ -754,7 +781,7 @@ namespace AsmTools
 
         public static bool IsRegister(string keyword, bool strIsCapitals = false)
         {
-            return ParseRn(keyword, strIsCapitals) != Rn.NOREG;
+            return _register_cache.ContainsKey(ToCapitals(keyword, strIsCapitals));
         }
 
         public static RegisterType GetRegisterType(Rn rn)

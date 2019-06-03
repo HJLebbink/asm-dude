@@ -363,7 +363,7 @@ namespace AsmDude
             #endregion
             #region Test if keyword is an instruction
             {
-                Mnemonic mnemonic = AsmSourceTools.ParseMnemonic_Att(keyword, true);
+                (Mnemonic mnemonic, AttType type) = AsmSourceTools.ParseMnemonic_Att(keyword, true);
                 if (mnemonic != Mnemonic.NONE)
                 {
                     if (this.MnemonicSwitchedOn(mnemonic))

@@ -403,7 +403,7 @@ namespace AsmDude
                 if ((pos.Count > 0) && !pos[0].Item3)
                 {
                     string keyword_capitals = AsmSourceTools.Keyword(pos[0], line_capitals);
-                    if (AsmSourceTools.ParseMnemonic(keyword_capitals, true) != Mnemonic.NONE)
+                    if (AsmSourceTools.IsMnemonic(keyword_capitals, true))
                     {
                         return true;
                     }
@@ -416,7 +416,7 @@ namespace AsmDude
                 if ((pos.Count > 1) && !pos[1].Item3)
                 {
                     string keywordString = AsmSourceTools.Keyword(pos[1], line_capitals);
-                    if (AsmSourceTools.ParseMnemonic(keywordString, true) != Mnemonic.NONE)
+                    if (AsmSourceTools.IsMnemonic(keywordString, true))
                     {
                         return true;
                     }

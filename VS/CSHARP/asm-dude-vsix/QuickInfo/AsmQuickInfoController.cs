@@ -257,7 +257,7 @@ namespace AsmDude.QuickInfo
                     case AsmTokenType.Mnemonic: // intentional fall through
                     case AsmTokenType.Jump:
                         {
-                            Mnemonic mnemonic = AsmSourceTools.ParseMnemonic_Att(keywordUpper, true);
+                            (Mnemonic mnemonic, AttType type) = AsmSourceTools.ParseMnemonic_Att(keywordUpper, true);
 
                             InstructionTooltipWindow instructionTooltipWindow = new InstructionTooltipWindow(AsmDudeToolsStatic.GetFontColor())
                             {
