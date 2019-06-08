@@ -48,18 +48,18 @@ namespace AsmSim
             //TestMnemonic();
             //Test_Rep();
             //Test_Usage();
-            //TestMemorySpeed();
+            if (true) TestMemorySpeed();
             //TestDynamicFlow();
             //TestSIMD();
-            //EmptyMemoryTest();
+            if (false) EmptyMemoryTest();
             //ProgramSynthesis1();
             //TestFunctions();
             //TacticTest();
             //TestMemoryLeak();
             //Test_NullReference_Bsf_1();
 
-            AsmSourceTools.SpeedTestMnemonic();
-            AsmSourceTools.SpeedTestRegister();
+            if (false) AsmSourceTools.SpeedTestMnemonic();
+            if (false) AsmSourceTools.SpeedTestRegister();
 
             double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
             Console.WriteLine(string.Format("Elapsed time " + elapsedSec + " sec"));

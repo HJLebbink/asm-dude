@@ -215,14 +215,6 @@ namespace AsmDude.Tools
 
                 List<string> keywords = AsmSourceTools.SplitIntoKeywordsList(line_capitals);
 
-                foreach (string word in keywords)
-                {
-                    switch (word)
-                    {
-                        case ".INTEL_SYNTAX": return true; // we know for sure
-                        case ".ATT_SYNTAX": return false; // we know for sure
-                    }
-                }
                 if (contains_register_att(keywords)) registers_i++;
                 if (contains_register_intel(keywords)) registers_i--;
                 if (contains_constant_att(keywords)) constants_i++;
@@ -343,6 +335,7 @@ namespace AsmDude.Tools
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             }
+
             buffer.Properties.TryGetProperty(typeof(ITextDocument), out ITextDocument document);
             string filename = document?.FilePath;
             //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Get_Filename_Async: retrieving filename {1}", typeof(AsmDudeToolsStatic), filename));
@@ -377,13 +370,20 @@ namespace AsmDude.Tools
             dte.ExecuteCommand("Debug.Disassembly");
         }
 
-        public static int GetFontSize()
+        public static int GetFontSize(int timeout_ms = 200)
         {
-            //TODO 02-06 add timeout similar to GetFilename
-
             return ThreadHelper.JoinableTaskFactory.Run(async delegate
             {
-                return await GetFontSizeAsync();
+                var task = GetFontSizeAsync();
+                if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)) == task)
+                {
+                    return await task;
+                }
+                else
+                {
+                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:GetFontSize; could not get font size within timeout {1} ms", "AsmDudeToolsStatic", timeout_ms));
+                    return 8;
+                }
             });
         }
 
@@ -401,11 +401,20 @@ namespace AsmDude.Tools
             return fontSize;
         }
 
-        public static FontFamily GetFontType()
+        public static FontFamily GetFontType(int timeout_ms = 200)
         {
             return ThreadHelper.JoinableTaskFactory.Run(async delegate
             {
-                return await GetFontTypeAsync();
+                var task = GetFontTypeAsync();
+                if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)) == task)
+                {
+                    return await task;
+                }
+                else
+                {
+                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:GetFontType; could not get font size within timeout {1} ms", "AsmDudeToolsStatic", timeout_ms));
+                    return new FontFamily("Comic Sans MS");
+                }
             });
         }
 
@@ -425,11 +434,20 @@ namespace AsmDude.Tools
             return new FontFamily(font);
         }
 
-        public static Brush GetFontColor()
+        public static Brush GetFontColor(int timeout_ms = 200)
         {
             return ThreadHelper.JoinableTaskFactory.Run(async delegate
             {
-                return await GetFontColorAsync();
+                var task = GetFontColorAsync();
+                if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)) == task)
+                {
+                    return await task;
+                }
+                else
+                {
+                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:GetFontColor; could not get font color within timeout {1} ms", "AsmDudeToolsStatic", timeout_ms));
+                    return new SolidColorBrush(Colors.Gray);
+                }
             });
         }
 
@@ -458,11 +476,20 @@ namespace AsmDude.Tools
             return new SolidColorBrush(Colors.Gray);
         }
 
-        public static Brush GetBackgroundColor()
+        public static Brush GetBackgroundColor(int timeout_ms = 200)
         {
             return ThreadHelper.JoinableTaskFactory.Run(async delegate
             {
-                return await GetBackgroundColorAsync();
+                var task = GetBackgroundColorAsync();
+                if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)) == task)
+                {
+                    return await task;
+                }
+                else
+                {
+                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:GetBackgroundColor; could not get font color within timeout {1} ms", "AsmDudeToolsStatic", timeout_ms));
+                    return new SolidColorBrush(Colors.Gray);
+                }
             });
         }
 

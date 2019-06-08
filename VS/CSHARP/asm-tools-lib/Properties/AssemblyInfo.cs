@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Lebbink")]
 [assembly: AssemblyProduct("asm-tools-lib")]
-[assembly: AssemblyCopyright("Copyright © Henk-Jan Lebbink 2017")]
+[assembly: AssemblyCopyright("Copyright © Henk-Jan Lebbink 2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

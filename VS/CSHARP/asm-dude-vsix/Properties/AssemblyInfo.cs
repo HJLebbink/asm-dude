@@ -32,7 +32,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Lebbink")]
 [assembly: AssemblyProduct("AsmDude")]
-[assembly: AssemblyCopyright("Copyright © Henk-Jan Lebbink")]
+[assembly: AssemblyCopyright("Copyright © Henk-Jan Lebbink 2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

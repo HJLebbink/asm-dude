@@ -276,8 +276,8 @@ namespace AsmDude
 
             foreach ((int BeginPos, int Length, bool IsLabel) v in pos)
             {
-                string asmToken = AsmSourceTools.Keyword(v, line);
-                if (AsmSourceTools.IsMnemonic_Att(asmToken, true))
+                string word = AsmSourceTools.Keyword(v, line);
+                if (AsmSourceTools.IsMnemonic_Att(word, true))
                 {
                     return false; // found an assebly instruction, think this is assembly code
                 }
