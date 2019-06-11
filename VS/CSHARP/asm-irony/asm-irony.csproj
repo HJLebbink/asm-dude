@@ -77,6 +77,9 @@
     <PackageReference Include="Irony.Interpreter">
       <Version>0.9.1</Version>
     </PackageReference>
+    <PackageReference Include="System.Runtime">
+      <Version>4.3.1</Version>
+    </PackageReference>
     <PackageReference Include="System.ValueTuple">
       <Version>4.5.0</Version>
     </PackageReference>
