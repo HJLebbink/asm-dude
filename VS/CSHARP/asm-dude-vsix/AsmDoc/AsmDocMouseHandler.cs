@@ -437,6 +437,8 @@ namespace AsmDude.AsmDoc
         }
         public static Uri GetWebBrowserWindowUrl(EnvDTE.Window WindowReference)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             Uri BrowserUrl = new Uri("", UriKind.RelativeOrAbsolute);
             Evaluate(WindowReference, new Action<System.Windows.Forms.WebBrowser>((wb) => BrowserUrl = wb.Url));
             return BrowserUrl;
