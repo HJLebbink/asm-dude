@@ -63,22 +63,6 @@ namespace AsmDude.QuickInfo
             this._asmDudeTools = AsmDudeTools.Instance;
         }
 
-        /*
-        public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan)
-        {
-            //AugmentQuickInfoSession_OK(session, quickInfoContent, out applicableToSpan);
-            AugmentQuickInfoSession_Bug(session, quickInfoContent, out applicableToSpan);
-        }
-
-        public void AugmentQuickInfoSession_Bug(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan)
-        {
-            var snapshot = this._sourceBuffer.CurrentSnapshot;
-            var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(snapshot);
-            applicableToSpan = snapshot.CreateTrackingSpan(new SnapshotSpan(triggerPoint, triggerPoint), SpanTrackingMode.EdgeInclusive);
-            quickInfoContent.Add(new BugWindow());
-        }
-        */
-
         /// <summary>Determine which pieces of Quickinfo content should be displayed</summary>
         public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan)
         {
@@ -197,7 +181,7 @@ namespace AsmDude.QuickInfo
                     case AsmTokenType.MnemonicOff: // intentional fall through
                     case AsmTokenType.Jump:
                         {
-                            (Mnemonic mnemonic, AttType type) = AsmSourceTools.ParseMnemonic_Att(keywordUpper, true);
+                            (Mnemonic mnemonic, _) = AsmSourceTools.ParseMnemonic_Att(keywordUpper, true);
                             InstructionTooltipWindow instructionTooltipWindow = new InstructionTooltipWindow(foreground)
                             {
                                 Session = session // set the owner of this windows such that we can manually close this window

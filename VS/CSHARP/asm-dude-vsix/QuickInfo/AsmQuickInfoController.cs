@@ -52,23 +52,11 @@ namespace AsmDude.QuickInfo
             IBufferTagAggregatorFactoryService aggregatorFactory)
         {
             //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:constructor: file=" + AsmDudeToolsStatic.GetFileName(textView.TextBuffer));
-            this._textView = textView;
-            this._subjectBuffers = subjectBuffers;
-            this._quickInfoBroker = quickInfoBroker;
+            this._textView = textView ?? throw new ArgumentNullException(nameof(textView));
+            this._subjectBuffers = subjectBuffers ?? throw new ArgumentNullException(nameof(subjectBuffers));
+            this._quickInfoBroker = quickInfoBroker ?? throw new ArgumentNullException(nameof(quickInfoBroker));
             this._aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(textView.TextBuffer, aggregatorFactory);
             this._textView.MouseHover += this.OnTextViewMouseHover;
-            /*this._textView.MouseHover += (o, e) => {
-                SnapshotPoint? point = GetMousePosition(new SnapshotPoint(this._textView.TextSnapshot, e.Position));
-                if (point.HasValue)
-                {
-                    ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(point.Value.Position, PointTrackingMode.Positive);
-                    if (!this._quickInfoBroker.IsQuickInfoActive(this._textView))
-                    {
-                        this._quickInfoBroker.TriggerQuickInfo(this._textView, triggerPoint, false);
-                    }
-                }
-            };
-            */
         }
 
         public void ConnectSubjectBuffer(ITextBuffer subjectBuffer)
@@ -184,8 +172,8 @@ namespace AsmDude.QuickInfo
 
         private void Session_Dismissed(object sender, EventArgs e)
         {
-            this._session = null;
             AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Session_Dismissed: event={1}", this.ToString(), e));
+            this._session = null;
         }
 
         /// <summary>

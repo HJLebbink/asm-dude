@@ -215,9 +215,6 @@
     <Compile Include="ClearMefCache\ClearMefCache.cs" />
     <Compile Include="ClearMefCache\ComponentModelExtensions.cs" />
     <Compile Include="QuickInfo\ButtonInfo.cs" />
-    <Compile Include="QuickInfo\BugWindow.xaml.cs">
-      <DependentUpon>BugWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="QuickInfo\InstructionTooltipWindow.xaml.cs">
       <DependentUpon>InstructionTooltipWindow.xaml</DependentUpon>
     </Compile>
@@ -312,10 +309,6 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="OptionsPage\AsmDudeOptionPageUI.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="QuickInfo\BugWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
