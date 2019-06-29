@@ -45,6 +45,7 @@ namespace AsmDude.QuickInfo
 
         public IIntellisenseController TryCreateIntellisenseController(ITextView textView, IList<ITextBuffer> subjectBuffers)
         {
+            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:TryCreateIntellisenseController", this.ToString()));
             //TODO: make two different QuickInfoControllers: one for asm files and one for Disassembly window
             return new AsmQuickInfoController(textView, subjectBuffers, this._quickInfoBroker, this._aggregatorFactory);
         }

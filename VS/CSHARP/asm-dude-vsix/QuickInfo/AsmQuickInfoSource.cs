@@ -42,7 +42,7 @@ namespace AsmDude.QuickInfo
     /// </summary>
     internal sealed class AsmQuickInfoSource : IQuickInfoSource
     {
-        private readonly ITextBuffer _sourceBuffer;
+        private readonly ITextBuffer _textBuffer;
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
         private readonly LabelGraph _labelGraph;
         private readonly AsmSimulator _asmSimulator;
@@ -51,15 +51,15 @@ namespace AsmDude.QuickInfo
         public object CSharpEditorResources { get; private set; }
 
         public AsmQuickInfoSource(
-                ITextBuffer buffer,
+                ITextBuffer textBuffer,
                 IBufferTagAggregatorFactoryService aggregatorFactory,
                 LabelGraph labelGraph,
                 AsmSimulator asmSimulator)
         {
-            this._sourceBuffer = buffer;
-            this._aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, aggregatorFactory);
-            this._labelGraph = labelGraph;
-            this._asmSimulator = asmSimulator;
+            this._textBuffer = textBuffer ?? throw new ArgumentNullException(nameof(textBuffer));
+            this._aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(textBuffer, aggregatorFactory);
+            this._labelGraph = labelGraph ?? throw new ArgumentNullException(nameof(labelGraph));
+            this._asmSimulator = asmSimulator ?? throw new ArgumentNullException(nameof(asmSimulator));
             this._asmDudeTools = AsmDudeTools.Instance;
         }
 
@@ -69,7 +69,7 @@ namespace AsmDude.QuickInfo
             applicableToSpan = null;
             try
             {
-                string contentType = this._sourceBuffer.ContentType.DisplayName;
+                string contentType = this._textBuffer.ContentType.DisplayName;
                 if (contentType.Equals(AsmDudePackage.AsmDudeContentType, StringComparison.Ordinal))
                 {
                     this.Handle(session, quickInfoContent, out applicableToSpan);
@@ -94,7 +94,7 @@ namespace AsmDude.QuickInfo
             applicableToSpan = null;
             DateTime time1 = DateTime.Now;
 
-            ITextSnapshot snapshot = this._sourceBuffer.CurrentSnapshot;
+            ITextSnapshot snapshot = this._textBuffer.CurrentSnapshot;
             SnapshotPoint? triggerPoint = session.GetTriggerPoint(snapshot);
             if (!triggerPoint.HasValue)
             {
@@ -385,7 +385,7 @@ namespace AsmDude.QuickInfo
                     string lineContent;
                     if (this._labelGraph.Is_From_Main_File(id))
                     {
-                        lineContent = " :" + this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
+                        lineContent = " :" + this._textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
                     }
                     else
                     {
@@ -424,7 +424,7 @@ namespace AsmDude.QuickInfo
                     string lineContent;
                     if (this._labelGraph.Is_From_Main_File(id))
                     {
-                        lineContent = " :" + this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
+                        lineContent = " :" + this._textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
                     }
                     else
                     {

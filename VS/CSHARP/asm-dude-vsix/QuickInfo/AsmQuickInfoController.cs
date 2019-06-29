@@ -51,7 +51,7 @@ namespace AsmDude.QuickInfo
             IQuickInfoBroker quickInfoBroker,
             IBufferTagAggregatorFactoryService aggregatorFactory)
         {
-            //AsmDudeToolsStatic.Output_INFO("AsmQuickInfoController:constructor: file=" + AsmDudeToolsStatic.GetFileName(textView.TextBuffer));
+            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:constructor; file={1}", this.ToString(), AsmDudeToolsStatic.GetFilename(textView.TextBuffer)));
             this._textView = textView ?? throw new ArgumentNullException(nameof(textView));
             this._subjectBuffers = subjectBuffers ?? throw new ArgumentNullException(nameof(subjectBuffers));
             this._quickInfoBroker = quickInfoBroker ?? throw new ArgumentNullException(nameof(quickInfoBroker));

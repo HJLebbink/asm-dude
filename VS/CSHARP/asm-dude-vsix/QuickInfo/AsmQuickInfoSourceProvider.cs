@@ -30,9 +30,6 @@ using System.ComponentModel.Composition;
 
 namespace AsmDude.QuickInfo
 {
-    /// <summary>
-    /// Factory for quick info sources
-    /// </summary>
     [Export(typeof(IQuickInfoSourceProvider))]
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]
@@ -48,15 +45,16 @@ namespace AsmDude.QuickInfo
         [Import]
         private readonly IContentTypeRegistryService _contentService = null;
 
-        public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer buffer)
+        public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer textBuffer)
         {
+            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:TryCreateQuickInfoSource", this.ToString()));
             AsmQuickInfoSource sc()
             {
-                LabelGraph labelGraph = AsmDudeToolsStatic.GetOrCreate_Label_Graph(buffer, this._aggregatorFactory, this._docFactory, this._contentService);
-                AsmSimulator asmSimulator = AsmSimulator.GetOrCreate_AsmSimulator(buffer, this._aggregatorFactory);
-                return new AsmQuickInfoSource(buffer, this._aggregatorFactory, labelGraph, asmSimulator);
+                LabelGraph labelGraph = AsmDudeToolsStatic.GetOrCreate_Label_Graph(textBuffer, this._aggregatorFactory, this._docFactory, this._contentService);
+                AsmSimulator asmSimulator = AsmSimulator.GetOrCreate_AsmSimulator(textBuffer, this._aggregatorFactory);
+                return new AsmQuickInfoSource(textBuffer, this._aggregatorFactory, labelGraph, asmSimulator);
             }
-            return buffer.Properties.GetOrCreateSingletonProperty(sc);
+            return textBuffer.Properties.GetOrCreateSingletonProperty(sc);
         }
     }
 }
