@@ -40,7 +40,8 @@ namespace AsmDude.QuickInfo
     /// <summary>
     /// Provides QuickInfo information to be displayed in a text buffer
     /// </summary>
-    internal sealed class AsmQuickInfoSource : IQuickInfoSource
+     //internal sealed class QuickInfoSource : IAsyncQuickInfoSource //XYZZY NEW
+    internal sealed class AsmQuickInfoSource : IQuickInfoSource //XYZZY OLD
     {
         private readonly ITextBuffer _textBuffer;
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
@@ -64,7 +65,7 @@ namespace AsmDude.QuickInfo
         }
 
         /// <summary>Determine which pieces of Quickinfo content should be displayed</summary>
-        public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan)
+        public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan) //XYZZY OLD
         {
             applicableToSpan = null;
             try
@@ -85,7 +86,22 @@ namespace AsmDude.QuickInfo
             }
         }
 
-        public void Dispose() { }
+        public void AugmentQuickInfoSession_BUG(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan) //XYZZY OLD
+        {
+            applicableToSpan = null;
+            var triggerPoint = session.GetTriggerPoint(this._textBuffer.CurrentSnapshot);
+            if (triggerPoint != null)
+            {
+                var line = triggerPoint.Value.GetContainingLine();
+                applicableToSpan = this._textBuffer.CurrentSnapshot.CreateTrackingSpan(line.Extent, SpanTrackingMode.EdgeInclusive);
+                quickInfoContent.Add(new InstructionTooltipWindow(AsmDudeToolsStatic.GetFontColor()));
+            }
+        }
+
+
+        public void Dispose() {
+            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Dispose", this.ToString()));
+        }
 
         #region Private Methods
 

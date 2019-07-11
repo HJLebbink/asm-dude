@@ -30,11 +30,14 @@ using System.ComponentModel.Composition;
 
 namespace AsmDude.QuickInfo
 {
-    [Export(typeof(IQuickInfoSourceProvider))]
+    //[Export(typeof(IAsyncQuickInfoSourceProvider))] //XYZZY NEW
+    [Export(typeof(IQuickInfoSourceProvider))] //XYZZY OLD
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]
     [Name("AsmQuickInfoSourceProvider")]
-    internal sealed class AsmQuickInfoSourceProvider : IQuickInfoSourceProvider
+    [Order]
+    //internal sealed class QuickInfoSourceProvider : IAsyncQuickInfoSourceProvider //XYZZY NEW
+    internal sealed class AsmQuickInfoSourceProvider : IQuickInfoSourceProvider //XYZZY OLD
     {
         [Import]
         private readonly IBufferTagAggregatorFactoryService _aggregatorFactory = null;
@@ -45,7 +48,8 @@ namespace AsmDude.QuickInfo
         [Import]
         private readonly IContentTypeRegistryService _contentService = null;
 
-        public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer textBuffer)
+        //public IAsyncQuickInfoSource TryCreateQuickInfoSource(ITextBuffer textBuffer) //XYZZY NEW
+        public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer textBuffer) //XYZZY OLD
         {
             AsmDudeToolsStatic.Output_INFO(string.Format("{0}:TryCreateQuickInfoSource", this.ToString()));
             AsmQuickInfoSource sc()

@@ -1,7 +1,13 @@
 ﻿<UserControl x:Class="AsmDude.QuickInfo.InstructionTooltipWindow"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Name="MainWindow">
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" x:Name="MainWindow"
+             MinWidth="200"
+             MinHeight="20"
+             Focusable="True">
+<!--    <Expander x:Name="MyExpander" IsExpanded="False" >Bla</Expander>-->
     <StackPanel>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -15,7 +21,7 @@
             </Button>
         </Grid>
         <Border x:Name="AsmSimGridBorder" BorderBrush="LightGray" CornerRadius="2" BorderThickness="1" Margin="0,6,0,0" Visibility="Collapsed">
-            <Expander x:Name="AsmSimGridExpander" Visibility="Collapsed" IsExpanded="False">
+            <Expander x:Name="AsmSimGridExpander" Visibility="Collapsed" GotMouseCapture="AsmSimExpander_Click" IsExpanded="False">
                 <Expander.Header>
                     <DockPanel LastChildFill="False">
                         <Label DockPanel.Dock="Left">
