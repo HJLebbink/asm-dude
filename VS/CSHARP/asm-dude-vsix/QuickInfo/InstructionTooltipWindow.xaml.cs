@@ -48,8 +48,8 @@ namespace AsmDude.QuickInfo
             this._foreground = foreground;
             this.InitializeComponent();
 
-            //this.AsmSimGridExpander.Collapsed += (o, i) => { this.AsmSimGridExpanderNumeration.Visibility = Visibility.Collapsed; };
-            //this.AsmSimGridExpander.Expanded += (o, i) => { this.AsmSimGridExpanderNumeration.Visibility = Visibility.Visible; };
+            this.AsmSimGridExpander.Collapsed += (o, i) => { this.AsmSimGridExpanderNumeration.Visibility = Visibility.Collapsed; };
+            this.AsmSimGridExpander.Expanded += (o, i) => { this.AsmSimGridExpanderNumeration.Visibility = Visibility.Visible; };
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
@@ -59,7 +59,12 @@ namespace AsmDude.QuickInfo
             this.Session?.Dismiss();
             AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:CloseButton_Click: owner and session are null");
         }
-        
+
+        private void StackPanel_Click(object sender, RoutedEventArgs e)
+        {
+            AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:StackPanel_Click");
+        }
+
         private void AsmSimExpander_Click(object sender, RoutedEventArgs e)
         {
             AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:AsmSimExpander_Click");
@@ -69,6 +74,28 @@ namespace AsmDude.QuickInfo
         {
             AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:PerformanceExpander_Click");
         }
+
+        private void PerformanceBorder_Click(object sender, RoutedEventArgs e)
+        {
+            AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:PerformanceBorder_Click");
+        }
+
+        private void ScrollViewer_Click(object sender, RoutedEventArgs e)
+        {
+            AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:ScrollViewer_Click");
+        }
+
+        private void TextBlock_Click(object sender, RoutedEventArgs e)
+        {
+            AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:TextBlock_Click");
+        }
+
+        private void PerformanceExpander_MouseLeftDown(object sender, RoutedEventArgs e)
+        {
+            AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:PerformanceExpander_MouseLeftDown");
+        }
+
+        
 
         public void SetDescription(Mnemonic mnemonic, AsmDudeTools asmDudeTools)
         {
