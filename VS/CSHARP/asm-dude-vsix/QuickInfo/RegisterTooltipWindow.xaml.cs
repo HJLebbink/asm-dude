@@ -22,6 +22,7 @@
 
 using AsmDude.Tools;
 using AsmTools;
+using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Shell;
 using System;
 using System.Windows;
@@ -31,7 +32,7 @@ using System.Windows.Media;
 
 namespace AsmDude.QuickInfo
 {
-    public partial class RegisterTooltipWindow : UserControl
+    public partial class RegisterTooltipWindow : IInteractiveQuickInfoContent
     {
         private readonly Brush _foreground;
 
@@ -113,6 +114,11 @@ namespace AsmDude.QuickInfo
                 }
             };
         }
+
+        public bool KeepQuickInfoOpen => this.IsMouseOverAggregated || this.IsKeyboardFocusWithin || this.IsKeyboardFocused || this.IsFocused;
+
+        public bool IsMouseOverAggregated => this.IsMouseOver || this.IsMouseDirectlyOver;
+
 
         private void Generate(bool isBefore, Rn reg)
         {

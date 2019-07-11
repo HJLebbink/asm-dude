@@ -37,9 +37,10 @@ namespace AsmDude.QuickInfo
     internal sealed class AsmQuickInfoController : IIntellisenseController
     {
         private readonly IList<ITextBuffer> _subjectBuffers;
-        private readonly IQuickInfoBroker _quickInfoBroker;
+        private readonly IQuickInfoBroker _quickInfoBroker; //XYZZY OLD
+        //private readonly IAsyncQuickInfoBroker _quickInfoBroker; //XYZZY NEW
         private readonly ITagAggregator<AsmTokenTag> _aggregator;
-        private IQuickInfoSession _session;
+        //private IQuickInfoSession _session;
         private ITextView _textView;
 
         private Window _legacyTooltipWindow;
@@ -79,10 +80,11 @@ namespace AsmDude.QuickInfo
             }
         }
 
+        /*
         /// <summary>
         /// Determine if the mouse is hovering over a token. If so, display QuickInfo
         /// </summary>
-        private void OnTextViewMouseHover(object sender, MouseHoverEventArgs e)
+        private void OnTextViewMouseHover_OLD(object sender, MouseHoverEventArgs e)
         {
             try
             {
@@ -169,12 +171,85 @@ namespace AsmDude.QuickInfo
                 AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:OnTextViewMouseHover: exception={1}", this.ToString(), e2.Message));
             }
         }
+        */
 
-        private void Session_Dismissed(object sender, EventArgs e)
+        private void OnTextViewMouseHover(object sender, MouseHoverEventArgs e)
         {
-            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Session_Dismissed: event={1}", this.ToString(), e));
-            this._session = null;
+            try
+            {
+                string contentType = this._textView.TextBuffer.ContentType.DisplayName;
+                if (contentType.Equals(AsmDudePackage.AsmDudeContentType, StringComparison.Ordinal))
+                {
+                    AsmDudeToolsStatic.Output_INFO(string.Format("{0}:OnTextViewMouseHover: Quickinfo for regular view. file={1}", this.ToString(), AsmDudeToolsStatic.GetFilename(this._textView.TextBuffer)));
+                    SnapshotPoint? point = this.GetMousePosition(new SnapshotPoint(this._textView.TextSnapshot, e.Position));
+                    if (point.HasValue)
+                    {
+                        //int pos = point.Value.Position;
+                        int pos = this.Get_Keyword_Span_At_Point(point.Value).Start;
+
+                        ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(pos, PointTrackingMode.Positive);
+
+                        if (this._quickInfoBroker.IsQuickInfoActive(this._textView))
+                        {
+                            //IAsyncQuickInfoSession current_Session = this._quickInfoBroker.GetSession(this._textView); //XYZZY NEW
+                            IQuickInfoSession current_Session = this._quickInfoBroker.GetSessions(this._textView)[0]; //XYZZY OLD
+
+                            var span = current_Session.ApplicableToSpan;
+                            if ((span != null) && span.GetSpan(this._textView.TextSnapshot).IntersectsWith(new Span(pos, 0)))
+                            {
+                                AsmDudeToolsStatic.Output_INFO(string.Format("{0}::OnTextViewMouseHover: A: quickInfoBroker is already active: intersects!", this.ToString()));
+                            }
+                            else
+                            {
+                                AsmDudeToolsStatic.Output_INFO("QuickInfoController:OnTextViewMouseHover: B: quickInfoBroker is already active, but we need a new session at " + pos);
+                                //_ = current_Session.DismissAsync(); //XYZZY NEW
+                                //_ = this._quickInfoBroker.TriggerQuickInfoAsync(this._textView, triggerPoint, QuickInfoSessionOptions.None); //BUG here QuickInfoSessionOptions.None behaves as TrackMouse  //XYZZY NEW
+                                current_Session.Dismiss(); //XYZZY OLD
+                                this._quickInfoBroker.TriggerQuickInfo(this._textView, triggerPoint, false);  //XYZZY OLD
+                            }
+                        }
+                        else
+                        {
+                            AsmDudeToolsStatic.Output_INFO(string.Format("{0}::OnTextViewMouseHover: C: quickInfoBroker was not active, create a new session for triggerPoint {1}", this.ToString(), pos));
+                            //_ = this._quickInfoBroker.TriggerQuickInfoAsync(this._textView, triggerPoint, QuickInfoSessionOptions.None); //XYZZY NEW
+                            this._quickInfoBroker.TriggerQuickInfo(this._textView, triggerPoint, false);  //XYZZY OLD
+                        }
+                    }
+                    else
+                    {
+                        AsmDudeToolsStatic.Output_INFO(string.Format("{0}:OnTextViewMouseHover: point has not value", this.ToString()));
+                    }
+                }
+                else if (contentType.Equals(AsmDudePackage.DisassemblyContentType, StringComparison.Ordinal))
+                {
+                    AsmDudeToolsStatic.Output_INFO(string.Format("{0}:OnTextViewMouseHover: Quickinfo for disassembly view. file={1}", this.ToString(), AsmDudeToolsStatic.GetFilename(this._textView.TextBuffer)));
+                    SnapshotPoint? triggerPoint = this.GetMousePosition(new SnapshotPoint(this._textView.TextSnapshot, e.Position));
+                    if (!triggerPoint.HasValue)
+                    {
+                        AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:OnTextViewMouseHover: trigger point is null", this.ToString()));
+                    }
+                    else
+                    {
+                        System.Drawing.Point p = System.Windows.Forms.Control.MousePosition;
+                        this.ToolTipLegacy(triggerPoint.Value, new Point(p.X, p.Y));
+                    }
+                }
+                else
+                {
+                    AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:OnTextViewMouseHover: does not have have AsmDudeContentType: but has type {1}", this.ToString(), contentType));
+                }
+            }
+            catch (Exception e2)
+            {
+                AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:OnTextViewMouseHover: exception={1}", this.ToString(), e2.Message));
+            }
         }
+
+        //private void Session_Dismissed(object sender, EventArgs e)
+        //{
+        //    AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Session_Dismissed: event={1}", this.ToString(), e));
+        //    this._session = null;
+        //}
 
         /// <summary>
         /// Get mouse location on screen. Used to determine what word the cursor is currently hovering over.
@@ -214,8 +289,8 @@ namespace AsmDude.QuickInfo
         public void CloseToolTip()
         {
             this._legacyTooltipWindow?.Close();
-            this._session?.Dismiss();
-            this._session = null;
+            //this._session?.Dismiss();
+            //this._session = null;
         }
 
         private void ToolTipLegacy(SnapshotPoint triggerPoint, Point p)

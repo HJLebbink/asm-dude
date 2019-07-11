@@ -33,7 +33,7 @@ using System.Windows.Media;
 
 namespace AsmDude.QuickInfo
 {
-    public partial class InstructionTooltipWindow : UserControl
+    public partial class InstructionTooltipWindow : IInteractiveQuickInfoContent
     {
         private readonly Brush _foreground;
         private IList<TextBox> _itemsOnPage;
@@ -47,50 +47,27 @@ namespace AsmDude.QuickInfo
         {
             this._foreground = foreground;
             this.InitializeComponent();
-            /*
-            this.MainWindow.MouseLeftButtonDown += (o, i) => {
-                AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:MouseLeftButtonDown Event");
-                i.Handled = true; // dont let the mouse event from inside this window bubble up to VS
-            };
 
-            this.MainWindow.PreviewMouseLeftButtonDown += (o, i) =>
-            {
-                //i.Handled = true; // if true then no event is able to bubble to the gui
-                AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:PreviewMouseLeftButtonDown Event");
-            };
-            */
-            this.AsmSimGridExpander.Collapsed += (o, i) => { this.AsmSimGridExpanderNumeration.Visibility = Visibility.Collapsed; };
-            this.AsmSimGridExpander.Expanded += (o, i) => { this.AsmSimGridExpanderNumeration.Visibility = Visibility.Visible; };
+            //this.AsmSimGridExpander.Collapsed += (o, i) => { this.AsmSimGridExpanderNumeration.Visibility = Visibility.Collapsed; };
+            //this.AsmSimGridExpander.Expanded += (o, i) => { this.AsmSimGridExpanderNumeration.Visibility = Visibility.Visible; };
         }
-
-        /*
-        private void GotMouseCapture_Click(object sender, RoutedEventArgs e)
-        {
-            AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:PerformanceExpander_Click");
-            e.Handled = true;
-        }
-        */
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:CloseButton_Click");
-            if (this.Owner != null)
-            {
-                this.Owner.CloseToolTip();
-            }
-
-            if (this.Session != null)
-            {
-                this.Session.Dismiss();
-            }
-
+            this.Owner?.CloseToolTip();
+            this.Session?.Dismiss();
             AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:CloseButton_Click: owner and session are null");
+        }
+        
+        private void AsmSimExpander_Click(object sender, RoutedEventArgs e)
+        {
+            AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:AsmSimExpander_Click");
         }
 
         private void PerformanceExpander_Click(object sender, RoutedEventArgs e)
         {
             AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:PerformanceExpander_Click");
-            e.Handled = true;
         }
 
         public void SetDescription(Mnemonic mnemonic, AsmDudeTools asmDudeTools)
@@ -256,6 +233,26 @@ namespace AsmDude.QuickInfo
                     }
                 }
             };
+        }
+
+
+        public bool KeepQuickInfoOpen
+        {
+            get
+            {
+                AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:KeepQuickInfoOpen");
+                return true;
+                //this.IsMouseOverAggregated || this.IsKeyboardFocusWithin || this.IsKeyboardFocused || this.IsFocused;
+            }
+        }
+
+        bool IInteractiveQuickInfoContent.IsMouseOverAggregated
+        {
+            get
+            {
+                AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:IsMouseOverAggregated");
+                return this.IsMouseOver || this.IsMouseDirectlyOver;
+            }
         }
 
         private void GenerateHeader()

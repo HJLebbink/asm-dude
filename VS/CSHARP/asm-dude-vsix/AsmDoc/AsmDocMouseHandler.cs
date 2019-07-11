@@ -80,8 +80,15 @@ namespace AsmDude.AsmDoc
             };
 
             // Some other points to clear the highlight span:
-            this._view.LostAggregateFocus += (sender, args) => this.Set_Highlight_Span(null);
-            this._view.VisualElement.MouseLeave += (sender, args) => this.Set_Highlight_Span(null);
+            this._view.LostAggregateFocus += (sender, args) => {
+                AsmDudeToolsStatic.Output_INFO(string.Format("{0}:event: LostAggregateFocus", this.ToString()));
+                this.Set_Highlight_Span(null);
+            };
+            this._view.VisualElement.MouseLeave += (sender, args) =>
+            {
+                AsmDudeToolsStatic.Output_INFO(string.Format("{0}:event: MouseLeave", this.ToString()));
+                this.Set_Highlight_Span(null);
+            };
         }
 
         #region Mouse processor overrides
@@ -125,6 +132,7 @@ namespace AsmDude.AsmDoc
 
         public override void PreprocessMouseLeave(MouseEventArgs e)
         {
+            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:event: PreprocessMouseLeave; position={1}", this.ToString(), e));
             this._mouseDownAnchorPoint = null;
         }
 
@@ -175,7 +183,7 @@ namespace AsmDude.AsmDoc
 
         private bool TryHighlightItemUnderMouse(Point position)
         {
-            //AsmDudeToolsStatic.Output_INFO("AsmDocMouseHandler:TryHighlightItemUnderMouse: position=" + position);
+            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:event: TryHighlightItemUnderMouse; position={1}", this.ToString(), position));
             if (!Settings.Default.AsmDoc_On)
             {
                 return false;
