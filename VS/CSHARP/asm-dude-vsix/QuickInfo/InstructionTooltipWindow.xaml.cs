@@ -267,17 +267,16 @@ namespace AsmDude.QuickInfo
         {
             get
             {
-                AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:KeepQuickInfoOpen");
-                return true;
-                //this.IsMouseOverAggregated || this.IsKeyboardFocusWithin || this.IsKeyboardFocused || this.IsFocused;
+                //AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:KeepQuickInfoOpen");
+                return this.IsMouseOverAggregated || this.IsKeyboardFocusWithin || this.IsKeyboardFocused || this.IsFocused;
             }
         }
 
-        bool IInteractiveQuickInfoContent.IsMouseOverAggregated
+        public bool IsMouseOverAggregated
         {
             get
             {
-                AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:IsMouseOverAggregated");
+                //AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:IsMouseOverAggregated");
                 return this.IsMouseOver || this.IsMouseDirectlyOver;
             }
         }
