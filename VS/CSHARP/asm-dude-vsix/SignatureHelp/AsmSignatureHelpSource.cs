@@ -39,7 +39,7 @@ namespace AsmDude.SignatureHelp
         public AsmSignatureHelpSource(ITextBuffer buffer)
         {
             //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource:constructor");
-            this._buffer = buffer;
+            this._buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
             this._store = AsmDudeTools.Instance.Mnemonic_Store;
         }
 

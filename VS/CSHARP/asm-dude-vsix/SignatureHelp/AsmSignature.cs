@@ -40,7 +40,7 @@ namespace AsmDude.SignatureHelp
 
         internal AsmSignature(ITextBuffer subjectBuffer, string content, string doc, ReadOnlyCollection<IParameter> parameters)
         {
-            this._subjectBuffer = subjectBuffer;
+            this._subjectBuffer = subjectBuffer ?? throw new ArgumentNullException(nameof(subjectBuffer));
             this._content = content;
             this._documentation = doc;
             this._parameters = parameters;

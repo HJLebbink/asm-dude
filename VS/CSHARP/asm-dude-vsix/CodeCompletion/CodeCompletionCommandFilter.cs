@@ -39,8 +39,8 @@ namespace AsmDude
         public CodeCompletionCommandFilter(IWpfTextView textView, ICompletionBroker broker)
         {
             this._currentSession = null;
-            this.TextView = textView;
-            this.Broker = broker;
+            this.TextView = textView ?? throw new ArgumentNullException(nameof(textView));
+            this.Broker = broker ?? throw new ArgumentNullException(nameof(broker));
             //Debug.WriteLine(string.Format("INFO: {0}:constructor", this.ToString()));
         }
 

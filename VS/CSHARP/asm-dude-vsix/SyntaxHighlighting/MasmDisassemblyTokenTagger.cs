@@ -54,7 +54,7 @@ namespace AsmDude
         {
             AsmDudeToolsStatic.Output_INFO("MasmDisassemblyTokenTagger:constructor");
 
-            this._buffer = buffer;
+            this._buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
             this._asmDudeTools = AsmDudeTools.Instance;
 
             this._mnemonic = new AsmTokenTag(AsmTokenType.Mnemonic);

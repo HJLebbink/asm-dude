@@ -43,8 +43,8 @@ namespace AsmDude.SignatureHelp
 
         internal AsmSignatureHelpCommandFilter(IVsTextView textViewAdapter, ITextView textView, ISignatureHelpBroker broker)
         {
-            this._textView = textView;
-            this._broker = broker;
+            this._textView = textView ?? throw new ArgumentNullException(nameof(textView));
+            this._broker = broker ?? throw new ArgumentNullException(nameof(broker));
 
             //add this to the filter chain
             textViewAdapter.AddCommandFilter(this, out this._nextCommandHandler);

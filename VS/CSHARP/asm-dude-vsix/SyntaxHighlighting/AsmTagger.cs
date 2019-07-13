@@ -57,8 +57,8 @@ namespace AsmDude
                 ITagAggregator<AsmTokenTag> asmTagAggregator,
                 IClassificationTypeRegistryService typeService)
         {
-            this._buffer = buffer;
-            this._aggregator = asmTagAggregator;
+            this._buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
+            this._aggregator = asmTagAggregator ?? throw new ArgumentNullException(nameof(asmTagAggregator));
 
             this._mnemonic = new ClassificationTag(typeService.GetClassificationType(AsmClassificationDefinition.ClassificationTypeNames.Mnemonic));
             this._mnemonicOff = new ClassificationTag(typeService.GetClassificationType(AsmClassificationDefinition.ClassificationTypeNames.MnemonicOff));

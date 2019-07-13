@@ -59,10 +59,10 @@ namespace AsmDude.AsmDoc
             AsmDudeTools asmDudeTools)
         {
             AsmDudeToolsStatic.Output_INFO(string.Format("{0}:constructor: file={1}", this.ToString(), AsmDudeToolsStatic.GetFilename(view.TextBuffer)));
-            this._view = view;
-            this._state = state;
+            this._view = view ?? throw new ArgumentNullException(nameof(view));
+            this._state = state ?? throw new ArgumentNullException(nameof(state));
             this._aggregator2 = AsmDudeToolsStatic.GetOrCreate_Aggregator(view.TextBuffer, aggregatorFactory);
-            this._asmDudeTools = asmDudeTools;
+            this._asmDudeTools = asmDudeTools ?? throw new ArgumentNullException(nameof(asmDudeTools));
 
             this._state.CtrlKeyStateChanged += (sender, args) =>
             {

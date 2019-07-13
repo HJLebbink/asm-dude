@@ -37,8 +37,8 @@ namespace AsmDude.AsmDoc
 
         internal AsmDocUnderlineTagger(ITextView textView, IClassificationType classificationType)
         {
-            this._textView = textView;
-            this._classificationType = classificationType;
+            this._textView = textView ?? throw new ArgumentNullException(nameof(textView));
+            this._classificationType = classificationType ?? throw new ArgumentNullException(nameof(classificationType));
             this._underlineSpan = null;
         }
 

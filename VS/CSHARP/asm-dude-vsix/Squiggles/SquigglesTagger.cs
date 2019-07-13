@@ -58,12 +58,12 @@ namespace AsmDude.Squiggles
             AsmSimulator asmSimulator)
         {
             //AsmDudeToolsStatic.Output_INFO("SquigglesTagger: constructor");
-            this._sourceBuffer = buffer;
+            this._sourceBuffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
             this._aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, aggregatorFactory);
             this._errorListProvider = AsmDudeTools.Instance.Error_List_Provider;
             this._foreground = AsmDudeToolsStatic.GetFontColor();
 
-            this._labelGraph = labelGraph;
+            this._labelGraph = labelGraph ?? throw new ArgumentNullException(nameof(labelGraph));
             if (this._labelGraph.Enabled)
             {
                 this._labelGraph.Reset_Done_Event += (o, i) =>
@@ -74,7 +74,7 @@ namespace AsmDude.Squiggles
                 this._labelGraph.Reset();
             }
 
-            this._asmSimulator = asmSimulator;
+            this._asmSimulator = asmSimulator ?? throw new ArgumentNullException(nameof(asmSimulator));
             if (this._asmSimulator.Enabled)
             {
                 this._asmSimulator.Line_Updated_Event += (o, e) =>

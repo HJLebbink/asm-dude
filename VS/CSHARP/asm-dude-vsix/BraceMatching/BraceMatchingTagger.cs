@@ -43,8 +43,8 @@ namespace AsmDude.BraceMatching
 
         internal BraceMatchingTagger(ITextView view, ITextBuffer sourceBuffer)
         {
-            this._view = view;
-            this._sourceBuffer = sourceBuffer;
+            this._view = view ?? throw new ArgumentNullException(nameof(view));
+            this._sourceBuffer = sourceBuffer ?? throw new ArgumentNullException(nameof(sourceBuffer));
             this._currentChar = null;
 
             //here the keys are the open braces, and the values are the close braces

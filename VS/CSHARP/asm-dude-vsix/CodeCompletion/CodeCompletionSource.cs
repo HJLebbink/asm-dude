@@ -53,11 +53,11 @@ namespace AsmDude
 
         public CodeCompletionSource(ITextBuffer buffer, LabelGraph labelGraph, AsmSimulator asmSimulator)
         {
-            this._buffer = buffer;
-            this._labelGraph = labelGraph;
+            this._buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
+            this._labelGraph = labelGraph ?? throw new ArgumentNullException(nameof(labelGraph));
             this._icons = new Dictionary<AsmTokenType, ImageSource>();
             this._asmDudeTools = AsmDudeTools.Instance;
-            this._asmSimulator = asmSimulator;
+            this._asmSimulator = asmSimulator ?? throw new ArgumentNullException(nameof(asmSimulator));
             this.Load_Icons();
         }
 

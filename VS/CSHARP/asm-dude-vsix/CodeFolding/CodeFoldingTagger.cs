@@ -75,9 +75,9 @@ namespace AsmDude.CodeFolding
             ErrorListProvider errorListProvider)
         {
             //AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger: constructor");
-            this._buffer = buffer;
-            this._aggregator = aggregator;
-            this._errorListProvider = errorListProvider;
+            this._buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
+            this._aggregator = aggregator ?? throw new ArgumentNullException(nameof(aggregator));
+            this._errorListProvider = errorListProvider ?? throw new ArgumentNullException(nameof(errorListProvider));
 
             this._snapshot = buffer.CurrentSnapshot;
             this._regions = new List<Region>();
