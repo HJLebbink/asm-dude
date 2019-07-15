@@ -395,8 +395,15 @@ namespace AsmTools
                 case Arch.ARCH_AVX512_VPOPCNTDQ: return "AVX512-VPOPCNTDQ - Vector Population Count instructions for Dwords and Qwords";
                 case Arch.ARCH_AVX512_4VNNIW: return "AVX512-4VNNIW - Vector Neural Network Instructions Word variable precision";
                 case Arch.ARCH_AVX512_4FMAPS: return "AVX512-4FMAPS - Fused Multiply Accumulation Packed Single precision";
-                case Arch.ARCH_AVX512_BF16: return "AVX512-BF16 - BFLOAT16 floating-point format";
+                case Arch.ARCH_AVX512_VBMI2: return "AVX512-VBMI2 - Vector Byte Manipulation Instructions 2";
+                case Arch.ARCH_AVX512_VNNI: return "AVX512-VNNI - Vector Neural Network Instructions";
+                case Arch.ARCH_AVX512_BITALG: return "AVX512-BITALG - Bit Algorithms";
+                case Arch.ARCH_AVX512_GFNI: return " AVX512-GFNI - Galois Field New Instructions";
+                case Arch.ARCH_AVX512_VAES: return "AVX512-VPCLMULQDQ - EVEX-encoded Advanced Encryption Standard";
+                case Arch.ARCH_AVX512_VPCLMULQDQ: return "AVX512-VPCLMULQDQ";
+                case Arch.ARCH_AVX512_BF16: return "AVX512-BF16 - Brain Float 16 extension (Bfloat16)";
                 case Arch.ARCH_AVX512_VP2INTERSECT: return "AVX512-VP2INTERSECT - ";
+
 
                 case Arch.ARCH_ADX: return "Multi-Precision Add-Carry Instruction Extension";
                 case Arch.ARCH_AES: return "Advanced Encryption Standard Extension";
