@@ -696,7 +696,7 @@ namespace AsmDude.OptionsPage
             get { return this.ARCH_ENQCMD_UI.IsChecked ?? false; }
             set { this.ARCH_ENQCMD_UI.IsChecked = value; }
         }
-        
+
         public bool ARCH_X64
         {
             get { return this.ARCH_X64_UI.IsChecked ?? false; }

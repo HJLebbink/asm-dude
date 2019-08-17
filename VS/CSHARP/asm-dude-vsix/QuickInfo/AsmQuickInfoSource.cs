@@ -99,7 +99,8 @@ namespace AsmDude.QuickInfo
         }
 
 
-        public void Dispose() {
+        public void Dispose()
+        {
             AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Dispose", this.ToString()));
         }
 

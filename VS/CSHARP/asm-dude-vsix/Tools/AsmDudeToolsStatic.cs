@@ -181,7 +181,7 @@ namespace AsmDude.Tools
             }
             bool contains_constant_intel(List<string> line)
             {
-                 return false;
+                return false;
             }
             bool contains_mnemonic_att(List<string> line)
             {
@@ -203,7 +203,7 @@ namespace AsmDude.Tools
             }
 
             //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Guess_Intel_Syntax. file=\"{1}\"", "AsmDudeToolsStatic", AsmDudeToolsStatic.GetFilename(buffer)));
-            ITextSnapshot snapshot = buffer.CurrentSnapshot;            
+            ITextSnapshot snapshot = buffer.CurrentSnapshot;
             int registers_i = 0;
             int constants_i = 0;
             int mnemonics_i = 0;
@@ -222,9 +222,9 @@ namespace AsmDude.Tools
                 if (contains_mnemonic_att(keywords)) mnemonics_i++;
                 if (contains_mnemonic_intel(keywords)) mnemonics_i--;
             }
-            int total = 
-                Math.Max(Math.Min(1, registers_i), -1) + 
-                Math.Max(Math.Min(1, constants_i), -1) + 
+            int total =
+                Math.Max(Math.Min(1, registers_i), -1) +
+                Math.Max(Math.Min(1, constants_i), -1) +
                 Math.Max(Math.Min(1, mnemonics_i), -1);
 
             bool result = (total <= 0);
@@ -310,7 +310,7 @@ namespace AsmDude.Tools
                 }
             }
         }
-        
+
         public static string GetFilename(ITextBuffer buffer, int timeout_ms = 200)
         {
             return ThreadHelper.JoinableTaskFactory.Run(async delegate

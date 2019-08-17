@@ -28,10 +28,8 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
-using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
 using System;
 using System.Threading.Tasks;
@@ -80,7 +78,8 @@ namespace AsmDude.AsmDoc
             };
 
             // Some other points to clear the highlight span:
-            this._view.LostAggregateFocus += (sender, args) => {
+            this._view.LostAggregateFocus += (sender, args) =>
+            {
                 AsmDudeToolsStatic.Output_INFO(string.Format("{0}:event: LostAggregateFocus", this.ToString()));
                 this.Set_Highlight_Span(null);
             };

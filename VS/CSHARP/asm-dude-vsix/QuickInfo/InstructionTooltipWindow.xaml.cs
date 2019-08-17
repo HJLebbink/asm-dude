@@ -59,7 +59,7 @@ namespace AsmDude.QuickInfo
             this.Session?.Dismiss();
             AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:CloseButton_Click: owner and session are null");
         }
-        
+
         private void StackPanel_Click(object sender, RoutedEventArgs e)
         {
             AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:StackPanel_Click");
@@ -95,7 +95,7 @@ namespace AsmDude.QuickInfo
             AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:PerformanceExpander_MouseLeftDown");
         }
 
-        
+
 
         public void SetDescription(Mnemonic mnemonic, AsmDudeTools asmDudeTools)
         {

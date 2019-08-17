@@ -181,7 +181,7 @@ namespace AsmDude
                                             else if (this.IsProperLabel(asmToken2, containingLine.LineNumber, out AsmTokenTag asmTokenTag))
                                             {
                                                 yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), asmTokenTag);
-                                            }                                            
+                                            }
                                             break;
                                         }
                                 }
@@ -199,7 +199,7 @@ namespace AsmDude
                                 }
                                 else if (asmToken.StartsWith("$"))
                                 {
-                                    yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset+1, curSpan), this._constant);
+                                    yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset + 1, curSpan), this._constant);
                                 }
                                 else
                                 {
