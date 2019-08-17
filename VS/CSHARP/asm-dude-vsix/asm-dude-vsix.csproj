@@ -222,6 +222,9 @@
     <Compile Include="QuickInfo\RegisterTooltipWindow.xaml.cs">
       <DependentUpon>RegisterTooltipWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="QuickInfo\TextBoxWindow.xaml.cs">
+      <DependentUpon>TextBoxWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Settings.cs" />
     <Compile Include="SyntaxHighlighting\AsmContentTypeProvider.cs" />
     <Compile Include="SyntaxHighlighting\AsmDisassemblyTaggerProvider.cs" />
@@ -321,6 +324,10 @@
     <Page Include="QuickInfo\RegisterTooltipWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="QuickInfo\TextBoxWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

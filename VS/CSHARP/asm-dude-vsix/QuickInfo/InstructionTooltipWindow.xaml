@@ -68,7 +68,7 @@
         <Border x:Name="PerformanceBorder" GotMouseCapture="PerformanceBorder_Click" BorderBrush="LightGray" CornerRadius="2" BorderThickness="1" Margin="0,2,0,0" Visibility="Collapsed" MaxHeight="200">
             <Expander x:Name="PerformanceExpander" Header="Performance" MouseLeftButtonDown="PerformanceExpander_MouseLeftDown" GotMouseCapture="PerformanceExpander_Click" IsExpanded="False">
                 <ScrollViewer GotMouseCapture="ScrollViewer_Click">
-                    <TextBlock x:Name="Performance" TextWrapping="Wrap" GotMouseCapture="TextBlock_Click"/>
+                    <TextBlock x:Name="Performance" SnapsToDevicePixels="True" TextWrapping="Wrap" GotMouseCapture="TextBlock_Click"/>
                 </ScrollViewer>
             </Expander>
         </Border>

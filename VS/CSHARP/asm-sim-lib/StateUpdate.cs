@@ -41,7 +41,7 @@ namespace AsmSim
 
         public bool Empty { get; private set; }
 
-        /// <summary>Gets True if this stateUpdate is an update in which the state is reset.</summary>
+        /// <summary>Gets or sets a value indicating whether gets if this stateUpdate is an update in which the state is reset.</summary>
         public bool Reset { get; set; }
 
         private BranchInfo _branchInfo;

@@ -25,6 +25,7 @@ namespace AsmDude.QuickInfo
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Reflection;
     using System.Text;
     using System.Windows;
     using System.Windows.Controls;
@@ -33,6 +34,7 @@ namespace AsmDude.QuickInfo
     using AsmDude.SyntaxHighlighting;
     using AsmDude.Tools;
     using AsmTools;
+    using EnvDTE;
     using Microsoft.VisualStudio.Language.Intellisense;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Tagging;
@@ -275,15 +277,28 @@ namespace AsmDude.QuickInfo
                         }
                     case AsmTokenType.Constant:
                         {
-                            description = new TextBlock();
-                            description.Inlines.Add(Make_Run1("Constant ", foreground));
-
                             (bool valid, ulong value, int nBits) = AsmSourceTools.Evaluate_Constant(keyword);
                             string constantStr = valid
                                 ? value + "d = " + value.ToString("X") + "h = " + AsmSourceTools.ToStringBin(value, nBits) + "b"
                                 : keyword;
 
-                            description.Inlines.Add(Make_Run2(constantStr, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Constant))));
+
+                            if (true)
+                            {
+                                TextBoxWindow myWindow = new TextBoxWindow();
+                                myWindow.MouseRightButtonUp += this.MyWindow_MouseRightButtonUp;
+                                myWindow.MyContent.Text = "Constant X: " + constantStr;
+                                myWindow.MyContent.Foreground = foreground;
+                                myWindow.MyContent.MouseRightButtonUp += this.MyContent_MouseRightButtonUp;
+                                quickInfoContent.Add(myWindow);
+                            }
+                            else
+                            {
+                                description = new SelectableTextBlock();
+                                description.Inlines.Add(Make_Run1("Constant ", foreground));
+
+                                description.Inlines.Add(Make_Run2(constantStr, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Constant))));
+                            }
                             break;
                         }
                     case AsmTokenType.UserDefined1:
@@ -356,6 +371,7 @@ namespace AsmDude.QuickInfo
                 }
                 if (description != null)
                 {
+                    description.Focusable = true;
                     description.FontSize = AsmDudeToolsStatic.GetFontSize() + 2;
                     description.FontFamily = AsmDudeToolsStatic.GetFontType();
                     //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:AugmentQuickInfoSession; setting description fontSize={1}; fontFamily={2}", this.ToString(), description.FontSize, description.FontFamily));
@@ -366,10 +382,23 @@ namespace AsmDude.QuickInfo
             AsmDudeToolsStatic.Print_Speed_Warning(time1, "QuickInfo");
         }
 
+        private void MyWindow_MouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            //throw new NotImplementedException();
+            //e.Handled = true;
+        }
+
+        private void MyContent_MouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            // throw new NotImplementedException();
+            //e.Handled = true;
+        }
+
         private static Run Make_Run1(string str, Brush foreground)
         {
             return new Run(str)
             {
+                Focusable = true,
                 FontWeight = FontWeights.Bold,
                 Foreground = foreground,
             };
@@ -379,6 +408,7 @@ namespace AsmDude.QuickInfo
         {
             return new Run(str)
             {
+                Focusable = true,
                 FontWeight = FontWeights.Bold,
                 Foreground = foreground,
             };
@@ -459,5 +489,64 @@ namespace AsmDude.QuickInfo
         }
 
         #endregion Private Methods
+    }
+
+
+    internal class TextEditorWrapper
+    {
+        private static readonly Type TextEditorType = Type.GetType("System.Windows.Documents.TextEditor, PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35");
+        private static readonly PropertyInfo IsReadOnlyProp = TextEditorType.GetProperty("IsReadOnly", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly PropertyInfo TextViewProp = TextEditorType.GetProperty("TextView", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly MethodInfo RegisterMethod = TextEditorType.GetMethod(
+            "RegisterCommandHandlers",
+            BindingFlags.Static | BindingFlags.NonPublic, null, new[] { typeof(Type), typeof(bool), typeof(bool), typeof(bool) }, null);
+
+        private static readonly Type TextContainerType = Type.GetType("System.Windows.Documents.ITextContainer, PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35");
+        private static readonly PropertyInfo TextContainerTextViewProp = TextContainerType.GetProperty("TextView");
+
+        private static readonly PropertyInfo TextContainerProp = typeof(TextBlock).GetProperty("TextContainer", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        public static void RegisterCommandHandlers(Type controlType, bool acceptsRichContent, bool readOnly, bool registerEventListeners)
+        {
+            RegisterMethod.Invoke(null, new object[] { controlType, acceptsRichContent, readOnly, registerEventListeners });
+        }
+
+        public static TextEditorWrapper CreateFor(TextBlock tb)
+        {
+            var textContainer = TextContainerProp.GetValue(tb);
+
+            var editor = new TextEditorWrapper(textContainer, tb, false);
+            IsReadOnlyProp.SetValue(editor._editor, true);
+            TextViewProp.SetValue(editor._editor, TextContainerTextViewProp.GetValue(textContainer));
+
+            return editor;
+        }
+
+        private readonly object _editor;
+
+        public TextEditorWrapper(object textContainer, FrameworkElement uiScope, bool isUndoEnabled)
+        {
+            this._editor = Activator.CreateInstance(TextEditorType, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.CreateInstance,
+                null, new[] { textContainer, uiScope, isUndoEnabled }, null);
+        }
+    }
+
+    public class SelectableTextBlock : TextBlock
+    {
+        static SelectableTextBlock()
+        {
+            FocusableProperty.OverrideMetadata(typeof(SelectableTextBlock), new FrameworkPropertyMetadata(true));
+            TextEditorWrapper.RegisterCommandHandlers(typeof(SelectableTextBlock), true, true, true);
+
+            // remove the focus rectangle around the control
+            FocusVisualStyleProperty.OverrideMetadata(typeof(SelectableTextBlock), new FrameworkPropertyMetadata((object)null));
+        }
+
+        private readonly TextEditorWrapper _editor;
+
+        public SelectableTextBlock()
+        {
+            this._editor = TextEditorWrapper.CreateFor(this);
+        }
     }
 }
