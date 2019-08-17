@@ -40,7 +40,7 @@ namespace AsmDude.AsmDoc
             {
                 return new AsmDocKeyProcessor(CtrlKeyState.GetStateForView(view));
             }
-            return view.Properties.GetOrCreateSingletonProperty(typeof(AsmDocKeyProcessor), sc);
+            return view.Properties.GetOrCreateSingletonProperty(typeof(AsmDocKeyProcessor), this.sc);
         }
     }
 }

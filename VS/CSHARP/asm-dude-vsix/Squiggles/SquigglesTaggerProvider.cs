@@ -55,7 +55,7 @@ namespace AsmDude.Squiggles
                 AsmSimulator asmSimulator = AsmSimulator.GetOrCreate_AsmSimulator(buffer, this._aggregatorFactory);
                 return new SquigglesTagger(buffer, this._aggregatorFactory, labelGraph, asmSimulator) as ITagger<T>;
             }
-            return buffer.Properties.GetOrCreateSingletonProperty(sc);
+            return buffer.Properties.GetOrCreateSingletonProperty(this.sc);
         }
     }
 }

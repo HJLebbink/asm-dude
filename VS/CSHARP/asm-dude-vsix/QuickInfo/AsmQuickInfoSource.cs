@@ -89,10 +89,10 @@ namespace AsmDude.QuickInfo
         public void AugmentQuickInfoSession_BUG(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan) //XYZZY OLD
         {
             applicableToSpan = null;
-            var triggerPoint = session.GetTriggerPoint(this._textBuffer.CurrentSnapshot);
+            SnapshotPoint? triggerPoint = session.GetTriggerPoint(this._textBuffer.CurrentSnapshot);
             if (triggerPoint != null)
             {
-                var line = triggerPoint.Value.GetContainingLine();
+                ITextSnapshotLine line = triggerPoint.Value.GetContainingLine();
                 applicableToSpan = this._textBuffer.CurrentSnapshot.CreateTrackingSpan(line.Extent, SpanTrackingMode.EdgeInclusive);
                 quickInfoContent.Add(new InstructionTooltipWindow(AsmDudeToolsStatic.GetFontColor()));
             }

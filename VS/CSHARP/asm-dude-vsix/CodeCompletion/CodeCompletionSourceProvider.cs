@@ -53,7 +53,7 @@ namespace AsmDude
                 AsmSimulator asmSimulator = AsmSimulator.GetOrCreate_AsmSimulator(buffer, this._aggregatorFactory);
                 return new CodeCompletionSource(buffer, labelGraph, asmSimulator);
             }
-            return buffer.Properties.GetOrCreateSingletonProperty(sc);
+            return buffer.Properties.GetOrCreateSingletonProperty(this.sc);
         }
     }
 }

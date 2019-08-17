@@ -139,8 +139,8 @@ namespace AsmDude.OptionsPage
 
         private bool Setting_Changed(string Key, StringBuilder sb)
         {
-            var persisted_value = Settings.Default[Key];
-            var gui_value = this._asmDudeOptionsPageUI.GetPropValue(Key);
+            object persisted_value = Settings.Default[Key];
+            object gui_value = this._asmDudeOptionsPageUI.GetPropValue(Key);
             if (gui_value.Equals(persisted_value))
             {
                 return false;
@@ -171,8 +171,8 @@ namespace AsmDude.OptionsPage
         }
         private bool Setting_Update(string Key)
         {
-            var persisted_value = Settings.Default[Key];
-            var gui_value = this._asmDudeOptionsPageUI.GetPropValue(Key);
+            object persisted_value = Settings.Default[Key];
+            object gui_value = this._asmDudeOptionsPageUI.GetPropValue(Key);
             if (gui_value.Equals(persisted_value))
             {
                 return false;

@@ -215,12 +215,35 @@ namespace AsmDude.Tools
 
                 List<string> keywords = AsmSourceTools.SplitIntoKeywordsList(line_capitals);
 
-                if (contains_register_att(keywords)) registers_i++;
-                if (contains_register_intel(keywords)) registers_i--;
-                if (contains_constant_att(keywords)) constants_i++;
-                if (contains_constant_intel(keywords)) constants_i--;
-                if (contains_mnemonic_att(keywords)) mnemonics_i++;
-                if (contains_mnemonic_intel(keywords)) mnemonics_i--;
+                if (contains_register_att(keywords))
+                {
+                    registers_i++;
+                }
+
+                if (contains_register_intel(keywords))
+                {
+                    registers_i--;
+                }
+
+                if (contains_constant_att(keywords))
+                {
+                    constants_i++;
+                }
+
+                if (contains_constant_intel(keywords))
+                {
+                    constants_i--;
+                }
+
+                if (contains_mnemonic_att(keywords))
+                {
+                    mnemonics_i++;
+                }
+
+                if (contains_mnemonic_intel(keywords))
+                {
+                    mnemonics_i--;
+                }
             }
             int total =
                 Math.Max(Math.Min(1, registers_i), -1) +
@@ -315,7 +338,7 @@ namespace AsmDude.Tools
         {
             return ThreadHelper.JoinableTaskFactory.Run(async delegate
             {
-                var task = GetFilenameAsync(buffer);
+                Task<string> task = GetFilenameAsync(buffer);
                 if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)) == task)
                 {
                     return await task;
@@ -374,7 +397,7 @@ namespace AsmDude.Tools
         {
             return ThreadHelper.JoinableTaskFactory.Run(async delegate
             {
-                var task = GetFontSizeAsync();
+                Task<int> task = GetFontSizeAsync();
                 if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)) == task)
                 {
                     return await task;
@@ -405,7 +428,7 @@ namespace AsmDude.Tools
         {
             return ThreadHelper.JoinableTaskFactory.Run(async delegate
             {
-                var task = GetFontTypeAsync();
+                Task<FontFamily> task = GetFontTypeAsync();
                 if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)) == task)
                 {
                     return await task;
@@ -438,7 +461,7 @@ namespace AsmDude.Tools
         {
             return ThreadHelper.JoinableTaskFactory.Run(async delegate
             {
-                var task = GetFontColorAsync();
+                Task<Brush> task = GetFontColorAsync();
                 if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)) == task)
                 {
                     return await task;
@@ -480,7 +503,7 @@ namespace AsmDude.Tools
         {
             return ThreadHelper.JoinableTaskFactory.Run(async delegate
             {
-                var task = GetBackgroundColorAsync();
+                Task<Brush> task = GetBackgroundColorAsync();
                 if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)) == task)
                 {
                     return await task;

@@ -115,7 +115,7 @@ namespace AsmDude.SyntaxHighlighting
                 ITagAggregator<AsmTokenTag> aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, this._aggregatorFactory);
                 return new AsmClassifier(buffer, aggregator, this._classificationTypeRegistry) as ITagger<T>;
             }
-            return buffer.Properties.GetOrCreateSingletonProperty(sc);
+            return buffer.Properties.GetOrCreateSingletonProperty(this.sc);
         }
     }
 }

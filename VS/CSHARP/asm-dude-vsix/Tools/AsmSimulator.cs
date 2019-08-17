@@ -298,7 +298,7 @@ namespace AsmDude.Tools
                     this._threadPool2.Cancel(false);
 
                     AsmDudeToolsStatic.Output_INFO("AsmSimulator:Schedule_Reset_Async: going to start an new reset thread.");
-                    this._thread_Result = this._threadPool2.QueueWorkItem(Reset_Private, WorkItemPriority.Lowest);
+                    this._thread_Result = this._threadPool2.QueueWorkItem(this.Reset_Private, WorkItemPriority.Lowest);
                 }
                 else
                 {
@@ -869,7 +869,7 @@ namespace AsmDude.Tools
             (State State, bool Bussy) state = before ? this.Get_State_Before(lineNumber, async, create) : this.Get_State_After(lineNumber, async, create);
             if (state.Bussy)
             {
-                this._threadPool2.QueueWorkItem(Update_State_And_TvArray_LOCAL);
+                this._threadPool2.QueueWorkItem(this.Update_State_And_TvArray_LOCAL);
                 this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
                 return ("[I'm bussy and haven't acquired the state of line " + (lineNumber + 1) + " yet.]", true); // plus 1 for the lineNumber because lineNumber 0 is shown as lineNumber 1
             }
@@ -882,7 +882,7 @@ namespace AsmDude.Tools
             Tv[] reg = state.State.GetTvArray_Cached(name);
             if (reg == null)
             {
-                this._threadPool2.QueueWorkItem(Update_TvArray_LOCAL, state.State);
+                this._threadPool2.QueueWorkItem(this.Update_TvArray_LOCAL, state.State);
                 this.Line_Updated_Event?.Invoke(this, new LineUpdatedEventArgs(lineNumber, AsmMessageEnum.DECORATE_REG));
                 return ("[I'm bussy determining the bits of " + name + ".]", true);
             }
@@ -1007,7 +1007,7 @@ namespace AsmDude.Tools
                 if (async)
                 {
                     //AsmDudeToolsStatic.Output_INFO("AsmSimulator:Get_State_After: going to execute this in a different thread.");
-                    this._threadPool2.QueueWorkItem(Calculate_State_After_LOCAL, WorkItemPriority.Lowest);
+                    this._threadPool2.QueueWorkItem(this.Calculate_State_After_LOCAL, WorkItemPriority.Lowest);
                     return (State: null, Bussy: true);
                 }
                 else
@@ -1080,7 +1080,7 @@ namespace AsmDude.Tools
                 if (async)
                 {
                     //AsmDudeToolsStatic.Output_INFO("AsmSimulator:Get_State_Before: going to execute this in a different thread.");
-                    this._threadPool2.QueueWorkItem(Create_State_Before_LOCAL, WorkItemPriority.Lowest);
+                    this._threadPool2.QueueWorkItem(this.Create_State_Before_LOCAL, WorkItemPriority.Lowest);
                     return (State: null, Bussy: true);
                 }
                 else

@@ -61,7 +61,7 @@ namespace AsmDude
                 AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:CreateTagger: could not determine the used assembler", this.ToString()));
                 return new MasmDisassemblyTokenTagger(buffer) as ITagger<T>;
             }
-            return buffer.Properties.GetOrCreateSingletonProperty(sc);
+            return buffer.Properties.GetOrCreateSingletonProperty(this.sc);
         }
     }
 }

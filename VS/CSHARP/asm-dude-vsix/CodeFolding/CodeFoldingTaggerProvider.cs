@@ -54,7 +54,7 @@ namespace AsmDude.CodeFolding
                 ITagAggregator<SyntaxHighlighting.AsmTokenTag> aggregator = AsmDudeToolsStatic.GetOrCreate_Aggregator(buffer, this._aggregatorFactory);
                 return new CodeFoldingTagger(buffer, aggregator, AsmDudeTools.Instance.Error_List_Provider) as ITagger<T>;
             }
-            return buffer.Properties.GetOrCreateSingletonProperty(sc);
+            return buffer.Properties.GetOrCreateSingletonProperty(this.sc);
         }
     }
 }

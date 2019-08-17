@@ -65,7 +65,7 @@ namespace AsmDude.HighlightWord
                 ITextStructureNavigator textStructureNavigator = this._textStructureNavigatorSelector.GetTextStructureNavigator(buffer);
                 return new HighlightWordTagger(textView, buffer, this._textSearchService, textStructureNavigator) as ITagger<T>;
             }
-            return buffer.Properties.GetOrCreateSingletonProperty(sc);
+            return buffer.Properties.GetOrCreateSingletonProperty(this.sc);
         }
     }
 }

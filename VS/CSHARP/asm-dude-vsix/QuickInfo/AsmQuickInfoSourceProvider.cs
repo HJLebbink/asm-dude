@@ -58,7 +58,7 @@ namespace AsmDude.QuickInfo
                 AsmSimulator asmSimulator = AsmSimulator.GetOrCreate_AsmSimulator(textBuffer, this._aggregatorFactory);
                 return new AsmQuickInfoSource(textBuffer, this._aggregatorFactory, labelGraph, asmSimulator);
             }
-            return textBuffer.Properties.GetOrCreateSingletonProperty(sc);
+            return textBuffer.Properties.GetOrCreateSingletonProperty(this.sc);
         }
     }
 }

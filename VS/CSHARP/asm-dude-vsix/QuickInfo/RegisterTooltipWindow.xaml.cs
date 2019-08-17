@@ -115,10 +115,21 @@ namespace AsmDude.QuickInfo
             };
         }
 
-        public bool KeepQuickInfoOpen => this.IsMouseOverAggregated || this.IsKeyboardFocusWithin || this.IsKeyboardFocused || this.IsFocused;
+        public bool KeepQuickInfoOpen
+        {
+            get
+            {
+                return this.IsMouseOverAggregated || this.IsKeyboardFocusWithin || this.IsKeyboardFocused || this.IsFocused;
+            }
+        }
 
-        public bool IsMouseOverAggregated => this.IsMouseOver || this.IsMouseDirectlyOver;
-
+        public bool IsMouseOverAggregated
+        {
+            get
+            {
+                return this.IsMouseOver || this.IsMouseDirectlyOver;
+            }
+        }
 
         private void Generate(bool isBefore, Rn reg)
         {

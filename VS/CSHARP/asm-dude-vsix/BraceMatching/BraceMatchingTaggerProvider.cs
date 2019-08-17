@@ -52,7 +52,7 @@ namespace AsmDude.BraceMatching
             {
                 return new BraceMatchingTagger(textView, buffer) as ITagger<T>;
             }
-            return buffer.Properties.GetOrCreateSingletonProperty(sc);
+            return buffer.Properties.GetOrCreateSingletonProperty(this.sc);
         }
     }
 }
