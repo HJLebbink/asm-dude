@@ -79,7 +79,7 @@ namespace AsmDude.BraceMatching
             {
                 return;
             }
-            TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(new SnapshotSpan(this._sourceBuffer.CurrentSnapshot, 0, this._sourceBuffer.CurrentSnapshot.Length)));
+            this.TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(new SnapshotSpan(this._sourceBuffer.CurrentSnapshot, 0, this._sourceBuffer.CurrentSnapshot.Length)));
         }
 
         public IEnumerable<ITagSpan<TextMarkerTag>> GetTags(NormalizedSnapshotSpanCollection spans)
@@ -106,7 +106,7 @@ namespace AsmDude.BraceMatching
             char currentText = currentChar.GetChar();
             SnapshotPoint lastChar = currentChar == 0 ? currentChar : currentChar - 1; //if currentChar is 0 (beginning of buffer), don't move it back
             char lastText = lastChar.GetChar();
-            SnapshotSpan pairSpan = new SnapshotSpan();
+            SnapshotSpan pairSpan = default(SnapshotSpan);
 
             if (this._braceList.ContainsKey(currentText))
             { //the key is the open brace

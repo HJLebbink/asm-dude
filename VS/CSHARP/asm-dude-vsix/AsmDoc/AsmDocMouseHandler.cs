@@ -406,11 +406,11 @@ namespace AsmDude.AsmDoc
 
     public class VisualStudioWebBrowser : System.Windows.Forms.WebBrowser
     {
-        private object IWebBrowser2Object;
+        private object iWebBrowser2Object;
 
         public VisualStudioWebBrowser(object iWebBrowser2Object)
         {
-            this.IWebBrowser2Object = iWebBrowser2Object;
+            this.iWebBrowser2Object = iWebBrowser2Object;
         }
 
         private static void Evaluate(EnvDTE.Window windowReference, Action<System.Windows.Forms.WebBrowser> onEvaluate)
@@ -453,13 +453,13 @@ namespace AsmDude.AsmDoc
 
         protected override void AttachInterfaces(object nativeActiveXObject)
         {
-            base.AttachInterfaces(this.IWebBrowser2Object);
+            base.AttachInterfaces(this.iWebBrowser2Object);
         }
 
         protected override void DetachInterfaces()
         {
             base.DetachInterfaces();
-            this.IWebBrowser2Object = null;
+            this.iWebBrowser2Object = null;
         }
     }
 }

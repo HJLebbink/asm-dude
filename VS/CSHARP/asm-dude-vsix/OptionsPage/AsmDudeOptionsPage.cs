@@ -684,13 +684,7 @@ namespace AsmDude.OptionsPage
                 return;
             }
 
-            _ = store.SetItem(colorKeyName, new[]
-            {
-                new ColorableItemInfo {
-                    bForegroundValid = 1,
-                    crForeground = (uint)ColorTranslator.ToWin32(c),
-                },
-            });
+            _ = store.SetItem(colorKeyName, new[] { new ColorableItemInfo { bForegroundValid = 1, crForeground = (uint)ColorTranslator.ToWin32(c) } });
             store.CloseCategory();
         }
 

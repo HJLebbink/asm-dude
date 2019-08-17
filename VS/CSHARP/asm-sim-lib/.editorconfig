@@ -83,3 +83,12 @@ dotnet_diagnostic.SA1501.severity = none
 
 # SA1504: All accessors should be single-line or multi-line
 dotnet_diagnostic.SA1504.severity = none
+
+# SA1401: Fields should be private
+dotnet_diagnostic.SA1401.severity = silent
+
+# SA1649: File name should match first type name
+dotnet_diagnostic.SA1649.severity = none
+
+# SA1403: File may only contain a single namespace
+dotnet_diagnostic.SA1403.severity = silent

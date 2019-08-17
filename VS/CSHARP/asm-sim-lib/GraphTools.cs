@@ -27,9 +27,9 @@ namespace AsmSim
     using System.Linq;
     using QuickGraph;
 
-    public static class GraphTools<ITag>
+    public static class GraphTools<Tag>
     {
-        public static IEnumerable<string> Get_Branch_Points_Backwards(string vertex, BidirectionalGraph<string, TaggedEdge<string, ITag>> graph)
+        public static IEnumerable<string> Get_Branch_Points_Backwards(string vertex, BidirectionalGraph<string, TaggedEdge<string, Tag>> graph)
         {
             HashSet<string> visited = new HashSet<string>();
             return Get_Branch_Points_Backwards_LOCAL(vertex);
@@ -53,7 +53,7 @@ namespace AsmSim
                     yield return v1;
                 }
 
-                foreach (TaggedEdge<string, ITag> edge in graph.InEdges(v1))
+                foreach (TaggedEdge<string, Tag> edge in graph.InEdges(v1))
                 {
                     foreach (string v in Get_Branch_Points_Backwards_LOCAL(edge.Source))
                     {
@@ -65,7 +65,7 @@ namespace AsmSim
         }
 
         /// <summary>traverse the provided vertex backwards and return the first</summary>
-        public static IEnumerable<string> Get_First_Branch_Point_Backwards(string vertex, BidirectionalGraph<string, TaggedEdge<string, ITag>> graph)
+        public static IEnumerable<string> Get_First_Branch_Point_Backwards(string vertex, BidirectionalGraph<string, TaggedEdge<string, Tag>> graph)
         {
             HashSet<string> visited = new HashSet<string>();
             return Get_Branch_Point_Backwards_LOCAL(vertex);
@@ -90,7 +90,7 @@ namespace AsmSim
                 }
                 else
                 {
-                    foreach (TaggedEdge<string, ITag> edge in graph.InEdges(v1))
+                    foreach (TaggedEdge<string, Tag> edge in graph.InEdges(v1))
                     {
                         foreach (string v in Get_Branch_Point_Backwards_LOCAL(edge.Source))
                         {
@@ -102,7 +102,7 @@ namespace AsmSim
             #endregion
         }
 
-        public static IEnumerable<string> Get_First_Mutual_Branch_Point_Backwards(string vertex, BidirectionalGraph<string, TaggedEdge<string, ITag>> graph)
+        public static IEnumerable<string> Get_First_Mutual_Branch_Point_Backwards(string vertex, BidirectionalGraph<string, TaggedEdge<string, Tag>> graph)
         {
             if (!graph.ContainsVertex(vertex))
             {
@@ -147,7 +147,7 @@ namespace AsmSim
             }
         }
 
-        public static string Get_Branch_Point(string vertex1, string vertex2, BidirectionalGraph<string, TaggedEdge<string, ITag>> graph)
+        public static string Get_Branch_Point(string vertex1, string vertex2, BidirectionalGraph<string, TaggedEdge<string, Tag>> graph)
         {
             if (vertex1 == vertex2)
             {

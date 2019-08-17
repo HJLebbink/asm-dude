@@ -34,13 +34,13 @@ namespace AsmDude.ClearMefCache
             this.ServiceProvider = package;
         }
 
-        private static ClearMefCache Instance;
+        private static ClearMefCache instance;
 
         private AsyncPackage ServiceProvider { get; }
 
         public static void Initialize(AsyncPackage package)
         {
-            Instance = new ClearMefCache(package);
+            instance = new ClearMefCache(package);
         }
 
         //Clear the MEF Cache
@@ -51,7 +51,7 @@ namespace AsmDude.ClearMefCache
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             }
 
-            IVsComponentModelHost componentModelHost = await Instance.ServiceProvider.GetServiceAsync(typeof(SVsComponentModelHost)) as IVsComponentModelHost;
+            IVsComponentModelHost componentModelHost = await instance.ServiceProvider.GetServiceAsync(typeof(SVsComponentModelHost)) as IVsComponentModelHost;
             string folder = await componentModelHost?.GetFolderPathAsync();
 
             if (!string.IsNullOrEmpty(folder) && Directory.Exists(folder))
@@ -68,7 +68,7 @@ namespace AsmDude.ClearMefCache
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             }
 
-            IVsShell4 shell = await Instance.ServiceProvider.GetServiceAsync(typeof(SVsShell)) as IVsShell4;
+            IVsShell4 shell = await instance.ServiceProvider.GetServiceAsync(typeof(SVsShell)) as IVsShell4;
             Assumes.Present(shell);
             shell.Restart((uint)__VSRESTARTTYPE.RESTART_Normal);
         }

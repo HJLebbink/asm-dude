@@ -72,7 +72,7 @@ namespace AsmDude.AsmDoc
                         updateSpan.Snapshot,
                         Span.FromBounds(
                             Math.Min(updateSpan.Start, oldSpan.Value.Start),
-                                        Math.Max(updateSpan.End, oldSpan.Value.End)));
+                            Math.Max(updateSpan.End, oldSpan.Value.End)));
                 }
                 this.TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(updateSpan));
             }

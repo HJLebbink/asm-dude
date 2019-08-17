@@ -45,8 +45,8 @@ namespace AsmSim
 
         public Solver Solver_U { get; private set; }
 
-        private bool Solver_Dirty = false;
-        private bool Solver_U_Dirty = false;
+        private bool solver_Dirty = false;
+        private bool solver_U_Dirty = false;
 
         private string _warningMessage;
         private string _synstaxErrorMessage;
@@ -126,12 +126,12 @@ namespace AsmSim
                 {
                     other.Solver.Reset();
                     other.Assert(this.Solver.Assertions, false, true);
-                    other.Solver_Dirty = true;
+                    other.solver_Dirty = true;
                 }
                 {
                     other.Solver_U.Reset();
                     other.Assert(this.Solver_U.Assertions, true, true);
-                    other.Solver_U_Dirty = true;
+                    other.solver_U_Dirty = true;
                 }
                 {
                     other.BranchInfoStore.Clear();
@@ -324,11 +324,11 @@ namespace AsmSim
 
             if (undef)
             {
-                this.Solver_U_Dirty = true;
+                this.solver_U_Dirty = true;
             }
             else
             {
-                this.Solver_Dirty = true;
+                this.solver_Dirty = true;
             }
         }
 
@@ -387,8 +387,8 @@ namespace AsmSim
                 this.UndefGrounding = false;
                 stateUpdate.Update(this);
             }
-            this.Solver_Dirty = true;
-            this.Solver_U_Dirty = true;
+            this.solver_Dirty = true;
+            this.solver_U_Dirty = true;
         }
 
         public void Update_Forward(StateUpdate stateUpdate)
@@ -640,7 +640,7 @@ namespace AsmSim
                                 if (value2 != null)
                                 {
                                     this.Solver.Assert(this.Ctx.MkEq(regExpr, this.Ctx.MkBV(value2.Value, 64)));
-                                    this.Solver_Dirty = true;
+                                    this.solver_Dirty = true;
                                 }
                             }
                             this._cached_Reg_Values[regName] = result;
@@ -1131,15 +1131,15 @@ namespace AsmSim
         {
             lock (this._ctxLock)
             {
-                if (this.Solver_Dirty)
+                if (this.solver_Dirty)
                 {
                     ToolsZ3.Consolidate(false, this.Solver, this.Solver_U, this._ctx);
-                    this.Solver_Dirty = false;
+                    this.solver_Dirty = false;
                 }
-                if (this.Solver_U_Dirty)
+                if (this.solver_U_Dirty)
                 {
                     ToolsZ3.Consolidate(true, this.Solver, this.Solver_U, this._ctx);
-                    this.Solver_U_Dirty = false;
+                    this.solver_U_Dirty = false;
                 }
             }
         }

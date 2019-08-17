@@ -279,7 +279,7 @@ namespace AsmDude.HighlightWord
                 this.CurrentWord = newCurrentWord;
                 this._currentWordSpan = newCurrentWordSpan;
 
-                TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(new SnapshotSpan(this._sourceBuffer.CurrentSnapshot, 0, this._sourceBuffer.CurrentSnapshot.Length)));
+                this.TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(new SnapshotSpan(this._sourceBuffer.CurrentSnapshot, 0, this._sourceBuffer.CurrentSnapshot.Length)));
             }
         }
 

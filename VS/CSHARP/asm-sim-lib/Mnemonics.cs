@@ -20,17 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using AsmTools;
-using Microsoft.Z3;
-
 namespace AsmSim
 {
     namespace Mnemonics
     {
+        using System;
+        using System.Collections.Generic;
+        using System.Diagnostics;
+        using System.Linq;
+        using AsmTools;
+        using Microsoft.Z3;
+
         #region Instructions
         #region Abstract OpcodeBases
         public abstract class OpcodeBase : IDisposable
@@ -166,10 +166,10 @@ namespace AsmSim
 
             #region Register/Flags read/write
 
-            /// <summary>Get the flags that are read by this Mnemnonic</summary>
+            /// <summary>Gets the flags that are read by this Mnemnonic</summary>
             public virtual Flags FlagsReadStatic { get { return Flags.NONE; } }
 
-            /// <summary>Get the flags that are written by this Mnemnonic</summary>
+            /// <summary>Gets the flags that are written by this Mnemnonic</summary>
             public virtual Flags FlagsWriteStatic { get { return Flags.NONE; } }
 
             public virtual IEnumerable<Rn> RegsReadStatic { get { return Enumerable.Empty<Rn>(); } }
@@ -231,7 +231,7 @@ namespace AsmSim
 
             #region Protected stuff
 
-            /// <summary>Return number of operand of the arguments of this instruction</summary>
+            /// <summary>Gets number of operand of the arguments of this instruction</summary>
             protected int NOperands { get { return this._args.Length; } }
 
             public static BitVecExpr OpValue(

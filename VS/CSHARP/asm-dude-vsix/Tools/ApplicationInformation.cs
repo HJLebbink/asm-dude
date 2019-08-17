@@ -59,7 +59,7 @@ namespace AsmDude.Tools
                     compileDate = RetrieveLinkerTimestamp(ExecutingAssembly.Location);
                 }
 
-                return compileDate ?? new System.DateTime();
+                return compileDate ?? default(System.DateTime);
             }
         }
 
