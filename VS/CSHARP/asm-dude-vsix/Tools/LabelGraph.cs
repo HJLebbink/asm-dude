@@ -1,17 +1,17 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,23 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Amib.Threading;
-using AsmDude.SyntaxHighlighting;
-using AsmTools;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Tagging;
-using Microsoft.VisualStudio.Utilities;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-
 namespace AsmDude.Tools
 {
+    using System;
+    using System.Collections.Concurrent;
+    using System.Collections.Generic;
+    using System.IO;
+    using Amib.Threading;
+    using AsmDude.SyntaxHighlighting;
+    using AsmTools;
+    using Microsoft.VisualStudio.Shell;
+    using Microsoft.VisualStudio.Text;
+    using Microsoft.VisualStudio.Text.Tagging;
+    using Microsoft.VisualStudio.Utilities;
+
     public sealed class LabelGraph
     {
         #region Fields
+
         /// <summary>
         /// immutable empty set to prevent creating one every time you need one
         /// </summary>
@@ -50,6 +51,7 @@ namespace AsmDude.Tools
 
         private readonly string _thisFilename;
         private readonly IDictionary<uint, string> _filenames;
+
         /// <summary>
         /// Include_Filename = the file that is supposed to be included
         /// Path = path at which the include_filename is supposed to be found
@@ -67,6 +69,7 @@ namespace AsmDude.Tools
         private readonly ISet<uint> _hasDef;
 
         public bool Enabled { get; private set; }
+
         public ErrorListProvider Error_List_Provider { get; private set; }
 
         private readonly Delay _delay;
@@ -100,7 +103,7 @@ namespace AsmDude.Tools
             this._hasDef = new HashSet<uint>();
             this._undefined_includes = new List<(string Include_Filename, string Path, string Source_Filename, int LineNumber)>();
             this._thisFilename = AsmDudeToolsStatic.GetFilename(this._buffer);
-            this._delay = new Delay(AsmDudePackage.msSleepBeforeAsyncExecution, 100, AsmDudeTools.Instance.Thread_Pool);
+            this._delay = new Delay(AsmDudePackage.MsSleepBeforeAsyncExecution, 100, AsmDudeTools.Instance.Thread_Pool);
 
             this.Enabled = Settings.Default.IntelliSense_Label_Analysis_On;
             if (this.Enabled)
@@ -142,6 +145,7 @@ namespace AsmDude.Tools
         {
             return id >> 24;
         }
+
         public string Get_Filename(uint id)
         {
             uint fileId = this.Get_File_Id(id);
@@ -152,13 +156,15 @@ namespace AsmDude.Tools
             else
             {
                 AsmDudeToolsStatic.Output_WARNING("LabelGraph:Get_Filename: no filename for id=" + id + " (fileId " + fileId + "; line " + this.Get_Linenumber(id) + ")");
-                return "";
+                return string.Empty;
             }
         }
+
         public uint Make_Id(int lineNumber, uint fileId)
         {
             return (fileId << 24) | (uint)lineNumber;
         }
+
         public bool Is_From_Main_File(uint id)
         {
             return id <= 0xFFFFFF;
@@ -214,7 +220,7 @@ namespace AsmDude.Tools
                         foreach (uint used_at_id in entry.Value)
                         {
                             if (result.ContainsKey(used_at_id))
-                            {   // this should not happen: somehow the (file-line) used_at_id has multiple occurances on the same line?!
+                            { // this should not happen: somehow the (file-line) used_at_id has multiple occurances on the same line?!
                                 AsmDudeToolsStatic.Output_WARNING("LabelGraph:Get_Undefined_Labels: id=" + used_at_id + " (" + this.Get_Filename(used_at_id) + "; line " + this.Get_Linenumber(used_at_id) + ") with label \"" + full_Qualified_Label + "\" already exists and has key \"" + result[used_at_id] + "\".");
                             }
                             else
@@ -251,7 +257,7 @@ namespace AsmDude.Tools
                         }
                         else
                         {
-                            lineContent = "";
+                            lineContent = string.Empty;
                         }
                         result.Add(entry.Key, AsmDudeToolsStatic.Cleanup(string.Format("LINE {0} ({1}){2}", lineNumber + 1, filename, lineContent)));
                     }
@@ -351,7 +357,7 @@ namespace AsmDude.Tools
 
                 AsmDudeToolsStatic.Print_Speed_Warning(time1, "LabelGraph");
                 double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
-                if (elapsedSec > AsmDudePackage.slowShutdownThresholdSec)
+                if (elapsedSec > AsmDudePackage.SlowShutdownThresholdSec)
                 {
 #                   if DEBUG
                     AsmDudeToolsStatic.Output_WARNING("LabelGraph: Reset: disabled label analysis had I been in Release mode");

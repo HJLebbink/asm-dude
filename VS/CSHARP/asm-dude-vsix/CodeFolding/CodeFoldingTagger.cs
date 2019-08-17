@@ -1,17 +1,17 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,27 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Amib.Threading;
-using AsmDude.SyntaxHighlighting;
-using AsmDude.Tools;
-using AsmTools;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Tagging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Controls;
-
 namespace AsmDude.CodeFolding
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Windows.Controls;
+    using Amib.Threading;
+    using AsmDude.SyntaxHighlighting;
+    using AsmDude.Tools;
+    using AsmTools;
+    using Microsoft.VisualStudio.Shell;
+    using Microsoft.VisualStudio.Text;
+    using Microsoft.VisualStudio.Text.Tagging;
+
     internal class PartialRegion
     {
         public int StartLine { get; set; }
+
         public int StartOffset { get; set; }
+
         public int StartOffsetHoverText { get; set; }
+
         public int Level { get; set; }
+
         public PartialRegion PartialParent { get; set; }
     }
 
@@ -84,7 +88,7 @@ namespace AsmDude.CodeFolding
 
             this._enabled = true;
 
-            this._delay = new Delay(AsmDudePackage.msSleepBeforeAsyncExecution, 10, AsmDudeTools.Instance.Thread_Pool);
+            this._delay = new Delay(AsmDudePackage.MsSleepBeforeAsyncExecution, 10, AsmDudeTools.Instance.Thread_Pool);
             this._delay.Done_Event += (o, i) =>
             {
                 if ((this._thread_Result != null) && (!this._thread_Result.IsCanceled))
@@ -136,7 +140,7 @@ namespace AsmDude.CodeFolding
                             {
                                 // the following line gives an STA error
                                 /*
-                                    System.InvalidOperationException: The calling thread must be STA, because many UI components require this.&#x000D;&#x000A;   
+                                    System.InvalidOperationException: The calling thread must be STA, because many UI components require this.&#x000D;&#x000A;
                                     at System.Windows.Input.InputManager..ctor()&#x000D;&#x000A;
                                     at System.Windows.Input.InputManager.GetCurrentInputManagerImpl()&#x000D;&#x000A;
                                     at System.Windows.Input.KeyboardNavigation..ctor()&#x000D;&#x000A;
@@ -147,7 +151,7 @@ namespace AsmDude.CodeFolding
                                     at AsmDude.CodeFolding.CodeFoldingTagger.&lt;GetTags&gt;d__13.MoveNext() in C:\Cloud\Dropbox\sc\GitHub\asm-dude\VS\CSHARP\asm-dude-vsix\CodeFolding\CodeFoldingTagger.cs:line 122&#x000D;&#x000A;
                                     at Microsoft.VisualStudio.Text.Tagging.Implementation.TagAggregator`1.&lt;GetTagsForBuffer&gt;d__38.MoveNext()
                                  */
-                                hover = this.Get_Hover_Text_TextBlock(region.StartLine, region.EndLine, this._snapshot); // this 
+                                hover = this.Get_Hover_Text_TextBlock(region.StartLine, region.EndLine, this._snapshot); // this
                             }
                             yield return new TagSpan<IOutliningRegionTag>(
                                 new SnapshotSpan(startLine.Start + region.StartOffset, endLine.End),
@@ -157,6 +161,7 @@ namespace AsmDude.CodeFolding
                 }
             }
         }
+
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
         public bool Is_Enabled { get { return this._enabled; } }
@@ -168,7 +173,7 @@ namespace AsmDude.CodeFolding
         /// </summary>
         private string Get_Region_Description(string line, int startPos)
         {
-            string description = "";
+            string description = string.Empty;
             //AsmDudeToolsStatic.Output_INFO("getRegionDescription: startPos=" + startPos + "; line=" + line);
             if (startPos < 0)
             {
@@ -184,7 +189,7 @@ namespace AsmDude.CodeFolding
         private string Get_Hover_Text_String(int beginLineNumber, int endLineNumber, ITextSnapshot snapshot)
         {
             StringBuilder sb = new StringBuilder();
-            int numberOfLines = Math.Min(endLineNumber + 1 - beginLineNumber, 40); // do not show more than 40 lines 
+            int numberOfLines = Math.Min(endLineNumber + 1 - beginLineNumber, 40); // do not show more than 40 lines
             for (int i = 0; i < numberOfLines; ++i)
             {
                 sb.AppendLine(snapshot.GetLineFromLineNumber(beginLineNumber + i).GetText());
@@ -383,7 +388,7 @@ namespace AsmDude.CodeFolding
                     switch (tokenStr)
                     {
                         case "ENDSTRUC": // end token for STRUC
-                        case "IEND":    // end token for ISTRUC
+                        case "IEND": // end token for ISTRUC
                         case "%ENDMACRO": // end token for %MACRO
                             {
                                 return lineContent.IndexOf(tokenStr, StringComparison.OrdinalIgnoreCase);
@@ -503,7 +508,7 @@ namespace AsmDude.CodeFolding
                 AsmDudeToolsStatic.Print_Speed_Warning(time1, "CodeFoldingTagger");
 
                 double elapsedSec = (double)(DateTime.Now.Ticks - time1.Ticks) / 10000000;
-                if (elapsedSec > AsmDudePackage.slowShutdownThresholdSec)
+                if (elapsedSec > AsmDudePackage.SlowShutdownThresholdSec)
                 {
 #                   if DEBUG
                     AsmDudeToolsStatic.Output_WARNING("CodeFoldingTagger: Parse: disabled CodeFolding had I been in Release mode");
@@ -538,7 +543,7 @@ namespace AsmDude.CodeFolding
                     StartLine = currentRegion.StartLine,
                     StartOffset = currentRegion.StartOffset,
                     StartOffsetHoverText = regionStartHoverText,
-                    EndLine = lineNumber
+                    EndLine = lineNumber,
                 });
 
                 currentRegion = new PartialRegion()
@@ -547,7 +552,7 @@ namespace AsmDude.CodeFolding
                     StartLine = lineNumber,
                     StartOffset = regionStart,
                     StartOffsetHoverText = regionStartHoverText,
-                    PartialParent = currentRegion.PartialParent
+                    PartialParent = currentRegion.PartialParent,
                 };
             }
             //this is a new (sub)region
@@ -559,7 +564,7 @@ namespace AsmDude.CodeFolding
                     StartLine = lineNumber,
                     StartOffset = regionStart,
                     StartOffsetHoverText = regionStartHoverText,
-                    PartialParent = currentRegion
+                    PartialParent = currentRegion,
                 };
             }
         }
@@ -580,7 +585,7 @@ namespace AsmDude.CodeFolding
                     StartLine = currentRegion.StartLine,
                     StartOffset = currentRegion.StartOffset,
                     StartOffsetHoverText = currentRegion.StartOffsetHoverText,
-                    EndLine = lineNumber
+                    EndLine = lineNumber,
                 });
                 currentRegion = currentRegion.PartialParent;
             }

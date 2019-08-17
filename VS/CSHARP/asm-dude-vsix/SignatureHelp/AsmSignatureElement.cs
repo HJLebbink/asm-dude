@@ -1,17 +1,17 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,14 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude.Tools;
-using AsmTools;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace AsmDude.SignatureHelp
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
+    using AsmDude.Tools;
+    using AsmTools;
+
     public class AsmSignatureElement
     {
         #region Fields
@@ -35,7 +35,6 @@ namespace AsmDude.SignatureHelp
         private readonly IList<IList<AsmSignatureEnum>> _operands;
         private readonly IList<Arch> _arch;
         private readonly bool _reversed_Signature;
-
 
         private string[] _operandStr;
         private readonly string[] _operandDoc;
@@ -48,7 +47,6 @@ namespace AsmDude.SignatureHelp
             this._operands = new List<IList<AsmSignatureEnum>>();
             this._arch = new List<Arch>();
             this._reversed_Signature = AsmDudeToolsStatic.Used_Assembler == AssemblerEnum.NASM_ATT;
-
             {
                 string[] x = operandDoc.Split(' ');
                 if (x.Length > 1)
@@ -82,6 +80,7 @@ namespace AsmDude.SignatureHelp
         }
 
         #region Getters
+
         /// <summary>Return true if this Signature Element is allowed with the constraints of the provided operand</summary>
         public bool Is_Allowed(Operand op, int operandIndex)
         {
@@ -115,13 +114,15 @@ namespace AsmDude.SignatureHelp
         }
 
         public string Documentation { get { return this._doc; } set { this._doc = value; } }
+
         public string Arch_Str
         {
             get { return ArchTools.ToString(this._arch); }
+
             set
             {
                 this._arch.Clear();
-                if (value == "")
+                if (value == string.Empty)
                 {
                     //this._arch.Add(Arch.ARCH_486);
                 }
@@ -142,6 +143,7 @@ namespace AsmDude.SignatureHelp
                 }
             }
         }
+
         public IList<Arch> Arch { get { return this._arch; } }
 
         public Mnemonic Mnemonic { get { return this._mnemonic; } }
@@ -162,6 +164,7 @@ namespace AsmDude.SignatureHelp
                 }
                 return sb.ToString();
             }
+
             set
             {
                 this._operands.Clear();
@@ -227,7 +230,7 @@ namespace AsmDude.SignatureHelp
             {
                 return this._operandDoc[index];
             }
-            return "";
+            return string.Empty;
         }
 
         #endregion

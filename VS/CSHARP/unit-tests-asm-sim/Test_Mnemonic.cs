@@ -304,7 +304,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
             tools.StateConfig.RCX = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             string line1 = "mov byte ptr [rax], bl";
             string line2 = "mov cl, byte ptr [rax]";
@@ -340,7 +340,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RBX = true;
             tools.StateConfig.RCX = true;
             tools.StateConfig.RDX = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             string line1 = "mov byte ptr [rax], bl";
             string line2 = "mov cl, byte ptr [rax]";
@@ -413,7 +413,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
             tools.StateConfig.RCX = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             string line1 = "mov word ptr [rax], bx";
             string line2 = "mov cx, word ptr [rax]";
@@ -463,7 +463,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
             tools.StateConfig.RCX = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             string line1 = "mov dword ptr [rax], ebx";
             string line2 = "mov ecx, dword ptr [rax]";
@@ -513,7 +513,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
             tools.StateConfig.RCX = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             string line1 = "mov qword ptr [rax], rbx";
             string line2 = "mov rcx, qword ptr [rax]";
@@ -564,7 +564,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
             tools.StateConfig.RCX = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             string line1 = "mov rbx, rax";
             string line2 = "mov rax, qword ptr [rcx + 2 * rax]";
@@ -636,7 +636,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
             tools.StateConfig.ZF = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             ulong address = 10;
             ulong value = 20;
@@ -718,7 +718,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RBX = true;
             tools.StateConfig.RCX = true;
             tools.StateConfig.RDX = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             string line1 = "mov qword ptr [rax], rbx";
             string line2 = "mov rdx, qword ptr [rax]";
@@ -796,7 +796,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RBX = true;
             tools.StateConfig.RCX = true;
             tools.StateConfig.ZF = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             // test: chaining memory dereference with branch constraints afterwards
 
@@ -881,7 +881,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
             tools.StateConfig.RCX = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             // test dword write read
             string line1 = "mov dword ptr [rax], ebx";
@@ -933,7 +933,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RBX = true;
             tools.StateConfig.RCX = true;
             tools.StateConfig.RDX = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             string line1 = "mov rdx, rcx";
             string line2 = "lea rax, byte ptr [rcx]";
@@ -996,7 +996,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RBX = true;
             tools.StateConfig.RCX = true;
             tools.StateConfig.RDX = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             string line1 = "mov rdx, rcx";
             string line2 = "lea rax, byte ptr [2 * rcx + 10]";
@@ -1714,7 +1714,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.Set_All_Flags_On();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             State state = this.CreateState(tools);
 
@@ -3706,7 +3706,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RSP = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             string line1 = "mov rsp, 0x3FFF";
             string line2 = "mov rax, 0b_00000000_00000001_00000000_00000000_00000000_00000001_00000000_00000000";
@@ -3733,7 +3733,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RSP = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             string line1 = "mov rsp, 0x3FFF";
             string line2 = "pop rax";
@@ -3759,7 +3759,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
             tools.StateConfig.RSP = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             string line1 = "mov rsp, 0x3FFF";
             string line2 = "mov rax, 0";
@@ -3790,7 +3790,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
             tools.StateConfig.RSP = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             string line1 = "mov rsp, 0x3FFF";
             string line2 = "push rax";
@@ -3819,7 +3819,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
             tools.StateConfig.RSP = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             string line1 = "push rax";
             string line2 = "pop rbx";
@@ -3848,7 +3848,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
             tools.StateConfig.RSP = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             string line1 = "push rax";
             string line2 = "pop rbx";
@@ -4797,7 +4797,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
             tools.StateConfig.RCX = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             string line0 = "mov al, 1";
             string line1 = "mov byte ptr [rbx], 1";
@@ -4837,7 +4837,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
             tools.StateConfig.RCX = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             string line0 = "mov al, 1";
             string line1 = "mov byte ptr [rbx], 2";
@@ -4884,7 +4884,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.R8 = true;
             tools.StateConfig.R9 = true;
             tools.StateConfig.R10 = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             //Compare EDX:EAX with m64. If equal, set ZF and load ECX:EBX into m64. Else, clear ZF and load m64 into EDX:EAX.
 
@@ -4938,7 +4938,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.R8 = true;
             tools.StateConfig.R9 = true;
             tools.StateConfig.R10 = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             //Compare EDX:EAX with m64. If equal, set ZF and load ECX:EBX into m64. Else, clear ZF and load m64 into EDX:EAX.
 
@@ -4986,7 +4986,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             string line0 = "mov rbx, 0";
             string line1 = "mov eax, 0x08040201";
@@ -5139,7 +5139,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RCX = true;
             tools.StateConfig.RSI = true;
             tools.StateConfig.RDI = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             ulong rdi = 100;
             ulong rsi = 200;
@@ -5181,7 +5181,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RCX = true;
             tools.StateConfig.RSI = true;
             tools.StateConfig.RDI = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             ulong rdi = 100;
             ulong rsi = 200;
@@ -5223,7 +5223,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RCX = true;
             tools.StateConfig.RSI = true;
             tools.StateConfig.RDI = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             ulong rdi = 100;
             ulong rsi = 200;
@@ -5265,7 +5265,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RCX = true;
             tools.StateConfig.RSI = true;
             tools.StateConfig.RDI = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             ulong rdi = 100;
             ulong rsi = 200;
@@ -5307,7 +5307,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RCX = true;
             tools.StateConfig.RSI = true;
             tools.StateConfig.RDI = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             ulong rdi = 100;
             ulong rsi = 200;

@@ -1,17 +1,17 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,23 +20,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude.SyntaxHighlighting;
-using AsmDude.Tools;
-using AsmTools;
-using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Tagging;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Media;
-
 namespace AsmDude.QuickInfo
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Text;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Documents;
+    using System.Windows.Media;
+    using AsmDude.SyntaxHighlighting;
+    using AsmDude.Tools;
+    using AsmTools;
+    using Microsoft.VisualStudio.Language.Intellisense;
+    using Microsoft.VisualStudio.Text;
+    using Microsoft.VisualStudio.Text.Tagging;
+
     /// <summary>
     /// Provides QuickInfo information to be displayed in a text buffer
     /// </summary>
@@ -98,7 +98,6 @@ namespace AsmDude.QuickInfo
             }
         }
 
-
         public void Dispose()
         {
             AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Dispose", this.ToString()));
@@ -143,14 +142,14 @@ namespace AsmDude.QuickInfo
                             string descr = this._asmDudeTools.Get_Description(keywordUpper);
                             if (descr.Length > 0)
                             {
-                                if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2))
+                                if (keyword.Length > (AsmDudePackage.MaxNumberOfCharsInToolTips / 2))
                                 {
                                     descr = "\n" + descr;
                                 }
 
-                                description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.MaxNumberOfCharsInToolTips))
                                 {
-                                    Foreground = foreground
+                                    Foreground = foreground,
                                 });
                             }
                             break;
@@ -164,14 +163,14 @@ namespace AsmDude.QuickInfo
                             string descr = this._asmDudeTools.Get_Description(keywordUpper);
                             if (descr.Length > 0)
                             {
-                                if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2))
+                                if (keyword.Length > (AsmDudePackage.MaxNumberOfCharsInToolTips / 2))
                                 {
                                     descr = "\n" + descr;
                                 }
 
-                                description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.MaxNumberOfCharsInToolTips))
                                 {
-                                    Foreground = foreground
+                                    Foreground = foreground,
                                 });
                             }
                             break;
@@ -181,7 +180,7 @@ namespace AsmDude.QuickInfo
                             int lineNumber = AsmDudeToolsStatic.Get_LineNumber(tagSpan);
                             if (keywordUpper.StartsWith("%"))
                             {
-                                keywordUpper = keywordUpper.Substring(1); // remove the preceding % in AT&T syntax 
+                                keywordUpper = keywordUpper.Substring(1); // remove the preceding % in AT&T syntax
                             }
 
                             Rn reg = RegisterTools.ParseRn(keywordUpper, true);
@@ -201,7 +200,7 @@ namespace AsmDude.QuickInfo
                             (Mnemonic mnemonic, _) = AsmSourceTools.ParseMnemonic_Att(keywordUpper, true);
                             InstructionTooltipWindow instructionTooltipWindow = new InstructionTooltipWindow(foreground)
                             {
-                                Session = session // set the owner of this windows such that we can manually close this window
+                                Session = session, // set the owner of this windows such that we can manually close this window
                             };
                             instructionTooltipWindow.SetDescription(mnemonic, this._asmDudeTools);
                             instructionTooltipWindow.SetPerformanceInfo(mnemonic, this._asmDudeTools);
@@ -227,14 +226,14 @@ namespace AsmDude.QuickInfo
                             }
                             if (descr.Length > 0)
                             {
-                                if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2))
+                                if (keyword.Length > (AsmDudePackage.MaxNumberOfCharsInToolTips / 2))
                                 {
                                     descr = "\n" + descr;
                                 }
 
-                                description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.MaxNumberOfCharsInToolTips))
                                 {
-                                    Foreground = foreground
+                                    Foreground = foreground,
                                 });
                             }
                             break;
@@ -262,14 +261,14 @@ namespace AsmDude.QuickInfo
                             string descr = this.Get_Label_Def_Description(full_Qualified_Label, label);
                             if (descr.Length > 0)
                             {
-                                if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2))
+                                if (keyword.Length > (AsmDudePackage.MaxNumberOfCharsInToolTips / 2))
                                 {
                                     descr = "\n" + descr;
                                 }
 
-                                description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.MaxNumberOfCharsInToolTips))
                                 {
-                                    Foreground = foreground
+                                    Foreground = foreground,
                                 });
                             }
                             break;
@@ -279,9 +278,9 @@ namespace AsmDude.QuickInfo
                             description = new TextBlock();
                             description.Inlines.Add(Make_Run1("Constant ", foreground));
 
-                            (bool Valid, ulong Value, int NBits) = AsmSourceTools.Evaluate_Constant(keyword);
-                            string constantStr = Valid
-                                ? Value + "d = " + Value.ToString("X") + "h = " + AsmSourceTools.ToStringBin(Value, NBits) + "b"
+                            (bool valid, ulong value, int nBits) = AsmSourceTools.Evaluate_Constant(keyword);
+                            string constantStr = valid
+                                ? value + "d = " + value.ToString("X") + "h = " + AsmSourceTools.ToStringBin(value, nBits) + "b"
                                 : keyword;
 
                             description.Inlines.Add(Make_Run2(constantStr, new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Constant))));
@@ -296,14 +295,14 @@ namespace AsmDude.QuickInfo
                             string descr = this._asmDudeTools.Get_Description(keywordUpper);
                             if (descr.Length > 0)
                             {
-                                if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2))
+                                if (keyword.Length > (AsmDudePackage.MaxNumberOfCharsInToolTips / 2))
                                 {
                                     descr = "\n" + descr;
                                 }
 
-                                description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.MaxNumberOfCharsInToolTips))
                                 {
-                                    Foreground = foreground
+                                    Foreground = foreground,
                                 });
                             }
                             break;
@@ -317,14 +316,14 @@ namespace AsmDude.QuickInfo
                             string descr = this._asmDudeTools.Get_Description(keywordUpper);
                             if (descr.Length > 0)
                             {
-                                if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2))
+                                if (keyword.Length > (AsmDudePackage.MaxNumberOfCharsInToolTips / 2))
                                 {
                                     descr = "\n" + descr;
                                 }
 
-                                description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.MaxNumberOfCharsInToolTips))
                                 {
-                                    Foreground = foreground
+                                    Foreground = foreground,
                                 });
                             }
                             break;
@@ -338,14 +337,14 @@ namespace AsmDude.QuickInfo
                             string descr = this._asmDudeTools.Get_Description(keywordUpper);
                             if (descr.Length > 0)
                             {
-                                if (keyword.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2))
+                                if (keyword.Length > (AsmDudePackage.MaxNumberOfCharsInToolTips / 2))
                                 {
                                     descr = "\n" + descr;
                                 }
 
-                                description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.maxNumberOfCharsInToolTips))
+                                description.Inlines.Add(new Run(AsmSourceTools.Linewrap(": " + descr, AsmDudePackage.MaxNumberOfCharsInToolTips))
                                 {
-                                    Foreground = foreground
+                                    Foreground = foreground,
                                 });
                             }
                             break;
@@ -372,7 +371,7 @@ namespace AsmDude.QuickInfo
             return new Run(str)
             {
                 FontWeight = FontWeights.Bold,
-                Foreground = foreground
+                Foreground = foreground,
             };
         }
 
@@ -381,7 +380,7 @@ namespace AsmDude.QuickInfo
             return new Run(str)
             {
                 FontWeight = FontWeights.Bold,
-                Foreground = foreground
+                Foreground = foreground,
             };
         }
 
@@ -393,7 +392,7 @@ namespace AsmDude.QuickInfo
                 SortedSet<uint> labelDefs = this._labelGraph.Get_Label_Def_Linenumbers(label);
                 if (labelDefs.Count > 1)
                 {
-                    sb.AppendLine("");
+                    sb.AppendLine(string.Empty);
                 }
                 foreach (uint id in labelDefs)
                 {
@@ -406,7 +405,7 @@ namespace AsmDude.QuickInfo
                     }
                     else
                     {
-                        lineContent = "";
+                        lineContent = string.Empty;
                     }
                     sb.AppendLine(AsmDudeToolsStatic.Cleanup(string.Format("Defined at LINE {0} ({1}){2}", lineNumber + 1, filename, lineContent)));
                 }
@@ -432,7 +431,7 @@ namespace AsmDude.QuickInfo
                 StringBuilder sb = new StringBuilder();
                 if (usage.Count > 1)
                 {
-                    sb.AppendLine(""); // add a newline if multiple usage occurances exist
+                    sb.AppendLine(string.Empty); // add a newline if multiple usage occurances exist
                 }
                 foreach (uint id in usage)
                 {
@@ -445,7 +444,7 @@ namespace AsmDude.QuickInfo
                     }
                     else
                     {
-                        lineContent = "";
+                        lineContent = string.Empty;
                     }
                     sb.AppendLine(AsmDudeToolsStatic.Cleanup(string.Format("Used at LINE {0} ({1}){2}", lineNumber + 1, filename, lineContent)));
                     //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:getLabelDefDescription; sb=\"{1}\"", this.ToString(), sb.ToString()));

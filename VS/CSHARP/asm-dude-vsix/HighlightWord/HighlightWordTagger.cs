@@ -1,17 +1,17 @@
 // The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,23 +20,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude.Tools;
-using AsmTools;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Operations;
-using Microsoft.VisualStudio.Text.Tagging;
-using Microsoft.VisualStudio.Utilities;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Windows.Media;
-
 namespace AsmDude.HighlightWord
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.Composition;
+    using System.Linq;
+    using System.Runtime.InteropServices;
+    using System.Windows.Media;
+    using AsmDude.Tools;
+    using AsmTools;
+    using Microsoft.VisualStudio.Text;
+    using Microsoft.VisualStudio.Text.Classification;
+    using Microsoft.VisualStudio.Text.Editor;
+    using Microsoft.VisualStudio.Text.Operations;
+    using Microsoft.VisualStudio.Text.Tagging;
+    using Microsoft.VisualStudio.Utilities;
+
     [Export(typeof(EditorFormatDefinition))]
     [Name("AsmDude.HighlightWordFormatDefinition")]
     [UserVisible(true)]
@@ -66,7 +66,8 @@ namespace AsmDude.HighlightWord
     [ComVisible(false)]
     public class HighlightWordTag : TextMarkerTag
     {
-        public HighlightWordTag() : base("AsmDude.HighlightWordFormatDefinition")
+        public HighlightWordTag()
+            : base("AsmDude.HighlightWordFormatDefinition")
         {
             // empty
         }
@@ -81,16 +82,20 @@ namespace AsmDude.HighlightWord
         private readonly ITextView _view;
         private readonly ITextBuffer _sourceBuffer;
         private readonly ITextSearchService _textSearchService;
+
         private ITextStructureNavigator _textStructureNavigator { get; set; }
+
         private readonly object _updateLock = new object();
 
         // The current set of words to highlight
         private NormalizedSnapshotSpanCollection _wordSpans;
 
         private string CurrentWord { get; set; }
+
         private SnapshotSpan? _currentWordSpan;
 
         private string NewWord { get; set; }
+
         private SnapshotSpan? NewWordSpan { get; set; }
 
         // The current request, from the last cursor movement or view render
@@ -200,19 +205,19 @@ namespace AsmDude.HighlightWord
                         string t = RegisterTools.GetRelatedRegister(reg);
                         findData = new FindData(t, s)
                         {
-                            FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions
+                            FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions,
                         };
                     }
                     else
                     {
-                        (bool Valid, ulong Value, int NBits) = AsmSourceTools.Parse_Constant(this.NewWord);
-                        if (Valid)
+                        (bool valid, ulong value, int nBits) = AsmSourceTools.Parse_Constant(this.NewWord);
+                        if (valid)
                         {
                             AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. Contant={1}", this.ToString(), this.NewWord));
-                            string t = AsmSourceTools.Get_Related_Constant(this.NewWord, Value, NBits);
+                            string t = AsmSourceTools.Get_Related_Constant(this.NewWord, value, nBits);
                             findData = new FindData(t, s)
                             {
-                                FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions
+                                FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions,
                             };
                         }
                         else
@@ -222,7 +227,7 @@ namespace AsmDude.HighlightWord
                             string t = this.NewWord.Replace(".", "\\.").Replace("$", "\\$").Replace("?", "\\?").Replace("/", "\\/");
                             findData = new FindData(t, s)
                             {
-                                FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions
+                                FindOptions = FindOptions.WholeWord | FindOptions.SingleLine | FindOptions.UseRegularExpressions,
                             };
                         }
                     }

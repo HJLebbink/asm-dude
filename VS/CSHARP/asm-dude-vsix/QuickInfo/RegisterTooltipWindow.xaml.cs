@@ -1,17 +1,17 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,18 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude.Tools;
-using AsmTools;
-using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Shell;
-using System;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Media;
-
 namespace AsmDude.QuickInfo
 {
+    using System;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Documents;
+    using System.Windows.Media;
+    using AsmDude.Tools;
+    using AsmTools;
+    using Microsoft.VisualStudio.Language.Intellisense;
+    using Microsoft.VisualStudio.Shell;
+
     public partial class RegisterTooltipWindow : IInteractiveQuickInfoContent
     {
         private readonly Brush _foreground;
@@ -59,15 +59,15 @@ namespace AsmDude.QuickInfo
             this.Description.Inlines.Add(new Run(regStr) { FontWeight = FontWeights.Bold, Foreground = new SolidColorBrush(AsmDudeToolsStatic.ConvertColor(Settings.Default.SyntaxHighlighting_Register)) });
 
             Arch arch = RegisterTools.GetArch(reg);
-            string archStr = (arch == Arch.ARCH_NONE) ? "" : " [" + ArchTools.ToString(arch) + "] ";
+            string archStr = (arch == Arch.ARCH_NONE) ? string.Empty : " [" + ArchTools.ToString(arch) + "] ";
             string descr = asmDudeTools.Get_Description(regStr);
 
-            if (regStr.Length > (AsmDudePackage.maxNumberOfCharsInToolTips / 2))
+            if (regStr.Length > (AsmDudePackage.MaxNumberOfCharsInToolTips / 2))
             {
                 descr = "\n" + descr;
             }
 
-            string full_Descr = AsmSourceTools.Linewrap(":" + archStr + descr, AsmDudePackage.maxNumberOfCharsInToolTips);
+            string full_Descr = AsmSourceTools.Linewrap(":" + archStr + descr, AsmDudePackage.MaxNumberOfCharsInToolTips);
             this.Description.Inlines.Add(new Run(full_Descr) { Foreground = this._foreground });
         }
 
@@ -141,7 +141,7 @@ namespace AsmDude.QuickInfo
                 {
                     Text = isBefore ? "Before:" : "After:",
                     FontFamily = f,
-                    Foreground = this._foreground
+                    Foreground = this._foreground,
                 };
                 this.AsmSimGrid.Children.Add(textBlock);
                 Grid.SetRow(textBlock, row);
@@ -156,7 +156,7 @@ namespace AsmDude.QuickInfo
                     Background = Brushes.Transparent,
                     BorderThickness = new Thickness(0),
                     IsReadOnly = true,
-                    TextWrapping = TextWrapping.Wrap
+                    TextWrapping = TextWrapping.Wrap,
                 };
 
                 if (isBefore)
@@ -181,7 +181,7 @@ namespace AsmDude.QuickInfo
                         Content = "Determine " + reg.ToString(),
                         Foreground = this._foreground,
                         Visibility = Visibility.Visible,
-                        Tag = new ButtonInfo(textBox, reg, isBefore)
+                        Tag = new ButtonInfo(textBox, reg, isBefore),
                     };
                     this.AsmSimGrid.Children.Add(button);
                     Grid.SetRow(button, row);
@@ -217,11 +217,11 @@ namespace AsmDude.QuickInfo
 
                 ButtonInfo info = (ButtonInfo)button.Tag;
 
-                info.text.Text = (info.reg == Rn.NOREG)
-                    ? this._asmSimulator.Get_Flag_Value_and_Block(info.flag, this._lineNumber, info.before)
-                    : this._asmSimulator.Get_Register_Value_and_Block(info.reg, this._lineNumber, info.before, AsmSourceTools.ParseNumeration(this.AsmSimGridExpanderNumeration.Text));
+                info.Text.Text = (info.Reg == Rn.NOREG)
+                    ? this._asmSimulator.Get_Flag_Value_and_Block(info.Flag, this._lineNumber, info.Before)
+                    : this._asmSimulator.Get_Register_Value_and_Block(info.Reg, this._lineNumber, info.Before, AsmSourceTools.ParseNumeration(this.AsmSimGridExpanderNumeration.Text));
 
-                info.text.Visibility = Visibility.Visible;
+                info.Text.Visibility = Visibility.Visible;
                 button.Visibility = Visibility.Collapsed;
             }
             catch (Exception e)

@@ -1,17 +1,17 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,32 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmTools;
-using System.Windows.Controls;
-
 namespace AsmDude.QuickInfo
 {
+    using System.Windows.Controls;
+    using AsmTools;
+
     public class ButtonInfo
     {
-        public readonly TextBox text;
-        public readonly Rn reg;
-        public readonly Flags flag;
-        public readonly bool before;
+        public readonly TextBox Text;
+        public readonly Rn Reg;
+        public readonly Flags Flag;
+        public readonly bool Before;
 
         public ButtonInfo(TextBox text, Rn reg, bool before)
         {
-            this.text = text;
-            this.reg = reg;
-            this.flag = Flags.NONE;
-            this.before = before;
+            this.Text = text;
+            this.Reg = reg;
+            this.Flag = Flags.NONE;
+            this.Before = before;
         }
 
         public ButtonInfo(TextBox text, Flags flag, bool before)
         {
-            this.text = text;
-            this.reg = Rn.NOREG;
-            this.flag = flag;
-            this.before = before;
+            this.Text = text;
+            this.Reg = Rn.NOREG;
+            this.Flag = flag;
+            this.Before = before;
         }
     }
 }

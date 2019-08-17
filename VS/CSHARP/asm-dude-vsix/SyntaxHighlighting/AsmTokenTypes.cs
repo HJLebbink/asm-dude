@@ -1,7 +1,7 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -27,6 +27,6 @@ namespace AsmDude
     /// </summary>
     public enum AsmTokenType
     {
-        Mnemonic, MnemonicOff, Register, Remark, Directive, Constant, Jump, Label, LabelDef, Misc, UserDefined1, UserDefined2, UserDefined3, UNKNOWN
+        Mnemonic, MnemonicOff, Register, Remark, Directive, Constant, Jump, Label, LabelDef, Misc, UserDefined1, UserDefined2, UserDefined3, UNKNOWN,
     }
 }

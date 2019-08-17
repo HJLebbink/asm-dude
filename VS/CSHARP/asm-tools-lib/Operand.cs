@@ -125,7 +125,7 @@ namespace AsmTools
             {
                 if (nBits > this.NBits)
                 {
-                    bool signBit = (this._imm >> (this.NBits - 1) & 1) == 1;
+                    bool signBit = ((this._imm >> (this.NBits - 1)) & 1) == 1;
                     if (signBit)
                     {
                         for (int bit = this.NBits; bit < nBits; ++bit)

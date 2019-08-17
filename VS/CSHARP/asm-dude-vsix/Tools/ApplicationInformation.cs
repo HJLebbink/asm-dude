@@ -1,7 +1,7 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -22,7 +22,6 @@
 
 namespace AsmDude.Tools
 {
-
     public static class ApplicationInformation
     {
         /// <summary>
@@ -33,6 +32,7 @@ namespace AsmDude.Tools
         {
             get { return executingAssembly ?? (executingAssembly = System.Reflection.Assembly.GetExecutingAssembly()); }
         }
+
         private static System.Reflection.Assembly executingAssembly;
 
         /// <summary>
@@ -43,6 +43,7 @@ namespace AsmDude.Tools
         {
             get { return executingAssemblyVersion ?? (executingAssemblyVersion = ExecutingAssembly.GetName().Version); }
         }
+
         private static System.Version executingAssemblyVersion;
 
         /// <summary>
@@ -61,6 +62,7 @@ namespace AsmDude.Tools
                 return compileDate ?? new System.DateTime();
             }
         }
+
         private static System.DateTime? compileDate;
 
         /// <summary>

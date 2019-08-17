@@ -1,7 +1,7 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -9,22 +9,22 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
-using AsmTools;
-using System.Collections.Generic;
-
 namespace AsmSim
 {
+    // The above copyright notice and this permission notice shall be included in all
+    // copies or substantial portions of the Software.
+
+    // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    // SOFTWARE.
+
+    using System.Collections.Generic;
+    using AsmTools;
+
     public class StateConfig
     {
         public bool CF = false;
@@ -34,7 +34,6 @@ namespace AsmSim
         public bool SF = false;
         public bool OF = false;
         public bool DF = false;
-
 
         public bool RAX = false;
         public bool RBX = false;
@@ -56,7 +55,7 @@ namespace AsmSim
         public bool R14 = false;
         public bool R15 = false;
 
-        public bool mem = false;
+        public bool Mem = false;
 
         public bool SIMD = false;
 
@@ -65,8 +64,9 @@ namespace AsmSim
         {
             this.Set_All_Flags_On();
             this.Set_All_Reg_On();
-            this.mem = true;
+            this.Mem = true;
         }
+
         public void Set_All_Flags_On()
         {
             this.CF = true;
@@ -77,6 +77,7 @@ namespace AsmSim
             this.OF = true;
             this.DF = true;
         }
+
         public void Set_All_Reg_On()
         {
             this.RAX = true;
@@ -101,6 +102,7 @@ namespace AsmSim
 
             this.SIMD = true;
         }
+
         public void Set_All_Flags_Off()
         {
             this.CF = false;
@@ -111,6 +113,7 @@ namespace AsmSim
             this.OF = false;
             this.DF = false;
         }
+
         public void Set_All_Reg_Off()
         {
             this.RAX = false;
@@ -135,12 +138,14 @@ namespace AsmSim
 
             this.SIMD = false;
         }
+
         public void Set_All_Off()
         {
             this.Set_All_Flags_Off();
             this.Set_All_Reg_Off();
-            this.mem = false;
+            this.Mem = false;
         }
+
         public void Set_Flags_On(Flags flags)
         {
             if (flags.HasFlag(Flags.CF))
@@ -178,6 +183,7 @@ namespace AsmSim
                 this.DF = true;
             }
         }
+
         public void Set_Reg_On(Rn reg)
         {
             switch (reg)
@@ -233,6 +239,7 @@ namespace AsmSim
                 default: return false;
             }
         }
+
         public bool IsFlagOn(Flags flag)
         {
             switch (flag)
@@ -247,6 +254,7 @@ namespace AsmSim
                 default: return false;
             }
         }
+
         public IEnumerable<Rn> GetRegOn()
         {
             if (this.RAX)
@@ -329,6 +337,7 @@ namespace AsmSim
                 yield return Rn.R15;
             }
         }
+
         public IEnumerable<Flags> GetFlagOn()
         {
             if (this.CF)

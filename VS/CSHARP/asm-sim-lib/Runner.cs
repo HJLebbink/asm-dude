@@ -1,7 +1,7 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -9,23 +9,23 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
-using AsmSim.Mnemonics;
-using AsmTools;
-using System;
-
 namespace AsmSim
 {
+    // The above copyright notice and this permission notice shall be included in all
+    // copies or substantial portions of the Software.
+
+    // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    // SOFTWARE.
+
+    using System;
+    using AsmSim.Mnemonics;
+    using AsmTools;
+
     public static class Runner
     {
         public static DynamicFlow Construct_DynamicFlow_Backward(StaticFlow sFlow, Tools tools)
@@ -212,7 +212,7 @@ namespace AsmSim
                     {
                         StateUpdate resetState = new StateUpdate(keys.PrevKey, keys.NextKey, tools)
                         {
-                            Reset = true
+                            Reset = true,
                         };
                         return (Regular: resetState, Branch: null);
                     }
@@ -339,7 +339,7 @@ namespace AsmSim
                 case Mnemonic.BSF: return new Bsf(args, keys, t);
                 case Mnemonic.BSR: return new Bsr(args, keys, t);
                 case Mnemonic.TEST: return new Test(args, keys, t);
-                case Mnemonic.CRC32: break;//return new Crc32(args, keys, t);
+                case Mnemonic.CRC32: break; //return new Crc32(args, keys, t);
 
                 case Mnemonic.SETE:
                 case Mnemonic.SETZ:
@@ -414,7 +414,7 @@ namespace AsmSim
                 case Mnemonic.LOOPNZ: return new Loopnz(args, keys, t);
                 case Mnemonic.LOOPNE: return new Loopne(args, keys, t);
 
-                case Mnemonic.CALL: break;// return new Call(args, keys, t);
+                case Mnemonic.CALL: break; // return new Call(args, keys, t);
                 case Mnemonic.RET: break; // return new Ret(args, keys, t);
                 case Mnemonic.IRET: break;
                 case Mnemonic.INT: break;

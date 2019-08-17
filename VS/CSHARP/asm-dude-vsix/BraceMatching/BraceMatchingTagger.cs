@@ -1,17 +1,17 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,22 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Tagging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace AsmDude.BraceMatching
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Microsoft.VisualStudio.Text;
+    using Microsoft.VisualStudio.Text.Editor;
+    using Microsoft.VisualStudio.Text.Tagging;
 
     /// <summary>
     /// Somewhat unnecessary brace matching functionality
     /// </summary>
     internal sealed class BraceMatchingTagger : ITagger<TextMarkerTag>
     {
-
         private readonly ITextView _view;
         private readonly ITextBuffer _sourceBuffer;
         private readonly Dictionary<char, char> _braceList;
@@ -52,7 +50,7 @@ namespace AsmDude.BraceMatching
             {
                 { '[', ']' },
                 { '(', ')' },
-                { '{', '}' }
+                { '{', '}' },
             };
             this._view.Caret.PositionChanged += this.CaretPositionChanged;
             this._view.LayoutChanged += this.ViewLayoutChanged;
@@ -72,6 +70,7 @@ namespace AsmDude.BraceMatching
         {
             this.UpdateAtCaretPosition(e.NewPosition);
         }
+
         private void UpdateAtCaretPosition(CaretPosition caretPosition)
         {
             this._currentChar = caretPosition.Point.GetPoint(this._sourceBuffer, caretPosition.Affinity);
@@ -86,7 +85,7 @@ namespace AsmDude.BraceMatching
         public IEnumerable<ITagSpan<TextMarkerTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
             if (spans.Count == 0)
-            {  //there is no content in the buffer
+            { //there is no content in the buffer
                 yield break;
             }
             //don't do anything if the current SnapshotPoint is not initialized or at the end of the buffer
@@ -110,7 +109,7 @@ namespace AsmDude.BraceMatching
             SnapshotSpan pairSpan = new SnapshotSpan();
 
             if (this._braceList.ContainsKey(currentText))
-            {  //the key is the open brace
+            { //the key is the open brace
                 this._braceList.TryGetValue(currentText, out char closeChar);
                 if (FindMatchingCloseChar(currentChar, currentText, closeChar, this._view.TextViewLines.Count, out pairSpan) == true)
                 {
@@ -119,7 +118,7 @@ namespace AsmDude.BraceMatching
                 }
             }
             else if (this._braceList.ContainsValue(lastText))
-            {   //the value is the close brace, which is the *previous* character 
+            { //the value is the close brace, which is the *previous* character
                 IEnumerable<char> open = from n in this._braceList
                                          where n.Value.Equals(lastText)
                                          select n.Key;
@@ -158,7 +157,7 @@ namespace AsmDude.BraceMatching
                             openCount--;
                         }
                         else
-                        {   //found the matching close
+                        { //found the matching close
                             pairSpan = new SnapshotSpan(startPoint.Snapshot, line.Start + offset, 1);
                             return true;
                         }
@@ -182,6 +181,7 @@ namespace AsmDude.BraceMatching
 
             return false;
         }
+
         private static bool FindMatchingOpenChar(SnapshotPoint startPoint, char open, char close, int maxLines, out SnapshotSpan pairSpan)
         {
             pairSpan = new SnapshotSpan(startPoint, startPoint);
@@ -221,7 +221,7 @@ namespace AsmDude.BraceMatching
                             closeCount--;
                         }
                         else
-                        {  // We've found the open character
+                        { // We've found the open character
                             pairSpan = new SnapshotSpan(line.Start + offset, 1); //we just want the character itself
                             return true;
                         }

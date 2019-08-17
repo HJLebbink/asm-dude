@@ -1,7 +1,7 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -9,27 +9,27 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
-using AsmTools;
-using QuickGraph;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-
 namespace AsmSim
 {
+    // The above copyright notice and this permission notice shall be included in all
+    // copies or substantial portions of the Software.
+
+    // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    // SOFTWARE.
+
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Linq;
+    using System.Text;
+    using AsmTools;
+    using QuickGraph;
+
     public class StaticFlow
     {
         public static readonly char LINENUMBER_SEPARATOR = '!';
@@ -67,7 +67,7 @@ namespace AsmSim
             ISet<Rn> regs = new HashSet<Rn>();
             Flags flags = Flags.NONE;
             bool mem = false;
-            (string, string, string) dummyKeys = ("", "", "");
+            (string, string, string) dummyKeys = (string.Empty, string.Empty, string.Empty);
             for (int lineNumber = lineNumberBegin; lineNumber <= lineNumberEnd; lineNumber++)
             {
                 (Mnemonic Mnemonic, string[] Args) content = this.Get_Line(lineNumber);
@@ -99,7 +99,7 @@ namespace AsmSim
                 config.Set_Reg_On(reg);
             }
 
-            config.mem = mem;
+            config.Mem = mem;
             return config;
         }
 
@@ -114,6 +114,7 @@ namespace AsmSim
                 return "!" + lineNumber.ToString();
             }
         }
+
         public (string Key1, string Key2) Get_Key((int lineNumber1, int lineNumber2) lineNumber)
         {
             if (true)
@@ -145,6 +146,7 @@ namespace AsmSim
                 return lineNumber;
             }
         }
+
         public int LastLineNumber { get { return this.Current.Count; } }
 
         public bool HasLine(int lineNumber)
@@ -167,7 +169,7 @@ namespace AsmSim
 
         public string Get_Line_Str(int lineNumber)
         {
-            return this.HasLine(lineNumber) ? ToString(this.Current[lineNumber]) : "";
+            return this.HasLine(lineNumber) ? ToString(this.Current[lineNumber]) : string.Empty;
         }
 
         public bool Has_Prev_LineNumber(int lineNumber)
@@ -203,21 +205,21 @@ namespace AsmSim
 
         public (int Regular, int Branch) Get_Next_LineNumber(int lineNumber)
         {
-            int Regular = -1;
-            int Branch = -1;
+            int regular = -1;
+            int branch = -1;
 
             foreach (TaggedEdge<int, bool> v in this._graph.OutEdges(lineNumber))
             {
                 if (v.Tag)
                 {
-                    Branch = v.Target;
+                    branch = v.Target;
                 }
                 else
                 {
-                    Regular = v.Target;
+                    regular = v.Target;
                 }
             }
-            return (Regular: Regular, Branch: Branch);
+            return (Regular: regular, Branch: branch);
         }
 
         /// <summary>A LoopBranchPoint is a BranchPoint that choices between leaving the loop or staying in the loop.
@@ -226,9 +228,9 @@ namespace AsmSim
         {
             if (this.Is_Branch_Point(lineNumber))
             {
-                (int Regular, int Branch) = this.Get_Next_LineNumber(lineNumber);
-                bool hasCodePath_Branch = this.HasCodePath(Branch, lineNumber);
-                bool hasCodePath_Regular = this.HasCodePath(Regular, lineNumber);
+                (int regular, int branch) = this.Get_Next_LineNumber(lineNumber);
+                bool hasCodePath_Branch = this.HasCodePath(branch, lineNumber);
+                bool hasCodePath_Regular = this.HasCodePath(regular, lineNumber);
 
                 if (hasCodePath_Branch && !hasCodePath_Regular)
                 {
@@ -249,14 +251,14 @@ namespace AsmSim
             {
                 int numberOfLoops = 0;
                 int loopLineNumber = -1;
-                // TODO return the smallest loop 
+                // TODO return the smallest loop
 
-                foreach ((int LineNumber, bool IsBranch) in this.Get_Prev_LineNumber(lineNumber))
+                foreach ((int lineNumber1, bool isBranch) in this.Get_Prev_LineNumber(lineNumber))
                 {
-                    if (this.HasCodePath(lineNumber, LineNumber))
+                    if (this.HasCodePath(lineNumber, lineNumber1))
                     {
                         numberOfLoops++;
-                        loopLineNumber = LineNumber;
+                        loopLineNumber = lineNumber1;
                     }
                 }
                 if (numberOfLoops > 0)
@@ -289,9 +291,9 @@ namespace AsmSim
                 if (this.HasLine(lineNumber2) && !result.Contains(lineNumber2))
                 {
                     result.Add(lineNumber2);
-                    (int Regular, int Branch) = this.Get_Next_LineNumber(lineNumber2);
-                    FutureLineNumbers_Local(Regular);
-                    FutureLineNumbers_Local(Branch);
+                    (int regular, int branch) = this.Get_Next_LineNumber(lineNumber2);
+                    FutureLineNumbers_Local(regular);
+                    FutureLineNumbers_Local(branch);
                 }
             }
         }
@@ -311,6 +313,7 @@ namespace AsmSim
         #endregion
 
         #region Setters
+
         /// <summary>Update this CFlow with the provided programStr: return true if this CFlow has changed.</summary>
         public bool Update(string programStr, bool removeEmptyLines = true)
         {
@@ -404,10 +407,10 @@ namespace AsmSim
         {
             for (int i = 0; i < args.Length; ++i)
             {
-                (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Evaluate_Constant(args[i]);
-                if (Valid)
+                (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant(args[i]);
+                if (valid)
                 {
-                    args[i] = Value.ToString();
+                    args[i] = value.ToString();
                 }
             }
         }
@@ -455,7 +458,7 @@ namespace AsmSim
 
         public static string ToString((string label, Mnemonic mnemonic, string[] args) t)
         {
-            string arguments = "";
+            string arguments = string.Empty;
 
             switch (t.args.Length)
             {
@@ -472,7 +475,7 @@ namespace AsmSim
             }
             else
             {
-                return string.Format("{0}{1} {2}", (t.label.Length > 0) ? (t.label + ": ") : "", t.mnemonic, arguments);
+                return string.Format("{0}{1} {2}", (t.label.Length > 0) ? (t.label + ": ") : string.Empty, t.mnemonic, arguments);
             }
         }
 
@@ -485,20 +488,20 @@ namespace AsmSim
                 sb.Append("Line " + i + ": ");
                 sb.Append(this.Get_Line_Str(i));
                 sb.Append(" [Prev:");
-                foreach ((int LineNumber, bool IsBranch) in this.Get_Prev_LineNumber(i))
+                foreach ((int lineNumber, bool isBranch) in this.Get_Prev_LineNumber(i))
                 {
-                    sb.Append(LineNumber + (IsBranch ? "B" : "R") + ",");  // B=Branching; R=Regular Continuation
+                    sb.Append(lineNumber + (isBranch ? "B" : "R") + ",");  // B=Branching; R=Regular Continuation
                 }
                 sb.Append("][Next:");
-                (int Regular, int Branch) = this.Get_Next_LineNumber(i);
-                if (Regular != -1)
+                (int regular, int branch) = this.Get_Next_LineNumber(i);
+                if (regular != -1)
                 {
-                    sb.Append(Regular + "R,");
+                    sb.Append(regular + "R,");
                 }
 
-                if (Branch != -1)
+                if (branch != -1)
                 {
-                    sb.Append(Branch + "B");
+                    sb.Append(branch + "B");
                 }
 
                 sb.AppendLine("]");
@@ -514,6 +517,7 @@ namespace AsmSim
         {
             get { return this._use_Parsed_Code_A ? this._parsed_Code_A : this._parsed_Code_B; }
         }
+
         private IList<(string Label, Mnemonic Mnemonic, string[] Args)> Previous
         {
             get { return this._use_Parsed_Code_A ? this._parsed_Code_B : this._parsed_Code_A; }
@@ -609,7 +613,6 @@ namespace AsmSim
                 default:
                     jumpTo1 = lineNumber + 1;
                     break;
-
             }
             //Console.WriteLine("INFO: StaticControlFlow: "+StaticControlFlow.ToString(tup)+"; jumpTo1=" + jumpTo1 + "; jumpTo2=" + jumpTo2);
             return (jumpTo1, jumpTo2);
@@ -623,11 +626,11 @@ namespace AsmSim
             for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
             {
                 string line = lines[lineNumber];
-                (bool Valid, int BeginPos, int EndPos) = AsmSourceTools.GetLabelDefPos(line);
-                if (Valid)
+                (bool valid, int beginPos, int endPos) = AsmSourceTools.GetLabelDefPos(line);
+                if (valid)
                 {
-                    int labelBeginPos = BeginPos;
-                    int labelEndPos = EndPos;
+                    int labelBeginPos = beginPos;
+                    int labelEndPos = endPos;
                     string label = line.Substring(labelBeginPos, labelEndPos - labelBeginPos);
                     if (result.ContainsKey(label))
                     {

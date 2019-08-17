@@ -35,7 +35,7 @@ namespace unit_tests_asm_z3
             Tools tools = this.CreateTools(100000);
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             string line1 = "mov ptr qword [rax], 10";
             string line2 = "mov ptr qword [rax], 10";
@@ -67,7 +67,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.Set_All_Off();
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             string line1 = "mov ptr qword [rax], rbx";
             string line2 = "mov ptr qword [rax], rbx";
@@ -100,7 +100,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
             tools.StateConfig.RCX = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             string line0 = "mov rbx, rcx";
             string line1 = "mov ptr byte [rax], cl";

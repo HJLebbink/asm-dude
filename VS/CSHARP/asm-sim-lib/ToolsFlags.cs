@@ -1,7 +1,7 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -9,23 +9,23 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
-using Microsoft.Z3;
-using System;
-using System.Diagnostics;
-
 namespace AsmSim
 {
+    // The above copyright notice and this permission notice shall be included in all
+    // copies or substantial portions of the Software.
+
+    // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    // SOFTWARE.
+
+    using System;
+    using System.Diagnostics;
+    using Microsoft.Z3;
+
     public static class ToolsFlags
     {
         #region Carry Flag
@@ -37,14 +37,16 @@ namespace AsmSim
             return ToolsZ3.GetBit(sum, nBits, ctx.MkBV(1, 1), ctx);
             //return ctx.MkNot(ctx.MkBVAddNoOverflow(a, b, false));
         }
+
         public static BoolExpr Create_CF_Sub(BitVecExpr a, BitVecExpr b, uint nBits, Context ctx)
         {
             BitVecExpr ax = ctx.MkZeroExt(1, a);
             BitVecExpr bx = ctx.MkZeroExt(1, b);
-            BitVecNum ONE = ctx.MkBV(1, 1);
-            return ToolsZ3.GetBit(ctx.MkBVSub(ax, bx), nBits, ONE, ctx);
+            BitVecNum oNE = ctx.MkBV(1, 1);
+            return ToolsZ3.GetBit(ctx.MkBVSub(ax, bx), nBits, oNE, ctx);
             //return ctx.MkNot(ctx.MkBVSubNoUnderflow(a, b, false));
         }
+
         public static BoolExpr Create_CF_Mul(BitVecExpr a, BitVecExpr b, uint nBits, Context ctx)
         {
             throw new Exception();
@@ -60,12 +62,14 @@ namespace AsmSim
             Debug.Assert(b.SortSize >= 4);
             return Create_CF_Add(ctx.MkExtract(3, 0, a), ctx.MkExtract(3, 0, b), 4, ctx);
         }
+
         public static BoolExpr Create_AF_Sub(BitVecExpr a, BitVecExpr b, Context ctx)
         {
             Debug.Assert(a.SortSize >= 4);
             Debug.Assert(b.SortSize >= 4);
             return Create_CF_Sub(ctx.MkExtract(3, 0, a), ctx.MkExtract(3, 0, b), 4, ctx);
         }
+
         public static BoolExpr Create_AF_Mul(BitVecExpr a, BitVecExpr b, Context ctx)
         {
             Debug.Assert(a.SortSize >= 4);
@@ -80,16 +84,19 @@ namespace AsmSim
             //return ctx.MkNot(ctx.MkBVAddNoOverflow(a, b, true));
             return Create_OF(a, b, ctx.MkBVAdd(a, b), nBits, ctx);
         }
+
         public static BoolExpr Create_OF_Sub(BitVecExpr a, BitVecExpr b, uint nBits, Context ctx)
         {
             //return ctx.MkNot(ctx.MkBVSubNoUnderflow(a, b, true));
             return Create_OF(a, b, ctx.MkBVSub(a, b), nBits, ctx);
         }
+
         public static BoolExpr Create_OF_Mul(BitVecExpr a, BitVecExpr b, uint nBits, Context ctx)
         {
             //return ctx.MkNot(ctx.MkBVMulNoOverflow(a, b, true));
             return Create_OF(a, b, ctx.MkBVMul(a, b), nBits, ctx);
         }
+
         private static BoolExpr Create_OF(BitVecExpr a, BitVecExpr b, BitVecExpr result, uint nBits, Context ctx)
         {
             Debug.Assert(a != null, "BitVecExpr a cannot be null");
@@ -105,8 +112,8 @@ namespace AsmSim
             BitVecExpr signB = Create_SF_BV(b, nBits, ctx);
             BitVecExpr signC = Create_SF_BV(result, nBits, ctx);
 
-            BitVecExpr ONE = ctx.MkBV(1, 1);
-            return ctx.MkAnd(ctx.MkEq(signA, signB), ctx.MkEq(ctx.MkBVXOR(signA, signC), ONE));
+            BitVecExpr oNE = ctx.MkBV(1, 1);
+            return ctx.MkAnd(ctx.MkEq(signA, signB), ctx.MkEq(ctx.MkBVXOR(signA, signC), oNE));
         }
         #endregion
 
@@ -119,6 +126,7 @@ namespace AsmSim
             uint bitPos = nBits - 1;
             return ToolsZ3.GetBit(value, bitPos, ctx.MkBV(1, 1), ctx);
         }
+
         public static BitVecExpr Create_SF_BV(BitVecExpr value, uint nBits, Context ctx)
         {
             Debug.Assert(value != null, "BitVecExpr value cannot be null");
@@ -128,6 +136,7 @@ namespace AsmSim
             uint bitPos = nBits - 1;
             return ToolsZ3.GetBit_BV(value, bitPos, ctx);
         }
+
         public static BoolExpr Create_PF(BitVecExpr value, Context ctx)
         {
             Debug.Assert(value != null, "BitVecExpr value cannot be null");
@@ -141,6 +150,7 @@ namespace AsmSim
             BitVecExpr v01234567 = ctx.MkBVAdd(v0123, v4567);
             return ctx.MkEq(v01234567, ctx.MkBV(0, 1));
         }
+
         public static BoolExpr Create_ZF(BitVecExpr value, Context ctx)
         {
             Debug.Assert(value != null, "BitVecExpr value cannot be null");

@@ -1,7 +1,7 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -9,26 +9,26 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
-using AsmTools;
-using Microsoft.Z3;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-
 namespace AsmSim
 {
+    // The above copyright notice and this permission notice shall be included in all
+    // copies or substantial portions of the Software.
+
+    // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    // SOFTWARE.
+
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Text;
+    using AsmTools;
+    using Microsoft.Z3;
+
     public static class ToolsZ3
     {
         private static readonly object _object = new object();
@@ -86,16 +86,19 @@ namespace AsmSim
         {
             return ctx.MkEq(GetBit_BV(value, pos, ctx), ctx.MkBV(1, 1));
         }
+
         public static BitVecExpr GetBit_BV(BitVecExpr value, BitVecExpr pos, Context ctx)
         {
             return ctx.MkExtract(0, 0, ctx.MkBVLSHR(value, pos));
         }
+
         public static BoolExpr GetBit(BitVecExpr value, uint pos, BitVecNum one, Context ctx)
         {
             Debug.Assert(one.SortSize == 1);
             Debug.Assert(one.Int == 1);
             return ctx.MkEq(GetBit_BV(value, pos, ctx), one);
         }
+
         public static BitVecExpr GetBit_BV(BitVecExpr value, uint pos, Context ctx)
         {
             Debug.Assert(ctx != null, "Context ctx cannot be null");
@@ -125,7 +128,7 @@ namespace AsmSim
                         break;
                     case Tv.UNKNOWN:
                         next_value = ctx.MkBVConst("?" + random.Next(), 1);
-                        next_undef = ctx.MkBV(0, 1); // could also use one, 
+                        next_undef = ctx.MkBV(0, 1); // could also use one,
                         break;
                     case Tv.ONE:
                         next_value = ctx.MkBV(1, 1);
@@ -136,7 +139,6 @@ namespace AsmSim
                         next_undef = next_value;
                         break;
                     case Tv.INCONSISTENT: throw new Exception();
-
                 }
                 value = (value == null) ? next_value : ctx.MkConcat(next_value, value);
                 undef = (undef == null) ? next_undef : ctx.MkConcat(next_undef, undef);
@@ -295,7 +297,6 @@ namespace AsmSim
                     //Tactic ta6b = ctx.MkTactic("sat-preprocess"); // does not work: some constrains are lost
                     //Tactic ta7 = ctx.MkTactic("smt"); // does not work: all constraitns are lost
 
-
                     using (Tactic tactic = ctx.AndThen(ta2, ctx.AndThen(ta1, ta5)))
                     //                    using (Tactic tactic = ctx.AndThen(ta2, ta1))
                     {
@@ -433,7 +434,7 @@ namespace AsmSim
 
         public static string ToStringHex(Tv[] a)
         {
-            string str = "";
+            string str = string.Empty;
             int offset = 0;
             while (offset < a.Length)
             {
@@ -456,13 +457,13 @@ namespace AsmSim
 
         public static string ToStringDec(Tv[] a)
         {
-            (ulong? Value, Tv Misc) = ToUlong();
-            if (Value != null)
+            (ulong? value, Tv misc) = ToUlong();
+            if (value != null)
             {
-                return Value.ToString() + "d";
+                return value.ToString() + "d";
             }
 
-            return Misc.ToString();
+            return misc.ToString();
 
             #region LocalMethod
             (ulong? Value, Tv Misc) ToUlong()
@@ -487,7 +488,7 @@ namespace AsmSim
 
         public static string ToStringOct(Tv[] a)
         {
-            string str = "";
+            string str = string.Empty;
             int offset = 0;
             while (offset < a.Length)
             {
@@ -696,7 +697,7 @@ namespace AsmSim
 
         #endregion Print Methods
 
-        #region Conversion 
+        #region Conversion
         public static ulong? ToUlong(BitVecExpr value, uint nBits, Solver solver, Context ctx)
         {
             if (value.IsBVNumeral)
@@ -705,11 +706,11 @@ namespace AsmSim
             }
 
             Tv[] results = new Tv[nBits];
-            using (BitVecNum ONE = ctx.MkBV(1, 1))
+            using (BitVecNum oNE = ctx.MkBV(1, 1))
             {
                 for (uint bit = 0; bit < nBits; ++bit)
                 {
-                    using (BoolExpr b = GetBit(value, bit, ONE, ctx))
+                    using (BoolExpr b = GetBit(value, bit, oNE, ctx))
                     {
                         switch (GetTv(b, solver, ctx))
                         {
@@ -727,6 +728,7 @@ namespace AsmSim
             }
             return ToUlong(results);
         }
+
         public static ulong? ToUlong(Tv[] array)
         {
             ulong result = 0;
@@ -754,9 +756,10 @@ namespace AsmSim
             }
             return result;
         }
+
         public static Tv[] GetTvArray(string value)
         {
-            char[] charArray = value.Replace(".", "").Replace("_", "").ToCharArray();
+            char[] charArray = value.Replace(".", string.Empty).Replace("_", string.Empty).ToCharArray();
             Array.Reverse(charArray);
 
             int nBits = charArray.Length;
@@ -788,10 +791,12 @@ namespace AsmSim
             }
             return result;
         }
+
         public static Tv[] GetTvArray(BitVecExpr value, int nBits, Solver solver, Solver solver_U, Context ctx)
         {
             return GetTvArray(value, value, nBits, solver, solver_U, ctx);
         }
+
         public static Tv[] GetTvArray(BitVecExpr value, BitVecExpr undef, int nBits, Solver solver, Solver solver_U, Context ctx)
         {
             Tv[] results = new Tv[nBits];
@@ -813,6 +818,7 @@ namespace AsmSim
             }
             return results;
         }
+
         public static Tv[] GetTvArray(BitVecExpr value, int nBits, Solver solver, Context ctx)
         {
             Tv[] results = new Tv[nBits];
@@ -848,6 +854,7 @@ namespace AsmSim
                 return Tv.UNDETERMINED;
             }
         }
+
         private static Tv GetTv_Method1(BoolExpr value, BoolExpr undef, Solver solver, Solver solver_U, Context ctx)
         {
             bool tvTrue;
@@ -876,13 +883,13 @@ namespace AsmSim
                     tvFalse = status == Status.SATISFIABLE;
                 }
             }
-            // if it consistent to assert that the provided bit is true, 
-            // and seperately that it is consistent to be false, the model in the solver 
+            // if it consistent to assert that the provided bit is true,
+            // and seperately that it is consistent to be false, the model in the solver
             // is indifferent about the truth-value of bit.
 
             if (!tvTrue && !tvFalse)
             {
-                return Tv.INCONSISTENT; // TODO: if inconsistent does not occur and !tvTrue is observed we can directly return Tv5.ZERO 
+                return Tv.INCONSISTENT; // TODO: if inconsistent does not occur and !tvTrue is observed we can directly return Tv5.ZERO
             }
 
             if (!tvTrue && tvFalse)
@@ -932,6 +939,7 @@ namespace AsmSim
             // unreachable
             throw new Exception();
         }
+
         private static Tv GetTv_Method2(BoolExpr value, BoolExpr undef, Solver solver, Solver solver_U, Context ctx)
         {
             Dictionary<string, string> settings = new Dictionary<string, string>();
@@ -973,13 +981,13 @@ namespace AsmSim
                     tvFalse = status == Status.SATISFIABLE;
                 }
             }
-            // if it consistent to assert that the provided bit is true, 
-            // and seperately that it is consistent to be false, the model in the solver 
+            // if it consistent to assert that the provided bit is true,
+            // and seperately that it is consistent to be false, the model in the solver
             // is indifferent about the truth-value of bit.
 
             if (!tvTrue && !tvFalse)
             {
-                return Tv.INCONSISTENT; // TODO: if inconsistent does not occur and !tvTrue is observed we can directly return Tv5.ZERO 
+                return Tv.INCONSISTENT; // TODO: if inconsistent does not occur and !tvTrue is observed we can directly return Tv5.ZERO
             }
 
             if (!tvTrue && tvFalse)
@@ -1079,13 +1087,13 @@ namespace AsmSim
                     tvFalse = status == Status.SATISFIABLE;
                     solver.Pop();
                 }
-                // if it consistent to assert that the provided bit is true, 
-                // and seperately that it is consistent to be false, the model in the solver 
+                // if it consistent to assert that the provided bit is true,
+                // and seperately that it is consistent to be false, the model in the solver
                 // is indifferent about the truth-value of bit.
 
                 if (!tvTrue && !tvFalse)
                 {
-                    return Tv.INCONSISTENT; // TODO: if inconsistent does not occur and !tvTrue is observed we can directly return Tv5.ZERO 
+                    return Tv.INCONSISTENT; // TODO: if inconsistent does not occur and !tvTrue is observed we can directly return Tv5.ZERO
                 }
 
                 if (!tvTrue && tvFalse)
@@ -1119,14 +1127,14 @@ namespace AsmSim
 
         public static Expr UpdateConstName(Expr expr, string postfix, Context ctx)
         {
-            (IList<Symbol> BoolConstants, IList<Symbol> BvConstants) = GetConstants(expr);
+            (IList<Symbol> boolConstants, IList<Symbol> bvConstants) = GetConstants(expr);
 
-            foreach (Symbol s in BoolConstants)
+            foreach (Symbol s in boolConstants)
             {
                 expr = expr.Substitute(ctx.MkBoolConst(s), ctx.MkBoolConst(s + postfix));
                 //Console.WriteLine("UpdateConstName: s=" + s + "; expr=" + expr);
             }
-            foreach (Symbol s in BvConstants)
+            foreach (Symbol s in bvConstants)
             {
                 expr = expr.Substitute(ctx.MkBVConst(s, 64), ctx.MkBVConst(s + postfix, 64));
                 //Console.WriteLine("UpdateConstName: s=" + s + "; expr=" + expr);

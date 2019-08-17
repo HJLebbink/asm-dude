@@ -1,17 +1,17 @@
 // The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,21 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Amib.Threading;
-using AsmDude.SignatureHelp;
-using AsmDude.Tools;
-using AsmTools;
-using Microsoft.VisualStudio.Shell;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Xml;
-
 namespace AsmDude
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Globalization;
+    using System.IO;
+    using System.Linq;
+    using System.Xml;
+    using Amib.Threading;
+    using AsmDude.SignatureHelp;
+    using AsmDude.Tools;
+    using AsmTools;
+    using Microsoft.VisualStudio.Shell;
+
     public sealed class AsmDudeTools : IDisposable
     {
         private XmlDocument _xmlData;
@@ -51,10 +51,10 @@ namespace AsmDude
         private readonly SmartThreadPool _threadPool;
 
         #region Singleton Stuff
-        private static readonly Lazy<AsmDudeTools> lazy = new Lazy<AsmDudeTools>(() => new AsmDudeTools());
-        public static AsmDudeTools Instance { get { return lazy.Value; } }
-        #endregion Singleton Stuff
+        private static readonly Lazy<AsmDudeTools> Lazy = new Lazy<AsmDudeTools>(() => new AsmDudeTools());
 
+        public static AsmDudeTools Instance { get { return Lazy.Value; } }
+        #endregion Singleton Stuff
 
         /// <summary>
         /// Singleton pattern: use AsmDudeTools.Instance for the instance of this class
@@ -70,7 +70,7 @@ namespace AsmDude
             this._errorListProvider = new ErrorListProvider(serviceProvider)
             {
                 ProviderName = "Asm Errors",
-                ProviderGuid = new Guid(EnvDTE.Constants.vsViewKindCode)
+                ProviderGuid = new Guid(EnvDTE.Constants.vsViewKindCode),
             };
             #endregion
 
@@ -147,7 +147,6 @@ namespace AsmDude
                     {
                         string instruction = e.Mnemonic.ToString() + " " + e.Operands_Str;
 
-
                         //AsmDudeToolsStatic.Output_INFO("Intel " + instruction + ": arch" + e.archStr);
                         if ((e.Arch_Str == null) || (e.Arch_Str.Length == 0))
                         {
@@ -209,7 +208,7 @@ namespace AsmDude
                             usedMnemonics.Add(mnemonic);
                         }
                     }
-                    string str = "";
+                    string str = string.Empty;
                     foreach (Mnemonic mnemonic in usedMnemonics)
                     {
                         str += mnemonic.ToString() + ",";
@@ -229,7 +228,6 @@ namespace AsmDude
                         string reference = this.Get_Url(mnemonic);
 
                         this.Mnemonic_Store.SetHtmlRef(mnemonic, reference);
-
                     }
                 }
                 AsmDudeToolsStatic.Output_INFO(this.Mnemonic_Store.ToString());
@@ -266,10 +264,12 @@ namespace AsmDude
         {
             return this._mnemonics_switched_on.Contains(mnemonic);
         }
+
         public IEnumerable<Mnemonic> Get_Allowed_Mnemonics()
         {
             return this._mnemonics_switched_on;
         }
+
         public void UpdateMnemonicSwitchedOn()
         {
             this._mnemonics_switched_on.Clear();
@@ -291,10 +291,12 @@ namespace AsmDude
         {
             return this._register_switched_on.Contains(reg);
         }
+
         public IEnumerable<Rn> Get_Allowed_Registers()
         {
             return this._register_switched_on;
         }
+
         public void UpdateRegisterSwitchedOn()
         {
             this._register_switched_on.Clear();
@@ -413,7 +415,7 @@ namespace AsmDude
         public string Get_Description(string keyword)
         {
             Debug.Assert(keyword == keyword.ToUpper());
-            return this._description.TryGetValue(keyword, out string description) ? description : "";
+            return this._description.TryGetValue(keyword, out string description) ? description : string.Empty;
         }
 
         /// <summary>
@@ -565,11 +567,11 @@ namespace AsmDude
             try
             {
                 XmlNode node2 = node.SelectSingleNode("./description");
-                return (node2 == null) ? "" : node2.InnerText.Trim();
+                return (node2 == null) ? string.Empty : node2.InnerText.Trim();
             }
             catch (Exception)
             {
-                return "";
+                return string.Empty;
             }
         }
 

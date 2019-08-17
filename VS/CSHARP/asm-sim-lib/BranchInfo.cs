@@ -1,7 +1,7 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -20,10 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Microsoft.Z3;
-
 namespace AsmSim
 {
+    using Microsoft.Z3;
+
     public class BranchInfo
     {
         public readonly BoolExpr BranchCondition;
@@ -54,6 +54,7 @@ namespace AsmSim
                 return this.BranchTaken ? this.BranchCondition : ctx.MkNot(this.BranchCondition);
             }
         }
+
         public override string ToString()
         {
             return "BranchInfo: " + this.BranchCondition + "\n(branch taken " + this.BranchTaken + ")";

@@ -1,17 +1,17 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,19 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude.Tools;
-using AsmTools;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.TextManager.Interop;
-using System;
-using System.Runtime.InteropServices;
-
 namespace AsmDude.SignatureHelp
 {
+    using System;
+    using System.Runtime.InteropServices;
+    using AsmDude.Tools;
+    using AsmTools;
+    using Microsoft.VisualStudio;
+    using Microsoft.VisualStudio.Language.Intellisense;
+    using Microsoft.VisualStudio.OLE.Interop;
+    using Microsoft.VisualStudio.Text;
+    using Microsoft.VisualStudio.Text.Editor;
+    using Microsoft.VisualStudio.TextManager.Interop;
+
     internal sealed class AsmSignatureHelpCommandFilter : IOleCommandTarget
     {
         private readonly ITextView _textView;
@@ -65,7 +65,7 @@ namespace AsmDude.SignatureHelp
                     //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Exec: nCmdID={1}; nCmdexecopt={2}", this.ToString(), nCmdID, nCmdexecopt));
 
                     if (nCmdID == (uint)VSConstants.VSStd2KCmdID.RETURN)
-                    {   // return typed
+                    { // return typed
                         if (this._session != null)
                         {
                             this._session.Dismiss();
@@ -73,7 +73,7 @@ namespace AsmDude.SignatureHelp
                         }
                     }
                     else if (nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR)
-                    {   // character typed
+                    { // character typed
                         SnapshotPoint currentPoint = this._textView.Caret.Position.BufferPosition;
                         if ((currentPoint != null) && (currentPoint > 0))
                         {
@@ -86,7 +86,6 @@ namespace AsmDude.SignatureHelp
                                 int pos = point.Position - line.Start;
                                 if (!AsmSourceTools.IsInRemark(pos, lineStr))
                                 { //check if current position is in a remark; if we are in a remark, no signature help
-
                                     char typedChar = this.GetTypeChar(pvaIn);
                                     if (char.IsWhiteSpace(typedChar) || typedChar.Equals(','))
                                     {

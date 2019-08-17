@@ -923,7 +923,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RAX = true;
             tools.StateConfig.RCX = true;
             tools.StateConfig.RDX = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
 
             string programStr =
                 "           mov     rcx,        20              " + Environment.NewLine +
@@ -947,7 +947,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
             tools.StateConfig.RCX = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
             tools.Quiet = true;
 
             string programStr =
@@ -975,7 +975,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
             tools.StateConfig.RCX = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
             tools.Quiet = true;
             bool logToDisplay2 = false;// logToDisplay;
 
@@ -1012,7 +1012,7 @@ namespace unit_tests_asm_z3
             tools.StateConfig.RAX = true;
             tools.StateConfig.RBX = true;
             tools.StateConfig.ZF = true;
-            tools.StateConfig.mem = true;
+            tools.StateConfig.Mem = true;
             tools.Quiet = true;
 
             string programStr =

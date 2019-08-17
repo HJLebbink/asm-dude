@@ -1,14 +1,14 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
 
+// furnished to do so, subject to the following conditions:
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 
@@ -20,19 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmTools;
-using Microsoft.Z3;
-using System;
-using System.Diagnostics;
-
 namespace AsmSim
 {
+    using System;
+    using System.Diagnostics;
+    using AsmTools;
+    using Microsoft.Z3;
+
     public static class BitOperations
     {
         #region Logical Function
         public static (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) Neg(
-            BitVecExpr a, Context ctx
-        )
+            BitVecExpr a, Context ctx)
         {
             BitVecExpr zero = ctx.MkBV(0, a.SortSize);
             return Substract(zero, a, ctx);
@@ -43,8 +42,7 @@ namespace AsmSim
         #region Arithmetic
 
         public static (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) Addition(
-            BitVecExpr a, BitVecExpr b, Context ctx
-        )
+            BitVecExpr a, BitVecExpr b, Context ctx)
         {
             BitVecExpr result = ctx.MkBVAdd(a, b);
             BoolExpr cf = ToolsFlags.Create_CF_Add(a, b, a.SortSize, ctx);
@@ -54,8 +52,7 @@ namespace AsmSim
         }
 
         public static (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) Addition(
-            BitVecExpr a, BitVecExpr b, BoolExpr carry, Context ctx
-        )
+            BitVecExpr a, BitVecExpr b, BoolExpr carry, Context ctx)
         {
             //if (carry.IsFalse) return Addition(a, b, ctx);
 
@@ -78,8 +75,7 @@ namespace AsmSim
         }
 
         public static (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) Substract(
-            BitVecExpr a, BitVecExpr b, Context ctx
-        )
+            BitVecExpr a, BitVecExpr b, Context ctx)
         {
             uint nBits = a.SortSize;
             BitVecExpr result = ctx.MkBVSub(a, b);
@@ -90,8 +86,7 @@ namespace AsmSim
         }
 
         public static (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) Substract(
-            BitVecExpr a, BitVecExpr b, BoolExpr carry, Context ctx
-        )
+            BitVecExpr a, BitVecExpr b, BoolExpr carry, Context ctx)
         {
             if (carry.IsFalse)
             {
@@ -172,8 +167,8 @@ namespace AsmSim
             bitPos = ctx.MkZeroExt(value.SortSize - 8, bitPos);
             BoolExpr bitValue = ToolsZ3.GetBit(value, bitPos, ctx);
 
-            BoolExpr CF_undef = Tools.Create_Flag_Key_Fresh(Flags.CF, rand, ctx);
-            BoolExpr cf = ctx.MkITE(ctx.MkEq(nShifts, ctx.MkBV(0, 8)), CF_undef, bitValue) as BoolExpr;
+            BoolExpr cF_undef = Tools.Create_Flag_Key_Fresh(Flags.CF, rand, ctx);
+            BoolExpr cf = ctx.MkITE(ctx.MkEq(nShifts, ctx.MkBV(0, 8)), cF_undef, bitValue) as BoolExpr;
             return (result: value_out, cf: cf);
         }
 

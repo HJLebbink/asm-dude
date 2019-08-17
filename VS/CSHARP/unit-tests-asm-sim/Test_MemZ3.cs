@@ -62,7 +62,7 @@ namespace unit_tests_asm_z3
             stateConfig.Set_All_Off();
             stateConfig.RAX = true;
             stateConfig.RBX = true;
-            stateConfig.mem = true;
+            stateConfig.Mem = true;
 
             State state = this.CreateState(stateConfig);
             Context ctx = state.Ctx;
@@ -95,7 +95,7 @@ namespace unit_tests_asm_z3
             stateConfig.RAX = true;
             stateConfig.R8 = true;
             stateConfig.R9 = true;
-            stateConfig.mem = true;
+            stateConfig.Mem = true;
 
             State state = this.CreateState(stateConfig);
             Context ctx = state.Ctx;
@@ -138,7 +138,7 @@ namespace unit_tests_asm_z3
             stateConfig.RAX = true;
             stateConfig.RBX = true;
             stateConfig.RCX = true;
-            stateConfig.mem = true;
+            stateConfig.Mem = true;
 
             State state = this.CreateState(stateConfig);
             Context ctx = state.Ctx;
@@ -194,7 +194,7 @@ namespace unit_tests_asm_z3
             stateConfig.RAX = true;
             stateConfig.RBX = true;
             stateConfig.RCX = true;
-            stateConfig.mem = true;
+            stateConfig.Mem = true;
 
             State state = this.CreateState(stateConfig);
             Context ctx = state.Ctx;
@@ -249,7 +249,7 @@ namespace unit_tests_asm_z3
             stateConfig.RBX = true;
             stateConfig.RCX = true;
             stateConfig.R8 = true;
-            stateConfig.mem = true;
+            stateConfig.Mem = true;
 
             State state = this.CreateState(stateConfig);
             Context ctx = state.Ctx;
@@ -296,7 +296,7 @@ namespace unit_tests_asm_z3
             stateConfig.RBX = true;
             stateConfig.RCX = true;
             stateConfig.RDX = true;
-            stateConfig.mem = true;
+            stateConfig.Mem = true;
 
             State state = this.CreateState(stateConfig);
             Context ctx = state.Ctx;
@@ -340,7 +340,7 @@ namespace unit_tests_asm_z3
             stateConfig.RBX = true;
             stateConfig.RCX = true;
             stateConfig.RDX = true;
-            stateConfig.mem = true;
+            stateConfig.Mem = true;
 
             State state = this.CreateState(stateConfig);
             Context ctx = state.Ctx;
@@ -392,7 +392,7 @@ namespace unit_tests_asm_z3
             stateConfig.RBX = true;
             stateConfig.RCX = true;
             stateConfig.RDX = true;
-            stateConfig.mem = true;
+            stateConfig.Mem = true;
 
             State state = this.CreateState(stateConfig);
             Context ctx = state.Ctx;

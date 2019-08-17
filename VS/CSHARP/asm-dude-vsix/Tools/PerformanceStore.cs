@@ -1,17 +1,17 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,13 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmTools;
-using System;
-using System.Collections.Generic;
-using System.IO;
-
 namespace AsmDude.Tools
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using AsmTools;
+
     public struct PerformanceItem
     {
         public MicroArch _microArch;
@@ -121,7 +121,7 @@ namespace AsmDude.Tools
                                     {
                                         Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(mnemonicStr);
                                         if (mnemonic == Mnemonic.NONE)
-                                        {   // check if the mnemonicStr can be translated to a list of mnemonics
+                                        { // check if the mnemonicStr can be translated to a list of mnemonics
                                             if (translations.TryGetValue(mnemonicStr, out IList<Mnemonic> mnemonics2))
                                             {
                                                 foreach (Mnemonic m in mnemonics2)
@@ -152,7 +152,7 @@ namespace AsmDude.Tools
                                         _mu_Ops_Port = columns[4],
                                         _latency = columns[5],
                                         _throughput = columns[6],
-                                        _remark = columns[7]
+                                        _remark = columns[7],
                                     });
                                 }
                             }

@@ -1,17 +1,17 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,19 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude.Tools;
-using AsmTools;
-using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Shell;
-using System;
-using System.Collections.Generic;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Media;
-
 namespace AsmDude.QuickInfo
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Documents;
+    using System.Windows.Media;
+    using AsmDude.Tools;
+    using AsmTools;
+    using Microsoft.VisualStudio.Language.Intellisense;
+    using Microsoft.VisualStudio.Shell;
+
     public partial class InstructionTooltipWindow : IInteractiveQuickInfoContent
     {
         private readonly Brush _foreground;
@@ -41,6 +41,7 @@ namespace AsmDude.QuickInfo
         private AsmSimulator _asmSimulator;
 
         internal AsmQuickInfoController Owner { get; set; }
+
         internal IQuickInfoSession Session { get; set; }
 
         public InstructionTooltipWindow(Brush foreground)
@@ -95,8 +96,6 @@ namespace AsmDude.QuickInfo
             AsmDudeToolsStatic.Output_INFO("InstructionTooltipWindow:PerformanceExpander_MouseLeftDown");
         }
 
-
-
         public void SetDescription(Mnemonic mnemonic, AsmDudeTools asmDudeTools)
         {
             string mnemonicStr = mnemonic.ToString();
@@ -106,7 +105,7 @@ namespace AsmDude.QuickInfo
 
             string archStr = ":" + ArchTools.ToString(asmDudeTools.Mnemonic_Store.GetArch(mnemonic)) + " ";
             string descr = asmDudeTools.Mnemonic_Store.GetDescription(mnemonic);
-            string full_Descr = AsmSourceTools.Linewrap(archStr + descr, AsmDudePackage.maxNumberOfCharsInToolTips);
+            string full_Descr = AsmSourceTools.Linewrap(archStr + descr, AsmDudePackage.MaxNumberOfCharsInToolTips);
             this.Description.Inlines.Add(new Run(full_Descr) { Foreground = this._foreground });
         }
 
@@ -128,24 +127,27 @@ namespace AsmDude.QuickInfo
                     if (first)
                     {
                         first = false;
-                        this.Performance.Inlines.Add(new Run(string.Format(format,
-                            "", "", "µOps", "µOps", "µOps", "", "", ""))
+                        this.Performance.Inlines.Add(new Run(string.Format(
+                            format,
+                            string.Empty, string.Empty, "µOps", "µOps", "µOps", string.Empty, string.Empty, string.Empty))
                         {
                             FontFamily = family,
                             FontStyle = FontStyles.Italic,
                             FontWeight = FontWeights.Bold,
-                            Foreground = this._foreground
+                            Foreground = this._foreground,
                         });
-                        this.Performance.Inlines.Add(new Run(string.Format("\n" + format,
-                            "Architecture", "Instruction", "Fused", "Unfused", "Port", "Latency", "Throughput", ""))
+                        this.Performance.Inlines.Add(new Run(string.Format(
+                            "\n" + format,
+                            "Architecture", "Instruction", "Fused", "Unfused", "Port", "Latency", "Throughput", string.Empty))
                         {
                             FontFamily = family,
                             FontStyle = FontStyles.Italic,
                             FontWeight = FontWeights.Bold,
-                            Foreground = this._foreground
+                            Foreground = this._foreground,
                         });
                     }
-                    this.Performance.Inlines.Add(new Run(string.Format("\n" + format,
+                    this.Performance.Inlines.Add(new Run(string.Format(
+                        "\n" + format,
                         item._microArch + " ",
                         item._instr + " " + item._args + " ",
                         item._mu_Ops_Fused + " ",
@@ -156,7 +158,7 @@ namespace AsmDude.QuickInfo
                         item._remark))
                     {
                         FontFamily = family,
-                        Foreground = this._foreground
+                        Foreground = this._foreground,
                     });
                 }
                 this.PerformanceExpander.Visibility = empty ? Visibility.Collapsed : Visibility.Visible;
@@ -178,9 +180,9 @@ namespace AsmDude.QuickInfo
                 this.AsmSimGridExpander.IsExpanded = isExpanded;
                 this.AsmSimGridExpanderNumeration.Text = Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration;
 
-                (IEnumerable<Rn> ReadReg, IEnumerable<Rn> WriteReg, Flags ReadFlag, Flags WriteFlag, bool MemRead, bool MemWrite) = this._asmSimulator.Get_Usage(lineNumber);
-                HashSet<Rn> readReg = new HashSet<Rn>(ReadReg);
-                HashSet<Rn> writeReg = new HashSet<Rn>(WriteReg);
+                (IEnumerable<Rn> readReg1, IEnumerable<Rn> writeReg1, Flags readFlag, Flags writeFlag, bool memRead, bool memWrite) = this._asmSimulator.Get_Usage(lineNumber);
+                HashSet<Rn> readReg = new HashSet<Rn>(readReg1);
+                HashSet<Rn> writeReg = new HashSet<Rn>(writeReg1);
 
                 this.GenerateHeader();
                 int row = 2;
@@ -206,15 +208,15 @@ namespace AsmDude.QuickInfo
                     }
                 }
 
-                foreach (Flags flag in FlagTools.GetFlags(ReadFlag | WriteFlag))
+                foreach (Flags flag in FlagTools.GetFlags(readFlag | writeFlag))
                 {
                     if (flag == Flags.NONE)
                     {
                         continue;
                     }
 
-                    bool b1 = ReadFlag.HasFlag(flag);
-                    bool b2 = WriteFlag.HasFlag(flag);
+                    bool b1 = readFlag.HasFlag(flag);
+                    bool b2 = writeFlag.HasFlag(flag);
                     if (b1 || b2)
                     {
                         empty = false;
@@ -250,18 +252,17 @@ namespace AsmDude.QuickInfo
                 {
                     ButtonInfo info = textBox.Tag as ButtonInfo;
 
-                    string content = (info.reg == Rn.NOREG)
-                        ? this._asmSimulator.Get_Flag_Value_If_Already_Computed(info.flag, this._lineNumber, info.before)
-                        : this._asmSimulator.Get_Register_Value_If_Already_Computed(info.reg, this._lineNumber, info.before, numeration);
+                    string content = (info.Reg == Rn.NOREG)
+                        ? this._asmSimulator.Get_Flag_Value_If_Already_Computed(info.Flag, this._lineNumber, info.Before)
+                        : this._asmSimulator.Get_Register_Value_If_Already_Computed(info.Reg, this._lineNumber, info.Before, numeration);
 
                     if (content != null)
                     {
-                        textBox.Text = info.reg.ToString() + " = " + content;
+                        textBox.Text = info.Reg.ToString() + " = " + content;
                     }
                 }
             };
         }
-
 
         public bool KeepQuickInfoOpen
         {
@@ -292,7 +293,7 @@ namespace AsmDude.QuickInfo
                     FontFamily = f,
                     FontStyle = FontStyles.Italic,
                     FontWeight = FontWeights.Bold,
-                    Foreground = this._foreground
+                    Foreground = this._foreground,
                 };
                 this.AsmSimGrid.Children.Add(textBlock);
                 Grid.SetRow(textBlock, row);
@@ -327,7 +328,7 @@ namespace AsmDude.QuickInfo
                     BorderThickness = new Thickness(0),
                     IsReadOnly = true,
                     TextWrapping = TextWrapping.Wrap,
-                    Tag = new ButtonInfo(null, reg, isBefore)
+                    Tag = new ButtonInfo(null, reg, isBefore),
                 };
                 this._itemsOnPage.Add(textBox);
                 this.AsmSimGrid.Children.Add(textBox);
@@ -343,7 +344,7 @@ namespace AsmDude.QuickInfo
                         Content = "Determine " + reg.ToString(),
                         Foreground = this._foreground,
                         Visibility = Visibility.Visible,
-                        Tag = new ButtonInfo(textBox, reg, isBefore)
+                        Tag = new ButtonInfo(textBox, reg, isBefore),
                     };
                     this.AsmSimGrid.Children.Add(button);
                     Grid.SetRow(button, row);
@@ -372,7 +373,7 @@ namespace AsmDude.QuickInfo
                     Background = Brushes.Transparent,
                     BorderThickness = new Thickness(0),
                     IsReadOnly = true,
-                    TextWrapping = TextWrapping.Wrap
+                    TextWrapping = TextWrapping.Wrap,
                 };
                 this.AsmSimGrid.Children.Add(textBlock);
                 Grid.SetRow(textBlock, row);
@@ -387,7 +388,7 @@ namespace AsmDude.QuickInfo
                         Content = "Determine " + flag.ToString(),
                         Foreground = this._foreground,
                         Visibility = Visibility.Visible,
-                        Tag = new ButtonInfo(textBlock, flag, isBefore)
+                        Tag = new ButtonInfo(textBlock, flag, isBefore),
                     };
                     this.AsmSimGrid.Children.Add(button);
                     Grid.SetRow(button, row);
@@ -430,17 +431,17 @@ namespace AsmDude.QuickInfo
                 }
 
                 ButtonInfo info = (ButtonInfo)button.Tag;
-                info.text.Text = (info.reg == Rn.NOREG)
-                    ? info.flag.ToString() + " = " + this._asmSimulator.Get_Flag_Value_and_Block(info.flag, this._lineNumber, info.before)
-                    : info.reg.ToString() + " = " + this._asmSimulator.Get_Register_Value_and_Block(info.reg, this._lineNumber, info.before, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration));
+                info.Text.Text = (info.Reg == Rn.NOREG)
+                    ? info.Flag.ToString() + " = " + this._asmSimulator.Get_Flag_Value_and_Block(info.Flag, this._lineNumber, info.Before)
+                    : info.Reg.ToString() + " = " + this._asmSimulator.Get_Register_Value_and_Block(info.Reg, this._lineNumber, info.Before, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration));
 
-                info.text.Visibility = Visibility.Visible;
+                info.Text.Visibility = Visibility.Visible;
                 button.Visibility = Visibility.Collapsed;
             }
             catch (Exception e)
             {
                 AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Update_Async; e={1}", this.ToString(), e.ToString()));
-            };
+            }
         }
     }
 }

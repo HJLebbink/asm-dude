@@ -1,7 +1,7 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -9,27 +9,27 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
-using AsmTools;
-using Microsoft.Z3;
-using QuickGraph;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-
 namespace AsmSim
 {
+    // The above copyright notice and this permission notice shall be included in all
+    // copies or substantial portions of the Software.
+
+    // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    // SOFTWARE.
+
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Text;
+    using AsmTools;
+    using Microsoft.Z3;
+    using QuickGraph;
+
     public class DynamicFlow : IDisposable
     {
         #region Fields
@@ -40,7 +40,7 @@ namespace AsmSim
         private readonly IDictionary<string, int> _key_2_LineNumber;
         private string _rootKey;
         private readonly object _updateLock = new object();
-        #endregion 
+        #endregion
 
         #region Constructors
         public DynamicFlow(Tools tools)
@@ -243,7 +243,6 @@ namespace AsmSim
             return this._graph.OutEdge(key, 0).Tag.StateUpdate.BranchInfo.BranchCondition;
         }
 
-
         /// <summary> Create leafs of this DynamicFlow</summary>
         public IEnumerable<State> Leafs
         {
@@ -349,7 +348,7 @@ namespace AsmSim
             }
             Stack<string> nextKeys = new Stack<string>();
 
-            // Get the head of the current state, this head will be the prevKey of the update, nextKey is fresh. 
+            // Get the head of the current state, this head will be the prevKey of the update, nextKey is fresh.
             // When state is updated, tail is not changed; head is set to the fresh nextKey.
 
             #region Create the Root node
@@ -369,10 +368,10 @@ namespace AsmSim
                     (int Regular, int Branch) nextLineNumber = sFlow.Get_Next_LineNumber(currentLineNumber);
                     (string nextKey, string nextKeyBranch) = sFlow.Get_Key(nextLineNumber);
 
-                    (StateUpdate Regular, StateUpdate Branch) = Runner.Execute(sFlow, currentLineNumber, (prevKey, nextKey, nextKeyBranch), this._tools);
+                    (StateUpdate regular, StateUpdate branch) = Runner.Execute(sFlow, currentLineNumber, (prevKey, nextKey, nextKeyBranch), this._tools);
 
-                    HandleBranch_LOCAL(currentLineNumber, nextLineNumber.Branch, Branch, prevKey, nextKeyBranch);
-                    HandleRegular_LOCAL(currentLineNumber, nextLineNumber.Regular, Regular, prevKey, nextKey);
+                    HandleBranch_LOCAL(currentLineNumber, nextLineNumber.Branch, branch, prevKey, nextKeyBranch);
+                    HandleRegular_LOCAL(currentLineNumber, nextLineNumber.Regular, regular, prevKey, nextKey);
                 }
             }
             #region Local Methods
@@ -493,17 +492,17 @@ namespace AsmSim
                         string prevKey = sFlow.Get_Key(prev.LineNumber);
                         if (!this.Has_Edge(prevKey, nextKey, prev.IsBranch))
                         {
-                            (StateUpdate Regular, StateUpdate Branch) = Runner.Execute(sFlow, prev.LineNumber, (prevKey, nextKey, nextKey), this._tools);
+                            (StateUpdate regular, StateUpdate branch) = Runner.Execute(sFlow, prev.LineNumber, (prevKey, nextKey, nextKey), this._tools);
                             StateUpdate update = null;
                             if (prev.IsBranch)
                             {
-                                update = Branch;
-                                Regular?.Dispose();
+                                update = branch;
+                                regular?.Dispose();
                             }
                             else
                             {
-                                update = Regular;
-                                Branch?.Dispose();
+                                update = regular;
+                                branch?.Dispose();
                             }
 
                             this.Add_Vertex(prevKey, prev.LineNumber);
@@ -597,7 +596,7 @@ namespace AsmSim
             }
 
             int lineNumber = this.LineNumber(key);
-            string codeLine = (sFlow == null) ? "" : sFlow.Get_Line_Str(lineNumber);
+            string codeLine = (sFlow == null) ? string.Empty : sFlow.Get_Line_Str(lineNumber);
 
             sb.AppendLine("==========================================");
             using (State v = this.Create_State_Private(key, true))
@@ -714,7 +713,7 @@ namespace AsmSim
                             }
                             break;
                         default:
-                            // unreachable: 
+                            // unreachable:
                             Console.WriteLine("WARNING: DynamicFlow:Construct_State_Private: OutDegree = " + this._graph.OutDegree(key_LOCAL) + " is not implemented yet");
                             result = new State(this._tools, key_LOCAL, key_LOCAL);
                             break;
@@ -823,7 +822,7 @@ namespace AsmSim
                             {
                                 Console.WriteLine("WARNING: DynamicFlow: Merge_State_Update_LOCAL: tails are unequal: tail1=" + state1.TailKey + "; tail2=" + state2.TailKey);
                             }
-                            {   // merge the states state1 and state2 into state3 
+                            { // merge the states state1 and state2 into state3
                                 foreach (BoolExpr v1 in state2.Solver.Assertions)
                                 {
                                     tempSet1.Add(v1);

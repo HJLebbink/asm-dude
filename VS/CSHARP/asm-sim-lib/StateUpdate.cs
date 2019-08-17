@@ -1,7 +1,7 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -9,26 +9,26 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
-using AsmTools;
-using Microsoft.Z3;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-
 namespace AsmSim
 {
+    // The above copyright notice and this permission notice shall be included in all
+    // copies or substantial portions of the Software.
+
+    // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    // SOFTWARE.
+
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Text;
+    using AsmTools;
+    using Microsoft.Z3;
+
     public class StateUpdate : IDisposable
     {
         #region Fields
@@ -38,10 +38,12 @@ namespace AsmSim
         private readonly string _prevKey_Regular;
         private readonly string _prevKey_Branch;
         private readonly BoolExpr _branch_Condition;
+
         public bool Empty { get; private set; }
 
         /// <summary>True if this stateUpdate is an update in which the state is reset.</summary>
         public bool Reset { get; set; }
+
         private BranchInfo _branchInfo;
 
         private readonly object _ctxLock = new object();
@@ -133,6 +135,7 @@ namespace AsmSim
         }
 
         //TODO consider creating a special StateUpdateMerge class
+
         /// <summary>Constructor for merging. prevKey_Regular is the key for the regular continue for the provided branchCondition</summary>
         public StateUpdate(BoolExpr branchCondition, string prevKey_Regular, string prevKey_Branch, string nextKey, Tools tools)
         {
@@ -181,7 +184,7 @@ namespace AsmSim
                 {
                     yield return this.Get_Private(reg, false);
                 }
-                if (this._tools.StateConfig.mem)
+                if (this._tools.StateConfig.Mem)
                 {
                     if (this._mem_Full != null)
                     {
@@ -201,6 +204,7 @@ namespace AsmSim
                 }
             }
         }
+
         private IEnumerable<BoolExpr> Undef
         {
             get
@@ -215,7 +219,7 @@ namespace AsmSim
                 {
                     yield return this.Get_Private(reg, true);
                 }
-                if (this._tools.StateConfig.mem)
+                if (this._tools.StateConfig.Mem)
                 {
                     if (this._mem_Full != null)
                     {
@@ -235,9 +239,11 @@ namespace AsmSim
                 }
             }
         }
+
         public BranchInfo BranchInfo
         {
             get { return this._branchInfo; }
+
             set
             {
                 if (value != null)
@@ -271,6 +277,7 @@ namespace AsmSim
                 }
             }
         }
+
         private BoolExpr Get_Raw_Private(Rn reg, bool undef)
         {
             switch (reg)
@@ -319,6 +326,7 @@ namespace AsmSim
                 }
             }
         }
+
         private BoolExpr Get_Raw_Private(Flags flag, bool undef)
         {
             switch (flag)
@@ -385,7 +393,7 @@ namespace AsmSim
                             }
                         }
                     }
-                    if (this._tools.StateConfig.mem)
+                    if (this._tools.StateConfig.Mem)
                     {
                         if (this._mem_Update != null)
                         {
@@ -406,6 +414,7 @@ namespace AsmSim
         {
             this.Set(flag, value ? Tv.ONE : Tv.ZERO);
         }
+
         public void Set(Flags flag, Tv value)
         {
             lock (this._ctxLock)
@@ -420,10 +429,12 @@ namespace AsmSim
                 }
             }
         }
+
         public void Set(Flags flag, BoolExpr value)
         {
             this.Set(flag, value, value);
         }
+
         public void Set(Flags flag, BoolExpr value, BoolExpr undef)
         {
             this.Empty = false;
@@ -479,6 +490,7 @@ namespace AsmSim
                 this.Set_Private(flag, undef_Constraint, true);
             }
         }
+
         public void Set_SF_ZF_PF(BitVecExpr value)
         {
             Debug.Assert(value != null);
@@ -493,6 +505,7 @@ namespace AsmSim
                 this.Set(Flags.PF, ToolsFlags.Create_PF(value, ctx));
             }
         }
+
         private void Set_Private(Flags flag, BoolExpr value, bool undef)
         {
             switch (flag)
@@ -579,15 +592,18 @@ namespace AsmSim
             BitVecExpr valueExpr = this._ctx.MkBV(value, (uint)RegisterTools.NBits(reg));
             this.Set(reg, valueExpr, valueExpr);
         }
+
         public void Set(Rn reg, string value)
         {
             this.Set(reg, ToolsZ3.GetTvArray(value));
         }
+
         public void Set(Rn reg, Tv[] value)
         {
             (BitVecExpr value, BitVecExpr undef) tup = ToolsZ3.MakeVecExpr(value, this._ctx);
             this.Set(reg, tup.value, tup.undef);
         }
+
         /// <summary> Fill all bits of the provided register with the provided truth-value</summary>
         public void Set(Rn reg, Tv value)
         {
@@ -606,10 +622,12 @@ namespace AsmSim
                 default: break;
             }
         }
+
         public void Set(Rn reg, BitVecExpr value)
         {
             this.Set(reg, value, value);
         }
+
         public void Set(Rn reg, BitVecExpr value, BitVecExpr undef)
         {
             Debug.Assert(value != null);
@@ -623,7 +641,6 @@ namespace AsmSim
 
                 value = value.Translate(ctx) as BitVecExpr;
                 undef = undef.Translate(ctx) as BitVecExpr;
-
 
                 if (RegisterTools.IsGeneralPurposeRegister(reg))
                 {
@@ -689,23 +706,21 @@ namespace AsmSim
                     uint max = 512 * 32;
 
                     BitVecExpr prevKey = ctx.MkBVConst(Tools.Reg_Name(reg, this._prevKey_Regular), max);
-                    (uint High, uint Low) = Tools.SIMD_Extract_Range(reg);
-
+                    (uint high, uint low) = Tools.SIMD_Extract_Range(reg);
 
                     BitVecExpr top = null;
                     BitVecExpr bottom = null;
-                    if (High < (max - 1))
+                    if (high < (max - 1))
                     {
-                        top = ctx.MkExtract(max - 1, High + 1, prevKey);
+                        top = ctx.MkExtract(max - 1, high + 1, prevKey);
                     }
 
-                    if (Low > 0)
+                    if (low > 0)
                     {
-                        bottom = ctx.MkExtract(Low - 1, 0, prevKey);
+                        bottom = ctx.MkExtract(low - 1, 0, prevKey);
                     }
 
                     Console.WriteLine(top.SortSize + "+" + value.SortSize + "+" + bottom.SortSize + "=" + prevKey.SortSize);
-
 
                     BitVecExpr newValue = (top == null) ? value : ctx.MkConcat(top, value) as BitVecExpr;
                     newValue = (bottom == null) ? newValue : ctx.MkConcat(newValue, bottom);
@@ -904,19 +919,23 @@ namespace AsmSim
             BitVecExpr valueExpr = this._ctx.MkBV(value, (uint)nBytes << 3);
             this.Set_Mem(address, valueExpr);
         }
+
         public void Set_Mem(BitVecExpr address, string value)
         {
             this.Set_Mem(address, ToolsZ3.GetTvArray(value));
         }
+
         public void Set_Mem(BitVecExpr address, Tv[] value)
         {
             (BitVecExpr value, BitVecExpr undef) tup = ToolsZ3.MakeVecExpr(value, this._ctx);
             this.Set_Mem(address, tup.value, tup.undef);
         }
+
         public void Set_Mem(BitVecExpr address, BitVecExpr value)
         {
             this.Set_Mem(address, value, value);
         }
+
         public void Set_Mem(BitVecExpr address, BitVecExpr value, BitVecExpr undef)
         {
             this.Empty = false;
@@ -960,7 +979,6 @@ namespace AsmSim
             this.Set_Mem(Tools.Create_Mem_Key_Fresh(this._tools.Rand, this._ctx));
         }
 
-
         #endregion
 
         #region Set Operand
@@ -968,6 +986,7 @@ namespace AsmSim
         {
             this.Set(operand, value, value);
         }
+
         public void Set(Operand operand, BitVecExpr value, BitVecExpr undef)
         {
             if (operand.IsReg)
@@ -1054,6 +1073,7 @@ namespace AsmSim
 
         #endregion
         public bool Disposed = false;
+
         public void Dispose()
         {
             this.Disposed = true;

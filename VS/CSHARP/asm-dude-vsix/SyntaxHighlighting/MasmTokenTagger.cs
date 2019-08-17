@@ -1,17 +1,17 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,16 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude.SyntaxHighlighting;
-using AsmDude.Tools;
-using AsmTools;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Tagging;
-using System;
-using System.Collections.Generic;
-
 namespace AsmDude
 {
+    using System;
+    using System.Collections.Generic;
+    using AsmDude.SyntaxHighlighting;
+    using AsmDude.Tools;
+    using AsmTools;
+    using Microsoft.VisualStudio.Text;
+    using Microsoft.VisualStudio.Text.Tagging;
+
     internal sealed class MasmTokenTagger : ITagger<AsmTokenTag>
     {
         private readonly ITextBuffer _buffer;
@@ -84,7 +84,7 @@ namespace AsmDude
             DateTime time1 = DateTime.Now;
 
             if (spans.Count == 0)
-            {  //there is no content in the buffer
+            { //there is no content in the buffer
                 yield break;
             }
 
@@ -335,7 +335,7 @@ namespace AsmDude
             DateTime time1 = DateTime.Now;
 
             if (spans.Count == 0)
-            {  //there is no content in the buffer
+            { //there is no content in the buffer
                 yield break;
             }
 
@@ -389,7 +389,7 @@ namespace AsmDude
                         case AsmTokenType.Jump:
                             {
                                 yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(current, offset, curSpan), this._jump);
-                                {   // go to the next word
+                                { // go to the next word
                                     if (needToAdvance)
                                     {
                                         hasNext = enumerator.MoveNext();
@@ -415,7 +415,7 @@ namespace AsmDude
                                     case "NEAR":
                                         {
                                             yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(current, offset, curSpan), this._misc);
-                                            {   // go to the next word
+                                            { // go to the next word
                                                 if (needToAdvance)
                                                 {
                                                     hasNext = enumerator.MoveNext();
@@ -535,7 +535,7 @@ namespace AsmDude
 
                                     if (asmToken.Equals("INVOKE"))
                                     {
-                                        {   // go to the next word
+                                        { // go to the next word
                                             if (needToAdvance)
                                             {
                                                 hasNext = enumerator.MoveNext();
@@ -556,7 +556,7 @@ namespace AsmDude
                                 break;
                             }
                     }
-                    {   // go to the next word
+                    { // go to the next word
                         if (needToAdvance)
                         {
                             hasNext = enumerator.MoveNext();
@@ -606,7 +606,7 @@ namespace AsmDude
                 }
             }
             //AsmDudeToolsStatic.Output_INFO("MasmTokenTagger:Get_Procedure_Name: could not find regular label before lineNumber " + lineNumber);
-            return "";
+            return string.Empty;
         }
     }
 }

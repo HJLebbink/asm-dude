@@ -1,17 +1,17 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,20 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude.SyntaxHighlighting;
-using AsmDude.Tools;
-using AsmTools;
-using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Tagging;
-using System;
-using System.Collections.Generic;
-using System.Windows;
-using System.Windows.Controls;
-
 namespace AsmDude.QuickInfo
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Windows;
+    using System.Windows.Controls;
+    using AsmDude.SyntaxHighlighting;
+    using AsmDude.Tools;
+    using AsmTools;
+    using Microsoft.VisualStudio.Language.Intellisense;
+    using Microsoft.VisualStudio.Text;
+    using Microsoft.VisualStudio.Text.Editor;
+    using Microsoft.VisualStudio.Text.Tagging;
+
     internal sealed class AsmQuickInfoController : IIntellisenseController
     {
         private readonly IList<ITextBuffer> _subjectBuffers;
@@ -126,8 +126,7 @@ namespace AsmDude.QuickInfo
                 topPosition,
                 PointTrackingMode.Positive,
                 snapshot => this._subjectBuffers.Contains(snapshot.TextBuffer),
-                PositionAffinity.Predecessor
-            );
+                PositionAffinity.Predecessor);
         }
 
         public void CloseToolTip()
@@ -166,7 +165,7 @@ namespace AsmDude.QuickInfo
 
                             InstructionTooltipWindow instructionTooltipWindow = new InstructionTooltipWindow(AsmDudeToolsStatic.GetFontColor())
                             {
-                                Owner = this // set the owner of this windows such that we can manually close this window
+                                Owner = this, // set the owner of this windows such that we can manually close this window
                             };
                             instructionTooltipWindow.SetDescription(mnemonic, AsmDudeTools.Instance);
                             instructionTooltipWindow.SetPerformanceInfo(mnemonic, AsmDudeTools.Instance);
@@ -178,7 +177,7 @@ namespace AsmDude.QuickInfo
                                 BorderThickness = new Thickness(1.0),
                                 CornerRadius = new CornerRadius(2.0),
                                 Background = AsmDudeToolsStatic.GetBackgroundColor(),
-                                Child = instructionTooltipWindow
+                                Child = instructionTooltipWindow,
                             };
 
                             // cleanup old window remnants
@@ -204,7 +203,7 @@ namespace AsmDude.QuickInfo
                                 Left = p.X + 15, // placement slightly to the right
                                 Top = p.Y + 5, // placement slightly lower such that the code that is selected is visible
                                 //TODO find the space to the left and if not enough space is available, place the window more to the left
-                                Content = border
+                                Content = border,
                             };
                             this._legacyTooltipWindow.LostKeyboardFocus += (o, i) =>
                             {

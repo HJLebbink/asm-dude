@@ -1,17 +1,17 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,14 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude.Tools;
-using AsmTools;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-
 namespace AsmDude.SignatureHelp
 {
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Text;
+    using AsmDude.Tools;
+    using AsmTools;
+
     public enum AsmSignatureEnum : byte
     {
         NONE,
@@ -47,6 +47,7 @@ namespace AsmDude.SignatureHelp
 
         /// <summary>the IMM equal to 0</summary>
         ZERO,
+
         /// <summary>the IMM equal to 1</summary>
         UNITY,
 
@@ -83,12 +84,16 @@ namespace AsmDude.SignatureHelp
         #endregion
 
         #region SIMD
+
         /// <summary>Opmask register</summary>
         K,
+
         /// <summary> Zero mask. Nasm use {Z} or nothing</summary>
         Z,
+
         /// <summary>Suppress All Exceptions. Nasm use {SAE} or nothing</summary>
         SAE,
+
         /// <summary>
         /// Rounding mode. Nasm: use either:
         /// 1] round nearest even {rn-sae};
@@ -101,9 +106,11 @@ namespace AsmDude.SignatureHelp
         /// <summary>memory destination of type [gpr+xmm*scale+offset] </summary>
         VM32X,
         VM64X,
+
         /// <summary>memory destination of type [gpr+ymm*scale+offset] with scale=1|4|8</summary>
         VM32Y,
         VM64Y,
+
         /// <summary>memory destination of type [gpr+zmm*scale+offset] with scale=1|4|8</summary>
         VM32Z,
         VM64Z,
@@ -115,6 +122,7 @@ namespace AsmDude.SignatureHelp
 
         /// <summary>vector broadcasted from a 32-bit memory location</summary>
         M32BCST,
+
         /// <summary>vector broadcasted from a 64-bit memory location</summary>
         M64BCST,
         #endregion
@@ -127,7 +135,6 @@ namespace AsmDude.SignatureHelp
 
     public static class AsmSignatureTools
     {
-
         public static AsmSignatureEnum[] Parse_Operand_Type_Enum(string str)
         {
             switch (str.ToUpper().Trim())
@@ -161,7 +168,6 @@ namespace AsmDude.SignatureHelp
                 case "PTR16:16": return new AsmSignatureEnum[] { AsmSignatureEnum.IMM };
                 case "PTR16:32": return new AsmSignatureEnum[] { AsmSignatureEnum.IMM };
                 case "PTR16:64": return new AsmSignatureEnum[] { AsmSignatureEnum.IMM };
-
 
                 #endregion
 
@@ -369,6 +375,7 @@ namespace AsmDude.SignatureHelp
                     return new AsmSignatureEnum[] { AsmSignatureEnum.UNKNOWN };
             }
         }
+
         /// <summary>Get brief description of the operand</summary>
         public static string Get_Doc(AsmSignatureEnum operandType)
         {
@@ -447,7 +454,7 @@ namespace AsmDude.SignatureHelp
             int nOperands = list.Count;
             if (nOperands == 0)
             {
-                return "";
+                return string.Empty;
             }
             else if (nOperands == 1)
             {

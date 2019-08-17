@@ -1,17 +1,17 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,18 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude.Tools;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using System;
-using System.Runtime.InteropServices;
-
 namespace AsmDude
 {
+    using System;
+    using System.Runtime.InteropServices;
+    using AsmDude.Tools;
+    using Microsoft.VisualStudio;
+    using Microsoft.VisualStudio.Language.Intellisense;
+    using Microsoft.VisualStudio.OLE.Interop;
+    using Microsoft.VisualStudio.Shell;
+    using Microsoft.VisualStudio.Text;
+    using Microsoft.VisualStudio.Text.Editor;
+
     internal sealed class CodeCompletionCommandFilter : IOleCommandTarget
     {
         private ICompletionSession _currentSession;
@@ -45,7 +45,9 @@ namespace AsmDude
         }
 
         public IWpfTextView TextView { get; private set; }
+
         public ICompletionBroker Broker { get; private set; }
+
         public IOleCommandTarget NextCommandHandler { get; set; }
 
         private char GetTypeChar(IntPtr pvaIn)
@@ -90,7 +92,6 @@ namespace AsmDude
                 char.IsWhiteSpace(typedChar) ||
                 char.IsPunctuation(typedChar))
             {
-
                 //check for a selection
                 if ((this._currentSession != null) && !this._currentSession.IsDismissed)
                 {
@@ -128,12 +129,12 @@ namespace AsmDude
                     }
                 }
                 else
-                {   //the completion session is already active, so just filter
+                { //the completion session is already active, so just filter
                     this._currentSession.Filter();
                 }
                 handled = true;
             }
-            else if (nCmdID == (uint)VSConstants.VSStd2KCmdID.BACKSPACE   //redo the filter if there is a deletion
+            else if (nCmdID == (uint)VSConstants.VSStd2KCmdID.BACKSPACE //redo the filter if there is a deletion
                   || nCmdID == (uint)VSConstants.VSStd2KCmdID.DELETE)
             {
                 if (this._currentSession != null && !this._currentSession.IsDismissed)
@@ -216,7 +217,7 @@ namespace AsmDude
                     this.Filter();
                     hresult = VSConstants.S_OK;
                 }
-                else if (nCmdID == (uint)VSConstants.VSStd2KCmdID.BACKSPACE   //redo the filter if there is a deletion
+                else if (nCmdID == (uint)VSConstants.VSStd2KCmdID.BACKSPACE //redo the filter if there is a deletion
                       || nCmdID == (uint)VSConstants.VSStd2KCmdID.DELETE)
                 {
                     if ((this._currentSession != null) && !this._currentSession.IsDismissed)

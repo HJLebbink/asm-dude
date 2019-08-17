@@ -1,17 +1,17 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,28 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude.SyntaxHighlighting;
-using AsmTools;
-using EnvDTE;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Tagging;
-using Microsoft.VisualStudio.TextManager.Interop;
-using Microsoft.VisualStudio.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-
-
 namespace AsmDude.Tools
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Globalization;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Windows.Media;
+    using System.Windows.Media.Imaging;
+    using AsmDude.SyntaxHighlighting;
+    using AsmTools;
+    using EnvDTE;
+    using Microsoft.VisualStudio;
+    using Microsoft.VisualStudio.Shell;
+    using Microsoft.VisualStudio.Shell.Interop;
+    using Microsoft.VisualStudio.Text;
+    using Microsoft.VisualStudio.Text.Tagging;
+    using Microsoft.VisualStudio.TextManager.Interop;
+    using Microsoft.VisualStudio.Utilities;
+
     public static class AsmDudeToolsStatic
     {
         private static bool first_log_message = true;
@@ -53,7 +52,7 @@ namespace AsmDude.Tools
             IBufferTagAggregatorFactoryService aggregatorFactory)
         {
             ITagAggregator<AsmTokenTag> sc()
-            {   // this is the only place where ITagAggregator are created
+            { // this is the only place where ITagAggregator are created
                 //AsmDudeToolsStatic.Output_INFO("Creating a ITagAggregator");
                 return aggregatorFactory.CreateTagAggregator<AsmTokenTag>(buffer);
             }
@@ -77,7 +76,7 @@ namespace AsmDude.Tools
         public static void Print_Speed_Warning(DateTime startTime, string component)
         {
             double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
-            if (elapsedSec > AsmDudePackage.slowWarningThresholdSec)
+            if (elapsedSec > AsmDudePackage.SlowWarningThresholdSec)
             {
                 Output_WARNING(string.Format("SLOW: took {0} {1:F3} seconds to finish", component, elapsedSec));
             }
@@ -108,6 +107,7 @@ namespace AsmDude.Tools
                 Output_WARNING("AsmDudeToolsStatic.Used_Assembler: no assembler specified, assuming AUTO_DETECT");
                 return AssemblerEnum.AUTO_DETECT;
             }
+
             set
             {
                 Settings.Default.useAssemblerAutoDetect = false;
@@ -308,6 +308,7 @@ namespace AsmDude.Tools
                 Output_WARNING("AsmDudeToolsStatic.Used_Assembler_Disassembly_Window: no assembler specified, assuming AUTO_DETECT");
                 return AssemblerEnum.AUTO_DETECT;
             }
+
             set
             {
                 Settings.Default.useAssemblerDisassemblyAutoDetect = false;
@@ -336,7 +337,7 @@ namespace AsmDude.Tools
 
         public static string GetFilename(ITextBuffer buffer, int timeout_ms = 200)
         {
-            return ThreadHelper.JoinableTaskFactory.Run(async delegate
+            return ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
                 Task<string> task = GetFilenameAsync(buffer);
                 if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)) == task)
@@ -346,7 +347,7 @@ namespace AsmDude.Tools
                 else
                 {
                     AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:GetFilename; could not get filename within timeout {1} ms", "AsmDudeToolsStatic", timeout_ms));
-                    return "";
+                    return string.Empty;
                 }
             });
         }
@@ -395,7 +396,7 @@ namespace AsmDude.Tools
 
         public static int GetFontSize(int timeout_ms = 200)
         {
-            return ThreadHelper.JoinableTaskFactory.Run(async delegate
+            return ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
                 Task<int> task = GetFontSizeAsync();
                 if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)) == task)
@@ -426,7 +427,7 @@ namespace AsmDude.Tools
 
         public static FontFamily GetFontType(int timeout_ms = 200)
         {
-            return ThreadHelper.JoinableTaskFactory.Run(async delegate
+            return ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
                 Task<FontFamily> task = GetFontTypeAsync();
                 if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)) == task)
@@ -459,7 +460,7 @@ namespace AsmDude.Tools
 
         public static Brush GetFontColor(int timeout_ms = 200)
         {
-            return ThreadHelper.JoinableTaskFactory.Run(async delegate
+            return ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
                 Task<Brush> task = GetFontColorAsync();
                 if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)) == task)
@@ -501,7 +502,7 @@ namespace AsmDude.Tools
 
         public static Brush GetBackgroundColor(int timeout_ms = 200)
         {
-            return ThreadHelper.JoinableTaskFactory.Run(async delegate
+            return ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
                 Task<Brush> task = GetBackgroundColorAsync();
                 if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)) == task)
@@ -562,7 +563,6 @@ namespace AsmDude.Tools
 
             Output_INFO("AsmDudeToolsStatic: Error_Task_Navigate_Handler: task.Document=" + task.Document);
 
-
             IVsUIShellOpenDocument openDoc = Package.GetGlobalService(typeof(IVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
             if (openDoc == null)
             {
@@ -622,7 +622,7 @@ namespace AsmDude.Tools
             }
             catch (Exception)
             {
-                return "";
+                return string.Empty;
             }
         }
 
@@ -665,9 +665,9 @@ namespace AsmDude.Tools
         public static string Cleanup(string line)
         {
             string cleanedString = System.Text.RegularExpressions.Regex.Replace(line, @"\s+", " ");
-            if (cleanedString.Length > AsmDudePackage.maxNumberOfCharsInToolTips)
+            if (cleanedString.Length > AsmDudePackage.MaxNumberOfCharsInToolTips)
             {
-                return cleanedString.Substring(0, AsmDudePackage.maxNumberOfCharsInToolTips - 3) + "...";
+                return cleanedString.Substring(0, AsmDudePackage.MaxNumberOfCharsInToolTips - 3) + "...";
             }
             else
             {
@@ -682,11 +682,13 @@ namespace AsmDude.Tools
             OutputAsync("INFO: " + msg).ConfigureAwait(false);
 #           endif
         }
+
         /// <summary>Output message to the AsmDude window</summary>
         public static void Output_WARNING(string msg)
         {
             OutputAsync("WARNING: " + msg).ConfigureAwait(false);
         }
+
         /// <summary>Output message to the AsmDude window</summary>
         public static void Output_ERROR(string msg)
         {
@@ -787,7 +789,7 @@ namespace AsmDude.Tools
             // return getPreviousKeyword(begin.GetContainingLine.)
             if (end == 0)
             {
-                return "";
+                return string.Empty;
             }
 
             int beginLine = begin.GetContainingLine().Start;
@@ -826,7 +828,7 @@ namespace AsmDude.Tools
                 SubcategoryIndex = (int)AsmMessageEnum.OTHER,
                 Text = msg,
                 ErrorCategory = TaskErrorCategory.Message,
-                Document = filename
+                Document = filename,
             };
             errorTask.Navigate += Error_Task_Navigate_Handler;
 

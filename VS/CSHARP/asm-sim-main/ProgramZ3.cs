@@ -545,7 +545,7 @@ namespace AsmSim
                     tools.StateConfig.RCX = true;
                     tools.StateConfig.RSI = true;
                     tools.StateConfig.RDI = true;
-                    tools.StateConfig.mem = true;
+                    tools.StateConfig.Mem = true;
 
 
                     string line1 = "std"; //std = set direction flag
@@ -773,7 +773,7 @@ namespace AsmSim
                     tools.StateConfig.RAX = true;
                     tools.StateConfig.RBX = true;
                     tools.StateConfig.ZF = true;
-                    tools.StateConfig.mem = true;
+                    tools.StateConfig.Mem = true;
 
                     string programStr0 =
                     "           jz      label1                      " + Environment.NewLine +
@@ -834,7 +834,7 @@ namespace AsmSim
                     tools.StateConfig.Set_All_Off();
                     tools.StateConfig.RAX = true;
                     tools.StateConfig.RBX = true;
-                    tools.StateConfig.mem = true;
+                    tools.StateConfig.Mem = true;
 
                     DynamicFlow tree1 = Runner.Construct_DynamicFlow_Forward(sFlow1, tools);
                     DynamicFlow tree2 = Runner.Construct_DynamicFlow_Forward(sFlow2, tools);

@@ -1,17 +1,17 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,25 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude.SyntaxHighlighting;
-using AsmDude.Tools;
-using AsmTools;
-using EnvDTE80;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Formatting;
-using Microsoft.VisualStudio.Text.Tagging;
-using System;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Threading;
-
 namespace AsmDude.AsmDoc
 {
+    using System;
+    using System.Threading.Tasks;
+    using System.Windows;
+    using System.Windows.Input;
+    using System.Windows.Threading;
+    using AsmDude.SyntaxHighlighting;
+    using AsmDude.Tools;
+    using AsmTools;
+    using EnvDTE80;
+    using Microsoft.VisualStudio;
+    using Microsoft.VisualStudio.Shell;
+    using Microsoft.VisualStudio.Shell.Interop;
+    using Microsoft.VisualStudio.Text;
+    using Microsoft.VisualStudio.Text.Editor;
+    using Microsoft.VisualStudio.Text.Formatting;
+    using Microsoft.VisualStudio.Text.Tagging;
+
     /// <summary>
     /// Handle ctrl+click on valid elements to send GoToDefinition to the shell.  Also handle mouse moves
     /// (when control is pressed) to highlight references for which GoToDefinition will (likely) be valid.
@@ -202,7 +202,6 @@ namespace AsmDude.AsmDoc
                     return false;
                 }
                 SnapshotPoint triggerPoint = bufferPosition.Value;
-
 
                 // Quick check - if the mouse is still inside the current underline span, we're already set
                 SnapshotSpan? currentSpan = this.CurrentUnderlineSpan;
@@ -395,7 +394,7 @@ namespace AsmDude.AsmDoc
         private static void DelayAction(int millisecond, Action action)
         {
             DispatcherTimer timer = new DispatcherTimer();
-            timer.Tick += delegate
+            timer.Tick += (sender, e) =>
             {
                 action.Invoke();
                 timer.Stop();
@@ -409,27 +408,27 @@ namespace AsmDude.AsmDoc
     {
         private object IWebBrowser2Object;
 
-        public VisualStudioWebBrowser(object IWebBrowser2Object)
+        public VisualStudioWebBrowser(object iWebBrowser2Object)
         {
-            this.IWebBrowser2Object = IWebBrowser2Object;
+            this.IWebBrowser2Object = iWebBrowser2Object;
         }
 
-        private static void Evaluate(EnvDTE.Window WindowReference, Action<System.Windows.Forms.WebBrowser> OnEvaluate)
+        private static void Evaluate(EnvDTE.Window windowReference, Action<System.Windows.Forms.WebBrowser> onEvaluate)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
             //Note: Window of EnvDTE.Constants.vsWindowKindWebBrowser type contains an IWebBrowser2 object
             using (System.Threading.ManualResetEvent evt = new System.Threading.ManualResetEvent(false))
             {
-                System.Threading.Thread STAThread = new System.Threading.Thread(new System.Threading.ParameterizedThreadStart((o) =>
+                System.Threading.Thread sTAThread = new System.Threading.Thread(new System.Threading.ParameterizedThreadStart((o) =>
                 {
                     try
                     {
-                        using (VisualStudioWebBrowser Browser = new VisualStudioWebBrowser(o))
+                        using (VisualStudioWebBrowser browser = new VisualStudioWebBrowser(o))
                         {
                             try
                             {
-                                OnEvaluate.Invoke(Browser);
+                                onEvaluate.Invoke(browser);
                             }
                             catch { }
                         }
@@ -437,23 +436,26 @@ namespace AsmDude.AsmDoc
                     catch { }
                     evt.Set();
                 }));
-                STAThread.SetApartmentState(System.Threading.ApartmentState.STA);
-                STAThread.Start(WindowReference.Object);
+                sTAThread.SetApartmentState(System.Threading.ApartmentState.STA);
+                sTAThread.Start(windowReference.Object);
                 evt.WaitOne();
             }
         }
-        public static Uri GetWebBrowserWindowUrl(EnvDTE.Window WindowReference)
+
+        public static Uri GetWebBrowserWindowUrl(EnvDTE.Window windowReference)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            Uri BrowserUrl = new Uri("", UriKind.RelativeOrAbsolute);
-            Evaluate(WindowReference, new Action<System.Windows.Forms.WebBrowser>((wb) => BrowserUrl = wb.Url));
-            return BrowserUrl;
+            Uri browserUrl = new Uri(string.Empty, UriKind.RelativeOrAbsolute);
+            Evaluate(windowReference, new Action<System.Windows.Forms.WebBrowser>((wb) => browserUrl = wb.Url));
+            return browserUrl;
         }
+
         protected override void AttachInterfaces(object nativeActiveXObject)
         {
             base.AttachInterfaces(this.IWebBrowser2Object);
         }
+
         protected override void DetachInterfaces()
         {
             base.DetachInterfaces();

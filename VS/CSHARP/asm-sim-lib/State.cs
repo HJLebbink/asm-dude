@@ -1,7 +1,7 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -9,36 +9,40 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
-using AsmTools;
-using Microsoft.Z3;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace AsmSim
 {
+    // The above copyright notice and this permission notice shall be included in all
+    // copies or substantial portions of the Software.
+
+    // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    // SOFTWARE.
+
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
+    using AsmTools;
+    using Microsoft.Z3;
+
     public class State : IDisposable
     {
         #region Fields
         public static readonly bool ADD_COMPUTED_VALUES = true;
 
         private readonly Tools _tools;
+
         public Tools Tools { get { return this._tools; } }
+
         private readonly Context _ctx;
+
         public Context Ctx { get { return this._ctx; } }
 
         public Solver Solver { get; private set; }
+
         public Solver Solver_U { get; private set; }
 
         private bool Solver_Dirty = false;
@@ -46,6 +50,7 @@ namespace AsmSim
 
         private string _warningMessage;
         private string _synstaxErrorMessage;
+
         public bool IsHalted { get; private set; }
 
         public string HeadKey = null;
@@ -58,10 +63,12 @@ namespace AsmSim
         private readonly object _ctxLock = new object();
 
         private BranchInfoStore _branchInfoStore;
+
         public BranchInfoStore BranchInfoStore { get { return this._branchInfoStore; } }
         #endregion
 
         #region Constructors
+
         /// <summary>Private constructor for internal use</summary>
         private State(Tools tools)
         {
@@ -84,14 +91,16 @@ namespace AsmSim
         }
 
         /// <summary>Regular constructor</summary>
-        public State(Tools tools, string tailKey, string headKey) : this(tools)
+        public State(Tools tools, string tailKey, string headKey)
+            : this(tools)
         {
             this.TailKey = tailKey;
             this.HeadKey = headKey;
         }
 
         /// <summary>Copy constructor</summary>
-        public State(State other) : this(other.Tools)
+        public State(State other)
+            : this(other.Tools)
         {
             lock (this._ctxLock)
             {
@@ -135,7 +144,8 @@ namespace AsmSim
         }
 
         /// <summary>Merge and Diff constructor</summary>
-        public State(State state1, State state2, bool merge) : this(state1.Tools)
+        public State(State state1, State state2, bool merge)
+            : this(state1.Tools)
         {
             if (merge)
             {
@@ -146,6 +156,7 @@ namespace AsmSim
                 this.DiffConstructor(state1, state2);
             }
         }
+
         /// <summary>Merge Constructor Method</summary>
         private void MergeConstructor(State state1, State state2)
         {
@@ -332,6 +343,7 @@ namespace AsmSim
         public bool Frozen
         {
             get { return this._frozen; }
+
             set
             {
                 if (value)
@@ -378,6 +390,7 @@ namespace AsmSim
             this.Solver_Dirty = true;
             this.Solver_U_Dirty = true;
         }
+
         public void Update_Forward(StateUpdate stateUpdate)
         {
             if (stateUpdate == null)
@@ -388,6 +401,7 @@ namespace AsmSim
             this.Update(stateUpdate);
             this.HeadKey = stateUpdate.NextKey;
         }
+
         public void Update_Backward(StateUpdate stateUpdate, string prevKey)
         {
             if (stateUpdate == null)
@@ -418,11 +432,12 @@ namespace AsmSim
         }
         #endregion
 
-        #region Getters 
+        #region Getters
         public bool Is_Undefined(Flags flagName)
         {
             return this.GetTv(flagName) == Tv.UNDEFINED;
         }
+
         public bool Is_Undefined(Rn regName)
         {
             Tv[] result = this.GetTvArray(regName);
@@ -466,6 +481,7 @@ namespace AsmSim
                 }
             }
         }
+
         public bool Is_Redundant(Rn regName, string key1, string key2)
         {
             lock (this._ctxLock)
@@ -496,6 +512,7 @@ namespace AsmSim
                 }
             }
         }
+
         public Tv Is_Redundant_Mem(string key1, string key2)
         {
             lock (this._ctxLock)
@@ -677,6 +694,7 @@ namespace AsmSim
                 return Tools.Create_Key(regName, this.HeadKey, this._ctx);
             }
         }
+
         public BoolExpr Create(Flags flagName)
         {
             lock (this._ctxLock)
@@ -692,6 +710,7 @@ namespace AsmSim
                 return Tools.Create_Key(regName, this.TailKey, this._ctx);
             }
         }
+
         public BoolExpr Create_Tail(Flags flagName)
         {
             lock (this._ctxLock)
@@ -712,9 +731,11 @@ namespace AsmSim
 
         #region UndefGrounding
         private bool _hasUndefGrounding = false;
+
         private bool UndefGrounding
         {
             get { return this._hasUndefGrounding; }
+
             set
             {
                 if (value != this._hasUndefGrounding)
@@ -737,7 +758,7 @@ namespace AsmSim
                         {
                             this.Solver_U.Assert(ctx.MkEq(Tools.Create_Key(reg, key, ctx), regValue));
                         }
-                        if (this.Tools.StateConfig.mem)
+                        if (this.Tools.StateConfig.Mem)
                         {
                             ArrayExpr memKey = Tools.Create_Mem_Key(key, ctx);
                             ArrayExpr initialMem = ctx.MkConstArray(ctx.MkBitVecSort(64), ctx.MkBV(0xFF, 8));
@@ -752,6 +773,7 @@ namespace AsmSim
                 }
             }
         }
+
         private BoolExpr[] _undefStore;
 
         #endregion
@@ -772,7 +794,7 @@ namespace AsmSim
                     popNeeded = true;
                 }
 
-                string result = this.ToString("");
+                string result = this.ToString(string.Empty);
 
                 if (popNeeded)
                 {
@@ -782,6 +804,7 @@ namespace AsmSim
                 return result;
             }
         }
+
         public string ToString(string identStr)
         {
             StringBuilder sb = new StringBuilder();
@@ -802,6 +825,7 @@ namespace AsmSim
             //sb.AppendLine(ToStringWarning(identStr));
             return sb.ToString();
         }
+
         public string ToStringFlags(string identStr)
         {
             StringBuilder sb = new StringBuilder();
@@ -814,9 +838,10 @@ namespace AsmSim
                 }
                 sb.Append(flag.ToString() + "=" + c + "; ");
             }
-            sb.AppendLine("");
+            sb.AppendLine(string.Empty);
             return sb.ToString();
         }
+
         public string ToStringRegs(string identStr)
         {
             StringBuilder sb = new StringBuilder();
@@ -832,6 +857,7 @@ namespace AsmSim
             }
             return sb.ToString();
         }
+
         public string ToStringSIMD(string identStr)
         {
             StringBuilder sb = new StringBuilder();
@@ -898,7 +924,7 @@ namespace AsmSim
                     keep.Add(expr.ToString());
                 }
             }
-            if (this._tools.StateConfig.mem)
+            if (this._tools.StateConfig.Mem)
             {
                 using (ArrayExpr expr = Tools.Create_Mem_Key(this.HeadKey, this._ctx))
                 {
@@ -907,10 +933,12 @@ namespace AsmSim
             }
             this.Compress(keep);
         }
+
         public void Compress(string keep)
         {
             this.Compress(new HashSet<string>() { keep });
         }
+
         public void Compress(ISet<string> keep)
         {
             ISet<string> used = new HashSet<string>(keep);
@@ -1008,13 +1036,13 @@ namespace AsmSim
         {
             return this.EqualValues(this.Create(reg1), this.Create(reg2));
         }
+
         public Tv EqualValues(Expr value1, Expr value2)
         {
             //Console.WriteLine("INFO: MemZ3:isEqual: testing whether a=" + a + " is equal to b=" + b);
             const bool method1 = true; // the other method seems not to work
             lock (this._ctxLock)
             {
-
                 Tv eq = Tv.UNKNOWN;
                 Tv uneq = Tv.UNKNOWN;
 
@@ -1119,6 +1147,7 @@ namespace AsmSim
         public string Warning
         {
             get { return this._warningMessage; }
+
             set
             {
                 if (this._warningMessage == null)
@@ -1131,9 +1160,11 @@ namespace AsmSim
                 }
             }
         }
+
         public string SyntaxError
         {
             get { return this._synstaxErrorMessage; }
+
             set
             {
                 if (value != null)
