@@ -136,36 +136,36 @@ namespace AsmDude.Tools
             this._delay.Reset();
         }
 
-        public static int Get_Linenumber(uint id)
+        public int Get_Linenumber(uint id)
         {
             return (int)(id & 0x00FFFFFF);
         }
 
-        public static uint Get_File_Id(uint id)
+        public uint Get_File_Id(uint id)
         {
             return id >> 24;
         }
 
         public string Get_Filename(uint id)
         {
-            uint fileId = Get_File_Id(id);
+            uint fileId = this.Get_File_Id(id);
             if (this._filenames.TryGetValue(fileId, out string filename))
             {
                 return filename;
             }
             else
             {
-                AsmDudeToolsStatic.Output_WARNING("LabelGraph:Get_Filename: no filename for id=" + id + " (fileId " + fileId + "; line " + Get_Linenumber(id) + ")");
+                AsmDudeToolsStatic.Output_WARNING("LabelGraph:Get_Filename: no filename for id=" + id + " (fileId " + fileId + "; line " + this.Get_Linenumber(id) + ")");
                 return string.Empty;
             }
         }
 
-        public static uint Make_Id(int lineNumber, uint fileId)
+        public uint Make_Id(int lineNumber, uint fileId)
         {
             return (fileId << 24) | (uint)lineNumber;
         }
 
-        public static bool Is_From_Main_File(uint id)
+        public bool Is_From_Main_File(uint id)
         {
             return id <= 0xFFFFFF;
         }
@@ -221,7 +221,7 @@ namespace AsmDude.Tools
                         {
                             if (result.ContainsKey(used_at_id))
                             { // this should not happen: somehow the (file-line) used_at_id has multiple occurances on the same line?!
-                                AsmDudeToolsStatic.Output_WARNING("LabelGraph:Get_Undefined_Labels: id=" + used_at_id + " (" + this.Get_Filename(used_at_id) + "; line " + Get_Linenumber(used_at_id) + ") with label \"" + full_Qualified_Label + "\" already exists and has key \"" + result[used_at_id] + "\".");
+                                AsmDudeToolsStatic.Output_WARNING("LabelGraph:Get_Undefined_Labels: id=" + used_at_id + " (" + this.Get_Filename(used_at_id) + "; line " + this.Get_Linenumber(used_at_id) + ") with label \"" + full_Qualified_Label + "\" already exists and has key \"" + result[used_at_id] + "\".");
                             }
                             else
                             {
@@ -248,10 +248,10 @@ namespace AsmDude.Tools
                     foreach (KeyValuePair<string, IList<uint>> entry in this._defAt)
                     {
                         uint id = entry.Value[0];
-                        int lineNumber = Get_Linenumber(id);
+                        int lineNumber = this.Get_Linenumber(id);
                         string filename = Path.GetFileName(this.Get_Filename(id));
                         string lineContent;
-                        if (Is_From_Main_File(id))
+                        if (this.Is_From_Main_File(id))
                         {
                             lineContent = " :" + this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
                         }
@@ -484,7 +484,7 @@ namespace AsmDude.Tools
                 {
                     for (int lineNumber = 0; lineNumber < buffer.CurrentSnapshot.LineCount; ++lineNumber)
                     {
-                        this.Add_Linenumber(buffer, aggregator, lineNumber, Make_Id(lineNumber, fileId));
+                        this.Add_Linenumber(buffer, aggregator, lineNumber, this.Make_Id(lineNumber, fileId));
                     }
                 }
             }
