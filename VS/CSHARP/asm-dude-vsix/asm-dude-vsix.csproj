@@ -340,6 +340,11 @@
     <PackageReference Include="LoadingIndicators.WPF">
       <Version>0.0.1</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.CodeQuality.Analyzers">
+      <Version>2.9.4</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Composition.Analyzers">
       <Version>1.2.0-beta2</Version>
     </PackageReference>

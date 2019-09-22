@@ -13,7 +13,7 @@ dotnet_diagnostic.SA1310.severity = none
 dotnet_diagnostic.SA1309.severity = silent
 
 # SA1600: Elements should be documented
-dotnet_diagnostic.SA1600.severity = silent
+dotnet_diagnostic.SA1600.severity = none
 
 # SA1005: Single line comments should begin with single space
 dotnet_diagnostic.SA1005.severity = none
@@ -128,3 +128,12 @@ dotnet_diagnostic.SA1401.severity = silent
 
 # IDE1006: Naming Styles
 dotnet_diagnostic.IDE1006.severity = none
+
+# CA1031: Do not catch general exception types
+dotnet_diagnostic.CA1031.severity = silent
+
+# CA1051: Do not declare visible instance fields
+dotnet_diagnostic.CA1051.severity = silent
+
+# CA1707: Identifiers should not contain underscores
+dotnet_diagnostic.CA1707.severity = none

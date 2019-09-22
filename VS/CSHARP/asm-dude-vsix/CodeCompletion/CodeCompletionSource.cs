@@ -43,7 +43,7 @@ namespace AsmDude
 
     public sealed class CodeCompletionSource : ICompletionSource
     {
-        private static readonly int MAX_LENGTH_DESCR_TEXT = 120;
+        private const int MAX_LENGTH_DESCR_TEXT = 120;
 
         private readonly ITextBuffer _buffer;
         private readonly LabelGraph _labelGraph;
