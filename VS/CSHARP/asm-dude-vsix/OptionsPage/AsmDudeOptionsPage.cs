@@ -39,8 +39,11 @@ namespace AsmDude.OptionsPage
 
     public enum PropertyEnum
     {
+        Global_MaxFileLines,
+
         AsmDoc_On,
         AsmDoc_Url,
+
         CodeFolding_On,
         CodeFolding_IsDefaultCollapsed,
         CodeFolding_BeginTag,
@@ -371,6 +374,10 @@ namespace AsmDude.OptionsPage
             this._asmDudeOptionsPageUI.UsedAssembler = AsmDudeToolsStatic.Used_Assembler;
             this._asmDudeOptionsPageUI.UsedAssemblerDisassemblyWindow = AsmDudeToolsStatic.Used_Assembler_Disassembly_Window;
 
+            #region Global
+            this.Set_GUI(PropertyEnum.Global_MaxFileLines);
+            #endregion
+
             #region AsmDoc
             this.Set_GUI(PropertyEnum.AsmDoc_On);
             this.Set_GUI(PropertyEnum.AsmDoc_Url);
@@ -501,6 +508,10 @@ namespace AsmDude.OptionsPage
         {
             bool changed = false;
             StringBuilder sb = new StringBuilder();
+
+            #region Global
+            changed |= this.Setting_Changed(PropertyEnum.Global_MaxFileLines, sb);
+            #endregion
 
             #region Assembly Flavour
             if (AsmDudeToolsStatic.Used_Assembler != this._asmDudeOptionsPageUI.UsedAssembler)
@@ -760,6 +771,10 @@ namespace AsmDude.OptionsPage
             bool restartNeeded = false;
             bool archChanged = false;
 
+            #region Global
+            if (this.Setting_Update(PropertyEnum.Global_MaxFileLines)) { changed = true; }
+            #endregion
+
             #region Assembler Flavour
             if (AsmDudeToolsStatic.Used_Assembler != this._asmDudeOptionsPageUI.UsedAssembler)
             {
@@ -774,7 +789,7 @@ namespace AsmDude.OptionsPage
                 restartNeeded = true;
             }
             #endregion
-
+            if (this.Setting_Update(PropertyEnum.CodeFolding_On)) { changed = true; restartNeeded = true; }
             #region AsmDoc
             if (this.Setting_Update(PropertyEnum.AsmDoc_On)) { changed = true; }
             if (this.Setting_Update(PropertyEnum.AsmDoc_Url)) { changed = true; restartNeeded = true; }

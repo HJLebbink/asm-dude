@@ -78,7 +78,7 @@ namespace AsmDude.CodeFolding
             ITagAggregator<AsmTokenTag> aggregator,
             ErrorListProvider errorListProvider)
         {
-            //AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger: constructor");
+            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:constructor", this.ToString()));
             this._buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
             this._aggregator = aggregator ?? throw new ArgumentNullException(nameof(aggregator));
             this._errorListProvider = errorListProvider ?? throw new ArgumentNullException(nameof(errorListProvider));
@@ -86,20 +86,30 @@ namespace AsmDude.CodeFolding
             this._snapshot = buffer.CurrentSnapshot;
             this._regions = new List<Region>();
 
+            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:constructor; number of lines in file = {1}", this.ToString(), buffer.CurrentSnapshot.LineCount));
+
             this._enabled = true;
 
-            this._delay = new Delay(AsmDudePackage.MsSleepBeforeAsyncExecution, 10, AsmDudeTools.Instance.Thread_Pool);
-            this._delay.Done_Event += (o, i) =>
-            {
-                if ((this._thread_Result != null) && (!this._thread_Result.IsCanceled))
-                {
-                    this._thread_Result.Cancel();
-                }
-                this._thread_Result = AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Parse);
-            };
+            if (buffer.CurrentSnapshot.LineCount >= AsmDudeToolsStatic.MaxFileLines) {
+                this._enabled = false;
+                AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:CodeFoldingTagger; file {1} contains {2} lines which is more than maxLines {3}; switching off code folding", this.ToString(), AsmDudeToolsStatic.GetFilename(buffer), buffer.CurrentSnapshot.LineCount, AsmDudeToolsStatic.MaxFileLines));
+            }
 
-            this._delay.Reset();
-            this._buffer.ChangedLowPriority += this.Buffer_Changed;
+            if (this._enabled)
+            {
+                this._delay = new Delay(AsmDudePackage.MsSleepBeforeAsyncExecution, 10, AsmDudeTools.Instance.Thread_Pool);
+                this._delay.Done_Event += (o, i) =>
+                {
+                    if ((this._thread_Result != null) && (!this._thread_Result.IsCanceled))
+                    {
+                        this._thread_Result.Cancel();
+                    }
+                    this._thread_Result = AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Parse);
+                };
+
+                this._delay.Reset();
+                this._buffer.ChangedLowPriority += this.Buffer_Changed;
+            }
         }
 
         private void Buffer_Changed(object sender, TextContentChangedEventArgs e)

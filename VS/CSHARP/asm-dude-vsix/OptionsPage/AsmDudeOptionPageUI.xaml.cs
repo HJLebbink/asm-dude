@@ -157,6 +157,14 @@ namespace AsmDude.OptionsPage
         }
         #endregion
 
+        #region Global
+        public int Global_MaxFileLines
+        {
+            get { return this.Global_MaxFileLines_UI.Value ?? 50000; }
+            set { this.Global_MaxFileLines_UI.Value = value; }
+        }
+        #endregion
+
         #region Asm Documentation
         public bool AsmDoc_On
         {
@@ -296,11 +304,12 @@ namespace AsmDude.OptionsPage
             get { return this.CodeFolding_EndTag_UI.Text; }
             set { this.CodeFolding_EndTag_UI.Text = value; }
         }
-        #endregion Code Folding
 
-        #region Syntax Highlighting
+    #endregion Code Folding
 
-        public bool SyntaxHighlighting_On
+    #region Syntax Highlighting
+
+    public bool SyntaxHighlighting_On
         {
             get { return this.SyntaxHighlighting_On_UI.IsChecked ?? false; }
             set { this.SyntaxHighlighting_On_UI.IsChecked = value; }

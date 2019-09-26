@@ -470,5 +470,8 @@
     <Setting Name="useAssemblerAutoDetect" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="Global_MaxFileLines" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">50000</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

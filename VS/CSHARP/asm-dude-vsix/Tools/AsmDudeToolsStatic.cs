@@ -289,6 +289,19 @@ namespace AsmDude.Tools
             return result;
         }
 
+        public static int MaxFileLines
+        {
+            get
+            {
+                return Settings.Default.Global_MaxFileLines;
+            }
+
+            set
+            {
+                Settings.Default.Global_MaxFileLines = value;
+            }
+        }
+
         public static AssemblerEnum Used_Assembler_Disassembly_Window
         {
             get

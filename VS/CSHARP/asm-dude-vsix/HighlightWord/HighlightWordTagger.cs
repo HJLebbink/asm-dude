@@ -101,24 +101,30 @@ namespace AsmDude.HighlightWord
         // The current request, from the last cursor movement or view render
         private SnapshotPoint RequestedPoint { get; set; }
 
-        public HighlightWordTagger(ITextView view, ITextBuffer sourceBuffer, ITextSearchService textSearchService, ITextStructureNavigator textStructureNavigator)
+        public HighlightWordTagger(ITextView view, ITextBuffer buffer, ITextSearchService textSearchService, ITextStructureNavigator textStructureNavigator)
         {
-            this._view = view;
-            this._sourceBuffer = sourceBuffer;
-            this._textSearchService = textSearchService;
-            this._textStructureNavigator = textStructureNavigator;
+            this._view = view ?? throw new ArgumentNullException(nameof(view));
+            this._sourceBuffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
+            this._textSearchService = textSearchService ?? throw new ArgumentNullException(nameof(textSearchService));
+            this._textStructureNavigator = textStructureNavigator ?? throw new ArgumentNullException(nameof(textStructureNavigator));
 
-            this._wordSpans = new NormalizedSnapshotSpanCollection();
+            if (buffer.CurrentSnapshot.LineCount < AsmDudeToolsStatic.MaxFileLines)
+            {
+                this._wordSpans = new NormalizedSnapshotSpanCollection();
 
-            this.CurrentWord = null;
-            this._currentWordSpan = null;
-            this.NewWord = null;
-            this.NewWordSpan = null;
+                this.CurrentWord = null;
+                this._currentWordSpan = null;
+                this.NewWord = null;
+                this.NewWordSpan = null;
 
-            // Subscribe to both change events in the view - any time the view is updated
-            // or the caret is moved, we refresh our list of highlighted words.
-            this._view.Caret.PositionChanged += this.CaretPositionChanged;
-            this._view.LayoutChanged += this.ViewLayoutChanged;
+                // Subscribe to both change events in the view - any time the view is updated
+                // or the caret is moved, we refresh our list of highlighted words.
+                this._view.Caret.PositionChanged += this.CaretPositionChanged;
+                this._view.LayoutChanged += this.ViewLayoutChanged;
+            } else
+            {
+                AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:HighlightWordTagger; file {1} contains {2} lines which is more than maxLines {3}; switching off word highlighting", this.ToString(), AsmDudeToolsStatic.GetFilename(buffer), buffer.CurrentSnapshot.LineCount, AsmDudeToolsStatic.MaxFileLines));
+            }
         }
 
         #region Event Handlers

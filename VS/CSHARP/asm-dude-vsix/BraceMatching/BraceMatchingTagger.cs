@@ -25,6 +25,7 @@ namespace AsmDude.BraceMatching
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using AsmDude.Tools;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.Text.Tagging;
@@ -39,21 +40,28 @@ namespace AsmDude.BraceMatching
         private readonly Dictionary<char, char> _braceList;
         private SnapshotPoint? _currentChar;
 
-        internal BraceMatchingTagger(ITextView view, ITextBuffer sourceBuffer)
+        internal BraceMatchingTagger(ITextView view, ITextBuffer buffer)
         {
             this._view = view ?? throw new ArgumentNullException(nameof(view));
-            this._sourceBuffer = sourceBuffer ?? throw new ArgumentNullException(nameof(sourceBuffer));
-            this._currentChar = null;
+            this._sourceBuffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
 
-            //here the keys are the open braces, and the values are the close braces
-            this._braceList = new Dictionary<char, char>
+            if (buffer.CurrentSnapshot.LineCount < AsmDudeToolsStatic.MaxFileLines)
             {
-                { '[', ']' },
-                { '(', ')' },
-                { '{', '}' },
-            };
-            this._view.Caret.PositionChanged += this.CaretPositionChanged;
-            this._view.LayoutChanged += this.ViewLayoutChanged;
+                this._currentChar = null;
+
+                //here the keys are the open braces, and the values are the close braces
+                this._braceList = new Dictionary<char, char>
+                {
+                    { '[', ']' },
+                    { '(', ')' },
+                    { '{', '}' },
+                };
+                this._view.Caret.PositionChanged += this.CaretPositionChanged;
+                this._view.LayoutChanged += this.ViewLayoutChanged;
+            } else
+            {
+                AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:BraceMatchingTagger; file {1} contains {2} lines which is more than maxLines {3}; switching off brace matching", this.ToString(), AsmDudeToolsStatic.GetFilename(buffer), buffer.CurrentSnapshot.LineCount, AsmDudeToolsStatic.MaxFileLines));
+            }
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;

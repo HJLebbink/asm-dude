@@ -6,6 +6,19 @@
     <ScrollViewer>
         <StackPanel>
             <Label x:Name="version_UI" Content="AsmDude version" />
+            <GroupBox Header="Global" >
+                <Grid Margin="0,2,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130"/>
+                        <ColumnDefinition Width="90"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="26" />
+                    </Grid.RowDefinitions>
+                    <Label Content="Maximal file size:" Grid.Column="0" Grid.Row="0" />
+                    <xctk:IntegerUpDown x:Name="Global_MaxFileLines_UI" Grid.Column="1" Grid.Row="0" Height="26" VerticalAlignment="Center" VerticalContentAlignment="Center" Width="Auto"/>
+                </Grid>
+            </GroupBox>
             <GroupBox Header="Assembly Flavour" >
                 <Grid Margin="0,2,0,0">
                     <Grid.ColumnDefinitions>
@@ -143,8 +156,8 @@
 
                     <Label Content="End tag:" Grid.Column="0" Grid.Row="2" />
                     <TextBox x:Name="CodeFolding_EndTag_UI" Grid.Column="1" Grid.Row="2" ToolTipService.ShowOnDisabled="True" ToolTip="The characters that end the outlining region. E.g. #endregion." Height="26" VerticalAlignment="Center" VerticalContentAlignment="Center" />
-
-                    <TextBlock TextWrapping="WrapWithOverflow" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Text="Note: place folding tags in a remark in order not to offend your assembler. For example, use: ;#region" VerticalAlignment="Center" />
+ 
+                    <TextBlock TextWrapping="WrapWithOverflow" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Text="Note: place folding tags in a remark in order not to offend your assembler. For example, use: ;#region" VerticalAlignment="Center" />
                 </Grid>
             </GroupBox>
             <GroupBox Header="Keyword Highlighting" >

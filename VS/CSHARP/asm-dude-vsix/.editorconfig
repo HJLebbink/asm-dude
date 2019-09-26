@@ -137,3 +137,6 @@ dotnet_diagnostic.CA1051.severity = silent
 
 # CA1707: Identifiers should not contain underscores
 dotnet_diagnostic.CA1707.severity = none
+
+# SA1642: Constructor summary documentation should begin with standard text
+dotnet_diagnostic.SA1642.severity = silent

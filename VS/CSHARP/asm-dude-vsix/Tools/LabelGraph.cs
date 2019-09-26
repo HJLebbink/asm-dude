@@ -87,10 +87,10 @@ namespace AsmDude.Tools
                 IContentType contentType)
         {
             //AsmDudeToolsStatic.Output_INFO(string.Format("LabelGraph:constructor: creating a label graph for {0}", AsmDudeToolsStatic.GetFileName(buffer)));
-            this._buffer = buffer;
-            this._aggregatorFactory = aggregatorFactory;
-            this.Error_List_Provider = errorListProvider;
-            this._docFactory = docFactory;
+            this._buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
+            this._aggregatorFactory = aggregatorFactory ?? throw new ArgumentNullException(nameof(aggregatorFactory));
+            this.Error_List_Provider = errorListProvider ?? throw new ArgumentNullException(nameof(errorListProvider));
+            this._docFactory = docFactory ?? throw new ArgumentNullException(nameof(docFactory));
             this._contentType = contentType;
 
             this._filenames = new Dictionary<uint, string>();
@@ -106,6 +106,13 @@ namespace AsmDude.Tools
             this._delay = new Delay(AsmDudePackage.MsSleepBeforeAsyncExecution, 100, AsmDudeTools.Instance.Thread_Pool);
 
             this.Enabled = Settings.Default.IntelliSense_Label_Analysis_On;
+
+            if (buffer.CurrentSnapshot.LineCount >= AsmDudeToolsStatic.MaxFileLines)
+            {
+                this.Enabled = false;
+                AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:LabelGraph; file {1} contains {2} lines which is more than maxLines {3}; switching off label analysis", this.ToString(), AsmDudeToolsStatic.GetFilename(buffer), buffer.CurrentSnapshot.LineCount, AsmDudeToolsStatic.MaxFileLines));
+            }
+
             if (this.Enabled)
             {
                 this._delay.Done_Event += (o, i) =>
