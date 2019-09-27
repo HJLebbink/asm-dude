@@ -521,7 +521,7 @@ namespace AsmDude.OptionsPage
             }
             if (AsmDudeToolsStatic.Used_Assembler_Disassembly_Window != this._asmDudeOptionsPageUI.UsedAssemblerDisassemblyWindow)
             {
-                sb.AppendLine("UsedAssembler_DisassemblyWindwo=" + this._asmDudeOptionsPageUI.UsedAssemblerDisassemblyWindow);
+                sb.AppendLine("UsedAssembler_DisassemblyWindow=" + this._asmDudeOptionsPageUI.UsedAssemblerDisassemblyWindow);
                 changed = true;
             }
             #endregion
