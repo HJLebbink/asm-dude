@@ -15,8 +15,8 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="26" />
                     </Grid.RowDefinitions>
-                    <Label Content="Maximal file size:" Grid.Column="0" Grid.Row="0" />
-                    <xctk:IntegerUpDown x:Name="Global_MaxFileLines_UI" Grid.Column="1" Grid.Row="0" Height="26" VerticalAlignment="Center" VerticalContentAlignment="Center" Width="Auto"/>
+                    <Label Content="Maximal file size:" Grid.Column="0" Grid.Row="0" ToolTip="Files that contain more lines of code will switch off: Code Folding, Keyword Highlighting, Brace Matching and Label Analysis"/>
+                    <xctk:IntegerUpDown x:Name="Global_MaxFileLines_UI" Grid.Column="1" Grid.Row="0" DefaultValue="50000" Height="26" VerticalAlignment="Center" VerticalContentAlignment="Center" Width="Auto"/>
                 </Grid>
             </GroupBox>
             <GroupBox Header="Assembly Flavour" >
