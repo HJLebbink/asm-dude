@@ -1,6 +1,6 @@
 ﻿// The MIT License (MIT)
 //
-// Copyright (c) 2017 H.J. Lebbink
+// Copyright (c) 2019 Henk-Jan Lebbink
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -8,20 +8,20 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 namespace AsmDude.OptionsPage
 {
-    // The above copyright notice and this permission notice shall be included in all
-    // copies or substantial portions of the Software.
-
-    // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    // SOFTWARE.
-
     using System;
     using System.Windows.Controls;
     using AsmDude.Tools;
@@ -71,13 +71,17 @@ namespace AsmDude.OptionsPage
 
         public void SetPropValue(string propName, object o)
         {
-            try
+            if (o != null)
             {
-                this.GetType().GetProperty(propName).SetValue(this, o);
-            }
-            catch (Exception e)
-            {
-                AsmDudeToolsStatic.Output_ERROR("Could not find property " + propName + "; " + e);
+                try
+                {
+                    //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:SetPropValue: propName={1}; o={2}", this.ToString(), propName, o.ToString()));
+                    this.GetType().GetProperty(propName).SetValue(this, o);
+                }
+                catch (Exception e)
+                {
+                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:SetPropValue: Could not find property={1}; o={2}", this.ToString(), propName, o.ToString()));
+                }
             }
         }
 
@@ -160,25 +164,12 @@ namespace AsmDude.OptionsPage
         #region Global
         public int Global_MaxFileLines
         {
-            get { return this.Global_MaxFileLines_UI.Value ?? 50000; }
+            get { return this.Global_MaxFileLines_UI.Value.GetValueOrDefault(); }
             set { this.Global_MaxFileLines_UI.Value = value; }
         }
         #endregion
 
-        #region Asm Documentation
-        public bool AsmDoc_On
-        {
-            get { return this.AsmDoc_On_UI.IsChecked ?? false; }
-            set { this.AsmDoc_On_UI.IsChecked = value; }
-        }
-
-        public string AsmDoc_Url
-        {
-            get { return this.AsmDoc_Url_UI.Text; }
-            set { this.AsmDoc_Url_UI.Text = value; }
-        }
-        #endregion Asm Documentation
-
+        #region Assembly Flavour
         public AssemblerEnum UsedAssembler
         {
             get
@@ -279,8 +270,23 @@ namespace AsmDude.OptionsPage
                 }
             }
         }
+        #endregion
 
-        #region Code Folding
+        #region AsmDoc
+        public bool AsmDoc_On
+        {
+            get { return this.AsmDoc_On_UI.IsChecked ?? false; }
+            set { this.AsmDoc_On_UI.IsChecked = value; }
+        }
+
+        public string AsmDoc_Url
+        {
+            get { return this.AsmDoc_Url_UI.Text; }
+            set { this.AsmDoc_Url_UI.Text = value; }
+        }
+        #endregion Asm Documentation
+
+        #region CodeFolding
         public bool CodeFolding_On
         {
             get { return this.CodeFolding_On_UI.IsChecked ?? false; }
@@ -1062,7 +1068,7 @@ namespace AsmDude.OptionsPage
         }
         #endregion
 
-        #region Assembly Simulator
+        #region AsmSim
         public bool AsmSim_On
         {
             get { return this.AsmSim_On_UI.IsChecked ?? false; }
@@ -1071,13 +1077,13 @@ namespace AsmDude.OptionsPage
 
         public int AsmSim_Z3_Timeout_MS
         {
-            get { return this.AsmSim_Z3_Timeout_MS_UI.Value ?? 100; }
+            get { return this.AsmSim_Z3_Timeout_MS_UI.Value.GetValueOrDefault(); }
             set { this.AsmSim_Z3_Timeout_MS_UI.Value = value; }
         }
 
         public int AsmSim_Number_Of_Threads
         {
-            get { return this.AsmSim_Number_Of_Threads_UI.Value ?? 4; }
+            get { return this.AsmSim_Number_Of_Threads_UI.Value.GetValueOrDefault(); }
             set { this.AsmSim_Number_Of_Threads_UI.Value = value; }
         }
 

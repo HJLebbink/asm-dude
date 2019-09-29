@@ -37,7 +37,7 @@ namespace AsmDude.OptionsPage
     using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Shell.Interop;
 
-    public enum PropertyEnum
+    public enum PropertyEnum // NOTE: the enum elements should be precisely equal to the keys in Settings
     {
         Global_MaxFileLines,
 
@@ -371,11 +371,15 @@ namespace AsmDude.OptionsPage
         {
             base.OnActivate(e);
 
-            this._asmDudeOptionsPageUI.UsedAssembler = AsmDudeToolsStatic.Used_Assembler;
-            this._asmDudeOptionsPageUI.UsedAssemblerDisassemblyWindow = AsmDudeToolsStatic.Used_Assembler_Disassembly_Window;
-
             #region Global
             this.Set_GUI(PropertyEnum.Global_MaxFileLines);
+            //TODO: 29-09-19 why o why need i set DisplayDefaultValueOnEmptyText to true, while this is not necessary for AsmSim_Number_Of_Threads and AsmSim_Z3_Timeout_MS
+            this._asmDudeOptionsPageUI.Global_MaxFileLines_UI.DisplayDefaultValueOnEmptyText = true;
+            #endregion
+
+            #region Assembly Flavour
+            this._asmDudeOptionsPageUI.UsedAssembler = AsmDudeToolsStatic.Used_Assembler;
+            this._asmDudeOptionsPageUI.UsedAssemblerDisassemblyWindow = AsmDudeToolsStatic.Used_Assembler_Disassembly_Window;
             #endregion
 
             #region AsmDoc
@@ -472,13 +476,13 @@ namespace AsmDude.OptionsPage
             this.Set_GUI(PropertyEnum.AsmSim_Decorate_Unreachable_Instructions);
             this.Set_GUI(PropertyEnum.AsmSim_Decorate_Registers);
             this.Set_GUI(PropertyEnum.AsmSim_Show_Register_In_Code_Completion);
-            //TODO
+            //TODO: create generic ParseNumeration
             this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Code_Completion_Numeration = AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration);
             this.Set_GUI(PropertyEnum.AsmSim_Show_Register_In_Register_Tooltip);
-            //TODO
+            //TODO: create generic ParseNumeration
             this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Register_Tooltip_Numeration = AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Register_Tooltip_Numeration);
             this.Set_GUI(PropertyEnum.AsmSim_Show_Register_In_Instruction_Tooltip);
-            //TODO
+            //TODO: create generic ParseNumeration
             this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration = AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration);
             this.Set_GUI(PropertyEnum.AsmSim_Decorate_Unimplemented);
             this.Set_GUI(PropertyEnum.AsmSim_Pragma_Assume);
@@ -789,7 +793,7 @@ namespace AsmDude.OptionsPage
                 restartNeeded = true;
             }
             #endregion
-            if (this.Setting_Update(PropertyEnum.CodeFolding_On)) { changed = true; restartNeeded = true; }
+
             #region AsmDoc
             if (this.Setting_Update(PropertyEnum.AsmDoc_On)) { changed = true; }
             if (this.Setting_Update(PropertyEnum.AsmDoc_Url)) { changed = true; restartNeeded = true; }

@@ -84,61 +84,6 @@ namespace AsmDude.Tools
 
         #endregion Singleton Factories
 
-        public static AssemblerEnum Used_Assembler
-        {
-            get
-            {
-                if (Settings.Default.useAssemblerAutoDetect)
-                {
-                    return AssemblerEnum.AUTO_DETECT;
-                }
-                if (Settings.Default.useAssemblerMasm)
-                {
-                    return AssemblerEnum.MASM;
-                }
-                if (Settings.Default.useAssemblerNasm)
-                {
-                    return AssemblerEnum.NASM_INTEL;
-                }
-                if (Settings.Default.useAssemblerNasm_Att)
-                {
-                    return AssemblerEnum.NASM_ATT;
-                }
-                Output_WARNING("AsmDudeToolsStatic.Used_Assembler: no assembler specified, assuming AUTO_DETECT");
-                return AssemblerEnum.AUTO_DETECT;
-            }
-
-            set
-            {
-                Settings.Default.useAssemblerAutoDetect = false;
-                Settings.Default.useAssemblerMasm = false;
-                Settings.Default.useAssemblerNasm = false;
-                Settings.Default.useAssemblerNasm_Att = false;
-
-                if (value.HasFlag(AssemblerEnum.AUTO_DETECT))
-                {
-                    Settings.Default.useAssemblerAutoDetect = true;
-                }
-                if (value.HasFlag(AssemblerEnum.MASM))
-                {
-                    Settings.Default.useAssemblerMasm = true;
-                }
-                else if (value.HasFlag(AssemblerEnum.NASM_INTEL))
-                {
-                    Settings.Default.useAssemblerNasm = true;
-                }
-                else if (value.HasFlag(AssemblerEnum.NASM_ATT))
-                {
-                    Settings.Default.useAssemblerNasm_Att = true;
-                }
-                else
-                {
-                    Output_WARNING("AsmDudeToolsStatic.Used_Assembler: no assembler specified, assuming AUTO_DETECT");
-                    Settings.Default.useAssemblerAutoDetect = true;
-                }
-            }
-        }
-
         /// <summary>Guess whether the provided buffer has assembly in Intel syntax (return true) or AT&T syntax (return false)</summary>
         public static bool Guess_Intel_Syntax(ITextBuffer buffer, int nLinesMax = 30)
         {
@@ -302,6 +247,61 @@ namespace AsmDude.Tools
             }
         }
 
+        public static AssemblerEnum Used_Assembler
+        {
+            get
+            {
+                if (Settings.Default.useAssemblerAutoDetect)
+                {
+                    return AssemblerEnum.AUTO_DETECT;
+                }
+                if (Settings.Default.useAssemblerMasm)
+                {
+                    return AssemblerEnum.MASM;
+                }
+                if (Settings.Default.useAssemblerNasm)
+                {
+                    return AssemblerEnum.NASM_INTEL;
+                }
+                if (Settings.Default.useAssemblerNasm_Att)
+                {
+                    return AssemblerEnum.NASM_ATT;
+                }
+                Output_WARNING("AsmDudeToolsStatic.Used_Assembler:get: no assembler specified, assuming AUTO_DETECT");
+                return AssemblerEnum.AUTO_DETECT;
+            }
+
+            set
+            {
+                Settings.Default.useAssemblerAutoDetect = false;
+                Settings.Default.useAssemblerMasm = false;
+                Settings.Default.useAssemblerNasm = false;
+                Settings.Default.useAssemblerNasm_Att = false;
+
+                if (value.HasFlag(AssemblerEnum.AUTO_DETECT))
+                {
+                    Settings.Default.useAssemblerAutoDetect = true;
+                }
+                else if (value.HasFlag(AssemblerEnum.MASM))
+                {
+                    Settings.Default.useAssemblerMasm = true;
+                }
+                else if (value.HasFlag(AssemblerEnum.NASM_INTEL))
+                {
+                    Settings.Default.useAssemblerNasm = true;
+                }
+                else if (value.HasFlag(AssemblerEnum.NASM_ATT))
+                {
+                    Settings.Default.useAssemblerNasm_Att = true;
+                }
+                else
+                {
+                    Output_WARNING(string.Format("{0}:Used_Assembler:set: no assembler specified; value={1}, assuming AUTO_DETECT", "AsmDudeToolsStatic", value));
+                    Settings.Default.useAssemblerAutoDetect = true;
+                }
+            }
+        }
+
         public static AssemblerEnum Used_Assembler_Disassembly_Window
         {
             get
@@ -318,7 +318,7 @@ namespace AsmDude.Tools
                 {
                     return AssemblerEnum.NASM_ATT;
                 }
-                Output_WARNING("AsmDudeToolsStatic.Used_Assembler_Disassembly_Window: no assembler specified, assuming AUTO_DETECT");
+                Output_WARNING("AsmDudeToolsStatic.Used_Assembler_Disassembly_Window:get no assembler specified, assuming AUTO_DETECT");
                 return AssemblerEnum.AUTO_DETECT;
             }
 
@@ -332,7 +332,7 @@ namespace AsmDude.Tools
                 {
                     Settings.Default.useAssemblerDisassemblyAutoDetect = true;
                 }
-                if (value.HasFlag(AssemblerEnum.MASM))
+                else if (value.HasFlag(AssemblerEnum.MASM))
                 {
                     Settings.Default.useAssemblerDisassemblyMasm = true;
                 }
@@ -342,7 +342,7 @@ namespace AsmDude.Tools
                 }
                 else
                 {
-                    Output_WARNING("AsmDudeToolsStatic.Used_Assembler_Disassembly_Window: no assembler specified, assuming AUTO_DETECT");
+                    Output_WARNING(string.Format("{0}:Used_Assembler_Disassembly_Window:set: no assembler specified; value={1}, assuming AUTO_DETECT", "AsmDudeToolsStatic", value));
                     Settings.Default.useAssemblerDisassemblyAutoDetect = true;
                 }
             }
