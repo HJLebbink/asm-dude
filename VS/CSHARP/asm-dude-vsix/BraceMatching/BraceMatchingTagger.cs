@@ -58,7 +58,8 @@ namespace AsmDude.BraceMatching
                 };
                 this._view.Caret.PositionChanged += this.CaretPositionChanged;
                 this._view.LayoutChanged += this.ViewLayoutChanged;
-            } else
+            }
+            else
             {
                 AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:BraceMatchingTagger; file {1} contains {2} lines which is more than maxLines {3}; switching off brace matching", this.ToString(), AsmDudeToolsStatic.GetFilename(buffer), buffer.CurrentSnapshot.LineCount, AsmDudeToolsStatic.MaxFileLines));
             }

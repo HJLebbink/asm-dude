@@ -507,9 +507,9 @@ namespace AsmDude.QuickInfo
 
         public static TextEditorWrapper CreateFor(TextBlock tb)
         {
-            var textContainer = TextContainerProp.GetValue(tb);
+            object textContainer = TextContainerProp.GetValue(tb);
 
-            var editor = new TextEditorWrapper(textContainer, tb, false);
+            TextEditorWrapper editor = new TextEditorWrapper(textContainer, tb, false);
             IsReadOnlyProp.SetValue(editor._editor, true);
             TextViewProp.SetValue(editor._editor, TextContainerTextViewProp.GetValue(textContainer));
 

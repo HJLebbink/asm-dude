@@ -90,7 +90,8 @@ namespace AsmDude.CodeFolding
 
             this._enabled = true;
 
-            if (buffer.CurrentSnapshot.LineCount >= AsmDudeToolsStatic.MaxFileLines) {
+            if (buffer.CurrentSnapshot.LineCount >= AsmDudeToolsStatic.MaxFileLines)
+            {
                 this._enabled = false;
                 AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:CodeFoldingTagger; file {1} contains {2} lines which is more than maxLines {3}; switching off code folding", this.ToString(), AsmDudeToolsStatic.GetFilename(buffer), buffer.CurrentSnapshot.LineCount, AsmDudeToolsStatic.MaxFileLines));
             }

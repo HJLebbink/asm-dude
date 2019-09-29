@@ -2463,7 +2463,7 @@ namespace AsmTools
 
         VP2INTERSECTD,
         VP2INTERSECTQ
-    } 
+    }
 
     /// <summary>
     /// Suffix for AT&T mnemonic
@@ -2495,12 +2495,12 @@ namespace AsmTools
 
         private static string ToCapitals(string str, bool strIsCapitals)
         {
-            #if DEBUG
+#if DEBUG
             if (strIsCapitals && (str != str.ToUpper()))
             {
                 throw new Exception();
             }
-            #endif
+#endif
             return (strIsCapitals) ? str : str.ToUpper();
         }
 
@@ -2522,11 +2522,11 @@ namespace AsmTools
         {
             switch (c)
             {
-                case 'B': 
-                case 'S': 
-                case 'W': 
-                case 'L': 
-                case 'Q': 
+                case 'B':
+                case 'S':
+                case 'W':
+                case 'L':
+                case 'Q':
                 case 'T': return true;
                 default: return false;
             }
@@ -4708,10 +4708,22 @@ namespace AsmTools
         public static bool IsMnemonic_Att(string keyword, bool strIsCapitals = false)
         {
             int length = keyword.Length;
-            if (length < 2) return false;
+            if (length < 2)
+            {
+                return false;
+            }
+
             string str2 = ToCapitals(keyword, strIsCapitals);
-            if (IsMnemonic(str2, true)) return true;
-            if (!IsAttType(str2[length - 1])) return false;
+            if (IsMnemonic(str2, true))
+            {
+                return true;
+            }
+
+            if (!IsAttType(str2[length - 1]))
+            {
+                return false;
+            }
+
             return IsMnemonic(str2.Substring(0, length - 1), true);
         }
 
@@ -4730,13 +4742,19 @@ namespace AsmTools
                         stopwatch1.Start();
                         Mnemonic m1 = ParseMnemonic_OLD(str, strCapitals);
                         stopwatch1.Stop();
-                        if (m1 != mnemonic) Console.WriteLine("NOT OK OLD mnemonic=" + mnemonic.ToString() + "; str=" + str + "; m1=" + m1.ToString());
+                        if (m1 != mnemonic)
+                        {
+                            Console.WriteLine("NOT OK OLD mnemonic=" + mnemonic.ToString() + "; str=" + str + "; m1=" + m1.ToString());
+                        }
                     }
                     {
                         stopwatch2.Start();
                         Mnemonic m1 = ParseMnemonic(str, strCapitals);
                         stopwatch2.Stop();
-                        if (m1 != mnemonic) Console.WriteLine("NOT OK     mnemonic=" + mnemonic.ToString() + "; str=" + str + "; m1=" + m1.ToString());
+                        if (m1 != mnemonic)
+                        {
+                            Console.WriteLine("NOT OK     mnemonic=" + mnemonic.ToString() + "; str=" + str + "; m1=" + m1.ToString());
+                        }
                     }
                 }
             }
@@ -4758,13 +4776,19 @@ namespace AsmTools
                         stopwatch1.Start();
                         Rn m1 = RegisterTools.ParseRn_OLD(str, strCapitals);
                         stopwatch1.Stop();
-                        if (m1 != mnemonic) Console.WriteLine("NOT OK OLD rn=" + mnemonic.ToString() + "; str=" + str + "; m1=" + m1.ToString());
+                        if (m1 != mnemonic)
+                        {
+                            Console.WriteLine("NOT OK OLD rn=" + mnemonic.ToString() + "; str=" + str + "; m1=" + m1.ToString());
+                        }
                     }
                     {
                         stopwatch2.Start();
                         Rn m1 = RegisterTools.ParseRn(str, strCapitals);
                         stopwatch2.Stop();
-                        if (m1 != mnemonic) Console.WriteLine("NOT OK     rn=" + mnemonic.ToString() + "; str=" + str + "; m1=" + m1.ToString());
+                        if (m1 != mnemonic)
+                        {
+                            Console.WriteLine("NOT OK     rn=" + mnemonic.ToString() + "; str=" + str + "; m1=" + m1.ToString());
+                        }
                     }
                 }
             }
