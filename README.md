@@ -1,5 +1,5 @@
 # Asm-Dude
-Assembly syntax highlighting and code assistance for assembly source files and the disassembly window for Visual Studio 2015, 2017 and 2019. This extension can be found in the [visual studio extensions gallery](https://visualstudiogallery.msdn.microsoft.com/ff839577-2b68-416a-b761-72f9b1ca7c8e) or download latest installer [AsmDude.vsix (v1.9.6.8)](https://github.com/HJLebbink/asm-dude/releases/download/1.9.6.8/AsmDude.vsix). If assembly is too much of a hassle but you still want access to specific machine instructions, consider [Intrinsics-Dude](https://github.com/HJLebbink/intrinsics-dude).
+Assembly syntax highlighting and code assistance for assembly source files and the disassembly window for Visual Studio 2015, 2017 and 2019. This extension can be found in the [visual studio extensions gallery](https://visualstudiogallery.msdn.microsoft.com/ff839577-2b68-416a-b761-72f9b1ca7c8e) or download latest installer [AsmDude.vsix (v1.9.6.14)](https://github.com/HJLebbink/asm-dude/releases/download/1.9.6.14/AsmDude.vsix). If assembly is too much of a hassle but you still want access to specific machine instructions, consider [Intrinsics-Dude](https://github.com/HJLebbink/intrinsics-dude).
 
 ### Features
 
