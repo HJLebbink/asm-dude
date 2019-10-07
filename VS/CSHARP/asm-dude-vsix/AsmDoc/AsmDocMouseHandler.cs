@@ -23,6 +23,7 @@
 namespace AsmDude.AsmDoc
 {
     using System;
+    using System.Diagnostics.Contracts;
     using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Input;
@@ -444,6 +445,7 @@ namespace AsmDude.AsmDoc
 
         public static Uri GetWebBrowserWindowUrl(EnvDTE.Window windowReference)
         {
+            Contract.Requires(windowReference != null);
             ThreadHelper.ThrowIfNotOnUIThread();
 
             Uri browserUrl = new Uri(string.Empty, UriKind.RelativeOrAbsolute);

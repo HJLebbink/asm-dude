@@ -92,7 +92,7 @@ namespace AsmDude
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
 
                 string line_capitals = containingLine.GetText().ToUpper();
-                List<(int BeginPos, int Length, bool IsLabel)> pos = new List<(int BeginPos, int Length, bool IsLabel)>(AsmSourceTools.SplitIntoKeywordPos(line_capitals));
+                List<(int beginPos, int length, bool isLabel)> pos = new List<(int beginPos, int length, bool isLabel)>(AsmSourceTools.SplitIntoKeywordPos(line_capitals));
 
                 int offset = containingLine.Start.Position;
                 int nKeywords = pos.Count;
@@ -111,7 +111,7 @@ namespace AsmDude
                     string asmToken = AsmSourceTools.Keyword(pos[k], line_capitals);
 
                     // keyword k is a label definition
-                    if (pos[k].IsLabel)
+                    if (pos[k].isLabel)
                     {
                         yield return new TagSpan<AsmTokenTag>(NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan), this._labelDef);
                         continue;

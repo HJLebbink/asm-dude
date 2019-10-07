@@ -24,6 +24,7 @@ namespace AsmDude
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.IO;
     using System.Linq;
     using System.Windows.Media;
@@ -37,6 +38,8 @@ namespace AsmDude
     {
         public int Compare(Completion x, Completion y)
         {
+            Contract.Requires(x != null);
+            Contract.Requires(y != null);
             return x.InsertionText.CompareTo(y.InsertionText);
         }
     }
@@ -63,6 +66,9 @@ namespace AsmDude
 
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
         {
+            Contract.Requires(session != null);
+            Contract.Requires(completionSets != null);
+
             try
             {
                 //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:AugmentCompletionSession", this.ToString()));

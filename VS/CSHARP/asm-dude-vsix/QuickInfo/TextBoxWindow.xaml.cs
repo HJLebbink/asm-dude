@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualStudio.Language.Intellisense;
-
-namespace AsmDude.QuickInfo
+﻿namespace AsmDude.QuickInfo
 {
+    using Microsoft.VisualStudio.Language.Intellisense;
+
     /// <summary>
     /// Interaction logic for TextBoxWindow.xaml
     /// </summary>
@@ -11,6 +11,7 @@ namespace AsmDude.QuickInfo
         {
             this.InitializeComponent();
         }
+
         public bool KeepQuickInfoOpen
         {
             get

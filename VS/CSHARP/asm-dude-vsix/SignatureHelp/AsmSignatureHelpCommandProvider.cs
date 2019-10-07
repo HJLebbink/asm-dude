@@ -45,12 +45,11 @@ namespace AsmDude.SignatureHelp
         public void VsTextViewCreated(IVsTextView textViewAdapter)
         {
             ITextView textView = this._adapterService.GetWpfTextView(textViewAdapter);
-            if (textView == null)
+            if (textView != null)
             {
-                return;
+                textView.Properties.GetOrCreateSingletonProperty(
+                     () => new AsmSignatureHelpCommandFilter(textViewAdapter, textView, this._signatureHelpBroker));
             }
-            textView.Properties.GetOrCreateSingletonProperty(
-                 () => new AsmSignatureHelpCommandFilter(textViewAdapter, textView, this._signatureHelpBroker));
         }
     }
 }

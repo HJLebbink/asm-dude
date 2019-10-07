@@ -364,25 +364,25 @@ namespace AsmTools
         {
             switch (arch)
             {
-                case Arch.ARCH_NONE: return "";
-                case Arch.ARCH_8086: return "";
-                case Arch.ARCH_186: return "";
-                case Arch.ARCH_286: return "";
-                case Arch.ARCH_386: return "";
-                case Arch.ARCH_486: return "";
+                case Arch.ARCH_NONE: return string.Empty;
+                case Arch.ARCH_8086: return string.Empty;
+                case Arch.ARCH_186: return string.Empty;
+                case Arch.ARCH_286: return string.Empty;
+                case Arch.ARCH_386: return string.Empty;
+                case Arch.ARCH_486: return string.Empty;
                 case Arch.ARCH_PENT: return "Instruction set of the Pentium, 1994 (also known as i585)";
                 case Arch.ARCH_P6: return "Instruction set of the Pentium 6, 1995 (also knows as i686)";
-                case Arch.ARCH_MMX: return "";
-                case Arch.ARCH_SSE: return "";
-                case Arch.ARCH_SSE2: return "";
-                case Arch.ARCH_SSE3: return "";
-                case Arch.ARCH_SSSE3: return "";
-                case Arch.ARCH_SSE4_1: return "";
-                case Arch.ARCH_SSE4_2: return "";
+                case Arch.ARCH_MMX: return string.Empty;
+                case Arch.ARCH_SSE: return string.Empty;
+                case Arch.ARCH_SSE2: return string.Empty;
+                case Arch.ARCH_SSE3: return string.Empty;
+                case Arch.ARCH_SSSE3: return string.Empty;
+                case Arch.ARCH_SSE4_1: return string.Empty;
+                case Arch.ARCH_SSE4_2: return string.Empty;
                 case Arch.ARCH_SSE4A: return "Instruction set SSE4A, AMD";
                 case Arch.ARCH_SSE5: return "Instruction set SSE5, AMD";
-                case Arch.ARCH_AVX: return "";
-                case Arch.ARCH_AVX2: return "";
+                case Arch.ARCH_AVX: return string.Empty;
+                case Arch.ARCH_AVX2: return string.Empty;
                 case Arch.ARCH_AVX512_F: return "AVX512-F - Foundation";
                 case Arch.ARCH_AVX512_CD: return "AVX512-CD - Conflict Detection";
                 case Arch.ARCH_AVX512_ER: return "AVX512-ER - Exponential and Reciprocal";
@@ -412,7 +412,7 @@ namespace AsmTools
                 case Arch.ARCH_BMI2: return "Bit Manipulation Instruction Set 2";
                 case Arch.ARCH_F16C: return "Half Precision Floating Point Conversion Instructions";
                 case Arch.ARCH_FMA: return "Fused Multiply-Add Instructions";
-                case Arch.ARCH_FSGSBASE: return "";
+                case Arch.ARCH_FSGSBASE: return string.Empty;
                 case Arch.ARCH_HLE: return "Hardware Lock Elision Instructions";
                 case Arch.ARCH_INVPCID: return "Invalidate Translation Lookaside Buffers (TLBs)";
                 case Arch.ARCH_SHA: return "Secure Hash Algorithm Extensions";
@@ -420,8 +420,8 @@ namespace AsmTools
                 case Arch.ARCH_MPX: return "Memory Protection Extensions";
                 case Arch.ARCH_PCLMULQDQ: return "Carry-Less Multiplication Instructions";
                 case Arch.ARCH_LZCNT: return "Leading zero count";
-                case Arch.ARCH_PREFETCHWT1: return "";
-                case Arch.ARCH_PRFCHW: return "";
+                case Arch.ARCH_PREFETCHWT1: return string.Empty;
+                case Arch.ARCH_PRFCHW: return string.Empty;
                 case Arch.ARCH_RDPID: return "Read processor ID";
                 case Arch.ARCH_RDRAND: return "Read random number";
                 case Arch.ARCH_RDSEED: return "Reed random seed";
@@ -435,15 +435,15 @@ namespace AsmTools
                 case Arch.ARCH_CYRIX: return "Cyrix Instructions Set";
                 case Arch.ARCH_CYRIXM: return "Cyrix M Instruction Set";
 
-                case Arch.ARCH_CLDEMOTE: return "";
-                case Arch.ARCH_MOVDIR64B: return "";
-                case Arch.ARCH_MOVDIRI: return "";
-                case Arch.ARCH_PCONFIG: return "";
-                case Arch.ARCH_WAITPKG: return "";
+                case Arch.ARCH_CLDEMOTE: return string.Empty;
+                case Arch.ARCH_MOVDIR64B: return string.Empty;
+                case Arch.ARCH_MOVDIRI: return string.Empty;
+                case Arch.ARCH_PCONFIG: return string.Empty;
+                case Arch.ARCH_WAITPKG: return string.Empty;
                 case Arch.ARCH_ENQCMD: return "Enqueue Stores";
 
                 default:
-                    return "";
+                    return string.Empty;
             }
         }
 

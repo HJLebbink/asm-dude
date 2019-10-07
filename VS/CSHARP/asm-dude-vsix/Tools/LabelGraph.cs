@@ -25,6 +25,7 @@ namespace AsmDude.Tools
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.IO;
     using Amib.Threading;
     using AsmDude.SyntaxHighlighting;
@@ -309,6 +310,8 @@ namespace AsmDude.Tools
 
         public SortedSet<uint> Label_Used_At_Info(string full_Qualified_Label, string label)
         {
+            Contract.Requires(full_Qualified_Label != null);
+
             //AsmDudeToolsStatic.Output_INFO("LabelGraph:Label_Used_At_Info: full_Qualified_Label=" + full_Qualified_Label + "; label=" + label);
             SortedSet<uint> results = new SortedSet<uint>();
             {
@@ -379,7 +382,7 @@ namespace AsmDude.Tools
 
         public event EventHandler<EventArgs> Reset_Done_Event;
 
-        public IEnumerable<(string Include_Filename, string Path, string Source_Filename, int LineNumber)> Undefined_Includes { get { return this._undefined_includes; } }
+        public IEnumerable<(string include_Filename, string path, string source_Filename, int lineNumber)> Undefined_Includes { get { return this._undefined_includes; } }
 
         #endregion Public Methods
 

@@ -25,6 +25,7 @@ namespace AsmDude
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.IO;
     using System.Linq;
@@ -334,9 +335,10 @@ namespace AsmDude
 
         public AsmTokenType Get_Token_Type_Att(string keyword)
         {
-            Debug.Assert(keyword == keyword.ToUpper());
+            Contract.Requires(keyword != null);
+            Contract.Requires(keyword == keyword.ToUpper());
             int length = keyword.Length;
-            Debug.Assert(length > 0);
+            Contract.Requires(length > 0);
 
             char firstChar = keyword[0];
 
@@ -376,7 +378,8 @@ namespace AsmDude
 
         public AsmTokenType Get_Token_Type_Intel(string keyword)
         {
-            Debug.Assert(keyword == keyword.ToUpper());
+            Contract.Requires(keyword != null);
+            Contract.Requires(keyword == keyword.ToUpper());
 
             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword, true);
             if (mnemonic != Mnemonic.NONE)
@@ -397,7 +400,8 @@ namespace AsmDude
 
         public AssemblerEnum Get_Assembler(string keyword)
         {
-            Debug.Assert(keyword == keyword.ToUpper());
+            Contract.Requires(keyword != null);
+            Contract.Requires(keyword == keyword.ToUpper());
             return this._assembler.TryGetValue(keyword, out AssemblerEnum value) ? value : AssemblerEnum.UNKNOWN;
         }
 
@@ -414,7 +418,8 @@ namespace AsmDude
         /// </summary>
         public string Get_Description(string keyword)
         {
-            Debug.Assert(keyword == keyword.ToUpper());
+            Contract.Requires(keyword != null);
+            Contract.Requires(keyword == keyword.ToUpper());
             return this._description.TryGetValue(keyword, out string description) ? description : string.Empty;
         }
 
@@ -423,7 +428,8 @@ namespace AsmDude
         /// </summary>
         public Arch Get_Architecture(string keyword)
         {
-            Debug.Assert(keyword == keyword.ToUpper());
+            Contract.Requires(keyword != null);
+            Contract.Requires(keyword == keyword.ToUpper());
             return this._arch.TryGetValue(keyword, out Arch value) ? value : Arch.ARCH_NONE;
         }
 

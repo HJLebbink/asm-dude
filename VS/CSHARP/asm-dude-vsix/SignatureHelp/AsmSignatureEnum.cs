@@ -24,11 +24,12 @@ namespace AsmDude.SignatureHelp
 {
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Diagnostics.Contracts;
     using System.Text;
     using AsmDude.Tools;
     using AsmTools;
 
-    public enum AsmSignatureEnum : byte
+    public enum AsmSignatureEnum
     {
         NONE,
         UNKNOWN,
@@ -137,6 +138,7 @@ namespace AsmDude.SignatureHelp
     {
         public static AsmSignatureEnum[] Parse_Operand_Type_Enum(string str)
         {
+            Contract.Requires(str != null);
             switch (str.ToUpper().Trim())
             {
                 #region Memory
@@ -451,6 +453,8 @@ namespace AsmDude.SignatureHelp
 
         public static string ToString(IList<AsmSignatureEnum> list, string concat)
         {
+            Contract.Requires(list != null);
+
             int nOperands = list.Count;
             if (nOperands == 0)
             {
@@ -546,6 +550,8 @@ namespace AsmDude.SignatureHelp
 
         public static bool Is_Allowed_Operand(Operand op, AsmSignatureEnum operandType)
         {
+            Contract.Requires(op != null);
+
             switch (operandType)
             {
                 case AsmSignatureEnum.UNKNOWN: return true;
@@ -633,7 +639,9 @@ namespace AsmDude.SignatureHelp
 
         public static bool Is_Allowed_Misc(string misc, ISet<AsmSignatureEnum> allowedOperands)
         {
-            Debug.Assert(misc == misc.ToUpper());
+            Contract.Requires(misc != null);
+            Contract.Requires(allowedOperands != null);
+            Contract.Requires(misc == misc.ToUpper());
             switch (misc)
             {
                 case "PTR":
@@ -747,6 +755,8 @@ namespace AsmDude.SignatureHelp
 
         public static bool Is_Allowed_Reg(Rn regName, ISet<AsmSignatureEnum> allowedOperands)
         {
+            Contract.Requires(allowedOperands != null);
+
             RegisterType type = RegisterTools.GetRegisterType(regName);
             switch (type)
             {

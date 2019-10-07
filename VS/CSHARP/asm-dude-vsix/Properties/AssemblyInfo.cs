@@ -20,9 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmDude;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using AsmDude;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information

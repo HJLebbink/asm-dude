@@ -40,6 +40,35 @@ namespace AsmDude.Tools
         public string _latency;
         public string _throughput;
         public string _remark;
+
+        public override bool Equals(object obj)
+        {
+            //Check for null and compare run-time types.
+            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+            {
+                return false;
+            }
+            else
+            {
+                PerformanceItem p = (PerformanceItem)obj;
+                return (this._microArch == p._microArch) && (this._instr == p._instr) && (this._args == p._args);
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            return this._microArch.GetHashCode() ^ this._instr.GetHashCode() ^ this._args.GetHashCode();
+        }
+
+        public static bool operator ==(PerformanceItem left, PerformanceItem right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(PerformanceItem left, PerformanceItem right)
+        {
+            return !(left == right);
+        }
     }
 
     public class PerformanceStore

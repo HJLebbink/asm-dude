@@ -24,6 +24,7 @@ namespace AsmDude.QuickInfo
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Documents;
@@ -98,6 +99,7 @@ namespace AsmDude.QuickInfo
 
         public void SetDescription(Mnemonic mnemonic, AsmDudeTools asmDudeTools)
         {
+            Contract.Requires(asmDudeTools != null);
             string mnemonicStr = mnemonic.ToString();
 
             this.Description.Inlines.Add(new Run("Mnemonic ") { FontWeight = FontWeights.Bold, Foreground = this._foreground });
@@ -111,6 +113,8 @@ namespace AsmDude.QuickInfo
 
         public void SetPerformanceInfo(Mnemonic mnemonic, AsmDudeTools asmDudeTools)
         {
+            Contract.Requires(asmDudeTools != null);
+
             if (Settings.Default.PerformanceInfo_On)
             {
                 this.PerformanceExpander.IsExpanded = !Settings.Default.PerformanceInfo_IsDefaultCollapsed;
@@ -168,6 +172,8 @@ namespace AsmDude.QuickInfo
 
         public void SetAsmSim(AsmSimulator asmSimulator, int lineNumber, bool isExpanded)
         {
+            Contract.Requires(asmSimulator != null);
+
             this._asmSimulator = asmSimulator;
             this._lineNumber = lineNumber;
 

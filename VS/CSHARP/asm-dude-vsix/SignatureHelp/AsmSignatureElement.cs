@@ -24,6 +24,7 @@ namespace AsmDude.SignatureHelp
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Text;
     using AsmDude.Tools;
     using AsmTools;
@@ -43,6 +44,8 @@ namespace AsmDude.SignatureHelp
 
         public AsmSignatureElement(Mnemonic mnem, string operandStr2, string archStr, string operandDoc, string doc)
         {
+            Contract.Requires(operandDoc != null);
+
             this._mnemonic = mnem;
             this._operands = new List<IList<AsmSignatureEnum>>();
             this._arch = new List<Arch>();
@@ -70,6 +73,8 @@ namespace AsmDude.SignatureHelp
 
         public static string Make_Doc(IList<AsmSignatureEnum> operandType)
         {
+            Contract.Requires(operandType != null);
+
             StringBuilder sb = new StringBuilder();
             foreach (AsmSignatureEnum op in operandType)
             {
@@ -102,6 +107,7 @@ namespace AsmDude.SignatureHelp
         /// <summary>Return true if this Signature Element is allowed in the provided architectures</summary>
         public bool Is_Allowed(ISet<Arch> selectedArchitectures)
         {
+            Contract.Requires(selectedArchitectures != null);
             foreach (Arch a in this._arch)
             {
                 if (selectedArchitectures.Contains(a))
@@ -122,7 +128,7 @@ namespace AsmDude.SignatureHelp
             set
             {
                 this._arch.Clear();
-                if (value == string.Empty)
+                if (string.IsNullOrEmpty(value))
                 {
                     //this._arch.Add(Arch.ARCH_486);
                 }

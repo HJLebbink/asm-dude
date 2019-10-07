@@ -23,6 +23,7 @@
 namespace AsmDude.HighlightWord
 {
     using System.ComponentModel.Composition;
+    using System.Diagnostics.Contracts;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.Text.Operations;
@@ -50,6 +51,8 @@ namespace AsmDude.HighlightWord
         /// <returns> Returns a HighlightWordTagger instance</returns>
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
+            Contract.Requires(buffer != null);
+
             if (textView == null)
             {
                 return null;

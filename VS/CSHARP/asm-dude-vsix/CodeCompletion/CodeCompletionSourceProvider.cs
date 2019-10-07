@@ -23,6 +23,7 @@
 namespace AsmDude
 {
     using System.ComponentModel.Composition;
+    using System.Diagnostics.Contracts;
     using AsmDude.Tools;
     using Microsoft.VisualStudio.Language.Intellisense;
     using Microsoft.VisualStudio.Text;
@@ -47,6 +48,7 @@ namespace AsmDude
 
         public ICompletionSource TryCreateCompletionSource(ITextBuffer buffer)
         {
+            Contract.Requires(buffer != null);
             CodeCompletionSource sc()
             {
                 LabelGraph labelGraph = AsmDudeToolsStatic.GetOrCreate_Label_Graph(buffer, this._aggregatorFactory, this._docFactory, this._contentService);

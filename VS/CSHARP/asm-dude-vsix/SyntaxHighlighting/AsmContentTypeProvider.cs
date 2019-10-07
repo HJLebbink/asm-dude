@@ -89,7 +89,7 @@ namespace AsmDude.SyntaxHighlighting
 
     [ContentType(AsmDudePackage.AsmDudeContentType)]
     [Name("AsmDudeContentTypeProvider")]
-    internal sealed class AsmContentTypeProvider
+    internal static class AsmContentTypeProvider
     {
         [Export]
         [Name("asm!")]

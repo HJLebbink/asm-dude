@@ -25,6 +25,7 @@ namespace AsmDude.Tools
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.Text;
     using System.Threading.Tasks;
@@ -51,6 +52,9 @@ namespace AsmDude.Tools
             ITextBuffer buffer,
             IBufferTagAggregatorFactoryService aggregatorFactory)
         {
+            Contract.Requires(buffer != null);
+            Contract.Requires(aggregatorFactory != null);
+
             ITagAggregator<AsmTokenTag> sc()
             { // this is the only place where ITagAggregator are created
                 //AsmDudeToolsStatic.Output_INFO("Creating a ITagAggregator");
@@ -65,6 +69,9 @@ namespace AsmDude.Tools
             ITextDocumentFactoryService docFactory,
             IContentTypeRegistryService contentService)
         {
+            Contract.Requires(buffer != null);
+
+
             LabelGraph sc1()
             {
                 IContentType contentType = contentService.GetContentType(AsmDudePackage.AsmDudeContentType);
@@ -87,6 +94,8 @@ namespace AsmDude.Tools
         /// <summary>Guess whether the provided buffer has assembly in Intel syntax (return true) or AT&T syntax (return false)</summary>
         public static bool Guess_Intel_Syntax(ITextBuffer buffer, int nLinesMax = 30)
         {
+            Contract.Requires(buffer != null);
+
             bool contains_register_att(List<string> line)
             {
                 foreach (string asmToken in line)
@@ -203,6 +212,8 @@ namespace AsmDude.Tools
         /// <summary>Guess whether the provided buffer has assembly in Masm syntax (return true) or Gas syntax (return false)</summary>
         public static bool Guess_Masm_Syntax(ITextBuffer buffer, int nLinesMax = 30)
         {
+            Contract.Requires(buffer != null);
+
             //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Guess_Masm_Syntax. file=\"{1}\"", "AsmDudeToolsStatic", AsmDudeToolsStatic.GetFilename(buffer)));
             ITextSnapshot snapshot = buffer.CurrentSnapshot;
             int evidence_masm = 0;
@@ -350,6 +361,8 @@ namespace AsmDude.Tools
 
         public static string GetFilename(ITextBuffer buffer, int timeout_ms = 200)
         {
+            Contract.Requires(buffer != null);
+
             return ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
                 Task<string> task = GetFilenameAsync(buffer);
@@ -368,6 +381,8 @@ namespace AsmDude.Tools
         /// <summary>Get the full filename (with path) of the provided buffer; returns null if such name does not exist</summary>
         public static async Task<string> GetFilenameAsync(ITextBuffer buffer)
         {
+            Contract.Requires(buffer != null);
+
             if (!ThreadHelper.CheckAccess())
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -381,6 +396,8 @@ namespace AsmDude.Tools
 
         public static (AsmTokenTag tag, SnapshotSpan? keywordSpan) GetAsmTokenTag(ITagAggregator<AsmTokenTag> aggregator, SnapshotPoint triggerPoint)
         {
+            Contract.Requires(aggregator != null);
+
             foreach (IMappingTagSpan<AsmTokenTag> asmTokenTag in aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint)))
             {
                 foreach (SnapshotSpan span in asmTokenTag.Span.GetSpans(triggerPoint.Snapshot.TextBuffer))
@@ -393,6 +410,8 @@ namespace AsmDude.Tools
 
         public static IEnumerable<IMappingTagSpan<AsmTokenTag>> GetAsmTokenTags(ITagAggregator<AsmTokenTag> aggregator, int lineNumber)
         {
+            Contract.Requires(aggregator != null);
+
             return aggregator.GetTags(aggregator.BufferGraph.TopBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).Extent);
         }
 
@@ -616,7 +635,7 @@ namespace AsmDude.Tools
                 return;
             }
 
-            //Output("INFO: AsmDudeToolsStatic:errorTaskNavigateHandler: navigating to row="+task.Line);
+            //Output_INFO("AsmDudeToolsStatic:errorTaskNavigateHandler: navigating to row="+task.Line);
             int iStartIndex = task.Column & 0xFFFF;
             int iEndIndex = (task.Column >> 16) & 0xFFFF;
             mgr.NavigateToLineAndColumn(buffer, ref logicalView, task.Line, iStartIndex, task.Line, iEndIndex);
@@ -657,6 +676,8 @@ namespace AsmDude.Tools
 
         public static ImageSource Bitmap_From_Uri(Uri bitmapUri)
         {
+            Contract.Requires(bitmapUri != null);
+
             BitmapImage bitmap = new BitmapImage();
             try
             {
@@ -713,6 +734,8 @@ namespace AsmDude.Tools
         /// </summary>
         public static async System.Threading.Tasks.Task OutputAsync(string msg)
         {
+            Contract.Requires(msg != null);
+
             if (!ThreadHelper.CheckAccess())
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -813,6 +836,8 @@ namespace AsmDude.Tools
 
         public static bool Is_All_Upper(string input)
         {
+            Contract.Requires(input != null);
+
             for (int i = 0; i < input.Length; i++)
             {
                 if (char.IsLetter(input[i]) && !char.IsUpper(input[i]))
@@ -825,6 +850,8 @@ namespace AsmDude.Tools
 
         public static void Disable_Message(string msg, string filename, ErrorListProvider errorListProvider)
         {
+            Contract.Requires(errorListProvider != null);
+
             Output_WARNING(msg);
 
             for (int i = 0; i < errorListProvider.Tasks.Count; ++i)
@@ -941,6 +968,8 @@ namespace AsmDude.Tools
 
         public static string Retrieve_Regular_Label(string label, AssemblerEnum assembler)
         {
+            Contract.Requires(label != null);
+
             if (assembler.HasFlag(AssemblerEnum.MASM))
             {
                 if ((label.Length > 0) && label[0].Equals('['))

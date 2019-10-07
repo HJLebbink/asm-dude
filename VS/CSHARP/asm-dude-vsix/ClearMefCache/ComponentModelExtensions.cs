@@ -22,6 +22,7 @@
 
 namespace AsmDude.ClearMefCache
 {
+    using System.Diagnostics.Contracts;
     using System.Threading.Tasks;
     using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Shell.Interop;
@@ -30,6 +31,8 @@ namespace AsmDude.ClearMefCache
     {
         public static async Task<string> GetFolderPathAsync(this IVsComponentModelHost componentModelHost)
         {
+            Contract.Requires(componentModelHost != null);
+
             if (!ThreadHelper.CheckAccess())
             {
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();

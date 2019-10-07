@@ -25,6 +25,7 @@ namespace AsmDude.OptionsPage
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Diagnostics.Contracts;
     using System.Drawing;
     using System.Linq;
     using System.Runtime.InteropServices;
@@ -510,6 +511,8 @@ namespace AsmDude.OptionsPage
         /// </remarks>
         protected override void OnDeactivate(CancelEventArgs e)
         {
+            Contract.Requires(e != null);
+
             bool changed = false;
             StringBuilder sb = new StringBuilder();
 
@@ -810,7 +813,10 @@ namespace AsmDude.OptionsPage
             {
                 bool refreshRegistry = false;
 
-                if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_On)) { changed = true; restartNeeded = true; }
+                if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_On))
+                {
+                    changed = true; restartNeeded = true;
+                }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Opcode))
                 {
                     await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Mnemonic, this._asmDudeOptionsPageUI.SyntaxHighlighting_Opcode);

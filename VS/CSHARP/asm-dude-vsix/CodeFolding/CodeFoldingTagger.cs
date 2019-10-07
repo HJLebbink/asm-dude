@@ -226,10 +226,10 @@ namespace AsmDude.CodeFolding
         /// <summary>
         /// Return start positions of the provided line content. tup has: 1) start of the folding position; 2) start of the description position.
         /// </summary>
-        private (int StartPosFolding, int StartPosDescription) Is_Start_Keyword(string lineContent, int lineNumber)
+        private (int startPosFolding, int startPosDescription) Is_Start_Keyword(string lineContent, int lineNumber)
         {
-            (int StartPos, int StartPosDescription) tup = this.Is_Start_Directive_Keyword(lineContent);
-            if (tup.StartPos != -1)
+            (int startPos, int startPosDescription) tup = this.Is_Start_Directive_Keyword(lineContent);
+            if (tup.startPos != -1)
             {
                 return tup;
             }
@@ -254,7 +254,7 @@ namespace AsmDude.CodeFolding
         /// <summary>
         /// Return start positions of the provided line content. tup has: 1) start of the folding position; 2) start of the description position.
         /// </summary>
-        private (int StartPos, int StartPosDescription) Is_Start_Directive_Keyword(string lineContent)
+        private (int startPos, int startPosDescription) Is_Start_Directive_Keyword(string lineContent)
         {
             int i1 = lineContent.IndexOf(this.startRegionTag, StringComparison.OrdinalIgnoreCase);
             if (i1 == -1)
@@ -270,7 +270,7 @@ namespace AsmDude.CodeFolding
         /// <summary>
         /// Return start positions of the provided line content. tup has: 1) start of the folding position; 2) start of the description position.
         /// </summary>
-        private (int StartPosFolding, int StartPosDescription) Is_Start_Masm_Keyword(string lineContent, int lineNumber)
+        private (int startPosFolding, int startPosDescription) Is_Start_Masm_Keyword(string lineContent, int lineNumber)
         {
             try
             {
@@ -311,7 +311,7 @@ namespace AsmDude.CodeFolding
         /// <summary>
         /// Return start positions of the provided line content. tup has: 1) start of the folding position; 2) start of the description position.
         /// </summary>
-        private (int StartPos, int StartPosDescription) Is_Start_Nasm_Keyword(string lineContent, int lineNumber)
+        private (int startPos, int startPosDescription) Is_Start_Nasm_Keyword(string lineContent, int lineNumber)
         {
             foreach (IMappingTagSpan<AsmTokenTag> asmTokenSpan in AsmDudeToolsStatic.GetAsmTokenTags(this._aggregator, lineNumber))
             {
@@ -474,7 +474,7 @@ namespace AsmDude.CodeFolding
                                         line = enumerator.Current;
                                         string lineContent3 = line.GetText();
                                         if (AsmSourceTools.IsRemarkOnly(lineContent3) &&
-                                                (this.Is_Start_Directive_Keyword(lineContent3).StartPos == -1) &&
+                                                (this.Is_Start_Directive_Keyword(lineContent3).startPos == -1) &&
                                                 (this.Is_End_Directive_Keyword(lineContent3) == -1))
                                         {
                                             lineNumber2 = line.LineNumber;

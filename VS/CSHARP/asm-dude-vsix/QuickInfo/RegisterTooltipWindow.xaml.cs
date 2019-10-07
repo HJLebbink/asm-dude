@@ -23,6 +23,7 @@
 namespace AsmDude.QuickInfo
 {
     using System;
+    using System.Diagnostics.Contracts;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Documents;
@@ -53,6 +54,7 @@ namespace AsmDude.QuickInfo
 
         public void SetDescription(Rn reg, AsmDudeTools asmDudeTools)
         {
+            Contract.Requires(asmDudeTools != null);
             string regStr = reg.ToString();
 
             this.Description.Inlines.Add(new Run("Register ") { FontWeight = FontWeights.Bold, Foreground = this._foreground });
@@ -73,6 +75,8 @@ namespace AsmDude.QuickInfo
 
         public void SetAsmSim(AsmSimulator asmSimulator, Rn reg, int lineNumber, bool isExpanded)
         {
+            Contract.Requires(asmSimulator != null);
+
             this._asmSimulator = asmSimulator;
             this._lineNumber = lineNumber;
 

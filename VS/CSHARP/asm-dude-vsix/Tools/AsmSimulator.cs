@@ -24,6 +24,7 @@ namespace AsmDude.Tools
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Text;
     using Amib.Threading;
@@ -75,6 +76,8 @@ namespace AsmDude.Tools
             ITextBuffer buffer,
             IBufferTagAggregatorFactoryService aggregatorFactory)
         {
+            Contract.Requires(buffer != null);
+
             AsmSimulator sc()
             {
                 return new AsmSimulator(buffer, aggregatorFactory);

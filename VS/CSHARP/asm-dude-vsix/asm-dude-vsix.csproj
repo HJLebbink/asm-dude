@@ -341,7 +341,7 @@
       <Version>0.0.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeQuality.Analyzers">
-      <Version>2.9.4</Version>
+      <Version>2.9.6</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -376,7 +376,7 @@
       <Version>14.1.131</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers">
-      <Version>16.3.52</Version>
+      <Version>16.4.16</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Xaml">
       <Version>4.0.0.1</Version>
@@ -390,7 +390,7 @@
       <Version>2.2.6</Version>
     </PackageReference>
     <PackageReference Include="StyleCop.Analyzers">
-      <Version>1.1.118</Version>
+      <Version>1.2.0-beta.66</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
