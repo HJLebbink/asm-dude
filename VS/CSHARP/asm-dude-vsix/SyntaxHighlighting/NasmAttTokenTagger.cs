@@ -89,7 +89,7 @@ namespace AsmDude
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
 
                 string line_capitals = containingLine.GetText().ToUpper();
-                List<(int BeginPos, int Length, bool IsLabel)> pos = new List<(int BeginPos, int Length, bool IsLabel)>(AsmSourceTools.SplitIntoKeywordPos(line_capitals));
+                List<(int beginPos, int length, bool isLabel)> pos = new List<(int beginPos, int length, bool isLabel)>(AsmSourceTools.SplitIntoKeywordPos(line_capitals));
 
                 int offset = containingLine.Start.Position;
                 int nKeywords = pos.Count;
@@ -106,7 +106,7 @@ namespace AsmDude
                     }
 
                     // keyword k is a label definition
-                    if (pos[k].IsLabel)
+                    if (pos[k].isLabel)
                     {
                         //AsmDudeToolsStatic.Output_INFO("NasmTokenTagger:GetTags: found label " +asmToken);
                         if (this.IsProperLabelDef(asmToken, containingLine.LineNumber, out AsmTokenTag asmTokenTag))
@@ -289,13 +289,13 @@ namespace AsmDude
             string[] tokens,
             SnapshotSpan curSpan)
         {
-            (bool, int, int, string) tup = Get_Next_Token(tokenId, nextLoc, tokens);
-            tokenId = tup.Item2;
-            nextLoc = tup.Item3;
+            (bool valid, int nextTokenId, int tokenEndPos, string tokenSting) = Get_Next_Token(tokenId, nextLoc, tokens);
+            tokenId = nextTokenId;
+            nextLoc = tokenEndPos;
 
-            if (tup.Item1)
+            if (valid)
             {
-                asmToken = tup.Item4;
+                asmToken = tokenSting;
                 curLoc = nextLoc - (asmToken.Length + 1);
 
                 asmTokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, asmToken.Length));
@@ -313,7 +313,7 @@ namespace AsmDude
         }
 
         // return true, nextTokenId, tokenEndPos, tokenString
-        public static (bool, int, int, string) Get_Next_Token(int tokenId, int startLoc, string[] tokens)
+        public static (bool valid, int nextTokenId, int tokenEndPos, string tokenSting) Get_Next_Token(int tokenId, int startLoc, string[] tokens)
         {
             int nextTokenId = tokenId;
             int nextLoc = startLoc;
@@ -325,24 +325,24 @@ namespace AsmDude
                 if (asmToken.Length > 0)
                 {
                     nextLoc += asmToken.Length + 1; //add an extra char location because of the separator
-                    return (true, nextTokenId, nextLoc, asmToken.ToUpper());
+                    return (valid: true, nextTokenId: nextTokenId, tokenEndPos: nextLoc, tokenSting: asmToken.ToUpper());
                 }
                 else
                 {
                     nextLoc++;
                 }
             }
-            return (false, nextTokenId, nextLoc, string.Empty);
+            return (valid: false, nextTokenId: nextTokenId, tokenEndPos: nextLoc, tokenSting: string.Empty);
         }
 
-        public static string Keyword((int, int, bool) pos, string line)
+        public static string Keyword((int beginPos, int length, bool isLabel) pos, string line)
         {
-            return line.Substring(pos.Item1, pos.Item2 - pos.Item1);
+            return line.Substring(pos.beginPos, pos.length - pos.beginPos);
         }
 
-        public static SnapshotSpan New_Span((int BeginPos, int Length, bool IsLabel) pos, int offset, SnapshotSpan lineSnapShot)
+        public static SnapshotSpan New_Span((int beginPos, int length, bool isLabel) pos, int offset, SnapshotSpan lineSnapShot)
         {
-            return new SnapshotSpan(lineSnapShot.Snapshot, new Span(pos.BeginPos + offset, pos.Length - pos.BeginPos));
+            return new SnapshotSpan(lineSnapShot.Snapshot, new Span(pos.beginPos + offset, pos.length - pos.beginPos));
         }
         #endregion Public Static Methods
 

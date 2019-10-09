@@ -163,7 +163,7 @@ namespace AsmDude.SignatureHelp
             Span[] locus = new Span[nOperands];
 
             StringBuilder sb = new StringBuilder();
-            sb.Append(signatureElement.Mnemonic.ToString());
+            sb.Append(signatureElement.mnemonic.ToString());
             sb.Append(" ");
             //AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: createSignature: sb=" + sb.ToString());
 

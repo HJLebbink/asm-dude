@@ -125,8 +125,8 @@ namespace AsmDude
                 bool useCapitals = AsmDudeToolsStatic.Is_All_Upper(partialKeyword);
 
                 string lineStr = line.GetText();
-                (string Label, Mnemonic Mnemonic, string[] Args, string Remark) t = AsmSourceTools.ParseLine(lineStr);
-                Mnemonic mnemonic = t.Mnemonic;
+                (string label, Mnemonic mnemonic, string[] args, string remark) t = AsmSourceTools.ParseLine(lineStr);
+                Mnemonic mnemonic = t.mnemonic;
                 string previousKeyword = AsmDudeToolsStatic.Get_Previous_Keyword(line.Start, start).ToUpper();
 
                 //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:AugmentCompletionSession. lineStr=\"{1}\"; previousKeyword=\"{2}\"", this.ToString(), lineStr, previousKeyword));
@@ -197,7 +197,7 @@ namespace AsmDude
                     }
                     else
                     {
-                        IList<Operand> operands = AsmSourceTools.MakeOperands(t.Args);
+                        IList<Operand> operands = AsmSourceTools.MakeOperands(t.args);
                         ISet<AsmSignatureEnum> allowed = new HashSet<AsmSignatureEnum>();
                         int commaCount = AsmSignature.Count_Commas(lineStr);
                         IEnumerable<AsmSignatureElement> allSignatures = this._asmDudeTools.Mnemonic_Store.GetSignatures(mnemonic);

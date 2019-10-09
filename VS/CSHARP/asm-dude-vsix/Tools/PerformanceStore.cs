@@ -27,7 +27,7 @@ namespace AsmDude.Tools
     using System.IO;
     using AsmTools;
 
-    public struct PerformanceItem
+    public struct PerformanceItem : IEquatable<PerformanceItem>
     {
         public MicroArch _microArch;
         public Mnemonic _instr;
@@ -68,6 +68,11 @@ namespace AsmDude.Tools
         public static bool operator !=(PerformanceItem left, PerformanceItem right)
         {
             return !(left == right);
+        }
+
+        public bool Equals(PerformanceItem other)
+        {
+            return this == other;
         }
     }
 

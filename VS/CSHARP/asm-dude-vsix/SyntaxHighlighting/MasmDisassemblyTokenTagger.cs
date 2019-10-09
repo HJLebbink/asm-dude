@@ -244,7 +244,7 @@ namespace AsmDude
             return false;
         }
 
-        private static bool IsSourceCode(string line, List<(int BeginPos, int Length, bool IsLabel)> pos)
+        private static bool IsSourceCode(string line, List<(int beginPos, int length, bool isLabel)> pos)
         {
             if (pos.Count < 2)
             {
@@ -286,11 +286,11 @@ namespace AsmDude
                     return true;
                 }
             }
-            if (pos[0].IsLabel)
+            if (pos[0].isLabel)
             {
                 return false;
             }
-            foreach ((int BeginPos, int Length, bool IsLabel) v in pos)
+            foreach ((int beginPos, int length, bool isLabel) v in pos)
             {
                 string asmToken = AsmSourceTools.Keyword(v, line);
                 if (AsmSourceTools.IsMnemonic(asmToken, true))
@@ -305,14 +305,14 @@ namespace AsmDude
 
         #region Public Static Methods
 
-        public static string Keyword((int, int, bool) pos, string line)
+        public static string Keyword((int beginPos, int length, bool isLabel) pos, string line)
         {
-            return line.Substring(pos.Item1, pos.Item2 - pos.Item1);
+            return line.Substring(pos.beginPos, pos.length - pos.beginPos);
         }
 
-        public static SnapshotSpan New_Span((int, int, bool) pos, int offset, SnapshotSpan lineSnapShot)
+        public static SnapshotSpan New_Span((int beginPos, int length, bool isLabel) pos, int offset, SnapshotSpan lineSnapShot)
         {
-            return new SnapshotSpan(lineSnapShot.Snapshot, new Span(pos.Item1 + offset, pos.Item2 - pos.Item1));
+            return new SnapshotSpan(lineSnapShot.Snapshot, new Span(pos.beginPos + offset, pos.length - pos.beginPos));
         }
 
         #endregion Public Static Methods

@@ -225,7 +225,7 @@ namespace AsmDude.Squiggles
                                 {
                                     if (decorate_Syntax_Errors && this._asmSimulator.Has_Syntax_Error(lineNumber))
                                     {
-                                        string message = AsmSourceTools.Linewrap("Syntax Error: " + this._asmSimulator.Get_Syntax_Error(lineNumber).Message, AsmDudePackage.MaxNumberOfCharsInToolTips);
+                                        string message = AsmSourceTools.Linewrap("Syntax Error: " + this._asmSimulator.Get_Syntax_Error(lineNumber).message, AsmDudePackage.MaxNumberOfCharsInToolTips);
                                         yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.SyntaxError, message));
                                     }
                                 }
@@ -239,7 +239,7 @@ namespace AsmDude.Squiggles
                             {
                                 if (this._asmSimulator.Has_Usage_Undefined_Warning(lineNumber))
                                 {
-                                    string message = AsmSourceTools.Linewrap("Semantic Warning: " + this._asmSimulator.Get_Usage_Undefined_Warning(lineNumber).Message, AsmDudePackage.MaxNumberOfCharsInToolTips);
+                                    string message = AsmSourceTools.Linewrap("Semantic Warning: " + this._asmSimulator.Get_Usage_Undefined_Warning(lineNumber).message, AsmDudePackage.MaxNumberOfCharsInToolTips);
                                     yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.OtherError, message));
                                 }
                             }
@@ -247,7 +247,7 @@ namespace AsmDude.Squiggles
                             {
                                 if (this._asmSimulator.Has_Redundant_Instruction_Warning(lineNumber))
                                 {
-                                    string message = AsmSourceTools.Linewrap("Semantic Warning: " + this._asmSimulator.Get_Redundant_Instruction_Warning(lineNumber).Message, AsmDudePackage.MaxNumberOfCharsInToolTips);
+                                    string message = AsmSourceTools.Linewrap("Semantic Warning: " + this._asmSimulator.Get_Redundant_Instruction_Warning(lineNumber).message, AsmDudePackage.MaxNumberOfCharsInToolTips);
                                     yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.OtherError, message));
                                 }
                             }
@@ -255,7 +255,7 @@ namespace AsmDude.Squiggles
                             {
                                 if (this._asmSimulator.Has_Unreachable_Instruction_Warning(lineNumber))
                                 {
-                                    string message = AsmSourceTools.Linewrap("Semantic Warning: " + this._asmSimulator.Get_Unreachable_Instruction_Warning(lineNumber).Message, AsmDudePackage.MaxNumberOfCharsInToolTips);
+                                    string message = AsmSourceTools.Linewrap("Semantic Warning: " + this._asmSimulator.Get_Unreachable_Instruction_Warning(lineNumber).message, AsmDudePackage.MaxNumberOfCharsInToolTips);
                                     yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.OtherError, message));
                                 }
                             }
@@ -265,9 +265,9 @@ namespace AsmDude.Squiggles
                         {
                             if (decorate_Undefined_Includes)
                             {
-                                foreach ((string Include_Filename, string Path, string Source_Filename, int LineNumber) tup in this._labelGraph.Undefined_Includes)
+                                foreach ((string include_Filename, string path, string source_Filename, int lineNumber) tup in this._labelGraph.Undefined_Includes)
                                 {
-                                    if (tup.LineNumber == lineNumber) //TODO this is inefficient!
+                                    if (tup.lineNumber == lineNumber) //TODO this is inefficient!
                                     {
                                         string toolTipContent = "Could not resolve include \"" + tagSpan.GetText() + "\"";
                                         yield return new TagSpan<IErrorTag>(tagSpan, new ErrorTag(PredefinedErrorTypeNames.SyntaxError, toolTipContent));
@@ -391,10 +391,10 @@ namespace AsmDude.Squiggles
                     {
                         if (Settings.Default.AsmSim_Show_Syntax_Errors)
                         {
-                            (string Message, Mnemonic Mnemonic) tup = this._asmSimulator.Get_Syntax_Error(lineNumber);
-                            if (tup.Message.Length > 0)
+                            (string message, Mnemonic mnemonic) = this._asmSimulator.Get_Syntax_Error(lineNumber);
+                            if (message.Length > 0)
                             {
-                                await this.AddErrorTask_Syntax_Error_Async(lineNumber, tup.Mnemonic.ToString(), tup.Message);
+                                await this.AddErrorTask_Syntax_Error_Async(lineNumber, mnemonic.ToString(), message);
                             }
 
                             errorListNeedsRefresh = true;
@@ -405,10 +405,10 @@ namespace AsmDude.Squiggles
                     {
                         if (Settings.Default.AsmSim_Show_Usage_Of_Undefined)
                         {
-                            (string Message, Mnemonic Mnemonic) tup = this._asmSimulator.Get_Usage_Undefined_Warning(lineNumber);
-                            if (tup.Message.Length > 0)
+                            (string message, Mnemonic mnemonic) = this._asmSimulator.Get_Usage_Undefined_Warning(lineNumber);
+                            if (message.Length > 0)
                             {
-                                await this.AddErrorTask_Usage_Undefined_Async(lineNumber, tup.Mnemonic.ToString(), tup.Message);
+                                await this.AddErrorTask_Usage_Undefined_Async(lineNumber, mnemonic.ToString(), message);
                             }
 
                             errorListNeedsRefresh = true;
@@ -419,10 +419,10 @@ namespace AsmDude.Squiggles
                     {
                         if (Settings.Default.AsmSim_Show_Redundant_Instructions)
                         {
-                            (string Message, Mnemonic Mnemonic) tup = this._asmSimulator.Get_Redundant_Instruction_Warning(lineNumber);
-                            if (tup.Message.Length > 0)
+                            (string message, Mnemonic mnemonic) = this._asmSimulator.Get_Redundant_Instruction_Warning(lineNumber);
+                            if (message.Length > 0)
                             {
-                                await this.AddErrorTask_Redundant_Instruction_Async(lineNumber, tup.Mnemonic.ToString(), tup.Message);
+                                await this.AddErrorTask_Redundant_Instruction_Async(lineNumber, mnemonic.ToString(), message);
                             }
 
                             errorListNeedsRefresh = true;
@@ -433,10 +433,10 @@ namespace AsmDude.Squiggles
                     {
                         if (Settings.Default.AsmSim_Show_Unreachable_Instructions)
                         {
-                            (string Message, Mnemonic Mnemonic) tup = this._asmSimulator.Get_Unreachable_Instruction_Warning(lineNumber);
-                            if (tup.Message.Length > 0)
+                            (string message, Mnemonic mnemonic) = this._asmSimulator.Get_Unreachable_Instruction_Warning(lineNumber);
+                            if (message.Length > 0)
                             {
-                                await this.AddErrorTask_Unreachable_Instruction_Async(lineNumber, tup.Mnemonic.ToString(), tup.Message);
+                                await this.AddErrorTask_Unreachable_Instruction_Async(lineNumber, mnemonic.ToString(), message);
                             }
 
                             errorListNeedsRefresh = true;
@@ -490,33 +490,33 @@ namespace AsmDude.Squiggles
 
                             if (Settings.Default.AsmSim_Show_Syntax_Errors)
                             {
-                                foreach ((int lineNumber, (string Message, Mnemonic Mnemonic) info) in this._asmSimulator.Syntax_Errors)
+                                foreach ((int lineNumber, (string message, Mnemonic mnemonic) info) in this._asmSimulator.Syntax_Errors)
                                 {
-                                    this.AddErrorTask_Syntax_Error_Async(lineNumber, info.Mnemonic.ToString(), info.Message).ConfigureAwait(false);
+                                    this.AddErrorTask_Syntax_Error_Async(lineNumber, info.mnemonic.ToString(), info.message).ConfigureAwait(false);
                                     errorListNeedsRefresh = true;
                                 }
                             }
                             if (Settings.Default.AsmSim_Show_Usage_Of_Undefined)
                             {
-                                foreach ((int lineNumber, (string Message, Mnemonic Mnemonic) info) in this._asmSimulator.Usage_Undefined)
+                                foreach ((int lineNumber, (string message, Mnemonic mnemonic) info) in this._asmSimulator.Usage_Undefined)
                                 {
-                                    this.AddErrorTask_Usage_Undefined_Async(lineNumber, info.Mnemonic.ToString(), info.Message).ConfigureAwait(false);
+                                    this.AddErrorTask_Usage_Undefined_Async(lineNumber, info.mnemonic.ToString(), info.message).ConfigureAwait(false);
                                     errorListNeedsRefresh = true;
                                 }
                             }
                             if (Settings.Default.AsmSim_Show_Redundant_Instructions)
                             {
-                                foreach ((int lineNumber, (string Message, Mnemonic Mnemonic) info) in this._asmSimulator.Redundant_Instruction)
+                                foreach ((int lineNumber, (string message, Mnemonic mnemonic) info) in this._asmSimulator.Redundant_Instruction)
                                 {
-                                    this.AddErrorTask_Redundant_Instruction_Async(lineNumber, info.Mnemonic.ToString(), info.Message).ConfigureAwait(false);
+                                    this.AddErrorTask_Redundant_Instruction_Async(lineNumber, info.mnemonic.ToString(), info.message).ConfigureAwait(false);
                                     errorListNeedsRefresh = true;
                                 }
                             }
                             if (Settings.Default.AsmSim_Show_Unreachable_Instructions)
                             {
-                                foreach ((int lineNumber, (string Message, Mnemonic Mnemonic) info) in this._asmSimulator.Unreachable_Instruction)
+                                foreach ((int lineNumber, (string message, Mnemonic mnemonic) info) in this._asmSimulator.Unreachable_Instruction)
                                 {
-                                    this.AddErrorTask_Unreachable_Instruction_Async(lineNumber, info.Mnemonic.ToString(), info.Message).ConfigureAwait(false);
+                                    this.AddErrorTask_Unreachable_Instruction_Async(lineNumber, info.mnemonic.ToString(), info.message).ConfigureAwait(false);
                                     errorListNeedsRefresh = true;
                                 }
                             }
@@ -723,10 +723,10 @@ namespace AsmDude.Squiggles
                             }
                             if (Settings.Default.IntelliSense_Show_Undefined_Includes)
                             {
-                                foreach ((string Include_Filename, string Path, string Source_Filename, int LineNumber) entry in this._labelGraph.Undefined_Includes)
+                                foreach ((string include_Filename, string path, string source_Filename, int lineNumber) entry in this._labelGraph.Undefined_Includes)
                                 {
-                                    string include = entry.Include_Filename;
-                                    int lineNumber = entry.LineNumber;
+                                    string include = entry.include_Filename;
+                                    int lineNumber = entry.lineNumber;
                                     //TODO retrieve the lineContent of the correct buffer!
                                     string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
 
@@ -735,9 +735,9 @@ namespace AsmDude.Squiggles
                                         SubcategoryIndex = (int)AsmMessageEnum.INCLUDE_UNDEFINED,
                                         Line = lineNumber,
                                         Column = this.Get_Keyword_Begin_End(lineContent, include),
-                                        Text = "Could not resolve include \"" + include + "\" at line " + (lineNumber + 1) + " in file \"" + entry.Source_Filename + "\"",
+                                        Text = "Could not resolve include \"" + include + "\" at line " + (lineNumber + 1) + " in file \"" + entry.source_Filename + "\"",
                                         ErrorCategory = TaskErrorCategory.Warning,
-                                        Document = entry.Source_Filename,
+                                        Document = entry.source_Filename,
                                     };
                                     errorTask.Navigate += AsmDudeToolsStatic.Error_Task_Navigate_Handler;
                                     errorTasks.Add(errorTask);

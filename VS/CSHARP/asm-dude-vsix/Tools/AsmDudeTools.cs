@@ -119,7 +119,7 @@ namespace AsmDude
                     foreach (AsmSignatureElement e in intel)
                     {
                         intelCount++;
-                        string instruction = e.Mnemonic.ToString() + " " + e.Operands_Str;
+                        string instruction = e.mnemonic.ToString() + " " + e.Operands_Str;
                         if (signaturesIntel.ContainsKey(instruction))
                         {
                             AsmDudeToolsStatic.Output_WARNING("Intel " + instruction + ": is already present with arch " + signaturesIntel[instruction] + "; new arch " + e.Arch_Str);
@@ -133,7 +133,7 @@ namespace AsmDude
                     foreach (AsmSignatureElement e in nasm)
                     {
                         nasmCount++;
-                        string instruction = e.Mnemonic.ToString() + " " + e.Operands_Str;
+                        string instruction = e.mnemonic.ToString() + " " + e.Operands_Str;
                         if (signaturesNasm.ContainsKey(instruction))
                         {
                             // AsmDudeToolsStatic.Output_WARNING("Nasm " + instruction + ": is already present with arch " + signaturesNasm[instruction] + "; new arch " + e.archStr);
@@ -146,7 +146,7 @@ namespace AsmDude
 
                     foreach (AsmSignatureElement e in intel)
                     {
-                        string instruction = e.Mnemonic.ToString() + " " + e.Operands_Str;
+                        string instruction = e.mnemonic.ToString() + " " + e.Operands_Str;
 
                         //AsmDudeToolsStatic.Output_INFO("Intel " + instruction + ": arch" + e.archStr);
                         if ((e.Arch_Str == null) || (e.Arch_Str.Length == 0))

@@ -59,7 +59,7 @@ namespace AsmDude.Tools
         /// Source_Filename = full path and name of the source file in which the include is defined
         /// LineNumber = the lineNumber at which the include is defined
         /// </summary>
-        private readonly IList<(string Include_Filename, string Path, string Source_Filename, int LineNumber)> _undefined_includes;
+        private readonly IList<(string include_filename, string path, string source_filename, int lineNumber)> _undefined_includes;
 
         //private readonly BidirectionalGraph<uint, TaggedEdge<uint, (string LabelSource, string LabelTarget)>> _graph; TODO consider using graph
 
@@ -102,7 +102,7 @@ namespace AsmDude.Tools
             this._defAt_PROTO = new ConcurrentDictionary<string, IList<uint>>();
             this._hasLabel = new HashSet<uint>();
             this._hasDef = new HashSet<uint>();
-            this._undefined_includes = new List<(string Include_Filename, string Path, string Source_Filename, int LineNumber)>();
+            this._undefined_includes = new List<(string include_filename, string path, string source_filename, int lineNumber)>();
             this._thisFilename = AsmDudeToolsStatic.GetFilename(this._buffer);
             this._delay = new Delay(AsmDudePackage.MsSleepBeforeAsyncExecution, 100, AsmDudeTools.Instance.Thread_Pool);
 
@@ -178,7 +178,7 @@ namespace AsmDude.Tools
             return id <= 0xFFFFFF;
         }
 
-        public IEnumerable<(uint Key, string Value)> Label_Clashes
+        public IEnumerable<(uint key, string value)> Label_Clashes
         {
             get
             {
@@ -196,7 +196,7 @@ namespace AsmDude.Tools
             }
         }
 
-        public IEnumerable<(uint Key, string Value)> Undefined_Labels //TODO consider returning an IEnumerable
+        public IEnumerable<(uint key, string value)> Undefined_Labels //TODO consider returning an IEnumerable
         {
             get
             {
@@ -624,7 +624,7 @@ namespace AsmDude.Tools
                 if (!File.Exists(filePath))
                 {
                     //AsmDudeToolsStatic.Output_INFO("LabelGraph:Handle_Include: file " + filePath + " does not exist");
-                    this._undefined_includes.Add((Include_Filename: includeFilename, Path: filePath, Source_Filename: currentFilename, LineNumber: lineNumber));
+                    this._undefined_includes.Add((include_filename: includeFilename, path: filePath, source_filename: currentFilename, lineNumber: lineNumber));
                 }
                 else
                 {

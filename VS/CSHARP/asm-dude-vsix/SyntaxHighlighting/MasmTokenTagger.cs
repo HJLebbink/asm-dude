@@ -93,7 +93,7 @@ namespace AsmDude
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
 
                 string line_upcase = containingLine.GetText().ToUpper();
-                List<(int BeginPos, int Length, bool IsLabel)> pos = new List<(int BeginPos, int Length, bool IsLabel)>(AsmSourceTools.SplitIntoKeywordPos(line_upcase));
+                List<(int beginPos, int length, bool isLabel)> pos = new List<(int beginPos, int length, bool isLabel)>(AsmSourceTools.SplitIntoKeywordPos(line_upcase));
 
                 int offset = containingLine.Start.Position;
                 int nKeywords = pos.Count;
@@ -109,7 +109,7 @@ namespace AsmDude
                     }
 
                     // keyword k is a label definition
-                    if (pos[k].IsLabel)
+                    if (pos[k].isLabel)
                     {
                         SnapshotSpan labelDefSpan = NasmIntelTokenTagger.New_Span(pos[k], offset, curSpan);
                         //AsmDudeToolsStatic.Output_INFO("MasmTokenTagger:GetTags: found label " + asmToken +" at line "+containingLine.LineNumber);
@@ -345,7 +345,7 @@ namespace AsmDude
 
                 string line = containingLine.GetText().ToUpper();
                 int offset = containingLine.Start.Position;
-                IEnumerator<(int BeginPos, int Length, bool IsLabel)> enumerator = AsmSourceTools.SplitIntoKeywordPos(line).GetEnumerator();
+                IEnumerator<(int beginPos, int length, bool isLabel)> enumerator = AsmSourceTools.SplitIntoKeywordPos(line).GetEnumerator();
 
                 bool needToAdvance = false;
                 bool hasNext = enumerator.MoveNext();
@@ -354,8 +354,8 @@ namespace AsmDude
                     break;
                 }
 
-                (int BeginPos, int Length, bool IsLabel) prev = (0, 0, false);
-                (int BeginPos, int Length, bool IsLabel) current = enumerator.Current;
+                (int beginPos, int length, bool isLabel) prev = (0, 0, false);
+                (int beginPos, int length, bool isLabel) current = enumerator.Current;
 
                 while (hasNext)
                 {
@@ -368,7 +368,7 @@ namespace AsmDude
                     }
 
                     // keyword k is a label definition
-                    if (current.IsLabel)
+                    if (current.isLabel)
                     {
                         SnapshotSpan labelDefSpan = NasmIntelTokenTagger.New_Span(current, offset, curSpan);
                         //AsmDudeToolsStatic.Output_INFO("MasmTokenTagger:GetTags: found label " + asmToken +" at line "+containingLine.LineNumber);

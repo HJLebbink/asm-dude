@@ -120,7 +120,7 @@ namespace AsmDude.Tools
         /// <param name="asmSignatureElement"></param>
         private bool Add(AsmSignatureElement asmSignatureElement)
         {
-            Mnemonic mnemonic = asmSignatureElement.Mnemonic;
+            Mnemonic mnemonic = asmSignatureElement.mnemonic;
             bool result = false;
 
             if (this._data.TryGetValue(mnemonic, out IList<AsmSignatureElement> signatureElementList))
