@@ -144,36 +144,36 @@ namespace AsmDude.Tools
             this._delay.Reset();
         }
 
-        public int Get_Linenumber(uint id)
+        public static int Get_Linenumber(uint id)
         {
             return (int)(id & 0x00FFFFFF);
         }
 
-        public uint Get_File_Id(uint id)
+        public static uint Get_File_Id(uint id)
         {
             return id >> 24;
         }
 
         public string Get_Filename(uint id)
         {
-            uint fileId = this.Get_File_Id(id);
+            uint fileId = Get_File_Id(id);
             if (this._filenames.TryGetValue(fileId, out string filename))
             {
                 return filename;
             }
             else
             {
-                AsmDudeToolsStatic.Output_WARNING("LabelGraph:Get_Filename: no filename for id=" + id + " (fileId " + fileId + "; line " + this.Get_Linenumber(id) + ")");
+                AsmDudeToolsStatic.Output_WARNING("LabelGraph:Get_Filename: no filename for id=" + id + " (fileId " + fileId + "; line " + Get_Linenumber(id) + ")");
                 return string.Empty;
             }
         }
 
-        public uint Make_Id(int lineNumber, uint fileId)
+        public static uint Make_Id(int lineNumber, uint fileId)
         {
             return (fileId << 24) | (uint)lineNumber;
         }
 
-        public bool Is_From_Main_File(uint id)
+        public static bool Is_From_Main_File(uint id)
         {
             return id <= 0xFFFFFF;
         }
@@ -229,7 +229,7 @@ namespace AsmDude.Tools
                         {
                             if (result.ContainsKey(used_at_id))
                             { // this should not happen: somehow the (file-line) used_at_id has multiple occurances on the same line?!
-                                AsmDudeToolsStatic.Output_WARNING("LabelGraph:Get_Undefined_Labels: id=" + used_at_id + " (" + this.Get_Filename(used_at_id) + "; line " + this.Get_Linenumber(used_at_id) + ") with label \"" + full_Qualified_Label + "\" already exists and has key \"" + result[used_at_id] + "\".");
+                                AsmDudeToolsStatic.Output_WARNING("LabelGraph:Get_Undefined_Labels: id=" + used_at_id + " (" + this.Get_Filename(used_at_id) + "; line " + Get_Linenumber(used_at_id) + ") with label \"" + full_Qualified_Label + "\" already exists and has key \"" + result[used_at_id] + "\".");
                             }
                             else
                             {
@@ -256,10 +256,10 @@ namespace AsmDude.Tools
                     foreach (KeyValuePair<string, IList<uint>> entry in this._defAt)
                     {
                         uint id = entry.Value[0];
-                        int lineNumber = this.Get_Linenumber(id);
+                        int lineNumber = Get_Linenumber(id);
                         string filename = Path.GetFileName(this.Get_Filename(id));
                         string lineContent;
-                        if (this.Is_From_Main_File(id))
+                        if (Is_From_Main_File(id))
                         {
                             lineContent = " :" + this._buffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
                         }
@@ -494,7 +494,7 @@ namespace AsmDude.Tools
                 {
                     for (int lineNumber = 0; lineNumber < buffer.CurrentSnapshot.LineCount; ++lineNumber)
                     {
-                        this.Add_Linenumber(buffer, aggregator, lineNumber, this.Make_Id(lineNumber, fileId));
+                        this.Add_Linenumber(buffer, aggregator, lineNumber, Make_Id(lineNumber, fileId));
                     }
                 }
             }
@@ -521,30 +521,30 @@ namespace AsmDude.Tools
                 {
                     case AsmTokenType.LabelDef:
                         {
-                            string label = this.Get_Text(buffer, asmTokenTag);
+                            string label = Get_Text(buffer, asmTokenTag);
                             string extra_Tag_Info = asmTokenTag.Tag.Misc;
 
                             if ((extra_Tag_Info != null) && extra_Tag_Info.Equals(AsmTokenTag.MISC_KEYWORD_PROTO))
                             {
                                 //AsmDudeToolsStatic.Output_INFO("LabelGraph:Add_Linenumber: found PROTO labelDef \"" + label + "\" at line " + lineNumber);
-                                this.Add_To_Dictionary(label, id, this._defAt_PROTO);
+                                Add_To_Dictionary(label, id, this._defAt_PROTO);
                                 this._hasDef.Add(id);
                             }
                             else
                             {
                                 string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(extra_Tag_Info, label, usedAssember);
                                 //AsmDudeToolsStatic.Output_INFO("LabelGraph:Add_Linenumber: found labelDef \"" + label + "\" at line " + lineNumber + "; full_Qualified_Label = \"" + full_Qualified_Label + "\".");
-                                this.Add_To_Dictionary(full_Qualified_Label, id, this._defAt);
+                                Add_To_Dictionary(full_Qualified_Label, id, this._defAt);
                                 this._hasDef.Add(id);
                             }
                             break;
                         }
                     case AsmTokenType.Label:
                         {
-                            string labelStr = this.Get_Text(buffer, asmTokenTag);
+                            string labelStr = Get_Text(buffer, asmTokenTag);
                             string full_Qualified_Label = AsmDudeToolsStatic.Make_Full_Qualified_Label(asmTokenTag.Tag.Misc, labelStr, usedAssember);
 
-                            this.Add_To_Dictionary(full_Qualified_Label, id, this._usedAt);
+                            Add_To_Dictionary(full_Qualified_Label, id, this._usedAt);
 
                             //AsmDudeToolsStatic.Output_INFO("LabelGraph:Add_Linenumber: used label \"" + label + "\" at line " + lineNumber);
                             this._hasLabel.Add(id);
@@ -552,7 +552,7 @@ namespace AsmDude.Tools
                         }
                     case AsmTokenType.Directive:
                         {
-                            string directiveStr = this.Get_Text(buffer, asmTokenTag).ToUpper();
+                            string directiveStr = Get_Text(buffer, asmTokenTag).ToUpper();
 
                             switch (directiveStr)
                             {
@@ -562,7 +562,7 @@ namespace AsmDude.Tools
                                         if (enumerator.MoveNext()) // check whether a word exists after the include keyword
                                         {
                                             string currentFilename = this.Get_Filename(id);
-                                            string includeFilename = this.Get_Text(buffer, enumerator.Current);
+                                            string includeFilename = Get_Text(buffer, enumerator.Current);
                                             this.Handle_Include(includeFilename, lineNumber, currentFilename);
                                         }
                                         break;
@@ -583,7 +583,7 @@ namespace AsmDude.Tools
             }
         }
 
-        private void Add_To_Dictionary(string key, uint id, IDictionary<string, IList<uint>> dict)
+        private static void Add_To_Dictionary(string key, uint id, IDictionary<string, IList<uint>> dict)
         {
             if ((key == null) || (key.Length == 0))
             {
@@ -694,7 +694,7 @@ namespace AsmDude.Tools
             */
         }
 
-        private string Get_Text(ITextBuffer buffer, IMappingTagSpan<AsmTokenTag> asmTokenSpan)
+        private static string Get_Text(ITextBuffer buffer, IMappingTagSpan<AsmTokenTag> asmTokenSpan)
         {
             return asmTokenSpan.Span.GetSpans(buffer)[0].GetText();
         }

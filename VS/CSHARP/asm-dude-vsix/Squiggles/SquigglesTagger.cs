@@ -310,10 +310,10 @@ namespace AsmDude.Squiggles
                 StringBuilder sb = new StringBuilder();
                 foreach (uint id in this._labelGraph.Get_Label_Def_Linenumbers(label))
                 {
-                    int lineNumber = this._labelGraph.Get_Linenumber(id);
+                    int lineNumber = LabelGraph.Get_Linenumber(id);
                     string filename = Path.GetFileName(this._labelGraph.Get_Filename(id));
                     string lineContent;
-                    if (this._labelGraph.Is_From_Main_File(id))
+                    if (LabelGraph.Is_From_Main_File(id))
                     {
                         lineContent = " :" + this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
                     }
@@ -680,14 +680,14 @@ namespace AsmDude.Squiggles
                                 foreach ((uint key, string value) in this._labelGraph.Label_Clashes) // TODO Label_Clashes does not return the classes in any particular order,
                                 {
                                     string label = value;
-                                    int lineNumber = this._labelGraph.Get_Linenumber(key);
+                                    int lineNumber = LabelGraph.Get_Linenumber(key);
                                     //TODO retrieve the lineContent of the correct buffer!
                                     string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
 
                                     ErrorTask errorTask = new ErrorTask()
                                     {
                                         SubcategoryIndex = (int)AsmMessageEnum.LABEL_CLASH,
-                                        Line = this._labelGraph.Get_Linenumber(key),
+                                        Line = LabelGraph.Get_Linenumber(key),
                                         Column = this.Get_Keyword_Begin_End(lineContent, label),
                                         Text = "Label Clash: \"" + label + "\"",
                                         ErrorCategory = TaskErrorCategory.Warning,
@@ -703,7 +703,7 @@ namespace AsmDude.Squiggles
                                 foreach ((uint key, string value) in this._labelGraph.Undefined_Labels)
                                 {
                                     string label = value;
-                                    int lineNumber = this._labelGraph.Get_Linenumber(key);
+                                    int lineNumber = LabelGraph.Get_Linenumber(key);
                                     //TODO retrieve the lineContent of the correct buffer!
                                     string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
 

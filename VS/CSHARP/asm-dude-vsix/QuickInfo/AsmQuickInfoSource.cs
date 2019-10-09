@@ -426,9 +426,9 @@ namespace AsmDude.QuickInfo
                 }
                 foreach (uint id in labelDefs)
                 {
-                    int lineNumber = this._labelGraph.Get_Linenumber(id);
+                    int lineNumber = LabelGraph.Get_Linenumber(id);
                     string filename = Path.GetFileName(this._labelGraph.Get_Filename(id));
-                    string lineContent = (this._labelGraph.Is_From_Main_File(id))
+                    string lineContent = (LabelGraph.Is_From_Main_File(id))
                         ? " :" + this._textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText()
                         : string.Empty;
                     sb.AppendLine(AsmDudeToolsStatic.Cleanup(string.Format("Defined at LINE {0} ({1}){2}", lineNumber + 1, filename, lineContent)));
@@ -459,10 +459,10 @@ namespace AsmDude.QuickInfo
                 }
                 foreach (uint id in usage)
                 {
-                    int lineNumber = this._labelGraph.Get_Linenumber(id);
+                    int lineNumber = LabelGraph.Get_Linenumber(id);
                     string filename = Path.GetFileName(this._labelGraph.Get_Filename(id));
                     string lineContent;
-                    if (this._labelGraph.Is_From_Main_File(id))
+                    if (LabelGraph.Is_From_Main_File(id))
                     {
                         lineContent = " :" + this._textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
                     }

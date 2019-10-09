@@ -331,7 +331,7 @@ namespace AsmDude
                 {
                     case VSConstants.VSStd2KCmdID.AUTOCOMPLETE:
                     case VSConstants.VSStd2KCmdID.COMPLETEWORD:
-                        AsmDudeToolsStatic.Output_INFO(string.Format("{0}:QueryStatus", this.ToString()));
+                        //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:QueryStatus", this.ToString()));
                         //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:QueryStatus", this.ToString()));
                         prgCmds[0].cmdf = (uint)OLECMDF.OLECMDF_ENABLED | (uint)OLECMDF.OLECMDF_SUPPORTED;
                         return VSConstants.S_OK;

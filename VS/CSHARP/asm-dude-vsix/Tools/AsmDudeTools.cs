@@ -462,8 +462,8 @@ namespace AsmDude
                 {
                     string name = nameAttribute.Value.ToUpper();
                     this._type[name] = AsmTokenType.Misc;
-                    this._arch[name] = this.Retrieve_Arch(node);
-                    this._description[name] = this.Retrieve_Description(node);
+                    this._arch[name] = Retrieve_Arch(node);
+                    this._description[name] = Retrieve_Description(node);
                 }
             }
 
@@ -478,9 +478,9 @@ namespace AsmDude
                 {
                     string name = nameAttribute.Value.ToUpper();
                     this._type[name] = AsmTokenType.Directive;
-                    this._arch[name] = this.Retrieve_Arch(node);
-                    this._assembler[name] = this.Retrieve_Assembler(node);
-                    this._description[name] = this.Retrieve_Description(node);
+                    this._arch[name] = Retrieve_Arch(node);
+                    this._assembler[name] = Retrieve_Assembler(node);
+                    this._description[name] = Retrieve_Description(node);
                 }
             }
             foreach (XmlNode node in xmlDoc.SelectNodes("//register"))
@@ -494,8 +494,8 @@ namespace AsmDude
                 {
                     string name = nameAttribute.Value.ToUpper();
                     //this._type[name] = AsmTokenType.Register;
-                    this._arch[name] = this.Retrieve_Arch(node);
-                    this._description[name] = this.Retrieve_Description(node);
+                    this._arch[name] = Retrieve_Arch(node);
+                    this._description[name] = Retrieve_Description(node);
                 }
             }
             foreach (XmlNode node in xmlDoc.SelectNodes("//userdefined1"))
@@ -509,7 +509,7 @@ namespace AsmDude
                 {
                     string name = nameAttribute.Value.ToUpper();
                     this._type[name] = AsmTokenType.UserDefined1;
-                    this._description[name] = this.Retrieve_Description(node);
+                    this._description[name] = Retrieve_Description(node);
                 }
             }
             foreach (XmlNode node in xmlDoc.SelectNodes("//userdefined2"))
@@ -523,7 +523,7 @@ namespace AsmDude
                 {
                     string name = nameAttribute.Value.ToUpper();
                     this._type[name] = AsmTokenType.UserDefined2;
-                    this._description[name] = this.Retrieve_Description(node);
+                    this._description[name] = Retrieve_Description(node);
                 }
             }
             foreach (XmlNode node in xmlDoc.SelectNodes("//userdefined3"))
@@ -537,12 +537,12 @@ namespace AsmDude
                 {
                     string name = nameAttribute.Value.ToUpper();
                     this._type[name] = AsmTokenType.UserDefined3;
-                    this._description[name] = this.Retrieve_Description(node);
+                    this._description[name] = Retrieve_Description(node);
                 }
             }
         }
 
-        private Arch Retrieve_Arch(XmlNode node)
+        private static Arch Retrieve_Arch(XmlNode node)
         {
             try
             {
@@ -555,7 +555,7 @@ namespace AsmDude
             }
         }
 
-        private AssemblerEnum Retrieve_Assembler(XmlNode node)
+        private static AssemblerEnum Retrieve_Assembler(XmlNode node)
         {
             try
             {
@@ -568,7 +568,7 @@ namespace AsmDude
             }
         }
 
-        private string Retrieve_Description(XmlNode node)
+        private static string Retrieve_Description(XmlNode node)
         {
             try
             {
