@@ -260,7 +260,7 @@ namespace AsmDude.Tools
 
         private async System.Threading.Tasks.Task Schedule_Reset_Async()
         {
-            await System.Threading.Tasks.Task.Run(() =>
+            var task = System.Threading.Tasks.Task.Run(() =>
             {
                 bool changed;
                 lock (this._resetLock)
@@ -311,6 +311,7 @@ namespace AsmDude.Tools
                     AsmDudeToolsStatic.Output_INFO("AsmSimulator:Schedule_Reset_Async: but static flow update did not result in a different static flow.");
                 }
             });
+            await task.ConfigureAwait(true);
 
             void Reset_Private()
             {

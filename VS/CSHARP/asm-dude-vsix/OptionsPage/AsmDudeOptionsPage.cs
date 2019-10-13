@@ -819,73 +819,73 @@ namespace AsmDude.OptionsPage
                 }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Opcode))
                 {
-                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Mnemonic, this._asmDudeOptionsPageUI.SyntaxHighlighting_Opcode);
+                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Mnemonic, this._asmDudeOptionsPageUI.SyntaxHighlighting_Opcode).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
                 if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Opcode_Italic))
                 {
                     //TODO fix that toggling italic is displayed immediately
-                    //UpdateItalic(AsmClassificationDefinition.ClassificationTypeNames.Mnemonic, this._asmDudeOptionsPageUI.ColorMnemonic_Italic);
+                    //UpdateItalic(AsmClassificationDefinition.ClassificationTypeNames.Mnemonic, this._asmDudeOptionsPageUI.ColorMnemonic_Italic).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; restartNeeded = true;
                 }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Register))
                 {
-                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Register, this._asmDudeOptionsPageUI.SyntaxHighlighting_Register);
+                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Register, this._asmDudeOptionsPageUI.SyntaxHighlighting_Register).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
                 if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Register_Italic)) { changed = true; restartNeeded = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Remark))
                 {
-                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Remark, this._asmDudeOptionsPageUI.SyntaxHighlighting_Remark);
+                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Remark, this._asmDudeOptionsPageUI.SyntaxHighlighting_Remark).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
                 if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Remark_Italic)) { changed = true; restartNeeded = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Directive))
                 {
-                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Directive, this._asmDudeOptionsPageUI.SyntaxHighlighting_Directive);
+                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Directive, this._asmDudeOptionsPageUI.SyntaxHighlighting_Directive).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
                 if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Directive_Italic)) { changed = true; restartNeeded = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Constant))
                 {
-                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Constant, this._asmDudeOptionsPageUI.SyntaxHighlighting_Constant);
+                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Constant, this._asmDudeOptionsPageUI.SyntaxHighlighting_Constant).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
                 if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Constant_Italic)) { changed = true; restartNeeded = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Jump))
                 {
-                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Jump, this._asmDudeOptionsPageUI.SyntaxHighlighting_Jump);
+                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Jump, this._asmDudeOptionsPageUI.SyntaxHighlighting_Jump).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
                 if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Jump_Italic)) { changed = true; restartNeeded = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Label))
                 {
-                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Label, this._asmDudeOptionsPageUI.SyntaxHighlighting_Label);
-                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.LabelDef, this._asmDudeOptionsPageUI.SyntaxHighlighting_Label);
+                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Label, this._asmDudeOptionsPageUI.SyntaxHighlighting_Label).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
+                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.LabelDef, this._asmDudeOptionsPageUI.SyntaxHighlighting_Label).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
                 if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Label_Italic)) { changed = true; restartNeeded = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Misc))
                 {
-                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Misc, this._asmDudeOptionsPageUI.SyntaxHighlighting_Misc);
+                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.Misc, this._asmDudeOptionsPageUI.SyntaxHighlighting_Misc).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
                 if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Misc_Italic)) { changed = true; restartNeeded = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Userdefined1))
                 {
-                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.UserDefined1, this._asmDudeOptionsPageUI.SyntaxHighlighting_Userdefined1);
+                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.UserDefined1, this._asmDudeOptionsPageUI.SyntaxHighlighting_Userdefined1).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
                 if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Userdefined1_Italic)) { changed = true; restartNeeded = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Userdefined2))
                 {
-                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.UserDefined2, this._asmDudeOptionsPageUI.SyntaxHighlighting_Userdefined2);
+                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.UserDefined2, this._asmDudeOptionsPageUI.SyntaxHighlighting_Userdefined2).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
                 if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Userdefined2_Italic)) { changed = true; restartNeeded = true; }
                 if (this.Setting_Update_RGB(PropertyEnum.SyntaxHighlighting_Userdefined3))
                 {
-                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.UserDefined3, this._asmDudeOptionsPageUI.SyntaxHighlighting_Userdefined3);
+                    await this.UpdateFontAsync(AsmClassificationDefinition.ClassificationTypeNames.UserDefined3, this._asmDudeOptionsPageUI.SyntaxHighlighting_Userdefined3).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                     changed = true; refreshRegistry = true;
                 }
                 if (this.Setting_Update(PropertyEnum.SyntaxHighlighting_Userdefined3_Italic)) { changed = true; restartNeeded = true; }
@@ -989,7 +989,7 @@ namespace AsmDude.OptionsPage
             if (changed)
             {
                 Settings.Default.Save();
-                await ClearMefCache.ClearMefCache.ClearAsync();
+                await ClearMefCache.ClearMefCache.ClearAsync().ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
             }
             if (restartNeeded)
             {
@@ -998,7 +998,7 @@ namespace AsmDude.OptionsPage
 
                 if (MessageBox.Show(text1, title, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    await ClearMefCache.ClearMefCache.RestartAsync();
+                    await ClearMefCache.ClearMefCache.RestartAsync().ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                 }
                 else
                 {

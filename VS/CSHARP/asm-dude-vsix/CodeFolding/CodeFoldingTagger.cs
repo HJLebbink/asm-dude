@@ -539,9 +539,7 @@ namespace AsmDude.CodeFolding
             IList<Region> newRegions)
         {
             //AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger: addStartRegion");
-#pragma warning disable IDE0030 // Use null propagation
             int currentLevel = (currentRegion != null) ? currentRegion.Level : 1;
-#pragma warning restore IDE0030 // Use null propagation
             int newLevel = currentLevel + 1;
 
             //levels are the same and we have an existing region;

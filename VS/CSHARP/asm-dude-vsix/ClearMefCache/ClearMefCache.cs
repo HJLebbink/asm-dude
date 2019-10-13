@@ -51,12 +51,15 @@ namespace AsmDude.ClearMefCache
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             }
 
-            IVsComponentModelHost componentModelHost = await instance.ServiceProvider.GetServiceAsync(typeof(SVsComponentModelHost)) as IVsComponentModelHost;
-            string folder = await componentModelHost?.GetFolderPathAsync();
-
-            if (!string.IsNullOrEmpty(folder) && Directory.Exists(folder))
+            IVsComponentModelHost componentModelHost = await instance.ServiceProvider.GetServiceAsync(typeof(SVsComponentModelHost)).ConfigureAwait(true) as IVsComponentModelHost;
+            if (componentModelHost != null)
             {
-                Directory.Delete(folder, true);
+                string folder = await componentModelHost.GetFolderPathAsync().ConfigureAwait(true);
+
+                if (!string.IsNullOrEmpty(folder) && Directory.Exists(folder))
+                {
+                    Directory.Delete(folder, true);
+                }
             }
         }
 
@@ -68,7 +71,7 @@ namespace AsmDude.ClearMefCache
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             }
 
-            IVsShell4 shell = await instance.ServiceProvider.GetServiceAsync(typeof(SVsShell)) as IVsShell4;
+            IVsShell4 shell = await instance.ServiceProvider.GetServiceAsync(typeof(SVsShell)).ConfigureAwait(true) as IVsShell4;
             Assumes.Present(shell);
             shell.Restart((uint)__VSRESTARTTYPE.RESTART_Normal);
         }
