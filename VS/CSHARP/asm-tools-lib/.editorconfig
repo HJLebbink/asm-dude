@@ -5,3 +5,6 @@ dotnet_diagnostic.CS0162.severity = silent
 
 # CA1712: Do not prefix enum values with type name
 dotnet_diagnostic.CA1712.severity = silent
+
+# CA1707: Identifiers should not contain underscores
+dotnet_diagnostic.CA1707.severity = silent

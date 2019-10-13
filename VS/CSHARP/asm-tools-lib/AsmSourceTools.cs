@@ -39,7 +39,7 @@ namespace AsmTools
 
             string label = "";
             Mnemonic mnemonic = Mnemonic.NONE;
-            string[] args = new string[0] { };
+            string[] args = Array.Empty<string>();
             string remark = "";
 
             if (line.Length > 0)

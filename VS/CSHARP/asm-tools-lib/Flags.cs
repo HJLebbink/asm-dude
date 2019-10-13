@@ -28,7 +28,7 @@ namespace AsmTools
 {
     /// <summary>Flags, CF, PF, AF, ZF, SF, OF, DF, IF</summary>
     [Flags]
-    public enum Flags : byte
+    public enum Flags
     {
         NONE = 0,
         /// <summary>

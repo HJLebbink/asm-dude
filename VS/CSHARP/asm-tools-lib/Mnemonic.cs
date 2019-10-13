@@ -394,9 +394,11 @@ namespace AsmTools
         RET,
         /// <summary>Return from interrupt</summary>
         IRET,
-        /// <summary>Software interrupt</summary>
+#pragma warning disable CA1720 // Identifier contains type name
+                              /// <summary>Software interrupt</summary>
         INT,
-        /// <summary>Interrupt on overflow</summary>
+#pragma warning restore CA1720 // Identifier contains type name
+                              /// <summary>Interrupt on overflow</summary>
         INTO,
         /// <summary>Detect value out of range</summary>
         BOUND,
@@ -2468,7 +2470,7 @@ namespace AsmTools
     /// <summary>
     /// Suffix for AT&T mnemonic
     /// </summary>
-    public enum AttType : byte
+    public enum AttType
     {
         B = (byte)'B',
         S = (byte)'S',

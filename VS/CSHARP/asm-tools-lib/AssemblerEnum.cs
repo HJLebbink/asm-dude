@@ -25,7 +25,7 @@ using System;
 namespace AsmTools
 {
     [Flags]
-    public enum AssemblerEnum : byte
+    public enum AssemblerEnum 
     {
         UNKNOWN = 0,
         MASM = 1 << 0,

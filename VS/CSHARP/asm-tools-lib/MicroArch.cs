@@ -25,7 +25,7 @@ using System;
 namespace AsmTools
 {
     [Flags]
-    public enum MicroArch : uint
+    public enum MicroArch
     {
         NONE = 0,
         SandyBridge = 1 << 0,

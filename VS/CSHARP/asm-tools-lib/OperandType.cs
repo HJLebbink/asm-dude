@@ -31,7 +31,7 @@ namespace AsmTools
     /// Operand Type: reg, mem, imm, UNKNOWN
     /// </summary>
     [Flags]
-    public enum Ot1 : byte
+    public enum Ot1
     {
         reg = 1 << 0,
         mem = 1 << 1,
@@ -43,7 +43,7 @@ namespace AsmTools
     /// Operand Type tup (OperandType x OperandType)
     /// </summary>
     [Flags]
-    public enum Ot2 : byte
+    public enum Ot2
     {
         [Description("Reg-Reg")]
         reg_reg = Ot1.reg | (Ot1.reg << 4),

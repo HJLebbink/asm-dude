@@ -95,6 +95,9 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
+      <Version>2.9.3</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.Scripting">
       <Version>2.10.0</Version>
     </PackageReference>
