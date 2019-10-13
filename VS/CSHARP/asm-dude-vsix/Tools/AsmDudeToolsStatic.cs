@@ -366,9 +366,9 @@ namespace AsmDude.Tools
             return ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
                 Task<string> task = GetFilenameAsync(buffer);
-                if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)) == task)
+                if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)).ConfigureAwait(true) == task)
                 {
-                    return await task;
+                    return await task.ConfigureAwait(true);
                 }
                 else
                 {
@@ -431,9 +431,9 @@ namespace AsmDude.Tools
             return ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
                 Task<int> task = GetFontSizeAsync();
-                if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)) == task)
+                if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)).ConfigureAwait(true) == task)
                 {
-                    return await task;
+                    return await task.ConfigureAwait(true);
                 }
                 else
                 {
@@ -462,9 +462,9 @@ namespace AsmDude.Tools
             return ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
                 Task<FontFamily> task = GetFontTypeAsync();
-                if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)) == task)
+                if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)).ConfigureAwait(true) == task)
                 {
-                    return await task;
+                    return await task.ConfigureAwait(true);
                 }
                 else
                 {
@@ -495,9 +495,9 @@ namespace AsmDude.Tools
             return ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
                 Task<Brush> task = GetFontColorAsync();
-                if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)) == task)
+                if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)).ConfigureAwait(true) == task)
                 {
-                    return await task;
+                    return await task.ConfigureAwait(true);
                 }
                 else
                 {
@@ -537,9 +537,9 @@ namespace AsmDude.Tools
             return ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
                 Task<Brush> task = GetBackgroundColorAsync();
-                if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)) == task)
+                if (await System.Threading.Tasks.Task.WhenAny(task, System.Threading.Tasks.Task.Delay(timeout_ms)).ConfigureAwait(true) == task)
                 {
-                    return await task;
+                    return await task.ConfigureAwait(true);
                 }
                 else
                 {
@@ -741,7 +741,6 @@ namespace AsmDude.Tools
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             }
 
-            IVsOutputWindowPane outputPane = await GetOutputPaneAsync();
             string msg2 = string.Format(CultureInfo.CurrentCulture, "{0}", msg.Trim() + Environment.NewLine);
 
             if (first_log_message)
@@ -760,6 +759,7 @@ namespace AsmDude.Tools
                 sb.Append("----------------------------------\n");
                 msg2 = sb.ToString() + msg2;
             }
+            IVsOutputWindowPane outputPane = await GetOutputPaneAsync().ConfigureAwait(true);
             if (outputPane == null)
             {
                 Debug.Write(msg2);

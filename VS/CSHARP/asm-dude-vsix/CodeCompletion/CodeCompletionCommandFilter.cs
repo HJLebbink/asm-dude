@@ -50,7 +50,7 @@ namespace AsmDude
 
         public IOleCommandTarget NextCommandHandler { get; set; }
 
-        private char GetTypeChar(IntPtr pvaIn)
+        private static char GetTypeChar(IntPtr pvaIn)
         {
             return (char)(ushort)Marshal.GetObjectForNativeVariant(pvaIn);
         }
@@ -82,7 +82,7 @@ namespace AsmDude
             //make sure the input is a char before getting it
             if ((pguidCmdGroup == VSConstants.VSStd2K) && (nCmdID == (uint)VSConstants.VSStd2KCmdID.TYPECHAR))
             {
-                typedChar = this.GetTypeChar(pvaIn);
+                typedChar = GetTypeChar(pvaIn);
             }
             //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:Exec: typedChar={1}", this.ToString(), typedChar));
 
@@ -181,7 +181,7 @@ namespace AsmDude
                         handledChar = this.Cancel();
                         break;
                     case VSConstants.VSStd2KCmdID.TYPECHAR:
-                        typedChar = this.GetTypeChar(pvaIn);
+                        typedChar = GetTypeChar(pvaIn);
                         if (char.IsWhiteSpace(typedChar))
                         {
                             this.Complete(true);
