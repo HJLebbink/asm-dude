@@ -24,12 +24,16 @@ namespace AsmSim
 
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using Microsoft.Z3;
 
     public static class ToolsFloatingPoint
     {
         public static IEnumerable<FPExpr> BV_2_Doubles(BitVecExpr value, Context ctx)
         {
+            Contract.Requires(value != null);
+            Contract.Requires(ctx != null);
+
             uint nBits = value.SortSize;
 
             if (nBits == 128)
@@ -63,6 +67,9 @@ namespace AsmSim
 
         public static BitVecExpr FP_2_BV(IEnumerable<FPExpr> fps, Context ctx)
         {
+            Contract.Requires(fps != null);
+            Contract.Requires(ctx != null);
+
             BitVecExpr result = null;
             foreach (FPExpr fp in fps)
             {

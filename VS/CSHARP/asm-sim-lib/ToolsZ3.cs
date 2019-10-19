@@ -8,23 +8,24 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 namespace AsmSim
 {
-    // The above copyright notice and this permission notice shall be included in all
-    // copies or substantial portions of the Software.
-
-    // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    // SOFTWARE.
-
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Diagnostics.Contracts;
     using System.Text;
     using AsmTools;
     using Microsoft.Z3;
@@ -37,6 +38,8 @@ namespace AsmSim
 
         public static ulong GetRandomUlong(Random rand)
         {
+            Contract.Requires(rand != null);
+
             ulong i1, i2;
             lock (_object)
             {
@@ -48,6 +51,8 @@ namespace AsmSim
 
         public static int GetLineNumberFromLabel(string label, char lineNumberSeparator)
         {
+            Contract.Requires(label != null);
+
             int beginPos = label.Length;
             for (int i = 0; i < label.Length; ++i)
             {
@@ -84,31 +89,37 @@ namespace AsmSim
 
         public static BoolExpr GetBit(BitVecExpr value, BitVecExpr pos, Context ctx)
         {
+            Contract.Requires(ctx != null);
             return ctx.MkEq(GetBit_BV(value, pos, ctx), ctx.MkBV(1, 1));
         }
 
         public static BitVecExpr GetBit_BV(BitVecExpr value, BitVecExpr pos, Context ctx)
         {
+            Contract.Requires(ctx != null);
             return ctx.MkExtract(0, 0, ctx.MkBVLSHR(value, pos));
         }
 
         public static BoolExpr GetBit(BitVecExpr value, uint pos, BitVecNum one, Context ctx)
         {
-            Debug.Assert(one.SortSize == 1);
-            Debug.Assert(one.Int == 1);
+            Contract.Requires(ctx != null);
+            Contract.Requires(one != null);
+            Contract.Requires(one.SortSize == 1);
+            Contract.Requires(one.Int == 1);
             return ctx.MkEq(GetBit_BV(value, pos, ctx), one);
         }
 
         public static BitVecExpr GetBit_BV(BitVecExpr value, uint pos, Context ctx)
         {
-            Debug.Assert(ctx != null, "Context ctx cannot be null");
-            Debug.Assert(value != null, "BitVecExpr v cannot be null");
+            Contract.Requires(ctx != null, "Context ctx cannot be null");
+            Contract.Requires(value != null, "BitVecExpr v cannot be null");
             return ctx.MkExtract(pos, pos, value);
         }
 
         public static (BitVecExpr value, BitVecExpr undef) MakeVecExpr(Tv[] tv5, Context ctx)
         {
-            Debug.Assert(tv5.Length > 0);
+            Contract.Requires(ctx != null);
+            Contract.Requires(tv5 != null);
+            Contract.Requires(tv5.Length > 0);
 
             Random random = new Random();
 
@@ -148,6 +159,8 @@ namespace AsmSim
 
         private static (bool valid, ulong value) IsSimpleAssignment_UNUSED(string name, BoolExpr e)
         {
+            Contract.Requires(e != null);
+
             if (e.IsEq)
             {
                 if (e.Args[0].IsConst)
@@ -175,6 +188,10 @@ namespace AsmSim
         /// </summary>
         public static void Consolidate(bool undef, Solver solver, Solver solver_U, Context ctx)
         {
+            Contract.Requires(solver != null);
+            Contract.Requires(solver_U != null);
+            Contract.Requires(ctx != null);
+
             if (true)
             {
                 #region Doc
@@ -332,6 +349,9 @@ namespace AsmSim
         /// <summary>Returns true if the provided valueExpr and undef yield the same tv5 array as the provided valueTv </summary>
         public static bool Equals(BitVecExpr valueExpr, BitVecExpr undef, Tv[] valueTv, int nBits, Solver solver, Solver solver_U, Context ctx)
         {
+            Contract.Requires(ctx != null);
+            Contract.Requires(valueTv != null);
+
             using (BitVecNum bv1_1bit = ctx.MkBV(1, 1))
             {
                 for (uint bit = 0; bit < nBits; ++bit)
@@ -398,6 +418,7 @@ namespace AsmSim
 
         public static string ToString(Expr e)
         {
+            Contract.Requires(e != null);
             if (false)
             {
                 return e.ToString();
@@ -434,6 +455,8 @@ namespace AsmSim
 
         public static string ToStringHex(Tv[] a)
         {
+            Contract.Requires(a != null);
+
             string str = string.Empty;
             int offset = 0;
             while (offset < a.Length)
@@ -457,6 +480,8 @@ namespace AsmSim
 
         public static string ToStringDec(Tv[] a)
         {
+            Contract.Requires(a != null);
+
             (ulong? value, Tv misc) = ToUlong();
             if (value != null)
             {
@@ -466,7 +491,7 @@ namespace AsmSim
             return misc.ToString();
 
             #region LocalMethod
-            (ulong? Value, Tv Misc) ToUlong()
+            (ulong? value, Tv misc) ToUlong()
             {
                 ulong result = 0;
                 for (int i = 0; i < Math.Min(a.Length, 64); ++i)
@@ -478,16 +503,18 @@ namespace AsmSim
                             break;
                         case Tv.ZERO:
                             break;
-                        default: return (Value: null, Misc: a[i]);
+                        default: return (value: null, misc: a[i]);
                     }
                 }
-                return (Value: result, Misc: Tv.UNKNOWN);
+                return (value: result, misc: Tv.UNKNOWN);
             }
             #endregion
         }
 
         public static string ToStringOct(Tv[] a)
         {
+            Contract.Requires(a != null);
+
             string str = string.Empty;
             int offset = 0;
             while (offset < a.Length)
@@ -700,6 +727,9 @@ namespace AsmSim
         #region Conversion
         public static ulong? ToUlong(BitVecExpr value, uint nBits, Solver solver, Context ctx)
         {
+            Contract.Requires(value != null);
+            Contract.Requires(ctx != null);
+
             if (value.IsBVNumeral)
             {
                 return ((BitVecNum)value).UInt64;
@@ -731,6 +761,8 @@ namespace AsmSim
 
         public static ulong? ToUlong(Tv[] array)
         {
+            Contract.Requires(array != null);
+
             ulong result = 0;
             for (int i = 0; i < Math.Min(array.Length, 64); ++i)
             {
@@ -759,6 +791,8 @@ namespace AsmSim
 
         public static Tv[] GetTvArray(string value)
         {
+            Contract.Requires(value != null);
+
             char[] charArray = value.Replace(".", string.Empty).Replace("_", string.Empty).ToCharArray();
             Array.Reverse(charArray);
 
@@ -799,6 +833,8 @@ namespace AsmSim
 
         public static Tv[] GetTvArray(BitVecExpr value, BitVecExpr undef, int nBits, Solver solver, Solver solver_U, Context ctx)
         {
+            Contract.Requires(ctx != null);
+
             Tv[] results = new Tv[nBits];
             if (value == null)
             {
@@ -821,6 +857,8 @@ namespace AsmSim
 
         public static Tv[] GetTvArray(BitVecExpr value, int nBits, Solver solver, Context ctx)
         {
+            Contract.Requires(ctx != null);
+
             Tv[] results = new Tv[nBits];
             if (value == null)
             {
@@ -842,6 +880,9 @@ namespace AsmSim
 
         public static Tv GetTv(BoolExpr value, BoolExpr undef, Solver solver, Solver solver_U, Context ctx, bool freshSolver = false)
         {
+            Contract.Requires(solver != null);
+            Contract.Requires(ctx != null);
+
             try
             {
                 return freshSolver
@@ -857,6 +898,10 @@ namespace AsmSim
 
         private static Tv GetTv_Method1(BoolExpr value, BoolExpr undef, Solver solver, Solver solver_U, Context ctx)
         {
+            Contract.Requires(solver != null);
+            //NOTE solver_U can be null
+            Contract.Requires(ctx != null);
+
             bool tvTrue;
             {
                 Status status = solver.Check(value);
@@ -1051,6 +1096,9 @@ namespace AsmSim
 
         public static Tv GetTv(BoolExpr value, Solver solver, Context ctx)
         {
+            Contract.Requires(solver != null);
+            Contract.Requires(ctx != null);
+
             try
             {
                 bool tvTrue;
@@ -1127,6 +1175,9 @@ namespace AsmSim
 
         public static Expr UpdateConstName(Expr expr, string postfix, Context ctx)
         {
+            Contract.Requires(expr != null);
+            Contract.Requires(ctx != null);
+
             (IList<Symbol> boolConstants, IList<Symbol> bvConstants) = GetConstants(expr);
 
             foreach (Symbol s in boolConstants)
@@ -1153,6 +1204,8 @@ namespace AsmSim
         /// <summary> check whethe provided array of truth-values only contains a single value, return this single value</summary>
         public static (bool hasOneValue, Tv value) HasOneValue(Tv[] array)
         {
+            Contract.Requires(array != null);
+
             bool unknown = true;
             bool zero = true;
             bool one = true;
@@ -1200,6 +1253,10 @@ namespace AsmSim
 
         private static void GetConstants(Expr expr, ref IList<Symbol> boolResults, ref IList<Symbol> bvResults)
         {
+            Contract.Requires(expr != null);
+            Contract.Requires(boolResults != null);
+            Contract.Requires(bvResults != null);
+
             if (expr.IsConst)
             {
                 if (expr.IsBool)
@@ -1222,6 +1279,8 @@ namespace AsmSim
 
         public static IEnumerable<string> Get_Constants(Expr expr)
         {
+            Contract.Requires(expr != null);
+
             if (expr.IsConst)
             {
                 yield return expr.FuncDecl.Name.ToString();

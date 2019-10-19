@@ -24,6 +24,7 @@ namespace AsmSim
 
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Text;
     using AsmTools;
     using Microsoft.Z3;
@@ -83,6 +84,8 @@ namespace AsmSim
 
         public static Solver MakeSolver(Context ctx)
         {
+            Contract.Requires(ctx != null);
+
             Solver s = ctx.MkSolver(ctx.MkTactic("qfbv"));
             //Params p = ctx.MkParams();
             //p.Add("mbqi", false); // use Model-based Quantifier Instantiation
@@ -102,6 +105,7 @@ namespace AsmSim
         public State(State other)
             : this(other.Tools)
         {
+            Contract.Requires(other != null);
             lock (this._ctxLock)
             {
                 other.Copy(this);
@@ -111,6 +115,8 @@ namespace AsmSim
         /// <summary>Copy this state to the provided other State</summary>
         public void Copy(State other)
         {
+            Contract.Requires(other != null);
+
             if (this == other)
             {
                 return;
@@ -147,6 +153,9 @@ namespace AsmSim
         public State(State state1, State state2, bool merge)
             : this(state1.Tools)
         {
+            Contract.Requires(state1 != null);
+            Contract.Requires(state2 != null);
+
             if (merge)
             {
                 this.MergeConstructor(state1, state2);
@@ -334,6 +343,8 @@ namespace AsmSim
 
         public void Assert(IEnumerable<BoolExpr> exprs, bool undef, bool translate)
         {
+            Contract.Requires(exprs != null);
+
             foreach (BoolExpr v in exprs)
             {
                 this.Assert(v, undef, translate);

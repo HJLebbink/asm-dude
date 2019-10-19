@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Text;
 
 namespace AsmTools
@@ -95,6 +96,8 @@ namespace AsmTools
 
         public static Flags Parse(string str)
         {
+            Contract.Requires(str != null);
+
             switch (str.ToUpper())
             {
                 case "CF": return Flags.CF;

@@ -27,6 +27,7 @@ namespace AsmSim
         using System;
         using System.Collections.Generic;
         using System.Diagnostics;
+        using System.Diagnostics.Contracts;
         using System.Linq;
         using AsmTools;
         using Microsoft.Z3;
@@ -95,6 +96,9 @@ namespace AsmSim
 
             public OpcodeBase(Mnemonic m, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
             {
+                Contract.Requires(t != null);
+                Contract.Requires(args != null);
+
                 this.Mnemonic = m;
                 this._args = args;
                 this.Tools = t;
@@ -159,7 +163,7 @@ namespace AsmSim
             }
             #endregion
 
-            public (StateUpdate Regular, StateUpdate Branch) Updates
+            public (StateUpdate regular, StateUpdate branch) Updates
             {
                 get { return (this._regularUpdate, this._branchUpdate); }
             }
@@ -240,6 +244,9 @@ namespace AsmSim
                 Context ctx,
                 int nBits = -1)
             {
+                Contract.Requires(operand != null);
+                Contract.Requires(ctx != null);
+
                 try
                 {
                     if (operand == null)
@@ -393,6 +400,8 @@ namespace AsmSim
             /// <summary>Create Syntax Error that op1 and op2 should have been equal size</summary>
             protected void CreateSyntaxError1(Operand op1, Operand op2)
             {
+                Contract.Requires(op1 != null);
+                Contract.Requires(op2 != null);
                 this.SyntaxError = string.Format("\"{0}\": Operand 1 and 2 should have same number of bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), op1, op1.Type, op1.NBits, op2, op2.Type, op2.NBits);
             }
 
@@ -684,7 +693,7 @@ namespace AsmSim
 
         public sealed class NotImplemented : OpcodeBase
         {
-            public NotImplemented(Mnemonic mnemnonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
+            public NotImplemented(Mnemonic mnemonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.NOP, args, keys, t)
             {
                 this.SyntaxError = "Not implemented";
@@ -698,7 +707,7 @@ namespace AsmSim
 
         public sealed class Ignore : OpcodeBase
         {
-            public Ignore(Mnemonic mnemnonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
+            public Ignore(Mnemonic mnemonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.NOP, args, keys, t) { }
 
             public override void Execute()
@@ -1148,6 +1157,8 @@ namespace AsmSim
             public Push(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.PUSH, args, Ot1.reg | Ot1.mem | Ot1.imm, keys, t)
             {
+                Contract.Requires(t != null);
+
                 if (this.IsHalted)
                 {
                     return;
@@ -1275,6 +1286,8 @@ namespace AsmSim
             public Pop(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.POP, args, Ot1.reg | Ot1.mem, keys, t)
             {
+                Contract.Requires(t != null);
+
                 if (this.IsHalted)
                 {
                     return;
@@ -2729,6 +2742,8 @@ namespace AsmSim
             public Aam(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.AAM, args, 1, keys, t)
             {
+                Contract.Requires(args != null);
+
                 if (this.IsHalted)
                 {
                     return;
@@ -2779,6 +2794,8 @@ namespace AsmSim
             public Aad(string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.AAD, args, 1, keys, t)
             {
+                Contract.Requires(args != null);
+
                 if (this.IsHalted)
                 {
                     return;
@@ -2983,7 +3000,10 @@ namespace AsmSim
 
             public static (BitVecExpr shiftCount, BoolExpr tooLarge) GetShiftCount(BitVecExpr value, int nBits, Context ctx)
             {
-                Debug.Assert(value.SortSize == 8);
+                Contract.Requires(ctx != null);
+                Contract.Requires(value != null);
+                Contract.Requires(value.SortSize == 8);
+
                 BitVecNum shiftMask = ctx.MkBV((nBits == 64) ? 0x3F : 0x1F, 8);
                 BoolExpr tooLarge = ctx.MkBVSGE(value, ctx.MkBV((nBits == 64) ? 64 : 32, 8));
                 BitVecExpr shiftCount = ctx.MkBVAND(value, shiftMask);
@@ -2997,6 +3017,10 @@ namespace AsmSim
 
             public static void UpdateFlagsShift(BitVecExpr value, BoolExpr cfIn, BitVecExpr shiftCount, BoolExpr shiftTooLarge, bool left, string prevKey, StateUpdate stateUpdate, Random rand, Context ctx)
             {
+                Contract.Requires(shiftCount != null);
+                Contract.Requires(ctx != null);
+                Contract.Requires(stateUpdate != null);
+
                 uint nBits = shiftCount.SortSize;
                 BoolExpr isZero = ctx.MkEq(shiftCount, ctx.MkBV(0, nBits));
                 BoolExpr isOne = ctx.MkEq(shiftCount, ctx.MkBV(1, nBits));
@@ -3034,6 +3058,8 @@ namespace AsmSim
 
             public void UpdateFlagsRotate(BitVecExpr value, BoolExpr cfIn, BitVecExpr shiftCount, bool left)
             {
+                Contract.Requires(shiftCount != null);
+
                 /* The OF flag is defined only for the 1-bit rotates; it is undefined in all other
                  * cases (except RCL and RCR instructions only: a zero - bit rotate does nothing, that
                  * is affects no flags). For left rotates, the OF flag is set to the exclusive OR of
@@ -3043,6 +3069,7 @@ namespace AsmSim
                  */
 
                 Context ctx = this._ctx;
+                Contract.Assume(ctx != null);
 
                 uint nBits = shiftCount.SortSize;
                 BoolExpr isZero = ctx.MkEq(shiftCount, ctx.MkBV(0, nBits));

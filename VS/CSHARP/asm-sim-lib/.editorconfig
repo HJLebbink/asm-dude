@@ -92,3 +92,18 @@ dotnet_diagnostic.SA1649.severity = none
 
 # SA1403: File may only contain a single namespace
 dotnet_diagnostic.SA1403.severity = silent
+
+# CA1707: Identifiers should not contain underscores
+dotnet_diagnostic.CA1707.severity = silent
+
+# CA1303: Do not pass literals as localized parameters
+dotnet_diagnostic.CA1303.severity = suggestion
+
+# CA1305: Specify IFormatProvider
+dotnet_diagnostic.CA1305.severity = suggestion
+
+# CA1715: Identifiers should have correct prefix
+dotnet_diagnostic.CA1715.severity = silent
+
+# CA1714: Flags enums should have plural names
+dotnet_diagnostic.CA1714.severity = none

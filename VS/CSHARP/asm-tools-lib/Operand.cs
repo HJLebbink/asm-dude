@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using System.Diagnostics.Contracts;
 
 namespace AsmTools
 {
@@ -37,6 +38,8 @@ namespace AsmTools
         /// <summary>constructor</summary>
         public Operand(string token, bool isCapitals, AsmParameters p = null)
         {
+            Contract.Requires(token != null);
+
 #if DEBUG
             if (isCapitals && (token != token.ToUpper()))
             {
@@ -163,6 +166,7 @@ namespace AsmTools
         }
         public override string ToString()
         {
+            Contract.Assert(this._str != null);
             return this._str;
         }
     }

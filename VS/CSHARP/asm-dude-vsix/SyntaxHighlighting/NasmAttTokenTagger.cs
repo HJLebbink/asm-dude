@@ -24,6 +24,7 @@ namespace AsmDude
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using AsmDude.SyntaxHighlighting;
     using AsmDude.Tools;
     using AsmTools;
@@ -289,6 +290,8 @@ namespace AsmDude
             string[] tokens,
             SnapshotSpan curSpan)
         {
+            Contract.Requires(curSpan != null);
+
             (bool valid, int nextTokenId, int tokenEndPos, string tokenSting) = Get_Next_Token(tokenId, nextLoc, tokens);
             tokenId = nextTokenId;
             nextLoc = tokenEndPos;
@@ -315,6 +318,8 @@ namespace AsmDude
         // return true, nextTokenId, tokenEndPos, tokenString
         public static (bool valid, int nextTokenId, int tokenEndPos, string tokenSting) Get_Next_Token(int tokenId, int startLoc, string[] tokens)
         {
+            Contract.Requires(tokens != null);
+
             int nextTokenId = tokenId;
             int nextLoc = startLoc;
 
@@ -337,11 +342,13 @@ namespace AsmDude
 
         public static string Keyword((int beginPos, int length, bool isLabel) pos, string line)
         {
+            Contract.Requires(line != null);
             return line.Substring(pos.beginPos, pos.length - pos.beginPos);
         }
 
         public static SnapshotSpan New_Span((int beginPos, int length, bool isLabel) pos, int offset, SnapshotSpan lineSnapShot)
         {
+            Contract.Requires(lineSnapShot != null);
             return new SnapshotSpan(lineSnapShot.Snapshot, new Span(pos.beginPos + offset, pos.length - pos.beginPos));
         }
         #endregion Public Static Methods
@@ -350,6 +357,8 @@ namespace AsmDude
 
         private bool IsProperLabelDef(string asmToken, int lineNumber, out AsmTokenTag labelDefSpan)
         {
+            Contract.Requires(asmToken != null);
+
             labelDefSpan = null;
             if (!this.IsExecutableCode(lineNumber))
             {
@@ -374,6 +383,8 @@ namespace AsmDude
 
         private bool IsProperLabel(string asmToken, int lineNumber, out AsmTokenTag labelSpan)
         {
+            Contract.Requires(asmToken != null);
+
             labelSpan = null;
 
             //AsmDudeToolsStatic.Output_INFO("NasmTokenTagger:GetTags: found label " +asmToken);
@@ -433,10 +444,10 @@ namespace AsmDude
             for (int i = lineNumber - 1; i >= 0; --i)
             {
                 string line = this._buffer.CurrentSnapshot.GetLineFromLineNumber(i).GetText();
-                (int, int, bool) pos = AsmSourceTools.Get_First_Keyword(line);
+                (int beginPos, int length, bool isLabel) pos = AsmSourceTools.Get_First_Keyword(line);
                 string keywordString = AsmSourceTools.Keyword(pos, line);
 
-                if (pos.Item3)
+                if (pos.isLabel)
                 {
                     if (!keywordString[0].Equals('.'))
                     {

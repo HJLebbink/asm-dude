@@ -8,7 +8,7 @@ namespace unit_tests_asm_z3
     [TestClass]
     public class Test_StaticFlow
     {
-        private const bool logToDisplay = TestTools.LOG_TO_DISPLAY;
+        private const bool logToDisplay = AsmTestTools.LOG_TO_DISPLAY;
 
         [TestMethod]
         public void Test_StaticFlow_Forward_1()

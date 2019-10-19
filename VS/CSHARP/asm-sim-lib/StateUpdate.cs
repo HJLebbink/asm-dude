@@ -25,6 +25,7 @@ namespace AsmSim
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Diagnostics.Contracts;
     using System.Text;
     using AsmTools;
     using Microsoft.Z3;
@@ -125,6 +126,8 @@ namespace AsmSim
         /// <summary> Constructor </summary>
         public StateUpdate(string prevKey, string nextKey, Tools tools)
         {
+            Contract.Requires(tools != null);
+
             this._branch_Condition = null;
             this._prevKey_Regular = prevKey;
             this._prevKey_Branch = null;
@@ -139,6 +142,9 @@ namespace AsmSim
         /// <summary>Constructor for merging. prevKey_Regular is the key for the regular continue for the provided branchCondition</summary>
         public StateUpdate(BoolExpr branchCondition, string prevKey_Regular, string prevKey_Branch, string nextKey, Tools tools)
         {
+            Contract.Requires(tools != null);
+            Contract.Requires(branchCondition != null);
+
             this._ctx = new Context(tools.Settings); // housekeeping in Dispose();
             this._branch_Condition = branchCondition.Translate(this._ctx) as BoolExpr;
             this._prevKey_Regular = prevKey_Regular;
@@ -152,6 +158,8 @@ namespace AsmSim
         /// <summary>Update the provided state with this stateUpdate</summary>
         public void Update(State state)
         {
+            Contract.Requires(state != null);
+
             lock (this._ctxLock)
             {
                 if (!this.Reset)
@@ -493,7 +501,7 @@ namespace AsmSim
 
         public void Set_SF_ZF_PF(BitVecExpr value)
         {
-            Debug.Assert(value != null);
+            Contract.Requires(value != null);
             this.Empty = false;
 
             lock (this._ctxLock)
@@ -630,8 +638,8 @@ namespace AsmSim
 
         public void Set(Rn reg, BitVecExpr value, BitVecExpr undef)
         {
-            Debug.Assert(value != null);
-            Debug.Assert(undef != null);
+            Contract.Requires(value != null);
+            Contract.Requires(undef != null);
 
             this.Empty = false;
 
@@ -938,6 +946,10 @@ namespace AsmSim
 
         public void Set_Mem(BitVecExpr address, BitVecExpr value, BitVecExpr undef)
         {
+            Contract.Requires(address != null);
+            Contract.Requires(value != null);
+            Contract.Requires(undef != null);
+
             this.Empty = false;
 
             lock (this._ctxLock)
@@ -964,6 +976,8 @@ namespace AsmSim
 
         public void Set_Mem(ArrayExpr memContent)
         {
+            Contract.Requires(memContent != null);
+
             this.Empty = false;
 
             if (this._mem_Full != null)
@@ -989,6 +1003,8 @@ namespace AsmSim
 
         public void Set(Operand operand, BitVecExpr value, BitVecExpr undef)
         {
+            Contract.Requires(operand != null);
+
             if (operand.IsReg)
             {
                 this.Set(operand.Rn, value, undef);

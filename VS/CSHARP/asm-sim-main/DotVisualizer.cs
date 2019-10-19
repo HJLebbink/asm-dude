@@ -23,6 +23,7 @@
 using QuickGraph;
 using QuickGraph.Graphviz;
 using QuickGraph.Graphviz.Dot;
+using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -33,6 +34,9 @@ namespace AsmSim
     {
         public static void SaveToDot(StaticFlow sFlow, DynamicFlow dFlow, string filename)
         {
+            Contract.Requires(sFlow != null);
+            Contract.Requires(dFlow != null);
+
             AdjacencyGraph<string, TaggedEdge<string, string>> displayGraph = new AdjacencyGraph<string, TaggedEdge<string, string>>();
 
             foreach (string vertex in dFlow.Graph.Vertices)
@@ -93,6 +97,7 @@ namespace AsmSim
 
         private static void VizFormatVertex(object sender, FormatVertexEventArgs<string> e)
         {
+            Contract.Requires(e != null);
             e.VertexFormatter.Label = e.Vertex.ToString();
         }
 

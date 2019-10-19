@@ -23,6 +23,7 @@ namespace AsmSim
     // SOFTWARE.
 
     using System;
+    using System.Diagnostics.Contracts;
     using AsmSim.Mnemonics;
     using AsmTools;
 
@@ -30,6 +31,7 @@ namespace AsmSim
     {
         public static DynamicFlow Construct_DynamicFlow_Backward(StaticFlow sFlow, Tools tools)
         {
+            Contract.Requires(sFlow != null);
             return Construct_DynamicFlow_Backward(sFlow, sFlow.LastLineNumber, sFlow.NLines * 2, tools);
         }
 
@@ -42,6 +44,7 @@ namespace AsmSim
 
         public static DynamicFlow Construct_DynamicFlow_Forward(StaticFlow sFlow, Tools tools)
         {
+            Contract.Requires(sFlow != null);
             return Construct_DynamicFlow_Forward(sFlow, sFlow.FirstLineNumber, sFlow.NLines * 2, tools);
         }
 
@@ -80,11 +83,11 @@ namespace AsmSim
                     }
                     opcodeBase.Execute();
                     State stateOut = new State(state);
-                    stateOut.Update_Forward(opcodeBase.Updates.Regular);
+                    stateOut.Update_Forward(opcodeBase.Updates.regular);
                     stateOut.Frozen = true;
 
-                    opcodeBase.Updates.Regular?.Dispose();
-                    opcodeBase.Updates.Branch?.Dispose();
+                    opcodeBase.Updates.regular?.Dispose();
+                    opcodeBase.Updates.branch?.Dispose();
 
                     if (!tools.Quiet)
                     {
@@ -109,6 +112,8 @@ namespace AsmSim
         /// <summary>Perform onestep forward and return the state of the regular branch</summary>
         public static State SimpleStep_Backward(string line, State state)
         {
+            Contract.Requires(state != null);
+
             try
             {
                 string prevKey = Tools.CreateKey(state.Tools.Rand);
@@ -127,10 +132,10 @@ namespace AsmSim
 
                     opcodeBase.Execute();
                     State stateOut = new State(state);
-                    stateOut.Update_Backward(opcodeBase.Updates.Regular, prevKey);
+                    stateOut.Update_Backward(opcodeBase.Updates.regular, prevKey);
 
-                    opcodeBase.Updates.Regular?.Dispose();
-                    opcodeBase.Updates.Branch?.Dispose();
+                    opcodeBase.Updates.regular?.Dispose();
+                    opcodeBase.Updates.branch?.Dispose();
 
                     if (!state.Tools.Quiet)
                     {
@@ -155,6 +160,8 @@ namespace AsmSim
         /// <summary>Perform one step forward and return states for both branches</summary>
         public static (State Regular, State Branch) Step_Forward(string line, State state)
         {
+            Contract.Requires(state != null);
+
             try
             {
                 string nextKey = Tools.CreateKey(state.Tools.Rand);
@@ -174,18 +181,18 @@ namespace AsmSim
 
                     opcodeBase.Execute();
                     State stateRegular = null;
-                    if (opcodeBase.Updates.Regular != null)
+                    if (opcodeBase.Updates.regular != null)
                     {
                         stateRegular = new State(state);
-                        stateRegular.Update_Forward(opcodeBase.Updates.Regular);
-                        opcodeBase.Updates.Regular.Dispose();
+                        stateRegular.Update_Forward(opcodeBase.Updates.regular);
+                        opcodeBase.Updates.regular.Dispose();
                     }
                     State stateBranch = null;
-                    if (opcodeBase.Updates.Branch != null)
+                    if (opcodeBase.Updates.branch != null)
                     {
                         stateBranch = new State(state);
-                        stateBranch.Update_Forward(opcodeBase.Updates.Branch);
-                        opcodeBase.Updates.Branch.Dispose();
+                        stateBranch.Update_Forward(opcodeBase.Updates.branch);
+                        opcodeBase.Updates.branch.Dispose();
                     }
                     return (Regular: stateRegular, Branch: stateBranch);
                 }
@@ -203,6 +210,8 @@ namespace AsmSim
             (string PrevKey, string NextKey, string NextKeyBranch) keys,
             Tools tools)
         {
+            Contract.Requires(sFlow != null);
+
             try
             {
                 (Mnemonic Mnemonic, string[] Args) content = sFlow.Get_Line(lineNumber);

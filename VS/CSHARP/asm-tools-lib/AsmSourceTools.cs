@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 
@@ -35,6 +36,7 @@ namespace AsmTools
         /// </summary>
         public static (string Label, Mnemonic Mnemonic, string[] Args, string Remark) ParseLine(string line)
         {
+            Contract.Requires(line != null);
             //Console.WriteLine("INFO: AsmSourceTools:ParseLine: line=" + line + "; length=" + line.Length);
 
             string label = "";
@@ -130,6 +132,8 @@ namespace AsmTools
 
         public static IList<Operand> MakeOperands(string[] operandStrArray) //TODO consider Enumerable
         {
+            Contract.Requires(operandStrArray != null);
+
             int nOperands = operandStrArray.Length;
             if (nOperands <= 1)
             {
@@ -160,6 +164,8 @@ namespace AsmTools
         /// </summary>
         public static (int beginPos, int length, bool isLabel) Get_First_Keyword(string line)
         {
+            Contract.Requires(line != null);
+
             bool started = false;
             int keywordBegin = 0;
 
@@ -211,6 +217,8 @@ namespace AsmTools
         /// </summary>
         public static IEnumerable<(int BeginPos, int Length, bool IsLabel)> SplitIntoKeywordPos(string line)
         {
+            Contract.Requires(line != null);
+
             int keywordBegin = 0;
             bool inStringDef = false;
             bool isFirstKeyword = true;
@@ -300,6 +308,7 @@ namespace AsmTools
 
         public static string Keyword((int BeginPos, int Length, bool IsLabel) pos, string line)
         {
+            Contract.Requires(line != null);
             return line.Substring(pos.BeginPos, pos.Length - pos.BeginPos);
         }
 
@@ -327,6 +336,8 @@ namespace AsmTools
         /// <returns></returns>
         public static bool IsInRemark(int pos, string line)
         {
+            Contract.Requires(line != null);
+
             // check if the line contains a remark character before the current point
             int nChars = line.Length;
             int startPos = (pos >= nChars) ? nChars - 1 : pos;
@@ -347,6 +358,8 @@ namespace AsmTools
         /// <returns></returns>
         public static bool IsRemarkOnly(string line)
         {
+            Contract.Requires(line != null);
+
             int nChars = line.Length;
             for (int i = 0; i < nChars; ++i)
             {
@@ -373,6 +386,8 @@ namespace AsmTools
 
         public static int GetRemarkCharPosition(string line)
         {
+            Contract.Requires(line != null);
+
             for (int i = 0; i < line.Length; ++i)
             {
                 if (IsRemarkChar(line[i]))
@@ -431,7 +446,9 @@ namespace AsmTools
         /// <summary> Check if the provided string is a constant by evaluating it.</summary>
         public static (bool Valid, ulong Value, int NBits) Evaluate_Constant(string token, bool isCapitals = false)
         {
-            if (token.StartsWith("$")) // AT&T syntax constants start with '$'
+            Contract.Requires(token != null);
+
+            if (token.StartsWith("$", StringComparison.Ordinal)) // AT&T syntax constants start with '$'
             {
                 token = token.Substring(1);
             }
@@ -474,6 +491,8 @@ namespace AsmTools
         public static (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits, string ErrorMessage)
             Parse_Mem_Operand(string token, bool isCapitals = false)
         {
+            Contract.Requires(token != null);
+
             int length = token.Length;
             if (length < 3)
             {
@@ -614,6 +633,8 @@ namespace AsmTools
             #region Local Methods
             int ParseScale(string str)
             {
+                Contract.Requires(str != null);
+
                 switch (str)
                 {
                     case "1": return 1;
@@ -627,88 +648,90 @@ namespace AsmTools
             /// <summary> Return the number of bits of the provided operand (assumes 64-bits) </summary>
             int Get_Nbits_Mem_Operand(string token2)
             {
+                Contract.Requires(token2 != null);
+
                 string s = token2.TrimStart();
-                if (s.StartsWith("PTR"))
+                if (s.StartsWith("PTR", StringComparison.Ordinal))
                 {
                     s = s.Substring(3, token.Length - 3).TrimStart();
                 }
 
-                if (s.StartsWith("BYTE"))
+                if (s.StartsWith("BYTE", StringComparison.Ordinal))
                 {
                     return 8; //nasm
                 }
 
-                if (s.StartsWith("SBYTE"))
+                if (s.StartsWith("SBYTE", StringComparison.Ordinal))
                 {
                     return 8;
                 }
 
-                if (s.StartsWith("WORD"))
+                if (s.StartsWith("WORD", StringComparison.Ordinal))
                 {
                     return 16; //nasm
                 }
 
-                if (s.StartsWith("SWORD"))
+                if (s.StartsWith("SWORD", StringComparison.Ordinal))
                 {
                     return 16;
                 }
 
-                if (s.StartsWith("DWORD"))
+                if (s.StartsWith("DWORD", StringComparison.Ordinal))
                 {
                     return 32; //nasm
                 }
 
-                if (s.StartsWith("SDWORD"))
+                if (s.StartsWith("SDWORD", StringComparison.Ordinal))
                 {
                     return 32;
                 }
 
-                if (s.StartsWith("QWORD"))
+                if (s.StartsWith("QWORD", StringComparison.Ordinal))
                 {
                     return 64; //nasm
                 }
 
-                if (s.StartsWith("TWORD"))
+                if (s.StartsWith("TWORD", StringComparison.Ordinal))
                 {
                     return 80; //nasm
                 }
 
-                if (s.StartsWith("DQWORD"))
+                if (s.StartsWith("DQWORD", StringComparison.Ordinal))
                 {
                     return 128;
                 }
 
-                if (s.StartsWith("OWORD"))
+                if (s.StartsWith("OWORD", StringComparison.Ordinal))
                 {
                     return 128; //nasm
                 }
 
-                if (s.StartsWith("XMMWORD"))
+                if (s.StartsWith("XMMWORD", StringComparison.Ordinal))
                 {
                     return 128;
                 }
 
-                if (s.StartsWith("XWORD"))
+                if (s.StartsWith("XWORD", StringComparison.Ordinal))
                 {
                     return 128;
                 }
 
-                if (s.StartsWith("YMMWORD"))
+                if (s.StartsWith("YMMWORD", StringComparison.Ordinal))
                 {
                     return 256;
                 }
 
-                if (s.StartsWith("YWORD"))
+                if (s.StartsWith("YWORD", StringComparison.Ordinal))
                 {
                     return 256; //nasm
                 }
 
-                if (s.StartsWith("ZMMWORD"))
+                if (s.StartsWith("ZMMWORD", StringComparison.Ordinal))
                 {
                     return 512;
                 }
 
-                if (s.StartsWith("ZWORD"))
+                if (s.StartsWith("ZWORD", StringComparison.Ordinal))
                 {
                     return 512; //nasm
                 }
@@ -735,6 +758,7 @@ namespace AsmTools
 
         public static string GetKeyword(int pos, string line)
         {
+            Contract.Requires(line != null);
             (int beginPos, int endPos) = GetKeywordPos(pos, line);
             return line.Substring(beginPos, endPos - beginPos);
         }
@@ -744,9 +768,10 @@ namespace AsmTools
         /// </summary>
         public static string GetPreviousKeyword(int begin, int end, string line)
         {
-            Debug.Assert(begin >= 0);
-            Debug.Assert(begin <= line.Length);
-            Debug.Assert(end <= line.Length);
+            Contract.Requires(line != null);
+            Contract.Requires(begin >= 0);
+            Contract.Requires(begin <= line.Length);
+            Contract.Requires(end <= line.Length);
 
             if (end <= 0)
             {
@@ -826,6 +851,8 @@ namespace AsmTools
         /// <summary>Return the begin and end of the keyword</summary>
         public static (int BeginPos, int EndPos) GetKeywordPos(int pos, string line)
         {
+            Contract.Requires(line != null);
+
             //Debug.WriteLine(string.Format("INFO: getKeyword; pos={0}; line=\"{1}\"", pos, new string(line)));
             if ((pos < 0) || (pos >= line.Length))
             {
@@ -858,6 +885,8 @@ namespace AsmTools
 
         public static (bool Valid, int BeginPos, int EndPos) GetLabelDefPos(string line)
         {
+            Contract.Requires(line != null);
+
             (bool Valid, int BeginPos, int EndPos) tup = GetLabelDefPos_Regular(line);
             if (tup.Valid)
             {
@@ -958,6 +987,8 @@ namespace AsmTools
         /// Valid is true if one such char is found.</summary>
         public static (bool Valid, int BeginPos, int EndPos) GetRemarkPos(string line)
         {
+            Contract.Requires(line != null);
+
             int nChars = line.Length;
             for (int i = 0; i < nChars; ++i)
             {

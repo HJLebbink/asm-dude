@@ -25,6 +25,7 @@ namespace AsmSim
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Diagnostics.Contracts;
     using AsmTools;
     using Microsoft.Z3;
 
@@ -42,6 +43,8 @@ namespace AsmSim
 
         public Tools(Tools other)
         {
+            Contract.Requires(other != null);
+
             this.Settings = new Dictionary<string, string>(other.Settings);
             this._rand = other.Rand; //new Random();
             this._p = other._p;
@@ -71,11 +74,14 @@ namespace AsmSim
 
         public static string CreateKey(Random rand)
         {
+            Contract.Requires(rand != null);
             return "!" + ToolsZ3.GetRandomUlong(rand).ToString("X16");
         }
 
         public static string Reg_Name(Rn reg, string key)
         {
+            Contract.Requires(key != null);
+
             if (RegisterTools.Is_SIMD_Register(reg))
             {
                 return "SIMD" + key;
@@ -217,6 +223,8 @@ namespace AsmSim
 
         public static BitVecExpr Create_Key(Rn reg, string key, Context ctx)
         {
+            Contract.Requires(ctx != null);
+
             uint nBits = (uint)RegisterTools.NBits(reg);
             if (RegisterTools.Is_SIMD_Register(reg))
             {
@@ -245,36 +253,45 @@ namespace AsmSim
 
         public static BoolExpr Create_Key(Flags flag, string key, Context ctx)
         {
+            Contract.Requires(ctx != null);
             return ctx.MkBoolConst(Flag_Name(flag, key));
         }
 
         public static ArrayExpr Create_Mem_Key(string key, Context ctx)
         {
+            Contract.Requires(ctx != null);
             return ctx.MkArrayConst(Mem_Name(key), ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
         }
 
         public static ArrayExpr Create_Mem_Key_Fresh(Random rand, Context ctx)
         {
+            Contract.Requires(ctx != null);
             return ctx.MkArrayConst(Mem_Name_Fresh(rand), ctx.MkBitVecSort(64), ctx.MkBitVecSort(8));
         }
 
         public static BitVecExpr Create_Reg_Key_Fresh(Rn reg, Random rand, Context ctx)
         {
+            Contract.Requires(ctx != null);
             return ctx.MkBVConst(Reg_Name_Fresh(reg, rand), (uint)RegisterTools.NBits(reg));
         }
 
         public static BoolExpr Create_Flag_Key_Fresh(Flags flag, Random rand, Context ctx)
         {
+            Contract.Requires(ctx != null);
             return ctx.MkBoolConst(Flag_Name_Fresh(flag, rand));
         }
 
         public static BitVecExpr Calc_Effective_Address(string op, string key, Tools tools, Context ctx)
         {
+            Contract.Requires(tools != null);
             return Calc_Effective_Address(new Operand(op, false, tools.Parameters), key, ctx);
         }
 
         public static BitVecExpr Calc_Effective_Address(Operand op, string key, Context ctx)
         {
+            Contract.Requires(op != null);
+            Contract.Requires(ctx != null);
+
             uint nBitsOperand = (uint)op.NBits;
             uint nBitsAddress = 64;
 
@@ -366,7 +383,8 @@ namespace AsmSim
 
         public static BitVecExpr Create_Value_From_Mem(BitVecExpr address, int nBytes, string key, Context ctx)
         {
-            Debug.Assert(nBytes > 0, "Number of bytes has to larger than zero. nBytes=" + nBytes);
+            Contract.Requires(ctx != null);
+            Contract.Requires(nBytes > 0, "Number of bytes has to larger than zero. nBytes=" + nBytes);
 
             ArrayExpr mem = Create_Mem_Key(key, ctx);
             BitVecExpr result = ctx.MkSelect(mem, address) as BitVecExpr;
@@ -382,10 +400,15 @@ namespace AsmSim
 
         public static ArrayExpr Set_Value_To_Mem(BitVecExpr value, BitVecExpr address, string key, Context ctx)
         {
+            Contract.Requires(value != null);
+            Contract.Requires(address != null);
+            Contract.Requires(ctx != null);
+
             if (address.SortSize < 64)
             {
                 address = ctx.MkZeroExt(64 - address.SortSize, address);
             }
+            Debug.Assert(address != null);
             Debug.Assert(address.SortSize == 64);
 
             uint nBytes = value.SortSize >> 3;
@@ -401,6 +424,8 @@ namespace AsmSim
 
         public static State Collapse(IEnumerable<State> previousStates)
         {
+            Contract.Requires(previousStates != null);
+
             State result = null;
             int counter = 0;
             foreach (State prev in previousStates)

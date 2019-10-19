@@ -8,23 +8,24 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 namespace AsmSim
 {
-    // The above copyright notice and this permission notice shall be included in all
-    // copies or substantial portions of the Software.
-
-    // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    // SOFTWARE.
-
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Diagnostics.Contracts;
     using System.Text;
     using Microsoft.Z3;
 
@@ -154,14 +155,14 @@ namespace AsmSim
                 string key = sharedKeys[0];
                 foreach (KeyValuePair<string, BranchInfo> element in store1._branchInfo)
                 {
-                    if (!element.Key.Equals(key))
+                    if (!element.Key.Equals(key, StringComparison.Ordinal))
                     {
                         mergeBranchStore.Add(element.Value, true);
                     }
                 }
                 foreach (KeyValuePair<string, BranchInfo> element in store2._branchInfo)
                 {
-                    if (!element.Key.Equals(key))
+                    if (!element.Key.Equals(key, StringComparison.Ordinal))
                     {
                         if (!mergeBranchStore.ContainsKey(element.Key))
                         {
@@ -186,6 +187,7 @@ namespace AsmSim
 
         public void Remove(BranchInfo branchInfo)
         {
+            Contract.Requires(branchInfo != null);
             this._branchInfo.Remove(branchInfo.Key);
         }
 

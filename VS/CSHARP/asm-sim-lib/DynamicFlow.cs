@@ -25,6 +25,7 @@ namespace AsmSim
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Diagnostics.Contracts;
     using System.Text;
     using AsmTools;
     using Microsoft.Z3;
@@ -35,7 +36,7 @@ namespace AsmSim
         #region Fields
         private readonly Tools _tools;
 
-        private readonly BidirectionalGraph<string, TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)>> _graph;
+        private readonly BidirectionalGraph<string, TaggedEdge<string, (bool branch, StateUpdate stateUpdate)>> _graph;
         private readonly IDictionary<int, string> _lineNumber_2_Key;
         private readonly IDictionary<string, int> _key_2_LineNumber;
         private string _rootKey;
@@ -240,7 +241,7 @@ namespace AsmSim
         public BoolExpr Get_Branch_Condition(int lineNumber)
         {
             string key = this._lineNumber_2_Key[lineNumber];
-            return this._graph.OutEdge(key, 0).Tag.StateUpdate.BranchInfo.BranchCondition;
+            return this._graph.OutEdge(key, 0).Tag.stateUpdate.BranchInfo.BranchCondition;
         }
 
         /// <summary> Create leafs of this DynamicFlow</summary>
@@ -319,6 +320,8 @@ namespace AsmSim
 
         public void Reset(StaticFlow sFlow, bool forward)
         {
+            Contract.Requires(sFlow != null);
+
             lock (this._updateLock)
             {
                 this._rootKey = "!" + sFlow.FirstLineNumber;
@@ -401,7 +404,7 @@ namespace AsmSim
                             Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Forward: LINE " + currentLineNumber + ": \"" + sFlow.Get_Line_Str(currentLineNumber) + "\" Branches to LINE " + nextLineNumber);
                         }
 
-                        if (!this._tools.Quiet && sFlow.Get_Line(currentLineNumber).Mnemonic != Mnemonic.NONE)
+                        if (!this._tools.Quiet && sFlow.Get_Line(currentLineNumber).mnemonic != Mnemonic.NONE)
                         {
                             Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Forward: " + update);
                         }
@@ -440,7 +443,7 @@ namespace AsmSim
                             Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Forward: LINE " + currentLineNumber + ": \"" + sFlow.Get_Line_Str(currentLineNumber) + "\" Continues to LINE " + nextLineNumber);
                         }
 
-                        if (!this._tools.Quiet && sFlow.Get_Line(currentLineNumber).Mnemonic != Mnemonic.NONE)
+                        if (!this._tools.Quiet && sFlow.Get_Line(currentLineNumber).mnemonic != Mnemonic.NONE)
                         {
                             Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Forward: " + update);
                         }
@@ -522,7 +525,7 @@ namespace AsmSim
                                 Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Backward: LINE " + prev.LineNumber + ": \"" + sFlow.Get_Line_Str(prev.LineNumber) + "; branch=" + prev.IsBranch);
                             }
 
-                            if (!this._tools.Quiet && sFlow.Get_Line(prev.LineNumber).Mnemonic != Mnemonic.NONE)
+                            if (!this._tools.Quiet && sFlow.Get_Line(prev.LineNumber).mnemonic != Mnemonic.NONE)
                             {
                                 Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Backward: " + update);
                             }

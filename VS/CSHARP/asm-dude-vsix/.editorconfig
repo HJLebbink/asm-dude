@@ -143,3 +143,6 @@ dotnet_diagnostic.SA1642.severity = silent
 
 # CA1714: Flags enums should have plural names
 dotnet_diagnostic.CA1714.severity = silent
+
+# CA1303: Do not pass literals as localized parameters
+dotnet_diagnostic.CA1303.severity = silent

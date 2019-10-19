@@ -8,9 +8,9 @@ namespace unit_tests_asm_z3
     [TestClass]
     public class Test_State
     {
-        private const bool logToDisplay = TestTools.LOG_TO_DISPLAY;
+        private const bool logToDisplay = AsmTestTools.LOG_TO_DISPLAY;
 
-        private Tools CreateTools(int timeOut = TestTools.DEFAULT_TIMEOUT)
+        private Tools CreateTools(int timeOut = AsmTestTools.DEFAULT_TIMEOUT)
         {
             Dictionary<string, string> settings = new Dictionary<string, string>
             {
@@ -57,7 +57,7 @@ namespace unit_tests_asm_z3
 
             string key2 = state.HeadKey;
 
-            TestTools.IsTrue(state.Is_Redundant_Mem(key1, key2));
+            AsmTestTools.IsTrue(state.Is_Redundant_Mem(key1, key2));
         }
 
         [TestMethod]
@@ -89,7 +89,7 @@ namespace unit_tests_asm_z3
 
             string key2 = state.HeadKey;
 
-            TestTools.IsTrue(state.Is_Redundant_Mem(key1, key2));
+            AsmTestTools.IsTrue(state.Is_Redundant_Mem(key1, key2));
         }
 
         [TestMethod]
@@ -124,7 +124,7 @@ namespace unit_tests_asm_z3
 
             string key2 = state.HeadKey;
 
-            TestTools.IsTrue(state.Is_Redundant_Mem(key1, key2));
+            AsmTestTools.IsTrue(state.Is_Redundant_Mem(key1, key2));
         }
     }
 }

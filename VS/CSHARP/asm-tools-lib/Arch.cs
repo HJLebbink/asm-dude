@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Text;
 
 namespace AsmTools
@@ -246,6 +247,7 @@ namespace AsmTools
 
         public static Arch ParseArch(string str, bool warn = true)
         {
+            Contract.Requires(str != null);
             switch (str.Replace("_", "").ToUpper())
             {
                 case "NONE": return Arch.ARCH_NONE;
@@ -449,6 +451,8 @@ namespace AsmTools
 
         public static string ToString(IEnumerable<Arch> archs)
         {
+            Contract.Requires(archs != null);
+
             bool empty = true;
             StringBuilder sb = new StringBuilder();
             foreach (Arch arch in archs)

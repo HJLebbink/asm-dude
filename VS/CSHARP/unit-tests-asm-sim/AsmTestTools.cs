@@ -3,11 +3,12 @@ using AsmTools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Z3;
 using System;
+using System.Diagnostics.Contracts;
 using System.Numerics;
 
 namespace unit_tests_asm_z3
 {
-    public class TestTools
+    public class AsmTestTools
     {
 #if DEBUG
         public const bool LOG_TO_DISPLAY = true;
@@ -19,6 +20,8 @@ namespace unit_tests_asm_z3
 
         public static ulong RandUlong(int nBits, Random rand)
         {
+            Contract.Requires(rand != null);
+
             ulong i1 = (ulong)rand.Next();
             if (nBits < 32)
             {
@@ -195,6 +198,7 @@ namespace unit_tests_asm_z3
         #region AreEqual Flags
         public static Tv GetTv5(Flags flag, State state)
         {
+            Contract.Requires(state != null);
             return state.GetTv(flag);
         }
         public static void AreEqual(Flags flags, bool expected, State state)
@@ -313,12 +317,18 @@ namespace unit_tests_asm_z3
         }
         public static void AreEqual(BitVecExpr expr, string expected, State state)
         {
+            Contract.Requires(expr != null);
+
             Tv[] expectedTvArray = ToolsZ3.GetTvArray(expected);
             Assert.AreEqual(expr.SortSize, (uint)expectedTvArray.Length);
             AreEqual(expr, expectedTvArray, state);
         }
         public static void AreEqual(BitVecExpr expr, Tv[] expectedTvArray, State state)
         {
+            Contract.Requires(expr != null);
+            Contract.Requires(expectedTvArray != null);
+            Contract.Requires(state != null);
+
             int nBits = (int)expr.SortSize;
             Assert.AreEqual(nBits, expectedTvArray.Length);
             Tv[] actualTvArray = ToolsZ3.GetTvArray(expr, (int)expr.SortSize, state.Solver, state.Solver_U, state.Ctx);
@@ -345,10 +355,14 @@ namespace unit_tests_asm_z3
         #region AreEqual TV
         public static void AreEqual(ulong expected, Tv[] actualArray)
         {
+            Contract.Requires(actualArray != null);
             AreEqual(ToolsZ3.GetTvArray(expected, actualArray.Length), actualArray);
         }
         public static void AreEqual(Tv[] expectedArray, Tv[] actualArray)
         {
+            Contract.Requires(expectedArray != null);
+            Contract.Requires(actualArray != null);
+
             Assert.AreEqual(expectedArray.Length, actualArray.Length);
             for (int i = 0; i < actualArray.Length; ++i)
             {

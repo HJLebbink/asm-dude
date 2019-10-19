@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace AsmTools
 {
@@ -47,7 +48,8 @@ namespace AsmTools
 
         private static string ToCapitals(string str, bool strIsCapitals)
         {
-            #if DEBUG
+            Contract.Requires(str != null);
+#if DEBUG
             if (strIsCapitals && (str != str.ToUpper()))
             {
                 throw new Exception();

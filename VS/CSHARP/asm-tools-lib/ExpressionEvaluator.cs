@@ -22,6 +22,7 @@
 
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using System;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 
@@ -32,6 +33,8 @@ namespace AsmTools
         /// <summary> Check if the provided string is a constant. Does not evaluate arithmetic in the string </summary>
         public static (bool Valid, ulong Value, int NBits) Parse_Constant(string str, bool isCapitals = false)
         {
+            Contract.Requires(str != null);
+
             string token2;
             bool isHex = false;
             bool isBinary = false;

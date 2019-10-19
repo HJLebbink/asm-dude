@@ -23,6 +23,7 @@ namespace AsmSim
     // SOFTWARE.
 
     using System;
+    using System.Diagnostics.Contracts;
     using AsmTools;
     using Microsoft.Z3;
 
@@ -315,6 +316,8 @@ namespace AsmSim
 
         public static BoolExpr ConditionalTaken(ConditionalElement ce, string key, Context ctx)
         {
+            Contract.Requires(ctx != null);
+
             switch (ce)
             {
                 case ConditionalElement.NONE: return ctx.MkFalse();

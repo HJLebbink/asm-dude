@@ -23,7 +23,7 @@
 namespace AsmSim
 {
     using System;
-    using System.Diagnostics;
+    using System.Diagnostics.Contracts;
     using AsmTools;
     using Microsoft.Z3;
 
@@ -33,6 +33,9 @@ namespace AsmSim
         public static (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) Neg(
             BitVecExpr a, Context ctx)
         {
+            Contract.Requires(ctx != null);
+            Contract.Requires(a != null);
+
             BitVecExpr zero = ctx.MkBV(0, a.SortSize);
             return Substract(zero, a, ctx);
         }
@@ -44,6 +47,9 @@ namespace AsmSim
         public static (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) Addition(
             BitVecExpr a, BitVecExpr b, Context ctx)
         {
+            Contract.Requires(ctx != null);
+            Contract.Requires(a != null);
+
             BitVecExpr result = ctx.MkBVAdd(a, b);
             BoolExpr cf = ToolsFlags.Create_CF_Add(a, b, a.SortSize, ctx);
             BoolExpr of = ToolsFlags.Create_OF_Add(a, b, a.SortSize, ctx);
@@ -54,6 +60,9 @@ namespace AsmSim
         public static (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) Addition(
             BitVecExpr a, BitVecExpr b, BoolExpr carry, Context ctx)
         {
+            Contract.Requires(ctx != null);
+            Contract.Requires(a != null);
+
             //if (carry.IsFalse) return Addition(a, b, ctx);
 
             uint nBits = a.SortSize;
@@ -77,6 +86,9 @@ namespace AsmSim
         public static (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) Substract(
             BitVecExpr a, BitVecExpr b, Context ctx)
         {
+            Contract.Requires(ctx != null);
+            Contract.Requires(a != null);
+
             uint nBits = a.SortSize;
             BitVecExpr result = ctx.MkBVSub(a, b);
             BoolExpr cf = ToolsFlags.Create_CF_Sub(a, b, nBits, ctx);
@@ -88,6 +100,11 @@ namespace AsmSim
         public static (BitVecExpr result, BoolExpr cf, BoolExpr of, BoolExpr af) Substract(
             BitVecExpr a, BitVecExpr b, BoolExpr carry, Context ctx)
         {
+            Contract.Requires(a != null);
+            Contract.Requires(b != null);
+            Contract.Requires(carry != null);
+            Contract.Requires(ctx != null);
+
             if (carry.IsFalse)
             {
                 return Substract(a, b, ctx);
@@ -120,7 +137,10 @@ namespace AsmSim
             Context ctx,
             Random rand)
         {
-            Debug.Assert(nShifts.SortSize == 8);
+            Contract.Requires(nShifts != null);
+            Contract.Requires(ctx != null);
+            Contract.Requires(value != null);
+            Contract.Requires(nShifts.SortSize == 8);
 
             BitVecExpr value_out;
 
@@ -180,7 +200,10 @@ namespace AsmSim
             string prevKey,
             Context ctx)
         {
-            Debug.Assert(nShifts.SortSize == 8);
+            Contract.Requires(value != null);
+            Contract.Requires(nShifts != null);
+            Contract.Requires(ctx != null);
+            Contract.Requires(nShifts.SortSize == 8);
             //Console.WriteLine("ShiftOperations:nShifts=" + nShifts);
 
             uint nBits = value.SortSize;

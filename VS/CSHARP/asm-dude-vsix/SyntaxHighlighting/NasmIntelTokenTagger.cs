@@ -24,6 +24,8 @@ namespace AsmDude
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+    using System.Globalization;
     using AsmDude.SyntaxHighlighting;
     using AsmDude.Tools;
     using AsmTools;
@@ -286,6 +288,9 @@ namespace AsmDude
             string[] tokens,
             SnapshotSpan curSpan)
         {
+            Contract.Requires(tokens != null);
+            Contract.Requires(curSpan != null);
+
             (bool valid, int nextTokenId, int tokenEndPos, string tokenSting) = Get_Next_Token(tokenId, nextLoc, tokens);
             tokenId = nextTokenId;
             nextLoc = tokenEndPos;
@@ -312,6 +317,8 @@ namespace AsmDude
         // return true, nextTokenId, tokenEndPos, tokenString
         public static (bool valid, int nextTokenId, int tokenEndPos, string tokenSting) Get_Next_Token(int tokenId, int startLoc, string[] tokens)
         {
+            Contract.Requires(tokens != null);
+
             int nextTokenId = tokenId;
             int nextLoc = startLoc;
 
@@ -342,6 +349,8 @@ namespace AsmDude
 
         private bool IsProperLabelDef(string asmToken, int lineNumber, out AsmTokenTag labelDefSpan)
         {
+            Contract.Requires(asmToken != null);
+
             labelDefSpan = null;
             if (!this.IsExecutableCode(lineNumber))
             {
@@ -366,6 +375,8 @@ namespace AsmDude
 
         private bool IsProperLabel(string asmToken, int lineNumber, out AsmTokenTag labelSpan)
         {
+            Contract.Requires(asmToken != null);
+
             labelSpan = null;
 
             //AsmDudeToolsStatic.Output_INFO("NasmTokenTagger:GetTags: found label " +asmToken);
@@ -395,7 +406,7 @@ namespace AsmDude
                 if ((pos.Count > 0) && !pos[0].Item3)
                 {
                     string keywordString = AsmSourceTools.Keyword(pos[0], line).ToUpper();
-                    if (AsmSourceTools.IsMnemonic(keywordString))
+                    if (AsmSourceTools.IsMnemonic(keywordString, true))
                     {
                         return true;
                     }
@@ -407,8 +418,8 @@ namespace AsmDude
                 }
                 if ((pos.Count > 1) && !pos[1].Item3)
                 {
-                    string keywordString = AsmSourceTools.Keyword(pos[1], line).ToUpper();
-                    if (AsmSourceTools.IsMnemonic(keywordString))
+                    string keywordString = AsmSourceTools.Keyword(pos[1], line);
+                    if (AsmSourceTools.IsMnemonic(keywordString, false))
                     {
                         return true;
                     }

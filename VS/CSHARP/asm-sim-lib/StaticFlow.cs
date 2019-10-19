@@ -25,6 +25,7 @@ namespace AsmSim
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Text;
     using AsmTools;
@@ -154,17 +155,17 @@ namespace AsmSim
             return (lineNumber >= 0) && (lineNumber < this.Current.Count);
         }
 
-        public (Mnemonic Mnemonic, string[] Args) Get_Line(int lineNumber)
+        public (Mnemonic mnemonic, string[] args) Get_Line(int lineNumber)
         {
-            Debug.Assert(lineNumber >= 0);
+            Contract.Requires(lineNumber >= 0);
             if (lineNumber >= this.Current.Count)
             {
                 Console.WriteLine("WARING: CFlow:geLine: lineNumber " + lineNumber + " does not exist");
                 return (Mnemonic.NONE, null);
             }
-            (string Label, Mnemonic Mnemonic, string[] Args) v = this.Current[lineNumber];
+            (string label, Mnemonic mnemonic, string[] args) v = this.Current[lineNumber];
 
-            return (v.Mnemonic, v.Args);
+            return (v.mnemonic, v.args);
         }
 
         public string Get_Line_Str(int lineNumber)
@@ -317,6 +318,8 @@ namespace AsmSim
         /// <summary>Update this CFlow with the provided programStr: return true if this CFlow has changed.</summary>
         public bool Update(string programStr, bool removeEmptyLines = true)
         {
+            Contract.Requires(programStr != null);
+
             //Console.WriteLine("INFO: CFlow:Update_Lines");
             this._use_Parsed_Code_A = !this._use_Parsed_Code_A;
 
@@ -621,6 +624,8 @@ namespace AsmSim
         /// <summary>Get all labels with the line number on which it is defined</summary>
         private IDictionary<string, int> GetLabels(string text)
         {
+            Contract.Requires(text != null);
+
             IDictionary<string, int> result = new Dictionary<string, int>();
             string[] lines = text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)

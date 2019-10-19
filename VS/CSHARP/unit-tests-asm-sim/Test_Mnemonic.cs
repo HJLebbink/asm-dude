@@ -11,14 +11,14 @@ namespace unit_tests_asm_z3
     [TestClass]
     public class Test_Mnemonic
     {
-        private const bool logToDisplay = TestTools.LOG_TO_DISPLAY;
+        private const bool logToDisplay = AsmTestTools.LOG_TO_DISPLAY;
 
         public Test_Mnemonic()
         {
             Console.WriteLine("logToDisplay=" + logToDisplay);
         }
 
-        private Tools CreateTools(int timeOut = TestTools.DEFAULT_TIMEOUT)
+        private Tools CreateTools(int timeOut = AsmTestTools.DEFAULT_TIMEOUT)
         {
             /* The following parameters can be set: 
                     - proof (Boolean) Enable proof generation
@@ -142,9 +142,9 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, value_rcx, state);
-                TestTools.AreEqual(Rn.RBX, value_rcx, state);
-                TestTools.AreEqual(Rn.RCX, value_rcx, state);
+                AsmTestTools.AreEqual(Rn.RAX, value_rcx, state);
+                AsmTestTools.AreEqual(Rn.RBX, value_rcx, state);
+                AsmTestTools.AreEqual(Rn.RCX, value_rcx, state);
             }
             if (true)
             {
@@ -172,9 +172,9 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, value_rcx, state);
-                TestTools.AreEqual(Rn.RBX, value_rcx, state);
-                TestTools.AreEqual(Rn.RCX, value_rcx, state);
+                AsmTestTools.AreEqual(Rn.RAX, value_rcx, state);
+                AsmTestTools.AreEqual(Rn.RBX, value_rcx, state);
+                AsmTestTools.AreEqual(Rn.RCX, value_rcx, state);
             }
         }
 
@@ -204,7 +204,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, Rn.RCX, state);
+                AsmTestTools.AreEqual(Rn.RAX, Rn.RCX, state);
             }
             {   // backward
                 State state = this.CreateState(tools);
@@ -220,7 +220,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, Rn.RCX, state);
+                AsmTestTools.AreEqual(Rn.RAX, Rn.RCX, state);
             }
         }
 
@@ -246,8 +246,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.EAX, value_eax, state);
-                TestTools.AreEqual(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
+                AsmTestTools.AreEqual(Rn.EAX, value_eax, state);
+                AsmTestTools.AreEqual(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay)
@@ -255,8 +255,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.EAX, value_eax, state);
-                TestTools.AreEqual(Rn.EBX, value_eax, state);
+                AsmTestTools.AreEqual(Rn.EAX, value_eax, state);
+                AsmTestTools.AreEqual(Rn.EBX, value_eax, state);
 
                 state = Runner.SimpleStep_Forward(line3, state);
                 if (logToDisplay)
@@ -264,8 +264,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.EAX, value_eax_2, state);
-                TestTools.AreEqual(Rn.EBX, value_eax, state);
+                AsmTestTools.AreEqual(Rn.EAX, value_eax_2, state);
+                AsmTestTools.AreEqual(Rn.EBX, value_eax, state);
             }
             {
                 State state = this.CreateState(tools);
@@ -288,8 +288,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.EAX, value_eax_2, state);
-                TestTools.AreEqual(Rn.EBX, value_eax, state);
+                AsmTestTools.AreEqual(Rn.EAX, value_eax_2, state);
+                AsmTestTools.AreEqual(Rn.EBX, value_eax, state);
             }
         }
 
@@ -319,7 +319,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreUnrelated(Rn.BL, Rn.CL, state);
+                AsmTestTools.AreUnrelated(Rn.BL, Rn.CL, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay)
@@ -327,7 +327,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.BL, Rn.CL, state);
+                AsmTestTools.AreEqual(Rn.BL, Rn.CL, state);
             }
         }
 
@@ -357,7 +357,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreUnrelated(Rn.BL, Rn.CL, state);
+                AsmTestTools.AreUnrelated(Rn.BL, Rn.CL, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay)
@@ -365,7 +365,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.BL, Rn.CL, state);
+                AsmTestTools.AreEqual(Rn.BL, Rn.CL, state);
 
                 state = Runner.SimpleStep_Forward(line3, state);
                 if (logToDisplay)
@@ -373,7 +373,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Forward: After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreUnrelated(Rn.DL, Rn.CL, state);
+                AsmTestTools.AreUnrelated(Rn.DL, Rn.CL, state);
 
                 state = Runner.SimpleStep_Forward(line4, state);
                 if (logToDisplay)
@@ -381,7 +381,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Forward: After \"" + line4 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.DL, Rn.CL, state);
+                AsmTestTools.AreEqual(Rn.DL, Rn.CL, state);
             }
             if (true)
             {   // backward
@@ -393,7 +393,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Backward: After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreUnrelated(Rn.BL, Rn.CL, state);
+                AsmTestTools.AreUnrelated(Rn.BL, Rn.CL, state);
 
                 state = Runner.SimpleStep_Backward(line1, state);
                 if (logToDisplay)
@@ -401,7 +401,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.BL, Rn.CL, state);
+                AsmTestTools.AreEqual(Rn.BL, Rn.CL, state);
             }
         }
 
@@ -425,7 +425,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreUnrelated(Rn.BX, Rn.CX, state);
+                AsmTestTools.AreUnrelated(Rn.BX, Rn.CX, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay)
@@ -433,7 +433,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.BX, Rn.CX, state);
+                AsmTestTools.AreEqual(Rn.BX, Rn.CX, state);
             }
             {   // backward
                 State state = this.CreateState(tools);
@@ -443,7 +443,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Backward: After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreUnrelated(Rn.BX, Rn.CX, state);
+                AsmTestTools.AreUnrelated(Rn.BX, Rn.CX, state);
 
                 state = Runner.SimpleStep_Backward(line1, state);
                 if (logToDisplay)
@@ -451,7 +451,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.BX, Rn.CX, state);
+                AsmTestTools.AreEqual(Rn.BX, Rn.CX, state);
             }
         }
 
@@ -475,7 +475,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreUnrelated(Rn.EBX, Rn.ECX, state);
+                AsmTestTools.AreUnrelated(Rn.EBX, Rn.ECX, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay)
@@ -483,7 +483,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.EBX, Rn.ECX, state);
+                AsmTestTools.AreEqual(Rn.EBX, Rn.ECX, state);
             }
             {   // backward
                 State state = this.CreateState(tools);
@@ -493,7 +493,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Backward: After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreUnrelated(Rn.EBX, Rn.ECX, state);
+                AsmTestTools.AreUnrelated(Rn.EBX, Rn.ECX, state);
 
                 state = Runner.SimpleStep_Backward(line1, state);
                 if (logToDisplay)
@@ -501,7 +501,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.EBX, Rn.ECX, state);
+                AsmTestTools.AreEqual(Rn.EBX, Rn.ECX, state);
             }
         }
 
@@ -526,7 +526,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreUnrelated(Rn.RBX, Rn.RCX, state);
+                AsmTestTools.AreUnrelated(Rn.RBX, Rn.RCX, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay)
@@ -534,7 +534,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RBX, Rn.RCX, state);
+                AsmTestTools.AreEqual(Rn.RBX, Rn.RCX, state);
             }
             {   // backward
                 State state = this.CreateState(tools);
@@ -544,7 +544,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Backward: After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreUnrelated(Rn.RBX, Rn.RCX, state);
+                AsmTestTools.AreUnrelated(Rn.RBX, Rn.RCX, state);
 
                 state = Runner.SimpleStep_Backward(line1, state);
                 if (logToDisplay)
@@ -552,7 +552,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RBX, Rn.RCX, state);
+                AsmTestTools.AreEqual(Rn.RBX, Rn.RCX, state);
             }
         }
 
@@ -596,7 +596,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, 0, state);
+                AsmTestTools.AreEqual(Rn.RAX, 0, state);
             }
             {   // backward
                 State state = this.CreateState(tools);
@@ -624,7 +624,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, 0, state);
+                AsmTestTools.AreEqual(Rn.RAX, 0, state);
             }
         }
 
@@ -672,8 +672,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, value, state);
-                TestTools.AreEqual(Rn.RBX, address, state);
+                AsmTestTools.AreEqual(Rn.RAX, value, state);
+                AsmTestTools.AreEqual(Rn.RBX, address, state);
             }
             if (true)
             {   // backward
@@ -702,8 +702,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, value, state);
-                TestTools.AreEqual(Rn.RBX, address, state);
+                AsmTestTools.AreEqual(Rn.RAX, value, state);
+                AsmTestTools.AreEqual(Rn.RBX, address, state);
             }
         }
 
@@ -740,7 +740,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RDX, Rn.RBX, state);
+                AsmTestTools.AreEqual(Rn.RDX, Rn.RBX, state);
                 state = Runner.SimpleStep_Forward(line3, state);
                 if (logToDisplay)
                 {
@@ -753,7 +753,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RDX, Rn.RCX, state);
+                AsmTestTools.AreEqual(Rn.RDX, Rn.RCX, state);
             }
             if (false)
             {   // backward: TODO is this test correct??
@@ -770,7 +770,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RDX, Rn.RCX, state);
+                AsmTestTools.AreEqual(Rn.RDX, Rn.RCX, state);
                 state = Runner.SimpleStep_Backward(line2, state);
                 if (logToDisplay)
                 {
@@ -783,7 +783,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RDX, Rn.RCX, state);// rbx is written to [rax] before [rax] is written with rcx, hence rcx is equal to rdx
+                AsmTestTools.AreEqual(Rn.RDX, Rn.RCX, state);// rbx is written to [rax] before [rax] is written with rcx, hence rcx is equal to rdx
             }
         }
 
@@ -823,9 +823,9 @@ namespace unit_tests_asm_z3
                 state.Add(new BranchInfo(ToolsAsmSim.ConditionalTaken(ConditionalElement.NZ, state.HeadKey, state.Ctx), false));
                 //if (logToDisplay) Console.WriteLine("After \"" + line6 + "\", we know:\n" + state);
 
-                TestTools.AreEqual(Rn.RAX, 30, state);
-                TestTools.AreEqual(Rn.RBX, 20, state);
-                TestTools.AreEqual(Rn.RCX, 10, state);
+                AsmTestTools.AreEqual(Rn.RAX, 30, state);
+                AsmTestTools.AreEqual(Rn.RBX, 20, state);
+                AsmTestTools.AreEqual(Rn.RCX, 10, state);
             }
             else
             {
@@ -867,9 +867,9 @@ namespace unit_tests_asm_z3
 
                 state = Runner.SimpleStep_Backward(line1, state);
 
-                TestTools.AreEqual(Rn.RAX, 30, state);
-                TestTools.AreEqual(Rn.RBX, 20, state);
-                TestTools.AreEqual(Rn.RCX, 10, state);
+                AsmTestTools.AreEqual(Rn.RAX, 30, state);
+                AsmTestTools.AreEqual(Rn.RBX, 20, state);
+                AsmTestTools.AreEqual(Rn.RCX, 10, state);
             }
         }
 
@@ -901,7 +901,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Forward: After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.EBX, Rn.ECX, state);
+                AsmTestTools.AreEqual(Rn.EBX, Rn.ECX, state);
             }
             if (true)
             {   // backward
@@ -918,7 +918,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.EBX, Rn.ECX, state);
+                AsmTestTools.AreEqual(Rn.EBX, Rn.ECX, state);
             }
         }
         #endregion
@@ -944,7 +944,7 @@ namespace unit_tests_asm_z3
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 //if (logToDisplay) Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
-                TestTools.AreEqual(Rn.RDX, Rn.RCX, state);
+                AsmTestTools.AreEqual(Rn.RDX, Rn.RCX, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay)
@@ -958,7 +958,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Forward: After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, Rn.RBX, state);
+                AsmTestTools.AreEqual(Rn.RAX, Rn.RBX, state);
             }
             if (true)
             {   // backward
@@ -982,8 +982,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, Rn.RBX, state);
-                TestTools.AreEqual(Rn.RDX, Rn.RCX, state);
+                AsmTestTools.AreEqual(Rn.RAX, Rn.RBX, state);
+                AsmTestTools.AreEqual(Rn.RDX, Rn.RCX, state);
             }
         }
 
@@ -1007,7 +1007,7 @@ namespace unit_tests_asm_z3
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 //if (logToDisplay) Console.WriteLine("Forward: After \"" + line1 + "\", we know:\n" + state);
-                TestTools.AreEqual(Rn.RDX, Rn.RCX, state);
+                AsmTestTools.AreEqual(Rn.RDX, Rn.RCX, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay)
@@ -1021,7 +1021,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Forward: After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, Rn.RBX, state);
+                AsmTestTools.AreEqual(Rn.RAX, Rn.RBX, state);
             }
             if (true)
             {   // backward
@@ -1045,8 +1045,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("Backward: After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, Rn.RBX, state);
-                TestTools.AreEqual(Rn.RDX, Rn.RCX, state);
+                AsmTestTools.AreEqual(Rn.RAX, Rn.RBX, state);
+                AsmTestTools.AreEqual(Rn.RDX, Rn.RCX, state);
             }
         }
 
@@ -1083,8 +1083,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, 30, state);
-                TestTools.AreEqual(Rn.RBX, 20, state);
+                AsmTestTools.AreEqual(Rn.RAX, 30, state);
+                AsmTestTools.AreEqual(Rn.RBX, 20, state);
             }
             { // backward
                 State state = this.CreateState(tools);
@@ -1106,8 +1106,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, 30, state);
-                TestTools.AreEqual(Rn.RBX, 20, state);
+                AsmTestTools.AreEqual(Rn.RAX, 30, state);
+                AsmTestTools.AreEqual(Rn.RBX, 20, state);
             }
         }
 
@@ -1143,8 +1143,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, value_rax, state);
-                TestTools.AreEqual(Rn.RBX, value_rbx, state);
+                AsmTestTools.AreEqual(Rn.RAX, value_rax, state);
+                AsmTestTools.AreEqual(Rn.RBX, value_rbx, state);
                 state = Runner.SimpleStep_Forward(line3, state);
 
                 if (logToDisplay)
@@ -1152,8 +1152,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, value_rax, state);
-                TestTools.AreEqual(Rn.RBX, "00000000.00000000.00000000.00000000.00000000.00000000.00000000.000????0", state);
+                AsmTestTools.AreEqual(Rn.RAX, value_rax, state);
+                AsmTestTools.AreEqual(Rn.RBX, "00000000.00000000.00000000.00000000.00000000.00000000.00000000.000????0", state);
             }
             {
                 (State Regular, State Branch) = Runner.Step_Forward(line4, state);
@@ -1165,16 +1165,16 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line4 + "\", Branch NOT taken, we know:\n" + state1);
                 }
 
-                TestTools.AreEqual(Rn.RAX, value_rax, state1);
-                TestTools.AreEqual(Rn.RBX, value_rbx, state1);
+                AsmTestTools.AreEqual(Rn.RAX, value_rax, state1);
+                AsmTestTools.AreEqual(Rn.RBX, value_rbx, state1);
 
                 if (logToDisplay)
                 {
                     Console.WriteLine("After \"" + line4 + "\", Branch taken, we know:\n" + state2);
                 }
 
-                TestTools.AreEqual(Rn.RAX, value_rax, state2);
-                TestTools.AreEqual(Rn.RBX, value_rax, state2);
+                AsmTestTools.AreEqual(Rn.RAX, value_rax, state2);
+                AsmTestTools.AreEqual(Rn.RBX, value_rax, state2);
             }
         }
 
@@ -1208,7 +1208,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RBX, "00000000.00000000.00000000.00000000.00000000.00000000.00000000.000000?U", state);
+                AsmTestTools.AreEqual(Rn.RBX, "00000000.00000000.00000000.00000000.00000000.00000000.00000000.000000?U", state);
             }
         }
 
@@ -1237,8 +1237,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, value_rax, state);
-                TestTools.AreEqual(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
+                AsmTestTools.AreEqual(Rn.RAX, value_rax, state);
+                AsmTestTools.AreEqual(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay)
@@ -1246,8 +1246,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, value_rax, state);
-                TestTools.AreEqual(Rn.RBX, value_rbx, state);
+                AsmTestTools.AreEqual(Rn.RAX, value_rax, state);
+                AsmTestTools.AreEqual(Rn.RBX, value_rbx, state);
 
                 state = Runner.SimpleStep_Forward(line3, state);
                 if (logToDisplay)
@@ -1255,8 +1255,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, value_rax_2, state);
-                TestTools.AreEqual(Rn.RBX, value_rbx, state);
+                AsmTestTools.AreEqual(Rn.RAX, value_rax_2, state);
+                AsmTestTools.AreEqual(Rn.RBX, value_rbx, state);
             }
         }
 
@@ -1329,8 +1329,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Flags.OF, false, state);
-                TestTools.AreEqual(Rn.AL, a + b, state);
+                AsmTestTools.AreEqual(Flags.OF, false, state);
+                AsmTestTools.AreEqual(Rn.AL, a + b, state);
             }
             {
                 ulong a = 0b1100_0000;
@@ -1353,8 +1353,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine(of);
                 }
 
-                TestTools.AreEqual(Flags.OF, true, state);
-                TestTools.AreEqual(Rn.AL, a + b, state); //NOTE: only the lower 8bits are checked for equality!
+                AsmTestTools.AreEqual(Flags.OF, true, state);
+                AsmTestTools.AreEqual(Rn.AL, a + b, state); //NOTE: only the lower 8bits are checked for equality!
             }
             {
                 ulong a = 0b0000_1000;
@@ -1381,8 +1381,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine(of);
                 }
 
-                TestTools.AreEqual(Flags.OF, false, state);
-                TestTools.AreEqual(Rn.AL, a + b, state);
+                AsmTestTools.AreEqual(Flags.OF, false, state);
+                AsmTestTools.AreEqual(Rn.AL, a + b, state);
             }
         }
 
@@ -1401,8 +1401,8 @@ namespace unit_tests_asm_z3
                 uint nBits = 64;
                 for (int i = 0; i < nExperiments; ++i)
                 {
-                    ulong rax_value = TestTools.RandUlong((int)nBits, rand);
-                    ulong rbx_value = TestTools.RandUlong((int)nBits, rand);
+                    ulong rax_value = AsmTestTools.RandUlong((int)nBits, rand);
+                    ulong rbx_value = AsmTestTools.RandUlong((int)nBits, rand);
                     ulong result = rax_value + rbx_value;
 
                     State state = this.CreateState(tools);
@@ -1421,21 +1421,21 @@ namespace unit_tests_asm_z3
                         Console.WriteLine("After \"" + line + "\", we know:\n" + state);
                     }
 
-                    TestTools.AreEqual(Rn.RAX, result, state);
-                    TestTools.AreEqual(Flags.CF, TestTools.ToTv5(TestTools.Calc_CF_Add(nBits, rax_value, rbx_value)), state);
-                    TestTools.AreEqual(Flags.OF, TestTools.ToTv5(TestTools.Calc_OF_Add(nBits, rax_value, rbx_value)), state);
-                    TestTools.AreEqual(Flags.AF, TestTools.ToTv5(TestTools.Calc_AF_Add(rax_value, rbx_value)), state);
-                    TestTools.AreEqual(Flags.PF, TestTools.ToTv5(TestTools.Calc_PF(result)), state);
-                    TestTools.AreEqual(Flags.ZF, TestTools.ToTv5(TestTools.Calc_ZF(result)), state);
-                    TestTools.AreEqual(Flags.SF, TestTools.ToTv5(TestTools.Calc_SF(nBits, result)), state);
+                    AsmTestTools.AreEqual(Rn.RAX, result, state);
+                    AsmTestTools.AreEqual(Flags.CF, AsmTestTools.ToTv5(AsmTestTools.Calc_CF_Add(nBits, rax_value, rbx_value)), state);
+                    AsmTestTools.AreEqual(Flags.OF, AsmTestTools.ToTv5(AsmTestTools.Calc_OF_Add(nBits, rax_value, rbx_value)), state);
+                    AsmTestTools.AreEqual(Flags.AF, AsmTestTools.ToTv5(AsmTestTools.Calc_AF_Add(rax_value, rbx_value)), state);
+                    AsmTestTools.AreEqual(Flags.PF, AsmTestTools.ToTv5(AsmTestTools.Calc_PF(result)), state);
+                    AsmTestTools.AreEqual(Flags.ZF, AsmTestTools.ToTv5(AsmTestTools.Calc_ZF(result)), state);
+                    AsmTestTools.AreEqual(Flags.SF, AsmTestTools.ToTv5(AsmTestTools.Calc_SF(nBits, result)), state);
                 }
             }
             {
                 uint nBits = 16;
                 for (int i = 0; i < nExperiments; ++i)
                 {
-                    ulong ax_value = TestTools.RandUlong((int)nBits, rand);
-                    ulong bx_value = TestTools.RandUlong((int)nBits, rand);
+                    ulong ax_value = AsmTestTools.RandUlong((int)nBits, rand);
+                    ulong bx_value = AsmTestTools.RandUlong((int)nBits, rand);
                     ulong result = (ax_value + bx_value) & 0xFFFF;
 
                     State state = this.CreateState(tools);
@@ -1451,13 +1451,13 @@ namespace unit_tests_asm_z3
 
                     //if (logToDisplay) Console.WriteLine("After \"" + line + "\", we know:\n" + state);
 
-                    TestTools.AreEqual(Rn.AX, result, state);
-                    Assert.AreEqual(TestTools.ToTv5(TestTools.Calc_CF_Add(nBits, ax_value, bx_value)), TestTools.GetTv5(Flags.CF, state), "CF: ax=" + ax_value + "; bx=" + bx_value);
-                    Assert.AreEqual(TestTools.ToTv5(TestTools.Calc_OF_Add(nBits, ax_value, bx_value)), TestTools.GetTv5(Flags.OF, state), "OF: ax=" + ax_value + "; bx=" + bx_value);
-                    Assert.AreEqual(TestTools.ToTv5(TestTools.Calc_AF_Add(ax_value, bx_value)), TestTools.GetTv5(Flags.AF, state), "AF: ax=" + ax_value + "; bx=" + bx_value);
-                    Assert.AreEqual(TestTools.ToTv5(TestTools.Calc_PF(result)), TestTools.GetTv5(Flags.PF, state), "PF: ax=" + ax_value + "; bx=" + bx_value);
-                    Assert.AreEqual(TestTools.ToTv5(TestTools.Calc_ZF(result)), TestTools.GetTv5(Flags.ZF, state), "ZF: ax=" + ax_value + "; bx=" + bx_value);
-                    Assert.AreEqual(TestTools.ToTv5(TestTools.Calc_SF(nBits, result)), TestTools.GetTv5(Flags.SF, state), "SF: ax=" + ax_value + "; bx=" + bx_value);
+                    AsmTestTools.AreEqual(Rn.AX, result, state);
+                    Assert.AreEqual(AsmTestTools.ToTv5(AsmTestTools.Calc_CF_Add(nBits, ax_value, bx_value)), AsmTestTools.GetTv5(Flags.CF, state), "CF: ax=" + ax_value + "; bx=" + bx_value);
+                    Assert.AreEqual(AsmTestTools.ToTv5(AsmTestTools.Calc_OF_Add(nBits, ax_value, bx_value)), AsmTestTools.GetTv5(Flags.OF, state), "OF: ax=" + ax_value + "; bx=" + bx_value);
+                    Assert.AreEqual(AsmTestTools.ToTv5(AsmTestTools.Calc_AF_Add(ax_value, bx_value)), AsmTestTools.GetTv5(Flags.AF, state), "AF: ax=" + ax_value + "; bx=" + bx_value);
+                    Assert.AreEqual(AsmTestTools.ToTv5(AsmTestTools.Calc_PF(result)), AsmTestTools.GetTv5(Flags.PF, state), "PF: ax=" + ax_value + "; bx=" + bx_value);
+                    Assert.AreEqual(AsmTestTools.ToTv5(AsmTestTools.Calc_ZF(result)), AsmTestTools.GetTv5(Flags.ZF, state), "ZF: ax=" + ax_value + "; bx=" + bx_value);
+                    Assert.AreEqual(AsmTestTools.ToTv5(AsmTestTools.Calc_SF(nBits, result)), AsmTestTools.GetTv5(Flags.SF, state), "SF: ax=" + ax_value + "; bx=" + bx_value);
                 }
             }
         }
@@ -1482,7 +1482,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, value_rax, state);
+                AsmTestTools.AreEqual(Rn.RAX, value_rax, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay)
@@ -1490,7 +1490,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, value_rax + 1, state);
+                AsmTestTools.AreEqual(Rn.RAX, value_rax + 1, state);
             }
         }
 
@@ -1515,7 +1515,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, value_rax, state);
+                AsmTestTools.AreEqual(Rn.RAX, value_rax, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay)
@@ -1523,7 +1523,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, value_rax - 1, state);
+                AsmTestTools.AreEqual(Rn.RAX, value_rax - 1, state);
             }
         }
 
@@ -1547,7 +1547,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, value_rax, state);
+                AsmTestTools.AreEqual(Rn.RAX, value_rax, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay)
@@ -1555,7 +1555,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, 0 - value_rax, state);
+                AsmTestTools.AreEqual(Rn.RAX, 0 - value_rax, state);
             }
         }
 
@@ -1589,14 +1589,14 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After line 3 with \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, value_result, state);
+                AsmTestTools.AreEqual(Rn.RAX, value_result, state);
 
-                TestTools.AreEqual(Flags.SF, TestTools.Calc_SF(64, value_result), state);
-                TestTools.AreEqual(Flags.ZF, TestTools.Calc_ZF(value_result), state);
-                TestTools.AreEqual(Flags.PF, TestTools.Calc_PF(value_result), state);
-                TestTools.AreEqual(Flags.OF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.CF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Flags.SF, AsmTestTools.Calc_SF(64, value_result), state);
+                AsmTestTools.AreEqual(Flags.ZF, AsmTestTools.Calc_ZF(value_result), state);
+                AsmTestTools.AreEqual(Flags.PF, AsmTestTools.Calc_PF(value_result), state);
+                AsmTestTools.AreEqual(Flags.OF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.CF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
             }
         }
 
@@ -1633,9 +1633,9 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After line 3 with \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Flags.OF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.CF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Flags.OF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.CF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
 
                 state = Runner.SimpleStep_Backward(line2, state);
                 if (logToDisplay)
@@ -1649,14 +1649,14 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After line 1 with \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, value_result, state);
+                AsmTestTools.AreEqual(Rn.RAX, value_result, state);
 
-                TestTools.AreEqual(Flags.SF, TestTools.Calc_SF(64, value_result), state);
-                TestTools.AreEqual(Flags.ZF, TestTools.Calc_ZF(value_result), state);
-                TestTools.AreEqual(Flags.PF, TestTools.Calc_PF(value_result), state);
-                TestTools.AreEqual(Flags.OF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.CF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Flags.SF, AsmTestTools.Calc_SF(64, value_result), state);
+                AsmTestTools.AreEqual(Flags.ZF, AsmTestTools.Calc_ZF(value_result), state);
+                AsmTestTools.AreEqual(Flags.PF, AsmTestTools.Calc_PF(value_result), state);
+                AsmTestTools.AreEqual(Flags.OF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.CF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
             }
         }
 
@@ -1690,8 +1690,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, value_rax, state);
-                TestTools.AreEqual(Rn.RBX, value_rbx, state);
+                AsmTestTools.AreEqual(Rn.RAX, value_rax, state);
+                AsmTestTools.AreEqual(Rn.RBX, value_rbx, state);
             }
             {
                 string line = "cmove rcx, rbx";
@@ -1701,9 +1701,9 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, value_rax, state);
-                TestTools.AreEqual(Rn.RBX, value_rbx, state);
-                TestTools.AreEqual(Rn.RCX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
+                AsmTestTools.AreEqual(Rn.RAX, value_rax, state);
+                AsmTestTools.AreEqual(Rn.RBX, value_rbx, state);
+                AsmTestTools.AreEqual(Rn.RCX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
             }
         }
         [TestMethod]
@@ -1737,15 +1737,15 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
-                TestTools.AreEqual(Rn.BL, value2, state);
+                AsmTestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
+                AsmTestTools.AreEqual(Rn.BL, value2, state);
 
-                TestTools.AreEqual(Flags.SF, TestTools.Calc_SF(8, value_result), state);
-                TestTools.AreEqual(Flags.ZF, TestTools.Calc_ZF(value_result), state);
-                TestTools.AreEqual(Flags.PF, TestTools.Calc_PF(value_result), state);
-                TestTools.AreEqual(Flags.OF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.CF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.AF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.SF, AsmTestTools.Calc_SF(8, value_result), state);
+                AsmTestTools.AreEqual(Flags.ZF, AsmTestTools.Calc_ZF(value_result), state);
+                AsmTestTools.AreEqual(Flags.PF, AsmTestTools.Calc_PF(value_result), state);
+                AsmTestTools.AreEqual(Flags.OF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.CF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.AF, Tv.ZERO, state);
             }
         }
         #region BTS
@@ -1773,7 +1773,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, value_rax, state);
+                AsmTestTools.AreEqual(Rn.RAX, value_rax, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay)
@@ -1781,7 +1781,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.CL, value_cl, state);
+                AsmTestTools.AreEqual(Rn.CL, value_cl, state);
 
                 state = Runner.SimpleStep_Forward(line3, state);
                 if (logToDisplay)
@@ -1789,7 +1789,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, value2_rax, state);
+                AsmTestTools.AreEqual(Rn.RAX, value2_rax, state);
             }
             {   // backward
                 State state = this.CreateState(tools);
@@ -1806,7 +1806,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.CL, value_cl, state);
+                AsmTestTools.AreEqual(Rn.CL, value_cl, state);
 
                 state = Runner.SimpleStep_Backward(line1, state);
                 if (logToDisplay)
@@ -1814,7 +1814,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, value2_rax, state);
+                AsmTestTools.AreEqual(Rn.RAX, value2_rax, state);
             }
         }
 
@@ -1849,7 +1849,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.CL, value_cl, state);
+                AsmTestTools.AreEqual(Rn.CL, value_cl, state);
 
                 state = Runner.SimpleStep_Forward(line3, state);
                 if (logToDisplay)
@@ -1857,7 +1857,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.EAX, value2_eax, state);
+                AsmTestTools.AreEqual(Rn.EAX, value2_eax, state);
             }
             {   // backward
                 State state = this.CreateState(tools);
@@ -1874,7 +1874,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.CL, value_cl, state);
+                AsmTestTools.AreEqual(Rn.CL, value_cl, state);
 
                 state = Runner.SimpleStep_Backward(line1, state);
                 if (logToDisplay)
@@ -1882,7 +1882,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.EAX, value2_eax, state);
+                AsmTestTools.AreEqual(Rn.EAX, value2_eax, state);
             }
         }
         #endregion
@@ -1932,7 +1932,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, 0, state);
+                AsmTestTools.AreEqual(Rn.RAX, 0, state);
             }
             if (true)
             {   // backward
@@ -1964,7 +1964,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, 0, state);
+                AsmTestTools.AreEqual(Rn.RAX, 0, state);
             }
         }
 
@@ -1997,7 +1997,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
+                AsmTestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Forward(line3, state);
                 if (logToDisplay)
@@ -2005,7 +2005,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
+                AsmTestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
             }
             {   // backward
                 State state = this.CreateState(tools);
@@ -2022,7 +2022,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
+                AsmTestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay)
@@ -2030,7 +2030,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
+                AsmTestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
             }
         }
 
@@ -2071,7 +2071,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
+                AsmTestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Forward(line4, state);
                 if (logToDisplay)
@@ -2079,7 +2079,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
+                AsmTestTools.AreEqual(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Forward(line5, state);
                 if (logToDisplay)
@@ -2087,7 +2087,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, 0, state);
+                AsmTestTools.AreEqual(Rn.RAX, 0, state);
             }
         }
 
@@ -2115,7 +2115,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay)
@@ -2123,7 +2123,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.AX, 0, state);
+                AsmTestTools.AreEqual(Rn.AX, 0, state);
 
                 state = Runner.SimpleStep_Forward(line3, state);
                 if (logToDisplay)
@@ -2131,7 +2131,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "00000000.00000000.00000000.00000000.????????.???????0.00000000.0000000U", state);
+                AsmTestTools.AreEqual(Rn.RAX, "00000000.00000000.00000000.00000000.????????.???????0.00000000.0000000U", state);
             }
         }
 
@@ -2156,15 +2156,15 @@ namespace unit_tests_asm_z3
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 //if (logToDisplay) Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
-                TestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
+                AsmTestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
                 // (logToDisplay) Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
-                TestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
+                AsmTestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Forward(line3, state);
                 //if (logToDisplay) Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
-                TestTools.AreEqual(Rn.RAX, 0, state);
+                AsmTestTools.AreEqual(Rn.RAX, 0, state);
             }
             if (false) // incorrect test... 
             {   // backward is 
@@ -2176,7 +2176,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, 0, state);
+                AsmTestTools.AreEqual(Rn.RAX, 0, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay)
@@ -2184,7 +2184,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, 0, state);
+                AsmTestTools.AreEqual(Rn.RAX, 0, state);
 
                 state = Runner.SimpleStep_Forward(line1, state);
                 if (logToDisplay)
@@ -2192,7 +2192,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, 0, state);
+                AsmTestTools.AreEqual(Rn.RAX, 0, state);
             }
         }
 
@@ -2220,7 +2220,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
+                AsmTestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
                 //TestTools.Test(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
@@ -2229,8 +2229,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
-                TestTools.AreEqual(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
+                AsmTestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
+                AsmTestTools.AreEqual(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Forward(line3, state);
                 if (logToDisplay)
@@ -2238,7 +2238,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
                 //TestTools.Test(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
-                TestTools.AreEqual(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
+                AsmTestTools.AreEqual(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Forward(line4, state);
                 if (logToDisplay)
@@ -2246,7 +2246,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
+                AsmTestTools.AreEqual(Rn.RAX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
                 //TestTools.Test(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
 
                 state = Runner.SimpleStep_Forward(line5, state);
@@ -2255,7 +2255,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "00000000.00000000.00000000.00000000.00000000.00000000.00000000.0000?000", state);
+                AsmTestTools.AreEqual(Rn.RAX, "00000000.00000000.00000000.00000000.00000000.00000000.00000000.0000?000", state);
                 //TestTools.Test(Rn.RBX, "????????.????????.????????.????????.????????.????????.????????.????????", state);
             }
         }
@@ -2284,7 +2284,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, 1, state);
+                AsmTestTools.AreEqual(Rn.RAX, 1, state);
             }
         }
 
@@ -2311,7 +2311,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU", state);
+                AsmTestTools.AreEqual(Rn.RAX, "UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU", state);
             }
         }
         #endregion
@@ -2339,7 +2339,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, 60, state);
+                AsmTestTools.AreEqual(Rn.RAX, 60, state);
             }
         }
 
@@ -2366,7 +2366,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU", state);
+                AsmTestTools.AreEqual(Rn.RAX, "UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU_UUUUUUUU", state);
             }
         }
         #endregion 
@@ -2391,13 +2391,13 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000010", state);
-                TestTools.AreEqual(Flags.CF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.OF, Tv.ZERO, state); //the OF flag is set to 0 if the most-significant bit of the result is the same as the CF flag (that is, the top two bits of the original operand were the same); otherwise, it is set to 1
-                TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
-                TestTools.AreEqual(Flags.SF, Tv.ZERO, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.PF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000010", state);
+                AsmTestTools.AreEqual(Flags.CF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.OF, Tv.ZERO, state); //the OF flag is set to 0 if the most-significant bit of the result is the same as the CF flag (that is, the top two bits of the original operand were the same); otherwise, it is set to 1
+                AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
+                AsmTestTools.AreEqual(Flags.SF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.PF, Tv.ZERO, state); // regular behaviour according to the result.
             }
         }
 
@@ -2424,13 +2424,13 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000010", state);
-                TestTools.AreEqual(Flags.CF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.OF, Tv.ZERO, state); //the OF flag is set to 0 if the most-significant bit of the result is the same as the CF flag (that is, the top two bits of the original operand were the same); otherwise, it is set to 1
-                TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
-                TestTools.AreEqual(Flags.SF, Tv.ZERO, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.PF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000010", state);
+                AsmTestTools.AreEqual(Flags.CF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.OF, Tv.ZERO, state); //the OF flag is set to 0 if the most-significant bit of the result is the same as the CF flag (that is, the top two bits of the original operand were the same); otherwise, it is set to 1
+                AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
+                AsmTestTools.AreEqual(Flags.SF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.PF, Tv.ZERO, state); // regular behaviour according to the result.
             }
         }
 
@@ -2454,13 +2454,13 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00001000", state);
-                TestTools.AreEqual(Flags.CF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.OF, Tv.UNDEFINED, state); //The OF flag is affected only for 1-bit shifts; otherwise, it is undefined.
-                TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
-                TestTools.AreEqual(Flags.SF, Tv.ZERO, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.PF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00001000", state);
+                AsmTestTools.AreEqual(Flags.CF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.OF, Tv.UNDEFINED, state); //The OF flag is affected only for 1-bit shifts; otherwise, it is undefined.
+                AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
+                AsmTestTools.AreEqual(Flags.SF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.PF, Tv.ZERO, state); // regular behaviour according to the result.
             }
         }
 
@@ -2484,13 +2484,13 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00001000", state);
-                TestTools.AreEqual(Flags.CF, Tv.ONE, state);
-                TestTools.AreEqual(Flags.OF, Tv.UNDEFINED, state); //The OF flag is affected only for 1-bit shifts; otherwise, it is undefined.
-                TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
-                TestTools.AreEqual(Flags.SF, Tv.ZERO, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.PF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00001000", state);
+                AsmTestTools.AreEqual(Flags.CF, Tv.ONE, state);
+                AsmTestTools.AreEqual(Flags.OF, Tv.UNDEFINED, state); //The OF flag is affected only for 1-bit shifts; otherwise, it is undefined.
+                AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
+                AsmTestTools.AreEqual(Flags.SF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.PF, Tv.ZERO, state); // regular behaviour according to the result.
             }
         }
 
@@ -2526,7 +2526,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001", state);
+                AsmTestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001", state);
 
                 //If the count is 0, the flags are not affected.
                 Assert.AreEqual(state.GetTv(Flags.CF), cf);
@@ -2558,13 +2558,13 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000010", state);
-                TestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state); //The CF is undefined for SHL and SHR instructions where the count is greater than or equal to the size (in bits) of the destination operand.
-                TestTools.AreEqual(Flags.OF, Tv.UNDEFINED, state); //The OF flag is affected only for 1-bit shifts; otherwise, it is undefined.
-                TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
-                TestTools.AreEqual(Flags.SF, Tv.ZERO, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.PF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000010", state);
+                AsmTestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state); //The CF is undefined for SHL and SHR instructions where the count is greater than or equal to the size (in bits) of the destination operand.
+                AsmTestTools.AreEqual(Flags.OF, Tv.UNDEFINED, state); //The OF flag is affected only for 1-bit shifts; otherwise, it is undefined.
+                AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
+                AsmTestTools.AreEqual(Flags.SF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.PF, Tv.ZERO, state); // regular behaviour according to the result.
             }
         }
 
@@ -2588,13 +2588,13 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00001000", state);
-                TestTools.AreEqual(Flags.CF, Tv.ONE, state); //The CF is undefined for SHL and SHR instructions where the count is greater than or equal to the size (in bits) of the destination operand.
-                TestTools.AreEqual(Flags.OF, Tv.UNDEFINED, state); //The OF flag is affected only for 1-bit shifts; otherwise, it is undefined.
-                TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
-                TestTools.AreEqual(Flags.SF, Tv.ZERO, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.PF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00001000", state);
+                AsmTestTools.AreEqual(Flags.CF, Tv.ONE, state); //The CF is undefined for SHL and SHR instructions where the count is greater than or equal to the size (in bits) of the destination operand.
+                AsmTestTools.AreEqual(Flags.OF, Tv.UNDEFINED, state); //The OF flag is affected only for 1-bit shifts; otherwise, it is undefined.
+                AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
+                AsmTestTools.AreEqual(Flags.SF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.PF, Tv.ZERO, state); // regular behaviour according to the result.
             }
         }
 
@@ -2618,13 +2618,13 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_10000000_00000100", state);
-                TestTools.AreEqual(Flags.CF, Tv.ONE, state); //The CF is undefined for SHL and SHR instructions where the count is greater than or equal to the size (in bits) of the destination operand.
-                TestTools.AreEqual(Flags.OF, Tv.ZERO, state); //The OF flag is affected only for 1-bit shifts; otherwise, it is undefined.
-                TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
-                TestTools.AreEqual(Flags.SF, Tv.ONE, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.PF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_10000000_00000100", state);
+                AsmTestTools.AreEqual(Flags.CF, Tv.ONE, state); //The CF is undefined for SHL and SHR instructions where the count is greater than or equal to the size (in bits) of the destination operand.
+                AsmTestTools.AreEqual(Flags.OF, Tv.ZERO, state); //The OF flag is affected only for 1-bit shifts; otherwise, it is undefined.
+                AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
+                AsmTestTools.AreEqual(Flags.SF, Tv.ONE, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.PF, Tv.ZERO, state); // regular behaviour according to the result.
             }
         }
         #endregion
@@ -2653,13 +2653,13 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "10000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000", state);
-                TestTools.AreEqual(Flags.CF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.OF, Tv.ZERO, state); //the OF flag is set to 0 if the most-significant bit of the result is the same as the CF flag (that is, the top two bits of the original operand were the same); otherwise, it is set to 1
-                TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
-                TestTools.AreEqual(Flags.SF, Tv.ONE, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.PF, Tv.ONE, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Rn.RAX, "10000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000", state);
+                AsmTestTools.AreEqual(Flags.CF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.OF, Tv.ZERO, state); //the OF flag is set to 0 if the most-significant bit of the result is the same as the CF flag (that is, the top two bits of the original operand were the same); otherwise, it is set to 1
+                AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
+                AsmTestTools.AreEqual(Flags.SF, Tv.ONE, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.PF, Tv.ONE, state); // regular behaviour according to the result.
             }
         }
 
@@ -2689,14 +2689,14 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "10000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000", state);
-                TestTools.AreEqual(Rn.RBX, "11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111", state);
-                TestTools.AreEqual(Flags.CF, Tv.ONE, state); // the last bit that is shifted out of rax
-                TestTools.AreEqual(Flags.OF, Tv.ZERO, state); //the OF flag is set to 0 if the most-significant bit of the result is the same as the CF flag (that is, the top two bits of the original operand were the same); otherwise, it is set to 1
-                TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
-                TestTools.AreEqual(Flags.SF, Tv.ONE, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.PF, Tv.ONE, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Rn.RAX, "10000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000", state);
+                AsmTestTools.AreEqual(Rn.RBX, "11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111", state);
+                AsmTestTools.AreEqual(Flags.CF, Tv.ONE, state); // the last bit that is shifted out of rax
+                AsmTestTools.AreEqual(Flags.OF, Tv.ZERO, state); //the OF flag is set to 0 if the most-significant bit of the result is the same as the CF flag (that is, the top two bits of the original operand were the same); otherwise, it is set to 1
+                AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
+                AsmTestTools.AreEqual(Flags.SF, Tv.ONE, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.PF, Tv.ONE, state); // regular behaviour according to the result.
             }
         }
 
@@ -2723,14 +2723,14 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "11100000_00000000_00000000_00000000_00000000_00000000_00000000_00000000", state);
-                TestTools.AreEqual(Rn.RBX, "11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111", state);
-                TestTools.AreEqual(Flags.CF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.OF, Tv.UNDEFINED, state); //The OF flag is affected only for 1-bit shifts; otherwise, it is undefined.
-                TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
-                TestTools.AreEqual(Flags.SF, Tv.ONE, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.PF, Tv.ONE, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Rn.RAX, "11100000_00000000_00000000_00000000_00000000_00000000_00000000_00000000", state);
+                AsmTestTools.AreEqual(Rn.RBX, "11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111", state);
+                AsmTestTools.AreEqual(Flags.CF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.OF, Tv.UNDEFINED, state); //The OF flag is affected only for 1-bit shifts; otherwise, it is undefined.
+                AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
+                AsmTestTools.AreEqual(Flags.SF, Tv.ONE, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.PF, Tv.ONE, state); // regular behaviour according to the result.
             }
         }
 
@@ -2757,14 +2757,14 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "11100000_00000000_00000000_00000000_00000000_00000000_00000000_00000000", state);
-                TestTools.AreEqual(Rn.RBX, "11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111", state);
-                TestTools.AreEqual(Flags.CF, Tv.ONE, state);
-                TestTools.AreEqual(Flags.OF, Tv.UNDEFINED, state); //The OF flag is affected only for 1-bit shifts; otherwise, it is undefined.
-                TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
-                TestTools.AreEqual(Flags.SF, Tv.ONE, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.PF, Tv.ONE, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Rn.RAX, "11100000_00000000_00000000_00000000_00000000_00000000_00000000_00000000", state);
+                AsmTestTools.AreEqual(Rn.RBX, "11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111", state);
+                AsmTestTools.AreEqual(Flags.CF, Tv.ONE, state);
+                AsmTestTools.AreEqual(Flags.OF, Tv.UNDEFINED, state); //The OF flag is affected only for 1-bit shifts; otherwise, it is undefined.
+                AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
+                AsmTestTools.AreEqual(Flags.SF, Tv.ONE, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.PF, Tv.ONE, state); // regular behaviour according to the result.
             }
         }
 
@@ -2793,13 +2793,13 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "10000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000", state);
-                TestTools.AreEqual(Flags.CF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.OF, Tv.ZERO, state); //the OF flag is set to 0 if the most-significant bit of the result is the same as the CF flag (that is, the top two bits of the original operand were the same); otherwise, it is set to 1
-                TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
-                TestTools.AreEqual(Flags.SF, Tv.ONE, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.PF, Tv.ONE, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Rn.RAX, "10000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000", state);
+                AsmTestTools.AreEqual(Flags.CF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.OF, Tv.ZERO, state); //the OF flag is set to 0 if the most-significant bit of the result is the same as the CF flag (that is, the top two bits of the original operand were the same); otherwise, it is set to 1
+                AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
+                AsmTestTools.AreEqual(Flags.SF, Tv.ONE, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.PF, Tv.ONE, state); // regular behaviour according to the result.
             }
         }
 
@@ -2829,13 +2829,13 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "10000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000", state);
-                TestTools.AreEqual(Flags.CF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.OF, Tv.ZERO, state); //the OF flag is set to 0 if the most-significant bit of the result is the same as the CF flag (that is, the top two bits of the original operand were the same); otherwise, it is set to 1
-                TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
-                TestTools.AreEqual(Flags.SF, Tv.ONE, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.PF, Tv.ONE, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Rn.RAX, "10000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000", state);
+                AsmTestTools.AreEqual(Flags.CF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.OF, Tv.ZERO, state); //the OF flag is set to 0 if the most-significant bit of the result is the same as the CF flag (that is, the top two bits of the original operand were the same); otherwise, it is set to 1
+                AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state); //For a non-zero count, the AF flag is undefined.
+                AsmTestTools.AreEqual(Flags.SF, Tv.ONE, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.PF, Tv.ONE, state); // regular behaviour according to the result.
             }
         }
         #endregion
@@ -2863,15 +2863,15 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, "00000000_00000001_11111111_11111111_00000000_00000001_11111111_11111111", state);
-                TestTools.AreEqual(Rn.RBX, "00000000_00000000_11111111_11111111_00000000_00000000_11111111_11111111", state);
+                AsmTestTools.AreEqual(Rn.RAX, "00000000_00000001_11111111_11111111_00000000_00000001_11111111_11111111", state);
+                AsmTestTools.AreEqual(Rn.RBX, "00000000_00000000_11111111_11111111_00000000_00000000_11111111_11111111", state);
 
-                TestTools.AreEqual(Flags.CF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.OF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.AF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.SF, Tv.ZERO, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
-                TestTools.AreEqual(Flags.PF, Tv.ONE, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.CF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.OF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.AF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.SF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.ZF, Tv.ZERO, state); // regular behaviour according to the result.
+                AsmTestTools.AreEqual(Flags.PF, Tv.ONE, state); // regular behaviour according to the result.
             }
         }
 
@@ -2904,9 +2904,9 @@ namespace unit_tests_asm_z3
                 }
 
                 Assert.IsFalse(state.IsHalted);
-                TestTools.AreEqual(Rn.AX, (ulong)ax, state);
-                TestTools.AreEqual(Flags.CF | Flags.OF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Rn.AX, (ulong)ax, state);
+                AsmTestTools.AreEqual(Flags.CF | Flags.OF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
             }
         }
 
@@ -2938,9 +2938,9 @@ namespace unit_tests_asm_z3
                 }
 
                 Assert.IsFalse(state.IsHalted);
-                TestTools.AreEqual(Rn.AX, (ulong)ax, state);
-                TestTools.AreEqual(Flags.CF | Flags.OF, Tv.ONE, state);
-                TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Rn.AX, (ulong)ax, state);
+                AsmTestTools.AreEqual(Flags.CF | Flags.OF, Tv.ONE, state);
+                AsmTestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
             }
         }
 
@@ -2972,9 +2972,9 @@ namespace unit_tests_asm_z3
                 }
 
                 Assert.IsFalse(state.IsHalted);
-                TestTools.AreEqual(Rn.AX, (ulong)ax, state);
-                TestTools.AreEqual(Flags.CF | Flags.OF, Tv.ONE, state);
-                TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Rn.AX, (ulong)ax, state);
+                AsmTestTools.AreEqual(Flags.CF | Flags.OF, Tv.ONE, state);
+                AsmTestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
             }
         }
 
@@ -3009,10 +3009,10 @@ namespace unit_tests_asm_z3
                 }
 
                 Assert.IsFalse(state.IsHalted);
-                TestTools.AreEqual(Rn.AX, resultAx, state);
-                TestTools.AreEqual(Rn.DX, resultDx, state);
-                TestTools.AreEqual(Flags.CF | Flags.OF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Rn.AX, resultAx, state);
+                AsmTestTools.AreEqual(Rn.DX, resultDx, state);
+                AsmTestTools.AreEqual(Flags.CF | Flags.OF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
             }
             {   // forward
                 string line1 = "mov ax, " + ax;
@@ -3029,9 +3029,9 @@ namespace unit_tests_asm_z3
                 }
 
                 Assert.IsFalse(state.IsHalted);
-                TestTools.AreEqual(Rn.AX, resultAx, state);
-                TestTools.AreEqual(Flags.CF | Flags.OF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Rn.AX, resultAx, state);
+                AsmTestTools.AreEqual(Flags.CF | Flags.OF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
             }
             {   // forward
                 string line1 = "mov bx, " + bx;
@@ -3046,9 +3046,9 @@ namespace unit_tests_asm_z3
                 }
 
                 Assert.IsFalse(state.IsHalted);
-                TestTools.AreEqual(Rn.AX, resultAx, state);
-                TestTools.AreEqual(Flags.CF | Flags.OF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Rn.AX, resultAx, state);
+                AsmTestTools.AreEqual(Flags.CF | Flags.OF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
             }
         }
 
@@ -3083,10 +3083,10 @@ namespace unit_tests_asm_z3
                 }
 
                 Assert.IsFalse(state.IsHalted);
-                TestTools.AreEqual(Rn.AX, resultAx, state);
-                TestTools.AreEqual(Rn.DX, resultDx, state);
-                TestTools.AreEqual(Flags.CF | Flags.OF, Tv.ONE, state);
-                TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Rn.AX, resultAx, state);
+                AsmTestTools.AreEqual(Rn.DX, resultDx, state);
+                AsmTestTools.AreEqual(Flags.CF | Flags.OF, Tv.ONE, state);
+                AsmTestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
             }
             {   // forward
                 string line1 = "mov ax, " + ax;
@@ -3103,9 +3103,9 @@ namespace unit_tests_asm_z3
                 }
 
                 Assert.IsFalse(state.IsHalted);
-                TestTools.AreEqual(Rn.AX, resultAx, state);
-                TestTools.AreEqual(Flags.CF | Flags.OF, Tv.ONE, state);
-                TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Rn.AX, resultAx, state);
+                AsmTestTools.AreEqual(Flags.CF | Flags.OF, Tv.ONE, state);
+                AsmTestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
             }
             {   // forward
                 string line1 = "mov bx, " + bx;
@@ -3120,9 +3120,9 @@ namespace unit_tests_asm_z3
                 }
 
                 Assert.IsFalse(state.IsHalted);
-                TestTools.AreEqual(Rn.AX, resultAx, state);
-                TestTools.AreEqual(Flags.CF | Flags.OF, Tv.ONE, state);
-                TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Rn.AX, resultAx, state);
+                AsmTestTools.AreEqual(Flags.CF | Flags.OF, Tv.ONE, state);
+                AsmTestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
             }
         }
 
@@ -3162,10 +3162,10 @@ namespace unit_tests_asm_z3
                 }
 
                 Assert.IsFalse(state.IsHalted);
-                TestTools.AreEqual(Rn.EAX, resultEax, state);
-                TestTools.AreEqual(Rn.EDX, resultEdx, state);
-                TestTools.AreEqual(Flags.CF | Flags.OF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Rn.EAX, resultEax, state);
+                AsmTestTools.AreEqual(Rn.EDX, resultEdx, state);
+                AsmTestTools.AreEqual(Flags.CF | Flags.OF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
             }
             {   // forward
                 string line1 = "mov eax, " + eax;
@@ -3182,9 +3182,9 @@ namespace unit_tests_asm_z3
                 }
 
                 Assert.IsFalse(state.IsHalted);
-                TestTools.AreEqual(Rn.EAX, resultEax, state);
-                TestTools.AreEqual(Flags.CF | Flags.OF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Rn.EAX, resultEax, state);
+                AsmTestTools.AreEqual(Flags.CF | Flags.OF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
             }
             {   // forward
                 string line1 = "mov ebx, " + ebx;
@@ -3199,9 +3199,9 @@ namespace unit_tests_asm_z3
                 }
 
                 Assert.IsFalse(state.IsHalted);
-                TestTools.AreEqual(Rn.EAX, resultEax, state);
-                TestTools.AreEqual(Flags.CF | Flags.OF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Rn.EAX, resultEax, state);
+                AsmTestTools.AreEqual(Flags.CF | Flags.OF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
             }
         }
 
@@ -3281,9 +3281,9 @@ namespace unit_tests_asm_z3
                 }
 
                 Assert.IsFalse(state.IsHalted);
-                TestTools.AreEqual(Rn.EAX, resultEax, state);
-                TestTools.AreEqual(Flags.CF | Flags.OF, Tv.ONE, state);
-                TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Rn.EAX, resultEax, state);
+                AsmTestTools.AreEqual(Flags.CF | Flags.OF, Tv.ONE, state);
+                AsmTestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
             }
             if (false)
             {   // forward
@@ -3299,9 +3299,9 @@ namespace unit_tests_asm_z3
                 }
 
                 Assert.IsFalse(state.IsHalted);
-                TestTools.AreEqual(Rn.EAX, resultEax, state);
-                TestTools.AreEqual(Flags.CF | Flags.OF, Tv.ONE, state);
-                TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Rn.EAX, resultEax, state);
+                AsmTestTools.AreEqual(Flags.CF | Flags.OF, Tv.ONE, state);
+                AsmTestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
             }
         }
 
@@ -3343,10 +3343,10 @@ namespace unit_tests_asm_z3
                 }
 
                 Assert.IsFalse(state.IsHalted);
-                TestTools.AreEqual(Rn.RAX, resultRax, state);
-                TestTools.AreEqual(Rn.RDX, resultRdx, state);
-                TestTools.AreEqual(Flags.CF | Flags.OF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Rn.RAX, resultRax, state);
+                AsmTestTools.AreEqual(Rn.RDX, resultRdx, state);
+                AsmTestTools.AreEqual(Flags.CF | Flags.OF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
             }
             {   // forward
                 string line1 = "mov rax, " + rax;
@@ -3363,9 +3363,9 @@ namespace unit_tests_asm_z3
                 }
 
                 Assert.IsFalse(state.IsHalted);
-                TestTools.AreEqual(Rn.RAX, resultRax, state);
-                TestTools.AreEqual(Flags.CF | Flags.OF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Rn.RAX, resultRax, state);
+                AsmTestTools.AreEqual(Flags.CF | Flags.OF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
             }
             {   // forward
                 string line1 = "mov rbx, " + rbx;
@@ -3380,9 +3380,9 @@ namespace unit_tests_asm_z3
                 }
 
                 Assert.IsFalse(state.IsHalted);
-                TestTools.AreEqual(Rn.RAX, resultRax, state);
-                TestTools.AreEqual(Flags.CF | Flags.OF, Tv.ZERO, state);
-                TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Rn.RAX, resultRax, state);
+                AsmTestTools.AreEqual(Flags.CF | Flags.OF, Tv.ZERO, state);
+                AsmTestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
             }
         }
 
@@ -3431,10 +3431,10 @@ namespace unit_tests_asm_z3
                 }
 
                 Assert.IsFalse(state.IsHalted);
-                TestTools.AreEqual(Rn.RAX, resultRax, state);
-                TestTools.AreEqual(Rn.RDX, resultRdx, state);
-                TestTools.AreEqual(Flags.CF | Flags.OF, Tv.ONE, state);
-                TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Rn.RAX, resultRax, state);
+                AsmTestTools.AreEqual(Rn.RDX, resultRdx, state);
+                AsmTestTools.AreEqual(Flags.CF | Flags.OF, Tv.ONE, state);
+                AsmTestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
             }
             if (false)
             {   // forward
@@ -3453,9 +3453,9 @@ namespace unit_tests_asm_z3
                 }
 
                 Assert.IsFalse(state.IsHalted);
-                TestTools.AreEqual(Rn.RAX, resultRax, state);
-                TestTools.AreEqual(Flags.CF | Flags.OF, Tv.ONE, state);
-                TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Rn.RAX, resultRax, state);
+                AsmTestTools.AreEqual(Flags.CF | Flags.OF, Tv.ONE, state);
+                AsmTestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF, Tv.UNDEFINED, state);
             }
         }
 
@@ -3496,9 +3496,9 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.AL, quotient, state);
-                TestTools.AreEqual(Rn.AH, remainder, state);
-                TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF | Flags.CF | Flags.OF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Rn.AL, quotient, state);
+                AsmTestTools.AreEqual(Rn.AH, remainder, state);
+                AsmTestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF | Flags.CF | Flags.OF, Tv.UNDEFINED, state);
             }
         }
 
@@ -3535,9 +3535,9 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.AL, quotient, state);
-                TestTools.AreEqual(Rn.AH, remainder, state);
-                TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF | Flags.CF | Flags.OF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Rn.AL, quotient, state);
+                AsmTestTools.AreEqual(Rn.AH, remainder, state);
+                AsmTestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF | Flags.CF | Flags.OF, Tv.UNDEFINED, state);
             }
         }
 
@@ -3585,9 +3585,9 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.AX, (ulong)quotient, state);
-                TestTools.AreEqual(Rn.DX, (ulong)remainder, state);
-                TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF | Flags.CF | Flags.OF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Rn.AX, (ulong)quotient, state);
+                AsmTestTools.AreEqual(Rn.DX, (ulong)remainder, state);
+                AsmTestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF | Flags.CF | Flags.OF, Tv.UNDEFINED, state);
             }
         }
 
@@ -3635,9 +3635,9 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.EAX, quotient, state);
-                TestTools.AreEqual(Rn.EDX, remainder, state);
-                TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF | Flags.CF | Flags.OF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Rn.EAX, quotient, state);
+                AsmTestTools.AreEqual(Rn.EDX, remainder, state);
+                AsmTestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF | Flags.CF | Flags.OF, Tv.UNDEFINED, state);
             }
         }
 
@@ -3690,9 +3690,9 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, quotient_ulong, state);
-                TestTools.AreEqual(Rn.RDX, remainder_ulong, state);
-                TestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF | Flags.CF | Flags.OF, Tv.UNDEFINED, state);
+                AsmTestTools.AreEqual(Rn.RAX, quotient_ulong, state);
+                AsmTestTools.AreEqual(Rn.RDX, remainder_ulong, state);
+                AsmTestTools.AreEqual(Flags.AF | Flags.SF | Flags.ZF | Flags.PF | Flags.CF | Flags.OF, Tv.UNDEFINED, state);
             }
         }
 
@@ -3722,7 +3722,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RSP, 0x3FFF - 8, state);
+                AsmTestTools.AreEqual(Rn.RSP, 0x3FFF - 8, state);
             }
         }
 
@@ -3747,7 +3747,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RSP, 0x3FFF + 8, state);
+                AsmTestTools.AreEqual(Rn.RSP, 0x3FFF + 8, state);
             }
         }
 
@@ -3777,8 +3777,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RSP, 0x3FFF, state);
-                TestTools.AreEqual(Rn.RAX, Rn.RBX, state);
+                AsmTestTools.AreEqual(Rn.RSP, 0x3FFF, state);
+                AsmTestTools.AreEqual(Rn.RAX, Rn.RBX, state);
             }
         }
 
@@ -3806,8 +3806,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RSP, 0x3FFF, state);
-                TestTools.AreEqual(Rn.RAX, Rn.RBX, state);
+                AsmTestTools.AreEqual(Rn.RSP, 0x3FFF, state);
+                AsmTestTools.AreEqual(Rn.RAX, Rn.RBX, state);
             }
         }
 
@@ -3828,7 +3828,7 @@ namespace unit_tests_asm_z3
                 State state = this.CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
-                TestTools.AreUnrelated(Rn.RAX, Rn.RBX, state);
+                AsmTestTools.AreUnrelated(Rn.RAX, Rn.RBX, state);
 
                 state = Runner.SimpleStep_Forward(line2, state);
                 if (logToDisplay)
@@ -3836,7 +3836,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, Rn.RBX, state);
+                AsmTestTools.AreEqual(Rn.RAX, Rn.RBX, state);
             }
         }
 
@@ -3868,7 +3868,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, Rn.RBX, state);
+                AsmTestTools.AreEqual(Rn.RAX, Rn.RBX, state);
             }
         }
 
@@ -3895,7 +3895,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.EAX, "????_????_????_????_????_????_????_????", state);
+                AsmTestTools.AreEqual(Rn.EAX, "????_????_????_????_????_????_????_????", state);
             }
         }
 
@@ -3922,7 +3922,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.EAX, "????_????_????_????_????_????_????_????", state);
+                AsmTestTools.AreEqual(Rn.EAX, "????_????_????_????_????_????_????_????", state);
             }
         }
         #endregion in
@@ -3949,7 +3949,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RBX, 2, state);
+                AsmTestTools.AreEqual(Rn.RBX, 2, state);
             }
         }
 
@@ -3974,7 +3974,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.RBX, 64, state);
+                AsmTestTools.AreEqual(Rn.RBX, 64, state);
             }
         }
 
@@ -3999,7 +3999,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.EBX, 1, state);
+                AsmTestTools.AreEqual(Rn.EBX, 1, state);
             }
         }
 
@@ -4024,7 +4024,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.EBX, 32, state);
+                AsmTestTools.AreEqual(Rn.EBX, 32, state);
             }
         }
 
@@ -4049,7 +4049,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.BX, 1, state);
+                AsmTestTools.AreEqual(Rn.BX, 1, state);
             }
         }
 
@@ -4074,7 +4074,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.BX, 16, state);
+                AsmTestTools.AreEqual(Rn.BX, 16, state);
             }
         }
 
@@ -4097,7 +4097,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
                 }
 
-                TestTools.AreEqual(Rn.BX, "0000_0000_000?_????", state);
+                AsmTestTools.AreEqual(Rn.BX, "0000_0000_000?_????", state);
             }
         }
         #endregion Popcnt
@@ -4167,7 +4167,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.AL, result, state);
+            AsmTestTools.AreEqual(Rn.AL, result, state);
         }
         [TestMethod]
         public void Test_MnemonicZ3_Daa_2()
@@ -4198,7 +4198,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.AL, result, state);
+            AsmTestTools.AreEqual(Rn.AL, result, state);
         }
 
 
@@ -4235,7 +4235,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.AL, result, state);
+            AsmTestTools.AreEqual(Rn.AL, result, state);
         }
         [TestMethod]
         public void Test_MnemonicZ3_Das_2()
@@ -4267,7 +4267,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.AL, result, state);
+            AsmTestTools.AreEqual(Rn.AL, result, state);
         }
 
 
@@ -4302,9 +4302,9 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.AL, result, state);
-            TestTools.AreEqual(Flags.AF, false, state);
-            TestTools.AreEqual(Flags.CF, false, state);
+            AsmTestTools.AreEqual(Rn.AL, result, state);
+            AsmTestTools.AreEqual(Flags.AF, false, state);
+            AsmTestTools.AreEqual(Flags.CF, false, state);
         }
         [TestMethod]
         public void Test_MnemonicZ3_Aaa_2()
@@ -4340,10 +4340,10 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.AL, al_result, state);
-            TestTools.AreEqual(Rn.AH, ah_result, state);
-            TestTools.AreEqual(Flags.AF, true, state);
-            TestTools.AreEqual(Flags.CF, true, state);
+            AsmTestTools.AreEqual(Rn.AL, al_result, state);
+            AsmTestTools.AreEqual(Rn.AH, ah_result, state);
+            AsmTestTools.AreEqual(Flags.AF, true, state);
+            AsmTestTools.AreEqual(Flags.CF, true, state);
         }
 
 
@@ -4378,9 +4378,9 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.AL, result, state);
-            TestTools.AreEqual(Flags.AF, false, state);
-            TestTools.AreEqual(Flags.CF, false, state);
+            AsmTestTools.AreEqual(Rn.AL, result, state);
+            AsmTestTools.AreEqual(Flags.AF, false, state);
+            AsmTestTools.AreEqual(Flags.CF, false, state);
 
         }
         [TestMethod]
@@ -4420,10 +4420,10 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.AL, al_result, state);
-            TestTools.AreEqual(Rn.AH, ah_result, state);
-            TestTools.AreEqual(Flags.AF, true, state);
-            TestTools.AreEqual(Flags.CF, true, state);
+            AsmTestTools.AreEqual(Rn.AL, al_result, state);
+            AsmTestTools.AreEqual(Rn.AH, ah_result, state);
+            AsmTestTools.AreEqual(Flags.AF, true, state);
+            AsmTestTools.AreEqual(Flags.CF, true, state);
         }
         #endregion
         #region AAM
@@ -4467,10 +4467,10 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.AL, al_result, state);
-            TestTools.AreEqual(Rn.AH, ah_result, state);
-            TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
-            TestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
+            AsmTestTools.AreEqual(Rn.AL, al_result, state);
+            AsmTestTools.AreEqual(Rn.AH, ah_result, state);
+            AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
+            AsmTestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
 
         }
         [TestMethod]
@@ -4513,10 +4513,10 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.AL, al_result, state);
-            TestTools.AreEqual(Rn.AH, ah_result, state);
-            TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
-            TestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
+            AsmTestTools.AreEqual(Rn.AL, al_result, state);
+            AsmTestTools.AreEqual(Rn.AH, ah_result, state);
+            AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
+            AsmTestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
         }
         [TestMethod]
         public void Test_MnemonicZ3_Aam_Base11_1()
@@ -4558,10 +4558,10 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.AL, al_result, state);
-            TestTools.AreEqual(Rn.AH, ah_result, state);
-            TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
-            TestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
+            AsmTestTools.AreEqual(Rn.AL, al_result, state);
+            AsmTestTools.AreEqual(Rn.AH, ah_result, state);
+            AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
+            AsmTestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
 
         }
         [TestMethod]
@@ -4604,10 +4604,10 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.AL, al_result, state);
-            TestTools.AreEqual(Rn.AH, ah_result, state);
-            TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
-            TestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
+            AsmTestTools.AreEqual(Rn.AL, al_result, state);
+            AsmTestTools.AreEqual(Rn.AH, ah_result, state);
+            AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
+            AsmTestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
         }
         #endregion
         #region AAD
@@ -4650,10 +4650,10 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.AL, al_result, state);
-            TestTools.AreEqual(Rn.AH, 0, state);
-            TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
-            TestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
+            AsmTestTools.AreEqual(Rn.AL, al_result, state);
+            AsmTestTools.AreEqual(Rn.AH, 0, state);
+            AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
+            AsmTestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
         }
 
         [TestMethod]
@@ -4697,7 +4697,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.AX, decimalA, state);
+            AsmTestTools.AreEqual(Rn.AX, decimalA, state);
 
             state = Runner.SimpleStep_Forward(line3, state);
             if (logToDisplay)
@@ -4705,10 +4705,10 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.AL, result, state);
-            TestTools.AreEqual(Rn.AH, 0, state);
-            TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
-            TestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
+            AsmTestTools.AreEqual(Rn.AL, result, state);
+            AsmTestTools.AreEqual(Rn.AH, 0, state);
+            AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
+            AsmTestTools.AreEqual(Flags.CF, Tv.UNDEFINED, state);
         }
         #endregion
         #endregion
@@ -4745,10 +4745,10 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Flags.ZF, true, state); // thus rax and rbx are equal
-            TestTools.AreEqual(Rn.RAX, 1, state);
-            TestTools.AreEqual(Rn.RBX, 3, state);
-            TestTools.AreEqual(Rn.RCX, 3, state); // operand 2 is never changed.
+            AsmTestTools.AreEqual(Flags.ZF, true, state); // thus rax and rbx are equal
+            AsmTestTools.AreEqual(Rn.RAX, 1, state);
+            AsmTestTools.AreEqual(Rn.RBX, 3, state);
+            AsmTestTools.AreEqual(Rn.RCX, 3, state); // operand 2 is never changed.
         }
 
         [TestMethod]
@@ -4782,10 +4782,10 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Flags.ZF, false, state); // thus rax and rbx are not equal
-            TestTools.AreEqual(Rn.RAX, 2, state);
-            TestTools.AreEqual(Rn.RBX, 2, state);
-            TestTools.AreEqual(Rn.RCX, 3, state); // operand 2 is never changed.
+            AsmTestTools.AreEqual(Flags.ZF, false, state); // thus rax and rbx are not equal
+            AsmTestTools.AreEqual(Rn.RAX, 2, state);
+            AsmTestTools.AreEqual(Rn.RBX, 2, state);
+            AsmTestTools.AreEqual(Rn.RCX, 3, state); // operand 2 is never changed.
         }
 
         [TestMethod]
@@ -4822,10 +4822,10 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Flags.ZF, true, state); // thus rax and rbx are equal
-            TestTools.AreEqual(Rn.AL, 1, state);
-            TestTools.AreEqual(Rn.BL, 3, state);
-            TestTools.AreEqual(Rn.CL, 3, state); // operand 2 is never changed.
+            AsmTestTools.AreEqual(Flags.ZF, true, state); // thus rax and rbx are equal
+            AsmTestTools.AreEqual(Rn.AL, 1, state);
+            AsmTestTools.AreEqual(Rn.BL, 3, state);
+            AsmTestTools.AreEqual(Rn.CL, 3, state); // operand 2 is never changed.
         }
 
         [TestMethod]
@@ -4862,10 +4862,10 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line4 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Flags.ZF, false, state); // thus rax and rbx are not equal
-            TestTools.AreEqual(Rn.AL, 2, state);
-            TestTools.AreEqual(Rn.BL, 2, state);
-            TestTools.AreEqual(Rn.CL, 3, state); // operand 2 is never changed.
+            AsmTestTools.AreEqual(Flags.ZF, false, state); // thus rax and rbx are not equal
+            AsmTestTools.AreEqual(Rn.AL, 2, state);
+            AsmTestTools.AreEqual(Rn.BL, 2, state);
+            AsmTestTools.AreEqual(Rn.CL, 3, state); // operand 2 is never changed.
         }
 
         #endregion
@@ -4919,8 +4919,8 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line8 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Flags.ZF, true, state); // thus rax and rbx are equal
-            TestTools.AreEqual(Rn.R10, (1UL << 32) | (9UL), state);
+            AsmTestTools.AreEqual(Flags.ZF, true, state); // thus rax and rbx are equal
+            AsmTestTools.AreEqual(Rn.R10, (1UL << 32) | (9UL), state);
         }
         #endregion
 
@@ -4973,8 +4973,8 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line8 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Flags.ZF, true, state); // thus rax and rbx are equal
-            TestTools.AreEqual(Rn.R10, (1UL << 32) | (9UL), state);
+            AsmTestTools.AreEqual(Flags.ZF, true, state); // thus rax and rbx are equal
+            AsmTestTools.AreEqual(Rn.R10, (1UL << 32) | (9UL), state);
         }
         #endregion
 
@@ -5010,7 +5010,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.EAX, 0x1020408, state);
+            AsmTestTools.AreEqual(Rn.EAX, 0x1020408, state);
         }
         #endregion
 
@@ -5041,8 +5041,8 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.EAX, 2, state);
-            TestTools.AreEqual(Rn.EBX, 1, state);
+            AsmTestTools.AreEqual(Rn.EAX, 2, state);
+            AsmTestTools.AreEqual(Rn.EBX, 1, state);
         }
 
         [TestMethod]
@@ -5071,8 +5071,8 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.RAX, 2, state);
-            TestTools.AreEqual(Rn.RBX, 1, state);
+            AsmTestTools.AreEqual(Rn.RAX, 2, state);
+            AsmTestTools.AreEqual(Rn.RBX, 1, state);
         }
         #endregion
 
@@ -5100,7 +5100,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.EAX, 0x1020408, state);
+            AsmTestTools.AreEqual(Rn.EAX, 0x1020408, state);
         }
         [TestMethod]
         public void Test_MnemonicZ3_Bswap_2()
@@ -5125,7 +5125,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.RAX, 0x102040810203040, state);
+            AsmTestTools.AreEqual(Rn.RAX, 0x102040810203040, state);
         }
         #endregion
 
@@ -5167,9 +5167,9 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.RCX, 0, state);
-            TestTools.AreEqual(Rn.RDI, rdi - (1 * rcx), state);
-            TestTools.AreEqual(Rn.RSI, rsi - (1 * rcx), state);
+            AsmTestTools.AreEqual(Rn.RCX, 0, state);
+            AsmTestTools.AreEqual(Rn.RDI, rdi - (1 * rcx), state);
+            AsmTestTools.AreEqual(Rn.RSI, rsi - (1 * rcx), state);
         }
 
         [TestMethod]
@@ -5209,9 +5209,9 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.RCX, 0, state);
-            TestTools.AreEqual(Rn.RDI, rdi + (1 * rcx), state);
-            TestTools.AreEqual(Rn.RSI, rsi + (1 * rcx), state);
+            AsmTestTools.AreEqual(Rn.RCX, 0, state);
+            AsmTestTools.AreEqual(Rn.RDI, rdi + (1 * rcx), state);
+            AsmTestTools.AreEqual(Rn.RSI, rsi + (1 * rcx), state);
         }
 
         [TestMethod]
@@ -5251,9 +5251,9 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.RCX, 0, state);
-            TestTools.AreEqual(Rn.RDI, rdi - (1 * rcx), state);
-            TestTools.AreEqual(Rn.RSI, rsi - (1 * rcx), state);
+            AsmTestTools.AreEqual(Rn.RCX, 0, state);
+            AsmTestTools.AreEqual(Rn.RDI, rdi - (1 * rcx), state);
+            AsmTestTools.AreEqual(Rn.RSI, rsi - (1 * rcx), state);
         }
 
         [TestMethod]
@@ -5293,9 +5293,9 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.RCX, 0, state);
-            TestTools.AreEqual(Rn.RDI, rdi - (2 * rcx), state);
-            TestTools.AreEqual(Rn.RSI, rsi - (2 * rcx), state);
+            AsmTestTools.AreEqual(Rn.RCX, 0, state);
+            AsmTestTools.AreEqual(Rn.RDI, rdi - (2 * rcx), state);
+            AsmTestTools.AreEqual(Rn.RSI, rsi - (2 * rcx), state);
         }
 
         [TestMethod]
@@ -5335,9 +5335,9 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("After \"" + line5 + "\", we know:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.RCX, 0, state);
-            TestTools.AreEqual(Rn.RDI, rdi - (4 * rcx), state);
-            TestTools.AreEqual(Rn.RSI, rsi - (4 * rcx), state);
+            AsmTestTools.AreEqual(Rn.RCX, 0, state);
+            AsmTestTools.AreEqual(Rn.RDI, rdi - (4 * rcx), state);
+            AsmTestTools.AreEqual(Rn.RSI, rsi - (4 * rcx), state);
         }
 
 

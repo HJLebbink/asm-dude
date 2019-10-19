@@ -11,9 +11,9 @@ namespace unit_tests_asm_z3
     [TestClass]
     public class Test_MemZ3
     {
-        private const bool logToDisplay = TestTools.LOG_TO_DISPLAY;
+        private const bool logToDisplay = AsmTestTools.LOG_TO_DISPLAY;
 
-        private Tools CreateTools(int timeOut = TestTools.DEFAULT_TIMEOUT)
+        private Tools CreateTools(int timeOut = AsmTestTools.DEFAULT_TIMEOUT)
         {
             /* The following parameters can be set: 
                     - proof (Boolean) Enable proof generation
@@ -152,8 +152,8 @@ namespace unit_tests_asm_z3
                 state.Update_Forward(updateState);
             }
             //TestTools.AreEqual(Rn.RAX, 20, state);
-            TestTools.AreEqual(Rn.RBX, 10, state);
-            TestTools.AreEqual(Rn.RCX, 5, state);
+            AsmTestTools.AreEqual(Rn.RBX, 10, state);
+            AsmTestTools.AreEqual(Rn.RCX, 5, state);
 
             BitVecExpr address1 = Tools.Calc_Effective_Address("qword ptr[rax + 2 * rbx + 10]", state.HeadKey, tools, ctx);
             BitVecExpr address2 = Tools.Calc_Effective_Address("qword ptr[rax + 4 * rcx + 10]", state.HeadKey, tools, ctx);
@@ -166,7 +166,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("address2 = " + address2);
                 Console.WriteLine(state);
             }
-            TestTools.AreEqual(Tv.ONE, equalAddresses);
+            AsmTestTools.AreEqual(Tv.ONE, equalAddresses);
 
             BitVecExpr value1 = state.Create(Rn.R8);
 
@@ -183,7 +183,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("value2 = " + value2);
                 Console.WriteLine(state);
             }
-            TestTools.AreEqual(Tv.ONE, state.EqualValues(value1, value2));
+            AsmTestTools.AreEqual(Tv.ONE, state.EqualValues(value1, value2));
         }
 
         [TestMethod]
@@ -218,7 +218,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("address2 = " + address2);
                 Console.WriteLine(state);
             }
-            TestTools.AreEqual(Tv.ZERO, equalAddresses);
+            AsmTestTools.AreEqual(Tv.ZERO, equalAddresses);
 
             BitVecExpr value1 = state.Create(Rn.R8);
             using (StateUpdate updateState = new StateUpdate(state.HeadKey, Tools.CreateKey(tools.Rand), tools))
@@ -237,7 +237,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("value2 = " + value2);
                 Console.WriteLine(state);
             }
-            TestTools.AreEqual(Tv.UNKNOWN, equalValues);
+            AsmTestTools.AreEqual(Tv.UNKNOWN, equalValues);
         }
 
         [TestMethod]
@@ -284,7 +284,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("value2 = " + value2);
                 Console.WriteLine(state);
             }
-            TestTools.AreEqual(Tv.ONE, state.EqualValues(value1, value2));
+            AsmTestTools.AreEqual(Tv.ONE, state.EqualValues(value1, value2));
         }
 
         [TestMethod]
@@ -328,7 +328,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("value2 = " + value2);
                 Console.WriteLine(state);
             }
-            TestTools.AreEqual(Tv.ONE, state.EqualValues(value1, value2));
+            AsmTestTools.AreEqual(Tv.ONE, state.EqualValues(value1, value2));
         }
 
         [TestMethod]
@@ -379,8 +379,8 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("value2b = " + value2b);
                 Console.WriteLine(state);
             }
-            TestTools.AreEqual(Tv.ONE, state.EqualValues(value1a, value1b));
-            TestTools.AreEqual(Tv.ONE, state.EqualValues(value2a, value2b));
+            AsmTestTools.AreEqual(Tv.ONE, state.EqualValues(value1a, value1b));
+            AsmTestTools.AreEqual(Tv.ONE, state.EqualValues(value2a, value2b));
         }
 
         [TestMethod]
@@ -427,7 +427,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine(reg2 + " = " + state.Create(reg2));
                 Console.WriteLine(state);
             }
-            TestTools.AreEqual(Tv.ONE, state.EqualValues(reg1, reg2));
+            AsmTestTools.AreEqual(Tv.ONE, state.EqualValues(reg1, reg2));
         }
     }
 }

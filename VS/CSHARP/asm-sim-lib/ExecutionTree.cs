@@ -33,7 +33,7 @@ namespace AsmSim
         private readonly BidirectionalGraph<string, TaggedEdge<string, (bool Branch, string AsmCode)>> _graph;
         private readonly IDictionary<string, State> _states;
 
-        private readonly object _updateLock = new object();
+        //private readonly object _updateLock = new object();
         #endregion
 
         public ExecutionTree(Tools tools)

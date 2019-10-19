@@ -98,7 +98,7 @@
     <Compile Include="Test_Mnemonic.cs" />
     <Compile Include="Test_Runner.cs" />
     <Compile Include="Test_Z3.cs" />
-    <Compile Include="TestTools.cs" />
+    <Compile Include="AsmTestTools.cs" />
     <Compile Include="Test_State.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -112,6 +112,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include=".editorconfig" />
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
@@ -126,15 +127,14 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Z3, Version=4.8.1.9857, Culture=neutral, PublicKeyToken=9c8d792caae602a2, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\asm-sim-lib\libs\z3-4.8.1.016872a5e0f6-x64-win\bin\Microsoft.Z3.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="libz3.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Z3">
+      <HintPath>..\asm-sim-lib\libs\z3-4.8.6-x64-win\bin\Microsoft.Z3.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

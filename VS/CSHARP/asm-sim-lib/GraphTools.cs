@@ -24,6 +24,7 @@ namespace AsmSim
 
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Linq;
     using QuickGraph;
 
@@ -31,6 +32,8 @@ namespace AsmSim
     {
         public static IEnumerable<string> Get_Branch_Points_Backwards(string vertex, BidirectionalGraph<string, TaggedEdge<string, Tag>> graph)
         {
+            Contract.Requires(graph != null);
+
             HashSet<string> visited = new HashSet<string>();
             return Get_Branch_Points_Backwards_LOCAL(vertex);
 
@@ -67,6 +70,8 @@ namespace AsmSim
         /// <summary>traverse the provided vertex backwards and return the first</summary>
         public static IEnumerable<string> Get_First_Branch_Point_Backwards(string vertex, BidirectionalGraph<string, TaggedEdge<string, Tag>> graph)
         {
+            Contract.Requires(graph != null);
+
             HashSet<string> visited = new HashSet<string>();
             return Get_Branch_Point_Backwards_LOCAL(vertex);
 
@@ -104,6 +109,8 @@ namespace AsmSim
 
         public static IEnumerable<string> Get_First_Mutual_Branch_Point_Backwards(string vertex, BidirectionalGraph<string, TaggedEdge<string, Tag>> graph)
         {
+            Contract.Requires(graph != null);
+
             if (!graph.ContainsVertex(vertex))
             {
                 yield break;

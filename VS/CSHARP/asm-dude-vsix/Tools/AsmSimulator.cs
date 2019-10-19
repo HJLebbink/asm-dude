@@ -599,8 +599,8 @@ namespace AsmDude.Tools
                         }
                         mnemonic = opcodeBase.Mnemonic;
                         // cleanup
-                        opcodeBase.Updates.Regular?.Dispose();
-                        opcodeBase.Updates.Branch?.Dispose();
+                        opcodeBase.Updates.regular?.Dispose();
+                        opcodeBase.Updates.branch?.Dispose();
                     }
                     return (message: message, mnemonic: mnemonic);
                 }
@@ -739,7 +739,7 @@ namespace AsmDude.Tools
 
             if (state.IsConsistent == Tv.ZERO)
             {
-                return (message: "\"" + this._sFlow.Get_Line_Str(lineNumber) + "\" is unreachable.", mnemonic: this._sFlow.Get_Line(lineNumber).Mnemonic);
+                return (message: "\"" + this._sFlow.Get_Line_Str(lineNumber) + "\" is unreachable.", mnemonic: this._sFlow.Get_Line(lineNumber).mnemonic);
             }
             else
             {

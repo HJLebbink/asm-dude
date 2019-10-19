@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 
 namespace AsmTools
 {
@@ -2497,6 +2498,8 @@ namespace AsmTools
 
         private static string ToCapitals(string str, bool strIsCapitals)
         {
+            Contract.Requires(str != null);
+
 #if DEBUG
             if (strIsCapitals && (str != str.ToUpper()))
             {
@@ -2585,6 +2588,8 @@ namespace AsmTools
         /// <summary>Parse the provided string that contains a AT&T syntax mnemonic</summary>
         public static Mnemonic ParseMnemonic_Att_OLD(string str, bool strIsCapitals = false)
         {
+            Contract.Requires(str != null);
+
             int length = str.Length;
             if (length > 1)
             {
@@ -2608,6 +2613,8 @@ namespace AsmTools
 
         public static (Mnemonic, AttType) ParseMnemonic_Att(string str, bool strIsCapitals = false)
         {
+            Contract.Requires(str != null);
+
             int length = str.Length;
             if (length > 1)
             {
@@ -4702,13 +4709,15 @@ namespace AsmTools
             }
         }
 
-        public static bool IsMnemonic(string keyword, bool strIsCapitals = false)
+        public static bool IsMnemonic(string keyword, bool strIsCapitals)
         {
             return _mnemonic_cache.ContainsKey(ToCapitals(keyword, strIsCapitals));
         }
 
         public static bool IsMnemonic_Att(string keyword, bool strIsCapitals = false)
         {
+            Contract.Requires(keyword != null);
+
             int length = keyword.Length;
             if (length < 2)
             {

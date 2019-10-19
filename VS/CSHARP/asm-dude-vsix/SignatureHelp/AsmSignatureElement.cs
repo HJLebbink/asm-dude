@@ -58,7 +58,7 @@ namespace AsmDude.SignatureHelp
                 }
                 else
                 {
-                    this._operandDoc = new string[0];
+                    this._operandDoc = Array.Empty<string>();
                 }
                 if (this._reversed_Signature)
                 {

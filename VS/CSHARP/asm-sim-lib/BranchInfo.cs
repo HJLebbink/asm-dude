@@ -23,6 +23,7 @@
 namespace AsmSim
 {
     using Microsoft.Z3;
+    using System.Diagnostics.Contracts;
 
     public class BranchInfo
     {
@@ -32,6 +33,8 @@ namespace AsmSim
 
         public BranchInfo(BoolExpr condition, bool taken)
         {
+            Contract.Requires(condition != null);
+
             this.BranchCondition = condition;
             this.Key = condition.ToString();
             this.BranchTaken = taken;
@@ -44,6 +47,7 @@ namespace AsmSim
 
         public BoolExpr GetData(Context ctx)
         {
+            Contract.Requires(ctx != null);
             if (false)
             {
                 BoolExpr bc = this.BranchCondition.Translate(ctx) as BoolExpr;

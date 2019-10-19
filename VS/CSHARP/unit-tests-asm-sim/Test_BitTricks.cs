@@ -10,9 +10,9 @@ namespace unit_tests_asm_z3
     [TestClass]
     public class Test_BitTricks
     {
-        private const bool logToDisplay = TestTools.LOG_TO_DISPLAY;
+        private const bool logToDisplay = AsmTestTools.LOG_TO_DISPLAY;
 
-        private Tools CreateTools(int timeOut = TestTools.DEFAULT_TIMEOUT)
+        private Tools CreateTools(int timeOut = AsmTestTools.DEFAULT_TIMEOUT)
         {
             /* The following parameters can be set: 
                     - proof (Boolean) Enable proof generation
@@ -546,7 +546,7 @@ namespace unit_tests_asm_z3
                         ),
                         ctx.MkNot(ctx.MkEq(state.Create(Rn.ECX), ctx.MkBV(0, 32)))
                     );
-                    TestTools.AreEqual(Tv.ONE, ToolsZ3.GetTv(property, state.Solver, state.Ctx));
+                    AsmTestTools.AreEqual(Tv.ONE, ToolsZ3.GetTv(property, state.Solver, state.Ctx));
                 }
                 {
                     state.Solver.Push();
@@ -670,7 +670,7 @@ namespace unit_tests_asm_z3
                         ),
                         ctx.MkNot(ctx.MkEq(state.Create(Rn.RCX), ctx.MkBV(0, 64)))
                     );
-                    TestTools.AreEqual(Tv.ONE, ToolsZ3.GetTv(property, state.Solver, ctx));
+                    AsmTestTools.AreEqual(Tv.ONE, ToolsZ3.GetTv(property, state.Solver, ctx));
                 }
             }
         }

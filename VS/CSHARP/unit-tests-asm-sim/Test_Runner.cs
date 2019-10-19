@@ -9,11 +9,11 @@ namespace unit_tests_asm_z3
     [TestClass]
     public class Test_Runner
     {
-        private const bool logToDisplay = TestTools.LOG_TO_DISPLAY;
+        private const bool logToDisplay = AsmTestTools.LOG_TO_DISPLAY;
 
         #region Private Methods
 
-        private Tools CreateTools(int timeOut = TestTools.DEFAULT_TIMEOUT)
+        private Tools CreateTools(int timeOut = AsmTestTools.DEFAULT_TIMEOUT)
         {
             Dictionary<string, string> settings = new Dictionary<string, string>
             {
@@ -61,7 +61,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine(state1);
                 Console.WriteLine("=================================================================");
             }
-            TestTools.AreEqual(state0, state1);
+            AsmTestTools.AreEqual(state0, state1);
             return state0;
         }
         #endregion Private Methods
@@ -98,7 +98,7 @@ namespace unit_tests_asm_z3
                 state_backward = Runner.SimpleStep_Backward(line2, state_backward);
                 state_backward = Runner.SimpleStep_Backward(line1, state_backward);
 
-                TestTools.AreEqual(state_backward, state_forward);
+                AsmTestTools.AreEqual(state_backward, state_forward);
             }
         }
 
@@ -114,7 +114,7 @@ namespace unit_tests_asm_z3
                 "           stc       ; set CF                  " + Environment.NewLine +
                 "           cmc       ; complement CF           ";
             State state = this.Equal_Forward_Backward(programStr, logToDisplay, tools);
-            TestTools.AreEqual(Flags.CF, Tv.ZERO, state);
+            AsmTestTools.AreEqual(Flags.CF, Tv.ZERO, state);
         }
 
         [TestMethod]
@@ -130,8 +130,8 @@ namespace unit_tests_asm_z3
                 "           mov     rbx,        10              " + Environment.NewLine +
                 "           mov     rbx,        rax             ";
             State state = this.Equal_Forward_Backward(programStr, logToDisplay, tools);
-            TestTools.AreEqual(Rn.RAX, 0, state);
-            TestTools.AreEqual(Rn.RBX, 0, state);
+            AsmTestTools.AreEqual(Rn.RAX, 0, state);
+            AsmTestTools.AreEqual(Rn.RBX, 0, state);
         }
 
         [TestMethod]
@@ -151,14 +151,14 @@ namespace unit_tests_asm_z3
 
             ulong result = 10 + 20;
             uint nBits = 64;
-            TestTools.AreEqual(Rn.RAX, result, state);
-            TestTools.AreEqual(Rn.RBX, 20, state);
-            TestTools.AreEqual(Flags.CF, TestTools.ToTv5(TestTools.Calc_CF_Add(nBits, 10, 20)), state);
-            TestTools.AreEqual(Flags.OF, TestTools.ToTv5(TestTools.Calc_OF_Add(nBits, 10, 20)), state);
-            TestTools.AreEqual(Flags.AF, TestTools.ToTv5(TestTools.Calc_AF_Add(10, 20)), state);
-            TestTools.AreEqual(Flags.PF, TestTools.ToTv5(TestTools.Calc_PF(result)), state);
-            TestTools.AreEqual(Flags.ZF, TestTools.ToTv5(TestTools.Calc_ZF(result)), state);
-            TestTools.AreEqual(Flags.SF, TestTools.ToTv5(TestTools.Calc_SF(nBits, result)), state);
+            AsmTestTools.AreEqual(Rn.RAX, result, state);
+            AsmTestTools.AreEqual(Rn.RBX, 20, state);
+            AsmTestTools.AreEqual(Flags.CF, AsmTestTools.ToTv5(AsmTestTools.Calc_CF_Add(nBits, 10, 20)), state);
+            AsmTestTools.AreEqual(Flags.OF, AsmTestTools.ToTv5(AsmTestTools.Calc_OF_Add(nBits, 10, 20)), state);
+            AsmTestTools.AreEqual(Flags.AF, AsmTestTools.ToTv5(AsmTestTools.Calc_AF_Add(10, 20)), state);
+            AsmTestTools.AreEqual(Flags.PF, AsmTestTools.ToTv5(AsmTestTools.Calc_PF(result)), state);
+            AsmTestTools.AreEqual(Flags.ZF, AsmTestTools.ToTv5(AsmTestTools.Calc_ZF(result)), state);
+            AsmTestTools.AreEqual(Flags.SF, AsmTestTools.ToTv5(AsmTestTools.Calc_SF(nBits, result)), state);
         }
 
         [TestMethod]
@@ -180,14 +180,14 @@ namespace unit_tests_asm_z3
 
             ulong result = 10 + 20;
             uint nBits = 64;
-            TestTools.AreEqual(Rn.RAX, result, state);
-            TestTools.AreEqual(Rn.RBX, 20, state);
-            TestTools.AreEqual(Flags.CF, TestTools.ToTv5(TestTools.Calc_CF_Add(nBits, 10, 20)), state);
-            TestTools.AreEqual(Flags.OF, TestTools.ToTv5(TestTools.Calc_OF_Add(nBits, 10, 20)), state);
-            TestTools.AreEqual(Flags.AF, TestTools.ToTv5(TestTools.Calc_AF_Add(10, 20)), state);
-            TestTools.AreEqual(Flags.PF, TestTools.ToTv5(TestTools.Calc_PF(result)), state);
-            TestTools.AreEqual(Flags.ZF, TestTools.ToTv5(TestTools.Calc_ZF(result)), state);
-            TestTools.AreEqual(Flags.SF, TestTools.ToTv5(TestTools.Calc_SF(nBits, result)), state);
+            AsmTestTools.AreEqual(Rn.RAX, result, state);
+            AsmTestTools.AreEqual(Rn.RBX, 20, state);
+            AsmTestTools.AreEqual(Flags.CF, AsmTestTools.ToTv5(AsmTestTools.Calc_CF_Add(nBits, 10, 20)), state);
+            AsmTestTools.AreEqual(Flags.OF, AsmTestTools.ToTv5(AsmTestTools.Calc_OF_Add(nBits, 10, 20)), state);
+            AsmTestTools.AreEqual(Flags.AF, AsmTestTools.ToTv5(AsmTestTools.Calc_AF_Add(10, 20)), state);
+            AsmTestTools.AreEqual(Flags.PF, AsmTestTools.ToTv5(AsmTestTools.Calc_PF(result)), state);
+            AsmTestTools.AreEqual(Flags.ZF, AsmTestTools.ToTv5(AsmTestTools.Calc_ZF(result)), state);
+            AsmTestTools.AreEqual(Flags.SF, AsmTestTools.ToTv5(AsmTestTools.Calc_SF(nBits, result)), state);
         }
 
         [TestMethod]
@@ -207,13 +207,13 @@ namespace unit_tests_asm_z3
 
             ulong result = 20 ^ 20;
             uint nBits = 64;
-            TestTools.AreEqual(Rn.RBX, result, state);
-            TestTools.AreEqual(Flags.CF, Tv.ZERO, state);
-            TestTools.AreEqual(Flags.OF, Tv.ZERO, state);
-            TestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
-            TestTools.AreEqual(Flags.PF, TestTools.ToTv5(TestTools.Calc_PF(result)), state);
-            TestTools.AreEqual(Flags.ZF, TestTools.ToTv5(TestTools.Calc_ZF(result)), state);
-            TestTools.AreEqual(Flags.SF, TestTools.ToTv5(TestTools.Calc_SF(nBits, result)), state);
+            AsmTestTools.AreEqual(Rn.RBX, result, state);
+            AsmTestTools.AreEqual(Flags.CF, Tv.ZERO, state);
+            AsmTestTools.AreEqual(Flags.OF, Tv.ZERO, state);
+            AsmTestTools.AreEqual(Flags.AF, Tv.UNDEFINED, state);
+            AsmTestTools.AreEqual(Flags.PF, AsmTestTools.ToTv5(AsmTestTools.Calc_PF(result)), state);
+            AsmTestTools.AreEqual(Flags.ZF, AsmTestTools.ToTv5(AsmTestTools.Calc_ZF(result)), state);
+            AsmTestTools.AreEqual(Flags.SF, AsmTestTools.ToTv5(AsmTestTools.Calc_SF(nBits, result)), state);
         }
 
         [TestMethod]
@@ -238,8 +238,8 @@ namespace unit_tests_asm_z3
                 Console.WriteLine(state);
             }
 
-            TestTools.IsTrue(state.IsConsistent);
-            TestTools.AreEqual(Rn.RAX, 0, state);
+            AsmTestTools.IsTrue(state.IsConsistent);
+            AsmTestTools.AreEqual(Rn.RAX, 0, state);
         }
 
         [TestMethod]
@@ -265,8 +265,8 @@ namespace unit_tests_asm_z3
                 Console.WriteLine(state);
             }
 
-            TestTools.IsTrue(state.IsConsistent);
-            TestTools.AreEqual(Rn.RBX, 10, state);
+            AsmTestTools.IsTrue(state.IsConsistent);
+            AsmTestTools.AreEqual(Rn.RBX, 10, state);
         }
 
         [TestMethod]
@@ -293,8 +293,8 @@ namespace unit_tests_asm_z3
                 Console.WriteLine(state);
             }
 
-            TestTools.IsTrue(state.IsConsistent);
-            TestTools.AreEqual(Rn.RAX, 10, state);
+            AsmTestTools.IsTrue(state.IsConsistent);
+            AsmTestTools.AreEqual(Rn.RAX, 10, state);
         }
 
         [TestMethod]
@@ -320,8 +320,8 @@ namespace unit_tests_asm_z3
             State state = dFlow.EndState;
             //if (logToDisplay) Console.WriteLine(state);
 
-            TestTools.IsTrue(state.IsConsistent);
-            TestTools.AreEqual(Rn.RAX, 20, state);
+            AsmTestTools.IsTrue(state.IsConsistent);
+            AsmTestTools.AreEqual(Rn.RAX, 20, state);
         }
 
         [TestMethod]
@@ -352,8 +352,8 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("state:\n" + state);
             }
 
-            TestTools.IsTrue(state.IsConsistent);
-            TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_000????0", state);
+            AsmTestTools.IsTrue(state.IsConsistent);
+            AsmTestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_000????0", state);
 
             Microsoft.Z3.BoolExpr branch_Condition = dFlow.Get_Branch_Condition(0);
             if (logToDisplay2)
@@ -369,8 +369,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("state with ZF = true:\n" + state2a);
                 }
 
-                TestTools.IsTrue(state2a.IsConsistent);
-                TestTools.AreEqual(Rn.RAX, 10, state2a); // TODO why is 10 / 20 reversed?
+                AsmTestTools.IsTrue(state2a.IsConsistent);
+                AsmTestTools.AreEqual(Rn.RAX, 10, state2a); // TODO why is 10 / 20 reversed?
             }
             {
                 State state2b = new State(state);
@@ -380,8 +380,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("state with ZF = false:\n" + state2b);
                 }
 
-                TestTools.IsTrue(state2b.IsConsistent);
-                TestTools.AreEqual(Rn.RAX, 20, state2b);
+                AsmTestTools.IsTrue(state2b.IsConsistent);
+                AsmTestTools.AreEqual(Rn.RAX, 20, state2b);
             }
         }
 
@@ -415,8 +415,8 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("state:\n" + state);
             }
 
-            TestTools.IsTrue(state.IsConsistent);
-            TestTools.AreEqual(Rn.RAX, 20, state);
+            AsmTestTools.IsTrue(state.IsConsistent);
+            AsmTestTools.AreEqual(Rn.RAX, 20, state);
         }
 
         [TestMethod]
@@ -449,8 +449,8 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("state:\n" + state);
             }
 
-            TestTools.IsTrue(state.IsConsistent);
-            TestTools.AreEqual(Rn.RAX, 10, state);
+            AsmTestTools.IsTrue(state.IsConsistent);
+            AsmTestTools.AreEqual(Rn.RAX, 10, state);
         }
 
         [TestMethod]
@@ -476,7 +476,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("state:\n" + state);
             }
 
-            TestTools.IsTrue(state.IsConsistent);
+            AsmTestTools.IsTrue(state.IsConsistent);
             Microsoft.Z3.BoolExpr branch_Condition = dFlow.Get_Branch_Condition(0);
 
             {
@@ -487,7 +487,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("state with ZF = true:\n" + state2a);
                 }
 
-                TestTools.AreEqual(Tv.ONE, state2a.IsConsistent);
+                AsmTestTools.AreEqual(Tv.ONE, state2a.IsConsistent);
             }
             {
                 State state2b = new State(state);
@@ -497,7 +497,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("state with ZF = false:\n" + state2b);
                 }
 
-                TestTools.AreEqual(Tv.ONE, state2b.IsConsistent);
+                AsmTestTools.AreEqual(Tv.ONE, state2b.IsConsistent);
             }
         }
 
@@ -531,8 +531,8 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("state:\n" + state);
             }
 
-            TestTools.IsTrue(state.IsConsistent);
-            TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_000????0", state);
+            AsmTestTools.IsTrue(state.IsConsistent);
+            AsmTestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_000????0", state);
 
             Microsoft.Z3.BoolExpr branch_Condition = dFlow.Get_Branch_Condition(0);
             {
@@ -543,8 +543,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("state with ZF = true:\n" + state2a);
                 }
 
-                TestTools.IsTrue(state2a.IsConsistent);
-                TestTools.AreEqual(Rn.RAX, 10, state2a);
+                AsmTestTools.IsTrue(state2a.IsConsistent);
+                AsmTestTools.AreEqual(Rn.RAX, 10, state2a);
             }
             {
                 State state2b = new State(state);
@@ -554,8 +554,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine("state with ZF = false:\n" + state2b);
                 }
 
-                TestTools.IsTrue(state2b.IsConsistent);
-                TestTools.AreEqual(Rn.RAX, 20, state2b);
+                AsmTestTools.IsTrue(state2b.IsConsistent);
+                AsmTestTools.AreEqual(Rn.RAX, 20, state2b);
             }
         }
 
@@ -589,7 +589,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("state:\n" + state);
             }
 
-            TestTools.IsTrue(state.IsConsistent);
+            AsmTestTools.IsTrue(state.IsConsistent);
 
             Microsoft.Z3.BoolExpr branch_Condition_jz = dFlow.Get_Branch_Condition(0);
             Microsoft.Z3.BoolExpr branch_Condition_jc = dFlow.Get_Branch_Condition(2);
@@ -600,17 +600,17 @@ namespace unit_tests_asm_z3
                 {
                     State state2 = new State(state);
                     state2.Add(new BranchInfo(branch_Condition_jz, true));
-                    TestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
-                    TestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
-                    TestTools.AreEqual(Rn.RCX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
+                    AsmTestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    AsmTestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    AsmTestTools.AreEqual(Rn.RCX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
                 }
                 if (true)
                 {
                     State state2 = new State(state);
                     state2.Add(new BranchInfo(branch_Condition_jz, false));
-                    TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001", state2);
-                    TestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
-                    TestTools.AreEqual(Rn.RCX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
+                    AsmTestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001", state2);
+                    AsmTestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    AsmTestTools.AreEqual(Rn.RCX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
                 }
             }
             if (true)
@@ -619,17 +619,17 @@ namespace unit_tests_asm_z3
                 {
                     State state2 = new State(state);
                     state2.Add(new BranchInfo(branch_Condition_jc, true));
-                    TestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
-                    TestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
-                    TestTools.AreEqual(Rn.RCX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
+                    AsmTestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    AsmTestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    AsmTestTools.AreEqual(Rn.RCX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
                 }
                 if (true)
                 {
                     State state2 = new State(state);
                     state2.Add(new BranchInfo(branch_Condition_jc, false));
-                    TestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
-                    TestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
-                    TestTools.AreEqual(Rn.RCX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
+                    AsmTestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    AsmTestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    AsmTestTools.AreEqual(Rn.RCX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
                 }
             }
             if (true)
@@ -639,36 +639,36 @@ namespace unit_tests_asm_z3
                     State state2 = new State(state);
                     state2.Add(new BranchInfo(branch_Condition_jz, true));
                     state2.Add(new BranchInfo(branch_Condition_jc, true));
-                    TestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
-                    TestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
-                    TestTools.AreEqual(Rn.RCX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
+                    AsmTestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    AsmTestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    AsmTestTools.AreEqual(Rn.RCX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
                 }
                 if (true)
                 {
                     State state2 = new State(state);
                     state2.Add(new BranchInfo(branch_Condition_jz, true));
                     state2.Add(new BranchInfo(branch_Condition_jc, false));
-                    TestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
-                    TestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
-                    TestTools.AreEqual(Rn.RCX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
+                    AsmTestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    AsmTestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    AsmTestTools.AreEqual(Rn.RCX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
                 }
                 if (true)
                 {
                     State state2 = new State(state);
                     state2.Add(new BranchInfo(branch_Condition_jz, false));
                     state2.Add(new BranchInfo(branch_Condition_jc, true));
-                    TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001", state2);
-                    TestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
-                    TestTools.AreEqual(Rn.RCX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
+                    AsmTestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001", state2);
+                    AsmTestTools.AreEqual(Rn.RBX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    AsmTestTools.AreEqual(Rn.RCX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
                 }
                 if (true)
                 {
                     State state2 = new State(state);
                     state2.Add(new BranchInfo(branch_Condition_jz, false));
                     state2.Add(new BranchInfo(branch_Condition_jc, false));
-                    TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001", state2);
-                    TestTools.AreEqual(Rn.RBX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000010", state2);
-                    TestTools.AreEqual(Rn.RCX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
+                    AsmTestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001", state2);
+                    AsmTestTools.AreEqual(Rn.RBX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000010", state2);
+                    AsmTestTools.AreEqual(Rn.RCX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
                 }
             }
         }
@@ -704,7 +704,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("state:\n" + state);
             }
 
-            TestTools.IsTrue(state.IsConsistent);
+            AsmTestTools.IsTrue(state.IsConsistent);
 
             Microsoft.Z3.BoolExpr branch_Condition_jz = dFlow.Get_Branch_Condition(0);
             Microsoft.Z3.BoolExpr branch_Condition_jc = dFlow.Get_Branch_Condition(2);
@@ -718,7 +718,7 @@ namespace unit_tests_asm_z3
                     state2.Add(new BranchInfo(branch_Condition_jz, true));
                     state2.Add(new BranchInfo(branch_Condition_jc, true));
                     state2.Add(new BranchInfo(branch_Condition_jp, true));
-                    TestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    AsmTestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
                 }
                 if (true)
                 {
@@ -726,7 +726,7 @@ namespace unit_tests_asm_z3
                     state2.Add(new BranchInfo(branch_Condition_jz, true));
                     state2.Add(new BranchInfo(branch_Condition_jc, true));
                     state2.Add(new BranchInfo(branch_Condition_jp, false));
-                    TestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    AsmTestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
                 }
                 if (true)
                 {
@@ -734,7 +734,7 @@ namespace unit_tests_asm_z3
                     state2.Add(new BranchInfo(branch_Condition_jz, true));
                     state2.Add(new BranchInfo(branch_Condition_jc, false));
                     state2.Add(new BranchInfo(branch_Condition_jp, true));
-                    TestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    AsmTestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
                 }
                 if (true)
                 {
@@ -742,7 +742,7 @@ namespace unit_tests_asm_z3
                     state2.Add(new BranchInfo(branch_Condition_jz, true));
                     state2.Add(new BranchInfo(branch_Condition_jc, false));
                     state2.Add(new BranchInfo(branch_Condition_jp, false));
-                    TestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
+                    AsmTestTools.AreEqual(Rn.RAX, "????????_????????_????????_????????_????????_????????_????????_????????", state2);
                 }
                 if (true)
                 {
@@ -750,7 +750,7 @@ namespace unit_tests_asm_z3
                     state2.Add(new BranchInfo(branch_Condition_jz, false));
                     state2.Add(new BranchInfo(branch_Condition_jc, true));
                     state2.Add(new BranchInfo(branch_Condition_jp, true));
-                    TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001", state2);
+                    AsmTestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001", state2);
                 }
                 if (true)
                 {
@@ -758,7 +758,7 @@ namespace unit_tests_asm_z3
                     state2.Add(new BranchInfo(branch_Condition_jz, false));
                     state2.Add(new BranchInfo(branch_Condition_jc, true));
                     state2.Add(new BranchInfo(branch_Condition_jp, false));
-                    TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001", state2);
+                    AsmTestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000001", state2);
                 }
                 if (true)
                 {
@@ -766,7 +766,7 @@ namespace unit_tests_asm_z3
                     state2.Add(new BranchInfo(branch_Condition_jz, false));
                     state2.Add(new BranchInfo(branch_Condition_jc, false));
                     state2.Add(new BranchInfo(branch_Condition_jp, true));
-                    TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000010", state2);
+                    AsmTestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000010", state2);
                 }
                 if (true)
                 {
@@ -774,7 +774,7 @@ namespace unit_tests_asm_z3
                     state2.Add(new BranchInfo(branch_Condition_jz, false));
                     state2.Add(new BranchInfo(branch_Condition_jc, false));
                     state2.Add(new BranchInfo(branch_Condition_jp, false));
-                    TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
+                    AsmTestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000011", state2);
                 }
             }
         }
@@ -809,7 +809,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("state:\n" + state);
             }
 
-            TestTools.IsTrue(state.IsConsistent);
+            AsmTestTools.IsTrue(state.IsConsistent);
 
             Microsoft.Z3.BoolExpr branch_Condition_jz1 = dFlow.Get_Branch_Condition(1);
             Microsoft.Z3.BoolExpr branch_Condition_jz2 = dFlow.Get_Branch_Condition(3);
@@ -821,28 +821,28 @@ namespace unit_tests_asm_z3
                     State state2 = new State(state);
                     state2.Add(new BranchInfo(branch_Condition_jz1, true));
                     state2.Add(new BranchInfo(branch_Condition_jz2, true));
-                    TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000", state2);
+                    AsmTestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000", state2);
                 }
                 if (true)
                 {
                     State state2 = new State(state);
                     state2.Add(new BranchInfo(branch_Condition_jz1, true));
                     state2.Add(new BranchInfo(branch_Condition_jz2, false));
-                    TestTools.AreEqual(Rn.RAX, "XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX", state2);
+                    AsmTestTools.AreEqual(Rn.RAX, "XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX", state2);
                 }
                 if (true)
                 {
                     State state2 = new State(state);
                     state2.Add(new BranchInfo(branch_Condition_jz1, false));
                     state2.Add(new BranchInfo(branch_Condition_jz2, true));
-                    TestTools.AreEqual(Rn.RAX, "XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX", state2);
+                    AsmTestTools.AreEqual(Rn.RAX, "XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX_XXXXXXXX", state2);
                 }
                 if (true)
                 {
                     State state2 = new State(state);
                     state2.Add(new BranchInfo(branch_Condition_jz1, false));
                     state2.Add(new BranchInfo(branch_Condition_jz2, false));
-                    TestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000010", state2);
+                    AsmTestTools.AreEqual(Rn.RAX, "00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000010", state2);
                 }
             }
         }
@@ -877,7 +877,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("state:\n" + state);
             }
 
-            TestTools.IsTrue(state.IsConsistent);
+            AsmTestTools.IsTrue(state.IsConsistent);
 
             Microsoft.Z3.BoolExpr branch_Condition_jp = dFlow.Get_Branch_Condition(1);
             Microsoft.Z3.BoolExpr branch_Condition_jz = dFlow.Get_Branch_Condition(3);
@@ -889,28 +889,28 @@ namespace unit_tests_asm_z3
                     State state2 = new State(state);
                     state2.Add(new BranchInfo(branch_Condition_jp, true));
                     state2.Add(new BranchInfo(branch_Condition_jz, true));
-                    TestTools.AreEqual(Rn.AL, "00000000", state2);
+                    AsmTestTools.AreEqual(Rn.AL, "00000000", state2);
                 }
                 if (true)
                 {
                     State state2 = new State(state);
                     state2.Add(new BranchInfo(branch_Condition_jp, true));
                     state2.Add(new BranchInfo(branch_Condition_jz, false));
-                    TestTools.AreEqual(Rn.AL, "????????", state2);
+                    AsmTestTools.AreEqual(Rn.AL, "????????", state2);
                 }
                 if (true)
                 {
                     State state2 = new State(state);
                     state2.Add(new BranchInfo(branch_Condition_jp, false));
                     state2.Add(new BranchInfo(branch_Condition_jz, true));
-                    TestTools.AreEqual(Rn.AL, "XXXXXXXX", state2);
+                    AsmTestTools.AreEqual(Rn.AL, "XXXXXXXX", state2);
                 }
                 if (true)
                 {
                     State state2 = new State(state);
                     state2.Add(new BranchInfo(branch_Condition_jp, false));
                     state2.Add(new BranchInfo(branch_Condition_jz, false));
-                    TestTools.AreEqual(Rn.AL, "00000010", state2);
+                    AsmTestTools.AreEqual(Rn.AL, "00000010", state2);
                 }
             }
         }
@@ -935,8 +935,8 @@ namespace unit_tests_asm_z3
             DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             State state = dFlow.EndState;
 
-            TestTools.AreEqual(Rn.RCX, 20, state);
-            TestTools.AreEqual(Rn.RDX, 20, state);
+            AsmTestTools.AreEqual(Rn.RCX, 20, state);
+            AsmTestTools.AreEqual(Rn.RDX, 20, state);
         }
 
         [TestMethod]
@@ -962,9 +962,9 @@ namespace unit_tests_asm_z3
             DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
             State state = dFlow.EndState;
 
-            TestTools.AreEqual(Rn.RAX, 0, state);
-            TestTools.AreEqual(Rn.RBX, 10, state);
-            TestTools.AreEqual(Rn.RCX, 20, state);
+            AsmTestTools.AreEqual(Rn.RAX, 0, state);
+            AsmTestTools.AreEqual(Rn.RBX, 10, state);
+            AsmTestTools.AreEqual(Rn.RCX, 20, state);
         }
 
         [TestMethod]
@@ -999,9 +999,9 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("Forward:\n" + state);
             }
 
-            TestTools.AreEqual(Rn.RAX, 0, state);
-            TestTools.AreEqual(Rn.RBX, 10, state);
-            TestTools.AreEqual(Rn.RCX, 20, state);
+            AsmTestTools.AreEqual(Rn.RAX, 0, state);
+            AsmTestTools.AreEqual(Rn.RBX, 10, state);
+            AsmTestTools.AreEqual(Rn.RCX, 20, state);
         }
 
         [TestMethod]
@@ -1038,7 +1038,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("state3:\n" + state3);
             }
 
-            TestTools.AreEqual(Rn.BL, 10, state3);
+            AsmTestTools.AreEqual(Rn.BL, 10, state3);
 
             state4.Add(new BranchInfo(branch_Condition, false));
             if (logToDisplay)
@@ -1046,7 +1046,7 @@ namespace unit_tests_asm_z3
                 Console.WriteLine("state4:\n" + state4);
             }
 
-            TestTools.AreEqual(Rn.BL, 20, state4);
+            AsmTestTools.AreEqual(Rn.BL, 20, state4);
         }
 
         [TestMethod]
@@ -1085,8 +1085,8 @@ namespace unit_tests_asm_z3
                     Console.WriteLine(state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, 0, state);
-                TestTools.AreEqual(Rn.RBX, 3, state);
+                AsmTestTools.AreEqual(Rn.RAX, 0, state);
+                AsmTestTools.AreEqual(Rn.RBX, 3, state);
             }
             else
             {
@@ -1127,7 +1127,7 @@ namespace unit_tests_asm_z3
                     Console.WriteLine(state);
                 }
 
-                TestTools.AreEqual(Rn.RAX, 0, state);
+                AsmTestTools.AreEqual(Rn.RAX, 0, state);
             }
             else
             {

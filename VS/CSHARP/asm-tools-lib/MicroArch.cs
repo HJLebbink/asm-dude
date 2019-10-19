@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using System.Diagnostics.Contracts;
 
 namespace AsmTools
 {
@@ -47,6 +48,8 @@ namespace AsmTools
     {
         public static MicroArch ParseMicroArch(string str)
         {
+            Contract.Requires(str != null);
+
             switch (str.ToUpper())
             {
                 case "SANDYBRIDGE": return MicroArch.SandyBridge;
