@@ -311,7 +311,7 @@ namespace AsmDude.OptionsPage
             set { this.CodeFolding_EndTag_UI.Text = value; }
         }
 
-    #endregion Code Folding
+        #endregion Code Folding
 
         #region Syntax Highlighting
 

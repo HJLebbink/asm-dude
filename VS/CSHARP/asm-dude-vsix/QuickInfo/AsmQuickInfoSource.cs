@@ -35,7 +35,6 @@ namespace AsmDude.QuickInfo
     using AsmDude.SyntaxHighlighting;
     using AsmDude.Tools;
     using AsmTools;
-    using EnvDTE;
     using Microsoft.VisualStudio.Language.Intellisense;
     using Microsoft.VisualStudio.Text;
     using Microsoft.VisualStudio.Text.Tagging;

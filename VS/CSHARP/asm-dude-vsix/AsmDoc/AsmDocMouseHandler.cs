@@ -156,7 +156,7 @@ namespace AsmDude.AsmDoc
                             if (keyword != null)
                             {
                                 (Mnemonic mnemonic, AttType type) = AsmSourceTools.ParseMnemonic_Att(keyword, false);
-                                var result = this.Dispatch_Goto_DocAsync(mnemonic).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
+                                System.Runtime.CompilerServices.ConfiguredTaskAwaitable<bool> result = this.Dispatch_Goto_DocAsync(mnemonic).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                             }
                             this.Set_Highlight_Span(null);
                             this._view.Selection.Clear();

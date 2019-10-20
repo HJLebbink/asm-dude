@@ -24,7 +24,6 @@ namespace AsmDude
 {
     using System;
     using System.Runtime.InteropServices;
-    using AsmDude.Tools;
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.Language.Intellisense;
     using Microsoft.VisualStudio.OLE.Interop;

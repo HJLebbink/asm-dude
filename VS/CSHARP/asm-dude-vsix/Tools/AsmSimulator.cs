@@ -261,7 +261,7 @@ namespace AsmDude.Tools
 
         private async System.Threading.Tasks.Task Schedule_Reset_Async()
         {
-            var task = System.Threading.Tasks.Task.Run(() =>
+            System.Threading.Tasks.Task task = System.Threading.Tasks.Task.Run(() =>
             {
                 bool changed;
                 lock (this._resetLock)
