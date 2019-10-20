@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -39,10 +40,10 @@ namespace AsmTools
             Contract.Requires(line != null);
             //Console.WriteLine("INFO: AsmSourceTools:ParseLine: line=" + line + "; length=" + line.Length);
 
-            string label = "";
+            string label = string.Empty;
             Mnemonic mnemonic = Mnemonic.NONE;
             string[] args = Array.Empty<string>();
-            string remark = "";
+            string remark = string.Empty;
 
             if (line.Length > 0)
             {
@@ -71,7 +72,7 @@ namespace AsmTools
                     //Console.WriteLine("found remark " + remark);
                 }
 
-                string codeStr = line.Substring(codeBeginPos, codeEndPos - codeBeginPos).Trim().ToUpper();
+                string codeStr = line.Substring(codeBeginPos, codeEndPos - codeBeginPos).Trim().ToUpper(CultureInfo.InvariantCulture);
                 //Console.WriteLine("code string \"" + codeStr + "\".");
                 if (codeStr.Length > 0)
                 {
@@ -127,6 +128,10 @@ namespace AsmTools
                 }
             }
             //Console.WriteLine(args[1] + ":" + args[1].Length);
+
+            Contract.Ensures(label != null);
+            Contract.Ensures(args != null);
+            Contract.Ensures(remark != null);
             return (Label: label, Mnemonic: mnemonic, Args: args, Remark: remark);
         }
 
@@ -146,14 +151,7 @@ namespace AsmTools
                 for (int i = 0; i < nOperands; ++i)
                 {
                     string opStr = operandStrArray[i];
-                    if (opStr.Length == 0)
-                    {
-                        operands.Add(null);
-                    }
-                    else
-                    {
-                        operands.Add(new Operand(opStr, false));
-                    }
+                    operands.Add((string.IsNullOrEmpty(opStr)) ? null : new Operand(opStr, false));
                 }
                 return operands;
             }
@@ -197,7 +195,7 @@ namespace AsmTools
                 {
                     if (started)
                     {
-                        return (keywordBegin, length: i, false);
+                        return (beginPos: keywordBegin, length: i, isLabel: false);
                     }
                     else
                     {
@@ -501,7 +499,8 @@ namespace AsmTools
 
             if (!isCapitals)
             {
-                token = token.ToUpper();
+                token = token.ToUpper(CultureInfo.InvariantCulture);
+                Contract.Assume(token != null);
             }
 
             // 1] select everything between []
@@ -775,11 +774,11 @@ namespace AsmTools
 
             if (end <= 0)
             {
-                return "";
+                return string.Empty;
             }
             if (begin == end)
             {
-                return "";
+                return string.Empty;
             }
 
             int pos = (end >= line.Length) ? (line.Length - 1) : end;
@@ -844,7 +843,7 @@ namespace AsmTools
             }
             else
             {
-                return "";
+                return string.Empty;
             }
         }
 
@@ -1009,7 +1008,7 @@ namespace AsmTools
         /// <returns></returns>
         public static string Linewrap(this string str, int maxLength)
         {
-            return Linewrap(str, maxLength, "");
+            return Linewrap(str, maxLength, string.Empty);
         }
 
         /// <summary>
@@ -1023,7 +1022,7 @@ namespace AsmTools
         {
             if (string.IsNullOrEmpty(str))
             {
-                return "";
+                return string.Empty;
             }
 
             if (maxLength <= 0)

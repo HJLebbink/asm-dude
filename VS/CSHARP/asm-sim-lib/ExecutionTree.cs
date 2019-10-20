@@ -30,7 +30,7 @@ namespace AsmSim
     {
         #region Fields
         private readonly Tools _tools;
-        private readonly BidirectionalGraph<string, TaggedEdge<string, (bool Branch, string AsmCode)>> _graph;
+        private readonly BidirectionalGraph<string, TaggedEdge<string, (bool branch, string asmCode)>> _graph;
         private readonly IDictionary<string, State> _states;
 
         //private readonly object _updateLock = new object();
@@ -39,7 +39,7 @@ namespace AsmSim
         public ExecutionTree(Tools tools)
         {
             this._tools = tools;
-            this._graph = new BidirectionalGraph<string, TaggedEdge<string, (bool Branch, string AsmCode)>>(true);
+            this._graph = new BidirectionalGraph<string, TaggedEdge<string, (bool branch, string asmCode)>>(true);
             this._states = new Dictionary<string, State>();
         }
 

@@ -24,6 +24,7 @@ namespace AsmDude.QuickInfo
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.IO;
     using System.Reflection;
     using System.Text;
@@ -127,7 +128,7 @@ namespace AsmDude.QuickInfo
             {
                 SnapshotSpan tagSpan = keywordSpan.Value;
                 string keyword = tagSpan.GetText();
-                string keywordUpper = keyword.ToUpper();
+                string keywordUpper = keyword.ToUpper(CultureInfo.InvariantCulture);
 
                 AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Handle: keyword=\"{1}\"; type={2}; file=\"{3}\"", this.ToString(), keyword, tag.Type, AsmDudeToolsStatic.GetFilename(session.TextView.TextBuffer)));
                 applicableToSpan = snapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeInclusive);

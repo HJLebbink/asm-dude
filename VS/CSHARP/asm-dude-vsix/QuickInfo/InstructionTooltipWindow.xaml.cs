@@ -247,7 +247,7 @@ namespace AsmDude.QuickInfo
             this.AsmSimGridExpanderNumeration.SelectionChanged += (sender, i) =>
             {
                 string numerationStr = ((sender as ComboBox).SelectedItem as ComboBoxItem).Content.ToString();
-                NumerationEnum numeration = AsmSourceTools.ParseNumeration(numerationStr);
+                NumerationEnum numeration = AsmSourceTools.ParseNumeration(numerationStr, false);
                 if (numeration == NumerationEnum.UNKNOWN)
                 {
                     AsmDudeToolsStatic.Output_WARNING("SetAsmSim:smSimGridExpanderNumeration.SelectionChanged: unknown numerationStr=" + numerationStr);
@@ -341,7 +341,7 @@ namespace AsmDude.QuickInfo
                 Grid.SetRow(textBox, row);
                 Grid.SetColumn(textBox, column);
 
-                string register_Content = this._asmSimulator.Get_Register_Value_If_Already_Computed(reg, this._lineNumber, isBefore, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration));
+                string register_Content = this._asmSimulator.Get_Register_Value_If_Already_Computed(reg, this._lineNumber, isBefore, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration, false));
                 if (register_Content == null)
                 {
                     textBox.Visibility = Visibility.Collapsed;
@@ -439,7 +439,7 @@ namespace AsmDude.QuickInfo
                 ButtonInfo info = (ButtonInfo)button.Tag;
                 info.Text.Text = (info.Reg == Rn.NOREG)
                     ? info.Flag.ToString() + " = " + this._asmSimulator.Get_Flag_Value_and_Block(info.Flag, this._lineNumber, info.Before)
-                    : info.Reg.ToString() + " = " + this._asmSimulator.Get_Register_Value_and_Block(info.Reg, this._lineNumber, info.Before, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration));
+                    : info.Reg.ToString() + " = " + this._asmSimulator.Get_Register_Value_and_Block(info.Reg, this._lineNumber, info.Before, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration, false));
 
                 info.Text.Visibility = Visibility.Visible;
                 button.Visibility = Visibility.Collapsed;

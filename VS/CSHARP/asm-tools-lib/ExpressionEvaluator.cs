@@ -28,7 +28,7 @@ using System.Linq;
 
 namespace AsmTools
 {
-    public class ExpressionEvaluator
+    public static class ExpressionEvaluator
     {
         /// <summary> Check if the provided string is a constant. Does not evaluate arithmetic in the string </summary>
         public static (bool Valid, ulong Value, int NBits) Parse_Constant(string str, bool isCapitals = false)
@@ -48,7 +48,7 @@ namespace AsmTools
 
             if (!isCapitals)
             {
-                str = str.ToUpper();
+                str = str.ToUpper(CultureInfo.InvariantCulture);
             }
             str = str.Trim();
 

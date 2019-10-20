@@ -66,6 +66,9 @@
     <Compile Include="test_AsmDudeTools.cs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
+      <Version>2.9.3</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.UnitTesting">
       <Version>11.0.50727.1</Version>
     </PackageReference>
@@ -75,6 +78,9 @@
     <PackageReference Include="System.ValueTuple">
       <Version>4.5.0</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".editorconfig" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

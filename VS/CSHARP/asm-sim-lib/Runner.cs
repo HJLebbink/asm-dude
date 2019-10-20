@@ -68,8 +68,8 @@ namespace AsmSim
                 Tools tools = state.Tools;
                 string nextKey = Tools.CreateKey(tools.Rand);
                 string nextKeyBranch = "DUMMY_NOT_USED";
-                (string Label, Mnemonic Mnemonic, string[] Args, string Remark) content = AsmSourceTools.ParseLine(line);
-                using (OpcodeBase opcodeBase = InstantiateOpcode(content.Mnemonic, content.Args, (state.HeadKey, nextKey, nextKeyBranch), tools))
+                (string label, Mnemonic mnemonic, string[] args, string remark) content = AsmSourceTools.ParseLine(line);
+                using (OpcodeBase opcodeBase = InstantiateOpcode(content.mnemonic, content.args, (state.HeadKey, nextKey, nextKeyBranch), tools))
                 {
                     if (opcodeBase == null)
                     {
@@ -117,8 +117,8 @@ namespace AsmSim
             try
             {
                 string prevKey = Tools.CreateKey(state.Tools.Rand);
-                (string Label, Mnemonic Mnemonic, string[] Args, string Remark) content = AsmSourceTools.ParseLine(line);
-                using (OpcodeBase opcodeBase = InstantiateOpcode(content.Mnemonic, content.Args, (prevKey, state.TailKey, state.TailKey), state.Tools))
+                (string label, Mnemonic mnemonic, string[] args, string remark) content = AsmSourceTools.ParseLine(line);
+                using (OpcodeBase opcodeBase = InstantiateOpcode(content.mnemonic, content.args, (prevKey, state.TailKey, state.TailKey), state.Tools))
                 {
                     if (opcodeBase == null)
                     {
@@ -158,7 +158,7 @@ namespace AsmSim
         }
 
         /// <summary>Perform one step forward and return states for both branches</summary>
-        public static (State Regular, State Branch) Step_Forward(string line, State state)
+        public static (State regular, State branch) Step_Forward(string line, State state)
         {
             Contract.Requires(state != null);
 
@@ -166,17 +166,17 @@ namespace AsmSim
             {
                 string nextKey = Tools.CreateKey(state.Tools.Rand);
                 string nextKeyBranch = nextKey + "!BRANCH";
-                (string Label, Mnemonic Mnemonic, string[] Args, string Remark) content = AsmSourceTools.ParseLine(line);
-                using (OpcodeBase opcodeBase = InstantiateOpcode(content.Mnemonic, content.Args, (state.HeadKey, nextKey, nextKeyBranch), state.Tools))
+                (string label, Mnemonic mnemonic, string[] args, string remark) content = AsmSourceTools.ParseLine(line);
+                using (OpcodeBase opcodeBase = InstantiateOpcode(content.mnemonic, content.args, (state.HeadKey, nextKey, nextKeyBranch), state.Tools))
                 {
                     if (opcodeBase == null)
                     {
-                        return (Regular: null, Branch: null);
+                        return (regular: null, branch: null);
                     }
 
                     if (opcodeBase.IsHalted)
                     {
-                        return (Regular: null, Branch: null);
+                        return (regular: null, branch: null);
                     }
 
                     opcodeBase.Execute();
@@ -194,36 +194,36 @@ namespace AsmSim
                         stateBranch.Update_Forward(opcodeBase.Updates.branch);
                         opcodeBase.Updates.branch.Dispose();
                     }
-                    return (Regular: stateRegular, Branch: stateBranch);
+                    return (regular: stateRegular, branch: stateBranch);
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine("WARNING: Runner:Step_Forward: Exception at line: " + line + "; e=" + e.Message);
-                return (null, null);
+                return (regular: null, branch: null);
             }
         }
 
-        public static (StateUpdate Regular, StateUpdate Branch) Execute(
+        public static (StateUpdate regular, StateUpdate branch) Execute(
             StaticFlow sFlow,
             int lineNumber,
-            (string PrevKey, string NextKey, string NextKeyBranch) keys,
+            (string prevKey, string nextKey, string nextKeyBranch) keys,
             Tools tools)
         {
             Contract.Requires(sFlow != null);
 
             try
             {
-                (Mnemonic Mnemonic, string[] Args) content = sFlow.Get_Line(lineNumber);
-                using (OpcodeBase opcodeBase = InstantiateOpcode(content.Mnemonic, content.Args, keys, tools))
+                (Mnemonic mnemonic, string[] args) content = sFlow.Get_Line(lineNumber);
+                using (OpcodeBase opcodeBase = InstantiateOpcode(content.mnemonic, content.args, keys, tools))
                 {
                     if ((opcodeBase == null) || opcodeBase.IsHalted)
                     {
-                        StateUpdate resetState = new StateUpdate(keys.PrevKey, keys.NextKey, tools)
+                        StateUpdate resetState = new StateUpdate(keys.prevKey, keys.nextKey, tools)
                         {
                             Reset = true,
                         };
-                        return (Regular: resetState, Branch: null);
+                        return (regular: resetState, branch: null);
                     }
                     opcodeBase.Execute();
                     return opcodeBase.Updates;
@@ -232,7 +232,7 @@ namespace AsmSim
             catch (Exception e)
             {
                 Console.WriteLine("WARNING: Runner:Step_Forward: Exception e=" + e.Message);
-                return (null, null);
+                return (regular: null, branch: null);
             }
         }
 

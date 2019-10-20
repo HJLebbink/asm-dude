@@ -1155,7 +1155,7 @@ namespace AsmDude.OptionsPage
 
         public NumerationEnum AsmSim_Show_Register_In_Code_Completion_Numeration
         {
-            get { return AsmSourceTools.ParseNumeration(this.AsmSim_Show_Register_In_Code_Completion_Numeration_UI.Text); }
+            get { return AsmSourceTools.ParseNumeration(this.AsmSim_Show_Register_In_Code_Completion_Numeration_UI.Text, false); }
             set { this.AsmSim_Show_Register_In_Code_Completion_Numeration_UI.Text = value.ToString(); }
         }
 
@@ -1167,7 +1167,7 @@ namespace AsmDude.OptionsPage
 
         public NumerationEnum AsmSim_Show_Register_In_Register_Tooltip_Numeration
         {
-            get { return AsmSourceTools.ParseNumeration(this.AsmSim_Show_Register_In_Register_Tooltip_Numeration_UI.Text); }
+            get { return AsmSourceTools.ParseNumeration(this.AsmSim_Show_Register_In_Register_Tooltip_Numeration_UI.Text, false); }
             set { this.AsmSim_Show_Register_In_Register_Tooltip_Numeration_UI.Text = value.ToString(); }
         }
 
@@ -1179,7 +1179,7 @@ namespace AsmDude.OptionsPage
 
         public NumerationEnum AsmSim_Show_Register_In_Instruction_Tooltip_Numeration
         {
-            get { return AsmSourceTools.ParseNumeration(this.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration_UI.Text); }
+            get { return AsmSourceTools.ParseNumeration(this.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration_UI.Text, false); }
             set { this.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration_UI.Text = value.ToString(); }
         }
 

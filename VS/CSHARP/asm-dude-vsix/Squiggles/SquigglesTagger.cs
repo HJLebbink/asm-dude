@@ -24,6 +24,7 @@ namespace AsmDude.Squiggles
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.IO;
     using System.Text;
     using System.Windows;
@@ -542,7 +543,8 @@ namespace AsmDude.Squiggles
             {
                 try
                 {
-                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().ToUpper();
+                    //TODO why the upper here?
+                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().ToUpper(CultureInfo.InvariantCulture);
                     ErrorTask errorTask = new ErrorTask()
                     {
                         SubcategoryIndex = (int)AsmMessageEnum.SYNTAX_ERROR,
@@ -568,7 +570,8 @@ namespace AsmDude.Squiggles
             {
                 try
                 {
-                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().ToUpper();
+                    //TODO why the upper here?
+                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().ToUpper(CultureInfo.InvariantCulture);
                     ErrorTask errorTask = new ErrorTask()
                     {
                         SubcategoryIndex = (int)AsmMessageEnum.USAGE_OF_UNDEFINED,
@@ -594,7 +597,8 @@ namespace AsmDude.Squiggles
             {
                 try
                 {
-                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().ToUpper();
+                    //TODO why the upper here?
+                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().ToUpper(CultureInfo.InvariantCulture);
                     ErrorTask errorTask = new ErrorTask()
                     {
                         SubcategoryIndex = (int)AsmMessageEnum.REDUNDANT,
@@ -620,7 +624,8 @@ namespace AsmDude.Squiggles
             {
                 try
                 {
-                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().ToUpper();
+                    //TODO why the upper here?
+                    string lineContent = this._sourceBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText().ToUpper(CultureInfo.InvariantCulture);
                     ErrorTask errorTask = new ErrorTask()
                     {
                         SubcategoryIndex = (int)AsmMessageEnum.UNREACHABLE,

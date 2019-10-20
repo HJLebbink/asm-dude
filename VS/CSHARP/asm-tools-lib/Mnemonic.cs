@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 
 namespace AsmTools
 {
@@ -2496,17 +2497,17 @@ namespace AsmTools
             }
         }
 
-        private static string ToCapitals(string str, bool strIsCapitals)
+        public static string ToCapitals(string str, bool strIsCapitals)
         {
             Contract.Requires(str != null);
 
 #if DEBUG
-            if (strIsCapitals && (str != str.ToUpper()))
+            if (strIsCapitals && (str != str.ToUpper(CultureInfo.InvariantCulture)))
             {
                 throw new Exception();
             }
 #endif
-            return (strIsCapitals) ? str : str.ToUpper();
+            return (strIsCapitals) ? str : str.ToUpper(CultureInfo.InvariantCulture);
         }
 
         private static AttType ParseAttType(char c)
@@ -2635,7 +2636,7 @@ namespace AsmTools
             return (Mnemonic.NONE, AttType.NONE);
         }
 
-        public static Mnemonic ParseMnemonic(string str, bool strIsCapitals = false)
+        public static Mnemonic ParseMnemonic(string str, bool strIsCapitals)
         {
             return (_mnemonic_cache.TryGetValue(ToCapitals(str, strIsCapitals), out Mnemonic value)) ? value : Mnemonic.NONE;
         }

@@ -40,37 +40,26 @@ namespace AsmTools
         {
             Contract.Requires(token != null);
 
-#if DEBUG
-            if (isCapitals && (token != token.ToUpper()))
-            {
-                throw new Exception();
-            }
-#endif
-
-            if (!isCapitals)
-            {
-                token = token.ToUpper();
-            }
-
+            token = AsmSourceTools.ToCapitals(token, isCapitals);
             this._str = token;
 
             //TODO: properly handle optional elements {K}{Z} {AES}{ER}
             string token2 = token.Contains("{")
                 ? token.
-                    Replace("{K0}", "").
-                    Replace("{K1}", "").
-                    Replace("{K2}", "").
-                    Replace("{K3}", "").
-                    Replace("{K4}", "").
-                    Replace("{K5}", "").
-                    Replace("{K6}", "").
-                    Replace("{K7}", "").
-                    Replace("{Z}", "").
-                    Replace("{ER}", "").
-                    Replace("{SAE}", "").
-                    Replace("{1TO4}", "").
-                    Replace("{1TO8}", "").
-                    Replace("{1TO16}", "")
+                    Replace("{K0}", string.Empty).
+                    Replace("{K1}", string.Empty).
+                    Replace("{K2}", string.Empty).
+                    Replace("{K3}", string.Empty).
+                    Replace("{K4}", string.Empty).
+                    Replace("{K5}", string.Empty).
+                    Replace("{K6}", string.Empty).
+                    Replace("{K7}", string.Empty).
+                    Replace("{Z}", string.Empty).
+                    Replace("{ER}", string.Empty).
+                    Replace("{SAE}", string.Empty).
+                    Replace("{1TO4}", string.Empty).
+                    Replace("{1TO8}", string.Empty).
+                    Replace("{1TO16}", string.Empty)
                 : token2 = token;
 
             (bool Valid, Rn Reg, int NBits) t0 = RegisterTools.ToRn(token2, true);

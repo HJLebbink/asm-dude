@@ -245,10 +245,12 @@ namespace AsmTools
     public static class ArchTools
     {
 
-        public static Arch ParseArch(string str, bool warn = true)
+        public static Arch ParseArch(string str, bool strIsCapitals, bool warn)
         {
             Contract.Requires(str != null);
-            switch (str.Replace("_", "").ToUpper())
+
+            string str2 = AsmSourceTools.ToCapitals(str, strIsCapitals).Replace("_", string.Empty);
+            switch (str2)
             {
                 case "NONE": return Arch.ARCH_NONE;
 
@@ -406,7 +408,6 @@ namespace AsmTools
                 case Arch.ARCH_AVX512_BF16: return "AVX512-BF16 - Brain Float 16 extension (Bfloat16)";
                 case Arch.ARCH_AVX512_VP2INTERSECT: return "AVX512-VP2INTERSECT - ";
 
-
                 case Arch.ARCH_ADX: return "Multi-Precision Add-Carry Instruction Extension";
                 case Arch.ARCH_AES: return "Advanced Encryption Standard Extension";
                 case Arch.ARCH_VMX: return "Virtual Machine Extension";
@@ -463,12 +464,12 @@ namespace AsmTools
             }
             if (empty)
             {
-                return "";
+                return string.Empty;
             }
             else
             {
                 sb.Length--; // get rid of the last comma;
-                sb.Append("]");
+                sb.Append(']');
                 return " [" + sb.ToString();
             }
         }

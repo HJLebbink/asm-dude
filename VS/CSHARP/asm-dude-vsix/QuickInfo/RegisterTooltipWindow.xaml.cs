@@ -98,7 +98,7 @@ namespace AsmDude.QuickInfo
             this.AsmSimGridExpanderNumeration.SelectionChanged += (sender, i) =>
             {
                 string numerationStr = ((sender as ComboBox).SelectedItem as ComboBoxItem).Content.ToString();
-                NumerationEnum numeration = AsmSourceTools.ParseNumeration(numerationStr);
+                NumerationEnum numeration = AsmSourceTools.ParseNumeration(numerationStr, false);
                 if (numeration == NumerationEnum.UNKNOWN)
                 {
                     AsmDudeToolsStatic.Output_WARNING("SetAsmSim:smSimGridExpanderNumeration.SelectionChanged: unknown numerationStr=" + numerationStr);
@@ -176,7 +176,7 @@ namespace AsmDude.QuickInfo
                 Grid.SetRow(textBox, row);
                 Grid.SetColumn(textBox, 1);
 
-                string register_Content = this._asmSimulator.Get_Register_Value_If_Already_Computed(reg, this._lineNumber, isBefore, AsmSourceTools.ParseNumeration(this.AsmSimGridExpanderNumeration.Text));
+                string register_Content = this._asmSimulator.Get_Register_Value_If_Already_Computed(reg, this._lineNumber, isBefore, AsmSourceTools.ParseNumeration(this.AsmSimGridExpanderNumeration.Text, false));
                 if (register_Content == null)
                 {
                     textBox.Visibility = Visibility.Collapsed;
@@ -223,7 +223,7 @@ namespace AsmDude.QuickInfo
 
                 info.Text.Text = (info.Reg == Rn.NOREG)
                     ? this._asmSimulator.Get_Flag_Value_and_Block(info.Flag, this._lineNumber, info.Before)
-                    : this._asmSimulator.Get_Register_Value_and_Block(info.Reg, this._lineNumber, info.Before, AsmSourceTools.ParseNumeration(this.AsmSimGridExpanderNumeration.Text));
+                    : this._asmSimulator.Get_Register_Value_and_Block(info.Reg, this._lineNumber, info.Before, AsmSourceTools.ParseNumeration(this.AsmSimGridExpanderNumeration.Text, false));
 
                 info.Text.Visibility = Visibility.Visible;
                 button.Visibility = Visibility.Collapsed;

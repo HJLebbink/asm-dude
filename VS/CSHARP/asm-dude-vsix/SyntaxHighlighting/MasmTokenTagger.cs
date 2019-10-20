@@ -24,6 +24,7 @@ namespace AsmDude
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using AsmDude.SyntaxHighlighting;
     using AsmDude.Tools;
     using AsmTools;
@@ -92,7 +93,7 @@ namespace AsmDude
             {
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
 
-                string line_upcase = containingLine.GetText().ToUpper();
+                string line_upcase = containingLine.GetText().ToUpper(CultureInfo.InvariantCulture);
                 List<(int beginPos, int length, bool isLabel)> pos = new List<(int beginPos, int length, bool isLabel)>(AsmSourceTools.SplitIntoKeywordPos(line_upcase));
 
                 int offset = containingLine.Start.Position;
@@ -343,9 +344,9 @@ namespace AsmDude
             {
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
 
-                string line = containingLine.GetText().ToUpper();
+                string line_upcase = containingLine.GetText().ToUpper(CultureInfo.InvariantCulture);
                 int offset = containingLine.Start.Position;
-                IEnumerator<(int beginPos, int length, bool isLabel)> enumerator = AsmSourceTools.SplitIntoKeywordPos(line).GetEnumerator();
+                IEnumerator<(int beginPos, int length, bool isLabel)> enumerator = AsmSourceTools.SplitIntoKeywordPos(line_upcase).GetEnumerator();
 
                 bool needToAdvance = false;
                 bool hasNext = enumerator.MoveNext();
@@ -359,7 +360,7 @@ namespace AsmDude
 
                 while (hasNext)
                 {
-                    string asmToken = AsmSourceTools.Keyword(current, line);
+                    string asmToken = AsmSourceTools.Keyword(current, line_upcase);
                     // keyword starts with a remark char
                     if (AsmSourceTools.IsRemarkChar(asmToken[0]))
                     {
@@ -398,7 +399,7 @@ namespace AsmDude
                                     }
                                     needToAdvance = true;
                                 }
-                                string asmToken2 = AsmSourceTools.Keyword(current, line);
+                                string asmToken2 = AsmSourceTools.Keyword(current, line_upcase);
                                 switch (asmToken2)
                                 {
                                     case "$":
@@ -424,7 +425,7 @@ namespace AsmDude
                                                 }
                                                 needToAdvance = true;
                                             }
-                                            switch (AsmSourceTools.Keyword(current, line))
+                                            switch (AsmSourceTools.Keyword(current, line_upcase))
                                             {
                                                 case "$":
                                                 case "@B":
@@ -475,7 +476,7 @@ namespace AsmDude
                                 else
                                 {
                                     // do one word look back; see whether we can understand the current unknown word
-                                    string previousKeyword = AsmSourceTools.Keyword(prev, line);
+                                    string previousKeyword = AsmSourceTools.Keyword(prev, line_upcase);
                                     switch (previousKeyword)
                                     {
                                         case "ALIAS":
@@ -498,7 +499,7 @@ namespace AsmDude
                                         prev = current;
                                         current = enumerator.Current;
 
-                                        string nextKeyword = AsmSourceTools.Keyword(current, line);
+                                        string nextKeyword = AsmSourceTools.Keyword(current, line_upcase);
                                         switch (nextKeyword)
                                         {
                                             case "PROC":
@@ -596,7 +597,7 @@ namespace AsmDude
                 IList<(int, int, bool)> positions = new List<(int, int, bool)>(AsmSourceTools.SplitIntoKeywordPos(line));
                 if (positions.Count > 1)
                 {
-                    string keywordStr = AsmSourceTools.Keyword(positions[1], line).ToUpper();
+                    string keywordStr = AsmSourceTools.Keyword(positions[1], line).ToUpper(CultureInfo.InvariantCulture);
                     switch (keywordStr)
                     {
                         case "PROC": return AsmSourceTools.Keyword(positions[0], line);

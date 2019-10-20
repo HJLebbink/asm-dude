@@ -99,7 +99,7 @@ namespace AsmDude.Tools
             foreach (KeyValuePair<Mnemonic, IList<AsmSignatureElement>> element in this._data)
             {
                 Mnemonic mnemonic = element.Key;
-                string s1 = mnemonic.ToString().ToUpper();
+                string s1 = mnemonic.ToString();
                 string s6 = this._htmlRef[mnemonic];
 
                 foreach (AsmSignatureElement sig in element.Value)
@@ -154,7 +154,7 @@ namespace AsmDude.Tools
                         if (columns.Length == 4)
                         { // general description
                             #region
-                            Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(columns[1]);
+                            Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(columns[1], false);
                             if (mnemonic == Mnemonic.NONE)
                             {
                                 // ignore the unknown mnemonic
@@ -186,7 +186,7 @@ namespace AsmDude.Tools
                         else if ((columns.Length == 5) || (columns.Length == 6))
                         { // signature description, ignore an old sixth column
                             #region
-                            Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(columns[0]);
+                            Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(columns[0], false);
                             if (mnemonic == Mnemonic.NONE)
                             {
                                 AsmDudeToolsStatic.Output_WARNING("MnemonicStore:loadRegularData: unknown mnemonic in line: " + line);
@@ -261,7 +261,7 @@ namespace AsmDude.Tools
                         if (columns.Length == 4)
                         { // general description
                             #region
-                            Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(columns[1]);
+                            Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(columns[1], false);
                             if (mnemonic == Mnemonic.NONE)
                             {
                                 AsmDudeToolsStatic.Output_WARNING("MnemonicStore:loadHandcraftedData: unknown mnemonic in line" + line);
@@ -285,7 +285,7 @@ namespace AsmDude.Tools
                         else if ((columns.Length == 5) || (columns.Length == 6))
                         { // signature description, ignore an old sixth column
                             #region
-                            Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(columns[0]);
+                            Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(columns[0], false);
                             if (mnemonic == Mnemonic.NONE)
                             {
                                 AsmDudeToolsStatic.Output_WARNING("MnemonicStore:loadHandcraftedData: unknown mnemonic in line" + line);

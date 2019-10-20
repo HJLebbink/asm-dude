@@ -94,11 +94,11 @@ namespace AsmTools
             return (intVal != 0) && ((intVal & (intVal - 1)) == 0);
         }
 
-        public static Flags Parse(string str)
+        public static Flags Parse(string str, bool strIsCapitals)
         {
             Contract.Requires(str != null);
 
-            switch (str.ToUpper())
+            switch (AsmSourceTools.ToCapitals(str, strIsCapitals))
             {
                 case "CF": return Flags.CF;
                 case "PF": return Flags.PF;

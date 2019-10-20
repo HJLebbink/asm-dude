@@ -43,10 +43,10 @@ namespace AsmSim
             {
                 displayGraph.AddVertex(vertex);
             }
-            foreach (TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)> edge in dFlow.Graph.Edges)
+            foreach (TaggedEdge<string, (bool branch, StateUpdate stateUpdate)> edge in dFlow.Graph.Edges)
             {
                 int lineNumber = dFlow.LineNumber(edge.Source);
-                string displayInfo = sFlow.Get_Line_Str(lineNumber) + "\n" + edge.Tag.StateUpdate.ToString2();
+                string displayInfo = sFlow.Get_Line_Str(lineNumber) + "\n" + edge.Tag.stateUpdate.ToString2();
                 displayGraph.AddEdge(new TaggedEdge<string, string>(edge.Source, edge.Target, displayInfo));
             }
             Visualize(displayGraph, filename);
@@ -101,7 +101,7 @@ namespace AsmSim
             e.VertexFormatter.Label = e.Vertex.ToString();
         }
 
-        public sealed class FileDotEngine : IDotEngine
+        private sealed class FileDotEngine : IDotEngine
         {
             public string Run(GraphvizImageType imageType, string dot, string outputFileName)
             {

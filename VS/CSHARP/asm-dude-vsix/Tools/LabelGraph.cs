@@ -26,6 +26,7 @@ namespace AsmDude.Tools
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.IO;
     using Amib.Threading;
     using AsmDude.SyntaxHighlighting;
@@ -552,9 +553,8 @@ namespace AsmDude.Tools
                         }
                     case AsmTokenType.Directive:
                         {
-                            string directiveStr = Get_Text(buffer, asmTokenTag).ToUpper();
-
-                            switch (directiveStr)
+                            string directive_upper = Get_Text(buffer, asmTokenTag).ToUpper(CultureInfo.InvariantCulture);
+                            switch (directive_upper)
                             {
                                 case "%INCLUDE":
                                 case "INCLUDE":

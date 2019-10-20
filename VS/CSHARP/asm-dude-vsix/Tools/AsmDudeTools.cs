@@ -149,7 +149,7 @@ namespace AsmDude
                         string instruction = e.mnemonic.ToString() + " " + e.Operands_Str;
 
                         //AsmDudeToolsStatic.Output_INFO("Intel " + instruction + ": arch" + e.archStr);
-                        if ((e.Arch_Str == null) || (e.Arch_Str.Length == 0))
+                        if (string.IsNullOrEmpty(e.Arch_Str))
                         {
                             if (signaturesNasm.ContainsKey(instruction))
                             {
@@ -222,7 +222,7 @@ namespace AsmDude
             {
                 foreach (Mnemonic mnemonic in Enum.GetValues(typeof(Mnemonic)))
                 {
-                    string keyword = mnemonic.ToString().ToUpper();
+                    string keyword = mnemonic.ToString();
                     if (this._description.ContainsKey(keyword))
                     {
                         string description = this._description[keyword];
@@ -336,7 +336,8 @@ namespace AsmDude
         public AsmTokenType Get_Token_Type_Att(string keyword)
         {
             Contract.Requires(keyword != null);
-            Contract.Requires(keyword == keyword.ToUpper());
+            Contract.Requires(keyword == keyword.ToUpper(CultureInfo.InvariantCulture));
+
             int length = keyword.Length;
             Contract.Requires(length > 0);
 
@@ -379,7 +380,7 @@ namespace AsmDude
         public AsmTokenType Get_Token_Type_Intel(string keyword)
         {
             Contract.Requires(keyword != null);
-            Contract.Requires(keyword == keyword.ToUpper());
+            Contract.Requires(keyword == keyword.ToUpper(CultureInfo.InvariantCulture));
 
             Mnemonic mnemonic = AsmSourceTools.ParseMnemonic(keyword, true);
             if (mnemonic != Mnemonic.NONE)
@@ -401,7 +402,8 @@ namespace AsmDude
         public AssemblerEnum Get_Assembler(string keyword)
         {
             Contract.Requires(keyword != null);
-            Contract.Requires(keyword == keyword.ToUpper());
+            Contract.Requires(keyword == keyword.ToUpper(CultureInfo.InvariantCulture));
+
             return this._assembler.TryGetValue(keyword, out AssemblerEnum value) ? value : AssemblerEnum.UNKNOWN;
         }
 
@@ -419,7 +421,8 @@ namespace AsmDude
         public string Get_Description(string keyword)
         {
             Contract.Requires(keyword != null);
-            Contract.Requires(keyword == keyword.ToUpper());
+            Contract.Requires(keyword == keyword.ToUpper(CultureInfo.InvariantCulture));
+
             return this._description.TryGetValue(keyword, out string description) ? description : string.Empty;
         }
 
@@ -429,7 +432,8 @@ namespace AsmDude
         public Arch Get_Architecture(string keyword)
         {
             Contract.Requires(keyword != null);
-            Contract.Requires(keyword == keyword.ToUpper());
+            Contract.Requires(keyword == keyword.ToUpper(CultureInfo.InvariantCulture));
+
             return this._arch.TryGetValue(keyword, out Arch value) ? value : Arch.ARCH_NONE;
         }
 
@@ -460,7 +464,7 @@ namespace AsmDude
                 }
                 else
                 {
-                    string name = nameAttribute.Value.ToUpper();
+                    string name = nameAttribute.Value.ToUpper(CultureInfo.InvariantCulture);
                     this._type[name] = AsmTokenType.Misc;
                     this._arch[name] = Retrieve_Arch(node);
                     this._description[name] = Retrieve_Description(node);
@@ -476,7 +480,7 @@ namespace AsmDude
                 }
                 else
                 {
-                    string name = nameAttribute.Value.ToUpper();
+                    string name = nameAttribute.Value.ToUpper(CultureInfo.InvariantCulture);
                     this._type[name] = AsmTokenType.Directive;
                     this._arch[name] = Retrieve_Arch(node);
                     this._assembler[name] = Retrieve_Assembler(node);
@@ -492,7 +496,7 @@ namespace AsmDude
                 }
                 else
                 {
-                    string name = nameAttribute.Value.ToUpper();
+                    string name = nameAttribute.Value.ToUpper(CultureInfo.InvariantCulture);
                     //this._type[name] = AsmTokenType.Register;
                     this._arch[name] = Retrieve_Arch(node);
                     this._description[name] = Retrieve_Description(node);
@@ -507,7 +511,7 @@ namespace AsmDude
                 }
                 else
                 {
-                    string name = nameAttribute.Value.ToUpper();
+                    string name = nameAttribute.Value.ToUpper(CultureInfo.InvariantCulture);
                     this._type[name] = AsmTokenType.UserDefined1;
                     this._description[name] = Retrieve_Description(node);
                 }
@@ -521,7 +525,7 @@ namespace AsmDude
                 }
                 else
                 {
-                    string name = nameAttribute.Value.ToUpper();
+                    string name = nameAttribute.Value.ToUpper(CultureInfo.InvariantCulture);
                     this._type[name] = AsmTokenType.UserDefined2;
                     this._description[name] = Retrieve_Description(node);
                 }
@@ -535,7 +539,7 @@ namespace AsmDude
                 }
                 else
                 {
-                    string name = nameAttribute.Value.ToUpper();
+                    string name = nameAttribute.Value.ToUpper(CultureInfo.InvariantCulture);
                     this._type[name] = AsmTokenType.UserDefined3;
                     this._description[name] = Retrieve_Description(node);
                 }
@@ -547,7 +551,7 @@ namespace AsmDude
             try
             {
                 XmlAttribute archAttribute = node.Attributes["arch"];
-                return (archAttribute == null) ? Arch.ARCH_NONE : ArchTools.ParseArch(archAttribute.Value.ToUpper());
+                return (archAttribute == null) ? Arch.ARCH_NONE : ArchTools.ParseArch(archAttribute.Value, false, true);
             }
             catch (Exception)
             {
@@ -560,7 +564,7 @@ namespace AsmDude
             try
             {
                 XmlAttribute archAttribute = node.Attributes["tool"];
-                return (archAttribute == null) ? AssemblerEnum.UNKNOWN : AsmSourceTools.ParseAssembler(archAttribute.Value);
+                return (archAttribute == null) ? AssemblerEnum.UNKNOWN : AsmSourceTools.ParseAssembler(archAttribute.Value, false);
             }
             catch (Exception)
             {

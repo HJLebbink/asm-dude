@@ -22,7 +22,7 @@
 
 namespace AsmTools
 {
-    public enum NumerationEnum : byte
+    public enum NumerationEnum
     {
         UNKNOWN,
         HEX,
@@ -33,13 +33,13 @@ namespace AsmTools
 
     public static partial class AsmSourceTools
     {
-        public static NumerationEnum ParseNumeration(string str)
+        public static NumerationEnum ParseNumeration(string str, bool strIsCapitals)
         {
-            if ((str == null) || (str.Length == 0))
+            if (string.IsNullOrEmpty(str))
             {
                 return NumerationEnum.UNKNOWN;
             }
-            switch (str.ToUpper().Trim())
+            switch (ToCapitals(str, strIsCapitals).Trim())
             {
                 case "HEX": return NumerationEnum.HEX;
                 case "BIN": return NumerationEnum.BIN;

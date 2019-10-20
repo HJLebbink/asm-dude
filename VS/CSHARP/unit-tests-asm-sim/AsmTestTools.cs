@@ -8,7 +8,7 @@ using System.Numerics;
 
 namespace unit_tests_asm_z3
 {
-    public class AsmTestTools
+    public static class AsmTestTools
     {
 #if DEBUG
         public const bool LOG_TO_DISPLAY = true;
@@ -178,11 +178,13 @@ namespace unit_tests_asm_z3
         #region AreEqual
         public static void AreEqual(State state1, State state2)
         {
+            Contract.Requires(state1 != null);
+            Contract.Requires(state2 != null);
             Assert.IsNotNull(state1);
             Assert.IsNotNull(state2);
 
-            string state1Str = state1.ToStringRegs("") + state1.ToStringFlags("");
-            string state2Str = state2.ToStringRegs("") + state2.ToStringFlags("");
+            string state1Str = state1.ToStringRegs(string.Empty) + state1.ToStringFlags(string.Empty);
+            string state2Str = state2.ToStringRegs(string.Empty) + state2.ToStringFlags(string.Empty);
             if (state1Str.Equals(state2Str))
             {
                 // ok
@@ -207,6 +209,7 @@ namespace unit_tests_asm_z3
         }
         public static void AreEqual(Flags flags, Tv expected, State state)
         {
+            Contract.Requires(state != null);
             foreach (Flags flag in FlagTools.GetFlags(flags))
             {
                 AreEqual(expected, state.GetTv(flag));
@@ -232,6 +235,9 @@ namespace unit_tests_asm_z3
         }
         public static void AreEqual(Rn name, Tv[] expectedTvArray, State state)
         {
+            Contract.Requires(state != null);
+            Contract.Requires(expectedTvArray != null);
+
             Assert.IsNotNull(state);
 
             int nBits = RegisterTools.NBits(name);
@@ -260,6 +266,8 @@ namespace unit_tests_asm_z3
         /// <param name="state"></param>
         public static void AreEqual(Rn reg1, Rn reg2, State state)
         {
+            Contract.Requires(state != null);
+
             using (BoolExpr eq = state.Ctx.MkEq(state.Create(reg1), state.Create(reg2)))
             {
                 Tv tv = ToolsZ3.GetTv(eq, state.Solver, state.Ctx);
@@ -287,6 +295,8 @@ namespace unit_tests_asm_z3
         /// <param name="state"></param>
         public static void AreUnrelated(Rn reg1, Rn reg2, State state)
         {
+            Contract.Requires(state != null);
+
             using (BoolExpr eq = state.Ctx.MkEq(state.Create(reg1), state.Create(reg2)))
             {
                 Tv tv = ToolsZ3.GetTv(eq, state.Solver, state.Ctx);
@@ -311,6 +321,8 @@ namespace unit_tests_asm_z3
         #region AreEqual Expr
         public static void AreEqual(BitVecExpr expr, ulong expected, State state)
         {
+            Contract.Requires(expr != null);
+
             Tv[] expectedTvArray = ToolsZ3.GetTvArray(expected, (int)expr.SortSize);
             Assert.IsNotNull(expectedTvArray);
             AreEqual(expr, expectedTvArray, state);

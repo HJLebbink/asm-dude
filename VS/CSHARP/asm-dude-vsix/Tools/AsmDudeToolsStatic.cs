@@ -164,37 +164,37 @@ namespace AsmDude.Tools
 
             for (int i = 0; i < Math.Min(snapshot.LineCount, nLinesMax); ++i)
             {
-                string line_capitals = snapshot.GetLineFromLineNumber(i).GetText().ToUpper();
-                AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Guess_Intel_Syntax {1}:\"{2}\"", "AsmDudeToolsStatic", i, line_capitals));
+                string line_upcase = snapshot.GetLineFromLineNumber(i).GetText().ToUpper(CultureInfo.InvariantCulture);
+                AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Guess_Intel_Syntax {1}:\"{2}\"", "AsmDudeToolsStatic", i, line_upcase));
 
-                List<string> keywords = AsmSourceTools.SplitIntoKeywordsList(line_capitals);
+                List<string> keywords_upcase = AsmSourceTools.SplitIntoKeywordsList(line_upcase);
 
-                if (contains_register_att(keywords))
+                if (contains_register_att(keywords_upcase))
                 {
                     registers_i++;
                 }
 
-                if (contains_register_intel(keywords))
+                if (contains_register_intel(keywords_upcase))
                 {
                     registers_i--;
                 }
 
-                if (contains_constant_att(keywords))
+                if (contains_constant_att(keywords_upcase))
                 {
                     constants_i++;
                 }
 
-                if (contains_constant_intel(keywords))
+                if (contains_constant_intel(keywords_upcase))
                 {
                     constants_i--;
                 }
 
-                if (contains_mnemonic_att(keywords))
+                if (contains_mnemonic_att(keywords_upcase))
                 {
                     mnemonics_i++;
                 }
 
-                if (contains_mnemonic_intel(keywords))
+                if (contains_mnemonic_intel(keywords_upcase))
                 {
                     mnemonics_i--;
                 }
@@ -220,14 +220,14 @@ namespace AsmDude.Tools
 
             for (int i = 0; i < Math.Min(snapshot.LineCount, nLinesMax); ++i)
             {
-                string line_capitals = snapshot.GetLineFromLineNumber(i).GetText().ToUpper();
+                string line_upcase = snapshot.GetLineFromLineNumber(i).GetText().ToUpper(CultureInfo.InvariantCulture);
                 //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Guess_Masm_Syntax {1}:\"{2}\"", "AsmDudeToolsStatic", i, line_capitals));
 
-                List<string> keywords = AsmSourceTools.SplitIntoKeywordsList(line_capitals);
+                List<string> keywords_upcase = AsmSourceTools.SplitIntoKeywordsList(line_upcase);
 
-                foreach (string word in keywords)
+                foreach (string keyword_upcase in keywords_upcase)
                 {
-                    switch (word)
+                    switch (keyword_upcase)
                     {
                         case "PTR":
                         case "@B":

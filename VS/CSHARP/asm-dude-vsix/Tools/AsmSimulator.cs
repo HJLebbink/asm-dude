@@ -25,6 +25,7 @@ namespace AsmDude.Tools
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.Linq;
     using System.Text;
     using Amib.Threading;
@@ -265,24 +266,24 @@ namespace AsmDude.Tools
                 bool changed;
                 lock (this._resetLock)
                 {
-                    string programStr = this._buffer.CurrentSnapshot.GetText().ToUpper();
-                    string[] lines = programStr.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+                    string program_upcase = this._buffer.CurrentSnapshot.GetText().ToUpper(CultureInfo.InvariantCulture);
+                    string[] lines_upcase = program_upcase.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
 
                     #region Restrict input to max number of lines
-                    if (lines.Length > MAX_LINES)
+                    if (lines_upcase.Length > MAX_LINES)
                     {
-                        Array.Resize(ref lines, MAX_LINES);
+                        Array.Resize(ref lines_upcase, MAX_LINES);
                     }
                     #endregion
 
                     StringBuilder sb = new StringBuilder();
-                    string pragmaKeyword = Settings.Default.AsmSim_Pragma_Assume.ToUpper();
+                    string pragmaKeyword = Settings.Default.AsmSim_Pragma_Assume.ToUpper(CultureInfo.InvariantCulture);
                     int pragmaKeywordLength = pragmaKeyword.Length;
 
-                    for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
+                    for (int lineNumber = 0; lineNumber < lines_upcase.Length; ++lineNumber)
                     {
                         #region Handle Pragma Assume
-                        string line = lines[lineNumber];
+                        string line = lines_upcase[lineNumber];
                         int startPos = line.IndexOf(pragmaKeyword);
                         if (startPos != -1)
                         {
@@ -597,7 +598,7 @@ namespace AsmDude.Tools
                                 }
                             }
                         }
-                        mnemonic = opcodeBase.Mnemonic;
+                        mnemonic = opcodeBase._mnemonic;
                         // cleanup
                         opcodeBase.Updates.regular?.Dispose();
                         opcodeBase.Updates.branch?.Dispose();

@@ -91,7 +91,7 @@ namespace AsmDude
             {
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
 
-                string line_upcase = containingLine.GetText().ToUpper();
+                string line_upcase = containingLine.GetText().ToUpper(CultureInfo.InvariantCulture);
                 List<(int beginPos, int length, bool isLabel)> pos = new List<(int beginPos, int length, bool isLabel)>(AsmSourceTools.SplitIntoKeywordPos(line_upcase));
 
                 int offset = containingLine.Start.Position;

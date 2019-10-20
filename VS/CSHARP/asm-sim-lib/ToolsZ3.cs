@@ -389,7 +389,7 @@ namespace AsmSim
         {
             if (e.IsConst)
             {
-                flags |= FlagTools.Parse(e.ToString().Substring(0, 2));
+                flags |= FlagTools.Parse(e.ToString().Substring(0, 2), false);
             }
             else
             {
@@ -1193,12 +1193,12 @@ namespace AsmSim
             return expr;
         }
 
-        private static (IList<Symbol> BoolConstants, IList<Symbol> BvConstants) GetConstants(Expr expr)
+        private static (IList<Symbol> boolConstants, IList<Symbol> bvConstants) GetConstants(Expr expr)
         {
             IList<Symbol> boolResults = new List<Symbol>();
             IList<Symbol> bvResults = new List<Symbol>();
             GetConstants(expr, ref boolResults, ref bvResults);
-            return (BoolConstants: boolResults, BvConstants: bvResults);
+            return (boolConstants: boolResults, bvConstants: bvResults);
         }
 
         /// <summary> check whethe provided array of truth-values only contains a single value, return this single value</summary>

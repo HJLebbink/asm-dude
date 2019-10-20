@@ -85,7 +85,7 @@ namespace AsmTools
     ///  Operand Type tup (OperandType x OperandType x OperandType)
     /// </summary>
     [Flags]
-    public enum Ot3 : short
+    public enum Ot3
     {
         reg_reg_reg = Ot1.reg | (Ot1.reg << 4) | (Ot1.reg << 8),
         reg_mem_reg = Ot1.reg | (Ot1.mem << 4) | (Ot1.reg << 8),

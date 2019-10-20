@@ -37,8 +37,8 @@ namespace AsmSim
 
         private readonly Tools _tools;
 
-        private readonly IList<(string Label, Mnemonic Mnemonic, string[] Args)> _parsed_Code_A;
-        private readonly IList<(string Label, Mnemonic Mnemonic, string[] Args)> _parsed_Code_B;
+        private readonly IList<(string label, Mnemonic mnemonic, string[] args)> _parsed_Code_A;
+        private readonly IList<(string label, Mnemonic mnemonic, string[] args)> _parsed_Code_B;
         private bool _use_Parsed_Code_A;
 
         private readonly BidirectionalGraph<int, TaggedEdge<int, bool>> _graph;
@@ -49,8 +49,8 @@ namespace AsmSim
             //Console.WriteLine("INFO: CFlow: constructor");
             this._tools = tools;
             this._use_Parsed_Code_A = true;
-            this._parsed_Code_A = new List<(string Label, Mnemonic Mnemonic, string[] Args)>();
-            this._parsed_Code_B = new List<(string Label, Mnemonic Mnemonic, string[] Args)>();
+            this._parsed_Code_A = new List<(string label, Mnemonic mnemonic, string[] args)>();
+            this._parsed_Code_B = new List<(string label, Mnemonic mnemonic, string[] args)>();
             this._graph = new BidirectionalGraph<int, TaggedEdge<int, bool>>(true); // allowParallesEdges is true because of conditional jumps to the next line
         }
 
@@ -71,8 +71,8 @@ namespace AsmSim
             (string, string, string) dummyKeys = (string.Empty, string.Empty, string.Empty);
             for (int lineNumber = lineNumberBegin; lineNumber <= lineNumberEnd; lineNumber++)
             {
-                (Mnemonic Mnemonic, string[] Args) content = this.Get_Line(lineNumber);
-                using (Mnemonics.OpcodeBase opcodeBase = Runner.InstantiateOpcode(content.Mnemonic, content.Args, dummyKeys, this._tools))
+                (Mnemonic mnemonic, string[] args) content = this.Get_Line(lineNumber);
+                using (Mnemonics.OpcodeBase opcodeBase = Runner.InstantiateOpcode(content.mnemonic, content.args, dummyKeys, this._tools))
                 {
                     if (opcodeBase != null)
                     {
@@ -116,19 +116,19 @@ namespace AsmSim
             }
         }
 
-        public (string Key1, string Key2) Get_Key((int lineNumber1, int lineNumber2) lineNumber)
+        public (string key1, string key2) Get_Key((int lineNumber1, int lineNumber2) lineNumber)
         {
             if (true)
             {
                 string key1 = this.Get_Key(lineNumber.lineNumber1);
                 string key2 = this.Get_Key(lineNumber.lineNumber2);
-                return (Key1: key1, Key2: key2);
+                return (key1: key1, key2: key2);
             }
             else
             {
                 string key1 = Tools.CreateKey(this._tools.Rand);
                 string key2 = key1 + "B";
-                return (Key1: key1, Key2: key2);
+                return (key1: key1, key2: key2);
             }
         }
 
@@ -139,8 +139,8 @@ namespace AsmSim
             get
             {
                 int lineNumber = 0;
-                IList<(string Label, Mnemonic Mnemonic, string[] Args)> current = this.Current;
-                while (current[lineNumber].Mnemonic == Mnemonic.NONE)
+                IList<(string label, Mnemonic mnemonic, string[] args)> current = this.Current;
+                while (current[lineNumber].mnemonic == Mnemonic.NONE)
                 {
                     lineNumber++;
                 }
@@ -196,7 +196,7 @@ namespace AsmSim
         /// <summary>
         /// Get the previous line numbers and whether those line numbers branched to the current line number
         /// </summary>
-        public IEnumerable<(int LineNumber, bool IsBranch)> Get_Prev_LineNumber(int lineNumber)
+        public IEnumerable<(int lineNumber, bool isBranch)> Get_Prev_LineNumber(int lineNumber)
         {
             foreach (TaggedEdge<int, bool> v in this._graph.InEdges(lineNumber))
             {
@@ -204,7 +204,7 @@ namespace AsmSim
             }
         }
 
-        public (int Regular, int Branch) Get_Next_LineNumber(int lineNumber)
+        public (int regular, int branch) Get_Next_LineNumber(int lineNumber)
         {
             int regular = -1;
             int branch = -1;
@@ -220,12 +220,12 @@ namespace AsmSim
                     regular = v.Target;
                 }
             }
-            return (Regular: regular, Branch: branch);
+            return (regular: regular, branch: branch);
         }
 
         /// <summary>A LoopBranchPoint is a BranchPoint that choices between leaving the loop or staying in the loop.
         /// BranchToExitLoop is true if the branch code flow is used to leave the loop.</summary>
-        public (bool IsLoopBranchPoint, bool BranchToExitLoop) Is_Loop_Branch_Point(int lineNumber)
+        public (bool isLoopBranchPoint, bool branchToExitLoop) Is_Loop_Branch_Point(int lineNumber)
         {
             if (this.Is_Branch_Point(lineNumber))
             {
@@ -235,18 +235,18 @@ namespace AsmSim
 
                 if (hasCodePath_Branch && !hasCodePath_Regular)
                 {
-                    return (IsLoopBranchPoint: true, BranchToExitLoop: false);
+                    return (isLoopBranchPoint: true, branchToExitLoop: false);
                 }
                 else if (!hasCodePath_Branch && hasCodePath_Regular)
                 {
-                    return (IsLoopBranchPoint: true, BranchToExitLoop: true);
+                    return (isLoopBranchPoint: true, branchToExitLoop: true);
                 }
             }
             return (false, false);
         }
 
         /// <summary>A LoopMergePoint is a MergePoint that merges a loop with its begin point.</summary>
-        public (bool IsLoopMergePoint, int LoopLineNumber) Is_Loop_Merge_Point(int lineNumber)
+        public (bool isLoopMergePoint, int loopLineNumber) Is_Loop_Merge_Point(int lineNumber)
         {
             if (this.Is_Merge_Point(lineNumber))
             {
@@ -338,8 +338,8 @@ namespace AsmSim
             }
             #endregion
 
-            IList<(string Label, Mnemonic Mnemonic, string[] Args)> previous = this.Previous;
-            IList<(string Label, Mnemonic Mnemonic, string[] Args)> current = this.Current;
+            IList<(string label, Mnemonic mnemonic, string[] args)> previous = this.Previous;
+            IList<(string label, Mnemonic mnemonic, string[] args)> current = this.Current;
 
             current.Clear();
             this._graph.Clear();
@@ -350,11 +350,11 @@ namespace AsmSim
 
                 for (int lineNumber = 0; lineNumber < lines.Length; ++lineNumber)
                 {
-                    (string Label, Mnemonic Mnemonic, string[] Args, string Remark) line = AsmSourceTools.ParseLine(lines[lineNumber]);
-                    this.EvalArgs(ref line.Args);
-                    current.Add((line.Label, line.Mnemonic, line.Args));
+                    (string label, Mnemonic mnemonic, string[] args, string remark) line = AsmSourceTools.ParseLine(lines[lineNumber]);
+                    this.EvalArgs(ref line.args);
+                    current.Add((line.label, line.mnemonic, line.args));
 
-                    (int jumpTo1, int jumpTo2) = this.Static_Jump(line.Mnemonic, line.Args, lineNumber);
+                    (int jumpTo1, int jumpTo2) = this.Static_Jump(line.mnemonic, line.args, lineNumber);
                     if (jumpTo1 != -1)
                     {
                         this.Add_Edge(lineNumber, jumpTo1, false);
@@ -383,19 +383,19 @@ namespace AsmSim
             {
                 for (int lineNumber = 0; lineNumber < current.Count; ++lineNumber)
                 {
-                    (string Label, Mnemonic Mnemonic, string[] Args) previous_line = previous[lineNumber];
-                    (string Label, Mnemonic Mnemonic, string[] Args) current_line = current[lineNumber];
-                    if (previous_line.Label != current_line.Label)
+                    (string label, Mnemonic mnemonic, string[] args) previous_line = previous[lineNumber];
+                    (string label, Mnemonic mnemonic, string[] args) current_line = current[lineNumber];
+                    if (previous_line.label != current_line.label)
                     {
                         equal = false;
                         break;
                     }
-                    else if (previous_line.Mnemonic != current_line.Mnemonic)
+                    else if (previous_line.mnemonic != current_line.mnemonic)
                     {
                         equal = false;
                         break;
                     }
-                    else if (!Enumerable.SequenceEqual(previous_line.Args, current_line.Args))
+                    else if (!Enumerable.SequenceEqual(previous_line.args, current_line.args))
                     {
                         equal = false;
                         break;
@@ -421,12 +421,12 @@ namespace AsmSim
         /// <summary>Compress this static flow by removing empty lines</summary>
         private void Compress()
         {
-            IList<(string Label, Mnemonic Mnemonic, string[] Args)> current = this.Current;
+            IList<(string label, Mnemonic mnemonic, string[] args)> current = this.Current;
             for (int lineNumber = 0; lineNumber < current.Count; ++lineNumber)
             {
-                (string Label, Mnemonic Mnemonic, string[] Args) c = current[lineNumber];
+                (string label, Mnemonic mnemonic, string[] args) c = current[lineNumber];
 
-                if (c.Mnemonic == Mnemonic.NONE) // found an empty line
+                if (c.mnemonic == Mnemonic.NONE) // found an empty line
                 {
                     int outDegree = this._graph.OutDegree(lineNumber);
                     if (outDegree == 0)
@@ -516,12 +516,12 @@ namespace AsmSim
 
         #region Private Methods
 
-        private IList<(string Label, Mnemonic Mnemonic, string[] Args)> Current
+        private IList<(string label, Mnemonic mnemonic, string[] args)> Current
         {
             get { return this._use_Parsed_Code_A ? this._parsed_Code_A : this._parsed_Code_B; }
         }
 
-        private IList<(string Label, Mnemonic Mnemonic, string[] Args)> Previous
+        private IList<(string label, Mnemonic mnemonic, string[] args)> Previous
         {
             get { return this._use_Parsed_Code_A ? this._parsed_Code_B : this._parsed_Code_A; }
         }
@@ -546,7 +546,7 @@ namespace AsmSim
             this._graph.AddEdge(new TaggedEdge<int, bool>(jumpFrom, jumpTo, isBranch));
         }
 
-        private (int RegularLineNumber, int BranchLineNumber) Static_Jump(Mnemonic mnemonic, string[] args, int lineNumber)
+        private (int regularLineNumber, int branchLineNumber) Static_Jump(Mnemonic mnemonic, string[] args, int lineNumber)
         {
             int jumpTo1 = -1;
             int jumpTo2 = -1;

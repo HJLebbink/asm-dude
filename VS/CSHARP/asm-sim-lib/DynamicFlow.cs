@@ -47,7 +47,7 @@ namespace AsmSim
         public DynamicFlow(Tools tools)
         {
             this._tools = tools;
-            this._graph = new BidirectionalGraph<string, TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)>>(true); // allowParallelEdges because of conditional branches to the next line of code
+            this._graph = new BidirectionalGraph<string, TaggedEdge<string, (bool branch, StateUpdate stateUpdate)>>(true); // allowParallelEdges because of conditional branches to the next line of code
             this._lineNumber_2_Key = new Dictionary<int, string>();
             this._key_2_LineNumber = new Dictionary<string, int>();
         }
@@ -55,7 +55,7 @@ namespace AsmSim
 
         #region Getters
 
-        public BidirectionalGraph<string, TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)>> Graph { get { return this._graph; } }
+        public BidirectionalGraph<string, TaggedEdge<string, (bool branch, StateUpdate stateUpdate)>> Graph { get { return this._graph; } }
 
         public bool Is_Branch_Point(int lineNumber)
         {
@@ -108,17 +108,17 @@ namespace AsmSim
 
         private IEnumerable<StateUpdate> Get_Incoming_StateUpdate(string key)
         {
-            foreach (TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)> v in this._graph.InEdges(key))
+            foreach (TaggedEdge<string, (bool branch, StateUpdate stateUpdate)> v in this._graph.InEdges(key))
             {
-                yield return v.Tag.StateUpdate;
+                yield return v.Tag.stateUpdate;
             }
         }
 
         private IEnumerable<StateUpdate> Get_Outgoing_StateUpdate(string key)
         {
-            foreach (TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)> v in this._graph.OutEdges(key))
+            foreach (TaggedEdge<string, (bool branch, StateUpdate stateUpdate)> v in this._graph.OutEdges(key))
             {
-                yield return v.Tag.StateUpdate;
+                yield return v.Tag.stateUpdate;
             }
         }
 
@@ -149,9 +149,9 @@ namespace AsmSim
 
         private bool Has_Edge(string source, string target, bool isBranch)
         {
-            if (this._graph.TryGetEdge(source, target, out TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)> tag))
+            if (this._graph.TryGetEdge(source, target, out TaggedEdge<string, (bool branch, StateUpdate stateUpdate)> tag))
             {
-                return tag.Tag.Branch == isBranch;
+                return tag.Tag.branch == isBranch;
             }
             return false;
         }
@@ -244,7 +244,7 @@ namespace AsmSim
             return this._graph.OutEdge(key, 0).Tag.stateUpdate.BranchInfo.BranchCondition;
         }
 
-        /// <summary> Create leafs of this DynamicFlow</summary>
+        /// <summary> Gets leafs of this DynamicFlow</summary>
         public IEnumerable<State> Leafs
         {
             get
@@ -273,7 +273,7 @@ namespace AsmSim
                         }
                         else
                         {
-                            foreach (TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)> edge in this._graph.OutEdges(key))
+                            foreach (TaggedEdge<string, (bool branch, StateUpdate stateUpdate)> edge in this._graph.OutEdges(key))
                             {
                                 foreach (string v in Get_Leafs_LOCAL(edge.Target))
                                 {
@@ -308,9 +308,9 @@ namespace AsmSim
 
         public void Clear()
         {
-            foreach (TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)> v in this._graph.Edges)
+            foreach (TaggedEdge<string, (bool branch, StateUpdate stateUpdate)> v in this._graph.Edges)
             {
-                v.Tag.StateUpdate.Dispose();
+                v.Tag.stateUpdate.Dispose();
             }
 
             this._graph.Clear();
@@ -368,13 +368,13 @@ namespace AsmSim
                 int currentLineNumber = this.LineNumber(prevKey);
                 if (sFlow.HasLine(currentLineNumber))
                 {
-                    (int Regular, int Branch) nextLineNumber = sFlow.Get_Next_LineNumber(currentLineNumber);
+                    (int regular, int branch) nextLineNumber = sFlow.Get_Next_LineNumber(currentLineNumber);
                     (string nextKey, string nextKeyBranch) = sFlow.Get_Key(nextLineNumber);
 
                     (StateUpdate regular, StateUpdate branch) = Runner.Execute(sFlow, currentLineNumber, (prevKey, nextKey, nextKeyBranch), this._tools);
 
-                    HandleBranch_LOCAL(currentLineNumber, nextLineNumber.Branch, branch, prevKey, nextKeyBranch);
-                    HandleRegular_LOCAL(currentLineNumber, nextLineNumber.Regular, regular, prevKey, nextKey);
+                    HandleBranch_LOCAL(currentLineNumber, nextLineNumber.branch, branch, prevKey, nextKeyBranch);
+                    HandleRegular_LOCAL(currentLineNumber, nextLineNumber.regular, regular, prevKey, nextKey);
                 }
             }
             #region Local Methods
@@ -488,16 +488,16 @@ namespace AsmSim
 
                 int currentLineNumber = this.LineNumber(nextKey);
 
-                foreach ((int LineNumber, bool IsBranch) prev in sFlow.Get_Prev_LineNumber(currentLineNumber))
+                foreach ((int lineNumber, bool isBranch) prev in sFlow.Get_Prev_LineNumber(currentLineNumber))
                 {
-                    if (sFlow.HasLine(prev.LineNumber))
+                    if (sFlow.HasLine(prev.lineNumber))
                     {
-                        string prevKey = sFlow.Get_Key(prev.LineNumber);
-                        if (!this.Has_Edge(prevKey, nextKey, prev.IsBranch))
+                        string prevKey = sFlow.Get_Key(prev.lineNumber);
+                        if (!this.Has_Edge(prevKey, nextKey, prev.isBranch))
                         {
-                            (StateUpdate regular, StateUpdate branch) = Runner.Execute(sFlow, prev.LineNumber, (prevKey, nextKey, nextKey), this._tools);
+                            (StateUpdate regular, StateUpdate branch) = Runner.Execute(sFlow, prev.lineNumber, (prevKey, nextKey, nextKey), this._tools);
                             StateUpdate update = null;
-                            if (prev.IsBranch)
+                            if (prev.isBranch)
                             {
                                 update = branch;
                                 regular?.Dispose();
@@ -508,8 +508,8 @@ namespace AsmSim
                                 branch?.Dispose();
                             }
 
-                            this.Add_Vertex(prevKey, prev.LineNumber);
-                            this.Add_Edge(prev.IsBranch, update, prevKey, nextKey);
+                            this.Add_Vertex(prevKey, prev.lineNumber);
+                            this.Add_Edge(prev.isBranch, update, prevKey, nextKey);
 
                             //Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Backward: scheduling key " + prevKey);
                             prevKeys.Push(prevKey); // only continue if the state is consistent; no need to go futher in the past if the state is inconsistent.
@@ -522,10 +522,10 @@ namespace AsmSim
 
                             if (!this._tools.Quiet)
                             {
-                                Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Backward: LINE " + prev.LineNumber + ": \"" + sFlow.Get_Line_Str(prev.LineNumber) + "; branch=" + prev.IsBranch);
+                                Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Backward: LINE " + prev.lineNumber + ": \"" + sFlow.Get_Line_Str(prev.lineNumber) + "; branch=" + prev.isBranch);
                             }
 
-                            if (!this._tools.Quiet && sFlow.Get_Line(prev.LineNumber).mnemonic != Mnemonic.NONE)
+                            if (!this._tools.Quiet && sFlow.Get_Line(prev.lineNumber).mnemonic != Mnemonic.NONE)
                             {
                                 Console.WriteLine("INFO: Runner:Construct_DynamicFlow_Backward: " + update);
                             }
@@ -559,16 +559,16 @@ namespace AsmSim
 
         private void Add_Edge(bool isBranch, StateUpdate stateUpdate, string source, string target)
         {
-            if (this._graph.TryGetEdge(source, target, out TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)> tag))
+            if (this._graph.TryGetEdge(source, target, out TaggedEdge<string, (bool branch, StateUpdate stateUpdate)> tag))
             {
-                if (tag.Tag.Branch == isBranch)
+                if (tag.Tag.branch == isBranch)
                 {
                     Console.WriteLine("WARNING: DynamicFlow.Add_Edge: edge " + source + "->" + target + " with branch=" + isBranch + " already exists");
                     return;
                 }
             }
             //Console.WriteLine("INFO: DynamicFlow.Add_Edge: adding edge " + source + "->" + target + " with branch=" + isBranch + ".");
-            this._graph.AddEdge(new TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)>(source, target, (isBranch, stateUpdate)));
+            this._graph.AddEdge(new TaggedEdge<string, (bool branch, StateUpdate stateUpdate)>(source, target, (isBranch, stateUpdate)));
         }
 
         #endregion
@@ -606,12 +606,12 @@ namespace AsmSim
             {
                 sb.AppendLine("State " + key + ": " + v?.ToString());
             }
-            foreach (TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)> v in this._graph.OutEdges(key))
+            foreach (TaggedEdge<string, (bool branch, StateUpdate stateUpdate)> v in this._graph.OutEdges(key))
             {
                 Debug.Assert(v.Source == key);
                 string nextKey = v.Target;
                 sb.AppendLine("------------------------------------------");
-                sb.AppendLine("Transition from state " + key + " to " + nextKey + "; execute LINE " + lineNumber + ": \"" + codeLine + "\" " + (v.Tag.Branch ? "[Forward Branching]" : "[Forward Continue]"));
+                sb.AppendLine("Transition from state " + key + " to " + nextKey + "; execute LINE " + lineNumber + ": \"" + codeLine + "\" " + (v.Tag.branch ? "[Forward Branching]" : "[Forward Continue]"));
                 this.ToString(nextKey, sFlow, ref sb);
             }
         }
@@ -661,8 +661,8 @@ namespace AsmSim
                         }
                     case 1:
                         {
-                            TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)> edge = this._graph.InEdge(key_LOCAL, 0);
-                            if (edge.Tag.StateUpdate.Reset)
+                            TaggedEdge<string, (bool branch, StateUpdate stateUpdate)> edge = this._graph.InEdge(key_LOCAL, 0);
+                            if (edge.Tag.stateUpdate.Reset)
                             {
                                 result = new State(this._tools, key_LOCAL, key_LOCAL);
                             }
@@ -674,14 +674,14 @@ namespace AsmSim
                                     return null;
                                 }
 
-                                result.Update_Forward(edge.Tag.StateUpdate);
+                                result.Update_Forward(edge.Tag.stateUpdate);
                             }
                             break;
                         }
                     default:
                         {
-                            (string Source, StateUpdate StateUpdate) incoming_Regular = this.Get_Regular(this._graph.InEdges(key_LOCAL));
-                            IEnumerable<(string Source, StateUpdate StateUpdate)> incoming_Branches = this.Get_Branches(this._graph.InEdges(key_LOCAL));
+                            (string source, StateUpdate stateUpdate) incoming_Regular = this.Get_Regular(this._graph.InEdges(key_LOCAL));
+                            IEnumerable<(string source, StateUpdate stateUpdate)> incoming_Branches = this.Get_Branches(this._graph.InEdges(key_LOCAL));
                             result = Merge_State_Update_LOCAL(key_LOCAL, incoming_Regular, incoming_Branches, visited_LOCAL);
                             if (result == null)
                             {
@@ -699,18 +699,18 @@ namespace AsmSim
                         case 0:
                             break;
                         case 1:
-                            TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)> edge = this._graph.OutEdge(key_LOCAL, 0);
-                            result.Update_Forward(edge.Tag.StateUpdate);
+                            TaggedEdge<string, (bool branch, StateUpdate stateUpdate)> edge = this._graph.OutEdge(key_LOCAL, 0);
+                            result.Update_Forward(edge.Tag.stateUpdate);
                             break;
                         case 2:
                             using (State state1 = new State(result))
                             using (State state2 = new State(result))
                             {
-                                TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)> edge1 = this._graph.OutEdge(key_LOCAL, 0);
-                                state1.Update_Forward(edge1.Tag.StateUpdate);
+                                TaggedEdge<string, (bool branch, StateUpdate stateUpdate)> edge1 = this._graph.OutEdge(key_LOCAL, 0);
+                                state1.Update_Forward(edge1.Tag.stateUpdate);
 
-                                TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)> edge2 = this._graph.OutEdge(key_LOCAL, 1);
-                                state2.Update_Forward(edge2.Tag.StateUpdate);
+                                TaggedEdge<string, (bool branch, StateUpdate stateUpdate)> edge2 = this._graph.OutEdge(key_LOCAL, 1);
+                                state2.Update_Forward(edge2.Tag.stateUpdate);
 
                                 result = new State(state1, state2, true);
                             }
@@ -733,11 +733,11 @@ namespace AsmSim
 
             State Merge_State_Update_LOCAL(
                 string target,
-                (string Source, StateUpdate StateUpdate) incoming_Regular,
-                IEnumerable<(string Source, StateUpdate StateUpdate)> incoming_Branches,
+                (string source, StateUpdate stateUpdate) incoming_Regular,
+                IEnumerable<(string source, StateUpdate stateUpdate)> incoming_Branches,
                 ICollection<string> visited2)
             {
-                string source1 = incoming_Regular.Source;
+                string source1 = incoming_Regular.source;
                 using (State state1 = Construct_State_Private_LOCAL(source1, false, new List<string>(visited2)))
                 {
                     if (state1 == null)
@@ -747,7 +747,7 @@ namespace AsmSim
 
                     string nextKey1 = target + "A0";
                     {
-                        StateUpdate update1 = incoming_Regular.StateUpdate;
+                        StateUpdate update1 = incoming_Regular.stateUpdate;
                         update1.NextKey = nextKey1;
                         state1.Update_Forward(update1);
                     }
@@ -775,12 +775,12 @@ namespace AsmSim
                     }
 
                     int counter = 0;
-                    List<(string Source, StateUpdate StateUpdate)> incoming_Branches_list = new List<(string Source, StateUpdate StateUpdate)>(incoming_Branches);
+                    List<(string source, StateUpdate stateUpdate)> incoming_Branches_list = new List<(string source, StateUpdate stateUpdate)>(incoming_Branches);
                     incoming_Branches_list.Reverse(); //TODO does this always works??
                     int nBranches = incoming_Branches_list.Count;
-                    foreach ((string Source, StateUpdate StateUpdate) incoming_Branch in incoming_Branches_list)
+                    foreach ((string source, StateUpdate stateUpdate) incoming_Branch in incoming_Branches_list)
                     {
-                        string source2 = incoming_Branch.Source;
+                        string source2 = incoming_Branch.source;
                         using (State state2 = Construct_State_Private_LOCAL(source2, false, new List<string>(visited2)))
                         { // recursive call
                             if (state2 == null)
@@ -791,7 +791,7 @@ namespace AsmSim
                             string nextKey2 = target + "B" + counter;
                             counter++;
                             {
-                                StateUpdate update2 = incoming_Branch.StateUpdate;
+                                StateUpdate update2 = incoming_Branch.stateUpdate;
                                 update2.NextKey = nextKey2; //TODO BUG here, is the reference updated???
                                 state2.Update_Forward(update2);
                             }
@@ -874,44 +874,44 @@ namespace AsmSim
                     Console.WriteLine("WARNING: DynamicFlow:Get_Branch_Condition: incorrect out degree;");
                     return null;
                 }
-                TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)> edge1 = this._graph.OutEdge(branchKey, 0);
-                TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)> edge2 = this._graph.OutEdge(branchKey, 1);
+                TaggedEdge<string, (bool branch, StateUpdate stateUpdate)> edge1 = this._graph.OutEdge(branchKey, 0);
+                TaggedEdge<string, (bool branch, StateUpdate stateUpdate)> edge2 = this._graph.OutEdge(branchKey, 1);
 
-                if (edge1.Tag.StateUpdate.BranchInfo == null)
+                if (edge1.Tag.stateUpdate.BranchInfo == null)
                 {
                     Console.WriteLine("WARNING: DynamicFlow:Get_Branch_Condition: branchinfo of edge1 is null");
                     return null;
                 }
-                if (edge2.Tag.StateUpdate.BranchInfo == null)
+                if (edge2.Tag.stateUpdate.BranchInfo == null)
                 {
                     Console.WriteLine("WARNING: DynamicFlow:Get_Branch_Condition: branchinfo of edge2 is null");
                     return null;
                 }
-                return edge1.Tag.StateUpdate.BranchInfo;
+                return edge1.Tag.stateUpdate.BranchInfo;
             }
             #endregion
         }
 
-        private (string Source, StateUpdate StateUpdate) Get_Regular(IEnumerable<TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)>> inEdges)
+        private (string source, StateUpdate stateUpdate) Get_Regular(IEnumerable<TaggedEdge<string, (bool branch, StateUpdate stateUpdate)>> inEdges)
         {
-            foreach (TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)> v in inEdges)
+            foreach (TaggedEdge<string, (bool branch, StateUpdate stateUpdate)> v in inEdges)
             {
-                if (!v.Tag.Branch)
+                if (!v.Tag.branch)
                 {
-                    return (v.Source, v.Tag.StateUpdate);
+                    return (v.Source, v.Tag.stateUpdate);
                 }
             }
 
-            return ("NOKEY", null);
+            return (source: "NOKEY", stateUpdate: null);
         }
 
-        private IEnumerable<(string Source, StateUpdate StateUpdate)> Get_Branches(IEnumerable<TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)>> inEdges)
+        private IEnumerable<(string source, StateUpdate stateUpdate)> Get_Branches(IEnumerable<TaggedEdge<string, (bool branch, StateUpdate stateUpdate)>> inEdges)
         {
-            foreach (TaggedEdge<string, (bool Branch, StateUpdate StateUpdate)> v in inEdges)
+            foreach (TaggedEdge<string, (bool branch, StateUpdate stateUpdate)> v in inEdges)
             {
-                if (v.Tag.Branch)
+                if (v.Tag.branch)
                 {
-                    yield return (v.Source, v.Tag.StateUpdate);
+                    yield return (source: v.Source, stateUpdate: v.Tag.stateUpdate);
                 }
             }
         }

@@ -22,8 +22,8 @@
 
 namespace AsmSim
 {
-    using Microsoft.Z3;
     using System.Diagnostics.Contracts;
+    using Microsoft.Z3;
 
     public class BranchInfo
     {

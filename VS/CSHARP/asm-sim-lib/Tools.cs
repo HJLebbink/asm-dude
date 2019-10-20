@@ -115,7 +115,7 @@ namespace AsmSim
             return "MEM" + CreateKey(rand) + "!U";
         }
 
-        public static (uint High, uint Low) SIMD_Extract_Range(Rn rn)
+        public static (uint high, uint low) SIMD_Extract_Range(Rn rn)
         {
             switch (rn)
             {

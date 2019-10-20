@@ -37,14 +37,15 @@ namespace AsmTools
 
     public static partial class AsmSourceTools
     {
-        public static AssemblerEnum ParseAssembler(string str)
+        public static AssemblerEnum ParseAssembler(string str, bool strIsCapitals)
         {
-            if ((str == null) || (str.Length == 0))
+            if (string.IsNullOrEmpty(str))
             {
                 return AssemblerEnum.UNKNOWN;
             }
             AssemblerEnum result = AssemblerEnum.UNKNOWN;
-            foreach (string str2 in str.ToUpper().Split(','))
+
+            foreach (string str2 in ToCapitals(str, strIsCapitals).Split(','))
             {
                 switch (str2.Trim())
                 {

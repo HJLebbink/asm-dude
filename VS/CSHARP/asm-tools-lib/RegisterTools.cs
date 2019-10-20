@@ -46,18 +46,6 @@ namespace AsmTools
             }
         }
 
-        private static string ToCapitals(string str, bool strIsCapitals)
-        {
-            Contract.Requires(str != null);
-#if DEBUG
-            if (strIsCapitals && (str != str.ToUpper()))
-            {
-                throw new Exception();
-            }
-            #endif
-            return (strIsCapitals) ? str : str.ToUpper();
-        }
-
         public static (bool Valid, Rn Reg, int NBits) ToRn(string str, bool isCapitals = false)
         {
             Rn rn = ParseRn(str, isCapitals);
@@ -68,12 +56,12 @@ namespace AsmTools
 
         public static Rn ParseRn(string str, bool strIsCapitals = false)
         {
-            return (_register_cache.TryGetValue(ToCapitals(str, strIsCapitals), out Rn value)) ? value : Rn.NOREG;
+            return (_register_cache.TryGetValue(AsmSourceTools.ToCapitals(str, strIsCapitals), out Rn value)) ? value : Rn.NOREG;
         }
 
         public static Rn ParseRn_OLD(string str, bool strIsCapitals = false)
         {
-            switch (ToCapitals(str, strIsCapitals))
+            switch (AsmSourceTools.ToCapitals(str, strIsCapitals))
             {
                 case "RAX": return Rn.RAX;
                 case "EAX": return Rn.EAX;
@@ -323,7 +311,7 @@ namespace AsmTools
 
         public static bool IsRn(string str, bool strIsCapitals = false)
         {
-            return _register_cache.ContainsKey(ToCapitals(str, strIsCapitals));
+            return _register_cache.ContainsKey(AsmSourceTools.ToCapitals(str, strIsCapitals));
         }
 
         public static int NBits(Rn rn)
@@ -783,7 +771,7 @@ namespace AsmTools
 
         public static bool IsRegister(string keyword, bool strIsCapitals = false)
         {
-            return _register_cache.ContainsKey(ToCapitals(keyword, strIsCapitals));
+            return _register_cache.ContainsKey(AsmSourceTools.ToCapitals(keyword, strIsCapitals));
         }
 
         public static RegisterType GetRegisterType(Rn rn)

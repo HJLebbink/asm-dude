@@ -25,6 +25,7 @@ namespace AsmDude
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Windows.Media;
@@ -127,7 +128,7 @@ namespace AsmDude
                 string lineStr = line.GetText();
                 (string label, Mnemonic mnemonic, string[] args, string remark) t = AsmSourceTools.ParseLine(lineStr);
                 Mnemonic mnemonic = t.mnemonic;
-                string previousKeyword = AsmDudeToolsStatic.Get_Previous_Keyword(line.Start, start).ToUpper();
+                string previousKeyword = AsmDudeToolsStatic.Get_Previous_Keyword(line.Start, start).ToUpper(CultureInfo.InvariantCulture);
 
                 //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:AugmentCompletionSession. lineStr=\"{1}\"; previousKeyword=\"{2}\"", this.ToString(), lineStr, previousKeyword));
 
@@ -245,7 +246,7 @@ namespace AsmDude
                     string keyword = regName.ToString();
                     if (use_AsmSim_In_Code_Completion && this._asmSimulator.Tools.StateConfig.IsRegOn(RegisterTools.Get64BitsRegister(regName)))
                     {
-                        (string value, bool bussy) = this._asmSimulator.Get_Register_Value(regName, lineNumber, true, false, false, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration));
+                        (string value, bool bussy) = this._asmSimulator.Get_Register_Value(regName, lineNumber, true, false, false, AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration, false));
                         if (!bussy)
                         {
                             additionalInfo = value;
@@ -262,10 +263,10 @@ namespace AsmDude
                     //AsmDudeToolsStatic.Output_INFO("AsmCompletionSource:AugmentCompletionSession: keyword \"" + keyword + "\" is added to the completions list");
 
                     // by default, the entry.Key is with capitals
-                    string insertionText = useCapitals ? keyword : keyword.ToLower();
+                    string insertionText = useCapitals ? keyword : keyword.ToLower(CultureInfo.InvariantCulture);
                     string archStr = (arch == Arch.ARCH_NONE) ? string.Empty : " [" + ArchTools.ToString(arch) + "]";
                     string descriptionStr = this._asmDudeTools.Get_Description(keyword);
-                    descriptionStr = (descriptionStr.Length == 0) ? string.Empty : " - " + descriptionStr;
+                    descriptionStr = (string.IsNullOrEmpty(descriptionStr)) ? string.Empty : " - " + descriptionStr;
                     string displayText = Truncat(keyword + archStr + descriptionStr);
                     this._icons.TryGetValue(AsmTokenType.Register, out ImageSource imageSource);
                     completions.Add(new Completion(displayText, insertionText, additionalInfo, imageSource, string.Empty));
@@ -304,10 +305,10 @@ namespace AsmDude
                     //AsmDudeToolsStatic.Output_INFO("AsmCompletionSource:AugmentCompletionSession: keyword \"" + keyword + "\" is added to the completions list");
 
                     // by default, the entry.Key is with capitals
-                    string insertionText = useCapitals ? keyword2 : keyword2.ToLower();
+                    string insertionText = useCapitals ? keyword2 : keyword2.ToLower(CultureInfo.InvariantCulture);
                     string archStr = (arch == Arch.ARCH_NONE) ? string.Empty : " [" + ArchTools.ToString(arch) + "]";
                     string descriptionStr = this._asmDudeTools.Get_Description(keyword);
-                    descriptionStr = (descriptionStr.Length == 0) ? string.Empty : " - " + descriptionStr;
+                    descriptionStr = (string.IsNullOrEmpty(descriptionStr)) ? string.Empty : " - " + descriptionStr;
                     string displayText = Truncat(keyword2 + archStr + descriptionStr);
                     this._icons.TryGetValue(type, out ImageSource imageSource);
                     completions.Add(new Completion(displayText, insertionText, additionalInfo, imageSource, string.Empty));
@@ -382,10 +383,10 @@ namespace AsmDude
                 {
                     string keyword = mnemonic.ToString();
                     string description = this._asmDudeTools.Mnemonic_Store.GetSignatures(mnemonic).First().Documentation;
-                    string insertionText = useCapitals ? keyword : keyword.ToLower();
+                    string insertionText = useCapitals ? keyword : keyword.ToLower(CultureInfo.InvariantCulture);
                     string archStr = ArchTools.ToString(this._asmDudeTools.Mnemonic_Store.GetArch(mnemonic));
                     string descriptionStr = this._asmDudeTools.Mnemonic_Store.GetDescription(mnemonic);
-                    descriptionStr = (descriptionStr.Length == 0) ? string.Empty : " - " + descriptionStr;
+                    descriptionStr = (string.IsNullOrEmpty(descriptionStr)) ? string.Empty : " - " + descriptionStr;
                     string displayText = Truncat(keyword + archStr + descriptionStr);
                     //String description = keyword.PadRight(15) + archStr.PadLeft(8) + descriptionStr;
                     completions.Add(new Completion(displayText, insertionText, description, imageSource, string.Empty));
@@ -432,10 +433,10 @@ namespace AsmDude
                         //Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: name keyword \"" + entry.Key + "\"");
 
                         // by default, the entry.Key is with capitals
-                        string insertionText = useCapitals ? keyword : keyword.ToLower();
+                        string insertionText = useCapitals ? keyword : keyword.ToLower(CultureInfo.InvariantCulture);
                         string archStr = (arch == Arch.ARCH_NONE) ? string.Empty : " [" + ArchTools.ToString(arch) + "]";
                         string descriptionStr = this._asmDudeTools.Get_Description(keyword);
-                        descriptionStr = (descriptionStr.Length == 0) ? string.Empty : " - " + descriptionStr;
+                        descriptionStr = (string.IsNullOrEmpty(descriptionStr)) ? string.Empty : " - " + descriptionStr;
                         string displayTextFull = keyword + archStr + descriptionStr;
                         string displayText = Truncat(displayTextFull);
                         //String description = keyword.PadRight(15) + archStr.PadLeft(8) + descriptionStr;

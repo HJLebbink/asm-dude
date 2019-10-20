@@ -107,3 +107,12 @@ dotnet_diagnostic.CA1715.severity = silent
 
 # CA1714: Flags enums should have plural names
 dotnet_diagnostic.CA1714.severity = none
+
+# CA1822: Mark members as static
+dotnet_diagnostic.CA1822.severity = silent
+
+# CA1031: Do not catch general exception types
+dotnet_diagnostic.CA1031.severity = silent
+
+# CA1716: Identifiers should not match keywords
+dotnet_diagnostic.CA1716.severity = silent

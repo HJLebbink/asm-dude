@@ -478,13 +478,13 @@ namespace AsmDude.OptionsPage
             this.Set_GUI(PropertyEnum.AsmSim_Decorate_Registers);
             this.Set_GUI(PropertyEnum.AsmSim_Show_Register_In_Code_Completion);
             //TODO: create generic ParseNumeration
-            this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Code_Completion_Numeration = AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration);
+            this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Code_Completion_Numeration = AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Code_Completion_Numeration, false);
             this.Set_GUI(PropertyEnum.AsmSim_Show_Register_In_Register_Tooltip);
             //TODO: create generic ParseNumeration
-            this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Register_Tooltip_Numeration = AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Register_Tooltip_Numeration);
+            this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Register_Tooltip_Numeration = AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Register_Tooltip_Numeration, false);
             this.Set_GUI(PropertyEnum.AsmSim_Show_Register_In_Instruction_Tooltip);
             //TODO: create generic ParseNumeration
-            this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration = AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration);
+            this._asmDudeOptionsPageUI.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration = AsmSourceTools.ParseNumeration(Settings.Default.AsmSim_Show_Register_In_Instruction_Tooltip_Numeration, false);
             this.Set_GUI(PropertyEnum.AsmSim_Decorate_Unimplemented);
             this.Set_GUI(PropertyEnum.AsmSim_Pragma_Assume);
             #endregion

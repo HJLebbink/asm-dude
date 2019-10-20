@@ -46,11 +46,11 @@ namespace AsmTools
 
     public static partial class AsmSourceTools
     {
-        public static MicroArch ParseMicroArch(string str)
+        public static MicroArch ParseMicroArch(string str, bool strIsCapitals)
         {
             Contract.Requires(str != null);
 
-            switch (str.ToUpper())
+            switch (AsmSourceTools.ToCapitals(str, strIsCapitals))
             {
                 case "SANDYBRIDGE": return MicroArch.SandyBridge;
                 case "IVYBRIDGE": return MicroArch.IvyBridge;

@@ -24,6 +24,7 @@ namespace AsmDude.CodeFolding
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Text;
     using System.Windows.Controls;
@@ -278,7 +279,7 @@ namespace AsmDude.CodeFolding
                 {
                     if (asmTokenSpan.Tag.Type == AsmTokenType.Directive)
                     {
-                        string tokenStr = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText().ToUpper();
+                        string tokenStr = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText().ToUpper(CultureInfo.InvariantCulture);
                         //AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger:IsStartMasmKeyword: tokenStr=" + tokenStr);
                         switch (tokenStr)
                         {
@@ -317,7 +318,7 @@ namespace AsmDude.CodeFolding
             {
                 if (asmTokenSpan.Tag.Type == AsmTokenType.Directive)
                 {
-                    string tokenStr = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText().ToUpper();
+                    string tokenStr = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText().ToUpper(CultureInfo.InvariantCulture);
                     //AsmDudeToolsStatic.Output_INFO("CodeFoldingTagger:IsStartMasmKeyword: tokenStr=" + tokenStr);
                     switch (tokenStr)
                     {
@@ -370,7 +371,7 @@ namespace AsmDude.CodeFolding
             {
                 if (asmTokenSpan.Tag.Type == AsmTokenType.Directive)
                 {
-                    string tokenStr = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText().ToUpper();
+                    string tokenStr = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText().ToUpper(CultureInfo.InvariantCulture);
                     switch (tokenStr)
                     {
                         case "ENDS": // end token for SEGMENT
@@ -395,7 +396,7 @@ namespace AsmDude.CodeFolding
             {
                 if (asmTokenSpan.Tag.Type == AsmTokenType.Directive)
                 {
-                    string tokenStr = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText().ToUpper();
+                    string tokenStr = asmTokenSpan.Span.GetSpans(this._buffer)[0].GetText().ToUpper(CultureInfo.InvariantCulture);
                     switch (tokenStr)
                     {
                         case "ENDSTRUC": // end token for STRUC

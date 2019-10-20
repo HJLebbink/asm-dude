@@ -136,7 +136,7 @@ namespace AsmDude.SignatureHelp
                 {
                     foreach (string arch2 in value.Split(','))
                     {
-                        Arch a = ArchTools.ParseArch(arch2);
+                        Arch a = ArchTools.ParseArch(arch2, false, true);
                         if (a != AsmTools.Arch.ARCH_NONE)
                         {
                             this._arch.Add(a);
@@ -190,7 +190,7 @@ namespace AsmDude.SignatureHelp
                         {
                             //AsmDudeToolsStatic.Output_INFO("SignatureStore:load: operandStr " + operandStr);
                             IList<AsmSignatureEnum> operandList = new List<AsmSignatureEnum>();
-                            AsmSignatureEnum[] operandTypes = AsmSignatureTools.Parse_Operand_Type_Enum(this._operandStr[i]);
+                            AsmSignatureEnum[] operandTypes = AsmSignatureTools.Parse_Operand_Type_Enum(this._operandStr[i], false);
                             if ((operandTypes.Length == 1) && ((operandTypes[0] == AsmSignatureEnum.NONE) || (operandTypes[0] == AsmSignatureEnum.UNKNOWN)))
                             {
                                 // do nothing

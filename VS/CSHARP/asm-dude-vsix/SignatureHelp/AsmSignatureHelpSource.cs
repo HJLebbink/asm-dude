@@ -25,6 +25,7 @@ namespace AsmDude.SignatureHelp
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Globalization;
     using System.Text;
     using AsmDude.Tools;
     using AsmTools;
@@ -143,7 +144,7 @@ namespace AsmDude.SignatureHelp
             if (session.Signatures.Count > 0)
             {
                 ITrackingSpan applicableToSpan = session.Signatures[0].ApplicableToSpan;
-                string text = applicableToSpan.GetText(applicableToSpan.TextBuffer.CurrentSnapshot).Trim().ToUpper();
+                string text = applicableToSpan.GetText(applicableToSpan.TextBuffer.CurrentSnapshot).Trim().ToUpper(CultureInfo.InvariantCulture);
 
                 AsmDudeToolsStatic.Output_INFO("AsmSignatureHelpSource: GetBestMatch: session.Signatures.Count=" + session.Signatures.Count);
                 /*

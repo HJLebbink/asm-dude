@@ -326,7 +326,7 @@ namespace unit_tests
         {
             foreach (Mnemonic x in Enum.GetValues(typeof(Mnemonic)))
             {
-                Assert.AreEqual(AsmSourceTools.ParseMnemonic(x.ToString()), x,
+                Assert.AreEqual(AsmSourceTools.ParseMnemonic(x.ToString(), true), x,
                     "Parsing string " + x.ToString() + " does not yield the same enumeration.");
             }
         }
@@ -335,7 +335,7 @@ namespace unit_tests
         {
             foreach (Arch x in Enum.GetValues(typeof(Arch)))
             {
-                Assert.AreEqual(ArchTools.ParseArch(ArchTools.ToString(x)), x,
+                Assert.AreEqual(ArchTools.ParseArch(ArchTools.ToString(x), true, true), x,
                     "Parsing string " + x.ToString() + " does not yield the same enumeration.");
             }
         }
