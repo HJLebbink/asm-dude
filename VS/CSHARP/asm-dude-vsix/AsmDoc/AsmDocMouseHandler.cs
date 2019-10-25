@@ -24,6 +24,7 @@ namespace AsmDude.AsmDoc
 {
     using System;
     using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Input;
@@ -57,7 +58,7 @@ namespace AsmDude.AsmDoc
             CtrlKeyState state,
             AsmDudeTools asmDudeTools)
         {
-            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:constructor: file={1}", this.ToString(), AsmDudeToolsStatic.GetFilename(view.TextBuffer)));
+            AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:constructor: file={1}", this.ToString(), AsmDudeToolsStatic.GetFilename(view.TextBuffer)));
             this._view = view ?? throw new ArgumentNullException(nameof(view));
             this._state = state ?? throw new ArgumentNullException(nameof(state));
             this._aggregator2 = AsmDudeToolsStatic.GetOrCreate_Aggregator(view.TextBuffer, aggregatorFactory);
@@ -81,12 +82,12 @@ namespace AsmDude.AsmDoc
             // Some other points to clear the highlight span:
             this._view.LostAggregateFocus += (sender, args) =>
             {
-                AsmDudeToolsStatic.Output_INFO(string.Format("{0}:event: LostAggregateFocus", this.ToString()));
+                AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:event: LostAggregateFocus", this.ToString()));
                 this.Set_Highlight_Span(null);
             };
             this._view.VisualElement.MouseLeave += (sender, args) =>
             {
-                AsmDudeToolsStatic.Output_INFO(string.Format("{0}:event: MouseLeave", this.ToString()));
+                AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:event: MouseLeave", this.ToString()));
                 this.Set_Highlight_Span(null);
             };
         }
@@ -132,7 +133,7 @@ namespace AsmDude.AsmDoc
 
         public override void PreprocessMouseLeave(MouseEventArgs e)
         {
-            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:event: PreprocessMouseLeave; position={1}", this.ToString(), e));
+            AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:event: PreprocessMouseLeave; position={1}", this.ToString(), e));
             this._mouseDownAnchorPoint = null;
         }
 
@@ -167,7 +168,7 @@ namespace AsmDude.AsmDoc
                 }
                 catch (Exception ex)
                 {
-                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0} PreprocessMouseUp; e={1}", this.ToString(), ex.ToString()));
+                    AsmDudeToolsStatic.Output_ERROR(string.Format(AsmDudeToolsStatic.CultureUI, "{0} PreprocessMouseUp; e={1}", this.ToString(), ex.ToString()));
                 }
             }
         }
@@ -183,7 +184,7 @@ namespace AsmDude.AsmDoc
 
         private bool TryHighlightItemUnderMouse(Point position)
         {
-            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:event: TryHighlightItemUnderMouse; position={1}", this.ToString(), position));
+            AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:event: TryHighlightItemUnderMouse; position={1}", this.ToString(), position));
             if (!Settings.Default.AsmDoc_On)
             {
                 return false;
@@ -272,7 +273,7 @@ namespace AsmDude.AsmDoc
 
         private async Task<bool> Dispatch_Goto_DocAsync(Mnemonic mnemonic)
         {
-            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:DispatchGoToDoc; keyword=\"{1}\".", this.ToString(), keyword));
+            //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:DispatchGoToDoc; keyword=\"{1}\".", this.ToString(), keyword));
             int hr = await this.Open_File_Async(mnemonic).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
             return ErrorHandler.Succeeded(hr);
         }
@@ -306,7 +307,7 @@ namespace AsmDude.AsmDoc
             while (enumerator.MoveNext())
             {
                 EnvDTE.Window window = enumerator.Current as EnvDTE.Window;
-                if (window.ObjectKind.Equals(EnvDTE.Constants.vsWindowKindWebBrowser))
+                if (string.Equals(window.ObjectKind, EnvDTE.Constants.vsWindowKindWebBrowser, StringComparison.Ordinal))
                 {
                     string url2 = VisualStudioWebBrowser.GetWebBrowserWindowUrl(window).ToString();
                     //AsmDudeToolsStatic.Output_INFO("Documentation " + window.Caption + " is open. url=" + url2.ToString());
@@ -329,15 +330,15 @@ namespace AsmDude.AsmDoc
             string url = this.Get_Url(mnemonic);
             if (url == null)
             { // this situation happens for all keywords that do not have an url specified (such as registers).
-                //AsmDudeToolsStatic.Output_INFO(string.Format("INFO: {0}:openFile; url for keyword \"{1}\" is null.", this.ToString(), keyword));
+                //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "INFO: {0}:openFile; url for keyword \"{1}\" is null.", this.ToString(), keyword));
                 return 1;
             }
-            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Open_File; url={1}", this.ToString(), url));
+            //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Open_File; url={1}", this.ToString(), url));
 
             DTE2 dte2 = Package.GetGlobalService(typeof(SDTE)) as DTE2;
             if (dte2 == null)
             {
-                AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:Open_File; dte2 is null.", this.ToString()));
+                AsmDudeToolsStatic.Output_WARNING(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Open_File; dte2 is null.", this.ToString()));
                 return 1;
             }
 
@@ -348,7 +349,7 @@ namespace AsmDude.AsmDoc
                 {
                     // vsNavigateOptionsDefault    0   The Web page opens in the currently open browser window. (Default)
                     // vsNavigateOptionsNewWindow  1   The Web page opens in a new browser window.
-                    AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Open_File; going to open url {1}.", this.ToString(), url));
+                    AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Open_File; going to open url {1}.", this.ToString(), url));
                     window = dte2.ItemOperations.Navigate(url, EnvDTE.vsNavigateOptions.vsNavigateOptionsNewWindow);
 
                     string[] parts = url.Split('/');
@@ -362,14 +363,14 @@ namespace AsmDude.AsmDoc
                         try
                         {
                             ThreadHelper.ThrowIfNotOnUIThread();
-                            if (!window.Caption.Equals(caption))
+                            if (!window.Caption.Equals(caption, StringComparison.Ordinal))
                             {
                                 window.Caption = caption;
                             }
                         }
                         catch (Exception e)
                         {
-                            AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Open_File; exception={1}", this.ToString(), e));
+                            AsmDudeToolsStatic.Output_ERROR(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Open_File; exception={1}", this.ToString(), e));
                         }
                     });
                     DelayAction(100, action);
@@ -386,7 +387,7 @@ namespace AsmDude.AsmDoc
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Open_File; exception={1}", this.ToString(), e));
+                AsmDudeToolsStatic.Output_ERROR(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Open_File; exception={1}", this.ToString(), e));
                 return 2;
             }
         }

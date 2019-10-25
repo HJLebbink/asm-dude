@@ -40,7 +40,7 @@ namespace AsmDude
             this._currentSession = null;
             this.TextView = textView ?? throw new ArgumentNullException(nameof(textView));
             this.Broker = broker ?? throw new ArgumentNullException(nameof(broker));
-            //Debug.WriteLine(string.Format("INFO: {0}:constructor", this.ToString()));
+            //Debug.WriteLine(string.Format(AsmDudeToolsStatic.CultureUI, "INFO: {0}:constructor", this.ToString()));
         }
 
         public IWpfTextView TextView { get; private set; }
@@ -154,7 +154,7 @@ namespace AsmDude
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:ExecMethod2", this.ToString()));
+            //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:ExecMethod2", this.ToString()));
 
             bool handledChar = false;
             int hresult = VSConstants.S_OK;
@@ -259,17 +259,17 @@ namespace AsmDude
 
             if (this.Broker.IsCompletionActive(this.TextView))
             {
-                //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:StartSession. Recycling an existing auto-complete session", this.ToString()));
+                //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:StartSession. Recycling an existing auto-complete session", this.ToString()));
                 this._currentSession = this.Broker.GetSessions(this.TextView)[0];
             }
             else
             {
-                //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:StartSession. Creating a new auto-complete session", this.ToString()));
+                //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:StartSession. Creating a new auto-complete session", this.ToString()));
                 this._currentSession = this.Broker.CreateCompletionSession(this.TextView, snapshot.CreateTrackingPoint(caret, PointTrackingMode.Positive), true);
             }
             this._currentSession.Dismissed += (sender, args) => this._currentSession = null;
             this._currentSession.Start();
-            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:StartSession", this.ToString()));
+            //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:StartSession", this.ToString()));
             return true;
         }
 
@@ -323,14 +323,14 @@ namespace AsmDude
         public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:QueryStatus", this.ToString()));
+            //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:QueryStatus", this.ToString()));
             if (pguidCmdGroup == VSConstants.VSStd2K)
             {
                 switch ((VSConstants.VSStd2KCmdID)prgCmds[0].cmdID)
                 {
                     case VSConstants.VSStd2KCmdID.AUTOCOMPLETE:
                     case VSConstants.VSStd2KCmdID.COMPLETEWORD:
-                        //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:QueryStatus", this.ToString()));
+                        //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:QueryStatus", this.ToString()));
                         //Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: {0}:QueryStatus", this.ToString()));
                         prgCmds[0].cmdf = (uint)OLECMDF.OLECMDF_ENABLED | (uint)OLECMDF.OLECMDF_SUPPORTED;
                         return VSConstants.S_OK;

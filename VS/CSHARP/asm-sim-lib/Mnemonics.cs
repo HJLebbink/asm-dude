@@ -28,6 +28,7 @@ namespace AsmSim
         using System.Collections.Generic;
         using System.Diagnostics;
         using System.Diagnostics.Contracts;
+        using System.Globalization;
         using System.Linq;
         using AsmTools;
         using Microsoft.Z3;
@@ -37,6 +38,8 @@ namespace AsmSim
         public abstract class OpcodeBase : IDisposable
         {
             #region Fields
+            public static readonly CultureInfo Culture = CultureInfo.CurrentUICulture;
+
             public readonly Mnemonic _mnemonic;
             private readonly string[] _args;
             public readonly Tools _tools;
@@ -402,7 +405,7 @@ namespace AsmSim
             {
                 Contract.Requires(op1 != null);
                 Contract.Requires(op2 != null);
-                this.SyntaxError = string.Format("\"{0}\": Operand 1 and 2 should have same number of bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), op1, op1.Type, op1.NBits, op2, op2.Type, op2.NBits);
+                this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 and 2 should have same number of bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), op1, op1.Type, op1.NBits, op2, op2.Type, op2.NBits);
             }
 
             #endregion
@@ -427,8 +430,8 @@ namespace AsmSim
                 if (this.NOperands != 0)
                 {
                     this.SyntaxError = (this.NOperands == 1)
-                        ? string.Format("\"{0}\": Expected no operands. Found 1 operand with value \"{1}\".", this.ToString(), args[0])
-                        : string.Format("\"{0}\": Expected no operands. Found {1} operands with values \"{2}\".", this.ToString(), this.NOperands, string.Join(", ", args));
+                        ? string.Format(Culture, "\"{0}\": Expected no operands. Found 1 operand with value \"{1}\".", this.ToString(), args[0])
+                        : string.Format(Culture, "\"{0}\": Expected no operands. Found {1} operands with values \"{2}\".", this.ToString(), this.NOperands, string.Join(", ", args));
                 }
             }
         }
@@ -447,18 +450,18 @@ namespace AsmSim
                     this.op1 = new Operand(args[0], false);
                     if (this.op1.ErrorMessage != null)
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
                     }
                 }
                 else
                 {
                     if (this.NOperands == 0)
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Expected 1 operand. Found 0 operands.", this.ToString());
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Expected 1 operand. Found 0 operands.", this.ToString());
                     }
                     else
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Expected 1 operand. Found {1} operands with values \"{2}\".", this.ToString(), this.NOperands, string.Join(", ", args));
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Expected 1 operand. Found {1} operands with values \"{2}\".", this.ToString(), this.NOperands, string.Join(", ", args));
                     }
                 }
             }
@@ -473,7 +476,7 @@ namespace AsmSim
 
                 if (!allowedOperands1.HasFlag(this.op1.Type))
                 {
-                    this.SyntaxError = string.Format("\"{0}\": First operand ({1}) cannot be of type {2}. Allowed types: {3}.", this.ToString(), this.op1, this.op1.Type, AsmSourceTools.ToString(allowedOperands1));
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": First operand ({1}) cannot be of type {2}. Allowed types: {3}.", this.ToString(), this.op1, this.op1.Type, AsmSourceTools.ToString(allowedOperands1));
                 }
             }
 
@@ -500,23 +503,23 @@ namespace AsmSim
                     this.op2 = new Operand(args[1], false);
                     if (this.op1.ErrorMessage != null)
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
                     }
 
                     if (this.op2.ErrorMessage != null)
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2.ErrorMessage);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2.ErrorMessage);
                     }
                 }
                 else
                 {
                     if (this.NOperands == 0)
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Expected 2 operands. Found 0 operands.", this.ToString());
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Expected 2 operands. Found 0 operands.", this.ToString());
                     }
                     else
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Expected 2 operands. Found {1} operand(s) with value \"{2}\".", this.ToString(), this.NOperands, string.Join(", ", args));
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Expected 2 operands. Found {1} operand(s) with value \"{2}\".", this.ToString(), this.NOperands, string.Join(", ", args));
                     }
                 }
             }
@@ -565,28 +568,28 @@ namespace AsmSim
 
                     if (this.op1.ErrorMessage != null)
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
                     }
 
                     if (this.op2.ErrorMessage != null)
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2.ErrorMessage);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2.ErrorMessage);
                     }
 
                     if (this.op3.ErrorMessage != null)
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Operand 3 is malformed: {1}", this.ToString(), this.op3.ErrorMessage);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 3 is malformed: {1}", this.ToString(), this.op3.ErrorMessage);
                     }
                 }
                 else
                 {
                     if (this.NOperands == 0)
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Expected 3 operands. Found 0 operands.", this.ToString());
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Expected 3 operands. Found 0 operands.", this.ToString());
                     }
                     else
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Expected 3 operands. Found {1} operand(s) with value \"{2}\".", this.ToString(), this.NOperands, string.Join(", ", args));
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Expected 3 operands. Found {1} operand(s) with value \"{2}\".", this.ToString(), this.NOperands, string.Join(", ", args));
                     }
                 }
             }
@@ -601,7 +604,7 @@ namespace AsmSim
 
                 if (!allowedOperands3.HasFlag(AsmSourceTools.MergeOt(this.op1.Type, this.op2.Type, this.op3.Type)))
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6}); op3={7} ({8}, bits={9}) Allowed types: {10}.", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits, AsmSourceTools.ToString(allowedOperands3));
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6}); op3={7} ({8}, bits={9}) Allowed types: {10}.", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits, AsmSourceTools.ToString(allowedOperands3));
                 }
             }
 
@@ -629,14 +632,14 @@ namespace AsmSim
 
                 if (args.Length > maxNArgs)
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Only {1} operand(s) are allowed, and received {2} operand(s).", this.ToString(), maxNArgs, args.Length);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Only {1} operand(s) are allowed, and received {2} operand(s).", this.ToString(), maxNArgs, args.Length);
                 }
                 if (this.NOperands >= 1)
                 {
                     this.op1 = new Operand(args[0], false);
                     if (this.op1.ErrorMessage != null)
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 is malformed: {1}", this.ToString(), this.op1.ErrorMessage);
                     }
                 }
                 if (this.NOperands >= 2)
@@ -644,7 +647,7 @@ namespace AsmSim
                     this.op2 = new Operand(args[1], false);
                     if (this.op2.ErrorMessage != null)
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2.ErrorMessage);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 2 is malformed: {1}", this.ToString(), this.op2.ErrorMessage);
                     }
                 }
                 if (this.NOperands >= 3)
@@ -652,7 +655,7 @@ namespace AsmSim
                     this.op3 = new Operand(args[2], false);
                     if (this.op3.ErrorMessage != null)
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Operand 3 is malformed: {1}", this.ToString(), this.op3.ErrorMessage);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 3 is malformed: {1}", this.ToString(), this.op3.ErrorMessage);
                     }
                 }
             }
@@ -682,7 +685,7 @@ namespace AsmSim
                 {
                     if (this.op1.NBits < this.op2.NBits)
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Operand 1 should be smaller or equal than operand 2. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 should be smaller or equal than operand 2. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                     }
                     if ((this.op1.NBits == 64) && (this.op2.NBits == 32))
                     {
@@ -703,7 +706,7 @@ namespace AsmSim
 
         public sealed class NotImplemented : OpcodeBase
         {
-            public NotImplemented(Mnemonic mnemonic, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
+            public NotImplemented(Mnemonic _, string[] args, (string prevKey, string nextKey, string nextKeyBranch) keys, Tools t)
                 : base(Mnemonic.NOP, args, keys, t)
             {
                 this.SyntaxError = "Not implemented";
@@ -788,7 +791,7 @@ namespace AsmSim
                 if (this.op1.Type == Ot1.UNKNOWN)
                 {
                     //TODO The moffs8, moffs16, moffs32 and moffs64 operands specify a simple offset relative to the segment base, where 8, 16, 32 and 64 refer to the size of the data.The address-size attribute of the instruction determines the size of the offset, either 16, 32 or 64 bits.
-                    this.SyntaxError = string.Format("\"{0}\": execute: Unknown memory address in op1; Operand1={1} ({2}); Operand2={3} ({4})", this.ToString(), this.op1, this.op1.Type, this.op2, this.op2.Type);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": execute: Unknown memory address in op1; Operand1={1} ({2}); Operand2={3} ({4})", this.ToString(), this.op1, this.op1.Type, this.op2, this.op2.Type);
                 }
                 else
                 {
@@ -870,7 +873,7 @@ namespace AsmSim
 
                 if (!((this.op1.NBits == 32) || (this.op1.NBits == 64)))
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operand 1 should be 32-bits or 64-bits. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 should be 32-bits or 64-bits. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
                 }
             }
 
@@ -1060,7 +1063,7 @@ namespace AsmSim
 
                 if (this.op1.NBits != 64)
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operand 1 should be a 64-bit memory operand. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 should be a 64-bit memory operand. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
                 }
             }
 
@@ -1117,7 +1120,7 @@ namespace AsmSim
 
                 if (this.op1.NBits != 128)
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operand 1 should be a 128-bit memory operand. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 should be a 128-bit memory operand. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
                 }
             }
 
@@ -1176,11 +1179,11 @@ namespace AsmSim
 
                 if ((this.op1.NBits == 8) && (this.op1.IsReg || this.op1.IsMem))
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
                 }
                 else if ((this.op1.NBits == 64) && this.op1.IsImm)
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
                 }
 
                 if (this.op1.IsReg && t.Parameters.mode_64bit)
@@ -1188,7 +1191,7 @@ namespace AsmSim
                     Rn reg = this.op1.Rn;
                     if ((reg == Rn.CS) || (reg == Rn.SS) || (reg == Rn.DS) || (reg == Rn.ES))
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Invalid register in 64-bit mode. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Invalid register in 64-bit mode. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
                     }
                 }
             }
@@ -1305,7 +1308,7 @@ namespace AsmSim
 
                 if (this.op1.NBits == 8)
                 {
-                    this.SyntaxError = string.Format("\"{0}\": 8-bit operand is not allowed. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": 8-bit operand is not allowed. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
                 }
 
                 if (this.op1.IsReg && t.Parameters.mode_64bit)
@@ -1313,7 +1316,7 @@ namespace AsmSim
                     Rn reg = this.op1.Rn;
                     if ((reg == Rn.SS) || (reg == Rn.DS) || (reg == Rn.ES))
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Invalid register in 64-bit mode. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Invalid register in 64-bit mode. Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
                     }
                 }
             }
@@ -1551,32 +1554,32 @@ namespace AsmSim
 
                 if (this.op1.NBits == 8)
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                 }
                 else if (this.op1.NBits == 16)
                 {
                     if (this.op2.NBits != 8)
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                     }
                 }
                 else if (this.op1.NBits == 32)
                 {
                     if ((this.op2.NBits != 8) && (this.op2.NBits != 16))
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                     }
                 }
                 else if (this.op1.NBits == 64)
                 {
                     if ((this.op2.NBits != 8) && (this.op2.NBits != 16))
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                     }
                 }
                 else
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                 }
             }
 
@@ -1604,12 +1607,12 @@ namespace AsmSim
 
                 if (this.op1.NBits != 64)
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                 }
 
                 if (this.op2.NBits == 32)
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                 }
             }
 
@@ -1637,32 +1640,32 @@ namespace AsmSim
 
                 if (this.op1.NBits == 8)
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                 }
                 else if (this.op1.NBits == 16)
                 {
                     if (this.op2.NBits != 8)
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                     }
                 }
                 else if (this.op1.NBits == 32)
                 {
                     if ((this.op2.NBits != 8) && (this.op2.NBits != 16))
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                     }
                 }
                 else if (this.op1.NBits == 64)
                 {
                     if ((this.op2.NBits != 8) && (this.op2.NBits != 16))
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                     }
                 }
                 else
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                 }
             }
 
@@ -1895,7 +1898,7 @@ namespace AsmSim
                             break;
                         }
                     default:
-                        this.SyntaxError = string.Format("\"{0}\": Expected 1 or 2 or 3 operands. Found {1} operand(s) with value \"{2}\".", this.ToString(), this.NOperands, string.Join(", ", args));
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Expected 1 or 2 or 3 operands. Found {1} operand(s) with value \"{2}\".", this.ToString(), this.NOperands, string.Join(", ", args));
                         break;
                 }
             }
@@ -2769,7 +2772,7 @@ namespace AsmSim
                 }
                 else
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operand 1 should be an 8-bits imm. Operand1={1} ({2}, bits={3}))", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 should be an 8-bits imm. Operand1={1} ({2}, bits={3}))", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
                 }
             }
 
@@ -2821,7 +2824,7 @@ namespace AsmSim
                 }
                 else
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operand 1 should be an 8-bits imm. Operand1={1} ({2}, bits={3}))", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 should be an 8-bits imm. Operand1={1} ({2}, bits={3}))", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
                 }
             }
 
@@ -2866,7 +2869,7 @@ namespace AsmSim
                 {
                     if (this.op1.NBits < this.op2.NBits)
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Operand 1 should smaller or equal than operand 2. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 should smaller or equal than operand 2. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                     }
                     if ((this.op1.NBits == 64) && (this.op2.NBits == 32))
                     {
@@ -2957,7 +2960,7 @@ namespace AsmSim
                 {
                     if (this.op1.NBits < this.op2.NBits)
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Operand 1 should smaller or equal than operand 2. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 should smaller or equal than operand 2. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                     }
                     if (this.op2.NBits < this.op1.NBits)
                     {
@@ -3000,11 +3003,11 @@ namespace AsmSim
 
                 if (this.op2.IsReg && (this.op2.Rn != Rn.CL))
                 {
-                    this.SyntaxError = string.Format("\"{0}\": If operand 2 is a registers, only GPR cl is allowed. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": If operand 2 is a registers, only GPR cl is allowed. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                 }
                 if (this.Op2Value.SortSize != 8)
                 {
-                    this.Warning = string.Format("\"{0}\": value of operand 2 does not fit in 8-bit field. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.Warning = string.Format(Culture, "\"{0}\": value of operand 2 does not fit in 8-bit field. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                 }
             }
 
@@ -3276,7 +3279,7 @@ namespace AsmSim
 
                 if (this.Op3Value.SortSize != 8)
                 {
-                    this.Warning = string.Format("\"{0}\": value of operand 3 does not fit in 8-bit field. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.Warning = string.Format(Culture, "\"{0}\": value of operand 3 does not fit in 8-bit field. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                 }
             }
 
@@ -3352,7 +3355,7 @@ namespace AsmSim
 
                 if ((this.op1.NBits == 8) || (this.op2.NBits == 8))
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operand 1 and 2 cannot be 8-bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6};  op3={7} ({8}, bits={9})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 and 2 cannot be 8-bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6};  op3={7} ({8}, bits={9})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits);
                 }
                 if (this.op1.NBits != this.op2.NBits)
                 {
@@ -3361,11 +3364,11 @@ namespace AsmSim
 
                 if (this.op3.IsReg && (this.op3.Rn != Rn.CL))
                 {
-                    this.SyntaxError = string.Format("\"{0}\": If operand 3 is a registers, only GPR cl is allowed. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6};  op3={7} ({8}, bits={9})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": If operand 3 is a registers, only GPR cl is allowed. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6};  op3={7} ({8}, bits={9})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits);
                 }
                 if (this.Op3Value.SortSize != 8)
                 {
-                    this.SyntaxError = string.Format("\"{0}\": value of operand 3 does not fit in 8-bit field. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6};  op3={7} ({8}, bits={9})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": value of operand 3 does not fit in 8-bit field. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6};  op3={7} ({8}, bits={9})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits, this.op3, this.op3.Type, this.op3.NBits);
                 }
             }
 
@@ -3459,7 +3462,7 @@ namespace AsmSim
 
                 if (this.op1.NBits != 8)
                 {
-                    this.SyntaxError = string.Format("Invalid operands size. Operands can only have size 8. Operand1={0}", this.op1);
+                    this.SyntaxError = string.Format(Culture, "Invalid operands size. Operands can only have size 8. Operand1={0}", this.op1);
                 }
             }
 
@@ -3489,7 +3492,7 @@ namespace AsmSim
                 {
                     if (this.op2.NBits != 8)
                     {
-                        this.SyntaxError = string.Format("Operand 2 is imm and should have 8 bits. Operand1={0} ({1}, bits={2}); Operand2={3} ({4}, bits={5})", this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "Operand 2 is imm and should have 8 bits. Operand1={0} ({1}, bits={2}); Operand2={3} ({4}, bits={5})", this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                     }
                 }
                 else if (this.op1.NBits != this.op2.NBits)
@@ -3610,7 +3613,7 @@ namespace AsmSim
 
                 if (this.op1.NBits == 8)
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operands cannot be 8-bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operands cannot be 8-bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                 }
             }
 
@@ -3675,7 +3678,7 @@ namespace AsmSim
 
                 if (this.op1.NBits == 8)
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operands cannot be 8-bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operands cannot be 8-bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                 }
             }
 
@@ -3896,7 +3899,7 @@ namespace AsmSim
 
                 if (this.op1.NBits == 8)
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
                 }
             }
 
@@ -4033,12 +4036,12 @@ namespace AsmSim
                     {
                         if (this.op1.NBits != 16)
                         {
-                            this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                            this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
                         }
                     }
                     else
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits);
                     }
                 }
             }
@@ -4230,7 +4233,7 @@ namespace AsmSim
 
                 if (!((prefix == Mnemonic.NONE) || (prefix == Mnemonic.REP)))
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Invalid prefix {1}. Only REP is allowed.", this.ToString(), prefix);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Invalid prefix {1}. Only REP is allowed.", this.ToString(), prefix);
                 }
                 if (this.NOperands == 2)
                 {
@@ -4249,7 +4252,7 @@ namespace AsmSim
                 }
                 else
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Invalid number of operands. Expected 0 or 2 operands, found {1} operand(s)", this.ToString(), this.NOperands);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Invalid number of operands. Expected 0 or 2 operands, found {1} operand(s)", this.ToString(), this.NOperands);
                 }
             }
 
@@ -4302,7 +4305,7 @@ namespace AsmSim
 
                 if (!((prefix == Mnemonic.NONE) || (prefix == Mnemonic.REPE) || (prefix == Mnemonic.REPZ) || (prefix == Mnemonic.REPNE) || (prefix == Mnemonic.REPNZ)))
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Invalid prefix {1}. Only REPE, REPZ, REPZE or REPNZ are allowed.", this.ToString(), prefix);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Invalid prefix {1}. Only REPE, REPZ, REPZE or REPNZ are allowed.", this.ToString(), prefix);
                 }
                 if (this.NOperands == 2)
                 {
@@ -4321,7 +4324,7 @@ namespace AsmSim
                 }
                 else
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Invalid number of operands. Expected 0 or 2 operands, found {1} operand(s)", this.ToString(), this.NOperands);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Invalid number of operands. Expected 0 or 2 operands, found {1} operand(s)", this.ToString(), this.NOperands);
                 }
             }
 
@@ -4391,7 +4394,7 @@ namespace AsmSim
 
                 if (!((prefix == Mnemonic.NONE) || (prefix == Mnemonic.REP)))
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Invalid prefix {1}. Only REP is allowed.", this.ToString(), prefix);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Invalid prefix {1}. Only REP is allowed.", this.ToString(), prefix);
                 }
                 if (this.NOperands == 2)
                 {
@@ -4410,7 +4413,7 @@ namespace AsmSim
                 }
                 else
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Invalid number of operands. Expected 0 or 2 operands, found {1} operand(s)", this.ToString(), this.NOperands);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Invalid number of operands. Expected 0 or 2 operands, found {1} operand(s)", this.ToString(), this.NOperands);
                 }
             }
 
@@ -4489,7 +4492,7 @@ namespace AsmSim
 
                 if (!((prefix == Mnemonic.NONE) || (prefix == Mnemonic.REPE) || (prefix == Mnemonic.REPZ) || (prefix == Mnemonic.REPNE) || (prefix == Mnemonic.REPNZ)))
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Invalid prefix {1}. Only REPE, REPZ, REPZE or REPNZ are allowed.", this.ToString(), prefix);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Invalid prefix {1}. Only REPE, REPZ, REPZE or REPNZ are allowed.", this.ToString(), prefix);
                 }
                 if (this.NOperands == 1)
                 {
@@ -4508,7 +4511,7 @@ namespace AsmSim
                 }
                 else
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Invalid number of operands. Expected 0 or 1 operand, found {1} operand(s)", this.ToString(), this.NOperands);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Invalid number of operands. Expected 0 or 1 operand, found {1} operand(s)", this.ToString(), this.NOperands);
                 }
             }
 
@@ -4606,7 +4609,7 @@ namespace AsmSim
 
                 if (!(prefix == Mnemonic.NONE))
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Invalid prefix {1}. No Prefix is allowed.", this.ToString(), prefix);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Invalid prefix {1}. No Prefix is allowed.", this.ToString(), prefix);
                 }
                 if (this.NOperands == 1)
                 {
@@ -4625,7 +4628,7 @@ namespace AsmSim
                 }
                 else
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Invalid number of operands. Expected 0 or 1 operand, found {1} operand(s)", this.ToString(), this.NOperands);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Invalid number of operands. Expected 0 or 1 operand, found {1} operand(s)", this.ToString(), this.NOperands);
                 }
             }
 
@@ -4687,26 +4690,26 @@ namespace AsmSim
 
                 if (this.op1.NBits == 64)
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                 }
                 Rn regOp1 = this.op1.Rn;
                 if (!((regOp1 == Rn.AL) || (regOp1 == Rn.AX) || (regOp1 == Rn.EAX)))
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                 }
 
                 if (this.op2.IsImm)
                 {
                     if (this.op2.NBits != 8)
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                     }
                 }
                 else
                 {
                     if (this.op2.Rn != Rn.DX)
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                     }
                 }
             }
@@ -4735,26 +4738,26 @@ namespace AsmSim
 
                 if (this.op2.NBits == 64)
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                 }
                 Rn regOp2 = this.op2.Rn;
                 if (!((regOp2 == Rn.AL) || (regOp2 == Rn.AX) || (regOp2 == Rn.EAX)))
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                 }
 
                 if (this.op1.IsImm)
                 {
                     if (this.op1.NBits != 8)
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                     }
                 }
                 else
                 {
                     if (this.op1.Rn != Rn.DX)
                     {
-                        this.SyntaxError = string.Format("\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                        this.SyntaxError = string.Format(Culture, "\"{0}\": Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                     }
                 }
             }
@@ -4932,7 +4935,7 @@ namespace AsmSim
 
                 if (this.op1.NBits == 8)
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operand 1 cannot be 8 bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 cannot be 8 bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                 }
             }
 
@@ -5000,7 +5003,7 @@ namespace AsmSim
 
                 if (this.op1.NBits == 8)
                 {
-                    this.SyntaxError = string.Format("\"{0}\": Operand 1 cannot be 8 bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": Operand 1 cannot be 8 bits. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                 }
                 if (this.op1.NBits != this.op2.NBits)
                 {
@@ -5197,7 +5200,7 @@ namespace AsmSim
 
                 if (this.op1.NBits == 8)
                 {
-                    this.SyntaxError = string.Format("\"{0}\": 8 bits operands are not allowed. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
+                    this.SyntaxError = string.Format(Culture, "\"{0}\": 8 bits operands are not allowed. Operand1={1} ({2}, bits={3}); Operand2={4} ({5}, bits={6})", this.ToString(), this.op1, this.op1.Type, this.op1.NBits, this.op2, this.op2.Type, this.op2.NBits);
                 }
             }
 

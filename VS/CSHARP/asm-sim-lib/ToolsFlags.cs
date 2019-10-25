@@ -8,20 +8,20 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 namespace AsmSim
 {
-    // The above copyright notice and this permission notice shall be included in all
-    // copies or substantial portions of the Software.
-
-    // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    // SOFTWARE.
-
     using System;
     using System.Diagnostics;
     using System.Diagnostics.Contracts;
@@ -128,12 +128,13 @@ namespace AsmSim
             Contract.Requires(a.SortSize == result.SortSize, "number of bits of a and result should be equal");
             Contract.Requires(nBits <= a.SortSize);
 
-            BitVecExpr signA = Create_SF_BV(a, nBits, ctx);
-            BitVecExpr signB = Create_SF_BV(b, nBits, ctx);
-            BitVecExpr signC = Create_SF_BV(result, nBits, ctx);
-
-            BitVecExpr oNE = ctx.MkBV(1, 1);
-            return ctx.MkAnd(ctx.MkEq(signA, signB), ctx.MkEq(ctx.MkBVXOR(signA, signC), oNE));
+            using (BitVecExpr signA = Create_SF_BV(a, nBits, ctx))
+            using (BitVecExpr signB = Create_SF_BV(b, nBits, ctx))
+            using (BitVecExpr signC = Create_SF_BV(result, nBits, ctx))
+            using (BitVecExpr oNE = ctx.MkBV(1, 1))
+            {
+                return ctx.MkAnd(ctx.MkEq(signA, signB), ctx.MkEq(ctx.MkBVXOR(signA, signC), oNE));
+            }
         }
         #endregion
 

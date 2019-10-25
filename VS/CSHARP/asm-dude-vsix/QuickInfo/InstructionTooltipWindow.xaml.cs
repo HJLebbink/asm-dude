@@ -400,10 +400,10 @@ namespace AsmDude.QuickInfo
                     Grid.SetRow(button, row);
                     Grid.SetColumn(button, column);
 
-                    button.GotFocus += (s, e) => AsmDudeToolsStatic.Output_INFO(string.Format("{0}:GotFocus", this.ToString()));
+                    button.GotFocus += (s, e) => AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:GotFocus", this.ToString()));
                     button.Click += (sender, e) =>
                     {
-                        AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Click", this.ToString()));
+                        AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Click", this.ToString()));
                         this.Update_Async(sender as Button).ConfigureAwait(false);
                     };
                 }
@@ -417,7 +417,7 @@ namespace AsmDude.QuickInfo
 
         private async System.Threading.Tasks.Task Update_Async(Button button)
         {
-            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Async", this.ToString()));
+            AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Update_Async", this.ToString()));
 
             if (button == null)
             {
@@ -446,7 +446,7 @@ namespace AsmDude.QuickInfo
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Update_Async; e={1}", this.ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output_ERROR(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Update_Async; e={1}", this.ToString(), e.ToString()));
             }
         }
     }

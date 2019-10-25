@@ -52,7 +52,7 @@ namespace AsmDude.QuickInfo
             IQuickInfoBroker quickInfoBroker,
             IBufferTagAggregatorFactoryService aggregatorFactory)
         {
-            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:constructor; file={1}", this.ToString(), AsmDudeToolsStatic.GetFilename(textView.TextBuffer)));
+            AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:constructor; file={1}", this.ToString(), AsmDudeToolsStatic.GetFilename(textView.TextBuffer)));
             this._textView = textView ?? throw new ArgumentNullException(nameof(textView));
             this._subjectBuffers = subjectBuffers ?? throw new ArgumentNullException(nameof(subjectBuffers));
             this._quickInfoBroker = quickInfoBroker ?? throw new ArgumentNullException(nameof(quickInfoBroker));
@@ -62,17 +62,17 @@ namespace AsmDude.QuickInfo
 
         public void ConnectSubjectBuffer(ITextBuffer subjectBuffer)
         {
-            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:ConnectSubjectBuffer", this.ToString()));
+            AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:ConnectSubjectBuffer", this.ToString()));
         }
 
         public void DisconnectSubjectBuffer(ITextBuffer subjectBuffer)
         {
-            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:DisconnectSubjectBuffer", this.ToString()));
+            AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:DisconnectSubjectBuffer", this.ToString()));
         }
 
         public void Detach(ITextView textView)
         {
-            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Detach", this.ToString()));
+            AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Detach", this.ToString()));
             if (this._textView == textView)
             {
                 this._textView.MouseHover -= this.OnTextViewMouseHover;
@@ -87,11 +87,11 @@ namespace AsmDude.QuickInfo
                 string contentType = this._textView.TextBuffer.ContentType.DisplayName;
                 if (contentType.Equals(AsmDudePackage.DisassemblyContentType, StringComparison.Ordinal))
                 {
-                    AsmDudeToolsStatic.Output_INFO(string.Format("{0}:OnTextViewMouseHover: Quickinfo for disassembly view. file={1}", this.ToString(), AsmDudeToolsStatic.GetFilename(this._textView.TextBuffer)));
+                    AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:OnTextViewMouseHover: Quickinfo for disassembly view. file={1}", this.ToString(), AsmDudeToolsStatic.GetFilename(this._textView.TextBuffer)));
                     SnapshotPoint? triggerPoint = this.GetMousePosition(new SnapshotPoint(this._textView.TextSnapshot, e.Position));
                     if (!triggerPoint.HasValue)
                     {
-                        AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:OnTextViewMouseHover: trigger point is null", this.ToString()));
+                        AsmDudeToolsStatic.Output_WARNING(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:OnTextViewMouseHover: trigger point is null", this.ToString()));
                     }
                     else
                     {
@@ -101,18 +101,18 @@ namespace AsmDude.QuickInfo
                 }
                 else
                 {
-                    AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:OnTextViewMouseHover: does not have have AsmDudeContentType: but has type {1}", this.ToString(), contentType));
+                    AsmDudeToolsStatic.Output_WARNING(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:OnTextViewMouseHover: does not have have AsmDudeContentType: but has type {1}", this.ToString(), contentType));
                 }
             }
             catch (Exception e2)
             {
-                AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:OnTextViewMouseHover: exception={1}", this.ToString(), e2.Message));
+                AsmDudeToolsStatic.Output_WARNING(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:OnTextViewMouseHover: exception={1}", this.ToString(), e2.Message));
             }
         }
 
         //private void Session_Dismissed(object sender, EventArgs e)
         //{
-        //    AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Session_Dismissed: event={1}", this.ToString(), e));
+        //    AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Session_Dismissed: event={1}", this.ToString(), e));
         //    this._session = null;
         //}
 
@@ -147,13 +147,13 @@ namespace AsmDude.QuickInfo
                 string keyword = tagSpan.GetText();
                 string keywordUpper = keyword.ToUpper(CultureInfo.InvariantCulture);
 
-                //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:ToolTipLegacy: keyword=\"{1}\"; type={2}; file=\"{3}\"", this.ToString(), keyword, tag.Type, AsmDudeToolsStatic.GetFilename(this._textView.TextBuffer)));
+                //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:ToolTipLegacy: keyword=\"{1}\"; type={2}; file=\"{3}\"", this.ToString(), keyword, tag.Type, AsmDudeToolsStatic.GetFilename(this._textView.TextBuffer)));
                 ITrackingSpan applicableTo = snapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeInclusive);
 
                 // check if a tooltip window is already visible for the applicable span
                 if ((this._legacySpan != null) && this._legacySpan.OverlapsWith(tagSpan))
                 {
-                    AsmDudeToolsStatic.Output_INFO(string.Format("{0}:ToolTipLegacy: tooltip is already visible. span = {1}, content = {2}", this.ToString(), this._legacySpan.ToString(), applicableTo.GetText(this._textView.TextSnapshot)));
+                    AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:ToolTipLegacy: tooltip is already visible. span = {1}, content = {2}", this.ToString(), this._legacySpan.ToString(), applicableTo.GetText(this._textView.TextSnapshot)));
                     return;
                 }
 
@@ -184,7 +184,7 @@ namespace AsmDude.QuickInfo
                             // cleanup old window remnants
                             if (this._legacyTooltipWindow != null)
                             {
-                                AsmDudeToolsStatic.Output_INFO(string.Format("{0}:ToolTipLegacy: going to cleanup old window remnants.", this.ToString()));
+                                AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:ToolTipLegacy: going to cleanup old window remnants.", this.ToString()));
                                 if (this._legacyTooltipWindow.IsLoaded)
                                 {
                                     this._legacyTooltipWindow = null;
@@ -215,7 +215,7 @@ namespace AsmDude.QuickInfo
                                 }
                                 catch (Exception e)
                                 {
-                                    AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:ToolTipLegacy: e={1}", this.ToString(), e.Message));
+                                    AsmDudeToolsStatic.Output_WARNING(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:ToolTipLegacy: e={1}", this.ToString(), e.Message));
                                 }
                             };
                             this._legacySpan = tagSpan;

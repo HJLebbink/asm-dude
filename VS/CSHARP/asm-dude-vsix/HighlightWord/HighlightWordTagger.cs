@@ -124,7 +124,7 @@ namespace AsmDude.HighlightWord
             }
             else
             {
-                AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:HighlightWordTagger; file {1} contains {2} lines which is more than maxLines {3}; switching off word highlighting", this.ToString(), AsmDudeToolsStatic.GetFilename(buffer), buffer.CurrentSnapshot.LineCount, AsmDudeToolsStatic.MaxFileLines));
+                AsmDudeToolsStatic.Output_WARNING(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:HighlightWordTagger; file {1} contains {2} lines which is more than maxLines {3}; switching off word highlighting", this.ToString(), AsmDudeToolsStatic.GetFilename(buffer), buffer.CurrentSnapshot.LineCount, AsmDudeToolsStatic.MaxFileLines));
             }
         }
 
@@ -164,14 +164,14 @@ namespace AsmDude.HighlightWord
             SnapshotPoint? point = caretPosition.Point.GetPoint(this._sourceBuffer, caretPosition.Affinity);
 
             TextExtent? newWordExtend = this._textStructureNavigator.GetExtentOfWord(point.Value);
-            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. word={1}", this.ToString(), newWordExtend.ToString()));
+            //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Update_Word_Adornments. word={1}", this.ToString(), newWordExtend.ToString()));
 
             // If the new cursor position is still within the current word (and on the same snapshot),
             // we don't need to check it.
             if (newWordExtend.HasValue)
             {
                 string newWord = newWordExtend.Value.Span.GetText().Trim();
-                //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. caretPoisition={1}; point={2}; newWordExtend={3}", this.ToString(), caretPosition, point, newWordExtend));
+                //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Update_Word_Adornments. caretPoisition={1}; point={2}; newWordExtend={3}", this.ToString(), caretPosition, point, newWordExtend));
 
                 if ((this.CurrentWord != null) && newWord.Equals(this.CurrentWord))
                 {
@@ -182,7 +182,7 @@ namespace AsmDude.HighlightWord
                     this.RequestedPoint = point.Value;
                     this.NewWord = newWord;
                     this.NewWordSpan = newWordExtend.Value.Span;
-                    //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. RequestedPoint={1}; NewWord=\"{2}\"; NewWordSpan={3}", this.ToString(), this.RequestedPoint, this.NewWord, this.NewWordSpan));
+                    //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Update_Word_Adornments. RequestedPoint={1}; NewWord=\"{2}\"; NewWordSpan={3}", this.ToString(), this.RequestedPoint, this.NewWord, this.NewWordSpan));
 
                     AsmDudeTools.Instance.Thread_Pool.QueueWorkItem(this.Update_Word_Adornments);
                 }
@@ -208,7 +208,7 @@ namespace AsmDude.HighlightWord
                     Rn reg = RegisterTools.ParseRn(this.NewWord);
                     if (reg != Rn.NOREG)
                     {
-                        AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. Register={1}", this.ToString(), this.NewWord));
+                        AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Update_Word_Adornments. Register={1}", this.ToString(), this.NewWord));
                         string t = RegisterTools.GetRelatedRegister(reg);
                         findData = new FindData(t, s)
                         {
@@ -220,7 +220,7 @@ namespace AsmDude.HighlightWord
                         (bool valid, ulong value, int nBits) = AsmSourceTools.Parse_Constant(this.NewWord);
                         if (valid)
                         {
-                            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. Contant={1}", this.ToString(), this.NewWord));
+                            AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Update_Word_Adornments. Contant={1}", this.ToString(), this.NewWord));
                             string t = AsmSourceTools.Get_Related_Constant(this.NewWord, value, nBits);
                             findData = new FindData(t, s)
                             {
@@ -229,7 +229,7 @@ namespace AsmDude.HighlightWord
                         }
                         else
                         {
-                            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Update_Word_Adornments. Keyword={1}", this.ToString(), this.NewWord));
+                            AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Update_Word_Adornments. Keyword={1}", this.ToString(), this.NewWord));
                             //We have to replace all occurrences of special characters with escaped versions of that char since we cannot use verbatim strings.
                             string t = this.NewWord.Replace(".", "\\.").Replace("$", "\\$").Replace("?", "\\?").Replace("/", "\\/");
                             findData = new FindData(t, s)
@@ -246,7 +246,7 @@ namespace AsmDude.HighlightWord
                     }
                     catch (Exception e2)
                     {
-                        AsmDudeToolsStatic.Output_WARNING(string.Format("could not highlight string \"{0}\"; e={1}", findData.SearchString, e2.InnerException.Message));
+                        AsmDudeToolsStatic.Output_WARNING(string.Format(AsmDudeToolsStatic.CultureUI, "could not highlight string \"{0}\"; e={1}", findData.SearchString, e2.InnerException.Message));
                     }
                     this.SynchronousUpdate(this.RequestedPoint, new NormalizedSnapshotSpanCollection(wordSpans), this.NewWord, sp);
                 }
@@ -259,7 +259,7 @@ namespace AsmDude.HighlightWord
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:UpdateWordAdornments; e={1}", this.ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output_ERROR(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:UpdateWordAdornments; e={1}", this.ToString(), e.ToString()));
             }
         }
 

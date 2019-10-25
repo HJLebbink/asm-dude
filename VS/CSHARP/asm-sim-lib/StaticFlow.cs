@@ -8,24 +8,25 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
 
 namespace AsmSim
 {
-    // The above copyright notice and this permission notice shall be included in all
-    // copies or substantial portions of the Software.
-
-    // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    // SOFTWARE.
-
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.Linq;
     using System.Text;
     using AsmTools;
@@ -34,6 +35,7 @@ namespace AsmSim
     public class StaticFlow
     {
         public static readonly char LINENUMBER_SEPARATOR = '!';
+        private static readonly CultureInfo Culture = CultureInfo.CurrentUICulture;
 
         private readonly Tools _tools;
 
@@ -474,11 +476,11 @@ namespace AsmSim
             if ((t.mnemonic == Mnemonic.NONE) && (t.label.Length > 0))
             {
                 // line with only a label and no opcode
-                return string.Format("{0}:", t.label);
+                return string.Format(Culture, "{0}:", t.label);
             }
             else
             {
-                return string.Format("{0}{1} {2}", (t.label.Length > 0) ? (t.label + ": ") : string.Empty, t.mnemonic, arguments);
+                return string.Format(Culture, "{0}{1} {2}", (t.label.Length > 0) ? (t.label + ": ") : string.Empty, t.mnemonic, arguments);
             }
         }
 
@@ -639,13 +641,13 @@ namespace AsmSim
                     string label = line.Substring(labelBeginPos, labelEndPos - labelBeginPos);
                     if (result.ContainsKey(label))
                     {
-                        Console.WriteLine(string.Format("WARNING: getLabels: found a clashing label \"{0}\" at line=\"{1}\".", label, lineNumber));
+                        Console.WriteLine(string.Format(Culture, "WARNING: getLabels: found a clashing label \"{0}\" at line=\"{1}\".", label, lineNumber));
                     }
                     else
                     {
                         result.Add(label, lineNumber);
                     }
-                    //Console.WriteLine(string.Format("INFO: getLabels: label=\"{0}\"; line=\"{1}\".", label, lineNumber));
+                    //Console.WriteLine(string.Format(AsmDudeToolsStatic.CultureUI, "INFO: getLabels: label=\"{0}\"; line=\"{1}\".", label, lineNumber));
                 }
             }
             return result;

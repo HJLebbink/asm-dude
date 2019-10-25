@@ -1,7 +1,7 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -22,7 +22,6 @@
 
 namespace AsmTools
 {
-
     /// <summary>Register Name Enumeration</summary>
     public enum Rn
     {
@@ -70,6 +69,6 @@ namespace AsmTools
 
         CR0, CR1, CR2, CR3, CR4, CR5, CR6, CR7, CR8,
         DR0, DR1, DR2, DR3, DR4, DR5, DR6, DR7,
-        BND0, BND1, BND2, BND3
+        BND0, BND1, BND2, BND3,
     };
 }

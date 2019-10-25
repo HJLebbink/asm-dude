@@ -459,7 +459,7 @@ namespace AsmDude.Tools
                         }
                         //catch (Exception e)
                         // {
-                        //    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:PreCalculate_LOCAL; e={1}", ToString(), e.ToString()));
+                        //    AsmDudeToolsStatic.Output_ERROR(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:PreCalculate_LOCAL; e={1}", ToString(), e.ToString()));
                         // }
                     }
                 }
@@ -996,7 +996,7 @@ namespace AsmDude.Tools
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Has_Register_Value; e={1}", this.ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output_ERROR(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Has_Register_Value; e={1}", this.ToString(), e.ToString()));
                 return (false, false);
             }
         }
@@ -1055,7 +1055,7 @@ namespace AsmDude.Tools
                         state = statesBefore[0];
                         break;
                     default:
-                        state = AsmSim.Tools.Collapse(statesBefore);
+                        state = Tools.Collapse(statesBefore);
                         foreach (State v in statesBefore)
                         {
                             v.Dispose();
@@ -1128,7 +1128,7 @@ namespace AsmDude.Tools
                         state = statesBefore[0];
                         break;
                     default:
-                        state = AsmSim.Tools.Collapse(statesBefore);
+                        state = Tools.Collapse(statesBefore);
                         foreach (State v in statesBefore)
                         {
                             v.Dispose();

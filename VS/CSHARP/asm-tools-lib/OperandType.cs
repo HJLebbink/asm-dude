@@ -1,7 +1,7 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -20,12 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.ComponentModel;
-using System.Text;
-
 namespace AsmTools
 {
+    using System;
+    using System.ComponentModel;
+    using System.Globalization;
+    using System.Text;
 
     /// <summary>
     /// Operand Type: reg, mem, imm, UNKNOWN
@@ -36,7 +36,7 @@ namespace AsmTools
         reg = 1 << 0,
         mem = 1 << 1,
         imm = 1 << 2,
-        UNKNOWN = 1 << 3
+        UNKNOWN = 1 << 3,
     }
 
     /// <summary>
@@ -106,7 +106,7 @@ namespace AsmTools
         UNKNOWN_mem_reg = Ot1.UNKNOWN | (Ot1.mem << 4) | (Ot1.reg << 8),
         UNKNOWN_imm_reg = Ot1.UNKNOWN | (Ot1.imm << 4) | (Ot1.reg << 8),
         UNKNOWN_UNKNOWN_reg = Ot1.UNKNOWN | (Ot1.UNKNOWN << 4) | (Ot1.reg << 8),
-        ///
+        //
         reg_rem_mem = Ot1.reg | (Ot1.reg << 4) | (Ot1.mem << 8),
         reg_mem_mem = Ot1.reg | (Ot1.mem << 4) | (Ot1.mem << 8),
         reg_imm_mem = Ot1.reg | (Ot1.imm << 4) | (Ot1.mem << 8),
@@ -126,7 +126,7 @@ namespace AsmTools
         UNKNOWN_mem_mem = Ot1.UNKNOWN | (Ot1.mem << 4) | (Ot1.mem << 8),
         UNKNOWN_imm_mem = Ot1.UNKNOWN | (Ot1.imm << 4) | (Ot1.mem << 8),
         UNKNOWN_UNKNOWN_mem = Ot1.UNKNOWN | (Ot1.UNKNOWN << 4) | (Ot1.mem << 8),
-        ///
+        //
         reg_reg_imm = Ot1.reg | (Ot1.reg << 4) | (Ot1.imm << 8),
         reg_mem_imm = Ot1.reg | (Ot1.mem << 4) | (Ot1.imm << 8),
         reg_imm_imm = Ot1.reg | (Ot1.imm << 4) | (Ot1.imm << 8),
@@ -146,7 +146,7 @@ namespace AsmTools
         UNKNOWN_mem_imm = Ot1.UNKNOWN | (Ot1.mem << 4) | (Ot1.imm << 8),
         UNKNOWN_imm_imm = Ot1.UNKNOWN | (Ot1.imm << 4) | (Ot1.imm << 8),
         UNKNOWN_UNKNOWN_imm = Ot1.UNKNOWN | (Ot1.UNKNOWN << 4) | (Ot1.imm << 8),
-        ///
+        //
         reg_reg_UNKNOWN = Ot1.reg | (Ot1.reg << 4) | (Ot1.UNKNOWN << 8),
         reg_mem_UNKNOWN = Ot1.reg | (Ot1.mem << 4) | (Ot1.UNKNOWN << 8),
         reg_imm_UNKNOWN = Ot1.reg | (Ot1.imm << 4) | (Ot1.UNKNOWN << 8),
@@ -166,13 +166,10 @@ namespace AsmTools
         UNKNOWN_mem_UNKNOWN = Ot1.UNKNOWN | (Ot1.mem << 4) | (Ot1.UNKNOWN << 8),
         UNKNOWN_imm_UNKNOWN = Ot1.UNKNOWN | (Ot1.imm << 4) | (Ot1.UNKNOWN << 8),
         UNKNOWN_UNKNOWN_UNKNOWN = Ot1.UNKNOWN | (Ot1.UNKNOWN << 4) | (Ot1.UNKNOWN << 8),
-
     }
-
 
     public static partial class AsmSourceTools
     {
-
         public static string ToString(Ot1 ot)
         {
             StringBuilder sb = new StringBuilder();
@@ -190,6 +187,7 @@ namespace AsmTools
 
             return sb.ToString();
         }
+
         public static string ToString(Ot2 ot2)
         {
             StringBuilder sb = new StringBuilder();
@@ -207,6 +205,7 @@ namespace AsmTools
 
             return sb.ToString();
         }
+
         public static string ToString(Ot3 ot)
         {
             StringBuilder sb = new StringBuilder();
@@ -225,7 +224,7 @@ namespace AsmTools
             return sb.ToString();
         }
 
-        public static (Ot1, Ot1) SplitOt(Ot2 optup)
+        public static (Ot1 operand1, Ot1 operand2) SplitOt(Ot2 optup)
         {
             switch (optup)
             {
@@ -249,10 +248,12 @@ namespace AsmTools
                     return (Ot1.UNKNOWN, Ot1.UNKNOWN);
             }
         }
+
         public static Ot2 MergeOt(Ot1 ot1, Ot1 ot2)
         {
             return (Ot2)(((byte)ot1) | (((byte)ot2) << 4));
         }
+
         public static Ot3 MergeOt(Ot1 ot1, Ot1 ot2, Ot1 ot3)
         {
             return (Ot3)(((byte)ot1) | (((byte)ot2) << 4) | (((byte)ot3) << 8));

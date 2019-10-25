@@ -1,7 +1,7 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -20,18 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Diagnostics.Contracts;
-
 namespace AsmTools
 {
+    using System;
+    using System.Diagnostics.Contracts;
+
     public class Operand
     {
         private readonly string _str;
         private readonly Ot1 _type;
         private readonly Rn _rn = Rn.NOREG;
         private ulong _imm = 0;
+
         public int NBits { get; set; }
+
         private readonly (Rn BaseReg, Rn IndexReg, int Scale, long Displacement) _mem;
         public readonly string ErrorMessage;
 
@@ -43,7 +45,7 @@ namespace AsmTools
             token = AsmSourceTools.ToCapitals(token, isCapitals);
             this._str = token;
 
-            //TODO: properly handle optional elements {K}{Z} {AES}{ER}
+            // TODO: properly handle optional elements {K}{Z} {AES}{ER}
             string token2 = token.Contains("{")
                 ? token.
                     Replace("{K0}", string.Empty).
@@ -100,14 +102,18 @@ namespace AsmTools
         }
 
         public Ot1 Type { get { return this._type; } }
+
         public bool IsReg { get { return this._type == Ot1.reg; } }
+
         public bool IsMem { get { return this._type == Ot1.mem; } }
+
         public bool IsImm { get { return this._type == Ot1.imm; } }
 
         public Rn Rn { get { return this._rn; } }
+
         public ulong Imm { get { return this._imm; } }
 
-        /// <summary> Return tup with BaseReg, IndexReg, Scale and Displacement. Offset = Base + (Index * Scale) + Displacement </summary>
+        /// <summary> Gets tup with BaseReg, IndexReg, Scale and Displacement. Offset = Base + (Index * Scale) + Displacement </summary>
         public (Rn BaseReg, Rn IndexReg, int Scale, long Displacement) Mem { get { return this._mem; } }
 
         /// <summary> Sign Extend the imm to the provided number of bits;</summary>
@@ -153,6 +159,7 @@ namespace AsmTools
                 Console.WriteLine("WARNING: Operand:ZeroExtend: can only zero extend imm.");
             }
         }
+
         public override string ToString()
         {
             Contract.Assert(this._str != null);

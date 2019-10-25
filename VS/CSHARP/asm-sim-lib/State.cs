@@ -25,12 +25,15 @@ namespace AsmSim
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.Text;
     using AsmTools;
     using Microsoft.Z3;
 
     public class State : IDisposable
     {
+        private static readonly CultureInfo Culture = CultureInfo.CurrentUICulture;
+
         #region Fields
         public static readonly bool ADD_COMPUTED_VALUES = true;
 
@@ -895,7 +898,7 @@ namespace AsmSim
                 for (int i = 0; i < (int)this.Solver.NumAssertions; ++i)
                 {
                     BoolExpr e = this.Solver.Assertions[i];
-                    sb.AppendLine(identStr + string.Format("   {0}: {1}", i, ToolsZ3.ToString(e)));
+                    sb.AppendLine(identStr + string.Format(Culture, "   {0}: {1}", i, ToolsZ3.ToString(e)));
                 }
             }
             if (this.Tools.ShowUndefConstraints)
@@ -906,7 +909,7 @@ namespace AsmSim
                     for (int i = 0; i < (int)this.Solver_U.NumAssertions; ++i)
                     {
                         BoolExpr e = this.Solver_U.Assertions[i];
-                        sb.AppendLine(identStr + string.Format("   {0}: {1}", i, ToolsZ3.ToString(e)));
+                        sb.AppendLine(identStr + string.Format(Culture, "   {0}: {1}", i, ToolsZ3.ToString(e)));
                     }
                 }
             }
@@ -1045,7 +1048,11 @@ namespace AsmSim
 
         public Tv EqualValues(Rn reg1, Rn reg2)
         {
-            return this.EqualValues(this.Create(reg1), this.Create(reg2));
+            using (BitVecExpr expr1 = this.Create(reg1))
+            using (BitVecExpr expr2 = this.Create(reg2))
+            {
+                return this.EqualValues(expr1, expr2);
+            }
         }
 
         public Tv EqualValues(Expr value1, Expr value2)

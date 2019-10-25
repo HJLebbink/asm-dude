@@ -79,7 +79,7 @@ namespace AsmDude.CodeFolding
             ITagAggregator<AsmTokenTag> aggregator,
             ErrorListProvider errorListProvider)
         {
-            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:constructor", this.ToString()));
+            //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:constructor", this.ToString()));
             this._buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
             this._aggregator = aggregator ?? throw new ArgumentNullException(nameof(aggregator));
             this._errorListProvider = errorListProvider ?? throw new ArgumentNullException(nameof(errorListProvider));
@@ -87,14 +87,14 @@ namespace AsmDude.CodeFolding
             this._snapshot = buffer.CurrentSnapshot;
             this._regions = new List<Region>();
 
-            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:constructor; number of lines in file = {1}", this.ToString(), buffer.CurrentSnapshot.LineCount));
+            AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:constructor; number of lines in file = {1}", this.ToString(), buffer.CurrentSnapshot.LineCount));
 
             this._enabled = true;
 
             if (buffer.CurrentSnapshot.LineCount >= AsmDudeToolsStatic.MaxFileLines)
             {
                 this._enabled = false;
-                AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:CodeFoldingTagger; file {1} contains {2} lines which is more than maxLines {3}; switching off code folding", this.ToString(), AsmDudeToolsStatic.GetFilename(buffer), buffer.CurrentSnapshot.LineCount, AsmDudeToolsStatic.MaxFileLines));
+                AsmDudeToolsStatic.Output_WARNING(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:CodeFoldingTagger; file {1} contains {2} lines which is more than maxLines {3}; switching off code folding", this.ToString(), AsmDudeToolsStatic.GetFilename(buffer), buffer.CurrentSnapshot.LineCount, AsmDudeToolsStatic.MaxFileLines));
             }
 
             if (this._enabled)
@@ -304,7 +304,7 @@ namespace AsmDude.CodeFolding
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Is_Start_Masm_Keyword; e={1}", this.ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output_ERROR(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Is_Start_Masm_Keyword; e={1}", this.ToString(), e.ToString()));
             }
             return (-1, -1);
         }
@@ -648,7 +648,7 @@ namespace AsmDude.CodeFolding
         private void Disable()
         {
             string filename = AsmDudeToolsStatic.GetFilename(this._buffer);
-            string msg = string.Format("Performance of CodeFoldingTagger is horrible: disabling folding for {0}.", filename);
+            string msg = string.Format(AsmDudeToolsStatic.CultureUI, "Performance of CodeFoldingTagger is horrible: disabling folding for {0}.", filename);
             AsmDudeToolsStatic.Output_WARNING(msg);
 
             this._enabled = false;

@@ -1,17 +1,17 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,14 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.Contracts;
-using System.Globalization;
-
 namespace AsmTools
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Diagnostics.Contracts;
+    using System.Globalization;
+
     public enum Mnemonic
     {
         NONE,
@@ -35,8 +35,8 @@ namespace AsmTools
         HLT,
 
         #region Data Transfer Instructions
-        //The data transfer instructions move data between memory and the general-purpose and segment registers. They
-        //also perform specific operations such as conditional moves, stack access, and data conversion.
+        // The data transfer instructions move data between memory and the general-purpose and segment registers. They
+        // also perform specific operations such as conditional moves, stack access, and data conversion.
 
         /// <summary>Move data between general-purpose registers; move data between memory and general purpose or segment registers; move immediates to general-purpose registers</summary>
         MOV,
@@ -177,7 +177,7 @@ namespace AsmTools
         CMP,
         #endregion
         #region Decimal Arithmetic Instructions
-        //The decimal arithmetic instructions perform decimal arithmetic on binary coded decimal (BCD) data.
+        // The decimal arithmetic instructions perform decimal arithmetic on binary coded decimal (BCD) data.
 
         /// <summary>Decimal adjust after addition</summary>
         DAA,
@@ -193,8 +193,8 @@ namespace AsmTools
         AAD,
         #endregion
         #region Logical Instructions
-        //The logical instructions perform basic AND, OR, XOR, and NOT logical operations on byte, word, and doubleword
-        //values.
+        // The logical instructions perform basic AND, OR, XOR, and NOT logical operations on byte, word, and doubleword
+        // values.
         /// <summary>Perform bitwise logical AND</summary>
         AND,
         /// <summary> Perform bitwise logical OR</summary>
@@ -205,7 +205,7 @@ namespace AsmTools
         NOT,
         #endregion
         #region Shift and Rotate Instructions
-        //The shift and rotate instructions shift and rotate the bits in word and doubleword operands.
+        // The shift and rotate instructions shift and rotate the bits in word and doubleword operands.
         /// <summary>Shift arithmetic right</summary>
         SAR,
         /// <summary>Shift logical right</summary>
@@ -228,8 +228,8 @@ namespace AsmTools
         RCL,
         #endregion
         #region Bit and Byte Instructions
-        //Bit instructions test and modify individual bits in word and doubleword operands. Byte instructions set the value of
-        //a byte operand to indicate the status of flags in the EFLAGS register.
+        // Bit instructions test and modify individual bits in word and doubleword operands. Byte instructions set the value of
+        // a byte operand to indicate the status of flags in the EFLAGS register.
         /// <summary>Bit test</summary>
         BT,
         /// <summary>Bit test and set</summary>
@@ -311,7 +311,7 @@ namespace AsmTools
         #endregion
         #region Control Transfer Instructions
         // The control transfer instructions provide jump, conditional jump, loop, and call and return operations to control
-        //program flow.
+        // program flow.
         /// <summary>Jump</summary>
         JMP,
         /// <summary>Jump if equal</summary>
@@ -381,7 +381,7 @@ namespace AsmTools
         /// <summary>Jump register RCX zero</summary>
         JRCXZ,
         /// <summary>Loop with ECX counter</summary>
-        LOOP,// 
+        LOOP,
         /// <summary>Loop with ECX and zero</summary>
         LOOPZ,
         /// <summary>Loop with ECX and equal</summary>
@@ -538,7 +538,7 @@ namespace AsmTools
         #endregion
         #endregion
         #region I/O Instructions
-        //These instructions move data between the processor’s I/O ports and a register or memory.
+        // These instructions move data between the processor’s I/O ports and a register or memory.
         /// <summary>Read from a port</summary>
         IN,
         /// <summary>Write to a port</summary>
@@ -571,7 +571,7 @@ namespace AsmTools
         REP_OUTSD,
         #endregion
         #region Flag Control (EFLAG) Instructions
-        //The flag control instructions operate on the flags in the EFLAGS register.
+        // The flag control instructions operate on the flags in the EFLAGS register.
         /// <summary>Set carry flag</summary>
         STC,
         /// <summary>Clear the carry flag</summary>
@@ -600,7 +600,7 @@ namespace AsmTools
         CLI,
         #endregion
         #region Segment Register Instructions
-        //The segment register instructions allow far pointers (segment addresses) to be loaded into the segment registers.
+        // The segment register instructions allow far pointers (segment addresses) to be loaded into the segment registers.
         /// <summary>Load far pointer using DS</summary>
         LDS,
         /// <summary> Load far pointer using ES</summary>
@@ -613,8 +613,8 @@ namespace AsmTools
         LSS,
         #endregion
         #region Miscellaneous Instructions
-        //The miscellaneous instructions provide such functions as loading an effective address, executing a “no-operation,”
-        //and retrieving processor identification information.
+        // The miscellaneous instructions provide such functions as loading an effective address, executing a “no-operation,”
+        // and retrieving processor identification information.
         /// <summary>Load effective address</summary>
         LEA,
         /// <summary>No operation</summary>
@@ -624,7 +624,6 @@ namespace AsmTools
         UD01,
         UD1,
         UD2,
-
 
         /// <summary>Table lookup translation</summary>
         XLAT,
@@ -2322,9 +2321,7 @@ namespace AsmTools
         RDSHR,
         #endregion
 
-
         PPMULHRWA,
-
 
         /// <summary>Dot Product of Signed Words with Dword Accumulation (4-iterations)</summary>
         VP4DPWSSD,
@@ -2466,7 +2463,7 @@ namespace AsmTools
         VDPBF16PS,
 
         VP2INTERSECTD,
-        VP2INTERSECTQ
+        VP2INTERSECTQ,
     }
 
     /// <summary>
@@ -2480,7 +2477,7 @@ namespace AsmTools
         L = (byte)'L',
         Q = (byte)'Q',
         T = (byte)'T',
-        NONE = 0xFF
+        NONE = 0xFF,
     }
 
     public static partial class AsmSourceTools
@@ -2612,7 +2609,7 @@ namespace AsmTools
             return Mnemonic.NONE;
         }
 
-        public static (Mnemonic, AttType) ParseMnemonic_Att(string str, bool strIsCapitals = false)
+        public static (Mnemonic mnemonic, AttType attribute_type) ParseMnemonic_Att(string str, bool strIsCapitals = false)
         {
             Contract.Requires(str != null);
 
@@ -4773,6 +4770,7 @@ namespace AsmTools
             Console.WriteLine("ParseMnemonic OLD " + stopwatch1.ElapsedMilliseconds + " ms");
             Console.WriteLine("ParseMnemonic     " + stopwatch2.ElapsedMilliseconds + " ms");
         }
+
         public static void SpeedTestRegister()
         {
             Stopwatch stopwatch1 = new Stopwatch();

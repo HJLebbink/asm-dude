@@ -8,8 +8,6 @@ namespace AsmTools
     {
         private readonly IDictionary<string, long> _startTimeTicks;
         private readonly IDictionary<string, double> _totalTimeInSec;
-        public bool On { get; set; }
-
 
         /// <summary> Constructor </summary>
         public StopWatch()
@@ -18,6 +16,7 @@ namespace AsmTools
             this._startTimeTicks = new Dictionary<string, long>();
             this._totalTimeInSec = new Dictionary<string, double>();
         }
+        public bool On { get; set; }
 
         public void Reset()
         {

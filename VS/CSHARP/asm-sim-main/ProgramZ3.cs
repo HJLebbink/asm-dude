@@ -1,7 +1,7 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -20,18 +20,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmTools;
-using Microsoft.Z3;
-using QuickGraph;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-
 namespace AsmSim
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+    using System.Reflection;
+    using AsmTools;
+    using Microsoft.Z3;
+    using QuickGraph;
+
     internal class AsmSimMain
     {
+        private static readonly CultureInfo Culture = CultureInfo.CurrentUICulture;
+
         [STAThread]
         private static void Main(string[] args)
         {
@@ -39,30 +42,30 @@ namespace AsmSim
             Assembly thisAssem = typeof(AsmSimMain).Assembly;
             AssemblyName thisAssemName = thisAssem.GetName();
             System.Version ver = thisAssemName.Version;
-            Console.WriteLine(string.Format("Loaded AsmSim version {0}.", ver));
+            Console.WriteLine(string.Format(Culture, "Loaded AsmSim version {0}.", ver));
 
-            //ExpressionTest();
-            //TestMem2();
-            //TestExecutionTree();
-            //TestGraph();
-            //TestMnemonic();
-            //Test_Rep();
-            //Test_Usage();
+            // ExpressionTest();
+            // TestMem2();
+            // TestExecutionTree();
+            // TestGraph();
+            // TestMnemonic();
+            // Test_Rep();
+            // Test_Usage();
             if (true)
             {
                 TestMemorySpeed();
             }
-            //TestDynamicFlow();
-            //TestSIMD();
+            // TestDynamicFlow();
+            // TestSIMD();
             if (false)
             {
                 EmptyMemoryTest();
             }
-            //ProgramSynthesis1();
-            //TestFunctions();
-            //TacticTest();
-            //TestMemoryLeak();
-            //Test_NullReference_Bsf_1();
+            // ProgramSynthesis1();
+            // TestFunctions();
+            // TacticTest();
+            // TestMemoryLeak();
+            // Test_NullReference_Bsf_1();
 
             if (false)
             {
@@ -75,26 +78,26 @@ namespace AsmSim
             }
 
             double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
-            Console.WriteLine(string.Format("Elapsed time " + elapsedSec + " sec"));
-            Console.WriteLine(string.Format("Press any key to continue."));
+            Console.WriteLine(string.Format(Culture, "Elapsed time " + elapsedSec + " sec"));
+            Console.WriteLine(string.Format(Culture, "Press any key to continue."));
             Console.ReadKey();
         }
 
         private static Tools CreateTools(int timeOut = 1000)
         {
-            /* The following parameters can be set: 
+            /* The following parameters can be set:
                     - proof (Boolean) Enable proof generation
                     - debug_ref_count (Boolean) Enable debug support for Z3_ast reference counting
-                    - trace (Boolean) Tracing support for VCC 
-                    - trace_file_name (String) Trace out file for VCC traces 
-                    - timeout (unsigned) default timeout (in milliseconds) used for solvers 
-                    - well_sorted_check type checker 
-                    - auto_config use heuristics to automatically select solver and configure it 
-                    - model model generation for solvers, this parameter can be overwritten when creating a solver 
-                    - model_validate validate models produced by solvers 
-                    - unsat_core unsat-core generation for solvers, this parameter can be overwritten when creating 
-                            a solver Note that in previous versions of Z3, this constructor was also used to set 
-                            global and module parameters. For this purpose we should now use 
+                    - trace (Boolean) Tracing support for VCC
+                    - trace_file_name (String) Trace out file for VCC traces
+                    - timeout (unsigned) default timeout (in milliseconds) used for solvers
+                    - well_sorted_check type checker
+                    - auto_config use heuristics to automatically select solver and configure it
+                    - model model generation for solvers, this parameter can be overwritten when creating a solver
+                    - model_validate validate models produced by solvers
+                    - unsat_core unsat-core generation for solvers, this parameter can be overwritten when creating
+                            a solver Note that in previous versions of Z3, this constructor was also used to set
+                            global and module parameters. For this purpose we should now use
                             Microsoft.Z3.Global.SetParameter(System.String,System.String)
             */
 
@@ -103,22 +106,22 @@ namespace AsmSim
                 { "unsat_core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" },         // enable proof generation
-                { "timeout", timeOut.ToString() }
+                { "timeout", timeOut.ToString() },
             };
             return new Tools(settings);
         }
 
         private static State CreateState(Tools tools)
         {
-            string tailKey = "!0";// Tools.CreateKey(tools.Rand);
+            string tailKey = "!0"; // Tools.CreateKey(tools.Rand);
             string headKey = tailKey;
             return new State(tools, tailKey, headKey);
         }
 
         private static void ExpressionTest()
         {
-            (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Evaluate_Constant("01b", false);
-            Console.WriteLine("valid = " + Value + "; value = " + Value, "; nBits = " + NBits);
+            (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant("01b", false);
+            Console.WriteLine("valid = " + value + "; value = " + value, "; nBits = " + nBits);
         }
 
         private static void TestExecutionTree()
@@ -135,11 +138,11 @@ namespace AsmSim
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" },         // enable proof generation
-                { "timeout", "1000" }
+                { "timeout", "1000" },
             };
             Tools tools = new Tools(settings)
             {
-                Quiet = false
+                Quiet = false,
             };
             StaticFlow sFlow = new StaticFlow(tools);
             sFlow.Update(programStr);
@@ -158,7 +161,7 @@ namespace AsmSim
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" },         // enable proof generation
-                { "timeout", "1000" }
+                { "timeout", "1000" },
             };
             Tools tools = new Tools(settings);
             tools.StateConfig.Set_All_Off();
@@ -169,7 +172,7 @@ namespace AsmSim
                 string line1 = "xorpd xmm1, xmm1";
                 string line2 = "addpd xmm1, xmm1";
 
-                {   // forward
+                { // forward
                     string rootKey = "!0";
                     State state = new State(tools, rootKey, rootKey);
 
@@ -188,14 +191,14 @@ namespace AsmSim
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" },         // enable proof generation
-                { "timeout", "60000" }        // 60000=1min
+                { "timeout", "60000" },        // 60000=1min
             };
             using (Context ctx = new Context(settings))
             {
                 /*
                 string line1 = "mov qword ptr [rax], rbx";
                 string line2 = "mov rcx, qword ptr [rax]";
-                 * 
+                 *
                 (declare-const RAX!0 (_ BitVec 64))
                 (declare-const RAX!1 (_ BitVec 64))
                 (declare-const RAX!2 (_ BitVec 64))
@@ -223,11 +226,11 @@ namespace AsmSim
                 (assert (= MEM!2 MEM!1))
                  */
 
-                //Solver solver = ctx.MkSolver("QF_ABV");
-                //Solver solver = ctx.MkSolver("QF_BV");
-                //Solver solver = ctx.MkSolver(ctx.MkTactic("qfbv"));
-                //Solver solver = ctx.MkSolver(ctx.MkTactic("simplify"));
-                //Solver solver = ctx.MkSimpleSolver();
+                // Solver solver = ctx.MkSolver("QF_ABV");
+                // Solver solver = ctx.MkSolver("QF_BV");
+                // Solver solver = ctx.MkSolver(ctx.MkTactic("qfbv"));
+                // Solver solver = ctx.MkSolver(ctx.MkTactic("simplify"));
+                // Solver solver = ctx.MkSimpleSolver();
                 Solver solver = ctx.MkSolver();
 
                 #region Create 3 64bit-registers and 1 64-bit memory location, at 3 time stamps
@@ -320,7 +323,7 @@ namespace AsmSim
                     solver.Assert(ctx.MkEq(rcx2, y));
                     solver.Assert(ctx.MkEq(mem2, mem1));
                 }
-                //Console.WriteLine(solver);
+                // Console.WriteLine(solver);
                 Console.WriteLine("========================");
 
                 bool method1 = false;
@@ -351,7 +354,7 @@ namespace AsmSim
                     }
                     double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
                     Console.WriteLine("Status Neg = " + status + ": Elapsed time " + elapsedSec + " sec");
-                    //Console.WriteLine(solver);
+                    // Console.WriteLine(solver);
                     Console.WriteLine("========================");
 
                     if (method1)
@@ -391,7 +394,7 @@ namespace AsmSim
                     }
                     double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
                     Console.WriteLine("Status Pos = " + status + ": Elapsed time " + elapsedSec + " sec");
-                    //Console.WriteLine(solver);
+                    // Console.WriteLine(solver);
                     Console.WriteLine("========================");
                     if (method1)
                     {
@@ -430,7 +433,7 @@ namespace AsmSim
                     }
                     double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
                     Console.WriteLine("Status Neg = " + status + ": Elapsed time " + elapsedSec + " sec");
-                    //Console.WriteLine(solver);
+                    // Console.WriteLine(solver);
                     Console.WriteLine("========================");
 
                     if (method1)
@@ -465,13 +468,13 @@ namespace AsmSim
 
             string ToString(long vertex, int depth)
             {
-                string result = "";
+                string result = string.Empty;
                 for (int i = 0; i < depth; ++i)
                 {
                     result += "  ";
                 }
 
-                result += vertex.ToString() + "\n";
+                result += vertex.ToString(Culture) + "\n";
 
                 foreach (TaggedEdge<long, bool> v in graph.OutEdges(vertex))
                 {
@@ -483,8 +486,7 @@ namespace AsmSim
 
             Console.WriteLine(ToString(rootVertex, 0));
 
-            //            graph.
-
+            // graph.
         }
 
         private static void TestMem2()
@@ -494,7 +496,7 @@ namespace AsmSim
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" },         // enable proof generation
-                { "timeout", "20000" }
+                { "timeout", "20000" },
             };
 
             using (Context ctx = new Context(settings))
@@ -527,7 +529,7 @@ namespace AsmSim
                 else
                 {
                     BitVecExpr address = ctx.MkBVConst("address", 64);
-                    //solver.Assert(ctx.MkForall(new Expr[] { address, mem0, mem1, rax1, rbx1 }, ctx.MkImplies(ctx.MkAnd(ctx.MkBVULE(ctx.MkBV(10, 64), address), ctx.MkBVULE(address, ctx.MkBV(5, 64))), ctx.MkEq(mem1, ctx.MkStore(mem0, address, value2)))));
+                    // solver.Assert(ctx.MkForall(new Expr[] { address, mem0, mem1, rax1, rbx1 }, ctx.MkImplies(ctx.MkAnd(ctx.MkBVULE(ctx.MkBV(10, 64), address), ctx.MkBVULE(address, ctx.MkBV(5, 64))), ctx.MkEq(mem1, ctx.MkStore(mem0, address, value2)))));
                     solver.Assert(ctx.MkForall(new Expr[] { address, mem0, mem1, rax1, rbx1 }, ctx.MkImplies(ctx.MkOr(ctx.MkEq(ctx.MkBV(10, 64), address), ctx.MkEq(address, ctx.MkBV(5, 64))), ctx.MkEq(mem1, ctx.MkStore(mem0, address, value2)))));
                     solver.Assert(ctx.MkEq(rax1, ctx.MkZeroExt(64 - 8, ctx.MkSelect(mem1, address1) as BitVecExpr)));
                     solver.Assert(ctx.MkEq(rbx1, ctx.MkZeroExt(64 - 8, ctx.MkSelect(mem1, address2) as BitVecExpr)));
@@ -545,7 +547,7 @@ namespace AsmSim
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" },         // enable proof generation
-                { "timeout", "1000" }
+                { "timeout", "1000" },
             };
             Tools tools = new Tools(settings);
             tools.StateConfig.Set_All_Off();
@@ -560,14 +562,13 @@ namespace AsmSim
                     tools.StateConfig.RDI = true;
                     tools.StateConfig.Mem = true;
 
-
-                    string line1 = "std"; //std = set direction flag
+                    string line1 = "std"; // std = set direction flag
                     string line2 = "mov rdi, 100";
                     string line3 = "mov rsi, 200";
                     string line4 = "mov rcx, 3";
                     string line5 = "rep movs";
 
-                    {   // forward
+                    { // forward
                         string rootKey = "!INIT";
                         State state = new State(tools, rootKey, rootKey);
 
@@ -591,7 +592,7 @@ namespace AsmSim
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" },         // enable proof generation
-                { "timeout", "1000" }
+                { "timeout", "1000" },
             };
             Tools tools = new Tools(settings);
 
@@ -603,7 +604,6 @@ namespace AsmSim
 
             Console.WriteLine("read = " + string.Join(",", read));
             Console.WriteLine("write = " + string.Join(",", write));
-
         }
 
         private static void TestMnemonic()
@@ -613,23 +613,22 @@ namespace AsmSim
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" },         // enable proof generation
-                { "timeout", "1000" }
+                { "timeout", "1000" },
             };
             Tools tools = new Tools(settings);
             tools.StateConfig.Set_All_Off();
             using (Context ctx = new Context(settings))
             {
-
                 if (false)
                 {
                     tools.StateConfig.Set_All_Off();
-                    //tools.StateConfig.Set_All_Flags_On();
+                    // tools.StateConfig.Set_All_Flags_On();
                     tools.StateConfig.RAX = true;
 
                     string line1 = "mov rax, 1";
                     string line2 = "shl rax, 65"; // special behaviour: shift left too large; 65 mod 64 = 1
 
-                    {   // forward
+                    { // forward
                         string rootKey = "!INIT";
                         State state = new State(tools, rootKey, rootKey);
 
@@ -707,7 +706,6 @@ namespace AsmSim
                     state = Runner.SimpleStep_Forward(line2, state);
                     state = Runner.SimpleStep_Forward(line3, state);
                     Console.WriteLine("After \"" + line3 + "\", we know:\n" + state);
-
                 }
                 if (false)
                 {
@@ -728,7 +726,6 @@ namespace AsmSim
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                     state = Runner.SimpleStep_Backward(line1, state);
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
-
                 }
                 if (false)
                 {
@@ -747,7 +744,7 @@ namespace AsmSim
                     updateState.Set(Rn.BL, b);
 
                     state.Update_Forward(updateState);
-                    //if (logToDisplay) Console.WriteLine("Before \"" + line1 + "\", we know:\n" + state);
+                    // if (logToDisplay) Console.WriteLine("Before \"" + line1 + "\", we know:\n" + state);
 
                     state = Runner.SimpleStep_Forward(line1, state);
                     Console.WriteLine("After \"" + line1 + "\", we know:\n" + state);
@@ -762,7 +759,7 @@ namespace AsmSim
                     tools.StateConfig.ZF = true;
 
                     string programStr =
-                        //"           xor     rax,        rax             " + Environment.NewLine +
+                        // "           xor     rax,        rax             " + Environment.NewLine +
                         "           jz      label1                      " + Environment.NewLine +
                         "           mov     rax,        1               " + Environment.NewLine +
                         "           jmp     label2                      " + Environment.NewLine +
@@ -852,7 +849,7 @@ namespace AsmSim
                     DynamicFlow tree1 = Runner.Construct_DynamicFlow_Forward(sFlow1, tools);
                     DynamicFlow tree2 = Runner.Construct_DynamicFlow_Forward(sFlow2, tools);
 
-                    //Console.WriteLine(tree1.ToString(flow1));
+                    // Console.WriteLine(tree1.ToString(flow1));
                     State state1 = tree1.EndState;
                     State state2 = tree2.EndState;
 
@@ -881,8 +878,7 @@ namespace AsmSim
                     DynamicFlow tree1 = Runner.Construct_DynamicFlow_Forward(sFlow1, tools);
                     DynamicFlow tree2 = Runner.Construct_DynamicFlow_Forward(sFlow2, tools);
 
-                    //Console.WriteLine(tree1.ToString(flow1));
-
+                    // Console.WriteLine(tree1.ToString(flow1));
 
                     State state1 = tree1.Leafs.ElementAt(0);
                     State state2 = tree2.Leafs.ElementAt(0);
@@ -984,12 +980,12 @@ namespace AsmSim
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" },         // enable proof generation
-                { "timeout", "1000" }
+                { "timeout", "1000" },
             };
 
             Tools tools = new Tools(settings)
             {
-                ShowUndefConstraints = false
+                ShowUndefConstraints = false,
             };
 
             StaticFlow sFlow = new StaticFlow(tools);
@@ -1001,10 +997,10 @@ namespace AsmSim
             {
                 tools.Quiet = true;
                 DynamicFlow dFlow = Runner.Construct_DynamicFlow_Forward(sFlow, tools);
-                //DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
+                // DynamicFlow dFlow = Runner.Construct_DynamicFlow_Backward(sFlow, tools);
 
-                //Console.WriteLine(dFlow.ToString(sFlow));
-                //DotVisualizer.SaveToDot(sFlow, dFlow, "test1.dot");
+                // Console.WriteLine(dFlow.ToString(sFlow));
+                // DotVisualizer.SaveToDot(sFlow, dFlow, "test1.dot");
 
                 if (false)
                 {
@@ -1034,7 +1030,7 @@ namespace AsmSim
             {
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
-                { "proof", "false" }         // enable proof generation
+                { "proof", "false" },         // enable proof generation
             };
 
             using (Context ctx = new Context(settings))
@@ -1059,7 +1055,6 @@ namespace AsmSim
                     Expr retrievedValue2 = ctx.MkSelect(mem1, address2);
                     Console.WriteLine("Retrieved value 2 " + retrievedValue2);
                     Console.WriteLine("Retrieved value 2 Simplified " + retrievedValue2.Simplify());
-
                 }
                 if (true)
                 {
@@ -1076,7 +1071,7 @@ namespace AsmSim
                     Console.WriteLine("Retrieved value 1 Simplified " + retrievedValue1.Simplify());
 
                     Expr retrievedValue2 = ctx.MkSelect(mem1, address2);
-                    //Console.WriteLine("Retrieved value 2 " + retrievedValue2);
+                    // Console.WriteLine("Retrieved value 2 " + retrievedValue2);
                     Console.WriteLine("Retrieved value 2 Simplified " + retrievedValue2.Simplify());
                 }
             }
@@ -1090,7 +1085,7 @@ namespace AsmSim
                 {
                     { "unsat-core", "false" },    // enable generation of unsat cores
                     { "model", "true" },         // enable model generation
-                    { "proof", "false" }         // enable proof generation
+                    { "proof", "false" },         // enable proof generation
                 };
                 using (Context ctx = new Context(settings))
                 {
@@ -1131,7 +1126,7 @@ namespace AsmSim
                 {
                     { "unsat-core", "true" },    // enable generation of unsat cores
                     { "model", "true" },         // enable model generation
-                    { "proof", "false" }         // enable proof generation
+                    { "proof", "false" },         // enable proof generation
                 };
                 using (Context ctx = new Context(settings))
                 {
@@ -1145,7 +1140,7 @@ namespace AsmSim
                     BoolExpr switch_XOR_RAX_RAX = ctx.MkBoolConst("switch_XOR_RAX_RAX"); // switch on/off instruction 1
                     BoolExpr switch_INC_RAX = ctx.MkBoolConst("switch_INC_RAX"); // switch on/off instruction 2
 
-                    //solver.Assert(switch_XOR_RAX_RAX); // this instruction should not be allowed
+                    // solver.Assert(switch_XOR_RAX_RAX); // this instruction should not be allowed
                     solver.Assert(switch_INC_RAX); // this instruction has to be allowed
 
                     solver.Assert(ctx.MkImplies(switch_XOR_RAX_RAX, ctx.MkEq(rax_1, ctx.MkBV(0, 8))));
@@ -1174,7 +1169,7 @@ namespace AsmSim
                                 ctx.MkEq(reg_0, reg_1))
                             )
                         ));
-                        //solver.Assert(ctx.MkNot(ctx.MkEq(rax_0, ctx.MkBV(0, 64))));
+                        // solver.Assert(ctx.MkNot(ctx.MkEq(rax_0, ctx.MkBV(0, 64))));
                         /*
                         solver.Assert(ctx.MkNot(ctx.MkQuantifier(false, new Expr[] { reg1 },
                             ctx.MkAnd(ctx.MkEq(reg1, rax_1), ctx.MkNot(ctx.MkEq(reg1, ctx.MkBVAdd(rax_0, ctx.MkBV(1, 8)))))
@@ -1189,14 +1184,12 @@ namespace AsmSim
                         */
                     }
 
-
                     foreach (BoolExpr b in solver.Assertions)
                     {
                         Console.WriteLine("Solver A: " + b);
                     }
 
                     Console.WriteLine("-------------");
-
 
                     Status status = solver.Check();
                     Console.WriteLine("Status = " + status);
@@ -1222,7 +1215,7 @@ namespace AsmSim
                 {
                     { "unsat-core", "true" },    // enable generation of unsat cores
                     { "model", "true" },         // enable model generation
-                    { "proof", "false" }         // enable proof generation
+                    { "proof", "false" },         // enable proof generation
                 };
                 using (Context ctx = new Context(settings))
                 {
@@ -1253,36 +1246,34 @@ namespace AsmSim
                     solver.Assert(ctx.MkAtMost(new BoolExpr[] { switch_L1_INC_RAX, switch_L1_INC_RBX, switch_L1_XOR_RAX_RAX, switch_L1_XOR_RBX_RBX }, 1));
                     solver.Assert(ctx.MkOr(new BoolExpr[] { switch_L1_INC_RAX, switch_L1_INC_RBX, switch_L1_XOR_RAX_RAX, switch_L1_XOR_RBX_RBX }));
 
-
-                    BitVecExpr ZERO = ctx.MkBV(0, 64);
-                    BitVecExpr ONE = ctx.MkBV(1, 64);
-
+                    BitVecExpr zERO = ctx.MkBV(0, 64);
+                    BitVecExpr oNE = ctx.MkBV(1, 64);
 
                     // INC RAX
                     solver.Assert(ctx.MkImplies(
                         ctx.MkAnd(switch_L1_INC_RAX),
-                        ctx.MkAnd(ctx.MkEq(rax1, ctx.MkBVAdd(rax0, ONE)),
+                        ctx.MkAnd(ctx.MkEq(rax1, ctx.MkBVAdd(rax0, oNE)),
                         rax0_goal, // make the prerequisite a goal
                         rax1_goal, // make application of this rule goal directed
-                        rax0_input, //rax0 is  based on (variable) input but is not a constant
-                        rax1_input)) //rax1 is  based on (variable) input but is not a constant
+                        rax0_input, // rax0 is  based on (variable) input but is not a constant
+                        rax1_input)) // rax1 is  based on (variable) input but is not a constant
                     );
 
                     // INC RBX
                     solver.Assert(ctx.MkImplies(
                         ctx.MkAnd(switch_L1_INC_RBX),
-                        ctx.MkAnd(ctx.MkEq(rax1, ctx.MkBVAdd(rbx0, ONE)),
+                        ctx.MkAnd(ctx.MkEq(rax1, ctx.MkBVAdd(rbx0, oNE)),
                         rbx0_goal, // make the prerequisite a goal
                         rbx1_goal, // make application of this rule goal directed
-                        rbx0_input, //rax0 is  based on (variable) input but is not a constant
-                        rbx1_input)) //rax1 is  based on (variable) input but is not a constant
+                        rbx0_input, // rax0 is  based on (variable) input but is not a constant
+                        rbx1_input)) // rax1 is  based on (variable) input but is not a constant
                     );
 
                     // XOR RAX, RAX
                     solver.Assert(ctx.MkImplies(
                         ctx.MkAnd(switch_L1_XOR_RAX_RAX),
-                        ctx.MkAnd(ctx.MkEq(rax1, ZERO),
-                        // rax0_goal is irelevant 
+                        ctx.MkAnd(ctx.MkEq(rax1, zERO),
+                        // rax0_goal is irelevant
                         rax1_goal, // make application of this rule goal directed
                         ctx.MkNot(rax0_input), // TODO: could this create inconsistencies with other instructions that updated rax!0
                         ctx.MkNot(rax1_input))) // rax1 is not based on (variable) input but is a constant
@@ -1291,14 +1282,14 @@ namespace AsmSim
                     // XOR RBX, RBX
                     solver.Assert(ctx.MkImplies(
                         ctx.MkAnd(switch_L1_XOR_RBX_RBX),
-                        ctx.MkAnd(ctx.MkEq(rbx1, ZERO),
-                        // rbx0_goal is irelevant 
+                        ctx.MkAnd(ctx.MkEq(rbx1, zERO),
+                        // rbx0_goal is irelevant
                         rbx1_goal, // make application of this rule goal directed
                         ctx.MkNot(rbx0_input), // TODO: could this create inconsistencies with other instructions that updated rax!0
                         ctx.MkNot(rbx1_input))) // rax1 is not based on (variable) input but is a constant
                     );
 
-                    {   // check INC RAX
+                    { // check INC RAX
                         solver.Push();
                         solver.Assert(ctx.MkEq(rax1, ctx.MkBVAdd(rax0, ctx.MkBV(1, 64))));
                         solver.Assert(rax0_input, rax1_goal);
@@ -1315,7 +1306,7 @@ namespace AsmSim
 
                         solver.Pop();
                     }
-                    {   // check XOR RAX, RAX
+                    { // check XOR RAX, RAX
                         solver.Push();
                         solver.Assert(ctx.MkEq(rax1, ctx.MkBV(0, 64)));
                         solver.Assert(ctx.MkNot(rax0_input));
@@ -1333,13 +1324,13 @@ namespace AsmSim
                         solver.Pop();
                     }
 
-                    Console.WriteLine("");
+                    Console.WriteLine(string.Empty);
                     foreach (BoolExpr b in solver.Assertions)
                     {
                         Console.WriteLine("Solver = " + b);
                     }
 
-                    Console.WriteLine("");
+                    Console.WriteLine(string.Empty);
 
                     Status status = solver.Check();
                     Console.WriteLine("Status = " + status + "\n");
@@ -1349,7 +1340,6 @@ namespace AsmSim
                         {
                             Console.WriteLine("Model: " + f.Name + " = " + solver.Model.ConstInterp(f));
                         }
-
                     }
                     else
                     {
@@ -1358,7 +1348,7 @@ namespace AsmSim
                             Console.WriteLine("Unsat: " + b);
                         }
                     }
-                    Console.WriteLine("");
+                    Console.WriteLine(string.Empty);
 
                     /*
 
@@ -1385,9 +1375,9 @@ namespace AsmSim
             }
             else
             {
-                //ProgramSyntesizer ps = new ProgramSyntesizer(3, new Rn[] { Rn.RAX, Rn.RBX, Rn.RCX, Rn.RDX });
-                //ProgramSyntesizer ps = new ProgramSyntesizer(2, new Rn[] { Rn.RAX });
-                //ps.Run();
+                // ProgramSyntesizer ps = new ProgramSyntesizer(3, new Rn[] { Rn.RAX, Rn.RBX, Rn.RCX, Rn.RDX });
+                // ProgramSyntesizer ps = new ProgramSyntesizer(2, new Rn[] { Rn.RAX });
+                // ps.Run();
             }
         }
 
@@ -1433,7 +1423,6 @@ namespace AsmSim
         {
             using (Context ctx = new Context())
             {
-
                 if (false)
                 {
                     #region Doc
@@ -1583,7 +1572,7 @@ namespace AsmSim
                 { "unsat-core", "false" },    // enable generation of unsat cores
                 { "model", "false" },         // enable model generation
                 { "proof", "false" },         // enable proof generation
-                { "timeout", "1000" }
+                { "timeout", "1000" },
             };
             int nContexts = 4000;
 
@@ -1594,7 +1583,7 @@ namespace AsmSim
                 using (Context ctx = new Context(settings))
                 using (Solver s = ctx.MkSolver())
                 {
-                    //ctxArray[i] = ctx;
+                    // ctxArray[i] = ctx;
 
                     using (BitVecExpr rax = ctx.MkBVConst("RAX!0", 64))
                     using (BitVecExpr rbx = ctx.MkBVConst("RBX!0", 64))
@@ -1616,10 +1605,10 @@ namespace AsmSim
                         }
                     }
                 }
-                //System.GC.Collect();
+                // System.GC.Collect();
             }
 
-            Console.WriteLine(string.Format("When a key is pressed ctxArray goes out of scope and may be garbage collected."));
+            Console.WriteLine(string.Format(Culture, "When a key is pressed ctxArray goes out of scope and may be garbage collected."));
             Console.ReadKey();
             GC.Collect();
         }
@@ -1635,7 +1624,7 @@ namespace AsmSim
             string line1 = "mov rbx, 00010000_00000000_00000000_00000000_00000000_00000000_00000000_00001110b";
             string line2 = "bsf rax, rbx";
 
-            {   // forward
+            { // forward
                 State state = CreateState(tools);
 
                 state = Runner.SimpleStep_Forward(line1, state);
@@ -1649,9 +1638,8 @@ namespace AsmSim
                 {
                     Console.WriteLine("After \"" + line2 + "\", we know:\n" + state);
                 }
-                //TestTools.AreEqual(Rn.RAX, 1, state);
+                // TestTools.AreEqual(Rn.RAX, 1, state);
             }
         }
-
     }
 }

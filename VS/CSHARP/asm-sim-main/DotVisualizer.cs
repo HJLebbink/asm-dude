@@ -1,7 +1,7 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -20,16 +20,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using QuickGraph;
-using QuickGraph.Graphviz;
-using QuickGraph.Graphviz.Dot;
-using System.Diagnostics.Contracts;
-using System.Drawing;
-using System.IO;
-using System.Windows.Forms;
-
 namespace AsmSim
 {
+    using System.Diagnostics.Contracts;
+    using System.Drawing;
+    using System.Globalization;
+    using System.IO;
+    using System.Windows.Forms;
+    using QuickGraph;
+    using QuickGraph.Graphviz;
+    using QuickGraph.Graphviz.Dot;
+
     public static class DotVisualizer
     {
         public static void SaveToDot(StaticFlow sFlow, DynamicFlow dFlow, string filename)
@@ -54,23 +55,24 @@ namespace AsmSim
 
         public static void ShowPicture(string filename)
         {
-            Form f = new Form();
-            //f.FormBorderStyle = FormBorderStyle.None;
-
-            PictureBox picture = new PictureBox()
+            using (Form f = new Form())
             {
-                ImageLocation = filename,
-                SizeMode = PictureBoxSizeMode.Normal,
-                Dock = DockStyle.Fill,
-                Size = new Size(100, 300)
-            };
-            f.Controls.Add(picture);
-            f.Size = picture.Size;
+                // f.FormBorderStyle = FormBorderStyle.None;
 
+                PictureBox picture = new PictureBox()
+                {
+                    ImageLocation = filename,
+                    SizeMode = PictureBoxSizeMode.Normal,
+                    Dock = DockStyle.Fill,
+                    Size = new Size(100, 300),
+                };
+                f.Controls.Add(picture);
+                f.Size = picture.Size;
 
-            f.ShowDialog();
-            f.Refresh();
-            f.Show();
+                f.ShowDialog();
+                f.Refresh();
+                f.Show();
+            }
         }
 
         public static void Visualize(
@@ -90,7 +92,7 @@ namespace AsmSim
         {
             GraphvizEdgeLabel label = new GraphvizEdgeLabel
             {
-                Value = e.Edge.Tag
+                Value = e.Edge.Tag,
             };
             e.EdgeFormatter.Label = label;
         }
@@ -111,7 +113,7 @@ namespace AsmSim
                 if (true)
                 {
                     // assumes dot.exe is on the path:
-                    string args = string.Format(@"{0} -Tjpg -O", output);
+                    string args = string.Format(CultureInfo.InvariantCulture, @"{0} -Tjpg -O", output);
                     System.Diagnostics.Process process = System.Diagnostics.Process.Start("dot.exe", args);
                     if (true)
                     {

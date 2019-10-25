@@ -131,7 +131,7 @@ namespace AsmDude.SignatureHelp
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:AugmentSignatureHelpSession; e={1}", this.ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output_ERROR(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:AugmentSignatureHelpSession; e={1}", this.ToString(), e.ToString()));
             }
         }
 

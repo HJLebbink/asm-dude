@@ -45,6 +45,8 @@ namespace AsmDude.Tools
     public static class AsmDudeToolsStatic
     {
         private static bool first_log_message = true;
+        public static readonly CultureInfo CultureUI = CultureInfo.CurrentUICulture;
+
 
         #region Singleton Factories
 
@@ -85,7 +87,7 @@ namespace AsmDude.Tools
             double elapsedSec = (double)(DateTime.Now.Ticks - startTime.Ticks) / 10000000;
             if (elapsedSec > AsmDudePackage.SlowWarningThresholdSec)
             {
-                Output_WARNING(string.Format("SLOW: took {0} {1:F3} seconds to finish", component, elapsedSec));
+                Output_WARNING(string.Format(CultureUI, "SLOW: took {0} {1:F3} seconds to finish", component, elapsedSec));
             }
         }
 
@@ -156,7 +158,7 @@ namespace AsmDude.Tools
                 return false;
             }
 
-            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Guess_Intel_Syntax. file=\"{1}\"", "AsmDudeToolsStatic", AsmDudeToolsStatic.GetFilename(buffer)));
+            //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Guess_Intel_Syntax. file=\"{1}\"", "AsmDudeToolsStatic", AsmDudeToolsStatic.GetFilename(buffer)));
             ITextSnapshot snapshot = buffer.CurrentSnapshot;
             int registers_i = 0;
             int constants_i = 0;
@@ -165,7 +167,7 @@ namespace AsmDude.Tools
             for (int i = 0; i < Math.Min(snapshot.LineCount, nLinesMax); ++i)
             {
                 string line_upcase = snapshot.GetLineFromLineNumber(i).GetText().ToUpper(CultureInfo.InvariantCulture);
-                AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Guess_Intel_Syntax {1}:\"{2}\"", "AsmDudeToolsStatic", i, line_upcase));
+                Output_INFO(string.Format(CultureUI, "{0}:Guess_Intel_Syntax {1}:\"{2}\"", "AsmDudeToolsStatic", i, line_upcase));
 
                 List<string> keywords_upcase = AsmSourceTools.SplitIntoKeywordsList(line_upcase);
 
@@ -205,7 +207,7 @@ namespace AsmDude.Tools
                 Math.Max(Math.Min(1, mnemonics_i), -1);
 
             bool result = (total <= 0);
-            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Guess_Intel_Syntax; result {1}; file=\"{2}\"; registers {3}; constants {4}; mnemonics {5}", "AsmDudeToolsStatic", result, AsmDudeToolsStatic.GetFilename(buffer), registers_i, constants_i, mnemonics_i));
+            Output_INFO(string.Format(CultureUI, "{0}:Guess_Intel_Syntax; result {1}; file=\"{2}\"; registers {3}; constants {4}; mnemonics {5}", "AsmDudeToolsStatic", result, GetFilename(buffer), registers_i, constants_i, mnemonics_i));
             return result;
         }
 
@@ -214,14 +216,14 @@ namespace AsmDude.Tools
         {
             Contract.Requires(buffer != null);
 
-            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Guess_Masm_Syntax. file=\"{1}\"", "AsmDudeToolsStatic", AsmDudeToolsStatic.GetFilename(buffer)));
+            //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Guess_Masm_Syntax. file=\"{1}\"", "AsmDudeToolsStatic", AsmDudeToolsStatic.GetFilename(buffer)));
             ITextSnapshot snapshot = buffer.CurrentSnapshot;
             int evidence_masm = 0;
 
             for (int i = 0; i < Math.Min(snapshot.LineCount, nLinesMax); ++i)
             {
                 string line_upcase = snapshot.GetLineFromLineNumber(i).GetText().ToUpper(CultureInfo.InvariantCulture);
-                //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Guess_Masm_Syntax {1}:\"{2}\"", "AsmDudeToolsStatic", i, line_capitals));
+                //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Guess_Masm_Syntax {1}:\"{2}\"", "AsmDudeToolsStatic", i, line_capitals));
 
                 List<string> keywords_upcase = AsmSourceTools.SplitIntoKeywordsList(line_upcase);
 
@@ -241,7 +243,7 @@ namespace AsmDude.Tools
                 }
             }
             bool result = (evidence_masm > 0);
-            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Guess_Masm_Syntax; result {1}; file=\"{2}\"; evidence_masm {3}", "AsmDudeToolsStatic", result, AsmDudeToolsStatic.GetFilename(buffer), evidence_masm));
+            Output_INFO(string.Format(CultureUI, "{0}:Guess_Masm_Syntax; result {1}; file=\"{2}\"; evidence_masm {3}", "AsmDudeToolsStatic", result, GetFilename(buffer), evidence_masm));
             return result;
         }
 
@@ -307,7 +309,7 @@ namespace AsmDude.Tools
                 }
                 else
                 {
-                    Output_WARNING(string.Format("{0}:Used_Assembler:set: no assembler specified; value={1}, assuming AUTO_DETECT", "AsmDudeToolsStatic", value));
+                    Output_WARNING(string.Format(CultureUI, "{0}:Used_Assembler:set: no assembler specified; value={1}, assuming AUTO_DETECT", "AsmDudeToolsStatic", value));
                     Settings.Default.useAssemblerAutoDetect = true;
                 }
             }
@@ -353,7 +355,7 @@ namespace AsmDude.Tools
                 }
                 else
                 {
-                    Output_WARNING(string.Format("{0}:Used_Assembler_Disassembly_Window:set: no assembler specified; value={1}, assuming AUTO_DETECT", "AsmDudeToolsStatic", value));
+                    Output_WARNING(string.Format(CultureUI, "{0}:Used_Assembler_Disassembly_Window:set: no assembler specified; value={1}, assuming AUTO_DETECT", "AsmDudeToolsStatic", value));
                     Settings.Default.useAssemblerDisassemblyAutoDetect = true;
                 }
             }
@@ -372,7 +374,7 @@ namespace AsmDude.Tools
                 }
                 else
                 {
-                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:GetFilename; could not get filename within timeout {1} ms", "AsmDudeToolsStatic", timeout_ms));
+                    Output_ERROR(string.Format(CultureUI, "{0}:GetFilename; could not get filename within timeout {1} ms", "AsmDudeToolsStatic", timeout_ms));
                     return string.Empty;
                 }
             });
@@ -390,7 +392,7 @@ namespace AsmDude.Tools
 
             buffer.Properties.TryGetProperty(typeof(ITextDocument), out ITextDocument document);
             string filename = document?.FilePath;
-            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Get_Filename_Async: retrieving filename {1}", typeof(AsmDudeToolsStatic), filename));
+            //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Get_Filename_Async: retrieving filename {1}", typeof(AsmDudeToolsStatic), filename));
             return filename;
         }
 
@@ -437,7 +439,7 @@ namespace AsmDude.Tools
                 }
                 else
                 {
-                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:GetFontSize; could not get font size within timeout {1} ms", "AsmDudeToolsStatic", timeout_ms));
+                    Output_ERROR(string.Format(CultureUI, "{0}:GetFontSize; could not get font size within timeout {1} ms", "AsmDudeToolsStatic", timeout_ms));
                     return 8;
                 }
             });
@@ -468,7 +470,7 @@ namespace AsmDude.Tools
                 }
                 else
                 {
-                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:GetFontType; could not get font size within timeout {1} ms", "AsmDudeToolsStatic", timeout_ms));
+                    Output_ERROR(string.Format(CultureUI, "{0}:GetFontType; could not get font size within timeout {1} ms", "AsmDudeToolsStatic", timeout_ms));
                     return new FontFamily("Comic Sans MS");
                 }
             });
@@ -486,7 +488,7 @@ namespace AsmDude.Tools
             Properties propertiesList = dte.get_Properties("FontsAndColors", "TextEditor");
             Property prop = propertiesList.Item("FontFamily");
             string font = (string)prop.Value;
-            //AsmDudeToolsStatic.Output_INFO(string.Format("AsmDudeToolsStatic:Get_Font_Type {0}", font));
+            //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "AsmDudeToolsStatic:Get_Font_Type {0}", font));
             return new FontFamily(font);
         }
 
@@ -501,7 +503,7 @@ namespace AsmDude.Tools
                 }
                 else
                 {
-                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:GetFontColor; could not get font color within timeout {1} ms", "AsmDudeToolsStatic", timeout_ms));
+                    Output_ERROR(string.Format(CultureUI, "{0}:GetFontColor; could not get font color within timeout {1} ms", "AsmDudeToolsStatic", timeout_ms));
                     return new SolidColorBrush(Colors.Gray);
                 }
             });
@@ -543,7 +545,7 @@ namespace AsmDude.Tools
                 }
                 else
                 {
-                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:GetBackgroundColor; could not get font color within timeout {1} ms", "AsmDudeToolsStatic", timeout_ms));
+                    Output_ERROR(string.Format(CultureUI, "{0}:GetBackgroundColor; could not get font color within timeout {1} ms", "AsmDudeToolsStatic", timeout_ms));
                     return new SolidColorBrush(Colors.Gray);
                 }
             });
@@ -753,7 +755,7 @@ namespace AsmDude.Tools
                 sb.Append("|  _  |___ _____  |    \\ _ _ _| |___ \n");
                 sb.Append("|     |_ -|     | |  |  | | | . | -_|\n");
                 sb.Append("|__|__|___|_|_|_| |____/|___|___|___|\n");
-                sb.Append("INFO: Loaded AsmDude version " + typeof(AsmDudePackage).Assembly.GetName().Version + " (" + ApplicationInformation.CompileDate.ToString() + ")\n");
+                sb.Append("INFO: Loaded AsmDude version " + typeof(AsmDudePackage).Assembly.GetName().Version + " (" + ApplicationInformation.CompileDate.ToString(CultureUI) + ")\n");
                 sb.Append("INFO: Open source assembly extension. Making programming in assembler almost bearable.\n");
                 sb.Append("INFO: More info at https://github.com/HJLebbink/asm-dude \n");
                 sb.Append("----------------------------------\n");
@@ -857,7 +859,7 @@ namespace AsmDude.Tools
             for (int i = 0; i < errorListProvider.Tasks.Count; ++i)
             {
                 Microsoft.VisualStudio.Shell.Task t = errorListProvider.Tasks[i];
-                if (t.Text.Equals(msg))
+                if (t.Text.Equals(msg, StringComparison.Ordinal))
                 {
                     return;
                 }

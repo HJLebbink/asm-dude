@@ -24,6 +24,7 @@ namespace AsmDude.QuickInfo
 {
     using System;
     using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Documents;
@@ -230,7 +231,7 @@ namespace AsmDude.QuickInfo
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Update_Async; e={1}", this.ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output_ERROR(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Update_Async; e={1}", this.ToString(), e.ToString()));
             }
         }
     }

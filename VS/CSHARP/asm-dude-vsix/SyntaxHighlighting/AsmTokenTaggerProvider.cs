@@ -39,7 +39,7 @@ namespace AsmDude
     {
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
-            //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:CreateTagger", this.ToString()));
+            //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:CreateTagger", this.ToString()));
             ITagger<T> sc()
             {
                 if (AsmDudeToolsStatic.Used_Assembler.HasFlag(AssemblerEnum.AUTO_DETECT))
@@ -68,7 +68,7 @@ namespace AsmDude
                 {
                     return new NasmAttTokenTagger(buffer) as ITagger<T>;
                 }
-                AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:CreateTagger: could not determine the used assembler", this.ToString()));
+                AsmDudeToolsStatic.Output_WARNING(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:CreateTagger: could not determine the used assembler", this.ToString()));
                 return new MasmTokenTagger(buffer) as ITagger<T>;
             }
             return buffer.Properties.GetOrCreateSingletonProperty(sc);

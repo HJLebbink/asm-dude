@@ -1,8 +1,8 @@
-﻿using AsmSim;
+﻿using System;
+using System.Collections.Generic;
+using AsmSim;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Z3;
-using System;
-using System.Collections.Generic;
 
 namespace unit_tests_asm_z3
 {

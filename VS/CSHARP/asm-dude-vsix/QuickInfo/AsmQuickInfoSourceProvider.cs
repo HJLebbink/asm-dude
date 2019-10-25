@@ -51,7 +51,7 @@ namespace AsmDude.QuickInfo
         //public IAsyncQuickInfoSource TryCreateQuickInfoSource(ITextBuffer textBuffer) //XYZZY NEW
         public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer textBuffer) //XYZZY OLD
         {
-            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:TryCreateQuickInfoSource", this.ToString()));
+            AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:TryCreateQuickInfoSource", this.ToString()));
             AsmQuickInfoSource sc()
             {
                 LabelGraph labelGraph = AsmDudeToolsStatic.GetOrCreate_Label_Graph(textBuffer, this._aggregatorFactory, this._docFactory, this._contentService);

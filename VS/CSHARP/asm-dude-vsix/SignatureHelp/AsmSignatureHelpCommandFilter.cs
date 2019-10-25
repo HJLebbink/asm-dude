@@ -62,7 +62,7 @@ namespace AsmDude.SignatureHelp
             {
                 if (pguidCmdGroup == VSConstants.VSStd2K)
                 {
-                    //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Exec: nCmdID={1}; nCmdexecopt={2}", this.ToString(), nCmdID, nCmdexecopt));
+                    //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Exec: nCmdID={1}; nCmdexecopt={2}", this.ToString(), nCmdID, nCmdexecopt));
 
                     if (nCmdID == (uint)VSConstants.VSStd2KCmdID.RETURN)
                     { // return typed
@@ -113,7 +113,7 @@ namespace AsmDude.SignatureHelp
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:Exec; e={1}", this.ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output_ERROR(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Exec; e={1}", this.ToString(), e.ToString()));
             }
             return this._nextCommandHandler.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
         }

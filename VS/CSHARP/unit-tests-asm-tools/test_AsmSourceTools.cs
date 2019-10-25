@@ -1,7 +1,7 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -20,17 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using AsmTools;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-
 namespace unit_tests
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using AsmTools;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     public class Test_AsmSourceTools
     {
+        private static readonly CultureInfo Culture = CultureInfo.CurrentCulture;
 
         #region Private Stuff
         private static ulong RandUlong(int nBits, Random rand)
@@ -56,6 +57,7 @@ namespace unit_tests
                 }
             }
         }
+
         private static long RandLong(int nBits, Random rand)
         {
             ulong raw = RandUlong(nBits, rand);
@@ -104,7 +106,6 @@ namespace unit_tests
         [TestMethod]
         public void Test_AsmSourceTools_GetPreviousKeyword()
         {
-
             const string line = "    mov rax, rbx;bla";
             {
                 int begin = 0;
@@ -139,7 +140,7 @@ namespace unit_tests
                 int end = 6;
                 string result = AsmSourceTools.GetPreviousKeyword(begin, end, line);
                 string msg = "line=\"" + line + "\"; result=\"" + result + "\"; begin=" + begin + "; end=" + end;
-                Assert.AreEqual("", result, msg);
+                Assert.AreEqual(string.Empty, result, msg);
             }
             {
                 int begin = 0;
@@ -155,116 +156,116 @@ namespace unit_tests
         {
             {
                 ulong i = 0ul;
-                string s = i + "";
-                (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Evaluate_Constant(s);
-                Assert.IsTrue(Valid, "could not parse: s=" + s);
-                Assert.AreEqual(i, Value, s);
-                Assert.AreEqual(8, NBits, s);
+                string s = i + string.Empty;
+                (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant(s);
+                Assert.IsTrue(valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, value, s);
+                Assert.AreEqual(8, nBits, s);
             }
             {
                 ulong i = 0ul;
-                string s = "0x" + i.ToString("X");
-                (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Evaluate_Constant(s);
-                Assert.IsTrue(Valid, "could not parse: s=" + s);
-                Assert.AreEqual(i, Value, s);
-                Assert.AreEqual(8, NBits, s);
+                string s = "0x" + i.ToString("X", Culture);
+                (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant(s);
+                Assert.IsTrue(valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, value, s);
+                Assert.AreEqual(8, nBits, s);
             }
             {
                 ulong i = 0ul;
-                string s = i.ToString("X") + "h";
-                (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Evaluate_Constant(s);
-                Assert.IsTrue(Valid, "could not parse: s=" + s);
-                Assert.AreEqual(i, Value, s);
-                Assert.AreEqual(8, NBits, s);
+                string s = i.ToString("X", Culture) + "h";
+                (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant(s);
+                Assert.IsTrue(valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, value, s);
+                Assert.AreEqual(8, nBits, s);
             }
             {
                 ulong i = 1ul;
-                string s = i.ToString("X") + "h";
-                (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Evaluate_Constant(s);
-                Assert.IsTrue(Valid, "could not parse: s=" + s);
-                Assert.AreEqual(i, Value, s);
-                Assert.AreEqual(8, NBits, s);
+                string s = i.ToString("X", Culture) + "h";
+                (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant(s);
+                Assert.IsTrue(valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, value, s);
+                Assert.AreEqual(8, nBits, s);
             }
             {
                 ulong i = 1ul;
-                string s = "0x" + i.ToString("X"); ;
-                (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Evaluate_Constant(s);
-                Assert.IsTrue(Valid, "could not parse: s=" + s);
-                Assert.AreEqual(i, Value, s);
-                Assert.AreEqual(8, NBits, s);
+                string s = "0x" + i.ToString("X", Culture); ;
+                (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant(s);
+                Assert.IsTrue(valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, value, s);
+                Assert.AreEqual(8, nBits, s);
             }
             {
                 ulong i = 1ul;
-                string s = i.ToString("X") + "h";
-                (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Evaluate_Constant(s);
-                Assert.IsTrue(Valid, "could not parse: s=" + s);
-                Assert.AreEqual(i, Value, s);
-                Assert.AreEqual(8, NBits, s);
+                string s = i.ToString("X", Culture) + "h";
+                (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant(s);
+                Assert.IsTrue(valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, value, s);
+                Assert.AreEqual(8, nBits, s);
             }
 
             {
                 ulong i = 0xFFul;
-                string s = "0x" + i.ToString("X"); ;
-                (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Evaluate_Constant(s);
-                Assert.IsTrue(Valid, "could not parse: s=" + s);
-                Assert.AreEqual(i, Value, s);
-                Assert.AreEqual(8, NBits, s);
+                string s = "0x" + i.ToString("X", Culture) + "h";
+                (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant(s);
+                Assert.IsTrue(valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, value, s);
+                Assert.AreEqual(8, nBits, s);
             }
             {
                 ulong i = 0xFFul;
-                string s = i.ToString("X") + "h";
-                (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Evaluate_Constant(s);
-                Assert.IsTrue(Valid, "could not parse: s=" + s);
-                Assert.AreEqual(i, Value, s);
-                Assert.AreEqual(8, NBits, s);
+                string s = i.ToString("X", Culture) + "h";
+                (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant(s);
+                Assert.IsTrue(valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, value, s);
+                Assert.AreEqual(8, nBits, s);
             }
             {
                 ulong i = 0x100ul;
-                string s = "0x" + i.ToString("X");
-                (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Evaluate_Constant(s);
-                Assert.IsTrue(Valid, "could not parse: s=" + s);
-                Assert.AreEqual(i, Value, s);
-                Assert.AreEqual(16, NBits, s);
+                string s = "0x" + i.ToString("X", Culture);
+                (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant(s);
+                Assert.IsTrue(valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, value, s);
+                Assert.AreEqual(16, nBits, s);
             }
             {
                 ulong i = 0xFFFFul;
-                string s = "0x" + i.ToString("X");
-                (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Evaluate_Constant(s);
-                Assert.IsTrue(Valid, "could not parse: s=" + s);
-                Assert.AreEqual(i, Value, s);
-                Assert.AreEqual(16, NBits, s);
+                string s = "0x" + i.ToString("X", Culture);
+                (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant(s);
+                Assert.IsTrue(valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, value, s);
+                Assert.AreEqual(16, nBits, s);
             }
             {
                 ulong i = 0x10000ul;
-                string s = "0x" + i.ToString("X");
-                (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Evaluate_Constant(s);
-                Assert.IsTrue(Valid, "could not parse: s=" + s);
-                Assert.AreEqual(i, Value, s);
-                Assert.AreEqual(32, NBits, s);
+                string s = "0x" + i.ToString("X", Culture);
+                (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant(s);
+                Assert.IsTrue(valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, value, s);
+                Assert.AreEqual(32, nBits, s);
             }
             {
                 ulong i = 0xFFFFFFFFul;
-                string s = "0x" + i.ToString("X");
-                (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Evaluate_Constant(s);
-                Assert.IsTrue(Valid);
-                Assert.AreEqual(i, Value, s);
-                Assert.AreEqual(32, NBits, s);
+                string s = "0x" + i.ToString("X", Culture);
+                (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant(s);
+                Assert.IsTrue(valid);
+                Assert.AreEqual(i, value, s);
+                Assert.AreEqual(32, nBits, s);
             }
             {
                 ulong i = 0x100000000ul;
-                string s = "0x" + i.ToString("X");
-                (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Evaluate_Constant(s);
-                Assert.IsTrue(Valid, "could not parse: s=" + s);
-                Assert.AreEqual(i, Value, s);
-                Assert.AreEqual(64, NBits, s);
+                string s = "0x" + i.ToString("X", Culture);
+                (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant(s);
+                Assert.IsTrue(valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, value, s);
+                Assert.AreEqual(64, nBits, s);
             }
             {
                 ulong i = 0xFFFFFFFFFFFFFFFFul;
-                string s = "0x" + i.ToString("X");
-                (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Evaluate_Constant(s);
-                Assert.IsTrue(Valid);
-                Assert.AreEqual(i, Value, s);
-                Assert.AreEqual(64, NBits, s);
+                string s = "0x" + i.ToString("X", Culture);
+                (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant(s);
+                Assert.IsTrue(valid);
+                Assert.AreEqual(i, value, s);
+                Assert.AreEqual(64, nBits, s);
             }
         }
 
@@ -274,50 +275,50 @@ namespace unit_tests
             {
                 string s = "1<<2";
                 ulong i = 1 << 2;
-                (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Evaluate_Constant(s);
-                Assert.IsTrue(Valid, "could not parse: s=" + s);
-                Assert.AreEqual(i, Value, s);
-                Assert.AreEqual(8, NBits, s);
+                (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant(s);
+                Assert.IsTrue(valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, value, s);
+                Assert.AreEqual(8, nBits, s);
             }
             {
                 string s = "1 << 2";
                 ulong i = 1 << 2;
-                (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Evaluate_Constant(s);
-                Assert.IsTrue(Valid, "could not parse: s=" + s);
-                Assert.AreEqual(i, Value, s);
-                Assert.AreEqual(8, NBits, s);
+                (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant(s);
+                Assert.IsTrue(valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, value, s);
+                Assert.AreEqual(8, nBits, s);
             }
             {
                 string s = "(1 << 2)";
                 ulong i = 1 << 2;
-                (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Evaluate_Constant(s);
-                Assert.IsTrue(Valid, "could not parse: s=" + s);
-                Assert.AreEqual(i, Value, s);
-                Assert.AreEqual(8, NBits, s);
+                (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant(s);
+                Assert.IsTrue(valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, value, s);
+                Assert.AreEqual(8, nBits, s);
             }
             {
                 string s = " (1<<2) ";
                 ulong i = 1 << 2;
-                (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Evaluate_Constant(s);
-                Assert.IsTrue(Valid, "could not parse: s=" + s);
-                Assert.AreEqual(i, Value, s);
-                Assert.AreEqual(8, NBits, s);
+                (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant(s);
+                Assert.IsTrue(valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, value, s);
+                Assert.AreEqual(8, nBits, s);
             }
             {
                 string s = "(1<<(1+1))";
                 ulong i = 1 << (1 + 1);
-                (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Evaluate_Constant(s);
-                Assert.IsTrue(Valid, "could not parse: s=" + s);
-                Assert.AreEqual(i, Value, s);
-                Assert.AreEqual(8, NBits, s);
+                (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant(s);
+                Assert.IsTrue(valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, value, s);
+                Assert.AreEqual(8, nBits, s);
             }
             {
                 string s = " ( 1 << ( 1 + 1 ) ) ";
                 ulong i = 1 << (1 + 1);
-                (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Evaluate_Constant(s);
-                Assert.IsTrue(Valid, "could not parse: s=" + s);
-                Assert.AreEqual(i, Value, s);
-                Assert.AreEqual(8, NBits, s);
+                (bool valid, ulong value, int nBits) = ExpressionEvaluator.Evaluate_Constant(s);
+                Assert.IsTrue(valid, "could not parse: s=" + s);
+                Assert.AreEqual(i, value, s);
+                Assert.AreEqual(8, nBits, s);
             }
         }
 
@@ -330,6 +331,7 @@ namespace unit_tests
                     "Parsing string " + x.ToString() + " does not yield the same enumeration.");
             }
         }
+
         [TestMethod]
         public void Test_AsmSourceTools_parseArch()
         {
@@ -339,6 +341,7 @@ namespace unit_tests
                     "Parsing string " + x.ToString() + " does not yield the same enumeration.");
             }
         }
+
         [TestMethod]
         public void Test_AsmSourceTools_OperandType()
         {
@@ -347,15 +350,15 @@ namespace unit_tests
                 foreach (Ot1 x2 in Enum.GetValues(typeof(Ot1)))
                 {
                     (Ot1, Ot1) t = AsmSourceTools.SplitOt(AsmSourceTools.MergeOt(x1, x2));
-                    Assert.AreEqual(t.Item1, x1, "");
-                    Assert.AreEqual(t.Item2, x2, "");
+                    Assert.AreEqual(t.Item1, x1, string.Empty);
+                    Assert.AreEqual(t.Item2, x2, string.Empty);
                 }
             }
         }
+
         [TestMethod]
         public void Test_AsmSourceTools_parseMemOperand()
         {
-
             // see intel manual : 3.7.5 Specifying an Offset
 
             // 32-bit mode:
@@ -380,19 +383,18 @@ namespace unit_tests
 
             int[] scales = new int[] { 1, 2, 4, 8 };
 
-
             for (int i = 0; i < bases32.Length; ++i)
             {
                 Rn b = bases32[i];
 
                 {
                     string str = "[" + b + "]";
-                    (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits, string ErrorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
-                    Assert.AreEqual(true, Valid, str);
-                    Assert.AreEqual(b, BaseReg, "base: " + str);
-                    Assert.AreEqual(Rn.NOREG, IndexReg, "index: " + str);
-                    Assert.AreEqual(0, Scale, "scale: " + str);
-                    Assert.AreEqual(0, Displacement, "displacement: " + str);
+                    (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits, string errorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
+                    Assert.AreEqual(true, valid, str);
+                    Assert.AreEqual(b, baseReg, "base: " + str);
+                    Assert.AreEqual(Rn.NOREG, indexReg, "index: " + str);
+                    Assert.AreEqual(0, scale, "scale: " + str);
+                    Assert.AreEqual(0, displacement, "displacement: " + str);
                 }
 
                 for (int j = 0; j < index32.Length; ++j)
@@ -401,64 +403,64 @@ namespace unit_tests
 
                     {
                         string str = "[" + b + "+" + idx + "]";
-                        (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits, string ErrorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
-                        Assert.AreEqual(true, Valid, str);
-                        Assert.AreEqual(b, BaseReg, "base: " + str);
-                        Assert.AreEqual(idx, IndexReg, "index: " + str);
-                        Assert.AreEqual(1, Scale, "scale: " + str);
-                        Assert.AreEqual(0, Displacement, "displacement: " + str);
+                        (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits, string errorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
+                        Assert.AreEqual(true, valid, str);
+                        Assert.AreEqual(b, baseReg, "base: " + str);
+                        Assert.AreEqual(idx, indexReg, "index: " + str);
+                        Assert.AreEqual(1, scale, "scale: " + str);
+                        Assert.AreEqual(0, displacement, "displacement: " + str);
                     }
                     {
                         string str = "[" + idx + "+" + b + "]";
-                        (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits, string ErrorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
-                        Assert.AreEqual(true, Valid, str);
-                        //idx and base can be interchanged
-                        //Assert.AreEqual(b, t.Item2, "base: " + str); 
-                        //Assert.AreEqual(idx, t.Item3, "index: " + str);
-                        Assert.AreEqual(1, Scale, "scale: " + str);
-                        Assert.AreEqual(0, Displacement, "displacement: " + str);
+                        (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits, string errorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
+                        Assert.AreEqual(true, valid, str);
+                        // idx and base can be interchanged
+                        // Assert.AreEqual(b, t.Item2, "base: " + str);
+                        // Assert.AreEqual(idx, t.Item3, "index: " + str);
+                        Assert.AreEqual(1, scale, "scale: " + str);
+                        Assert.AreEqual(0, displacement, "displacement: " + str);
                     }
 
                     for (int k = 0; k < scales.Length; ++k)
                     {
                         int s = scales[k];
 
-                        //Offset = Base + (Index * Scale) + Displacement
+                        // Offset = Base + (Index * Scale) + Displacement
                         {
                             string str = "[" + b + "+" + idx + " * " + s + "]";
-                            (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits, string ErrorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
-                            Assert.AreEqual(true, Valid, str);
-                            Assert.AreEqual(b, BaseReg, "base: " + str);
-                            Assert.AreEqual(idx, IndexReg, "index: " + str);
-                            Assert.AreEqual(s, Scale, "scale: " + str);
-                            Assert.AreEqual(0, Displacement, "displacement: " + str);
+                            (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits, string errorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
+                            Assert.AreEqual(true, valid, str);
+                            Assert.AreEqual(b, baseReg, "base: " + str);
+                            Assert.AreEqual(idx, indexReg, "index: " + str);
+                            Assert.AreEqual(s, scale, "scale: " + str);
+                            Assert.AreEqual(0, displacement, "displacement: " + str);
                         }
                         {
                             string str = "[" + b + "+" + s + " * " + idx + "]";
-                            (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits, string ErrorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
-                            Assert.AreEqual(true, Valid, str);
-                            Assert.AreEqual(b, BaseReg, "base: " + str);
-                            Assert.AreEqual(idx, IndexReg, "index: " + str);
-                            Assert.AreEqual(s, Scale, "scale: " + str);
-                            Assert.AreEqual(0, Displacement, "displacement: " + str);
+                            (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits, string errorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
+                            Assert.AreEqual(true, valid, str);
+                            Assert.AreEqual(b, baseReg, "base: " + str);
+                            Assert.AreEqual(idx, indexReg, "index: " + str);
+                            Assert.AreEqual(s, scale, "scale: " + str);
+                            Assert.AreEqual(0, displacement, "displacement: " + str);
                         }
                         {
                             string str = "[" + s + " * " + idx + "+" + b + "]";
-                            (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits, string ErrorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
-                            Assert.AreEqual(true, Valid, str);
-                            Assert.AreEqual(b, BaseReg, "base: " + str);
-                            Assert.AreEqual(idx, IndexReg, "index: " + str);
-                            Assert.AreEqual(s, Scale, "scale: " + str);
-                            Assert.AreEqual(0, Displacement, "displacement: " + str);
+                            (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits, string errorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
+                            Assert.AreEqual(true, valid, str);
+                            Assert.AreEqual(b, baseReg, "base: " + str);
+                            Assert.AreEqual(idx, indexReg, "index: " + str);
+                            Assert.AreEqual(s, scale, "scale: " + str);
+                            Assert.AreEqual(0, displacement, "displacement: " + str);
                         }
                         {
                             string str = "[" + idx + " * " + s + "+" + b + "]";
-                            (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits, string ErrorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
-                            Assert.AreEqual(true, Valid, str);
-                            Assert.AreEqual(b, BaseReg, "base: " + str);
-                            Assert.AreEqual(idx, IndexReg, "index: " + str);
-                            Assert.AreEqual(s, Scale, "scale: " + str);
-                            Assert.AreEqual(0, Displacement, "displacement: " + str);
+                            (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits, string errorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
+                            Assert.AreEqual(true, valid, str);
+                            Assert.AreEqual(b, baseReg, "base: " + str);
+                            Assert.AreEqual(idx, indexReg, "index: " + str);
+                            Assert.AreEqual(s, scale, "scale: " + str);
+                            Assert.AreEqual(0, displacement, "displacement: " + str);
                         }
 
                         for (int m = 0; m < 10; ++m)
@@ -467,86 +469,86 @@ namespace unit_tests
                             {
                                 {
                                     string str = "[" + b + "+" + idx + " * " + s + "+" + disp + "]";
-                                    (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits, string ErrorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
-                                    Assert.AreEqual(true, Valid, str);
-                                    Assert.AreEqual(b, BaseReg, "base: " + str);
-                                    Assert.AreEqual(idx, IndexReg, "index: " + str);
-                                    Assert.AreEqual(s, Scale, "scale: " + str);
-                                    Assert.AreEqual(disp, Displacement, "displacement: " + str);
+                                    (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits, string errorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
+                                    Assert.AreEqual(true, valid, str);
+                                    Assert.AreEqual(b, baseReg, "base: " + str);
+                                    Assert.AreEqual(idx, indexReg, "index: " + str);
+                                    Assert.AreEqual(s, scale, "scale: " + str);
+                                    Assert.AreEqual(disp, displacement, "displacement: " + str);
                                 }
                                 {
                                     string str = "[" + b + "+" + s + " * " + idx + "+" + disp + "]";
-                                    (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits, string ErrorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
-                                    Assert.AreEqual(true, Valid, str);
-                                    Assert.AreEqual(b, BaseReg, "base: " + str);
-                                    Assert.AreEqual(idx, IndexReg, "index: " + str);
-                                    Assert.AreEqual(s, Scale, "scale: " + str);
-                                    Assert.AreEqual(disp, Displacement, "displacement: " + str);
+                                    (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits, string errorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
+                                    Assert.AreEqual(true, valid, str);
+                                    Assert.AreEqual(b, baseReg, "base: " + str);
+                                    Assert.AreEqual(idx, indexReg, "index: " + str);
+                                    Assert.AreEqual(s, scale, "scale: " + str);
+                                    Assert.AreEqual(disp, displacement, "displacement: " + str);
                                 }
                                 {
                                     string str = "[" + s + " * " + idx + "+" + b + "+" + disp + "]";
-                                    (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits, string ErrorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
-                                    Assert.AreEqual(true, Valid, str);
-                                    Assert.AreEqual(b, BaseReg, "base: " + str);
-                                    Assert.AreEqual(idx, IndexReg, "index: " + str);
-                                    Assert.AreEqual(s, Scale, "scale: " + str);
-                                    Assert.AreEqual(disp, Displacement, "displacement: " + str);
+                                    (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits, string errorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
+                                    Assert.AreEqual(true, valid, str);
+                                    Assert.AreEqual(b, baseReg, "base: " + str);
+                                    Assert.AreEqual(idx, indexReg, "index: " + str);
+                                    Assert.AreEqual(s, scale, "scale: " + str);
+                                    Assert.AreEqual(disp, displacement, "displacement: " + str);
                                 }
                                 {
                                     string str = "[" + idx + " * " + s + "+" + b + "+" + disp + "]";
-                                    (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits, string ErrorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
-                                    Assert.AreEqual(true, Valid, str);
-                                    Assert.AreEqual(b, BaseReg, "base: " + str);
-                                    Assert.AreEqual(idx, IndexReg, "index: " + str);
-                                    Assert.AreEqual(s, Scale, "scale: " + str);
-                                    Assert.AreEqual(disp, Displacement, "displacement: " + str);
+                                    (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits, string errorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
+                                    Assert.AreEqual(true, valid, str);
+                                    Assert.AreEqual(b, baseReg, "base: " + str);
+                                    Assert.AreEqual(idx, indexReg, "index: " + str);
+                                    Assert.AreEqual(s, scale, "scale: " + str);
+                                    Assert.AreEqual(disp, displacement, "displacement: " + str);
                                 }
                             }
                             {
                                 {
                                     string str = "[" + disp + "+" + b + "+" + idx + " * " + s + "]";
-                                    (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits, string ErrorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
-                                    Assert.AreEqual(true, Valid, str);
-                                    Assert.AreEqual(b, BaseReg, "base: " + str);
-                                    Assert.AreEqual(idx, IndexReg, "index: " + str);
-                                    Assert.AreEqual(s, Scale, "scale: " + str);
-                                    Assert.AreEqual(disp, Displacement, "displacement: " + str);
+                                    (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits, string errorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
+                                    Assert.AreEqual(true, valid, str);
+                                    Assert.AreEqual(b, baseReg, "base: " + str);
+                                    Assert.AreEqual(idx, indexReg, "index: " + str);
+                                    Assert.AreEqual(s, scale, "scale: " + str);
+                                    Assert.AreEqual(disp, displacement, "displacement: " + str);
                                 }
                                 {
                                     string str = "[" + b + "+" + disp + "+" + idx + " * " + s + "]";
-                                    (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits, string ErrorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
-                                    Assert.AreEqual(true, Valid, str);
-                                    Assert.AreEqual(b, BaseReg, "base: " + str);
-                                    Assert.AreEqual(idx, IndexReg, "index: " + str);
-                                    Assert.AreEqual(s, Scale, "scale: " + str);
-                                    Assert.AreEqual(disp, Displacement, "displacement: " + str);
+                                    (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits, string errorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
+                                    Assert.AreEqual(true, valid, str);
+                                    Assert.AreEqual(b, baseReg, "base: " + str);
+                                    Assert.AreEqual(idx, indexReg, "index: " + str);
+                                    Assert.AreEqual(s, scale, "scale: " + str);
+                                    Assert.AreEqual(disp, displacement, "displacement: " + str);
                                 }
                                 {
                                     string str = "[" + b + "+" + disp + "+" + s + " * " + idx + "]";
-                                    (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits, string ErrorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
-                                    Assert.AreEqual(true, Valid, str);
-                                    Assert.AreEqual(b, BaseReg, "base: " + str);
-                                    Assert.AreEqual(idx, IndexReg, "index: " + str);
-                                    Assert.AreEqual(s, Scale, "scale: " + str);
-                                    Assert.AreEqual(disp, Displacement, "displacement: " + str);
+                                    (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits, string errorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
+                                    Assert.AreEqual(true, valid, str);
+                                    Assert.AreEqual(b, baseReg, "base: " + str);
+                                    Assert.AreEqual(idx, indexReg, "index: " + str);
+                                    Assert.AreEqual(s, scale, "scale: " + str);
+                                    Assert.AreEqual(disp, displacement, "displacement: " + str);
                                 }
                                 {
                                     string str = "[" + s + " * " + idx + "+" + disp + "+" + b + "]";
-                                    (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits, string ErrorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
-                                    Assert.AreEqual(true, Valid, str);
-                                    Assert.AreEqual(b, BaseReg, "base: " + str);
-                                    Assert.AreEqual(idx, IndexReg, "index: " + str);
-                                    Assert.AreEqual(s, Scale, "scale: " + str);
-                                    Assert.AreEqual(disp, Displacement, "displacement: " + str);
+                                    (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits, string errorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
+                                    Assert.AreEqual(true, valid, str);
+                                    Assert.AreEqual(b, baseReg, "base: " + str);
+                                    Assert.AreEqual(idx, indexReg, "index: " + str);
+                                    Assert.AreEqual(s, scale, "scale: " + str);
+                                    Assert.AreEqual(disp, displacement, "displacement: " + str);
                                 }
                                 {
                                     string str = "[" + idx + " * " + s + "+" + disp + "+" + b + "]";
-                                    (bool Valid, Rn BaseReg, Rn IndexReg, int Scale, long Displacement, int NBits, string ErrorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
-                                    Assert.AreEqual(true, Valid, str);
-                                    Assert.AreEqual(b, BaseReg, "base: " + str);
-                                    Assert.AreEqual(idx, IndexReg, "index: " + str);
-                                    Assert.AreEqual(s, Scale, "scale: " + str);
-                                    Assert.AreEqual(disp, Displacement, "displacement: " + str);
+                                    (bool valid, Rn baseReg, Rn indexReg, int scale, long displacement, int nBits, string errorMessage) = AsmSourceTools.Parse_Mem_Operand(str);
+                                    Assert.AreEqual(true, valid, str);
+                                    Assert.AreEqual(b, baseReg, "base: " + str);
+                                    Assert.AreEqual(idx, indexReg, "index: " + str);
+                                    Assert.AreEqual(s, scale, "scale: " + str);
+                                    Assert.AreEqual(disp, displacement, "displacement: " + str);
                                 }
                             }
                         }
@@ -561,12 +563,10 @@ namespace unit_tests
             int nBits = 64;
 
             ulong value = 3352562;
-            string original = value.ToString();
+            string original = value.ToString(Culture);
             string related = AsmSourceTools.Get_Related_Constant(original, value, nBits);
 
             Console.WriteLine(related);
-
         }
-
     }
 }

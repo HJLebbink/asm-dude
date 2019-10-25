@@ -1,7 +1,7 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -32,13 +32,15 @@ namespace AsmTools
 {
     public static partial class AsmSourceTools
     {
+        private static readonly CultureInfo Culture = CultureInfo.CurrentCulture;
+
         /// <summary>
         /// Parse the provided line. Returns label, mnemonic, args, remarks. Args are in capitals
         /// </summary>
         public static (string Label, Mnemonic Mnemonic, string[] Args, string Remark) ParseLine(string line)
         {
             Contract.Requires(line != null);
-            //Console.WriteLine("INFO: AsmSourceTools:ParseLine: line=" + line + "; length=" + line.Length);
+            // Console.WriteLine("INFO: AsmSourceTools:ParseLine: line=" + line + "; length=" + line.Length);
 
             string label = string.Empty;
             Mnemonic mnemonic = Mnemonic.NONE;
@@ -47,12 +49,12 @@ namespace AsmTools
 
             if (line.Length > 0)
             {
-                (bool Valid, int BeginPos, int EndPos) = GetLabelDefPos(line);
+                (bool valid, int beginPos, int endPos) = GetLabelDefPos(line);
                 int codeBeginPos = 0;
-                if (Valid)
+                if (valid)
                 {
-                    label = line.Substring(BeginPos, EndPos - BeginPos);
-                    codeBeginPos = EndPos + 1; // plus one to get rid of the colon 
+                    label = line.Substring(beginPos, endPos - beginPos);
+                    codeBeginPos = endPos + 1; // plus one to get rid of the colon
                     if (line.Length > codeBeginPos)
                     {
                         if (line[codeBeginPos] == ':')
@@ -60,7 +62,7 @@ namespace AsmTools
                             codeBeginPos++; // remove a second colon
                         }
                     }
-                    //Console.WriteLine("found label " + label);
+                    // Console.WriteLine("found label " + label);
                 }
 
                 (bool Valid, int BeginPos, int EndPos) remarkPos = GetRemarkPos(line);
@@ -69,14 +71,14 @@ namespace AsmTools
                 {
                     remark = line.Substring(remarkPos.BeginPos, remarkPos.EndPos - remarkPos.BeginPos);
                     codeEndPos = remarkPos.BeginPos;
-                    //Console.WriteLine("found remark " + remark);
+                    // Console.WriteLine("found remark " + remark);
                 }
 
                 string codeStr = line.Substring(codeBeginPos, codeEndPos - codeBeginPos).Trim().ToUpper(CultureInfo.InvariantCulture);
-                //Console.WriteLine("code string \"" + codeStr + "\".");
+                // Console.WriteLine("code string \"" + codeStr + "\".");
                 if (codeStr.Length > 0)
                 {
-                    //Console.WriteLine(codeStr + ":" + codeStr.Length);
+                    // Console.WriteLine(codeStr + ":" + codeStr.Length);
 
                     // get the first keyword, check if it is a mnemonic
                     (int BeginPos, int EndPos) keyword1Pos = GetKeywordPos(0, codeStr); // find a keyword starting a position 0
@@ -127,7 +129,7 @@ namespace AsmTools
                     }
                 }
             }
-            //Console.WriteLine(args[1] + ":" + args[1].Length);
+            // Console.WriteLine(args[1] + ":" + args[1].Length);
 
             Contract.Ensures(label != null);
             Contract.Ensures(args != null);
@@ -135,7 +137,7 @@ namespace AsmTools
             return (Label: label, Mnemonic: mnemonic, Args: args, Remark: remark);
         }
 
-        public static IList<Operand> MakeOperands(string[] operandStrArray) //TODO consider Enumerable
+        public static IList<Operand> MakeOperands(string[] operandStrArray) // TODO consider Enumerable
         {
             Contract.Requires(operandStrArray != null);
 
@@ -260,7 +262,7 @@ namespace AsmTools
                         inStringDef = true;
                         keywordBegin = i; // '"' is part of the keyword
                     }
-                    //else if (IsSeparatorChar_NoOperator(c))
+                    // else if (IsSeparatorChar_NoOperator(c))
                     else if (IsSeparatorChar(c))
                     {
                         if (keywordBegin < i)
@@ -293,13 +295,12 @@ namespace AsmTools
             }
         }
 
-
         public static List<string> SplitIntoKeywordsList(string line)
         {
             List<string> keywords = new List<string>();
-            foreach ((int BeginPos, int Length, bool IsLabel) pos in AsmSourceTools.SplitIntoKeywordPos(line))
+            foreach ((int BeginPos, int Length, bool IsLabel) pos in SplitIntoKeywordPos(line))
             {
-                keywords.Add(AsmSourceTools.Keyword(pos, line));
+                keywords.Add(Keyword(pos, line));
             }
             return keywords;
         }
@@ -329,9 +330,6 @@ namespace AsmTools
         /// <summary>
         /// Determine whether the provided pos is in a remark in the provided line.
         /// </summary>
-        /// <param name="triggerPoint"></param>
-        /// <param name="lineStart"></param>
-        /// <returns></returns>
         public static bool IsInRemark(int pos, string line)
         {
             Contract.Requires(line != null);
@@ -440,7 +438,6 @@ namespace AsmTools
             }
         }
 
-
         /// <summary> Check if the provided string is a constant by evaluating it.</summary>
         public static (bool Valid, ulong Value, int NBits) Evaluate_Constant(string token, bool isCapitals = false)
         {
@@ -451,8 +448,8 @@ namespace AsmTools
                 token = token.Substring(1);
             }
 
-            //TODO 01-06-19 fix evaluate_constant
-            //TODO bugfix: there is a issue with .net 1.6.2 and the evaluation code in Evaluate_Constant
+            // TODO 01-06-19 fix evaluate_constant
+            // TODO bugfix: there is a issue with .net 1.6.2 and the evaluation code in Evaluate_Constant
             if (true)
             {
                 // dont use expression evaluation, just parse it.
@@ -474,14 +471,13 @@ namespace AsmTools
         public static string Get_Related_Constant(string original, ulong value, int nBits)
         {
             string s0 = original;
-            string s1 = value.ToString();
-            string h1 = string.Format("{0:X}", value); // just the hex number
+            string s1 = value.ToString(Culture);
+            string h1 = string.Format(Culture, "{0:X}", value); // just the hex number
 
-            //string h3 = Convert.ToString(value, 8); // no octal
+            // string h3 = Convert.ToString(value, 8); // no octal
 
             return "\\b(" + s0 + "|" + s1 + "|0x[0]{0,}" + h1 + "|[0]{0,}" + h1 + "[h]{0,1})\\b";
         }
-
 
         /// <summary>
         /// return Offset = Base + (Index * Scale) + Displacement
@@ -529,7 +525,7 @@ namespace AsmTools
             length = token.Length;
             if (length == 0)
             {
-                return (Valid: false, BaseReg: Rn.NOREG, IndexReg: Rn.NOREG, Scale: 0, Displacement: 0, NBits: 0, ErrorMessage: null);// do not return a error message because the provided token can be a label
+                return (Valid: false, BaseReg: Rn.NOREG, IndexReg: Rn.NOREG, Scale: 0, Displacement: 0, NBits: 0, ErrorMessage: null); // do not return a error message because the provided token can be a label
             }
 
             // 2] check if the displacement is negative
@@ -559,8 +555,8 @@ namespace AsmTools
             {
                 string y = x[i].Trim();
 
-                (bool Valid, ulong Value, int NBits) = ExpressionEvaluator.Parse_Constant(y, true);
-                if (Valid)
+                (bool valid, ulong value, int NBits) = ExpressionEvaluator.Parse_Constant(y, true);
+                if (valid)
                 {
                     if (foundDisplacement)
                     {
@@ -570,7 +566,7 @@ namespace AsmTools
                     else
                     {
                         foundDisplacement = true;
-                        displacement = negativeDisplacement ? -(long)Value : (long)Value;
+                        displacement = negativeDisplacement ? -(long)value : (long)value;
                     }
                 }
                 else
@@ -657,7 +653,7 @@ namespace AsmTools
 
                 if (s.StartsWith("BYTE", StringComparison.Ordinal))
                 {
-                    return 8; //nasm
+                    return 8; // nasm
                 }
 
                 if (s.StartsWith("SBYTE", StringComparison.Ordinal))
@@ -667,7 +663,7 @@ namespace AsmTools
 
                 if (s.StartsWith("WORD", StringComparison.Ordinal))
                 {
-                    return 16; //nasm
+                    return 16; // nasm
                 }
 
                 if (s.StartsWith("SWORD", StringComparison.Ordinal))
@@ -677,7 +673,7 @@ namespace AsmTools
 
                 if (s.StartsWith("DWORD", StringComparison.Ordinal))
                 {
-                    return 32; //nasm
+                    return 32; // nasm
                 }
 
                 if (s.StartsWith("SDWORD", StringComparison.Ordinal))
@@ -687,12 +683,12 @@ namespace AsmTools
 
                 if (s.StartsWith("QWORD", StringComparison.Ordinal))
                 {
-                    return 64; //nasm
+                    return 64; // nasm
                 }
 
                 if (s.StartsWith("TWORD", StringComparison.Ordinal))
                 {
-                    return 80; //nasm
+                    return 80; // nasm
                 }
 
                 if (s.StartsWith("DQWORD", StringComparison.Ordinal))
@@ -702,7 +698,7 @@ namespace AsmTools
 
                 if (s.StartsWith("OWORD", StringComparison.Ordinal))
                 {
-                    return 128; //nasm
+                    return 128; // nasm
                 }
 
                 if (s.StartsWith("XMMWORD", StringComparison.Ordinal))
@@ -722,7 +718,7 @@ namespace AsmTools
 
                 if (s.StartsWith("YWORD", StringComparison.Ordinal))
                 {
-                    return 256; //nasm
+                    return 256; // nasm
                 }
 
                 if (s.StartsWith("ZMMWORD", StringComparison.Ordinal))
@@ -732,10 +728,10 @@ namespace AsmTools
 
                 if (s.StartsWith("ZWORD", StringComparison.Ordinal))
                 {
-                    return 512; //nasm
+                    return 512; // nasm
                 }
 
-                //Console.WriteLine("AsmSourceTools:GetNbitsMemOperand: could not determine nBits in token " + token + " assuming 32 bits");
+                // Console.WriteLine("AsmSourceTools:GetNbitsMemOperand: could not determine nBits in token " + token + " assuming 32 bits");
 
                 return 32;
             }
@@ -763,7 +759,7 @@ namespace AsmTools
         }
 
         /// <summary>
-        /// Return the previous keyword between begin and end. 
+        /// Return the previous keyword between begin and end.
         /// </summary>
         public static string GetPreviousKeyword(int begin, int end, string line)
         {
@@ -788,13 +784,13 @@ namespace AsmTools
             {
                 if (IsSeparatorChar(line[pos]))
                 {
-                    //Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; pos={1} has a separator. Found end of current keyword", line, pos));
+                    // Debug.WriteLine(string.Format(AsmDudeToolsStatic.CultureUI, "INFO: getPreviousKeyword; line=\"{0}\"; pos={1} has a separator. Found end of current keyword", line, pos));
                     pos--;
                     break;
                 }
                 else
                 {
-                    //Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; pos={1} has char {2} of current keyword", line, pos, line[pos]));
+                    // Debug.WriteLine(string.Format(AsmDudeToolsStatic.CultureUI, "INFO: getPreviousKeyword; line=\"{0}\"; pos={1} has char {2} of current keyword", line, pos, line[pos]));
                     pos--;
                 }
             }
@@ -805,13 +801,13 @@ namespace AsmTools
             {
                 if (IsSeparatorChar(line[pos]))
                 {
-                    //Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; pos={1} has a separator.", line, pos));
+                    // Debug.WriteLine(string.Format(AsmDudeToolsStatic.CultureUI, "INFO: getPreviousKeyword; line=\"{0}\"; pos={1} has a separator.", line, pos));
                     pos--;
                 }
                 else
                 {
                     endPrevious = pos + 1;
-                    //Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; pos={1} has char {2} which is the end of previous keyword.", line, pos, line[pos]));
+                    // Debug.WriteLine(string.Format(AsmDudeToolsStatic.CultureUI, "INFO: getPreviousKeyword; line=\"{0}\"; pos={1} has char {2} which is the end of previous keyword.", line, pos, line[pos]));
                     pos--;
                     break;
                 }
@@ -824,12 +820,12 @@ namespace AsmTools
                 if (IsSeparatorChar(line[pos]))
                 {
                     beginPrevious = pos + 1;
-                    //Debug.WriteLine(string.Format("INFO: getPreviousKeyword; line=\"{0}\"; beginPrevious={1}; pos={2}", line, beginPrevious, pos));
+                    // Debug.WriteLine(string.Format(AsmDudeToolsStatic.CultureUI, "INFO: getPreviousKeyword; line=\"{0}\"; beginPrevious={1}; pos={2}", line, beginPrevious, pos));
                     break;
                 }
                 else
                 {
-                    //Debug.WriteLine(string.Format("INFO: getPreviousKeyword; find begin. line=\"{0}\"; pos={1} has char {2}", line, pos, line[pos]));
+                    // Debug.WriteLine(string.Format(AsmDudeToolsStatic.CultureUI, "INFO: getPreviousKeyword; find begin. line=\"{0}\"; pos={1} has char {2}", line, pos, line[pos]));
                     pos--;
                 }
             }
@@ -838,7 +834,7 @@ namespace AsmTools
             if (length > 0)
             {
                 string previousKeyword = line.Substring(beginPrevious, length);
-                //Debug.WriteLine(string.Format("INFO: getPreviousKeyword; previousKeyword={0}", previousKeyword));
+                // Debug.WriteLine(string.Format(AsmDudeToolsStatic.CultureUI, "INFO: getPreviousKeyword; previousKeyword={0}", previousKeyword));
                 return previousKeyword;
             }
             else
@@ -852,7 +848,7 @@ namespace AsmTools
         {
             Contract.Requires(line != null);
 
-            //Debug.WriteLine(string.Format("INFO: getKeyword; pos={0}; line=\"{1}\"", pos, new string(line)));
+            // Debug.WriteLine(string.Format(AsmDudeToolsStatic.CultureUI, "INFO: getKeyword; pos={0}; line=\"{1}\"", pos, new string(line)));
             if ((pos < 0) || (pos >= line.Length))
             {
                 return (pos, pos);
@@ -922,7 +918,7 @@ namespace AsmTools
             }
             int beginPos = i;
             // position i points to the start of the current keyword
-            //AsmDudeToolsStatic.Output_INFO("getLabelEndPos: found first char of first keyword "+ line[i]+".");
+            // AsmDudeToolsStatic.Output_INFO("getLabelEndPos: found first char of first keyword "+ line[i]+".");
 
             for (; i < nChars; ++i)
             {
@@ -981,8 +977,7 @@ namespace AsmTools
             }
         }
 
-
-        /// <summary>Get the first position of a remark character in the provided line; 
+        /// <summary>Get the first position of a remark character in the provided line;
         /// Valid is true if one such char is found.</summary>
         public static (bool Valid, int BeginPos, int EndPos) GetRemarkPos(string line)
         {
@@ -1041,13 +1036,14 @@ namespace AsmTools
                     string newLine = GetLine(remainingLine, maxLength - prefix.Length);
                     lines.Add(newLine);
                     remainingLine = remainingLine.Substring(newLine.Length).Trim();
-                    // Keep iterating as int as we've got words remaining 
+                    // Keep iterating as int as we've got words remaining
                     // in the line.
                 } while (remainingLine.Length > 0);
             }
 
             return string.Join(Environment.NewLine + prefix, lines.ToArray());
         }
+
         private static string GetLine(string str, int maxLength)
         {
             // The string is less than the max length so just return it.

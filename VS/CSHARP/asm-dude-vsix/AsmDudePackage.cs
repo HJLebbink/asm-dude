@@ -100,7 +100,7 @@ namespace AsmDude
                     EnvDTE.Properties asmDudePropertiesList = vsEnvironment.get_Properties("AsmDude", "Asm Documentation");
                     if (asmDudePropertiesList != null) {
                         string url = asmDudePropertiesList.Item("_asmDocUrl").Value as string;
-                        AsmDudeToolsStatic.Output_INFO(string.Format("{0}:changeFontAutoComplete. url=", this.ToString(), url));
+                        AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:changeFontAutoComplete. url=", this.ToString(), url));
                     }
                 }
                 if (false) {

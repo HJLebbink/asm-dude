@@ -41,7 +41,7 @@ namespace AsmDude
         {
             Contract.Requires(x != null);
             Contract.Requires(y != null);
-            return x.InsertionText.CompareTo(y.InsertionText);
+            return string.CompareOrdinal(x.InsertionText, y.InsertionText);
         }
     }
 
@@ -72,7 +72,7 @@ namespace AsmDude
 
             try
             {
-                //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:AugmentCompletionSession", this.ToString()));
+                //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:AugmentCompletionSession", this.ToString()));
 
                 if (!Settings.Default.CodeCompletion_On)
                 {
@@ -130,7 +130,7 @@ namespace AsmDude
                 Mnemonic mnemonic = t.mnemonic;
                 string previousKeyword = AsmDudeToolsStatic.Get_Previous_Keyword(line.Start, start).ToUpper(CultureInfo.InvariantCulture);
 
-                //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:AugmentCompletionSession. lineStr=\"{1}\"; previousKeyword=\"{2}\"", this.ToString(), lineStr, previousKeyword));
+                //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:AugmentCompletionSession. lineStr=\"{1}\"; previousKeyword=\"{2}\"", this.ToString(), lineStr, previousKeyword));
 
                 if (mnemonic == Mnemonic.NONE)
                 {
@@ -226,7 +226,7 @@ namespace AsmDude
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:AugmentCompletionSession; e={1}", this.ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output_ERROR(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:AugmentCompletionSession; e={1}", this.ToString(), e.ToString()));
             }
         }
 

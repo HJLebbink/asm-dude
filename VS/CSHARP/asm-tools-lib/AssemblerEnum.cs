@@ -1,7 +1,7 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -25,14 +25,14 @@ using System;
 namespace AsmTools
 {
     [Flags]
-    public enum AssemblerEnum 
+    public enum AssemblerEnum
     {
         UNKNOWN = 0,
         MASM = 1 << 0,
         NASM_INTEL = 1 << 1,
         NASM_ATT = 1 << 2,
         ALL = NASM_INTEL | NASM_ATT | MASM,
-        AUTO_DETECT = 1 << 3
+        AUTO_DETECT = 1 << 3,
     }
 
     public static partial class AsmSourceTools

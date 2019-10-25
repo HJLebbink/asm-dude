@@ -1,6 +1,6 @@
-﻿using AsmSim;
+﻿using System;
+using AsmSim;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 
 namespace unit_tests_asm_tools
 {

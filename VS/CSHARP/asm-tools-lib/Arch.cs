@@ -1,7 +1,7 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -20,17 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Text;
-
 namespace AsmTools
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+    using System.Globalization;
+    using System.Text;
 
     public enum Arch
     {
-
         ARCH_NONE,
 
         ARCH_8086,
@@ -58,74 +57,73 @@ namespace AsmTools
         ARCH_AVX,
         ARCH_AVX2,
 
-        ///<summary>AVX512 foundation (Knights Landing, Intel Xeon)</summary>
+        /// <summary>AVX512 foundation (Knights Landing, Intel Xeon)</summary>
         ARCH_AVX512_F,
 
-        ///<summary>AVX512 conflict detection (Knights Landing, Intel Xeon)</summary>
+        /// <summary>AVX512 conflict detection (Knights Landing, Intel Xeon)</summary>
         ARCH_AVX512_CD,
 
-        ///<summary>AVX512 exponential and reciprocal (Knights Landing)</summary>
+        /// <summary>AVX512 exponential and reciprocal (Knights Landing)</summary>
         ARCH_AVX512_ER,
 
-        ///<summary>AVX512 prefetch (Knights Landing)</summary>
+        /// <summary>AVX512 prefetch (Knights Landing)</summary>
         ARCH_AVX512_PF,
 
-        ///<summary>AVX512 byte and word (Intel Xeon)</summary>
+        /// <summary>AVX512 byte and word (Intel Xeon)</summary>
         ARCH_AVX512_BW,
 
-        ///<summary>AVX512 doubleword and quadword (Intel Xeon)</summary>
+        /// <summary>AVX512 doubleword and quadword (Intel Xeon)</summary>
         ARCH_AVX512_DQ,
 
-        ///<summary>AVX512 Vector Length Extensions (Intel Xeon)</summary>
-        ///An additional orthogonal capability known as Vector Length Extensions provide for most AVX-512 instructions 
-        ///to operate on 128 or 256 bits, instead of only 512. Vector Length Extensions can currently be applied to
-        ///most Foundation Instructions, the Conflict Detection Instructions as well as the new Byte, Word, Doubleword 
-        ///and Quadword instructions. These AVX-512 Vector Length Extensions are indicated by the AVX512VL CPUID flag. 
-        ///The use of Vector Length Extensions extends most AVX-512 operations to also operate on XMM (128-bit, SSE) 
-        ///registers and YMM (256-bit, AVX) registers. The use of Vector Length Extensions allows the capabilities of 
-        ///EVEX encodings, including the use of mask registers and access to registers 16..31, to be applied to XMM 
-        ///and YMM registers instead of only to ZMM registers.
+        /// <summary>AVX512 Vector Length Extensions (Intel Xeon)</summary>
+        /// An additional orthogonal capability known as Vector Length Extensions provide for most AVX-512 instructions
+        /// to operate on 128 or 256 bits, instead of only 512. Vector Length Extensions can currently be applied to
+        /// most Foundation Instructions, the Conflict Detection Instructions as well as the new Byte, Word, Doubleword
+        /// and Quadword instructions. These AVX-512 Vector Length Extensions are indicated by the AVX512VL CPUID flag.
+        /// The use of Vector Length Extensions extends most AVX-512 operations to also operate on XMM (128-bit, SSE)
+        /// registers and YMM (256-bit, AVX) registers. The use of Vector Length Extensions allows the capabilities of
+        /// EVEX encodings, including the use of mask registers and access to registers 16..31, to be applied to XMM
+        /// and YMM registers instead of only to ZMM registers.
         ARCH_AVX512_VL,
 
-        //Cannon Lake
+        /// <summary> Cannon Lake</summary>
         ARCH_AVX512_IFMA,
 
-        //Cannon Lake
+        /// <summary> Cannon Lake</summary>
         ARCH_AVX512_VBMI,
 
-        //Knight Mill, Ice Lake
+        /// <summary> Knight Mill, Ice Lake</summary>
         ARCH_AVX512_VPOPCNTDQ,
 
-        //Knight Mill
+        /// <summary> Knight Mill</summary>
         ARCH_AVX512_4VNNIW,
 
-        //Knight Mill
+        /// <summary> Knight Mill</summary>
         ARCH_AVX512_4FMAPS,
 
-        //Ice Lake
+        /// <summary> Ice Lake</summary>
         ARCH_AVX512_VBMI2,
 
-        //Ice Lake
+        /// <summary> Ice Lake</summary>
         ARCH_AVX512_VNNI,
 
-        //Ice Lake
+        /// <summary> Ice Lake</summary>
         ARCH_AVX512_BITALG,
 
-        //Ice Lake
+        /// <summary> Ice Lake</summary>
         ARCH_AVX512_GFNI,
 
-        //Ice Lake
+        /// <summary> Ice Lake</summary>
         ARCH_AVX512_VAES,
 
-        //Ice Lake
+        /// <summary> Ice Lake</summary>
         ARCH_AVX512_VPCLMULQDQ,
 
-        //Cooper Lake: Support for BFLOAT16 instructions.
+        /// <summary> Cooper Lake: Support for BFLOAT16 instructions.</summary>
         ARCH_AVX512_BF16,
 
-        //Tiger Lake: Support for VP2INTERSECT[D,Q]
+        /// <summary>Tiger Lake: Support for VP2INTERSECT[D,Q]</summary>
         ARCH_AVX512_VP2INTERSECT,
-
 
         #region Misc Intel
         /// <summary>Multi-Precision Add-Carry Instruction Extensions</summary>
@@ -152,7 +150,7 @@ namespace AsmTools
         /// <summary>TODO</summary>
         ARCH_FSGSBASE,
 
-        ///<summary>Hardware Lock Elision</summary>
+        /// <summary>Hardware Lock Elision</summary>
         ARCH_HLE,
 
         /// <summary>Invalidates TLBs, two instructions</summary>
@@ -219,15 +217,13 @@ namespace AsmTools
         /// <summary> Sapphire Rapids</summary>
         ARCH_ENQCMD,
 
-
         #region Misc Other
         ARCH_X64,
 
         ARCH_IA64,
 
         ARCH_UNDOC,
-        #endregion 
-
+        #endregion
 
         #region AMD
         ARCH_AMD,
@@ -244,7 +240,6 @@ namespace AsmTools
 
     public static class ArchTools
     {
-
         public static Arch ParseArch(string str, bool strIsCapitals, bool warn)
         {
             Contract.Requires(str != null);
@@ -331,7 +326,6 @@ namespace AsmTools
                 case "XSS": return Arch.ARCH_XSAVEOPT;
                 case "XSAVE": return Arch.ARCH_XSAVEOPT;
                 case "XSAVEC": return Arch.ARCH_XSAVEOPT;
-
 
                 case "FSGSBASE": return Arch.ARCH_FSGSBASE;
                 case "LZCNT": return Arch.ARCH_LZCNT;

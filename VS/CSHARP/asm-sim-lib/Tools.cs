@@ -304,7 +304,7 @@ namespace AsmSim
                 //Console.WriteLine("INFO: MemZ3:Calc_Effective_Address: operand=" + op);
 
                 (Rn baseReg, Rn indexReg, int scale, long displacement1) = op.Mem;
-                //Console.WriteLine(string.Format("INFO: Calc_Effective_Address: base={0}; index={1}; scale={2}; disp={3}", t.Item1, t.Item2, t.Item3, t.Item4));
+                //Console.WriteLine(string.Format(AsmDudeToolsStatic.CultureUI, "INFO: Calc_Effective_Address: base={0}; index={1}; scale={2}; disp={3}", t.Item1, t.Item2, t.Item3, t.Item4));
 
                 BitVecExpr address = null;
                 //Offset = Base + (Index * Scale) + Displacement
@@ -314,7 +314,7 @@ namespace AsmSim
                 {
                     BitVecNum displacement = ctx.MkBV(displacement1, nBitsAddress);
                     address = displacement;
-                    //Console.WriteLine(string.Format("INFO: MemZ3:Calc_Effective_Address: A: address={0}", address));
+                    //Console.WriteLine(string.Format(AsmDudeToolsStatic.CultureUI, "INFO: MemZ3:Calc_Effective_Address: A: address={0}", address));
                 }
 
                 //2] add value of the base register
@@ -330,7 +330,7 @@ namespace AsmSim
                     }
                     //Console.WriteLine("baseRegister.NBits = " + baseRegister.SortSize + "; address.NBits = " + address.SortSize);
                     address = (address == null) ? baseRegister : ctx.MkBVAdd(address, baseRegister);
-                    //Console.WriteLine(string.Format("INFO: MemZ3:Calc_Effective_Address: B: address={0}", address));
+                    //Console.WriteLine(string.Format(AsmDudeToolsStatic.CultureUI, "INFO: MemZ3:Calc_Effective_Address: B: address={0}", address));
                 }
 
                 //3] add the value of (Index * Scale)
@@ -365,7 +365,7 @@ namespace AsmSim
                         else if (indexRegister != null)
                         {
                             address = ctx.MkBVAdd(address, indexRegister);
-                            //Console.WriteLine(string.Format("INFO: MemZ3:Calc_Effective_Address: C: address={0}", address));
+                            //Console.WriteLine(string.Format(AsmDudeToolsStatic.CultureUI, "INFO: MemZ3:Calc_Effective_Address: C: address={0}", address));
                         }
                     }
                 }

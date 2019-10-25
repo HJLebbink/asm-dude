@@ -1,10 +1,10 @@
-﻿using AsmSim;
+﻿using System;
+using System.Diagnostics.Contracts;
+using System.Numerics;
+using AsmSim;
 using AsmTools;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Z3;
-using System;
-using System.Diagnostics.Contracts;
-using System.Numerics;
 
 namespace unit_tests_asm_z3
 {
@@ -15,8 +15,7 @@ namespace unit_tests_asm_z3
 #else
         public const bool LOG_TO_DISPLAY = true;
 #endif
-        public const int DEFAULT_TIMEOUT = 10000;//60000;
-
+        public const int DEFAULT_TIMEOUT = 10000; // 60000;
 
         public static ulong RandUlong(int nBits, Random rand)
         {
@@ -51,6 +50,7 @@ namespace unit_tests_asm_z3
                 }
             }
         }
+
         public static long RandLong(int nBits, Random rand)
         {
             ulong raw = RandUlong(nBits, rand);
@@ -78,9 +78,10 @@ namespace unit_tests_asm_z3
             ulong c = a + b;
             bool signC = Calc_SF(nBits, c);
             bool result = (signA == signB) && (signA != signC);
-            //Console.WriteLine("TestTools: calc_OF_Add: nBits="+nBits+"; a=" + a + "; b=" + b + "; c=" + c + "; signA=" + signA + "; signB=" + signB + "; signC=" + signC +"; result="+result);
+            // Console.WriteLine("TestTools: calc_OF_Add: nBits="+nBits+"; a=" + a + "; b=" + b + "; c=" + c + "; signA=" + signA + "; signB=" + signB + "; signC=" + signC +"; result="+result);
             return result;
         }
+
         public static bool Calc_OF_Sub(uint nBits, ulong a, ulong b)
         {
             bool signA = Calc_SF(nBits, a);
@@ -88,7 +89,7 @@ namespace unit_tests_asm_z3
             ulong c = a - b;
             bool signC = Calc_SF(nBits, c);
             bool result = (signA == signB) && (signA != signC);
-            //Console.WriteLine("TestTools: calc_OF_Add: nBits="+nBits+"; a=" + a + "; b=" + b + "; c=" + c + "; signA=" + signA + "; signB=" + signB + "; signC=" + signC +"; result="+result);
+            // Console.WriteLine("TestTools: calc_OF_Add: nBits="+nBits+"; a=" + a + "; b=" + b + "; c=" + c + "; signA=" + signA + "; signB=" + signB + "; signC=" + signC +"; result="+result);
             return result;
         }
 
@@ -105,9 +106,10 @@ namespace unit_tests_asm_z3
             count += (int)((a >> 7) & 0x1);
 
             bool result = (count & 1) == 0;
-            //Console.WriteLine("PF(" + (a & 0xFF) + ") = " + result);
+            // Console.WriteLine("PF(" + (a & 0xFF) + ") = " + result);
             return result;
         }
+
         public static bool Calc_ZF(ulong a)
         {
             return a == 0;
@@ -120,7 +122,7 @@ namespace unit_tests_asm_z3
 
         public static bool Calc_AF_Add(ulong a, ulong b)
         {
-            //Console.WriteLine("INFO: TestTools:calc_AF_Add: a="+a+"; b="+b+"; a2=" + (a & 0xF) + "; b2=" + (b & 0xF) + "; c=" + ((a & 0xF) + (b & 0xF)));
+            // Console.WriteLine("INFO: TestTools:calc_AF_Add: a="+a+"; b="+b+"; a2=" + (a & 0xF) + "; b2=" + (b & 0xF) + "; c=" + ((a & 0xF) + (b & 0xF)));
             return ((a & 0xF) + (b & 0xF)) > 0xF;
         }
 
@@ -128,6 +130,7 @@ namespace unit_tests_asm_z3
         {
             return (new BigInteger(a) + new BigInteger(b)) >= BigInteger.Pow(new BigInteger(2), (int)nBits);
         }
+
         public static bool Calc_CF_Mul(int nBits, ulong a, ulong b)
         {
             return (new BigInteger(a) * new BigInteger(b)) >= BigInteger.Pow(new BigInteger(2), nBits);
@@ -154,6 +157,7 @@ namespace unit_tests_asm_z3
                     break;
             }
         }
+
         public static void IsFalse(Tv tv)
         {
             switch (tv)
@@ -203,10 +207,12 @@ namespace unit_tests_asm_z3
             Contract.Requires(state != null);
             return state.GetTv(flag);
         }
+
         public static void AreEqual(Flags flags, bool expected, State state)
         {
             AreEqual(flags, expected ? Tv.ONE : Tv.ZERO, state);
         }
+
         public static void AreEqual(Flags flags, Tv expected, State state)
         {
             Contract.Requires(state != null);
@@ -222,17 +228,20 @@ namespace unit_tests_asm_z3
         {
             AreEqual(name, (ulong)expected, state);
         }
+
         public static void AreEqual(Rn name, ulong expected, State state)
         {
             Tv[] expectedTvArray = ToolsZ3.GetTvArray(expected, RegisterTools.NBits(name));
             AreEqual(name, expectedTvArray, state);
         }
+
         public static void AreEqual(Rn name, string expected, State state)
         {
             Tv[] expectedTvArray = ToolsZ3.GetTvArray(expected);
             Assert.AreEqual(RegisterTools.NBits(name), expectedTvArray.Length);
             AreEqual(name, expectedTvArray, state);
         }
+
         public static void AreEqual(Rn name, Tv[] expectedTvArray, State state)
         {
             Contract.Requires(state != null);
@@ -287,7 +296,7 @@ namespace unit_tests_asm_z3
             }
         }
         /// <summary>
-        /// Test whether the provided registers are unrelated in the provided state. That is, whether the 
+        /// Test whether the provided registers are unrelated in the provided state. That is, whether the
         /// equality of the two registers is unknown in the provided state.
         /// </summary>
         /// <param name="reg1"></param>
@@ -327,6 +336,7 @@ namespace unit_tests_asm_z3
             Assert.IsNotNull(expectedTvArray);
             AreEqual(expr, expectedTvArray, state);
         }
+
         public static void AreEqual(BitVecExpr expr, string expected, State state)
         {
             Contract.Requires(expr != null);
@@ -335,6 +345,7 @@ namespace unit_tests_asm_z3
             Assert.AreEqual(expr.SortSize, (uint)expectedTvArray.Length);
             AreEqual(expr, expectedTvArray, state);
         }
+
         public static void AreEqual(BitVecExpr expr, Tv[] expectedTvArray, State state)
         {
             Contract.Requires(expr != null);
@@ -370,6 +381,7 @@ namespace unit_tests_asm_z3
             Contract.Requires(actualArray != null);
             AreEqual(ToolsZ3.GetTvArray(expected, actualArray.Length), actualArray);
         }
+
         public static void AreEqual(Tv[] expectedArray, Tv[] actualArray)
         {
             Contract.Requires(expectedArray != null);
@@ -391,6 +403,7 @@ namespace unit_tests_asm_z3
                 }
             }
         }
+
         public static void AreEqual(Tv expected, Tv actual)
         {
             if ((actual == Tv.UNDETERMINED) && (expected != Tv.UNDETERMINED))

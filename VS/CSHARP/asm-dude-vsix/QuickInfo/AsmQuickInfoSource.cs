@@ -79,12 +79,12 @@ namespace AsmDude.QuickInfo
                 }
                 else
                 {
-                    AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:AugmentQuickInfoSession; does not have have AsmDudeContentType: but has type {1}", this.ToString(), contentType));
+                    AsmDudeToolsStatic.Output_WARNING(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:AugmentQuickInfoSession; does not have have AsmDudeContentType: but has type {1}", this.ToString(), contentType));
                 }
             }
             catch (Exception e)
             {
-                AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:AugmentQuickInfoSession; e={1}", this.ToString(), e.ToString()));
+                AsmDudeToolsStatic.Output_ERROR(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:AugmentQuickInfoSession; e={1}", this.ToString(), e.ToString()));
             }
         }
 
@@ -102,7 +102,7 @@ namespace AsmDude.QuickInfo
 
         public void Dispose()
         {
-            AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Dispose", this.ToString()));
+            AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Dispose", this.ToString()));
         }
 
         #region Private Methods
@@ -116,7 +116,7 @@ namespace AsmDude.QuickInfo
             SnapshotPoint? triggerPoint = session.GetTriggerPoint(snapshot);
             if (!triggerPoint.HasValue)
             {
-                AsmDudeToolsStatic.Output_WARNING(string.Format("{0}:Handle: trigger point is null", this.ToString()));
+                AsmDudeToolsStatic.Output_WARNING(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Handle: trigger point is null", this.ToString()));
                 return;
             }
 
@@ -129,7 +129,7 @@ namespace AsmDude.QuickInfo
                 string keyword = tagSpan.GetText();
                 string keywordUpper = keyword.ToUpper(CultureInfo.InvariantCulture);
 
-                AsmDudeToolsStatic.Output_INFO(string.Format("{0}:Handle: keyword=\"{1}\"; type={2}; file=\"{3}\"", this.ToString(), keyword, tag.Type, AsmDudeToolsStatic.GetFilename(session.TextView.TextBuffer)));
+                AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Handle: keyword=\"{1}\"; type={2}; file=\"{3}\"", this.ToString(), keyword, tag.Type, AsmDudeToolsStatic.GetFilename(session.TextView.TextBuffer)));
                 applicableToSpan = snapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeInclusive);
 
                 TextBlock description = null;
@@ -374,7 +374,7 @@ namespace AsmDude.QuickInfo
                     description.Focusable = true;
                     description.FontSize = AsmDudeToolsStatic.GetFontSize() + 2;
                     description.FontFamily = AsmDudeToolsStatic.GetFontType();
-                    //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:AugmentQuickInfoSession; setting description fontSize={1}; fontFamily={2}", this.ToString(), description.FontSize, description.FontFamily));
+                    //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:AugmentQuickInfoSession; setting description fontSize={1}; fontFamily={2}", this.ToString(), description.FontSize, description.FontFamily));
                     quickInfoContent.Add(description);
                 }
             }
@@ -431,7 +431,7 @@ namespace AsmDude.QuickInfo
                     string lineContent = (LabelGraph.Is_From_Main_File(id))
                         ? " :" + this._textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText()
                         : string.Empty;
-                    sb.AppendLine(AsmDudeToolsStatic.Cleanup(string.Format("Defined at LINE {0} ({1}){2}", lineNumber + 1, filename, lineContent)));
+                    sb.AppendLine(AsmDudeToolsStatic.Cleanup(string.Format(AsmDudeToolsStatic.CultureUI, "Defined at LINE {0} ({1}){2}", lineNumber + 1, filename, lineContent)));
                 }
                 string result = sb.ToString();
                 return result.TrimEnd(Environment.NewLine.ToCharArray());
@@ -470,8 +470,8 @@ namespace AsmDude.QuickInfo
                     {
                         lineContent = string.Empty;
                     }
-                    sb.AppendLine(AsmDudeToolsStatic.Cleanup(string.Format("Used at LINE {0} ({1}){2}", lineNumber + 1, filename, lineContent)));
-                    //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:getLabelDefDescription; sb=\"{1}\"", this.ToString(), sb.ToString()));
+                    sb.AppendLine(AsmDudeToolsStatic.Cleanup(string.Format(AsmDudeToolsStatic.CultureUI, "Used at LINE {0} ({1}){2}", lineNumber + 1, filename, lineContent)));
+                    //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:getLabelDefDescription; sb=\"{1}\"", this.ToString(), sb.ToString()));
                 }
                 string result = sb.ToString();
                 return result.TrimEnd(Environment.NewLine.ToCharArray());

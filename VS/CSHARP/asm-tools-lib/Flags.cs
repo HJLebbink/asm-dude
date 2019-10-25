@@ -1,7 +1,7 @@
 ﻿// The MIT License (MIT)
 //
 // Copyright (c) 2019 Henk-Jan Lebbink
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
@@ -20,13 +20,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Text;
-
 namespace AsmTools
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+    using System.Text;
+
     /// <summary>Flags, CF, PF, AF, ZF, SF, OF, DF, IF</summary>
     [Flags]
     public enum Flags
@@ -75,14 +75,13 @@ namespace AsmTools
         /// <summary>
         /// TF (bit 8) Trap flag — Control Flag.
         /// </summary>
-        //TF = 1 << 8,
-
+        // TF = 1 << 8,
 
         ALL = CF | PF | AF | ZF | SF | OF | DF,
 
         CF_PF_AF_SF_OF = CF | PF | AF | SF | OF,
         CF_PF_AF_ZF_SF_OF = CF | PF | AF | ZF | SF | OF,
-        PF_AF_ZF_SF_OF = PF | AF | ZF | SF | OF
+        PF_AF_ZF_SF_OF = PF | AF | ZF | SF | OF,
     }
 
     public static class FlagTools
@@ -168,6 +167,7 @@ namespace AsmTools
                 yield return Flags.OF;
             }
         }
+
         public static IEnumerable<Flags> GetFlags()
         {
             yield return Flags.CF;

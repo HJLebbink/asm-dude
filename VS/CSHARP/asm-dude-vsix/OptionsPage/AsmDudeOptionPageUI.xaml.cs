@@ -75,12 +75,12 @@ namespace AsmDude.OptionsPage
             {
                 try
                 {
-                    //AsmDudeToolsStatic.Output_INFO(string.Format("{0}:SetPropValue: propName={1}; o={2}", this.ToString(), propName, o.ToString()));
+                    //AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:SetPropValue: propName={1}; o={2}", this.ToString(), propName, o.ToString()));
                     this.GetType().GetProperty(propName).SetValue(this, o);
                 }
                 catch (Exception)
                 {
-                    AsmDudeToolsStatic.Output_ERROR(string.Format("{0}:SetPropValue: Could not find property={1}; o={2}", this.ToString(), propName, o.ToString()));
+                    AsmDudeToolsStatic.Output_ERROR(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:SetPropValue: Could not find property={1}; o={2}", this.ToString(), propName, o.ToString()));
                 }
             }
         }
