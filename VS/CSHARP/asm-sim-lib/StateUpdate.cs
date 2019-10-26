@@ -1098,78 +1098,96 @@ namespace AsmSim
         }
 
         #endregion
-        public bool Disposed = false;
+
+        #region IDisposable Support
 
         public void Dispose()
         {
-            this.Disposed = true;
-            lock (this.ctxLock_)
-            {
-                this.cf_?.Dispose();
-                this.pf_?.Dispose();
-                this.af_?.Dispose();
-                this.zf_?.Dispose();
-                this.sf_?.Dispose();
-                this.of_?.Dispose();
-                this.df_?.Dispose();
-
-                this.cf_U_?.Dispose();
-                this.pf_U_?.Dispose();
-                this.af_U_?.Dispose();
-                this.zf_U_?.Dispose();
-                this.sf_U_?.Dispose();
-                this.of_U_?.Dispose();
-                this.df_U_?.Dispose();
-
-                this.rax_?.Dispose();
-                this.rbx_?.Dispose();
-                this.rcx_?.Dispose();
-                this.rdx_?.Dispose();
-
-                this.rsi_?.Dispose();
-                this.rdi_?.Dispose();
-                this.rbp_?.Dispose();
-                this.rsp_?.Dispose();
-
-                this.r8_?.Dispose();
-                this.r9_?.Dispose();
-                this.r10_?.Dispose();
-                this.r11_?.Dispose();
-
-                this.r12_?.Dispose();
-                this.r13_?.Dispose();
-                this.r14_?.Dispose();
-                this.r15_?.Dispose();
-
-                this.simd_?.Dispose();
-
-                this.rax_U_?.Dispose();
-                this.rbx_U_?.Dispose();
-                this.rcx_U_?.Dispose();
-                this.rdx_U_?.Dispose();
-
-                this.rsi_U_?.Dispose();
-                this.rdi_U_?.Dispose();
-                this.rbp_U_?.Dispose();
-                this.rsp_U_?.Dispose();
-
-                this.r8_U_?.Dispose();
-                this.r9_U_?.Dispose();
-                this.r10_U_?.Dispose();
-                this.r11_U_?.Dispose();
-
-                this.r12_U_?.Dispose();
-                this.r13_U_?.Dispose();
-                this.r14_U_?.Dispose();
-                this.r15_U_?.Dispose();
-
-                this.simd_U_?.Dispose();
-                this.mem_Update_?.Dispose();
-                this.mem_Update_U_?.Dispose();
-                this.mem_Full_?.Dispose();
-
-                this.ctx_.Dispose();
-            }
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
+
+        ~StateUpdate()
+        {
+            this.Dispose(false);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // free managed resources
+                lock (this.ctxLock_)
+                {
+                    this.cf_?.Dispose();
+                    this.pf_?.Dispose();
+                    this.af_?.Dispose();
+                    this.zf_?.Dispose();
+                    this.sf_?.Dispose();
+                    this.of_?.Dispose();
+                    this.df_?.Dispose();
+
+                    this.cf_U_?.Dispose();
+                    this.pf_U_?.Dispose();
+                    this.af_U_?.Dispose();
+                    this.zf_U_?.Dispose();
+                    this.sf_U_?.Dispose();
+                    this.of_U_?.Dispose();
+                    this.df_U_?.Dispose();
+
+                    this.rax_?.Dispose();
+                    this.rbx_?.Dispose();
+                    this.rcx_?.Dispose();
+                    this.rdx_?.Dispose();
+
+                    this.rsi_?.Dispose();
+                    this.rdi_?.Dispose();
+                    this.rbp_?.Dispose();
+                    this.rsp_?.Dispose();
+
+                    this.r8_?.Dispose();
+                    this.r9_?.Dispose();
+                    this.r10_?.Dispose();
+                    this.r11_?.Dispose();
+
+                    this.r12_?.Dispose();
+                    this.r13_?.Dispose();
+                    this.r14_?.Dispose();
+                    this.r15_?.Dispose();
+
+                    this.simd_?.Dispose();
+
+                    this.rax_U_?.Dispose();
+                    this.rbx_U_?.Dispose();
+                    this.rcx_U_?.Dispose();
+                    this.rdx_U_?.Dispose();
+
+                    this.rsi_U_?.Dispose();
+                    this.rdi_U_?.Dispose();
+                    this.rbp_U_?.Dispose();
+                    this.rsp_U_?.Dispose();
+
+                    this.r8_U_?.Dispose();
+                    this.r9_U_?.Dispose();
+                    this.r10_U_?.Dispose();
+                    this.r11_U_?.Dispose();
+
+                    this.r12_U_?.Dispose();
+                    this.r13_U_?.Dispose();
+                    this.r14_U_?.Dispose();
+                    this.r15_U_?.Dispose();
+
+                    this.simd_U_?.Dispose();
+                    this.mem_Update_?.Dispose();
+                    this.mem_Update_U_?.Dispose();
+                    this.mem_Full_?.Dispose();
+                    this.branch_Condition_?.Dispose();
+
+                    this.ctx_.Dispose();
+                }
+            }
+            // free native resources if there are any.
+        }
+        #endregion
     }
 }

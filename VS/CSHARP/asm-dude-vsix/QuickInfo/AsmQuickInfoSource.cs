@@ -99,11 +99,6 @@ namespace AsmDude.QuickInfo
             }
         }
 
-        public void Dispose()
-        {
-            AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Dispose", this.ToString()));
-        }
-
         #region Private Methods
 
         private void Handle(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan)
@@ -482,8 +477,32 @@ namespace AsmDude.QuickInfo
         }
 
         #endregion Private Methods
-    }
 
+        #region IDisposable Support
+
+        public void Dispose()
+        {
+            AsmDudeToolsStatic.Output_INFO(string.Format(AsmDudeToolsStatic.CultureUI, "{0}:Dispose", this.ToString()));
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~AsmQuickInfoSource()
+        {
+            this.Dispose(false);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // free managed resources
+                this.aggregator_.Dispose();
+            }
+            // free native resources if there are any.
+        }
+    }
+    #endregion
 
     internal class TextEditorWrapper
     {

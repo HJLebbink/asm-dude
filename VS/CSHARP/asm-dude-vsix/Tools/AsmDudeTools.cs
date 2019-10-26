@@ -30,6 +30,7 @@ namespace AsmDude
     using System.IO;
     using System.Linq;
     using System.Xml;
+    using System.Xml.XPath;
     using Amib.Threading;
     using AsmDude.SignatureHelp;
     using AsmDude.Tools;
@@ -454,6 +455,7 @@ namespace AsmDude
         }
 
         #endregion Public Methods
+
         #region Private Methods
 
         private void Init_Data()
@@ -603,8 +605,12 @@ namespace AsmDude
                 Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "INFO: AsmDudeTools:getXmlData: going to load file \"{0}\"", filename));
                 try
                 {
-                    this.xmlData_ = new XmlDocument();
-                    this.xmlData_.Load(filename);
+                    this.xmlData_ = new XmlDocument() { XmlResolver = null };
+                    System.IO.StringReader sreader = new System.IO.StringReader(File.ReadAllText(filename));
+                    using (XmlReader reader = XmlReader.Create(sreader, new XmlReaderSettings() { XmlResolver = null }))
+                    {
+                        this.xmlData_.Load(reader);
+                    }
                 }
                 catch (FileNotFoundException)
                 {
@@ -622,12 +628,31 @@ namespace AsmDude
             return this.xmlData_;
         }
 
+        #endregion
+
+        #region IDisposable Support
+
         public void Dispose()
         {
-            this.errorListProvider_.Dispose();
-            this.threadPool_.Dispose();
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
+        ~AsmDudeTools()
+        {
+            this.Dispose(false);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // free managed resources
+                this.errorListProvider_.Dispose();
+                this.threadPool_.Dispose();
+            }
+            // free native resources if there are any.
+        }
         #endregion
     }
 }

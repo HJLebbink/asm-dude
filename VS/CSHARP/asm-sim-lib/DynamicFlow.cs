@@ -245,7 +245,7 @@ namespace AsmSim
         }
 
         /// <summary> Gets leafs of this DynamicFlow</summary>
-        public IEnumerable<State> Leafs
+        public IEnumerable<State> Create_Leafs
         {
             get
             {
@@ -287,11 +287,11 @@ namespace AsmSim
             }
         }
 
-        public State EndState
+        public State Create_EndState
         {
             get
             {
-                IEnumerable<State> leafs = this.Leafs;
+                IEnumerable<State> leafs = this.Create_Leafs;
                 State result = Tools.Collapse(leafs);
                 foreach (State v in leafs)
                 {
@@ -624,6 +624,7 @@ namespace AsmSim
 
         #region Private Methods
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "<Pending>")]
         private State Create_State_Private(string key, bool after)
         {
             List<string> visisted = new List<string>();
@@ -920,7 +921,23 @@ namespace AsmSim
         #region IDisposable Support
         public void Dispose()
         {
-            this.Clear();
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~DynamicFlow()
+        {
+            this.Dispose(false);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // free managed resources
+                this.Clear();
+            }
+            // free native resources if there are any.
         }
         #endregion
     }

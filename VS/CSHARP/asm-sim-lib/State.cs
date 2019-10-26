@@ -1222,12 +1222,28 @@ namespace AsmSim
         #region IDisposable Support
         public void Dispose()
         {
-            lock (this.ctxLock_)
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~State()
+        {
+            this.Dispose(false);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                this.Solver.Dispose();
-                this.Solver_U.Dispose();
-                this.ctx_.Dispose();
+                // free managed resources
+                lock (this.ctxLock_)
+                {
+                    this.Solver.Dispose();
+                    this.Solver_U.Dispose();
+                    this.ctx_.Dispose();
+                }
             }
+            // free native resources if there are any.
         }
         #endregion
     }

@@ -177,7 +177,7 @@ namespace AsmDude.Tools
 
         public event EventHandler<EventArgs> Reset_Done_Event;
 
-        #region Disposing
+        #region IDisposable Support
         public void Dispose()
         {
             this.Dispose(true);
@@ -201,7 +201,6 @@ namespace AsmDude.Tools
                     {
                         v.Value.Dispose();
                     }
-
                     this.cached_States_After_.Clear();
                 }
                 if (this.cached_States_Before_ != null)
@@ -210,7 +209,6 @@ namespace AsmDude.Tools
                     {
                         v.Value.Dispose();
                     }
-
                     this.cached_States_Before_.Clear();
                 }
                 if (this.threadPool2_ != null)
@@ -223,6 +221,7 @@ namespace AsmDude.Tools
                     this.dFlow_.Dispose();
                     this.dFlow_ = null;
                 }
+                this.aggregator_.Dispose();
             }
             // free native resources if there are any.
         }
