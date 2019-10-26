@@ -327,6 +327,7 @@ namespace AsmSim
             #region Parse to find all labels
             IDictionary<string, int> labels = this.GetLabels(programStr);
             // replace all labels by annotated label
+
             foreach (KeyValuePair<string, int> entry in labels)
             {
                 if (entry.Key.Contains(LINENUMBER_SEPARATOR.ToString()))
@@ -336,6 +337,7 @@ namespace AsmSim
                 string newLabel = entry.Key + LINENUMBER_SEPARATOR + entry.Value;
                 //Console.WriteLine("INFO: ControlFlow:getLines: Replacing label " + entry.Key + " with " + newLabel);
                 programStr = programStr.Replace(entry.Key, newLabel);
+                Contract.Assert(programStr != null);
             }
             #endregion
 

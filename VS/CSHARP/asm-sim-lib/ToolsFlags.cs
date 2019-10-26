@@ -50,13 +50,6 @@ namespace AsmSim
             return ToolsZ3.GetBit(ctx.MkBVSub(ax, bx), nBits, oNE, ctx);
             //return ctx.MkNot(ctx.MkBVSubNoUnderflow(a, b, false));
         }
-
-        public static BoolExpr Create_CF_Mul(BitVecExpr a, BitVecExpr b, uint nBits, Context ctx)
-        {
-            throw new Exception();
-            //return ctx.MkNot(ctx.MkBVMulNoOverflow(a, b, false));
-        }
-
         #endregion
 
         #region Auxiliary Flag
@@ -80,17 +73,6 @@ namespace AsmSim
             Contract.Requires(b.SortSize >= 4);
 
             return Create_CF_Sub(ctx.MkExtract(3, 0, a), ctx.MkExtract(3, 0, b), 4, ctx);
-        }
-
-        public static BoolExpr Create_AF_Mul(BitVecExpr a, BitVecExpr b, Context ctx)
-        {
-            Contract.Requires(a != null);
-            Contract.Requires(b != null);
-            Contract.Requires(ctx != null);
-            Contract.Requires(a.SortSize >= 4);
-            Contract.Requires(b.SortSize >= 4);
-
-            return Create_CF_Mul(ctx.MkExtract(3, 0, a), ctx.MkExtract(3, 0, b), 4, ctx);
         }
         #endregion
 

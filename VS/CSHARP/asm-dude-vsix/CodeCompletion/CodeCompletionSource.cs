@@ -305,7 +305,7 @@ namespace AsmDude
                     //AsmDudeToolsStatic.Output_INFO("AsmCompletionSource:AugmentCompletionSession: keyword \"" + keyword + "\" is added to the completions list");
 
                     // by default, the entry.Key is with capitals
-                    string insertionText = useCapitals ? keyword2 : keyword2.ToLower(CultureInfo.InvariantCulture);
+                    string insertionText = useCapitals ? keyword2 : keyword2.ToLowerInvariant();
                     string archStr = (arch == Arch.ARCH_NONE) ? string.Empty : " [" + ArchTools.ToString(arch) + "]";
                     string descriptionStr = this.asmDudeTools_.Get_Description(keyword);
                     descriptionStr = (string.IsNullOrEmpty(descriptionStr)) ? string.Empty : " - " + descriptionStr;
@@ -381,22 +381,22 @@ namespace AsmDude
                 this.icons_.TryGetValue(AsmTokenType.Mnemonic, out ImageSource imageSource);
                 foreach (Mnemonic mnemonic in this.asmDudeTools_.Get_Allowed_Mnemonics())
                 {
-                    string keyword = mnemonic.ToString();
+                    string keyword_upcase = mnemonic.ToString();
                     string description = this.asmDudeTools_.Mnemonic_Store.GetSignatures(mnemonic).First().Documentation;
-                    string insertionText = useCapitals ? keyword : keyword.ToLowerInvariant();
+                    string insertionText = useCapitals ? keyword_upcase : keyword_upcase.ToLowerInvariant();
                     string archStr = ArchTools.ToString(this.asmDudeTools_.Mnemonic_Store.GetArch(mnemonic));
                     string descriptionStr = this.asmDudeTools_.Mnemonic_Store.GetDescription(mnemonic);
                     descriptionStr = (string.IsNullOrEmpty(descriptionStr)) ? string.Empty : " - " + descriptionStr;
-                    string displayText = Truncat(keyword + archStr + descriptionStr);
+                    string displayText = Truncat(keyword_upcase + archStr + descriptionStr);
                     //String description = keyword.PadRight(15) + archStr.PadLeft(8) + descriptionStr;
                     completions.Add(new Completion(displayText, insertionText, description, imageSource, string.Empty));
                 }
             }
 
             //Add the completions that are defined in the xml file
-            foreach (string keyword in this.asmDudeTools_.Get_Keywords())
+            foreach (string keyword_upcase in this.asmDudeTools_.Get_Keywords())
             {
-                AsmTokenType type = this.asmDudeTools_.Get_Token_Type_Intel(keyword);
+                AsmTokenType type = this.asmDudeTools_.Get_Token_Type_Intel(keyword_upcase);
                 if (selectedTypes.Contains(type))
                 {
                     Arch arch = Arch.ARCH_NONE;
@@ -404,7 +404,7 @@ namespace AsmDude
 
                     if (type == AsmTokenType.Directive)
                     {
-                        AssemblerEnum assembler = this.asmDudeTools_.Get_Assembler(keyword);
+                        AssemblerEnum assembler = this.asmDudeTools_.Get_Assembler(keyword_upcase);
                         if (assembler.HasFlag(AssemblerEnum.MASM))
                         {
                             if (!usedAssember.HasFlag(AssemblerEnum.MASM))
@@ -422,7 +422,7 @@ namespace AsmDude
                     }
                     else
                     {
-                        arch = this.asmDudeTools_.Get_Architecture(keyword);
+                        arch = this.asmDudeTools_.Get_Architecture(keyword_upcase);
                         selected = AsmDudeToolsStatic.Is_Arch_Switched_On(arch);
                     }
 
@@ -433,11 +433,11 @@ namespace AsmDude
                         //Debug.WriteLine("INFO: CompletionSource:AugmentCompletionSession: name keyword \"" + entry.Key + "\"");
 
                         // by default, the entry.Key is with capitals
-                        string insertionText = useCapitals ? keyword : keyword.ToLowerInvariant();
+                        string insertionText = useCapitals ? keyword_upcase : keyword_upcase.ToLowerInvariant();
                         string archStr = (arch == Arch.ARCH_NONE) ? string.Empty : " [" + ArchTools.ToString(arch) + "]";
-                        string descriptionStr = this.asmDudeTools_.Get_Description(keyword);
+                        string descriptionStr = this.asmDudeTools_.Get_Description(keyword_upcase);
                         descriptionStr = (string.IsNullOrEmpty(descriptionStr)) ? string.Empty : " - " + descriptionStr;
-                        string displayTextFull = keyword + archStr + descriptionStr;
+                        string displayTextFull = keyword_upcase + archStr + descriptionStr;
                         string displayText = Truncat(displayTextFull);
                         //String description = keyword.PadRight(15) + archStr.PadLeft(8) + descriptionStr;
                         this.icons_.TryGetValue(type, out ImageSource imageSource);

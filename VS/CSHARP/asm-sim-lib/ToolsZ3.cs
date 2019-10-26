@@ -1182,11 +1182,13 @@ namespace AsmSim
             foreach (Symbol s in boolConstants)
             {
                 expr = expr.Substitute(ctx.MkBoolConst(s), ctx.MkBoolConst(s + postfix));
+                Contract.Assume(expr != null);
                 //Console.WriteLine("UpdateConstName: s=" + s + "; expr=" + expr);
             }
             foreach (Symbol s in bvConstants)
             {
                 expr = expr.Substitute(ctx.MkBVConst(s, 64), ctx.MkBVConst(s + postfix, 64));
+                Contract.Assume(expr != null);
                 //Console.WriteLine("UpdateConstName: s=" + s + "; expr=" + expr);
             }
             return expr;

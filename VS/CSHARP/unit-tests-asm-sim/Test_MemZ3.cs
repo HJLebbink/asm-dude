@@ -37,7 +37,7 @@ namespace unit_tests_asm_z3
     {
         private const bool LogToDisplay = AsmTestTools.LOG_TO_DISPLAY;
 
-        private Tools CreateTools(int timeOut = AsmTestTools.DEFAULT_TIMEOUT)
+        private static Tools CreateTools(int timeOut = AsmTestTools.DEFAULT_TIMEOUT)
         {
             /* The following parameters can be set:
                     - proof (Boolean) Enable proof generation
@@ -67,7 +67,7 @@ namespace unit_tests_asm_z3
 
         private State CreateState(StateConfig stateConfig)
         {
-            Tools tools = this.CreateTools();
+            Tools tools = CreateTools();
             tools.StateConfig = stateConfig;
             return this.CreateState(tools);
         }

@@ -32,7 +32,9 @@ namespace AsmTools
         private readonly Rn rn_ = Rn.NOREG;
         private ulong imm_ = 0;
         private readonly (Rn baseReg, Rn indexReg, int scale, long displacement) mem_;
-        public readonly string ErrorMessage_;
+        private readonly string errorMessage_;
+
+        public string ErrorMessage { get { return this.errorMessage_; } }
 
         public int NBits { get; set; }
 
@@ -92,7 +94,7 @@ namespace AsmTools
                     }
                     else
                     {
-                        this.ErrorMessage_ = errorMessage;
+                        this.errorMessage_ = errorMessage;
                         this.type_ = Ot1.UNKNOWN;
                         this.NBits = -1;
                     }

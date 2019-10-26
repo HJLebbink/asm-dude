@@ -94,6 +94,7 @@ namespace AsmDude.Tools
         #endregion Singleton Factories
 
         /// <summary>Guess whether the provided buffer has assembly in Intel syntax (return true) or AT&T syntax (return false)</summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "<Pending>")]
         public static bool Guess_Intel_Syntax(ITextBuffer buffer, int nLinesMax = 30)
         {
             Contract.Requires(buffer != null);

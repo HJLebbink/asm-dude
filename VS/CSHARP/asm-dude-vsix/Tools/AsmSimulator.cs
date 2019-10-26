@@ -933,11 +933,11 @@ namespace AsmDude.Tools
             {
                 switch (numeration)
                 {
-                    case NumerationEnum.HEX: return ToolsZ3.ToStringHex(reg);
-                    case NumerationEnum.BIN: return ToolsZ3.ToStringBin(reg);
-                    case NumerationEnum.DEC: return ToolsZ3.ToStringDec(reg);
-                    case NumerationEnum.OCT: return ToolsZ3.ToStringOct(reg);
-                    default: return ToolsZ3.ToStringHex(reg);
+                    case NumerationEnum.HEX: return ToolsZ3.ToStringHex(array);
+                    case NumerationEnum.BIN: return ToolsZ3.ToStringBin(array);
+                    case NumerationEnum.DEC: return ToolsZ3.ToStringDec(array);
+                    case NumerationEnum.OCT: return ToolsZ3.ToStringOct(array);
+                    default: return ToolsZ3.ToStringHex(array);
                 }
             }
             #endregion

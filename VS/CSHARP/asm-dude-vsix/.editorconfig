@@ -152,3 +152,6 @@ dotnet_diagnostic.SA1307.severity = none
 
 # SA1404: Code analysis suppression should have justification
 dotnet_diagnostic.SA1404.severity = none
+
+# IDE0060: Remove unused parameter
+dotnet_code_quality_unused_parameters = all:silent

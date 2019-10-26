@@ -396,10 +396,10 @@ namespace AsmTools
         /// <summary>Return from interrupt</summary>
         IRET,
 #pragma warning disable CA1720 // Identifier contains type name
-                              /// <summary>Software interrupt</summary>
+        /// <summary>Software interrupt</summary>
         INT,
 #pragma warning restore CA1720 // Identifier contains type name
-                              /// <summary>Interrupt on overflow</summary>
+        /// <summary>Interrupt on overflow</summary>
         INTO,
         /// <summary>Detect value out of range</summary>
         BOUND,
@@ -4735,7 +4735,8 @@ namespace AsmTools
             return IsMnemonic(str2.Substring(0, length - 1), true);
         }
 
-        public static void SpeedTestMnemonic()
+        /// <summary>Simple speed test to compare parsing of mnemonics vs a lookup map</summary>
+        public static void SpeedTestMnemonicParsing()
         {
             Stopwatch stopwatch1 = new Stopwatch();
             Stopwatch stopwatch2 = new Stopwatch();
@@ -4770,7 +4771,8 @@ namespace AsmTools
             Console.WriteLine("ParseMnemonic     " + stopwatch2.ElapsedMilliseconds + " ms");
         }
 
-        public static void SpeedTestRegister()
+        /// <summary>Simple speed test to compare parsing of registers vs a lookup map</summary>
+        public static void SpeedTestRegisterParsing()
         {
             Stopwatch stopwatch1 = new Stopwatch();
             Stopwatch stopwatch2 = new Stopwatch();

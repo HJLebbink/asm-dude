@@ -8,10 +8,10 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,10 +24,13 @@ namespace AsmTools
 {
     public class AsmParameters
     {
-        private bool assume_initial_known_mem;
-        public bool mode_64bit;
-        public bool mode_32bit;
-        public bool mode_16bit;
+        public bool assume_initial_known_mem { get; private set; }
+
+        public bool mode_64bit { get; set; }
+
+        public bool mode_32bit { get; set; }
+
+        public bool mode_16bit { get; set; }
 
         public AsmParameters()
         {

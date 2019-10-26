@@ -295,7 +295,7 @@ namespace AsmDude.AsmDoc
                 : Settings.Default.AsmDoc_Url + reference;
         }
 
-        private async Task<EnvDTE.Window> GetWindowAsync(DTE2 dte2, string url)
+        private static async Task<EnvDTE.Window> GetWindowAsync(DTE2 dte2, string url)
         {
             if (!ThreadHelper.CheckAccess())
             {
@@ -343,7 +343,7 @@ namespace AsmDude.AsmDoc
 
             try
             {
-                EnvDTE.Window window = await this.GetWindowAsync(dte2, url).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
+                EnvDTE.Window window = await GetWindowAsync(dte2, url).ConfigureAwait(false); // use .ConfigureAwait(false) to signal your intention for continuation.
                 if (window == null)
                 {
                     // vsNavigateOptionsDefault    0   The Web page opens in the currently open browser window. (Default)

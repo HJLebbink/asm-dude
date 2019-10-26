@@ -1181,7 +1181,9 @@ namespace AsmSim
                     this.mem_Update_?.Dispose();
                     this.mem_Update_U_?.Dispose();
                     this.mem_Full_?.Dispose();
-                    this.branch_Condition_?.Dispose();
+
+                    //TODO HJ 26-10-2019 why when when branch_Condition_ is disposed Get_Private will throw
+                    //this.branch_Condition_?.Dispose();
 
                     this.ctx_.Dispose();
                 }
